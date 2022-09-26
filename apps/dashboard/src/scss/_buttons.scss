@@ -1,0 +1,112 @@
+[class*='btn-outline-'] {
+    border-width: 3px;
+}
+
+.btn {
+    font-family: $font-family-sans-serif;
+    font-weight: $font-weight-normal !important;
+
+    i {
+        font-size: 0.8rem;
+        margin-left: 0.5rem;
+    }
+}
+
+.btn-chat {
+    position: fixed;
+    width: auto;
+    font-size: 1.2rem;
+    bottom: 1rem;
+    right: 1rem;
+}
+
+.btn-nav {
+    display: block;
+    color: #000;
+    font-size: 18px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin: 0;
+    position: relative;
+
+    &:focus {
+        box-shadow: none;
+    }
+
+    i {
+        margin-left: 0.5rem;
+        font-size: $font-size-sm;
+    }
+}
+
+.btn-sm {
+    font-size: 14px !important;
+}
+
+@media (max-width: 768px) {
+    .btn-nav {
+        margin: auto;
+        color: black !important;
+    }
+    .header-menu--right .btn-primary {
+        margin-top: 1rem;
+    }
+}
+
+.btn-remove {
+    height: 31px;
+    width: 31px;
+    background-color: transparent;
+    color: $gray-400;
+    border: 1px solid $gray-400;
+
+    &:hover,
+    &:focus,
+    &:focus:hover {
+        background-color: transparent;
+        color: $danger;
+        border-color: $danger;
+    }
+
+    i {
+        margin: 0;
+    }
+}
+
+.btn-tab {
+    flex: 1;
+    color: white;
+    background-color: $primary;
+    margin: 0 1rem;
+    background-size: contain;
+
+    img {
+        height: 20px;
+    }
+
+    @media (min-width: map-get($grid-breakpoints, 'md')) {
+        padding: 1.5rem 2rem;
+
+        img {
+            margin-bottom: 0.5rem;
+            height: 30px;
+        }
+    }
+
+    &:not(.router-link-exact-active) {
+        background-image: none !important;
+        background-color: white;
+        color: $primary;
+    }
+
+    &.router-link-exact-active:hover {
+        color: white;
+    }
+
+    &:first-of-type {
+        margin-left: 0;
+    }
+    &:last-of-type {
+        margin-right: 0;
+    }
+}

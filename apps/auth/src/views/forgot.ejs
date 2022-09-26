@@ -1,0 +1,35 @@
+<div class="col-md-6 offset-md-3 col-xl-4 offset-xl-4 order-0 order-sm-1">
+    <div class="text-center pb-4 pt-4">
+        <img src="/img/logo.png" width="60" alt="THX Logo" />
+    </div>
+    <div class="card shadow-sm mb-5">
+        <div class="card-body p-sm-5">
+            <% if (locals.alert && alert.message) { %>
+            <div class="alert alert-<%= alert.variant %>">
+                <%= alert.message %>
+            </div>
+            <% } %>
+            <form autocomplete="off" action="/oidc/<%= uid %>/forgot" method="post">
+                <h2>Forgot your password?</h2>
+                <p>
+
+                    No worries, we got your back! Please submit the e-mail
+                    address of your account and we will send you a password reset link.
+                </p>
+                <% if (locals.alert && alert.variant !="success" ) { %>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input class="form-control" autocomplete="off" required type="email" name="email" />
+                </div>
+                <input type="hidden" name="returnUrl" value="<%= params.return_url %>" />
+                <button type="submit" class="btn rounded-pill btn-primary btn-block">
+                    Send password reset link
+                    <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                </button>
+                <a class="btn btn-block btn-link" href="/oidc/<%= uid %>/signin">
+                    Back to sign in</a>
+                <% } %>
+            </form>
+        </div>
+    </div>
+</div>

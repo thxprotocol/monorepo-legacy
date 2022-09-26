@@ -1,0 +1,83 @@
+@mixin switch($res: 'sm') {
+    $index: 1rem;
+    $mainVal: 1rem;
+
+    @if $res == 'md' {
+        $index: 2rem;
+        $mainVal: 1.5rem;
+    } @else if $res == 'lg' {
+        $index: 3rem;
+        $mainVal: 2rem;
+    } @else if $res == 'xl' {
+        $index: 4rem;
+        $mainVal: 2.5rem;
+    }
+
+    .custom-control-label {
+        padding-left: #{$index};
+        padding-bottom: #{$mainVal};
+    }
+
+    .custom-control-label::before {
+        height: $mainVal;
+        width: calc(#{$index} + 0.75rem);
+        border-radius: $mainVal * 2;
+    }
+
+    .custom-control-label::after {
+        width: calc(#{$mainVal} - 4px);
+        height: calc(#{$mainVal} - 4px);
+        border-radius: calc(#{$index} - (#{$mainVal} / 2));
+    }
+
+    .custom-control-input:checked ~ .custom-control-label::after {
+        transform: translateX(calc(#{$mainVal} - 0.25rem));
+    }
+}
+
+// YOU CAN PUT ALL RESOLUTION HERE
+// sm - DEFAULT, md, lg, xl
+.custom-switch.custom-switch-sm {
+    @include switch();
+}
+
+.custom-switch.custom-switch-md {
+    @include switch('md');
+}
+
+.custom-switch.custom-switch-lg {
+    @include switch('lg');
+}
+
+.custom-switch.custom-switch-xl {
+    @include switch('xl');
+}
+
+.custom-switch .custom-control-input:checked {
+    ~ .custom-control-label::before {
+        background-color: $dark !important;
+        border-color: $dark !important;
+    }
+}
+
+.custom-switch .custom-control-input:focus {
+    ~ .custom-control-label::before {
+        box-shadow: 0 0 0 0.2rem rgb(0 0 0 / 25%);
+    }
+}
+
+.custom-switch-light .custom-control-input:checked {
+    ~ .custom-control-label::before {
+        background-color: $light !important;
+        border-color: $light !important;
+    }
+    ~ .custom-control-label::after {
+        background-color: $darker !important;
+    }
+}
+
+.custom-switch-light .custom-control-input:focus {
+    ~ .custom-control-label::before {
+        box-shadow: 0 0 0 0.2rem rgb(255 255 255 / 25%);
+    }
+}

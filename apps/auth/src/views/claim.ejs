@@ -1,0 +1,102 @@
+<div class="col-md-6 offset-md-3 col-xl-4 offset-xl-4 order-0 order-sm-1">
+    <div class="text-center pb-4 pt-4">
+        <img src="/img/logo.png" width="60" alt="THX Logo" />
+    </div>
+    <div class="card shadow-sm mb-5">
+        <div class="card-body pt-sm-5 px-sm-5 pb-md-4">
+            <% if (locals.alert && alert.message) { %>
+            <div class="alert alert-<%= alert.variant %>">
+                <%= alert.message %>
+            </div>
+            <% } %>
+
+            <form autocomplete="off" action="/oidc/<%= uid %>/login" method="post" class="mb-4">
+                <strong class="h2 d-block text-dark text-center mb-4">
+                    Claim <span class="text-primary"><%= params.rewardData.withdrawAmount %>
+                        <%= params.rewardData.tokenSymbol %></span>
+                </strong>
+                <p>
+                    Sign in to your THX Web Wallet with your <%= params.channelType %> account to claim this reward.
+                    <a href="#" data-toggle="tooltip"
+                       title="We will create a new account if the email address used for authentication has not been used for a sign up.">
+                        <i class="fas fa-question-circle" aria-hidden="true"></i>
+                    </a>
+                </p>
+                <p>
+                    We will use your social account to verify if you
+                    <% if (params.channelAction == 'YouTubeLike' ) { %>
+                    <a target="_blank" href="https://www.youtube.com/watch?v=<%= params.channelItem %>"
+                       class="font-weight-bold">liked this video</a>
+                    <% } %>
+                    <% if (params.channelAction == 'YouTubeSubscribe' ) { %>
+                    <a target="_blank" href="https://www.youtube.com/channel/<%= params.channelItem %>"
+                       class="font-weight-bold">subscribed to this channel</a>.
+                    <% } %>
+                    <% if (params.channelAction == 'TwitterLike' ) { %>
+                    <a target="_blank" href="https://www.twitter.com/twitter/status/<%= params.channelItem %>"
+                       class="font-weight-bold">liked this tweet</a>.
+                    <% } %>
+                    <% if (params.channelAction == 'TwitterRetweet' ) { %>
+                    <a target="_blank" href="https://www.twitter.com/twitter/status/<%= params.channelItem %>"
+                       class="font-weight-bold">retweeted this tweet</a>.
+                    <% } %>
+                    <% if (params.channelAction == 'TwitterFollow' ) { %>
+                    <a target="_blank" href="https://www.twitter.com/i/user/<%= params.channelItem %>"
+                       class="font-weight-bold">follow this account</a>.
+                    <% } %>
+                    <% if (params.channelAction == 'SpotifyUserFollow' ) { %>
+                    <a target="_blank" href="https://open.spotify.com/user/<%= params.channelItem %>"
+                       class="font-weight-bold">follow this account</a>.
+                    <% } %>
+                    <% if (params.channelAction == 'SpotifyPlaylistFollow' ) { %>
+                    <a target="_blank" href="https://open.spotify.com/playlist/<%= params.channelItem %>"
+                       class="font-weight-bold">follow this playlist</a>.
+                    <% } %>
+                    <% if (params.channelAction == 'SpotifyTrackPlaying' ) { %>
+                    <a target="_blank" href="https://open.spotify.com/track/<%= params.channelItem %>"
+                       class="font-weight-bold">play this track</a>.
+                    <% } %>
+                    <% if (params.channelAction == 'SpotifyTrackSaved' ) { %>
+                    <a target="_blank" href="https://open.spotify.com/track/<%= params.channelItem %>"
+                       class="font-weight-bold">save this track</a>.
+                    <% } %>
+                </p>
+                <p>
+                    Make sure to grant these scopes:
+                </p>
+                <ul>
+                    <% for(let scope of params.channelScopes || []){  %>
+                    <li class="small"><%= scope %></li>
+                    <% } %>
+                </ul>
+                <input type="hidden" name="returnUrl" value="<%= params.return_url %>" />
+                <input type="hidden" name="rewardHash" value="<%= params.reward_hash %>" />
+                <% if (params.googleLoginUrl ) { %>
+                <a class="btn btn-sign-in btn-google btn-block" href="<%= params.googleLoginUrl %>">
+                    <div class="logo">
+                        <img src="/img/g-logo.png" alt="Google logo" />
+                    </div>
+                    <div class="label">Sign in with Google</div>
+                </a>
+                <% } %>
+                <% if (params.twitterLoginUrl ) { %>
+                <a class="btn btn-sign-in btn-twitter btn-block" href="<%= params.twitterLoginUrl %>">
+                    <div class="logo">
+                        <img src="/img/t-logo.png" alt="Twitter logo" />
+                    </div>
+                    <div class="label">Sign in with Twitter</div>
+                </a>
+                <% } %>
+                <% if (params.spotifyLoginUrl ) { %>
+                <a class="btn btn-sign-in btn-twitter btn-block" href="<%= params.spotifyLoginUrl %>">
+                    <div class="logo">
+                        <img src="/img/s-logo.png" alt="Spotify logo" />
+                    </div>
+                    <div class="label">Sign in with Spotify</div>
+                </a>
+                <% } %>
+            </form>
+
+        </div>
+    </div>
+</div>

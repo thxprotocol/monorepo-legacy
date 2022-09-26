@@ -1,0 +1,229 @@
+<div class="col-md-6 offset-md-3 order-0 order-sm-1">
+    <div class="text-center pb-4 pt-4">
+        <img src="/img/logo.png" width="60" alt="THX Logo" />
+    </div>
+    <div class="card shadow-sm mb-5 w-100">
+        <div class="card-body p-sm-5">
+            <strong class="h3 d-block text-dark text-center mb-5">
+                Account
+            </strong>
+            <% if (alert && alert.message) { %>
+                <div class="alert alert-<%= alert.variant %>">
+                    <%= alert.message %>
+                </div>
+                <% } %>
+
+                    <form id="account_update" class="pt-5 mt-5" autocomplete="off" action="/oidc/<%= uid %>/account"
+                        enctype="multipart/form-data" method="POST">
+
+                        <% if (params.profileImg) { %>
+                            <div class="row d-flex align-items-center justify-content-center pb-5">
+                                <img class="w-75" src="<%= params.profileImg %>" alt="profle-picture" />
+                            </div>
+                            <% } %>
+                                <div class="row pb-3">
+                                    <div class="d-flex col-4 align-items-center font-weight-bold">
+                                        Profile:
+                                    </div>
+                                    <div class="col-8">
+                                        <input class="form-control" name="profile" type="file" accept="image/*">
+                                    </div>
+                                </div>
+                                <div class=" row pb-3">
+                                    <div class="d-flex col-4 align-items-center font-weight-bold">
+                                        Email:
+                                    </div>
+                                    <div class="col-8">
+                                        <input class="form-control" name="email" required disabled
+                                            value="<%= params.email %>" placeholder="" />
+                                    </div>
+                                </div>
+
+                                <div class="row pb-3">
+                                    <div class="d-flex col-4 align-items-center font-weight-bold">
+                                        Address:
+                                    </div>
+
+                                    <div class="col-8">
+                                        <input class="form-control" disabled required value="<%= params.address %>" />
+                                    </div>
+                                </div>
+
+                                <div class="row pb-3">
+                                    <div class="d-flex col-4 align-items-center font-weight-bold">
+                                        First name:
+                                    </div>
+                                    <div class="col-8">
+                                        <input class="form-control" name="firstName" value="<%= params.firstName %>"
+                                            placeholder="" />
+                                    </div>
+                                </div>
+
+                                <div class="row pb-3">
+                                    <div class="d-flex col-4 align-items-center font-weight-bold">
+                                        Last name:
+                                    </div>
+                                    <div class="col-8">
+                                        <input class="form-control" name="lastName" value="<%= params.lastName %>"
+                                            placeholder="" />
+                                    </div>
+                                </div>
+
+                                <div class="row pb-3">
+                                    <div class="d-flex col-4 align-items-center font-weight-bold">
+                                        Organisation:
+                                    </div>
+                                    <div class="col-8">
+                                        <input class="form-control" name="organisation"
+                                            value="<%= params.organisation %>" placeholder="" />
+                                    </div>
+                                </div>
+
+                                <% if (params.googleAccess) { %>
+                                    <input form="account_update" type="hidden" name="googleAccess" value="false" />
+                                    <% } %>
+
+                                        <% if (params.twitterAccess) { %>
+                                            <input form="account_update" type="hidden" name="twitterAccess"
+                                                value="false" />
+                                            <% } %>
+
+                                                <% if (params.spotifyAccess) { %>
+                                                    <input form="account_update" type="hidden" name="spotifyAccess"
+                                                        value="false" />
+                                                    <% } %>
+
+
+                                                        <div class="row pb-3">
+                                                            <div
+                                                                class="d-flex col-4 align-items-center font-weight-bold">
+                                                                Plan
+                                                            </div>
+                                                            <div class="col-8">
+                                                                <select name="plan" class="form-control" disabled>
+                                                                    <option <%=params.plan==0 ? 'selected' : '' %>
+                                                                        value="0">Free</option>
+                                                                    <option <%=params.plan==1 ? 'selected' : '' %>
+                                                                        value="1">Basic</option>
+                                                                    <option <%=params.plan==2 ? 'selected' : '' %>
+                                                                        value="2">Premium</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+
+                                                        <input type="hidden" name="return_url"
+                                                            value="<%= params.return_url %>" />
+                    </form>
+                    <hr>
+                    <div class="row pb-3">
+                        <div class="d-flex col-4 align-items-start justify-content-start flex-column font-weight-bold">
+                            MFA
+                            <small class="text-muted">Multi-factor Authentication using time-based one-time passwords
+                                (TOTP).</small>
+                        </div>
+                        <div class="col-8">
+                            <% if (params.otpSecret) { %>
+                                <form autocomplete="off" action="/oidc/<%= uid %>/account/totp" method="POST">
+                                    <button class="btn btn-light text-danger btn-block">Deactivate</button>
+                                    <input type="hidden" name="disable" value="true" />
+                                </form>
+                                <% } %>
+                                    <% if (!params.otpSecret) { %>
+                                        <form autocomplete="off" action="/oidc/<%= uid %>/account/totp" method="POST">
+                                            <button type="submit"
+                                                class="btn btn-light text-primary btn-block">Activate</button>
+                                        </form>
+                                        <% } %>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="d-flex col-4 align-items-start flex-column font-weight-bold">
+                            Connect
+                            <small class="text-muted">Link your other accounts using single sign-on.</small>
+                        </div>
+
+                        <div class="d-flex col-8">
+                            <div class="w-100 d-flex flex-column">
+                                <% if (params.googleLoginUrl && !params.googleAccess) { %>
+                                    <a class="btn btn-sign-in btn-google btn-block my-1"
+                                        href="<%= params.googleLoginUrl %>">
+                                        <div class="logo">
+                                            <img src="/img/g-logo.png" alt="Google logo" />
+                                        </div>
+                                        <div class="label">Sign in with Google</div>
+                                    </a>
+                                    <% } %>
+                                        <% if (params.googleAccess) { %>
+                                            <form method="post" action="/oidc/<%= uid %>/account/google/disconnect">
+                                                <button class="btn btn-sign-in btn-google bg-gray btn-block my-1"
+                                                    type="submit">
+                                                    <div class="logo">
+                                                        <img src="/img/g-logo.png" alt="Google logo" />
+                                                    </div>
+                                                    <div class="label">Disconnect Google</div>
+                                                </button>
+                                            </form>
+                                            <% } %>
+                                                <% if (params.twitterLoginUrl && !params.twitterAccess) { %>
+                                                    <a class="btn btn-sign-in btn-twitter btn-block my-1"
+                                                        href="<%= params.twitterLoginUrl %>">
+                                                        <div class="logo">
+                                                            <img src="/img/t-logo.png" alt="Twitter logo" />
+                                                        </div>
+                                                        <div class="label">Sign in with Twitter</div>
+                                                    </a>
+                                                    <% } %>
+                                                        <% if (params.twitterAccess) { %>
+                                                            <form method="post"
+                                                                action="/oidc/<%= uid %>/account/twitter/disconnect">
+                                                                <button
+                                                                    class="btn btn-sign-in bg-gray btn-twitter btn-block my-1"
+                                                                    type="submit">
+                                                                    <div class="logo">
+                                                                        <img src="/img/t-logo.png" alt="Twitter logo" />
+                                                                    </div>
+                                                                    <div class="label">Disconnect Twitter</div>
+                                                                </button>
+                                                            </form>
+                                                            <% } %>
+                                                                <% if (params.spotifyLoginUrl && !params.spotifyAccess)
+                                                                    { %>
+                                                                    <a class="btn btn-sign-in btn-twitter btn-block my-1"
+                                                                        href="<%= params.spotifyLoginUrl %>">
+                                                                        <div class="logo">
+                                                                            <img src="/img/s-logo.png"
+                                                                                alt="Spotify logo" />
+                                                                        </div>
+                                                                        <div class="label">Sign in with Spotify</div>
+                                                                    </a>
+                                                                    <% } %>
+                                                                        <% if (params.spotifyAccess) { %>
+                                                                            <form method="post"
+                                                                                action="/oidc/<%= uid %>/account/spotify/disconnect">
+                                                                                <button
+                                                                                    class="btn btn-sign-in bg-gray btn-twitter btn-block my-1"
+                                                                                    type="submit">
+                                                                                    <div class="logo">
+                                                                                        <img src="/img/s-logo.png"
+                                                                                            alt="Spotify logo" />
+                                                                                    </div>
+                                                                                    <div class="label">Disconnect
+                                                                                        Spotify</div>
+                                                                                </button>
+                                                                            </form>
+                                                                            <% } %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+                    <button class="mt-5 btn btn-primary btn-block rounded-pill" type="submit" form="account_update">
+                        Update Infomation
+                    </button>
+                    <a class="btn btn-link btn-block rounded-pill" href="<%= params.return_url %>">
+                        Return to application
+                    </a>
+        </div>
+    </div>
+</div>

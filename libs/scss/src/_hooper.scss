@@ -1,0 +1,119 @@
+section .hooper-pagination {
+    bottom: -4rem;
+    width: 100%;
+
+    .hooper-indicators {
+        width: 100%;
+
+        &:before {
+            content: '';
+            position: absolute;
+            display: block;
+            width: auth;
+            left: 1rem;
+            right: 1rem;
+            background-color: $gray;
+            height: 1px;
+            bottom: 24px;
+            z-index: -1;
+        }
+
+        li {
+            flex: 1;
+            text-align: center;
+        }
+    }
+
+    .hooper-indicator {
+        background-color: transparent;
+        width: 100%;
+        height: 40px;
+
+        &:after {
+            content: '';
+            display: block;
+            width: 25%;
+            height: 6px;
+            border-radius: 6px;
+        }
+
+        &.is-active:after {
+            background-color: $darker;
+        }
+    }
+}
+section .hooper-team {
+    height: auto;
+}
+
+section .hooper-use-cases {
+    height: auto;
+}
+
+.card-metrics-dark {
+    margin-top: 100%;
+    margin-bottom: 1rem;
+
+    @media (min-width: map-get($grid-breakpoints, 'lg')) {
+        margin: 0;
+        position: absolute;
+        top: 25%;
+        right: 0;
+        margin-right: -200px;
+    }
+}
+
+section .hooper-metrics {
+    height: 100%;
+
+    .card {
+        margin-right: 1rem;
+    }
+
+    .hooper-track {
+        height: auto;
+    }
+
+    @media (min-width: map-get($grid-breakpoints, 'lg')) {
+        .hooper-list {
+            position: relative;
+            overflow: visible;
+        }
+
+        .hooper-track {
+            height: 100%;
+        }
+
+        .hooper-slide {
+            position: absolute;
+            height: auto;
+
+            .card {
+                width: 400px !important;
+                margin: 0;
+            }
+
+            &:nth-child(1) {
+                bottom: 40%;
+                right: 0;
+                margin-right: 0px;
+            }
+
+            &:nth-child(2) {
+                left: 0;
+                bottom: 30%;
+                margin-left: -350px;
+
+                .card {
+                    width: 450px !important;
+                }
+            }
+
+            &:nth-child(3) {
+                left: 0;
+                bottom: 10%;
+                margin-left: -150px;
+            }
+        }
+    }
+}

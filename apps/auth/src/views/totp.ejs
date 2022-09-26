@@ -1,0 +1,36 @@
+<div class="col-md-6 offset-md-3 order-0 order-sm-1">
+    <div class="text-center pb-4 pt-4">
+        <img src="/img/logo.png" width="60" alt="THX Logo" />
+    </div>
+    <div class="card shadow-sm mb-5 w-100">
+        <div class="card-body p-sm-5">
+            <strong class="h3 d-block text-dark text-center mb-5">
+                MFA Configuration
+            </strong>
+            <p>Scan this QR code with your authenticator app. E.g. <a
+                   href="https://apps.apple.com/us/app/google-authenticator/id388497605" target="_blank">Google
+                    Authenticator</a> or <a href="https://www.authy.com" target="_blank">Authy</a>.</p>
+            <hr>
+            <div class="img-responsive text-center bg-light p-3">
+                <img width="200" src="<%= params.qrCode %>" />
+            </div>
+            <hr>
+            <form autocomplete="off" action="/oidc/<%= uid %>/account/totp" method="post" class="mb-3">
+                <div class="p-2">
+                    <p>Enter the code shown in your authenticator app here:</p>
+                    <input placeholder="123123" class="form-control" autocomplete="off" required name="code" />
+                    <input type="hidden" name="otpSecret" value="<%= params.otpSecret %>" />
+                </div>
+                <hr>
+                <button type="submit" class="btn rounded-pill btn-primary btn-block">
+                    Submit code
+                    <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                </button>
+            </form>
+
+            <a class="btn btn-link btn-block rounded-pill" href="/oidc/<%= uid %>/account">
+                Return to Account
+            </a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,9 @@
+{
+  "$schema": "./node_modules/nx/schemas/workspace-schema.json",
+  "version": 2,
+  "projects": {
+    "auth": "apps/auth",
+    "dashboard": "apps/dashboard",
+    "scss": "libs/scss"
+  }
+}

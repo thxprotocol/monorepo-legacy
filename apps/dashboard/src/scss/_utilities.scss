@@ -1,0 +1,39 @@
+.pt-10 {
+    padding-top: 5rem;
+}
+.font-size-10 {
+    font-size: 5rem !important;
+
+    @media (min-width: map-get($grid-breakpoints, 'xl')) {
+        font-size: 9rem !important;
+    }
+}
+.mt-lg-10 {
+    @media (min-width: map-get($grid-breakpoints, 'xl')) {
+        margin-top: 7rem !important;
+    }
+}
+.ml-lg-10 {
+    @media (min-width: map-get($grid-breakpoints, 'xl')) {
+        margin-left: 8rem !important;
+    }
+}
+.mt-n7 {
+    margin-top: -7rem;
+}
+.bg-gray-1000 {
+    background-color: $gray-1000;
+}
+.text-truncate {
+    width: 150px;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.text-overflow-ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.cursor-not-allowed {
+    cursor: not-allowed;
+}

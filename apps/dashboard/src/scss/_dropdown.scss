@@ -1,0 +1,8 @@
+.dropdown-select .dropdown-item {
+    white-space: normal;
+    border-bottom: 1px solid $light;
+
+    &:last-child {
+        border-bottom: 0;
+    }
+}
