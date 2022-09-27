@@ -1,9 +1,9 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { IPayments } from '@thxprotocol/dashboard/types/IPayments';
+import { IPayments } from '@thxnetwork/dashboard/types/IPayments';
 import { IPool } from './pools';
-import { PaymentState } from '@thxprotocol/dashboard/types/enums/PaymentState';
+import { PaymentState } from '@thxnetwork/dashboard/types/enums/PaymentState';
 
 export type TPayment = {
     _id: string;

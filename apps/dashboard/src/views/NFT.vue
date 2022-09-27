@@ -52,11 +52,11 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import ModalErc721Create from '@thxprotocol/dashboard/components/modals/BaseModalERC721Create.vue';
-import BaseCardErc721 from '@thxprotocol/dashboard/components/cards/BaseCardERC721.vue';
-import BaseNothingHere from '@thxprotocol/dashboard/components/BaseListStateEmpty.vue';
-import { IERC721s } from '@thxprotocol/dashboard/types/erc721';
-import BaseBtnToggleArchive from '@thxprotocol/dashboard/components/buttons/BaseBtnToggleArchive.vue';
+import ModalErc721Create from '@thxnetwork/dashboard/components/modals/BaseModalERC721Create.vue';
+import BaseCardErc721 from '@thxnetwork/dashboard/components/cards/BaseCardERC721.vue';
+import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
+import { IERC721s } from '@thxnetwork/dashboard/types/erc721';
+import BaseBtnToggleArchive from '@thxnetwork/dashboard/components/buttons/BaseBtnToggleArchive.vue';
 
 @Component({
     components: {

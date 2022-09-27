@@ -137,11 +137,11 @@
 </template>
 
 <script lang="ts">
-import { IPools } from '@thxprotocol/dashboard/store/modules/pools';
-import { IAccount } from '@thxprotocol/dashboard/types/account';
-import { ERC20Type } from '@thxprotocol/dashboard/types/erc20';
-import { plans } from '@thxprotocol/dashboard/utils/plans';
-import { getRoutes } from '@thxprotocol/dashboard/utils/routes';
+import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
+import { IAccount } from '@thxnetwork/dashboard/types/account';
+import { ERC20Type } from '@thxnetwork/dashboard/types/erc20';
+import { plans } from '@thxnetwork/dashboard/utils/plans';
+import { getRoutes } from '@thxnetwork/dashboard/utils/routes';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 

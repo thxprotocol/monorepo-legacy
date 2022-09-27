@@ -72,16 +72,16 @@
 </template>
 
 <script lang="ts">
-import { IPool, IPools } from '@thxprotocol/dashboard/store/modules/pools';
+import { IPool, IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { IERC721s, TERC721, TERC721Metadata } from '@thxprotocol/dashboard/types/erc721';
-import BaseNothingHere from '@thxprotocol/dashboard/components/BaseListStateEmpty.vue';
-import BaseCardErc721Metadata from '@thxprotocol/dashboard/components/cards/BaseCardERC721Metadata.vue';
-import BaseModalErc721MetadataCreate from '@thxprotocol/dashboard/components/modals/BaseModalERC721MetadataCreate.vue';
-import BaseModalErc721MetadataBulkCreate from '@thxprotocol/dashboard/components/modals/BaseModalERC721MetadataBulkCreate.vue';
-import BaseModalErc721MetadataUploadCSV from '@thxprotocol/dashboard/components/modals/BaseModalERC721MetadataUploadCSV.vue';
-import BaseModalErc721MetadataCreateCSV from '@thxprotocol/dashboard/components/modals/BaseModalERC721MetadataCreateCSV.vue';
+import { IERC721s, TERC721, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
+import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
+import BaseCardErc721Metadata from '@thxnetwork/dashboard/components/cards/BaseCardERC721Metadata.vue';
+import BaseModalErc721MetadataCreate from '@thxnetwork/dashboard/components/modals/BaseModalERC721MetadataCreate.vue';
+import BaseModalErc721MetadataBulkCreate from '@thxnetwork/dashboard/components/modals/BaseModalERC721MetadataBulkCreate.vue';
+import BaseModalErc721MetadataUploadCSV from '@thxnetwork/dashboard/components/modals/BaseModalERC721MetadataUploadCSV.vue';
+import BaseModalErc721MetadataCreateCSV from '@thxnetwork/dashboard/components/modals/BaseModalERC721MetadataCreateCSV.vue';
 
 @Component({
     components: {

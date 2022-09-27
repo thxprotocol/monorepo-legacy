@@ -29,12 +29,12 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { ERC20Type, TERC20 } from '@thxprotocol/dashboard/types/erc20';
-import BaseCard from '@thxprotocol/dashboard/components/cards/BaseCard.vue';
-import BaseBadgeNetwork from '@thxprotocol/dashboard/components/badges/BaseBadgeNetwork.vue';
-import BaseIdenticon from '@thxprotocol/dashboard/components/BaseIdenticon.vue';
-import BaseDropdownTokenMenu from '@thxprotocol/dashboard/components/dropdowns/BaseDropdownMenuToken.vue';
-import { chainInfo } from '@thxprotocol/dashboard/utils/chains';
+import { ERC20Type, TERC20 } from '@thxnetwork/dashboard/types/erc20';
+import BaseCard from '@thxnetwork/dashboard/components/cards/BaseCard.vue';
+import BaseBadgeNetwork from '@thxnetwork/dashboard/components/badges/BaseBadgeNetwork.vue';
+import BaseIdenticon from '@thxnetwork/dashboard/components/BaseIdenticon.vue';
+import BaseDropdownTokenMenu from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownMenuToken.vue';
+import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import poll from 'promise-poller';
 
 @Component({

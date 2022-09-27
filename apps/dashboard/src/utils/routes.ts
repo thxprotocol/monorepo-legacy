@@ -1,4 +1,4 @@
-import { IPool } from '@thxprotocol/dashboard/store/modules/pools';
+import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
 
 type RouteDefinition = { path: string; label: string; iconClasses: string; visible: boolean };
 

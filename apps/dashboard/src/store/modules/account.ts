@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { User, UserManager } from 'oidc-client-ts';
-import { ChannelType } from '@thxprotocol/dashboard/types/rewards';
-import { IAccount, IAccountUpdates, ISpotify, ITwitter, IYoutube } from '@thxprotocol/dashboard/types/account';
-import { config } from '@thxprotocol/dashboard/utils/oidc';
-import { BASE_URL } from '@thxprotocol/dashboard/utils/secrets';
+import { ChannelType } from '@thxnetwork/dashboard/types/rewards';
+import { IAccount, IAccountUpdates, ISpotify, ITwitter, IYoutube } from '@thxnetwork/dashboard/types/account';
+import { config } from '@thxnetwork/dashboard/utils/oidc';
+import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 
 @Module({ namespaced: true })
 class AccountModule extends VuexModule {

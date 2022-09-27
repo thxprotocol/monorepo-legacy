@@ -47,14 +47,14 @@
 </template>
 
 <script lang="ts">
-import BaseCardPool from '@thxprotocol/dashboard/components/cards/BaseCardPool.vue';
-import BaseModalPoolCreate from '@thxprotocol/dashboard/components/modals/BaseModalPoolCreate.vue';
-import BaseListStateEmpty from '@thxprotocol/dashboard/components/BaseListStateEmpty.vue';
-import { IAccount } from '@thxprotocol/dashboard/types/account';
-import { IPools } from '@thxprotocol/dashboard/store/modules/pools';
+import BaseCardPool from '@thxnetwork/dashboard/components/cards/BaseCardPool.vue';
+import BaseModalPoolCreate from '@thxnetwork/dashboard/components/modals/BaseModalPoolCreate.vue';
+import BaseListStateEmpty from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
+import { IAccount } from '@thxnetwork/dashboard/types/account';
+import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import BaseBtnToggleArchive from '@thxprotocol/dashboard/components/buttons/BaseBtnToggleArchive.vue';
+import BaseBtnToggleArchive from '@thxnetwork/dashboard/components/buttons/BaseBtnToggleArchive.vue';
 
 @Component({
     components: {

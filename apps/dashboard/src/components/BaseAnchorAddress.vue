@@ -5,8 +5,8 @@
 </template>
 
 <script lang="ts">
-import { ChainId } from '@thxprotocol/dashboard/types/enums/ChainId';
-import { chainInfo } from '@thxprotocol/dashboard/utils/chains';
+import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
+import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component({})

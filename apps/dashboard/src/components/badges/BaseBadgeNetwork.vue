@@ -12,9 +12,9 @@
 </template>
 
 <script lang="ts">
-import { ChainInfo } from '@thxprotocol/dashboard/types/ChainInfo';
-import { ChainId } from '@thxprotocol/dashboard/types/enums/ChainId';
-import { chainInfo } from '@thxprotocol/dashboard/utils/chains';
+import { ChainInfo } from '@thxnetwork/dashboard/types/ChainInfo';
+import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
+import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component({})

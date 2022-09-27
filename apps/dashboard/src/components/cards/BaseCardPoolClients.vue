@@ -22,10 +22,10 @@
 <script lang="ts">
 import { mapGetters, mapState } from 'vuex';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { TClient } from '@thxprotocol/dashboard/store/modules/clients';
-import BaseListItemClient from '@thxprotocol/dashboard/components/list-items/BaseListItemClient.vue';
-import BaseModalClientCreate from '@thxprotocol/dashboard/components/modals/BaseModalClientCreate.vue';
-import { IPool } from '@thxprotocol/dashboard/store/modules/pools';
+import { TClient } from '@thxnetwork/dashboard/store/modules/clients';
+import BaseListItemClient from '@thxnetwork/dashboard/components/list-items/BaseListItemClient.vue';
+import BaseModalClientCreate from '@thxnetwork/dashboard/components/modals/BaseModalClientCreate.vue';
+import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
 
 @Component({
     components: {

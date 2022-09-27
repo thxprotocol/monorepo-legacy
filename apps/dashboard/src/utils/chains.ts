@@ -1,5 +1,5 @@
-import { ChainInfo } from '@thxprotocol/dashboard/types/ChainInfo';
-import { ChainId } from '@thxprotocol/dashboard/types/enums/ChainId';
+import { ChainInfo } from '@thxnetwork/dashboard/types/ChainInfo';
+import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 
 const chainInfo: { [chainId: number]: ChainInfo } = {
   1: {

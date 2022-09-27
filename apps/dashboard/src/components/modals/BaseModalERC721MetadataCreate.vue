@@ -48,12 +48,12 @@
 </template>
 
 <script lang="ts">
-import { IPool } from '@thxprotocol/dashboard/store/modules/pools';
-import { TERC721, TERC721DefaultProp, TERC721Metadata } from '@thxprotocol/dashboard/types/erc721';
+import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import { TERC721, TERC721DefaultProp, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseModal from './BaseModal.vue';
-import { isValidUrl } from '@thxprotocol/dashboard/utils/url';
+import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 
 const PROPTYPE_MAP: { [key: string]: string } = {
     string: 'text',

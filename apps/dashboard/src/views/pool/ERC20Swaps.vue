@@ -73,14 +73,14 @@
 </template>
 
 <script lang="ts">
-import ModalERC20SwapRuleCreate from '@thxprotocol/dashboard/components/modals/BaseModalERC20SwapRuleCreate.vue';
-import BaseNothingHere from '@thxprotocol/dashboard/components/BaseListStateEmpty.vue';
-import { GetERC20SwapRulesProps, IERC20SwapRules, TERC20SwapRule } from '@thxprotocol/dashboard/types/IERC20SwapRules';
-import { IPools } from '@thxprotocol/dashboard/store/modules/pools';
+import ModalERC20SwapRuleCreate from '@thxnetwork/dashboard/components/modals/BaseModalERC20SwapRuleCreate.vue';
+import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
+import { GetERC20SwapRulesProps, IERC20SwapRules, TERC20SwapRule } from '@thxnetwork/dashboard/types/IERC20SwapRules';
+import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import BaseIdenticon from '@thxprotocol/dashboard/components/BaseIdenticon.vue';
-import BaseFormGroupSwapRule from '@thxprotocol/dashboard/components/form-group/BaseFormGroupSwapRule.vue';
+import BaseIdenticon from '@thxnetwork/dashboard/components/BaseIdenticon.vue';
+import BaseFormGroupSwapRule from '@thxnetwork/dashboard/components/form-group/BaseFormGroupSwapRule.vue';
 
 @Component({
     components: {

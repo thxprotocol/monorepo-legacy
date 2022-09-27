@@ -1,7 +1,7 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { IRewardCondition, Reward } from '@thxprotocol/dashboard/types/rewards';
+import { IRewardCondition, Reward } from '@thxnetwork/dashboard/types/rewards';
 import { IPool } from './pools';
 
 export type TReward = { page: number } & Reward;

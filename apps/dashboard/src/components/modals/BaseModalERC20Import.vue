@@ -36,14 +36,14 @@
 </template>
 
 <script lang="ts">
-import { ChainId } from '@thxprotocol/dashboard/types/enums/ChainId';
-import { TERC20 } from '@thxprotocol/dashboard/types/erc20';
+import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
+import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseDropDownSelectPolygonERC20 from '../dropdowns/BaseDropDownSelectPolygonERC20.vue';
 import BaseModal from './BaseModal.vue';
 import BaseFormSelectNetwork from '../form-select/BaseFormSelectNetwork.vue';
-import { chainInfo } from '@thxprotocol/dashboard/utils/chains';
+import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { isAddress } from 'web3-utils';
 
 @Component({

@@ -19,6 +19,6 @@ module.exports = (config) => {
 
   config.resolve.alias = {
     ...config.resolve.alias,
-    '@thxprotocol/dashboard': 'src',
+    '@thxnetwork/dashboard': 'src',
   };
 };

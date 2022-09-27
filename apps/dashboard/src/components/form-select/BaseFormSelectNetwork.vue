@@ -29,10 +29,10 @@
 </template>
 
 <script lang="ts">
-import { ChainId } from '@thxprotocol/dashboard/types/enums/ChainId';
-import { AccountPlanType, IAccount } from '@thxprotocol/dashboard/types/account';
-import { chainInfo } from '@thxprotocol/dashboard/utils/chains';
-import { PUBLIC_URL } from '@thxprotocol/dashboard/utils/secrets';
+import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
+import { AccountPlanType, IAccount } from '@thxnetwork/dashboard/types/account';
+import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
+import { PUBLIC_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 

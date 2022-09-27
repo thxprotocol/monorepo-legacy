@@ -7,8 +7,8 @@
 </template>
 
 <script lang="ts">
-import { IPool } from '@thxprotocol/dashboard/store/modules/pools';
-import { TERC721 } from '@thxprotocol/dashboard/types/erc721';
+import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import { TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseModal from './BaseModal.vue';

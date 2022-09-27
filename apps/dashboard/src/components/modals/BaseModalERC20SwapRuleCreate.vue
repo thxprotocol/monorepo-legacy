@@ -26,13 +26,13 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import BaseDropdownSelectErc20 from '@thxprotocol/dashboard/components/dropdowns/BaseDropdownSelectERC20.vue';
+import BaseDropdownSelectErc20 from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownSelectERC20.vue';
 import BaseModal from './BaseModal.vue';
 import { AxiosError } from 'axios';
-import { IAccount } from '@thxprotocol/dashboard/types/account';
-import { TERC20 } from '@thxprotocol/dashboard/types/erc20';
-import { ChainId } from '@thxprotocol/dashboard/types/enums/ChainId';
-import { IPools } from '@thxprotocol/dashboard/store/modules/pools';
+import { IAccount } from '@thxnetwork/dashboard/types/account';
+import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
+import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
+import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 
 @Component({
     components: {

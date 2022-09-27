@@ -92,12 +92,12 @@
 </template>
 
 <script lang="ts">
-import { IPools } from '@thxprotocol/dashboard/store/modules/pools';
+import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { IPayments } from '@thxprotocol/dashboard/types/IPayments';
-import BaseModalPaymentCreate from '@thxprotocol/dashboard/components/modals/BaseModalPaymentCreate.vue';
-import BaseNothingHere from '@thxprotocol/dashboard/components/BaseListStateEmpty.vue';
+import { IPayments } from '@thxnetwork/dashboard/types/IPayments';
+import BaseModalPaymentCreate from '@thxnetwork/dashboard/components/modals/BaseModalPaymentCreate.vue';
+import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
 import { fromWei } from 'web3-utils';
 
 enum PaymentState {

@@ -1,8 +1,8 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { ChainId } from '@thxprotocol/dashboard/types/enums/ChainId';
-import { IRewardCondition } from '@thxprotocol/dashboard/types/rewards';
+import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
+import { IRewardCondition } from '@thxnetwork/dashboard/types/rewards';
 
 export type TClaim = {
     _id: string;

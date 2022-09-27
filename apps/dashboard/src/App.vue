@@ -15,11 +15,11 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { IAccount } from './types/account';
-import { initGTM } from '@thxprotocol/dashboard/utils/ga';
+import { initGTM } from '@thxnetwork/dashboard/utils/ga';
 import BaseDropdownAccount from './components/dropdowns/BaseDropdownAccount.vue';
 import BaseNavbar from './components/BaseNavbar.vue';
 import BaseDropdownMenu from './components/dropdowns/BaseDropdownMenu.vue';
-import { GTM } from '@thxprotocol/dashboard/utils/secrets';
+import { GTM } from '@thxnetwork/dashboard/utils/secrets';
 
 @Component({
     components: {

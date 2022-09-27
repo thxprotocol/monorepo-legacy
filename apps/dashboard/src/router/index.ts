@@ -1,4 +1,4 @@
-import store from '@thxprotocol/dashboard/store';
+import store from '@thxnetwork/dashboard/store';
 import {
     assertAuthorization,
     redirectAccount,
@@ -8,7 +8,7 @@ import {
     redirectSigninSilent,
     redirectSignout,
     redirectSignup,
-} from '@thxprotocol/dashboard/utils/guards';
+} from '@thxnetwork/dashboard/utils/guards';
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
 

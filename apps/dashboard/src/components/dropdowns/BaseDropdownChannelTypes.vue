@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import { channelList, IChannel } from '@thxprotocol/dashboard/types/rewards';
+import { channelList, IChannel } from '@thxnetwork/dashboard/types/rewards';
 import { BDropdown, BDropdownItemButton, BBadge, BSpinner } from 'bootstrap-vue';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';

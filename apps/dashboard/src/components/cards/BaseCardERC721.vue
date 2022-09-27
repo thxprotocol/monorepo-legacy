@@ -38,13 +38,13 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { chainInfo } from '@thxprotocol/dashboard/utils/chains';
-import { ERC721Variant, TERC721 } from '@thxprotocol/dashboard/types/erc721';
+import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
+import { ERC721Variant, TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import poll from 'promise-poller';
-import BaseCard from '@thxprotocol/dashboard/components/cards/BaseCard.vue';
-import BaseBadgeNetwork from '@thxprotocol/dashboard/components/badges/BaseBadgeNetwork.vue';
-import BaseIdenticon from '@thxprotocol/dashboard/components/BaseIdenticon.vue';
-import BaseDropdownMenuNft from '@thxprotocol/dashboard/components/dropdowns/BaseDropdownMenuNft.vue';
+import BaseCard from '@thxnetwork/dashboard/components/cards/BaseCard.vue';
+import BaseBadgeNetwork from '@thxnetwork/dashboard/components/badges/BaseBadgeNetwork.vue';
+import BaseIdenticon from '@thxnetwork/dashboard/components/BaseIdenticon.vue';
+import BaseDropdownMenuNft from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownMenuNft.vue';
 
 @Component({
     components: {

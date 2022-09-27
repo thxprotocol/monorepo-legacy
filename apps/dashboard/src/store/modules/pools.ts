@@ -1,10 +1,10 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { IMember } from '@thxprotocol/dashboard/types/account';
-import { TERC20 } from '@thxprotocol/dashboard/types/erc20';
-import { TERC721 } from '@thxprotocol/dashboard/types/erc721';
-import { ChainId } from '@thxprotocol/dashboard/types/enums/ChainId';
+import { IMember } from '@thxnetwork/dashboard/types/account';
+import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
+import { TERC721 } from '@thxnetwork/dashboard/types/erc721';
+import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 
 export interface PoolToken {
     _id: string;

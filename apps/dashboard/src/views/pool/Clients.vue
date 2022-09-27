@@ -39,10 +39,10 @@
 <script lang="ts">
 import { mapGetters } from 'vuex';
 import { Component, Vue } from 'vue-property-decorator';
-import { TClient } from '@thxprotocol/dashboard/store/modules/clients';
-import BaseListItemClient from '@thxprotocol/dashboard/components/list-items/BaseListItemClient.vue';
-import BaseModalClientCreate from '@thxprotocol/dashboard/components/modals/BaseModalClientCreate.vue';
-import { IPools } from '@thxprotocol/dashboard/store/modules/pools';
+import { TClient } from '@thxnetwork/dashboard/store/modules/clients';
+import BaseListItemClient from '@thxnetwork/dashboard/components/list-items/BaseListItemClient.vue';
+import BaseModalClientCreate from '@thxnetwork/dashboard/components/modals/BaseModalClientCreate.vue';
+import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 
 @Component({
     components: {

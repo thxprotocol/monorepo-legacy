@@ -27,9 +27,9 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import axios from 'axios';
-import { TERC20 } from '@thxprotocol/dashboard/types/erc20';
+import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import BaseIdenticon from '../BaseIdenticon.vue';
-import { ChainId } from '@thxprotocol/dashboard/types/enums/ChainId';
+import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 
 const QUICKSWAP_TOKEN_LIST =
     'https://unpkg.com/quickswap-default-token-list@1.2.41/build/quickswap-default.tokenlist.json';

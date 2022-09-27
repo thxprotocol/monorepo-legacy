@@ -16,12 +16,12 @@
 </template>
 
 <script lang="ts">
-import { IPool } from '@thxprotocol/dashboard/store/modules/pools';
+import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { IERC20s } from '@thxprotocol/dashboard/types/erc20';
-import { TERC20SwapRule } from '@thxprotocol/dashboard/types/IERC20SwapRules';
-import BaseIdenticon from '@thxprotocol/dashboard/components/BaseIdenticon.vue';
+import { IERC20s } from '@thxnetwork/dashboard/types/erc20';
+import { TERC20SwapRule } from '@thxnetwork/dashboard/types/IERC20SwapRules';
+import BaseIdenticon from '@thxnetwork/dashboard/components/BaseIdenticon.vue';
 
 @Component({
     components: {

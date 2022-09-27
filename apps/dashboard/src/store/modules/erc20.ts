@@ -1,7 +1,7 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { IERC20s, TERC20 } from '@thxprotocol/dashboard/types/erc20';
+import { IERC20s, TERC20 } from '@thxnetwork/dashboard/types/erc20';
 
 @Module({ namespaced: true })
 class ERC20Module extends VuexModule {

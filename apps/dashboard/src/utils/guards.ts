@@ -1,4 +1,4 @@
-import store from '@thxprotocol/dashboard/store';
+import store from '@thxnetwork/dashboard/store';
 import { Route } from 'vue-router';
 
 export function redirectPasswordResetLink(to: Route) {

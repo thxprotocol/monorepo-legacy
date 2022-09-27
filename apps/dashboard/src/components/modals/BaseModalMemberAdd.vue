@@ -37,7 +37,7 @@
 </template>
 
 <script lang="ts">
-import { IPool } from '@thxprotocol/dashboard/store/modules/pools';
+import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import BaseModal from './BaseModal.vue';
 

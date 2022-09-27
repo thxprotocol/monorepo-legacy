@@ -32,11 +32,11 @@
 <script lang="ts">
 import { mapGetters } from 'vuex';
 import { Component, Vue } from 'vue-property-decorator';
-import { IPools } from '@thxprotocol/dashboard/store/modules/pools';
-import { ITransactions } from '@thxprotocol/dashboard/types/ITransactions';
-import BaseNothingHere from '@thxprotocol/dashboard/components/BaseListStateEmpty.vue';
-import BarChart from '@thxprotocol/dashboard/components/charts/BarChart.vue';
-import { GetTransactionsResponse } from '@thxprotocol/dashboard/store/modules/transactions';
+import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
+import { ITransactions } from '@thxnetwork/dashboard/types/ITransactions';
+import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
+import BarChart from '@thxnetwork/dashboard/components/charts/BarChart.vue';
+import { GetTransactionsResponse } from '@thxnetwork/dashboard/store/modules/transactions';
 
 @Component({
     components: { BaseNothingHere, BarChart },

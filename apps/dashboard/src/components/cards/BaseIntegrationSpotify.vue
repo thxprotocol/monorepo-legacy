@@ -51,8 +51,8 @@
 </template>
 
 <script lang="ts">
-import { IAccount, ISpotify } from '@thxprotocol/dashboard/types/account';
-import { ChannelType } from '@thxprotocol/dashboard/types/rewards';
+import { IAccount, ISpotify } from '@thxnetwork/dashboard/types/account';
+import { ChannelType } from '@thxnetwork/dashboard/types/rewards';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 

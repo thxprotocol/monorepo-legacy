@@ -1,7 +1,7 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { IPromotions } from '@thxprotocol/dashboard/types/IPromotions';
+import { IPromotions } from '@thxnetwork/dashboard/types/IPromotions';
 import { IPool } from './pools';
 
 export type TPromotion = {

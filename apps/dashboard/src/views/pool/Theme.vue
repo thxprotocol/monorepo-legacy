@@ -48,12 +48,12 @@
 </template>
 
 <script lang="ts">
-import { IPools } from '@thxprotocol/dashboard/store/modules/pools';
+import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
-import { ChainId } from '@thxprotocol/dashboard/types/enums/ChainId';
+import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import { mapGetters } from 'vuex';
-import { isValidUrl } from '@thxprotocol/dashboard/utils/url';
-import { TBrand } from '@thxprotocol/dashboard/store/modules/brands';
+import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
+import { TBrand } from '@thxnetwork/dashboard/store/modules/brands';
 
 @Component({
     computed: mapGetters({

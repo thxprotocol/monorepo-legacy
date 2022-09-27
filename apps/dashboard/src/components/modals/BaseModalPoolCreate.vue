@@ -20,17 +20,17 @@
 </template>
 
 <script lang="ts">
-import { ChainId } from '@thxprotocol/dashboard/types/enums/ChainId';
+import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import BaseFormSelectNetwork from '@thxprotocol/dashboard/components/form-select/BaseFormSelectNetwork.vue';
-import BaseDropdownSelectErc20 from '@thxprotocol/dashboard/components/dropdowns/BaseDropdownSelectERC20.vue';
-import BaseDropdownSelectMultipleErc20 from '@thxprotocol/dashboard/components/dropdowns/BaseDropdownSelectMultipleERC20.vue';
-import BaseDropdownSelectErc721 from '@thxprotocol/dashboard/components/dropdowns/BaseDropdownSelectERC721.vue';
+import BaseFormSelectNetwork from '@thxnetwork/dashboard/components/form-select/BaseFormSelectNetwork.vue';
+import BaseDropdownSelectErc20 from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownSelectERC20.vue';
+import BaseDropdownSelectMultipleErc20 from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownSelectMultipleERC20.vue';
+import BaseDropdownSelectErc721 from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownSelectERC721.vue';
 import BaseModal from './BaseModal.vue';
-import { IAccount } from '@thxprotocol/dashboard/types/account';
-import { TERC20 } from '@thxprotocol/dashboard/types/erc20';
-import { TERC721 } from '@thxprotocol/dashboard/types/erc721';
+import { IAccount } from '@thxnetwork/dashboard/types/account';
+import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
+import { TERC721 } from '@thxnetwork/dashboard/types/erc721';
 
 @Component({
     components: {

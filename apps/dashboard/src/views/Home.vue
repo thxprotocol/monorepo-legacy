@@ -136,8 +136,8 @@
 import {
   AccountPlanType,
   IAccount,
-} from '@thxprotocol/dashboard/types/account';
-import { IPools } from '@thxprotocol/dashboard/store/modules/pools';
+} from '@thxnetwork/dashboard/types/account';
+import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 

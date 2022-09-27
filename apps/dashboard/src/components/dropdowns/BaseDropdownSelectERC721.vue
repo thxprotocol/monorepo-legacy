@@ -28,8 +28,8 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseIdenticon from '../BaseIdenticon.vue';
-import { IERC721s, TERC721 } from '@thxprotocol/dashboard/types/erc721';
-import { ChainId } from '@thxprotocol/dashboard/types/enums/ChainId';
+import { IERC721s, TERC721 } from '@thxnetwork/dashboard/types/erc721';
+import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 
 @Component({
     components: {

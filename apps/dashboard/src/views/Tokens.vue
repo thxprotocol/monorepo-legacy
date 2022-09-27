@@ -65,12 +65,12 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import ModalErc20Create from '@thxprotocol/dashboard/components/modals/BaseModalERC20Create.vue';
-import ModalErc20Import from '@thxprotocol/dashboard/components/modals/BaseModalERC20Import.vue';
-import BaseCardErc20 from '@thxprotocol/dashboard/components/cards/BaseCardERC20.vue';
-import BaseNothingHere from '@thxprotocol/dashboard/components/BaseListStateEmpty.vue';
-import BaseBtnToggleArchive from '@thxprotocol/dashboard/components/buttons/BaseBtnToggleArchive.vue';
-import { IERC20s } from '@thxprotocol/dashboard/types/erc20';
+import ModalErc20Create from '@thxnetwork/dashboard/components/modals/BaseModalERC20Create.vue';
+import ModalErc20Import from '@thxnetwork/dashboard/components/modals/BaseModalERC20Import.vue';
+import BaseCardErc20 from '@thxnetwork/dashboard/components/cards/BaseCardERC20.vue';
+import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
+import BaseBtnToggleArchive from '@thxnetwork/dashboard/components/buttons/BaseBtnToggleArchive.vue';
+import { IERC20s } from '@thxnetwork/dashboard/types/erc20';
 
 @Component({
   components: {

@@ -54,14 +54,14 @@
 </template>
 
 <script lang="ts">
-import { ChainId } from '@thxprotocol/dashboard/types/enums/ChainId';
-import { IPools } from '@thxprotocol/dashboard/store/modules/pools';
+import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
+import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { getRoutes } from '@thxprotocol/dashboard/utils/routes';
-import { ERC20Type } from '@thxprotocol/dashboard/types/erc20';
-import BaseBadgeNetwork from '@thxprotocol/dashboard/components/badges/BaseBadgeNetwork.vue';
-import BaseModalDepositCreate from '@thxprotocol/dashboard/components/modals/BaseModalDepositCreate.vue';
+import { getRoutes } from '@thxnetwork/dashboard/utils/routes';
+import { ERC20Type } from '@thxnetwork/dashboard/types/erc20';
+import BaseBadgeNetwork from '@thxnetwork/dashboard/components/badges/BaseBadgeNetwork.vue';
+import BaseModalDepositCreate from '@thxnetwork/dashboard/components/modals/BaseModalDepositCreate.vue';
 import { fromWei } from 'web3-utils';
 
 @Component({

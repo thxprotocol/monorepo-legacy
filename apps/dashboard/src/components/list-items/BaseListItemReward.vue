@@ -153,21 +153,21 @@
 </template>
 
 <script lang="ts">
-import { IPool } from '@thxprotocol/dashboard/store/modules/pools';
+import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import {
   Reward,
   ChannelType,
   ChannelAction,
   RewardState,
-} from '@thxprotocol/dashboard/types/rewards';
+} from '@thxnetwork/dashboard/types/rewards';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import BaseCard from '../cards/BaseCard.vue';
-import BaseModalRewardCreate from '@thxprotocol/dashboard/components/modals/BaseModalRewardCreate.vue';
+import BaseModalRewardCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardCreate.vue';
 import VueQr from 'vue-qr';
-import { BASE_URL, WALLET_URL } from '@thxprotocol/dashboard/utils/secrets';
+import { BASE_URL, WALLET_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { mapGetters } from 'vuex';
-import { TBrandState } from '@thxprotocol/dashboard/store/modules/brands';
-import { TERC721, TERC721Metadata } from '@thxprotocol/dashboard/types/erc721';
+import { TBrandState } from '@thxnetwork/dashboard/store/modules/brands';
+import { TERC721, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
 
 const getBase64Image = (url: string): Promise<string> => {
   return new Promise((resolve) => {

@@ -1,0 +1,54 @@
+[class*='btn-outline-'] {
+    border-width: 3px;
+}
+
+.btn {
+    font-family: $font-family-sans-serif;
+    font-weight: $font-weight-normal !important;
+
+    i {
+        font-size: 0.8rem;
+        margin-left: 0.5rem;
+    }
+}
+
+.btn-chat {
+    position: fixed;
+    width: auto;
+    font-size: 1.2rem;
+    bottom: 1rem;
+    right: 1rem;
+}
+
+.btn-nav {
+    display: block;
+    color: #000;
+    font-size: 18px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin: 0;
+    position: relative;
+
+    &:focus {
+        box-shadow: none;
+    }
+
+    i {
+        margin-left: 0.5rem;
+        font-size: $font-size-sm;
+    }
+}
+
+.btn-sm {
+    font-size: 14px !important;
+}
+
+@media (max-width: 768px) {
+    .btn-nav {
+        margin: auto;
+        color: black !important;
+    }
+    .header-menu--right .btn-primary {
+        margin-top: 1rem;
+    }
+}

@@ -99,8 +99,8 @@
 </template>
 
 <script lang="ts">
-import { ChainId } from '@thxprotocol/dashboard/types/enums/ChainId';
-import { ERC721Variant, TERC721, TERC721DefaultProp } from '@thxprotocol/dashboard/types/erc721';
+import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
+import { ERC721Variant, TERC721, TERC721DefaultProp } from '@thxnetwork/dashboard/types/erc721';
 import { Component, Vue } from 'vue-property-decorator';
 import BaseCardERC721DefaultPropertyConfig from '../cards/BaseCardERC721DefaultPropertyConfig.vue';
 import BaseFormSelectNetwork from '../form-select/BaseFormSelectNetwork.vue';

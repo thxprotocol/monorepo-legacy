@@ -227,7 +227,7 @@
 </template>
 
 <script lang="ts">
-import { IPool } from '@thxprotocol/dashboard/store/modules/pools';
+import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import {
@@ -238,8 +238,8 @@ import {
     IChannelAction,
     Reward,
     channelList,
-} from '@thxprotocol/dashboard/types/rewards';
-import { IAccount, ISpotify, ITwitter, IYoutube } from '@thxprotocol/dashboard/types/account';
+} from '@thxnetwork/dashboard/types/rewards';
+import { IAccount, ISpotify, ITwitter, IYoutube } from '@thxnetwork/dashboard/types/account';
 import BaseDropdownYoutubeVideo from '../dropdowns/BaseDropdownYoutubeVideo.vue';
 import BaseDropdownYoutubeUploads from '../dropdowns/BaseDropdownYoutubeUploads.vue';
 import BaseDropdownYoutubeChannels from '../dropdowns/BaseDropdownYoutubeChannels.vue';
@@ -249,9 +249,9 @@ import BaseDropdownTwitterUsers from '../dropdowns/BaseDropdownTwitterUsers.vue'
 import BaseDropdownSpotifyTrack from '../dropdowns/BaseDropdownSpotifyTrack.vue';
 import BaseDropdownSpotifyPlaylist from '../dropdowns/BaseDropdownSpotifyPlaylist.vue';
 import BaseDropdownChannelTypes from '../dropdowns/BaseDropdownChannelTypes.vue';
-import slugify from '@thxprotocol/dashboard/utils/slugify';
+import slugify from '@thxnetwork/dashboard/utils/slugify';
 import BaseModal from './BaseModal.vue';
-import { TERC721, TERC721Metadata } from '@thxprotocol/dashboard/types/erc721';
+import { TERC721, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
 import { format } from 'date-fns';
 import BaseTooltipInfo from '../tooltips/BaseTooltipInfo.vue';
 import BaseDropdownERC721Metadata from '../dropdowns/BaseDropdownERC721Metadata.vue';

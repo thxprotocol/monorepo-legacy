@@ -75,10 +75,10 @@
 </template>
 
 <script lang="ts">
-import { IPool } from '@thxprotocol/dashboard/store/modules/pools';
+import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { Reward } from '@thxprotocol/dashboard/types/rewards';
+import { Reward } from '@thxnetwork/dashboard/types/rewards';
 
 @Component({
     computed: mapGetters({

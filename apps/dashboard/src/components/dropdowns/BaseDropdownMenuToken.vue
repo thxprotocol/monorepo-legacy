@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import { TERC20 } from '@thxprotocol/dashboard/types/erc20';
+import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component({})

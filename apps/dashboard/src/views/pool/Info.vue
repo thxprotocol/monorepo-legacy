@@ -63,11 +63,11 @@
 </template>
 
 <script lang="ts">
-import { IPools } from '@thxprotocol/dashboard/store/modules/pools';
+import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
-import { ChainId } from '@thxprotocol/dashboard/types/enums/ChainId';
+import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import { mapGetters } from 'vuex';
-import { chainInfo } from '@thxprotocol/dashboard/utils/chains';
+import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 
 @Component({
     computed: mapGetters({

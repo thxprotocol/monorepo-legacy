@@ -76,7 +76,7 @@
 </template>
 
 <script lang="ts">
-import { TERC721DefaultProp } from '@thxprotocol/dashboard/types/erc721';
+import { TERC721DefaultProp } from '@thxnetwork/dashboard/types/erc721';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { snakeCase } from 'change-case';
 

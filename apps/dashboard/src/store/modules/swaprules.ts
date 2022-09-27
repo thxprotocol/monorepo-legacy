@@ -1,8 +1,8 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { IPool } from '@thxprotocol/dashboard/store/modules/pools';
-import { GetERC20SwapRulesProps, IERC20SwapRules, TERC20SwapRule } from '@thxprotocol/dashboard/types/IERC20SwapRules';
+import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import { GetERC20SwapRulesProps, IERC20SwapRules, TERC20SwapRule } from '@thxnetwork/dashboard/types/IERC20SwapRules';
 
 @Module({ namespaced: true })
 class ERC20SwapRuleModule extends VuexModule {

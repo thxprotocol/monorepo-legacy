@@ -31,9 +31,9 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import BaseIntegrationYoutube from '@thxprotocol/dashboard/components/cards/BaseIntegrationYoutube.vue';
-import BaseIntegrationTwitter from '@thxprotocol/dashboard/components/cards/BaseIntegrationTwitter.vue';
-import BaseIntegrationSpotify from '@thxprotocol/dashboard/components/cards/BaseIntegrationSpotify.vue';
+import BaseIntegrationYoutube from '@thxnetwork/dashboard/components/cards/BaseIntegrationYoutube.vue';
+import BaseIntegrationTwitter from '@thxnetwork/dashboard/components/cards/BaseIntegrationTwitter.vue';
+import BaseIntegrationSpotify from '@thxnetwork/dashboard/components/cards/BaseIntegrationSpotify.vue';
 
 @Component({
   components: {

@@ -30,11 +30,11 @@
 <script lang="ts">
 import { mapGetters } from 'vuex';
 import { Component, Vue } from 'vue-property-decorator';
-import { IPools } from '@thxprotocol/dashboard/store/modules/pools';
-import { IPromotions } from '@thxprotocol/dashboard/types/IPromotions';
-import ModalPromotionCreate from '@thxprotocol/dashboard/components/modals/BaseModalPromotionCreate.vue';
-import BasePromotion from '@thxprotocol/dashboard/components/cards/BasePromotion.vue';
-import BaseNothingHere from '@thxprotocol/dashboard/components/BaseListStateEmpty.vue';
+import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
+import { IPromotions } from '@thxnetwork/dashboard/types/IPromotions';
+import ModalPromotionCreate from '@thxnetwork/dashboard/components/modals/BaseModalPromotionCreate.vue';
+import BasePromotion from '@thxnetwork/dashboard/components/cards/BasePromotion.vue';
+import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
 
 @Component({
     components: { BaseNothingHere, ModalPromotionCreate, BasePromotion },

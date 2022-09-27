@@ -54,8 +54,8 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { TClient } from '@thxprotocol/dashboard/store/modules/clients';
-import { IPool } from '@thxprotocol/dashboard/store/modules/pools';
+import { TClient } from '@thxnetwork/dashboard/store/modules/clients';
+import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
 
 export interface TClientInfo {
     clientId: string;

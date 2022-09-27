@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Vue } from 'vue-property-decorator';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { Reward } from '@thxprotocol/dashboard/types/rewards';
+import { Reward } from '@thxnetwork/dashboard/types/rewards';
 
 export class Widget {
     clientId: string;

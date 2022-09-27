@@ -41,15 +41,15 @@
 </template>
 
 <script lang="ts">
-import { IAccount } from '@thxprotocol/dashboard/types/account';
-import { IPool } from '@thxprotocol/dashboard/store/modules/pools';
+import { IAccount } from '@thxnetwork/dashboard/types/account';
+import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters, mapState } from 'vuex';
-import BaseModalDelete from '@thxprotocol/dashboard/components/modals/BaseModalDelete.vue';
-import BaseBadgeNetwork from '@thxprotocol/dashboard/components/badges/BaseBadgeNetwork.vue';
-import BaseCard from '@thxprotocol/dashboard/components/cards/BaseCard.vue';
+import BaseModalDelete from '@thxnetwork/dashboard/components/modals/BaseModalDelete.vue';
+import BaseBadgeNetwork from '@thxnetwork/dashboard/components/badges/BaseBadgeNetwork.vue';
+import BaseCard from '@thxnetwork/dashboard/components/cards/BaseCard.vue';
 import promisePoller from 'promise-poller';
-import BaseDropdownMenuPool from '@thxprotocol/dashboard/components/dropdowns/BaseDropdownMenuPool.vue';
+import BaseDropdownMenuPool from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownMenuPool.vue';
 import { fromWei } from 'web3-utils';
 
 @Component({

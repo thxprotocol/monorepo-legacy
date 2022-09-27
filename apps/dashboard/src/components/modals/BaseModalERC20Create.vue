@@ -59,8 +59,8 @@
 </template>
 
 <script lang="ts">
-import { ChainId } from '@thxprotocol/dashboard/types/enums/ChainId';
-import { ERC20Type, TERC20 } from '@thxprotocol/dashboard/types/erc20';
+import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
+import { ERC20Type, TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseFormSelectNetwork from '../form-select/BaseFormSelectNetwork.vue';

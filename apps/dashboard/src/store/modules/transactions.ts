@@ -1,9 +1,9 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { IPool } from '@thxprotocol/dashboard/store/modules/pools';
-import { ChainId } from '@thxprotocol/dashboard/types/enums/ChainId';
-import { ITransactions } from '@thxprotocol/dashboard/types/ITransactions';
+import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
+import { ITransactions } from '@thxnetwork/dashboard/types/ITransactions';
 
 export enum TransactionType {
     Default = 0,

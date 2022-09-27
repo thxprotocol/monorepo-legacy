@@ -107,15 +107,15 @@
 </template>
 
 <script lang="ts">
-import { IPools } from '@thxprotocol/dashboard/store/modules/pools';
+import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { IRewards, Reward } from '@thxprotocol/dashboard/types/rewards';
-import { IWidgets, Widget } from '@thxprotocol/dashboard/store/modules/widgets';
-import BaseNothingHere from '@thxprotocol/dashboard/components/BaseListStateEmpty.vue';
-import BaseModalWidgetCreate from '@thxprotocol/dashboard/components/modals/BaseModalWidgetCreate.vue';
-import BaseModalWidgetEdit from '@thxprotocol/dashboard/components/modals/BaseModalWidgetEdit.vue';
-import ModalDelete from '@thxprotocol/dashboard/components/modals/BaseModalDelete.vue';
+import { IRewards, Reward } from '@thxnetwork/dashboard/types/rewards';
+import { IWidgets, Widget } from '@thxnetwork/dashboard/store/modules/widgets';
+import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
+import BaseModalWidgetCreate from '@thxnetwork/dashboard/components/modals/BaseModalWidgetCreate.vue';
+import BaseModalWidgetEdit from '@thxnetwork/dashboard/components/modals/BaseModalWidgetEdit.vue';
+import ModalDelete from '@thxnetwork/dashboard/components/modals/BaseModalDelete.vue';
 
 @Component({
     components: {

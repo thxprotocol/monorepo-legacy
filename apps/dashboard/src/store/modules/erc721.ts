@@ -2,7 +2,7 @@ import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { IPool } from './pools';
-import { ChainId } from '@thxprotocol/dashboard/types/enums/ChainId';
+import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import {
     TERC721,
     IERC721s,
@@ -10,8 +10,8 @@ import {
     TERC721DefaultProp,
     MetadataListProps,
     TMetadataResponse,
-} from '@thxprotocol/dashboard/types/erc721';
-import { zip, zipFolder } from '@thxprotocol/dashboard/utils/zip';
+} from '@thxnetwork/dashboard/types/erc721';
+import { zip, zipFolder } from '@thxnetwork/dashboard/utils/zip';
 
 @Module({ namespaced: true })
 class ERC721Module extends VuexModule {

@@ -41,12 +41,12 @@
 </template>
 
 <script lang="ts">
-import { GetMembersProps, GetMembersResponse, IPools } from '@thxprotocol/dashboard/store/modules/pools';
-import { IMemberByPage } from '@thxprotocol/dashboard/types/account';
+import { GetMembersProps, GetMembersResponse, IPools } from '@thxnetwork/dashboard/store/modules/pools';
+import { IMemberByPage } from '@thxnetwork/dashboard/types/account';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 
-import BaseModalMemberAdd from '@thxprotocol/dashboard/components/modals/BaseModalMemberAdd.vue';
+import BaseModalMemberAdd from '@thxnetwork/dashboard/components/modals/BaseModalMemberAdd.vue';
 
 @Component({
     components: {

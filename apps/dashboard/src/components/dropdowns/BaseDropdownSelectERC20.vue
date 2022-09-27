@@ -47,10 +47,10 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import axios from 'axios';
-import { IERC20s, TERC20 } from '@thxprotocol/dashboard/types/erc20';
+import { IERC20s, TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import BaseIdenticon from '../BaseIdenticon.vue';
-import { IERC721s } from '@thxprotocol/dashboard/types/erc721';
-import { ChainId } from '@thxprotocol/dashboard/types/enums/ChainId';
+import { IERC721s } from '@thxnetwork/dashboard/types/erc721';
+import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 
 const QUICKSWAP_TOKEN_LIST =
     'https://unpkg.com/quickswap-default-token-list@1.2.40/build/quickswap-default.tokenlist.json';
