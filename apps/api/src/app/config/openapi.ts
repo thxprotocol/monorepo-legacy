@@ -60,7 +60,7 @@ const doc: any = {
     },
 };
 const outputFile = './openapi.json';
-const endpointsFiles = ['../src/app/controllers/index.ts'];
+const endpointsFiles = ['apps/api/src/app/controllers/index.ts'];
 
 if (!['test', 'production'].includes(NODE_ENV)) {
     swaggerAutogen()(outputFile, endpointsFiles, doc).then(async () => {
