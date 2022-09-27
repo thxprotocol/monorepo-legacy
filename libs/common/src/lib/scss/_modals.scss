@@ -1,0 +1,24 @@
+.modal-header {
+    border: 0;
+
+    h5 {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    @media (min-width: map-get($grid-breakpoints, 'md')) {
+        padding: 3rem 3rem 0 3rem;
+    }
+}
+.modal-body {
+    @media (min-width: map-get($grid-breakpoints, 'md')) {
+        padding: 2rem 3rem;
+    }
+}
+
+.modal-footer {
+    border: 0;
+    @media (min-width: map-get($grid-breakpoints, 'md')) {
+        padding: 0rem 3rem 3rem 3rem;
+    }
+}

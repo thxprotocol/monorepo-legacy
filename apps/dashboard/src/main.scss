@@ -1,0 +1,96 @@
+@import url('https://fonts.googleapis.com/css?family=Exo+2:200,400,400i,700,700i,900,900i');
+
+//
+@import '~bootstrap/scss/mixins';
+@import '~bootstrap/scss/functions';
+@import '~bootstrap/scss/variables';
+@import '@thxprotocol/scss/_variables.scss';
+
+// Optional
+@import '~bootstrap/scss/utilities';
+@import '~bootstrap/scss/root';
+@import '~bootstrap/scss/reboot';
+@import '~bootstrap/scss/type';
+
+// Defaults
+@import '~bootstrap/scss/card';
+@import '~bootstrap/scss/badge';
+@import '~bootstrap/scss/forms';
+@import '~bootstrap/scss/dropdown';
+@import '~bootstrap/scss/custom-forms';
+@import '~bootstrap/scss/list-group';
+@import '~bootstrap/scss/alert';
+@import '~bootstrap/scss/modal';
+@import '~bootstrap/scss/toasts';
+@import '~bootstrap/scss/close';
+@import '~bootstrap/scss/tooltip';
+@import '~bootstrap/scss/transitions';
+@import '~bootstrap/scss/buttons';
+@import '~bootstrap/scss/spinners';
+@import '~bootstrap/scss/nav';
+@import '~bootstrap/scss/navbar';
+@import '~bootstrap/scss/media';
+@import '~bootstrap/scss/input-group';
+@import '~bootstrap/scss/grid';
+@import '~bootstrap/scss/code';
+@import '~bootstrap/scss/popover';
+@import '~bootstrap/scss/jumbotron';
+@import '~bootstrap/scss/progress';
+@import '~bootstrap/scss/pagination';
+
+// Bootstrap Vue
+@import '~bootstrap-vue/src/index.scss';
+
+// Reset
+@import '@thxprotocol/scss/_root.scss';
+
+// Custom
+@import '@thxprotocol/scss/_buttons.scss';
+@import '@thxprotocol/scss/_navbar.scss';
+@import '@thxprotocol/scss/_forms.scss';
+@import '@thxprotocol/scss/_custom-forms.scss';
+@import '@thxprotocol/scss/_custom-switch.scss';
+@import '@thxprotocol/scss/_sidebar.scss';
+@import '@thxprotocol/scss/_jumbotron.scss';
+@import '@thxprotocol/scss/_modals.scss';
+@import '@thxprotocol/scss/_utilities.scss';
+@import '@thxprotocol/scss/_identicon.scss';
+@import '@thxprotocol/scss/_alert.scss';
+@import '@thxprotocol/scss/_popover.scss';
+
+html,
+body {
+    background: $light;
+}
+
+@media (min-width: map-get($grid-breakpoints, 'lg')) {
+    .container {
+        max-width: map-get($grid-breakpoints, 'lg');
+    }
+}
+
+widgetbot {
+    width: 100% !important;
+    max-width: 380px !important;
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    left: auto;
+    top: auto;
+}
+
+.text-overflow {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    overflow: hidden;
+    width: 100%;
+}
+
+.text-overflow-75 {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    overflow: hidden;
+    width: 75px;
+}

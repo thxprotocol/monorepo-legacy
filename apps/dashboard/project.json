@@ -1,0 +1,61 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/dashboard/src",
+  "targets": {
+    "build": {
+      "executor": "@nx-plus/vue:browser",
+      "options": {
+        "dest": "dist/apps/dashboard",
+        "index": "apps/dashboard/public/index.html",
+        "main": "apps/dashboard/src/main.ts",
+        "tsConfig": "apps/dashboard/tsconfig.app.json"
+      },
+      "configurations": {
+        "production": {
+          "mode": "production",
+          "filenameHashing": true,
+          "productionSourceMap": true,
+          "css": {
+            "extract": true,
+            "sourceMap": false
+          }
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx-plus/vue:dev-server",
+      "options": {
+        "port": 8082,
+        "devServer": {
+          "https": {
+            "key": "./certs/localhost.key",
+            "cert": "./certs/localhost.crt"
+          }
+        },
+        "browserTarget": "dashboard:build"
+      },
+      "configurations": {
+        "production": {
+          "browserTarget": "dashboard:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/dashboard/**/*.{ts,tsx,vue}"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/dashboard"],
+      "options": {
+        "jestConfig": "apps/dashboard/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

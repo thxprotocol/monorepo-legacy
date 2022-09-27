@@ -1,0 +1,55 @@
+
+.dark-mode {
+    .main-container {
+        background-color: $darker;
+    }
+
+    .list-group-item {
+        background-color: $dark;
+        color: white;
+
+        .bg-dark {
+            background-color: $light !important;
+        }
+    }
+
+    .form-control {
+        background-color: $darker;
+        color: white;
+    }
+
+    .btn-light,
+    .btn-light:focus:active {
+        border-color: $darker;
+        background-color: $darker;
+        color: $light;
+    }
+
+    ~ * .modal {
+        .modal-header {
+            color: white;
+            border-color: $dark;
+        }
+        .modal-content {
+            background-color: $darker !important;
+            border-color: $dark;
+        }
+        .modal-footer {
+            border-color: $dark;
+        }
+
+        p {
+            color: white;
+        }
+
+        .form-control {
+            background-color: $darker;
+            color: white;
+            border-color: $dark;
+        }
+
+        .close {
+            color: white;
+        }
+    }
+}

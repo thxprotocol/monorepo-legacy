@@ -1,0 +1,27 @@
+.section-contact {
+    background-color: #ffe500;
+    color: #000;
+    padding: 5rem 0;
+    width: 100%;
+    align-self: center;
+
+    a {
+        color: $black;
+    }
+}
+@media (min-width: 768px) {
+    .section-contact {
+        h2 {
+            font-size: 53px;
+            + {
+                p {
+                    font-size: 23px;
+                }
+            }
+        }
+        padding: 10rem 0;
+        .align-center {
+            text-align: center;
+        }
+    }
+}
