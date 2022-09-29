@@ -1,0 +1,117 @@
+[
+    {
+        "_id": "puqOQ6ZT9U8UsfyzuTIwT",
+        "payload": {
+            "application_type": "web",
+            "grant_types": ["authorization_code", "refresh_token"],
+            "id_token_signed_response_alg": "RS256",
+            "post_logout_redirect_uris": ["https://localhost:8082"],
+            "require_auth_time": false,
+            "response_types": ["code"],
+            "subject_type": "public",
+            "token_endpoint_auth_method": "client_secret_basic",
+            "introspection_endpoint_auth_method": "client_secret_basic",
+            "require_signed_request_object": false,
+            "request_uris": ["https://localhost:8082"],
+            "client_id_issued_at": 1621329421,
+            "client_id": "puqOQ6ZT9U8UsfyzuTIwT",
+            "client_name": "THX Dashboard",
+            "client_secret_expires_at": 0,
+            "client_secret": "VVrUT7n82KNcuh947RAI-dqY79K8r47k_Xk9WvdKXl_viltV5kzX5oNDjen97vr0pBRSlv3oGZvz3_ka1136LQ",
+            "redirect_uris": ["https://localhost:8082/signin-oidc", "https://localhost:8082/silent-renew.html"],
+            "scope": "openid offline_access account:read pools:read pools:write erc20:read erc20:write erc721:read erc721:write rewards:read rewards:write withdrawals:read deposits:read deposits:write promotions:read promotions:write widgets:write widgets:read transactions:read payments:read payments:write members:read members:write brands:read brands:write swaprule:read swaprule:write claims:read clients:read clients:write"
+        }
+    },
+    {
+        "_id": "JNd4hvx0TCZvnnXiTCnar",
+        "payload": {
+            "application_type": "web",
+            "grant_types": ["authorization_code", "refresh_token"],
+            "id_token_signed_response_alg": "RS256",
+            "post_logout_redirect_uris": ["https://localhost:8083"],
+            "require_auth_time": false,
+            "response_types": ["code"],
+            "subject_type": "public",
+            "token_endpoint_auth_method": "client_secret_basic",
+            "introspection_endpoint_auth_method": "client_secret_basic",
+            "require_signed_request_object": false,
+            "request_uris": ["http://localhost:8083"],
+            "client_id_issued_at": 1621329462,
+            "client_id": "JNd4hvx0TCZvnnXiTCnar",
+            "client_name": "THX Wallet",
+            "client_secret_expires_at": 0,
+            "client_secret": "sefR_erB65hgzp18RCj4OB6ZBCAO-jUba-4M-A8zkaQftBZD2boy-ZSSbGRBHtqXUssSI6TJZVN3W8QIyS34yw",
+            "redirect_uris": ["https://localhost:8083/signin-oidc", "https://localhost:8083/silent-renew.html"],
+            "scope": "openid offline_access rewards:read erc20:read erc721:read withdrawals:read withdrawals:write deposits:read deposits:write account:read account:write memberships:read memberships:write promotions:read transactions:read relay:write swap:read swap:write swaprule:read swaprule:write claims:read"
+        }
+    },
+    {
+        "_id": "vdYn6w3z9wQ9TO7gbZkEO",
+        "payload": {
+            "application_type": "web",
+            "grant_types": ["client_credentials"],
+            "id_token_signed_response_alg": "RS256",
+            "post_logout_redirect_uris": [],
+            "require_auth_time": false,
+            "response_types": [],
+            "subject_type": "public",
+            "token_endpoint_auth_method": "client_secret_basic",
+            "introspection_endpoint_auth_method": "client_secret_basic",
+            "require_signed_request_object": false,
+            "request_uris": [],
+            "client_id_issued_at": 1621329896,
+            "client_id": "vdYn6w3z9wQ9TO7gbZkEO",
+            "client_name": "THX CMS",
+            "client_secret_expires_at": 0,
+            "client_secret": "gCCe45P1arpSfy9605iXiRno7yp1pmFafbXQMk_MUzE6eRNJHpSK3h63fMI_E9pChBhIBtF1cQBvFxKTCPVfjQ",
+            "redirect_uris": [],
+            "scope": "openid metrics:read"
+        }
+    },
+    {
+        "_id": "ISsh6Xw6wDISihJS2xs2_",
+        "payload": {
+            "application_type": "web",
+            "grant_types": ["client_credentials"],
+            "id_token_signed_response_alg": "RS256",
+            "post_logout_redirect_uris": [],
+            "require_auth_time": false,
+            "response_types": [],
+            "subject_type": "public",
+            "token_endpoint_auth_method": "client_secret_basic",
+            "introspection_endpoint_auth_method": "client_secret_basic",
+            "require_signed_request_object": false,
+            "request_uris": [],
+            "client_id_issued_at": 1635194521,
+            "client_id": "ISsh6Xw6wDISihJS2xs2_",
+            "client_name": "THX API",
+            "client_secret_expires_at": 0,
+            "client_secret": "BnQrAHSb4UDnpR-9klfFAQbZvq_RjVZgLTKwRD3qfOjawX21jrnbBxvSOU84EwqAy1J-fNKvxD2qZen5Gm8jXg",
+            "redirect_uris": [],
+            "scope": "openid account:read account:write"
+        }
+    },
+    {
+        "_id": "P4bLsMzQIwWlr_DOhH_qE",
+        "payload": {
+            "application_type": "web",
+            "grant_types": ["client_credentials"],
+            "id_token_signed_response_alg": "RS256",
+            "post_logout_redirect_uris": [],
+            "require_auth_time": false,
+            "response_types": [],
+            "subject_type": "public",
+            "token_endpoint_auth_method": "client_secret_basic",
+            "introspection_endpoint_auth_method": "client_secret_basic",
+            "require_signed_request_object": false,
+            "request_uris": [],
+            "client_id_issued_at": 1655295083,
+            "client_id": "P4bLsMzQIwWlr_DOhH_qE",
+            "client_name": "THX Auth",
+            "client_secret_expires_at": 0,
+            "client_secret": "o7RMGeLieULzp0bAiuq6nfukFBCLKxo8N867SzeZNrinshSb15W9NggU93CdtrE_0jTWLUl3U2YkcXYtD3hdcQ",
+            "redirect_uris": [],
+            "scope": "openid brands:read claims:write claims:read"
+        }
+    }
+]

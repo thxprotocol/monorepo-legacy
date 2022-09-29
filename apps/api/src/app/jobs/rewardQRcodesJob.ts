@@ -36,7 +36,7 @@ export const generateRewardQRCodesJob = async ({ attrs }: Job) => {
         if (!claims.length) throw new Error('Claims not found');
 
         const brand = await BrandService.get(poolId);
-        let logo = path.resolve(__dirname, '../public/qr-logo.jpg');
+        let logo = path.resolve(__dirname, './assets/public/qr-logo.jpg');
         if (brand && brand.logoImgUrl) {
             try {
                 const response = await axios.get(brand.logoImgUrl, { responseType: 'arraybuffer' });

@@ -14,7 +14,7 @@ const required = [
     'POLYGON_NAME',
     'MONGODB_URI',
     'PRIVATE_KEY',
-    'PORT',
+    'API_PORT',
     'AUTH_CLIENT_ID',
     'AUTH_CLIENT_SECRET',
     'RATE_LIMIT_REWARD_GIVE',
@@ -55,7 +55,7 @@ export const POLYGON_RPC = process.env.POLYGON_RPC;
 export const POLYGON_NAME = process.env.POLYGON_NAME;
 export const MONGODB_URI = process.env.MONGODB_URI;
 export const PRIVATE_KEY = process.env.PRIVATE_KEY;
-export const PORT = process.env.PORT;
+export const PORT = process.env.API_PORT;
 export const AUTH_CLIENT_ID = process.env.AUTH_CLIENT_ID;
 export const AUTH_CLIENT_SECRET = process.env.AUTH_CLIENT_SECRET;
 export const RATE_LIMIT_REWARD_GIVE = Number(process.env.RATE_LIMIT_REWARD_GIVE);

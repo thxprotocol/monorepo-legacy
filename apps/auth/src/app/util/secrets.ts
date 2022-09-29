@@ -9,7 +9,7 @@ const required = [
     'PUBLIC_URL',
     'DASHBOARD_URL',
     'MONGODB_URI',
-    'PORT',
+    'AUTH_PORT',
     'SECURE_KEY',
 ];
 
@@ -48,7 +48,7 @@ export const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
 export const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
 export const WIDGETS_URL = process.env.WIDGETS_URL;
 export const MONGODB_URI = process.env.MONGODB_URI;
-export const PORT = process.env.PORT;
+export const PORT = process.env.AUTH_PORT;
 export const SECURE_KEY = process.env.SECURE_KEY;
 export const GTM = process.env.GTM;
 export const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
