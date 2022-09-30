@@ -6,7 +6,7 @@ applications:
           commands:
             - cd ../..
             - yarn install --ci
-            - yarn nx api:build --prod --skip-nx-cache
+            - yarn nx run api:build --prod --skip-nx-cache
             - cp node_modules apps/api
       artifacts:
         baseDirectory: dist
@@ -16,3 +16,37 @@ applications:
         paths:
           - node_modules/**/*
     appRoot: apps/api
+
+ - auth:
+      phases:
+        build:
+          commands:
+            - cd ../..
+            - yarn install --ci
+            - yarn nx run auth:build --prod --skip-nx-cache
+            - cp node_modules apps/auth
+      artifacts:
+        baseDirectory: dist
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - node_modules/**/*
+    appRoot: apps/auth
+
+ - dashboard:
+      phases:
+        build:
+          commands:
+            - cd ../..
+            - yarn install --ci
+            - yarn nx run dashboard:build --prod --skip-nx-cache
+            - cp node_modules apps/dashboard
+      artifacts:
+        baseDirectory: dist
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - node_modules/**/*
+    appRoot: apps/dashboard
