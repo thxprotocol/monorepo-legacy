@@ -1,6 +1,7 @@
 version: 1
 applications:
-  - api:
+  appRoot: apps/dashboard
+  api:
       phases:
         build:
           commands:
@@ -15,9 +16,9 @@ applications:
       cache:
         paths:
           - node_modules/**/*
-    appRoot: apps/api
 
- - auth:
+
+ auth:
       phases:
         build:
           commands:
@@ -32,9 +33,8 @@ applications:
       cache:
         paths:
           - node_modules/**/*
-    appRoot: apps/auth
 
- - dashboard:
+ dashboard:
       phases:
         build:
           commands:
@@ -49,4 +49,4 @@ applications:
       cache:
         paths:
           - node_modules/**/*
-    appRoot: apps/dashboard
+    =
