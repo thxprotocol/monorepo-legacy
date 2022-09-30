@@ -4,11 +4,12 @@ import router from './router';
 import store from './store';
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { BootstrapVue, TooltipPlugin, ModalPlugin, ToastPlugin, VBTogglePlugin } from 'bootstrap-vue';
-import './main.scss';
 import VueClipboard from 'vue-clipboard2';
 import * as rules from 'vee-validate/dist/rules';
 import * as en from 'vee-validate/dist/locale/en.json';
 import { ValidationObserver, ValidationProvider, extend, localize } from 'vee-validate';
+
+import './main.scss';
 
 // Install VeeValidate rules and localization
 Object.keys(rules).forEach((rule) => {
