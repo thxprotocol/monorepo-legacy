@@ -1,11 +1,11 @@
 import Airtable from 'airtable';
-import db from '../src/util/database';
-import { Account } from '../src/models/Account';
-import { AIRTABLE_API_KEY, AIRTABLE_BASE_ID, MONGODB_URI } from '../src/util/secrets';
+import db from '../apps/api/src/app/util/database';
+import { Account } from '../apps/auth/src/app/models/Account';
+import { AIRTABLE_API_KEY, AIRTABLE_BASE_ID, MONGODB_URI } from '../apps/auth/src/app/util/secrets';
 
 async function main() {
-    db.connect(MONGODB_URI);
-    const base = new Airtable({ apiKey: AIRTABLE_API_KEY }).base(AIRTABLE_BASE_ID);
+    db.connect(MONGODB_URI as string);
+    const base = new Airtable({ apiKey: AIRTABLE_API_KEY }).base(AIRTABLE_BASE_ID as string);
     // Only query for active accounts
     const query = Account.find({ active: true, privateKey: { $exists: false } });
 
