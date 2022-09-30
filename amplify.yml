@@ -4,7 +4,7 @@ applications:
       phases:
         build:
           commands:
-            - cd .. && cd ..
+            - cd ../..
             - yarn install --ci
             - yarn nx api:build --prod --skip-nx-cache
             - cp node_modules apps/api
