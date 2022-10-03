@@ -6,6 +6,7 @@ applications:
         preBuild:
           commands:
             - cd ../..
+            - npm i -g yarn
             - yarn install --ci
         build:
           commands:
@@ -23,6 +24,7 @@ applications:
         build:
           commands:
             - cd ../..
+            - npm i -g yarn
             - yarn install --ci
             - yarn nx run auth:build --prod --skip-nx-cache
             - cp node_modules apps/auth
@@ -39,6 +41,7 @@ applications:
         build:
           commands:
             - cd ../..
+            - npm i -g yarn
             - yarn install --ci
             - yarn nx run dashboard:build --prod --skip-nx-cache
             - cp node_modules apps/dashboard
