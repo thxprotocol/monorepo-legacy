@@ -10,7 +10,7 @@ applications:
             - yarn nx run api:build --prod --skip-nx-cache
             - cp node_modules apps/api
       artifacts:
-        baseDirectory: dist
+        baseDirectory: ../../dist/apps/api
         files:
           - '**/*'
       cache:
@@ -25,7 +25,7 @@ applications:
             - yarn nx run auth:build --prod --skip-nx-cache
             - cp node_modules apps/auth
       artifacts:
-        baseDirectory: dist
+        baseDirectory: ../../dist/apps/auth
         files:
           - '**/*'
       cache:
@@ -41,7 +41,7 @@ applications:
             - yarn nx run dashboard:build --prod --skip-nx-cache
             - cp node_modules apps/dashboard
       artifacts:
-        baseDirectory: dist
+        baseDirectory: ../../dist/apps/dashboard
         files:
           - '**/*'
       cache:
