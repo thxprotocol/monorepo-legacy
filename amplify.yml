@@ -47,7 +47,7 @@ applications:
         build:
           commands:
             - yarn nx run dashboard:build --prod --skip-nx-cache
-            - cp node_modules apps/dashboarddas
+            - cp node_modules apps/dashboard
       artifacts:
         baseDirectory: ../../dist/apps/dashboard
         files:
