@@ -1,6 +1,6 @@
 version: 1
 applications:
-  - appRoot: apps/dashboard
+  - appRoot: apps/api
     api:
       phases:
         preBuild:
@@ -17,6 +17,7 @@ applications:
         files:
           - '**/*'
 
+  - appRoot: apps/auth
     auth:
       phases:
         build:
@@ -34,6 +35,7 @@ applications:
         paths:
           - node_modules/**/*
 
+  - appRoot: apps/dashboard
     dashboard:
       phases:
         build:
