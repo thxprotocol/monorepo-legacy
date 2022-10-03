@@ -38,17 +38,17 @@ applications:
   - appRoot: apps/dashboard
     dashboard:
       phases:
-        build:
+        preBuild:
           commands:
             - cd ../..
             - npm i -g yarn
             - yarn install --ci
+
+        build:
+          commands:
             - yarn nx run dashboard:build --prod --skip-nx-cache
-            - cp node_modules apps/dashboard
+            - cp node_modules apps/dashboarddas
       artifacts:
-        baseDirectory: dist/apps/dashboard
+        baseDirectory: ../../dist/apps/dashboard
         files:
           - '**/*'
-      cache:
-        paths:
-          - node_modules/**/*
