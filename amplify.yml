@@ -3,14 +3,16 @@ applications:
   - appRoot: apps/dashboard
     api:
       phases:
-        build:
+        preBuild:
           commands:
             - cd ../..
             - yarn install --ci
+        build:
+          commands:
             - yarn nx run api:build --prod --skip-nx-cache
             - cp node_modules apps/api
       artifacts:
-        baseDirectory: ../../dist/apps/api
+        baseDirectory: ../../dist/apps/dashboard
         files:
           - '**/*'
       cache:
