@@ -12,7 +12,7 @@ applications:
             - yarn nx run api:build --prod --skip-nx-cache
             - cp node_modules apps/api
       artifacts:
-        baseDirectory: ../../dist/apps/dashboard
+        baseDirectory: dist/apps/dashboard
         files:
           - '**/*'
       cache:
