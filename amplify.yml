@@ -16,9 +16,7 @@ applications:
         baseDirectory: dist/apps/dashboard
         files:
           - '**/*'
-      cache:
-        paths:
-          - node_modules/**/*
+
     auth:
       phases:
         build:
@@ -46,7 +44,7 @@ applications:
             - yarn nx run dashboard:build --prod --skip-nx-cache
             - cp node_modules apps/dashboard
       artifacts:
-        baseDirectory: ../../dist/apps/dashboard
+        baseDirectory: dist/apps/dashboard
         files:
           - '**/*'
       cache:
