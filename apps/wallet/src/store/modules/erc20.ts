@@ -1,13 +1,16 @@
-import Vue from 'vue';
-import { default as ERC20Abi } from '@thxnetwork/artifacts/dist/exports/abis/ERC20.json';
-import { Contract } from 'web3-eth-contract';
-import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
-import { send } from '@thxnetwork/wallet/utils/network';
-import { ChainId } from '@thxnetwork/wallet/types/enums/ChainId';
-import { fromWei, toWei, toChecksumAddress } from 'web3-utils';
 import axios from 'axios';
+import Vue from 'vue';
+import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
 import Web3 from 'web3';
+import { Contract } from 'web3-eth-contract';
+import { fromWei, toChecksumAddress, toWei } from 'web3-utils';
+
+import {
+    default as ERC20Abi
+} from '@thxnetwork/artifacts/dist/exports/abis/LimitedSupplyToken.json';
+import { ChainId } from '@thxnetwork/wallet/types/enums/ChainId';
 import { chainInfo } from '@thxnetwork/wallet/utils/chains';
+import { send } from '@thxnetwork/wallet/utils/network';
 
 export interface ERC20 {
     _id: string;

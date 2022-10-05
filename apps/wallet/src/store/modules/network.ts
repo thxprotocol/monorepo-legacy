@@ -5,7 +5,7 @@ import { HARDHAT_RPC, POLYGON_MUMBAI_RPC, POLYGON_RPC } from '@thxnetwork/wallet
 import { fromWei, toWei } from 'web3-utils';
 import { ChainId } from '@thxnetwork/wallet/types/enums/ChainId';
 import axios from 'axios';
-import { default as ERC20Abi } from '@thxnetwork/artifacts/dist/exports/abis/ERC20.json';
+import { default as ERC20Abi } from '@thxnetwork/artifacts/dist/exports/abis/LimitedSupplyToken.json';
 import { TPayment } from '@thxnetwork/wallet/types/Payments';
 
 export type TNetworkConfig = {

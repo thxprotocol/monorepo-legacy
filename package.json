@@ -18,7 +18,7 @@
     "@godaddy/terminus": "^4.10.2",
     "@metamask/eth-sig-util": "^4.0.1",
     "@sendgrid/mail": "^7.4.2",
-    "@thxnetwork/artifacts": "^3.1.21",
+    "@thxnetwork/artifacts": "^4.0.6",
     "@toruslabs/customauth": "^10.1.0",
     "@types/express-formidable": "^1.2.0",
     "@types/multer": "^1.4.7",

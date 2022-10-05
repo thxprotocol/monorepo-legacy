@@ -144,7 +144,7 @@ import { mapGetters, mapState } from 'vuex';
 import { fromWei } from 'web3-utils';
 import BaseModalPaymentConnect from '@thxnetwork/wallet/components/modals/ModalPaymentConnect.vue';
 import promisePoller from 'promise-poller';
-import { default as ERC20Abi } from '@thxnetwork/artifacts/dist/exports/abis/ERC20.json';
+import { default as ERC20Abi } from '@thxnetwork/artifacts/dist/exports/abis/LimitedSupplyToken.json';
 import { chainInfo } from '@thxnetwork/wallet/utils/chains';
 
 @Component({

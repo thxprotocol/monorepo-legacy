@@ -1,8 +1,8 @@
 import Web3 from 'web3';
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
 import { toHex } from 'web3-utils';
-import { default as defaultPoolDiamondAbi } from '@thxnetwork/artifacts/dist/exports/abis/defaultPoolDiamond.json';
-import { default as ERC20Abi } from '@thxnetwork/artifacts/dist/exports/abis/ERC20.json';
+import { default as ERC20Abi } from '@thxnetwork/artifacts/dist/exports/abis/LimitedSupplyToken.json';
+import { default as defaultPoolDiamondAbi } from '@thxnetwork/artifacts/dist/exports/abis/defaultDiamondDiamond.json';
 import { soliditySha3 } from 'web3-utils';
 
 @Module({ namespaced: true })
@@ -116,7 +116,7 @@ class MetamaskStore extends VuexModule {
         const solution = new this.web3.eth.Contract(defaultPoolDiamondAbi as any, payload.poolAddress, {
             from: this.account,
         });
-        const abi: any = defaultPoolDiamondAbi.find(fn => fn.name === payload.method);
+        const abi: any = defaultPoolDiamondAbi.find((fn: any) => fn.name === payload.method);
         const nonce = Number(await solution.methods.getLatestNonce(this.account).call()) + 1;
         const call = this.web3.eth.abi.encodeFunctionCall(abi, payload.params);
         const hash = soliditySha3(call, nonce) || '';
