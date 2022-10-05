@@ -17,11 +17,12 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@thxnetwork/auth*": ["apps/auth/src*"],
       "@thxnetwork/api*": ["apps/api/src/app*"],
+      "@thxnetwork/auth*": ["apps/auth/src*"],
       "@thxnetwork/common": ["libs/common/src/index.ts"],
       "@thxnetwork/dashboard*": ["apps/dashboard/src*"],
-      "@thxnetwork/scss*": ["libs/common/src/lib/scss*"]
+      "@thxnetwork/scss*": ["libs/common/src/lib/scss*"],
+      "@thxnetwork/sdk*": ["libs/sdk/src/lib*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

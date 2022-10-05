@@ -5,6 +5,7 @@
     "api": "apps/api",
     "auth": "apps/auth",
     "common": "libs/common",
-    "dashboard": "apps/dashboard"
+    "dashboard": "apps/dashboard",
+    "sdk": "libs/sdk"
   }
 }
