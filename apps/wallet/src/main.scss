@@ -1,0 +1,109 @@
+@import url('https://fonts.googleapis.com/css?family=Exo+2:200,400,400i,700,700i,900,900i');
+
+// Required
+@import '~bootstrap/scss/mixins';
+@import '~bootstrap/scss/functions';
+@import '@thxnetwork/scss/_variables.scss';
+@import '~bootstrap/scss/variables';
+
+// Required
+@import '~bootstrap/scss/functions';
+@import '~bootstrap/scss/variables';
+@import '~bootstrap/scss/mixins';
+
+// Optional
+@import '~bootstrap/scss/utilities';
+@import '~bootstrap/scss/root';
+@import '~bootstrap/scss/reboot';
+@import '~bootstrap/scss/type';
+
+// Defaults
+@import '~bootstrap/scss/card';
+@import '~bootstrap/scss/badge';
+@import '~bootstrap/scss/forms';
+@import '~bootstrap/scss/custom-forms';
+@import '~bootstrap/scss/list-group';
+@import '~bootstrap/scss/alert';
+@import '~bootstrap/scss/modal';
+@import '~bootstrap/scss/progress';
+@import '~bootstrap/scss/close';
+@import '~bootstrap/scss/tooltip';
+@import '~bootstrap/scss/transitions';
+@import '~bootstrap/scss/buttons';
+@import '~bootstrap/scss/spinners';
+@import '~bootstrap/scss/nav';
+@import '~bootstrap/scss/toasts';
+@import '~bootstrap/scss/navbar';
+@import '~bootstrap/scss/media';
+@import '~bootstrap/scss/input-group';
+@import '~bootstrap/scss/grid';
+@import '~bootstrap/scss/code';
+@import '~bootstrap/scss/dropdown';
+@import '~bootstrap/scss/pagination';
+@import '~bootstrap/scss/button-group';
+@import '~bootstrap/scss/popover';
+
+// Bootstrap Vue
+@import '~bootstrap-vue/src/index.scss';
+
+// Custom
+@import '@thxnetwork/scss/_buttons.scss';
+@import '@thxnetwork/scss/_navbar.scss';
+@import '@thxnetwork/scss/_jumbotron.scss';
+@import '@thxnetwork/scss/_forms.scss';
+@import '@thxnetwork/scss/_custom-forms.scss';
+@import '@thxnetwork/scss/_dark-mode.scss';
+
+html,
+body {
+    height: 100%;
+    background-image: url('./assets/img/thx_landing_crater.webp');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    overflow: hidden;
+}
+
+.main-container {
+    border-radius: 10px;
+    background-color: $light;
+    padding: 1rem 1rem 2rem 1rem;
+}
+
+.text-overflow {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    overflow: hidden;
+    width: 100%;
+}
+
+.text-overflow-75 {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    overflow: hidden;
+    width: 75px;
+}
+
+.overflow-auto {
+    overflow: auto;
+}
+
+.center-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-rounded {
+    border-radius: 25px;
+}
+
+.line-height-12 {
+    line-height: 1.2;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}

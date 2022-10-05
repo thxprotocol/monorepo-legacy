@@ -4118,10 +4118,10 @@
   dependencies:
     defer-to-connect "^2.0.1"
 
-"@thxnetwork/artifacts@^4.0.6":
-  version "4.0.6"
-  resolved "https://registry.yarnpkg.com/@thxnetwork/artifacts/-/artifacts-4.0.6.tgz#3a3c6a355442e86990c84e9ba548b98020a6c73d"
-  integrity sha512-3dDYJqcNt7IS/XnBDP0BXBNstI8v9GetGzaBxILWi7ZtSes2UdhnWUOTW9oZo4btNLgwh2d8yCzLp0NLQ8gTag==
+"@thxnetwork/artifacts@^3.1.21":
+  version "3.1.22"
+  resolved "https://registry.yarnpkg.com/@thxnetwork/artifacts/-/artifacts-3.1.22.tgz#1c4393672792d073e4211144f794fce9c4a52685"
+  integrity sha512-zi1jXDwxZq1wWrD6O9AJ0pG3PKUZkvcw+7KdwvdV6DrfkwlKdk67GW/OI32jxuAo++Ak/fn/6zaZRO7dZ3TCjA==
 
 "@tokenizer/token@^0.3.0":
   version "0.3.0"

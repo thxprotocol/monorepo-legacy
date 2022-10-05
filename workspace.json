@@ -6,6 +6,7 @@
     "auth": "apps/auth",
     "common": "libs/common",
     "dashboard": "apps/dashboard",
-    "sdk": "libs/sdk"
+    "sdk": "libs/sdk",
+    "wallet": "apps/wallet"
   }
 }
