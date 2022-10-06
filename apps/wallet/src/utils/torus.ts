@@ -27,7 +27,7 @@ export async function getPrivateKeyForUser(user: User) {
     const torusKey: TorusKey = await torus.getTorusKey(
         TORUS_VERIFIER,
         user.profile.sub,
-        { verifier_id: user.profile.sub }, // eslint-disable-line @typescript-eslint/camelcase
+        { verifier_id: user.profile.sub },
         user.access_token,
     );
 
