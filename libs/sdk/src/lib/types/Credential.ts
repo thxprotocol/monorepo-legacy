@@ -7,6 +7,5 @@ export default interface Credential {
   /* Optionals */
   requestUrl?: string;
   redirectUrl?: string;
-  torusNetwork?: TORUS_NETWORK_TYPE;
   scopes?: string;
 }

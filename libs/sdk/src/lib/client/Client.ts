@@ -1,4 +1,8 @@
-import { User, UserManager as BaseUserManager, UserManagerSettings } from 'oidc-client-ts';
+import {
+  User,
+  UserManager as BaseUserManager,
+  UserManagerSettings,
+} from 'oidc-client-ts';
 
 import { URL_CONFIG } from '../configs';
 import TorusManager from '../managers/TorusManager';
@@ -11,6 +15,9 @@ import SessionManager from '../managers/SessionManager';
 import UserManager from '../managers/UserManager';
 
 import type { Credential } from '../types';
+
+type Props = Omit<Credential, 'grantType'>;
+
 export default class THXClient {
   initialized = false;
   authenticated = false;
@@ -27,7 +34,7 @@ export default class THXClient {
   /* External managers */
   account: AccountManager;
 
-  constructor({ scopes = 'openid', torusNetwork = 'testnet', ...rest }: Credential) {
+  constructor({ scopes = 'openid', ...rest }: Props) {
     const settings: UserManagerSettings = {
       authority: URL_CONFIG['AUTH_URL'],
       client_id: rest.clientId,
@@ -44,9 +51,17 @@ export default class THXClient {
     /* Mapped values */
     const userManager = new BaseUserManager(settings);
 
+    const grantType = rest.redirectUrl
+      ? 'authorization_code'
+      : 'client_credentials';
+
     /** Init managers */
     this.request = new RequestManager(this);
-    this.credential = new CredentialManager(this, { ...rest, scopes, torusNetwork });
+    this.credential = new CredentialManager(this, {
+      ...rest,
+      scopes,
+      grantType,
+    });
     this.userManager = new UserManager(this, userManager);
     this.session = new SessionManager(this, {});
     this.account = new AccountManager(this);
