@@ -8,11 +8,22 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/libs/sdk",
-        "tsConfig": "libs/sdk/tsconfig.lib.json",
-        "packageJson": "libs/sdk/package.json",
         "main": "libs/sdk/src/index.ts",
+        "tsConfig": "libs/sdk/tsconfig.lib.json",
         "assets": ["libs/sdk/*.md"]
       }
+    },
+    "publish": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "command": "node tools/scripts/publish.mjs sdk {args.ver} {args.tag}"
+      },
+      "dependsOn": [
+        {
+          "projects": "self",
+          "target": "build"
+        }
+      ]
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
@@ -30,5 +41,5 @@
       }
     }
   },
-  "tags": ["sdk", "library"]
+  "tags": []
 }

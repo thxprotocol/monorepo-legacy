@@ -8,7 +8,7 @@ export default class THXError extends Error {
     this.code = code;
   }
 
-  get name() {
+  override get name() {
     return `[${this.code}]`;
   }
 }

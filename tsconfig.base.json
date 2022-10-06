@@ -21,9 +21,9 @@
       "@thxnetwork/auth*": ["apps/auth/src*"],
       "@thxnetwork/common": ["libs/common/src/index.ts"],
       "@thxnetwork/dashboard*": ["apps/dashboard/src*"],
-      "@thxnetwork/wallet*": ["apps/wallet/src*"],
       "@thxnetwork/scss*": ["libs/common/src/lib/scss*"],
-      "@thxnetwork/sdk*": ["libs/sdk/src/lib*"]
+      "@thxnetwork/sdk*": ["libs/sdk/src/lib*"],
+      "@thxnetwork/wallet*": ["apps/wallet/src*"]
     }
   },
   "exclude": ["node_modules", "tmp"]
