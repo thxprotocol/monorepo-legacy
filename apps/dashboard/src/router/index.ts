@@ -8,6 +8,7 @@ import {
     redirectSigninSilent,
     redirectSignout,
     redirectSignup,
+    redirectVerifyEmail,
 } from '@thxnetwork/dashboard/utils/guards';
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
@@ -96,6 +97,10 @@ const routes: Array<RouteConfig> = [
     {
         path: '/signin-oidc',
         component: () => import('../views/SigninRedirect.vue'),
+    },
+    {
+        path: '/verify_email',
+        beforeEnter: redirectVerifyEmail,
     },
     {
         path: '/reset',

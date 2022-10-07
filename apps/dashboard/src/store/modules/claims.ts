@@ -6,10 +6,11 @@ import { IRewardCondition } from '@thxnetwork/dashboard/types/rewards';
 
 export type TClaim = {
     _id: string;
+    id: string;
     poolId: string;
     erc20Id?: string;
     erc721Id?: string;
-    rewardId: number;
+    rewardId: string;
 };
 
 export type TClaimURLData = TClaim & {
@@ -38,14 +39,14 @@ class ClaimModule extends VuexModule {
         if (!this._all[claim.poolId]) {
             Vue.set(this._all, claim.poolId, {});
         }
-        Vue.set(this._all[claim.poolId], claim._id, claim);
+        Vue.set(this._all[claim.poolId], claim.id, claim);
     }
 
     setClaimURLData(claim: TClaimURLData) {
         if (!this._all[claim.poolId]) {
             Vue.set(this._all, claim.poolId, {});
         }
-        Vue.set(this._all[claim.poolId], claim._id, claim);
+        Vue.set(this._all[claim.poolId], claim.id, claim);
     }
 
     @Action({ rawError: true })

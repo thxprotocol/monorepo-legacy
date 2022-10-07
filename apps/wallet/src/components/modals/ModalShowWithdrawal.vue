@@ -60,7 +60,7 @@ import { format } from 'date-fns';
     computed: mapGetters({ erc721s: 'erc721/all' }),
 })
 export default class BaseModalShowWithdrawal extends Vue {
-    imgUrl = require('@thxnetwork/wallet/assets/img/thx_treasure.png');
+    imgUrl = require('../../../public/assets/img/thx_treasure.png');
     erc721s!: { [id: string]: ERC721 };
     format = format;
 

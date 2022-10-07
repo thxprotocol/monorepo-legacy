@@ -9,15 +9,27 @@
                 {{ !erc20.archived ? 'Archive' : 'Unarchive' }}
             </span>
         </b-dropdown-item>
+        <b-dropdown-item size="sm" variant="dark" @click="openTokenUrl()">
+            <span class="text-muted"
+                ><i class="fa fa-external-link mr-3"></i>
+                View in Block Explorer
+            </span>
+        </b-dropdown-item>
     </b-dropdown>
 </template>
 
 <script lang="ts">
 import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
+import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component({})
 export default class BaseDropdownMenuToken extends Vue {
     @Prop() erc20!: TERC20;
+
+    openTokenUrl() {
+        const url = `${chainInfo[this.erc20.chainId].blockExplorer}/token/${this.erc20.address}`;
+        return (window as any).open(url, '_blank').focus();
+    }
 }
 </script>

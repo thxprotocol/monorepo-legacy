@@ -36,3 +36,9 @@ export async function assertAuthorization(to: Route, from: Route, next: any) {
     if (!user) return redirectSignin();
     next();
 }
+
+export function redirectVerifyEmail(to: Route) {
+    return store.dispatch('account/signinRedirect', {
+        verifyEmailToken: to.query.verifyEmailToken || null,
+    });
+}

@@ -1,7 +1,6 @@
+import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import { AxiosResponse } from 'axios';
-
-import { IPool } from '../store/modules/pools';
-import { ChainId } from '../types/enums/ChainId';
 
 export enum ERC721Variant {
     Uknown = -1,
@@ -43,6 +42,7 @@ export type TERC721 = {
     properties: TERC721DefaultProp[];
     metadata: TERC721Metadata[];
     archived: boolean;
+    poolId?: string;
 };
 
 export interface IERC721s {

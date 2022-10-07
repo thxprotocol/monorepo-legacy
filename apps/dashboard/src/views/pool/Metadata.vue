@@ -1,74 +1,75 @@
 <template>
-    <b-skeleton-wrapper :loading="isLoading">
-        <template #loading>
-            <b-card class="mt-3 mb-3 shadow-sm cursor-pointer">
-                <b-skeleton animation="fade" width="65%"></b-skeleton>
-                <hr />
-                <b-skeleton animation="fade" width="55%"></b-skeleton>
-                <b-skeleton animation="fade" class="mb-3" width="70%"></b-skeleton>
-                <b-skeleton type="button" animation="fade" class="rounded-pill" width="100%"></b-skeleton>
-            </b-card>
-        </template>
-        <div>
-            <b-row class="mb-3">
-                <b-col class="d-flex align-items-center">
-                    <h2 class="mb-0">Metadata</h2>
-                </b-col>
-                <div class="d-flex justify-content-end">
-                    <b-button @click="onCreate()" class="rounded-pill" variant="primary">
-                        <i class="fas fa-plus mr-2"></i>
-                        <span class="d-none d-md-inline">Create Metadata</span>
-                    </b-button>
-                    <b-button v-b-modal="'modalNFTBulkCreate'" class="rounded-pill ml-2" variant="primary">
-                        <i class="fas fa-upload mr-2"></i>
-                        <span class="d-none d-md-inline">Upload images</span>
-                    </b-button>
-                    <b-button v-b-modal="'modalNFTUploadMetadataCsv'" class="rounded-pill ml-2" variant="primary">
-                        <i class="fas fa-upload mr-2"></i>
-                        <span class="d-none d-md-inline">Upload CSV</span>
-                    </b-button>
-                </div>
-            </b-row>
-            <base-nothing-here
-                v-if="erc721 && !erc721.metadata"
-                text-submit="Create NFT Metadata"
-                title="You have not created NFT Metadata yet"
-                description="NFT Metadata is the actual data that is attached to your token."
-                @clicked="$bvModal.show('modalNFTCreate')"
-            />
-            <base-card-erc721-metadata
-                @edit="onEdit"
-                v-if="erc721 && erc721.metadata"
-                :erc721="erc721"
-                :metadata="metadataByPage"
-                :pool="pool"
-            />
-            <b-pagination
-                v-if="erc721s && erc721 && erc721.metadata && total > limit"
-                class="mt-3"
-                @change="onChangePage"
-                v-model="page"
-                :per-page="limit"
-                :total-rows="total"
-                align="center"
-            ></b-pagination>
-            <base-modal-erc721-metadata-create
-                v-if="erc721"
-                @hidden="reset"
-                :metadata="editingMeta"
-                :pool="pool"
-                :erc721="erc721"
-                @success="listMetadata()"
-            />
-            <base-modal-erc721-metadata-bulk-create
-                v-if="erc721"
-                :pool="pool"
-                :erc721="erc721"
-                @success="listMetadata()"
-            />
-            <BaseModalErc721MetadataUploadCSV v-if="erc721" :pool="pool" :erc721="erc721" @success="onSuccess()" />
-        </div>
-    </b-skeleton-wrapper>
+    <div>
+        <b-row class="mb-3">
+            <b-col class="d-flex align-items-center">
+                <h2 class="mb-0">Metadata</h2>
+            </b-col>
+            <b-dropdown variant="light" dropleft no-caret size="sm" class="ml-2">
+                <template #button-content>
+                    <i class="fas fa-ellipsis-v m-0 p-1 px-2 text-muted" style="font-size: 1.2rem"></i>
+                </template>
+                <b-dropdown-item v-b-modal="'modalNFTCreate'" @click="onCreate()">
+                    <i class="fas fa-plus mr-2"></i>
+                    Create Metadata
+                </b-dropdown-item>
+                <b-dropdown-item v-b-modal="'modalNFTBulkCreate'">
+                    <i class="fas fa-upload mr-2"></i>
+                    Upload Images
+                </b-dropdown-item>
+                <b-dropdown-item v-b-modal="'modalNFTUploadMetadataCsv'">
+                    <i class="fas fa-exchange-alt mr-2"></i>
+                    Import/Export
+                </b-dropdown-item>
+                <b-dropdown-item @click="getQRCodes()">
+                    <i class="fas fa-download mr-2"></i>
+                    Download Rewards
+                </b-dropdown-item>
+            </b-dropdown>
+        </b-row>
+        <b-row>
+            <b-alert variant="success" show v-if="isDownloadScheduled">
+                <i class="fas fa-clock mr-2"></i>
+                You will receive an e-mail when your download is ready!
+            </b-alert>
+            <b-alert variant="info" show v-if="isDownloading">
+                <i class="fas fa-hourglass-half mr-2"></i>
+                Downloading your QR codes
+            </b-alert>
+        </b-row>
+        <base-nothing-here
+            v-if="erc721 && !erc721.metadata"
+            text-submit="Create NFT Metadata"
+            title="You have not created NFT Metadata yet"
+            description="NFT Metadata is the actual data that is attached to your token."
+            @clicked="$bvModal.show('modalNFTCreate')"
+        />
+        <base-card-erc721-metadata
+            @edit="onEdit"
+            v-if="erc721 && erc721.metadata"
+            :erc721="erc721"
+            :metadata="metadataByPage"
+            :pool="pool"
+        />
+        <b-pagination
+            v-if="erc721s && erc721 && erc721.metadata && total > limit"
+            class="mt-3"
+            @change="onChangePage"
+            v-model="page"
+            :per-page="limit"
+            :total-rows="total"
+            align="center"
+        ></b-pagination>
+        <base-modal-erc721-metadata-create
+            v-if="erc721"
+            @hidden="reset"
+            :metadata="editingMeta"
+            :pool="pool"
+            :erc721="erc721"
+            @success="listMetadata()"
+        />
+        <base-modal-erc721-metadata-bulk-create v-if="erc721" :pool="pool" :erc721="erc721" @success="listMetadata()" />
+        <BaseModalErc721MetadataUploadCSV v-if="erc721" :pool="pool" :erc721="erc721" @success="onSuccess()" />
+    </div>
 </template>
 
 <script lang="ts">
@@ -86,9 +87,9 @@ import BaseModalErc721MetadataCreateCSV from '@thxnetwork/dashboard/components/m
 @Component({
     components: {
         BaseNothingHere,
+        BaseCardErc721Metadata,
         BaseModalErc721MetadataCreate,
         BaseModalErc721MetadataBulkCreate,
-        BaseCardErc721Metadata,
         BaseModalErc721MetadataUploadCSV,
         BaseModalErc721MetadataCreateCSV,
     },
@@ -100,7 +101,7 @@ import BaseModalErc721MetadataCreateCSV from '@thxnetwork/dashboard/components/m
 })
 export default class MetadataView extends Vue {
     page = 1;
-    limit = 100;
+    limit = 15;
     isLoading = true;
 
     totals!: { [erc721Id: string]: number };
@@ -108,6 +109,10 @@ export default class MetadataView extends Vue {
     docsUrl = process.env.VUE_APP_DOCS_URL;
     apiUrl = process.env.VUE_APP_API_ROOT;
     widgetUrl = process.env.VUE_APP_WIDGET_URL;
+
+    qrURL = '';
+    isDownloading = false;
+    isDownloadScheduled = false;
 
     pools!: IPools;
     erc721s!: IERC721s;
@@ -152,6 +157,10 @@ export default class MetadataView extends Vue {
         this.$bvModal.show('modalNFTCreate');
     }
 
+    downloadQrCodes() {
+        this.$store.dispatch('erc721/getQRCodes', { erc721: this.erc721 });
+    }
+
     async listMetadata() {
         this.isLoading = true;
         await this.$store.dispatch('erc721/read', this.pool.erc721._id).then(async () => {
@@ -169,8 +178,20 @@ export default class MetadataView extends Vue {
         this.reset();
     }
 
-    mounted() {
+    async mounted() {
         this.listMetadata();
+        if (this.$route.query.qrcodes === '1') {
+            await this.getQRCodes();
+        }
+    }
+
+    async getQRCodes() {
+        this.isDownloading = true;
+        this.isDownloadScheduled = await this.$store.dispatch('erc721/getMetadataQRCodes', {
+            pool: this.pool,
+            erc721: this.erc721,
+        });
+        this.isDownloading = false;
     }
 }
 </script>

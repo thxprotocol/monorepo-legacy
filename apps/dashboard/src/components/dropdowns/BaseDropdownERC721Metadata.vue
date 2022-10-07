@@ -1,12 +1,12 @@
 <template>
-    <b-dropdown variant="link" class="dropdown-select bg-white">
+    <b-dropdown variant="link" class="dropdown-select">
         <template #button-content>{{
-            selectedMetadata ? selectedMetadata.title || 'No Title' : 'Select the NFT to Mint'
+            selectedMetadata ? selectedMetadata.title || '-' : 'Select the NFT to Mint'
         }}</template>
         <b-dropdown-form>
             <b-form-input class="mb-2" placeholder="Search..." @input="onSearch" v-model="q" />
         </b-dropdown-form>
-        <div style="height: 80px; overflow-y: scroll">
+        <div style="height: 250px; overflow-y: scroll">
             <b-dropdown-item-button
                 :key="metadata._id"
                 v-for="metadata of options"
@@ -86,6 +86,7 @@ export default class BaseDropdownERC721Metadata extends Vue {
     }
 
     @Prop() pool!: IPool;
+    @Prop({ required: false }) erc721metadata!: TERC721Metadata;
 
     mounted() {
         if (this.pool.erc721) {
@@ -93,6 +94,7 @@ export default class BaseDropdownERC721Metadata extends Vue {
                 await this.listMetadata();
             });
         }
+        this.selectedMetadata = this.erc721metadata;
     }
 
     async listMetadata() {
@@ -118,3 +120,8 @@ export default class BaseDropdownERC721Metadata extends Vue {
     }
 }
 </script>
+<style lang="scss">
+.dropdown-menu {
+    background-color: #f8f9fa;
+}
+</style>

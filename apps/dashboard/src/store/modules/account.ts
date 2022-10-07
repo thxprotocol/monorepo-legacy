@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { User, UserManager } from 'oidc-client-ts';
 import { ChannelType } from '@thxnetwork/dashboard/types/rewards';
-import { IAccount, IAccountUpdates, ISpotify, ITwitter, IYoutube } from '@thxnetwork/dashboard/types/account';
+import { IAccount, IAccountUpdates, ITwitter, IYoutube } from '@thxnetwork/dashboard/types/account';
 import { config } from '@thxnetwork/dashboard/utils/oidc';
 import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 
@@ -16,7 +16,6 @@ class AccountModule extends VuexModule {
     _profile: IAccount | null = null;
     _youtube: IYoutube | null = null;
     _twitter: ITwitter | null = null;
-    _spotify: ISpotify | null = null;
 
     get networkHealth() {
         return this._networkHealth;
@@ -38,10 +37,6 @@ class AccountModule extends VuexModule {
         return this._twitter;
     }
 
-    get spotify() {
-        return this._spotify;
-    }
-
     @Mutation
     setUser(user: User) {
         this._user = user;
@@ -60,11 +55,6 @@ class AccountModule extends VuexModule {
     @Mutation
     setTwitter(data: ITwitter) {
         this._twitter = data;
-    }
-
-    @Mutation
-    setSpotify(data: ISpotify) {
-        this._spotify = data;
     }
 
     @Mutation
@@ -123,19 +113,6 @@ class AccountModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async getSpotify() {
-        const r = await axios({
-            method: 'GET',
-            url: '/account/spotify',
-        });
-
-        this.context.commit('setSpotify', r.data.isAuthorized ? r.data : null);
-
-        if (r.data.isAuthorized) return { spotify: r.data, isAuthorized: true };
-        return { isAuthorized: false };
-    }
-
-    @Action({ rawError: true })
     async update(data: IAccountUpdates) {
         const r = await axios({
             method: 'PATCH',
@@ -154,7 +131,12 @@ class AccountModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async signinRedirect(payload: { signupToken: string; signupEmail: string; passwordResetToken: string }) {
+    async signinRedirect(payload: {
+        signupToken: string;
+        signupEmail: string;
+        passwordResetToken: string;
+        verifyEmailToken: string;
+    }) {
         const extraQueryParams: any = {
             return_url: BASE_URL,
         };
@@ -167,6 +149,11 @@ class AccountModule extends VuexModule {
         if (payload.passwordResetToken) {
             extraQueryParams['prompt'] = 'reset';
             extraQueryParams['password_reset_token'] = payload.passwordResetToken;
+        }
+
+        if (payload.verifyEmailToken) {
+            extraQueryParams['prompt'] = 'verify_email';
+            extraQueryParams['verifyEmailToken'] = payload.verifyEmailToken;
         }
 
         await this.userManager.clearStaleState();

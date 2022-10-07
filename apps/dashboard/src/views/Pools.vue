@@ -1,27 +1,33 @@
 <template>
     <div>
-        <b-jumbotron
-            class="jumbotron-header text-left"
-            :style="{
-                'background-image': `url(${require('../../public/assets/thx_jumbotron.webp')})`,
-            }"
-        >
-            <div class="container container-md pt-5 pb-5">
-                <p class="brand-text">Pools</p>
-                <b-button v-b-modal="'modalAssetPoolCreate'" class="rounded-pill" variant="secondary">
-                    <i class="fas fa-plus mr-2"></i>
-                    <span>Create Pool</span>
-                </b-button>
-                <b-button to="/tokens" variant="link" class="text-light">
-                    <i class="fas fa-coins mr-2"></i>
-                    <span>Create a token</span>
-                </b-button>
-                <b-button to="/nft" variant="link" class="text-light">
-                    <i class="fas fa-palette mr-2"></i>
-                    <span>Create an NFT</span>
-                </b-button>
-            </div>
-        </b-jumbotron>
+        <div class="container-xl">
+            <b-jumbotron
+                bg-variant="light"
+                class="mt-3 jumbotron-header"
+                :style="{
+                    'min-height': 'none',
+                    'border-radius': '1rem',
+                    'background-size': 'cover',
+                    'background-image': `url(${require('../../public/assets/thx_jumbotron.webp')})`,
+                }"
+            >
+                <div class="container container-md py-5">
+                    <p class="brand-text">Pools</p>
+                    <b-button v-b-modal="`modalAssetPoolCreate_0`" class="rounded-pill" variant="secondary">
+                        <i class="fas fa-plus mr-2"></i>
+                        <span>Create Pool</span>
+                    </b-button>
+                    <b-button to="/tokens" variant="link" class="text-light">
+                        <i class="fas fa-coins mr-2"></i>
+                        <span>Create a token</span>
+                    </b-button>
+                    <b-button to="/nft" variant="link" class="text-light">
+                        <i class="fas fa-palette mr-2"></i>
+                        <span>Create an NFT</span>
+                    </b-button>
+                </div>
+            </b-jumbotron>
+        </div>
         <div class="container container-md">
             <b-row>
                 <b-col class="text-right pb-3">
@@ -42,7 +48,7 @@
                 </div>
             </div>
         </div>
-        <base-modal-pool-create />
+        <base-modal-pool-create :tokenId="0" />
     </div>
 </template>
 

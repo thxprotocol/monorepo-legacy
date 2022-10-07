@@ -19,7 +19,7 @@
             description="Ask people to pay you with the configured pool token."
             @clicked="$bvModal.show('modalPaymentCreate')"
         />
-        <b-card class="shadow-sm mb-2" v-else :key="payment._id" v-for="payment of paymentsForPool">
+        <b-card class="shadow-sm mb-2" v-else :key="payment.id" v-for="payment of paymentsForPool">
             <b-row>
                 <b-col md="12">
                     <small class="float-md-right text-muted" v-b-tooltip :title="`Updated: ${payment.updatedAt}`">

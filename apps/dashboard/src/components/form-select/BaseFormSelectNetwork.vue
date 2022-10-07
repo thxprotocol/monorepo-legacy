@@ -5,8 +5,8 @@
             <b-dropdown variant="link" class="dropdown-select">
                 <template #button-content>
                     <div class="d-flex align-items-center">
-                        <img :src="chainInfo[chainId].logo" width="20" height="20" class="mr-3" />
-                        {{ chainInfo[chainId].name }}
+                        <img :src="chainInfo[currentChainId].logo" width="20" height="20" class="mr-3" />
+                        {{ chainInfo[currentChainId].name }}
                     </div>
                 </template>
                 <b-dropdown-item-button
@@ -20,7 +20,7 @@
                 </b-dropdown-item-button>
             </b-dropdown>
         </b-form-group>
-        <b-alert :show="profile.plan === AccountPlanType.Free && chainId == ChainId.Polygon" variant="warning">
+        <b-alert :show="profile.plan === AccountPlanType.Free && currentChainId == ChainId.Polygon" variant="warning">
             <i class="fas fa-rocket mr-2"></i>
             Choosing <strong>Polygon</strong> will move you from a Free to
             <b-link :href="publicUrl + '/pricing'">Basic</b-link> plan and start invoicing.
@@ -33,7 +33,7 @@ import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import { AccountPlanType, IAccount } from '@thxnetwork/dashboard/types/account';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { PUBLIC_URL } from '@thxnetwork/dashboard/utils/secrets';
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 
 @Component({
@@ -42,23 +42,25 @@ import { mapGetters } from 'vuex';
     }),
 })
 export default class BaseFormSelectNetwork extends Vue {
+    @Prop() chainId!: ChainId;
     ChainId = ChainId;
     AccountPlanType = AccountPlanType;
     publicUrl = PUBLIC_URL;
     chainInfo = chainInfo;
-    chainId = ChainId.PolygonMumbai;
     profile!: IAccount;
+    currentChainId = ChainId.PolygonMumbai;
 
-    mounted() {
-        if (this.profile.plan !== AccountPlanType.Free) this.chainId = ChainId.Polygon;
-        if (process.env.NODE_ENV !== 'production') this.chainId = ChainId.Hardhat;
-
-        this.$emit('selected', this.chainId);
+    created() {
+        if (!this.chainId && this.profile.plan !== AccountPlanType.Free) this.currentChainId = ChainId.Polygon;
+        else if (this.chainId) {
+            this.currentChainId = this.chainId;
+        }
+        this.$emit('selected', this.currentChainId);
     }
 
     onSelectNetwork(chainId: ChainId) {
-        this.chainId = chainId;
-        this.$emit('selected', this.chainId);
+        this.currentChainId = chainId;
+        this.$emit('selected', chainId);
     }
 }
 </script>

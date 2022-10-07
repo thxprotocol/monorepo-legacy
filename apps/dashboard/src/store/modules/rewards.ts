@@ -122,7 +122,7 @@ class RewardModule extends VuexModule {
             // Fake an anchor click to trigger a download in the browser
             const anchor = document.createElement('a');
             anchor.href = window.URL.createObjectURL(new Blob([data]));
-            anchor.setAttribute('download', `${reward._id}_qrcodes.zip`);
+            anchor.setAttribute('download', `${reward.id}_qrcodes.zip`);
             document.body.appendChild(anchor);
             anchor.click();
         }

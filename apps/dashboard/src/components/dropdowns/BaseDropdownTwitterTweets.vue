@@ -22,18 +22,11 @@
 </template>
 
 <script lang="ts">
-import { BDropdown, BDropdownItemButton, BBadge, BSpinner } from 'bootstrap-vue';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { format } from 'date-fns';
 
 @Component({
-    components: {
-        BBadge,
-        BDropdown,
-        BDropdownItemButton,
-        BSpinner,
-    },
     computed: mapGetters({}),
 })
 export default class BaseDropdownTwitterTweets extends Vue {
@@ -48,10 +41,12 @@ export default class BaseDropdownTwitterTweets extends Vue {
         if (!this.item) {
             this.onItemClick(this.items[0]);
         } else {
-            const isUserPlaylist = this.items.find((playlist: any) => playlist.id === this.item);
-            if (isUserPlaylist) this.selected = isUserPlaylist;
-            else {
-                this.onItemClick(this.items[0]);
+            for (const key in this.items) {
+                const tweet = this.items[key].referenced_tweets[0];
+                if (tweet.id === this.item) {
+                    this.onItemClick(this.items[key]);
+                    break;
+                }
             }
         }
     }

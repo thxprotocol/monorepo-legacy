@@ -24,6 +24,17 @@
                 </b-col>
             </b-form-row>
             <hr />
+            <b-form-group>
+                <label>
+                    Promotion
+                    <base-tooltip-info
+                        class="mr-2"
+                        title="Select the promotion that should be shown when the payment succedes"
+                    />
+                </label>
+                <base-dropdown-promotion @selected="onSelectPromotion" />
+            </b-form-group>
+
             <b-form-group v-if="showMetadataList">
                 <label>
                     NFT
@@ -55,6 +66,7 @@
                 </b-input-group>
                 <small class="text-muted"> {{ amountInWei }} {{ pool.erc20.symbol }} (wei)</small>
             </b-form-group>
+
             <b-form-group label="Success URL">
                 <b-form-input v-model="successUrl" />
             </b-form-group>
@@ -83,7 +95,9 @@ import { unitMap, Unit } from 'web3-utils';
 import { TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
 import BaseDropdownERC721Metadata from '../dropdowns/BaseDropdownERC721Metadata.vue';
 import BaseTooltipInfo from '../tooltips/BaseTooltipInfo.vue';
-
+import BaseDropdownPromotion from '../dropdowns/BaseDropdownPromotion.vue';
+import { TPromotion } from '@thxnetwork/dashboard/store/modules/promotions';
+import { timeStamp } from 'console';
 enum PaymentVariant {
     Token = 0,
     NFT = 1,
@@ -95,6 +109,7 @@ enum PaymentVariant {
         BaseModal,
         BaseFormSelectNetwork,
         BaseDropdownERC721Metadata,
+        BaseDropdownPromotion,
     },
     computed: mapGetters({}),
 })
@@ -112,13 +127,19 @@ export default class BaseModalPaymentCreate extends Vue {
     paymentVariant: PaymentVariant = PaymentVariant.Token;
     showMetadataList = false;
     selectedMetadataId: string | undefined = undefined;
+    selectedPromotionId: string | undefined = undefined;
 
     get amountInWei() {
         return this.amount * this.units[this.unit];
     }
 
     get isSubmitDisabled() {
-        if (this.loading || this.amount <= 0 || (this.paymentVariant && !this.selectedMetadataId)) {
+        if (
+            this.loading ||
+            this.amount <= 0 ||
+            (this.paymentVariant && !this.selectedMetadataId) ||
+            (this.selectedMetadataId && this.selectedPromotionId)
+        ) {
             return true;
         }
         return false;
@@ -136,6 +157,7 @@ export default class BaseModalPaymentCreate extends Vue {
             failUrl: this.failUrl.length > 0 ? this.failUrl : undefined,
             cancelUrl: this.cancelUrl.length > 0 ? this.cancelUrl : undefined,
             metadataId: this.selectedMetadataId,
+            promotionId: this.selectedPromotionId,
         };
 
         await this.$store.dispatch('payments/create', { pool: this.pool, payment });
@@ -146,6 +168,10 @@ export default class BaseModalPaymentCreate extends Vue {
 
     onSelectMetadata(metadata: TERC721Metadata) {
         this.selectedMetadataId = metadata._id;
+    }
+
+    onSelectPromotion(promotion: TPromotion) {
+        this.selectedPromotionId = promotion._id;
     }
 
     onPaymentVariantChanged(variant: PaymentVariant) {

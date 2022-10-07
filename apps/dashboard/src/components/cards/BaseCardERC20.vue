@@ -1,14 +1,14 @@
 <template>
-    <base-card :loading="isLoading" :is-deploying="isDeploying" classes="cursor-pointer" @click="openTokenUrl()">
+    <base-card :loading="isLoading" :is-deploying="isDeploying" classes="cursor-pointer" @click="onClick">
         <template #card-header>
             {{ ERC20Type[erc20.type] }}
             <i class="ml-1 fas fa-archive text-white small" v-if="erc20.archived"></i>
         </template>
-        <template #card-body v-if="erc20.name">
+        <template #card-body v-if="!isLoading && erc20.address">
             <base-dropdown-token-menu :erc20="erc20" @archive="archive" />
             <base-badge-network class="mr-2" :chainId="erc20.chainId" />
             <div class="my-3 d-flex align-items-center" v-if="erc20.name">
-                <base-identicon class="mr-2" size="40" :rounded="true" variant="darker" :uri="erc20.logoURI" />
+                <base-identicon class="mr-2" size="40" :rounded="true" variant="darker" :uri="erc20.logoImgUrl" />
                 <div>
                     <strong class="m-0">{{ erc20.symbol }}</strong>
                     <br />
@@ -23,6 +23,12 @@
                 <span class="text-muted">Treasury</span><br />
                 <strong class="font-weight-bold h3 text-primary"> {{ erc20.adminBalance }} </strong>
             </p>
+            <template v-if="!erc20.poolId">
+                <hr />
+                <b-button block variant="primary" v-b-modal="`modalAssetPoolCreate_${erc20._id}`" class="rounded-pill">
+                    Create Pool
+                </b-button>
+            </template>
         </template>
     </base-card>
 </template>
@@ -34,7 +40,7 @@ import BaseCard from '@thxnetwork/dashboard/components/cards/BaseCard.vue';
 import BaseBadgeNetwork from '@thxnetwork/dashboard/components/badges/BaseBadgeNetwork.vue';
 import BaseIdenticon from '@thxnetwork/dashboard/components/BaseIdenticon.vue';
 import BaseDropdownTokenMenu from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownMenuToken.vue';
-import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
+
 import poll from 'promise-poller';
 
 @Component({
@@ -81,15 +87,14 @@ export default class BaseCardERC20 extends Vue {
         poll({ taskFn, interval: 3000, retries: 10 });
     }
 
-    openTokenUrl() {
-        const url = `${chainInfo[this.erc20.chainId].blockExplorer}/token/${this.erc20.address}`;
-        return (window as any).open(url, '_blank').focus();
-    }
-
     async archive() {
         this.isLoading = true;
         this.$store.dispatch('erc20/update', { erc20: this.erc20, data: { archived: !this.erc20.archived } });
         this.isLoading = false;
+    }
+
+    onClick() {
+        if (this.erc20.poolId) this.$router.push({ path: `/pool/${this.erc20.poolId}` });
     }
 }
 </script>

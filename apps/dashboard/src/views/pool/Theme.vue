@@ -8,7 +8,7 @@
                     <p class="text-muted small">
                         This background image is shown on the login page users see when claiming your crypto or NFT's.
                     </p>
-                    <b-form-file @change="onUpload" :data-key="backgroundImgUrl" accept="image/*" />
+                    <b-form-file @change="onUpload($event, 'backgroundImgUrl')" accept="image/*" />
                 </b-col>
                 <b-col>
                     <label>Preview</label>
@@ -25,7 +25,7 @@
                     <p class="text-muted small">
                         This logo image is shown above the login panel users see when claiming your crypto or NFT's.
                     </p>
-                    <b-form-file @change="onUpload" :data-key="logoImgUrl" accept="image/*" />
+                    <b-form-file @change="onUpload($event, 'logoImgUrl')" accept="image/*" />
                 </b-col>
                 <b-col>
                     <label>Preview</label>
@@ -82,6 +82,10 @@ export default class AssetPoolView extends Vue {
         return logoUrlIsValid && backgroundUrlIsValid;
     }
 
+    get brand() {
+        return this.brands[this.$route.params.id];
+    }
+
     mounted() {
         this.chainId = this.pool.chainId;
         this.get().then(() => {
@@ -90,12 +94,7 @@ export default class AssetPoolView extends Vue {
     }
 
     async upload(file: File) {
-        const publicUrl = await this.$store.dispatch('images/upload', file);
-        return publicUrl;
-    }
-
-    get brand() {
-        return this.brands[this.$route.params.id];
+        return await this.$store.dispatch('images/upload', file);
     }
 
     async get() {
@@ -105,10 +104,9 @@ export default class AssetPoolView extends Vue {
             this.logoImgUrl = this.brand.logoImgUrl;
         }
     }
-
-    async onUpload(event: any) {
+    async onUpload(event: any, key: string) {
         const publicUrl = await this.upload(event.target.files[0]);
-        Vue.set(this, event.target.dataset['key'], publicUrl);
+        Vue.set(this, key, publicUrl);
     }
 
     async update() {

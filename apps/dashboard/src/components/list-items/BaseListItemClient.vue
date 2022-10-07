@@ -21,7 +21,7 @@
                             <b-form-input readonly size="sm" :value="client.clientId" />
                             <template #append>
                                 <b-button size="sm" variant="dark" v-clipboard:copy="client.clientId">
-                                    <i class="fas fa-pen m-0"></i>
+                                    <i class="fas fa-clipboard m-0"></i>
                                 </b-button>
                             </template>
                         </b-input-group>
@@ -44,7 +44,14 @@
                 </b-form-row>
             </b-col>
             <b-col md="1">
-                <b-dropdown class="float-right" variant="light">
+                <b-dropdown class="float-right" size="sm" variant="white" no-caret right>
+                    <template #button-content>
+                        <i
+                            class="fas fa-ellipsis-v m-0 p-1 px-2 text-muted"
+                            style="font-size: 1.2rem"
+                            aria-hidden="true"
+                        ></i>
+                    </template>
                     <b-dropdown-item @click="onEdit"> <i class="fas fa-pen mr-2"></i> Edit </b-dropdown-item>
                 </b-dropdown>
             </b-col>
@@ -80,7 +87,6 @@ export default class BaseListItemClient extends Vue {
     }
 
     onEdit() {
-        console.log('Test');
         this.$emit('edit', this.client);
     }
 

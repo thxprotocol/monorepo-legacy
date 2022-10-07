@@ -11,7 +11,7 @@
                     <strong class="text-primary">{{ decodedHash.rewardAmount }} {{ decodedHash.tokenSymbol }}</strong
                     >, click <strong>Open in Chrome</strong> from the dropdown in the upper right corner.
                 </p>
-                <img width="100%" height="auto" :src="require('@thxnetwork/wallet/assets/img/screenshot-android.png')" />
+                <img width="100%" height="auto" :src="require('../../public/assets/img/screenshot-android.png')" />
                 <hr />
                 <div class="text-center text-muted">or copy and open it yourself</div>
                 <hr />

@@ -12,6 +12,7 @@ export interface IAccount {
     lastName: string;
     company: string;
     plan: AccountPlanType;
+    email?: string;
 }
 export interface IAccountUpdates {
     address: string;
@@ -27,13 +28,6 @@ export interface ITwitter {
     tweets: any;
     users: any;
 }
-
-export interface ISpotify {
-    playlists: any;
-    items: any;
-    users: any;
-}
-
 export interface IMember {
     poolAddress: string;
     memberId: number;

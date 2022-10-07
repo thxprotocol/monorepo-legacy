@@ -1,3 +1,5 @@
+import { TClaim } from '@thxnetwork/dashboard/store/modules/claims';
+
 export enum RewardState {
     Disabled = 0,
     Enabled = 1,
@@ -31,7 +33,7 @@ export interface Reward {
     isClaimOnce: boolean;
     isMembershipRequired: boolean;
     title: string;
-    claims: { _id: string }[];
+    claims: TClaim[];
     amount: number;
     createdAt: Date;
     updatedAt: Date;
@@ -46,7 +48,6 @@ export enum ChannelType {
     None = 0,
     YouTube = 1,
     Twitter = 2,
-    Spotify = 3,
 }
 
 export enum ChannelAction {
@@ -55,14 +56,9 @@ export enum ChannelAction {
     TwitterLike = 2,
     TwitterRetweet = 3,
     TwitterFollow = 4,
-    SpotifyUserFollow = 5,
-    SpotifyPlaylistFollow = 6,
-    SpotifyTrackPlaying = 7,
-    SpotifyTrackSaved = 8,
-    SpotifyTrackRecent = 9,
 }
 
-export const channelList = [
+export const channelList: IChannel[] = [
     {
         type: ChannelType.None,
         name: ChannelType[0],
@@ -80,17 +76,6 @@ export const channelList = [
         name: ChannelType[2],
         logoURI: require('../../public/assets/logo-twitter.png'),
         actions: [ChannelAction.TwitterLike, ChannelAction.TwitterRetweet, ChannelAction.TwitterFollow],
-    },
-    {
-        type: ChannelType.Spotify,
-        name: ChannelType[3],
-        logoURI: require('../../public/assets/logo-spotify.png'),
-        actions: [
-            ChannelAction.SpotifyUserFollow,
-            ChannelAction.SpotifyPlaylistFollow,
-            ChannelAction.SpotifyTrackPlaying,
-            ChannelAction.SpotifyTrackSaved,
-        ],
     },
 ];
 export const channelActionList = [
@@ -117,26 +102,6 @@ export const channelActionList = [
     {
         type: ChannelAction.TwitterFollow,
         name: 'Follow',
-        items: [],
-    },
-    {
-        type: ChannelAction.SpotifyUserFollow,
-        name: 'Follow me',
-        items: [],
-    },
-    {
-        type: ChannelAction.SpotifyPlaylistFollow,
-        name: 'Follow Playlist',
-        items: [],
-    },
-    {
-        type: ChannelAction.SpotifyTrackPlaying,
-        name: 'Play a Track',
-        items: [],
-    },
-    {
-        type: ChannelAction.SpotifyTrackSaved,
-        name: 'Save a Track',
         items: [],
     },
 ];

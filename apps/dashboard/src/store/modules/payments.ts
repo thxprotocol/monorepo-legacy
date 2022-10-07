@@ -7,6 +7,7 @@ import { PaymentState } from '@thxnetwork/dashboard/types/enums/PaymentState';
 
 export type TPayment = {
     _id: string;
+    id: string;
     amount: string;
     tokenAddress: string;
     poolId: string;
@@ -36,7 +37,7 @@ class PaymentModule extends VuexModule {
         if (!this._all[pool._id]) {
             Vue.set(this._all, pool._id, {});
         }
-        Vue.set(this._all[pool._id], payment._id, payment);
+        Vue.set(this._all[pool._id], payment.id, payment);
     }
 
     @Action({ rawError: true })

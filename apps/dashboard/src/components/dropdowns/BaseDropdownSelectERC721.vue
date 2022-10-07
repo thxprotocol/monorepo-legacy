@@ -1,5 +1,5 @@
 <template>
-    <b-dropdown variant="link" class="dropdown-select">
+    <b-dropdown variant="link" class="dropdown-select" v-if="hasERC721s">
         <template #button-content>
             <div class="d-flex align-items-center" v-if="token && token.chainId === chainId">
                 <base-identicon class="mr-3" :size="20" variant="darker" :uri="token.logoURI" />
@@ -22,6 +22,7 @@
             </div>
         </b-dropdown-item-button>
     </b-dropdown>
+    <div v-else class="small">No NFT contracts available</div>
 </template>
 
 <script lang="ts">

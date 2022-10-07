@@ -1,7 +1,7 @@
 <template>
     <base-modal :loading="loading" :error="error" title="Create Token Contract" id="modalERC20Create">
         <template #modal-body v-if="!loading">
-            <base-form-select-network @selected="chainId = $event" />
+            <base-form-select-network @selected="chainId = $event" :chainId="chainId" />
             <label>Variant</label>
             <b-form-group>
                 <b-form-radio v-model="tokenType" name="tokenType" :value="ERC20Type.Unlimited">

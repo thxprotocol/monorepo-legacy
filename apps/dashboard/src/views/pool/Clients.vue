@@ -101,7 +101,6 @@ export default class Clients extends Vue {
     }
 
     onEdit(client: TClient) {
-        console.log('Test', client);
         this.editingClient = client;
         this.$bvModal.show('modalClientCreate');
     }

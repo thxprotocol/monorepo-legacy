@@ -1,67 +1,39 @@
 <template>
-    <b-skeleton-wrapper :loading="loading">
-        <template #loading>
-            <b-form-group class="mb-0">
-                <hr />
-                <div class="row pt-2 pb-2">
-                    <div class="col-md-4">
-                        <b-skeleton animation="fade" width="85%"></b-skeleton>
-                        <b-skeleton animation="fade" width="80%"></b-skeleton>
+    <base-modal @show="onShow" :loading="loading" :error="error" title="Upload images" id="modalNFTBulkCreate">
+        <template #modal-body v-if="!loading">
+            <label>Select image property</label>
+            <b-dropdown variant="link" class="dropdown-select">
+                <template #button-content>
+                    <div v-if="selectedProp">
+                        {{ selectedProp.name }}
                     </div>
-                    <div class="col-md-2">
-                        <b-skeleton animation="fade" width="85%"></b-skeleton>
-                        <b-skeleton animation="fade" width="80%"></b-skeleton>
-                    </div>
-                    <div class="col-md-2">
-                        <b-skeleton animation="fade" width="85%"></b-skeleton>
-                        <b-skeleton animation="fade" width="80%"></b-skeleton>
-                    </div>
-                    <div class="col-md-4 text-right d-flex justify-content-end">
-                        <b-skeleton type="avatar" class="inline"></b-skeleton>
-                        <b-skeleton type="avatar" class="inline ml-1"></b-skeleton>
-                    </div>
-                </div>
+                </template>
+                <b-dropdown-item-button
+                    v-for="(prop, key) of erc721.properties.filter((x) => x.propType === 'image')"
+                    :key="key"
+                    @click="onPropSelect(prop, key)"
+                >
+                    {{ prop.name }}
+                </b-dropdown-item-button>
+            </b-dropdown>
+            <br />
+            <b-form-group v-if="selectedProp">
+                <label>Select image folder</label>
+                <b-form-file
+                    @change="onFolderSelected"
+                    :data-key="selectedKey"
+                    accept="image/*"
+                    :directory="true"
+                    :multiple="true"
+                />
             </b-form-group>
         </template>
-
-        <base-modal :error="error" title="Create Bulk NFTs" id="modalNFTBulkCreate">
-            <template #modal-body>
-                <label>Select Image Property</label>
-                <b-card bg-variant="light">
-                    <b-dropdown variant="link" class="dropdown-select">
-                        <template #button-content>
-                            <div v-if="selectedProp">
-                                {{ selectedProp.name }}
-                            </div>
-                        </template>
-                        <b-dropdown-item-button
-                            v-for="(prop, key) of erc721.properties.filter((x) => x.propType === 'image')"
-                            :key="key"
-                            @click="onPropSelect(prop, key)"
-                        >
-                            {{ prop.name }}
-                        </b-dropdown-item-button>
-                    </b-dropdown>
-                    <br />
-                    <b-form-group v-if="selectedProp">
-                        <label>Browse folder</label>
-                        <b-form-file
-                            @change="onFolderSelected"
-                            :data-key="selectedKey"
-                            accept="image/*"
-                            :directory="true"
-                            :multiple="true"
-                        />
-                    </b-form-group>
-                </b-card>
-            </template>
-            <template #btn-primary>
-                <b-button :disabled="isSubmitDisabled" class="rounded-pill" @click="submit()" variant="primary" block>
-                    Create NFTs
-                </b-button>
-            </template>
-        </base-modal>
-    </b-skeleton-wrapper>
+        <template #btn-primary>
+            <b-button :disabled="isSubmitDisabled" class="rounded-pill" @click="submit()" variant="primary" block>
+                Upload Images
+            </b-button>
+        </template>
+    </base-modal>
 </template>
 
 <script lang="ts">
@@ -86,6 +58,13 @@ export default class ModalERC721MetadataBulkCreate extends Vue {
 
     @Prop() pool!: IPool;
     @Prop() erc721!: TERC721;
+
+    onShow() {
+        const imageProps = this.erc721.properties.filter((x) => x.propType === 'image');
+        if (imageProps.length) {
+            this.selectedProp = imageProps[0];
+        }
+    }
 
     get isSubmitDisabled() {
         return this.loading || !this.files;
@@ -121,6 +100,9 @@ export default class ModalERC721MetadataBulkCreate extends Vue {
         } finally {
             this.$bvModal.hide('modalNFTBulkCreate');
             this.loading = false;
+            this.files = null;
+            this.selectedProp = null;
+            this.selectedKey = null;
         }
     }
 }

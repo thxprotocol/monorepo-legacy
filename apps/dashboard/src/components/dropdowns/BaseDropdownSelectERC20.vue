@@ -1,5 +1,5 @@
 <template>
-    <b-dropdown variant="link" class="dropdown-select">
+    <b-dropdown variant="link" class="dropdown-select" v-if="tokenList.length">
         <template #button-content>
             <div v-if="erc20Token && erc20Token.chainId === chainId">
                 <div class="d-flex align-items-center">
@@ -41,6 +41,7 @@
             <strong>{{ erc20.symbol }}</strong> {{ erc20.name }}
         </b-dropdown-item-button>
     </b-dropdown>
+    <div v-else class="small">No Token contracts available</div>
 </template>
 
 <script lang="ts">

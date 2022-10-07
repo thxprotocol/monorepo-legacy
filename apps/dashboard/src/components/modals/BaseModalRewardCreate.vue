@@ -38,46 +38,34 @@
                             <label> Label </label>
                             <b-form-input v-model="rewardTitle" placeholder="A token of appreciation" />
                         </b-form-group>
-                        <b-row v-if="rewardVariant === RewardVariant.Token && pool.erc20">
-                            <b-col md="6">
-                                <b-form-group>
-                                    <label>
-                                        Tokens
-                                        <a
-                                            v-b-tooltip
-                                            :title="`The amount of ${pool.erc20.symbol} tokens earned with this reward.`"
-                                            target="_blank"
-                                        >
-                                            <i class="fas fa-question-circle"></i>
-                                        </a>
-                                    </label>
-                                    <b-input-group :append="pool.erc20.symbol">
-                                        <b-form-input type="number" v-model="rewardWithdrawAmount" />
-                                    </b-input-group>
-                                </b-form-group>
-                            </b-col>
-                            <b-col md="6">
-                                <label>
-                                    Supply Limit
-                                    <a
-                                        v-b-tooltip
-                                        title="The total amount of times this reward could be claimed. Leave 0 for an infinite amount of times."
-                                    >
-                                        <i class="fas fa-question-circle"></i>
-                                    </a>
-                                </label>
-                                <b-form-input type="number" v-model="rewardWithdrawLimit" />
-                            </b-col>
-                        </b-row>
+                        <b-form-group v-if="rewardVariant === RewardVariant.Token && pool.erc20">
+                            <label>
+                                Tokens
+                                <a
+                                    v-b-tooltip
+                                    :title="`The amount of ${pool.erc20.symbol} tokens earned with this reward.`"
+                                    target="_blank"
+                                >
+                                    <i class="fas fa-question-circle"></i>
+                                </a>
+                            </label>
+                            <b-input-group :append="pool.erc20.symbol">
+                                <b-form-input type="number" v-model="rewardWithdrawAmount" />
+                            </b-input-group>
+                        </b-form-group>
                         <b-form-group v-if="rewardVariant === RewardVariant.NFT && erc721metadata">
                             <label>
-                                NFT
+                                Metadata
                                 <base-tooltip-info
                                     class="mr-2"
                                     title="Select the metadata for the NFT that should be minted when this reward is claimed."
                                 />
                             </label>
-                            <BaseDropdownERC721Metadata :pool="pool" @selected="onSelectMetadata" />
+                            <BaseDropdownERC721Metadata
+                                :erc721metadata="erc721metadata"
+                                :pool="pool"
+                                @selected="onSelectMetadata"
+                            />
                         </b-form-group>
                         <hr />
                         <b-form-group class="mb-0">
@@ -93,6 +81,31 @@
                             </b-form-checkbox>
                         </b-form-group>
                     </b-tab>
+                    <b-tab title="Expiration & Limit">
+                        <b-form-group>
+                            <label> Expiration </label>
+                            <b-row>
+                                <b-col md="6">
+                                    <b-datepicker value-as-date :min="minDate" v-model="rewardExpireDate" />
+                                </b-col>
+                                <b-col md="6">
+                                    <b-timepicker :disabled="!rewardExpireDate" v-model="rewardExpireTime" />
+                                </b-col>
+                            </b-row>
+                        </b-form-group>
+                        <b-form-group>
+                            <label>
+                                Reward Limit
+                                <a
+                                    v-b-tooltip
+                                    title="The total amount of times this reward could be claimed. Leave 0 for an infinite amount of times, but be aware that this could drain your pool."
+                                >
+                                    <i class="fas fa-question-circle"></i>
+                                </a>
+                            </label>
+                            <b-form-input type="number" v-model="rewardWithdrawLimit" />
+                        </b-form-group>
+                    </b-tab>
                     <b-tab title="QR Codes">
                         <b-form-group>
                             <label>
@@ -106,19 +119,6 @@
                             </b-input-group>
                         </b-form-group>
                     </b-tab>
-                    <b-tab title="Expiration">
-                        <b-form-group>
-                            <label> Expiration </label>
-                            <b-row>
-                                <b-col md="6">
-                                    <b-datepicker value-as-date :min="minDate" v-model="rewardExpireDate" />
-                                </b-col>
-                                <b-col md="6">
-                                    <b-timepicker :disabled="!rewardExpireDate" v-model="rewardExpireTime" />
-                                </b-col>
-                            </b-row>
-                        </b-form-group>
-                    </b-tab>
                     <b-tab title="Conditions">
                         <b-form-group>
                             <b-row>
@@ -130,7 +130,7 @@
                                     />
                                 </b-col>
                                 <b-col md="6">
-                                    <label> Channel Interaction</label>
+                                    <label> Action</label>
                                     <base-dropdown-channel-actions
                                         v-if="channel && channel.actions.length > 0"
                                         :actions="
@@ -142,67 +142,71 @@
                                         :action="action"
                                         @selected="onActionClick($event)"
                                     />
-                                    <p v-else class="small text-muted">Select a channel first.</p>
+                                    <p v-else class="small text-muted">Please choose a channel.</p>
                                 </b-col>
                             </b-row>
                         </b-form-group>
                         <b-form-group>
                             <template v-if="channel && action && action.items.length > 0">
                                 <base-dropdown-youtube-uploads
-                                    v-if="action.type === 0"
+                                    v-if="action.type === ChannelAction.YouTubeLike"
                                     @selected="item = $event"
                                     :items="action.items"
+                                    :item="
+                                        reward && reward.withdrawCondition ? reward.withdrawCondition.channelItem : null
+                                    "
                                 />
                                 <base-dropdown-youtube-channels
-                                    v-if="action.type === 1"
+                                    v-if="action.type === ChannelAction.YouTubeSubscribe"
                                     @selected="item = $event"
                                     :items="action.items"
+                                    :item="
+                                        reward && reward.withdrawCondition ? reward.withdrawCondition.channelItem : null
+                                    "
                                 />
                                 <base-dropdown-twitter-tweets
-                                    v-if="action.type === 2 || action.type === 3"
+                                    v-if="
+                                        action.type === ChannelAction.TwitterLike ||
+                                        action.type === ChannelAction.TwitterRetweet
+                                    "
                                     @selected="item = $event"
                                     :items="action.items"
-                                    :item="item"
+                                    :item="
+                                        reward && reward.withdrawCondition ? reward.withdrawCondition.channelItem : null
+                                    "
                                 />
                                 <base-dropdown-twitter-users
-                                    v-if="action.type === 4"
+                                    v-if="action.type === ChannelAction.TwitterFollow"
                                     @selected="item = $event"
                                     :items="action.items"
-                                    :item="item"
+                                    :item="
+                                        reward && reward.withdrawCondition ? reward.withdrawCondition.channelItem : null
+                                    "
                                 />
                             </template>
                             <b-alert show variant="warning" v-if="warning">{{ warning }}</b-alert>
                             <template v-if="channel && action && action.type === 0">
                                 <base-dropdown-youtube-video :url="item" @selected="item = $event" />
                             </template>
-                            <template
-                                v-if="
-                                    channel && action && (action.type === 7 || action.type === 8 || action.type === 9)
-                                "
-                            >
-                                <base-dropdown-spotify-track
-                                    :item="item"
-                                    :items="action.items"
-                                    @selected="item = $event"
-                                />
-                            </template>
-                            <template v-if="channel && action && action.type === 6">
-                                <base-dropdown-spotify-playlist
-                                    :item="item"
-                                    @selected="item = $event"
-                                    :items="action.items"
-                                />
-                            </template>
                         </b-form-group>
-                        <b-form-group v-if="action && [2, 3, 4].includes(action.type)">
+                        <b-form-group
+                            v-if="
+                                action &&
+                                [
+                                    ChannelAction.TwitterLike,
+                                    ChannelAction.TwitterRetweet,
+                                    ChannelAction.TwitterFollow,
+                                ].includes(action.type)
+                            "
+                        >
                             <b-alert variant="warning" show class="m-0">
-                                <template v-if="action.type == 2">
+                                <template v-if="action.type == ChannelAction.TwitterLike">
                                     Validation is limited to the last 100 likes.
                                 </template>
-                                <template v-if="action.type == 3">
+                                <template v-if="action.type == ChannelAction.TwitterRetweet">
                                     Validation is limited to the last 100 retweets.
                                 </template>
-                                <template v-if="action.type == 4">
+                                <template v-if="action.type == ChannelAction.TwitterFollow">
                                     Validation is limited to the last 5000 followers.
                                 </template>
                             </b-alert>
@@ -239,15 +243,13 @@ import {
     Reward,
     channelList,
 } from '@thxnetwork/dashboard/types/rewards';
-import { IAccount, ISpotify, ITwitter, IYoutube } from '@thxnetwork/dashboard/types/account';
+import { IAccount, ITwitter, IYoutube } from '@thxnetwork/dashboard/types/account';
 import BaseDropdownYoutubeVideo from '../dropdowns/BaseDropdownYoutubeVideo.vue';
 import BaseDropdownYoutubeUploads from '../dropdowns/BaseDropdownYoutubeUploads.vue';
 import BaseDropdownYoutubeChannels from '../dropdowns/BaseDropdownYoutubeChannels.vue';
 import BaseDropdownChannelActions from '../dropdowns/BaseDropdownChannelActions.vue';
 import BaseDropdownTwitterTweets from '../dropdowns/BaseDropdownTwitterTweets.vue';
 import BaseDropdownTwitterUsers from '../dropdowns/BaseDropdownTwitterUsers.vue';
-import BaseDropdownSpotifyTrack from '../dropdowns/BaseDropdownSpotifyTrack.vue';
-import BaseDropdownSpotifyPlaylist from '../dropdowns/BaseDropdownSpotifyPlaylist.vue';
 import BaseDropdownChannelTypes from '../dropdowns/BaseDropdownChannelTypes.vue';
 import slugify from '@thxnetwork/dashboard/utils/slugify';
 import BaseModal from './BaseModal.vue';
@@ -272,18 +274,16 @@ enum RewardVariant {
         BaseDropdownTwitterUsers,
         BaseDropdownChannelActions,
         BaseDropdownChannelTypes,
-        BaseDropdownSpotifyTrack,
-        BaseDropdownSpotifyPlaylist,
         BaseDropdownERC721Metadata,
     },
     computed: mapGetters({
         profile: 'account/profile',
         youtube: 'account/youtube',
         twitter: 'account/twitter',
-        spotify: 'account/spotify',
     }),
 })
 export default class ModalRewardCreate extends Vue {
+    ChannelAction = ChannelAction;
     channelActions = channelActionList;
     docsUrl = process.env.VUE_APP_DOCS_URL;
     loading = false;
@@ -313,7 +313,6 @@ export default class ModalRewardCreate extends Vue {
     profile!: IAccount;
     youtube!: IYoutube;
     twitter!: ITwitter;
-    spotify!: ISpotify;
 
     @Prop() pool!: IPool;
     @Prop() erc721!: TERC721;
@@ -333,38 +332,42 @@ export default class ModalRewardCreate extends Vue {
     async onRewardChange() {
         if (!this.reward) return;
 
+        if (this.reward.erc721metadataId) {
+            this.onRewardVariantChanged(RewardVariant.NFT);
+            await this.$store.dispatch('erc721/readMetadata', {
+                erc721: this.erc721,
+                metadataId: this.reward.erc721metadataId,
+            });
+            this.erc721metadata =
+                this.erc721?.metadata?.find((meta) => meta._id === this.reward.erc721metadataId) || null;
+        } else {
+            this.onRewardVariantChanged(RewardVariant.Token);
+        }
+
         if (this.reward.withdrawCondition) {
-            const seletectChannel = channelList.find(
-                (channel) => channel.type === this.reward.withdrawCondition.channelType,
-            );
+            const channel = channelList.find((channel) => channel.type === this.reward.withdrawCondition.channelType);
 
-            if (seletectChannel) {
-                Vue.set(this, 'channel', {
-                    type: seletectChannel.type,
-                    name: seletectChannel.name,
-                    logoURI: seletectChannel.logoURI,
-                    actions: seletectChannel.actions,
-                });
+            if (channel) {
+                this.channel = channel;
 
-                await this.onChannelClick(seletectChannel);
-
-                Vue.set(this, 'action', this.channelActions[this.reward.withdrawCondition?.channelAction]);
-                Vue.set(this, 'item', this.reward.withdrawCondition.channelItem);
+                await this.onChannelClick(
+                    this.channel,
+                    this.channelActions[this.reward.withdrawCondition.channelAction],
+                );
             }
         }
 
-        this.rewardWithdrawLimit = this.reward?.withdrawLimit || 0;
-        this.rewardWithdrawAmount = this.reward?.withdrawAmount || 0;
-        this.rewardWithdrawDuration = this.reward?.withdrawDuration || 0;
-        this.rewardTitle = this.reward?.title || '';
-        this.rewardExpireDate = this.reward?.expiryDate || null;
-        this.rewardExpireTime = this.reward?.expiryDate
+        this.rewardTitle = this.reward.title || '';
+        this.rewardWithdrawLimit = this.reward.withdrawLimit || 0;
+        this.rewardWithdrawAmount = this.reward.withdrawAmount || 0;
+        this.rewardWithdrawDuration = this.reward.withdrawDuration || 0;
+        this.rewardExpireDate = this.reward.expiryDate || null;
+        this.rewardExpireTime = this.reward.expiryDate
             ? `${String(this.reward.expiryDate.getHours()).padStart(2, '0')}:${String(
                   this.reward.expiryDate.getMinutes(),
               ).padStart(2, '0')}:${String(this.reward.expiryDate.getSeconds()).padStart(2, '0')}`
             : '00:00:00';
-        this.amount = this.reward?.amount || 1;
-        this.erc721metadata = this.erc721?.metadata?.find((meta) => meta._id === this.reward?.erc721metadataId) || null;
+        this.amount = this.reward.amount || 1;
     }
 
     get minDate() {
@@ -381,11 +384,6 @@ export default class ModalRewardCreate extends Vue {
             (this.rewardVariant === RewardVariant.Token && this.rewardWithdrawAmount <= 0) ||
             (this.channel?.type !== ChannelType.None && !this.item)
         );
-    }
-
-    onShow() {
-        this.erc721metadata =
-            this.rewardVariant === RewardVariant.NFT && this.filteredMetadata ? this.filteredMetadata[0] : null;
     }
 
     onRewardVariantChanged(variant: RewardVariant) {
@@ -433,35 +431,14 @@ export default class ModalRewardCreate extends Vue {
         }
     }
 
-    async getSpotify() {
-        const { isAuthorized } = await this.$store.dispatch('account/getSpotify');
-
-        if (!isAuthorized) {
-            this.warning = 'Your Spotify account is not connected.';
-        }
-
-        if (isAuthorized && this.channel) {
-            this.warning = '';
-            this.channelActions[ChannelAction.SpotifyUserFollow].items = this.spotify.users;
-            this.channelActions[ChannelAction.SpotifyPlaylistFollow].items = this.spotify.playlists;
-            this.channelActions[ChannelAction.SpotifyTrackPlaying].items = this.spotify.items;
-            this.channelActions[ChannelAction.SpotifyTrackSaved].items = this.spotify.items;
-        }
-    }
-
     concatDatetime(date: Date, time: string) {
         const concatedDate = new Date(date);
-        // time will alway have format "HH:MM:SS"
         const [hours, minutes, seconds] = time.split(':').map((item) => Number(item));
         concatedDate.setHours(hours, minutes, seconds);
         return concatedDate;
     }
 
-    async onChannelClick(channel: IChannel) {
-        this.item = null;
-        this.action = null;
-        this.channel = channel;
-
+    async onChannelClick(channel: IChannel, action: IChannelAction | null = null) {
         switch (channel.type) {
             case ChannelType.None:
                 break;
@@ -473,22 +450,21 @@ export default class ModalRewardCreate extends Vue {
                 this.action = this.channelActions[channel.actions[0]];
                 await this.getTwitter();
                 break;
-            case ChannelType.Spotify:
-                this.action = this.channelActions[channel.actions[0]];
-                await this.getSpotify();
-                this.item = this.channelActions[channel.actions[0]].items[0];
-                break;
-
             default:
                 this.error = 'Channel type is not known.';
                 break;
+        }
+
+        this.channel = channel;
+
+        if (action) {
+            this.action = action;
         }
     }
 
     async onActionClick(action: IChannelAction) {
         this.action = action;
         if (!this.item) this.item = this.channelActions[action.type].items[0];
-        else this.item = null;
     }
 
     async submit() {
@@ -502,6 +478,7 @@ export default class ModalRewardCreate extends Vue {
                       channelItem:
                           this.item &&
                           this.item.referenced_tweets &&
+                          this.item.referenced_tweets[0] &&
                           this.item.referenced_tweets[0].type === 'retweeted'
                               ? this.item.referenced_tweets[0].id
                               : this.item.id,

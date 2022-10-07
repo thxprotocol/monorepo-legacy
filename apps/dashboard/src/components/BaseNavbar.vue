@@ -1,14 +1,13 @@
 <template>
     <b-sidebar
         class="d-none d-md-flex"
-        bg-variant="darker"
+        bg-variant="white"
         id="sidebar-left"
         no-header
         no-header-close
         no-close-on-route-change
         no-slide
         :visible="true"
-        shadow
     >
         <b-navbar toggleable="lg" class="sidebar">
             <div class="w-100 pt-4 pb-4 text-center">
@@ -41,7 +40,7 @@
                                 <i class="fas fa-palette"></i>
                             </div>
                             <div class="flex-grow-1">
-                                <span class="mr-2">NFT</span>
+                                <span class="mr-2">Collections</span>
                             </div>
                         </div>
                     </b-nav-item>
@@ -55,7 +54,7 @@
                                 <small v-if="pool" class="text-truncate w-10 m-0">{{ pool.address }}</small>
                             </div>
                         </div>
-                        <div v-if="pool" class="bg-dark p-0">
+                        <div v-if="pool" class="p-0">
                             <b-nav-item
                                 :to="`/pool/${pool._id}/${route.path}`"
                                 class="nav-link-plain"
@@ -96,21 +95,21 @@
             </div>
             <div class="d-flex justify-content-end flex-column flex-grow-0 w-100">
                 <b-navbar-nav>
-                    <b-nav-item class="nav-link-plain border-top border-dark" v-if="profile">
+                    <b-nav-item class="nav-link-plain" v-if="profile">
                         <div class="nav-link-wrapper">
                             <div class="flex-grow-1">
-                                <b-badge variant="dark">{{ plans[profile.plan].name }}</b-badge
-                                ><br />
+                                <b-badge variant="dark">{{ plans[profile.plan].name }}</b-badge>
+                                <br />
                                 <small class="text-muted" v-html="plans[profile.plan].text" />
                             </div>
                             <div class="d-flex align-items-center">
-                                <b-button size="sm" variant="dark" disabled href="https://docs.thx.network/pricing">
+                                <b-button size="sm" variant="darker" disabled href="https://docs.thx.network/pricing">
                                     Upgrade
                                 </b-button>
                             </div>
                         </div>
                     </b-nav-item>
-                    <b-nav-item to="/account" class="nav-link-plain border-top border-dark">
+                    <b-nav-item to="/account" class="nav-link-plain">
                         <div class="nav-link-wrapper">
                             <div class="nav-link-icon">
                                 <i class="fa fa-gear"></i>
@@ -120,7 +119,7 @@
                             </div>
                         </div>
                     </b-nav-item>
-                    <b-nav-item to="/signout" class="nav-link-plain border-top border-dark">
+                    <b-nav-item to="/signout" class="nav-link-plain">
                         <div class="nav-link-wrapper">
                             <div class="nav-link-icon">
                                 <i class="fas fa-sign-out-alt"></i>
@@ -168,38 +167,3 @@ export default class BaseNavbar extends Vue {
     }
 }
 </script>
-
-<style scoped lang="scss">
-.sidebar .nav-link-plain {
-    .nav-link {
-        padding: 0rem;
-        margin: 0;
-    }
-
-    .nav-link-wrapper {
-        padding: 0.7rem 1rem;
-        display: flex;
-        transition: 0.2s background-color ease;
-
-        &:hover {
-            background-color: #211359;
-        }
-    }
-
-    .nav-link-icon {
-        width: 30px;
-        flex: 0 0 30px;
-
-        ~ div {
-            flex-grow: 1;
-        }
-    }
-
-    .nav-link-plain {
-        .nav-link {
-            padding: 0.7rem 1rem;
-        }
-        border-bottom: 1px solid black;
-    }
-}
-</style>

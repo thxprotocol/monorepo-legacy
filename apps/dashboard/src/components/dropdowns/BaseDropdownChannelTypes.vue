@@ -34,9 +34,7 @@ export default class BaseDropdownChannelTypes extends Vue {
     @Prop() channel!: IChannel;
 
     mounted() {
-        if (!this.channel) {
-            this.$emit('selected', this.channelList[0]);
-        }
+        this.$emit('selected', this.channel ? this.channel : this.channelList[0]);
     }
 }
 </script>

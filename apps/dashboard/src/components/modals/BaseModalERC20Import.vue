@@ -3,11 +3,11 @@
         <template #modal-body v-if="!loading">
             <BaseFormSelectNetwork @selected="chainId = $event" />
             <b-form-group label="Existing ERC20 contract">
-                <BaseDropDownSelectPolygonERC20 :erc20="erc20" :chainId="chainId" @selected="onERC20Selected" />
+                <BaseDropDownSelectPolygonERC20 :erc20="erc20" :chainId="chainId" @selected="onERC20Selected($event)" />
             </b-form-group>
             <b-form-group label="Contract Address">
                 <b-input-group>
-                    <b-form-input v-model="erc20Address" :disabled="!!erc20" />
+                    <b-form-input v-model="erc20Address" :disabled="!!erc20" @input="getPreview" />
                     <template #append>
                         <b-button
                             v-if="erc20"
@@ -20,7 +20,17 @@
                     </template>
                 </b-input-group>
             </b-form-group>
+            <div v-if="previewLoading">
+                <p><i class="fas fa-spinner fa-spin"></i> loading token info...</p>
+            </div>
+            <div v-if="showPreview">
+                <p>
+                    <strong>{{ name }}</strong> ({{ symbol }})
+                </p>
+                <p><strong>Total Supply:</strong> {{ totalSupply }}</p>
+            </div>
         </template>
+
         <template #btn-primary>
             <b-button
                 :disabled="loading || !isValidAddress"
@@ -60,6 +70,12 @@ export default class ModalERC20Import extends Vue {
     chainId: ChainId = ChainId.Polygon;
     erc20: TERC20 | null = null;
     erc20Address = '';
+    erc20LogoImgUrl = '';
+    showPreview = false;
+    name = '';
+    symbol = '';
+    totalSupply = '';
+    previewLoading = false;
 
     get isValidAddress() {
         return isAddress(this.erc20Address);
@@ -71,6 +87,7 @@ export default class ModalERC20Import extends Vue {
         const data = {
             chainId: this.chainId,
             address: this.erc20Address,
+            logoImgUrl: this.erc20LogoImgUrl,
         };
 
         await this.$store.dispatch('erc20/import', data);
@@ -83,6 +100,33 @@ export default class ModalERC20Import extends Vue {
     onERC20Selected(erc20: TERC20) {
         this.erc20 = erc20;
         this.erc20Address = erc20 ? erc20.address : '';
+        this.erc20LogoImgUrl = erc20 && erc20.logoURI ? erc20.logoURI : '';
+    }
+
+    async getPreview(address: string) {
+        if (address.length != 42) {
+            this.showPreview = false;
+            this.name = '';
+            this.symbol = '';
+            this.totalSupply = '';
+            return;
+        }
+        try {
+            this.previewLoading = true;
+            const { name, symbol, totalSupply } = await this.$store.dispatch('erc20/preview', {
+                chainId: this.chainId,
+                address: address,
+            });
+            this.name = name;
+            this.symbol = symbol;
+            this.totalSupply = totalSupply;
+            this.previewLoading = false;
+            this.showPreview = true;
+        } catch (err) {
+            this.previewLoading = false;
+            this.showPreview = false;
+            throw new Error('Invalid Contract Address');
+        }
     }
 }
 </script>

@@ -26,7 +26,7 @@
                     `
                     border-top-left-radius: 0.5rem;
                     border-top-right-radius: 0.5rem;
-                    background-image: url(${require('@thxnetwork/wallet/assets/img/thx_modal-header-danger.webp')});
+                    background-image: url(${require('../../../public/assets/img/thx_modal-header-danger.webp')});
                 `
                 "
             >

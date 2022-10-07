@@ -3,7 +3,7 @@
         <div class="flex-grow-1 overflow-auto d-flex flex-column">
             <header class="p-md-3 container-fluid d-flex align-items-center" v-if="$router.currentRoute.name">
                 <b-button to="/" variant="link" class="pl-0 mr-auto mr-md-0">
-                    <img :src="require('@thxnetwork/wallet/assets/img/logo.png')" height="32" alt="" />
+                    <img :src="require('../public/assets/img/logo.png')" height="32" alt="" />
                 </b-button>
                 <base-network-select v-if="profile" />
                 <div class="d-none d-md-flex flex-grow-1 justify-content-center ">
