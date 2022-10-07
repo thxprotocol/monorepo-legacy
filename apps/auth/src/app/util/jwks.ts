@@ -9,7 +9,7 @@ export function getJwks() {
         return JSON.parse(JWKS_JSON);
     }
 
-    const jwksPath = path.resolve('./jwks.json');
+    const jwksPath = path.resolve(path.dirname(__dirname), 'jwks.json');
 
     if (!fs.existsSync(jwksPath)) {
         logger.warn('No JWKS_JSON env var set and no jwks.json present, generating a new one.');

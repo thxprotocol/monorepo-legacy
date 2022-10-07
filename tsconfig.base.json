@@ -18,7 +18,7 @@
     "baseUrl": ".",
     "paths": {
       "@thxnetwork/api*": ["apps/api/src/app*"],
-      "@thxnetwork/auth*": ["apps/auth/src*"],
+      "@thxnetwork/auth*": ["apps/auth/src/app*"],
       "@thxnetwork/common": ["libs/common/src/index.ts"],
       "@thxnetwork/dashboard*": ["apps/dashboard/src*"],
       "@thxnetwork/scss*": ["libs/common/src/lib/scss*"],

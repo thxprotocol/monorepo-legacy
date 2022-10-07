@@ -31,14 +31,15 @@ describe('SSO Sign In', () => {
 
         CLIENT_ID = res.body.client_id;
 
-        const account = await AccountService.signup(
-            accountEmail,
-            accountSecret,
-            AccountVariant.EmailPassword,
-            true,
-            true,
-            true,
-        );
+        const signupData = {
+            email: accountEmail,
+            password: accountSecret,
+            variant: AccountVariant.EmailPassword,
+            acceptTermsPrivacy: true,
+            acceptUpdates: true,
+            active: true,
+        };
+        const account = await AccountService.signup(signupData);
         account.privateKey = undefined;
 
         const params = new URLSearchParams({

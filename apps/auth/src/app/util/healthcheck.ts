@@ -23,7 +23,7 @@ const dbConnected: HealthCheck = async () => {
 const migrationsApplied: HealthCheck = async () => {
     config.set(migrateMongoConfig);
 
-    const pendingMigrations = (await status(connection.db as any) as any).filter((migration) => migration.appliedAt === 'PENDING');
+    const pendingMigrations = (await status(connection.db as any)).filter((migration) => migration.appliedAt === 'PENDING');
     if (pendingMigrations.length > 0) {
         throw new Error('Not all migrations applied');
     }

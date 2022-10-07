@@ -8,7 +8,7 @@ export const getTwitter = async (req: Request, res: Response) => {
         account.twitterAccessToken = tokens.access_token || account.twitterAccessToken;
         account.twitterRefreshToken = tokens.refresh_token || account.twitterRefreshToken;
         account.twitterAccessTokenExpires = tokens.expires_in
-            ? Date.now() + Number(tokens.expires_in) * 1000 - 4000
+            ? Date.now() + Number(tokens.expires_in) * 1000
             : account.twitterAccessTokenExpires;
 
         return await account.save();

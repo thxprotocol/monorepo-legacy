@@ -8,11 +8,11 @@
                 Account
             </strong>
             <% if (alert && alert.message) { %>
-                <div class="alert alert-<%= alert.variant %>">
-                    <%= alert.message %>
-                </div>
-                <% } %>
 
+            <div class="alert alert-<%= alert.variant %>">
+                <%= alert.message %>
+            </div>
+            <% } %>
                     <form id="account_update" class="pt-5 mt-5" autocomplete="off" action="/oidc/<%= uid %>/account"
                         enctype="multipart/form-data" method="POST">
 
@@ -34,7 +34,7 @@
                                         Email:
                                     </div>
                                     <div class="col-8">
-                                        <input class="form-control" name="email" required disabled
+                                        <input class="form-control" name="email" required
                                             value="<%= params.email %>" placeholder="" />
                                     </div>
                                 </div>

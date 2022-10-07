@@ -30,7 +30,7 @@ required.forEach((value: string) => {
 // easy to use setup locally without having hardcoded credentials during test runs.
 if (process.env.NODE_ENV === 'test') {
     if (process.env.AUTH_URL_TEST_OVERRIDE !== undefined) process.env.AUTH_URL = process.env.AUTH_URL_TEST_OVERRIDE;
-    if (process.env.PORT_TEST_OVERRIDE !== undefined) process.env.PORT = process.env.PORT_TEST_OVERRIDE;
+    if (process.env.PORT_TEST_OVERRIDE !== undefined) process.env.AUTH_PORT = process.env.PORT_TEST_OVERRIDE;
     if (process.env.MONGODB_URI_TEST_OVERRIDE !== undefined)
         process.env.MONGODB_URI = process.env.MONGODB_URI_TEST_OVERRIDE;
 }

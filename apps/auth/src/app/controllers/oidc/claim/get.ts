@@ -29,26 +29,31 @@ async function controller(req: Request, res: Response) {
     params.logoImgUrl = brandData?.logoImgUrl;
 
     // Render the regular signin page success alert
-    if (!claim.rewardCondition || !claim.rewardCondition.channelType) {
+    if (!claim.withdrawCondition || !claim.withdrawCondition.channelType) {
         params.googleLoginUrl = YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getBasicScopes());
         params.authRequestMessage = createTypedMessage(AUTH_REQUEST_TYPED_MESSAGE, AUTH_URL, uid);
+
+        let message = `Sign in and claim your <strong>${claim.withdrawAmount} ${claim.tokenSymbol}</strong>!`;
+        if (params.rewardData.erc721Id) {
+            message = `<i class="fas fa-gift mr-2"></i> Sign in and claim your <strong>${claim.tokenSymbol}</strong> NFT!`;
+        }
 
         return res.render('signin', {
             uid,
             params,
             alert: {
                 variant: 'success',
-                message: `Sign in and claim your <strong>${claim.withdrawAmount} ${claim.tokenSymbol}</strong>!`,
+                message,
             },
         });
     }
 
-    params.channelType = ChannelType[claim.rewardCondition.channelType];
-    params.channelAction = ChannelAction[claim.rewardCondition.channelAction];
-    params.channelItem = claim.rewardCondition.channelItem;
+    params.channelType = ChannelType[claim.withdrawCondition.channelType];
+    params.channelAction = ChannelAction[claim.withdrawCondition.channelAction];
+    params.channelItem = claim.withdrawCondition.channelItem;
 
-    const scopes = getChannelScopes(claim.rewardCondition.channelAction);
-    const loginLink = getLoginLinkForChannelAction(uid, claim.rewardCondition.channelAction);
+    const scopes = getChannelScopes(claim.withdrawCondition.channelAction);
+    const loginLink = getLoginLinkForChannelAction(uid, claim.withdrawCondition.channelAction);
 
     res.render('claim', {
         uid,

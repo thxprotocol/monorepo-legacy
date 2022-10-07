@@ -11,3 +11,5 @@ export const SUCCESS_SIGNUP_COMPLETED = 'Congratulations! Your e-mail address ha
 export const ERROR_NO_ACCOUNT = 'Could not find an account for this address';
 export const ERROR_PASSWORD_RESET_TOKEN_INVALID_OR_EXPIRED = 'Your password reset token is invalid or expired.';
 export const ERROR_PASSWORD_STRENGTH = 'Please enter a strong password.';
+export const ERROR_VERIFY_EMAIL_TOKEN_INVALID = 'Could not find an account for this verify_email_token.';
+export const ERROR_VERIFY_EMAIL_EXPIRED = 'This verify_email_token has expired.';

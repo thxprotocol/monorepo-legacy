@@ -42,7 +42,7 @@ async function controller(req: Request, res: Response) {
     }
 
     // Make sure to send a new confirmation email for inactive accounts
-    if (!account.active) {
+    if (!account.active && account.email) {
         await MailService.sendConfirmationEmail(account, req.body.returnUrl);
         return renderLogin(ERROR_ACCOUNT_NOT_ACTIVE);
     }

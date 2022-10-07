@@ -4,7 +4,7 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <title>Reset your Password</title>
+  <title>Confirm your E-mail Address</title>
   <style>
     /* -------------------------------------
           GLOBAL RESETS
@@ -371,16 +371,17 @@
                   <tr>
                     <td>
                       <p style="font-size: 18px;">Hi!</p>
-                      <p style="font-size: 21px;">A password reset has been requested.</p>
+                      <p style="font-size: 21px;">Please confirm your e-mail address.</p>
                       <p>
-                        Please use this link to reset your password. If you do not reset your
-                        password within 20 minutes, you will need to submit a new request.
+                        Complete the verification by clicking on the button below. If you need
+                                                any help please do not hesitate to contact and hop into our Discord or
+                                                Slack channels.
                       </p>
 
                       <p>
                       <div class="btn">
-                        <a href="<%= resetUrl %>" target="_blank">
-                          Reset your password
+                        <a href="<%= verifyUrl %>" target="_blank">
+                          Confirm
                           <img width="12" height="auto" src="<%= baseUrl %>/img/mail/icons/chevron-right-solid.png" />
                         </a>
                       </div>

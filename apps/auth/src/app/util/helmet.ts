@@ -1,5 +1,5 @@
 import helmet from 'helmet';
-import { AUTH_URL, DASHBOARD_URL, WALLET_URL } from './secrets';
+// import { AUTH_URL, DASHBOARD_URL, WALLET_URL } from './secrets';
 
 export const helmetInstance = helmet({
     // contentSecurityPolicy: {

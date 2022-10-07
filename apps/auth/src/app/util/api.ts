@@ -1,8 +1,8 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import URLSearchParams from '@ungap/url-search-params'
+import { URLSearchParams } from 'url';
 
 import { THXError } from './errors';
-import { AUTH_CLIENT_ID, AUTH_CLIENT_SECRET, API_URL, AUTH_URL } from './secrets';
+import { API_URL, AUTH_CLIENT_ID, AUTH_CLIENT_SECRET, AUTH_URL } from './secrets';
 
 class ApiAccesTokenRequestError extends THXError {
     message = 'API access token request failed';

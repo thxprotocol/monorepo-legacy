@@ -10,6 +10,7 @@ import ReadSignup from './signup/get';
 import ReadClaim from './claim/get';
 import ReadReset from './reset/get';
 import ReadConfirm from './confirm/get';
+import ReadConfirmEmail from './account/email/get';
 import ReadConnect from './connect/get';
 import CreatePassword from './password/post';
 import CreateForgot from './forgot/post';
@@ -24,6 +25,7 @@ import ReadAccountTOTP from './account/totp/get';
 import PostGoogleDisconnect from './account/google/disconnect/post.controller';
 import PostTwitterDisconnect from './account/twitter/disconnect/post.controller';
 import PostSpotifyDisconnect from './account/spotify/disconnect/post.controller';
+import ReadAccountEmailVerify from './account/email/get';
 import { assertInput, assertAuthorization, assertInteraction } from '../../middlewares';
 
 const router = express.Router();
@@ -37,6 +39,7 @@ router.get('/:uid', assertInteraction, ReadOIDC.controller);
 router.get('/:uid/signin', assertInteraction, ReadSignin.controller);
 router.get('/:uid/signup', assertInteraction, ReadSignup.controller);
 router.get('/:uid/confirm', assertInteraction, ReadConfirm.controller);
+router.get('/:uid/confirm/email', assertInteraction, ReadConfirmEmail.controller);
 router.get('/:uid/reset', assertInteraction, ReadReset.controller);
 router.get('/:uid/claim', assertInteraction, ReadClaim.controller);
 router.post('/:uid/signin', urlencoded({ extended: false }), assertInteraction, CreateSignin.controller);
@@ -86,5 +89,6 @@ router.post(
     assertInput(UpdateAccountTOTP.validation),
     UpdateAccountTOTP.controller,
 );
+router.get('/:uid/account/email/verify', assertInteraction, assertAuthorization, ReadAccountEmailVerify.controller);
 
 export default router;

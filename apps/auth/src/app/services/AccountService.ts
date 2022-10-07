@@ -17,12 +17,13 @@ import {
     ERROR_PASSWORD_NOT_MATCHING,
     ERROR_PASSWORD_RESET_TOKEN_INVALID_OR_EXPIRED,
     ERROR_PASSWORD_STRENGTH,
+    ERROR_VERIFY_EMAIL_TOKEN_INVALID,
+    ERROR_VERIFY_EMAIL_EXPIRED,
 } from '../util/messages';
 import { YouTubeService } from './YouTubeService';
 import { logger } from '../util/logger';
 import { AccountPlanType } from '../types/enums/AccountPlanType';
 import { AccountVariant } from '../types/enums/AccountVariant';
-
 export class AccountService {
     static get(sub: string) {
         return Account.findById(sub);
@@ -36,9 +37,12 @@ export class AccountService {
         return Account.findOne({ address });
     }
 
+    static getByTwitterId(twitterId: string) {
+        return Account.findOne({ twitterId });
+    }
+
     static async isActiveUserByEmail(email: string) {
-        const result = await Account.findOne({ email, active: true });
-        return Boolean(result);
+        return await Account.exists({ email, active: true });
     }
 
     static async update(
@@ -59,8 +63,12 @@ export class AccountService {
             profileImg,
             lastName,
             plan,
+            email,
         }: IAccountUpdates,
     ) {
+        if (email) {
+            account.email = email;
+        }
         // No strict checking here since null == undefined
         if (account.acceptTermsPrivacy == null) {
             account.acceptTermsPrivacy = acceptTermsPrivacy == null ? false : account.acceptTermsPrivacy;
@@ -148,29 +156,36 @@ export class AccountService {
         });
     }
 
-    static async signup(
-        email: string,
-        password: string,
-        variant: AccountVariant,
-        acceptTermsPrivacy: boolean,
-        acceptUpdates: boolean,
-        active = false,
-    ) {
-        let account = await Account.findOne({ email, active: false });
+    static async signup(data: {
+        email?: string;
+        password: string;
+        variant: AccountVariant;
+        acceptTermsPrivacy: boolean;
+        acceptUpdates: boolean;
+        active?: boolean;
+        twitterId?: string;
+    }) {
+        let account;
+        if (data.email) {
+            account = await Account.findOne({ email: data.email, active: false });
+        } else if (data.twitterId) {
+            account = await Account.findOne({ twitterId: data.twitterId });
+        }
 
         if (!account) {
             account = new Account();
         }
 
-        account.active = active;
-        account.email = email;
-        account.variant = variant;
-        account.password = password;
-        account.acceptTermsPrivacy = acceptTermsPrivacy || false;
-        account.acceptUpdates = acceptUpdates || false;
+        account.active = data.active;
+        account.email = data.email;
+        account.variant = data.variant;
+        account.password = data.password;
+        account.acceptTermsPrivacy = data.acceptTermsPrivacy || false;
+        account.acceptUpdates = data.acceptUpdates || false;
         account.plan = AccountPlanType.Free;
+        account.twitterId = data.twitterId;
 
-        if (!active) {
+        if (!data.active) {
             account.signupToken = createRandomToken();
             account.signupTokenExpires = DURATION_TWENTYFOUR_HOURS;
         }
@@ -207,6 +222,27 @@ export class AccountService {
         account.signupToken = '';
         account.signupTokenExpires = null;
         account.active = true;
+        account.isEmailVerified = true;
+
+        await account.save();
+
+        return { result: SUCCESS_SIGNUP_COMPLETED, account };
+    }
+
+    static async verifyEmailToken(verifyEmailToken: string) {
+        const account = await Account.findOne({ verifyEmailToken });
+
+        if (!account) {
+            return { error: ERROR_VERIFY_EMAIL_TOKEN_INVALID };
+        }
+
+        if (account.verifyEmailTokenExpires < Date.now()) {
+            return { error: ERROR_VERIFY_EMAIL_EXPIRED };
+        }
+
+        account.verifyEmailToken = '';
+        account.verifyEmailTokenExpires = null;
+        account.isEmailVerified = true;
 
         await account.save();
 

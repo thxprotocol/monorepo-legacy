@@ -6,7 +6,7 @@ import { AccountService } from '../../../services/AccountService';
 export const getSpotify = async (req: Request, res: Response) => {
     async function updateTokens(account: AccountDocument, newAccessToken: string) {
         account.spotifyAccessToken = newAccessToken || account.spotifyAccessToken;
-        account.spotifyAccessTokenExpires = Date.now() + Number(3600) * 1000 - 4000;
+        account.spotifyAccessTokenExpires = Date.now() + Number(3600) * 1000;
 
         return await account.save();
     }

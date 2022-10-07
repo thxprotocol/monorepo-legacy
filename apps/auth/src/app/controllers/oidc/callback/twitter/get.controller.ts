@@ -3,8 +3,7 @@ import { AccountService } from '../../../../services/AccountService';
 import { TwitterService } from '../../../../services/TwitterService';
 import { AccountDocument } from '../../../../models/Account';
 import { ERROR_NO_ACCOUNT } from '../../../../util/messages';
-import { getAccountByEmail, getInteraction, saveInteraction } from '../../../../util/oidc';
-import { AccountVariant } from '../../../../types/enums/AccountVariant';
+import { getAccountByTwitterId, getInteraction, saveInteraction } from '../../../../util/oidc';
 
 export async function controller(req: Request, res: Response) {
     async function getAccountBySub(sub: string) {
@@ -30,8 +29,8 @@ export async function controller(req: Request, res: Response) {
 
     // Get all token information
     const tokens = await TwitterService.requestTokens(code);
+
     const user = await TwitterService.getUser(tokens.access_token);
-    const email = user.id + '@twitter.thx.network';
 
     // Get the interaction based on the state
     const interaction = await getInteraction(uid);
@@ -42,7 +41,7 @@ export async function controller(req: Request, res: Response) {
             ? // If so, get account for sub
               await getAccountBySub(interaction.session.accountId)
             : // If not, get account for email claim
-              await getAccountByEmail(email, AccountVariant.SSOGoogle);
+              await getAccountByTwitterId(user.id);
 
     // Actions after successfully login
     await AccountService.update(account, {

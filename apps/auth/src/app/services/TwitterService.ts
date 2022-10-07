@@ -1,5 +1,5 @@
+import CommonOauthLoginOptions from '@thxnetwork/auth/types/CommonOauthLoginOptions';
 import { URLSearchParams } from 'url';
-import CommonOauthLoginOptions from '../types/CommonOauthLoginOptions';
 import { twitterClient } from '../util/axios';
 import { TWITTER_CLIENT_ID, TWITTER_CLIENT_SECRET, TWITTER_REDIRECT_URI } from '../util/secrets';
 

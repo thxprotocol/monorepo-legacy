@@ -13,6 +13,12 @@ async function controller(req: Request, res: Response) {
         case 'confirm': {
             return res.redirect(`/oidc/${uid}/confirm`);
         }
+        case 'confirm_email': {
+            return res.redirect(`/oidc/${uid}/confirm/email`);
+        }
+        case 'verify_email': {
+            return res.redirect(`/oidc/${uid}/account/email/verify`);
+        }
         case 'reset': {
             return res.redirect(`/oidc/${uid}/reset`);
         }
