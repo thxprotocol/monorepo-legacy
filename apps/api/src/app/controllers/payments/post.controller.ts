@@ -16,7 +16,7 @@ async function controller(req: Request, res: Response) {
     // #swagger.tags = ['Payments']
     const chainId = req.body.chainId;
     const payment: PaymentDocument = await PaymentService.create(req.assetPool, chainId, req.body);
-    const paymentUrl = PaymentService.getPaymentUrl(payment._id, payment.token);
+    const paymentUrl = PaymentService.getPaymentUrl(payment.id, payment.token);
 
     res.status(201).json({ ...payment.toJSON(), paymentUrl });
 }

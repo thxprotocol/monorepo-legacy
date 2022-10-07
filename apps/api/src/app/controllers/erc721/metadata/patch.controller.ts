@@ -7,8 +7,8 @@ import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
 const validation = [
     param('id').isMongoId(),
     param('metadataId').isMongoId(),
-    body('title').isString().isLength({ min: 0, max: 100 }),
-    body('description').isString().isLength({ min: 0, max: 400 }),
+    body('title').optional().isString().isLength({ min: 0, max: 100 }),
+    body('description').optional().isString().isLength({ min: 0, max: 400 }),
     body('attributes').exists(),
 ];
 
@@ -28,7 +28,7 @@ const controller = async (req: Request, res: Response) => {
         attributes: req.body.attributes,
     });
 
-    res.status(201).json({ ...metadata.toJSON(), tokens });
+    res.json({ ...metadata.toJSON(), tokens });
 };
 
 export default { controller, validation };

@@ -8,7 +8,7 @@ const validation = [param('id').exists().isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721 Token']
-    const token = await ERC721Service.findTokenById(req.params.id);
+    const token = await ERC721Service.queryMintTransaction(await ERC721Service.findTokenById(req.params.id));
     if (!token) throw new NotFoundError('ERC721Token not found');
 
     const erc721 = await ERC721Service.findById(token.erc721Id);

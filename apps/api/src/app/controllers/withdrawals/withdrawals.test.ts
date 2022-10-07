@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/app';
-import { toWei } from 'web3-utils';
+import { toWei, isAddress } from 'web3-utils';
 import { ERC20Type, ChainId, WithdrawalState } from '@thxnetwork/api/types/enums';
 import {
     adminAccessToken,
@@ -12,7 +12,6 @@ import {
     userWalletPrivateKey2,
     walletAccessToken,
 } from '@thxnetwork/api/util/jest/constants';
-import { isAddress } from 'web3-utils';
 import { Account } from 'web3-core';
 import { createWallet } from '@thxnetwork/api/util/jest/network';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';

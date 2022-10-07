@@ -22,17 +22,18 @@ export const sub = '6074cbdd1459355fae4b6a14';
 export const sub2 = '6074cbdd1459355fae4b6a15';
 export const userWalletAddress = '0xE1ea36CC205923b3fC3b46bb747BE4Fd6bE23E6C';
 export const userWalletAddress2 = '0xaf9d56684466fcFcEA0a2B7fC137AB864d642946';
-// export const userWalletPrivateKey = '0x668b4ef1e9a288a39974951746e366c632f21c653d3fff89ebe206bdb7194c58';
 export const userWalletPrivateKey2 = '0x97093724e1748ebfa6aa2d2ec4ec68df8678423ab9a12eb2d27ddc74e35e5db9';
 export const account: any = {
     id: sub,
     address: userWalletAddress,
     plan: AccountPlanType.Basic,
+    email: 'account@test.thx.network',
 };
 export const account2: any = {
     id: sub2,
     address: userWalletAddress2,
     plan: AccountPlanType.Basic,
+    email: 'account2@test.thx.network',
 };
 
 export const rewardId = 1;

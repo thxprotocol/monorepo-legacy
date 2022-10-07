@@ -27,7 +27,7 @@ async function create(assetPool: AssetPoolDocument, tokenInAddress: string, toke
 
     const tokenIn = await ERC20Service.findOrImport(assetPool, tokenInAddress);
 
-    return await ERC20SwapRule.create({
+    return ERC20SwapRule.create({
         poolId: String(assetPool._id),
         tokenInId: String(tokenIn._id),
         tokenMultiplier: tokenMultiplier,

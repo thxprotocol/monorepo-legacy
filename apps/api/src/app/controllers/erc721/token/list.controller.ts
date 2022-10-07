@@ -6,11 +6,11 @@ import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 export const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721']
     const tokens = await ERC721Service.findTokensBySub(req.auth.sub);
-    const result: any = await Promise.all(
+    const result = await Promise.all(
         tokens.map(async (token: ERC721TokenDocument) => {
             const erc721 = await ERC721Service.findById(token.erc721Id);
             const tokenUri = await erc721.contract.methods.tokenURI(token.tokenId).call();
-            return { ...token.toJSON(), tokenUri, erc721 };
+            return { ...(token.toJSON() as TERC721Token), tokenUri, erc721 };
         }),
     );
 

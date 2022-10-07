@@ -2,13 +2,12 @@ import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
-import { csvWriter } from '@thxnetwork/api/util/csv';
+import * as csvWriter from 'csv-writer';
 import { AWS_S3_PUBLIC_BUCKET_NAME } from '@thxnetwork/api/config/secrets';
 import { s3Client } from '@thxnetwork/api/util/s3';
 import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { Readable } from 'stream';
 import { logger } from '@thxnetwork/api/util/logger';
-import ImageService from '@thxnetwork/api/services/ImageService';
 import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
 
 const validation = [param('id').isMongoId()];
@@ -68,8 +67,6 @@ const controller = async (req: Request, res: Response) => {
                 Key: csvFileName,
             }),
         );
-        // COLLECT THE URL
-        const url = ImageService.getPublicUrl(csvFileName);
 
         // RETURN THE FILE TO THE RESPONSE
         (response.Body as Readable).pipe(res).attachment(csvFileName);

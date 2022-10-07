@@ -1,7 +1,7 @@
 import app from '@thxnetwork/api/app';
 import request, { Response } from 'supertest';
 import { Account } from 'web3-core';
-import { isAddress, toWei } from 'web3-utils';
+import { isAddress, toWei, fromWei } from 'web3-utils';
 import { Contract } from 'web3-eth-contract';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { ChainId, ERC20Type } from '@thxnetwork/api/types/enums';
@@ -21,7 +21,6 @@ import TransactionService from '@thxnetwork/api/services/TransactionService';
 import { getContractFromName } from '@thxnetwork/api/config/contracts';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { BigNumber } from 'ethers';
-import { fromWei } from 'web3-utils';
 import { PromotionDocument } from '@thxnetwork/api/models/Promotion';
 
 const http = request.agent(app);

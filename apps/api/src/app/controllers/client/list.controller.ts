@@ -6,12 +6,12 @@ export default {
     controller: async (req: Request, res: Response) => {
         /*
         #swagger.tags = ['Client']
-        #swagger.responses[200] = {
+        #swagger.responses[200] = { 
             description: 'Get a list of client credentials for this user',
-            schema: {
+            schema: { 
                 type: 'array',
                 items: {
-                    $ref: '#/definitions/Client' }
+                    $ref: '#/definitions/Client' } 
                 }
             }
         }

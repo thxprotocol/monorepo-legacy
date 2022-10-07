@@ -1,14 +1,16 @@
 import { toWei } from 'web3-utils';
-import { ChainId } from '@thxnetwork/api/types/enums';
-import { WithdrawalState, WithdrawalType } from '@thxnetwork/api/types/enums';
+import { ChainId, TransactionState, WithdrawalState, WithdrawalType } from '@thxnetwork/api/types/enums';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { Withdrawal, WithdrawalDocument } from '@thxnetwork/api/models/Withdrawal';
 import { IAccount } from '@thxnetwork/api/models/Account';
-import { assertEvent, CustomEventLog } from '@thxnetwork/api/util/events';
-import { paginatedResults } from '@thxnetwork/api/util/pagination';
-import { TransactionDocument } from '@thxnetwork/api/models/Transaction';
+import { assertEvent, parseLogs } from '@thxnetwork/api/util/events';
 import TransactionService from './TransactionService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
+import { TWithdrawForCallbackArgs } from '@thxnetwork/api/types/TTransaction';
+import { TransactionReceipt } from 'web3-core';
+import AssetPoolService from './AssetPoolService';
+import { paginatedResults } from '@thxnetwork/api/util/pagination';
+import { Transaction } from '@thxnetwork/api/models/Transaction';
 
 export default class WithdrawalService {
     static getById(id: string) {
@@ -68,23 +70,48 @@ export default class WithdrawalService {
         return withdrawals.map((item) => item.amount).reduce((prev, curr) => prev + curr, 0);
     }
 
-    static async withdrawFor(pool: AssetPoolDocument, withdrawal: WithdrawalDocument, account: IAccount) {
+    static async withdrawFor(
+        pool: AssetPoolDocument,
+        withdrawal: WithdrawalDocument,
+        account: IAccount,
+        forceSync = true,
+    ) {
         const amountInWei = toWei(String(withdrawal.amount));
-        const callback = async (tx: TransactionDocument, events?: CustomEventLog[]) => {
-            if (events) {
-                assertEvent('ERC20WithdrawFor', events);
-                withdrawal.state = WithdrawalState.Withdrawn;
-            }
-            withdrawal.transactions.push(String(tx._id));
-            return await withdrawal.save();
-        };
-        return await TransactionService.relay(
-            pool.contract,
-            'withdrawFor',
-            [account.address, amountInWei],
+
+        const txId = await TransactionService.sendAsync(
+            pool.contract.options.address,
+            pool.contract.methods.withdrawFor(account.address, amountInWei),
             pool.chainId,
-            callback,
+            forceSync,
+            {
+                type: 'withdrawForCallback',
+                args: { assetPoolId: String(pool._id), withdrawalId: String(withdrawal._id) },
+            },
         );
+
+        return Withdrawal.findByIdAndUpdate(withdrawal._id, { transactions: [txId] }, { new: true });
+    }
+
+    static async withdrawForCallback(args: TWithdrawForCallbackArgs, receipt: TransactionReceipt) {
+        const { assetPoolId, withdrawalId } = args;
+        const { contract } = await AssetPoolService.getById(assetPoolId);
+        const events = parseLogs(contract.options.jsonInterface, receipt.logs);
+
+        assertEvent('ERC20WithdrawFor', events);
+
+        await Withdrawal.findByIdAndUpdate(withdrawalId, { state: WithdrawalState.Withdrawn });
+    }
+
+    static async queryWithdrawTransaction(withdrawal: WithdrawalDocument): Promise<WithdrawalDocument> {
+        if (withdrawal.state !== WithdrawalState.Withdrawn && withdrawal.transactions[0]) {
+            const tx = await Transaction.findById(withdrawal.transactions[0]);
+            const txResult = await TransactionService.queryTransactionStatusReceipt(tx);
+            if (txResult === TransactionState.Mined) {
+                withdrawal = await this.getById(withdrawal._id);
+            }
+        }
+
+        return withdrawal;
     }
 
     static countByPool(assetPool: AssetPoolDocument) {
@@ -110,7 +137,7 @@ export default class WithdrawalService {
             ...(rewardId ? { rewardId } : {}),
             ...(state === 0 || state === 1 ? { state } : {}),
         };
-        return await paginatedResults(Withdrawal, page, limit, query);
+        return paginatedResults(Withdrawal, page, limit, query);
     }
 
     static async removeAllForPool(pool: AssetPoolDocument) {

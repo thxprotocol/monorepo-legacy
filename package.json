@@ -135,6 +135,7 @@
     "@types/qrcode": "^1.5.0",
     "@types/semver": "^7.3.12",
     "@types/supertest": "^2.0.8",
+    "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.10.2",
     "@typescript-eslint/parser": "^5.10.2",
     "@vue/cli-plugin-babel": "~4.5.0",

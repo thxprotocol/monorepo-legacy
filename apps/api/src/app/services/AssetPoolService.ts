@@ -1,5 +1,5 @@
-import { assertEvent, CustomEventLog, findEvent } from '@thxnetwork/api/util/events';
-import { ChainId, DepositState, ERC20Type } from '@thxnetwork/api/types/enums';
+import { assertEvent, parseLogs } from '@thxnetwork/api/util/events';
+import { ChainId, DepositState } from '@thxnetwork/api/types/enums';
 import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { Membership } from '@thxnetwork/api/models/Membership';
@@ -8,14 +8,14 @@ import { diamondContracts, getContract, poolFacetAdressesPermutations } from '@t
 import { pick } from '@thxnetwork/api/util';
 import { diamondSelectors, getDiamondCutForContractFacets, updateDiamondContract } from '@thxnetwork/api/util/upgrades';
 import { currentVersion } from '@thxnetwork/artifacts';
-import { TransactionDocument } from '@thxnetwork/api/models/Transaction';
-import MembershipService from './MembershipService';
 import ERC20Service from './ERC20Service';
 import ERC721Service from './ERC721Service';
 import { Deposit } from '@thxnetwork/api/models/Deposit';
 import { TAssetPool } from '@thxnetwork/api/types/TAssetPool';
 import { ADDRESS_ZERO } from '@thxnetwork/api/config/secrets';
 import { isAddress } from 'ethers/lib/utils';
+import { TransactionReceipt } from 'web3-core';
+import { TAssetPoolDeployCallbackArgs, TTopupCallbackArgs } from '@thxnetwork/api/types/TTransaction';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -53,46 +53,53 @@ export default class AssetPoolService {
         erc721Address: string,
     ): Promise<AssetPoolDocument> {
         const factory = getContract(chainId, 'Factory', currentVersion);
-        const poolFacetContracts = diamondContracts(chainId, 'defaultDiamond');
-        const pool = new AssetPool({
+        const variant = 'defaultDiamond';
+        const poolFacetContracts = diamondContracts(chainId, variant);
+        const pool = await AssetPool.create({
             sub,
             chainId,
-            variant: 'defaultDiamond',
+            variant,
             version: currentVersion,
             archived: false,
         });
-        const callback = async (tx: TransactionDocument, events?: CustomEventLog[]): Promise<AssetPoolDocument> => {
-            if (events) {
-                const event = findEvent('DiamondDeployed', events);
-                pool.address = event.args.diamond;
-
-                if (isAddress(erc20Address) && erc20Address !== ADDRESS_ZERO) {
-                    const erc20 = await ERC20Service.findOrImport(pool, erc20Address);
-                    await ERC20Service.initialize(pool, erc20Address); // TODO Should move to ERC20Service
-                    pool.erc20Id = String(erc20._id);
-                }
-
-                if (isAddress(erc721Address) && erc721Address !== ADDRESS_ZERO) {
-                    const erc721 = await ERC721Service.findByQuery({
-                        address: erc721Address,
-                        chainId: pool.chainId,
-                    });
-                    await ERC721Service.initialize(pool, erc721Address); // TODO Should move to ERC721Service
-                    pool.erc721Id = String(erc721._id);
-                }
-            }
-            pool.transactions.push(String(tx._id));
-
-            return await pool.save();
-        };
-
-        return await TransactionService.relay(
-            factory,
-            'deploy',
-            [getDiamondCutForContractFacets(poolFacetContracts, []), erc20Address, erc721Address],
+        const txId = await TransactionService.sendAsync(
+            factory.options.address,
+            factory.methods.deploy(getDiamondCutForContractFacets(poolFacetContracts, []), erc20Address, erc721Address),
             pool.chainId,
-            callback,
+            true,
+            {
+                type: 'assetPoolDeployCallback',
+                args: { erc721Address, erc20Address, chainId, assetPoolId: String(pool._id) },
+            },
         );
+
+        return AssetPool.findByIdAndUpdate(pool._id, { transactions: [txId] }, { new: true });
+    }
+
+    static async deployCallback(args: TAssetPoolDeployCallbackArgs, receipt: TransactionReceipt) {
+        const { assetPoolId, chainId, erc20Address, erc721Address } = args;
+        const contract = getContract(chainId, 'Factory');
+        const pool = await AssetPoolService.getById(assetPoolId);
+        const events = parseLogs(contract.options.jsonInterface, receipt.logs);
+        const event = assertEvent('DiamondDeployed', events);
+        pool.address = event.args.diamond;
+
+        if (isAddress(erc20Address) && erc20Address !== ADDRESS_ZERO) {
+            const erc20 = await ERC20Service.findOrImport(pool, erc20Address);
+            await ERC20Service.initialize(pool, erc20Address); // TODO Should move to ERC20Service
+            pool.erc20Id = String(erc20._id);
+        }
+
+        if (isAddress(erc721Address) && erc721Address !== ADDRESS_ZERO) {
+            const erc721 = await ERC721Service.findByQuery({
+                address: erc721Address,
+                chainId: pool.chainId,
+            });
+            await ERC721Service.initialize(pool, erc721Address); // TODO Should move to ERC721Service
+            pool.erc721Id = String(erc721._id);
+        }
+
+        await pool.save();
     }
 
     static async topup(assetPool: TAssetPool, amount: string) {
@@ -104,27 +111,29 @@ export default class AssetPoolService {
             state: DepositState.Pending,
         });
 
-        return await TransactionService.relay(
-            assetPool.contract,
-            'transferFrom',
-            [defaultAccount, assetPool.address, amount],
+        const txId = await TransactionService.sendAsync(
+            assetPool.contract.options.address,
+            assetPool.contract.methods.transferFrom(defaultAccount, assetPool.address, amount),
             assetPool.chainId,
-            async (tx: TransactionDocument, events: CustomEventLog[]) => {
-                if (events) {
-                    assertEvent('ERC20ProxyTransferFrom', events);
-                    deposit.state = DepositState.Completed;
-                }
-
-                deposit.transactions.push(String(tx._id));
-
-                return await deposit.save();
-            },
+            true,
+            { type: 'topupCallback', args: { receiver: assetPool.address, depositId: String(deposit._id) } },
         );
+
+        return Deposit.findByIdAndUpdate(deposit._id, { transactions: [txId] }, { new: true });
+    }
+
+    static async topupCallback({ receiver, depositId }: TTopupCallbackArgs, receipt: TransactionReceipt) {
+        const pool = await AssetPoolService.getByAddress(receiver);
+        const events = parseLogs(pool.contract.options.jsonInterface, receipt.logs);
+
+        assertEvent('ERC20ProxyTransferFrom', events);
+
+        await Deposit.findByIdAndUpdate(depositId, { state: DepositState.Completed });
     }
 
     static async getAllBySub(sub: string, archived = false) {
-        if (archived) return await AssetPool.find({ sub });
-        return await AssetPool.find({ sub, archived });
+        if (archived) return AssetPool.find({ sub });
+        return AssetPool.find({ sub, archived });
     }
 
     static getAll() {
@@ -142,7 +151,7 @@ export default class AssetPoolService {
     }
 
     static async countByNetwork(chainId: ChainId) {
-        return await AssetPool.countDocuments({ chainId });
+        return AssetPool.countDocuments({ chainId });
     }
 
     static async contractVersionVariant(assetPool: AssetPoolDocument) {

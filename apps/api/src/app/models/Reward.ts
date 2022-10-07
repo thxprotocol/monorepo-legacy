@@ -11,11 +11,6 @@ export enum ChannelAction {
     TwitterLike = 2,
     TwitterRetweet = 3,
     TwitterFollow = 4,
-    SpotifyUserFollow = 5,
-    SpotifyPlaylistFollow = 6,
-    SpotifyTrackPlaying = 7,
-    SpotifyTrackSaved = 8,
-    SpotifyTrackRecent = 9,
 }
 
 export enum RewardState {

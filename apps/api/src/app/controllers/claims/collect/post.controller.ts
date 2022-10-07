@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { param } from 'express-validator';
+import { param, query } from 'express-validator';
 import { BadRequestError, ForbiddenError } from '@thxnetwork/api/util/errors';
 import { WithdrawalState, WithdrawalType } from '@thxnetwork/api/types/enums';
 import { WithdrawalDocument } from '@thxnetwork/api/models/Withdrawal';
@@ -12,12 +12,17 @@ import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import AssetPoolService from '@thxnetwork/api/services/AssetPoolService';
 import { Claim } from '@thxnetwork/api/models/Claim';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
+import ClaimService from '@thxnetwork/api/services/ClaimService';
 
-const validation = [param('id').isMongoId()];
+const validation = [param('id').exists().isString(), query('forceSync').optional().isBoolean()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
-    const claim = await Claim.findById(req.params.id);
+    let claim = await ClaimService.findById(req.params.id);
+    if (!claim) {
+        // maintain compatibility with old the claim urls
+        claim = await Claim.findById(req.params.id);
+    }
     if (!claim) throw new BadRequestError('This claim URL is invalid.');
 
     const pool = await AssetPoolService.getById(claim.poolId);
@@ -45,6 +50,9 @@ const controller = async (req: Request, res: Response) => {
         }
     }
 
+    // Force sync by default but allow the requester to do async calls.
+    const forceSync = req.query.forceSync !== undefined ? req.query.forceSync === 'true' : true;
+
     if (claim.erc20Id) {
         let w: WithdrawalDocument = await WithdrawalService.schedule(
             pool,
@@ -57,7 +65,7 @@ const controller = async (req: Request, res: Response) => {
         );
         const erc20 = await ERC20Service.getById(claim.erc20Id);
 
-        w = await WithdrawalService.withdrawFor(pool, w, account);
+        w = await WithdrawalService.withdrawFor(pool, w, account, forceSync);
 
         return res.json({ ...w.toJSON(), erc20 });
     }
@@ -65,7 +73,7 @@ const controller = async (req: Request, res: Response) => {
     if (claim.erc721Id) {
         const metadata = await ERC721Service.findMetadataById(reward.erc721metadataId);
         const erc721 = await ERC721Service.findById(metadata.erc721);
-        const token = await ERC721Service.mint(pool, erc721, metadata, account);
+        const token = await ERC721Service.mint(pool, erc721, metadata, account, forceSync);
 
         return res.json({ ...token.toJSON(), erc721: erc721.toJSON(), metadata: metadata.toJSON() });
     }

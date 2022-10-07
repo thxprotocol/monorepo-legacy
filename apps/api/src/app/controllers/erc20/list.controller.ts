@@ -8,13 +8,13 @@ export const validation = [query('archived').optional().isBoolean()];
 export const controller = async (req: Request, res: Response) => {
     /*
     #swagger.tags = ['ERC20 Contract']
-    #swagger.responses[200] = {
+    #swagger.responses[200] = { 
         description: 'Get a list of ERC20 contracts for this user.',
-        schema: {
+        schema: { 
             type: 'array',
-            items: {
+            items: { 
                 $ref: '#/definitions/ERC20',
-            }
+            } 
         }
     }
     */

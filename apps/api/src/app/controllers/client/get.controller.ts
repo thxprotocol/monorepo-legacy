@@ -5,9 +5,9 @@ export default {
     controller: async (req: Request, res: Response) => {
         /*
         #swagger.tags = ['Client']
-        #swagger.responses[200] = {
+        #swagger.responses[200] = { 
             description: 'Get a set of client credentials',
-            schema: { $ref: '#/definitions/Client' }
+            schema: { $ref: '#/definitions/Client' } 
         }
         */
         const client = await ClientProxy.get(req.params.id);

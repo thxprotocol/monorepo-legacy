@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 
 const schema = new mongoose.Schema(
     {
+        id: String,
         poolId: String,
         erc20Id: String,
         erc721Id: String,

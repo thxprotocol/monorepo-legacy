@@ -25,7 +25,7 @@ export const getContractConfig = (
     return contractConfig(chainIdToName(chainId), contractName, version);
 };
 
-export const getContractFromAbi = (chainId: ChainId, abi: AbiItem[], address: string): Contract => {
+export const getContractFromAbi = (chainId: ChainId, abi: AbiItem[], address?: string): Contract => {
     const { web3 } = getProvider(chainId);
     return new web3.eth.Contract(abi, address);
 };
@@ -42,7 +42,7 @@ export const getByteCodeForContractName = (contractName: TokenContractName): str
 export const getContractFromName = (
     chainId: ChainId,
     contractName: ContractName | TokenContractName,
-    address: string,
+    address?: string,
 ) => {
     return getContractFromAbi(chainId, getAbiForContractName(contractName), address);
 };

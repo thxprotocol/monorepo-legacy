@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import bluebird from 'bluebird';
 import { logger } from './logger';
+import { v4 as uuidv4 } from 'uuid';
 
 (mongoose as any).Promise = bluebird;
 
@@ -44,10 +45,15 @@ const disconnect = async () => {
     }
 };
 
+const createUUID = () => {
+    return uuidv4();
+};
+
 export default {
     connect,
     truncate,
     disconnect,
     readyState,
     connection: mongoose.connection,
+    createUUID,
 };

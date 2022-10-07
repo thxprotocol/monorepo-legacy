@@ -11,13 +11,18 @@ const validation = [param('id').exists().isMongoId()];
 const controller = async (req: Request, res: Response) => {
     /*
     #swagger.tags = ['ERC20 Contract']
-    #swagger.responses[200] = {
+    #swagger.responses[200] = { 
             description: 'Get an ERC20 contract for this user.',
-            schema: { $ref: '#/definitions/ERC20' }
+            schema: { $ref: '#/definitions/ERC20' } 
     }
     */
-    const erc20 = await ERC20Service.getById(req.params.id);
-    if (!erc20) new NotFoundError('ERC20 not found');
+    let erc20 = await ERC20Service.queryDeployTransaction(await ERC20Service.getById(req.params.id));
+    if (!erc20) throw new NotFoundError('ERC20 not found');
+
+    // Check if pending transaction is mined.
+    if (!erc20.address) erc20 = await ERC20Service.queryDeployTransaction(erc20);
+
+    // Still no address.
     if (!erc20.address) return res.send(erc20);
 
     const { defaultAccount } = getProvider(erc20.chainId);

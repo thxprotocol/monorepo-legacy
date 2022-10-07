@@ -7,9 +7,7 @@ export const validation = [param('id').isMongoId(), param('metadataId').isMongoI
 export const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721 Metadata']
     const metadata = await ERC721Service.findMetadataById(req.params.metadataId);
-    const attributes = await ERC721Service.parseAttributes(metadata);
-
-    res.json({ title: metadata.title, description: metadata.description, attributes });
+    res.json(metadata);
 };
 
 export default { controller, validation };

@@ -1,14 +1,16 @@
 import { TAssetPool } from '@thxnetwork/api/types/TAssetPool';
 import { ERC20Swap, ERC20SwapDocument } from '@thxnetwork/api/models/ERC20Swap';
 import TransactionService from './TransactionService';
-import { assertEvent, CustomEventLog, findEvent, hex2a } from '@thxnetwork/api/util/events';
+import { assertEvent, parseLogs } from '@thxnetwork/api/util/events';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { SwapState } from '@thxnetwork/api/types/enums/SwapState';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { TransactionDocument } from '@thxnetwork/api/models/Transaction';
 import { ERC20SwapRuleDocument } from '@thxnetwork/api/models/ERC20SwapRule';
 import { IAccount } from '@thxnetwork/api/models/Account';
 import { ERC20Document } from '@thxnetwork/api/models/ERC20';
+import { TSwapCreateCallbackArgs } from '@thxnetwork/api/types/TTransaction';
+import { TransactionReceipt } from 'web3-core';
+import AssetPoolService from './AssetPoolService';
 
 async function get(id: string): Promise<ERC20SwapDocument> {
     const erc20Swap = await ERC20Swap.findById(id);
@@ -17,7 +19,7 @@ async function get(id: string): Promise<ERC20SwapDocument> {
 }
 
 async function getAll(assetPool: TAssetPool): Promise<ERC20SwapDocument[]> {
-    return await ERC20Swap.find({ poolAddress: assetPool.address });
+    return ERC20Swap.find({ poolAddress: assetPool.address });
 }
 
 async function create(
@@ -32,27 +34,24 @@ async function create(
         amountIn: amountInInWei,
     });
 
-    const callback = async (tx: TransactionDocument, events?: CustomEventLog[]): Promise<ERC20SwapDocument> => {
-        if (events) {
-            assertEvent('ERC20SwapFor', events);
-            const swapEvent = findEvent('ERC20SwapFor', events);
-
-            swap.transactions.push(String(tx._id));
-            swap.state = SwapState.Completed;
-            swap.amountOut = swapEvent.args.amountOut;
-        }
-        swap.transactions.push(String(tx._id));
-
-        return await swap.save();
-    };
-
-    return await TransactionService.relay(
-        assetPool.contract,
-        'swapFor',
-        [account.address, amountInInWei, erc20TokenIn.address],
+    const txId = await TransactionService.sendAsync(
+        assetPool.contract.options.address,
+        assetPool.contract.methods.swapFor(account.address, amountInInWei, erc20TokenIn.address),
         assetPool.chainId,
-        callback,
+        true,
+        { type: 'swapCreateCallback', args: { assetPoolId: String(assetPool._id), swapId: String(swap._id) } },
     );
+
+    return ERC20Swap.findByIdAndUpdate(swap._id, { transactions: [txId] }, { new: true });
 }
 
-export default { get, getAll, create };
+async function createCallback({ swapId, assetPoolId }: TSwapCreateCallbackArgs, receipt: TransactionReceipt) {
+    const { contract } = await AssetPoolService.getById(assetPoolId);
+    const events = parseLogs(contract.options.jsonInterface, receipt.logs);
+
+    const swapEvent = assertEvent('ERC20SwapFor', events);
+
+    await ERC20Swap.findByIdAndUpdate(swapId, { state: SwapState.Completed, amountOut: swapEvent.args.amountOut });
+}
+
+export default { get, getAll, create, createCallback };

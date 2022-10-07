@@ -5,12 +5,7 @@ import { Contract } from 'web3-eth-contract';
 import { isAddress, fromWei, toWei, toChecksumAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { ChainId, ERC20Type } from '@thxnetwork/api/types/enums';
-import {
-    getAbiForContractName,
-    getByteCodeForContractName,
-    getContract,
-    getContractFromName,
-} from '@thxnetwork/api/config/contracts';
+import { getAbiForContractName, getByteCodeForContractName, getContractFromName } from '@thxnetwork/api/config/contracts';
 import {
     adminAccessToken,
     dashboardAccessToken,
@@ -21,8 +16,6 @@ import {
 import { createWallet } from '@thxnetwork/api/util/jest/network';
 import { getProvider } from '@thxnetwork/api/util/network';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
-import { assertEvent, parseLogs } from '@thxnetwork/api/util/events';
-import { currentVersion } from '@thxnetwork/artifacts';
 import { SwapState } from '@thxnetwork/api/types/enums/SwapState';
 import { InsufficientBalanceError } from '@thxnetwork/api/util/errors';
 import { PRIVATE_KEY } from '@thxnetwork/api/config/secrets';

@@ -8,7 +8,7 @@ const controller = async (req: Request, res: Response) => {
 
     res.json(
         payments.map((payment: PaymentDocument) => {
-            const paymentUrl = PaymentService.getPaymentUrl(payment._id, payment.token);
+            const paymentUrl = PaymentService.getPaymentUrl(payment.id, payment.token);
 
             return { ...payment.toJSON(), paymentUrl };
         }),

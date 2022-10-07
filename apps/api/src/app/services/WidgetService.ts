@@ -11,7 +11,7 @@ export default class WidgetService {
     }
 
     static async create(sub: string, clientId: string, rewardId: number, poolId: string) {
-        return await Widget.create({
+        return Widget.create({
             sub,
             clientId,
             metadata: {

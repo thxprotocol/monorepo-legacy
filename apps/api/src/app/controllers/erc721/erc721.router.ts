@@ -14,6 +14,7 @@ import UploadERC721MetadataCSV from './metadata/csv/post.controller';
 import { upload } from '@thxnetwork/api/util/multer';
 import UpdateERC721 from './patch.controller';
 import ReadERC721Metadata from './metadata/get.controller';
+import DownloadERC721MetadataZip from './metadata/rewards/claims/qrcode/get.controller';
 import PatchERC721Metadata from './metadata/patch.controller';
 
 const router = express.Router();
@@ -55,6 +56,7 @@ router.post(
     assertRequestInput(CreateERC721Metadata.validation),
     CreateERC721Metadata.controller,
 );
+
 router.post(
     '/:id/metadata/zip',
     upload.single('file'),
@@ -63,6 +65,14 @@ router.post(
     assertRequestInput(CreateMultipleERC721Metadata.validation),
     CreateMultipleERC721Metadata.controller,
 );
+
+router.get(
+    '/:id/metadata/zip',
+    guard.check(['erc721:read', 'rewards:read']),
+    requireAssetPoolHeader,
+    DownloadERC721MetadataZip.controller,
+);
+
 router.get(
     '/:id/metadata/csv',
     guard.check(['erc721:read']),
@@ -74,11 +84,12 @@ router.get(
 router.post(
     '/:id/metadata/csv',
     upload.single('file'),
-    guard.check(['erc721:read', 'erc721:write']),
+    guard.check(['erc721:read', 'erc721:write', 'rewards:write', 'rewards:read']),
     requireAssetPoolHeader,
     assertRequestInput(UploadERC721MetadataCSV.validation),
     UploadERC721MetadataCSV.controller,
 );
+
 router.patch(
     '/:id',
     guard.check(['erc721:write', 'erc721:read']),

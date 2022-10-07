@@ -7,7 +7,6 @@ export interface IAccount {
     twitterAccess: boolean;
     youtube?: any;
     twitter?: any;
-    spotify?: any;
     plan: AccountPlanType;
     email: string;
 }
@@ -30,6 +29,5 @@ export interface IAccountUpdates {
     authenticationTokenExpires?: number;
     googleAccess?: string;
     twitterAccess?: string;
-    spotifyAccess?: string;
     plan?: AccountPlanType;
 }

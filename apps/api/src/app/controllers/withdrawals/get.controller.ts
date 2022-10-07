@@ -8,12 +8,12 @@ const validation = [param('id').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Withdrawals']
-    const withdrawal = await WithdrawalService.getById(req.params.id);
+    const withdrawal = await WithdrawalService.queryWithdrawTransaction(await WithdrawalService.getById(req.params.id));
     if (!withdrawal) throw new NotFoundError();
 
     const transactions = await Promise.all(
         withdrawal.transactions.map(async (id) => {
-            return await TransactionService.getById(id);
+            return TransactionService.getById(id);
         }),
     );
 

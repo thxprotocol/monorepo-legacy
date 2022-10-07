@@ -31,6 +31,7 @@ const controller = async (req: Request, res: Response) => {
 
     res.json({
         _id: claim._id,
+        id: claim.id,
         poolId: claim.poolId,
         erc20Id: claim.erc20Id,
         erc721Id: claim.erc721Id,

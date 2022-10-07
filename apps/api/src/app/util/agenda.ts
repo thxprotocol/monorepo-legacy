@@ -1,8 +1,9 @@
 import db from './database';
 import { Agenda } from 'agenda';
 import { logger } from './logger';
-// import { jobProcessTransactions } from '@thxnetwork/api/jobs/transactionProcessor';
+import { updatePendingTransactions } from '@thxnetwork/api/jobs/updatePendingTransactions';
 import { generateRewardQRCodesJob } from '@thxnetwork/api/jobs/rewardQRcodesJob';
+import { generateMetadataRewardQRCodesJob } from '@thxnetwork/api/jobs/metadataRewardQRcodesJob';
 
 const agenda = new Agenda({
     name: 'jobs',
@@ -11,21 +12,29 @@ const agenda = new Agenda({
     processEvery: '1 second',
 });
 
-const EVENT_REQUIRE_TRANSACTIONS = 'requireTransactions';
+const EVENT_UPDATE_PENDING_TRANSACTIONS = 'updatePendingTransactions';
 const EVENT_SEND_DOWNLOAD_QR_EMAIL = 'sendDownloadQrEmail';
+const EVENT_SEND_DOWNLOAD_METADATA_QR_EMAIL = 'sendDownloadMetadataQrEmail';
 
-// agenda.define(EVENT_REQUIRE_TRANSACTIONS, jobProcessTransactions);
+agenda.define(EVENT_UPDATE_PENDING_TRANSACTIONS, updatePendingTransactions);
 agenda.define(EVENT_SEND_DOWNLOAD_QR_EMAIL, generateRewardQRCodesJob);
+agenda.define(EVENT_SEND_DOWNLOAD_METADATA_QR_EMAIL, generateMetadataRewardQRCodesJob);
 
 db.connection.once('open', async () => {
-    (agenda.mongo as any)(db.connection.getClient().db() as any, 'jobs');
+    agenda.mongo((db.connection.getClient().db() as any), 'jobs');
 
     await agenda.start();
 
-    // agenda.every('5 seconds', EVENT_REQUIRE_TRANSACTIONS);
+    agenda.every('30 seconds', EVENT_UPDATE_PENDING_TRANSACTIONS);
     agenda.every('5 seconds', EVENT_SEND_DOWNLOAD_QR_EMAIL);
+    agenda.every('5 seconds', EVENT_SEND_DOWNLOAD_METADATA_QR_EMAIL);
 
     logger.info('AgendaJS successfully started job processor');
 });
 
-export { agenda, EVENT_REQUIRE_TRANSACTIONS, EVENT_SEND_DOWNLOAD_QR_EMAIL };
+export {
+    agenda,
+    EVENT_UPDATE_PENDING_TRANSACTIONS,
+    EVENT_SEND_DOWNLOAD_QR_EMAIL,
+    EVENT_SEND_DOWNLOAD_METADATA_QR_EMAIL,
+};

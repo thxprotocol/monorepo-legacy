@@ -2,7 +2,7 @@ import { ethers } from 'ethers';
 import { THXError } from './errors';
 import { logger } from './logger';
 
-class ExpectedEventNotFound extends THXError {
+export class ExpectedEventNotFound extends THXError {
     constructor(event: string) {
         super(`Event ${event} expected in eventlog but not found. Check API health status at /v1/health.`);
     }

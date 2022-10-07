@@ -91,7 +91,7 @@ export const updateDiamondContract = async (
     const diamondCuts = getDiamondCutForContractFacets(newContracts, facets);
 
     if (diamondCuts.length > 0) {
-        return await TransactionService.send(
+        return TransactionService.send(
             contract.options.address,
             contract.methods.diamondCut(diamondCuts, ADDRESS_ZERO, '0x'),
             chainId,

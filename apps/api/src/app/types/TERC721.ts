@@ -26,8 +26,8 @@ export type TERC721Token = {
     failReason: string;
     transactions: string[];
     tokenId: number;
-    erc721Id: string;
     metadataId: string;
+    erc721Id?: string;
     metadata?: TERC721Metadata;
 };
 

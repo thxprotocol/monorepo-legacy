@@ -8,6 +8,7 @@ import CreateERC20 from './post.controller';
 import ImportERC20 from './token/post.controller';
 import DeleteERC20 from './delete.controller';
 import UpdateERC20 from './patch.controller';
+import PreviewERC20 from './import_preview/post.controller';
 import { upload } from '@thxnetwork/api/util/multer';
 
 const router = express.Router();
@@ -29,6 +30,7 @@ router.post(
     assertRequestInput(ImportERC20.validation),
     ImportERC20.controller,
 );
+router.post('/preview', assertRequestInput(PreviewERC20.validation), PreviewERC20.controller);
 router.patch(
     '/:id',
     guard.check(['erc20:write', 'erc20:read']),

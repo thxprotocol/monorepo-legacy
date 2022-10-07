@@ -17,7 +17,6 @@ describe('Promotions', () => {
     const price = 10;
     const title = 'The promocode title shown in wallet';
     const description = 'Longer form for a description of the usage';
-    // const expiry = Date.now();
 
     beforeAll(async () => {
         await beforeAllCallback();

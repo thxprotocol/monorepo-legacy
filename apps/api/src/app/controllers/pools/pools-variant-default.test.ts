@@ -2,8 +2,8 @@ import request from 'supertest';
 import app from '@thxnetwork/api/app';
 import { ChainId, WithdrawalState } from '@thxnetwork/api/types/enums';
 import { Account } from 'web3-core';
-import { toWei } from 'web3-utils';
-import { timeTravel, createWallet } from '@thxnetwork/api/util/jest/network';
+import { toWei, isAddress } from 'web3-utils';
+import { createWallet } from '@thxnetwork/api/util/jest/network';
 import {
     rewardWithdrawAmount,
     rewardWithdrawDuration,
@@ -18,15 +18,12 @@ import {
     dashboardAccessToken,
     walletAccessToken,
 } from '@thxnetwork/api/util/jest/constants';
-import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { getByteCodeForContractName, getContract, getContractFromName } from '@thxnetwork/api/config/contracts';
 import { currentVersion } from '@thxnetwork/artifacts';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
 import { RewardDocument } from '@thxnetwork/api/models/Reward';
 import { ClaimDocument } from '@thxnetwork/api/types/TClaim';
-import { getProvider } from '@thxnetwork/api/util/network';
-import { Response } from 'express';
 
 const user = request.agent(app);
 
@@ -35,8 +32,6 @@ describe('Default Pool', () => {
         slug = 'welcome-package';
 
     let poolAddress: string,
-        withdrawDocumentId: string,
-        withdrawPollID: string,
         tokenAddress: string,
         userWallet: Account,
         poolId: string,
@@ -147,7 +142,8 @@ describe('Default Pool', () => {
                     amount: 1,
                 })
                 .expect(async (res: request.Response) => {
-                    expect(res.body.id).toEqual(res.body._id);
+                    expect(res.body.id).toBeDefined();
+                    expect(res.body.claims[0].id).toBeDefined();
                     reward = res.body;
                     claim = res.body.claims[0];
                 })
@@ -187,7 +183,7 @@ describe('Default Pool', () => {
     describe('POST /rewards/:id/claim', () => {
         it('HTTP 302 when tx is handled', async () => {
             await user
-                .post(`/v1/claims/${claim._id}/collect`)
+                .post(`/v1/claims/${claim.id}/collect`)
                 .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
                 .expect(200);
         });

@@ -32,7 +32,7 @@ const controller = async (req: Request, res: Response) => {
             `0.01 MATIC -> ${account.address}`,
             `${account.address} has requested a topup for 0.01 MATIC to interact with pool ${
                 req.assetPool.address
-            } and ERC20 contract ${erc20.address}.
+            } and ERC20 contract ${erc20.address}. 
             <a href="https://${req.assetPool.chainId === ChainId.PolygonMumbai ? 'mumbai.' : ''}polygonscan.com/tx/${
                 receipt.transactionHash
             }">

@@ -10,11 +10,11 @@ import {
 } from '@thxnetwork/api/models/Reward';
 import TwitterDataProxy from '@thxnetwork/api/proxies/TwitterDataProxy';
 import YouTubeDataProxy from '@thxnetwork/api/proxies/YoutubeDataProxy';
-import SpotifyDataProxy from '@thxnetwork/api/proxies/SpotifyDataProxy';
 import WithdrawalService from './WithdrawalService';
 import ERC721Service from './ERC721Service';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
+import db from '@thxnetwork/api/util/database';
 
 export default class RewardService {
     static async get(assetPool: AssetPoolDocument, rewardId: string): Promise<RewardDocument> {
@@ -48,7 +48,7 @@ export default class RewardService {
         }
 
         // Can not claim if reward already extends the claim limit
-        // (included pending withdrawars)
+        // (included pending withdrawals)
         if (reward.withdrawLimit > 0) {
             const withdrawals = await WithdrawalService.findByQuery({
                 poolId: String(assetPool._id),
@@ -64,23 +64,26 @@ export default class RewardService {
             if (Date.now() > expiryTimestamp) return { error: 'This reward URL has expired' };
         }
 
-        const withdrawal = await WithdrawalService.hasClaimedOnce(String(assetPool._id), account.id, reward.id);
+        if (reward.erc721metadataId) {
+            const metadata = await ERC721Service.findMetadataById(reward.erc721metadataId);
+            const tokensForSub = await ERC721Service.findTokensByMetadataAndSub(reward.erc721metadataId, account);
 
-        // Can only claim this reward once and a withdrawal already exists
-        if (reward.isClaimOnce && withdrawal) {
-            return { error: 'You have already claimed this reward' };
-        }
+            // Can only claim this reward once, metadata exists, but is not minted
+            if (reward.isClaimOnce && tokensForSub.length) {
+                return { error: 'You have already claimed this NFT' };
+            }
 
-        const token = await ERC721Service.findTokenById(reward.erc721metadataId);
+            const tokens = await ERC721Service.findTokensByMetadata(metadata);
+            if (reward.withdrawLimit > 0 && tokens.length >= reward.withdrawLimit) {
+                return { error: 'This NFT has already been claimed' };
+            }
+        } else {
+            const withdrawal = await WithdrawalService.hasClaimedOnce(String(assetPool._id), account.id, reward.id);
 
-        // Can only claim this reward once, metadata exists, but is not minted
-        if (reward.isClaimOnce && token && !!token.tokenId) {
-            return {
-                error:
-                    token.recipient === account.address
-                        ? 'You have already claimed this NFT'
-                        : 'Someone has already claimed this NFT',
-            };
+            // Can only claim this reward once and a withdrawal already exists
+            if (reward.isClaimOnce && withdrawal) {
+                return { error: 'You have already claimed this reward' };
+            }
         }
 
         // Can claim if no condition and channel are set
@@ -88,7 +91,7 @@ export default class RewardService {
             return { result: true };
         }
 
-        return await this.validate(
+        return this.validateCondition(
             account,
             reward.withdrawCondition.channelAction,
             reward.withdrawCondition.channelItem,
@@ -120,7 +123,7 @@ export default class RewardService {
         },
     ) {
         const expiryDateObj = data.expiryDate && new Date(data.expiryDate);
-        const reward = await Reward.create({
+        return Reward.create({
             title: data.title,
             slug: data.slug,
             expiryDate: expiryDateObj,
@@ -135,18 +138,15 @@ export default class RewardService {
             isMembershipRequired: data.isMembershipRequired,
             isClaimOnce: data.isClaimOnce,
             amount: data.amount || 1,
+            id: db.createUUID(),
         });
-
-        // Store in id to minimize regresion. Remove when old style QR's are no longer going around.
-        reward.id = String(reward._id);
-        return await reward.save();
     }
 
     static update(reward: RewardDocument, updates: IRewardUpdates) {
         return Reward.findByIdAndUpdate(reward._id, updates, { new: true });
     }
 
-    static async validate(
+    static async validateCondition(
         account: IAccount,
         channelAction: ChannelAction,
         channelItem: string,
@@ -175,31 +175,6 @@ export default class RewardService {
             case ChannelAction.TwitterFollow: {
                 const result = await TwitterDataProxy.validateFollow(account, channelItem);
                 if (!result) return { error: 'Twitter: Account is not followed.' };
-                break;
-            }
-            case ChannelAction.SpotifyUserFollow: {
-                const result = await SpotifyDataProxy.validateUserFollow(account, channelItem);
-                if (!result) return { error: 'Spotify: User not followed.' };
-                break;
-            }
-            case ChannelAction.SpotifyPlaylistFollow: {
-                const result = await SpotifyDataProxy.validatePlaylistFollow(account, channelItem);
-                if (!result) return { error: 'Spotify: Playlist is not followed.' };
-                break;
-            }
-            case ChannelAction.SpotifyTrackPlaying: {
-                const result = await SpotifyDataProxy.validateTrackPlaying(account, channelItem);
-                if (!result) return { error: 'Spotify: Track is not playing.' };
-                break;
-            }
-            case ChannelAction.SpotifyTrackRecent: {
-                const result = await SpotifyDataProxy.validateRecentTrack(account, channelItem);
-                if (!result) return { error: 'Spotify: Track not found in recent tracks.' };
-                break;
-            }
-            case ChannelAction.SpotifyTrackSaved: {
-                const result = await SpotifyDataProxy.validateSavedTracks(account, channelItem);
-                if (!result) return { error: 'Spotify: Track not saved.' };
                 break;
             }
         }

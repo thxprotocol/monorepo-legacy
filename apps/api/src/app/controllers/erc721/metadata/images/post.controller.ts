@@ -8,17 +8,15 @@ import { s3Client } from '@thxnetwork/api/util/s3';
 import { createArchiver } from '@thxnetwork/api/util/zip';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { fromBuffer } from 'file-type';
-
 import { Request, Response } from 'express';
 import { body, check, param } from 'express-validator';
 import short from 'short-uuid';
+import { createReward } from '@thxnetwork/api/controllers/rewards/utils';
 
 const validation = [
     param('id').isMongoId(),
-    body('title').optional().isString().isLength({ min: 0, max: 100 }),
-    body('description').optional().isString().isLength({ min: 0, max: 400 }),
     body('propName').exists().isString(),
-    check('compressedFile').custom((value, { req }) => {
+    check('file').custom((value, { req }) => {
         switch (req.file.mimetype) {
             case 'application/octet-stream':
             case 'application/zip':
@@ -37,17 +35,16 @@ const controller = async (req: Request, res: Response) => {
 
     // UNZIP THE FILE
     const zip = createArchiver().jsZip;
-    const metadatas: ERC721MetadataDocument[] = [];
 
     // LOAD ZIP IN MEMORY
     const contents = await zip.loadAsync(req.file.buffer);
 
     // ITERATE THE CONTENT BY OBJECT KEYS
     const objectKeys = Object.keys(contents.files);
+
     const promises = [];
 
-    for (let i = 0; i < objectKeys.length; i++) {
-        const file = objectKeys[i];
+    for (const file of objectKeys) {
         const extension = file.substring(file.lastIndexOf('.')).substring(1);
         const originalFileName = file.substring(0, file.lastIndexOf('.'));
 
@@ -67,45 +64,54 @@ const controller = async (req: Request, res: Response) => {
             continue;
         }
 
-        const promise = new Promise(async (resolve, reject) => {
-            try {
-                // FORMAT FILENAME
-                const filename =
-                    originalFileName.toLowerCase().split(' ').join('-').split('.') +
-                    '-' +
-                    short.generate() +
-                    `.${extension}`;
+        promises.push(
+            (async () => {
+                try {
+                    // FORMAT FILENAME
+                    const filename =
+                        originalFileName.toLowerCase().split(' ').join('-').split('.') +
+                        '-' +
+                        short.generate() +
+                        `.${extension}`;
 
-                // PREPARE PARAMS FOR UPLOAD TO S3 BUCKET
-                const uploadParams = {
-                    Key: filename,
-                    Bucket: AWS_S3_PUBLIC_BUCKET_NAME,
-                    ACL: 'public-read',
-                    Body: buffer,
-                };
+                    // PREPARE PARAMS FOR UPLOAD TO S3 BUCKET
+                    const uploadParams = {
+                        Key: filename,
+                        Bucket: AWS_S3_PUBLIC_BUCKET_NAME,
+                        ACL: 'public-read',
+                        Body: buffer,
+                    };
 
-                // UPLOAD THE FILE TO S3
-                await s3Client.send(new PutObjectCommand(uploadParams));
+                    // UPLOAD THE FILE TO S3
+                    await s3Client.send(new PutObjectCommand(uploadParams));
 
-                // COLLECT THE URL
-                const url = ImageService.getPublicUrl(filename);
+                    // COLLECT THE URL
+                    const url = ImageService.getPublicUrl(filename);
 
-                // CREATE THE METADATA
-                const metadata = await ERC721Service.createMetadata(erc721, req.body.title, req.body.description, [
-                    { key: req.body.propName, value: url },
-                ]);
+                    // CREATE THE METADATA
+                    const metadata = await ERC721Service.createMetadata(erc721, '', '', [
+                        { key: req.body.propName, value: url },
+                    ]);
 
-                metadatas.push(metadata);
-                resolve(metadata);
-            } catch (err) {
-                logger.error(err);
-                reject(err);
-            }
-        });
+                    createReward(req.assetPool, {
+                        erc721metadataId: String(metadata._id),
+                        withdrawAmount: 0,
+                        withdrawDuration: 0,
+                        withdrawLimit: 1,
+                        isClaimOnce: true,
+                        isMembershipRequired: false,
+                    });
 
-        promises.push(promise);
+                    return metadata;
+                } catch (err) {
+                    logger.error(err);
+                }
+            })(),
+        );
     }
-    await Promise.all(promises);
+
+    const metadatas: ERC721MetadataDocument[] = await Promise.all(promises);
+
     res.status(201).json({ metadatas });
 };
 

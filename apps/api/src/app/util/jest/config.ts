@@ -1,7 +1,6 @@
 import db from '@thxnetwork/api/util/database';
-import { mockStart } from './mock';
+import { mockStart, mockClear } from './mock';
 import { agenda } from '@thxnetwork/api/util/agenda';
-import { mockClear } from './mock';
 import { logger } from '@thxnetwork/api/util/logger';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { ChainId } from '@thxnetwork/api/types/enums';

@@ -3,6 +3,7 @@ import { PaymentState } from '@thxnetwork/api/types/enums/PaymentState';
 import PaymentService from '@thxnetwork/api/services/PaymentService';
 
 export type TPayment = {
+    id: string;
     amount: string;
     token: string;
     tokenAddress: string;
@@ -19,12 +20,14 @@ export type TPayment = {
     createdAt: Date;
     updatedAt?: Date;
     metadataId?: string;
+    promotionId?: string;
 };
 
 export type PaymentDocument = mongoose.Document & TPayment;
 
 const paymentSchema = new mongoose.Schema(
     {
+        id: String,
         amount: String,
         token: String,
         tokenAddress: String,
@@ -39,12 +42,13 @@ const paymentSchema = new mongoose.Schema(
         cancelUrl: String,
         failUrl: String,
         metadataId: String,
+        promotionId: String,
     },
     { timestamps: true },
 );
 
 paymentSchema.virtual('paymentUrl').get(function () {
-    return PaymentService.getPaymentUrl(this._id.toString(), this.token);
+    return PaymentService.getPaymentUrl(this.id, this.token);
 });
 
 export const Payment = mongoose.model<PaymentDocument>('Payment', paymentSchema, 'payments');

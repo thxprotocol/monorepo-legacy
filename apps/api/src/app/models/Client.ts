@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 
 export type TClient = {
-    _id: string;
     sub: string;
     name: string;
     poolId: string;

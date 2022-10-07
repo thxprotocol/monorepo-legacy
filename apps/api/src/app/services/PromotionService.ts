@@ -1,12 +1,14 @@
 import { Promotion, PromotionDocument } from '@thxnetwork/api/models/Promotion';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import { Deposit } from '@thxnetwork/api/models/Deposit';
-import { ForbiddenError, PromoCodeNotFoundError } from '@thxnetwork/api/util/errors';
+import { ForbiddenError } from '@thxnetwork/api/util/errors';
 import { DepositState } from '@thxnetwork/api/types/enums/DepositState';
 import { TPromotion } from '@thxnetwork/api/types/TPromotion';
+import { Payment } from '@thxnetwork/api/models/Payment';
+import { PaymentState } from '@thxnetwork/api/types/enums/PaymentState';
 
 async function create(data: TPromotion) {
-    return await Promotion.create(data);
+    return Promotion.create(data);
 }
 
 async function deleteById(id: string, sub: string) {
@@ -16,7 +18,7 @@ async function deleteById(id: string, sub: string) {
         throw new ForbiddenError();
     }
 
-    return await promoCode.remove();
+    return promoCode.remove();
 }
 
 function findById(id: string) {
@@ -26,9 +28,10 @@ function findById(id: string) {
 async function formatResult(sub: string, promotion: PromotionDocument) {
     // Check if user is owner
     const isOwner = promotion.sub === sub;
-    // Check if user made a deposit
+    // Check if user made a payment or a deposit
     const deposit = await Deposit.findOne({ sub, item: promotion.id, state: DepositState.Completed });
-    const value = isOwner || deposit ? promotion.value : '';
+    const payment = await Payment.findOne({ sub, promotionId: promotion.id, state: PaymentState.Completed });
+    const value = isOwner || payment || deposit ? promotion.value : '';
 
     return {
         _id: String(promotion._id),

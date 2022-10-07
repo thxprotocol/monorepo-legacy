@@ -20,6 +20,7 @@ const transactionSchema = new mongoose.Schema(
         call: { fn: String, args: String },
         chainId: Number,
         failReason: String,
+        callback: {},
     },
     { timestamps: true },
 );

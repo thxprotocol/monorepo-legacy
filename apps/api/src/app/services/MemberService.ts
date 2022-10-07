@@ -25,7 +25,7 @@ export default class MemberService {
     }
 
     static async addMember(assetPool: AssetPoolDocument, address: string) {
-        return await Member.create({
+        return Member.create({
             poolId: String(assetPool._id),
             address,
         });
@@ -40,7 +40,7 @@ export default class MemberService {
     }
 
     static async removeMember(assetPool: AssetPoolDocument, address: string) {
-        return await Member.deleteOne({ poolAddress: assetPool.address, address });
+        return Member.deleteOne({ poolAddress: assetPool.address, address });
     }
 
     upgradeAddress() {

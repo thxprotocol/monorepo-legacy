@@ -14,9 +14,9 @@ if (app.get('env') === 'development') {
   const dir = path.dirname(__dirname);
   server = https.createServer(
     {
-      key: fs.readFileSync(dir + '/certs/localhost.key'),
-      cert: fs.readFileSync(dir + '/certs/localhost.crt'),
-      ca: fs.readFileSync(dir + '/certs/rootCA.crt'),
+      key: fs.readFileSync(path.resolve(dir, '../../certs/localhost.key')),
+      cert: fs.readFileSync(path.resolve(dir, '../../certs/localhost.crt')),
+      ca: fs.readFileSync(path.resolve(dir, '../../certs/rootCA.crt')),
     },
     app
   );

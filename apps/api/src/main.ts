@@ -12,49 +12,51 @@ import fs from 'fs';
 
 let server;
 if (app.get('env') === 'development') {
-    const dir = path.dirname(__dirname);
-    server = https.createServer(
-        {
-            key: fs.readFileSync(dir + '/certs/localhost.key'),
-            cert: fs.readFileSync(dir + '/certs/localhost.crt'),
-            ca: fs.readFileSync(dir + '/certs/rootCA.crt'),
-        },
-        app,
-    );
+  const dir = path.dirname(__dirname);
+  server = https.createServer(
+    {
+      key: fs.readFileSync(path.resolve(dir, '../../certs/localhost.key')),
+      cert: fs.readFileSync(path.resolve(dir, '../../certs/localhost.crt')),
+      ca: fs.readFileSync(path.resolve(dir, '../../certs/rootCA.crt')),
+    },
+    app
+  );
 } else {
-    server = http.createServer(app);
+  server = http.createServer(app);
 }
 
 const options = {
-    healthChecks: {
-        '/healthcheck': healthCheck,
-        'verbatim': true,
-    },
-    onSignal: (): Promise<any> => {
-        logger.info('Server shutting down gracefully');
-        return Promise.all([db.disconnect(), agenda.stop()]);
-    },
-    logger: logger.error,
+  healthChecks: {
+    '/healthcheck': healthCheck,
+    verbatim: true,
+  },
+  onSignal: (): Promise<any> => {
+    logger.info('Server shutting down gracefully');
+    return Promise.all([db.disconnect(), agenda.stop()]);
+  },
+  logger: logger.error,
 };
 
 createTerminus(server, options);
 
 process.on('uncaughtException', function (err: Error) {
-    if (err) {
-        logger.error({
-            message: 'Uncaught Exception was thrown, shutting down',
-            errorName: err.name,
-            errorMessage: err.message,
-            stack: err.stack,
-        });
-        process.exit(1);
-    }
+  if (err) {
+    logger.error({
+      message: 'Uncaught Exception was thrown, shutting down',
+      errorName: err.name,
+      errorMessage: err.message,
+      stack: err.stack,
+    });
+    process.exit(1);
+  }
 });
 
 logger.info({
-    message: `Server is starting on port: ${app.get('port')}, env: ${app.get('env')}`,
-    port: app.get('port'),
-    env: app.get('env'),
+  message: `Server is starting on port: ${app.get('port')}, env: ${app.get(
+    'env'
+  )}`,
+  port: app.get('port'),
+  env: app.get('env'),
 });
 
 server.listen(app.get('port'));

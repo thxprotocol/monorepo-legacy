@@ -7,7 +7,7 @@ import MemberService from '@thxnetwork/api/services/MemberService';
 import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 
-const validation = [body('member').isEthereumAddress(), , body('amount').exists().isNumeric()];
+const validation = [body('member').isEthereumAddress(), body('amount').exists().isNumeric()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Withdrawals']

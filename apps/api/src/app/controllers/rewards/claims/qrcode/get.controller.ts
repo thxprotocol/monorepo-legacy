@@ -9,7 +9,7 @@ import { GetObjectCommand } from '@aws-sdk/client-s3';
 import { Readable } from 'stream';
 import { logger } from '@thxnetwork/api/util/logger';
 
-const validation = [param('id').isMongoId()];
+const validation = [param('id').exists().isString()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
@@ -18,7 +18,7 @@ const controller = async (req: Request, res: Response) => {
     const reward = await RewardService.get(req.assetPool, req.params.id);
     if (!reward) throw new NotFoundError('Reward not found');
 
-    const fileName = `${reward._id}.zip`;
+    const fileName = `${reward.id}.zip`;
     try {
         const response = await s3PrivateClient.send(
             new GetObjectCommand({

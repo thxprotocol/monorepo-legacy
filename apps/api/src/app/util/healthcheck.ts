@@ -1,7 +1,9 @@
-import newrelic from 'newrelic';
-import { HealthCheck } from '@godaddy/terminus';
 import { config, status } from 'migrate-mongo';
 import { connection } from 'mongoose';
+import newrelic from 'newrelic';
+
+import { HealthCheck } from '@godaddy/terminus';
+
 import migrateMongoConfig from '../../migrate-mongo-config';
 
 const dbConnected: HealthCheck = async () => {
@@ -15,19 +17,15 @@ const dbConnected: HealthCheck = async () => {
     if (readyState === 2) {
         throw new Error('Mongoose is connecting');
     }
-    // CONNECTED_TO_MONGO
-    return;
 };
 
 const migrationsApplied: HealthCheck = async () => {
     config.set(migrateMongoConfig);
 
-    const pendingMigrations = (await status(connection.db)).filter((migration) => migration.appliedAt === 'PENDING');
+    const pendingMigrations = (await status(connection.db as any)).filter((migration) => migration.appliedAt === 'PENDING');
     if (pendingMigrations.length > 0) {
         throw new Error('Not all migrations applied');
     }
-
-    return;
 };
 
 export const healthCheck: HealthCheck = () => {

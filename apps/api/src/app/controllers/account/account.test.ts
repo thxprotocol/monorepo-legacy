@@ -1,5 +1,5 @@
 import request from 'supertest';
-import app from '@thxnetwork/api/index';
+import app from '@thxnetwork/api/app';
 import {
     account2,
     adminAccessToken,

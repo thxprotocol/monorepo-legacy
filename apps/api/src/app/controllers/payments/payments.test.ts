@@ -23,6 +23,7 @@ import { getProvider } from '@thxnetwork/api/util/network';
 import { HARDHAT_RPC, PRIVATE_KEY, WALLET_URL } from '@thxnetwork/api/config/secrets';
 import Web3 from 'web3';
 import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
+import { agenda, EVENT_SEND_DOWNLOAD_METADATA_QR_EMAIL } from '@thxnetwork/api/util/agenda';
 
 const http = request.agent(app);
 
@@ -88,7 +89,7 @@ describe('Payment Request', () => {
                     chainId: ChainId.Hardhat,
                 })
                 .expect(({ body }: Response) => {
-                    paymentId = body._id;
+                    paymentId = body.id;
                     basicAccessToken = body.token;
 
                     expect(body.paymentUrl).toBe(
@@ -254,7 +255,7 @@ describe('Payment Request', () => {
                         metadataId,
                     })
                     .expect(({ body }: Response) => {
-                        paymentId = body._id;
+                        paymentId = body.id;
                         basicAccessToken = body.token;
 
                         expect(body.paymentUrl).toBe(
@@ -288,6 +289,7 @@ describe('Payment Request', () => {
                         expect(body.receiver).toBe(poolAddress);
                         expect(body.amount).toBe(amount);
                         expect(body.metadataId).toBe(metadataId);
+                        expect(body.metadata).toBeDefined();
                     })
                     .expect(200, done);
             });
@@ -316,6 +318,7 @@ describe('Payment Request', () => {
                     .expect(200);
             });
         });
+
         describe('GET erc721/token', () => {
             it('should return ERC721Token with state = MINTED', (done) => {
                 http.get('/v1/erc721/token')
@@ -327,6 +330,13 @@ describe('Payment Request', () => {
                         expect(body[0].transactions.length).toBe(1);
                     })
                     .expect(200, done);
+            });
+            it('should cast a success event for sendDownloadMetadataQrEmail event', (done) => {
+                const callback = async () => {
+                    agenda.off(`success:${EVENT_SEND_DOWNLOAD_METADATA_QR_EMAIL}`, callback);
+                    done();
+                };
+                agenda.on(`success:${EVENT_SEND_DOWNLOAD_METADATA_QR_EMAIL}`, callback);
             });
         });
     });

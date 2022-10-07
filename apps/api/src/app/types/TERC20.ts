@@ -1,5 +1,6 @@
 import { ChainId, ERC20Type } from './enums';
 import { Contract } from 'web3-eth-contract';
+import { TokenContractName } from '@thxnetwork/artifacts';
 
 export type TERC20 = {
     type: ERC20Type;
@@ -9,6 +10,7 @@ export type TERC20 = {
     transactions: string[];
     chainId?: ChainId;
     contract?: Contract;
+    contractName?: TokenContractName;
     sub?: string;
     totalSupply: number;
     decimals?: number;

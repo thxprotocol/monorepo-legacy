@@ -9,9 +9,9 @@ export default {
     controller: async (req: Request, res: Response) => {
         /*
         #swagger.tags = ['Client']
-        #swagger.responses[200] = {
+        #swagger.responses[200] = { 
             description: 'Edit paramed client credentials',
-            schema: { $ref: '#/definitions/Client' }
+            schema: { $ref: '#/definitions/Client' } 
         }
         */
         const poolId = req.headers['x-poolid'] as string;

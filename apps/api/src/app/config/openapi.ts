@@ -1,16 +1,13 @@
-import m2s from 'mongoose-to-swagger';
 import swaggerAutogen from 'swagger-autogen';
-
-import { AssetPool } from '@thxnetwork/api/models/AssetPool';
-import Brand from '@thxnetwork/api/models/Brand';
-import { Claim } from '@thxnetwork/api/models/Claim';
-import { Client } from '@thxnetwork/api/models/Client';
-import { Deposit } from '@thxnetwork/api/models/Deposit';
+import m2s from 'mongoose-to-swagger';
+import { version } from '../../../../../package.json';
+import { NODE_ENV } from './secrets';
 import ERC20 from '@thxnetwork/api/models/ERC20';
-import { ERC20Swap } from '@thxnetwork/api/models/ERC20Swap';
-import { ERC20SwapRule } from '@thxnetwork/api/models/ERC20SwapRule';
-import { ERC20Token } from '@thxnetwork/api/models/ERC20Token';
+import Brand from '@thxnetwork/api/models/Brand';
 import { ERC721 } from '@thxnetwork/api/models/ERC721';
+import { ERC20Token } from '@thxnetwork/api/models/ERC20Token';
+import { ERC20SwapRule } from '@thxnetwork/api/models/ERC20SwapRule';
+import { ERC20Swap } from '@thxnetwork/api/models/ERC20Swap';
 import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
 import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
 import { Payment } from '@thxnetwork/api/models/Payment';
@@ -18,9 +15,10 @@ import { Promotion } from '@thxnetwork/api/models/Promotion';
 import { Reward } from '@thxnetwork/api/models/Reward';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
 import { Withdrawal } from '@thxnetwork/api/models/Withdrawal';
-
-import { version } from '../../../../../package.json';
-import { NODE_ENV } from './secrets';
+import { AssetPool } from '@thxnetwork/api/models/AssetPool';
+import { Claim } from '@thxnetwork/api/models/Claim';
+import { Client } from '@thxnetwork/api/models/Client';
+import { Deposit } from '@thxnetwork/api/models/Deposit';
 
 const doc: any = {
     info: {
@@ -64,6 +62,6 @@ const endpointsFiles = ['apps/api/src/app/controllers/index.ts'];
 
 if (!['test', 'production'].includes(NODE_ENV)) {
     swaggerAutogen()(outputFile, endpointsFiles, doc).then(async () => {
-        await import('..');
+        await import('../index');
     });
 }

@@ -13,8 +13,10 @@ import PaymentService from '@thxnetwork/api/services/PaymentService';
 import { PaymentState } from '@thxnetwork/api/types/enums/PaymentState';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { getProvider } from '@thxnetwork/api/util/network';
+import MemberService from '@thxnetwork/api/services/MemberService';
+import AssetPoolService from '@thxnetwork/api/services/AssetPoolService';
 
-const validation = [param('id').isMongoId()];
+const validation = [param('id').exists().isString()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Payments']
@@ -33,14 +35,21 @@ const controller = async (req: Request, res: Response) => {
         throw new ForbiddenError('Payment state is completed');
     }
 
-    // const { call, nonce, sig } = req.body;
     const { defaultAccount } = getProvider(payment.chainId);
     const erc20 = await ERC20Service.findByPool(req.assetPool);
-    const contract = getContractFromName(req.assetPool.chainId, 'LimitedSupplyToken', erc20.address);
+    const contractName = 'LimitedSupplyToken';
+    const contract = getContractFromName(req.assetPool.chainId, contractName, erc20.address);
 
     // Recover signer from message
     const account = await AccountProxy.getById(req.auth.sub);
     payment.sender = account.address;
+
+    if (payment.promotionId) {
+        const assetPool = await AssetPoolService.getById(payment.poolId);
+        if (!MemberService.isMember(assetPool, account.address)) {
+            throw new ForbiddenError('Account is not a member of the pool');
+        }
+    }
 
     // Check balance to ensure throughput
     const balance = await contract.methods.balanceOf(payment.sender).call();
@@ -50,7 +59,7 @@ const controller = async (req: Request, res: Response) => {
     const allowance = Number(await contract.methods.allowance(payment.sender, defaultAccount).call());
     if (Number(allowance) < Number(payment.amount)) throw new AmountExceedsAllowanceError();
 
-    payment = await PaymentService.pay(contract, payment);
+    payment = await PaymentService.pay(contract, payment, contractName);
     res.json(await payment.save());
 };
 

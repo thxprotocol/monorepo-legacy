@@ -26,7 +26,7 @@ const controller = async (req: Request, res: Response) => {
     for (const w of result.results) {
         const transactions = await Promise.all(
             w.transactions.map(async (id: string) => {
-                return await TransactionService.getById(id);
+                return TransactionService.getById(id);
             }),
         );
         withdrawals.push({ ...w.toJSON(), transactions });

@@ -10,9 +10,9 @@ const validation = [param('id').exists().isMongoId()];
 const controller = async (req: Request, res: Response) => {
     /*
     #swagger.tags = ['ERC20 Token']
-    #swagger.responses[200] = {
+    #swagger.responses[200] = { 
             description: 'Get an ERC20 token for this user.',
-            schema: { $ref: '#/definitions/ERC20Token' }
+            schema: { $ref: '#/definitions/ERC20Token' } 
     }
     */
     const token = await ERC20Service.getTokenById(req.params.id);

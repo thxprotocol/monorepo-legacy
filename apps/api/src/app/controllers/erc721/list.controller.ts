@@ -7,7 +7,7 @@ export const validation = [query('archived').optional().isBoolean()];
 
 const controller = async (req: Request, res: Response) => {
     /* #swagger.tags = ['ERC721']
-       #swagger.responses[200] = { schema: { $ref: '#/definitions/ERC721' } }
+       #swagger.responses[200] = { schema: { $ref: '#/definitions/ERC721' } } 
     */
 
     let result: ERC721Document[];

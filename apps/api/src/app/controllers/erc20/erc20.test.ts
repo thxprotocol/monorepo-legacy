@@ -10,7 +10,7 @@ const http = request.agent(app);
 
 describe('ERC20', () => {
     const ACCESS_TOKEN = dashboardAccessToken;
-    let tokenId: string;
+    let tokenId: string, tokenAddress: string, tokenName: string, tokenSymbol: string;
 
     beforeAll(async () => {
         await beforeAllCallback();
@@ -43,6 +43,9 @@ describe('ERC20', () => {
                     expect(isAddress(body.address)).toBe(true);
                     expect(body.logoImgUrl).toBeDefined();
                     tokenId = body._id;
+                    tokenAddress = body.address;
+                    tokenName = body.name;
+                    tokenSymbol = body.symbol;
                 })
                 .expect(201);
         });
@@ -100,6 +103,24 @@ describe('ERC20', () => {
                 .expect(({ body }: request.Response) => {
                     expect(body).toBeDefined();
                     expect(body.archived).toBe(true);
+                })
+                .expect(200, done);
+        });
+    });
+
+    describe('POST /erc20/preview', () => {
+        it('should return name symbol and total supply of an oncChain ERC20Token', (done) => {
+            http.post('/v1/erc20/preview')
+                .set('Authorization', ACCESS_TOKEN)
+                .send({
+                    chainId: ChainId.Hardhat,
+                    address: tokenAddress,
+                })
+                .expect(({ body }: request.Response) => {
+                    expect(body).toBeDefined();
+                    expect(body.name).toBe(tokenName);
+                    expect(body.symbol).toBe(tokenSymbol);
+                    expect(body.totalSupply).toBeDefined();
                 })
                 .expect(200, done);
         });
