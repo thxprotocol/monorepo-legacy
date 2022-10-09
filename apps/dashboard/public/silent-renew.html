@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silen Renew</title>
+</head>
+
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/oidc-client-ts/2.0.5/browser/oidc-client-ts.min.js"
+            integrity="sha512-DWVgV3W3ZQMZlGndnjwb2g317DsLrfc84y2InVVMq4WfozsAPpoPjeJnkCe6/yBjWszDcjcsV1AwIuTOi1z/KQ=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        const config = JSON.parse(localStorage.getItem('thx:dashboard:oidc'));
+        const mgr = new window.oidc.UserManager(config);
+        mgr.signinSilentCallback().then(console.log).catch(console.error);
+    </script>
+</body>
+
+</html>

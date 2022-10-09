@@ -21,7 +21,7 @@ body {
     display: flex;
     height: 100%;
     padding: 0;
-    background-color: #080627; // $darker
+    background-color: white;
     flex-wrap: wrap;
     flex-direction: column;
 
@@ -41,24 +41,68 @@ body {
      .navbar-nav .nav-link {
         padding: 0.75rem 1rem 0.75rem 1rem;
         font-weight: 500;
-    }
-     .navbar-nav .nav-link:hover {
-        color: white;
-        opacity: 0.9;
-    }
-     .navbar-nav .nav-link,
-     .navbar-nav .nav-link i {
-        color: white;
-    }
+    } 
 
-     .navbar-nav .nav-link i {
-        opacity: 0.5;
+    .navbar-nav .nav-link i {
+        opacity: 0.75;
     }
 
     .navbar-nav .nav-link.router-link-exact-active,
     .navbar-nav .nav-link.router-link-exact-active i {
         color: $secondary;
         opacity: 1;
+    }
+
+    .nav-link-plain {
+        .nav-link {
+            padding: 0rem;
+            margin: 0 0.5rem;
+            border-radius: 5px;
+            display: block;
+            transition: 0.2s background-color ease;
+    
+            &:hover {
+                > .nav-link-icon i {
+                    color: $primary;
+                }
+            }
+        }
+        
+        .router-link-active {
+            background-color: #f8f9fa;
+            
+            span {
+                color: black;
+            }
+
+            .nav-link-wrapper > .nav-link-icon i {
+                color: $primary;
+            }
+
+            > .nav-link-icon i {
+                color: $primary;
+            }
+        }
+        
+        .nav-link-wrapper {
+            padding: 0.7rem 1rem;
+            display: flex;
+        }
+    
+        .nav-link-icon {
+            width: 30px;
+            flex: 0 0 30px;
+    
+            ~ div {
+                flex-grow: 1;
+            }
+        }
+    
+        .nav-link-plain {
+            .nav-link {
+                padding: 0.7rem 1rem;
+            }
+        }
     }
 }
 

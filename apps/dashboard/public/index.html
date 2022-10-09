@@ -1,21 +1,48 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
-    <title><%= htmlWebpackPlugin.options.title %></title>
-  </head>
-  <body>
-    <noscript>
-      <strong
-        >We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work
-        properly without JavaScript enabled. Please enable it to
-        continue.</strong
-      >
-    </noscript>
-    <div id="app"></div>
-    <!-- built files will be auto injected -->
-  </body>
+<html lang="">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description"
+        content="Allows you to pool funds and reward people. Designed developer first; thanks to an user friendly API, you integrate it easily with apps.">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>
+    THX Dashboard
+  </title>
+
+  <link rel="canonical" href="https://dashboard.thx.network/">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/icons/apple-touch-icon.png?v=pgdmXmoa2w">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/icons/favicon-32x32.png?v=pgdmXmoa2w">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/icons/favicon-16x16.png?v=pgdmXmoa2w">
+  <link rel="manifest" href="/site.webmanifest?v=pgdmXmoa2w">
+  <link rel="mask-icon" href="/img/icons/safari-pinned-tab.svg?v=pgdmXmoa2w" color="#5bbad5">
+  <link rel="shortcut icon" href="/img/icons/favicon.ico?v=pgdmXmoa2w">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+
+  <script src="https://kit.fontawesome.com/06b7267748.js" crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+  <noscript>
+    <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled.
+        Please enable it to continue.</strong>
+  </noscript>
+  <div id="app"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@widgetbot/crate@3" async defer>
+    if (window.location.hostname !== 'localhost') {
+      new Crate({
+        server: '836147176270856243',
+        channel: '871853680163446794',
+      })
+    }
+  </script>
+</body>
+
 </html>
