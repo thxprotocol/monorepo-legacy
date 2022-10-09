@@ -77,7 +77,6 @@ class AccountModule extends VuexModule {
         payload.authRequestSignature = signature;
       } else {
         // Do metamask signature
-        debugger;
       }
     }
 
