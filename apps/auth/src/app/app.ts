@@ -23,7 +23,7 @@ app.set('port', PORT);
 app.set('trust proxy', true);
 app.set('layout', './layouts/default');
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, './assets/views'));
+app.set('views', path.join(__dirname, '../assets/views'));
 app.use(compression());
 app.use(helmetInstance);
 app.use(corsHandler);
