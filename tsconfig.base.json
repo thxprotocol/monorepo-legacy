@@ -1,30 +1,30 @@
 {
-  "compileOnSave": false,
-  "compilerOptions": {
-    "rootDir": ".",
-    "sourceMap": true,
-    "declaration": true,
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "esModuleInterop": true,
-    "importHelpers": true,
-    "target": "es2019",
-    "module": "esnext",
-    "lib": ["es2017", "dom"],
-    "skipLibCheck": true,
-    "skipDefaultLibCheck": true,
-    "baseUrl": ".",
-    "paths": {
-      "@thxnetwork/api*": ["apps/api/src/app*"],
-      "@thxnetwork/auth*": ["apps/auth/src/app*"],
-      "@thxnetwork/common": ["libs/common/src/index.ts"],
-      "@thxnetwork/dashboard*": ["apps/dashboard/src*"],
-      "@thxnetwork/scss*": ["libs/common/src/lib/scss*"],
-      "@thxnetwork/sdk*": ["libs/sdk/src/lib*"],
-      "@thxnetwork/wallet*": ["apps/wallet/src*"]
-    }
-  },
-  "exclude": ["node_modules", "tmp"]
+    "compileOnSave": false,
+    "compilerOptions": {
+        "rootDir": ".",
+        "sourceMap": true,
+        "declaration": true,
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "esModuleInterop": true,
+        "importHelpers": true,
+        "target": "es2019",
+        "module": "esnext",
+        "lib": ["es2019", "dom"],
+        "skipLibCheck": true,
+        "skipDefaultLibCheck": true,
+        "baseUrl": ".",
+        "paths": {
+            "@thxnetwork/api*": ["apps/api/src/app*"],
+            "@thxnetwork/auth*": ["apps/auth/src/app*"],
+            "@thxnetwork/common": ["libs/common/src/index.ts"],
+            "@thxnetwork/dashboard*": ["apps/dashboard/src*"],
+            "@thxnetwork/scss*": ["libs/common/src/lib/scss*"],
+            "@thxnetwork/sdk*": ["libs/sdk/src/lib*"],
+            "@thxnetwork/wallet*": ["apps/wallet/src*"]
+        }
+    },
+    "exclude": ["node_modules", "tmp"]
 }

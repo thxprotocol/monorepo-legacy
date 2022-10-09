@@ -1,5 +1,5 @@
 import request from 'supertest';
-import app from '@thxnetwork/api/app';
+import app from '@thxnetwork/api/';
 import { toWei, isAddress } from 'web3-utils';
 import { ERC20Type, ChainId, WithdrawalState } from '@thxnetwork/api/types/enums';
 import {

@@ -1,5 +1,5 @@
 import request from 'supertest';
-import app from '@thxnetwork/api/app';
+import app from '@thxnetwork/api/';
 import { ChainId, ERC20Type } from '@thxnetwork/api/types/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { isAddress } from 'ethers/lib/utils';

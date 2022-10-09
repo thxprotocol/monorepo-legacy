@@ -1,5 +1,5 @@
 import request from 'supertest';
-import app from '@thxnetwork/api/app';
+import app from '@thxnetwork/api/';
 import { ChainId } from '@thxnetwork/api/types/enums';
 import {
     rewardWithdrawAmount,

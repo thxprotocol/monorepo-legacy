@@ -1,0 +1,19 @@
+version: '3.5'
+
+# This compose file only works when used in conjunction with the default docker-compose file.
+# docker compose -f docker-compose.yml -r docker-compose.ci.yml
+
+services:
+    api:
+        container_name: thx_api
+        build:
+            context: .
+            target: develop
+        env_file:
+            - .env.example
+            - .env.ci
+        ports:
+            - 3001:3000
+        depends_on:
+            - api_mongo
+            - api_hardhat

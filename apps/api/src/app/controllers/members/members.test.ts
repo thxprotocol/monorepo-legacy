@@ -1,5 +1,5 @@
 import request from 'supertest';
-import app from '@thxnetwork/api/app';
+import app from '@thxnetwork/api/';
 import { createWallet, voter } from '@thxnetwork/api/util/jest/network';
 import { adminAccessToken, dashboardAccessToken, userWalletPrivateKey2 } from '@thxnetwork/api/util/jest/constants';
 import { Contract } from 'web3-eth-contract';

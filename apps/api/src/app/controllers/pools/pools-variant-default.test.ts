@@ -1,5 +1,5 @@
 import request from 'supertest';
-import app from '@thxnetwork/api/app';
+import app from '@thxnetwork/api/';
 import { ChainId, WithdrawalState } from '@thxnetwork/api/types/enums';
 import { Account } from 'web3-core';
 import { toWei, isAddress } from 'web3-utils';

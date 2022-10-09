@@ -1,5 +1,5 @@
 import request, { Response } from 'supertest';
-import app from '@thxnetwork/api/app';
+import app from '@thxnetwork/api/';
 import { isAddress } from 'web3-utils';
 import { Contract } from 'web3-eth-contract';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';

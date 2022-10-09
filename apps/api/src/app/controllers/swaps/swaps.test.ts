@@ -1,11 +1,15 @@
 import request, { Response } from 'supertest';
-import app from '@thxnetwork/api/app';
+import app from '@thxnetwork/api/';
 import { Account } from 'web3-core';
 import { Contract } from 'web3-eth-contract';
 import { isAddress, fromWei, toWei, toChecksumAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { ChainId, ERC20Type } from '@thxnetwork/api/types/enums';
-import { getAbiForContractName, getByteCodeForContractName, getContractFromName } from '@thxnetwork/api/config/contracts';
+import {
+    getAbiForContractName,
+    getByteCodeForContractName,
+    getContractFromName,
+} from '@thxnetwork/api/config/contracts';
 import {
     adminAccessToken,
     dashboardAccessToken,

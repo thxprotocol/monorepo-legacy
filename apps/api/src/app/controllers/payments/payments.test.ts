@@ -1,4 +1,4 @@
-import app from '@thxnetwork/api/app';
+import app from '@thxnetwork/api/';
 import request, { Response } from 'supertest';
 import { Account } from 'web3-core';
 import { isAddress, toWei } from 'web3-utils';

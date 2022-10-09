@@ -1,11 +1,11 @@
 /* eslint-disable */
 export default {
-  displayName: 'auth',
-  preset: '../../jest.preset.js',
-  testEnvironment: 'node',
-  transform: {
-    '^.+\\.[tj]s$': 'babel-jest',
-  },
-  moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../coverage/apps/auth',
+    displayName: 'auth',
+    preset: '../../jest.preset.js',
+    testEnvironment: 'node',
+    transform: {
+        '^.+\\.[tj]s$': 'ts-jest',
+    },
+    moduleFileExtensions: ['ts', 'js', 'html', 'json'],
+    coverageDirectory: '../../coverage/apps/auth',
 };

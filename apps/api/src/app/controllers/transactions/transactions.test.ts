@@ -1,5 +1,5 @@
 import request from 'supertest';
-import app from '@thxnetwork/api/app';
+import app from '@thxnetwork/api/';
 import { ERC20Type, ChainId } from '@thxnetwork/api/types/enums';
 import { dashboardAccessToken } from '@thxnetwork/api/util/jest/constants';
 import { Contract } from 'web3-eth-contract';

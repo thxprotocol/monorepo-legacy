@@ -1,11 +1,11 @@
 /* eslint-disable */
 export default {
-  displayName: 'api',
-  preset: '../../jest.preset.js',
-  testEnvironment: 'node',
-  transform: {
-    '^.+\\.[tj]s$': 'babel-jest',
-  },
-  moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../coverage/apps/api',
+    displayName: 'api',
+    preset: '../../jest.preset.js',
+    testEnvironment: 'node',
+    transform: {
+        '^.+\\.[tj]s$': 'ts-jest',
+    },
+    moduleFileExtensions: ['ts', 'js', 'html', 'json'],
+    coverageDirectory: '../../coverage/apps/api',
 };
