@@ -3,7 +3,7 @@
 // Required
 @import '~bootstrap/scss/mixins';
 @import '~bootstrap/scss/functions';
-@import './scss/variables';
+@import '@thxnetwork/scss/_variables.scss';
 @import '~bootstrap/scss/variables';
 
 // Optional
@@ -42,21 +42,21 @@
 @import '~bootstrap-vue/src/index.scss';
 
 // Reset
-@import './scss/root';
+@import '@thxnetwork/scss/_root.scss';
 
 // Custom
-@import './scss/buttons';
-@import './scss/navbar';
-@import './scss/forms';
-@import './scss/custom-forms';
-@import './scss/custom-switch';
-@import './scss/sidebar';
-@import './scss/jumbotron';
-@import './scss/modals';
-@import './scss/utilities';
-@import './scss/identicon';
-@import './scss/alert';
-@import './scss/popover';
+@import '@thxnetwork/scss/_buttons.scss';
+@import '@thxnetwork/scss/_navbar.scss';
+@import '@thxnetwork/scss/_forms.scss';
+@import '@thxnetwork/scss/_custom-forms.scss';
+@import '@thxnetwork/scss/_custom-switch.scss';
+@import '@thxnetwork/scss/_sidebar.scss';
+@import '@thxnetwork/scss/_jumbotron.scss';
+@import '@thxnetwork/scss/_modals.scss';
+@import '@thxnetwork/scss/_utilities.scss';
+@import '@thxnetwork/scss/_identicon.scss';
+@import '@thxnetwork/scss/_alert.scss';
+@import '@thxnetwork/scss/_popover.scss';
 
 html,
 body {
