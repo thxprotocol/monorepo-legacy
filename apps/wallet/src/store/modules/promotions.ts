@@ -1,7 +1,7 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { Membership } from './memberships';
+import { TMembership } from './memberships';
 
 export type TPromotion = {
     id: string;
@@ -28,7 +28,7 @@ class PromotionModule extends VuexModule {
     }
 
     @Mutation
-    set({ promotion, membership }: { promotion: TPromotion; membership: Membership }) {
+    set({ promotion, membership }: { promotion: TPromotion; membership: TMembership }) {
         if (!this._all[membership._id]) {
             Vue.set(this._all, membership._id, {});
         }
@@ -36,7 +36,7 @@ class PromotionModule extends VuexModule {
     }
 
     @Mutation
-    unset({ promotion, membership }: { promotion: TPromotion; membership: Membership }) {
+    unset({ promotion, membership }: { promotion: TPromotion; membership: TMembership }) {
         Vue.delete(this._all[membership._id], promotion.id);
     }
 
@@ -46,7 +46,7 @@ class PromotionModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async filter({ membership, page = 1, limit = 10 }: { membership: Membership; page: number; limit: number }) {
+    async filter({ membership, page = 1, limit = 10 }: { membership: TMembership; page: number; limit: number }) {
         const params = new URLSearchParams();
         params.append('page', String(page));
         params.append('limit', String(limit));

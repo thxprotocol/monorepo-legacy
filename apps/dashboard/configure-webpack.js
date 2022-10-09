@@ -11,7 +11,6 @@
  * https://cli.vuejs.org/config/#configurewebpack
  */
 module.exports = (config) => {
-  // console.log(config);
   config.resolve = {
     extensions: ['.ts', '.tsx', '.vue', '.vuex'],
     ...config.resolve,

@@ -1,62 +1,83 @@
 <template>
-    <b-modal
-        title="Connect payment account"
-        id="modalPaymentConnect"
-        body-bg-variant="light"
-        no-close-on-backdrop
-        no-close-on-esc
-        centered
-        scrollable
-        hide-footer
-        hide-header
-        hide-header-close
-    >
-        <b-form-group class="mb-0">
-            <b-form-radio @change="signin()">
-                <strong class="text-primary">Connect THX Account</strong>
-                <p>Use your THX account for this payment and we'll cover your gas costs.</p>
-            </b-form-radio>
-            <b-form-radio @change="connect()" class="mb-0">
-                <strong class="text-primary"> Connect Metamask <b-badge variant="primary">Beta</b-badge> </strong>
-                <p>
-                    Use your Metamask wallet to sign the payment and we will cover your gas costs.
-                </p>
-                <small class="text-muted">
-                    A small MATIC fee does apply when you need to approve us to do the transfer.
-                </small>
-            </b-form-radio>
-        </b-form-group>
-    </b-modal>
+  <b-modal
+    title="Connect payment account"
+    id="modalPaymentConnect"
+    body-bg-variant="light"
+    no-close-on-backdrop
+    no-close-on-esc
+    centered
+    scrollable
+    hide-footer
+    hide-header
+    hide-header-close
+  >
+    <b-form-group>
+      <b-form-radio @change="signin()">
+        <strong class="text-primary">E-mail + Password</strong>
+        <p>
+          Use a traditional e-mail and password combination to authenticate for
+          this payment.
+        </p>
+      </b-form-radio>
+      <b-form-radio @change="signin()">
+        <strong class="text-primary">Social Sign-in</strong>
+        <p>
+          Use one of our integrated SSO providers to authenticate for for this
+          payment.
+        </p>
+      </b-form-radio>
+      <b-form-radio @change="signin()" class="mb-0">
+        <strong class="text-primary">
+          Metamask <b-badge variant="primary">Beta</b-badge>
+        </strong>
+        <p>Use a Metamask account to authenticate for this payment.</p>
+      </b-form-radio>
+    </b-form-group>
+    <small class="text-muted" v-if="payment">
+      A small MATIC fee does apply when you need to approve us to do the
+      transfer. You only have to do this once for the
+      {{ payment.tokenSymbol }} token.
+    </small>
+  </b-modal>
 </template>
 <script lang="ts">
-import { UserProfile } from '@thxnetwork/wallet/store/modules/account';
+import { ChainId } from '@thxnetwork/wallet/types/enums/ChainId';
 import { TPayment } from '@thxnetwork/wallet/types/Payments';
+import { User } from 'oidc-client-ts';
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import { mapGetters } from 'vuex';
 
-@Component({})
+@Component({
+  computed: mapGetters({
+    user: 'accounts/user',
+  }),
+})
 export default class Payment extends Vue {
-    @Prop() account!: string;
-    @Prop() profile!: UserProfile;
-    @Prop() chainId!: number;
-    @Prop() isConnected!: boolean;
-    @Prop() payment!: TPayment;
+  @Prop() chainId!: ChainId;
+  @Prop() payment!: TPayment;
+  @Prop() isConnected!: boolean;
 
-    async signin() {
-        const toPath = window.location.href.substring(window.location.origin.length);
-        this.$store.dispatch('account/signinRedirect', { toPath });
+  user!: User;
+
+  async signin() {
+    const toPath = window.location.href.substring(
+      window.location.origin.length
+    );
+    this.$store.dispatch('account/signinRedirect', { toPath });
+  }
+
+  async connect() {
+    await this.$store.dispatch('network/connect', this.payment.chainId);
+
+    if (this.chainId !== this.payment.chainId) {
+      await this.$store.dispatch(
+        'network/requestSwitchNetwork',
+        this.payment.chainId
+      );
     }
 
-    async connect() {
-        this.$store.dispatch('metamask/checkPreviouslyConnected');
-        if (!this.isConnected) {
-            await this.$store.dispatch('metamask/connect');
-        }
-
-        if (this.chainId !== this.payment.chainId) {
-            await this.$store.dispatch('metamask/requestSwitchNetwork', this.payment.chainId);
-        }
-
-        this.$bvModal.hide('modalPaymentConnect');
-    }
+    this.$emit('connected');
+    this.$bvModal.hide('modalPaymentConnect');
+  }
 }
 </script>

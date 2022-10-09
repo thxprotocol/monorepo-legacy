@@ -1,92 +1,185 @@
-import axios from 'axios';
 import Vue from 'vue';
-import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
+import { default as ERC721Abi } from '@thxnetwork/artifacts/dist/exports/abis/NonFungibleToken.json';
 import { Contract } from 'web3-eth-contract';
-
-import {
-    default as ERC721Abi
-} from '@thxnetwork/artifacts/dist/exports/abis/NonFungibleToken.json';
+import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
+import axios from 'axios';
 import { chainInfo } from '@thxnetwork/wallet/utils/chains';
+import { ChainId } from '@thxnetwork/wallet/types/enums/ChainId';
 
 export interface ERC721 {
-    _id: string;
-    address: string;
-    contract: Contract;
-    baseURL: string;
-    name: string;
-    symbol: string;
-    balance: string;
-    totalSupply: string;
-    properties: { propType: string; name: string; description: string }[];
-    logoURI: string;
-    blockExplorerUrl?: string;
+  _id: string;
+  address: string;
+  contract: Contract;
+  baseURL: string;
+  name: string;
+  description: string;
+  symbol: string;
+  balance: string;
+  totalSupply: string;
+  properties: { propType: string; name: string; description: string }[];
+  logoURI: string;
+  blockExplorerUrl?: string;
+  chainId: ChainId;
 }
+
+export type TERC721Token = {
+  _id: string;
+  sub: string;
+  recipient: string;
+  failReason: string;
+  transactions: string[];
+  tokenSymbol: string;
+  tokenId: number;
+  tokenUri: string;
+  erc721: ERC721;
+  erc721Id: string;
+  metadataId: string;
+  metadata: TERC721Metadata;
+};
+
+export type TERC721Metadata = {
+  _id: string;
+  erc721: string;
+  title: string;
+  description: string;
+  attributes: { key: string; value: any }[];
+};
 
 @Module({ namespaced: true })
 class ERC721Module extends VuexModule {
-    _all: { [address: string]: ERC721 } = {};
+  erc721s: { [_erc721Id: string]: ERC721 } = {};
+  tokens: { [_tokenId: string]: TERC721Token } = {};
+  metadata: { [_tokenId: string]: TERC721Metadata } = {};
 
-    get all() {
-        return this._all;
+  @Mutation
+  set(erc20: ERC721) {
+    Vue.set(this.erc721s, erc20._id, erc20);
+  }
+
+  @Mutation
+  setToken(token: TERC721Token) {
+    Vue.set(this.tokens, token._id, token);
+  }
+
+  @Mutation
+  setMetadata({
+    tokenId,
+    metadata,
+  }: {
+    tokenId: string;
+    metadata: TERC721Metadata;
+  }) {
+    Vue.set(this.metadata, tokenId, metadata);
+  }
+
+  @Mutation
+  setBalance(payload: { erc721: ERC721; balance: string }) {
+    Vue.set(this.erc721s[payload.erc721._id], 'balance', payload.balance);
+  }
+
+  @Action({ rawError: true })
+  async balanceOf(erc721: ERC721) {
+    const profile = this.context.rootGetters['account/profile'];
+    const balance = await erc721.contract.methods
+      .balanceOf(profile.address)
+      .call();
+
+    this.context.commit('setBalance', { erc721, balance });
+  }
+
+  @Action({ rawError: true })
+  async list() {
+    const { data } = await axios({
+      method: 'GET',
+      url: '/erc721/token',
+      params: { chainId: this.context.rootGetters['network/chainId'] },
+    });
+
+    await Promise.all(
+      data.map(async (token: TERC721Token) => {
+        try {
+          const web3 = this.context.rootState.network.web3;
+          const from = this.context.rootGetters['account/profile'].address;
+
+          token.erc721.blockExplorerUrl = `${
+            chainInfo[token.erc721.chainId].blockExplorer
+          }/token/${token.erc721.address}`;
+          token.erc721.logoURI = `https://avatars.dicebear.com/api/identicon/${token.erc721._id}.svg`;
+          token.erc721.contract = new web3.eth.Contract(
+            ERC721Abi as any,
+            token.erc721.address,
+            { from }
+          );
+
+          this.context.commit('setToken', token);
+        } catch (error) {
+          // Fail silent and do not break exec chain
+        }
+      })
+    );
+  }
+
+  @Action({ rawError: true })
+  async getToken(id: string) {
+    try {
+      const { data } = await axios({
+        method: 'GET',
+        url: '/erc721/token/' + id,
+      });
+
+      const token = data;
+      const web3 = this.context.rootState.network.web3;
+      const from = this.context.rootGetters['account/profile'].address;
+
+      token.erc721.blockExplorerUrl = `${
+        chainInfo[token.erc721.chainId].blockExplorer
+      }/token/${token.erc721.address}`;
+      token.erc721.logoURI = `https://avatars.dicebear.com/api/identicon/${token.erc721._id}.svg`;
+      token.erc721.contract = new web3.eth.Contract(
+        ERC721Abi as any,
+        token.erc721.address,
+        { from }
+      );
+
+      return token;
+    } catch (error) {
+      return { error };
     }
+  }
 
-    @Mutation
-    set(erc20: ERC721) {
-        Vue.set(this._all, erc20._id, erc20);
-    }
+  @Action({ rawError: true })
+  async get(id: string) {
+    const { data } = await axios({
+      method: 'GET',
+      url: '/erc721/' + id,
+    });
+    const web3 = this.context.rootState.network.web3;
+    const from = this.context.rootGetters['account/profile'].address;
+    const contract = new web3.eth.Contract(ERC721Abi as any, data.address, {
+      from,
+    });
+    const erc721 = {
+      ...data,
+      contract,
+      balance: 0,
+      blockExplorerUrl: `${chainInfo[data.chainId].blockExplorer}/token/${
+        data.address
+      }`,
+      logoURI: `https://avatars.dicebear.com/api/identicon/${data._id}.svg`,
+    };
 
-    @Mutation
-    setBalance(payload: { erc721: ERC721; balance: string }) {
-        Vue.set(this._all[payload.erc721._id], 'balance', payload.balance);
-    }
+    this.context.commit('set', erc721);
+    this.context.dispatch('balanceOf', erc721);
+  }
 
-    @Action({ rawError: true })
-    async balanceOf(erc721: ERC721) {
-        const profile = this.context.rootGetters['account/profile'];
-        const balance = await erc721.contract.methods.balanceOf(profile.address).call();
-
-        this.context.commit('setBalance', { erc721, balance });
-    }
-
-    @Action({ rawError: true })
-    async get(id: string) {
-        const { data } = await axios({
-            method: 'GET',
-            url: '/erc721/' + id,
-        });
-        const web3 = this.context.rootGetters['network/all'][data.chainId];
-        const from = this.context.rootGetters['account/profile'].address;
-        const contract = new web3.eth.Contract(ERC721Abi as any, data.address, { from });
-        const erc721 = {
-            ...data,
-            contract,
-            balance: 0,
-            blockExplorerUrl: `${chainInfo[data.chainId].blockExplorer}/address/${data.address}`,
-            logoURI: `https://avatars.dicebear.com/api/identicon/${data._id}.svg`,
-        };
-
-        this.context.commit('set', erc721);
-        this.context.dispatch('balanceOf', erc721);
-    }
-
-    @Action({ rawError: true })
-    async getMetadata(erc721: ERC721) {
-        const { data } = await axios({
-            method: 'GET',
-            url: '/erc721/' + erc721._id + '/metadata/',
-        });
-        const erc721metadata = {
-            address: data.address,
-            name: data.name,
-            symbol: data.symbol,
-            metadata: data.metadata,
-            logoURI: `https://avatars.dicebear.com/api/identicon/${data._id}.svg`,
-        };
-
-        this.context.commit('setMetadata', erc721);
-
-        return { erc721metadata };
-    }
+  @Action({ rawError: true })
+  async getMetadata(token: TERC721Token) {
+    const { data } = await axios({
+      method: 'GET',
+      url: `/erc721/${token.erc721Id}/metadata/${token.metadataId}`,
+    });
+    this.context.commit('setMetadata', { tokenId: token._id, metadata: data });
+  }
 }
 
 export default ERC721Module;

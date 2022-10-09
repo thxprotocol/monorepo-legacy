@@ -1,179 +1,214 @@
-import axios from 'axios';
 import Vue from 'vue';
-import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
-import Web3 from 'web3';
+import axios from 'axios';
+import { default as ERC20Abi } from '@thxnetwork/artifacts/dist/exports/abis/LimitedSupplyToken.json';
 import { Contract } from 'web3-eth-contract';
-import { fromWei, toChecksumAddress, toWei } from 'web3-utils';
-
-import {
-    default as ERC20Abi
-} from '@thxnetwork/artifacts/dist/exports/abis/LimitedSupplyToken.json';
+import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
 import { ChainId } from '@thxnetwork/wallet/types/enums/ChainId';
+import { fromWei, toWei, toChecksumAddress } from 'web3-utils';
 import { chainInfo } from '@thxnetwork/wallet/utils/chains';
-import { send } from '@thxnetwork/wallet/utils/network';
 
-export interface ERC20 {
-    _id: string;
-    erc20Id: string;
-    address: string;
-    contract: Contract;
-    name: string;
-    symbol: string;
-    blockExplorerUrl?: string;
-    balance: string;
-    totalSupply: string;
-    logoURI: string;
+export type TERC20 = {
+  _id: string;
+  address: string;
+  contract: Contract;
+  name: string;
+  symbol: string;
+  blockExplorerUrl?: string;
+  totalSupply: string;
+  logoURI: string;
+  chainId: ChainId;
+  balance: string;
+};
+export interface TERC20Token {
+  _id: string;
+  erc20: TERC20;
+  erc20Id: string;
+  balance: string;
 }
 
 export interface IERC20s {
-    [id: string]: ERC20;
+  [erc20Id: string]: TERC20;
 }
 
 @Module({ namespaced: true })
 class ERC20Module extends VuexModule {
-    _all: IERC20s = {};
+  contracts: IERC20s = {};
 
-    get all() {
-        return this._all;
+  @Mutation
+  set(erc20: TERC20) {
+    Vue.set(this.contracts, erc20._id, erc20);
+  }
+
+  @Mutation
+  setBalance({ erc20, balance }: { erc20: TERC20; balance: string }) {
+    if (!this.contracts[erc20._id]) Vue.set(this.contracts, erc20._id, {});
+    Vue.set(this.contracts[erc20._id], 'balance', balance);
+  }
+
+  @Action({ rawError: true })
+  async list() {
+    const res = await axios({
+      method: 'GET',
+      url: `/erc20/token`,
+      params: { chainId: this.context.rootGetters['network/chainId'] },
+    });
+
+    res.data.forEach((token: TERC20Token) => {
+      const web3 = this.context.rootState.network.web3;
+      const from = this.context.rootGetters['account/profile'].address;
+      token.erc20.contract = new web3.eth.Contract(
+        ERC20Abi as any,
+        token.erc20.address,
+        { from }
+      );
+      token.erc20.blockExplorerUrl = `${
+        chainInfo[token.erc20.chainId].blockExplorer
+      }/address/${token.erc20.address}`;
+      token.erc20.logoURI = `https://avatars.dicebear.com/api/identicon/${token.erc20.address}.svg`;
+
+      this.context.commit('set', token.erc20);
+    });
+  }
+
+  @Action({ rawError: true })
+  async get(id: string) {
+    try {
+      const { data } = await axios({
+        method: 'GET',
+        url: '/erc20/token/' + id,
+      });
+      const web3 = this.context.rootState.network.web3;
+      const from = this.context.rootGetters['account/profile'].address;
+      data.erc20.contract = new web3.eth.Contract(
+        ERC20Abi as any,
+        data.erc20.address,
+        { from }
+      );
+      data.erc20.blockExplorerUrl = `${
+        chainInfo[data.erc20.chainId].blockExplorer
+      }/address/${data.erc20.address}`;
+      data.erc20.logoURI = `https://avatars.dicebear.com/api/identicon/${data.erc20.address}.svg`;
+
+      this.context.commit('set', data.erc20);
+    } catch (error) {
+      return { error };
     }
+  }
 
-    @Mutation
-    set(erc20: ERC20) {
-        Vue.set(this._all, erc20._id, erc20);
-    }
+  @Action({ rawError: true })
+  async getContract(id: string) {
+    const { data } = await axios({
+      method: 'GET',
+      url: '/erc20/' + id,
+    });
+    const web3 = this.context.rootState.network.web3;
+    const from = this.context.rootGetters['account/profile'].address;
 
-    @Mutation
-    setBalance(payload: { erc20: ERC20; balance: string }) {
-        Vue.set(this._all[payload.erc20._id], 'balance', payload.balance);
-    }
+    data.contract = new web3.eth.Contract(ERC20Abi as any, data.address, {
+      from,
+    });
+    data.blockExplorerUrl = `${chainInfo[data.chainId].blockExplorer}/address/${
+      data.address
+    }`;
+    data.logoURI = `https://avatars.dicebear.com/api/identicon/${data.address}.svg`;
 
-    @Action({ rawError: true })
-    async list() {
-        const { data } = await axios({
-            method: 'GET',
-            url: '/erc20/token',
+    this.context.commit('set', data);
+  }
+
+  @Action({ rawError: true })
+  async balanceOf(erc20: TERC20) {
+    const address = this.context.rootGetters['account/profile'].address;
+    const balanceInWei = await erc20.contract.methods.balanceOf(address).call();
+    const balance = fromWei(balanceInWei);
+    this.context.commit('setBalance', { erc20, balance });
+  }
+
+  @Action({ rawError: true })
+  async allowance({
+    contract,
+    owner,
+    spender,
+  }: {
+    contract: Contract;
+    owner: string;
+    spender: string;
+  }) {
+    return await contract.methods
+      .allowance(owner, spender)
+      .call({ from: owner });
+  }
+
+  @Action({ rawError: true })
+  async approve({
+    contract,
+    to,
+    amount,
+    poolId,
+  }: {
+    contract: Contract;
+    to: string;
+    amount: string;
+    poolId: string;
+  }) {
+    const { web3, address } = this.context.rootState.network;
+    const user = this.context.rootGetters['account/user'];
+    const allowance = await this.context.dispatch('allowance', {
+      contract,
+      owner: address,
+      spender: to,
+    });
+
+    // Early return if allowance is already sufficient
+    if (Number(allowance) >= Number(amount)) return;
+
+    if (user && poolId) {
+      const balance = Number(fromWei(await web3.eth.getBalance(address)));
+      if (balance === 0) {
+        await axios({
+          method: 'POST',
+          url: `/deposits/approve`,
+          headers: {
+            'X-PoolId': poolId,
+          },
+          data: {
+            amount,
+          },
         });
-        data.forEach((_id: string) => {
-            this.context.commit('set', { _id });
-        });
+        // TODO Await the balance increase here
+      }
     }
 
-    @Action({ rawError: true })
-    async getContract(id: string) {
-        const { data } = await axios({
-            method: 'GET',
-            url: '/erc20/' + id,
-        });
-        const web3 = this.context.rootGetters['network/all'][data.chainId];
-        const from = this.context.rootGetters['account/profile'].address;
-        const contract = new web3.eth.Contract(ERC20Abi as any, data.address, { from });
-        const totalSupply = Number(fromWei(await contract.methods.totalSupply().call()));
-        const erc20 = {
-            ...data,
-            contract,
-            totalSupply,
-            balance: 0,
-            blockExplorerUrl: `${chainInfo[data.chainId].blockExplorer}/address/${data.address}`,
-            logoURI: `https://avatars.dicebear.com/api/identicon/${data._id}.svg`,
-        };
+    await this.context.dispatch(
+      'network/send',
+      {
+        to: contract.options.address,
+        fn: contract.methods.approve(to, amount),
+      },
+      { root: true }
+    );
+  }
 
-        this.context.commit('set', erc20);
-        this.context.dispatch('balanceOf', erc20);
-    }
+  @Action({ rawError: true })
+  async transfer({
+    erc20,
+    to,
+    amount,
+  }: {
+    erc20: TERC20;
+    to: string;
+    amount: string;
+  }) {
+    const wei = toWei(amount);
 
-    @Action({ rawError: true })
-    async get(id: string) {
-        try {
-            const { data } = await axios({
-                method: 'GET',
-                url: '/erc20/token/' + id,
-            });
-
-            const web3 = this.context.rootGetters['network/all'][data.chainId];
-            const from = this.context.rootGetters['account/profile'].address;
-            const contract = new web3.eth.Contract(ERC20Abi as any, data.address, { from });
-            const totalSupply = Number(fromWei(await contract.methods.totalSupply().call()));
-            const erc20 = {
-                ...data,
-                contract,
-                totalSupply,
-                balance: 0,
-                blockExplorerUrl: `${chainInfo[data.chainId].blockExplorer}/address/${data.address}`,
-                logoURI: `https://avatars.dicebear.com/api/identicon/${data._id}.svg`,
-            };
-
-            this.context.commit('set', erc20);
-            this.context.dispatch('balanceOf', erc20);
-        } catch (error) {
-            return { error };
-        }
-    }
-
-    @Action({ rawError: true })
-    async balanceOf(erc20: ERC20) {
-        const profile = this.context.rootGetters['account/profile'];
-        const wei = await erc20.contract.methods.balanceOf(profile.address).call();
-        const balance = fromWei(wei);
-        this.context.commit('setBalance', { erc20, balance });
-    }
-
-    @Action({ rawError: true })
-    async allowance({ token, owner, spender }: { token: ERC20; owner: string; spender: string }) {
-        const wei = await token.contract.methods.allowance(owner, spender).call({ from: owner });
-        return { allowance: fromWei(wei, 'ether') };
-    }
-
-    @Action({ rawError: true })
-    async approve({
-        token,
-        chainId,
-        to,
-        poolId,
-        amount,
-    }: {
-        token: ERC20;
-        chainId: ChainId;
-        to: string;
-        poolId: string;
-        amount: string;
-    }) {
-        const web3: Web3 = this.context.rootGetters['network/all'][chainId];
-        const profile = this.context.rootGetters['account/profile'];
-        const privateKey = this.context.rootGetters['account/privateKey'];
-        const balance = Number(fromWei(await web3.eth.getBalance(profile.address)));
-
-        if (balance === 0) {
-            await axios({
-                method: 'POST',
-                url: `/deposits/approve`,
-                headers: {
-                    'X-PoolId': poolId,
-                },
-                data: {
-                    amount,
-                },
-            });
-        }
-
-        const tx = await send(web3, token.address, token.contract.methods.approve(to, amount), privateKey);
-
-        return { tx };
-    }
-
-    @Action({ rawError: true })
-    async transfer({ token, chainId, to, amount }: { token: ERC20; chainId: ChainId; to: string; amount: string }) {
-        const wei = toWei(amount);
-        const web3 = this.context.rootGetters['network/all'][chainId];
-        const privateKey = this.context.rootGetters['account/privateKey'];
-        const tx = await send(
-            web3,
-            token.address,
-            token.contract.methods.transfer(toChecksumAddress(to), wei),
-            privateKey,
-        );
-
-        return { tx };
-    }
+    await this.context.dispatch(
+      'network/send',
+      {
+        to: erc20.address,
+        fn: erc20.contract.methods.transfer(toChecksumAddress(to), wei),
+      },
+      { root: true }
+    );
+  }
 }
 
 export default ERC20Module;

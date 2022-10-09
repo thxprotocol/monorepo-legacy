@@ -3,12 +3,12 @@
     class="d-flex align-items-center justify-content-center overflow-hidden"
     :class="variant ? `bg-${variant}` : ''"
     :style="{
-      width: `${size}px`,
-      height: `${size}px`,
+      width: `${width}px`,
+      height: `${height}px`,
       'border-radius': rounded ? '0.5rem' : 0,
     }"
   >
-    <img :height="size / 1.75" :width="size / 1.75" :src="uri" alt="" />
+    <img :height="height / 1.75" :width="width / 1.75" :src="uri" alt="" />
   </div>
 </template>
 

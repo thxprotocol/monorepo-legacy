@@ -4,6 +4,7 @@ export interface TSwapRule {
     tokenInId: string;
     tokenMultiplier: number;
     page?: number;
+    createdAt: Date;
 }
 
 export interface ISwapRules {

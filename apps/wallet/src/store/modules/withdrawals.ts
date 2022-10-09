@@ -1,10 +1,9 @@
-import axios from 'axios';
 import { Vue } from 'vue-property-decorator';
-import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
-
+import axios from 'axios';
+import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
+import { TMembership } from './memberships';
 import { TTransaction } from '@thxnetwork/wallet/types/Transactions';
-
-import { Membership } from './memberships';
+import { TERC20 } from './erc20';
 
 export enum WithdrawalState {
     Pending = 0,
@@ -29,12 +28,15 @@ export class Withdrawal {
     createdAt: string;
     updatedAt: string;
     page: number;
+    erc20: TERC20;
     transactions: TTransaction[];
     type: WithdrawalType;
+    unlockDate: Date;
 
     constructor(data: any, page: number) {
         this.transactions = data.transactions;
         this._id = data._id;
+        this.erc20 = data.erc20;
         this.amount = data.amount;
         this.state = data.state;
         this.beneficiary = data.beneficiary;
@@ -44,6 +46,7 @@ export class Withdrawal {
         this.type = data.type;
         this.page = page;
         this.failReason = data.failReason;
+        this.unlockDate = data.unlockDate;
         this.createdAt = data.createdAt;
         this.updatedAt = data.updatedAt;
     }
@@ -64,7 +67,7 @@ class WithdrawalModule extends VuexModule {
     }
 
     @Mutation
-    set({ withdrawal, membership }: { withdrawal: Withdrawal; membership: Membership }) {
+    set({ withdrawal, membership }: { withdrawal: Withdrawal; membership: TMembership }) {
         if (!this._all[membership._id]) {
             Vue.set(this._all, membership._id, {});
         }
@@ -72,7 +75,7 @@ class WithdrawalModule extends VuexModule {
     }
 
     @Mutation
-    unset({ withdrawal, membership }: { withdrawal: Withdrawal; membership: Membership }) {
+    unset({ withdrawal, membership }: { withdrawal: Withdrawal; membership: TMembership }) {
         Vue.delete(this._all[membership._id], withdrawal._id);
     }
 
@@ -82,7 +85,7 @@ class WithdrawalModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async read({ membership, id }: { membership: Membership; id: string }) {
+    async read({ membership, id }: { membership: TMembership; id: string }) {
         const r = await axios({
             method: 'GET',
             url: '/withdrawals/' + id,
@@ -92,7 +95,17 @@ class WithdrawalModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async withdraw({ membership, id }: { membership: Membership; id: string }) {
+    async get({ poolId, id }: { poolId: string; id: string }) {
+        const r = await axios({
+            method: 'GET',
+            url: '/withdrawals/' + id,
+            headers: { 'X-PoolId': poolId },
+        });
+        return r.data;
+    }
+
+    @Action({ rawError: true })
+    async withdraw({ membership, id }: { membership: TMembership; id: string }) {
         await axios({
             method: 'POST',
             url: `/withdrawals/${id}/withdraw`,
@@ -104,7 +117,7 @@ class WithdrawalModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async remove({ membership, withdrawal }: { membership: Membership; withdrawal: Withdrawal }) {
+    async remove({ membership, withdrawal }: { membership: TMembership; withdrawal: Withdrawal }) {
         await axios({
             method: 'DELETE',
             url: `/withdrawals/${withdrawal._id}`,
@@ -123,7 +136,7 @@ class WithdrawalModule extends VuexModule {
         limit = 10,
         state,
     }: {
-        membership: Membership;
+        membership: TMembership;
         page: number;
         limit: number;
         state?: WithdrawalState;

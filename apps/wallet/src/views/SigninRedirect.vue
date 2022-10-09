@@ -1,163 +1,114 @@
 <template>
-    <div class="d-flex align-items-center justify-content-center mb-2 bg-dark">
-        <div class="flex-row text-center" v-if="isClaimInvalid || isClaimFailed">
-            <b-alert show variant="info" v-if="isClaimInvalid">
-                {{ error }}
-            </b-alert>
-            <b-alert show variant="danger" v-if="isClaimFailed">
-                Oops, we did not manage to claim your token reward at this time, please try again later.
-            </b-alert>
-            <b-button variant="primary" class="rounded-pill" @click="claimReward()" v-if="isClaimFailed">
-                Try again
-            </b-button>
-            <b-button variant="link" @click="redirect()">Continue</b-button>
-        </div>
-        <div v-else class="d-flex flex-column align-items-center">
-            <b-alert show variant="danger" v-if="error">{{ error }}</b-alert>
-            <b-spinner variant="secondary" size="lg"></b-spinner>
-            <span class="text-muted mt-2">{{ info }}</span>
-        </div>
-        <modal-show-withdrawal @redirect="redirect()" :withdrawal="withdrawal" v-if="withdrawal" />
-        <modal-decode-private-key @init="redirect()" />
+  <div class="d-flex align-items-center justify-content-center mb-2 bg-dark">
+    <div class="d-flex flex-column align-items-center">
+      <b-alert show variant="danger" v-if="error">{{ error }}</b-alert>
+      <b-spinner variant="secondary" size="lg"></b-spinner>
+      <span class="text-muted mt-2">{{ info }}</span>
     </div>
+    <modal-decode-private-key @init="redirect()" />
+  </div>
 </template>
 
 <script lang="ts">
 import { UserProfile } from '@thxnetwork/wallet/store/modules/account';
 import { Component, Vue } from 'vue-property-decorator';
-import { mapGetters } from 'vuex';
-import { ChainId } from '@thxnetwork/wallet/types/enums/ChainId';
+import { mapGetters, mapState } from 'vuex';
 import { User } from 'oidc-client-ts';
 import ModalDecodePrivateKey from '@thxnetwork/wallet/components/modals/ModalDecodePrivateKey.vue';
-import ModalShowWithdrawal from '@thxnetwork/wallet/components/modals/ModalShowWithdrawal.vue';
-import { TNetworks } from '@thxnetwork/wallet/store/modules/network';
-import Web3 from 'web3';
+import { ChainId } from '@thxnetwork/wallet/types/enums/ChainId';
+import { chainInfo } from '@thxnetwork/wallet/utils/chains';
 
 @Component({
-    components: {
-        ModalShowWithdrawal,
-        ModalDecodePrivateKey,
-    },
-    computed: mapGetters({
-        privateKey: 'account/privateKey',
-        profile: 'account/profile',
-        user: 'account/user',
-        networks: 'network/all',
+  components: {
+    ModalDecodePrivateKey,
+  },
+  computed: {
+    ...mapState('network', ['address']),
+    ...mapGetters({
+      chainId: 'network/chainId',
+      profile: 'account/profile',
+      user: 'account/user',
     }),
+  },
 })
 export default class Redirect extends Vue {
-    error = '';
-    info = '';
-    redirectPath = '/memberships';
-    isClaimFailed = false;
-    isClaimInvalid = false;
+  error = '';
+  info = '';
+  redirectPath = '/memberships';
 
-    withdrawal = null;
+  address!: string;
+  profile!: UserProfile;
+  user!: User;
+  chainId!: ChainId;
 
-    // getters
-    privateKey!: string;
-    profile!: UserProfile;
-    networks!: TNetworks;
-    user!: User;
+  async mounted() {
+    await this.redirectCallback();
+    if (!this.user) await this.$store.dispatch('account/signinRedirect');
 
-    async mounted() {
-        await this.redirectCallback();
+    await this.getProfile();
 
-        if (!this.user) {
-            await this.$store.dispatch('account/signinRedirect');
-        }
-
-        await this.getProfile();
-
-        // Check for non custodial account and return
-        if (this.profile && this.profile.privateKey) {
-            await this.setNetwork(this.profile.privateKey);
-            return this.$bvModal.show('modalDecodePrivateKey');
-        }
-
-        await this.getPrivateKey();
-        await this.setNetwork(this.privateKey);
-
-        // Check for first time login
-        if (this.profile) {
-            await this.updateAccount();
-        }
-
-        // Check for reward hash in state
-        const state: any = this.user.state;
-        if (state.rewardHash) {
-            await this.claimReward();
-        }
-
-        if (!this.error && !this.isClaimFailed && !this.isClaimInvalid && !this.withdrawal) this.redirect();
+    // Check for non custodial account and return
+    if (this.profile && this.profile.privateKey) {
+      return this.$bvModal.show('modalDecodePrivateKey');
     }
 
-    redirect() {
-        const state: any = this.user.state;
-        const path = state.toPath || this.redirectPath;
-        this.$router.push(path);
+    // Get private key from Torus network if applicable
+    await this.getPrivateKey();
+
+    // Connect to network
+    await this.getNetwork();
+
+    // Update account if necessary
+    await this.updateAccount();
+
+    this.redirect();
+  }
+
+  redirect() {
+    const state: any = this.user.state;
+    let path = state.toPath || this.redirectPath;
+
+    // If a reward hash or claim Id is found, redirect to the claim page instead
+    if (state.rewardHash || state.claimId) {
+      path = '/collect';
     }
 
-    async setNetwork(privateKey: string) {
-        this.info = 'Initializing blockchain networks...';
+    this.$router.push(path);
+  }
 
-        if (process.env.NODE_ENV !== 'production ') {
-            await this.$store.dispatch('network/setNetwork', { chainId: ChainId.Hardhat, privateKey });
-        }
+  async getNetwork() {
+    this.info = `Connecting ${chainInfo[this.chainId].name}...`;
+    await this.$store.dispatch('network/connect', this.chainId);
+  }
 
-        await this.$store.dispatch('network/setNetwork', { chainId: ChainId.PolygonMumbai, privateKey });
-        await this.$store.dispatch('network/setNetwork', { chainId: ChainId.Polygon, privateKey });
+  async redirectCallback() {
+    this.info = 'Authenticating your account...';
+    await this.$store.dispatch('account/signinRedirectCallback');
+  }
+
+  async getMemberships() {
+    this.info = 'Fetching memberships for your account...';
+    await this.$store.dispatch('memberships/getAll');
+  }
+
+  async getPrivateKey() {
+    this.info = 'Fetching private key from Web3Auth...';
+    await this.$store.dispatch('network/getPrivateKey', this.user);
+  }
+
+  async updateAccount() {
+    this.info = 'Updating your account details with a new address...';
+
+    // If there is no address then sign a message and patch the account
+    // so the API can recoverAddress and update the account in db
+    if (!this.profile.address) {
+      await this.$store.dispatch('account/update', { address: this.address });
     }
+  }
 
-    async redirectCallback() {
-        this.info = 'Authenticating your account...';
-        await this.$store.dispatch('account/signinRedirectCallback');
-    }
-
-    async getMemberships() {
-        this.info = 'Fetching memberships for your account...';
-        const { error } = await this.$store.dispatch('memberships/getAll');
-        if (error) this.error = error.message;
-    }
-
-    async getPrivateKey() {
-        this.info = 'Fetching private key from Web3Auth...';
-        const { error } = await this.$store.dispatch('account/getPrivateKey', this.user);
-        if (error) this.error = error.message;
-    }
-
-    async claimReward() {
-        this.isClaimFailed = false;
-        this.isClaimInvalid = false;
-        this.info = 'Claiming your token reward...';
-
-        const state: any = this.user.state;
-        const { withdrawal, error } = await this.$store.dispatch('assetpools/claimReward', state.rewardHash);
-
-        if (error) {
-            this.error = error.response.data.error.message;
-            this.isClaimFailed = error.response?.status === 500;
-            this.isClaimInvalid = error.response?.status === 403;
-        } else {
-            this.withdrawal = withdrawal;
-        }
-    }
-
-    async updateAccount() {
-        this.info = 'Updating your account details with a new address...';
-
-        const web3 = new Web3();
-        const account = web3.eth.accounts.privateKeyToAccount(this.privateKey);
-
-        if (!this.profile.address || this.profile.address !== account.address) {
-            const error = await this.$store.dispatch('account/update', { address: account.address });
-            if (error) this.error = error.message;
-        }
-    }
-
-    async getProfile() {
-        this.info = 'Fetching your account details...';
-        await this.$store.dispatch('account/getProfile');
-    }
+  async getProfile() {
+    this.info = 'Fetching your account details...';
+    await this.$store.dispatch('account/getProfile');
+  }
 }
 </script>

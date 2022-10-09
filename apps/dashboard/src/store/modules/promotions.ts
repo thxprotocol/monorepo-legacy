@@ -6,6 +6,7 @@ import { IPool } from './pools';
 
 export type TPromotion = {
   _id: string;
+  id: string;
   poolAddress: string;
   title: string;
   description: string;
