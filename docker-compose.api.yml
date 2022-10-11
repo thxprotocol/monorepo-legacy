@@ -9,7 +9,7 @@ services:
         build:
             context: .
             dockerfile: apps/api/Dockerfile
-            target: production
+            target: develop
         env_file:
             - .env.example
             - .env.api.ci
