@@ -4,7 +4,7 @@ export default {
     preset: '../../jest.preset.js',
     testEnvironment: 'node',
     transform: {
-        '^.+\\.[tj]s$': 'ts-jest',
+        '^.+\\.ts$': 'ts-jest',
     },
     moduleFileExtensions: ['ts', 'js', 'html', 'json'],
     coverageDirectory: '../../coverage/apps/api',
