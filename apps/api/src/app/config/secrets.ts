@@ -17,7 +17,7 @@ const required = [
     'INITIAL_ACCESS_TOKEN',
     'MAX_FEE_PER_GAS',
 ];
-console.log('port', process.env.PORT);
+
 required.forEach((value: string) => {
     if (!process.env[value]) {
         console.log(`Set ${value} environment variable.`);
