@@ -23,7 +23,7 @@ ENV NODE_ENV=production
 WORKDIR /usr/src/app
 COPY --from=develop ./usr/src/app/ ./
 RUN npx nx build api --prod
-COPY ./apps/api/newrelic.js ./yarn.lock ./dist/apps/api/
+COPY ./newrelic.js ./yarn.lock ./dist/apps/api/
 
 
 #####################################################################################################
