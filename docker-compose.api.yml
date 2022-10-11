@@ -11,7 +11,7 @@ services:
             dockerfile: apps/api/Dockerfile
             target: develop
         env_file:
-            - .env.example
+            - apps/api/.env.example
             - apps/api/.env.ci
         ports:
             - 3001:3000
