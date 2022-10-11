@@ -1,7 +1,7 @@
 version: '3.5'
 
 # This compose file only works when used in conjunction with the default docker-compose file.
-# docker compose -f docker-compose.yml -r docker-compose.ci.yml
+# docker compose -f docker-compose.yml -r docker-compose.api.yml
 
 services:
     api:

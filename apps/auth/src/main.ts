@@ -11,7 +11,7 @@ import path from 'path';
 import { LOCAL_CERT, LOCAL_CERT_KEY } from './app/util/secrets';
 
 let server;
-if (LOCAL_CERT != '' && LOCAL_CERT_KEY != '') {
+if (LOCAL_CERT && LOCAL_CERT_KEY) {
     server = https.createServer(
         {
             key: fs.readFileSync(path.resolve(path.dirname(__dirname), LOCAL_CERT_KEY)),

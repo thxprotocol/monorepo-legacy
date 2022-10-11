@@ -32,5 +32,5 @@ const migrationsApplied: HealthCheck = async () => {
 
 export const healthCheck: HealthCheck = () => {
     newrelic.getTransaction().ignore();
-    return Promise.all([dbConnected]);
+    return Promise.all([dbConnected, migrationsApplied]);
 };
