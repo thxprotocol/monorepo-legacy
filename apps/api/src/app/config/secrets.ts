@@ -18,6 +18,10 @@ const required = [
     'MAX_FEE_PER_GAS',
 ];
 
+if (process.env.NODE_ENV === 'production') {
+    required.push('SENDGRID_API_KEY');
+}
+
 required.forEach((value: string) => {
     if (!process.env[value]) {
         console.log(`Set ${value} environment variable.`);
