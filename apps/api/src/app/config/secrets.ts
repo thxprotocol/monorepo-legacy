@@ -21,6 +21,7 @@ const required = [
 required.forEach((value: string) => {
     if (!process.env[value]) {
         console.log(`Set ${value} environment variable.`);
+        throw new Error(value);
         process.exit(1);
     }
 });
