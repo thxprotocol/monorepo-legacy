@@ -97,9 +97,9 @@ jobs:
     #         labels: ${{ steps.meta.outputs.labels }}
 
     buildAndPushImage:
-        name: Build and Push docker image || github.ref == 'refs/heads/main'
+        name: Build and Push docker image
         runs-on: ubuntu-latest
-        if: startsWith(github.ref,'refs/heads/hotfix/')
+        if: startsWith(github.ref,'refs/heads/hotfix/') || github.ref == 'refs/heads/main'
         needs: buildAndTest
         steps:
             - name: Checkout
@@ -137,6 +137,7 @@ jobs:
               with:
                   context: .
                   push: true
+                  file: apps/auth/Dockerfile
                   tags: ${{ steps.meta.outputs.tags }}
                   labels: ${{ steps.meta.outputs.labels }}
 
