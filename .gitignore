@@ -7,9 +7,11 @@
 
 # dependencies
 node_modules
-.env.local
-.env.*
-.env
+
+# API keys and secrets
+.env*
+!.env.*.ci
+!.env.example
 
 # IDEs and editors
 /.idea
