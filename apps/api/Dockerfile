@@ -35,7 +35,6 @@ ENV NODE_ENV=production
 
 WORKDIR /usr/src/app
 COPY --from=build ./usr/src/app/dist/apps/api/package.json ./usr/src/app/dist/apps/api/yarn.lock  ./
-RUN npm config set update-notifier false
 
 # install node-canvas dependencies
 RUN apk add --no-cache build-base cairo-dev jpeg-dev pango pango-dev giflib-dev imagemagick freetype fontconfig
