@@ -91,9 +91,9 @@ jobs:
                   tags: |
                       type=ref,event=branch
                       type=sha
-                  type=semver,pattern={{version}},value=${{needs.bumpVersion.outputs.newTag}}
-                  type=semver,pattern={{major}}.{{minor}},value=${{needs.bumpVersion.outputs.newTag}}
-                  type=semver,pattern={{raw}},value=${{needs.bumpVersion.outputs.newTag}}
+                      type=semver,pattern={{version}},value=${{needs.bumpVersion.outputs.newTag}}
+                      type=semver,pattern={{major}}.{{minor}},value=${{needs.bumpVersion.outputs.newTag}}
+                      type=semver,pattern={{raw}},value=${{needs.bumpVersion.outputs.newTag}}
 
             - name: Set correct version
               run: npm version ${{needs.bumpVersion.outputs.newTag}} --allow-same-version=true --git-tag-version=false
