@@ -9,7 +9,7 @@ import axiosBetterStacktrace from 'axios-better-stacktrace';
 import { helmetInstance } from './util/helmet';
 import { xssProtection } from 'lusca';
 import { requestLogger } from './util/logger';
-import { PORT, MONGODB_URI, GTM, DASHBOARD_URL, WALLET_URL, PUBLIC_URL } from './util/secrets';
+import { PORT, MONGODB_URI, GTM, DASHBOARD_URL, WALLET_URL, PUBLIC_URL, NODE_ENV } from './util/secrets';
 import { errorLogger, errorNormalizer, errorOutput, notFoundHandler, corsHandler } from './middlewares';
 import { mainRouter } from './controllers';
 
@@ -23,7 +23,8 @@ app.set('port', PORT);
 app.set('trust proxy', true);
 app.set('layout', './layouts/default');
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, '../assets/views'));
+
+app.set('views', path.join(__dirname, (NODE_ENV === 'test' ? '..' : '.') + '/assets/views'));
 app.use(compression());
 app.use(helmetInstance);
 app.use(corsHandler);
