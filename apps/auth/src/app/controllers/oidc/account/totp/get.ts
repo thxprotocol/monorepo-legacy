@@ -4,7 +4,7 @@ import { authenticator } from '@otplib/preset-default';
 import { AccountService } from '../../../../services/AccountService';
 import { ERROR_NO_ACCOUNT } from '../../../../util/messages';
 
-const validation: any[] = [];
+const validation = [];
 
 async function controller(req: Request, res: Response) {
     const { uid, session } = req.interaction;
