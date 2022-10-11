@@ -6,6 +6,7 @@
         "serve:docker": "docker-compose up --build -d",
         "serve:frontend": "yarn serve:docker && nx run-many --target=serve --projects=dashboard,wallet",
         "serve:backend": "yarn serve:docker && NODE_TLS_REJECT_UNAUTHORIZED='0' nx run-many --target=serve --projects=api,auth",
+        "serve:api": "NODE_TLS_REJECT_UNAUTHORIZED='0' nx run-many --target=serve --projects=api",
         "lock:api": "cd ./dist/apps/api && npm i --package-lock-only",
         "lock:auth": "cd ./dist/apps/auth && npm i --package-lock-only",
         "build": "nx build",
