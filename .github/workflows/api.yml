@@ -5,6 +5,7 @@ on:
         paths:
             - 'apps/api/**'
             - 'yarn.lock'
+            - '.github/workflows/api.yml'
 
 jobs:
     buildAndTest:
