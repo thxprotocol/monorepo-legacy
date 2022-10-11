@@ -1,8 +1,8 @@
 version: '3.5'
 
 services:
-    api_mongo:
-        container_name: thx_api_mongo
+    mongo:
+        container_name: thx_mongo
         image: mongo
         env_file: .env.example
         restart: always
@@ -17,8 +17,8 @@ services:
             - ./fixture/db:/docker-entrypoint-initdb.d/fixture
             - ./scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
 
-    api_hardhat:
-        container_name: thx_api_hardhat
+    hardhat:
+        container_name: thx_hardhat
         image: public.ecr.aws/o5j5y3t5/hardhat-thx-artifacts:4.0.4
         domainname: hardhat.thx.local
         volumes:
@@ -31,11 +31,11 @@ services:
             - VIRTUAL_HOST=hardhat.thx.local
             - VIRTUAL_PORT=8545
 
-    api_nginx:
+    nginx:
         image: nginx:1.17.10
-        container_name: thx_api_nginx
+        container_name: thx_nginx
         depends_on:
-            - api_hardhat
+            - hardhat
         volumes:
             - ./configs/nginx/nginx.conf:/etc/nginx/nginx.conf
             - ./certs/localhost.key:/etc/nginx/certs/nginx.key
