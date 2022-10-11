@@ -8,10 +8,11 @@
 # dependencies
 node_modules
 
-# API keys and secrets
+# API keys, secrets and certs
 .env*
-!.env.*.ci
+!.env.ci
 !.env.example
+certs/*
 
 # IDEs and editors
 /.idea

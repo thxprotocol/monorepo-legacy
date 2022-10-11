@@ -7,18 +7,16 @@ import { createTerminus } from '@godaddy/terminus';
 import { healthCheck } from './app/util/healthcheck';
 import { logger } from './app/util/logger';
 import { agenda } from './app/util/agenda';
-import path from 'path';
 import fs from 'fs';
-import { NODE_ENV } from './app/config/secrets';
+import { LOCAL_CERT, LOCAL_CERT_KEY, NODE_ENV } from './app/config/secrets';
+import path from 'path';
 
 let server;
-if (NODE_ENV === 'development') {
-    const dir = path.dirname(__dirname);
+if (LOCAL_CERT != '' && LOCAL_CERT_KEY != '') {
     server = https.createServer(
         {
-            key: fs.readFileSync(path.resolve(dir, '../../certs/localhost.key')),
-            cert: fs.readFileSync(path.resolve(dir, '../../certs/localhost.crt')),
-            ca: fs.readFileSync(path.resolve(dir, '../../certs/rootCA.crt')),
+            key: fs.readFileSync(path.resolve(path.dirname(__dirname), LOCAL_CERT_KEY)),
+            cert: fs.readFileSync(path.resolve(path.dirname(__dirname), LOCAL_CERT)),
         },
         app,
     );

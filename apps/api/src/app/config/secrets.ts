@@ -1,7 +1,3 @@
-import dotenv from 'dotenv';
-
-dotenv.config();
-
 const required = [
     'AUTH_URL',
     'API_URL',
@@ -13,7 +9,7 @@ const required = [
     'POLYGON_NAME',
     'MONGODB_URI',
     'PRIVATE_KEY',
-    'API_PORT',
+    'PORT',
     'AUTH_CLIENT_ID',
     'AUTH_CLIENT_SECRET',
     'RATE_LIMIT_REWARD_GIVE',
@@ -21,7 +17,7 @@ const required = [
     'INITIAL_ACCESS_TOKEN',
     'MAX_FEE_PER_GAS',
 ];
-
+console.log('port', process.env.PORT);
 required.forEach((value: string) => {
     if (!process.env[value]) {
         console.log(`Set ${value} environment variable.`);
@@ -53,7 +49,7 @@ export const POLYGON_RPC = process.env.POLYGON_RPC;
 export const POLYGON_NAME = process.env.POLYGON_NAME;
 export const MONGODB_URI = process.env.MONGODB_URI;
 export const PRIVATE_KEY = process.env.PRIVATE_KEY;
-export const PORT = process.env.API_PORT;
+export const PORT = process.env.PORT;
 export const AUTH_CLIENT_ID = process.env.AUTH_CLIENT_ID;
 export const AUTH_CLIENT_SECRET = process.env.AUTH_CLIENT_SECRET;
 export const RATE_LIMIT_REWARD_GIVE = Number(process.env.RATE_LIMIT_REWARD_GIVE);
@@ -85,6 +81,9 @@ export const MUMBAI_RELAYER_API_SECRET = process.env.MUMBAI_RELAYER_API_SECRET;
 export const POLYGON_RELAYER = process.env.POLYGON_RELAYER;
 export const POLYGON_RELAYER_API_KEY = process.env.POLYGON_RELAYER_API_KEY;
 export const POLYGON_RELAYER_API_SECRET = process.env.POLYGON_RELAYER_API_SECRET;
+
+export const LOCAL_CERT = process.env.LOCAL_CERT;
+export const LOCAL_CERT_KEY = process.env.LOCAL_CERT_KEY;
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 export const RELAYER_SPEED = 'fastest';

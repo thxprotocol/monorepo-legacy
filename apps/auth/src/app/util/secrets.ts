@@ -65,3 +65,5 @@ export const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
 export const AUTH_CLIENT_SECRET = process.env.AUTH_CLIENT_SECRET;
 export const AUTH_CLIENT_ID = process.env.AUTH_CLIENT_ID;
 export const JWKS_JSON = process.env.JWKS_JSON;
+export const LOCAL_CERT = process.env.LOCAL_CERT;
+export const LOCAL_CERT_KEY = process.env.LOCAL_CERT_KEY;
