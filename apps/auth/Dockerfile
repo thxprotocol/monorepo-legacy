@@ -12,7 +12,7 @@ COPY package.json yarn.lock ./
 RUN yarn
 COPY . .
 
-CMD [ "npx", "nx", "serve", "api" ]
+CMD [ "npx", "nx", "serve", "auth" ]
 
 #####################################################################################################
 ## Build stage
@@ -21,8 +21,8 @@ FROM node:16-alpine as build
 
 WORKDIR /usr/src/app
 COPY --from=develop ./usr/src/app/ ./
-RUN npx nx build api --prod
-COPY ./newrelic.js ./yarn.lock ./dist/apps/api/
+RUN npx nx build auth --prod
+COPY ./newrelic.js ./yarn.lock ./dist/apps/auth/
 
 
 #####################################################################################################
