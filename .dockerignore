@@ -3,5 +3,5 @@ node_modules
 cache
 dist
 docker-compose*
-.env
+.env*
 Dockerfile*

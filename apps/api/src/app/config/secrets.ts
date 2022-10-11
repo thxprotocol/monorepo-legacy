@@ -3,41 +3,39 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const required = [
-  'AUTH_URL',
-  'API_URL',
-  'WALLET_URL',
-  'DASHBOARD_URL',
-  'POLYGON_MUMBAI_RPC',
-  'POLYGON_MUMBAI_NAME',
-  'POLYGON_RPC',
-  'POLYGON_NAME',
-  'MONGODB_URI',
-  'PRIVATE_KEY',
-  'API_PORT',
-  'AUTH_CLIENT_ID',
-  'AUTH_CLIENT_SECRET',
-  'RATE_LIMIT_REWARD_GIVE',
-  'RATE_LIMIT_REWARD_GIVE_WINDOW',
-  'INITIAL_ACCESS_TOKEN',
-  'MAX_FEE_PER_GAS',
+    'AUTH_URL',
+    'API_URL',
+    'WALLET_URL',
+    'DASHBOARD_URL',
+    'POLYGON_MUMBAI_RPC',
+    'POLYGON_MUMBAI_NAME',
+    'POLYGON_RPC',
+    'POLYGON_NAME',
+    'MONGODB_URI',
+    'PRIVATE_KEY',
+    'API_PORT',
+    'AUTH_CLIENT_ID',
+    'AUTH_CLIENT_SECRET',
+    'RATE_LIMIT_REWARD_GIVE',
+    'RATE_LIMIT_REWARD_GIVE_WINDOW',
+    'INITIAL_ACCESS_TOKEN',
+    'MAX_FEE_PER_GAS',
 ];
 
 required.forEach((value: string) => {
-  if (!process.env[value]) {
-    console.log(`Set ${value} environment variable.`);
-    process.exit(1);
-  }
+    if (!process.env[value]) {
+        console.log(`Set ${value} environment variable.`);
+        process.exit(1);
+    }
 });
 
 // This allows you to use a single .env file with both regular and test configuration. This allows for an
 // easy to use setup locally without having hardcoded credentials during test runs.
 if (process.env.NODE_ENV === 'test') {
-  if (process.env.PORT_TEST_OVERRIDE !== undefined)
-    process.env.API_PORT = process.env.PORT_TEST_OVERRIDE;
-  if (process.env.MONGODB_URI_TEST_OVERRIDE !== undefined)
-    process.env.MONGODB_URI = process.env.MONGODB_URI_TEST_OVERRIDE;
-  if (process.env.HARDHAT_RPC_TEST_OVERRIDE)
-    process.env.HARDHAT_RPC = process.env.HARDHAT_RPC_TEST_OVERRIDE;
+    if (process.env.PORT_TEST_OVERRIDE !== undefined) process.env.API_PORT = process.env.PORT_TEST_OVERRIDE;
+    if (process.env.MONGODB_URI_TEST_OVERRIDE !== undefined)
+        process.env.MONGODB_URI = process.env.MONGODB_URI_TEST_OVERRIDE;
+    if (process.env.HARDHAT_RPC_TEST_OVERRIDE) process.env.HARDHAT_RPC = process.env.HARDHAT_RPC_TEST_OVERRIDE;
 }
 
 export const VERSION = 'v1';
@@ -58,18 +56,10 @@ export const PRIVATE_KEY = process.env.PRIVATE_KEY;
 export const PORT = process.env.API_PORT;
 export const AUTH_CLIENT_ID = process.env.AUTH_CLIENT_ID;
 export const AUTH_CLIENT_SECRET = process.env.AUTH_CLIENT_SECRET;
-export const RATE_LIMIT_REWARD_GIVE = Number(
-  process.env.RATE_LIMIT_REWARD_GIVE
-);
-export const RATE_LIMIT_REWARD_CLAIM = Number(
-  process.env.RATE_LIMIT_REWARD_CLAIM
-);
-export const RATE_LIMIT_REWARD_GIVE_WINDOW = Number(
-  process.env.RATE_LIMIT_REWARD_GIVE_WINDOW
-);
-export const RATE_LIMIT_REWARD_CLAIM_WINDOW = Number(
-  process.env.RATE_LIMIT_REWARD_CLAIM_WINDOW
-);
+export const RATE_LIMIT_REWARD_GIVE = Number(process.env.RATE_LIMIT_REWARD_GIVE);
+export const RATE_LIMIT_REWARD_CLAIM = Number(process.env.RATE_LIMIT_REWARD_CLAIM);
+export const RATE_LIMIT_REWARD_GIVE_WINDOW = Number(process.env.RATE_LIMIT_REWARD_GIVE_WINDOW);
+export const RATE_LIMIT_REWARD_CLAIM_WINDOW = Number(process.env.RATE_LIMIT_REWARD_CLAIM_WINDOW);
 export const INITIAL_ACCESS_TOKEN = process.env.INITIAL_ACCESS_TOKEN;
 export const CIRCULATING_SUPPLY = process.env.CIRCULATING_SUPPLY;
 export const MAX_FEE_PER_GAS = String(process.env.MAX_FEE_PER_GAS);
@@ -81,12 +71,9 @@ export const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
 export const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
 export const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
 export const AWS_S3_PUBLIC_BUCKET_NAME = process.env.AWS_S3_PUBLIC_BUCKET_NAME;
-export const AWS_S3_PUBLIC_BUCKET_REGION =
-  process.env.AWS_S3_PUBLIC_BUCKET_REGION;
-export const AWS_S3_PRIVATE_BUCKET_NAME =
-  process.env.AWS_S3_PRIVATE_BUCKET_NAME;
-export const AWS_S3_PRIVATE_BUCKET_REGION =
-  process.env.AWS_S3_PRIVATE_BUCKET_REGION;
+export const AWS_S3_PUBLIC_BUCKET_REGION = process.env.AWS_S3_PUBLIC_BUCKET_REGION;
+export const AWS_S3_PRIVATE_BUCKET_NAME = process.env.AWS_S3_PRIVATE_BUCKET_NAME;
+export const AWS_S3_PRIVATE_BUCKET_REGION = process.env.AWS_S3_PRIVATE_BUCKET_REGION;
 
 export const OZ_DEFENDER_API_KEY = process.env.OZ_DEFENDER_API_KEY;
 export const OZ_DEFENDER_API_SECRET = process.env.OZ_DEFENDER_API_SECRET;
@@ -97,8 +84,7 @@ export const MUMBAI_RELAYER_API_SECRET = process.env.MUMBAI_RELAYER_API_SECRET;
 
 export const POLYGON_RELAYER = process.env.POLYGON_RELAYER;
 export const POLYGON_RELAYER_API_KEY = process.env.POLYGON_RELAYER_API_KEY;
-export const POLYGON_RELAYER_API_SECRET =
-  process.env.POLYGON_RELAYER_API_SECRET;
+export const POLYGON_RELAYER_API_SECRET = process.env.POLYGON_RELAYER_API_SECRET;
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 export const RELAYER_SPEED = 'fastest';

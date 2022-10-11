@@ -4,6 +4,7 @@ on:
     push:
         paths:
             - 'apps/api/**'
+            - 'yarn.lock'
 
 jobs:
     buildAndTest:

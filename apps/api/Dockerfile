@@ -1,35 +1,48 @@
+
+#####################################################################################################
+## Develop stage
+#####################################################################################################
 FROM node:16-alpine as develop
 
 WORKDIR /usr/src/app
-RUN apk add g++ make py3-pip
-# install node-canvas dependencies
-RUN apk add build-base cairo-dev jpeg-dev pango pango-dev giflib-dev imagemagick freetype fontconfig
-COPY package-lock.json ./
-RUN npm ci
-COPY ./dist/apps/api .
 
-CMD [ "node", "main.js" ]
+RUN apk --no-cache add g++ make py3-pip build-base cairo-dev jpeg-dev pango pango-dev giflib-dev imagemagick freetype fontconfig
+COPY package.json yarn.lock ./
+RUN yarn
+COPY . .
 
+CMD [ "npx", "nx", "serve", "api" ]
 
+#####################################################################################################
+## Build stage
+#####################################################################################################
 FROM node:16-alpine as build
+
+ENV NODE_ENV=production
 
 WORKDIR /usr/src/app
 COPY --from=develop ./usr/src/app/ ./
-RUN npm run build
-COPY newrelic.js dist/newrelic.js
+RUN npx nx build api --prod
+COPY ./apps/api/newrelic.js ./yarn.lock ./dist/apps/api/
 
+
+#####################################################################################################
+## Production stage
+#####################################################################################################
 FROM node:16-alpine as production
 
 ENV NODE_ENV=production
-WORKDIR /usr/src/app
-COPY package* ./
-RUN npm config set update-notifier false
-RUN apk add --virtual .build g++ make py3-pip && \
-    # install node-canvas dependencies
-    apk add build-base cairo-dev jpeg-dev pango pango-dev giflib-dev imagemagick freetype fontconfig && \
-    npm ci --production && \
-    apk del .build
-COPY --from=build ./usr/src/app/dist ./
-COPY tsconfig.json ./
 
-CMD [ "-r", "tsconfig-paths/register", "src/server.js" ]
+WORKDIR /usr/src/app
+COPY --from=build ./usr/src/app/dist/apps/api/package.json ./usr/src/app/dist/apps/api/yarn.lock  ./
+RUN npm config set update-notifier false
+
+# install node-canvas dependencies
+RUN apk add --no-cache build-base cairo-dev jpeg-dev pango pango-dev giflib-dev imagemagick freetype fontconfig
+
+RUN apk add --no-cache --virtual .build g++ make py3-pip && \
+    yarn && \
+    apk del .build
+COPY --from=build ./usr/src/app/dist/apps/api ./
+
+CMD [ "main.js" ]

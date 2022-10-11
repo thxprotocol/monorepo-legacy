@@ -8,12 +8,13 @@ services:
         container_name: thx_api
         build:
             context: .
-            target: develop
+            dockerfile: apps/api/Dockerfile
+            target: production
         env_file:
             - .env.example
-            - .env.ci
+            - .env.api.ci
         ports:
             - 3001:3000
         depends_on:
-            - api_mongo
-            - api_hardhat
+            - mongo
+            - hardhat
