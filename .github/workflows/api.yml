@@ -4,6 +4,7 @@ on:
     push:
         paths:
             - 'apps/api/**'
+            - 'libs/**'
             - 'yarn.lock'
             - '.github/workflows/api.yml'
 
@@ -32,85 +33,85 @@ jobs:
               run: |
                   docker compose -f docker-compose.yml -f docker-compose.api.yml run -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} -T api sh -c "npx nx lint api && npx nx test api"
 
-    bumpVersion:
-        name: 'Bump Version on main'
-        runs-on: ubuntu-latest
-        if: github.ref == 'refs/heads/main'
-        needs: buildAndTest
-        outputs:
-            newTag: ${{ steps.version-bump.outputs.newTag }}
+    # bumpVersion:
+    #     name: 'Bump Version on main'
+    #     runs-on: ubuntu-latest
+    #     if: github.ref == 'refs/heads/main'
+    #     needs: buildAndTest
+    #     outputs:
+    #         newTag: ${{ steps.version-bump.outputs.newTag }}
 
-        steps:
-            - name: 'Checkout source code'
-              uses: 'actions/checkout@v2'
-              with:
-                  ref: ${{ github.ref }}
+    #     steps:
+    #         - name: 'Checkout source code'
+    #           uses: 'actions/checkout@v2'
+    #           with:
+    #               ref: ${{ github.ref }}
 
-            - name: 'Automated Version Bump'
-              id: version-bump
-              uses: 'phips28/gh-action-bump-version@master'
-              with:
-                  tag-prefix: 'v'
-                  commit-message: 'CI: bumps version to {{version}} for API [skip ci]'
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  PACKAGEJSON_DIR: 'apps/api'
+    #         - name: 'Automated Version Bump'
+    #           id: version-bump
+    #           uses: 'phips28/gh-action-bump-version@master'
+    #           with:
+    #               tag-prefix: 'v'
+    #               commit-message: 'CI: bumps version to {{version}} for API [skip ci]'
+    #           env:
+    #               GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #               PACKAGEJSON_DIR: 'apps/api'
+
+    # buildAndPushImage:
+    #     name: Build and Push docker image
+    #     runs-on: ubuntu-latest
+    #     if: github.ref == 'refs/heads/main'
+    #     needs: buildAndTest
+    #     steps:
+    #         - name: Checkout
+    #           uses: actions/checkout@v2
+
+    #         - name: Install Node.js 16.x
+    #           uses: actions/setup-node@v1
+    #           with:
+    #               node-version: 16.x
+
+    #         - name: Configure AWS credentials
+    #           uses: aws-actions/configure-aws-credentials@v1
+    #           with:
+    #               aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #               aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #               aws-region: eu-west-3
+
+    #         - name: Login to ECR
+    #           uses: docker/login-action@v1
+    #           with:
+    #               registry: 275440070213.dkr.ecr.eu-west-3.amazonaws.com
+
+    #         - name: Docker meta
+    #           id: meta
+    #           uses: docker/metadata-action@v3
+    #           with:
+    #               images: |
+    #                   275440070213.dkr.ecr.eu-west-3.amazonaws.com/api
+    #               tags: |
+    #                   type=ref,event=branch
+    #                   type=sha
+    #                   type=semver,pattern={{version}},value=${{needs.bumpVersion.outputs.newTag}}
+    #                   type=semver,pattern={{major}}.{{minor}},value=${{needs.bumpVersion.outputs.newTag}}
+    #                   type=semver,pattern={{raw}},value=${{needs.bumpVersion.outputs.newTag}}
+
+    #         - name: Set correct version
+    #           run: npm version ${{needs.bumpVersion.outputs.newTag}} --allow-same-version=true --git-tag-version=false
+    #           working-directory: ./apps/api
+
+    #         - name: Build
+    #           uses: docker/build-push-action@v2
+    #           with:
+    #               context: .
+    #               push: true
+    #               tags: ${{ steps.meta.outputs.tags }}
+    #               labels: ${{ steps.meta.outputs.labels }}
 
     buildAndPushImage:
         name: Build and Push docker image
         runs-on: ubuntu-latest
-        if: github.ref == 'refs/heads/main'
-        needs: bumpVersion
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v2
-
-            - name: Install Node.js 16.x
-              uses: actions/setup-node@v1
-              with:
-                  node-version: 16.x
-
-            - name: Configure AWS credentials
-              uses: aws-actions/configure-aws-credentials@v1
-              with:
-                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                  aws-region: eu-west-3
-
-            - name: Login to ECR
-              uses: docker/login-action@v1
-              with:
-                  registry: 275440070213.dkr.ecr.eu-west-3.amazonaws.com
-
-            - name: Docker meta
-              id: meta
-              uses: docker/metadata-action@v3
-              with:
-                  images: |
-                      275440070213.dkr.ecr.eu-west-3.amazonaws.com/api
-                  tags: |
-                      type=ref,event=branch
-                      type=sha
-                      type=semver,pattern={{version}},value=${{needs.bumpVersion.outputs.newTag}}
-                      type=semver,pattern={{major}}.{{minor}},value=${{needs.bumpVersion.outputs.newTag}}
-                      type=semver,pattern={{raw}},value=${{needs.bumpVersion.outputs.newTag}}
-
-            - name: Set correct version
-              run: npm version ${{needs.bumpVersion.outputs.newTag}} --allow-same-version=true --git-tag-version=false
-              working-directory: ./apps/api
-
-            - name: Build
-              uses: docker/build-push-action@v2
-              with:
-                  context: .
-                  push: true
-                  tags: ${{ steps.meta.outputs.tags }}
-                  labels: ${{ steps.meta.outputs.labels }}
-
-    buildAndPushHotfixImage:
-        name: Build and Push hotfix docker image
-        runs-on: ubuntu-latest
-        if: startsWith(github.ref,'refs/heads/hotfix/')
+        if: startsWith(github.ref,'refs/heads/hotfix/') || github.ref == 'refs/heads/main'
         needs: buildAndTest
         steps:
             - name: Checkout
