@@ -28,6 +28,9 @@ export interface TAccount {
     twitterAccessToken: string;
     twitterRefreshToken: string;
     twitterAccessTokenExpires: number;
+    githubAccessToken: string,
+    githubRefreshToken: string,
+    githubAccessTokenRefresh: number,
     twitterId?: string;
     spotifyAccessToken: string;
     spotifyRefreshToken: string;
