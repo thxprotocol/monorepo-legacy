@@ -1,3 +1,4 @@
+import { GithubService } from './../../../services/GithubServices';
 import { Request, Response } from 'express';
 import { AUTH_URL, WALLET_URL } from '../../../config/secrets';
 import { SpotifyService } from '../../../services/SpotifyService';
@@ -10,6 +11,7 @@ async function controller(req: Request, res: Response) {
     params.googleLoginUrl = YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getBasicScopes());
 
     if (params.return_url === WALLET_URL) {
+        params.githubLoginUrl === GithubService.getLoginURL(uid, {});
         params.twitterLoginUrl = TwitterService.getLoginURL(uid, {});
         params.spotifyLoginUrl = SpotifyService.getLoginURL(uid, {});
         params.authRequestMessage = createTypedMessage(AUTH_REQUEST_TYPED_MESSAGE, AUTH_URL, uid);
