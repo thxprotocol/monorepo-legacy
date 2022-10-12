@@ -1,7 +1,5 @@
 const axios = require('axios');
 
-require('dotenv').config();
-
 async function getAuthAccessToken() {
     const data = new URLSearchParams();
     data.append('grant_type', 'client_credentials');

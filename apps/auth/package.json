@@ -1,0 +1,8 @@
+{
+    "name": "@thxnetwork/auth",
+    "author": "Peter Polman",
+    "license": "AGPL-3.0",
+    "scripts": {
+        "migrate": "echo 'not implemented'"
+    }
+}

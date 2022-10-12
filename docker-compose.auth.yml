@@ -1,0 +1,19 @@
+version: '3.5'
+
+# This compose file only works when used in conjunction with the default docker-compose file.
+# docker compose -f docker-compose.yml -r docker-compose.auth.yml
+
+services:    
+    auth:
+        container_name: thx_auth
+        build:
+            context: .
+            dockerfile: apps/auth/Dockerfile
+            target: develop
+        env_file: 
+          - apps/auth/.env.example
+          - apps/auth/.env.ci
+        ports:
+            - 3031:3030
+        depends_on:
+            - mongo
