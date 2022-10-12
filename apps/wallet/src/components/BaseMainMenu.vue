@@ -1,14 +1,10 @@
 <template>
     <b-button-group>
-        <b-button to="/tokens" :variant="path === '/tokens' ? 'secondary' : 'darker'">
-            Tokens
-        </b-button>
+        <b-button to="/tokens" :variant="path === '/tokens' ? 'secondary' : 'darker'"> Tokens </b-button>
         <b-button to="/collectibles" :variant="path === '/collectibles' ? 'secondary' : 'darker'">
             Collectibles
         </b-button>
-        <b-button to="/memberships" :variant="path === '/memberships' ? 'secondary' : 'darker'">
-            Memberships
-        </b-button>
+        <b-button to="/memberships" :variant="path === '/memberships' ? 'secondary' : 'darker'"> Memberships </b-button>
     </b-button-group>
 </template>
 <script lang="ts">
