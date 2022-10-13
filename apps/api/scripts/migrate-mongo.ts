@@ -1,5 +1,4 @@
 import program from 'commander';
-import * as Table from 'cli-table3';
 import migrateMongo from 'migrate-mongo';
 import migrateMongoConfig from '../src/app/config/migrate-mongo';
 
