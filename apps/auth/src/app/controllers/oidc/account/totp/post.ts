@@ -4,7 +4,7 @@ import { AccountService } from '../../../../services/AccountService';
 import { ERROR_NO_ACCOUNT } from '../../../../util/messages';
 import { body } from 'express-validator';
 
-const validation: any[] = [body('code').exists(), body('otpSecret').exists()];
+const validation = [body('code').exists(), body('otpSecret').exists()];
 
 async function controller(req: Request, res: Response) {
     const { uid, session } = req.interaction;
