@@ -2,6 +2,7 @@
     "name": "@thxnetwork/api",
     "author": "Peter Polman",
     "license": "AGPL-3.0",
+    "version": "1.26.2",
     "scripts": {
         "migrate": "echo 'not implemented'"
     }

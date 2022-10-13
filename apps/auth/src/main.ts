@@ -28,7 +28,7 @@ const options = {
         '/healthcheck': healthCheck,
         'verbatim': true,
     },
-    onSignal: (): Promise<any> => {
+    onSignal: () => {
         logger.info('Server shutting down');
         return Promise.all([db.disconnect()]);
     },

@@ -1,4 +1,4 @@
-import { ExternalUrls } from "./Playlist";
+import { ExternalUrls } from './Playlist';
 
 export interface AddedBy {
     external_urls: ExternalUrls;
@@ -16,7 +16,6 @@ export interface Artist {
     type: string;
     uri: string;
 }
-
 
 export interface Image {
     height: number;
@@ -39,8 +38,6 @@ export interface Album {
     type: string;
     uri: string;
 }
-
-
 
 export interface ExternalIds {
     isrc: string;
