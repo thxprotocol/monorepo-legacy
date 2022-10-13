@@ -9,4 +9,5 @@ export default {
     migrationsDir: path.join(path.resolve(__dirname), 'app/migrations'),
     changelogCollectionName: 'changelog',
     useFileHash: false,
+    moduleSystem: 'commonjs',
 };
