@@ -60,7 +60,7 @@
                 "runInBand": true
             }
         },
-        "migratecontracts": {
+        "migrate:contracts": {
             "dependsOn": ["build"],
             "executor": "nx:run-commands",
             "options": {
