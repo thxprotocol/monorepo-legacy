@@ -2,7 +2,7 @@ import morgan from 'morgan';
 import json from 'morgan-json';
 import winston from 'winston';
 import { Request } from 'express';
-import { NODE_ENV, VERSION } from './secrets';
+import { NODE_ENV, VERSION } from '../config/secrets';
 
 const formatWinston = winston.format.combine(
     winston.format.timestamp({

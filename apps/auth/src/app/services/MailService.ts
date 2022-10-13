@@ -4,7 +4,7 @@ import path from 'path';
 
 import { AccountDocument } from '../models/Account';
 import { createRandomToken } from '../util/tokens';
-import { AUTH_URL, SECURE_KEY, WALLET_URL, SENDGRID_API_KEY } from '../util/secrets';
+import { AUTH_URL, SECURE_KEY, WALLET_URL, SENDGRID_API_KEY } from '../config/secrets';
 import { encryptString } from '../util/encrypt';
 import { logger } from '../util/logger';
 

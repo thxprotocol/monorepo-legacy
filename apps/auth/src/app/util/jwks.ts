@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import jose from 'jose';
-import { JWKS_JSON } from '../util/secrets';
+import { JWKS_JSON } from '../config/secrets';
 import { logger } from './logger';
 
 export function getJwks() {
