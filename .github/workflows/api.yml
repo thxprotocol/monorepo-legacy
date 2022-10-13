@@ -35,29 +35,30 @@ jobs:
                   -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} -T \
                   api sh -c "npx nx lint api && npx nx test api"
 
-    # bumpVersion:
-    #     name: 'Bump Version on main'
-    #     runs-on: ubuntu-latest
-    #     if: github.ref == 'refs/heads/main'
-    #     needs: buildAndTest
-    #     outputs:
-    #         newTag: ${{ steps.version-bump.outputs.newTag }}
+    bumpVersion:
+        name: 'Bump Version on main'
+        runs-on: ubuntu-latest
+        # if: github.ref == 'refs/heads/main'
+        needs: buildAndTest
+        outputs:
+            newTag: ${{ steps.version-bump.outputs.newTag }}
 
-    #     steps:
-    #         - name: 'Checkout source code'
-    #           uses: 'actions/checkout@v2'
-    #           with:
-    #               ref: ${{ github.ref }}
+        steps:
+            - name: 'Checkout source code'
+              uses: 'actions/checkout@v2'
+              with:
+                  ref: ${{ github.ref }}
 
-    #         - name: 'Automated Version Bump'
-    #           id: version-bump
-    #           uses: 'phips28/gh-action-bump-version@master'
-    #           with:
-    #               tag-prefix: 'v'
-    #               commit-message: 'CI: bumps version to {{version}} for API [skip ci]'
-    #           env:
-    #               GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #               PACKAGEJSON_DIR: 'apps/api'
+            - name: 'Automated Version Bump'
+              id: version-bump
+              uses: 'phips28/gh-action-bump-version@master'
+              with:
+                  tag-prefix: 'v'
+                  commit-message: 'CI: bumps version to {{version}} for API [skip ci]'
+                  skip-push: true
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  PACKAGEJSON_DIR: 'apps/api'
 
     # buildAndPushImage:
     #     name: Build and Push docker image
