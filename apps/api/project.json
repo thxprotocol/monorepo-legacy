@@ -61,7 +61,7 @@
             }
         },
         "migrate:contracts": {
-            "dependsOn": ["build"],
+            "dependsOn": ["^build"],
             "executor": "nx:run-commands",
             "options": {
                 "command": "node upgradeContractsToLatest.js",
