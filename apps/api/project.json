@@ -10,11 +10,16 @@
                 "outputPath": "dist/apps/api",
                 "main": "apps/api/src/main.ts",
                 "tsConfig": "apps/api/tsconfig.app.json",
-                "assets": ["apps/api/src/assets"],
+                "target": "web",
+                "assets": ["apps/api/src/assets", "apps/api/src/app/migrations"],
                 "additionalEntryPoints": [
                     {
                         "entryPath": "apps/api/scripts/upgradeContractsToLatest.ts",
                         "entryName": "upgradeContractsToLatest"
+                    },
+                    {
+                        "entryPath": "apps/api/scripts/migrate-mongo.ts",
+                        "entryName": "migrate-mongo"
                     }
                 ],
                 "generatePackageJson": true
@@ -65,6 +70,14 @@
             "executor": "nx:run-commands",
             "options": {
                 "command": "node upgradeContractsToLatest.js",
+                "cwd": "dist/apps/api"
+            }
+        },
+        "migrate:db": {
+            "dependsOn": ["^build"],
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "node migrate-mongo.js up",
                 "cwd": "dist/apps/api"
             }
         }

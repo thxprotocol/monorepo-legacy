@@ -65,7 +65,7 @@
         "jwks-rsa": "^2.1.4",
         "lodash": "^4.17.21",
         "lusca": "^1.6.1",
-        "migrate-mongo": "^8.2.3",
+        "migrate-mongo": "^9.0.0",
         "moment": "^2.29.4",
         "mongodb": "^4.3.1",
         "mongoose": "^6.4.6",
