@@ -50,7 +50,8 @@
             "outputs": ["coverage/apps/auth"],
             "options": {
                 "jestConfig": "apps/auth/jest.config.ts",
-                "passWithNoTests": true
+                "passWithNoTests": true,
+                "runInBand": true
             }
         }
     },
