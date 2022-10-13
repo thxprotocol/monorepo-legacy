@@ -1,9 +1,19 @@
 {
     "name": "@thxnetwork/api",
-    "author": "Peter Polman",
+    "contributors": [
+        "Peter Polman <peter@thx.network>",
+        "Valeria Grazzini <vgrazzini@gmail.com>",
+        "GarfDev <garfdev.13@gmail.com>",
+        "Bram Rongen <mail@bramrongen.nl>",
+        "Justina Mary <justinamary27@gmail.com>",
+        "Evert Kors <evert@hatching.io>",
+        "jochemvn <jochemvn@gmail.com>"
+    ],
     "license": "AGPL-3.0",
     "version": "1.26.3",
     "scripts": {
-        "migrate": "echo 'not implemented'"
+        "migrate": "yarn run migrate:db && yarn run migrate:contracts",
+        "migrate:contracts": "node upgradeContractsToLatest.js",
+        "migrate:db": "echo 'not implemented'"
     }
 }

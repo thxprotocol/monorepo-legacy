@@ -11,6 +11,12 @@
                 "main": "apps/api/src/main.ts",
                 "tsConfig": "apps/api/tsconfig.app.json",
                 "assets": ["apps/api/src/assets"],
+                "additionalEntryPoints": [
+                    {
+                        "entryPath": "apps/api/scripts/upgradeContractsToLatest.ts",
+                        "entryName": "upgradeContractsToLatest"
+                    }
+                ],
                 "generatePackageJson": true
             },
             "configurations": {
@@ -52,6 +58,14 @@
                 "jestConfig": "apps/api/jest.config.ts",
                 "passWithNoTests": false,
                 "runInBand": true
+            }
+        },
+        "migrate:contracts": {
+            "dependsOn": ["^build"],
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "node upgradeContractsToLatest.js",
+                "cwd": "dist/apps/api"
             }
         }
     },
