@@ -9,7 +9,7 @@ import axiosBetterStacktrace from 'axios-better-stacktrace';
 import { helmetInstance } from './util/helmet';
 import { xssProtection } from 'lusca';
 import { requestLogger } from './util/logger';
-import { PORT, MONGODB_URI, GTM, DASHBOARD_URL, WALLET_URL, PUBLIC_URL, NODE_ENV } from './util/secrets';
+import { PORT, MONGODB_URI, GTM, DASHBOARD_URL, WALLET_URL, PUBLIC_URL, NODE_ENV } from './config/secrets';
 import { errorLogger, errorNormalizer, errorOutput, notFoundHandler, corsHandler } from './middlewares';
 import { mainRouter } from './controllers';
 

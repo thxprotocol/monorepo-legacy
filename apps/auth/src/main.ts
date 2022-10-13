@@ -8,7 +8,7 @@ import { healthCheck } from './app/util/healthcheck';
 import { logger } from './app/util/logger';
 import fs from 'fs';
 import path from 'path';
-import { LOCAL_CERT, LOCAL_CERT_KEY } from './app/util/secrets';
+import { LOCAL_CERT, LOCAL_CERT_KEY } from './app/config/secrets';
 
 let server;
 if (LOCAL_CERT && LOCAL_CERT_KEY) {

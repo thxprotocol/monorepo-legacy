@@ -1,6 +1,6 @@
 import { Provider } from 'oidc-provider';
 import configuration from '../config/oidc';
-import { AUTH_URL, NODE_ENV } from './secrets';
+import { AUTH_URL, NODE_ENV } from '../config/secrets';
 import { AccountService } from '../services/AccountService';
 import { validateEmail } from './validate';
 import { AccountVariant } from '../types/enums/AccountVariant';

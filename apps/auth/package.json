@@ -10,6 +10,7 @@
     "license": "AGPL-3.0",
     "version": "1.12.13",
     "scripts": {
-        "migrate": "echo 'not implemented'"
+        "migrate": "node migrate-mongo.js up",
+        "migrate:down": "node migrate-mongo.js down"
     }
 }

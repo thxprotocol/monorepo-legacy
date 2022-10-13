@@ -6,7 +6,7 @@ import BrandProxy from '../../../proxies/BrandProxy';
 import { BadRequestError } from '../../../util/errors';
 import ClaimProxy from '../../../proxies/ClaimProxy';
 import { AUTH_REQUEST_TYPED_MESSAGE, createTypedMessage } from '../../../util/typedMessage';
-import { AUTH_URL } from '../../../util/secrets';
+import { AUTH_URL } from '../../../config/secrets';
 
 async function controller(req: Request, res: Response) {
     const { uid, params } = req.interaction;

@@ -1,6 +1,6 @@
 import cors from 'cors';
 import { Client } from '../models/Client';
-import { AUTH_URL, WALLET_URL, DASHBOARD_URL, WIDGETS_URL } from '../util/secrets';
+import { AUTH_URL, WALLET_URL, DASHBOARD_URL, WIDGETS_URL } from '../config/secrets';
 
 export const corsHandler = cors(async (req: any, callback: any) => {
     const origin = req.header('Origin');
