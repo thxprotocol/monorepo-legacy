@@ -2,16 +2,14 @@ import { Request, Response } from 'express';
 import newrelic from 'newrelic';
 import { fromWei } from 'web3-utils';
 
-import {
-    diamondFacetAddresses, getContractConfig, getContractFromName
-} from '@thxnetwork/api/config/contracts';
+import { diamondFacetAddresses, getContractConfig, getContractFromName } from '@thxnetwork/api/config/contracts';
 import { NODE_ENV } from '@thxnetwork/api/config/secrets';
 import { ChainId } from '@thxnetwork/api/types/enums';
 import { logger } from '@thxnetwork/api/util/logger';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { currentVersion, diamondVariants } from '@thxnetwork/artifacts';
 
-import { license, name, version } from '../../../../../../package.json';
+import { license, name, version } from '../../../../package.json';
 
 function handleError(error: Error) {
     newrelic.noticeError(error);
