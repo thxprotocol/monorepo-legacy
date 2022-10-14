@@ -44,13 +44,16 @@ export default class CredentialManager extends CacheManager<Credential> {
                 extraQueryParams['verifyEmailToken'] = payload['verifyEmailToken'];
             }
 
-            await this.client.userManager.cached.clearStaleState();
+            if (extraQueryParams['prompt']) {
+                await this.client.userManager.cached.clearStaleState();
 
-            return await this.client.userManager.cached.signinRedirect({
-                extraQueryParams,
-            });
+                return await this.client.userManager.cached.signinRedirect({
+                    extraQueryParams,
+                });
+            }
 
             const user = await this.client.userManager.signinRedirectCallback();
+
             if (window.history) {
                 window.history.pushState({}, document.title, window.location.pathname);
             }
