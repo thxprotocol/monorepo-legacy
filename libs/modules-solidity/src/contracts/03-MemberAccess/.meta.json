@@ -1,4 +1,0 @@
-{
-  "implements": ["TMP2", "TMP3"],
-  "depends": ["TMP1"]
-}

@@ -1,4 +1,4 @@
-import { version as currentVersion } from '../../package.json';
+import { version as currentVersion } from '../package.json';
 import { AbiItem } from 'web3-utils';
 import fs from 'fs';
 import path from 'path';
@@ -7,33 +7,55 @@ export const networkNames = ['mumbai', 'matic', 'mumbaidev', 'maticdev', 'hardha
 export type TNetworkName = typeof networkNames[number];
 
 export const contractNames = [
-    'AssetPoolRegistry',
-    'AssetPoolFactory',
-    'TokenFactory',
-    'LimitedSupplyToken',
-    'AccessControl',
-    'MemberAccess',
-    'Token',
-    'BasePollProxy',
-    'RelayHubFacet',
-    'Withdraw',
-    'WithdrawPoll',
-    'WithdrawPollProxy',
-    'WithdrawBy',
-    'WithdrawByPoll',
-    'WithdrawByPollProxy',
+    // Default
     'DiamondCutFacet',
     'DiamondLoupeFacet',
     'OwnershipFacet',
-    'AssetPoolFactoryFacet',
+
+    // Diamonds
+    'Factory',
+    'Registry',
+
+    // Facets
+    'FactoryFacet',
+    'RegistryFacet',
+    'RegistryProxyFacet',
+    'AccessControlFacet',
+    'ERC20ProxyFacet',
+    'ERC20DepositFacet',
+    'ERC20WithdrawFacet',
+    'ERC20SwapFacet',
+    'ERC721ProxyFacet',
+
+    // Wallet
+    'SharedWallet',
+
+    // Deprecated facets
+    'TokenFactory',
+    'PoolRegistry',
+    'PoolFactory',
     'TokenFactoryFacet',
     'PoolRegistryFacet',
+    'PoolFactoryFacet',
+    'ERC20Facet',
+    'ERC721Facet',
+    'BasePollProxyFacet',
+    'RelayHubFacet',
+    'WithdrawFacet',
+    'WithdrawPollFacet',
+    'WithdrawPollProxyFacet',
+    'WithdrawByFacet',
+    'WithdrawByPollFacet',
+    'WithdrawByPollProxyFacet',
 ] as const;
 export type ContractName = typeof contractNames[number];
+export const tokenContractNames = ['LimitedSupplyToken', 'UnlimitedSupplyToken', 'NonFungibleToken'] as const;
+export type TokenContractName = typeof tokenContractNames[number];
 
 export interface ContractConfig {
     address: string;
     abi: AbiItem[];
+    bytecode: string;
 }
 
 export interface ExportJsonFile {
@@ -42,21 +64,18 @@ export interface ExportJsonFile {
     contracts: { [key: string]: ContractConfig };
 }
 
-export type DiamondVariant = 'defaultPool' | 'assetPoolFactory' | 'tokenFactory' | 'assetPoolRegistry';
+export type DiamondVariant = 'defaultDiamond' | 'registry' | 'factory';
 const diamondVariantsConfig: { [key in DiamondVariant]: ContractName[] } = {
-    defaultPool: [
-        'AccessControl',
-        'MemberAccess',
-        'Token',
-        'BasePollProxy',
-        'RelayHubFacet',
-        'WithdrawBy',
-        'WithdrawByPoll',
-        'WithdrawByPollProxy',
+    defaultDiamond: [
+        'RegistryProxyFacet',
+        'ERC20ProxyFacet',
+        'ERC20DepositFacet',
+        'ERC20WithdrawFacet',
+        'ERC20SwapFacet',
+        'ERC721ProxyFacet',
     ],
-    assetPoolFactory: ['AssetPoolFactoryFacet'],
-    tokenFactory: ['TokenFactoryFacet'],
-    assetPoolRegistry: ['PoolRegistryFacet'],
+    registry: ['RegistryFacet'],
+    factory: ['FactoryFacet'],
 };
 
 export const diamondVariants = Object.keys(diamondVariantsConfig) as DiamondVariant[];
@@ -112,7 +131,7 @@ export const diamondAbi = (network: TNetworkName, variant: DiamondVariant, versi
 
 export const contractConfig = (
     network: TNetworkName,
-    contractName: ContractName,
+    contractName: ContractName | TokenContractName,
     version?: string | undefined,
 ): ContractConfig => {
     const artifacts = getArtifacts(network, version || currentVersion);
@@ -129,6 +148,10 @@ export const availableVersions = (network: TNetworkName): string[] => {
     }
 
     return cache[network].versions;
+};
+
+export const networkChainId = (network: TNetworkName): string => {
+    return getArtifacts(network, currentVersion).chainId;
 };
 
 export { currentVersion };

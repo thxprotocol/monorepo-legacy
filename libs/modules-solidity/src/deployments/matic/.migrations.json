@@ -1,6 +1,4 @@
 {
-  "001_registry": 1647504666,
-  "002_asset_pool_factory": 1647505378,
-  "003_token_factory": 1647505391,
-  "004_example_token": 1647505402
+  "001_registry_factory": 1660129682,
+  "004_example_token": 1660129830
 }
