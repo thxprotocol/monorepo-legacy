@@ -3,7 +3,7 @@
     "sourceRoot": "libs/modules-solidity/src",
     "projectType": "library",
     "targets": {
-        "complie": {
+        "compile": {
             "executor": "nx:run-commands",
             "options": {
                 "commands": ["npx hardhat compile"],
@@ -11,15 +11,10 @@
             }
         },
         "build": {
-            "executor": "@nrwl/js:tsc",
-            "outputs": ["{options.outputPath}"],
-            "options": {
-                "outputPath": "dist/libs/modules-solidity",
-                "tsConfig": "libs/modules-solidity/tsconfig.lib.json",
-                "packageJson": "libs/modules-solidity/package.json",
-                "main": "libs/modules-solidity/src/index.ts",
-                "assets": ["libs/modules-solidity/*.md"]
-            }
+          "executor": "nx:run-commands",
+          "options": {
+            "commands": ["npx hardhat compile"],
+            "cwd": "libs/modules-solidity"
         },
         "lint": {
             "executor": "@nrwl/linter:eslint",

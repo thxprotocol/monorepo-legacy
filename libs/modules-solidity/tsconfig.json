@@ -5,7 +5,7 @@
         "hardhat.config.ts",
         "./scripts",
         "./deploy",
-        "src/test",
+        "test",
         "src/exports",
         "src/exports/**/*.json",
         "typechain/**/*"
