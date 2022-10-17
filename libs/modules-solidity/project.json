@@ -11,25 +11,26 @@
             }
         },
         "build": {
-          "executor": "nx:run-commands",
-          "options": {
-            "commands": ["npx hardhat compile"],
-            "cwd": "libs/modules-solidity"
-        },
-        "lint": {
-            "executor": "@nrwl/linter:eslint",
-            "outputs": ["{options.outputFile}"],
-            "options": {
-                "lintFilePatterns": ["libs/modules-solidity/**/*.ts"]
-            }
-        },
-        "test": {
             "executor": "nx:run-commands",
             "options": {
-                "commands": ["npx hardhat test"],
+                "commands": ["npx hardhat compile"],
                 "cwd": "libs/modules-solidity"
+            },
+            "lint": {
+                "executor": "@nrwl/linter:eslint",
+                "outputs": ["{options.outputFile}"],
+                "options": {
+                    "lintFilePatterns": ["libs/modules-solidity/**/*.ts"]
+                }
+            },
+            "test": {
+                "executor": "nx:run-commands",
+                "options": {
+                    "commands": ["npx hardhat test"],
+                    "cwd": "libs/modules-solidity"
+                }
             }
-        }
-    },
-    "tags": ["solidity"]
+        },
+        "tags": ["solidity"]
+    }
 }
