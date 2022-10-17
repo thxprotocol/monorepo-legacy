@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { default as ERC721Abi } from '@thxnetwork/artifacts/dist/exports/abis/NonFungibleToken.json';
+import { default as ERC721Abi } from '@thxnetwork/contracts/exports/abis/NonFungibleToken.json';
 import { Contract } from 'web3-eth-contract';
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
 import axios from 'axios';

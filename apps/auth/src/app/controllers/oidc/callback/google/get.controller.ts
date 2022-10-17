@@ -5,7 +5,7 @@ import { parseJwt } from '../../../../util/jwt';
 import { AccountDocument } from '../../../../models/Account';
 import { getAccountByEmail, saveInteraction } from '../../../../util/oidc';
 import { YouTubeService } from '../../../../services/YouTubeService';
-import { WALLET_URL } from '../../../../util/secrets';
+import { WALLET_URL } from '../../../../config/secrets';
 import { getChannelScopes } from '../../../../util/social';
 import { AccountVariant } from '../../../../types/enums/AccountVariant';
 

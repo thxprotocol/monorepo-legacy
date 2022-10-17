@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { AccountService } from '../../../services/AccountService';
 import airtable from '../../../util/airtable';
-import { DASHBOARD_URL } from '../../../util/secrets';
+import { DASHBOARD_URL } from '../../../config/secrets';
 
 async function controller(req: Request, res: Response) {
     const { uid, params } = req.interaction;

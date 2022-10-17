@@ -4,7 +4,7 @@ import { Contract } from 'web3-eth-contract';
 import { uniq } from '.';
 import { ChainId } from '@thxnetwork/api/types/enums';
 import { diamondContracts } from '@thxnetwork/api/config/contracts';
-import { DiamondVariant } from '@thxnetwork/artifacts';
+import { DiamondVariant } from '@thxnetwork/contracts/exports';
 import { ADDRESS_ZERO } from '@thxnetwork/api/config/secrets';
 
 export enum FacetCutAction {

@@ -4,7 +4,7 @@ import { IAccountUpdates } from '../types/TAccount';
 import { Account, AccountDocument } from '../models/Account';
 import { createRandomToken } from '../util/tokens';
 import { decryptString } from '../util/decrypt';
-import { SECURE_KEY } from '../util/secrets';
+import { SECURE_KEY } from '../config/secrets';
 import { checkPasswordStrength } from '../util/passwordcheck';
 import { toChecksumAddress } from 'web3-utils';
 import {

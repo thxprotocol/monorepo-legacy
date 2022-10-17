@@ -1,0 +1,36 @@
+{
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "libs/contracts/src",
+    "projectType": "library",
+    "targets": {
+        "compile": {
+            "executor": "nx:run-commands",
+            "options": {
+                "commands": ["npx hardhat compile"],
+                "cwd": "libs/contracts"
+            }
+        },
+        "build": {
+            "executor": "nx:run-commands",
+            "options": {
+                "commands": ["npx hardhat compile"],
+                "cwd": "libs/contracts"
+            },
+            "lint": {
+                "executor": "@nrwl/linter:eslint",
+                "outputs": ["{options.outputFile}"],
+                "options": {
+                    "lintFilePatterns": ["libs/contracts/**/*.ts"]
+                }
+            },
+            "test": {
+                "executor": "nx:run-commands",
+                "options": {
+                    "commands": ["npx hardhat test"],
+                    "cwd": "libs/contracts"
+                }
+            }
+        },
+        "tags": ["solidity"]
+    }
+}

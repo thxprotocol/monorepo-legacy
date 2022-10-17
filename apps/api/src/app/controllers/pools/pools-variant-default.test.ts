@@ -20,7 +20,7 @@ import {
 } from '@thxnetwork/api/util/jest/constants';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { getByteCodeForContractName, getContract, getContractFromName } from '@thxnetwork/api/config/contracts';
-import { currentVersion } from '@thxnetwork/artifacts';
+import { currentVersion } from '@thxnetwork/contracts/exports';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
 import { RewardDocument } from '@thxnetwork/api/models/Reward';
 import { ClaimDocument } from '@thxnetwork/api/types/TClaim';

@@ -2,7 +2,7 @@ import request from 'supertest';
 import app from '../../../app';
 import db from '../../../util/database';
 import { AccountService } from '../../../services/AccountService';
-import { INITIAL_ACCESS_TOKEN } from '../../../util/secrets';
+import { INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
 import { accountEmail, accountSecret } from '../../../util/jest';
 
 const http = request.agent(app);
@@ -100,8 +100,7 @@ describe('OAuth2 Grants', () => {
                 })
                 .send({
                     grant_type: 'client_credentials',
-                    scope:
-                        'openid account:read account:write members:read members:write withdrawals:write asset_pools:read asset_pools:write rewards:read withdrawals:read deposits:read deposits:write',
+                    scope: 'openid account:read account:write members:read members:write withdrawals:write asset_pools:read asset_pools:write rewards:read withdrawals:read deposits:read deposits:write',
                 });
             expect(res.body).toMatchObject({
                 error: 'invalid_scope',

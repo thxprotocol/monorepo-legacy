@@ -14,7 +14,7 @@ import {
     diamondVariants,
     TNetworkName,
     TokenContractName,
-} from '@thxnetwork/artifacts';
+} from '@thxnetwork/contracts/exports';
 import { HARDHAT_NAME, POLYGON_MUMBAI_NAME, POLYGON_NAME } from './secrets';
 
 export const getContractConfig = (
@@ -31,12 +31,12 @@ export const getContractFromAbi = (chainId: ChainId, abi: AbiItem[], address?: s
 };
 
 export const getAbiForContractName = (contractName: ContractName | TokenContractName): AbiItem[] => {
-    return require(`@thxnetwork/artifacts/dist/exports/abis/${contractName}.json`);
+    return require(`../../../../../libs/contracts/src/exports/abis/${contractName}.json`);
 };
 
 export const getByteCodeForContractName = (contractName: TokenContractName): string => {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    return require(`@thxnetwork/artifacts/dist/exports/bytecodes/${contractName}.json`).bytecode;
+    return require(`../../../../../libs/contracts/src/exports/bytecodes/${contractName}.json`).bytecode;
 };
 
 export const getContractFromName = (

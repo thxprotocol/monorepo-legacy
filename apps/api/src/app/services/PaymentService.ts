@@ -14,7 +14,7 @@ import AssetPoolService from './AssetPoolService';
 import { getContractFromName } from '@thxnetwork/api/config/contracts';
 import { TransactionReceipt } from 'web3-core';
 import { TPayCallbackArgs } from '@thxnetwork/api/types/TTransaction';
-import { TokenContractName } from '@thxnetwork/artifacts';
+import { TokenContractName } from '@thxnetwork/contracts/exports';
 import db from '@thxnetwork/api/util/database';
 
 async function create(

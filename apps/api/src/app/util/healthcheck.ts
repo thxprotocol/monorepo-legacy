@@ -1,10 +1,10 @@
+import newrelic from 'newrelic';
 import { config, status } from 'migrate-mongo';
 import { connection } from 'mongoose';
-import newrelic from 'newrelic';
-
+import { Db } from 'mongodb';
 import { HealthCheck } from '@godaddy/terminus';
 
-import migrateMongoConfig from '../../migrate-mongo-config';
+import migrateMongoConfig from '../config/migrate-mongo';
 
 const dbConnected = async () => {
     // https://mongoosejs.com/docs/api.html#connection_Connection-readyState
@@ -20,9 +20,8 @@ const dbConnected = async () => {
 };
 
 const migrationsApplied = async () => {
-    return;
     config.set(migrateMongoConfig);
-    const pendingMigrations = (await status(connection.db as any)).filter(
+    const pendingMigrations = (await status(connection.db as Db)).filter(
         (migration) => migration.appliedAt === 'PENDING',
     );
     if (pendingMigrations.length > 0) {

@@ -18,7 +18,7 @@ import {
 import { getByteCodeForContractName, getContract } from '@thxnetwork/api/config/contracts';
 import { PaymentState } from '@thxnetwork/api/types/enums/PaymentState';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
-import { currentVersion } from '@thxnetwork/artifacts';
+import { currentVersion } from '@thxnetwork/contracts/exports';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { HARDHAT_RPC, PRIVATE_KEY, WALLET_URL } from '@thxnetwork/api/config/secrets';
 import Web3 from 'web3';

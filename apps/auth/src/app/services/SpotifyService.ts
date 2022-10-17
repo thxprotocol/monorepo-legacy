@@ -1,7 +1,7 @@
 import { spotifyClient } from '../util/axios';
 import { Playlist } from '../types';
 import { PlaylistItem } from '../types/PlaylistItem';
-import { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URI } from '../util/secrets';
+import { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URI } from '../config/secrets';
 import CommonOauthLoginOptions from '@thxnetwork/auth/types/CommonOauthLoginOptions';
 import { URLSearchParams } from 'url';
 

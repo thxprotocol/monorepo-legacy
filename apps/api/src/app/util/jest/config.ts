@@ -6,7 +6,7 @@ import { getProvider } from '@thxnetwork/api/util/network';
 import { ChainId } from '@thxnetwork/api/types/enums';
 import { getContract, getContractConfig } from '@thxnetwork/api/config/contracts';
 import { poll } from '../polling';
-import { currentVersion } from '@thxnetwork/artifacts';
+import { currentVersion } from '@thxnetwork/contracts/exports';
 
 export async function beforeAllCallback() {
     await db.truncate();
