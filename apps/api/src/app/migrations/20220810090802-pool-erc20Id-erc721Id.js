@@ -1,5 +1,5 @@
-const ERC20ProxyFacetArtifact = require('@thxnetwork/artifacts/dist/exports/abis/ERC20ProxyFacet.json');
-const ERC721ProxyFacetArtifact = require('@thxnetwork/artifacts/dist/exports/abis/ERC721ProxyFacet.json');
+const ERC20ProxyFacetArtifact = require('@thxnetwork/contracts/exports/abis/ERC20ProxyFacet.json');
+const ERC721ProxyFacetArtifact = require('@thxnetwork/contracts/exports/abis/ERC721ProxyFacet.json');
 const Web3 = require('web3');
 const { ObjectId } = require('mongodb');
 

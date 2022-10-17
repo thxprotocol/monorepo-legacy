@@ -1,8 +1,8 @@
 import Web3 from 'web3';
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
 import { toHex } from 'web3-utils';
-import { default as defaultPoolDiamondAbi } from '@thxnetwork/artifacts/dist/exports/abis/defaultDiamondDiamond.json';
-import { default as ERC20Abi } from '@thxnetwork/artifacts/dist/exports/abis/LimitedSupplyToken.json';
+import { default as defaultPoolDiamondAbi } from '@thxnetwork/contracts/exports/abis/defaultDiamondDiamond.json';
+import { default as ERC20Abi } from '@thxnetwork/contracts/exports/abis/LimitedSupplyToken.json';
 import { soliditySha3 } from 'web3-utils';
 
 @Module({ namespaced: true })

@@ -7,7 +7,7 @@ import { NODE_ENV } from '@thxnetwork/api/config/secrets';
 import { ChainId } from '@thxnetwork/api/types/enums';
 import { logger } from '@thxnetwork/api/util/logger';
 import { getProvider } from '@thxnetwork/api/util/network';
-import { currentVersion, diamondVariants } from '@thxnetwork/artifacts';
+import { currentVersion, diamondVariants } from '@thxnetwork/contracts/exports';
 
 import { license, name, version } from '../../../../package.json';
 
