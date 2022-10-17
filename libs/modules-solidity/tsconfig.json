@@ -1,0 +1,30 @@
+{
+    "extends": "../../tsconfig.base.json",
+    "files": [],
+    "include": [
+        "hardhat.config.ts",
+        "./scripts",
+        "./deploy",
+        "./test",
+        "./exports",
+        "./exports/**/*.json",
+        "typechain/**/*"
+    ],
+    "references": [
+        {
+            "path": "./tsconfig.lib.json"
+        },
+        {
+            "path": "./tsconfig.spec.json"
+        }
+    ],
+    "compilerOptions": {
+        "resolveJsonModule": true,
+        "skipLibCheck": true,
+        "declaration": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true
+    }
+}

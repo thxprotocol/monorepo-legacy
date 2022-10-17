@@ -1,0 +1,462 @@
+{
+  "address": "0x8C5d3A0007f916f4C5F9f8aa2e8D02e7cd4cBeE0",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "memberID",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousAddress",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newAddress",
+          "type": "address"
+        }
+      ],
+      "name": "MemberAddressChanged",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "previousAdminRole",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "newAdminRole",
+          "type": "bytes32"
+        }
+      ],
+      "name": "RoleAdminChanged",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        }
+      ],
+      "name": "RoleGranted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        }
+      ],
+      "name": "RoleRevoked",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_account",
+          "type": "address"
+        }
+      ],
+      "name": "addManager",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_account",
+          "type": "address"
+        }
+      ],
+      "name": "addMember",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_member",
+          "type": "uint256"
+        }
+      ],
+      "name": "getAddressByMember",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_address",
+          "type": "address"
+        }
+      ],
+      "name": "getMemberByAddress",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getOwner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_owner",
+          "type": "address"
+        }
+      ],
+      "name": "initializeRoles",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_account",
+          "type": "address"
+        }
+      ],
+      "name": "isManager",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_account",
+          "type": "address"
+        }
+      ],
+      "name": "isManagerRoleAdmin",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_account",
+          "type": "address"
+        }
+      ],
+      "name": "isMember",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_account",
+          "type": "address"
+        }
+      ],
+      "name": "isMemberRoleAdmin",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_account",
+          "type": "address"
+        }
+      ],
+      "name": "removeManager",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_account",
+          "type": "address"
+        }
+      ],
+      "name": "removeMember",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_oldAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_newAddress",
+          "type": "address"
+        }
+      ],
+      "name": "upgradeAddress",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0xb1eb5f66855ebd0445cfe65fc399dcdccce9dceb634635a684323005cba3b0c2",
+  "receipt": {
+    "to": null,
+    "from": "0xE4f3EEA6CeB6D8Cda41E1F78F4c549946a1EB395",
+    "contractAddress": "0x8C5d3A0007f916f4C5F9f8aa2e8D02e7cd4cBeE0",
+    "transactionIndex": 23,
+    "gasUsed": "800640",
+    "logsBloom": "0x08000000000000020000000000000000000000000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000800000400000000000000100000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000000000000000000200000000000000020000000000000000001000000000000000000000000004000000000000000000001000000000000000000004000000000100000000000000000000000000000000000000000000000000000000000000000000000100000",
+    "blockHash": "0x107cb472a705e6b353149e98835db3d3abf44db248b57fd491ca8b8f2bb5ffa2",
+    "transactionHash": "0xb1eb5f66855ebd0445cfe65fc399dcdccce9dceb634635a684323005cba3b0c2",
+    "logs": [
+      {
+        "transactionIndex": 23,
+        "blockNumber": 25549988,
+        "transactionHash": "0xb1eb5f66855ebd0445cfe65fc399dcdccce9dceb634635a684323005cba3b0c2",
+        "address": "0x0000000000000000000000000000000000001010",
+        "topics": [
+          "0x4dfe1bbbcf077ddc3e01291eea2d5c70c2b422b415d95645b9adcfd678cb1d63",
+          "0x0000000000000000000000000000000000000000000000000000000000001010",
+          "0x000000000000000000000000e4f3eea6ceb6d8cda41e1f78f4c549946a1eb395",
+          "0x000000000000000000000000c26880a0af2ea0c7e8130e6ec47af756465452e8"
+        ],
+        "data": "0x0000000000000000000000000000000000000000000000000006d8c941bfdd0000000000000000000000000000000000000000000000000089fe9a863a0466740000000000000000000000000000000000000000000008207e9d43a68ecb82de00000000000000000000000000000000000000000000000089f7c1bcf84489740000000000000000000000000000000000000000000008207ea41c6fd08b5fde",
+        "logIndex": 160,
+        "blockHash": "0x107cb472a705e6b353149e98835db3d3abf44db248b57fd491ca8b8f2bb5ffa2"
+      }
+    ],
+    "blockNumber": 25549988,
+    "cumulativeGasUsed": "5038426",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [],
+  "numDeployments": 1,
+  "solcInputHash": "954101db8fd21c30da9bb6a572893bde",
+  "metadata": "{\"compiler\":{\"version\":\"0.7.4+commit.3f05b770\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"memberID\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousAddress\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newAddress\",\"type\":\"address\"}],\"name\":\"MemberAddressChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"previousAdminRole\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"newAdminRole\",\"type\":\"bytes32\"}],\"name\":\"RoleAdminChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleGranted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleRevoked\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_account\",\"type\":\"address\"}],\"name\":\"addManager\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_account\",\"type\":\"address\"}],\"name\":\"addMember\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_member\",\"type\":\"uint256\"}],\"name\":\"getAddressByMember\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_address\",\"type\":\"address\"}],\"name\":\"getMemberByAddress\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getOwner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_owner\",\"type\":\"address\"}],\"name\":\"initializeRoles\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_account\",\"type\":\"address\"}],\"name\":\"isManager\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_account\",\"type\":\"address\"}],\"name\":\"isManagerRoleAdmin\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_account\",\"type\":\"address\"}],\"name\":\"isMember\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_account\",\"type\":\"address\"}],\"name\":\"isMemberRoleAdmin\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_account\",\"type\":\"address\"}],\"name\":\"removeManager\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_account\",\"type\":\"address\"}],\"name\":\"removeMember\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_oldAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_newAddress\",\"type\":\"address\"}],\"name\":\"upgradeAddress\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"addManager(address)\":{\"params\":{\"_account\":\"Address of the account to give the manager role to.\"}},\"addMember(address)\":{\"params\":{\"_account\":\"Address of the account to give the member role to.\"}},\"getAddressByMember(uint256)\":{\"details\":\"Different member id's can map to the same address.\",\"params\":{\"_member\":\"The index of the member account.\"},\"returns\":{\"_0\":\"Address of the member for the given member index in the memberToAddress storage.\"}},\"getMemberByAddress(address)\":{\"params\":{\"_address\":\"The address of the member account.\"},\"returns\":{\"_0\":\"Index of the member for a given address.\"}},\"getOwner()\":{\"returns\":{\"_0\":\"address of the contract owner.\"}},\"initializeRoles(address)\":{\"details\":\"Should be called right after deploying the contract. _owner will become member, manager and role admin.\",\"params\":{\"_owner\":\"Address of the account that should own the contract.\"}},\"isManager(address)\":{\"params\":{\"_account\":\"Address of the account to check the manager role for.\"},\"returns\":{\"_0\":\"if the given address bears the manager role.\"}},\"isManagerRoleAdmin(address)\":{\"params\":{\"_account\":\"Address of the account to check the manager role admin account for.\"},\"returns\":{\"_0\":\"if the given address is the manager role admin.\"}},\"isMember(address)\":{\"params\":{\"_account\":\"Address of the account to check the member role for.\"},\"returns\":{\"_0\":\"if the given address bears the member role.\"}},\"isMemberRoleAdmin(address)\":{\"params\":{\"_account\":\"Address of the account to check the member role admin account for.\"},\"returns\":{\"_0\":\"if the given address is the member role admin.\"}},\"removeManager(address)\":{\"params\":{\"_account\":\"Address of the account to revoke the manager role for.\"}},\"removeMember(address)\":{\"params\":{\"_account\":\"Address of the account to revoke the member role for.\"}},\"upgradeAddress(address,address)\":{\"details\":\"Different member id's can map to the same address.\",\"params\":{\"_newAddress\":\"The new address of the member.\",\"_oldAddress\":\"The current address of the member.\"}}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"getAddressByMember(uint256)\":{\"notice\":\"Upgrades an existing member address to a new member address, can only be called by the member itself.\"},\"upgradeAddress(address,address)\":{\"notice\":\"Upgrades an existing member address to a new member address, can only be called by the member itself.\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/03-MemberAccess/MemberAccess.sol\":\"MemberAccess\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/utils/Address.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity >=0.6.2 <0.8.0;\\n\\n/**\\n * @dev Collection of functions related to the address type\\n */\\nlibrary Address {\\n    /**\\n     * @dev Returns true if `account` is a contract.\\n     *\\n     * [IMPORTANT]\\n     * ====\\n     * It is unsafe to assume that an address for which this function returns\\n     * false is an externally-owned account (EOA) and not a contract.\\n     *\\n     * Among others, `isContract` will return false for the following\\n     * types of addresses:\\n     *\\n     *  - an externally-owned account\\n     *  - a contract in construction\\n     *  - an address where a contract will be created\\n     *  - an address where a contract lived, but was destroyed\\n     * ====\\n     */\\n    function isContract(address account) internal view returns (bool) {\\n        // This method relies on extcodesize, which returns 0 for contracts in\\n        // construction, since the code is only stored at the end of the\\n        // constructor execution.\\n\\n        uint256 size;\\n        // solhint-disable-next-line no-inline-assembly\\n        assembly { size := extcodesize(account) }\\n        return size > 0;\\n    }\\n\\n    /**\\n     * @dev Replacement for Solidity's `transfer`: sends `amount` wei to\\n     * `recipient`, forwarding all available gas and reverting on errors.\\n     *\\n     * https://eips.ethereum.org/EIPS/eip-1884[EIP1884] increases the gas cost\\n     * of certain opcodes, possibly making contracts go over the 2300 gas limit\\n     * imposed by `transfer`, making them unable to receive funds via\\n     * `transfer`. {sendValue} removes this limitation.\\n     *\\n     * https://diligence.consensys.net/posts/2019/09/stop-using-soliditys-transfer-now/[Learn more].\\n     *\\n     * IMPORTANT: because control is transferred to `recipient`, care must be\\n     * taken to not create reentrancy vulnerabilities. Consider using\\n     * {ReentrancyGuard} or the\\n     * https://solidity.readthedocs.io/en/v0.5.11/security-considerations.html#use-the-checks-effects-interactions-pattern[checks-effects-interactions pattern].\\n     */\\n    function sendValue(address payable recipient, uint256 amount) internal {\\n        require(address(this).balance >= amount, \\\"Address: insufficient balance\\\");\\n\\n        // solhint-disable-next-line avoid-low-level-calls, avoid-call-value\\n        (bool success, ) = recipient.call{ value: amount }(\\\"\\\");\\n        require(success, \\\"Address: unable to send value, recipient may have reverted\\\");\\n    }\\n\\n    /**\\n     * @dev Performs a Solidity function call using a low level `call`. A\\n     * plain`call` is an unsafe replacement for a function call: use this\\n     * function instead.\\n     *\\n     * If `target` reverts with a revert reason, it is bubbled up by this\\n     * function (like regular Solidity function calls).\\n     *\\n     * Returns the raw returned data. To convert to the expected return value,\\n     * use https://solidity.readthedocs.io/en/latest/units-and-global-variables.html?highlight=abi.decode#abi-encoding-and-decoding-functions[`abi.decode`].\\n     *\\n     * Requirements:\\n     *\\n     * - `target` must be a contract.\\n     * - calling `target` with `data` must not revert.\\n     *\\n     * _Available since v3.1._\\n     */\\n    function functionCall(address target, bytes memory data) internal returns (bytes memory) {\\n      return functionCall(target, data, \\\"Address: low-level call failed\\\");\\n    }\\n\\n    /**\\n     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`], but with\\n     * `errorMessage` as a fallback revert reason when `target` reverts.\\n     *\\n     * _Available since v3.1._\\n     */\\n    function functionCall(address target, bytes memory data, string memory errorMessage) internal returns (bytes memory) {\\n        return functionCallWithValue(target, data, 0, errorMessage);\\n    }\\n\\n    /**\\n     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],\\n     * but also transferring `value` wei to `target`.\\n     *\\n     * Requirements:\\n     *\\n     * - the calling contract must have an ETH balance of at least `value`.\\n     * - the called Solidity function must be `payable`.\\n     *\\n     * _Available since v3.1._\\n     */\\n    function functionCallWithValue(address target, bytes memory data, uint256 value) internal returns (bytes memory) {\\n        return functionCallWithValue(target, data, value, \\\"Address: low-level call with value failed\\\");\\n    }\\n\\n    /**\\n     * @dev Same as {xref-Address-functionCallWithValue-address-bytes-uint256-}[`functionCallWithValue`], but\\n     * with `errorMessage` as a fallback revert reason when `target` reverts.\\n     *\\n     * _Available since v3.1._\\n     */\\n    function functionCallWithValue(address target, bytes memory data, uint256 value, string memory errorMessage) internal returns (bytes memory) {\\n        require(address(this).balance >= value, \\\"Address: insufficient balance for call\\\");\\n        require(isContract(target), \\\"Address: call to non-contract\\\");\\n\\n        // solhint-disable-next-line avoid-low-level-calls\\n        (bool success, bytes memory returndata) = target.call{ value: value }(data);\\n        return _verifyCallResult(success, returndata, errorMessage);\\n    }\\n\\n    /**\\n     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],\\n     * but performing a static call.\\n     *\\n     * _Available since v3.3._\\n     */\\n    function functionStaticCall(address target, bytes memory data) internal view returns (bytes memory) {\\n        return functionStaticCall(target, data, \\\"Address: low-level static call failed\\\");\\n    }\\n\\n    /**\\n     * @dev Same as {xref-Address-functionCall-address-bytes-string-}[`functionCall`],\\n     * but performing a static call.\\n     *\\n     * _Available since v3.3._\\n     */\\n    function functionStaticCall(address target, bytes memory data, string memory errorMessage) internal view returns (bytes memory) {\\n        require(isContract(target), \\\"Address: static call to non-contract\\\");\\n\\n        // solhint-disable-next-line avoid-low-level-calls\\n        (bool success, bytes memory returndata) = target.staticcall(data);\\n        return _verifyCallResult(success, returndata, errorMessage);\\n    }\\n\\n    function _verifyCallResult(bool success, bytes memory returndata, string memory errorMessage) private pure returns(bytes memory) {\\n        if (success) {\\n            return returndata;\\n        } else {\\n            // Look for revert reason and bubble it up if present\\n            if (returndata.length > 0) {\\n                // The easiest way to bubble the revert reason is using memory via assembly\\n\\n                // solhint-disable-next-line no-inline-assembly\\n                assembly {\\n                    let returndata_size := mload(returndata)\\n                    revert(add(32, returndata), returndata_size)\\n                }\\n            } else {\\n                revert(errorMessage);\\n            }\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0xa6a15ddddcbf29d2922a1e0d4151b5d2d33da24b93cc9ebc12390e0d855532f8\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/EnumerableSet.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity >=0.6.0 <0.8.0;\\n\\n/**\\n * @dev Library for managing\\n * https://en.wikipedia.org/wiki/Set_(abstract_data_type)[sets] of primitive\\n * types.\\n *\\n * Sets have the following properties:\\n *\\n * - Elements are added, removed, and checked for existence in constant time\\n * (O(1)).\\n * - Elements are enumerated in O(n). No guarantees are made on the ordering.\\n *\\n * ```\\n * contract Example {\\n *     // Add the library methods\\n *     using EnumerableSet for EnumerableSet.AddressSet;\\n *\\n *     // Declare a set state variable\\n *     EnumerableSet.AddressSet private mySet;\\n * }\\n * ```\\n *\\n * As of v3.3.0, sets of type `bytes32` (`Bytes32Set`), `address` (`AddressSet`)\\n * and `uint256` (`UintSet`) are supported.\\n */\\nlibrary EnumerableSet {\\n    // To implement this library for multiple types with as little code\\n    // repetition as possible, we write it in terms of a generic Set type with\\n    // bytes32 values.\\n    // The Set implementation uses private functions, and user-facing\\n    // implementations (such as AddressSet) are just wrappers around the\\n    // underlying Set.\\n    // This means that we can only create new EnumerableSets for types that fit\\n    // in bytes32.\\n\\n    struct Set {\\n        // Storage of set values\\n        bytes32[] _values;\\n\\n        // Position of the value in the `values` array, plus 1 because index 0\\n        // means a value is not in the set.\\n        mapping (bytes32 => uint256) _indexes;\\n    }\\n\\n    /**\\n     * @dev Add a value to a set. O(1).\\n     *\\n     * Returns true if the value was added to the set, that is if it was not\\n     * already present.\\n     */\\n    function _add(Set storage set, bytes32 value) private returns (bool) {\\n        if (!_contains(set, value)) {\\n            set._values.push(value);\\n            // The value is stored at length-1, but we add 1 to all indexes\\n            // and use 0 as a sentinel value\\n            set._indexes[value] = set._values.length;\\n            return true;\\n        } else {\\n            return false;\\n        }\\n    }\\n\\n    /**\\n     * @dev Removes a value from a set. O(1).\\n     *\\n     * Returns true if the value was removed from the set, that is if it was\\n     * present.\\n     */\\n    function _remove(Set storage set, bytes32 value) private returns (bool) {\\n        // We read and store the value's index to prevent multiple reads from the same storage slot\\n        uint256 valueIndex = set._indexes[value];\\n\\n        if (valueIndex != 0) { // Equivalent to contains(set, value)\\n            // To delete an element from the _values array in O(1), we swap the element to delete with the last one in\\n            // the array, and then remove the last element (sometimes called as 'swap and pop').\\n            // This modifies the order of the array, as noted in {at}.\\n\\n            uint256 toDeleteIndex = valueIndex - 1;\\n            uint256 lastIndex = set._values.length - 1;\\n\\n            // When the value to delete is the last one, the swap operation is unnecessary. However, since this occurs\\n            // so rarely, we still do the swap anyway to avoid the gas cost of adding an 'if' statement.\\n\\n            bytes32 lastvalue = set._values[lastIndex];\\n\\n            // Move the last value to the index where the value to delete is\\n            set._values[toDeleteIndex] = lastvalue;\\n            // Update the index for the moved value\\n            set._indexes[lastvalue] = toDeleteIndex + 1; // All indexes are 1-based\\n\\n            // Delete the slot where the moved value was stored\\n            set._values.pop();\\n\\n            // Delete the index for the deleted slot\\n            delete set._indexes[value];\\n\\n            return true;\\n        } else {\\n            return false;\\n        }\\n    }\\n\\n    /**\\n     * @dev Returns true if the value is in the set. O(1).\\n     */\\n    function _contains(Set storage set, bytes32 value) private view returns (bool) {\\n        return set._indexes[value] != 0;\\n    }\\n\\n    /**\\n     * @dev Returns the number of values on the set. O(1).\\n     */\\n    function _length(Set storage set) private view returns (uint256) {\\n        return set._values.length;\\n    }\\n\\n   /**\\n    * @dev Returns the value stored at position `index` in the set. O(1).\\n    *\\n    * Note that there are no guarantees on the ordering of values inside the\\n    * array, and it may change when more values are added or removed.\\n    *\\n    * Requirements:\\n    *\\n    * - `index` must be strictly less than {length}.\\n    */\\n    function _at(Set storage set, uint256 index) private view returns (bytes32) {\\n        require(set._values.length > index, \\\"EnumerableSet: index out of bounds\\\");\\n        return set._values[index];\\n    }\\n\\n    // Bytes32Set\\n\\n    struct Bytes32Set {\\n        Set _inner;\\n    }\\n\\n    /**\\n     * @dev Add a value to a set. O(1).\\n     *\\n     * Returns true if the value was added to the set, that is if it was not\\n     * already present.\\n     */\\n    function add(Bytes32Set storage set, bytes32 value) internal returns (bool) {\\n        return _add(set._inner, value);\\n    }\\n\\n    /**\\n     * @dev Removes a value from a set. O(1).\\n     *\\n     * Returns true if the value was removed from the set, that is if it was\\n     * present.\\n     */\\n    function remove(Bytes32Set storage set, bytes32 value) internal returns (bool) {\\n        return _remove(set._inner, value);\\n    }\\n\\n    /**\\n     * @dev Returns true if the value is in the set. O(1).\\n     */\\n    function contains(Bytes32Set storage set, bytes32 value) internal view returns (bool) {\\n        return _contains(set._inner, value);\\n    }\\n\\n    /**\\n     * @dev Returns the number of values in the set. O(1).\\n     */\\n    function length(Bytes32Set storage set) internal view returns (uint256) {\\n        return _length(set._inner);\\n    }\\n\\n   /**\\n    * @dev Returns the value stored at position `index` in the set. O(1).\\n    *\\n    * Note that there are no guarantees on the ordering of values inside the\\n    * array, and it may change when more values are added or removed.\\n    *\\n    * Requirements:\\n    *\\n    * - `index` must be strictly less than {length}.\\n    */\\n    function at(Bytes32Set storage set, uint256 index) internal view returns (bytes32) {\\n        return _at(set._inner, index);\\n    }\\n\\n    // AddressSet\\n\\n    struct AddressSet {\\n        Set _inner;\\n    }\\n\\n    /**\\n     * @dev Add a value to a set. O(1).\\n     *\\n     * Returns true if the value was added to the set, that is if it was not\\n     * already present.\\n     */\\n    function add(AddressSet storage set, address value) internal returns (bool) {\\n        return _add(set._inner, bytes32(uint256(value)));\\n    }\\n\\n    /**\\n     * @dev Removes a value from a set. O(1).\\n     *\\n     * Returns true if the value was removed from the set, that is if it was\\n     * present.\\n     */\\n    function remove(AddressSet storage set, address value) internal returns (bool) {\\n        return _remove(set._inner, bytes32(uint256(value)));\\n    }\\n\\n    /**\\n     * @dev Returns true if the value is in the set. O(1).\\n     */\\n    function contains(AddressSet storage set, address value) internal view returns (bool) {\\n        return _contains(set._inner, bytes32(uint256(value)));\\n    }\\n\\n    /**\\n     * @dev Returns the number of values in the set. O(1).\\n     */\\n    function length(AddressSet storage set) internal view returns (uint256) {\\n        return _length(set._inner);\\n    }\\n\\n   /**\\n    * @dev Returns the value stored at position `index` in the set. O(1).\\n    *\\n    * Note that there are no guarantees on the ordering of values inside the\\n    * array, and it may change when more values are added or removed.\\n    *\\n    * Requirements:\\n    *\\n    * - `index` must be strictly less than {length}.\\n    */\\n    function at(AddressSet storage set, uint256 index) internal view returns (address) {\\n        return address(uint256(_at(set._inner, index)));\\n    }\\n\\n\\n    // UintSet\\n\\n    struct UintSet {\\n        Set _inner;\\n    }\\n\\n    /**\\n     * @dev Add a value to a set. O(1).\\n     *\\n     * Returns true if the value was added to the set, that is if it was not\\n     * already present.\\n     */\\n    function add(UintSet storage set, uint256 value) internal returns (bool) {\\n        return _add(set._inner, bytes32(value));\\n    }\\n\\n    /**\\n     * @dev Removes a value from a set. O(1).\\n     *\\n     * Returns true if the value was removed from the set, that is if it was\\n     * present.\\n     */\\n    function remove(UintSet storage set, uint256 value) internal returns (bool) {\\n        return _remove(set._inner, bytes32(value));\\n    }\\n\\n    /**\\n     * @dev Returns true if the value is in the set. O(1).\\n     */\\n    function contains(UintSet storage set, uint256 value) internal view returns (bool) {\\n        return _contains(set._inner, bytes32(value));\\n    }\\n\\n    /**\\n     * @dev Returns the number of values on the set. O(1).\\n     */\\n    function length(UintSet storage set) internal view returns (uint256) {\\n        return _length(set._inner);\\n    }\\n\\n   /**\\n    * @dev Returns the value stored at position `index` in the set. O(1).\\n    *\\n    * Note that there are no guarantees on the ordering of values inside the\\n    * array, and it may change when more values are added or removed.\\n    *\\n    * Requirements:\\n    *\\n    * - `index` must be strictly less than {length}.\\n    */\\n    function at(UintSet storage set, uint256 index) internal view returns (uint256) {\\n        return uint256(_at(set._inner, index));\\n    }\\n}\\n\",\"keccak256\":\"0xae0992eb1ec30fd1ecdf2e04a6036decfc9797bf11dc1ec84b546b74318d5ec2\",\"license\":\"MIT\"},\"contracts/01-AccessControl/AccessControl.sol\":{\"content\":\"// SPDX-License-Identifier: Apache-2.0\\n// source: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/AccessControl.sol\\n\\npragma solidity >=0.6.0 <0.8.0;\\n\\n/******************************************************************************\\\\\\n* @title Access Control\\n* @author Evert Kors <evert@thx.network>\\n* @notice Implement role-based access control.\\n* \\n* @dev\\n* Implementations: \\n* TMP-1 Access Control: https://github.com/thxprotocol/modules/issues/1\\n/******************************************************************************/\\n\\nimport '@openzeppelin/contracts/utils/EnumerableSet.sol';\\nimport '@openzeppelin/contracts/utils/Address.sol';\\n\\nimport '../TMP/TMP1/LibAccessStorage.sol';\\nimport '../TMP/TMP1/IAccessControl.sol';\\nimport '../TMP/TMP1/IAccessControlEvents.sol';\\nimport '../TMP/RelayReceiver.sol';\\n\\ncontract AccessControl is IAccessControl, IAccessControlEvents, RelayReceiver {\\n    using EnumerableSet for EnumerableSet.AddressSet;\\n    using Address for address;\\n\\n    /**\\n     * @notice Checks if an address bears a given role.\\n     * @param role Role to check account for.\\n     * @param account Account to check the role for.\\n     * @return if the account bears the role.\\n     */\\n    function hasRole(bytes32 role, address account) external view override returns (bool) {\\n        return _hasRole(role, account);\\n    }\\n\\n    /**\\n     * @notice Gets the amount of members for a role.\\n     * @param role Role to get the count for.\\n     * @return the amount of members for the role.\\n     */\\n    function getRoleMemberCount(bytes32 role) external view override returns (uint256) {\\n        return LibAccessStorage.roleStorage().roles[role].members.length();\\n    }\\n\\n    /**\\n     * @notice Gets the member address for a given role.\\n     * @param role Role of the pool member.\\n     * @param index Index of the pool member.\\n     * @return member address.\\n     */\\n    function getRoleMember(bytes32 role, uint256 index) external view override returns (address) {\\n        return LibAccessStorage.roleStorage().roles[role].members.at(index);\\n    }\\n\\n    /**\\n     * @notice Determines what role is required to manage the role.\\n     * @param role Bytes32 array representing the role\\n     * @return Bytes32 array of the administrative role for the given role.\\n     */\\n    function getRoleAdmin(bytes32 role) external view override returns (bytes32) {\\n        return LibAccessStorage.roleStorage().roles[role].adminRole;\\n    }\\n\\n    /**\\n     * @notice Grants a role to a given account address.\\n     * @param role Bytes32 array representing the role.\\n     * @param account Address of the account that is given the role.\\n     */\\n    function grantRole(bytes32 role, address account) external override {\\n        require(\\n            _hasRole(LibAccessStorage.roleStorage().roles[role].adminRole, _msgSender()),\\n            'AccessControl: sender must be an admin to grant'\\n        );\\n        _grantRole(role, account);\\n    }\\n\\n    /**\\n     * @notice Revokes the role for a given account address if sender is admin of the role.\\n     * @param role Bytes32 array representing the role.\\n     * @param account Address of the account\\n     */\\n    function revokeRole(bytes32 role, address account) external override {\\n        require(\\n            _hasRole(LibAccessStorage.roleStorage().roles[role].adminRole, _msgSender()),\\n            'AccessControl: sender must be an admin to revoke'\\n        );\\n        _revokeRole(role, account);\\n    }\\n\\n    /**\\n     * @notice Renounces the role for a given account address if equal to sender address.\\n     * @param role Bytes32 array representing the role.\\n     * @param account Address of the account\\n     */\\n    function renounceRole(bytes32 role, address account) external override {\\n        require(account == _msgSender(), 'AccessControl: can only renounce roles for self');\\n        _revokeRole(role, account);\\n    }\\n\\n    /**\\n     * @dev Checks if account bears role.\\n     * @param role Bytes32 array representing the role.\\n     * @param account Address of the account\\n     * @return if role member storage array contains the given account address.\\n     */\\n    function _hasRole(bytes32 role, address account) internal view virtual returns (bool) {\\n        LibAccessStorage.RoleStorage storage rs = LibAccessStorage.roleStorage();\\n\\n        return rs.roles[role].members.contains(account);\\n    }\\n\\n    /**\\n     * @dev Called in initialize methods.\\n     * @param role Bytes32 array representing the role.\\n     * @param account Address of the account\\n     */\\n    function _setupRole(bytes32 role, address account) internal virtual {\\n        _grantRole(role, account);\\n    }\\n\\n    /**\\n     * @dev Called during initialization\\n     * @param role Bytes32 array representing the role.\\n     * @param adminRole Address of the role admin\\n     */\\n    function _setRoleAdmin(bytes32 role, bytes32 adminRole) internal virtual {\\n        LibAccessStorage.RoleStorage storage rs = LibAccessStorage.roleStorage();\\n\\n        emit RoleAdminChanged(role, rs.roles[role].adminRole, adminRole);\\n        rs.roles[role].adminRole = adminRole;\\n    }\\n\\n    /**\\n     * @param role Bytes32 array representing the role.\\n     * @param account Address of the account\\n     */\\n    function _grantRole(bytes32 role, address account) internal virtual {\\n        LibAccessStorage.RoleStorage storage rs = LibAccessStorage.roleStorage();\\n\\n        if (rs.roles[role].members.add(account)) {\\n            emit RoleGranted(role, account, _msgSender());\\n        }\\n    }\\n\\n    /**\\n     * @param role Bytes32 array representing the role.\\n     * @param account Address of the account\\n     */\\n    function _revokeRole(bytes32 role, address account) internal virtual {\\n        LibAccessStorage.RoleStorage storage rs = LibAccessStorage.roleStorage();\\n\\n        if (rs.roles[role].members.remove(account)) {\\n            emit RoleRevoked(role, account, _msgSender());\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0x34b8794177221a59a8bcca2013b6876205cc62bdb5c38b4801ed54776604aa63\",\"license\":\"Apache-2.0\"},\"contracts/03-MemberAccess/MemberAccess.sol\":{\"content\":\"// SPDX-License-Identifier: Apache-2.0\\n\\npragma solidity ^0.7.4;\\n\\n/******************************************************************************\\\\\\n* @title Member Access Control\\n* @author Evert Kors <evert@thx.network>\\n* @notice Manage access control for MEMBER, MANAGER and OWNER roles.\\n* \\n* Dependencies:\\n* TMP-1 Access Control: https://github.com/thxprotocol/modules/issues/1\\n* \\n* Implementations: \\n* TMP-2 Member ID: https://github.com/thxprotocol/modules/issues/2\\n* TMP-3 Pool Roles: https://github.com/thxprotocol/modules/issues/3\\n/******************************************************************************/\\n\\nimport '@openzeppelin/contracts/utils/EnumerableSet.sol';\\nimport '@openzeppelin/contracts/utils/Address.sol';\\nimport 'diamond-2/contracts/libraries/LibDiamond.sol';\\nimport '../01-AccessControl/AccessControl.sol';\\n\\n// depends on\\nimport '../TMP/TMP1/IAccessControlEvents.sol';\\nimport '../TMP/TMP1/LibAccessStorage.sol';\\n\\n// implements\\nimport '../TMP/TMP2/IMemberID.sol';\\nimport '../TMP/TMP2/LibMemberAccessStorage.sol';\\nimport '../TMP/TMP3/IPoolRoles.sol';\\n\\nimport '../TMP/RelayReceiver.sol';\\n\\ncontract MemberAccess is IMemberID, IPoolRoles, RelayReceiver, IAccessControlEvents {\\n    /**\\n     * @param _owner Address of the account that should own the contract.\\n     * @dev Should be called right after deploying the contract. _owner will become member, manager and role admin.\\n     */\\n    function initializeRoles(address _owner) external override {\\n        require(LibMemberAccessStorage.memberStorage().memberCounter == 0, 'INIT');\\n\\n        LibMemberAccessStorage.memberStorage().memberCounter = 1000;\\n        _setupRole(DEFAULT_ADMIN_ROLE, _owner);\\n        _setupRole(MEMBER_ROLE, _owner);\\n        _setupRole(MANAGER_ROLE, _owner);\\n        setupMember(_owner);\\n    }\\n\\n    /**\\n     * @param _account Address of the account to check the member role for.\\n     * @return if the given address bears the member role.\\n     */\\n    function isMember(address _account) external view override returns (bool) {\\n        return _isMember(_account);\\n    }\\n\\n    /**\\n     * @param _account Address of the account to give the member role to.\\n     */\\n    function addMember(address _account) external override {\\n        require(_hasRole(MANAGER_ROLE, _msgSender()) || _hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), 'ACCESS');\\n        setupMember(_account);\\n        _grantRole(MEMBER_ROLE, _account);\\n    }\\n\\n    /**\\n     * @param _account Address of the account to revoke the member role for.\\n     */\\n    function removeMember(address _account) external override {\\n        require(_hasRole(MANAGER_ROLE, _msgSender()) || _hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), 'ACCESS');\\n        _revokeRole(MEMBER_ROLE, _account);\\n    }\\n\\n    /**\\n     * @param _account Address of the account to check the manager role for.\\n     * @return if the given address bears the manager role.\\n     */\\n    function isManager(address _account) external view override returns (bool) {\\n        return _isManager(_account);\\n    }\\n\\n    /**\\n     * @param _account Address of the account to give the manager role to.\\n     */\\n    function addManager(address _account) external override {\\n        require(_hasRole(MANAGER_ROLE, _msgSender()) || _hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), 'ACCESS');\\n        setupMember(_account);\\n        _grantRole(MANAGER_ROLE, _account);\\n    }\\n\\n    /**\\n     * @param _account Address of the account to revoke the manager role for.\\n     */\\n    function removeManager(address _account) external override {\\n        require(_hasRole(MANAGER_ROLE, _msgSender()) || _hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), 'ACCESS');\\n        require(_msgSender() != _account, 'OWN_ACCOUNT');\\n        _revokeRole(MANAGER_ROLE, _account);\\n    }\\n\\n    /**\\n     * @param _account Address of the account to check the manager role admin account for.\\n     * @return if the given address is the manager role admin.\\n     */\\n    function isManagerRoleAdmin(address _account) external view override returns (bool) {\\n        return _hasRole(LibAccessStorage.roleStorage().roles[MANAGER_ROLE].adminRole, _account);\\n    }\\n\\n    /**\\n     * @param _account Address of the account to check the member role admin account for.\\n     * @return if the given address is the member role admin.\\n     */\\n    function isMemberRoleAdmin(address _account) external view override returns (bool) {\\n        return _hasRole(LibAccessStorage.roleStorage().roles[MEMBER_ROLE].adminRole, _account);\\n    }\\n\\n    /**\\n     * @return address of the contract owner.\\n     */\\n    function getOwner() external view override returns (address) {\\n        return _getOwner();\\n    }\\n\\n    /**\\n     * @notice Upgrades an existing member address to a new member address, can only be called by the member itself.\\n     * @param _oldAddress The current address of the member.\\n     * @param _newAddress The new address of the member.\\n     * @dev Different member id's can map to the same address.\\n     */\\n    function upgradeAddress(address _oldAddress, address _newAddress) external override {\\n        require(_oldAddress == _msgSender(), 'OLD_NOT_SENDER');\\n        LibMemberAccessStorage.MemberStorage storage ms = LibMemberAccessStorage.memberStorage();\\n        uint256 member = ms.addressToMember[_oldAddress];\\n        require(member != 0, 'NON_MEMBER');\\n        ms.addressToMember[_oldAddress] = 0;\\n        ms.addressToMember[_newAddress] = member;\\n        ms.memberToAddress[member] = _newAddress;\\n\\n        if (_hasRole(MEMBER_ROLE, _oldAddress)) {\\n            _revokeRole(MEMBER_ROLE, _oldAddress);\\n            _grantRole(MEMBER_ROLE, _newAddress);\\n        }\\n\\n        if (_hasRole(MANAGER_ROLE, _oldAddress)) {\\n            _revokeRole(MANAGER_ROLE, _oldAddress);\\n            _grantRole(MANAGER_ROLE, _newAddress);\\n        }\\n        emit MemberAddressChanged(member, _oldAddress, _newAddress);\\n    }\\n\\n    /**\\n     * @notice Upgrades an existing member address to a new member address, can only be called by the member itself.\\n     * @param _member The index of the member account.\\n     * @dev Different member id's can map to the same address.\\n     * @return Address of the member for the given member index in the memberToAddress storage.\\n     */\\n    function getAddressByMember(uint256 _member) external view override returns (address) {\\n        return LibMemberAccessStorage.memberStorage().memberToAddress[_member];\\n    }\\n\\n    /**\\n     * @param _address The address of the member account.\\n     * @return Index of the member for a given address.\\n     */\\n    function getMemberByAddress(address _address) external view override returns (uint256) {\\n        return LibMemberAccessStorage.memberStorage().addressToMember[_address];\\n    }\\n\\n    /**\\n     * @param _account Address of the member.\\n     * @dev Called during initilization.\\n     */\\n    function setupMember(address _account) internal {\\n        LibMemberAccessStorage.MemberStorage storage ms = LibMemberAccessStorage.memberStorage();\\n        uint256 member = ms.addressToMember[_account];\\n        if (member != 0) {\\n            //member is already setup\\n            return;\\n        }\\n        ms.memberCounter += 1;\\n        ms.addressToMember[_account] = ms.memberCounter;\\n        ms.memberToAddress[ms.memberCounter] = _account;\\n    }\\n\\n    //\\n    // Access control view methods internal\\n    //\\n    using EnumerableSet for EnumerableSet.AddressSet;\\n    using Address for address;\\n\\n    /**\\n     * @dev Checks if account bears role.\\n     * @param role Bytes32 array representing the role.\\n     * @param account Address of the account\\n     * @return if role member storage array contains the given account address.\\n     */\\n    function _hasRole(bytes32 role, address account) internal view virtual returns (bool) {\\n        LibAccessStorage.RoleStorage storage rs = LibAccessStorage.roleStorage();\\n\\n        return rs.roles[role].members.contains(account);\\n    }\\n\\n    /**\\n     * @dev Called in initialize methods.\\n     * @param role Bytes32 array representing the role.\\n     * @param account Address of the account\\n     */\\n    function _setupRole(bytes32 role, address account) internal virtual {\\n        _grantRole(role, account);\\n    }\\n\\n    /**\\n     * @dev Called during initialization\\n     * @param role Bytes32 array representing the role.\\n     * @param adminRole Address of the role admin\\n     */\\n    function _setRoleAdmin(bytes32 role, bytes32 adminRole) internal virtual {\\n        LibAccessStorage.RoleStorage storage rs = LibAccessStorage.roleStorage();\\n\\n        emit RoleAdminChanged(role, rs.roles[role].adminRole, adminRole);\\n        rs.roles[role].adminRole = adminRole;\\n    }\\n\\n    /**\\n     * @param role Bytes32 array representing the role.\\n     * @param account Address of the account\\n     */\\n    function _grantRole(bytes32 role, address account) internal virtual {\\n        LibAccessStorage.RoleStorage storage rs = LibAccessStorage.roleStorage();\\n\\n        if (rs.roles[role].members.add(account)) {\\n            emit RoleGranted(role, account, _msgSender());\\n        }\\n    }\\n\\n    /**\\n     * @param role Bytes32 array representing the role.\\n     * @param account Address of the account\\n     */\\n    function _revokeRole(bytes32 role, address account) internal virtual {\\n        LibAccessStorage.RoleStorage storage rs = LibAccessStorage.roleStorage();\\n\\n        if (rs.roles[role].members.remove(account)) {\\n            emit RoleRevoked(role, account, _msgSender());\\n        }\\n    }\\n\\n    //\\n    // Pool roles view methods internal\\n    //\\n    bytes32 internal constant DEFAULT_ADMIN_ROLE = 0x00;\\n    bytes32 internal constant MEMBER_ROLE = keccak256('MEMBER_ROLE');\\n    bytes32 internal constant MANAGER_ROLE = keccak256('MANAGER_ROLE');\\n\\n    function _isManager(address _account) internal view returns (bool) {\\n        return _hasRole(MANAGER_ROLE, _account);\\n    }\\n\\n    function _isMember(address _account) internal view returns (bool) {\\n        return _hasRole(MEMBER_ROLE, _account) || _hasRole(MANAGER_ROLE, _account);\\n    }\\n\\n    function _getOwner() internal view returns (address) {\\n        return LibDiamond.contractOwner();\\n    }\\n}\\n\",\"keccak256\":\"0xf33cc57b9fd8a7a3d457cc2e75f5d2e050faf12b5e8cb3f232960496c95112f1\",\"license\":\"Apache-2.0\"},\"contracts/TMP/RelayReceiver.sol\":{\"content\":\"// SPDX-License-Identifier: Apache-2.0\\npragma solidity ^0.7.4;\\n\\n// Copied from https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/GSN/GSNRecipient.sol\\n// But kept minimalist.\\ncontract RelayReceiver {\\n    function _msgSender() internal pure returns (address payable result) {\\n        // If not call from RelayHub, return original sender\\n        // We need to read 20 bytes (an address) located at array index msg.data.length - 20. In memory, the array\\n        // is prefixed with a 32-byte length value, so we first add 32 to get the memory read index. However, doing\\n        // so would leave the address in the upper 20 bytes of the 32-byte word, which is inconvenient and would\\n        // require bit shifting. We therefore subtract 12 from the read index so the address lands on the lower 20\\n        // bytes. This can always be done due to the 32-byte prefix.\\n\\n        // The final memory read index is msg.data.length - 20 + 32 - 12 = msg.data.length. Using inline assembly is the\\n        // easiest/most-efficient way to perform this operation.\\n\\n        // These fields are not accessible from assembly\\n        bytes memory array = msg.data;\\n        uint256 index = msg.data.length;\\n\\n        // solhint-disable-next-line no-inline-assembly\\n        assembly {\\n            // Load the 32 bytes word from memory with the address on the lower 20 bytes, and mask those.\\n            result := and(mload(add(array, index)), 0xffffffffffffffffffffffffffffffffffffffff)\\n        }\\n        return result;\\n    }\\n}\\n\",\"keccak256\":\"0x389a8fb5beb19d72205c811e0af13ca5ce2ab019e0b8ef70ce209d4876783e57\",\"license\":\"Apache-2.0\"},\"contracts/TMP/TMP1/IAccessControl.sol\":{\"content\":\"// SPDX-License-Identifier: Apache-2.0\\npragma solidity ^0.7.4;\\n\\ninterface IAccessControl {\\n    function hasRole(bytes32 role, address account) external view returns (bool);\\n\\n    function getRoleMemberCount(bytes32 role) external view returns (uint256);\\n\\n    function getRoleMember(bytes32 role, uint256 index) external view returns (address);\\n\\n    function getRoleAdmin(bytes32 role) external view returns (bytes32);\\n\\n    function grantRole(bytes32 role, address account) external;\\n\\n    function revokeRole(bytes32 role, address account) external;\\n\\n    function renounceRole(bytes32 role, address account) external;\\n}\\n\",\"keccak256\":\"0x19b0c7e6635833c346ea76e6aead0046d78cbe1434b4799075c9cdd0024ad219\",\"license\":\"Apache-2.0\"},\"contracts/TMP/TMP1/IAccessControlEvents.sol\":{\"content\":\"// SPDX-License-Identifier: Apache-2.0\\npragma solidity ^0.7.4;\\n\\ninterface IAccessControlEvents {\\n    event RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole);\\n\\n    event RoleGranted(bytes32 indexed role, address indexed account, address indexed sender);\\n\\n    event RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender);\\n}\\n\",\"keccak256\":\"0x861e728dd47fece4a3be7f9581be8192efa7bdd135ad4c71b977786d09cfe070\",\"license\":\"Apache-2.0\"},\"contracts/TMP/TMP1/LibAccessStorage.sol\":{\"content\":\"// SPDX-License-Identifier: Apache-2.0\\npragma solidity ^0.7.4;\\nimport '@openzeppelin/contracts/utils/EnumerableSet.sol';\\n\\nlibrary LibAccessStorage {\\n    // TODO test with conflicting storage (with other pools)\\n    // set storage pointer based upon assigned id (by factory)\\n\\n    bytes32 constant ACCESS_STORAGE_POSITION = keccak256('diamond.standard.access.storage');\\n\\n    struct RoleStorage {\\n        mapping(bytes32 => RoleData) roles;\\n    }\\n\\n    struct RoleData {\\n        EnumerableSet.AddressSet members;\\n        bytes32 adminRole;\\n    }\\n\\n    function roleStorage() internal pure returns (RoleStorage storage rs) {\\n        bytes32 position = ACCESS_STORAGE_POSITION;\\n        assembly {\\n            rs.slot := position\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0x1b263026cf31b69957c414757a12ec6a3f30eda70155342941039a5864f9283b\",\"license\":\"Apache-2.0\"},\"contracts/TMP/TMP2/IMemberID.sol\":{\"content\":\"// SPDX-License-Identifier: Apache-2.0\\npragma solidity ^0.7.4;\\n\\ninterface IMemberID {\\n    event MemberAddressChanged(uint256 indexed memberID, address indexed previousAddress, address indexed newAddress);\\n\\n    function upgradeAddress(address _oldAddress, address _newAddress) external;\\n\\n    function getAddressByMember(uint256 _member) external view returns (address);\\n\\n    function getMemberByAddress(address _address) external view returns (uint256);\\n}\\n\",\"keccak256\":\"0x9f28c8a3ebc035329782e9ebf1046faae7ae4d72dda5b5a4284420129f234cd2\",\"license\":\"Apache-2.0\"},\"contracts/TMP/TMP2/LibMemberAccessStorage.sol\":{\"content\":\"// SPDX-License-Identifier: Apache-2.0\\npragma solidity ^0.7.4;\\n\\nlibrary LibMemberAccessStorage {\\n    bytes32 constant MEMBER_ACCESS_STORAGE_POSITION = keccak256('diamond.standard.member.access.storage');\\n\\n    struct MemberStorage {\\n        uint256 memberCounter;\\n        mapping(address => uint256) addressToMember;\\n        mapping(uint256 => address) memberToAddress;\\n    }\\n\\n    function memberStorage() internal pure returns (MemberStorage storage rs) {\\n        bytes32 position = MEMBER_ACCESS_STORAGE_POSITION;\\n        assembly {\\n            rs.slot := position\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0x20f2ae8102598623a0bf072a422ca0fa0edca86232d653f7ace0beb88762cc7a\",\"license\":\"Apache-2.0\"},\"contracts/TMP/TMP3/IPoolRoles.sol\":{\"content\":\"// SPDX-License-Identifier: Apache-2.0\\npragma solidity ^0.7.4;\\n\\ninterface IPoolRoles {\\n    function initializeRoles(address _owner) external;\\n\\n    function isMember(address _account) external view returns (bool);\\n\\n    function addMember(address _account) external;\\n\\n    function removeMember(address _account) external;\\n\\n    function isManager(address _account) external view returns (bool);\\n\\n    function addManager(address _account) external;\\n\\n    function removeManager(address _account) external;\\n\\n    function isManagerRoleAdmin(address _account) external view returns (bool);\\n\\n    function isMemberRoleAdmin(address _account) external view returns (bool);\\n\\n    function getOwner() external view returns (address);\\n}\\n\",\"keccak256\":\"0xe2889fb87c96d6070310bc8aeabe05a30183d0af418c8d3e960be35d05eb0ca5\",\"license\":\"Apache-2.0\"},\"diamond-2/contracts/interfaces/IDiamondCut.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.7.1;\\npragma experimental ABIEncoderV2;\\n\\n/******************************************************************************\\\\\\n* Author: Nick Mudge <nick@perfectabstractions.com> (https://twitter.com/mudgen)\\n* EIP-2535 Diamond Standard: https://eips.ethereum.org/EIPS/eip-2535\\n/******************************************************************************/\\n\\ninterface IDiamondCut {\\n    enum FacetCutAction {Add, Replace, Remove}\\n    // Add=0, Replace=1, Remove=2\\n\\n    struct FacetCut {\\n        address facetAddress;\\n        FacetCutAction action;\\n        bytes4[] functionSelectors;\\n    }\\n\\n    /// @notice Add/replace/remove any number of functions and optionally execute\\n    ///         a function with delegatecall\\n    /// @param _diamondCut Contains the facet addresses and function selectors\\n    /// @param _init The address of the contract or facet to execute _calldata\\n    /// @param _calldata A function call, including function selector and arguments\\n    ///                  _calldata is executed with delegatecall on _init\\n    function diamondCut(\\n        FacetCut[] calldata _diamondCut,\\n        address _init,\\n        bytes calldata _calldata\\n    ) external;\\n\\n    event DiamondCut(FacetCut[] _diamondCut, address _init, bytes _calldata);\\n}\\n\",\"keccak256\":\"0x19c92fe16028a8e74a5f1914235b3e7f4e5eafbc5fced9fa345cab5cd4644c0c\",\"license\":\"MIT\"},\"diamond-2/contracts/libraries/LibDiamond.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.7.1;\\npragma experimental ABIEncoderV2;\\n\\n/******************************************************************************\\\\\\n* Author: Nick Mudge <nick@perfectabstractions.com> (https://twitter.com/mudgen)\\n* EIP-2535 Diamond Standard: https://eips.ethereum.org/EIPS/eip-2535\\n*\\n* This is gas optimized by reducing storage reads and storage writes.\\n* This code is as complex as it is to reduce gas costs.\\n/******************************************************************************/\\n\\nimport \\\"../interfaces/IDiamondCut.sol\\\";\\n\\nlibrary LibDiamond {\\n    bytes32 constant DIAMOND_STORAGE_POSITION = keccak256(\\\"diamond.standard.diamond.storage\\\");\\n\\n    struct DiamondStorage {\\n        // maps function selectors to the facets that execute the functions.\\n        // and maps the selectors to their position in the selectorSlots array.\\n        // func selector => address facet, selector position\\n        mapping(bytes4 => bytes32) facets;\\n        // array of slots of function selectors.\\n        // each slot holds 8 function selectors.\\n        mapping(uint256 => bytes32) selectorSlots;\\n        // The number of function selectors in selectorSlots\\n        uint16 selectorCount;\\n        // owner of the contract\\n        // Used to query if a contract implements an interface.\\n        // Used to implement ERC-165.\\n        mapping(bytes4 => bool) supportedInterfaces;\\n        // owner of the contract\\n        address contractOwner;\\n    }\\n\\n    function diamondStorage() internal pure returns (DiamondStorage storage ds) {\\n        bytes32 position = DIAMOND_STORAGE_POSITION;\\n        assembly {\\n            ds.slot := position\\n        }\\n    }\\n\\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\\n\\n    function setContractOwner(address _newOwner) internal {\\n        DiamondStorage storage ds = diamondStorage();\\n        address previousOwner = ds.contractOwner;\\n        ds.contractOwner = _newOwner;\\n        emit OwnershipTransferred(previousOwner, _newOwner);\\n    }\\n\\n    function contractOwner() internal view returns (address contractOwner_) {\\n        contractOwner_ = diamondStorage().contractOwner;\\n    }\\n\\n    function enforceIsContractOwner() internal view {\\n        require(msg.sender == diamondStorage().contractOwner, \\\"LibDiamond: Must be contract owner\\\");\\n    }\\n\\n    modifier onlyOwner {\\n        require(msg.sender == diamondStorage().contractOwner, \\\"LibDiamond: Must be contract owner\\\");\\n        _;\\n    }\\n\\n    event DiamondCut(IDiamondCut.FacetCut[] _diamondCut, address _init, bytes _calldata);\\n\\n    bytes32 constant CLEAR_ADDRESS_MASK = bytes32(uint256(0xffffffffffffffffffffffff));\\n    bytes32 constant CLEAR_SELECTOR_MASK = bytes32(uint256(0xffffffff << 224));\\n\\n    // Internal function version of diamondCut\\n    // This code is almost the same as the external diamondCut,\\n    // except it is using 'Facet[] memory _diamondCut' instead of\\n    // 'Facet[] calldata _diamondCut'.\\n    // The code is duplicated to prevent copying calldata to memory which\\n    // causes an error for a two dimensional array.\\n    function diamondCut(\\n        IDiamondCut.FacetCut[] memory _diamondCut,\\n        address _init,\\n        bytes memory _calldata\\n    ) internal {\\n        DiamondStorage storage ds = diamondStorage();\\n        uint256 originalSelectorCount = ds.selectorCount;\\n        uint256 selectorCount = originalSelectorCount;\\n        bytes32 selectorSlot;\\n        // Check if last selector slot is not full\\n        if (selectorCount % 8 > 0) {\\n            // get last selectorSlot\\n            selectorSlot = ds.selectorSlots[selectorCount / 8];\\n        }\\n        // loop through diamond cut\\n        for (uint256 facetIndex; facetIndex < _diamondCut.length; facetIndex++) {\\n            (selectorCount, selectorSlot) = addReplaceRemoveFacetSelectors(\\n                selectorCount,\\n                selectorSlot,\\n                _diamondCut[facetIndex].facetAddress,\\n                _diamondCut[facetIndex].action,\\n                _diamondCut[facetIndex].functionSelectors\\n            );\\n        }\\n        if (selectorCount != originalSelectorCount) {\\n            ds.selectorCount = uint16(selectorCount);\\n        }\\n        // If last selector slot is not full\\n        if (selectorCount % 8 > 0) {\\n            ds.selectorSlots[selectorCount / 8] = selectorSlot;\\n        }\\n        emit DiamondCut(_diamondCut, _init, _calldata);\\n        initializeDiamondCut(_init, _calldata);\\n    }\\n\\n    function addReplaceRemoveFacetSelectors(\\n        uint256 _selectorCount,\\n        bytes32 _selectorSlot,\\n        address _newFacetAddress,\\n        IDiamondCut.FacetCutAction _action,\\n        bytes4[] memory _selectors\\n    ) internal returns (uint256, bytes32) {\\n        DiamondStorage storage ds = diamondStorage();\\n        require(_selectors.length > 0, \\\"LibDiamondCut: No selectors in facet to cut\\\");\\n        if (_action == IDiamondCut.FacetCutAction.Add) {\\n            require(_newFacetAddress != address(0), \\\"LibDiamondCut: Add facet can't be address(0)\\\");\\n            enforceHasContractCode(_newFacetAddress, \\\"LibDiamondCut: Add facet has no code\\\");\\n            for (uint256 selectorIndex; selectorIndex < _selectors.length; selectorIndex++) {\\n                bytes4 selector = _selectors[selectorIndex];\\n                bytes32 oldFacet = ds.facets[selector];\\n                require(address(bytes20(oldFacet)) == address(0), \\\"LibDiamondCut: Can't add function that already exists\\\");\\n                // add facet for selector\\n                ds.facets[selector] = bytes20(_newFacetAddress) | bytes32(_selectorCount);\\n                uint256 selectorInSlotPosition = (_selectorCount % 8) * 32;\\n                // clear selector position in slot and add selector\\n                _selectorSlot = (_selectorSlot & ~(CLEAR_SELECTOR_MASK >> selectorInSlotPosition)) | (bytes32(selector) >> selectorInSlotPosition);\\n                // if slot is full then write it to storage\\n                if (selectorInSlotPosition == 224) {\\n                    ds.selectorSlots[_selectorCount / 8] = _selectorSlot;\\n                    _selectorSlot = 0;\\n                }\\n                _selectorCount++;\\n            }\\n        } else if (_action == IDiamondCut.FacetCutAction.Replace) {\\n            require(_newFacetAddress != address(0), \\\"LibDiamondCut: Replace facet can't be address(0)\\\");\\n            enforceHasContractCode(_newFacetAddress, \\\"LibDiamondCut: Replace facet has no code\\\");\\n            for (uint256 selectorIndex; selectorIndex < _selectors.length; selectorIndex++) {\\n                bytes4 selector = _selectors[selectorIndex];\\n                bytes32 oldFacet = ds.facets[selector];\\n                address oldFacetAddress = address(bytes20(oldFacet));\\n                // only useful if immutable functions exist\\n                require(oldFacetAddress != address(this), \\\"LibDiamondCut: Can't replace immutable function\\\");\\n                require(oldFacetAddress != _newFacetAddress, \\\"LibDiamondCut: Can't replace function with same function\\\");\\n                require(oldFacetAddress != address(0), \\\"LibDiamondCut: Can't replace function that doesn't exist\\\");\\n                // replace old facet address\\n                ds.facets[selector] = (oldFacet & CLEAR_ADDRESS_MASK) | bytes20(_newFacetAddress);\\n            }\\n        } else if (_action == IDiamondCut.FacetCutAction.Remove) {\\n            require(_newFacetAddress == address(0), \\\"LibDiamondCut: Remove facet address must be address(0)\\\");\\n            uint256 selectorSlotCount = _selectorCount / 8;\\n            uint256 selectorInSlotIndex = (_selectorCount % 8) - 1;\\n            for (uint256 selectorIndex; selectorIndex < _selectors.length; selectorIndex++) {\\n                if (_selectorSlot == 0) {\\n                    // get last selectorSlot\\n                    selectorSlotCount--;\\n                    _selectorSlot = ds.selectorSlots[selectorSlotCount];\\n                    selectorInSlotIndex = 7;\\n                }\\n                bytes4 lastSelector;\\n                uint256 oldSelectorsSlotCount;\\n                uint256 oldSelectorInSlotPosition;\\n                // adding a block here prevents stack too deep error\\n                {\\n                    bytes4 selector = _selectors[selectorIndex];\\n                    bytes32 oldFacet = ds.facets[selector];\\n                    require(address(bytes20(oldFacet)) != address(0), \\\"LibDiamondCut: Can't remove function that doesn't exist\\\");\\n                    // only useful if immutable functions exist\\n                    require(address(bytes20(oldFacet)) != address(this), \\\"LibDiamondCut: Can't remove immutable function\\\");\\n                    // replace selector with last selector in ds.facets\\n                    // gets the last selector\\n                    lastSelector = bytes4(_selectorSlot << (selectorInSlotIndex * 32));\\n                    if (lastSelector != selector) {\\n                        // update last selector slot position info\\n                        ds.facets[lastSelector] = (oldFacet & CLEAR_ADDRESS_MASK) | bytes20(ds.facets[lastSelector]);\\n                    }\\n                    delete ds.facets[selector];\\n                    uint256 oldSelectorCount = uint16(uint256(oldFacet));\\n                    oldSelectorsSlotCount = oldSelectorCount / 8;\\n                    oldSelectorInSlotPosition = (oldSelectorCount % 8) * 32;\\n                }\\n                if (oldSelectorsSlotCount != selectorSlotCount) {\\n                    bytes32 oldSelectorSlot = ds.selectorSlots[oldSelectorsSlotCount];\\n                    // clears the selector we are deleting and puts the last selector in its place.\\n                    oldSelectorSlot =\\n                        (oldSelectorSlot & ~(CLEAR_SELECTOR_MASK >> oldSelectorInSlotPosition)) |\\n                        (bytes32(lastSelector) >> oldSelectorInSlotPosition);\\n                    // update storage with the modified slot\\n                    ds.selectorSlots[oldSelectorsSlotCount] = oldSelectorSlot;\\n                } else {\\n                    // clears the selector we are deleting and puts the last selector in its place.\\n                    _selectorSlot =\\n                        (_selectorSlot & ~(CLEAR_SELECTOR_MASK >> oldSelectorInSlotPosition)) |\\n                        (bytes32(lastSelector) >> oldSelectorInSlotPosition);\\n                }\\n                if (selectorInSlotIndex == 0) {\\n                    delete ds.selectorSlots[selectorSlotCount];\\n                    _selectorSlot = 0;\\n                }\\n                selectorInSlotIndex--;\\n            }\\n            _selectorCount = selectorSlotCount * 8 + selectorInSlotIndex + 1;\\n        } else {\\n            revert(\\\"LibDiamondCut: Incorrect FacetCutAction\\\");\\n        }\\n        return (_selectorCount, _selectorSlot);\\n    }\\n\\n    function initializeDiamondCut(address _init, bytes memory _calldata) internal {\\n        if (_init == address(0)) {\\n            require(_calldata.length == 0, \\\"LibDiamondCut: _init is address(0) but_calldata is not empty\\\");\\n        } else {\\n            require(_calldata.length > 0, \\\"LibDiamondCut: _calldata is empty but _init is not address(0)\\\");\\n            if (_init != address(this)) {\\n                enforceHasContractCode(_init, \\\"LibDiamondCut: _init address has no code\\\");\\n            }\\n            (bool success, bytes memory error) = _init.delegatecall(_calldata);\\n            if (!success) {\\n                if (error.length > 0) {\\n                    // bubble up the error\\n                    revert(string(error));\\n                } else {\\n                    revert(\\\"LibDiamondCut: _init function reverted\\\");\\n                }\\n            }\\n        }\\n    }\\n\\n    function enforceHasContractCode(address _contract, string memory _errorMessage) internal view {\\n        uint256 contractSize;\\n        assembly {\\n            contractSize := extcodesize(_contract)\\n        }\\n        require(contractSize > 0, _errorMessage);\\n    }\\n}\\n\",\"keccak256\":\"0x8f7751980297b63c26a4cf8d7830ba82befde6a07b6a179115985c8d04d6b3cd\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b50610d86806100206000396000f3fe608060405234801561001057600080fd5b50600436106100cf5760003560e01c806384c7b5d21161008c578063a230c52411610066578063a230c5241461024f578063ac18de4314610275578063ca6d56dc1461029b578063f3ae2415146102c1576100cf565b806384c7b5d2146101e857806388ba03101461020e578063893d20e814610247576100cf565b80630b1ca49a146100d457806327eef566146100fc5780632d06177a1461012a5780633dd9899f1461015057806354208a2f146101885780637f8057d5146101ae575b600080fd5b6100fa600480360360208110156100ea57600080fd5b50356001600160a01b03166102e7565b005b6100fa6004803603604081101561011257600080fd5b506001600160a01b038135811691602001351661036e565b6100fa6004803603602081101561014057600080fd5b50356001600160a01b031661055f565b6101766004803603602081101561016657600080fd5b50356001600160a01b03166105e7565b60408051918252519081900360200190f35b6100fa6004803603602081101561019e57600080fd5b50356001600160a01b0316610613565b6101d4600480360360208110156101c457600080fd5b50356001600160a01b03166106a7565b604080519115158252519081900360200190f35b6101d4600480360360208110156101fe57600080fd5b50356001600160a01b03166106e2565b61022b6004803603602081101561022457600080fd5b5035610717565b604080516001600160a01b039092168252519081900360200190f35b61022b61073e565b6101d46004803603602081101561026557600080fd5b50356001600160a01b031661074d565b6100fa6004803603602081101561028b57600080fd5b50356001600160a01b0316610758565b6100fa600480360360208110156102b157600080fd5b50356001600160a01b0316610833565b6101d4600480360360208110156102d757600080fd5b50356001600160a01b03166108bb565b610306600080516020610d118339815191526103016108c6565b610913565b80610319575061031960006103016108c6565b610353576040805162461bcd60e51b815260206004820152600660248201526541434345535360d01b604482015290519081900360640190fd5b61036b600080516020610d3183398151915282610941565b50565b6103766108c6565b6001600160a01b0316826001600160a01b0316146103cc576040805162461bcd60e51b815260206004820152600e60248201526d27a6222fa727aa2fa9a2a72222a960911b604482015290519081900360640190fd5b60006103d66109b9565b6001600160a01b038416600090815260018201602052604090205490915080610433576040805162461bcd60e51b815260206004820152600a6024820152692727a72fa6a2a6a122a960b11b604482015290519081900360640190fd5b6001600160a01b03808516600090815260018401602090815260408083208390559286168083528383208590558483526002860190915291902080546001600160a01b0319169091179055610496600080516020610d3183398151915285610913565b156104cb576104b3600080516020610d3183398151915285610941565b6104cb600080516020610d31833981519152846109dd565b6104e3600080516020610d1183398151915285610913565b1561051857610500600080516020610d1183398151915285610941565b610518600080516020610d11833981519152846109dd565b826001600160a01b0316846001600160a01b0316827f8132c6c688b9e92e30d65e58365bf9ddec7ca7333f82e764d6a1c66d08d7f33660405160405180910390a450505050565b610579600080516020610d118339815191526103016108c6565b8061058c575061058c60006103016108c6565b6105c6576040805162461bcd60e51b815260206004820152600660248201526541434345535360d01b604482015290519081900360640190fd5b6105cf81610a54565b61036b600080516020610d11833981519152826109dd565b60006105f16109b9565b6001600160a01b03929092166000908152600190920160205250604090205490565b61061b6109b9565b5415610657576040805162461bcd60e51b815260206004808301919091526024820152631253925560e21b604482015290519081900360640190fd5b6103e86106626109b9565b5561066e600082610ad4565b610686600080516020610d3183398151915282610ad4565b61069e600080516020610d1183398151915282610ad4565b61036b81610a54565b60006106dc6106b4610ae2565b600080516020610d118339815191526000908152602091909152604090206002015483610913565b92915050565b60006106dc6106ef610ae2565b600080516020610d318339815191526000908152602091909152604090206002015483610913565b60006107216109b9565b60009283526002016020525060409020546001600160a01b031690565b6000610748610b06565b905090565b60006106dc82610b10565b610772600080516020610d118339815191526103016108c6565b80610785575061078560006103016108c6565b6107bf576040805162461bcd60e51b815260206004820152600660248201526541434345535360d01b604482015290519081900360640190fd5b806001600160a01b03166107d16108c6565b6001600160a01b0316141561081b576040805162461bcd60e51b815260206004820152600b60248201526a13d5d397d050d0d3d5539560aa1b604482015290519081900360640190fd5b61036b600080516020610d1183398151915282610941565b61084d600080516020610d118339815191526103016108c6565b80610860575061086060006103016108c6565b61089a576040805162461bcd60e51b815260206004820152600660248201526541434345535360d01b604482015290519081900360640190fd5b6108a381610a54565b61036b600080516020610d31833981519152826109dd565b60006106dc82610b48565b600060606000368080601f0160208091040260200160405190810160405280939291908181526020018383808284376000920191909152505050503601516001600160a01b031692915050565b60008061091e610ae2565b60008581526020829052604090209091506109399084610b62565b949350505050565b600061094b610ae2565b60008481526020829052604090209091506109669083610b7e565b156109b4576109736108c6565b6001600160a01b0316826001600160a01b0316847ff6391f5c32d9c69d2a47ea670b442974b53935d1edc7fd64eb21e047a839171b60405160405180910390a45b505050565b7faa97fdeef5de5607974189e6a2429d502dcc32b43d658c3c065d5ca083ee1fab90565b60006109e7610ae2565b6000848152602082905260409020909150610a029083610b93565b156109b457610a0f6108c6565b6001600160a01b0316826001600160a01b0316847f2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d60405160405180910390a4505050565b6000610a5e6109b9565b6001600160a01b03831660009081526001820160205260409020549091508015610a8957505061036b565b50805460019081018083556001600160a01b0384166000818152928401602090815260408085208490559284526002909401909352902080546001600160a01b031916909117905550565b610ade82826109dd565b5050565b7f6282190449f76f72a9f692e4d8619a03764b7253394788948e36a7a57ba4a00e90565b6000610748610ba8565b6000610b2a600080516020610d3183398151915283610913565b806106dc57506106dc600080516020610d1183398151915283610913565b60006106dc600080516020610d1183398151915283610913565b6000610b77836001600160a01b038416610bc4565b9392505050565b6000610b77836001600160a01b038416610bdc565b6000610b77836001600160a01b038416610ca2565b6000610bb2610cec565b600401546001600160a01b0316919050565b60009081526001919091016020526040902054151590565b60008181526001830160205260408120548015610c985783546000198083019190810190600090879083908110610c0f57fe5b9060005260206000200154905080876000018481548110610c2c57fe5b600091825260208083209091019290925582815260018981019092526040902090840190558654879080610c5c57fe5b600190038181906000526020600020016000905590558660010160008781526020019081526020016000206000905560019450505050506106dc565b60009150506106dc565b6000610cae8383610bc4565b610ce4575081546001818101845560008481526020808220909301849055845484825282860190935260409020919091556106dc565b5060006106dc565b7fc8fcad8db84d3cc18b4c41d551ea0ee66dd599cde068d998e57d5e09332c131c9056fe241ecf16d79d0f8dbfb92cbc07fe17840425976cf0667f022fe9877caa831b08829b824e2329e205435d941c9f13baf578548505283d29261236d8e6596d4636a2646970667358221220b26a186a7172e058a71a87c042c705ee587967b4ad4a65bb83ec890c0e7ec02364736f6c63430007040033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100cf5760003560e01c806384c7b5d21161008c578063a230c52411610066578063a230c5241461024f578063ac18de4314610275578063ca6d56dc1461029b578063f3ae2415146102c1576100cf565b806384c7b5d2146101e857806388ba03101461020e578063893d20e814610247576100cf565b80630b1ca49a146100d457806327eef566146100fc5780632d06177a1461012a5780633dd9899f1461015057806354208a2f146101885780637f8057d5146101ae575b600080fd5b6100fa600480360360208110156100ea57600080fd5b50356001600160a01b03166102e7565b005b6100fa6004803603604081101561011257600080fd5b506001600160a01b038135811691602001351661036e565b6100fa6004803603602081101561014057600080fd5b50356001600160a01b031661055f565b6101766004803603602081101561016657600080fd5b50356001600160a01b03166105e7565b60408051918252519081900360200190f35b6100fa6004803603602081101561019e57600080fd5b50356001600160a01b0316610613565b6101d4600480360360208110156101c457600080fd5b50356001600160a01b03166106a7565b604080519115158252519081900360200190f35b6101d4600480360360208110156101fe57600080fd5b50356001600160a01b03166106e2565b61022b6004803603602081101561022457600080fd5b5035610717565b604080516001600160a01b039092168252519081900360200190f35b61022b61073e565b6101d46004803603602081101561026557600080fd5b50356001600160a01b031661074d565b6100fa6004803603602081101561028b57600080fd5b50356001600160a01b0316610758565b6100fa600480360360208110156102b157600080fd5b50356001600160a01b0316610833565b6101d4600480360360208110156102d757600080fd5b50356001600160a01b03166108bb565b610306600080516020610d118339815191526103016108c6565b610913565b80610319575061031960006103016108c6565b610353576040805162461bcd60e51b815260206004820152600660248201526541434345535360d01b604482015290519081900360640190fd5b61036b600080516020610d3183398151915282610941565b50565b6103766108c6565b6001600160a01b0316826001600160a01b0316146103cc576040805162461bcd60e51b815260206004820152600e60248201526d27a6222fa727aa2fa9a2a72222a960911b604482015290519081900360640190fd5b60006103d66109b9565b6001600160a01b038416600090815260018201602052604090205490915080610433576040805162461bcd60e51b815260206004820152600a6024820152692727a72fa6a2a6a122a960b11b604482015290519081900360640190fd5b6001600160a01b03808516600090815260018401602090815260408083208390559286168083528383208590558483526002860190915291902080546001600160a01b0319169091179055610496600080516020610d3183398151915285610913565b156104cb576104b3600080516020610d3183398151915285610941565b6104cb600080516020610d31833981519152846109dd565b6104e3600080516020610d1183398151915285610913565b1561051857610500600080516020610d1183398151915285610941565b610518600080516020610d11833981519152846109dd565b826001600160a01b0316846001600160a01b0316827f8132c6c688b9e92e30d65e58365bf9ddec7ca7333f82e764d6a1c66d08d7f33660405160405180910390a450505050565b610579600080516020610d118339815191526103016108c6565b8061058c575061058c60006103016108c6565b6105c6576040805162461bcd60e51b815260206004820152600660248201526541434345535360d01b604482015290519081900360640190fd5b6105cf81610a54565b61036b600080516020610d11833981519152826109dd565b60006105f16109b9565b6001600160a01b03929092166000908152600190920160205250604090205490565b61061b6109b9565b5415610657576040805162461bcd60e51b815260206004808301919091526024820152631253925560e21b604482015290519081900360640190fd5b6103e86106626109b9565b5561066e600082610ad4565b610686600080516020610d3183398151915282610ad4565b61069e600080516020610d1183398151915282610ad4565b61036b81610a54565b60006106dc6106b4610ae2565b600080516020610d118339815191526000908152602091909152604090206002015483610913565b92915050565b60006106dc6106ef610ae2565b600080516020610d318339815191526000908152602091909152604090206002015483610913565b60006107216109b9565b60009283526002016020525060409020546001600160a01b031690565b6000610748610b06565b905090565b60006106dc82610b10565b610772600080516020610d118339815191526103016108c6565b80610785575061078560006103016108c6565b6107bf576040805162461bcd60e51b815260206004820152600660248201526541434345535360d01b604482015290519081900360640190fd5b806001600160a01b03166107d16108c6565b6001600160a01b0316141561081b576040805162461bcd60e51b815260206004820152600b60248201526a13d5d397d050d0d3d5539560aa1b604482015290519081900360640190fd5b61036b600080516020610d1183398151915282610941565b61084d600080516020610d118339815191526103016108c6565b80610860575061086060006103016108c6565b61089a576040805162461bcd60e51b815260206004820152600660248201526541434345535360d01b604482015290519081900360640190fd5b6108a381610a54565b61036b600080516020610d31833981519152826109dd565b60006106dc82610b48565b600060606000368080601f0160208091040260200160405190810160405280939291908181526020018383808284376000920191909152505050503601516001600160a01b031692915050565b60008061091e610ae2565b60008581526020829052604090209091506109399084610b62565b949350505050565b600061094b610ae2565b60008481526020829052604090209091506109669083610b7e565b156109b4576109736108c6565b6001600160a01b0316826001600160a01b0316847ff6391f5c32d9c69d2a47ea670b442974b53935d1edc7fd64eb21e047a839171b60405160405180910390a45b505050565b7faa97fdeef5de5607974189e6a2429d502dcc32b43d658c3c065d5ca083ee1fab90565b60006109e7610ae2565b6000848152602082905260409020909150610a029083610b93565b156109b457610a0f6108c6565b6001600160a01b0316826001600160a01b0316847f2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d60405160405180910390a4505050565b6000610a5e6109b9565b6001600160a01b03831660009081526001820160205260409020549091508015610a8957505061036b565b50805460019081018083556001600160a01b0384166000818152928401602090815260408085208490559284526002909401909352902080546001600160a01b031916909117905550565b610ade82826109dd565b5050565b7f6282190449f76f72a9f692e4d8619a03764b7253394788948e36a7a57ba4a00e90565b6000610748610ba8565b6000610b2a600080516020610d3183398151915283610913565b806106dc57506106dc600080516020610d1183398151915283610913565b60006106dc600080516020610d1183398151915283610913565b6000610b77836001600160a01b038416610bc4565b9392505050565b6000610b77836001600160a01b038416610bdc565b6000610b77836001600160a01b038416610ca2565b6000610bb2610cec565b600401546001600160a01b0316919050565b60009081526001919091016020526040902054151590565b60008181526001830160205260408120548015610c985783546000198083019190810190600090879083908110610c0f57fe5b9060005260206000200154905080876000018481548110610c2c57fe5b600091825260208083209091019290925582815260018981019092526040902090840190558654879080610c5c57fe5b600190038181906000526020600020016000905590558660010160008781526020019081526020016000206000905560019450505050506106dc565b60009150506106dc565b6000610cae8383610bc4565b610ce4575081546001818101845560008481526020808220909301849055845484825282860190935260409020919091556106dc565b5060006106dc565b7fc8fcad8db84d3cc18b4c41d551ea0ee66dd599cde068d998e57d5e09332c131c9056fe241ecf16d79d0f8dbfb92cbc07fe17840425976cf0667f022fe9877caa831b08829b824e2329e205435d941c9f13baf578548505283d29261236d8e6596d4636a2646970667358221220b26a186a7172e058a71a87c042c705ee587967b4ad4a65bb83ec890c0e7ec02364736f6c63430007040033",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {
+      "addManager(address)": {
+        "params": {
+          "_account": "Address of the account to give the manager role to."
+        }
+      },
+      "addMember(address)": {
+        "params": {
+          "_account": "Address of the account to give the member role to."
+        }
+      },
+      "getAddressByMember(uint256)": {
+        "details": "Different member id's can map to the same address.",
+        "params": {
+          "_member": "The index of the member account."
+        },
+        "returns": {
+          "_0": "Address of the member for the given member index in the memberToAddress storage."
+        }
+      },
+      "getMemberByAddress(address)": {
+        "params": {
+          "_address": "The address of the member account."
+        },
+        "returns": {
+          "_0": "Index of the member for a given address."
+        }
+      },
+      "getOwner()": {
+        "returns": {
+          "_0": "address of the contract owner."
+        }
+      },
+      "initializeRoles(address)": {
+        "details": "Should be called right after deploying the contract. _owner will become member, manager and role admin.",
+        "params": {
+          "_owner": "Address of the account that should own the contract."
+        }
+      },
+      "isManager(address)": {
+        "params": {
+          "_account": "Address of the account to check the manager role for."
+        },
+        "returns": {
+          "_0": "if the given address bears the manager role."
+        }
+      },
+      "isManagerRoleAdmin(address)": {
+        "params": {
+          "_account": "Address of the account to check the manager role admin account for."
+        },
+        "returns": {
+          "_0": "if the given address is the manager role admin."
+        }
+      },
+      "isMember(address)": {
+        "params": {
+          "_account": "Address of the account to check the member role for."
+        },
+        "returns": {
+          "_0": "if the given address bears the member role."
+        }
+      },
+      "isMemberRoleAdmin(address)": {
+        "params": {
+          "_account": "Address of the account to check the member role admin account for."
+        },
+        "returns": {
+          "_0": "if the given address is the member role admin."
+        }
+      },
+      "removeManager(address)": {
+        "params": {
+          "_account": "Address of the account to revoke the manager role for."
+        }
+      },
+      "removeMember(address)": {
+        "params": {
+          "_account": "Address of the account to revoke the member role for."
+        }
+      },
+      "upgradeAddress(address,address)": {
+        "details": "Different member id's can map to the same address.",
+        "params": {
+          "_newAddress": "The new address of the member.",
+          "_oldAddress": "The current address of the member."
+        }
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {
+      "getAddressByMember(uint256)": {
+        "notice": "Upgrades an existing member address to a new member address, can only be called by the member itself."
+      },
+      "upgradeAddress(address,address)": {
+        "notice": "Upgrades an existing member address to a new member address, can only be called by the member itself."
+      }
+    },
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [],
+    "types": null
+  }
+}

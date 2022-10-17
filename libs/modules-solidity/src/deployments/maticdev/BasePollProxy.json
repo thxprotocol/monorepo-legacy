@@ -1,0 +1,193 @@
+{
+  "address": "0x5dED0837ebcb8Ab17EE8E1c09887d70bef037413",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_id",
+          "type": "uint256"
+        }
+      ],
+      "name": "getEndTime",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_id",
+          "type": "uint256"
+        }
+      ],
+      "name": "getNoCounter",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_id",
+          "type": "uint256"
+        }
+      ],
+      "name": "getStartTime",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_id",
+          "type": "uint256"
+        }
+      ],
+      "name": "getTotalVoted",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_address",
+          "type": "address"
+        }
+      ],
+      "name": "getVoteByAddress",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "time",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "weight",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "agree",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct LibBasePollStorage.Vote",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_id",
+          "type": "uint256"
+        }
+      ],
+      "name": "getYesCounter",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0xa42c5e3c8708c33b0d98a2e5ade0234c627bdd98ebcbf47eb54481f12253bada",
+  "receipt": {
+    "to": null,
+    "from": "0xE4f3EEA6CeB6D8Cda41E1F78F4c549946a1EB395",
+    "contractAddress": "0x5dED0837ebcb8Ab17EE8E1c09887d70bef037413",
+    "transactionIndex": 63,
+    "gasUsed": "225734",
+    "logsBloom": "0x08000000000000000000000000000000000000000000000000000000000000000000000000000000020000000000000000008000000000000000000000000000000000000000000000000000000000800000400000000000000100000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000008000000000000000000000000000200000000000000000000000000000000000000000000000000000000000004000000000000000000081000000000000000000004000000000100000000000000000000000000000000000000000000000000000000000000000000000100000",
+    "blockHash": "0xe061d5b1b4d8eb5e08037b1e7cb972ebd32a9f7fa9d7e86f6046a5ced67ded9e",
+    "transactionHash": "0xa42c5e3c8708c33b0d98a2e5ade0234c627bdd98ebcbf47eb54481f12253bada",
+    "logs": [
+      {
+        "transactionIndex": 63,
+        "blockNumber": 26032896,
+        "transactionHash": "0xa42c5e3c8708c33b0d98a2e5ade0234c627bdd98ebcbf47eb54481f12253bada",
+        "address": "0x0000000000000000000000000000000000001010",
+        "topics": [
+          "0x4dfe1bbbcf077ddc3e01291eea2d5c70c2b422b415d95645b9adcfd678cb1d63",
+          "0x0000000000000000000000000000000000000000000000000000000000001010",
+          "0x000000000000000000000000e4f3eea6ceb6d8cda41e1f78f4c549946a1eb395",
+          "0x000000000000000000000000e7e2cb8c81c10ff191a73fe266788c9ce62ec754"
+        ],
+        "data": "0x000000000000000000000000000000000000000000000000001c11a2bcc8507e00000000000000000000000000000000000000000000000313f85c84c935b5c5000000000000000000000000000000000000000000000624827af94609f1e56400000000000000000000000000000000000000000000000313dc4ae20c6d654700000000000000000000000000000000000000000000062482970ae8c6ba35e2",
+        "logIndex": 343,
+        "blockHash": "0xe061d5b1b4d8eb5e08037b1e7cb972ebd32a9f7fa9d7e86f6046a5ced67ded9e"
+      }
+    ],
+    "blockNumber": 26032896,
+    "cumulativeGasUsed": "10730530",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [],
+  "numDeployments": 1,
+  "solcInputHash": "954101db8fd21c30da9bb6a572893bde",
+  "metadata": "{\"compiler\":{\"version\":\"0.7.4+commit.3f05b770\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_id\",\"type\":\"uint256\"}],\"name\":\"getEndTime\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_id\",\"type\":\"uint256\"}],\"name\":\"getNoCounter\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_id\",\"type\":\"uint256\"}],\"name\":\"getStartTime\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_id\",\"type\":\"uint256\"}],\"name\":\"getTotalVoted\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_id\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"_address\",\"type\":\"address\"}],\"name\":\"getVoteByAddress\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"time\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"weight\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"agree\",\"type\":\"bool\"}],\"internalType\":\"struct LibBasePollStorage.Vote\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_id\",\"type\":\"uint256\"}],\"name\":\"getYesCounter\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/08-BasePoll/BasePollProxy.sol\":\"BasePollProxy\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"contracts/08-BasePoll/BasePollProxy.sol\":{\"content\":\"// SPDX-License-Identifier: Apache-2.0\\n\\npragma solidity ^0.7.4;\\npragma experimental ABIEncoderV2;\\n\\n/******************************************************************************\\\\\\n* @title Base Poll Proxy\\n* @author Evert Kors <evert@thx.network>\\n* @notice Expose base poll storage.\\n* \\n* Implementations: \\n* TMP-6 Base Poll: https://github.com/thxprotocol/modules/issues/6\\n/******************************************************************************/\\n\\nimport '../TMP/TMP6/LibBasePollStorage.sol';\\nimport '../TMP/TMP6/IBasePoll.sol';\\n\\ncontract BasePollProxy is IBasePoll {\\n    function getStartTime(uint256 _id) external view override returns (uint256) {\\n        return LibBasePollStorage.basePollStorageId(_id).startTime;\\n    }\\n\\n    function getEndTime(uint256 _id) external view override returns (uint256) {\\n        return LibBasePollStorage.basePollStorageId(_id).endTime;\\n    }\\n\\n    function getYesCounter(uint256 _id) external view override returns (uint256) {\\n        return LibBasePollStorage.basePollStorageId(_id).yesCounter;\\n    }\\n\\n    function getNoCounter(uint256 _id) external view override returns (uint256) {\\n        return LibBasePollStorage.basePollStorageId(_id).noCounter;\\n    }\\n\\n    function getTotalVoted(uint256 _id) external view override returns (uint256) {\\n        return LibBasePollStorage.basePollStorageId(_id).totalVoted;\\n    }\\n\\n    function getVoteByAddress(uint256 _id, address _address)\\n        public\\n        view\\n        override\\n        returns (LibBasePollStorage.Vote memory)\\n    {\\n        return LibBasePollStorage.basePollStorageId(_id).votesByAddress[_address];\\n    }\\n}\\n\",\"keccak256\":\"0xb5997409b95e94709acee7e283933c5efd8f36834ef586752b569e53303043db\",\"license\":\"Apache-2.0\"},\"contracts/TMP/TMP6/IBasePoll.sol\":{\"content\":\"// SPDX-License-Identifier: Apache-2.0\\npragma solidity ^0.7.4;\\npragma experimental ABIEncoderV2;\\n\\nimport './LibBasePollStorage.sol';\\n\\ninterface IBasePoll {\\n    function getStartTime(uint256 _id) external view returns (uint256);\\n\\n    function getEndTime(uint256 _id) external view returns (uint256);\\n\\n    function getYesCounter(uint256 _id) external view returns (uint256);\\n\\n    function getNoCounter(uint256 _id) external view returns (uint256);\\n\\n    function getTotalVoted(uint256 _id) external view returns (uint256);\\n\\n    function getVoteByAddress(uint256 _id, address _address) external view returns (LibBasePollStorage.Vote memory);\\n}\\n\",\"keccak256\":\"0x6525cee2a0b563088294d0b2be61a1af34ce482ee5fe4a21eec68590025947ec\",\"license\":\"Apache-2.0\"},\"contracts/TMP/TMP6/LibBasePollStorage.sol\":{\"content\":\"// SPDX-License-Identifier: Apache-2.0\\npragma solidity ^0.7.4;\\n\\n/// @dev This Lib is used to create unique storage pointers and store structured data in them.\\nlibrary LibBasePollStorage {\\n    bytes32 constant BASE_STORAGE = keccak256('diamond.contract.assetpool.basepoll');\\n\\n    /**\\n     * @dev Stores the amount of polls created in the diamond.\\n     */\\n    struct BaseStorage {\\n        uint256 pollCounter;\\n    }\\n\\n    /**\\n     * @dev Stores the information of a poll for a given storage pointer.\\n     */\\n    struct BasePollStorage {\\n        uint256 id;\\n        uint256 startTime;\\n        uint256 endTime;\\n        uint256 yesCounter;\\n        uint256 noCounter;\\n        uint256 totalVoted;\\n        mapping(address => Vote) votesByAddress;\\n    }\\n    /**\\n     * @dev Stores a vote for a poll in BasePollStorage.votesByAddress.\\n     */\\n    struct Vote {\\n        uint256 time;\\n        uint256 weight;\\n        bool agree;\\n    }\\n\\n    /**\\n     * @param _id The ID of a poll.\\n     * @return storage position for a given poll id\\n     */\\n    function getPosition(uint256 _id) internal pure returns (bytes32) {\\n        return keccak256(abi.encode('diamond.contract.assetpool.basepoll', _id));\\n    }\\n\\n    /**\\n     * @return bs The base storage containing pollCounter of all polls.\\n     */\\n    function baseStorage() internal pure returns (BaseStorage storage bs) {\\n        bytes32 position = BASE_STORAGE;\\n        assembly {\\n            bs.slot := position\\n        }\\n    }\\n\\n    /**\\n     * @param _pos The storage position of the poll.\\n     * @return bs The BasePollStorage struct storage for a poll its storage position.\\n     */\\n    function basePollStorage(bytes32 _pos) internal pure returns (BasePollStorage storage bs) {\\n        assembly {\\n            bs.slot := _pos\\n        }\\n    }\\n\\n    /**\\n     * @param _id The poll id\\n     * @return bs The BasePollStorage struct storage for a given poll ID.\\n     */\\n    function basePollStorageId(uint256 _id) internal pure returns (BasePollStorage storage bs) {\\n        bytes32 position = getPosition(_id);\\n        assembly {\\n            bs.slot := position\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0xf6a461ca59db0d5227af09886b0e7f9280f119ad25ad78ed553868ff8331696d\",\"license\":\"Apache-2.0\"}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b5061031f806100206000396000f3fe608060405234801561001057600080fd5b50600436106100625760003560e01c80637b1b130e146100675780638e308119146100905780639067b677146100a3578063bc2be1be146100b6578063f0738fad146100c9578063f94e85d6146100dc575b600080fd5b61007a610075366004610248565b6100fc565b60405161008791906102bd565b60405180910390f35b61007a61009e366004610248565b610111565b61007a6100b1366004610248565b610126565b61007a6100c4366004610248565b61013b565b61007a6100d7366004610248565b610150565b6100ef6100ea366004610260565b610165565b604051610087919061029a565b6000610107826101c6565b6003015492915050565b600061011c826101c6565b6005015492915050565b6000610131826101c6565b6002015492915050565b6000610146826101c6565b6001015492915050565b600061015b826101c6565b6004015492915050565b61016d610225565b610176836101c6565b6001600160a01b038316600090815260069190910160209081526040918290208251606081018452815481526001820154928101929092526002015460ff16151591810191909152905092915050565b6000806101d2836101d9565b9392505050565b6000816040516020018080602001838152602001828103825260238152602001806102c76023913960400192505050604051602081830303815290604052805190602001209050919050565b604051806060016040528060008152602001600081526020016000151581525090565b600060208284031215610259578081fd5b5035919050565b60008060408385031215610272578081fd5b8235915060208301356001600160a01b038116811461028f578182fd5b809150509250929050565b815181526020808301519082015260409182015115159181019190915260600190565b9081526020019056fe6469616d6f6e642e636f6e74726163742e6173736574706f6f6c2e62617365706f6c6ca26469706673582212202ec641f1e7ab35adf8ae20b954ea3ffce49107303576e81aa0683a0300c14e6664736f6c63430007040033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100625760003560e01c80637b1b130e146100675780638e308119146100905780639067b677146100a3578063bc2be1be146100b6578063f0738fad146100c9578063f94e85d6146100dc575b600080fd5b61007a610075366004610248565b6100fc565b60405161008791906102bd565b60405180910390f35b61007a61009e366004610248565b610111565b61007a6100b1366004610248565b610126565b61007a6100c4366004610248565b61013b565b61007a6100d7366004610248565b610150565b6100ef6100ea366004610260565b610165565b604051610087919061029a565b6000610107826101c6565b6003015492915050565b600061011c826101c6565b6005015492915050565b6000610131826101c6565b6002015492915050565b6000610146826101c6565b6001015492915050565b600061015b826101c6565b6004015492915050565b61016d610225565b610176836101c6565b6001600160a01b038316600090815260069190910160209081526040918290208251606081018452815481526001820154928101929092526002015460ff16151591810191909152905092915050565b6000806101d2836101d9565b9392505050565b6000816040516020018080602001838152602001828103825260238152602001806102c76023913960400192505050604051602081830303815290604052805190602001209050919050565b604051806060016040528060008152602001600081526020016000151581525090565b600060208284031215610259578081fd5b5035919050565b60008060408385031215610272578081fd5b8235915060208301356001600160a01b038116811461028f578182fd5b809150509250929050565b815181526020808301519082015260409182015115159181019190915260600190565b9081526020019056fe6469616d6f6e642e636f6e74726163742e6173736574706f6f6c2e62617365706f6c6ca26469706673582212202ec641f1e7ab35adf8ae20b954ea3ffce49107303576e81aa0683a0300c14e6664736f6c63430007040033",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [],
+    "types": null
+  }
+}

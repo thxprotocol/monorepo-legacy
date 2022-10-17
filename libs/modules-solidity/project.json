@@ -1,0 +1,41 @@
+{
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "libs/modules-solidity/src",
+    "projectType": "library",
+    "targets": {
+        "complie": {
+            "executor": "nx:run-commands",
+            "options": {
+                "commands": ["npx hardhat compile"],
+                "cwd": "libs/modules-solidity"
+            }
+        },
+        "build": {
+            "executor": "@nrwl/js:tsc",
+            "outputs": ["{options.outputPath}"],
+            "options": {
+                "outputPath": "dist/libs/modules-solidity",
+                "tsConfig": "libs/modules-solidity/tsconfig.lib.json",
+                "packageJson": "libs/modules-solidity/package.json",
+                "main": "libs/modules-solidity/src/index.ts",
+                "assets": ["libs/modules-solidity/*.md"]
+            }
+        },
+        "lint": {
+            "executor": "@nrwl/linter:eslint",
+            "outputs": ["{options.outputFile}"],
+            "options": {
+                "lintFilePatterns": ["libs/modules-solidity/**/*.ts"]
+            }
+        },
+        "test": {
+            "executor": "@nrwl/jest:jest",
+            "outputs": ["coverage/libs/modules-solidity"],
+            "options": {
+                "jestConfig": "libs/modules-solidity/jest.config.ts",
+                "passWithNoTests": true
+            }
+        }
+    },
+    "tags": ["solidity"]
+}
