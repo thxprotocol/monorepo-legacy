@@ -14,13 +14,35 @@ const POLYGON_PRIVATE_KEY_DEV = process.env.POLYGON_PRIVATE_KEY_DEV || '';
 const config: any = {
     defaultNetwork: 'hardhat',
     solidity: {
-        version: '0.7.4',
-        settings: {
-            optimizer: {
-                enabled: true,
-                runs: 200,
+        compilers: [
+            {
+                version: '0.7.6',
+                settings: {
+                    optimizer: {
+                        enabled: true,
+                        runs: 200,
+                    },
+                },
             },
-        },
+            {
+                version: '0.8.0',
+                settings: {
+                    optimizer: {
+                        enabled: true,
+                        runs: 200,
+                    },
+                },
+            },
+            {
+                version: '0.8.6',
+                settings: {
+                    optimizer: {
+                        enabled: true,
+                        runs: 200,
+                    },
+                },
+            },
+        ],
     },
     namedAccounts: {
         deployer: {
