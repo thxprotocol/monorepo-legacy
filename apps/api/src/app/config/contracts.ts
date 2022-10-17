@@ -14,7 +14,7 @@ import {
     diamondVariants,
     TNetworkName,
     TokenContractName,
-} from '@thxnetwork/artifacts';
+} from '@thxnetwork/contracts/exports';
 import { HARDHAT_NAME, POLYGON_MUMBAI_NAME, POLYGON_NAME } from './secrets';
 
 export const getContractConfig = (

@@ -1,4 +1,4 @@
-import { version as currentVersion } from '../package.json';
+import { version as currentVersion } from '../../package.json';
 import { AbiItem } from 'web3-utils';
 import fs from 'fs';
 import path from 'path';
