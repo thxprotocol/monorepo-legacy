@@ -6,8 +6,8 @@
         "./scripts",
         "./deploy",
         "./test",
-        "./exports",
-        "./exports/**/*.json",
+        "src/exports",
+        "src/exports/**/*.json",
         "typechain/**/*"
     ],
     "references": [
