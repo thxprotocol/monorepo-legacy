@@ -3,7 +3,7 @@ import request from 'supertest';
 import app from '../../../app';
 import { AccountService } from '../../../services/AccountService';
 import db from '../../../util/database';
-import { API_URL, INITIAL_ACCESS_TOKEN } from '../../../util/secrets';
+import { API_URL, INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
 
 const http = request.agent(app);
 

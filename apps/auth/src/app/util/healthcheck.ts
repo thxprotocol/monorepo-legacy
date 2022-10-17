@@ -2,10 +2,11 @@ import newrelic from 'newrelic';
 import { HealthCheck } from '@godaddy/terminus';
 import { config, status } from 'migrate-mongo';
 import { connection } from 'mongoose';
+import { Db } from 'mongodb';
 
-import migrateMongoConfig from '../../migrate-mongo-config';
+import migrateMongoConfig from '../config/migrate-mongo';
 
-const dbConnected: HealthCheck = async () => {
+const dbConnected = async () => {
     // https://mongoosejs.com/docs/api.html#connection_Connection-readyState
     const { readyState } = connection;
     // ERR_CONNECTING_TO_MONGO
@@ -20,10 +21,12 @@ const dbConnected: HealthCheck = async () => {
     return;
 };
 
-const migrationsApplied: HealthCheck = async () => {
+const migrationsApplied = async () => {
     config.set(migrateMongoConfig);
 
-    const pendingMigrations = (await status(connection.db as any)).filter((migration) => migration.appliedAt === 'PENDING');
+    const pendingMigrations = (await status(connection.db as Db)).filter(
+        (migration) => migration.appliedAt === 'PENDING',
+    );
     if (pendingMigrations.length > 0) {
         throw new Error('Not all migrations applied');
     }
@@ -33,5 +36,5 @@ const migrationsApplied: HealthCheck = async () => {
 
 export const healthCheck: HealthCheck = () => {
     newrelic.getTransaction().ignore();
-    return Promise.all([dbConnected, migrationsApplied]);
+    return Promise.all([dbConnected(), migrationsApplied()]);
 };

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { AUTH_URL, WALLET_URL } from '../../../util/secrets';
+import { AUTH_URL, WALLET_URL } from '../../../config/secrets';
 import { SpotifyService } from '../../../services/SpotifyService';
 import { TwitterService } from '../../../services/TwitterService';
 import { YouTubeService } from '../../../services/YouTubeService';

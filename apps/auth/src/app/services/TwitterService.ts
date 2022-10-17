@@ -1,7 +1,7 @@
 import CommonOauthLoginOptions from '@thxnetwork/auth/types/CommonOauthLoginOptions';
 import { URLSearchParams } from 'url';
 import { twitterClient } from '../util/axios';
-import { TWITTER_CLIENT_ID, TWITTER_CLIENT_SECRET, TWITTER_REDIRECT_URI } from '../util/secrets';
+import { TWITTER_CLIENT_ID, TWITTER_CLIENT_SECRET, TWITTER_REDIRECT_URI } from '../config/secrets';
 
 const ERROR_NO_DATA = 'Could not find an youtube data for this accesstoken';
 const ERROR_NOT_AUTHORIZED = 'Not authorized for Twitter API';

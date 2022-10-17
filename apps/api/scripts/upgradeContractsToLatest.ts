@@ -1,18 +1,18 @@
-import db from '../apps/api/src/app/util/database';
-import AssetPoolService from '../apps/api/src/app/services/AssetPoolService';
-import AccountProxy from '../apps/api/src/app/proxies/AccountProxy';
-import { MONGODB_URI } from '../apps/api/src/app/config/secrets';
-import { getContract } from '../apps/api/src/app/config/contracts';
-import { updateDiamondContract } from '../apps/api/src/app/util/upgrades';
-import { AssetPool } from '../apps/api/src/app/models/AssetPool';
-import { AccountPlanType, ChainId } from '../apps/api/src/app/types/enums';
+import db from '../src/app/util/database';
+import AssetPoolService from '../src/app/services/AssetPoolService';
+import AccountProxy from '../src/app/proxies/AccountProxy';
+import { MONGODB_URI } from '../src/app/config/secrets';
+import { getContract } from '../src/app/config/contracts';
+import { updateDiamondContract } from '../src/app/util/upgrades';
+import { AssetPool, AssetPoolDocument } from '../src/app/models/AssetPool';
+import { AccountPlanType, ChainId } from '../src/app/types/enums';
 import { ContractName, currentVersion, DiamondVariant } from '@thxnetwork/artifacts';
 
-db.connect(MONGODB_URI as string);
+db.connect(MONGODB_URI);
 
 async function main() {
     let counter = 0;
-    let pools: any[] = await AssetPool.find({ version: { $ne: currentVersion } });
+    let pools: AssetPoolDocument[] = await AssetPool.find({ version: { $ne: currentVersion } });
     const startTime = Date.now();
     const diamonds: Partial<Record<ContractName, DiamondVariant>> = {
         Registry: 'registry',

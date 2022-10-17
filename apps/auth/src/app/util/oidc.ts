@@ -1,6 +1,6 @@
 import { Provider } from 'oidc-provider';
 import configuration from '../config/oidc';
-import { AUTH_URL, NODE_ENV } from './secrets';
+import { AUTH_URL, NODE_ENV } from '../config/secrets';
 import { AccountService } from '../services/AccountService';
 import { validateEmail } from './validate';
 import { AccountVariant } from '../types/enums/AccountVariant';
@@ -11,7 +11,7 @@ oidc.proxy = true;
 
 if (NODE_ENV !== 'production') {
     const { invalidate: orig } = (oidc.Client as any).Schema.prototype;
-    (oidc.Client as any).Schema.prototype.invalidate = function invalidate(message: any, code: any) {
+    (oidc.Client as any).Schema.prototype.invalidate = function invalidate(message, code) {
         if (code === 'implicit-force-https' || code === 'implicit-forbid-localhost') return;
         orig.call(this, message);
     };
@@ -68,7 +68,7 @@ async function getAccountByTwitterId(twitterId: string) {
     return account;
 }
 
-async function saveInteraction(interaction: any, sub: string) {
+async function saveInteraction(interaction, sub: string) {
     interaction.result = { login: { accountId: sub } };
     await interaction.save(Date.now() + 10000);
     return interaction.returnTo;

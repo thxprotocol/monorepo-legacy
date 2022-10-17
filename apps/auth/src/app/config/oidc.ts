@@ -1,7 +1,7 @@
 import MongoAdapter from '../util/adapter';
 import { Account } from '../models/Account';
 import { AccountDocument } from '../models/Account';
-import { API_URL, INITIAL_ACCESS_TOKEN, NODE_ENV, SECURE_KEY } from '../util/secrets';
+import { API_URL, INITIAL_ACCESS_TOKEN, NODE_ENV, SECURE_KEY } from './secrets';
 import { Configuration, interactionPolicy } from 'oidc-provider';
 import { getJwks } from '../util/jwks';
 

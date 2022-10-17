@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { THXHttpError } from '../util/errors';
-import { NODE_ENV } from '../util/secrets';
+import { NODE_ENV } from '../config/secrets';
 
 interface ErrorResponse {
     error: {

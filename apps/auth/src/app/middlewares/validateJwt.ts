@@ -1,7 +1,7 @@
 import jwksRsa from 'jwks-rsa';
 import expressJwtPermissions from 'express-jwt-permissions';
 import { expressjwt } from 'express-jwt';
-import { AUTH_URL } from '../util/secrets';
+import { AUTH_URL } from '../config/secrets';
 import { getJwks } from '../util/jwks';
 
 export const validateJwt = expressjwt({

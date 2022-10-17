@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { NotFoundError } from '../../util/errors';
 import { AccountService } from '../../services/AccountService';
 
-function formatAccountRes(account: any) {
+function formatAccountRes(account) {
     let protectedPrivateKey;
     if (account.privateKey) {
         protectedPrivateKey = { privateKey: account.privateKey };
