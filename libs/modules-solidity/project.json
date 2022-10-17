@@ -29,11 +29,10 @@
             }
         },
         "test": {
-            "executor": "@nrwl/jest:jest",
-            "outputs": ["coverage/libs/modules-solidity"],
+            "executor": "nx:run-commands",
             "options": {
-                "jestConfig": "libs/modules-solidity/jest.config.ts",
-                "passWithNoTests": true
+                "commands": ["npx hardhat test"],
+                "cwd": "libs/modules-solidity"
             }
         }
     },
