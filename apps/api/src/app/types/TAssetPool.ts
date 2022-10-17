@@ -1,4 +1,4 @@
-import { DiamondVariant } from '@thxnetwork/artifacts';
+import { DiamondVariant } from '@thxnetwork/contracts/exports';
 import { Contract } from 'web3-eth-contract';
 import { ChainId } from './enums';
 

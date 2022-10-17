@@ -1,12 +1,14 @@
-import db from '../src/app/util/database';
-import AssetPoolService from '../src/app/services/AssetPoolService';
-import AccountProxy from '../src/app/proxies/AccountProxy';
-import { MONGODB_URI } from '../src/app/config/secrets';
+import {
+    ContractName, currentVersion, DiamondVariant
+} from '../../../libs/modules-solidity/src/exports';
 import { getContract } from '../src/app/config/contracts';
-import { updateDiamondContract } from '../src/app/util/upgrades';
+import { MONGODB_URI } from '../src/app/config/secrets';
 import { AssetPool, AssetPoolDocument } from '../src/app/models/AssetPool';
+import AccountProxy from '../src/app/proxies/AccountProxy';
+import AssetPoolService from '../src/app/services/AssetPoolService';
 import { AccountPlanType, ChainId } from '../src/app/types/enums';
-import { ContractName, currentVersion, DiamondVariant } from '@thxnetwork/artifacts';
+import db from '../src/app/util/database';
+import { updateDiamondContract } from '../src/app/util/upgrades';
 
 db.connect(MONGODB_URI);
 

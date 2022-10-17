@@ -8,7 +8,7 @@ import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/c
 import AssetPoolService from '@thxnetwork/api/services/AssetPoolService';
 import { updateDiamondContract } from '@thxnetwork/api/util/upgrades';
 import { getContract } from '@thxnetwork/api/config/contracts';
-import { currentVersion } from '@thxnetwork/artifacts';
+import { currentVersion } from '@thxnetwork/contracts/exports';
 import { dashboardAccessToken } from './jest/constants';
 
 const user = request.agent(app);

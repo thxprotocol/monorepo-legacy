@@ -1,4 +1,4 @@
-const TokenFacetArtifact = require('@thxnetwork/artifacts/dist/exports/abis/ERC20ProxyFacet.json');
+const TokenFacetArtifact = require('@thxnetwork/contracts/exports/abis/ERC20ProxyFacet.json');
 const Web3 = require('web3');
 const { ObjectId } = require('mongodb');
 

@@ -31,12 +31,12 @@ export const getContractFromAbi = (chainId: ChainId, abi: AbiItem[], address?: s
 };
 
 export const getAbiForContractName = (contractName: ContractName | TokenContractName): AbiItem[] => {
-    return require(`@thxnetwork/artifacts/dist/exports/abis/${contractName}.json`);
+    return require(`@thxnetwork/contracts/exports/abis/${contractName}.json`);
 };
 
 export const getByteCodeForContractName = (contractName: TokenContractName): string => {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    return require(`@thxnetwork/artifacts/dist/exports/bytecodes/${contractName}.json`).bytecode;
+    return require(`@thxnetwork/contracts/exports/bytecodes/${contractName}.json`).bytecode;
 };
 
 export const getContractFromName = (

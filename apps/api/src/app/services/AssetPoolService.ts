@@ -7,7 +7,7 @@ import TransactionService from './TransactionService';
 import { diamondContracts, getContract, poolFacetAdressesPermutations } from '@thxnetwork/api/config/contracts';
 import { pick } from '@thxnetwork/api/util';
 import { diamondSelectors, getDiamondCutForContractFacets, updateDiamondContract } from '@thxnetwork/api/util/upgrades';
-import { currentVersion } from '@thxnetwork/artifacts';
+import { currentVersion } from '@thxnetwork/contracts/exports';
 import ERC20Service from './ERC20Service';
 import ERC721Service from './ERC721Service';
 import { Deposit } from '@thxnetwork/api/models/Deposit';
