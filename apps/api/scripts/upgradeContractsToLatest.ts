@@ -1,6 +1,6 @@
 import {
     ContractName, currentVersion, DiamondVariant
-} from '../../../libs/modules-solidity/src/exports';
+} from '../../../libs/contracts/src/exports';
 import { getContract } from '../src/app/config/contracts';
 import { MONGODB_URI } from '../src/app/config/secrets';
 import { AssetPool, AssetPoolDocument } from '../src/app/models/AssetPool';
