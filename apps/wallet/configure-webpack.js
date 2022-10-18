@@ -13,7 +13,7 @@
 module.exports = (config) => {
   // console.log(config);
   config.resolve = {
-    extensions: ['.ts', '.tsx', '.vue', '.vuex'],
+    extensions: ['.js', '.ts', '.tsx', '.vue', '.vuex'],
     ...config.resolve,
   };
 

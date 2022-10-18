@@ -11,13 +11,13 @@
  * https://cli.vuejs.org/config/#configurewebpack
  */
 module.exports = (config) => {
-  config.resolve = {
-    extensions: ['.ts', '.tsx', '.vue', '.vuex'],
-    ...config.resolve,
-  };
+    config.resolve = {
+        extensions: ['.ts', '.tsx', '.vue', '.vuex'],
+        ...config.resolve,
+    };
 
-  config.resolve.alias = {
-    ...config.resolve.alias,
-    '@thxnetwork/dashboard': 'src',
-  };
+    config.resolve.alias = {
+        ...config.resolve.alias,
+        '@thxnetwork/dashboard': 'src',
+    };
 };

@@ -26,7 +26,7 @@
     "serve": {
       "executor": "@nx-plus/vue:dev-server",
       "options": {
-        "port": 8082,
+        "port": 8083,
         "devServer": {
           "https": {
             "key": "./certs/localhost.key",
