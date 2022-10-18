@@ -7,9 +7,11 @@ import { getProvider } from '../util/network';
 import TransactionService from './TransactionService';
 
 export default class WalletService {
-    static async create(assetPool: AssetPoolDocument, address: string) {
+    static async create(assetPool: AssetPoolDocument) {
+        const address = await this.deploy(assetPool);
         return await Wallet.create({ poolId: assetPool.id, address });
     }
+
     static findByAddress(address: string) {
         return Wallet.findOne({ address });
     }
@@ -18,17 +20,17 @@ export default class WalletService {
         return paginatedResults(Wallet, page, limit, query);
     }
 
-    static async deploy(assetPool: AssetPoolDocument, chainId: ChainId) {
+    static async deploy(assetPool: AssetPoolDocument) {
         const contractName = 'SharedWallet';
-        const contract = getContractFromName(chainId, contractName);
+        const contract = getContractFromName(assetPool.chainId, contractName);
         const bytecode = getByteCodeForContractName(contractName);
-        const { relayer } = getProvider(chainId);
+        const { relayer } = getProvider(assetPool.chainId);
         const fn = contract.deploy({
             data: bytecode,
             arguments: [(await relayer.getRelayer()).address],
         });
 
-        const receipt = await TransactionService.send(null, fn, chainId);
-        return await this.create(assetPool, receipt.to);
+        const receipt = await TransactionService.send(null, fn, assetPool.chainId);
+        return receipt.to;
     }
 }

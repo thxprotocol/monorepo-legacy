@@ -16,7 +16,7 @@ router.get(
 );
 router.post(
     '/',
-    guard.check(['wallets:read']),
+    guard.check(['wallets:write']),
     assertAssetPoolAccess,
     requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
