@@ -2,12 +2,12 @@ import mongoose from 'mongoose';
 
 export interface TWallet {
     address: string;
-    poolId: string;
+    sub: string;
 }
 
 const walletSchema = new mongoose.Schema({
     address: String,
-    poolId: String,
+    sub: String,
 });
 
 export default mongoose.model<TWallet>('wallet', walletSchema);

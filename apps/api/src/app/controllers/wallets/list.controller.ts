@@ -7,7 +7,7 @@ export const validation = [query('limit').isNumeric(), query('page').isNumeric()
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Wallets']
     const response = await WalletService.findByQuery(
-        { poolId: req.assetPool._id },
+        { sub: req.auth.sub },
         Number(req.query.page),
         Number(req.query.limit),
     );
