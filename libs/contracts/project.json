@@ -10,6 +10,13 @@
                 "cwd": "libs/contracts"
             }
         },
+        "test": {
+            "executor": "nx:run-commands",
+            "options": {
+                "commands": ["npx hardhat test"],
+                "cwd": "libs/contracts"
+            }
+        },
         "build": {
             "executor": "nx:run-commands",
             "options": {
