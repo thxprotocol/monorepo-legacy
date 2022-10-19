@@ -67,7 +67,6 @@ function poolRegistry(chainId: ChainId) {
         const { address } = getContractConfig(chainId, 'Registry');
         return getContractFromName(chainId, 'Registry', address);
     } catch (error) {
-        console.log(error);
         return undefined;
     }
 }
