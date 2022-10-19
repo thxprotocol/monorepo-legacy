@@ -95,9 +95,7 @@ const getArtifacts = (network: TNetworkName, version: string) => {
         }
 
         const v = network === 'hardhat' ? 'latest' : version;
-        cache[network].contracts[version] = JSON.parse(
-            fs.readFileSync(path.resolve(__dirname, './', network, `${v}.json`)).toString(),
-        );
+        cache[network].contracts[version] = require(`@thxnetwork/contracts/exports/${network}/${v}.json`) as any;
     }
 
     return cache[network].contracts[version];

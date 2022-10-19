@@ -2,6 +2,7 @@
     "extends": "../../tsconfig.base.json",
     "files": [],
     "include": [
+        "package.json",
         "hardhat.config.ts",
         "./scripts",
         "./src/deploy",
@@ -10,6 +11,7 @@
         "src/exports/**/*.json",
         "typechain/**/*"
     ],
+
     "references": [
         {
             "path": "./tsconfig.lib.json"
@@ -25,6 +27,7 @@
         "forceConsistentCasingInFileNames": true,
         "strict": true,
         "noImplicitReturns": true,
-        "noFallthroughCasesInSwitch": true
+        "noFallthroughCasesInSwitch": true,
+        "outDir": "../../dist/out-tsc"
     }
 }

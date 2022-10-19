@@ -17,25 +17,15 @@
                 "cwd": "libs/contracts"
             }
         },
+
         "build": {
-            "executor": "nx:run-commands",
+            "executor": "@nrwl/js:tsc",
+            "outputs": ["{options.outputPath}"],
             "options": {
-                "commands": ["npx tsc"],
-                "cwd": "libs/contracts"
-            },
-            "lint": {
-                "executor": "@nrwl/linter:eslint",
-                "outputs": ["{options.outputFile}"],
-                "options": {
-                    "lintFilePatterns": ["libs/contracts/**/*.ts"]
-                }
-            },
-            "test": {
-                "executor": "nx:run-commands",
-                "options": {
-                    "commands": ["npx hardhat test"],
-                    "cwd": "libs/contracts"
-                }
+                "outputPath": "dist/libs/contracts",
+                "main": "libs/contracts/src/index.ts",
+                "tsConfig": "libs/contracts/tsconfig.json",
+                "assets": ["libs/contracts/*.md"]
             }
         },
         "tags": ["solidity"]
