@@ -22,7 +22,7 @@ jobs:
               run: yarn install
 
             - name: Run tests
-              run: npm hardhat test
+              run: npx nx build contracts
 
     buildAndPushImage:
         name: Build and Push docker image
