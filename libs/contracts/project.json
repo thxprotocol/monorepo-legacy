@@ -20,7 +20,7 @@
         "build": {
             "executor": "nx:run-commands",
             "options": {
-                "commands": ["npx hardhat compile"],
+                "commands": ["npx tsc"],
                 "cwd": "libs/contracts"
             },
             "lint": {

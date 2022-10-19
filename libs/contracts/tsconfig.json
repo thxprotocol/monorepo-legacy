@@ -4,7 +4,7 @@
     "include": [
         "hardhat.config.ts",
         "./scripts",
-        "./deploy",
+        "./src/deploy",
         "test",
         "src/exports",
         "src/exports/**/*.json",
