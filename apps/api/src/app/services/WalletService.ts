@@ -9,7 +9,7 @@ import TransactionService from './TransactionService';
 export default class WalletService {
     static async create(chainId: ChainId, account: IAccount) {
         const address = await this.deploy(chainId);
-        return await Wallet.create({ sub: account.id, address });
+        return await Wallet.create({ sub: String(account.id), address });
     }
 
     static findByAddress(address: string) {
@@ -26,7 +26,6 @@ export default class WalletService {
         const bytecode = getByteCodeForContractName(contractName);
         const { relayer, defaultAccount } = getProvider(chainId);
         const ownerAddress = relayer ? (await relayer.getRelayer()).address : defaultAccount;
-
         const fn = contract.deploy({
             data: bytecode,
             arguments: [ownerAddress],

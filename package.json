@@ -7,7 +7,8 @@
         "serve:frontend": "yarn serve:docker && nx run-many --target=serve --projects=dashboard,wallet",
         "serve:backend": "yarn serve:docker && NODE_TLS_REJECT_UNAUTHORIZED='0' nx run-many --target=serve --projects=api,auth",
         "build": "nx build",
-        "test": "nx test",
+        "test:api": "nx test api",
+        "test:auth": "nx test auth",
         "postinstall": "node node_modules/@nx-plus/vue/patch-nx-dep-graph.js"
     },
     "private": true,

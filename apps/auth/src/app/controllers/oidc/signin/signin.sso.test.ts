@@ -26,7 +26,7 @@ describe('SSO Sign In', () => {
                 grant_types: ['authorization_code'],
                 redirect_uris: [REDIRECT_URL],
                 response_types: ['code'],
-                scope: 'openid pools:read pools:write withdrawals:read rewards:write deposits:read deposits:write',
+                scope: 'openid pools:read pools:write withdrawals:read rewards:write deposits:read deposits:write wallets:read wallets:write',
             });
 
         CLIENT_ID = res.body.client_id;
@@ -46,7 +46,7 @@ describe('SSO Sign In', () => {
             client_id: CLIENT_ID,
             redirect_uri: REDIRECT_URL,
             resource: API_URL,
-            scope: 'openid pools:read pools:write withdrawals:read rewards:write deposits:read deposits:write',
+            scope: 'openid pools:read pools:write withdrawals:read rewards:write deposits:read deposits:write wallets:read wallets:write',
             response_type: 'code',
             response_mode: 'query',
             nonce: 'xun4kvy4mh',

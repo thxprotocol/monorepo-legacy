@@ -5,6 +5,8 @@ import { ERROR_ACCOUNT_NOT_ACTIVE, ERROR_AUTH_LINK, ERROR_OTP_CODE_INVALID } fro
 import { oidc } from '../../../util/oidc';
 import { authenticator } from '@otplib/preset-default';
 import { recoverTypedSignature, SignTypedDataVersion } from '@metamask/eth-sig-util';
+import WalletProxy from '@thxnetwork/auth/proxies/WalletProxy';
+import { ChainId } from '@thxnetwork/auth/util/chainId';
 
 async function controller(req: Request, res: Response) {
     function renderLogin(errorMessage: string) {
@@ -79,6 +81,12 @@ async function controller(req: Request, res: Response) {
     await AccountService.update(account, {
         lastLoginAt: Date.now(),
     });
+
+    // Check if a SharedWallet must be created
+    const walletsCount = (await WalletProxy.get({ sub: String(account._id) })).total;
+    if (!walletsCount) {
+        await WalletProxy.create(String(account._id), ChainId.Hardhat);
+    }
 
     // Make to finish the interaction and login with sub
     return await oidc.interactionFinished(

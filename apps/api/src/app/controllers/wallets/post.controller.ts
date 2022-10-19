@@ -4,11 +4,11 @@ import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { body } from 'express-validator';
 import { UnauthorizedError } from '@thxnetwork/api/util/errors';
 
-export const validation = [body('chainId').exists().isNumeric()];
+export const validation = [body('sub').exists().isMongoId(), body('chainId').exists().isNumeric()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Wallets']
-    const account = await AccountProxy.getById(req.auth.sub);
+    const account = await AccountProxy.getById(req.body.sub);
     if (!account) {
         throw new UnauthorizedError('Invalid account');
     }
