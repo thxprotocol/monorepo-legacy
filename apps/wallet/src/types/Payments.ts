@@ -1,6 +1,6 @@
-import { TERC721Metadata } from '@thxnetwork/wallet/store/modules/erc721';
+import type { TERC721Metadata } from '@thxnetwork/wallet/store/modules/erc721';
 import { TMembership } from '@thxnetwork/wallet/store/modules/memberships';
-import { TPromotion } from '@thxnetwork/wallet/store/modules/promotions';
+import type { TPromotion } from '@thxnetwork/wallet/store/modules/promotions';
 import { ChainId } from './enums/ChainId';
 
 export enum PaymentState {
@@ -14,7 +14,7 @@ export interface IPayments {
     [id: string]: TPayment;
 }
 
-export type TPayment = {
+export interface TPayment {
     _id: string;
     id: string;
     amount: string;

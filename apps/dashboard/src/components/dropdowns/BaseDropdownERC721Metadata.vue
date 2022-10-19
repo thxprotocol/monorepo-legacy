@@ -59,8 +59,8 @@
 </template>
 
 <script lang="ts">
-import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
-import { IERC721s, TERC721 } from '@thxnetwork/dashboard/types/erc721';
+import type { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import type { IERC721s, TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import {
   BDropdown,
   BDropdownItemButton,
@@ -70,7 +70,7 @@ import {
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { format } from 'date-fns';
-import { TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
+import type { TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
 
 @Component({
   components: {

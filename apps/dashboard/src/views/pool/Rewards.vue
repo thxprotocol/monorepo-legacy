@@ -60,7 +60,7 @@ import {
   TReward,
   TRewardState,
 } from '@thxnetwork/dashboard/store/modules/rewards';
-import {
+import type {
   IERC721s,
   TERC721,
   TERC721Metadata,

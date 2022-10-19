@@ -1,48 +1,26 @@
 <template>
   <b-list-group-item class="d-flex align-items-center w-100">
-    <base-popover-transactions
-      :transactions="withdrawal.transactions"
-      :target="`popover-target-${withdrawal._id}`"
-    />
-    <div
-      :id="`popover-target-${withdrawal._id}`"
-      class="mr-3"
-      :class="{
-        'text-muted': !withdrawal.withdrawalId && !withdrawal.failReason,
-        'text-primary': withdrawal.withdrawalId,
-      }"
-    >
-      <i
-        :class="{
-          far: withdrawal.state === WithdrawalState.Pending,
-          fas: withdrawal.state === WithdrawalState.Withdrawn,
-        }"
-        class="fa-check-circle"
-      >
+    <base-popover-transactions :transactions="withdrawal.transactions" :target="`popover-target-${withdrawal._id}`" />
+    <div :id="`popover-target-${withdrawal._id}`" class="mr-3" :class="{
+      'text-muted': !withdrawal.withdrawalId && !withdrawal.failReason,
+      'text-primary': withdrawal.withdrawalId,
+    }">
+      <i :class="{
+        far: withdrawal.state === WithdrawalState.Pending,
+        fas: withdrawal.state === WithdrawalState.Withdrawn,
+      }" class="fa-check-circle">
       </i>
     </div>
     <div class="mr-auto line-height-12">
       <strong class="font-weight-bold">
         {{ withdrawal.amount }}
         {{ erc20.symbol }}
-        <i
-          v-if="withdrawal.type === WithdrawalType.ClaimReward"
-          v-b-tooltip.hover
-          title="You have claimed this reward yourself."
-          class="text-muted fas fa-gift"
-        ></i>
-        <i
-          v-if="withdrawal.type === WithdrawalType.ClaimRewardFor"
-          v-b-tooltip.hover
-          title="You have been given this reward."
-          class="text-muted fas fa-award"
-        ></i>
-        <i
-          v-if="withdrawal.type === WithdrawalType.ProposeWithdrawal"
-          v-b-tooltip.hover
-          title="You have been given this amount of tokens."
-          class="text-muted fas fa-coins"
-        ></i>
+        <i v-if="withdrawal.type === WithdrawalType.ClaimReward" v-b-tooltip.hover
+          title="You have claimed this reward yourself." class="text-muted fas fa-gift"></i>
+        <i v-if="withdrawal.type === WithdrawalType.ClaimRewardFor" v-b-tooltip.hover
+          title="You have been given this reward." class="text-muted fas fa-award"></i>
+        <i v-if="withdrawal.type === WithdrawalType.ProposeWithdrawal" v-b-tooltip.hover
+          title="You have been given this amount of tokens." class="text-muted fas fa-coins"></i>
       </strong>
 
       <br />
@@ -51,22 +29,12 @@
         {{ format(new Date(withdrawal.updatedAt), 'HH:mm MMMM dd, yyyy') }}
       </span>
     </div>
-    <b-button
-      variant="primary"
-      :disabled="
-        withdrawal.state === 1 || !withdrawal.withdrawalId || error || busy
-      "
-      @click="withdraw()"
-    >
+    <b-button variant="primary" :disabled="
+      withdrawal.state === 1 || !withdrawal.withdrawalId || error || busy
+    " @click="withdraw()">
       Withdraw
     </b-button>
-    <b-button
-      hover-class="text-danger"
-      class="ml-3"
-      variant="light"
-      :disabled="busy"
-      @click="remove()"
-    >
+    <b-button hover-class="text-danger" class="ml-3" variant="light" :disabled="busy" @click="remove()">
       <i class="fas fa-trash m-0"></i>
     </b-button>
   </b-list-group-item>
@@ -74,19 +42,23 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { TMembership } from '@thxnetwork/wallet/store/modules/memberships';
+import type { TMembership } from '@thxnetwork/wallet/store/modules/memberships';
 import {
   Withdrawal,
   WithdrawalState,
   WithdrawalType,
 } from '@thxnetwork/wallet/store/modules/withdrawals';
 import { format } from 'date-fns';
-import { TERC20 } from '@thxnetwork/wallet/store/modules/erc20';
+import type { TERC20 } from '@thxnetwork/wallet/store/modules/erc20';
 import BasePopoverTransactions from '@thxnetwork/wallet/components/popovers/BasePopoverTransactions.vue';
 import {
   TransactionState,
+} from '@thxnetwork/wallet/types/Transactions';
+
+import type {
   TTransaction,
 } from '@thxnetwork/wallet/types/Transactions';
+
 import poll from 'promise-poller';
 
 @Component({

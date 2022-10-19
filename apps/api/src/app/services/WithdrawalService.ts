@@ -2,7 +2,7 @@ import { toWei } from 'web3-utils';
 import { ChainId, TransactionState, WithdrawalState, WithdrawalType } from '@thxnetwork/api/types/enums';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { Withdrawal, WithdrawalDocument } from '@thxnetwork/api/models/Withdrawal';
-import { IAccount } from '@thxnetwork/api/models/Account';
+import type { IAccount } from '@thxnetwork/api/models/Account';
 import { assertEvent, parseLogs } from '@thxnetwork/api/util/events';
 import TransactionService from './TransactionService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';

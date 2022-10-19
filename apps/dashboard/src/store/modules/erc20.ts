@@ -1,7 +1,7 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { IERC20s, TERC20 } from '@thxnetwork/dashboard/types/erc20';
+import type { IERC20s, TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import { ChainId } from '../enums/chainId';
 
 @Module({ namespaced: true })

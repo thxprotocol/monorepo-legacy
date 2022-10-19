@@ -52,7 +52,7 @@
 
 <script lang="ts">
 import { UserProfile } from '@thxnetwork/wallet/store/modules/account';
-import { TERC20 } from '@thxnetwork/wallet/store/modules/erc20';
+import type { TERC20 } from '@thxnetwork/wallet/store/modules/erc20';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { toWei } from 'web3-utils';

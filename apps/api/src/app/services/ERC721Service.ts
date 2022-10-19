@@ -1,6 +1,6 @@
 import { ERC721, ERC721Document, IERC721Updates } from '@thxnetwork/api/models/ERC721';
 import { ERC721Metadata, ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
-import { ERC721TokenState, TERC721, TERC721Metadata, TERC721Token } from '@thxnetwork/api/types/TERC721';
+import type { ERC721TokenState, TERC721, TERC721Metadata, TERC721Token } from '@thxnetwork/api/types/TERC721';
 import TransactionService from './TransactionService';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { VERSION, API_URL } from '@thxnetwork/api/config/secrets';
@@ -11,7 +11,7 @@ import { getByteCodeForContractName, getContractFromName } from '@thxnetwork/api
 import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
 import { TAssetPool } from '@thxnetwork/api/types/TAssetPool';
 import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
-import { IAccount } from '@thxnetwork/api/models/Account';
+import type { IAccount } from '@thxnetwork/api/models/Account';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import MembershipService from './MembershipService';

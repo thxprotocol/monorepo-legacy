@@ -6,7 +6,7 @@ import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { SwapState } from '@thxnetwork/api/types/enums/SwapState';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { ERC20SwapRuleDocument } from '@thxnetwork/api/models/ERC20SwapRule';
-import { IAccount } from '@thxnetwork/api/models/Account';
+import type { IAccount } from '@thxnetwork/api/models/Account';
 import { ERC20Document } from '@thxnetwork/api/models/ERC20';
 import { TSwapCreateCallbackArgs } from '@thxnetwork/api/types/TTransaction';
 import { TransactionReceipt } from 'web3-core';

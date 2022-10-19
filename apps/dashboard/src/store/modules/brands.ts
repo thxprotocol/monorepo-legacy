@@ -1,7 +1,7 @@
 import axios from 'axios';
 import Vue from 'vue';
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
-import { IPool } from './pools';
+import type { IPool } from './pools';
 
 export interface TBrand {
     logoImgUrl: string;

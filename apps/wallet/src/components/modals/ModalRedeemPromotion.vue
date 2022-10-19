@@ -62,10 +62,10 @@
 
 <script lang="ts">
 import { UserProfile } from '@thxnetwork/wallet/store/modules/account';
-import { TERC20 } from '@thxnetwork/wallet/store/modules/erc20';
-import { TMembership } from '@thxnetwork/wallet/store/modules/memberships';
-import { TNetworks } from '@thxnetwork/wallet/store/modules/network';
-import { TPromotion } from '@thxnetwork/wallet/store/modules/promotions';
+import type { TERC20 } from '@thxnetwork/wallet/store/modules/erc20';
+import type { TMembership } from '@thxnetwork/wallet/store/modules/memberships';
+import type { TNetworks } from '@thxnetwork/wallet/store/modules/network';
+import type { TPromotion } from '@thxnetwork/wallet/store/modules/promotions';
 import { MAX_UINT256 } from '@thxnetwork/wallet/utils/network';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters, mapState } from 'vuex';

@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { TERC20SwapRule } from '@thxnetwork/api/types/TERC20SwapRule';
+import type { TERC20SwapRule } from '@thxnetwork/api/types/TERC20SwapRule';
 
 export type ERC20SwapRuleDocument = mongoose.Document & TERC20SwapRule;
 

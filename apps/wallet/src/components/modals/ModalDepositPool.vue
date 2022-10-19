@@ -47,8 +47,8 @@
 
 <script lang="ts">
 import { UserProfile } from '@thxnetwork/wallet/store/modules/account';
-import { TERC20 } from '@thxnetwork/wallet/store/modules/erc20';
-import { TMembership } from '@thxnetwork/wallet/store/modules/memberships';
+import type { TERC20 } from '@thxnetwork/wallet/store/modules/erc20';
+import type { TMembership } from '@thxnetwork/wallet/store/modules/memberships';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters, mapState } from 'vuex';
 import Web3 from 'web3';

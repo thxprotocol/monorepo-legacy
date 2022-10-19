@@ -14,7 +14,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { IAccount } from './types/account';
+import type { IAccount } from './types/account';
 import { initGTM } from '@thxnetwork/dashboard/utils/ga';
 import BaseDropdownAccount from './components/dropdowns/BaseDropdownAccount.vue';
 import BaseNavbar from './components/BaseNavbar.vue';

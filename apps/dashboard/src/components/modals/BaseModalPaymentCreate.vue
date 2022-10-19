@@ -106,17 +106,17 @@
 </template>
 
 <script lang="ts">
-import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import type { IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseFormSelectNetwork from '../form-select/BaseFormSelectNetwork.vue';
 import BaseModal from './BaseModal.vue';
 import { unitMap, Unit } from 'web3-utils';
-import { TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
+import type { TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
 import BaseDropdownERC721Metadata from '../dropdowns/BaseDropdownERC721Metadata.vue';
 import BaseTooltipInfo from '../tooltips/BaseTooltipInfo.vue';
 import BaseDropdownPromotion from '../dropdowns/BaseDropdownPromotion.vue';
-import { TPromotion } from '@thxnetwork/dashboard/store/modules/promotions';
+import type { TPromotion } from '@thxnetwork/dashboard/store/modules/promotions';
 
 enum PaymentVariant {
   Token = 0,

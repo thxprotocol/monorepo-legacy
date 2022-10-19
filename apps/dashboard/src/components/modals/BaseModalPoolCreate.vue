@@ -70,9 +70,9 @@ import BaseDropdownSelectErc20 from '@thxnetwork/dashboard/components/dropdowns/
 import BaseDropdownSelectMultipleErc20 from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownSelectMultipleERC20.vue';
 import BaseDropdownSelectErc721 from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownSelectERC721.vue';
 import BaseModal from './BaseModal.vue';
-import { IAccount } from '@thxnetwork/dashboard/types/account';
-import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
-import { TERC721 } from '@thxnetwork/dashboard/types/erc721';
+import type { IAccount } from '@thxnetwork/dashboard/types/account';
+import type { TERC20 } from '@thxnetwork/dashboard/types/erc20';
+import type { TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import BaseIdenticon from '../BaseIdenticon.vue';
 
 @Component({

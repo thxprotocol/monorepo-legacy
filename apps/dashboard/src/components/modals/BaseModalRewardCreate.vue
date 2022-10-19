@@ -1,41 +1,23 @@
 <template>
-  <base-modal
-    size="xl"
-    :title="modalName"
-    id="modalRewardCreate"
-    :error="error"
-    :loading="loading"
-  >
+  <base-modal size="xl" :title="modalName" id="modalRewardCreate" :error="error" :loading="loading">
     <template #modal-body v-if="profile && !loading">
       <form v-on:submit.prevent="submit" id="formRewardCreate">
         <hr />
         <b-form-row label="Variant">
           <b-col md="6">
-            <b-form-radio
-              class="mb-0"
-              @change="onRewardVariantChanged"
-              v-model="rewardVariant"
-              name="rewardVariant"
-              :value="RewardVariant.Token"
-            >
+            <b-form-radio class="mb-0" @change="onRewardVariantChanged" v-model="rewardVariant" name="rewardVariant"
+              :value="RewardVariant.Token">
               <strong> Token Reward</strong>
               <p>Let your users withdraw your tokens into their wallet.</p>
               <small class="text-muted">2.5% protocol fee on withdrawals</small>
             </b-form-radio>
           </b-col>
           <b-col md="6">
-            <b-form-radio
-              class="mb-0"
-              @change="onRewardVariantChanged"
-              v-model="rewardVariant"
-              name="rewardVariant"
-              :value="RewardVariant.NFT"
-            >
+            <b-form-radio class="mb-0" @change="onRewardVariantChanged" v-model="rewardVariant" name="rewardVariant"
+              :value="RewardVariant.NFT">
               <strong> NFT Reward</strong>
               <p>Let your users mint an NFT for your collection.</p>
-              <small class="text-muted"
-                >2.5% protocol fee on sales through Payment Requests</small
-              >
+              <small class="text-muted">2.5% protocol fee on sales through Payment Requests</small>
             </b-form-radio>
           </b-col>
         </b-form-row>
@@ -44,21 +26,13 @@
           <b-tab title="General" active>
             <b-form-group>
               <label> Label </label>
-              <b-form-input
-                v-model="rewardTitle"
-                placeholder="A token of appreciation"
-              />
+              <b-form-input v-model="rewardTitle" placeholder="A token of appreciation" />
             </b-form-group>
-            <b-form-group
-              v-if="rewardVariant === RewardVariant.Token && pool.erc20"
-            >
+            <b-form-group v-if="rewardVariant === RewardVariant.Token && pool.erc20">
               <label>
                 Tokens
-                <a
-                  v-b-tooltip
-                  :title="`The amount of ${pool.erc20.symbol} tokens earned with this reward.`"
-                  target="_blank"
-                >
+                <a v-b-tooltip :title="`The amount of ${pool.erc20.symbol} tokens earned with this reward.`"
+                  target="_blank">
                   <i class="fas fa-question-circle"></i>
                 </a>
               </label>
@@ -66,21 +40,13 @@
                 <b-form-input type="number" v-model="rewardWithdrawAmount" />
               </b-input-group>
             </b-form-group>
-            <b-form-group
-              v-if="rewardVariant === RewardVariant.NFT && erc721metadata"
-            >
+            <b-form-group v-if="rewardVariant === RewardVariant.NFT && erc721metadata">
               <label>
                 Metadata
-                <base-tooltip-info
-                  class="mr-2"
-                  title="Select the metadata for the NFT that should be minted when this reward is claimed."
-                />
+                <base-tooltip-info class="mr-2"
+                  title="Select the metadata for the NFT that should be minted when this reward is claimed." />
               </label>
-              <BaseDropdownERC721Metadata
-                :erc721metadata="erc721metadata"
-                :pool="pool"
-                @selected="onSelectMetadata"
-              />
+              <BaseDropdownERC721Metadata :erc721metadata="erc721metadata" :pool="pool" @selected="onSelectMetadata" />
             </b-form-group>
             <hr />
             <b-form-group class="mb-0">
@@ -104,27 +70,18 @@
               <label> Expiration </label>
               <b-row>
                 <b-col md="6">
-                  <b-datepicker
-                    value-as-date
-                    :min="minDate"
-                    v-model="rewardExpireDate"
-                  />
+                  <b-datepicker value-as-date :min="minDate" v-model="rewardExpireDate" />
                 </b-col>
                 <b-col md="6">
-                  <b-timepicker
-                    :disabled="!rewardExpireDate"
-                    v-model="rewardExpireTime"
-                  />
+                  <b-timepicker :disabled="!rewardExpireDate" v-model="rewardExpireTime" />
                 </b-col>
               </b-row>
             </b-form-group>
             <b-form-group>
               <label>
                 Reward Limit
-                <a
-                  v-b-tooltip
-                  title="The total amount of times this reward could be claimed. Leave 0 for an infinite amount of times, but be aware that this could drain your pool."
-                >
+                <a v-b-tooltip
+                  title="The total amount of times this reward could be claimed. Leave 0 for an infinite amount of times, but be aware that this could drain your pool.">
                   <i class="fas fa-question-circle"></i>
                 </a>
               </label>
@@ -140,12 +97,7 @@
                 </a>
               </label>
               <b-input-group>
-                <b-form-input
-                  type="number"
-                  v-model="amount"
-                  min="1"
-                  max="10000"
-                />
+                <b-form-input type="number" v-model="amount" min="1" max="10000" />
               </b-input-group>
             </b-form-group>
           </b-tab>
@@ -154,24 +106,16 @@
               <b-row>
                 <b-col md="6">
                   <label> Social Channel</label>
-                  <base-dropdown-channel-types
-                    :channel="channel"
-                    @selected="onChannelClick($event)"
-                  />
+                  <base-dropdown-channel-types :channel="channel" @selected="onChannelClick($event)" />
                 </b-col>
                 <b-col md="6">
                   <label> Action</label>
-                  <base-dropdown-channel-actions
-                    v-if="channel && channel.actions.length > 0"
-                    :actions="
-                      channelActions.filter((action) => {
-                        if (!channel) return;
-                        return channel.actions.includes(action.type);
-                      })
-                    "
-                    :action="action"
-                    @selected="onActionClick($event)"
-                  />
+                  <base-dropdown-channel-actions v-if="channel && channel.actions.length > 0" :actions="
+                    channelActions.filter((action) => {
+                      if (!channel) return;
+                      return channel.actions.includes(action.type);
+                    })
+                  " :action="action" @selected="onActionClick($event)" />
                   <p v-else class="small text-muted">
                     Please choose a channel.
                   </p>
@@ -180,70 +124,48 @@
             </b-form-group>
             <b-form-group>
               <template v-if="channel && action && action.items.length > 0">
-                <base-dropdown-youtube-uploads
-                  v-if="action.type === ChannelAction.YouTubeLike"
-                  @selected="item = $event"
-                  :items="action.items"
-                  :item="
+                <base-dropdown-youtube-uploads v-if="action.type === ChannelAction.YouTubeLike"
+                  @selected="item = $event" :items="action.items" :item="
                     reward && reward.withdrawCondition
                       ? reward.withdrawCondition.channelItem
                       : null
-                  "
-                />
-                <base-dropdown-youtube-channels
-                  v-if="action.type === ChannelAction.YouTubeSubscribe"
-                  @selected="item = $event"
-                  :items="action.items"
-                  :item="
+                  " />
+                <base-dropdown-youtube-channels v-if="action.type === ChannelAction.YouTubeSubscribe"
+                  @selected="item = $event" :items="action.items" :item="
                     reward && reward.withdrawCondition
                       ? reward.withdrawCondition.channelItem
                       : null
-                  "
-                />
-                <base-dropdown-twitter-tweets
-                  v-if="
-                    action.type === ChannelAction.TwitterLike ||
-                    action.type === ChannelAction.TwitterRetweet
-                  "
-                  @selected="item = $event"
-                  :items="action.items"
-                  :item="
+                  " />
+                <base-dropdown-twitter-tweets v-if="
+                  action.type === ChannelAction.TwitterLike ||
+                  action.type === ChannelAction.TwitterRetweet
+                " @selected="item = $event" :items="action.items" :item="
                     reward && reward.withdrawCondition
                       ? reward.withdrawCondition.channelItem
                       : null
-                  "
-                />
-                <base-dropdown-twitter-users
-                  v-if="action.type === ChannelAction.TwitterFollow"
-                  @selected="item = $event"
-                  :items="action.items"
-                  :item="
+                  " />
+                <base-dropdown-twitter-users v-if="action.type === ChannelAction.TwitterFollow"
+                  @selected="item = $event" :items="action.items" :item="
                     reward && reward.withdrawCondition
                       ? reward.withdrawCondition.channelItem
                       : null
-                  "
-                />
+                  " />
               </template>
               <b-alert show variant="warning" v-if="warning">{{
-                warning
+              warning
               }}</b-alert>
               <template v-if="channel && action && action.type === 0">
-                <base-dropdown-youtube-video
-                  :url="item"
-                  @selected="item = $event"
-                />
+                <base-dropdown-youtube-video :url="item" @selected="item = $event" />
               </template>
             </b-form-group>
-            <b-form-group
-              v-if="
-                action &&
-                [
-                  ChannelAction.TwitterLike,
-                  ChannelAction.TwitterRetweet,
-                  ChannelAction.TwitterFollow,
-                ].includes(action.type)
-              "
-            >
+            <b-form-group v-if="
+              action &&
+              [
+                ChannelAction.TwitterLike,
+                ChannelAction.TwitterRetweet,
+                ChannelAction.TwitterFollow,
+              ].includes(action.type)
+            ">
               <b-alert variant="warning" show class="m-0">
                 <template v-if="action.type == ChannelAction.TwitterLike">
                   Validation is limited to the last 100 likes.
@@ -261,14 +183,8 @@
       </form>
     </template>
     <template #btn-primary>
-      <b-button
-        :disabled="isSubmitDisabled"
-        class="rounded-pill"
-        type="submit"
-        form="formRewardCreate"
-        variant="primary"
-        block
-      >
+      <b-button :disabled="isSubmitDisabled" class="rounded-pill" type="submit" form="formRewardCreate"
+        variant="primary" block>
         {{ reward ? 'Update Reward' : 'Create Reward' }}
       </b-button>
     </template>
@@ -276,19 +192,22 @@
 </template>
 
 <script lang="ts">
-import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import type { IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import {
   channelActionList,
   ChannelType,
   ChannelAction,
+  channelList,
+} from '@thxnetwork/dashboard/types/rewards';
+
+import type {
   IChannel,
   IChannelAction,
   Reward,
-  channelList,
 } from '@thxnetwork/dashboard/types/rewards';
-import {
+import type {
   IAccount,
   ITwitter,
   IYoutube,
@@ -302,7 +221,7 @@ import BaseDropdownTwitterUsers from '../dropdowns/BaseDropdownTwitterUsers.vue'
 import BaseDropdownChannelTypes from '../dropdowns/BaseDropdownChannelTypes.vue';
 import slugify from '@thxnetwork/dashboard/utils/slugify';
 import BaseModal from './BaseModal.vue';
-import { TERC721, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
+import type { TERC721, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
 import { format } from 'date-fns';
 import BaseTooltipInfo from '../tooltips/BaseTooltipInfo.vue';
 import BaseDropdownERC721Metadata from '../dropdowns/BaseDropdownERC721Metadata.vue';
@@ -417,10 +336,10 @@ export default class ModalRewardCreate extends Vue {
     this.rewardExpireDate = this.reward.expiryDate || null;
     this.rewardExpireTime = this.reward.expiryDate
       ? `${String(this.reward.expiryDate.getHours()).padStart(2, '0')}:${String(
-          this.reward.expiryDate.getMinutes()
-        ).padStart(2, '0')}:${String(
-          this.reward.expiryDate.getSeconds()
-        ).padStart(2, '0')}`
+        this.reward.expiryDate.getMinutes()
+      ).padStart(2, '0')}:${String(
+        this.reward.expiryDate.getSeconds()
+      ).padStart(2, '0')}`
       : '00:00:00';
     this.amount = this.reward.amount || 1;
   }
@@ -544,16 +463,16 @@ export default class ModalRewardCreate extends Vue {
     const withdrawCondition =
       this.channel?.type !== ChannelType.None
         ? {
-            channelType: this.channel?.type,
-            channelAction: this.action?.type,
-            channelItem:
-              this.item &&
+          channelType: this.channel?.type,
+          channelAction: this.action?.type,
+          channelItem:
+            this.item &&
               this.item.referenced_tweets &&
               this.item.referenced_tweets[0] &&
               this.item.referenced_tweets[0].type === 'retweeted'
-                ? this.item.referenced_tweets[0].id
-                : this.item.id,
-          }
+              ? this.item.referenced_tweets[0].id
+              : this.item.id,
+        }
         : null;
 
     const slug = slugify(this.rewardTitle);

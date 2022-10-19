@@ -42,7 +42,7 @@
 </template>
 <script lang="ts">
 import { ChainId } from '@thxnetwork/wallet/types/enums/ChainId';
-import { TPayment } from '@thxnetwork/wallet/types/Payments';
+import type { TPayment } from '@thxnetwork/wallet/types/Payments';
 import { User } from 'oidc-client-ts';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';

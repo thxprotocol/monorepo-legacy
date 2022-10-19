@@ -50,7 +50,7 @@
 </template>
 
 <script lang="ts">
-import {
+import type {
   TransactionState,
   TransactionType,
   TTransaction,

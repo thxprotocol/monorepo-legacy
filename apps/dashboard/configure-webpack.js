@@ -1,3 +1,5 @@
+const IgnoreNotFoundExportPlugin = require('./IgnoreNotFoundError');
+
 /*
  * Modify the webpack config by exporting an Object or Function.
  *
@@ -11,10 +13,15 @@
  * https://cli.vuejs.org/config/#configurewebpack
  */
 module.exports = (config) => {
+    // console.log(config);
     config.resolve = {
-        extensions: ['.ts', '.tsx', '.vue', '.vuex'],
+        extensions: ['.js', '.ts', '.tsx', '.vue', '.vuex'],
         ...config.resolve,
     };
+
+    config.plugins.push(
+        new IgnoreNotFoundExportPlugin(), // All warnings will be ignored
+    );
 
     config.resolve.alias = {
         ...config.resolve.alias,

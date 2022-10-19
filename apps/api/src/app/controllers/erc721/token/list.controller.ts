@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
-import { TERC721, TERC721Token } from '@thxnetwork/api/types/TERC721';
+import type { TERC721, TERC721Token } from '@thxnetwork/api/types/TERC721';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 
 export const controller = async (req: Request, res: Response) => {

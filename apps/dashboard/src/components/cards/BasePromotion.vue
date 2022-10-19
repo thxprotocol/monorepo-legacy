@@ -31,10 +31,10 @@
 <script lang="ts">
 import { mapGetters } from 'vuex';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import type { IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import ModalDelete from '../modals/BaseModalDelete.vue';
-import { TPromotion } from '@thxnetwork/dashboard/store/modules/promotions';
-import { IPromotions } from '@thxnetwork/dashboard/types/IPromotions';
+import type { TPromotion } from '@thxnetwork/dashboard/store/modules/promotions';
+import type { IPromotions } from '@thxnetwork/dashboard/types/IPromotions';
 
 @Component({
   components: {

@@ -1,8 +1,8 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
-import {
+import type { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import type {
   GetERC20SwapRulesProps,
   IERC20SwapRules,
   TERC20SwapRule,

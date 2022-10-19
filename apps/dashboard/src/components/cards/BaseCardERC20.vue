@@ -55,7 +55,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { ERC20Type, TERC20 } from '@thxnetwork/dashboard/types/erc20';
+import type { ERC20Type, TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import BaseCard from '@thxnetwork/dashboard/components/cards/BaseCard.vue';
 import BaseBadgeNetwork from '@thxnetwork/dashboard/components/badges/BaseBadgeNetwork.vue';
 import BaseIdenticon from '@thxnetwork/dashboard/components/BaseIdenticon.vue';

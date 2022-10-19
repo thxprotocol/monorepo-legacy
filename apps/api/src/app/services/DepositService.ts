@@ -1,6 +1,6 @@
 import { TAssetPool } from '@thxnetwork/api/types/TAssetPool';
 import { Deposit, DepositDocument } from '@thxnetwork/api/models/Deposit';
-import { IAccount } from '@thxnetwork/api/models/Account';
+import type { IAccount } from '@thxnetwork/api/models/Account';
 import { DepositState } from '@thxnetwork/api/types/enums/DepositState';
 import TransactionService from './TransactionService';
 import { assertEvent, parseLogs } from '@thxnetwork/api/util/events';

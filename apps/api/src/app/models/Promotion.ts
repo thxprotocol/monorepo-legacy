@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { TPromotion } from '@thxnetwork/api/types/TPromotion';
+import type { TPromotion } from '@thxnetwork/api/types/TPromotion';
 
 export type PromotionDocument = mongoose.Document & TPromotion;
 
