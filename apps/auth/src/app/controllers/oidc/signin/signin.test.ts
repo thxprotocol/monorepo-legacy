@@ -5,8 +5,8 @@ import db from '../../../util/database';
 import { API_URL, INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
 import { getPath, accountEmail, accountSecret } from '../../../util/jest';
 import { AccountVariant } from '../../../types/enums/AccountVariant';
-import { ChainId } from '@thxnetwork/auth/util/chainId';
-
+import { ChainId } from '../../..//types/enums/chainId';
+import { mockWalletProxy } from '../../../util/jest/mock';
 const REDIRECT_URL = 'https://localhost:8082/signin-oidc';
 const http = request.agent(app);
 
@@ -75,14 +75,16 @@ describe('Sign In', () => {
         it('Failed to login with wrong credential', async () => {
             const res = await http
                 .post(`/oidc/${uid}/signin`)
-                .send('email=fake.user@thx.network&password=thisgoingtofail');
+                .send(`email=fake.user@thx.network&password=thisgoingtofail&chainId=${ChainId.Hardhat}`);
 
             expect(res.status).toEqual(200);
             expect(res.text).toMatch(new RegExp('.*Could not find an account for this address*'));
         });
 
         it('Failed to login with wrong password', async () => {
-            const res = await http.post(`/oidc/${uid}/signin`).send(`email=${accountEmail}&password=thisgoingtofail`);
+            const res = await http
+                .post(`/oidc/${uid}/signin`)
+                .send(`email=${accountEmail}&password=thisgoingtofail&chainId=${ChainId.Hardhat}`);
             expect(res.status).toEqual(200);
             expect(res.text).toMatch(new RegExp('.*Your provided passwords do not match*'));
         });
@@ -94,6 +96,8 @@ describe('Sign In', () => {
             let code = '';
 
             it('Successful login with correct information', async () => {
+                mockWalletProxy();
+
                 const res = await http
                     .post(`/oidc/${uid}/signin`)
                     .send(`email=${accountEmail}&password=${accountSecret}&chainId=${ChainId.Hardhat}`);

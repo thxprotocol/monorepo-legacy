@@ -31,9 +31,8 @@ describe('Wallets', () => {
 
     describe('GET /wallets', () => {
         it('HTTP 200 if OK', (done) => {
-            user.get('/v1/wallets?page=1&limit=10')
+            user.get(`/v1/wallets?page=1&limit=10&chainId=${ChainId.Hardhat}`)
                 .set({ Authorization: walletAccessToken })
-                .send({ sub: sub2 })
                 .expect((res: request.Response) => {
                     expect(res.body.results.length).toEqual(1);
                     expect(res.body.results[0].sub).toEqual(sub2);

@@ -12,7 +12,7 @@ const controller = async (req: Request, res: Response) => {
     if (!account) {
         throw new UnauthorizedError('Invalid account');
     }
-    const wallet = await WalletService.create(req.body.chainId, account);
+    const wallet = await WalletService.create(Number(req.body.chainId), account);
     res.status(201).json(wallet);
 };
 

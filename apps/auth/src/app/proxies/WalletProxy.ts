@@ -1,5 +1,5 @@
 import { apiClient, getAuthAccessToken } from '../util/api';
-import { ChainId } from '../util/chainId';
+import { ChainId } from '../types/enums/chainId';
 
 export default {
     get: async (query: { sub?: string; chainId: number }, page = 1, limit = 10) => {
