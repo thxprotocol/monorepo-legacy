@@ -1,8 +1,8 @@
+import { ethers } from 'hardhat';
 import { expect } from 'chai';
 import { parseEther } from 'ethers/lib/utils';
 import { BigNumber, constants, Contract, Signer } from 'ethers';
 import { getDiamondCuts, filterEvents, deployRegistry, deployFactory, deploy, deployToken } from './utils';
-import { ethers } from 'hardhat';
 
 const onePercent = ethers.BigNumber.from('10').pow(16);
 
