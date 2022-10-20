@@ -9,14 +9,14 @@ import TransactionService from './TransactionService';
 export default class WalletService {
     static async create(chainId: ChainId, account: IAccount) {
         const address = await this.deploy(chainId);
-        return await Wallet.create({ sub: String(account.id), address });
+        return await Wallet.create({ sub: String(account.id), address, chainId });
     }
 
     static findByAddress(address: string) {
         return Wallet.findOne({ address });
     }
 
-    static async findByQuery(query: { sub?: string }, page = 1, limit = 10) {
+    static async findByQuery(query: { sub?: string; chainId?: number }, page = 1, limit = 10) {
         return paginatedResults(Wallet, page, limit, query);
     }
 
@@ -30,7 +30,6 @@ export default class WalletService {
             data: bytecode,
             arguments: [ownerAddress],
         });
-
         const receipt = await TransactionService.send(null, fn, chainId);
         return receipt.contractAddress;
     }

@@ -22,6 +22,7 @@ describe('Wallets', () => {
                 })
                 .expect((res: request.Response) => {
                     expect(res.body.sub).toEqual(sub2);
+                    expect(res.body.chainId).toEqual(ChainId.Hardhat);
                     expect(res.body.address).toBeDefined();
                 })
                 .expect(201, done);
@@ -36,6 +37,7 @@ describe('Wallets', () => {
                 .expect((res: request.Response) => {
                     expect(res.body.results.length).toEqual(1);
                     expect(res.body.results[0].sub).toEqual(sub2);
+                    expect(res.body.results[0].chainId).toEqual(ChainId.Hardhat);
                     expect(res.body.results[0].address).toBeDefined();
                 })
                 .expect(200, done);

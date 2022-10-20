@@ -2,7 +2,7 @@ import { apiClient, getAuthAccessToken } from '../util/api';
 import { ChainId } from '../util/chainId';
 
 export default {
-    get: async (query: { sub?: string }, page = 1, limit = 10) => {
+    get: async (query: { sub?: string; chainId: number }, page = 1, limit = 10) => {
         const r = await apiClient({
             method: 'GET',
             url: '/v1/wallets',

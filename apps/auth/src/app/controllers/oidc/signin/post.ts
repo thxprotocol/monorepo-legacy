@@ -7,6 +7,9 @@ import { authenticator } from '@otplib/preset-default';
 import { recoverTypedSignature, SignTypedDataVersion } from '@metamask/eth-sig-util';
 import WalletProxy from '@thxnetwork/auth/proxies/WalletProxy';
 import { ChainId } from '@thxnetwork/auth/util/chainId';
+import { body } from 'express-validator';
+
+const validation = [body('chainId').optional().isNumeric()];
 
 async function controller(req: Request, res: Response) {
     function renderLogin(errorMessage: string) {
@@ -82,19 +85,24 @@ async function controller(req: Request, res: Response) {
         lastLoginAt: Date.now(),
     });
 
-    // Check if a SharedWallet must be created
-    const walletsCount = (await WalletProxy.get({ sub: String(account._id) })).total;
-    if (!walletsCount) {
-        await WalletProxy.create(String(account._id), ChainId.Hardhat);
+    // Check if a SharedWallet must be created for a specific chainId
+    const accountId = String(account._id);
+    const chainIds = req.body.chainId ? [req.body.chainId] : [ChainId.PolygonMumbai, ChainId.Polygon]; // DEFAULT CHAIN IDs
+    for (let i = 0; i < chainIds.length; i++) {
+        const chainId = chainIds[i];
+        const walletsCount = (await WalletProxy.get({ sub: accountId, chainId })).total;
+        if (!walletsCount) {
+            WalletProxy.create(accountId, chainId);
+        }
     }
 
     // Make to finish the interaction and login with sub
     return await oidc.interactionFinished(
         req,
         res,
-        { login: { accountId: String(account._id) } },
+        { login: { accountId: accountId } },
         { mergeWithLastSubmission: false },
     );
 }
 
-export default { controller };
+export default { controller, validation };

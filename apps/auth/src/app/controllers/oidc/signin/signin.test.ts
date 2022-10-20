@@ -5,6 +5,7 @@ import db from '../../../util/database';
 import { API_URL, INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
 import { getPath, accountEmail, accountSecret } from '../../../util/jest';
 import { AccountVariant } from '../../../types/enums/AccountVariant';
+import { ChainId } from '@thxnetwork/auth/util/chainId';
 
 const REDIRECT_URL = 'https://localhost:8082/signin-oidc';
 const http = request.agent(app);
@@ -95,7 +96,7 @@ describe('Sign In', () => {
             it('Successful login with correct information', async () => {
                 const res = await http
                     .post(`/oidc/${uid}/signin`)
-                    .send(`email=${accountEmail}&password=${accountSecret}`);
+                    .send(`email=${accountEmail}&password=${accountSecret}&chainId=${ChainId.Hardhat}`);
 
                 expect(res.status).toEqual(303);
 
