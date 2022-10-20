@@ -3,31 +3,44 @@
     "sourceRoot": "libs/contracts/src",
     "projectType": "library",
     "targets": {
-        "compile": {
-            "executor": "nx:run-commands",
-            "options": {
-                "commands": ["npx hardhat compile"],
-                "cwd": "libs/contracts"
-            }
-        },
-        "test": {
-            "executor": "nx:run-commands",
-            "options": {
-                "commands": ["npx hardhat test"],
-                "cwd": "libs/contracts"
-            }
-        },
-
         "build": {
             "executor": "@nrwl/js:tsc",
             "outputs": ["{options.outputPath}"],
             "options": {
                 "outputPath": "dist/libs/contracts",
                 "main": "libs/contracts/src/index.ts",
-                "tsConfig": "libs/contracts/tsconfig.json",
+                "tsConfig": "libs/contracts/tsconfig.lib.json",
                 "assets": ["libs/contracts/*.md"]
             }
         },
-        "tags": ["solidity"]
-    }
+
+        "test": {
+            "executor": "nx:run-commands",
+            "options": {
+                "tsConfig": "libs/contracts/tsconfig.lib.json",
+                "commands": ["npx hardhat test"],
+                "cwd": "libs/contracts"
+            }
+        },
+        "publish": {
+            "executor": "@nrwl/workspace:run-commands",
+            "options": {
+                "command": "node tools/scripts/publish.mjs contracts {args.ver} {args.tag}"
+            },
+            "dependsOn": [
+                {
+                    "projects": "self",
+                    "target": "build"
+                }
+            ]
+        },
+        "lint": {
+            "executor": "@nrwl/linter:eslint",
+            "outputs": ["{options.outputFile}"],
+            "options": {
+                "lintFilePatterns": ["libs/contracts/**/*.ts"]
+            }
+        }
+    },
+    "tags": []
 }

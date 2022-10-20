@@ -5,7 +5,7 @@ import { BigNumber } from 'ethers';
 const multiplier = BigNumber.from('10').pow(15);
 const twoHalfPercent = BigNumber.from('25').mul(multiplier);
 
-const func: DeployFunction = async function (hre: any) {
+const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployments, getNamedAccounts, network } = hre;
     const { diamond } = deployments;
     const { owner, collector } = await getNamedAccounts();
@@ -19,7 +19,7 @@ const func: DeployFunction = async function (hre: any) {
             args: [collector, twoHalfPercent],
         },
         autoMine: true, // speed up deployment on local network (ganache, hardhat), no effect on live networks
-        waitConfirmations: (network as any).live ? 3 : 0,
+        waitConfirmations: network.live ? 3 : 0,
     });
 
     await diamond.deploy('Factory', {
@@ -31,7 +31,7 @@ const func: DeployFunction = async function (hre: any) {
             args: [owner, registry.address],
         },
         autoMine: true, // speed up deployment on local network (ganache, hardhat), no effect on live networks
-        waitConfirmations: (network as any).live ? 3 : 0,
+        waitConfirmations: network.live ? 3 : 0,
     });
 
     return network.live; // Makes sure we don't redeploy on live networks

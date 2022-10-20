@@ -1,6 +1,6 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { DeployFunction } from 'hardhat-deploy/types';
-import { ContractName } from '../exports';
+import { ContractName } from 'exports';
 
 const facets: ContractName[] = [
     'FactoryFacet',
@@ -16,7 +16,7 @@ const facets: ContractName[] = [
     'DiamondLoupeFacet',
     'OwnershipFacet',
 ];
-const func: DeployFunction = async function (hre: any) {
+const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { deployments, getNamedAccounts, network } = hre;
     const { deploy } = deployments;
 
@@ -28,7 +28,7 @@ const func: DeployFunction = async function (hre: any) {
             args: [],
             log: true,
             autoMine: true, // speed up deployment on local network (ganache, hardhat), no effect on live networks
-            waitConfirmations: (network as any).live ? 3 : 0,
+            waitConfirmations: network.live ? 3 : 0,
         });
     }
 };

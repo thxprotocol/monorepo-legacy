@@ -1,4 +1,4 @@
-import { version as currentVersion } from '../../package.json';
+import { version as currentVersion } from '../package.json';
 import { AbiItem } from 'web3-utils';
 import fs from 'fs';
 import path from 'path';
@@ -26,9 +26,6 @@ export const contractNames = [
     'ERC20WithdrawFacet',
     'ERC20SwapFacet',
     'ERC721ProxyFacet',
-
-    // Wallet
-    'SharedWallet',
 
     // Deprecated facets
     'TokenFactory',
@@ -95,7 +92,9 @@ const getArtifacts = (network: TNetworkName, version: string) => {
         }
 
         const v = network === 'hardhat' ? 'latest' : version;
-        cache[network].contracts[version] = require(`@thxnetwork/contracts/exports/${network}/${v}.json`) as any;
+        cache[network].contracts[version] = JSON.parse(
+            fs.readFileSync(path.resolve(__dirname, './', network, `${v}.json`)).toString(),
+        );
     }
 
     return cache[network].contracts[version];

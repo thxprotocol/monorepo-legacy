@@ -1,33 +1,10 @@
 {
-    "extends": "../../tsconfig.base.json",
-    "files": [],
-    "include": [
-        "package.json",
-        "hardhat.config.ts",
-        "./scripts",
-        "./src/deploy",
-        "test",
-        "src/exports",
-        "src/exports/**/*.json",
-        "typechain/**/*"
-    ],
-
-    "references": [
-        {
-            "path": "./tsconfig.lib.json"
-        },
-        {
-            "path": "./tsconfig.spec.json"
-        }
-    ],
-    "compilerOptions": {
-        "resolveJsonModule": true,
-        "skipLibCheck": true,
-        "declaration": true,
-        "forceConsistentCasingInFileNames": true,
-        "strict": true,
-        "noImplicitReturns": true,
-        "noFallthroughCasesInSwitch": true,
-        "outDir": "../../dist/out-tsc"
-    }
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true
+  }
 }
