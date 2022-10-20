@@ -1,12 +1,9 @@
 import chai from 'chai';
-import eventemitter2 from 'chai-eventemitter2';
 import { constants, Contract, ContractReceipt, ContractTransaction } from 'ethers';
 import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
 import { ContractName, TokenContractName } from '../exports';
 import { ethers } from 'hardhat';
 import { FacetCut } from 'hardhat-deploy/types';
-
-chai.use(eventemitter2());
 
 
 export enum FacetCutAction {
