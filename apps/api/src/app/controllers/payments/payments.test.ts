@@ -22,7 +22,7 @@ import { currentVersion } from '@thxnetwork/contracts/exports';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { HARDHAT_RPC, PRIVATE_KEY, WALLET_URL } from '@thxnetwork/api/config/secrets';
 import Web3 from 'web3';
-import type { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
+import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
 import { agenda, EVENT_SEND_DOWNLOAD_METADATA_QR_EMAIL } from '@thxnetwork/api/util/agenda';
 
 const http = request.agent(app);
