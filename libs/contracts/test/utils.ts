@@ -1,4 +1,3 @@
-import chai from 'chai';
 import { constants, Contract, ContractReceipt, ContractTransaction } from 'ethers';
 import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
 import { ContractName, TokenContractName } from '../exports';

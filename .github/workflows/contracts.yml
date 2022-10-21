@@ -3,8 +3,8 @@ name: Smart Contract CI
 on:
     push:
         paths:
-            - 'libs/**'
             - 'yarn.lock'
+            - 'libs/contracts/**'
             - '.github/workflows/contracts.yml'
 
 jobs:
