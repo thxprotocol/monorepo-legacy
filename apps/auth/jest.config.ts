@@ -7,6 +7,5 @@ export default {
         '^.+\\.[tj]s$': 'ts-jest',
     },
     moduleFileExtensions: ['ts', 'js', 'html', 'json'],
-    coverageDirectory: '../../coverage/apps/auth',
     coverageReporters: ['lcov'],
 };
