@@ -7,6 +7,6 @@ export default {
         '^.+\\.ts$': 'ts-jest',
     },
     moduleFileExtensions: ['ts', 'js', 'html', 'json'],
-    coverageDirectory: '../../coverage/apps/auth',
-    coverageReporters: [['lcov', { projectRoot: './apps/api' }]],
+    coverageDirectory: '../../coverage/apps/api',
+    coverageReporters: [['lcov', { projectRoot: './apps/api' }], 'html'],
 };
