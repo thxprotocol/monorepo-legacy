@@ -21,7 +21,7 @@
         "../../package.json",
         "./src/openapi.json",
         "./package.json",
-        "../../libs/contracts/src",
+        "../../libs/contracts/**/*",
         "../../libs/contracts/package.json"
     ]
 }

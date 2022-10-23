@@ -1,6 +1,6 @@
 import { ChainId, ERC20Type } from './enums';
 import { Contract } from 'web3-eth-contract';
-import { TokenContractName } from '@thxnetwork/contracts/exports';
+import type { TokenContractName } from '@thxnetwork/contracts/exports';
 
 export type TERC20 = {
     type: ERC20Type;

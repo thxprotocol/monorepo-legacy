@@ -5,7 +5,7 @@
     "scripts": {
         "serve:docker": "docker-compose up --build -d",
         "serve:frontend": "yarn serve:docker && nx run-many --target=serve --projects=dashboard,wallet",
-        "serve:backend": "yarn serve:docker && NODE_TLS_REJECT_UNAUTHORIZED='0' nx run-many --target=serve --projects=api,auth",
+        "serve:backend": "yarn serve:docker && NODE_TLS_REJECT_UNAUTHORIZED='0' nx run-many --target=serve --projects=api,auth,contracts",
         "build": "nx build",
         "test": "nx test",
         "postinstall": "node node_modules/@nx-plus/vue/patch-nx-dep-graph.js"
