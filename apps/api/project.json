@@ -61,7 +61,8 @@
             "options": {
                 "jestConfig": "apps/api/jest.config.ts",
                 "passWithNoTests": false,
-                "runInBand": true
+                "runInBand": true,
+                "codeCoverage": true
             }
         },
         "migrate:contracts": {

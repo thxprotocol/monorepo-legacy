@@ -8,4 +8,5 @@ export default {
     },
     moduleFileExtensions: ['ts', 'js', 'html', 'json'],
     coverageDirectory: '../../coverage/apps/auth',
+    coverageReporters: ['lcov'],
 };
