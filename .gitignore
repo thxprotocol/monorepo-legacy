@@ -34,7 +34,6 @@ certs/*
 /.sass-cache
 /connect.lock
 /coverage
-/apps/*/coverage
 /libpeerconnection.log
 npm-debug.log
 yarn-error.log
