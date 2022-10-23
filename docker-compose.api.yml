@@ -11,7 +11,7 @@ services:
             dockerfile: apps/api/Dockerfile
             target: develop
         volumes:
-            - ./coverage/apps/api:/usr/src/app/coverage/apps/api
+            - ./apps/api/coverage:/usr/src/app/apps/api/coverage
         env_file:
             - apps/api/.env.example
             - apps/api/.env.ci
