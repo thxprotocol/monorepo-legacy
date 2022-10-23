@@ -67,3 +67,5 @@ amplifytools.xcconfig
 **/**/artifacts
 **/**/cache
 #amplify-do-not-edit-end
+
+libs/contracts/deployments/localhost
