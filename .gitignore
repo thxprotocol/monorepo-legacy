@@ -43,6 +43,7 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+.scannerwork
 
 #amplify-do-not-edit-begin
 amplify/*

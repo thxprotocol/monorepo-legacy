@@ -10,6 +10,8 @@ services:
             context: .
             dockerfile: apps/api/Dockerfile
             target: develop
+        volumes:
+            - ./coverage/apps/api:/usr/src/app/coverage/apps/api
         env_file:
             - apps/api/.env.example
             - apps/api/.env.ci
