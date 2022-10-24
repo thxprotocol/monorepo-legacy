@@ -8,5 +8,6 @@ export default {
     },
     moduleFileExtensions: ['ts', 'js', 'html', 'json'],
     coverageDirectory: '../../coverage/apps/api',
+    coveragePathIgnorePatterns: ['./src/main.ts'],
     coverageReporters: [['lcov', { projectRoot: './apps/api' }], 'html'],
 };

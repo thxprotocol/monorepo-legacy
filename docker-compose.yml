@@ -17,15 +17,5 @@ services:
             - ./fixture/db:/docker-entrypoint-initdb.d/fixture
             - ./scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
 
-    nginx:
-        image: nginx:1.17.10
-        container_name: thx_nginx
-        volumes:
-            - ./configs/nginx/nginx.conf:/etc/nginx/nginx.conf
-            - ./certs/localhost.key:/etc/nginx/certs/nginx.key
-            - ./certs/localhost.crt:/etc/nginx/certs/nginx.crt
-        ports:
-            - 8546:443
-
 volumes:
     mongo-data:
