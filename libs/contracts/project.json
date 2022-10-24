@@ -13,7 +13,14 @@
                 "assets": ["libs/contracts/*.md"]
             }
         },
-
+        "node": {
+          "executor": "nx:run-commands",
+          "options": {
+              "tsConfig": "libs/contracts/tsconfig.lib.json",
+              "commands": ["npx hardhat node"],
+              "cwd": "libs/contracts"
+          }
+        },
         "compile": {
             "executor": "nx:run-commands",
             "options": {
