@@ -5,5 +5,5 @@
         "resolveJsonModule": true
     },
     "exclude": ["**/*.spec.ts", "**/*.spec.tsx"],
-    "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "../../libs/contracts/src/**/*.json"]
+    "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "../../libs/contracts/**/*.json"]
 }
