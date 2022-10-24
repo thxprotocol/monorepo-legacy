@@ -55,7 +55,7 @@
                 "lintFilePatterns": ["apps/api/**/*.ts"]
             }
         },
-        "jest": {
+        "test": {
             "executor": "@nrwl/jest:jest",
             "outputs": ["coverage/apps/api"],
             "options": {
@@ -64,12 +64,6 @@
                 "passWithNoTests": false,
                 "runInBand": true,
                 "codeCoverage": true
-            }
-        },
-        "test": {
-            "executor": "nx:run-commands",
-            "options": {
-                "commands": ["npx nx run contracts:serve > /dev/null 2>&1", "npx nx run api:jest"]
             }
         },
         "migrate:contracts": {

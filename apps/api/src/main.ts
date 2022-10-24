@@ -24,11 +24,11 @@ if (LOCAL_CERT && LOCAL_CERT_KEY) {
         .createServer({
             target: {
                 host: 'localhost',
-                port: 8545,
+                port: 8546,
             },
             ssl,
         })
-        .listen(8546);
+        .listen(8547);
 } else {
     server = http.createServer(app);
 }
