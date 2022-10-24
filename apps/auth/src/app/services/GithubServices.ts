@@ -50,13 +50,12 @@ export class GithubService {
             headers: {
                 Authorization: 'Bearer ' + accessToken,
             },
-            data: body,
         });
 
         if (r.status !== 200) {
-          throw new Error('Failed to fetch user infomation');
-      }
+            throw new Error('Failed to fetch user information');
+        }
 
-        return r.data
+        return r.data;
     }
 }
