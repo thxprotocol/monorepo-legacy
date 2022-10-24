@@ -10,6 +10,8 @@ services:
             context: .
             dockerfile: apps/auth/Dockerfile
             target: develop
+        volumes:
+            - ./coverage/apps/auth:/usr/src/app/coverage/apps/auth
         env_file: 
           - apps/auth/.env.example
           - apps/auth/.env.ci
