@@ -1,6 +1,7 @@
 import 'newrelic';
 import http from 'http';
 import https from 'https';
+import httpProxy from 'http-proxy';
 import app from './app';
 import db from './app/util/database';
 import { createTerminus } from '@godaddy/terminus';
@@ -13,13 +14,21 @@ import path from 'path';
 
 let server;
 if (LOCAL_CERT && LOCAL_CERT_KEY) {
-    server = https.createServer(
-        {
-            key: fs.readFileSync(path.resolve(path.dirname(__dirname), LOCAL_CERT_KEY)),
-            cert: fs.readFileSync(path.resolve(path.dirname(__dirname), LOCAL_CERT)),
-        },
-        app,
-    );
+    const ssl = {
+        key: fs.readFileSync(path.resolve(path.dirname(__dirname), LOCAL_CERT_KEY)),
+        cert: fs.readFileSync(path.resolve(path.dirname(__dirname), LOCAL_CERT)),
+    };
+
+    server = https.createServer(ssl, app);
+    httpProxy
+        .createServer({
+            target: {
+                host: 'localhost',
+                port: 8545,
+            },
+            ssl,
+        })
+        .listen(8546);
 } else {
     server = http.createServer(app);
 }
