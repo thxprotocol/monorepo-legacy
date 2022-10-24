@@ -49,12 +49,7 @@ export const contractNames = [
     'WithdrawByPollProxyFacet',
 ] as const;
 export type ContractName = typeof contractNames[number];
-export const tokenContractNames = [
-    'LimitedSupplyToken',
-    'UnlimitedSupplyToken',
-    'NonFungibleToken',
-    'SharedWallet',
-] as const;
+export const tokenContractNames = ['LimitedSupplyToken', 'UnlimitedSupplyToken', 'NonFungibleToken'] as const;
 export type TokenContractName = typeof tokenContractNames[number];
 
 export interface ContractConfig {
