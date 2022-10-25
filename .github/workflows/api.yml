@@ -7,6 +7,7 @@ on:
             - 'libs/**'
             - 'yarn.lock'
             - '.github/workflows/api.yml'
+            - 'docker-compose*.yml'
 
 jobs:
     buildAndTest:
