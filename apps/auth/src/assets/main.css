@@ -9042,6 +9042,13 @@ textarea.form-control-underlined {
   background-color: #1865c2;
 }
 
+.btn-github {
+  background-color: #171515;
+}
+.btn-github:active {
+  background-color: #171515;
+}
+
 .btn-metamask {
   background-color: #037dd6;
 }

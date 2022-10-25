@@ -22,31 +22,27 @@ export class GithubService {
     }
 
     static async requestTokens(code: string) {
-        const body = new URLSearchParams();
-        body.append('code', code);
-        body.append('redirect_uri', GITHUB_REDIRECT_URI);
-        body.append('client_secret', GITHUB_CLIENT_SECRET);
-        body.append('client_id', GITHUB_CLIENT_ID);
-
         const r = await githubClient({
             url: '/login/oauth/access_token',
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
+            data: {
+                code,
+                redirect_uri: GITHUB_REDIRECT_URI,
+                client_secret: GITHUB_CLIENT_SECRET,
+                client_id: GITHUB_CLIENT_ID,
             },
-            data: body,
         });
 
         if (r.status !== 200) {
             throw new Error('Failed to request access token');
         }
-        return r.data;
+        return JSON.parse('{"' + decodeURI(r.data.replace(/&/g, '","').replace(/=/g, '":"')) + '"}');
     }
 
     static async getUser(accessToken: string) {
         const r = await githubClient({
             url: 'https://api.github.com/user',
-            method: 'POST',
+            method: 'GET',
             headers: {
                 Authorization: 'Bearer ' + accessToken,
             },
@@ -59,3 +55,5 @@ export class GithubService {
         return r.data;
     }
 }
+
+export default GithubService;
