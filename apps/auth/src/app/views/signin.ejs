@@ -21,8 +21,7 @@
   <div class="card shadow-sm mb-5">
 
     <% if (params.rewardData && params.rewardData.nftImageUrl) { %>
-    <div class="card-img-top bg-dark"
-         style="height: 200px; background-repeat: no-repeat; background-position: center center; background-image: url('<%- params.rewardData.nftImageUrl %>'); background-size: auto 80%;">
+    <div class="card-img-top bg-dark" style="height: 200px; background-repeat: no-repeat; background-position: center center; background-image: url('<%- params.rewardData.nftImageUrl %>'); background-size: auto 80%;">
     </div>
     <% } %>
 
@@ -35,8 +34,7 @@
       </div>
       <% } %>
 
-      <% if (params.authentication_token && params.secure_key) { %> <strong
-              class="h2 d-block text-dark text-center mb-4">
+      <% if (params.authentication_token && params.secure_key) { %> <strong class="h2 d-block text-dark text-center mb-4">
         Set a password
       </strong>
       <p>You are invited to access your THX Web Wallet. Set a password and accept the invite!</p>
@@ -63,8 +61,7 @@
         </div>
         <div class="form-group">
           <div class="m-0 custom-control custom-checkbox b-custom-control-sm">
-            <input id="acceptTermsPrivacy" type="checkbox" name="acceptTermsPrivacy" class="custom-control-input"
-                   value="true"><label for="acceptTermsPrivacy" class="custom-control-label font-weight-normal"> I
+            <input id="acceptTermsPrivacy" type="checkbox" name="acceptTermsPrivacy" class="custom-control-input" value="true"><label for="acceptTermsPrivacy" class="custom-control-label font-weight-normal"> I
               agree
               to
               THX' <a href="<%= publicUrl %>/general-terms-and-conditions.pdf" target="_blank">terms
@@ -108,6 +105,25 @@
         <div class="label">Sign in with Twitter</div>
       </a>
       <% } %>
+<<<<<<< HEAD
+=======
+      <% if (params.spotifyLoginUrl) { %>
+      <a class="btn btn-sign-in btn-spotify btn-block" href="<%= params.spotifyLoginUrl %>">
+        <div class="logo">
+          <img src="/img/s-logo.png" alt="Spotify logo" />
+        </div>
+        <div class="label">Sign in with Spotify</div>
+      </a>
+      <% } %>
+      <% if (params.githubLoginUrl) { %>
+      <a class="btn btn-sign-in btn-github btn-block" href="<%= params.githubLoginUrl %>">
+        <div class="logo">
+          <img src="/img/github-logo.png" alt="Spotify logo" />
+        </div>
+        <div class="label">Sign in with Github</div>
+      </a>
+      <% } %>
+>>>>>>> 0797382 (feat: finish signin flow)
       <% if (params.authRequestMessage) { %>
       <a class="btn btn-sign-in btn-metamask btn-block" @click="signin()">
         <div class="logo">
@@ -131,8 +147,7 @@
         </div>
         <div class="form-group">
           <label>Password:</label>
-          <input class="form-control" required autocomplete type="password" value="<%= params.password %>"
-                 name="password">
+          <input class="form-control" required autocomplete type="password" value="<%= params.password %>" name="password">
         </div>
 
         <% if (params.mfaEnabled) { %>
