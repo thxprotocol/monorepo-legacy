@@ -17,7 +17,7 @@ services:
             - ./fixture/db:/docker-entrypoint-initdb.d/fixture
             - ./scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
     
-    contracts:
+    hardhat:
         container_name: thx_contracts
         build:
             context: .
