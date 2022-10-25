@@ -18,7 +18,7 @@ services:
             - ./scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
     
     hardhat:
-        container_name: thx_contracts
+        container_name: thx_hardhat
         build:
             context: .
             dockerfile: libs/contracts/Dockerfile
