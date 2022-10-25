@@ -34,10 +34,10 @@ describe('Wallets', () => {
             user.get(`/v1/wallets?page=1&limit=10&chainId=${ChainId.Hardhat}`)
                 .set({ Authorization: walletAccessToken })
                 .expect((res: request.Response) => {
-                    expect(res.body.results.length).toEqual(1);
-                    expect(res.body.results[0].sub).toEqual(sub2);
-                    expect(res.body.results[0].chainId).toEqual(ChainId.Hardhat);
-                    expect(res.body.results[0].address).toBeDefined();
+                    expect(res.body.length).toEqual(1);
+                    expect(res.body[0].sub).toEqual(sub2);
+                    expect(res.body[0].chainId).toEqual(ChainId.Hardhat);
+                    expect(res.body[0].address).toBeDefined();
                 })
                 .expect(200, done);
         });

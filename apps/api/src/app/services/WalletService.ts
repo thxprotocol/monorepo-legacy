@@ -1,4 +1,3 @@
-import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import { getByteCodeForContractName, getContractFromName } from '../config/contracts';
 import { IAccount } from '../models/Account';
 import Wallet, { WalletDocument } from '../models/Wallet';
@@ -13,12 +12,12 @@ export default class WalletService {
         return await Wallet.findByIdAndUpdate(wallet._id, { address }, { new: true });
     }
 
-    static findByAddress(address: string) {
+    static findOneByAddress(address: string) {
         return Wallet.findOne({ address });
     }
 
-    static async findByQuery(query: { sub?: string; chainId?: number }, page = 1, limit = 10) {
-        return paginatedResults(Wallet, page, limit, query);
+    static async findByQuery(query: { sub?: string; chainId?: number }) {
+        return await Wallet.find(query);
     }
 
     static async deploy(wallet: WalletDocument, chainId: ChainId) {
