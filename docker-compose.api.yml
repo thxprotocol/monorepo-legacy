@@ -4,19 +4,29 @@ version: '3.5'
 # docker compose -f docker-compose.yml -r docker-compose.api.yml
 
 services:
-    api:
-        container_name: thx_api
-        build:
-            context: .
-            dockerfile: apps/api/Dockerfile
-            target: develop
-        volumes:
-            - ./coverage/apps/api:/usr/src/app/coverage/apps/api
-        env_file:
-            - apps/api/.env.example
-            - apps/api/.env.ci
-        ports:
-            - 3001:3000
-        depends_on:
-            - mongo
-            - hardhat
+  hardhat:
+    container_name: thx_hardhat
+    build:
+      context: .
+      dockerfile: libs/contracts/Dockerfile
+      target: develop
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    expose:
+      - 8545
+  api:
+    container_name: thx_api
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: develop
+    volumes:
+      - ./coverage/apps/api:/usr/src/app/coverage/apps/api
+    env_file:
+      - apps/api/.env.example
+      - apps/api/.env.ci
+    ports:
+      - 3001:3000
+    depends_on:
+      - mongo
+      - hardhat
