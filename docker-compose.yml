@@ -23,8 +23,10 @@ services:
             context: .
             dockerfile: libs/contracts/Dockerfile
             target: develop
-        ports:
-            - 8546:8545
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+        expose: 
+            - 8545
     
 volumes:
     mongo-data:
