@@ -12,8 +12,10 @@ COPY package.json yarn.lock ./
 RUN yarn
 COPY . .
 
+WORKDIR /usr/src/app/libs/contracts
 RUN npx hardhat node --hostname localhost --port 8545 >/dev/null 2>&1 &
 
+WORKDIR /usr/src/app
 CMD [ "npx", "nx", "serve", "api" ]
 
 #####################################################################################################
