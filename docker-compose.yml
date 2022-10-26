@@ -38,5 +38,4 @@ volumes:
   mongo-data:
 
 networks:
-  default:
-    name: thx_network
+  thx_network:
