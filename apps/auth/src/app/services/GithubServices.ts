@@ -106,9 +106,6 @@ export class GithubService {
       const r = await githubClient({
           url: `/repos/${repo}/issues/${issue}/comments`,
           method: 'GET',
-          params: {
-              creator: userinfo.login,
-          },
           headers: {
               Authorization: 'Bearer ' + accessToken,
           },
@@ -118,6 +115,9 @@ export class GithubService {
     }
 
     // Utils
+    static getAllIssueComments(repo: string, issue: string, accessToken: string) {
+
+    }
 
 }
 
