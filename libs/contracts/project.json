@@ -24,7 +24,8 @@
         "serve": {
             "executor": "nx:run-commands",
             "options": {
-                "command": "npx hardhat node --hostname localhost --port 8545 >/dev/null 2>&1 &",
+                "tsConfig": "libs/contracts/tsconfig.lib.json",
+                "commands": ["npx hardhat node --hostname localhost --port 8545 >/dev/null 2>&1 &"],
                 "cwd": "libs/contracts"
             }
         },

@@ -33,7 +33,7 @@ jobs:
               run: |
                   docker compose -f docker-compose.yml -f docker-compose.api.yml run \
                   -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} -T \
-                  api sh -c "npx nx lint api && npx nx test api"
+                  api sh -c "npx nx lint api && npx nx run contracts:serve && npx nx test api --verbose"
 
             - name: SonarCloud Scan
               uses: SonarSource/sonarcloud-github-action@master
