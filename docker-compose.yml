@@ -1,32 +1,35 @@
 version: '3.5'
 
 services:
-    mongo:
-        container_name: thx_mongo
-        image: mongo
-        env_file: .env.example
-        restart: always
-        ports:
-            - 27017:27017
-        environment:
-            MONGO_INITDB_ROOT_USERNAME: root
-            MONGO_INITDB_ROOT_PASSWORD: root
-            MONGO_INITDB_DATABASE: admin
-        volumes:
-            - mongo-data:/data/db
-            - ./fixture/db:/docker-entrypoint-initdb.d/fixture
-            - ./scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
+  mongo:
+    container_name: thx_mongo
+    image: mongo
+    env_file: .env.example
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: admin
+    volumes:
+      - mongo-data:/data/db
+      - ./fixture/db:/docker-entrypoint-initdb.d/fixture
+      - ./scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
 
-    hardhat:
-        container_name: thx_hardhat
-        build:
-            context: .
-            dockerfile: libs/contracts/Dockerfile
-            target: develop
-        volumes:
-            - /var/run/docker.sock:/var/run/docker.sock:ro
-        expose:
-            - 8545:8545
+  hardhat:
+    container_name: thx_hardhat
+    build:
+      context: .
+      dockerfile: libs/contracts/Dockerfile
+      target: develop
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    expose:
+      - 8545:8545
 
+networks:
+  default:
+    external: true
 volumes:
-    mongo-data:
+  mongo-data:

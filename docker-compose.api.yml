@@ -30,3 +30,6 @@ services:
     depends_on:
       - mongo
       - hardhat
+networks:
+  default:
+    external: true
