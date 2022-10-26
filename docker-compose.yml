@@ -16,6 +16,17 @@ services:
             - mongo-data:/data/db
             - ./fixture/db:/docker-entrypoint-initdb.d/fixture
             - ./scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
-
+    
+    hardhat:
+        container_name: thx_hardhat
+        build:
+            context: .
+            dockerfile: libs/contracts/Dockerfile
+            target: develop
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+        expose: 
+            - 8545
+    
 volumes:
     mongo-data:
