@@ -8,6 +8,8 @@ services:
         restart: always
         ports:
             - 27017:27017
+        networks:
+            - default
         environment:
             MONGO_INITDB_ROOT_USERNAME: root
             MONGO_INITDB_ROOT_PASSWORD: root
@@ -23,10 +25,15 @@ services:
             context: .
             dockerfile: libs/contracts/Dockerfile
             target: develop
+        networks:
+            - default
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock:ro
-        expose: 
-            - 8545
+        ports:
+            - 8545:8545
     
 volumes:
     mongo-data:
+
+networks:
+    default:

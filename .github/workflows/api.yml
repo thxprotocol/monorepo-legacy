@@ -27,11 +27,6 @@ jobs:
                   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                   aws-region: us-east-1
 
-            - name: Login to ECR
-              uses: docker/login-action@v1
-              with:
-                  registry: public.ecr.aws
-
             - name: Lint code and run tests
               env:
                   NODE_OPTIONS: '--max-old-space-size=8192'
