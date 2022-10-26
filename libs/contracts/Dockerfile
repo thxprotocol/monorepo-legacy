@@ -14,4 +14,4 @@ COPY . .
 
 WORKDIR /usr/src/app/libs/contracts
 
-CMD ["npx", "hardhat", "node"]
+CMD ["npx", "hardhat", "node", "--hostname 0.0.0.0"]
