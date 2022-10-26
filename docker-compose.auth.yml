@@ -15,8 +15,6 @@ services:
         env_file: 
           - apps/auth/.env.example
           - apps/auth/.env.ci
-        networks:
-            - default
         ports:
             - 3031:3030
         depends_on:

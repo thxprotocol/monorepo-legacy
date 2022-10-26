@@ -21,7 +21,13 @@
                 "cwd": "libs/contracts"
             }
         },
-
+        "serve": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "npx hardhat node --hostname localhost --port 8545",
+                "cwd": "libs/contracts"
+            }
+        },
         "test": {
             "executor": "nx:run-commands",
             "options": {

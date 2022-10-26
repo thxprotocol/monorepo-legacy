@@ -8,8 +8,6 @@ services:
         restart: always
         ports:
             - 27017:27017
-        networks:
-            - default
         environment:
             MONGO_INITDB_ROOT_USERNAME: root
             MONGO_INITDB_ROOT_PASSWORD: root
@@ -19,21 +17,5 @@ services:
             - ./fixture/db:/docker-entrypoint-initdb.d/fixture
             - ./scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
     
-    hardhat:
-        container_name: thx_hardhat
-        build:
-            context: .
-            dockerfile: libs/contracts/Dockerfile
-            target: develop
-        networks:
-            - default
-        volumes:
-            - /var/run/docker.sock:/var/run/docker.sock:ro
-        ports:
-            - 8545:8545
-    
 volumes:
     mongo-data:
-
-networks:
-    default:
