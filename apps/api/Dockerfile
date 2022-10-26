@@ -12,6 +12,8 @@ COPY package.json yarn.lock ./
 RUN yarn
 COPY . .
 
+RUN npx hardhat node --hostname localhost --port 8545 >/dev/null 2>&1 &
+
 CMD [ "npx", "nx", "serve", "api" ]
 
 #####################################################################################################
