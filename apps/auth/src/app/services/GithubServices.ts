@@ -80,6 +80,45 @@ export class GithubService {
 
         return r.data.state === 'APPROVED';
     }
+
+    static async validateIssueCreated(repo: string, accessToken: string) {
+        const userinfo = await this.getUser(accessToken);
+        // https://docs.github.com/en/rest/issues/issues
+
+        const r = await githubClient({
+            url: `/repos/${repo}/issues`,
+            method: 'GET',
+            params: {
+                creator: userinfo.login,
+            },
+            headers: {
+                Authorization: 'Bearer ' + accessToken,
+            },
+        });
+
+        return r.status === 200;
+    }
+
+    static async validateIssueCommented(repo: string, issue: string, accessToken: string) {
+      const userinfo = await this.getUser(accessToken);
+      // https://docs.github.com/en/rest/issues/issues
+
+      const r = await githubClient({
+          url: `/repos/${repo}/issues/${issue}/comments`,
+          method: 'GET',
+          params: {
+              creator: userinfo.login,
+          },
+          headers: {
+              Authorization: 'Bearer ' + accessToken,
+          },
+      });
+
+      return r.status === 200;
+    }
+
+    // Utils
+
 }
 
 export default GithubService;
