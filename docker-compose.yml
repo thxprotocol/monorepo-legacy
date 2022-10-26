@@ -6,6 +6,8 @@ services:
     image: mongo
     env_file: .env.example
     restart: always
+    networks:
+      - thx_network
     ports:
       - 27017:27017
     environment:
@@ -26,7 +28,15 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     expose:
+      - '8545'
+    ports:
       - 8545:8545
+    networks:
+      - thx_network
 
 volumes:
   mongo-data:
+
+networks:
+  default:
+    name: thx_network
