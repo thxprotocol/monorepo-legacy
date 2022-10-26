@@ -31,7 +31,8 @@ jobs:
               env:
                   NODE_OPTIONS: '--max-old-space-size=8192'
               run: |
-                  docker compose -f docker-compose.yml -f docker-compose.api.yml up --build
+                  docker compose -f docker-compose.yml -f docker-compose.api.yml up --build \
+                  -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} -T
 
             - name: SonarCloud Scan
               uses: SonarSource/sonarcloud-github-action@master
