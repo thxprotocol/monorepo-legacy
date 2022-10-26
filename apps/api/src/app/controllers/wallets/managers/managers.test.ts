@@ -7,6 +7,7 @@ const user = request.agent(app);
 
 describe('WalletManagers', () => {
     let walletId: string;
+    let walletManagerId: string;
 
     beforeAll(async () => {
         await beforeAllCallback();
@@ -55,6 +56,26 @@ describe('WalletManagers', () => {
                     expect(res.body.length).toEqual(1);
                     expect(res.body[0].walletId).toEqual(walletId);
                     expect(res.body[0].address).toEqual(userWalletAddress2);
+                    walletManagerId = res.body[0]._id;
+                })
+                .expect(200, done);
+        });
+    });
+
+    describe('DELETE /managers/:id', () => {
+        it('HTTP 204 if OK', (done) => {
+            user.delete(`/v1/wallets/managers/${walletManagerId}`)
+                .set({ Authorization: walletAccessToken })
+                .expect(204, done);
+        });
+    });
+
+    describe('GET /:id/managers/', () => {
+        it('HTTP 200 if OK', (done) => {
+            user.get(`/v1/wallets/${walletId}/managers`)
+                .set({ Authorization: walletAccessToken })
+                .expect((res: request.Response) => {
+                    expect(res.body.length).toEqual(0);
                 })
                 .expect(200, done);
         });

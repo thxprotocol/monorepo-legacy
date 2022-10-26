@@ -7,7 +7,7 @@ export interface TWalletManager {
 
 const walletManagerSchema = new mongoose.Schema({
     walletId: String,
-    address: String,
+    address: { type: String, unique: true, required: true },
 });
 
 export default mongoose.model<TWalletManager>('walletManager', walletManagerSchema);

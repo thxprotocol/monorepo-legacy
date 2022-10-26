@@ -32,8 +32,13 @@ class WalletManagerModule extends VuexModule {
     }
 
     @Mutation
-    unset({ walletManager, walletId }: { walletManager: TWalletManager; walletId: string }) {
-        Vue.delete(this._all[walletId], walletManager._id);
+    unset(walletManager: TWalletManager) {
+        Vue.delete(this._all[walletManager.walletId], walletManager._id);
+    }
+
+    @Mutation
+    clear() {
+        Vue.set(this, '_all', {});
     }
 
     @Action({ rawError: true })
@@ -42,7 +47,7 @@ class WalletManagerModule extends VuexModule {
         params.append('chainId', String(chainId));
 
         const result = await axios({
-            method: 'get',
+            method: 'GET',
             url: `/wallets`,
             params,
         });
@@ -57,13 +62,36 @@ class WalletManagerModule extends VuexModule {
     @Action({ rawError: true })
     async list(wallet: TWallet) {
         const result = await axios({
-            method: 'get',
+            method: 'GET',
             url: `/wallets/${wallet._id}/managers`,
         });
+
+        this.context.commit('clear');
 
         result.data.forEach((walletManager: TWalletManager) => {
             this.context.commit('set', { walletManager, walletId: wallet._id });
         });
+    }
+
+    @Action({ rawError: true })
+    async create(payload: { wallet: TWallet; address: string }) {
+        const walletManager = await axios({
+            method: 'POST',
+            url: `/wallets/${payload.wallet._id}/managers`,
+            data: {
+                address: payload.address,
+            },
+        });
+        this.context.commit('set', { walletManager, walletId: payload.wallet._id });
+    }
+
+    @Action({ rawError: true })
+    async remove(walletManager: TWalletManager) {
+        await axios({
+            method: 'DELETE',
+            url: `/wallets/managers/${walletManager._id}`,
+        });
+        this.context.commit('unset', walletManager);
     }
 }
 
