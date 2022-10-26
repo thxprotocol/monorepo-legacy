@@ -28,8 +28,5 @@ services:
     expose:
       - 8545:8545
 
-networks:
-  default:
-    external: true
 volumes:
   mongo-data:
