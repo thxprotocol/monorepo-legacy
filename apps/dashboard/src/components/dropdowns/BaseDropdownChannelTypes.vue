@@ -30,7 +30,8 @@
 </template>
 
 <script lang="ts">
-import { channelList, IChannel } from '@thxnetwork/dashboard/types/rewards';
+import { channelList } from '@thxnetwork/dashboard/types/rewards';
+import type { IChannel } from '@thxnetwork/dashboard/types/rewards';
 import {
   BDropdown,
   BDropdownItemButton,

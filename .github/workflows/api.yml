@@ -7,24 +7,9 @@ on:
             - 'libs/**'
             - 'yarn.lock'
             - '.github/workflows/api.yml'
+            - 'docker-compose*.yml'
 
 jobs:
-    sonarcloud:
-        name: SonarCloud
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v2
-              with:
-                  fetch-depth: 0
-
-            - name: SonarCloud Scan
-              uses: SonarSource/sonarcloud-github-action@master
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-              with:
-                  projectBaseDir: apps/api
-
     buildAndTest:
         name: CI Pipeline
         runs-on: ubuntu-latest
@@ -32,6 +17,8 @@ jobs:
         steps:
             - name: Checkout repository
               uses: actions/checkout@v2
+              with:
+                  fetch-depth: 0
 
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v1
@@ -40,16 +27,21 @@ jobs:
                   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                   aws-region: us-east-1
 
-            - name: Login to ECR
-              uses: docker/login-action@v1
-              with:
-                  registry: public.ecr.aws
-
             - name: Lint code and run tests
+              env:
+                  NODE_OPTIONS: '--max-old-space-size=8192'
               run: |
                   docker compose -f docker-compose.yml -f docker-compose.api.yml run \
                   -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} -T \
-                  api sh -c "npx nx lint api && npx nx test api"
+                  api bash scripts/test-api-ci.sh
+
+            - name: SonarCloud Scan
+              uses: SonarSource/sonarcloud-github-action@master
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+              with:
+                  projectBaseDir: apps/api
 
     bumpVersion:
         name: 'Bump Version on main'

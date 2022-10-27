@@ -1,4 +1,4 @@
-import { IAccount, IAccountUpdates } from '@thxnetwork/api/models/Account';
+import type { IAccount, IAccountUpdates } from '@thxnetwork/api/models/Account';
 import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
 import { THXError } from '@thxnetwork/api/util/errors';
 

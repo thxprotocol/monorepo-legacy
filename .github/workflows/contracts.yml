@@ -1,0 +1,25 @@
+name: Smart Contract CI
+
+on:
+    push:
+        paths:
+            - 'yarn.lock'
+            - 'libs/contracts/**'
+            - '.github/workflows/contracts.yml'
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v2
+            - name: Install Node.js
+              uses: actions/setup-node@v1
+              with:
+                  node-version: 16.x
+
+            - name: Install dependencies
+              run: yarn install
+
+            - name: Run tests
+              run: npx nx test contracts

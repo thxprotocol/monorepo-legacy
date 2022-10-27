@@ -2,7 +2,7 @@ import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { TMembership } from './memberships';
-import { TTransaction } from '@thxnetwork/wallet/types/Transactions';
+import type { TTransaction } from '@thxnetwork/wallet/types/Transactions';
 import { TERC20 } from './erc20';
 
 export enum WithdrawalState {

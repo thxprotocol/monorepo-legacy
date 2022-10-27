@@ -82,7 +82,7 @@
 </template>
 
 <script lang="ts">
-import { TERC721DefaultProp } from '@thxnetwork/dashboard/types/erc721';
+import type { TERC721DefaultProp } from '@thxnetwork/dashboard/types/erc721';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { snakeCase } from 'change-case';
 

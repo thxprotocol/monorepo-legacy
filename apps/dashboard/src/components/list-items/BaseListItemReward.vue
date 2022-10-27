@@ -149,20 +149,20 @@
 </template>
 
 <script lang="ts">
-import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import type { IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import {
-  Reward,
   ChannelType,
   ChannelAction,
   RewardState,
 } from '@thxnetwork/dashboard/types/rewards';
+import type { Reward } from '@thxnetwork/dashboard/types/rewards';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import BaseCard from '../cards/BaseCard.vue';
 import VueQr from 'vue-qr';
 import { BASE_URL, WALLET_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { mapGetters } from 'vuex';
-import { TBrandState } from '@thxnetwork/dashboard/store/modules/brands';
-import { TERC721, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
+import type { TBrandState } from '@thxnetwork/dashboard/store/modules/brands';
+import type { TERC721, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
 
 const getBase64Image = (url: string): Promise<string> => {
   return new Promise((resolve) => {

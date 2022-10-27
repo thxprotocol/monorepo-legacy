@@ -105,15 +105,15 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters, mapState } from 'vuex';
 import { UserProfile } from '@thxnetwork/wallet/store/modules/account';
-import {
+import type {
   IMemberships,
   TMembership,
 } from '@thxnetwork/wallet/store/modules/memberships';
 import { WithdrawalState } from '@thxnetwork/wallet/store/modules/withdrawals';
 import BaseModalDepositPool from '../modals/ModalDepositPool.vue';
 import ModalDelete from '../modals/ModalDelete.vue';
-import { TERC20 } from '@thxnetwork/wallet/store/modules/erc20';
-import { ERC721 } from '@thxnetwork/wallet/store/modules/erc721';
+import type { TERC20 } from '@thxnetwork/wallet/store/modules/erc20';
+import type { ERC721 } from '@thxnetwork/wallet/store/modules/erc721';
 import { ChainId } from '@thxnetwork/wallet/types/enums/ChainId';
 
 @Component({

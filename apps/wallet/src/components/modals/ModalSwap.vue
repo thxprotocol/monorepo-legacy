@@ -55,11 +55,11 @@
 </template>
 
 <script lang="ts">
-import { IERC20s } from '@thxnetwork/wallet/store/modules/erc20';
-import { TMembership } from '@thxnetwork/wallet/store/modules/memberships';
-import { TNetworks } from '@thxnetwork/wallet/store/modules/network';
+import type { IERC20s } from '@thxnetwork/wallet/store/modules/erc20';
+import type { TMembership } from '@thxnetwork/wallet/store/modules/memberships';
+import type { TNetworks } from '@thxnetwork/wallet/store/modules/network';
 import { ChainId } from '@thxnetwork/wallet/types/enums/ChainId';
-import { TSwapRule } from '@thxnetwork/wallet/types/SwapRules';
+import type { TSwapRule } from '@thxnetwork/wallet/types/SwapRules';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters, mapState } from 'vuex';
 import Web3 from 'web3';

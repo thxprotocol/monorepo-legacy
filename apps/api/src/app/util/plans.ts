@@ -1,4 +1,4 @@
-import { IAccount } from '@thxnetwork/api/models/Account';
+import type { IAccount } from '@thxnetwork/api/models/Account';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { AccountPlanType, ChainId } from '@thxnetwork/api/types/enums';
 

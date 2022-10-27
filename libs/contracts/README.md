@@ -1,11 +1,13 @@
-# contracts
+# Sample Hardhat Project
 
-This library was generated with [Nx](https://nx.dev).
+This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
 
-## Running unit tests
+Try running some of the following tasks:
 
-Run `nx test contracts` to execute the unit tests via [Jest](https://jestjs.io).
-
-## Running lint
-
-Run `nx lint contracts` to execute the lint via [ESLint](https://eslint.org/).
+```shell
+npx hardhat help
+npx hardhat test
+REPORT_GAS=true npx hardhat test
+npx hardhat node
+npx hardhat run scripts/deploy.ts
+```

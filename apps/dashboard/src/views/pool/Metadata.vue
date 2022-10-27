@@ -89,7 +89,7 @@
 import { IPool, IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import {
+import type {
   IERC721s,
   TERC721,
   TERC721Metadata,

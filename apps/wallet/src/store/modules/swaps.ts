@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { TSwapRule } from '@thxnetwork/wallet/types/SwapRules';
+import type { TSwapRule } from '@thxnetwork/wallet/types/SwapRules';
 import { Module, VuexModule, Action } from 'vuex-module-decorators';
 import { TMembership } from './memberships';
 

@@ -34,11 +34,11 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapState } from 'vuex';
 import BaseIdenticon from '@thxnetwork/wallet/components/BaseIdenticon.vue';
-import { TMembership } from '@thxnetwork/wallet/store/modules/memberships';
+import type { TMembership } from '@thxnetwork/wallet/store/modules/memberships';
 import BaseModalERC20Swap from '@thxnetwork/wallet/components/modals/ModalSwap.vue';
 import { ChainId } from '@thxnetwork/wallet/types/enums/ChainId';
-import { TSwapRule } from '@thxnetwork/wallet/types/SwapRules';
-import { IERC20s } from '@thxnetwork/wallet/store/modules/erc20';
+import type { TSwapRule } from '@thxnetwork/wallet/types/SwapRules';
+import type { IERC20s } from '@thxnetwork/wallet/store/modules/erc20';
 
 @Component({
   components: {

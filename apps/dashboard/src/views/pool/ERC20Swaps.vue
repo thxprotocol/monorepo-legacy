@@ -75,7 +75,7 @@
 <script lang="ts">
 import ModalERC20SwapRuleCreate from '@thxnetwork/dashboard/components/modals/BaseModalERC20SwapRuleCreate.vue';
 import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
-import {
+import type {
   GetERC20SwapRulesProps,
   IERC20SwapRules,
   TERC20SwapRule,

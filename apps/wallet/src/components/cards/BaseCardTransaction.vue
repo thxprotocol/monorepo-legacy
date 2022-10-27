@@ -1,21 +1,13 @@
 <template>
-  <b-card
-    header-bg-variant="primary"
-    header-class="text-white small text-center p-0"
-    body-class="p-2"
-    class="my-1"
-  >
+  <b-card header-bg-variant="primary" header-class="text-white small text-center p-0" body-class="p-2" class="my-1">
     <template #header>
       {{ TransactionType[tx.type] }}
     </template>
     <div class="d-flex justify-content-between w-100 align-items-center">
       <base-badge-network :chainId="tx.chainId" class="mr-2" />
-      <b-link
-        v-if="tx.transactionHash"
-        :href="`${chainInfo[tx.chainId].blockExplorer}/tx/${
-          tx.transactionHash
-        }`"
-      >
+      <b-link v-if="tx.transactionHash" :href="`${chainInfo[tx.chainId].blockExplorer}/tx/${
+        tx.transactionHash
+      }`">
         <i class="fas fa-external-link-alt mx-1"></i>
       </b-link>
     </div>
@@ -26,12 +18,8 @@
       </b-col>
       <b-col>
         <strong :class="`text-${state.variant}`">{{ state.label }}</strong>
-        <i
-          v-b-tooltip
-          :title="tx.failReason"
-          v-if="tx.failReason && tx.state === TransactionState.Failed"
-          class="fas fa-exclamation-circle ml-1 text-danger"
-        ></i>
+        <i v-b-tooltip :title="tx.failReason" v-if="tx.failReason && tx.state === TransactionState.Failed"
+          class="fas fa-exclamation-circle ml-1 text-danger"></i>
       </b-col>
     </b-row>
     <b-row>
@@ -39,11 +27,7 @@
         <div class="text-muted">To:</div>
       </b-col>
       <b-col>
-        <base-anchor-address
-          variant="light"
-          :address="tx.to"
-          :chain-id="tx.chainId"
-        />
+        <base-anchor-address variant="light" :address="tx.to" :chain-id="tx.chainId" />
       </b-col>
     </b-row>
     <b-row>
@@ -66,11 +50,11 @@
 </template>
 
 <script lang="ts">
-import {
+import type {
   TransactionState,
   TransactionType,
   TTransaction,
-} from '@thxnetwork/wallet/types/Transactions';
+} from '../../types/Transactions';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { format } from 'date-fns';
 import { chainInfo } from '@thxnetwork/wallet/utils/chains';

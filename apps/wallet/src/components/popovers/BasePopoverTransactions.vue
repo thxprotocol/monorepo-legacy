@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts">
-import { TTransaction } from '@thxnetwork/wallet/types/Transactions';
+import type { TTransaction } from '@thxnetwork/wallet/types/Transactions';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseCardTransaction from '../cards/BaseCardTransaction.vue';

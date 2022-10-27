@@ -60,8 +60,10 @@
             "outputs": ["coverage/apps/api"],
             "options": {
                 "jestConfig": "apps/api/jest.config.ts",
+                "testTimeout": 180000,
                 "passWithNoTests": false,
-                "runInBand": true
+                "runInBand": true,
+                "codeCoverage": true
             }
         },
         "migrate:contracts": {

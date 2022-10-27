@@ -1,7 +1,7 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { ITransactions, TTransaction } from '@thxnetwork/wallet/types/Transactions';
+import type { ITransactions, TTransaction } from '@thxnetwork/wallet/types/Transactions';
 
 @Module({ namespaced: true })
 class WithdrawalModule extends VuexModule {

@@ -77,8 +77,8 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { TClient } from '@thxnetwork/dashboard/store/modules/clients';
-import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import type { TClient } from '@thxnetwork/dashboard/store/modules/clients';
+import type { IPool } from '@thxnetwork/dashboard/store/modules/pools';
 
 export interface TClientInfo {
   clientId: string;

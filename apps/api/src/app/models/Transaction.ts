@@ -1,4 +1,4 @@
-import { TTransaction } from '@thxnetwork/api/types/TTransaction';
+import type { TTransaction } from '@thxnetwork/api/types/TTransaction';
 import mongoose from 'mongoose';
 
 export type TransactionDocument = mongoose.Document & TTransaction;

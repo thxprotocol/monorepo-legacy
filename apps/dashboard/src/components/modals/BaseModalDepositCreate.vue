@@ -64,8 +64,8 @@
 </template>
 
 <script lang="ts">
-import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
-import { ERC20Type, IERC20s } from '@thxnetwork/dashboard/types/erc20';
+import type { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import type { ERC20Type, IERC20s } from '@thxnetwork/dashboard/types/erc20';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseModal from './BaseModal.vue';

@@ -49,7 +49,7 @@
 </template>
 
 <script lang="ts">
-import { IAccount, IYoutube } from '@thxnetwork/dashboard/types/account';
+import type { IAccount, IYoutube } from '@thxnetwork/dashboard/types/account';
 import { ChannelType } from '@thxnetwork/dashboard/types/rewards';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';

@@ -26,11 +26,11 @@
 </template>
 
 <script lang="ts">
-import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import type { IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { IERC20s } from '@thxnetwork/dashboard/types/erc20';
-import { TERC20SwapRule } from '@thxnetwork/dashboard/types/IERC20SwapRules';
+import type { IERC20s } from '@thxnetwork/dashboard/types/erc20';
+import type { TERC20SwapRule } from '@thxnetwork/dashboard/types/IERC20SwapRules';
 import BaseIdenticon from '@thxnetwork/dashboard/components/BaseIdenticon.vue';
 
 @Component({

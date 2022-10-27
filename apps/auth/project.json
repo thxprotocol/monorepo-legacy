@@ -57,7 +57,8 @@
             "options": {
                 "jestConfig": "apps/auth/jest.config.ts",
                 "passWithNoTests": true,
-                "runInBand": true
+                "runInBand": true,
+                "codeCoverage": true
             }
         },
         "migrate:db": {

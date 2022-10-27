@@ -1,4 +1,9 @@
 {
-    "name": "@thxnetwork/solidity",
-    "version": "0.0.1"
+    "name": "@thxnetwork/contracts",
+    "version": "4.0.6",
+    "type": "commonjs",
+    "parserOptions": {
+        "ecmaVersion": 2021,
+        "sourceType": "module"
+    }
 }

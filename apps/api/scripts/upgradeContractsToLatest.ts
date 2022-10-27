@@ -1,6 +1,4 @@
-import {
-    ContractName, currentVersion, DiamondVariant
-} from '../../../libs/contracts/src/exports';
+import { ContractName, currentVersion, DiamondVariant } from '../../../libs/contracts/exports';
 import { getContract } from '../src/app/config/contracts';
 import { MONGODB_URI } from '../src/app/config/secrets';
 import { AssetPool, AssetPoolDocument } from '../src/app/models/AssetPool';

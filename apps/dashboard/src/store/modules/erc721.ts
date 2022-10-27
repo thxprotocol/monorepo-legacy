@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { IPool } from './pools';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
-import {
+import type {
   TERC721,
   IERC721s,
   TERC721Metadata,

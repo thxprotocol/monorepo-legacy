@@ -83,11 +83,11 @@ import BaseCard from './BaseCard.vue';
 import BaseBadgeNetwork from '../badges/BaseBadgeNetwork.vue';
 import BaseIdenticon from '../BaseIdenticon.vue';
 import BaseAnchorAddress from '../BaseAnchorAddress.vue';
-import { TERC721, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
+import type { TERC721, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
 import { format } from 'date-fns';
 import { API_URL } from '@thxnetwork/dashboard/utils/secrets';
 import BaseModalErc721MetadataMint from '@thxnetwork/dashboard/components/modals/BaseModalERC721MetadataMint.vue';
-import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import type { IPool } from '@thxnetwork/dashboard/store/modules/pools';
 
 @Component({
   components: {
