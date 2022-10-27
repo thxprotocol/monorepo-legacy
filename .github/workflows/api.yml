@@ -33,7 +33,7 @@ jobs:
               run: |
                   docker compose -f docker-compose.yml -f docker-compose.api.yml run \
                   -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} -T \
-                  api sh -c "npx nx lint api && cd ./libs/contracts && npx hardhat node > /dev/null 2>&1 & sudo bash ./scripts/wait-for-it.sh localhost:8545 --timeout=300 --strict -- npx nx test api"
+                  api sh -c "npx nx lint api && cd ./libs/contracts && npx hardhat node > /dev/null 2>&1 & bash ./scripts/wait-for-it.sh localhost:8545 --timeout=300 --strict -- npx nx test api"
 
             - name: SonarCloud Scan
               uses: SonarSource/sonarcloud-github-action@master
