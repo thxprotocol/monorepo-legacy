@@ -182,7 +182,7 @@
         "eslint-plugin-prettier": "^4.0.0",
         "eslint-plugin-vue": "^7.0.0-0",
         "ethers": "^5.0.26",
-        "hardhat": "^2.9.1",
+        "hardhat": "2.12.1",
         "hardhat-deploy": "^0.10.5",
         "hardhat-gas-reporter": "^1.0.8",
         "jest": "^29.1.2",
