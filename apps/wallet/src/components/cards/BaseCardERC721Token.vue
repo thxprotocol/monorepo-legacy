@@ -51,7 +51,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import {
+import type {
   ERC721,
   TERC721Metadata,
   TERC721Token,

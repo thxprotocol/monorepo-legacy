@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { TPayment } from '@thxnetwork/wallet/types/Payments';
+import type { TPayment } from '@thxnetwork/wallet/types/Payments';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 
 @Module({ namespaced: true })

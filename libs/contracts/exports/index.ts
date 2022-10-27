@@ -1,4 +1,4 @@
-import { version as currentVersion } from '../../package.json';
+import { version as currentVersion } from '../package.json';
 import { AbiItem } from 'web3-utils';
 import fs from 'fs';
 import path from 'path';
@@ -26,9 +26,6 @@ export const contractNames = [
     'ERC20WithdrawFacet',
     'ERC20SwapFacet',
     'ERC721ProxyFacet',
-
-    // Wallet
-    'SharedWallet',
 
     // Deprecated facets
     'TokenFactory',

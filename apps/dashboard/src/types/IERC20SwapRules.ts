@@ -1,5 +1,5 @@
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
-import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import type { IPool } from '@thxnetwork/dashboard/store/modules/pools';
 
 export type TERC20SwapRule = {
   _id: string;

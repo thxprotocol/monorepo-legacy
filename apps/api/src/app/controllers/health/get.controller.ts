@@ -9,7 +9,7 @@ import { logger } from '@thxnetwork/api/util/logger';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { currentVersion, diamondVariants } from '@thxnetwork/contracts/exports';
 
-import { license, name, version } from '../../../../package.json';
+import { license, name, version } from '../../../../../../package.json';
 
 function handleError(error: Error) {
     newrelic.noticeError(error);

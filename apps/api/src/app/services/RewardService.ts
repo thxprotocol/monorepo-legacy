@@ -1,4 +1,4 @@
-import { IAccount } from '@thxnetwork/api/models/Account';
+import type { IAccount } from '@thxnetwork/api/models/Account';
 import {
     ChannelAction,
     IRewardCondition,

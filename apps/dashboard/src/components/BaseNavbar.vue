@@ -144,7 +144,7 @@
 
 <script lang="ts">
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
-import { IAccount } from '@thxnetwork/dashboard/types/account';
+import type { IAccount } from '@thxnetwork/dashboard/types/account';
 import { ERC20Type } from '@thxnetwork/dashboard/types/erc20';
 import { plans } from '@thxnetwork/dashboard/utils/plans';
 import { getRoutes } from '@thxnetwork/dashboard/utils/routes';

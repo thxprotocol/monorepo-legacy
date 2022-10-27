@@ -3,7 +3,7 @@ import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import { Deposit } from '@thxnetwork/api/models/Deposit';
 import { ForbiddenError } from '@thxnetwork/api/util/errors';
 import { DepositState } from '@thxnetwork/api/types/enums/DepositState';
-import { TPromotion } from '@thxnetwork/api/types/TPromotion';
+import type { TPromotion } from '@thxnetwork/api/types/TPromotion';
 import { Payment } from '@thxnetwork/api/models/Payment';
 import { PaymentState } from '@thxnetwork/api/types/enums/PaymentState';
 

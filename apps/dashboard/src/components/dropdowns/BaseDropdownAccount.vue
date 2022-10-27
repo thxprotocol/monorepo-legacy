@@ -29,7 +29,7 @@
 </template>
 
 <script lang="ts">
-import { IAccount } from '@thxnetwork/dashboard/types/account';
+import type { IAccount } from '@thxnetwork/dashboard/types/account';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseIdenticon from '../BaseIdenticon.vue';

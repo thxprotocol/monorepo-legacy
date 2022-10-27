@@ -2,6 +2,7 @@
     "compileOnSave": false,
     "compilerOptions": {
         "rootDir": ".",
+        "composite": true,
         "sourceMap": true,
         "declaration": true,
         "moduleResolution": "node",
@@ -20,10 +21,10 @@
             "@thxnetwork/api*": ["apps/api/src/app*"],
             "@thxnetwork/auth*": ["apps/auth/src/app*"],
             "@thxnetwork/common": ["libs/common/src/index.ts"],
+            "@thxnetwork/contracts*": ["libs/contracts*"],
             "@thxnetwork/dashboard*": ["apps/dashboard/src*"],
             "@thxnetwork/scss*": ["libs/common/src/lib/scss*"],
             "@thxnetwork/sdk*": ["libs/sdk/src/lib*"],
-            "@thxnetwork/contracts*": ["libs/contracts/src*"],
             "@thxnetwork/wallet*": ["apps/wallet/src*"]
         }
     },

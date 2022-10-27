@@ -4,13 +4,6 @@
     "plugins": ["@nrwl/nx"],
     "overrides": [
         {
-            "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-            "rules": {
-                "@typescript-eslint/no-explicit-any": "off",
-                "@nrwl/nx/enforce-module-boundaries": "off"
-            }
-        },
-        {
             "files": ["*.ts", "*.tsx"],
             "extends": ["plugin:@nrwl/nx/typescript"],
             "rules": {}
@@ -19,6 +12,13 @@
             "files": ["*.js", "*.jsx"],
             "extends": ["plugin:@nrwl/nx/javascript"],
             "rules": {}
+        },
+        {
+            "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+            "rules": {
+                "@typescript-eslint/no-explicit-any": ["off"],
+                "@nrwl/nx/enforce-module-boundaries": "off"
+            }
         }
     ]
 }

@@ -1,6 +1,6 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { DeployFunction } from 'hardhat-deploy/types';
-import { ContractName } from 'exports';
+import { ContractName } from '../exports';
 
 const facets: ContractName[] = [
     'FactoryFacet',

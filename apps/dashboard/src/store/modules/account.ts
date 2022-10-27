@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { User, UserManager } from 'oidc-client-ts';
 import { ChannelType } from '@thxnetwork/dashboard/types/rewards';
-import {
+import type {
   IAccount,
   IAccountUpdates,
   ITwitter,

@@ -2,10 +2,11 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "lib": ["ES2019"],
+    "declaration": true,
     "outDir": "../../dist/out-tsc",
     "module": "commonjs",
     "types": ["node"]
   },
   "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "../../package.json", "./package.json"]
 }

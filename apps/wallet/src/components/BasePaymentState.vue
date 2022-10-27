@@ -17,32 +17,19 @@
           {{ payment.metadata.title || 'No Title' }}
         </div>
         <div class="text-gray">
-          <b-badge
-            :key="key"
-            v-for="(key, value) in payment.metadata.attributes"
-            variant="dark"
-            v-b-tooltip
-            :title="key"
-            class="mr-2 text-gray"
-          >
+          <b-badge :key="key" v-for="(key, value) in payment.metadata.attributes" variant="dark" v-b-tooltip
+            :title="key" class="mr-2 text-gray">
             {{ value }}
           </b-badge>
         </div>
       </div>
-      <b-button
-        class="rounded-pill"
-        variant="primary"
-        :href="payment.successUrl"
-      >
+      <b-button class="rounded-pill" variant="primary" :href="payment.successUrl">
         Continue to merchant
         <i class="fas fa-chevron-right ml-2"></i>
       </b-button>
     </div>
     <div class="text-center" v-if="payment.state === PaymentState.Failed">
-      <i
-        class="fas fa-exclamation-circle text-danger mb-3"
-        style="font-size: 3rem"
-      ></i>
+      <i class="fas fa-exclamation-circle text-danger mb-3" style="font-size: 3rem"></i>
       <p class="text-gray">Your payment has not been processed.</p>
       <b-button class="rounded-pill" variant="primary" :href="payment.failUrl">
         <i class="fas fa-chevron-left mr-2"></i>
@@ -53,7 +40,8 @@
 </template>
 
 <script lang="ts">
-import { PaymentState, TPayment } from '@thxnetwork/wallet/types/Payments';
+import { PaymentState } from '@thxnetwork/wallet/types/Payments';
+import type { TPayment } from '@thxnetwork/wallet/types/Payments';
 import { Component, Vue, Prop } from 'vue-property-decorator';
 
 @Component({})

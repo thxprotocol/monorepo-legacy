@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts">
-import { TERC721 } from '@thxnetwork/dashboard/types/erc721';
+import type { TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 

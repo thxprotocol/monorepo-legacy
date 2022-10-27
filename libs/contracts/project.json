@@ -3,34 +3,51 @@
     "sourceRoot": "libs/contracts/src",
     "projectType": "library",
     "targets": {
+        "build": {
+            "executor": "@nrwl/js:tsc",
+            "outputs": ["{options.outputPath}"],
+            "options": {
+                "outputPath": "dist/libs/contracts",
+                "main": "libs/contracts/src/index.ts",
+                "tsConfig": "libs/contracts/tsconfig.lib.json",
+                "assets": ["libs/contracts/*.md"]
+            }
+        },
         "compile": {
             "executor": "nx:run-commands",
             "options": {
+                "tsConfig": "libs/contracts/tsconfig.lib.json",
                 "commands": ["npx hardhat compile"],
                 "cwd": "libs/contracts"
             }
         },
-        "build": {
+        "test": {
             "executor": "nx:run-commands",
             "options": {
-                "commands": ["npx hardhat compile"],
+                "tsConfig": "libs/contracts/tsconfig.lib.json",
+                "commands": ["npx hardhat test"],
                 "cwd": "libs/contracts"
-            },
-            "lint": {
-                "executor": "@nrwl/linter:eslint",
-                "outputs": ["{options.outputFile}"],
-                "options": {
-                    "lintFilePatterns": ["libs/contracts/**/*.ts"]
-                }
-            },
-            "test": {
-                "executor": "nx:run-commands",
-                "options": {
-                    "commands": ["npx hardhat test"],
-                    "cwd": "libs/contracts"
-                }
             }
         },
-        "tags": ["solidity"]
-    }
+        "publish": {
+            "executor": "@nrwl/workspace:run-commands",
+            "options": {
+                "command": "node tools/scripts/publish.mjs contracts {args.ver} {args.tag}"
+            },
+            "dependsOn": [
+                {
+                    "projects": "self",
+                    "target": "build"
+                }
+            ]
+        },
+        "lint": {
+            "executor": "@nrwl/linter:eslint",
+            "outputs": ["{options.outputFile}"],
+            "options": {
+                "lintFilePatterns": ["libs/contracts/**/*.ts"]
+            }
+        }
+    },
+    "tags": []
 }

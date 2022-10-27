@@ -38,10 +38,10 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { TMembership } from '@thxnetwork/wallet/store/modules/memberships';
-import { TPromotion } from '@thxnetwork/wallet/store/modules/promotions';
+import type { TMembership } from '@thxnetwork/wallet/store/modules/memberships';
+import type { TPromotion } from '@thxnetwork/wallet/store/modules/promotions';
 import BaseModalRedeemPromotion from '@thxnetwork/wallet/components/modals/ModalRedeemPromotion.vue';
-import { TERC20 } from '@thxnetwork/wallet/store/modules/erc20';
+import type { TERC20 } from '@thxnetwork/wallet/store/modules/erc20';
 
 @Component({
   components: {

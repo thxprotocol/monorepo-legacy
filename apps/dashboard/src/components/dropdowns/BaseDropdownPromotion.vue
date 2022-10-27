@@ -27,7 +27,7 @@
 
 <script lang="ts">
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
-import { TPromotion } from '@thxnetwork/dashboard/store/modules/promotions';
+import type { TPromotion } from '@thxnetwork/dashboard/store/modules/promotions';
 import { IPromotions } from '@thxnetwork/dashboard/types/IPromotions';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';

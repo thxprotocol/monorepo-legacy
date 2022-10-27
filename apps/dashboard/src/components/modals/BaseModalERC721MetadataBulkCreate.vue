@@ -51,8 +51,8 @@
 </template>
 
 <script lang="ts">
-import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
-import {
+import type { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import type {
   TERC721,
   TERC721DefaultProp,
 } from '@thxnetwork/dashboard/types/erc721';

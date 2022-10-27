@@ -38,7 +38,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { TERC721Metadata, TERC721Token } from '@thxnetwork/wallet/store/modules/erc721';
+import type { TERC721Metadata, TERC721Token } from '@thxnetwork/wallet/store/modules/erc721';
 import BaseModalTransferTokens from '@thxnetwork/wallet/components/modals/ModalTransferTokens.vue';
 import BaseCardErc721Token from '@thxnetwork/wallet/components/cards/BaseCardERC721Token.vue';
 import BaseIdenticon from '@thxnetwork/wallet/components/BaseIdenticon.vue';

@@ -1,25 +1,32 @@
+import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
+import { TransactionReceipt } from 'web3-core';
+
+import { getByteCodeForContractName, getContractFromName } from '@thxnetwork/api/config/contracts';
+import { API_URL, VERSION } from '@thxnetwork/api/config/secrets';
+import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { ERC721, ERC721Document, IERC721Updates } from '@thxnetwork/api/models/ERC721';
 import { ERC721Metadata, ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
-import { ERC721TokenState, TERC721, TERC721Metadata, TERC721Token } from '@thxnetwork/api/types/TERC721';
-import TransactionService from './TransactionService';
-import { getProvider } from '@thxnetwork/api/util/network';
-import { VERSION, API_URL } from '@thxnetwork/api/config/secrets';
-import { assertEvent, ExpectedEventNotFound, findEvent, parseLogs } from '@thxnetwork/api/util/events';
-import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { ChainId, TransactionState } from '@thxnetwork/api/types/enums';
-import { getByteCodeForContractName, getContractFromName } from '@thxnetwork/api/config/contracts';
 import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
-import { TAssetPool } from '@thxnetwork/api/types/TAssetPool';
-import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
-import { IAccount } from '@thxnetwork/api/models/Account';
-import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import { paginatedResults } from '@thxnetwork/api/util/pagination';
-import MembershipService from './MembershipService';
-import AssetPoolService from './AssetPoolService';
-import { TERC721DeployCallbackArgs, TERC721TokenMintCallbackArgs } from '@thxnetwork/api/types/TTransaction';
-import { TransactionReceipt } from 'web3-core';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
+import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
+import { ChainId, TransactionState } from '@thxnetwork/api/types/enums';
+import { TAssetPool } from '@thxnetwork/api/types/TAssetPool';
+import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
+import {
+    TERC721DeployCallbackArgs, TERC721TokenMintCallbackArgs
+} from '@thxnetwork/api/types/TTransaction';
+import {
+    assertEvent, ExpectedEventNotFound, findEvent, parseLogs
+} from '@thxnetwork/api/util/events';
+import { getProvider } from '@thxnetwork/api/util/network';
+import { paginatedResults } from '@thxnetwork/api/util/pagination';
 
+import AssetPoolService from './AssetPoolService';
+import MembershipService from './MembershipService';
+import TransactionService from './TransactionService';
+
+import type { TERC721, TERC721Metadata, TERC721Token } from '@thxnetwork/api/types/TERC721';
+import type { IAccount } from '@thxnetwork/api/models/Account';
 const contractName = 'NonFungibleToken';
 
 async function deploy(data: TERC721, forceSync = true): Promise<ERC721Document> {
