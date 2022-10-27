@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { AUTH_URL } from '@thxnetwork/api/config/secrets';
+import { AUTH_URL } from '../../config/secrets';
 import { clientId, adminScopes, dashboardScopes, sub, sub2, walletScopes } from './constants';
 
 const privateKey = `-----BEGIN RSA PRIVATE KEY-----

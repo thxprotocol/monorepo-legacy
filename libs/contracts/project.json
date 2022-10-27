@@ -21,6 +21,14 @@
                 "cwd": "libs/contracts"
             }
         },
+        "serve": {
+            "executor": "nx:run-commands",
+            "options": {
+                "tsConfig": "libs/contracts/tsconfig.lib.json",
+                "commands": ["npx hardhat node"],
+                "cwd": "libs/contracts"
+            }
+        },
         "test": {
             "executor": "nx:run-commands",
             "options": {
