@@ -4,7 +4,6 @@ import { ContractName, TokenContractName } from '../exports';
 import { ethers } from 'hardhat';
 import { FacetCut } from 'hardhat-deploy/types';
 
-
 export enum FacetCutAction {
     Add,
     Replace,
@@ -90,10 +89,11 @@ export const deployRegistry = async (feeCollector: string, feePercentage: string
 export function createUnlockDate(numMonths: number) {
     // create unlock date adding 3 months to current time
     const now = new Date();
-    var newDate = new Date(now.setMonth(now.getMonth() + numMonths));
+    const newDate = new Date(now.setMonth(now.getMonth() + numMonths));
     const unlockDate = newDate.getTime() / 1000;
     return ~~unlockDate;
 }
 
 export const MINTER_ROLE = keccak256(toUtf8Bytes('MINTER_ROLE'));
+export const MANAGER_ROLE = keccak256(toUtf8Bytes('MANAGER_ROLE'));
 export const ADDRESS_ZERO = constants.AddressZero;

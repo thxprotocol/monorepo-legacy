@@ -70,3 +70,4 @@ amplifytools.xcconfig
 #amplify-do-not-edit-end
 
 libs/contracts/deployments/localhost
+.openzeppelin
