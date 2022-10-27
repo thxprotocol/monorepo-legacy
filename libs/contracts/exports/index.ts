@@ -11,6 +11,7 @@ export const contractNames = [
     'DiamondCutFacet',
     'DiamondLoupeFacet',
     'OwnershipFacet',
+    'SharedWallet',
 
     // Diamonds
     'Factory',
