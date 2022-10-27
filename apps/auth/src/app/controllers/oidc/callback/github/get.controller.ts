@@ -7,7 +7,6 @@ import { getAccountByEmail, getInteraction, saveInteraction } from '../../../../
 import { AccountVariant } from '../../../../types/enums/AccountVariant';
 
 async function updateTokens(account: AccountDocument, tokens: any): Promise<AccountDocument> {
-
     account.githubAccessToken = tokens.access_token || account.githubAccessToken;
     account.githubRefreshToken = tokens.refresh_token || account.githubRefreshToken;
     account.githubAccessTokenExpires =
@@ -28,13 +27,11 @@ async function controller(req: Request, res: Response) {
     const error = req.query.error as string;
     if (error) return res.redirect(`/oidc/${uid}`);
 
-
     // Get all token information
     const tokens = await GithubService.requestTokens(code);
-    console.log(tokens)
 
     const user = await GithubService.getUser(tokens.access_token);
-    const email = user.id + '@github.thx.network';
+    const email = user.email;
 
     // Get the interaction based on the state
     const interaction = await getInteraction(uid);
