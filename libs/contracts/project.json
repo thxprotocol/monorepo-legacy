@@ -47,6 +47,14 @@
             "options": {
                 "lintFilePatterns": ["libs/contracts/**/*.ts"]
             }
+        },
+        "serve": {
+            "executor": "nx:run-commands",
+            "options": {
+                "tsConfig": "libs/contracts/tsconfig.lib.json",
+                "command": "npx hardhat node",
+                "cwd": "libs/contracts"
+            }
         }
     },
     "tags": []
