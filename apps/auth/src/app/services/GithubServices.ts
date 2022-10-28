@@ -100,25 +100,18 @@ export class GithubService {
     }
 
     static async validateIssueCommented(repo: string, issue: string, accessToken: string) {
-      const userinfo = await this.getUser(accessToken);
-      // https://docs.github.com/en/rest/issues/issues
+        // https://docs.github.com/en/rest/issues/issues
 
-      const r = await githubClient({
-          url: `/repos/${repo}/issues/${issue}/comments`,
-          method: 'GET',
-          headers: {
-              Authorization: 'Bearer ' + accessToken,
-          },
-      });
+        const r = await githubClient({
+            url: `/repos/${repo}/issues/${issue}/comments`,
+            method: 'GET',
+            headers: {
+                Authorization: 'Bearer ' + accessToken,
+            },
+        });
 
-      return r.status === 200;
+        return r.status === 200;
     }
-
-    // Utils
-    static getAllIssueComments(repo: string, issue: string, accessToken: string) {
-
-    }
-
 }
 
 export default GithubService;
