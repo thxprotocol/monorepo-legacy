@@ -13,6 +13,22 @@
                 "assets": ["libs/contracts/*.md"]
             }
         },
+        "build-abi": {
+            "executor": "nx:run-commands",
+            "options": {
+                "tsConfig": "libs/contracts/tsconfig.lib.json",
+                "commands": ["npx ts-node ./scripts/write-abis.ts --project ./tsconfig.json"],
+                "cwd": "libs/contracts"
+            }
+        },
+        "build-bytecodes": {
+            "executor": "nx:run-commands",
+            "options": {
+                "tsConfig": "libs/contracts/tsconfig.lib.json",
+                "commands": ["npx ts-node ./scripts/write-bytecodes.ts --project ./tsconfig.json"],
+                "cwd": "libs/contracts"
+            }
+        },
         "compile": {
             "executor": "nx:run-commands",
             "options": {

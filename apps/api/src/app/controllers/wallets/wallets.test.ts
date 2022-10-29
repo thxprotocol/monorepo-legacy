@@ -5,7 +5,7 @@ import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/c
 import { ChainId } from '@thxnetwork/api/types/enums';
 const user = request.agent(app);
 
-describe('Wallets', () => {
+describe.only('Wallets', () => {
     beforeAll(async () => {
         await beforeAllCallback();
     });
@@ -19,8 +19,10 @@ describe('Wallets', () => {
                 .send({
                     chainId: ChainId.Hardhat,
                     sub: sub2,
+                    forceSync: true,
                 })
                 .expect((res: request.Response) => {
+                    console.log(res.body);
                     expect(res.body.sub).toEqual(sub2);
                     expect(res.body.chainId).toEqual(ChainId.Hardhat);
                     expect(res.body.address).toBeDefined();

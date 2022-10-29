@@ -15,6 +15,7 @@ import ERC721Service from './ERC721Service';
 import PaymentService from './PaymentService';
 import WithdrawalService from './WithdrawalService';
 import { RelayerTransactionPayload } from 'defender-relay-client';
+import WalletService from './WalletService';
 
 function getById(id: string) {
     return Transaction.findById(id);
@@ -236,6 +237,9 @@ async function executeCallback(tx: TransactionDocument, receipt: TransactionRece
             break;
         case 'withdrawForCallback':
             await WithdrawalService.withdrawForCallback(tx.callback.args, receipt);
+            break;
+        case 'walletDeployCallback':
+            await WalletService.deployCallback(tx.callback.args, receipt);
             break;
     }
 }

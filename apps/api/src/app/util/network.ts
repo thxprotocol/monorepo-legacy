@@ -1,8 +1,10 @@
 import {
+    HARDHAT_NAME,
     HARDHAT_RPC,
     MUMBAI_RELAYER,
     MUMBAI_RELAYER_API_KEY,
     MUMBAI_RELAYER_API_SECRET,
+    POLYGON_MUMBAI_NAME,
     POLYGON_MUMBAI_RPC,
     POLYGON_RELAYER,
     POLYGON_RELAYER_API_KEY,
@@ -17,16 +19,25 @@ import { arrayify, computeAddress, hashMessage, recoverPublicKey } from 'ethers/
 import { ChainId } from '../types/enums';
 import { DefenderRelayProvider } from 'defender-relay-client/lib/web3';
 import { Relayer } from 'defender-relay-client';
+import { TNetworkName } from '@thxnetwork/contracts/exports';
 
 const web3 = new Web3();
-const networks: { [chainId: number]: { web3: Web3; readProvider: Web3; defaultAccount: string; relayer?: Relayer } } =
-    {};
+const networks: {
+    [chainId: number]: {
+        web3: Web3;
+        networkName: TNetworkName;
+        readProvider: Web3;
+        defaultAccount: string;
+        relayer?: Relayer;
+    };
+} = {};
 
 if (HARDHAT_RPC) {
     networks[ChainId.Hardhat] = (() => {
         const web3 = new Web3(HARDHAT_RPC);
         return {
             web3,
+            networkName: HARDHAT_NAME as TNetworkName,
             defaultAccount: web3.eth.accounts.privateKeyToAccount(PRIVATE_KEY).address,
             readProvider: web3,
         };
@@ -41,7 +52,13 @@ if (MUMBAI_RELAYER) {
         );
         const relayer = new Relayer({ apiKey: MUMBAI_RELAYER_API_KEY, apiSecret: MUMBAI_RELAYER_API_SECRET });
         const readProvider = new Web3(POLYGON_MUMBAI_RPC);
-        return { web3: new Web3(provider), relayer, defaultAccount: MUMBAI_RELAYER, readProvider };
+        return {
+            web3: new Web3(provider),
+            networkName: POLYGON_MUMBAI_NAME as TNetworkName,
+            relayer,
+            defaultAccount: MUMBAI_RELAYER,
+            readProvider,
+        };
     })();
 }
 
@@ -53,7 +70,13 @@ if (POLYGON_RELAYER) {
         );
         const relayer = new Relayer({ apiKey: POLYGON_RELAYER_API_KEY, apiSecret: POLYGON_RELAYER_API_SECRET });
         const readProvider = new Web3(POLYGON_RPC);
-        return { web3: new Web3(provider), relayer, defaultAccount: POLYGON_RELAYER, readProvider };
+        return {
+            web3: new Web3(provider),
+            networkName: POLYGON_MUMBAI_NAME as TNetworkName,
+            relayer,
+            defaultAccount: POLYGON_RELAYER,
+            readProvider,
+        };
     })();
 }
 

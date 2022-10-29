@@ -9,13 +9,14 @@ import DeleteWalletManager from './managers/delete.controller';
 const router = express.Router();
 
 router.get('/', guard.check(['wallets:read']), ListWallets.controller);
+router.post('/', guard.check(['wallets:write']), assertRequestInput(CreateWallet.validation), CreateWallet.controller);
+
 router.get(
     '/:id/managers',
     guard.check(['wallets:read']),
     assertRequestInput(ListWalletManagers.validation),
     ListWalletManagers.controller,
 );
-router.post('/', guard.check(['wallets:write']), assertRequestInput(CreateWallet.validation), CreateWallet.controller);
 router.post(
     '/:id/managers',
     guard.check(['wallets:write']),

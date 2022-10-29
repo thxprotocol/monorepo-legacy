@@ -32,6 +32,15 @@ export type TERC721DeployCallbackArgs = {
     erc721Id: string;
 };
 
+type WalletDeployCallback = {
+    type: 'walletDeployCallback';
+    args: TWalletDeployCallbackArgs;
+};
+
+export type TWalletDeployCallbackArgs = {
+    walletId: string;
+};
+
 type ERC721DeployCallback = {
     type: 'Erc721DeployCallback';
     args: TERC721DeployCallbackArgs;
@@ -119,4 +128,5 @@ export type TTransactionCallback =
     | SwapCreateCallback
     | ERC721TokenMintCallback
     | PaymentCallback
-    | WithdrawForCallback;
+    | WithdrawForCallback
+    | WalletDeployCallback;
