@@ -22,7 +22,6 @@ describe('Wallets', () => {
                     forceSync: true,
                 })
                 .expect((res: request.Response) => {
-                    console.log(res.body);
                     expect(res.body.sub).toEqual(sub2);
                     expect(res.body.chainId).toEqual(ChainId.Hardhat);
                     expect(res.body.address).toBeDefined();
