@@ -5,7 +5,7 @@ import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/c
 import { ChainId } from '@thxnetwork/api/types/enums';
 const user = request.agent(app);
 
-describe.only('Wallets', () => {
+describe('Wallets', () => {
     beforeAll(async () => {
         await beforeAllCallback();
     });
