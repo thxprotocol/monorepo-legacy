@@ -95,9 +95,9 @@ const getArtifacts = (network: TNetworkName, version: string) => {
         }
 
         const v = network === 'hardhat' ? 'latest' : version;
-        cache[network].contracts[version] = JSON.parse(
-            fs.readFileSync(path.resolve(__dirname, './', network, `${v}.json`)).toString(),
-        );
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const contract = require(`@thxnetwork/contracts/exports/${network}/${v}.json`);
+        cache[network].contracts[version] = contract;
     }
 
     return cache[network].contracts[version];
@@ -143,7 +143,7 @@ export const availableVersions = (network: TNetworkName): string[] => {
     if (network === 'hardhat') return [currentVersion];
 
     if (cache[network].versions.length === 0) {
-        const list = fs.readdirSync(path.resolve(__dirname, './', network));
+        const list = fs.readdirSync(path.resolve('@thxnetwork/contracts', 'exports', network));
         cache[network].versions = list.map((filename) => filename.substring(0, filename.length - 5));
     }
 
