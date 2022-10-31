@@ -66,6 +66,14 @@
                 "codeCoverage": true
             }
         },
+        "test:ci": {
+            "executor": "nx:run-commands",
+            "options": {
+                "commands": ["nx run contracts:serve > /dev/null 2>&1", "nx run api:test"],
+                "readyWhen": "Ran all test suites.",
+                "parallel": true
+            }
+        },
         "migrate-contracts": {
             "dependsOn": ["^build"],
             "executor": "nx:run-commands",
