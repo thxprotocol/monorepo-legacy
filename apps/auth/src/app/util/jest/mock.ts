@@ -1,15 +1,21 @@
 import nock from 'nock';
 import { getToken, jwksResponse } from './jwt';
 import { API_URL, AUTH_URL } from '@thxnetwork/auth/config/secrets';
+import { ChainId } from '@thxnetwork/auth/types/enums/chainId';
 
 export function mockAuthPath(method: string, path: string, status: number, callback: any = {}) {
     const n = nock(AUTH_URL).persist() as any;
     return n[method](path).reply(status, callback);
 }
 
-export function mockApiPath(method: string, path: string, status: number, callback: any = {}) {
+export function mockApiPath(method: string, path: string, status: number, callback: any = {}, query?: any) {
     const n = nock(API_URL).persist() as any;
-    return n[method](path).reply(status, callback);
+
+    const interceptor = n[method](path);
+    if (query) {
+        interceptor.query(query);
+    }
+    return interceptor.reply(status, callback);
 }
 
 export function mockUrl(method: string, baseUrl: string, path: string, status: number, callback: any = {}) {
@@ -24,11 +30,17 @@ export function mockWalletProxy() {
             access_token: getToken('openid account:read account:write'),
         };
     });
-    mockApiPath('get', `/v1/wallets`, 200, async () => {
-        return {
-            total: 0,
-        };
-    });
+
+    mockApiPath(
+        'get',
+        `/v1/wallets`,
+        200,
+        async () => {
+            return [];
+        },
+        { chainId: ChainId.Hardhat },
+    );
+
     mockApiPath('post', `/v1/wallets`, 200, async () => {
         return true;
     });
