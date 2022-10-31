@@ -87,15 +87,16 @@ async function controller(req: Request, res: Response) {
 
     const accountId = String(account._id);
 
-    // Check if a SharedWallet must be created for a specific chainId
-    // const chainIds = req.body.chainId ? [req.body.chainId] : [ChainId.PolygonMumbai, ChainId.Polygon]; // DEFAULT CHAIN IDs
-    // for (let i = 0; i < chainIds.length; i++) {
-    //     const chainId = chainIds[i];
-    //     const walletsCount = (await WalletProxy.get({ sub: accountId, chainId })).length;
-    //     if (!walletsCount) {
-    //         WalletProxy.create(accountId, chainId);
-    //     }
-    // }
+    //Check if a SharedWallet must be created for a specific chainId
+    const chainIds = req.body.chainId ? [req.body.chainId] : [ChainId.Hardhat, ChainId.PolygonMumbai, ChainId.Polygon]; // DEFAULT CHAIN IDs
+
+    for (let i = 0; i < chainIds.length; i++) {
+        const chainId = chainIds[i];
+        const walletsCount = (await WalletProxy.get(chainId)).length;
+        if (!walletsCount) {
+            await WalletProxy.create(accountId, chainId, false);
+        }
+    }
 
     // Make to finish the interaction and login with sub
     return await oidc.interactionFinished(

@@ -3,7 +3,7 @@ import WalletService from '@thxnetwork/api/services/WalletService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { body } from 'express-validator';
 import { UnauthorizedError } from '@thxnetwork/api/util/errors';
-
+import Wallet from '../../models/Wallet';
 export const validation = [
     body('sub').exists().isMongoId(),
     body('chainId').exists().isNumeric(),
@@ -14,10 +14,16 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Wallets']
     const account = await AccountProxy.getById(req.body.sub);
     if (!account) throw new UnauthorizedError('Invalid account');
-
+    let wallet = await Wallet.findOne({ sub: req.body.sub, chainId: req.body.chainId });
+    if (wallet) {
+        if (!wallet.address) {
+            throw new Error('Wallet address not set');
+        }
+        return res.status(201).json(wallet);
+    }
     // Force sync by default but allow the requester to do async calls.
     const forceSync = req.query.forceSync !== undefined ? req.query.forceSync === 'true' : true;
-    const wallet = await WalletService.create(req.body.chainId, account, forceSync);
+    wallet = await WalletService.create(req.body.chainId, account, forceSync);
 
     res.status(201).json(wallet);
 };

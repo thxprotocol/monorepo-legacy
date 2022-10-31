@@ -12,6 +12,7 @@ import {
     POLYGON_RPC,
     PRIVATE_KEY,
     RELAYER_SPEED,
+    POLYGON_NAME,
 } from '@thxnetwork/api/config/secrets';
 import Web3 from 'web3';
 import { Contract } from 'web3-eth-contract';
@@ -72,7 +73,7 @@ if (POLYGON_RELAYER) {
         const readProvider = new Web3(POLYGON_RPC);
         return {
             web3: new Web3(provider),
-            networkName: POLYGON_MUMBAI_NAME as TNetworkName,
+            networkName: POLYGON_NAME as TNetworkName,
             relayer,
             defaultAccount: POLYGON_RELAYER,
             readProvider,

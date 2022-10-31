@@ -27,14 +27,15 @@ async function deploy(wallet: WalletDocument, chainId: ChainId, forceSync = true
     const { networkName, defaultAccount } = getProvider(chainId);
     const facetConfigs = diamondFacetConfigs(networkName, variant);
     const diamondCut = [];
+
     for (const contractName in facetConfigs) {
         const config = facetConfigs[contractName];
         const contract = getContractFromName(chainId, contractName as ContractName);
-
+        const functionSelectors = getSelectors(contract);
         diamondCut.push({
             action: FacetCutAction.Add,
             facetAddress: config.address,
-            functionSelectors: getSelectors(contract),
+            functionSelectors,
         });
     }
 

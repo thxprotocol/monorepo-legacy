@@ -143,7 +143,7 @@ export const availableVersions = (network: TNetworkName): string[] => {
     if (network === 'hardhat') return [currentVersion];
 
     if (cache[network].versions.length === 0) {
-        const list = fs.readdirSync(path.resolve('../../libs', 'contracts', 'exports', network));
+        const list = fs.readdirSync(path.resolve(process.cwd(), 'libs', 'contracts', 'exports', network));
         cache[network].versions = list.map((filename) => filename.substring(0, filename.length - 5));
     }
 
