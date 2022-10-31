@@ -39,6 +39,7 @@ type WalletDeployCallback = {
 
 export type TWalletDeployCallbackArgs = {
     walletId: string;
+    owner: string;
 };
 
 type ERC721DeployCallback = {
@@ -119,6 +120,15 @@ type WithdrawForCallback = {
     args: TWithdrawForCallbackArgs;
 };
 
+export type TWalletGrantRoleCallBackArgs = {
+    walletId: string;
+};
+
+type WalletGrantRoleCallBack = {
+    type: 'grantRoleCallBack';
+    args: TWalletGrantRoleCallBackArgs;
+};
+
 export type TTransactionCallback =
     | ERC20DeployCallback
     | ERC721DeployCallback
@@ -129,4 +139,5 @@ export type TTransactionCallback =
     | ERC721TokenMintCallback
     | PaymentCallback
     | WithdrawForCallback
-    | WalletDeployCallback;
+    | WalletDeployCallback
+    | WalletGrantRoleCallBack;

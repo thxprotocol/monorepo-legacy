@@ -16,6 +16,7 @@ import PaymentService from './PaymentService';
 import WithdrawalService from './WithdrawalService';
 import { RelayerTransactionPayload } from 'defender-relay-client';
 import WalletService from './WalletService';
+import WalletManagerService from './WalletManagerService';
 
 function getById(id: string) {
     return Transaction.findById(id);
@@ -100,7 +101,6 @@ async function sendAsync(
         chainId,
         callback,
     });
-
     if (relayer) {
         const args: RelayerTransactionPayload = {
             data,
@@ -240,6 +240,9 @@ async function executeCallback(tx: TransactionDocument, receipt: TransactionRece
             break;
         case 'walletDeployCallback':
             await WalletService.deployCallback(tx.callback.args, receipt);
+            break;
+        case 'grantRoleCallBack':
+            await WalletManagerService.grantRoleCallBack(tx.callback.args, receipt);
             break;
     }
 }
