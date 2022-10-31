@@ -22,7 +22,6 @@ export default class WalletManagerService {
                 },
             },
         );
-        console.log('tx', tx);
         return true;
     }
 
