@@ -244,6 +244,9 @@ async function executeCallback(tx: TransactionDocument, receipt: TransactionRece
         case 'grantRoleCallBack':
             await WalletManagerService.grantRoleCallBack(tx.callback.args, receipt);
             break;
+        case 'revokeRoleCallBack':
+            await WalletManagerService.revokeRoleCallBack(tx.callback.args, receipt);
+            break;
     }
 }
 

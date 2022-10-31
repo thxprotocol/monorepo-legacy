@@ -1,11 +1,11 @@
 import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
 import { WalletDocument } from '../models/Wallet';
-import WalletManager from '../models/WalletManager';
+import WalletManager, { WalletManagerDocument } from '../models/WalletManager';
 import Wallet from '../models/Wallet';
 import { assertEvent, parseLogs } from '../util/events';
 import TransactionService from './TransactionService';
 import { TransactionReceipt } from 'web3-core';
-import { TWalletGrantRoleCallBackArgs } from '../types/TTransaction';
+import { TWalletGrantRoleCallBackArgs, TWalletRevokeRoleCallBackArgs } from '../types/TTransaction';
 export default class WalletManagerService {
     public static MANAGER_ROLE = keccak256(toUtf8Bytes('MANAGER_ROLE'));
 
@@ -45,11 +45,40 @@ export default class WalletManagerService {
         return walletManager;
     }
 
-    static async grantRoleCallBack({ walletId }: TWalletGrantRoleCallBackArgs, receipt: TransactionReceipt) {
-        const wallet = await Wallet.findById(walletId);
+    static async grantRoleCallBack(args: TWalletGrantRoleCallBackArgs, receipt: TransactionReceipt) {
+        const wallet = await Wallet.findById(args.walletId);
         const events = parseLogs(wallet.contract.options.jsonInterface, receipt.logs);
         assertEvent('RoleGranted', events);
         console.log('Role Granted');
+        return true;
+    }
+
+    static async remove(walletManager: WalletManagerDocument) {
+        const wallet = await Wallet.findById(walletManager.walletId);
+
+        await TransactionService.sendAsync(
+            wallet.contract.options.address,
+            wallet.contract.methods.revokeRole(this.MANAGER_ROLE, walletManager.address),
+            wallet.chainId,
+            true,
+            {
+                type: 'revokeRoleCallBack',
+                args: {
+                    walletManagerId: String(walletManager._id),
+                    walletId: String(wallet._id),
+                },
+            },
+        );
+
+        return walletManager;
+    }
+
+    static async revokeRoleCallBack(args: TWalletRevokeRoleCallBackArgs, receipt: TransactionReceipt) {
+        const wallet = await Wallet.findById(args.walletId);
+        const events = parseLogs(wallet.contract.options.jsonInterface, receipt.logs);
+        assertEvent('RoleRevoked', events);
+        await WalletManager.findByIdAndRemove(args.walletManagerId);
+        console.log('Role Revoked');
         return true;
     }
 

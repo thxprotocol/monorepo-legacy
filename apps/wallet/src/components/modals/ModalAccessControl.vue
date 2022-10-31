@@ -92,6 +92,7 @@ export default class BaseModalAccessControl extends Vue {
         this.busy = true;
         await this.$store.dispatch('walletManagers/create', { wallet: this.wallet, address: this.managerAddress });
         await this.$store.dispatch('walletManagers/list', this.wallet);
+        this.managerAddress = '';
         this.busy = false;
         return true;
     }

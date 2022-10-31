@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 
+export type WalletManagerDocument = mongoose.Document & TWalletManager;
 export interface TWalletManager {
     walletId: string;
     address: string;

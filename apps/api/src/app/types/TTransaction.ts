@@ -129,6 +129,16 @@ type WalletGrantRoleCallBack = {
     args: TWalletGrantRoleCallBackArgs;
 };
 
+export type TWalletRevokeRoleCallBackArgs = {
+    walletManagerId: string;
+    walletId: string;
+};
+
+type WalletRevokeRoleCallBack = {
+    type: 'revokeRoleCallBack';
+    args: TWalletRevokeRoleCallBackArgs;
+};
+
 export type TTransactionCallback =
     | ERC20DeployCallback
     | ERC721DeployCallback
@@ -140,4 +150,5 @@ export type TTransactionCallback =
     | PaymentCallback
     | WithdrawForCallback
     | WalletDeployCallback
-    | WalletGrantRoleCallBack;
+    | WalletGrantRoleCallBack
+    | WalletRevokeRoleCallBack;
