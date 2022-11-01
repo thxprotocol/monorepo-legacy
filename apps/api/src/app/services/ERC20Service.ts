@@ -11,8 +11,10 @@ import { ERC20Token } from '@thxnetwork/api/models/ERC20Token';
 import { getProvider } from '@thxnetwork/api/util/network';
 import MembershipService from './MembershipService';
 import { TransactionReceipt } from 'web3-core';
-import { TERC20DeployCallbackArgs } from '@thxnetwork/api/types/TTransaction';
+import { TERC20DeployCallbackArgs, TERC20TransferFromCallBackArgs } from '@thxnetwork/api/types/TTransaction';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
+import ERC20Transfer from '../models/ERC20Transfer';
+import AssetPoolService from './AssetPoolService';
 
 function getDeployArgs(erc20: ERC20Document, totalSupply?: string) {
     const { defaultAccount } = getProvider(erc20.chainId);
@@ -210,6 +212,32 @@ export const update = (erc20: ERC20Document, updates: IERC20Updates) => {
     return ERC20.findByIdAndUpdate(erc20._id, updates, { new: true });
 };
 
+export const transferFrom = async (
+    erc20: ERC20Document,
+    from: string,
+    to: string,
+    amount: string,
+    assetPool: AssetPoolDocument,
+) => {
+    const erc20Transfer = await ERC20Transfer.create({ erc20: erc20.address, from, to, poolId: assetPool._id });
+
+    const txId = await TransactionService.sendAsync(
+        assetPool.contract.options.address,
+        assetPool.contract.methods.transferFrom(from, to, amount),
+        assetPool.chainId,
+        true,
+        { type: 'transferFromCallBack', args: { erc20TransferId: String(erc20Transfer._id) } },
+    );
+    await ERC20Transfer.findByIdAndUpdate(erc20Transfer._id, { transactionId: txId });
+};
+export const transferFromCallBack = async (args: TERC20TransferFromCallBackArgs, receipt: TransactionReceipt) => {
+    const erc20Transfer = await ERC20Transfer.findById(args.erc20TransferId);
+    const assetPool = await AssetPoolService.getById(erc20Transfer.poolId);
+    const events = parseLogs(assetPool.contract.options.jsonInterface, receipt.logs);
+
+    assertEvent('ERC20ProxyTransferFrom', events);
+};
+
 export default {
     deploy,
     getAll,
@@ -226,4 +254,6 @@ export default {
     initialize,
     getOnChainERC20Token,
     queryDeployTransaction,
+    transferFrom,
+    transferFromCallBack,
 };
