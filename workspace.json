@@ -8,6 +8,7 @@
         "contracts": "libs/contracts",
         "dashboard": "apps/dashboard",
         "sdk": "libs/sdk",
-        "wallet": "apps/wallet"
+        "wallet": "apps/wallet",
+        "widget": "apps/widget"
     }
 }
