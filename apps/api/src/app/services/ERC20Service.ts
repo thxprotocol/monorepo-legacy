@@ -222,13 +222,13 @@ export const transferFrom = async (
     const erc20Transfer = await ERC20Transfer.create({ erc20: erc20.address, from, to, poolId: assetPool._id });
 
     const txId = await TransactionService.sendAsync(
-        assetPool.contract.options.address,
-        assetPool.contract.methods.transferFrom(from, to, amount),
+        erc20.address,
+        erc20.contract.methods.transferFrom(from, to, amount),
         assetPool.chainId,
         true,
         { type: 'transferFromCallBack', args: { erc20TransferId: String(erc20Transfer._id) } },
     );
-    await ERC20Transfer.findByIdAndUpdate(erc20Transfer._id, { transactionId: txId });
+    return await ERC20Transfer.findByIdAndUpdate(erc20Transfer._id, { transactionId: txId }, { new: true });
 };
 export const transferFromCallBack = async (args: TERC20TransferFromCallBackArgs, receipt: TransactionReceipt) => {
     const erc20Transfer = await ERC20Transfer.findById(args.erc20TransferId);
