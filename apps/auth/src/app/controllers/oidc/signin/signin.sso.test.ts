@@ -1,3 +1,4 @@
+import { GITHUB_API_ENDPOINT } from './../../../config/secrets';
 import nock from 'nock';
 import request from 'supertest';
 import { AccountVariant } from '../../../types/enums/AccountVariant';
@@ -149,6 +150,29 @@ describe('SSO Sign In', () => {
                 state: uid,
             });
             const res = await http.get('/oidc/callback/spotify?' + params.toString());
+
+            expect(res.status).toBe(302);
+            expect(res.headers['location']).toContain('/auth/');
+        });
+    });
+
+    describe('Github SSO', () => {
+        beforeAll(async () => {
+            nock('https://github.com/login/oauth/access_token').post(/.*?/).reply(200, 'access_token=thisnotgonnawork');
+
+            nock(GITHUB_API_ENDPOINT + '/user')
+                .get(/.*?/)
+                .reply(200, {
+                    login: 'GarfDev',
+                });
+        });
+
+        it('GET /oidc/callback/github', async () => {
+            const params = new URLSearchParams({
+                code: 'thisnotgonnawork',
+                state: uid,
+            });
+            const res = await http.get('/oidc/callback/github?' + params.toString());
 
             expect(res.status).toBe(302);
             expect(res.headers['location']).toContain('/auth/');
