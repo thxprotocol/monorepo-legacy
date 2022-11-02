@@ -96,7 +96,7 @@ const getArtifacts = (network: TNetworkName, version: string) => {
 
         const v = network === 'hardhat' ? 'latest' : version;
         // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const contract = require(`@thxnetwork/contracts/exports/${network}/${v}.json`);
+        const contract = require(`./${network}/${v}.json`);
         cache[network].contracts[version] = contract;
     }
 
