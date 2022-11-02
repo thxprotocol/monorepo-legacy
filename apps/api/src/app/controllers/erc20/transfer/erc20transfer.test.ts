@@ -3,7 +3,6 @@ import app from '@thxnetwork/api/';
 import { ChainId } from '@thxnetwork/api/types/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import {
-    adminAddress,
     dashboardAccessToken,
     MaxUint256,
     userWalletAddress2,
@@ -24,7 +23,7 @@ import { getProvider } from '@thxnetwork/api/util/network';
 const user = request.agent(app);
 
 describe('ERC20Transfer', () => {
-    let poolId: string, testToken: Contract, sender: string, userWallet: Account, poolAddress: string, admin: Account;
+    let testToken: Contract, userWallet: Account, admin: Account;
 
     beforeAll(async () => {
         await beforeAllCallback();
@@ -43,11 +42,6 @@ describe('ERC20Transfer', () => {
                 .send({
                     chainId: ChainId.Hardhat,
                     erc20tokens: [testToken.options.address],
-                })
-                .expect((res: request.Response) => {
-                    poolId = res.body._id;
-                    sender = res.body.sub;
-                    poolAddress = res.body.address;
                 })
                 .expect(201, done);
         });
@@ -82,16 +76,17 @@ describe('ERC20Transfer', () => {
             user.post('/v1/erc20/transfer')
                 .set({ Authorization: walletAccessToken })
                 .send({
-                    poolId,
                     erc20: testToken.options.address,
-                    receiver: userWalletAddress2,
+                    from: userWallet.address,
+                    to: userWalletAddress2,
                     amount: '50',
+                    chainId: ChainId.Hardhat,
                 })
                 .expect((res: request.Response) => {
                     expect(res.body.erc20).toEqual(testToken.options.address);
                     expect(res.body.from).toEqual(userWallet.address);
                     expect(res.body.to).toEqual(userWalletAddress2);
-                    expect(res.body.poolId).toEqual(poolId);
+                    expect(res.body.chainId).toEqual(ChainId.Hardhat);
                     expect(res.body.transactionId).toBeDefined();
                 })
                 .expect(201, done);

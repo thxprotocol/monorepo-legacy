@@ -8,7 +8,7 @@ const erc20TransferSchema = new mongoose.Schema(
         erc20: String,
         from: String,
         to: String,
-        poolId: String,
+        chainId: Number,
         transactionId: String,
     },
     { timestamps: true },
