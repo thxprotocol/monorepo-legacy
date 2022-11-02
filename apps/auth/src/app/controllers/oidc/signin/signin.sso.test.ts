@@ -5,8 +5,8 @@ import app from '../../../app';
 import { AccountService } from '../../../services/AccountService';
 import db from '../../../util/database';
 import { accountEmail, accountSecret } from '../../../util/jest';
+import { mockWalletProxy } from '../../../util/jest/mock';
 import { API_URL, INITIAL_ACCESS_TOKEN, SPOTIFY_API_ENDPOINT, TWITTER_API_ENDPOINT } from '../../../config/secrets';
-import { mockWalletProxy } from '@thxnetwork/auth/util/jest/mock';
 
 const http = request.agent(app);
 
