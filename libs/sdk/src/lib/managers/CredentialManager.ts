@@ -1,19 +1,11 @@
 import THXClient from '../client/Client';
 import { URL_CONFIG } from '../configs/index';
-import { TORUS_NETWORK } from '../constants/torusNetwork';
 import CacheManager from './CacheManager';
-import TorusManager from './TorusManager';
 
 import type { Credential } from '../types';
 export default class CredentialManager extends CacheManager<Credential> {
     constructor(client: THXClient, credential: Credential) {
         super(client, credential);
-
-        this.client.torusManager = new TorusManager(client, {
-            baseUrl: `${location.origin}/serviceworker`,
-            network: TORUS_NETWORK,
-            enableLogging: false,
-        });
     }
 
     public async authorizationCode() {
