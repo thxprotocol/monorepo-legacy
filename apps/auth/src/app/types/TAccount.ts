@@ -12,6 +12,7 @@ export interface TAccount {
     email: string;
     password: string;
     address: string;
+    walletAddress: string;
     variant: AccountVariant;
     privateKey: string;
     signupToken: string;

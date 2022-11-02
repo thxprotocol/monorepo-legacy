@@ -45,7 +45,13 @@ router.get('/:uid/confirm', assertInteraction, ReadConfirm.controller);
 router.get('/:uid/confirm/email', assertInteraction, ReadConfirmEmail.controller);
 router.get('/:uid/reset', assertInteraction, ReadReset.controller);
 router.get('/:uid/claim', assertInteraction, ReadClaim.controller);
-router.post('/:uid/signin', urlencoded({ extended: false }), assertInteraction, CreateSignin.controller);
+router.post(
+    '/:uid/signin',
+    urlencoded({ extended: false }),
+    assertInteraction,
+    assertInput(CreateSignin.validation),
+    CreateSignin.controller,
+);
 router.post('/:uid/signup', urlencoded({ extended: false }), assertInteraction, CreateSignup.controller);
 router.post('/:uid/password', urlencoded({ extended: false }), assertInteraction, CreatePassword.controller);
 router.get('/:uid/abort', assertInteraction, ReadAbort.controller);

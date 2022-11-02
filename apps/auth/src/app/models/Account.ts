@@ -19,6 +19,7 @@ const accountSchema = new mongoose.Schema(
         password: String,
         // address.sparse allows the value to be null and unique if defined
         address: { type: String, unique: true, sparse: true },
+        walletAddress: { type: String, unique: true, sparse: true },
         variant: Number,
         privateKey: String,
         signupToken: String,
@@ -54,7 +55,7 @@ const accountSchema = new mongoose.Schema(
  * Password hash middleware.
  */
 accountSchema.pre('save', function save(next) {
-    const account = (this as any) as AccountDocument;
+    const account = this as any as AccountDocument;
 
     if (!account.isModified('password')) {
         return next();

@@ -1697,6 +1697,24 @@
           "outputs": [],
           "stateMutability": "nonpayable",
           "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "name": "setupRole",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
         }
       ]
     },
@@ -2309,8 +2327,105 @@
         }
       ]
     },
-    "DiamondCutFacet": {
+    "SharedWalletFacet": {
       "address": "0x8B219D3d1FC64e03F6cF3491E7C7A732bF253EC8",
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_tokenAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "_address",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "approveERC20",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_tokenAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "_address",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_tokenId",
+              "type": "uint256"
+            }
+          ],
+          "name": "approveERC721",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_tokenAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "_to",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "transferERC20",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_tokenAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "_to",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_tokenId",
+              "type": "uint256"
+            }
+          ],
+          "name": "transferERC721",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ]
+    },
+    "DiamondCutFacet": {
+      "address": "0xeDdBA2bDeE7c9006944aCF9379Daa64478E02290",
       "abi": [
         {
           "anonymous": false,
@@ -2397,7 +2512,7 @@
       ]
     },
     "DiamondLoupeFacet": {
-      "address": "0xeDdBA2bDeE7c9006944aCF9379Daa64478E02290",
+      "address": "0x3eF13AcF26776BfEd682732ae34cBC86bb355862",
       "abi": [
         {
           "inputs": [
@@ -2497,7 +2612,7 @@
       ]
     },
     "OwnershipFacet": {
-      "address": "0x3eF13AcF26776BfEd682732ae34cBC86bb355862",
+      "address": "0xB1456cF726D8D2A2b10dD4db417674A49dB94998",
       "abi": [
         {
           "anonymous": false,
@@ -2547,7 +2662,7 @@
       ]
     },
     "LimitedSupplyToken": {
-      "address": "0xB1456cF726D8D2A2b10dD4db417674A49dB94998",
+      "address": "0xc368fA6A4057BcFD9E49221d8354d5fA6B88945a",
       "abi": [
         {
           "inputs": [
@@ -2848,7 +2963,7 @@
       ]
     },
     "UnlimitedSupplyToken": {
-      "address": "0xc368fA6A4057BcFD9E49221d8354d5fA6B88945a",
+      "address": "0x439F0128d07f005e0703602f366599ACaaBfEA18",
       "abi": [
         {
           "inputs": [
@@ -3437,7 +3552,7 @@
       ]
     },
     "NonFungibleToken": {
-      "address": "0x439F0128d07f005e0703602f366599ACaaBfEA18",
+      "address": "0x24E91C3a2822bDc4bc73512872ab07fD93c8101b",
       "abi": [
         {
           "inputs": [

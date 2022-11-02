@@ -42,7 +42,7 @@
             "client_secret_expires_at": 0,
             "client_secret": "sefR_erB65hgzp18RCj4OB6ZBCAO-jUba-4M-A8zkaQftBZD2boy-ZSSbGRBHtqXUssSI6TJZVN3W8QIyS34yw",
             "redirect_uris": ["https://localhost:8083/signin-oidc", "https://localhost:8083/silent-renew.html"],
-            "scope": "openid offline_access rewards:read erc20:read erc721:read withdrawals:read withdrawals:write deposits:read deposits:write account:read account:write memberships:read memberships:write promotions:read transactions:read relay:write swap:read swap:write swaprule:read swaprule:write claims:read"
+            "scope": "openid offline_access rewards:read erc20:read erc721:read withdrawals:read withdrawals:write deposits:read deposits:write account:read account:write memberships:read memberships:write promotions:read transactions:read relay:write swap:read swap:write swaprule:read swaprule:write claims:read wallets:read"
         }
     },
     {
@@ -111,7 +111,7 @@
             "client_secret_expires_at": 0,
             "client_secret": "o7RMGeLieULzp0bAiuq6nfukFBCLKxo8N867SzeZNrinshSb15W9NggU93CdtrE_0jTWLUl3U2YkcXYtD3hdcQ",
             "redirect_uris": [],
-            "scope": "openid brands:read claims:write claims:read"
+            "scope": "openid brands:read claims:write claims:read wallets:write wallets:read"
         }
     }
 ]

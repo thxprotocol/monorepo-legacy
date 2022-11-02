@@ -24,7 +24,7 @@ if (LOCAL_CERT && LOCAL_CERT_KEY) {
         .createServer({
             target: {
                 host: 'localhost',
-                port: 8546,
+                port: 8545,
             },
             ssl,
         })
