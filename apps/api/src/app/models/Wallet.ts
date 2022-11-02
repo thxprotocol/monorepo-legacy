@@ -12,11 +12,14 @@ export interface TWallet {
     contract: Contract;
 }
 
-const walletSchema = new mongoose.Schema({
-    address: String,
-    sub: String,
-    chainId: Number,
-});
+const walletSchema = new mongoose.Schema(
+    {
+        address: String,
+        sub: String,
+        chainId: Number,
+    },
+    { timestamps: true },
+);
 
 walletSchema.virtual('contract').get(function () {
     if (!this.address) return;

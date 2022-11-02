@@ -5,9 +5,8 @@ import { ERROR_ACCOUNT_NOT_ACTIVE, ERROR_AUTH_LINK, ERROR_OTP_CODE_INVALID } fro
 import { oidc } from '../../../util/oidc';
 import { authenticator } from '@otplib/preset-default';
 import { recoverTypedSignature, SignTypedDataVersion } from '@metamask/eth-sig-util';
-import WalletProxy from '../../../proxies/WalletProxy';
-import { ChainId } from '../../../types/enums/chainId';
 import { body } from 'express-validator';
+import { createWallet } from '@thxnetwork/auth/util/wallet';
 
 const validation = [body('chainId').optional().isNumeric()];
 
@@ -88,16 +87,7 @@ async function controller(req: Request, res: Response) {
     const accountId = String(account._id);
 
     //Check if a SharedWallet must be created for a specific chainId
-    const chainIds = req.body.chainId ? [req.body.chainId] : [ChainId.PolygonMumbai, ChainId.Polygon]; // DEFAULT CHAIN IDs
-    const promises = [];
-    for (let i = 0; i < chainIds.length; i++) {
-        const chainId = chainIds[i];
-        const walletsCount = (await WalletProxy.get(chainId)).length;
-        if (!walletsCount) {
-            promises.push(WalletProxy.create(accountId, chainId, false));
-        }
-    }
-    await Promise.all(promises);
+    createWallet(accountId);
 
     // Make to finish the interaction and login with sub
     return await oidc.interactionFinished(

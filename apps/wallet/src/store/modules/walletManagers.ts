@@ -42,9 +42,10 @@ class WalletManagerModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async getWallet(chainId: ChainId) {
+    async getWallet(payload: { sub: string; chainId: ChainId }) {
         const params = new URLSearchParams();
-        params.append('chainId', String(chainId));
+        params.append('chainId', String(payload.chainId));
+        params.append('sub', String(payload.sub));
 
         const result = await axios({
             method: 'GET',

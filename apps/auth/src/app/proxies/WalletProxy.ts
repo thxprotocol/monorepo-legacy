@@ -2,9 +2,10 @@ import { apiClient, getAuthAccessToken } from '../util/api';
 import { ChainId } from '../types/enums/chainId';
 
 export default {
-    get: async (chainId: ChainId) => {
+    get: async (sub: string, chainId: ChainId) => {
         const params = new URLSearchParams();
         params.set('chainId', String(chainId));
+        params.set('sub', String(sub));
 
         const r = await apiClient({
             method: 'GET',

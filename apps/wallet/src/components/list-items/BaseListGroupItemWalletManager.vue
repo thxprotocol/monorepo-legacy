@@ -5,7 +5,7 @@
                 <strong>{{ walletManager.address }}</strong>
             </div>
             <div class="float-right">
-                <b-button hover-class="text-danger" class="ml-1" variant="link" @click="$emit('delete', walletManager)">
+                <b-button class="text-danger ml-1" variant="link" @click="$emit('delete', walletManager)">
                     <i class="fas fa-trash m-0"></i>
                 </b-button>
             </div>
