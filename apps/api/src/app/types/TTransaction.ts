@@ -140,7 +140,7 @@ type WalletRevokeRoleCallBack = {
 };
 
 export type TERC20TransferFromCallBackArgs = {
-    erc20TransferId: string;
+    erc20Id: string;
 };
 
 type ERC20TransferFromCallBack = {

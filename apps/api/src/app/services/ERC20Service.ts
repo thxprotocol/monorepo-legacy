@@ -217,23 +217,22 @@ export const transferFrom = async (
     from: string,
     to: string,
     amount: string,
-    assetPool: AssetPoolDocument,
+    chainId: ChainId,
 ) => {
-    const erc20Transfer = await ERC20Transfer.create({ erc20: erc20.address, from, to, poolId: assetPool._id });
+    const erc20Transfer = await ERC20Transfer.create({ erc20: erc20.address, from, to, chainId });
 
     const txId = await TransactionService.sendAsync(
         erc20.address,
         erc20.contract.methods.transferFrom(from, to, amount),
-        assetPool.chainId,
+        chainId,
         true,
-        { type: 'transferFromCallBack', args: { erc20TransferId: String(erc20Transfer._id) } },
+        { type: 'transferFromCallBack', args: { erc20Id: String(erc20._id) } },
     );
     return await ERC20Transfer.findByIdAndUpdate(erc20Transfer._id, { transactionId: txId }, { new: true });
 };
 export const transferFromCallBack = async (args: TERC20TransferFromCallBackArgs, receipt: TransactionReceipt) => {
-    const erc20Transfer = await ERC20Transfer.findById(args.erc20TransferId);
-    const assetPool = await AssetPoolService.getById(erc20Transfer.poolId);
-    const events = parseLogs(assetPool.contract.options.jsonInterface, receipt.logs);
+    const erc20 = await ERC20.findById(args.erc20Id);
+    const events = parseLogs(erc20.contract.options.jsonInterface, receipt.logs);
 
     assertEvent('ERC20ProxyTransferFrom', events);
 };
