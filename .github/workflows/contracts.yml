@@ -28,7 +28,7 @@ jobs:
         name: 'Bump Version on main'
         runs-on: ubuntu-latest
         if: github.ref == 'refs/heads/main'
-        needs: buildAndTest
+        needs: test
         outputs:
             newTag: ${{ steps.version-bump.outputs.newTag }}
 
