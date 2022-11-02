@@ -5,6 +5,7 @@ import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/c
 import {
     dashboardAccessToken,
     MaxUint256,
+    sub2,
     userWalletAddress2,
     userWalletPrivateKey2,
     walletAccessToken,
@@ -23,7 +24,7 @@ import { getProvider } from '@thxnetwork/api/util/network';
 const user = request.agent(app);
 
 describe('ERC20Transfer', () => {
-    let testToken: Contract, userWallet: Account, admin: Account;
+    let testToken: Contract, userWallet: Account, admin: Account, erc20TransferId: string;
 
     beforeAll(async () => {
         await beforeAllCallback();
@@ -88,8 +89,40 @@ describe('ERC20Transfer', () => {
                     expect(res.body.to).toEqual(userWalletAddress2);
                     expect(res.body.chainId).toEqual(ChainId.Hardhat);
                     expect(res.body.transactionId).toBeDefined();
+                    expect(res.body.sub).toBeDefined();
+                    expect(res.body.sub).toEqual(sub2);
+                    erc20TransferId = res.body._id;
                 })
                 .expect(201, done);
+        });
+
+        it('HTTP 200', (done) => {
+            user.get(`/v1/erc20/transfer/${erc20TransferId}`)
+                .set({ Authorization: walletAccessToken })
+                .expect((res: request.Response) => {
+                    expect(res.body.erc20).toEqual(testToken.options.address);
+                    expect(res.body.from).toEqual(userWallet.address);
+                    expect(res.body.to).toEqual(userWalletAddress2);
+                    expect(res.body.chainId).toEqual(ChainId.Hardhat);
+                    expect(res.body.transactionId).toBeDefined();
+                    expect(res.body.sub).toEqual(sub2);
+                })
+                .expect(200, done);
+        });
+
+        it('HTTP 200', (done) => {
+            user.get(`/v1/erc20/transfer?erc20=${testToken.options.address}&chainId=${ChainId.Hardhat}`)
+                .set({ Authorization: walletAccessToken })
+                .expect((res: request.Response) => {
+                    expect(res.body.length).toEqual(1);
+                    expect(res.body[0].erc20).toEqual(testToken.options.address);
+                    expect(res.body[0].from).toEqual(userWallet.address);
+                    expect(res.body[0].to).toEqual(userWalletAddress2);
+                    expect(res.body[0].chainId).toEqual(ChainId.Hardhat);
+                    expect(res.body[0].transactionId).toBeDefined();
+                    expect(res.body[0].sub).toEqual(sub2);
+                })
+                .expect(200, done);
         });
     });
 });

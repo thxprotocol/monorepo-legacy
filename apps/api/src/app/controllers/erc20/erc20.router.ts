@@ -9,13 +9,22 @@ import ImportERC20 from './token/post.controller';
 import DeleteERC20 from './delete.controller';
 import UpdateERC20 from './patch.controller';
 import PreviewERC20 from './import_preview/post.controller';
-import TransferERC20 from './transfer/post.controller';
+import CreateTransferERC20 from './transfer/post.controller';
+import ReadTransferERC20 from './transfer/get.controller';
+import ListTransferERC20 from './transfer/list.controller';
 import { upload } from '@thxnetwork/api/util/multer';
 
 const router = express.Router();
 
 router.get('/token', guard.check(['erc20:read']), ListERC20Token.controller);
 router.get('/token/:id', guard.check(['erc20:read']), ReadERC20Token.controller);
+router.get(
+    '/transfer',
+    guard.check(['erc20:read']),
+    ListTransferERC20.controller,
+    assertRequestInput(ListTransferERC20.validation),
+);
+router.get('/transfer/:id', guard.check(['erc20:read']), ReadTransferERC20.controller);
 router.get('/', guard.check(['erc20:read']), assertRequestInput(ListERC20.validation), ListERC20.controller);
 router.get('/:id', guard.check(['erc20:read']), assertRequestInput(ReadERC20.validation), ReadERC20.controller);
 router.post(
@@ -32,7 +41,7 @@ router.post(
     ImportERC20.controller,
 );
 router.post('/preview', assertRequestInput(PreviewERC20.validation), PreviewERC20.controller);
-router.post('/transfer', assertRequestInput(TransferERC20.validation), TransferERC20.controller);
+router.post('/transfer', assertRequestInput(CreateTransferERC20.validation), CreateTransferERC20.controller);
 router.patch(
     '/:id',
     guard.check(['erc20:write', 'erc20:read']),

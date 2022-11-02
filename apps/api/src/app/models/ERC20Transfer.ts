@@ -10,6 +10,7 @@ const erc20TransferSchema = new mongoose.Schema(
         to: String,
         chainId: Number,
         transactionId: String,
+        sub: String,
     },
     { timestamps: true },
 );

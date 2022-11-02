@@ -10,17 +10,16 @@ import ERC20 from '@thxnetwork/api/models/ERC20';
 
 export const validation = [
     body('erc20').exists().isString(),
-    body('chainId').exists().isNumeric(),
     body('from').exists().isString(),
     body('to').exists().isString(),
     body('amount').exists().isString(),
+    body('chainId').exists().isNumeric(),
 ];
 
 export const controller = async (req: Request, res: Response) => {
     /*
     #swagger.tags = ['ERC20Transaction']
     */
-
     const erc20 = await ERC20.findOne({ address: req.body.erc20 });
     if (!erc20) {
         throw new NotFoundError('Could not find the ERC20');
@@ -41,7 +40,14 @@ export const controller = async (req: Request, res: Response) => {
 
     if (BigNumber.from(allowance).lt(BigNumber.from(amount))) throw new AmountExceedsAllowanceError();
 
-    const erc20Transfer = await ERC20Service.transferFrom(erc20, sender, req.body.to, amount, req.body.chainId);
+    const erc20Transfer = await ERC20Service.transferFrom(
+        erc20,
+        sender,
+        req.body.to,
+        amount,
+        req.body.chainId,
+        req.auth.sub,
+    );
 
     res.status(201).json(erc20Transfer);
 };
