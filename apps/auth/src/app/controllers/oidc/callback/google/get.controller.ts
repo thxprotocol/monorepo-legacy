@@ -8,6 +8,7 @@ import { YouTubeService } from '../../../../services/YouTubeService';
 import { WALLET_URL } from '../../../../config/secrets';
 import { getChannelScopes } from '../../../../util/social';
 import { AccountVariant } from '../../../../types/enums/AccountVariant';
+import { createWallet } from '@thxnetwork/auth/util/wallet';
 
 async function updateTokens(account: AccountDocument, tokens: any) {
     account.googleAccessToken = tokens.access_token || account.googleAccessToken;
@@ -67,6 +68,9 @@ export async function controller(req: Request, res: Response) {
               await AccountService.get(interaction.session.accountId)
             : // If not, get account for email claim
               await getAccountByEmail(claims.email, AccountVariant.SSOGoogle);
+
+    //Check if a SharedWallet must be created for a specific chainId
+    createWallet(String(account._id));
 
     // Actions after successfully login
     await AccountService.update(account, {

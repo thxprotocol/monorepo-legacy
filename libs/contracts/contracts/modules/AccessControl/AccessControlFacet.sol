@@ -8,8 +8,9 @@ import '@openzeppelin/contracts/utils/Address.sol';
 import './interfaces/IAccessControlFacet.sol';
 import './lib/LibAccessStorage.sol';
 import '../../interfaces/IAccessControlEvents.sol';
+import '../../utils/Access.sol';
 
-contract AccessControlFacet is IAccessControlFacet, IAccessControlEvents {
+contract AccessControlFacet is IAccessControlFacet, IAccessControlEvents, Access {
     using EnumerableSet for EnumerableSet.AddressSet;
     using Address for address;
 
@@ -49,6 +50,16 @@ contract AccessControlFacet is IAccessControlFacet, IAccessControlEvents {
      */
     function getRoleAdmin(bytes32 role) external view override returns (bytes32) {
         return LibAccessStorage.roleStorage().roles[role].adminRole;
+    }
+
+    /**
+     * @dev Called in initialize methods.
+     * @param role Bytes32 array representing the role.
+     * @param account Address of the account
+     */
+    function setupRole(bytes32 role, address account) external override onlyOwner {
+        _grantRole(0x00, account);
+        _grantRole(role, account);
     }
 
     /**

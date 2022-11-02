@@ -28,7 +28,7 @@ describe('Account Controller', () => {
                 })
                 .send({
                     grant_type: 'client_credentials',
-                    scope: 'openid account:read account:write',
+                    scope: 'openid account:read account:write wallet:read wallet:write',
                 });
             return `Bearer ${res.body.access_token}`;
         }

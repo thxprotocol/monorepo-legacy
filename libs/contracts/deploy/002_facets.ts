@@ -12,6 +12,7 @@ const facets: ContractName[] = [
     'ERC20WithdrawFacet',
     'ERC20SwapFacet',
     'ERC721ProxyFacet',
+    'SharedWalletFacet',
     'DiamondCutFacet',
     'DiamondLoupeFacet',
     'OwnershipFacet',

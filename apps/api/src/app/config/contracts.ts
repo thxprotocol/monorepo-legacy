@@ -34,7 +34,7 @@ export const getAbiForContractName = (contractName: ContractName | TokenContract
     return require(`../../../../../libs/contracts/exports/abis/${contractName}.json`);
 };
 
-export const getByteCodeForContractName = (contractName: TokenContractName): string => {
+export const getByteCodeForContractName = (contractName: ContractName | TokenContractName): string => {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return require(`../../../../../libs/contracts/exports/bytecodes/${contractName}.json`).bytecode;
 };
