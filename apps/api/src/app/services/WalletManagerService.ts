@@ -9,8 +9,8 @@ import { TWalletGrantRoleCallBackArgs, TWalletRevokeRoleCallBackArgs } from '../
 export default class WalletManagerService {
     public static MANAGER_ROLE = keccak256(toUtf8Bytes('MANAGER_ROLE'));
 
-    static async setupManagerRoleAdmin(wallet: WalletDocument, adminAddress: string) {
-        const tx = await TransactionService.sendAsync(
+    static setupManagerRoleAdmin(wallet: WalletDocument, adminAddress: string) {
+        TransactionService.sendAsync(
             wallet.contract.options.address,
             wallet.contract.methods.setupRole(this.MANAGER_ROLE, adminAddress),
             wallet.chainId,
@@ -22,7 +22,6 @@ export default class WalletManagerService {
                 },
             },
         );
-        return true;
     }
 
     static async create(wallet: WalletDocument, managerAddress: string) {
@@ -48,8 +47,6 @@ export default class WalletManagerService {
         const wallet = await Wallet.findById(args.walletId);
         const events = parseLogs(wallet.contract.options.jsonInterface, receipt.logs);
         assertEvent('RoleGranted', events);
-        console.log('Role Granted');
-        return true;
     }
 
     static async remove(walletManager: WalletManagerDocument) {
@@ -77,8 +74,6 @@ export default class WalletManagerService {
         const events = parseLogs(wallet.contract.options.jsonInterface, receipt.logs);
         assertEvent('RoleRevoked', events);
         await WalletManager.findByIdAndRemove(args.walletManagerId);
-        console.log('Role Revoked');
-        return true;
     }
 
     static async findByWalletId(walletId: string) {

@@ -1,21 +1,24 @@
 <template>
-    <b-modal v-if="profile" :id="'modalAccessControl'" centered scrollable title="Access Control" @show="onShow">
+    <b-modal
+        v-if="profile"
+        :id="'modalAccessControl'"
+        centered
+        hide-footer
+        scrollable
+        title="Access Control"
+        @show="onShow"
+    >
         <div class="w-100 text-center" v-if="busy">
             <b-spinner variant="dark" />
         </div>
         <template v-else>
-            <b-list-group class="w-auto align-self-start" v-if="managers.length">
-                <base-list-group-item-wallet-manager
-                    :walletManager="w"
-                    :key="key"
-                    v-for="(w, key) of managers"
-                    @delete="remove"
-                />
-            </b-list-group>
-
             <b-form-group v-if="managers.length < MAX_MANAGERS_PER_WALLET">
-                <b-form-group label="Add a new Wallet Manager" label-class="text-muted">Address</b-form-group>
-                <b-form-input autofocus size="lg" v-model="managerAddress" placeholder="0x00..." />
+                <b-form-group v-if="wallet" label="Wallet Address" label-class="text-muted">
+                    <b-form-input disabled :value="wallet.address" />
+                </b-form-group>
+                <b-form-group label="Wallet Manager Address" label-class="text-muted">
+                    <b-form-input autofocus v-model="managerAddress" placeholder="0x00..." />
+                </b-form-group>
 
                 <b-button
                     :disabled="!canAddNewManagers"
@@ -27,6 +30,14 @@
                     >Add</b-button
                 >
             </b-form-group>
+            <b-list-group class="w-auto align-self-start" v-if="managers.length">
+                <base-list-group-item-wallet-manager
+                    :walletManager="w"
+                    :key="key"
+                    v-for="(w, key) of managers"
+                    @delete="remove"
+                />
+            </b-list-group>
         </template>
     </b-modal>
 </template>
@@ -34,6 +45,7 @@
 <script lang="ts">
 import { UserProfile } from '@thxnetwork/wallet/store/modules/account';
 import { IWalletManagers, TWalletManager } from '@thxnetwork/wallet/types/WalletManagers';
+import { User } from 'oidc-client-ts';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { ChainId } from '../../types/enums/ChainId';
@@ -47,6 +59,7 @@ import BaseListGroupItemWalletManager from '../list-items/BaseListGroupItemWalle
     computed: {
         ...mapGetters({
             chainId: 'network/chainId',
+            user: 'account/user',
             profile: 'account/profile',
             wallet: 'walletManagers/wallet',
             walletManagers: 'walletManagers/all',
@@ -55,6 +68,7 @@ import BaseListGroupItemWalletManager from '../list-items/BaseListGroupItemWalle
 })
 export default class BaseModalAccessControl extends Vue {
     // getters
+    user!: User;
     profile!: UserProfile;
     chainId!: ChainId;
     wallet!: TWallet;
@@ -78,7 +92,7 @@ export default class BaseModalAccessControl extends Vue {
 
     async onShow() {
         this.busy = true;
-        await this.$store.dispatch('walletManagers/getWallet', this.chainId);
+        await this.$store.dispatch('walletManagers/getWallet', { sub: this.user.profile.sub, chainId: this.chainId });
         if (this.wallet) {
             await this.$store.dispatch('walletManagers/list', this.wallet);
         }

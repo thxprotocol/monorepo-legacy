@@ -6,7 +6,7 @@ export default {
         const params = new URLSearchParams();
         params.set('chainId', String(chainId));
         params.set('sub', String(sub));
-        console.log(sub, chainId);
+
         const r = await apiClient({
             method: 'GET',
             url: '/v1/wallets',
