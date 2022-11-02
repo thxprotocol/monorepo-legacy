@@ -6,7 +6,7 @@ export async function createWallet(sub: string, chainIds: ChainId[] = []) {
     if (NODE_ENV !== 'production') {
         chainIds.push(ChainId.Hardhat);
     } else {
-        chainIds = chainIds.concat([ChainId.Hardhat, ChainId.PolygonMumbai, ChainId.Polygon]);
+        chainIds = chainIds.concat([ChainId.PolygonMumbai, ChainId.Polygon]);
     }
     await Promise.all(
         chainIds.filter(async (chainId: ChainId) => {
