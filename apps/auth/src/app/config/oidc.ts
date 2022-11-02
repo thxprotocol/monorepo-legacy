@@ -109,6 +109,8 @@ const config: Configuration = {
         'claims:read',
         'clients:write',
         'clients:read',
+        'wallets:read',
+        'wallets:write',
     ],
     claims: {
         openid: ['sub', 'email', 'variant', 'address'],

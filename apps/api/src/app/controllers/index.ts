@@ -23,6 +23,7 @@ import clientRouter from './client/client.router';
 import erc20SwapRouter from './swaps/swaps.router';
 import claimsRouter from './claims/claims.router';
 import brandsRouter from './brands/brands.router';
+import walletsRouter from './wallets/wallets.router';
 import { checkJwt, corsHandler } from '@thxnetwork/api/middlewares';
 
 const router = express.Router();
@@ -56,5 +57,6 @@ router.use('/brands', brandsRouter);
 router.use('/clients', clientRouter);
 router.use('/transactions', transactionsRouter);
 router.use('/claims', claimsRouter);
+router.use('/wallets', walletsRouter);
 
 export default router;

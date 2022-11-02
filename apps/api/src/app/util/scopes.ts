@@ -6,6 +6,8 @@ export const adminScopes = [
     'members:write',
     'withdrawals:write',
     'rewards:read',
+    'wallets:read',
+    'wallets:write',
 ];
 export const dashboardScopes = [
     'asset_pools:read',

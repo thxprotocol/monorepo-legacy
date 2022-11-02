@@ -3,7 +3,7 @@
   "chainId": "80001",
   "contracts": {
     "AccessControlFacet": {
-      "address": "0xf3b2A7d67575642406E2d80849f4949FeB84Aba8",
+      "address": "0x3eE4C3368869f4f572305Fe424E4a47972F48815",
       "abi": [
         {
           "anonymous": false,
@@ -216,6 +216,24 @@
             }
           ],
           "name": "revokeRole",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "name": "setupRole",
           "outputs": [],
           "stateMutability": "nonpayable",
           "type": "function"
@@ -484,7 +502,7 @@
       ]
     },
     "ERC20DepositFacet": {
-      "address": "0x72c7f29A25B36F4003af610726D324aBa7a970Ae",
+      "address": "0x82e10Ceba92584be4c0cDfDf12E89a3D0373325c",
       "abi": [
         {
           "anonymous": false,
@@ -557,7 +575,7 @@
       ]
     },
     "ERC20ProxyFacet": {
-      "address": "0x000bba378E59f2D8B82439b097D9Eb8e5C0a68a7",
+      "address": "0xdf65115cA1125dF69C5224321e3E66CA471eDeEB",
       "abi": [
         {
           "anonymous": false,
@@ -749,7 +767,7 @@
       ]
     },
     "ERC20SwapFacet": {
-      "address": "0x5505b4D62B2c94Caf56CAd4E21C113e9cdba0A04",
+      "address": "0x636e972fb9f1F022e571f7D7CD7255C53A7Bf401",
       "abi": [
         {
           "anonymous": false,
@@ -883,7 +901,7 @@
       ]
     },
     "ERC20WithdrawFacet": {
-      "address": "0xAcE41afdd51B08b30Ab5Bc0EC0EF0e85D3245F88",
+      "address": "0x5c5446eA43Ee0c8Aef9261fA96A6E15C4421D80D",
       "abi": [
         {
           "anonymous": false,
@@ -956,7 +974,7 @@
       ]
     },
     "ERC721ProxyFacet": {
-      "address": "0x80058971592261e574944b83F232305fB5027007",
+      "address": "0x247E6Bc7ff995E22E71c9e754d68b24f86D3f6F0",
       "abi": [
         {
           "anonymous": false,
@@ -1395,7 +1413,7 @@
       ]
     },
     "FactoryFacet": {
-      "address": "0x75EBbCcC865254CA10BE518d47b454d4a1Ad0154",
+      "address": "0xcd589718e1Fc267447207c6ACAd4D2D2a3eb2610",
       "abi": [
         {
           "anonymous": false,
@@ -3195,7 +3213,7 @@
       ]
     },
     "RegistryFacet": {
-      "address": "0x750f51a8be12400088cC1b61Dd76703F7881B041",
+      "address": "0x049A9AA0fD00Fba21A039fA0B0f7A710F91839A1",
       "abi": [
         {
           "inputs": [],
@@ -3270,7 +3288,7 @@
       ]
     },
     "RegistryProxyFacet": {
-      "address": "0xcC1A01Fa7505A5Ad8673074C40dBFE48d70dFc48",
+      "address": "0x9ffd286F8830944F87ac6afc5FB302D35CD5ba55",
       "abi": [
         {
           "anonymous": false,
@@ -3588,6 +3606,103 @@
             }
           ],
           "name": "transferOwnership",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ]
+    },
+    "SharedWalletFacet": {
+      "address": "0x979035BaA46277C64568e56AE2Ca6B6FdfC35D28",
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_tokenAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "_address",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "approveERC20",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_tokenAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "_address",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_tokenId",
+              "type": "uint256"
+            }
+          ],
+          "name": "approveERC721",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_tokenAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "_to",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "transferERC20",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_tokenAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "_to",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_tokenId",
+              "type": "uint256"
+            }
+          ],
+          "name": "transferERC721",
           "outputs": [],
           "stateMutability": "nonpayable",
           "type": "function"

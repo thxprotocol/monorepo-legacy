@@ -64,12 +64,12 @@ export const exceedingFeeData = {
 };
 
 export const adminScopes =
-    'openid account:read account:write members:read members:write withdrawals:read withdrawals:write payments:write payments:read rewards:read';
+    'openid account:read account:write members:read members:write withdrawals:read withdrawals:write payments:write payments:read rewards:read wallets:read wallets:write';
 export const adminAccessToken = getToken(adminScopes);
 export const dashboardScopes =
     'openid pools:read pools:write erc20:write erc20:read erc721:write erc721:read rewards:read rewards:write deposits:read deposits:write promotions:read promotions:write widgets:write widgets:read transactions:read swaprule:read swaprule:write claims:read';
 export const dashboardAccessToken = getToken(dashboardScopes);
 export const walletScopes =
-    'openid rewards:read erc20:read erc721:read withdrawals:read withdrawals:write deposits:read deposits:write account:read account:write memberships:read memberships:write promotions:read payments:write payments:read relay:write transactions:read transactions:write swap:read swap:write swaprule:read claims:read';
+    'openid rewards:read erc20:read erc721:read withdrawals:read withdrawals:write deposits:read deposits:write account:read account:write memberships:read memberships:write promotions:read payments:write payments:read relay:write transactions:read transactions:write swap:read swap:write swaprule:read claims:read wallets:read wallets:write';
 export const walletAccessToken = getToken(walletScopes);
 export const walletAccessToken2 = getToken(walletScopes, sub);

@@ -5,6 +5,10 @@ import { ERROR_ACCOUNT_NOT_ACTIVE, ERROR_AUTH_LINK, ERROR_OTP_CODE_INVALID } fro
 import { oidc } from '../../../util/oidc';
 import { authenticator } from '@otplib/preset-default';
 import { recoverTypedSignature, SignTypedDataVersion } from '@metamask/eth-sig-util';
+import { body } from 'express-validator';
+import { createWallet } from '@thxnetwork/auth/util/wallet';
+
+const validation = [body('chainId').optional().isNumeric()];
 
 async function controller(req: Request, res: Response) {
     function renderLogin(errorMessage: string) {
@@ -80,13 +84,18 @@ async function controller(req: Request, res: Response) {
         lastLoginAt: Date.now(),
     });
 
+    const accountId = String(account._id);
+
+    //Check if a SharedWallet must be created for a specific chainId
+    createWallet(accountId);
+
     // Make to finish the interaction and login with sub
     return await oidc.interactionFinished(
         req,
         res,
-        { login: { accountId: String(account._id) } },
+        { login: { accountId: accountId } },
         { mergeWithLastSubmission: false },
     );
 }
 
-export default { controller };
+export default { controller, validation };

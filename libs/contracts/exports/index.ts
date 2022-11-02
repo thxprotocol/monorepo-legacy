@@ -8,6 +8,7 @@ export type TNetworkName = typeof networkNames[number];
 
 export const contractNames = [
     // Default
+    'Diamond',
     'DiamondCutFacet',
     'DiamondLoupeFacet',
     'OwnershipFacet',
@@ -26,6 +27,7 @@ export const contractNames = [
     'ERC20WithdrawFacet',
     'ERC20SwapFacet',
     'ERC721ProxyFacet',
+    'SharedWalletFacet',
 
     // Deprecated facets
     'TokenFactory',
@@ -61,7 +63,7 @@ export interface ExportJsonFile {
     contracts: { [key: string]: ContractConfig };
 }
 
-export type DiamondVariant = 'defaultDiamond' | 'registry' | 'factory';
+export type DiamondVariant = 'defaultDiamond' | 'registry' | 'factory' | 'sharedWallet';
 const diamondVariantsConfig: { [key in DiamondVariant]: ContractName[] } = {
     defaultDiamond: [
         'RegistryProxyFacet',
@@ -71,6 +73,7 @@ const diamondVariantsConfig: { [key in DiamondVariant]: ContractName[] } = {
         'ERC20SwapFacet',
         'ERC721ProxyFacet',
     ],
+    sharedWallet: ['AccessControlFacet', 'SharedWalletFacet'],
     registry: ['RegistryFacet'],
     factory: ['FactoryFacet'],
 };
@@ -92,9 +95,9 @@ const getArtifacts = (network: TNetworkName, version: string) => {
         }
 
         const v = network === 'hardhat' ? 'latest' : version;
-        cache[network].contracts[version] = JSON.parse(
-            fs.readFileSync(path.resolve(__dirname, './', network, `${v}.json`)).toString(),
-        );
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const contract = require(`@thxnetwork/contracts/exports/${network}/${v}.json`);
+        cache[network].contracts[version] = contract;
     }
 
     return cache[network].contracts[version];
@@ -140,7 +143,7 @@ export const availableVersions = (network: TNetworkName): string[] => {
     if (network === 'hardhat') return [currentVersion];
 
     if (cache[network].versions.length === 0) {
-        const list = fs.readdirSync(path.resolve(__dirname, './', network));
+        const list = fs.readdirSync(path.resolve(process.cwd(), 'libs', 'contracts', 'exports', network));
         cache[network].versions = list.map((filename) => filename.substring(0, filename.length - 5));
     }
 

@@ -4279,11 +4279,6 @@
     tsconfig-paths-webpack-plugin "3.5.2"
     typescript "4.5.4"
 
-"@openzeppelin/contracts-upgradeable@^4.8.0-rc.1":
-  version "4.8.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-4.8.0-rc.1.tgz#2f8dfa64ce04f92f7e7409117b82e051bb4d1caa"
-  integrity sha512-yywl0OC8ZGyRLDf0hQqGt2qtm5DZcDf6CggfE+J0bNw2mF6ySaXW6lovAZwXI/frtevUGog4WKNm6EPXtpoh3A==
-
 "@openzeppelin/contracts@^3.3.0":
   version "3.4.2"
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-3.4.2.tgz#d81f786fda2871d1eb8a8c5a73e455753ba53527"
@@ -4736,11 +4731,6 @@
   integrity sha512-+PmQX0PiAYPMeVYe237LJAYvOMYW1j2rH5YROyS3b4CTVJum34HfRvKvAzozHAQG0TnHNdUfY9nCeUyRAs//cw==
   dependencies:
     defer-to-connect "^2.0.1"
-
-"@thxnetwork/artifacts@^4.0.6":
-  version "4.0.6"
-  resolved "https://registry.yarnpkg.com/@thxnetwork/artifacts/-/artifacts-4.0.6.tgz#3a3c6a355442e86990c84e9ba548b98020a6c73d"
-  integrity sha512-3dDYJqcNt7IS/XnBDP0BXBNstI8v9GetGzaBxILWi7ZtSes2UdhnWUOTW9oZo4btNLgwh2d8yCzLp0NLQ8gTag==
 
 "@tokenizer/token@^0.3.0":
   version "0.3.0"
