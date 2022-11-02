@@ -218,8 +218,9 @@ export const transferFrom = async (
     to: string,
     amount: string,
     chainId: ChainId,
+    sub: string,
 ) => {
-    const erc20Transfer = await ERC20Transfer.create({ erc20: erc20.address, from, to, chainId });
+    const erc20Transfer = await ERC20Transfer.create({ erc20: erc20.address, from, to, chainId, sub });
 
     const txId = await TransactionService.sendAsync(
         erc20.address,

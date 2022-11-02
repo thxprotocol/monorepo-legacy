@@ -6,4 +6,5 @@ export type TERC20Transfer = {
     to: string;
     chainId: ChainId;
     transactionId: string;
+    sub: string;
 };
