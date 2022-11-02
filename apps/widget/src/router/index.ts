@@ -5,7 +5,7 @@ const routes: Array<RouteRecordRaw> = [
     {
         path: '/',
         name: 'Home',
-        component: Home as any,
+        component: Home,
     },
     {
         path: '/about',
