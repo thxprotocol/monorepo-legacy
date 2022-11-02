@@ -1,9 +1,9 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { IWalletManagers, TWalletManager } from '@thxnetwork/wallet/types/WalletManagers';
+import { IWalletManagers, type TWalletManager } from '@thxnetwork/wallet/types/WalletManagers';
 import { ChainId } from '@thxnetwork/wallet/types/enums/ChainId';
-import { TWallet } from '@thxnetwork/wallet/types/Wallet';
+import type { TWallet } from '@thxnetwork/wallet/types/Wallet';
 
 @Module({ namespaced: true })
 class WalletManagerModule extends VuexModule {
