@@ -9,8 +9,8 @@ import { TWalletGrantRoleCallBackArgs, TWalletRevokeRoleCallBackArgs } from '../
 export default class WalletManagerService {
     public static MANAGER_ROLE = keccak256(toUtf8Bytes('MANAGER_ROLE'));
 
-    static setupManagerRoleAdmin(wallet: WalletDocument, adminAddress: string) {
-        TransactionService.sendAsync(
+    static async setupManagerRoleAdmin(wallet: WalletDocument, adminAddress: string) {
+        return await TransactionService.sendAsync(
             wallet.contract.options.address,
             wallet.contract.methods.setupRole(this.MANAGER_ROLE, adminAddress),
             wallet.chainId,
