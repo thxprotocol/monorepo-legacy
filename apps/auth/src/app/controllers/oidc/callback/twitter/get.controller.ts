@@ -4,6 +4,7 @@ import { TwitterService } from '../../../../services/TwitterService';
 import { AccountDocument } from '../../../../models/Account';
 import { ERROR_NO_ACCOUNT } from '../../../../util/messages';
 import { getAccountByTwitterId, getInteraction, saveInteraction } from '../../../../util/oidc';
+import { createWallet } from '@thxnetwork/auth/util/wallet';
 
 export async function controller(req: Request, res: Response) {
     async function getAccountBySub(sub: string) {
@@ -47,6 +48,9 @@ export async function controller(req: Request, res: Response) {
     await AccountService.update(account, {
         lastLoginAt: Date.now(),
     });
+
+    //Check if a SharedWallet must be created for a specific chainId
+    createWallet(String(account._id));
 
     const returnTo = await saveInteraction(interaction, account._id.toString());
 
