@@ -16,7 +16,7 @@ import { s3PrivateClient } from '@thxnetwork/api/util/s3';
 import { createArchiver } from '@thxnetwork/api/util/zip';
 import { Upload } from '@aws-sdk/lib-storage';
 import ejs from 'ejs';
-
+const ROOT_PATH = './apps/api/src/app';
 export const generateRewardQRCodesJob = async ({ attrs }: Job) => {
     if (!attrs.data) return;
 
@@ -37,7 +37,7 @@ export const generateRewardQRCodesJob = async ({ attrs }: Job) => {
         if (!claims.length) throw new Error('Claims not found');
 
         const brand = await BrandService.get(poolId);
-        let logo = path.resolve(__dirname, '../public/qr-logo.jpg');
+        let logo = path.resolve(process.cwd(), ROOT_PATH + '/public/qr-logo.jpg');
         if (brand && brand.logoImgUrl) {
             try {
                 const response = await axios.get(brand.logoImgUrl, { responseType: 'arraybuffer' });
@@ -75,7 +75,7 @@ export const generateRewardQRCodesJob = async ({ attrs }: Job) => {
         await multipartUpload.done();
         const dashboardUrl = `${DASHBOARD_URL}/pool/${reward.poolId}/rewards`;
         const html = await ejs.renderFile(
-            path.dirname(__dirname) + '/templates/email/qrcodesReady.ejs',
+            path.resolve(process.cwd(), ROOT_PATH + '/templates/email/qrcodesReady.ejs'),
             {
                 dashboardUrl,
                 baseUrl: API_URL,

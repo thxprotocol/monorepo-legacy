@@ -2,9 +2,12 @@
     "extends": "../../tsconfig.base.json",
     "compilerOptions": {
         "jsx": "preserve",
+        "sourceMap": true,
+        "declaration": true,
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
         "types": ["webpack-env", "node"],
+        "incremental": true,
         "strict": true
     },
     "include": [],

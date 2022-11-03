@@ -2,10 +2,6 @@ name: Smart Contract CI
 
 on:
     push:
-        paths:
-            - 'yarn.lock'
-            - 'libs/contracts/**'
-            - '.github/workflows/contracts.yml'
 
 jobs:
     test:
@@ -23,27 +19,3 @@ jobs:
 
             - name: Run tests
               run: npx nx test contracts
-
-    bumpVersion:
-        name: 'Bump Version on main'
-        runs-on: ubuntu-latest
-        if: github.ref == 'refs/heads/main'
-        needs: test
-        outputs:
-            newTag: ${{ steps.version-bump.outputs.newTag }}
-
-        steps:
-            - name: 'Checkout source code'
-              uses: 'actions/checkout@v2'
-              with:
-                  ref: ${{ github.ref }}
-
-            - name: 'Automated Version Bump'
-              id: version-bump
-              uses: 'phips28/gh-action-bump-version@master'
-              with:
-                  tag-prefix: 'v'
-                  commit-message: 'CI: bumps version to {{version}} for Contracts'
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  PACKAGEJSON_DIR: 'libs/contracts'
