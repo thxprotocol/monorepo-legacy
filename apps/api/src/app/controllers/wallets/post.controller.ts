@@ -4,6 +4,8 @@ import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { body } from 'express-validator';
 import { UnauthorizedError } from '@thxnetwork/api/util/errors';
 import Wallet from '../../models/Wallet';
+import { ChainId } from '@thxnetwork/api/types/enums';
+
 export const validation = [
     body('sub').exists().isMongoId(),
     body('chainId').exists().isNumeric(),
@@ -14,7 +16,7 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Wallets']
     const account = await AccountProxy.getById(req.body.sub);
     if (!account) throw new UnauthorizedError('Invalid account');
-    let wallet = await Wallet.findOne({ sub: req.body.sub, chainId: req.body.chainId });
+    let wallet = await Wallet.findOne({ sub: String(req.body.sub), chainId: Number(req.body.chainId) as ChainId });
     if (wallet) {
         if (!wallet.address) {
             throw new Error('Wallet address not set');
