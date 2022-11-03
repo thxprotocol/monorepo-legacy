@@ -1,7 +1,6 @@
 import nock from 'nock';
 import { getToken, jwksResponse } from './jwt';
 import { API_URL, AUTH_URL } from '@thxnetwork/auth/config/secrets';
-import { ChainId } from '@thxnetwork/auth/types/enums/chainId';
 
 export function mockAuthPath(method: string, path: string, status: number, callback: any = {}) {
     const n = nock(AUTH_URL).persist() as any;
@@ -38,7 +37,7 @@ export function mockWalletProxy() {
         async () => {
             return [];
         },
-        { chainId: ChainId.Hardhat },
+        true, // mocks the entire url regardless of the passed query string:
     );
 
     mockApiPath('post', `/v1/wallets`, 200, async () => {
