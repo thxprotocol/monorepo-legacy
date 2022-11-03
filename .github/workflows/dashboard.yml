@@ -1,10 +1,6 @@
 name: Dashboard CI
 
-on:
-    push:
-        paths:
-            - 'apps/dashboard/**'
-            - '.github/workflows/dashboard.yml'
+on: push:
 
 jobs:
     sonarcloud:

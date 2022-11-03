@@ -1,12 +1,6 @@
 name: Auth CI
 
-on:
-    push:
-        paths:
-            - 'apps/auth/**'
-            - 'libs/**'
-            - 'yarn.lock'
-            - '.github/workflows/auth.yml'
+on: push:
 
 jobs:
     buildAndTest:

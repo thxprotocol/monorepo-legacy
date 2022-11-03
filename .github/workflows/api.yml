@@ -1,13 +1,6 @@
 name: API CI
 
-on:
-    push:
-        paths:
-            - 'apps/api/**'
-            - 'libs/**'
-            - 'yarn.lock'
-            - '.github/workflows/api.yml'
-            - 'docker-compose*.yml'
+on: push:
 
 jobs:
     buildAndTest:
