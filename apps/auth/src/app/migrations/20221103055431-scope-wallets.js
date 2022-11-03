@@ -10,7 +10,7 @@ module.exports = {
 
         await clientColl.updateOne(
             { _id: wallet._id },
-            { $set: { 'payload.scope': wallet.payload.scope + ' wallets:read' } },
+            { $set: { 'payload.scope': wallet.payload.scope + ' wallets:read wallets:write' } },
         );
         await clientColl.updateOne(
             { _id: auth._id },

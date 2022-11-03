@@ -2,9 +2,6 @@ name: Wallet CI
 
 on:
     push:
-        paths:
-            - 'apps/wallet/**'
-            - '.github/workflows/wallet.yml'
 
 jobs:
     sonarcloud:
