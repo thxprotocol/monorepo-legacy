@@ -41,7 +41,6 @@ describe('WalletManagers', () => {
                     address: userWalletAddress2,
                 })
                 .expect((res: request.Response) => {
-                    console.log(res.body);
                     expect(res.body.walletId).toEqual(walletId);
                     expect(res.body.address).toEqual(userWalletAddress2);
                 })
