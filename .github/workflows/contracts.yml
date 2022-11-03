@@ -1,6 +1,7 @@
 name: Smart Contract CI
 
-on: push:
+on:
+    push:
 
 jobs:
     test:
