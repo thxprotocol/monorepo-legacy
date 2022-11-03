@@ -6,3 +6,4 @@ export { default as RequestManager } from './lib/managers/RequestManager';
 export { default as AccountManager } from './lib/managers/AccountManager';
 export { default as SessionManager } from './lib/managers/SessionManager';
 export { default as UserManager } from './lib/managers/UserManager';
+export { default as WalletManager } from './lib/managers/WalletManager';
