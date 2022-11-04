@@ -2,8 +2,7 @@
     "extends": "./tsconfig.json",
     "compilerOptions": {
         "declaration": true,
-        "types": ["webpack-env", "node"],
-        "resolveJsonModule": true
+        "types": ["webpack-env", "node"]
     },
     "exclude": ["**/*.spec.ts", "**/*.spec.tsx"],
     "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "../../libs/contracts/**/*.json"]

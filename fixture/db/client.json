@@ -88,7 +88,7 @@
             "client_secret_expires_at": 0,
             "client_secret": "BnQrAHSb4UDnpR-9klfFAQbZvq_RjVZgLTKwRD3qfOjawX21jrnbBxvSOU84EwqAy1J-fNKvxD2qZen5Gm8jXg",
             "redirect_uris": [],
-            "scope": "openid accounts:read accounts:write claims:read"
+            "scope": "openid accounts:read accounts:write"
         }
     },
     {
