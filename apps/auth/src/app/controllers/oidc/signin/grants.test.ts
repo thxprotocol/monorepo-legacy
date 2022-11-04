@@ -46,7 +46,7 @@ describe('OAuth2 Grants', () => {
                     grant_types: ['client_credentials'],
                     redirect_uris: [],
                     response_types: [],
-                    scope: 'openid account:read account:write',
+                    scope: 'openid accounts:read accounts:write',
                 });
             authHeader = 'Basic ' + Buffer.from(`${res.body.client_id}:${res.body.client_secret}`).toString('base64');
 
@@ -65,7 +65,7 @@ describe('OAuth2 Grants', () => {
                 .send({
                     // resource: API_URL,
                     grant_type: 'client_credentials',
-                    scope: 'openid account:read account:write',
+                    scope: 'openid accounts:read accounts:write',
                 });
             expect(res.status).toBe(400);
             expect(res.body).toMatchObject({
@@ -82,7 +82,7 @@ describe('OAuth2 Grants', () => {
                 })
                 .send({
                     grant_type: 'authorization_code',
-                    scope: 'openid account:read account:write',
+                    scope: 'openid accounts:read accounts:write',
                 });
             expect(res.body).toMatchObject({
                 error: 'unauthorized_client',
@@ -105,7 +105,7 @@ describe('OAuth2 Grants', () => {
             expect(res.body).toMatchObject({
                 error: 'invalid_scope',
                 error_description: 'requested scope is not allowed',
-                scope: 'members:read',
+                scope: 'account:read',
             });
             expect(res.status).toBe(400);
         });
@@ -119,7 +119,7 @@ describe('OAuth2 Grants', () => {
                 })
                 .send({
                     grant_type: 'client_credentials',
-                    scope: 'openid account:read account:write',
+                    scope: 'openid accounts:read accounts:write',
                 });
             accessToken = res.body.access_token;
 
