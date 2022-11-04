@@ -1,8 +1,5 @@
-import { Log, UserManagerSettings } from 'oidc-client-ts';
+import { UserManagerSettings } from 'oidc-client-ts';
 import { API_URL, AUTH_URL, OIDC_CLIENT_ID, OIDC_CLIENT_SECRET, BASE_URL } from './secrets';
-
-Log.setLogger(console);
-Log.setLevel(Log.DEBUG);
 
 const config: UserManagerSettings = {
     authority: AUTH_URL,

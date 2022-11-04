@@ -143,7 +143,6 @@ const config: Configuration = {
             enabled: true,
             defaultResource: () => API_URL,
             getResourceServerInfo: async (ctx, resourceIndicator, client) => {
-                console.log('Client in "getResourceServerInfo"', client, resourceIndicator);
                 return {
                     scope: client.scope,
                     audience: client.clientId,
