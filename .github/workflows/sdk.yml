@@ -1,4 +1,4 @@
-name: Smart Contract CI
+name: SDK CI
 
 on:
     push:
