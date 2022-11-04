@@ -1,6 +1,7 @@
 {
     "extends": "./tsconfig.json",
     "compilerOptions": {
+        "declaration": true,
         "types": ["webpack-env", "node"],
         "resolveJsonModule": true
     },
