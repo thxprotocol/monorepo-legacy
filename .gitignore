@@ -71,3 +71,4 @@ amplifytools.xcconfig
 
 libs/contracts/deployments/localhost
 .openzeppelin
+*.tsbuildinfo

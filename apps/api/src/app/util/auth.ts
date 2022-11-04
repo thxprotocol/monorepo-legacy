@@ -14,7 +14,7 @@ axios.defaults.baseURL = AUTH_URL;
 async function requestAuthAccessToken() {
     const data = new URLSearchParams();
     data.append('grant_type', 'client_credentials');
-    data.append('scope', 'openid account:read account:write');
+    data.append('scope', 'openid accounts:read accounts:write');
 
     const r = await axios({
         url: '/token',

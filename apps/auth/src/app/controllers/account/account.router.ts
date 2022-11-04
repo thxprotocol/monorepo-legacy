@@ -21,30 +21,30 @@ import { createLoginValidation, postLogin } from './login/post.controller';
 const router = express.Router();
 
 router.use(validateJwt);
-router.post('/', guard.check(['account:read', 'account:write']), validate(validations.postAccount), postAccount);
-router.get('/:id', guard.check(['account:read']), getAccount);
+router.post('/', guard.check(['accounts:read', 'accounts:write']), validate(validations.postAccount), postAccount);
+router.get('/:id', guard.check(['accounts:read']), getAccount);
 
-router.get('/:sub/twitter', guard.check(['account:read']), getTwitter);
-router.get('/:sub/twitter/like/:item', guard.check(['account:read']), getTwitterLike);
-router.get('/:sub/twitter/retweet/:item', guard.check(['account:read']), getTwitterRetweet);
-router.get('/:sub/twitter/follow/:item', guard.check(['account:read']), getTwitterFollow);
+router.get('/:sub/twitter', guard.check(['accounts:read']), getTwitter);
+router.get('/:sub/twitter/like/:item', guard.check(['accounts:read']), getTwitterLike);
+router.get('/:sub/twitter/retweet/:item', guard.check(['accounts:read']), getTwitterRetweet);
+router.get('/:sub/twitter/follow/:item', guard.check(['accounts:read']), getTwitterFollow);
 
-router.get('/:sub/google/youtube', guard.check(['account:read']), getYoutube);
-router.get('/:sub/google/youtube/like/:item', guard.check(['account:read']), getYoutubeLike);
-router.get('/:sub/google/youtube/subscribe/:item', guard.check(['account:read']), getYoutubeSubscribe);
+router.get('/:sub/google/youtube', guard.check(['accounts:read']), getYoutube);
+router.get('/:sub/google/youtube/like/:item', guard.check(['accounts:read']), getYoutubeLike);
+router.get('/:sub/google/youtube/subscribe/:item', guard.check(['accounts:read']), getYoutubeSubscribe);
 
-router.get('/:sub/spotify', guard.check(['account:read']), getSpotify);
-router.get('/:sub/spotify/user_follow/:item', guard.check(['account:read']), getSpotifyUserFollow);
-router.get('/:sub/spotify/playlist_follow/:item', guard.check(['account:read']), getSpotifyPlaylistFollow);
-router.get('/:sub/spotify/track_playing/:item', guard.check(['account:read']), getSpotifyTrackPlaying);
-router.get('/:sub/spotify/track_recent/:item', guard.check(['account:read']), getSpotifyTrackRecent);
-router.get('/:sub/spotify/track_saved/:item', guard.check(['account:read']), getSpotifyTrackSaved);
+router.get('/:sub/spotify', guard.check(['accounts:read']), getSpotify);
+router.get('/:sub/spotify/user_follow/:item', guard.check(['accounts:read']), getSpotifyUserFollow);
+router.get('/:sub/spotify/playlist_follow/:item', guard.check(['accounts:read']), getSpotifyPlaylistFollow);
+router.get('/:sub/spotify/track_playing/:item', guard.check(['accounts:read']), getSpotifyTrackPlaying);
+router.get('/:sub/spotify/track_recent/:item', guard.check(['accounts:read']), getSpotifyTrackRecent);
+router.get('/:sub/spotify/track_saved/:item', guard.check(['accounts:read']), getSpotifyTrackSaved);
 
-router.get('/address/:address', guard.check(['account:read']), validate([]), getAccountByAddress);
-router.get('/email/:email', guard.check(['account:read']), validate([]), getAccountByEmail);
-router.patch('/:id', guard.check(['account:read', 'account:write']), patchAccount);
-router.delete('/:id', guard.check(['account:write']), deleteAccount);
+router.get('/address/:address', guard.check(['accounts:read']), validate([]), getAccountByAddress);
+router.get('/email/:email', guard.check(['accounts:read']), validate([]), getAccountByEmail);
+router.patch('/:id', guard.check(['accounts:read', 'accounts:write']), patchAccount);
+router.delete('/:id', guard.check(['accounts:write']), deleteAccount);
 
-router.post('/login', validate(createLoginValidation), guard.check(['account:write']), postLogin);
+router.post('/login', validate(createLoginValidation), guard.check(['accounts:write']), postLogin);
 
 export default router;
