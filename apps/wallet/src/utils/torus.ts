@@ -1,5 +1,5 @@
 import Web3 from 'web3';
-import CustomAuth, { TORUS_NETWORK_TYPE } from '@toruslabs/customauth';
+import CustomAuth from '@toruslabs/customauth';
 import { TORUS_NETWORK } from './secrets';
 
 export function mockPrivateKeyForSubject(subject: string) {
@@ -15,5 +15,5 @@ export function mockPrivateKeyForSubject(subject: string) {
 export const torusClient = new CustomAuth({
     baseUrl: `${location.origin}/serviceworker`,
     enableLogging: false,
-    network: (TORUS_NETWORK as unknown) as TORUS_NETWORK_TYPE,
+    network: TORUS_NETWORK as any,
 });
