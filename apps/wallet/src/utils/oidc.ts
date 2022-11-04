@@ -1,5 +1,8 @@
-import { UserManagerSettings } from 'oidc-client-ts';
+import { Log, UserManagerSettings } from 'oidc-client-ts';
 import { API_URL, AUTH_URL, OIDC_CLIENT_ID, OIDC_CLIENT_SECRET, BASE_URL } from './secrets';
+
+Log.setLogger(console);
+Log.setLevel(Log.DEBUG);
 
 const config: UserManagerSettings = {
     authority: AUTH_URL,
@@ -12,7 +15,7 @@ const config: UserManagerSettings = {
     automaticSilentRenew: true,
     loadUserInfo: false,
     resource: API_URL,
-    scope: 'openid offline_access rewards:read erc20:read erc721:read withdrawals:read withdrawals:write deposits:read deposits:write account:read account:write memberships:read memberships:write promotions:read transactions:read relay:write swaprule:read swap:read swap:write wallets:read wallets:write',
+    scope: 'openid rewards:read erc20:read erc721:read withdrawals:read withdrawals:write deposits:read deposits:write account:read account:write memberships:read memberships:write promotions:read transactions:read relay:write swaprule:read swap:read swap:write wallets:read wallets:write',
 };
 
 // Set the config in localstorage, so we can access it from the silent renew iframe
