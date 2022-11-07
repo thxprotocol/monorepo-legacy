@@ -10,6 +10,8 @@ interface IAccessControlFacet {
 
     function getRoleAdmin(bytes32 role) external view returns (bytes32);
 
+    function setupRole(bytes32 role, address account) external;
+
     function grantRole(bytes32 role, address account) external;
 
     function revokeRole(bytes32 role, address account) external;

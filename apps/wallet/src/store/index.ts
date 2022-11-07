@@ -19,6 +19,7 @@ import PaymentStore from './modules/payments';
 import SwapRuleStore from './modules/swaprules';
 import SwapStore from './modules/swaps';
 import TransactionStore from './modules/transactions';
+import WalletManagerStore from './modules/walletManagers';
 
 Vue.use(Vuex);
 
@@ -40,6 +41,7 @@ const modules = {
     swaprules: SwapRuleStore,
     swaps: SwapStore,
     transactions: TransactionStore,
+    walletManagers: WalletManagerStore,
 };
 
 export default new Vuex.Store({

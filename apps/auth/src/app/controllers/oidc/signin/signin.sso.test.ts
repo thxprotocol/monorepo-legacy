@@ -5,6 +5,7 @@ import app from '../../../app';
 import { AccountService } from '../../../services/AccountService';
 import db from '../../../util/database';
 import { accountEmail, accountSecret } from '../../../util/jest';
+import { mockWalletProxy } from '../../../util/jest/mock';
 import { API_URL, INITIAL_ACCESS_TOKEN, SPOTIFY_API_ENDPOINT, TWITTER_API_ENDPOINT } from '../../../config/secrets';
 
 const http = request.agent(app);
@@ -15,6 +16,7 @@ describe('SSO Sign In', () => {
     const REDIRECT_URL = 'https://localhost:8082/signin-oidc';
 
     beforeAll(async () => {
+        mockWalletProxy();
         await db.truncate();
 
         const res = await http
@@ -26,7 +28,7 @@ describe('SSO Sign In', () => {
                 grant_types: ['authorization_code'],
                 redirect_uris: [REDIRECT_URL],
                 response_types: ['code'],
-                scope: 'openid pools:read pools:write withdrawals:read rewards:write deposits:read deposits:write',
+                scope: 'openid pools:read pools:write withdrawals:read rewards:write deposits:read deposits:write wallets:read wallets:write',
             });
 
         CLIENT_ID = res.body.client_id;
@@ -46,7 +48,7 @@ describe('SSO Sign In', () => {
             client_id: CLIENT_ID,
             redirect_uri: REDIRECT_URL,
             resource: API_URL,
-            scope: 'openid pools:read pools:write withdrawals:read rewards:write deposits:read deposits:write',
+            scope: 'openid pools:read pools:write withdrawals:read rewards:write deposits:read deposits:write wallets:read wallets:write',
             response_type: 'code',
             response_mode: 'query',
             nonce: 'xun4kvy4mh',

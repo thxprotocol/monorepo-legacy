@@ -1,20 +1,23 @@
 {
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "jsx": "preserve",
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "types": ["webpack-env", "node"],
-    "strict": true
-  },
-  "include": [],
-  "files": [],
-  "references": [
-    {
-      "path": "./tsconfig.app.json"
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": {
+        "jsx": "preserve",
+        "sourceMap": true,
+        "declaration": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "types": ["webpack-env", "node"],
+        "incremental": true,
+        "strict": true
     },
-    {
-      "path": "./tsconfig.spec.json"
-    }
-  ]
+    "include": [],
+    "files": [],
+    "references": [
+        {
+            "path": "./tsconfig.app.json"
+        },
+        {
+            "path": "./tsconfig.spec.json"
+        }
+    ]
 }

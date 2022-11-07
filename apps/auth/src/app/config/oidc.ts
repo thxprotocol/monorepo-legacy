@@ -73,6 +73,8 @@ const config: Configuration = {
         'offline_access',
         'account:read',
         'account:write',
+        'accounts:read',
+        'accounts:write',
         'brands:read',
         'brands:write',
         'pools:read',
@@ -109,6 +111,8 @@ const config: Configuration = {
         'claims:read',
         'clients:write',
         'clients:read',
+        'wallets:read',
+        'wallets:write',
     ],
     claims: {
         openid: ['sub', 'email', 'variant', 'address'],
