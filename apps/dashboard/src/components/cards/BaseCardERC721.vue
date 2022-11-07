@@ -66,7 +66,8 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
-import type { ERC721Variant, TERC721 } from '@thxnetwork/dashboard/types/erc721';
+import { ERC721Variant } from '@thxnetwork/dashboard/types/erc721';
+import type { TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import poll from 'promise-poller';
 import BaseCard from '@thxnetwork/dashboard/components/cards/BaseCard.vue';
 import BaseBadgeNetwork from '@thxnetwork/dashboard/components/badges/BaseBadgeNetwork.vue';

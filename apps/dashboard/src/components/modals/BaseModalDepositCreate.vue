@@ -1,43 +1,23 @@
 <template>
-  <base-modal
-    size="lg"
-    :title="`Top up a pool with ${pool.erc20.symbol}`"
-    :id="`modalDepositCreate-${pool.erc20._id}`"
-    @show="onShow"
-    :loading="loading"
-    :error="error"
-  >
+  <base-modal size="lg" :title="`Top up a pool with ${pool.erc20.symbol}`" :id="`modalDepositCreate-${pool.erc20._id}`"
+    @show="onShow" :loading="loading" :error="error">
     <template #modal-body v-if="!loading && erc20">
-      <b-alert
-        v-if="pool.erc20.type === ERC20Type.Unlimited"
-        variant="info"
-        show
-      >
+      <b-alert v-if="pool.erc20.type === ERC20Type.Unlimited" variant="info" show>
         <i class="fas fa-info-circle mr-2"></i>
         <strong>No need to top up your pool!</strong> Tokens will be minted when
         they are needed.
       </b-alert>
-      <b-alert
-        variant="warning"
-        show
-        v-if="pool.erc20.type === ERC20Type.Unknown"
-      >
+      <b-alert variant="warning" show v-if="pool.erc20.type === ERC20Type.Unknown">
         <i class="fas fa-info-circle mr-2"></i>
         <strong>It seems we have not deployed this contract.</strong>
         Transfer {{ pool.erc20.symbol }} to <strong>{{ pool.address }}</strong>
         <a v-clipboard:copy="pool.address"><i class="fas fa-clipboard"></i></a>
         to top up your pool.
       </b-alert>
-      <form
-        v-if="pool.erc20.type === ERC20Type.Limited && erc20.adminBalance > 0"
-        v-on:submit.prevent="submit"
-        id="formDepositCreate"
-      >
+      <form v-if="pool.erc20.type === ERC20Type.Limited && erc20.adminBalance > 0" v-on:submit.prevent="submit"
+        id="formDepositCreate">
         <b-card bg-variant="light" class="border-0" body-class="p-5">
-          <b-input-group
-            :append="erc20.symbol"
-            :class="{ 'is-valid': amount <= erc20.adminBalance }"
-          >
+          <b-input-group :append="erc20.symbol" :class="{ 'is-valid': amount <= erc20.adminBalance }">
             <b-form-input type="number" v-model="amount" />
           </b-input-group>
           <small class="text-muted">
@@ -49,14 +29,8 @@
       </form>
     </template>
     <template #btn-primary>
-      <b-button
-        :disabled="loading || pool.erc20.type !== ERC20Type.Limited"
-        class="rounded-pill"
-        type="submit"
-        form="formDepositCreate"
-        variant="primary"
-        block
-      >
+      <b-button :disabled="loading || pool.erc20.type !== ERC20Type.Limited" class="rounded-pill" type="submit"
+        form="formDepositCreate" variant="primary" block>
         Top up {{ amount }} {{ pool.erc20.symbol }}
       </b-button>
     </template>
@@ -65,7 +39,8 @@
 
 <script lang="ts">
 import type { IPool } from '@thxnetwork/dashboard/store/modules/pools';
-import type { ERC20Type, IERC20s } from '@thxnetwork/dashboard/types/erc20';
+import type { IERC20s } from '@thxnetwork/dashboard/types/erc20';
+import { ERC20Type } from '@thxnetwork/dashboard/types/erc20';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseModal from './BaseModal.vue';
@@ -118,4 +93,6 @@ export default class BaseModalDepositCreate extends Vue {
   }
 }
 </script>
-<style lang="scss"></style>
+<style lang="scss">
+
+</style>

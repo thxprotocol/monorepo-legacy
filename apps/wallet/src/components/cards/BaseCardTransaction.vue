@@ -50,11 +50,8 @@
 </template>
 
 <script lang="ts">
-import type {
-  TransactionState,
-  TransactionType,
-  TTransaction,
-} from '../../types/Transactions';
+import { TransactionState, TransactionType } from '../../types/Transactions';
+import { TTransaction } from '../../types/Transactions';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { format } from 'date-fns';
 import { chainInfo } from '@thxnetwork/wallet/utils/chains';
