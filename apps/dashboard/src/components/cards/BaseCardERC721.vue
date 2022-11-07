@@ -36,10 +36,11 @@
             </p>
             <template v-if="!erc721.poolId">
                 <hr />
-                <b-button block variant="primary" v-b-modal="`modalAssetPoolCreate_${erc721._id}`" class="rounded-pill">
+                <b-button block variant="primary" v-b-modal="`modalAssetPoolCreate-${erc721._id}`" class="rounded-pill">
                     Create Pool
                 </b-button>
             </template>
+            <base-modal-pool-create :id="`modalAssetPoolCreate-${erc721._id}`" />
         </template>
     </base-card>
 </template>
@@ -53,9 +54,11 @@ import BaseCard from '@thxnetwork/dashboard/components/cards/BaseCard.vue';
 import BaseBadgeNetwork from '@thxnetwork/dashboard/components/badges/BaseBadgeNetwork.vue';
 import BaseIdenticon from '@thxnetwork/dashboard/components/BaseIdenticon.vue';
 import BaseDropdownMenuNft from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownMenuNft.vue';
+import BaseModalPoolCreate from '@thxnetwork/dashboard/components/modals/BaseModalPoolCreate.vue';
 
 @Component({
     components: {
+        BaseModalPoolCreate,
         BaseCard,
         BaseBadgeNetwork,
         BaseIdenticon,

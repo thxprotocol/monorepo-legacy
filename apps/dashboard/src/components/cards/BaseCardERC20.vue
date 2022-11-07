@@ -29,10 +29,11 @@
             </p>
             <template v-if="!erc20.poolId">
                 <hr />
-                <b-button block variant="primary" v-b-modal="`modalAssetPoolCreate_${erc20._id}`" class="rounded-pill">
+                <b-button block variant="primary" v-b-modal="`modalPoolCreate-${erc20._id}`" class="rounded-pill">
                     Create Pool
                 </b-button>
             </template>
+            <base-modal-pool-create :erc20="erc20" :id="`modalPoolCreate-${erc20._id}`" />
         </template>
     </base-card>
 </template>
@@ -45,11 +46,13 @@ import BaseCard from '@thxnetwork/dashboard/components/cards/BaseCard.vue';
 import BaseBadgeNetwork from '@thxnetwork/dashboard/components/badges/BaseBadgeNetwork.vue';
 import BaseIdenticon from '@thxnetwork/dashboard/components/BaseIdenticon.vue';
 import BaseDropdownTokenMenu from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownMenuToken.vue';
+import BaseModalPoolCreate from '@thxnetwork/dashboard/components/modals/BaseModalPoolCreate.vue';
 
 import poll from 'promise-poller';
 
 @Component({
     components: {
+        BaseModalPoolCreate,
         BaseCard,
         BaseBadgeNetwork,
         BaseIdenticon,
@@ -102,7 +105,7 @@ export default class BaseCardERC20 extends Vue {
     }
 
     onClick() {
-        if (this.erc20.poolId) this.$router.push({ path: `/pool/${this.erc20.poolId}` });
+        if (this.erc20.poolId) this.$router.push({ path: `/pool/${this.erc20.poolId}/rewards` });
     }
 }
 </script>
