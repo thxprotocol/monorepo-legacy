@@ -28,7 +28,7 @@ describe('Account Controller', () => {
                 })
                 .send({
                     grant_type: 'client_credentials',
-                    scope: 'openid account:read account:write wallet:read wallet:write',
+                    scope: 'openid accounts:read accounts:write',
                 });
             return `Bearer ${res.body.access_token}`;
         }
@@ -39,11 +39,11 @@ describe('Account Controller', () => {
                 .set({ Authorization: `Bearer ${INITIAL_ACCESS_TOKEN}` })
                 .send({
                     application_type: 'web',
-                    client_name: 'thx_api',
+                    client_name: 'THX API',
                     grant_types: ['client_credentials'],
                     redirect_uris: [],
                     response_types: [],
-                    scope: 'openid account:read account:write',
+                    scope: 'openid accounts:read accounts:write',
                 });
 
             return 'Basic ' + Buffer.from(`${res.body.client_id}:${res.body.client_secret}`).toString('base64');
