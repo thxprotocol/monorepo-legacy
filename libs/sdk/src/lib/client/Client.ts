@@ -10,6 +10,7 @@ import SessionManager from '../managers/SessionManager';
 import UserManager from '../managers/UserManager';
 
 import type { Credential } from '../types';
+import WalletManager from '../managers/WalletManager';
 
 type Props = Omit<Credential, 'grantType'>;
 
@@ -24,7 +25,7 @@ export default class THXClient {
     session: SessionManager;
     userManager: UserManager;
     credential: CredentialManager;
-
+    walletManager: WalletManager;
     /* External managers */
     account: AccountManager;
 
@@ -37,14 +38,13 @@ export default class THXClient {
             response_type: 'code',
             revokeTokenTypes: ['refresh_token'],
             resource: URL_CONFIG['API_URL'],
-            automaticSilentRenew: false,
+            automaticSilentRenew: rest.automaticSilentRenew,
             loadUserInfo: false,
             scope: scopes,
         };
 
         /* Mapped values */
         const userManager = new BaseUserManager(settings);
-
         const grantType = rest.redirectUrl ? 'authorization_code' : 'client_credentials';
 
         /** Init managers */
@@ -59,6 +59,7 @@ export default class THXClient {
         this.account = new AccountManager(this);
         this.erc20 = new ERC20Manager(this);
         this.erc721 = new ERC721Manager(this);
+        this.walletManager = new WalletManager(this);
     }
 
     public async init() {

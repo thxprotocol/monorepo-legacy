@@ -22,7 +22,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseListGroupItemMembership from '@thxnetwork/wallet/components/list-items/BaseListGroupItemMembership.vue';
 import { IMemberships } from '@thxnetwork/wallet/store/modules/memberships';
-import { THXClient } from '@thxnetwork/sdk';
+
 @Component({
     components: {
         BaseListGroupItemMembership,
@@ -37,18 +37,10 @@ export default class Memberships extends Vue {
     profile!: UserProfile;
     memberships!: IMemberships;
 
-    mounted() {
-        this.$store.dispatch('memberships/list').then(() => {
+    async mounted() {
+        await this.$store.dispatch('memberships/list').then(() => {
             this.loading = false;
         });
-        const client = new THXClient({
-            clientId: process.env['VUE_APP_CLIENT_ID'],
-            clientSecret: process.env['VUE_APP_CLIENT_SECRET'],
-            grantType: 'authorization_code',
-            redirectUrl: 'http://192.168.1.3:8080/signin-oidc',
-            scopes: 'openid accounts:read erc20:read erc721:read',
-        });
-        console.log('CLIENT', client);
     }
 }
 </script>
