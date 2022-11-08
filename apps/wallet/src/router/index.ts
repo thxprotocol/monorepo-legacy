@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import Vue from 'vue-demi';
 import VueRouter, { RouteConfig } from 'vue-router';
 import {
   assertAuthorization,

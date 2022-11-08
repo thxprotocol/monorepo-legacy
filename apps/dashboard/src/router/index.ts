@@ -10,7 +10,7 @@ import {
     redirectSignup,
     redirectVerifyEmail,
 } from '@thxnetwork/dashboard/utils/guards';
-import Vue from 'vue';
+import Vue from 'vue-demi';
 import VueRouter, { RouteConfig } from 'vue-router';
 
 Vue.use(VueRouter);

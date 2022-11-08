@@ -1,5 +1,5 @@
 import axios from 'axios';
-import Vue from 'vue';
+import Vue from 'vue-demi';
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
 import type { IPool } from './pools';
 

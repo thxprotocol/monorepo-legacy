@@ -88,17 +88,18 @@
         "swagger-ui-express": "^4.1.4",
         "tsconfig-paths": "^4.1.0",
         "tslib": "^2.3.0",
+        "vue": "^3.2.41",
+        "@vue/composition-api": "^1.7.1",
         "vee-validate": "^3.4.5",
-        "vue": "^2.6.11",
         "vue-chartjs": "^4.1.1",
         "vue-class-component": "^7.2.3",
         "vue-clipboard2": "^0.3.1",
         "vue-confetti": "^2.3.0",
-        "vue-demi": "latest",
+        "vue-demi": "0.13.0",
         "vue-property-decorator": "^9.1.2",
         "vue-qr": "^4.0.6",
         "vue-router": "^3.2.0",
-        "vue-router4": "npm:vue-router@4.0.15",
+        "vue-router4": "npm:vue-router@4.1.2",
         "vue-template-compiler": "2.6.12",
         "vuex": "^3.4.0",
         "vuex-module-decorators": "^1.0.1",
@@ -108,13 +109,13 @@
         "y18n": "^5.0.8"
     },
     "peerDependencies": {
-      "@vue/composition-api": "^1.7.1",
-      "vue": "^2.6.11 || ^3.2.41"
+        "@vue/composition-api": "^1.7.1",
+        "vue": "^2.6.11 || ^3.0.0"
     },
     "peerDependenciesMeta": {
-      "@vue/composition-api": {
-        "optional": true
-      }
+        "@vue/composition-api": {
+            "optional": true
+        }
     },
     "devDependencies": {
         "@babel/preset-typescript": "^7.18.6",
