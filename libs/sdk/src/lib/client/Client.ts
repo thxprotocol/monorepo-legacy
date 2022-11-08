@@ -39,6 +39,7 @@ export default class THXClient {
             revokeTokenTypes: ['refresh_token'],
             resource: URL_CONFIG['API_URL'],
             automaticSilentRenew: rest.automaticSilentRenew,
+            silent_redirect_uri: rest.silent_redirect_uri,
             loadUserInfo: false,
             scope: scopes,
         };
