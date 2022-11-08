@@ -6,4 +6,5 @@ export default interface Credential {
     requestUrl?: string;
     redirectUrl?: string;
     scopes?: string;
+    automaticSilentRenew?: boolean;
 }

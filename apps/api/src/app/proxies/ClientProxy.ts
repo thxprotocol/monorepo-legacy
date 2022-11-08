@@ -48,7 +48,7 @@ export default class ClientProxy {
             registrationAccessToken: data.registration_access_token,
         });
 
-        if (payload.request_uris.length) {
+        if (payload.request_uris && payload.request_uris.length) {
             const origins = payload.request_uris.map((uri: string) => new URL(uri));
             await client.updateOne({ origins });
         }

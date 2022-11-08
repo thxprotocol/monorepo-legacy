@@ -1,9 +1,9 @@
 import { Vue } from 'vue-property-decorator';
-import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { IWalletManagers, type TWalletManager } from '@thxnetwork/wallet/types/WalletManagers';
 import { ChainId } from '@thxnetwork/wallet/types/enums/ChainId';
 import type { TWallet } from '@thxnetwork/wallet/types/Wallet';
+import { thxClient } from '@thxnetwork/wallet/utils/oidc';
 
 @Module({ namespaced: true })
 class WalletManagerModule extends VuexModule {
@@ -43,55 +43,33 @@ class WalletManagerModule extends VuexModule {
 
     @Action({ rawError: true })
     async getWallet(payload: { sub: string; chainId: ChainId }) {
-        const params = new URLSearchParams();
-        params.append('chainId', String(payload.chainId));
-        params.append('sub', String(payload.sub));
-
-        const result = await axios({
-            method: 'GET',
-            url: `/wallets`,
-            params,
-        });
-
-        if (!result.data.length) {
+        const wallets = await thxClient.walletManager.list(payload.chainId, payload.sub);
+        if (!wallets.length) {
             return null;
         }
-        const wallet = result.data[0];
-        this.context.commit('setWallet', wallet);
+        this.context.commit('setWallet', wallets[0]);
     }
 
     @Action({ rawError: true })
     async list(wallet: TWallet) {
-        const result = await axios({
-            method: 'GET',
-            url: `/wallets/${wallet._id}/managers`,
-        });
+        const result = await thxClient.walletManager.getManagers(wallet._id);
 
         this.context.commit('clear');
 
-        result.data.forEach((walletManager: TWalletManager) => {
+        result.forEach((walletManager: TWalletManager) => {
             this.context.commit('set', { walletManager, walletId: wallet._id });
         });
     }
 
     @Action({ rawError: true })
     async create(payload: { wallet: TWallet; address: string }) {
-        const walletManager = await axios({
-            method: 'POST',
-            url: `/wallets/${payload.wallet._id}/managers`,
-            data: {
-                address: payload.address,
-            },
-        });
+        const walletManager = await thxClient.walletManager.addManager(payload.wallet._id, payload.address);
         this.context.commit('set', { walletManager, walletId: payload.wallet._id });
     }
 
     @Action({ rawError: true })
     async remove(walletManager: TWalletManager) {
-        await axios({
-            method: 'DELETE',
-            url: `/wallets/managers/${walletManager._id}`,
-        });
+        await thxClient.walletManager.deleteManager(walletManager._id);
         this.context.commit('unset', walletManager);
     }
 }
