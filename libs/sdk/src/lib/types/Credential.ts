@@ -7,4 +7,5 @@ export default interface Credential {
     redirectUrl?: string;
     scopes?: string;
     automaticSilentRenew?: boolean;
+    silent_redirect_uri?: string;
 }
