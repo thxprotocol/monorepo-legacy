@@ -4,7 +4,7 @@ import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 
 import { BASE_URL } from '@thxnetwork/wallet/utils/secrets';
 import { thxClient } from '../../utils/oidc';
-import { UserManager } from '@thxnetwork/sdk';
+import UserManager from '@thxnetwork/sdk/managers/UserManager';
 import { User } from 'oidc-client-ts';
 const AUTH_REQUEST_TYPED_MESSAGE =
     "Welcome! Please make sure you have selected your preferred account and sign this message to verify it's ownership.";
