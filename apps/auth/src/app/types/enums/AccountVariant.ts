@@ -4,4 +4,5 @@ export enum AccountVariant {
     SSOTwitter = 2,
     SSOSpotify = 3,
     Metamask = 4,
+    SSOGithub = 5,
 }

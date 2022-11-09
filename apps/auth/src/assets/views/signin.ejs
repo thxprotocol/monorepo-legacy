@@ -1,166 +1,169 @@
 <% if (params.backgroundImgUrl) { %>
 <style type="text/css">
-    body {
-        background-image: url("<%- params.backgroundImgUrl %>") !important;
-        background-repeat: no-repeat;
-        background-size: cover;
-    }
+  body {
+    background-image: url("<%- params.backgroundImgUrl %>") !important;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
 </style>
 <% } %>
 
 <div class="col-md-6 offset-md-3 col-xl-4 offset-xl-4 order-0 order-sm-1">
-    <div class="text-center py-4">
-        <% if (params.logoImgUrl) { %>
-        <img src="<%- params.logoImgUrl %>" width="60" alt="THX Logo" />
-        <% } else { %>
-        <img src="/img/logo.png" width="60" alt="THX Logo" />
-        <% } %>
-    </div>
-    <div class="card shadow-sm mb-5">
-        <div class="card-body p-sm-5">
-            <% if (params.authRequestMessage) { %>
-            <div v-if="alert && alert.message" class="alert" :class="`alert-${alert.variant}`">
-                <i class="fas fa-exclamation-circle mr-2"></i>
-                {{alert.message}}
-            </div>
-            <% } %>
-            <% if (params.authentication_token && params.secure_key) { %> <strong
-                    class="h2 d-block text-dark text-center mb-4">
-                Set a password
-            </strong>
-            <p>You are invited to access your THX Web Wallet. Set a password and accept the invite!</p>
-            <% } %>
+  <div class="text-center py-4">
+    <% if (params.logoImgUrl) { %>
+    <img src="<%- params.logoImgUrl %>" width="60" alt="THX Logo" />
+    <% } else { %>
+    <img src="/img/logo.png" width="60" alt="THX Logo" />
+    <% } %>
+  </div>
+  <div class="card shadow-sm mb-5">
+    <div class="card-body p-sm-5">
+      <% if (params.authRequestMessage) { %>
+      <div v-if="alert && alert.message" class="alert" :class="`alert-${alert.variant}`">
+        <i class="fas fa-exclamation-circle mr-2"></i>
+        {{alert.message}}
+      </div>
+      <% } %>
+      <% if (params.authentication_token && params.secure_key) { %> <strong class="h2 d-block text-dark text-center mb-4">
+        Set a password
+      </strong>
+      <p>You are invited to access your THX Web Wallet. Set a password and accept the invite!</p>
+      <% } %>
 
-            <% if (locals.alert && alert.message) { %>
-            <div class="alert alert-<%= alert.variant %>">
-                <%- alert.message %>
-            </div>
-            <% } %>
+      <% if (locals.alert && alert.message) { %>
+      <div class="alert alert-<%= alert.variant %>">
+        <%- alert.message %>
+      </div>
+      <% } %>
 
-            <!--
+      <!--
                 This part is used for the invite flow
             -->
-            <% if (params.authentication_token && params.secure_key) { %>
-            <form action="/oidc/<%= uid %>/password" method="post">
-                <div class="form-group">
-                    <label>Password:</label>
-                    <input class="form-control" required autocomplete type="password" name="password">
-                </div>
-                <div class="form-group">
-                    <label>Repeat password:</label>
-                    <input class="form-control" required autocomplete type="password" name="passwordConfirm">
-                </div>
-                <div class="form-group">
-                    <div class="m-0 custom-control custom-checkbox b-custom-control-sm">
-                        <input id="acceptTermsPrivacy" type="checkbox" name="acceptTermsPrivacy"
-                               class="custom-control-input" value="true"><label for="acceptTermsPrivacy"
-                               class="custom-control-label font-weight-normal"> I agree to
-                            THX' <a href="<%= publicUrl %>/general-terms-and-conditions.pdf" target="_blank">terms
-                                of
-                                use</a> and <a href="<%= publicUrl %>/privacy-policy.pdf" target="_blank">privacy
-                                statement</a></label>
-                    </div>
-                    <div class="custom-control custom-checkbox b-custom-control-sm">
-                        <input id="acceptUpdates" type="checkbox" name="acceptUpdates" class="custom-control-input"
-                               value="true">
-                        <label for="acceptUpdates" class="custom-control-label font-weight-normal">
-                            Opt-in to receive updates from THX on its products, you can opt-out at any time.
-                        </label>
-                    </div>
-                </div>
-                <input type="hidden" name="authenticationToken" value="<%= params.authentication_token %>" />
-                <input type="hidden" name="secureKey" value="<%= params.secure_key %>" />
-                <input type="hidden" name="returnUrl" value="<%= params.return_url %>" />
+      <% if (params.authentication_token && params.secure_key) { %>
+      <form action="/oidc/<%= uid %>/password" method="post">
+        <div class="form-group">
+          <label>Password:</label>
+          <input class="form-control" required autocomplete type="password" name="password">
+        </div>
+        <div class="form-group">
+          <label>Repeat password:</label>
+          <input class="form-control" required autocomplete type="password" name="passwordConfirm">
+        </div>
+        <div class="form-group">
+          <div class="m-0 custom-control custom-checkbox b-custom-control-sm">
+            <input id="acceptTermsPrivacy" type="checkbox" name="acceptTermsPrivacy" class="custom-control-input" value="true"><label for="acceptTermsPrivacy" class="custom-control-label font-weight-normal"> I agree to
+              THX' <a href="<%= publicUrl %>/general-terms-and-conditions.pdf" target="_blank">terms
+                of
+                use</a> and <a href="<%= publicUrl %>/privacy-policy.pdf" target="_blank">privacy
+                statement</a></label>
+          </div>
+          <div class="custom-control custom-checkbox b-custom-control-sm">
+            <input id="acceptUpdates" type="checkbox" name="acceptUpdates" class="custom-control-input" value="true">
+            <label for="acceptUpdates" class="custom-control-label font-weight-normal">
+              Opt-in to receive updates from THX on its products, you can opt-out at any time.
+            </label>
+          </div>
+        </div>
+        <input type="hidden" name="authenticationToken" value="<%= params.authentication_token %>" />
+        <input type="hidden" name="secureKey" value="<%= params.secure_key %>" />
+        <input type="hidden" name="returnUrl" value="<%= params.return_url %>" />
 
-                <button type="submit" class="btn rounded-pill btn-primary btn-block">
-                    Accept invite
-                    <i class="fas fa-chevron-right" aria-hidden="true"></i>
-                </button>
-            </form>
-            <% } else { %>
-            <!--
+        <button type="submit" class="btn rounded-pill btn-primary btn-block">
+          Accept invite
+          <i class="fas fa-chevron-right" aria-hidden="true"></i>
+        </button>
+      </form>
+      <% } else { %>
+      <!--
                     This part is used for regular login flow and only visibile if links are available
                 -->
-            <% if (params.googleLoginUrl) { %>
-            <a class="btn btn-sign-in btn-google btn-block" href="<%= params.googleLoginUrl %>" download>
-                <div class="logo">
-                    <img src="/img/g-logo.png" alt="Google logo" />
-                </div>
-                <div class="label">Sign in with Google</div>
-            </a>
-            <% } %>
-            <% if (params.twitterLoginUrl) { %>
-            <a class="btn btn-sign-in btn-twitter btn-block" href="<%= params.twitterLoginUrl %>">
-                <div class="logo">
-                    <img src="/img/t-logo.png" alt="Twitter logo" />
-                </div>
-                <div class="label">Sign in with Twitter</div>
-            </a>
-            <% } %>
-            <% if (params.spotifyLoginUrl) { %>
-            <a class="btn btn-sign-in btn-spotify btn-block" href="<%= params.spotifyLoginUrl %>">
-                <div class="logo">
-                    <img src="/img/s-logo.png" alt="Spotify logo" />
-                </div>
-                <div class="label">Sign in with Spotify</div>
-            </a>
-            <% } %>
-            <% if (params.authRequestMessage) { %>
-            <a class="btn btn-sign-in btn-metamask btn-block" @click="signin()">
-                <div class="logo">
-                    <img src="/img/mm-logo.svg" width="30" height="30" alt="Metamask logo" />
-                </div>
-                <div class="label">
-                    Sign in with Metamask
-                </div>
-            </a>
-            <% } %>
-            <hr>
+      <% if (params.googleLoginUrl) { %>
+      <a class="btn btn-sign-in btn-google btn-block" href="<%= params.googleLoginUrl %>" download>
+        <div class="logo">
+          <img src="/img/g-logo.png" alt="Google logo" />
+        </div>
+        <div class="label">Sign in with Google</div>
+      </a>
+      <% } %>
+      <% if (params.twitterLoginUrl) { %>
+      <a class="btn btn-sign-in btn-twitter btn-block" href="<%= params.twitterLoginUrl %>">
+        <div class="logo">
+          <img src="/img/t-logo.png" alt="Twitter logo" />
+        </div>
+        <div class="label">Sign in with Twitter</div>
+      </a>
+      <% } %>
+      <% if (params.githubLoginUrl) { %>
+      <a class="btn btn-sign-in btn-spotify btn-block" href="<%= params.spotifyLoginUrl %>">
+        <div class="logo">
+          <img src="/img/s-logo.png" alt="github logo" />
+        </div>
+        <div class="label">Sign in with Spotify</div>
+      </a>
+      <% } %>
+      <% if (params.githubLoginUrl) { %>
+      <a class="btn btn-sign-in btn-github btn-block" href="<%= params.githubLoginUrl %>">
+        <div class="logo">
+          <img src="/img/github-logo.png" alt="github logo" />
+        </div>
+        <div class="label">Sign in with Github</div>
+      </a>
+      <% } %>
+      <% if (params.authRequestMessage) { %>
+      <a class="btn btn-sign-in btn-metamask btn-block" @click="signin()">
+        <div class="logo">
+          <img src="/img/mm-logo.svg" width="30" height="30" alt="Metamask logo" />
+        </div>
+        <div class="label">
+          Sign in with Metamask
+        </div>
+      </a>
+      <% } %>
+      <hr>
 
-            <!--
+      <!--
                     This part is used for regular login flow
                 -->
-            <form id="form-signin" action="/oidc/<%= uid %>/signin" method="post" class="mb-4">
+      <form id="form-signin" action="/oidc/<%= uid %>/signin" method="post" class="mb-4">
 
-                <div class="form-group">
-                    <label>E-mail:</label>
-                    <input class="form-control" required type="email" value="<%= params.email %>" name="email">
-                </div>
-                <div class="form-group">
-                    <label>Password:</label>
-                    <input class="form-control" required autocomplete type="password" value="<%= params.password %>"
-                           name="password">
-                </div>
-
-                <% if (params.mfaEnabled) { %>
-                <label>MFA code:</label>
-                <input class="form-control mb-4" required name="code">
-                <% } %>
-
-                <% if (params.authRequestMessage) { %>
-                <input type="hidden" name="authRequestMessage" value="<%= params.authRequestMessage %>" />
-                <input type="hidden" name="authRequestSignature" value="" />
-                <script type="module" src="/js/signin.js"></script>
-                <% } %>
-
-                <input type="hidden" name="returnUrl" value="<%= params.return_url %>" />
-                <button type="submit" class="btn rounded-pill btn-primary btn-block">
-                    Sign in
-                    <i class="fas fa-chevron-right" aria-hidden="true"></i>
-                </button>
-            </form>
-            <hr>
-            <div class="text-center">
-                <a class="btn btn-link" href="/oidc/<%= uid %>/forgot">
-                    Can't sign in?
-                </a>
-                <span class="text-muted">|</span>
-                <a class="btn btn-link" href="/oidc/<%= uid %>/signup?returnUrl=<%= params.return_url%>">
-                    Sign up for an account
-                </a>
-            </div>
-
-            <% } %>
+        <div class="form-group">
+          <label>E-mail:</label>
+          <input class="form-control" required type="email" value="<%= params.email %>" name="email">
         </div>
+        <div class="form-group">
+          <label>Password:</label>
+          <input class="form-control" required autocomplete type="password" value="<%= params.password %>" name="password">
+        </div>
+
+        <% if (params.mfaEnabled) { %>
+        <label>MFA code:</label>
+        <input class="form-control mb-4" required name="code">
+        <% } %>
+
+        <% if (params.authRequestMessage) { %>
+        <input type="hidden" name="authRequestMessage" value="<%= params.authRequestMessage %>" />
+        <input type="hidden" name="authRequestSignature" value="" />
+        <script type="module" src="/js/signin.js"></script>
+        <% } %>
+
+        <input type="hidden" name="returnUrl" value="<%= params.return_url %>" />
+        <button type="submit" class="btn rounded-pill btn-primary btn-block">
+          Sign in
+          <i class="fas fa-chevron-right" aria-hidden="true"></i>
+        </button>
+      </form>
+      <hr>
+      <div class="text-center">
+        <a class="btn btn-link" href="/oidc/<%= uid %>/forgot">
+          Can't sign in?
+        </a>
+        <span class="text-muted">|</span>
+        <a class="btn btn-link" href="/oidc/<%= uid %>/signup?returnUrl=<%= params.return_url%>">
+          Sign up for an account
+        </a>
+      </div>
+
+      <% } %>
     </div>
+  </div>
 </div>

@@ -1,3 +1,4 @@
+import { GithubService } from './../services/GithubServices';
 import { TwitterService } from '../services/TwitterService';
 import { YouTubeService } from '../services/YouTubeService';
 import { ChannelAction } from '../models/Reward';
@@ -36,6 +37,11 @@ function getLoginLinkForChannelAction(uid: string, channelAction: ChannelAction)
         case ChannelAction.SpotifyTrackSaved:
         case ChannelAction.SpotifyUserFollow:
             return { spotifyLoginUrl: SpotifyService.getLoginURL(uid, {}) };
+        case ChannelAction.GithubIssueCommented:
+        case ChannelAction.GithubIssueCreated:
+        case ChannelAction.GithubPullRequestMerged:
+          return { githubLoginUrl: GithubService.getLoginURL(uid, {}) };
+
     }
 }
 

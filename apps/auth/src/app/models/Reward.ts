@@ -3,6 +3,7 @@ export enum ChannelType {
     Google = 1,
     Twitter = 2,
     Spotify = 3,
+    Github = 4,
 }
 
 export enum ChannelAction {
@@ -16,4 +17,7 @@ export enum ChannelAction {
     SpotifyTrackPlaying = 7,
     SpotifyTrackSaved = 8,
     SpotifyTrackRecent = 9,
+    GithubPullRequestMerged = 10,
+    GithubIssueCreated = 11,
+    GithubIssueCommented = 12,
 }

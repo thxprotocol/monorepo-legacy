@@ -5,6 +5,7 @@ import { AccountService } from '../../../services/AccountService';
 import { SpotifyService } from '../../../services/SpotifyService';
 import { TwitterService } from '../../../services/TwitterService';
 import { YouTubeService } from '../../../services/YouTubeService';
+import { GithubService } from '@thxnetwork/auth/services/GithubServices';
 
 async function controller(req: Request, res: Response) {
     const { uid, params, session } = req.interaction;
@@ -25,6 +26,8 @@ async function controller(req: Request, res: Response) {
         redirect = TwitterService.getLoginURL(uid, {});
     } else if (params.channel == ChannelType.Spotify && !account.spotifyAccessToken) {
         redirect = SpotifyService.getLoginURL(uid, {});
+    } else if (params.channel == ChannelType.Github && !account.githubAccessToken) {
+        redirect = GithubService.getLoginURL(uid, {});
     }
 
     if (!redirect) {

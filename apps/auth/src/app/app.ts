@@ -1,17 +1,23 @@
 import 'express-async-errors';
-import express from 'express';
-import compression from 'compression';
-import path from 'path';
-import db from './util/database';
-import expressEJSLayouts from 'express-ejs-layouts';
+
 import axios from 'axios';
 import axiosBetterStacktrace from 'axios-better-stacktrace';
-import { helmetInstance } from './util/helmet';
+import compression from 'compression';
+import express from 'express';
+import expressEJSLayouts from 'express-ejs-layouts';
 import { xssProtection } from 'lusca';
-import { requestLogger } from './util/logger';
-import { PORT, MONGODB_URI, GTM, DASHBOARD_URL, WALLET_URL, PUBLIC_URL, NODE_ENV } from './config/secrets';
-import { errorLogger, errorNormalizer, errorOutput, notFoundHandler, corsHandler } from './middlewares';
+import path from 'path';
+
+import {
+    DASHBOARD_URL, GTM, MONGODB_URI, NODE_ENV, PORT, PUBLIC_URL, WALLET_URL
+} from './config/secrets';
 import { mainRouter } from './controllers';
+import {
+    corsHandler, errorLogger, errorNormalizer, errorOutput, notFoundHandler
+} from './middlewares';
+import db from './util/database';
+import { helmetInstance } from './util/helmet';
+import { requestLogger } from './util/logger';
 
 axiosBetterStacktrace(axios);
 
