@@ -18,7 +18,6 @@ async function controller(req: Request, res: Response) {
         params.authRequestMessage = createTypedMessage(AUTH_REQUEST_TYPED_MESSAGE, AUTH_URL, uid);
     }
 
-    console.log(params)
     res.render('signin', { uid, params, alert: {} });
 }
 
