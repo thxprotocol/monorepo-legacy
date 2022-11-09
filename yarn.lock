@@ -4732,9 +4732,10 @@
   dependencies:
     defer-to-connect "^2.0.1"
 
-"@thxnetwork/sdk@file:./thxnetwork-sdk-0.0.1.tgz":
+"@thxnetwork/sdk@0.0.1":
   version "0.0.1"
-  resolved "file:./thxnetwork-sdk-0.0.1.tgz#3e30e0b29df2d9ad283c59ce499b61f45d8b4153"
+  resolved "https://registry.yarnpkg.com/@thxnetwork/sdk/-/sdk-0.0.1.tgz#c7355de5d6a300995d60e758f9f0bf970ef3b838"
+  integrity sha512-EPONVZymOOVixol06Fd2FeB1QsnOicGy9dytgbXg3XxDn6CRjih+YmnQJIh3xHP7yFWne2ZSf15KhX9yOzAgUg==
 
 "@tokenizer/token@^0.3.0":
   version "0.3.0"
