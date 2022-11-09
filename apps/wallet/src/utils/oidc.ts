@@ -1,5 +1,5 @@
 import { OIDC_CLIENT_ID, OIDC_CLIENT_SECRET, BASE_URL } from './secrets';
-import { THXClient } from '@thxnetwork/sdk';
+import { Client as THXClient } from '@thxnetwork/sdk/client';
 
 // Set the config in localstorage, so we can access it from the silent renew iframe
 //localStorage.setItem('thx:wallet:oidc', JSON.stringify(config));
