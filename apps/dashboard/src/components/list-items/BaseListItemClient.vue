@@ -96,7 +96,6 @@ export default class BaseListItemClient extends Vue {
             client: this.client,
             pool: this.pool,
         });
-        console.log('CLIENT, ', this.client);
     }
 }
 </script>
