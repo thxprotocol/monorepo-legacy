@@ -33,7 +33,11 @@
                     Create Pool
                 </b-button>
             </template>
-            <base-modal-pool-create :erc20="erc20" :id="`modalPoolCreate-${erc20._id}`" />
+            <base-modal-pool-create
+                @created="$store.dispatch('erc20/read', erc20._id)"
+                :erc20="erc20"
+                :id="`modalPoolCreate-${erc20._id}`"
+            />
         </template>
     </base-card>
 </template>

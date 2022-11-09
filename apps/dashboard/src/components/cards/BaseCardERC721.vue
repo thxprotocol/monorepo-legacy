@@ -40,7 +40,11 @@
                     Create Pool
                 </b-button>
             </template>
-            <base-modal-pool-create :id="`modalAssetPoolCreate-${erc721._id}`" />
+            <base-modal-pool-create
+                @created="$store.dispatch('erc721/read', erc721._id)"
+                :erc721="erc721"
+                :id="`modalAssetPoolCreate-${erc721._id}`"
+            />
         </template>
     </base-card>
 </template>
