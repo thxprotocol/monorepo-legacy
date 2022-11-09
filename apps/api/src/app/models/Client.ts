@@ -28,6 +28,7 @@ const clientSchema = new mongoose.Schema(
         name: String,
         poolId: String,
         clientId: String,
+        clientSecret: String,
         grantType: String,
         registrationAccessToken: String,
         origins: [String],

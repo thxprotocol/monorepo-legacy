@@ -8,8 +8,10 @@ class WalletManager extends BaseManager {
         super(client);
     }
 
-    async list() {
-        const res = await this.client.request.get(`${URL_CONFIG['API_URL']}/v1/wallets`);
+    async list(chainId: ChainId, sub: string) {
+        const res = await this.client.request.get(
+            `${URL_CONFIG['API_URL']}/v1/wallets?sub=${sub}&chainId=${chainId.toString()}`,
+        );
         return await res.json();
     }
 
@@ -28,6 +30,25 @@ class WalletManager extends BaseManager {
         const res = await this.client.request.post(`${URL_CONFIG['API_URL']}/v1/wallets`, { body: params });
 
         return await res.json();
+    }
+
+    async getManagers(walletId: string) {
+        const res = await this.client.request.get(`${URL_CONFIG['API_URL']}/v1/wallets/${walletId}/managers`);
+        return await res.json();
+    }
+
+    async addManager(walletId: string, address: string) {
+        const params = new URLSearchParams();
+        params.append('address', address);
+        const res = await this.client.request.post(`${URL_CONFIG['API_URL']}/v1/wallets/${walletId}/managers`, {
+            body: params,
+        });
+        return await res.json();
+    }
+
+    async deleteManager(walletManagerId: string) {
+        const res = await this.client.request.delete(`${URL_CONFIG['API_URL']}/v1/wallets/managers/${walletManagerId}`);
+        return res.status;
     }
 }
 
