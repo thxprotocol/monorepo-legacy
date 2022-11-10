@@ -4,10 +4,10 @@ services:
     mongo:
         container_name: thx_mongo
         image: mongo
-        env_file: .env
+        env_file: .env.example
         restart: always
         ports:
-            - 27018:27017
+            - 27017:27017
         environment:
             MONGO_INITDB_ROOT_USERNAME: root
             MONGO_INITDB_ROOT_PASSWORD: root
