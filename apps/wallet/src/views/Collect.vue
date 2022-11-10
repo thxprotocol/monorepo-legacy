@@ -56,6 +56,38 @@
                     Continue
                 </b-button>
             </template>
+
+            <template v-if="notAuthorized">
+                <b-card class="mb-3">
+                    <div v-if="currentChannel === ChannelType.Twitter">
+                        <div class="mb-3 d-flex align-items-center">
+                            <img
+                                height="30"
+                                class="mr-3"
+                                :src="require('../../public/assets/img/thx_twitter.png')"
+                                alt=""
+                            />
+                            <strong> Twitter </strong>
+                        </div>
+                    </div>
+                    <div v-else>
+                        <div class="mb-3 d-flex align-items-center">
+                            <img
+                                height="30"
+                                class="mr-3"
+                                :src="require('../../public/assets/img/thx_youtube.png')"
+                                alt=""
+                            />
+                            <strong> Youtube </strong>
+                        </div>
+                    </div>
+                    <hr />
+                    <p class="text-muted">Please, connect to this channel to claim your reward.</p>
+                    <b-button @click="connect(currentChannel)" variant="primary" block class="rounded-pill">
+                        Connect
+                    </b-button>
+                </b-card>
+            </template>
         </div>
     </div>
 </template>
@@ -69,6 +101,8 @@ import { User } from 'oidc-client-ts';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters, mapState } from 'vuex';
 import poll from 'promise-poller';
+import { UserProfile } from '../store/modules/account';
+import { ChannelType } from '../types/enums/ChannelType';
 
 @Component({
     computed: {
@@ -94,6 +128,11 @@ export default class Collect extends Vue {
     erc721s!: { [id: string]: ERC721 };
     user!: User;
 
+    profile!: UserProfile;
+    notAuthorized = false;
+    ChannelType = ChannelType;
+    currentChannel: ChannelType | null = null;
+
     get erc721() {
         if (!this.claim) return null;
         return this.erc721s[this.claim.erc721Id];
@@ -104,7 +143,52 @@ export default class Collect extends Vue {
     }
 
     mounted() {
+        this.verifyOSSAuth();
         this.claimReward();
+    }
+
+    async getReward() {
+        if (!this.user.state) {
+            return null;
+        }
+        const state: any = this.user.state;
+        const claim = await this.$store.dispatch('assetpools/getClaim', {
+            claimId: state.claimId,
+            rewardHash: state.rewardHash,
+        });
+        if (!claim) {
+            return null;
+        }
+        const reward = await this.$store.dispatch('assetpools/getReward', {
+            rewardId: claim.rewardId,
+            poolId: claim.poolId,
+        });
+        if (!reward) {
+            return null;
+        }
+        return reward;
+    }
+
+    async verifyOSSAuth() {
+        const reward = await this.getReward();
+        if (!reward) {
+            throw new Error('Could not find the Reward');
+        }
+
+        reward.withdrawCondition = { channelType: ChannelType.Google };
+
+        if (reward.withdrawCondition === undefined) {
+            return;
+        }
+        if (reward.withdrawCondition.channelType === ChannelType.Google && !this.profile.googleAccess) {
+            this.notAuthorized = true;
+            this.currentChannel = ChannelType.Google;
+            return;
+        }
+        if (reward.withdrawCondition.channelType === ChannelType.Twitter && !this.profile.twitterAccess) {
+            this.notAuthorized = true;
+            this.currentChannel = ChannelType.Twitter;
+        }
     }
 
     async claimReward() {
@@ -113,6 +197,13 @@ export default class Collect extends Vue {
         if (!this.user) this.$router.push({ path: 'memberships' });
 
         try {
+            console.log('ACCOUNT', this.profile);
+            console.log('CURRENT CHANNEL', this.currentChannel.toString());
+            console.log('NOT AUTHORIZED', this.notAuthorized);
+            if (this.notAuthorized) {
+                this.isLoading = false;
+                return;
+            }
             const state: any = this.user.state;
             const claim = await this.$store.dispatch('assetpools/claimReward', {
                 claimId: state.claimId,
@@ -148,6 +239,8 @@ export default class Collect extends Vue {
         } finally {
             this.claimStarted = false;
             this.isLoading = false;
+            this.notAuthorized = false;
+            this.currentChannel = null;
         }
     }
 
@@ -209,6 +302,17 @@ export default class Collect extends Vue {
         (this as any).$confetti.stop();
         const path = this.erc721 ? 'collectibles' : 'tokens';
         this.$router.push({ path });
+    }
+
+    connect(channelType: ChannelType) {
+        if (!this.user.state) {
+            return;
+        }
+        const state: any = this.user.state;
+        this.$store.dispatch('account/connectRedirect', {
+            channel: channelType,
+            path: `/claim/${state.claimId ? state.claimId : state.rewardHash}`,
+        });
     }
 }
 </script>
