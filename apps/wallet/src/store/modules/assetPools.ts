@@ -28,6 +28,16 @@ class AssetPoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
+    async getReward({ rewardId, poolId }: { rewardId: string; poolId: string }) {
+        const { data } = await axios({
+            method: 'GET',
+            url: `/rewards/${rewardId}`,
+            headers: { 'X-PoolId': poolId },
+        });
+        return data;
+    }
+
+    @Action({ rawError: true })
     async getClaim({ rewardHash, claimId }: { rewardHash: string; claimId: string }) {
         if (rewardHash) {
             const { data } = await axios({

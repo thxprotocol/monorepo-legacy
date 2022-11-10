@@ -16,9 +16,9 @@ function formatAccountRes(account) {
             company: account.company,
             plan: account.plan,
             email: account.email,
-            googleAccess: account.googleAccessToken && account.googleAccessTokenExpires > Date.now(),
-            twitterAccess: account.twitterAccessToken && account.twitterAccessTokenExpires > Date.now(),
-            spotifyAccess: account.spotifyAccessToken && account.spotifyAccessTokenExpires > Date.now(),
+            googleAccess: account.googleAccessToken !== undefined && account.googleAccessTokenExpires > Date.now(),
+            twitterAccess: account.twitterAccessToken !== undefined && account.twitterAccessTokenExpires > Date.now(),
+            spotifyAccess: account.spotifyAccessToken !== undefined && account.spotifyAccessTokenExpires > Date.now(),
         },
         ...protectedPrivateKey,
     };
@@ -29,7 +29,8 @@ export const getAccount = async (req: Request, res: Response) => {
     if (!account) {
         throw new NotFoundError();
     }
-
+    const result = formatAccountRes(account);
+    console.log('AUTH ACCOUNT---------------------------', result);
     res.send(formatAccountRes(account));
 };
 
