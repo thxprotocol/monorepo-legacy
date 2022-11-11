@@ -29,8 +29,6 @@ export const getAccount = async (req: Request, res: Response) => {
     if (!account) {
         throw new NotFoundError();
     }
-    const result = formatAccountRes(account);
-    console.log('AUTH ACCOUNT---------------------------', result);
     res.send(formatAccountRes(account));
 };
 

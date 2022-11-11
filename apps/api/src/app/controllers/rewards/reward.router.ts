@@ -1,5 +1,11 @@
 import express from 'express';
-import { assertAssetPoolAccess, assertRequestInput, requireAssetPoolHeader, guard, assertPlan } from '@thxnetwork/api/middlewares';
+import {
+    assertAssetPoolAccess,
+    assertRequestInput,
+    requireAssetPoolHeader,
+    guard,
+    assertPlan,
+} from '@thxnetwork/api/middlewares';
 import { AccountPlanType } from '@thxnetwork/api/types/enums';
 import CreateReward from './post.controller';
 import ReadReward from './get.controller';
@@ -22,7 +28,7 @@ router.get(
 router.get(
     '/:id',
     guard.check(['rewards:read']),
-    assertAssetPoolAccess,
+    //assertAssetPoolAccess,
     assertRequestInput(ReadReward.validation),
     requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),

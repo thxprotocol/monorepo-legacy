@@ -1,6 +1,6 @@
 <template>
     <div class="d-flex align-items-center justify-content-center bg-dark p-5">
-        <div class="flex-row text-white">
+        <div class="flex-row text-white" v-if="!notAuthorized">
             <div v-if="isLoading && !error" class="text-center">
                 <b-spinner variant="secondary" large /><br />
                 <span class="text-muted mt-2">{{ info }}</span>
@@ -56,39 +56,38 @@
                     Continue
                 </b-button>
             </template>
-
-            <template v-if="notAuthorized">
-                <b-card class="mb-3">
-                    <div v-if="currentChannel === ChannelType.Twitter">
-                        <div class="mb-3 d-flex align-items-center">
-                            <img
-                                height="30"
-                                class="mr-3"
-                                :src="require('../../public/assets/img/thx_twitter.png')"
-                                alt=""
-                            />
-                            <strong> Twitter </strong>
-                        </div>
-                    </div>
-                    <div v-else>
-                        <div class="mb-3 d-flex align-items-center">
-                            <img
-                                height="30"
-                                class="mr-3"
-                                :src="require('../../public/assets/img/thx_youtube.png')"
-                                alt=""
-                            />
-                            <strong> Youtube </strong>
-                        </div>
-                    </div>
-                    <hr />
-                    <p class="text-muted">Please, connect to this channel to claim your reward.</p>
-                    <b-button @click="connect(currentChannel)" variant="primary" block class="rounded-pill">
-                        Connect
-                    </b-button>
-                </b-card>
-            </template>
         </div>
+        <template v-else>
+            <b-card class="mb-3">
+                <div v-if="currentChannel === ChannelType.Twitter">
+                    <div class="mb-3 d-flex align-items-center">
+                        <img
+                            height="30"
+                            class="mr-3"
+                            :src="require('../../public/assets/img/thx_twitter.png')"
+                            alt=""
+                        />
+                        <strong> Twitter </strong>
+                    </div>
+                </div>
+                <div v-else>
+                    <div class="mb-3 d-flex align-items-center">
+                        <img
+                            height="30"
+                            class="mr-3"
+                            :src="require('../../public/assets/img/thx_youtube.png')"
+                            alt=""
+                        />
+                        <strong> Youtube </strong>
+                    </div>
+                </div>
+                <hr />
+                <p class="text-muted">Please, connect to this channel to claim your reward.</p>
+                <b-button @click="connect(currentChannel)" variant="primary" block class="rounded-pill">
+                    Connect
+                </b-button>
+            </b-card>
+        </template>
     </div>
 </template>
 
@@ -142,8 +141,14 @@ export default class Collect extends Vue {
         return this.claimStarted ? 'Claim transaction pending...' : 'Claiming your reward...';
     }
 
-    mounted() {
-        this.verifyOSSAuth();
+    async mounted() {
+        await this.verifyOSSAuth();
+
+        if (this.notAuthorized) {
+            this.isLoading = false;
+            return;
+        }
+
         this.claimReward();
     }
 
@@ -163,6 +168,7 @@ export default class Collect extends Vue {
             rewardId: claim.rewardId,
             poolId: claim.poolId,
         });
+
         if (!reward) {
             return null;
         }
@@ -174,8 +180,6 @@ export default class Collect extends Vue {
         if (!reward) {
             throw new Error('Could not find the Reward');
         }
-
-        reward.withdrawCondition = { channelType: ChannelType.Google };
 
         if (reward.withdrawCondition === undefined) {
             return;
@@ -197,13 +201,6 @@ export default class Collect extends Vue {
         if (!this.user) this.$router.push({ path: 'memberships' });
 
         try {
-            console.log('ACCOUNT', this.profile);
-            console.log('CURRENT CHANNEL', this.currentChannel.toString());
-            console.log('NOT AUTHORIZED', this.notAuthorized);
-            if (this.notAuthorized) {
-                this.isLoading = false;
-                return;
-            }
             const state: any = this.user.state;
             const claim = await this.$store.dispatch('assetpools/claimReward', {
                 claimId: state.claimId,
