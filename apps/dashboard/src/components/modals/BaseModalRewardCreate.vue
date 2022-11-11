@@ -526,6 +526,13 @@ export default class ModalRewardCreate extends Vue {
         this.erc721metadata = null;
         this.$bvModal.hide(`modalRewardCreate`);
         this.loading = false;
+        this.isClaimOnce = true;
+        this.isMembershipRequired = false;
+        this.rewardVariant = RewardVariant.Token;
+        this.channel = null;
+        this.action = null;
+        this.item = null;
+
         this.$emit('submit');
     }
 
