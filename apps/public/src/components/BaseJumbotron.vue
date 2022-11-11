@@ -1,0 +1,117 @@
+<template>
+    <div>
+        <b-jumbotron bg-variant="secondary" v-lazy:background-image="require('../../public/assets/img/thx_jumbotron_bg.jpg')">
+            <div class="container">
+                <div class="row py-md-5">
+                    <div class="brand-intro col-lg-4 offset-lg-1 order-1 order-md-0">
+                        <div>
+                            <h1 class="brand-text mb-3">Embed tokens in any app or website.</h1>
+                            <p class="lead mb-4">
+                                Integrate a robust tokenization API powered by the Ethereum blockchain and Polygon
+                                side-chain.
+                            </p>
+                            <b-form id="formSignupRedirect" class="row" v-on:submit.prevent="submit">
+                                <div class="col-12">
+                                    <b-form-input
+                                        v-model="signupEmail"
+                                        type="email"
+                                        class="mb-2 rounded-pill border-0 mr-3"
+                                        placeholder="Your Email Address"
+                                    />
+                                    <b-button
+                                        type="submit"
+                                        form="formSignupRedirect"
+                                        block
+                                        variant="primary"
+                                        class="rounded-pill"
+                                        :title="TITLES.HOME_SIGNUP"
+                                    >
+                                        Sign Up, It's Free
+                                        <i class="fas fa-chevron-right"></i>
+                                    </b-button>
+                                    <b-button
+                                        variant="link-dark"
+                                        href="https://docs.thx.network"
+                                        target="_blank"
+                                        :title="TITLES.HOME_READ_OUR_DOCUMENTATION"
+                                    >
+                                        Read our documentation to find out more
+                                        <i class="fas fa-chevron-right"></i>
+                                    </b-button>
+                                </div>
+                            </b-form>
+                        </div>
+                    </div>
+                    <div class="offset-lg-1 col-lg-6 pb-5 py-md-5 order-0 order-md-1">
+                        <img
+                            v-lazy="require('../../public/assets/img/thx_jumbotron_dashboard.png')"
+                            :alt="ALT_TEXT.HOME_MAN_WATCHING_PHONE"
+                            class="img-fluid"
+                        />
+                        <!-- <img
+                            v-lazy="require('../../public/assets/img/thx_jumbotron_phone.webp')"
+                            height="800"
+                            class="brand-image float-right"
+                            alt="THX Wallet screenshot"
+                        /> -->
+                    </div>
+                </div>
+            </div>
+        </b-jumbotron>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 offset-lg-4">
+                    <div class="d-flex align-items-center pt-5">
+                        <div class="flex-0 mr-3 rounded" style="background-color: #00349f;">
+                            <img
+                                v-lazy="require('../../public/assets/images/euflag.png')"
+                                class="img-fluid rounded"
+                                :alt="ALT_TEXT.HOME_EU_FLAG"
+                            />
+                        </div>
+                        <div class="align-items-center">
+                            <small class="m-0">
+                                This project has received funding from the European Union’s Horizon 2020 research and
+                                innovation programme under agreement No 82888 (Blockpool) and No 824509 (Block.IS)
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script lang="ts">
+import { IMetrics } from '@thxnetwork/public/store/modules/metrics';
+import { BButton, BJumbotron, BFormInput } from 'bootstrap-vue';
+import { Component, Vue } from 'vue-property-decorator';
+import { mapGetters } from 'vuex';
+import { ALT_TEXT, TITLES } from '@thxnetwork/public/utils/constants';
+
+@Component({
+    components: {
+        'b-jumbotron': BJumbotron,
+        'b-button': BButton,
+        'b-form-input': BFormInput,
+    },
+    computed: mapGetters({
+        metrics: 'metrics/all',
+    }),
+})
+export default class BaseJumbotron extends Vue {
+    dashboardUrl = process.env.VUE_APP_DASHBOARD_URL;
+    metrics!: IMetrics;
+    signupEmail = '';
+    ALT_TEXT = ALT_TEXT;
+    TITLES = TITLES;
+
+    async submit() {
+        let url = `${this.dashboardUrl}/signup`;
+        if (this.signupEmail) {
+            url += `?signup_email=${this.signupEmail}`;
+        }
+        window.location.href = url;
+    }
+}
+</script>

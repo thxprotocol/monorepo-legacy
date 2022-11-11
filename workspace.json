@@ -7,6 +7,8 @@
         "common": "libs/common",
         "contracts": "libs/contracts",
         "dashboard": "apps/dashboard",
+        "public": "apps/public",
+        "public-e2e": "apps/public-e2e",
         "sdk": "libs/sdk",
         "wallet": "apps/wallet"
     }
