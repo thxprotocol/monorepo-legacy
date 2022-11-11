@@ -33,6 +33,7 @@ export class YouTubeService {
 
     static async validateLike(account: AccountDocument, channelItem: string) {
         const youtube = await this.getYoutubeClient(account);
+
         const r = await youtube.videos.getRating({
             id: [channelItem],
         });
@@ -147,11 +148,13 @@ export class YouTubeService {
         const response = await axios({
             url: `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${token}`,
         });
+
         return response.data['scope'].split(' ');
     }
 
     static async haveExpandedScopes(token: string): Promise<boolean> {
         const expanedScopes = this.getExpandedScopes();
+
         const scopes = await YouTubeService.getScopesOfAccessToken(token);
 
         const missingScope = scopes.length !== expanedScopes.length;
