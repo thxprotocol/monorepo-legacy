@@ -1,0 +1,61 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/public/src",
+  "targets": {
+      "build": {
+          "executor": "@nx-plus/vue:browser",
+          "options": {
+              "dest": "dist/apps/public",
+              "index": "apps/public/public/index.html",
+              "main": "apps/public/src/main.ts",
+              "tsConfig": "apps/public/tsconfig.app.json"
+          },
+          "configurations": {
+              "production": {
+                  "mode": "production",
+                  "filenameHashing": true,
+                  "productionSourceMap": true,
+                  "css": {
+                      "extract": true,
+                      "sourceMap": false
+                  }
+              }
+          }
+      },
+      "serve": {
+          "executor": "@nx-plus/vue:dev-server",
+          "options": {
+              "port": 8085,
+              "devServer": {
+                  "https": {
+                      "key": "./certs/localhost.key",
+                      "cert": "./certs/localhost.crt"
+                  }
+              },
+              "browserTarget": "public:build"
+          },
+          "configurations": {
+              "production": {
+                  "browserTarget": "public:build:production"
+              }
+          }
+      },
+      "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+              "lintFilePatterns": ["apps/public/**/*.{ts,tsx,vue}"]
+          }
+      },
+      "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/public"],
+          "options": {
+              "jestConfig": "apps/public/jest.config.ts",
+              "passWithNoTests": true
+          }
+      }
+  },
+  "tags": ["frontend"]
+}

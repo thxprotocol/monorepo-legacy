@@ -1,0 +1,91 @@
+<template>
+    <div :class="toggle ? 'fixed-top bg-white shadow' : 'fixed-top'">
+        <b-navbar
+            toggleable="lg"
+            class="container"
+            :class="`page-${$route.path.substring(1)} ${isDarkJumbotron ? 'navbar-text-white' : ''}`"
+        >
+            <router-link to="/" class="header-brand d-lg-none" :title="TITLES.HOME">
+                <img :src="require('../../public/assets/img/logo.svg')" :alt="ALT_TEXT.HOME_THX_LOGO" />
+            </router-link>
+
+            <b-navbar-toggle target="nav-collapse">
+                <i class="fas fa-bars"></i>
+            </b-navbar-toggle>
+            <b-collapse id="nav-collapse" is-nav>
+                <router-link to="/" :title="TITLES.HOME" class="header-brand">
+                    <img :src="require('../../public/assets/img/logo.svg')" :alt="ALT_TEXT.HOME_THX_LOGO" />
+                </router-link>
+                <b-navbar-nav>
+                    <b-nav-item to="/pricing" :title="TITLES.PRICING">Pricing</b-nav-item>
+                    <b-nav-item to="/use-cases" :title="TITLES.USECASES">Use Cases</b-nav-item>
+                    <b-nav-item to="/integrations" :title="TITLES.INTEGRATIONS">Integrations</b-nav-item>
+                    <b-nav-item to="/token" :title="TITLES.TOKEN">Token</b-nav-item>
+                    <b-nav-item href="https://offsetra.com/profile/THX_Network" target="_blank"
+                        >Carbon Offset</b-nav-item
+                    >
+                    <b-nav-item to="/contact" :title="TITLES.CONTACT">Contact</b-nav-item>
+                </b-navbar-nav>
+                <div class="navbar-nav-right">
+                    <b-button
+                        :variant="isDarkJumbotron && !toggle ? 'outline-light' : 'outline-dark'"
+                        class="rounded-pill ml-3"
+                        :href="dashboardUrl"
+                        :title="TITLES.HOME_SIGN_IN"
+                    >
+                        Sign in
+                        <i class="fas fa-chevron-right"></i>
+                    </b-button>
+                    <b-button class="rounded-pill ml-3" variant="primary" href="/demo" :title="TITLES.HOME_LIVE_DEMO">
+                        <span>Live Demo</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </b-button>
+                </div>
+            </b-collapse>
+        </b-navbar>
+    </div>
+</template>
+
+<script lang="ts">
+import { BButton, BCollapse, BNavbar, BNavbarNav, BNavbarToggle, BNavItem } from 'bootstrap-vue';
+import { Component, Vue } from 'vue-property-decorator';
+import { ALT_TEXT, TITLES } from '@thxnetwork/public/utils/constants';
+
+@Component({
+    components: {
+        'b-button': BButton,
+        'b-navbar': BNavbar,
+        'b-navbar-nav': BNavbarNav,
+        'b-nav-item': BNavItem,
+        'b-navbar-toggle': BNavbarToggle,
+        'b-collapse': BCollapse,
+    },
+})
+export default class BaseNavbar extends Vue {
+    dashboardUrl = process.env.VUE_APP_DASHBOARD_URL;
+    docsUrl = process.env.VUE_APP_DOCS_URL;
+    toggle = false;
+    ALT_TEXT = ALT_TEXT;
+    TITLES = TITLES;
+
+    get isDarkJumbotron() {
+        return (
+            this.$route.path.startsWith('/demo') ||
+            this.$route.path.startsWith('/token') ||
+            this.$route.path.startsWith('/use-case')
+        );
+    }
+
+    created() {
+        window.addEventListener('scroll', this.onScroll);
+    }
+
+    destroyed() {
+        window.removeEventListener('scroll', this.onScroll);
+    }
+
+    onScroll() {
+        this.toggle = window.scrollY > 50;
+    }
+}
+</script>
