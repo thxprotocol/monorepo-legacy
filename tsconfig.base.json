@@ -23,6 +23,7 @@
             "@thxnetwork/contracts*": ["libs/contracts*"],
             "@thxnetwork/dashboard*": ["apps/dashboard/src*"],
             "@thxnetwork/scss*": ["libs/common/src/lib/scss*"],
+            "@thxnetwork/types*": ["libs/common/src/lib/types*"],
             "@thxnetwork/sdk*": ["libs/sdk/src/lib*"],
             "@thxnetwork/wallet*": ["apps/wallet/src*"],
             "@thxnetwork/public*": ["apps/public/src*"]

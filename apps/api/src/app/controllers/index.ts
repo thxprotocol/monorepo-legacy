@@ -10,6 +10,7 @@ import rewardsRouter from './rewards/reward.router';
 import withdrawalsRouter from './withdrawals/withdrawals.router';
 import membershipsRouter from './memberships/memberships.router';
 import tokenRouter from './token/token.router';
+import pointRewardsRouter from './point-rewards/point-rewards.router';
 import promotionsRouter from './promotions/promotions.router';
 import depositsRouter from './deposits/deposits.router';
 import paymentsRouter from './payments/payments.router';
@@ -34,6 +35,7 @@ router.use('/token', tokenRouter);
 router.use('/docs', docsRouter);
 router.use('/metadata', erc721MetadataRouter);
 router.use('/payments', paymentsRouter);
+router.use('/point-rewards', pointRewardsRouter);
 
 router.use(checkJwt);
 router.use(corsHandler);
