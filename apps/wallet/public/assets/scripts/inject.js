@@ -1,47 +1,52 @@
 async function createBaseElements() {
-  const main = document.createElement("div");
-  const iframe = document.createElement("iframe");
-  const trigger = document.createElement("img");
+    const main = document.createElement('div');
+    const iframe = document.createElement('iframe');
+    const launcher = document.createElement('div');
 
-  // Setup class name
-  main.className = "thx-container";
-  main.id = "thx-container";
-  iframe.className = "thx-iframe";
-  iframe.id = "thx-iframe";
-  trigger.className = "thx-trigger";
-  trigger.id = "thx-trigger";
+    // Setup class name
+    main.id = 'thx-container';
 
-  iframe.src = "https://wallet.thx.network";
-  trigger.src = "https://img.upanh.tv/2022/10/31/logo.png";
+    iframe.id = 'thx-iframe';
+    iframe.src = 'https://localhost:8080';
+    iframe.style.display = 'none';
+    iframe.style.position = 'fixed';
+    iframe.style.bottom = '100px';
+    iframe.style.right = '15px';
+    iframe.style.height = '680px';
+    iframe.style.width = '400px';
+    iframe.style.border = '0';
+    iframe.style.borderRadius = '10px';
 
-  trigger.addEventListener("click", toggleTrigger);
+    launcher.id = 'thx-launcher';
+    launcher.style.width = '52px';
+    launcher.style.height = '52px';
+    launcher.style.backgroundColor = '#5942C1';
+    launcher.style.borderRadius = '50%';
+    launcher.style.cursor = 'pointer';
+    launcher.style.position = 'fixed';
+    launcher.style.bottom = '15px';
+    launcher.style.right = '15px';
 
-  main.appendChild(iframe);
-  main.appendChild(trigger);
+    launcher.addEventListener('click', toggleTrigger);
 
-  document.body.appendChild(main);
+    main.appendChild(iframe);
+    main.appendChild(launcher);
 
-  return [main, iframe, trigger];
+    document.body.appendChild(main);
 }
 
-async function toggleTrigger(e) {
-  const iframe = document.getElementById("thx-iframe");
-
-  const cursorX = e.pageX;
-  const cursorY = e.pageY;
-
-  const isVisible = iframe.classList.contains("active");
-
-  iframe.style.left = `calc(${cursorX}px - 320px)`;
-  iframe.style.bottom = `calc(${cursorY}px - 440px)`;
-
-  if (isVisible)
-    document.getElementById("thx-iframe").classList.remove("active");
-  else document.getElementById("thx-iframe").classList.add("active");
+function toggleTrigger() {
+    const iframe = document.getElementById('thx-iframe');
+    iframe.style.display = iframe.style.display === 'block' ? 'none' : 'block';
 }
 
-async function initialize() {
-  const [mainDiv, iframe, trigger] = await createBaseElements();
+function initialize() {
+    createBaseElements();
+
+    window.onmessage = (event) => {
+        if (event.origin !== 'https://localhost:8080') return;
+        toggleTrigger();
+    };
 }
 
 initialize();

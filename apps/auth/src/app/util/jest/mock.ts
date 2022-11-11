@@ -37,7 +37,7 @@ export function mockWalletProxy() {
         async () => {
             return [];
         },
-        true,
+        true, // mocks the entire url regardless of the passed query string:
     );
 
     mockApiPath('post', `/v1/wallets`, 200, async () => {

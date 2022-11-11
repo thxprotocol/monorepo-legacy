@@ -1,6 +1,7 @@
 import express from 'express';
 import { guard, assertRequestInput } from '@thxnetwork/api/middlewares';
 import CreateWallet from './post.controller';
+import ReadWallets from './get.controller';
 import ListWallets from './list.controller';
 import ListWalletManagers from './managers/list.controller';
 import CreateWalletManager from './managers/post.controller';
@@ -8,7 +9,8 @@ import DeleteWalletManager from './managers/delete.controller';
 
 const router = express.Router();
 
-router.get('/', guard.check(['wallets:read']), ListWallets.controller);
+router.get('/', guard.check(['wallets:read']), assertRequestInput(ListWallets.validation), ListWallets.controller);
+router.get('/:id', guard.check(['wallets:read']), assertRequestInput(ReadWallets.validation), ReadWallets.controller);
 router.post('/', guard.check(['wallets:write']), assertRequestInput(CreateWallet.validation), CreateWallet.controller);
 
 router.get(

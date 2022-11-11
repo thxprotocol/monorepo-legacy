@@ -1,10 +1,11 @@
 import axios from 'axios';
 import Web3 from 'web3';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { User, UserManager } from 'oidc-client-ts';
-import { config } from '@thxnetwork/wallet/utils/oidc';
-import { BASE_URL } from '@thxnetwork/wallet/utils/secrets';
 
+import { BASE_URL } from '@thxnetwork/wallet/utils/secrets';
+import { thxClient } from '../../utils/oidc';
+import UserManager from '@thxnetwork/sdk/managers/UserManager';
+import { User } from 'oidc-client-ts';
 const AUTH_REQUEST_TYPED_MESSAGE =
     "Welcome! Please make sure you have selected your preferred account and sign this message to verify it's ownership.";
 
@@ -17,7 +18,7 @@ export interface UserProfile {
 
 @Module({ namespaced: true })
 class AccountModule extends VuexModule {
-    userManager: UserManager = new UserManager(config);
+    userManager: UserManager = thxClient.userManager;
     _user: User | null = null;
     _profile: UserProfile | null = null;
 
@@ -127,9 +128,9 @@ class AccountModule extends VuexModule {
             extraQueryParams['claim_id'] = payload.claimId;
         }
 
-        await this.userManager.clearStaleState();
+        await this.userManager.cached.clearStaleState();
 
-        return await this.userManager.signinRedirect({
+        return await this.userManager.cached.signinRedirect({
             state: {
                 toPath: payload.toPath,
                 rewardHash: payload.rewardHash,
@@ -148,8 +149,8 @@ class AccountModule extends VuexModule {
 
     @Action({ rawError: true })
     async signupRedirect() {
-        await this.userManager.clearStaleState();
-        await this.userManager.signinRedirect({
+        await this.userManager.cached.clearStaleState();
+        await this.userManager.cached.signinRedirect({
             prompt: 'create',
             extraQueryParams: { return_url: BASE_URL },
         });
@@ -157,7 +158,7 @@ class AccountModule extends VuexModule {
 
     @Action({ rawError: true })
     async accountRedirect(path: string) {
-        await this.userManager.signinRedirect({
+        await this.userManager.cached.signinRedirect({
             extraQueryParams: {
                 prompt: 'account-settings',
                 return_url: BASE_URL + path,
@@ -167,17 +168,17 @@ class AccountModule extends VuexModule {
 
     @Action({ rawError: true })
     async signoutRedirect(toPath: string) {
-        await this.userManager.signoutRedirect({ state: { toPath } });
+        await this.userManager.cached.signoutRedirect({ state: { toPath } });
     }
 
     @Action({ rawError: true })
     signinSilent() {
-        this.userManager.signinSilent();
+        this.userManager.cached.signinSilent();
     }
 
     @Action({ rawError: true })
     signinSilentCallback() {
-        this.userManager.signinSilentCallback();
+        this.userManager.cached.signinSilentCallback();
     }
 }
 

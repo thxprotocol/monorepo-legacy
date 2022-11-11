@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { query } from 'express-validator';
 import WalletService from '@thxnetwork/api/services/WalletService';
 
-export const validation = [query('chainId').exists().isNumeric()];
+const validation = [query('chainId').exists().isNumeric(), query('sub').exists().isString()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Wallets']
@@ -13,4 +13,4 @@ const controller = async (req: Request, res: Response) => {
     res.send(response);
 };
 
-export default { controller };
+export default { controller, validation };

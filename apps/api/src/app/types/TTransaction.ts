@@ -139,6 +139,15 @@ type WalletRevokeRoleCallBack = {
     args: TWalletRevokeRoleCallBackArgs;
 };
 
+export type TERC20TransferFromCallBackArgs = {
+    erc20Id: string;
+};
+
+type ERC20TransferFromCallBack = {
+    type: 'transferFromCallBack';
+    args: TERC20TransferFromCallBackArgs;
+};
+
 export type TTransactionCallback =
     | ERC20DeployCallback
     | ERC721DeployCallback
@@ -151,4 +160,5 @@ export type TTransactionCallback =
     | WithdrawForCallback
     | WalletDeployCallback
     | WalletGrantRoleCallBack
-    | WalletRevokeRoleCallBack;
+    | WalletRevokeRoleCallBack
+    | ERC20TransferFromCallBack;
