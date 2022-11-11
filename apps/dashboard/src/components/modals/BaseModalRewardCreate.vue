@@ -524,7 +524,6 @@ export default class ModalRewardCreate extends Vue {
         this.rewardExpireTime = '00:00:00';
         this.amount = 1;
         this.erc721metadata = null;
-        this.$bvModal.hide(`modalRewardCreate`);
         this.loading = false;
         this.isClaimOnce = true;
         this.isMembershipRequired = false;
@@ -532,6 +531,7 @@ export default class ModalRewardCreate extends Vue {
         this.channel = null;
         this.action = null;
         this.item = null;
+        this.$bvModal.hide(`modalRewardCreate`);
 
         this.$emit('submit');
     }
