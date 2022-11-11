@@ -13,7 +13,7 @@ import VueLazyload from 'vue-lazyload';
 import './main.scss';
 
 // Install VeeValidate rules and localization
-Object.keys(rules).forEach(rule => {
+Object.keys(rules).forEach((rule) => {
     extend(rule, (rules as any)[rule]);
 });
 
@@ -48,5 +48,5 @@ Vue.use(VueScrollTo, {
 new Vue({
     router,
     store,
-    render: h => h(App),
+    render: (h) => h(App),
 }).$mount('#app');
