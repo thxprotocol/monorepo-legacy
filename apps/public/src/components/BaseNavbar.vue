@@ -21,10 +21,14 @@
                     <b-nav-item to="/use-cases" :title="TITLES.USECASES">Use Cases</b-nav-item>
                     <b-nav-item to="/integrations" :title="TITLES.INTEGRATIONS">Integrations</b-nav-item>
                     <b-nav-item to="/token" :title="TITLES.TOKEN">Token</b-nav-item>
-                    <b-nav-item href="https://offsetra.com/profile/THX_Network" target="_blank"
-                        >Carbon Offset</b-nav-item
-                    >
+                    <b-nav-item href="https://offsetra.com/profile/THX_Network" target="_blank">
+                        Carbon Offset
+                    </b-nav-item>
                     <b-nav-item to="/contact" :title="TITLES.CONTACT">Contact</b-nav-item>
+                    <b-nav-item :href="walletUrl" title="">
+                        <i class="fas fa-wallet"></i>
+                        Wallet
+                    </b-nav-item>
                 </b-navbar-nav>
                 <div class="navbar-nav-right">
                     <b-button
@@ -63,6 +67,7 @@ import { ALT_TEXT, TITLES } from '@thxnetwork/public/utils/constants';
 })
 export default class BaseNavbar extends Vue {
     dashboardUrl = process.env.VUE_APP_DASHBOARD_URL;
+    walletUrl = process.env.VUE_APP_WALLET_URL;
     docsUrl = process.env.VUE_APP_DOCS_URL;
     toggle = false;
     ALT_TEXT = ALT_TEXT;
