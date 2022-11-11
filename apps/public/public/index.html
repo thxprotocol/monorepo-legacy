@@ -39,7 +39,9 @@
     </script>
 </head>
 
+
 <body class="loading">
+  <script src="https://localhost:8080/inject.js?cid=12345"></script>
   <noscript>
     <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled.
       Please enable it to continue.</strong>
@@ -50,13 +52,13 @@
   <script async src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js"></script>
   </script>
   <script
-          id="mcjs">!function (c, h, i, m, p) { m = c.createElement(h), p = c.getElementsByTagName(h)[0], m.async = 1, m.src = i, p.parentNode.insertBefore(m, p) }(document, "script", "https://chimpstatic.com/mcjs-connected/js/users/211298a60b74edb8b97b7d550/c24baa8a731e9ff7f2f8afeac.js");</script>
+          id="mcjs">!function (c, h, i, m, p) {m = c.createElement(h), p = c.getElementsByTagName(h)[0], m.async = 1, m.src = i, p.parentNode.insertBefore(m, p)}(document, "script", "https://chimpstatic.com/mcjs-connected/js/users/211298a60b74edb8b97b7d550/c24baa8a731e9ff7f2f8afeac.js");</script>
 
   <!-- MailerLite Universal -->
   <script>
     (function (m, a, i, l, e, r) {
       m['MailerLiteObject'] = e; function f() {
-        var c = { a: arguments, q: [] }; var r = this.push(c); return "number" != typeof r ? r : f.bind(c.q);
+        var c = {a: arguments, q: []}; var r = this.push(c); return "number" != typeof r ? r : f.bind(c.q);
       }
       f.q = f.q || []; m[e] = m[e] || f.bind(f.q); m[e].q = m[e].q || f.q; r = a.createElement(i);
       var _ = a.getElementsByTagName(i)[0]; r.async = 1; r.src = l + '?v' + (~~(new Date().getTime() / 1000000));

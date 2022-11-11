@@ -27,8 +27,7 @@ import { TITLES } from './utils/constants';
 
 @Component({
     metaInfo: {
-        title:
-            'Allows you to pool funds and reward people. Designed developer first; thanks to an user friendly API, you integrate it easily with apps.',
+        title: 'Allows you to pool funds and reward people. Designed developer first; thanks to an user friendly API, you integrate it easily with apps.',
         titleTemplate: '%s | THX Network',
     },
     components: {
@@ -46,7 +45,7 @@ export default class App extends Vue {
     }
 
     cookiesAccepted() {
-        (function(w: any, d, s, l: any, i) {
+        (function (w: any, d, s, l: any, i) {
             w[l] = w[l] || [];
             w[l].push({
                 'gtm.start': new Date().getTime(),
