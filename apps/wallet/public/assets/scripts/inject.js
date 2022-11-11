@@ -1,7 +1,7 @@
 async function createBaseElements() {
     const main = document.createElement('div');
     const iframe = document.createElement('iframe');
-    const trigger = document.createElement('img');
+    const launcher = document.createElement('div');
 
     // Setup class name
     main.id = 'thx-container';
@@ -17,20 +17,20 @@ async function createBaseElements() {
     iframe.style.border = '0';
     iframe.style.borderRadius = '10px';
 
-    trigger.id = 'thx-trigger';
-    trigger.src = 'https://img.upanh.tv/2022/10/31/logo.png';
-    trigger.style.width = '52px';
-    trigger.style.height = '52px';
-    trigger.style.opacity = 0.5;
-    trigger.style.transition = 'all 300ms';
-    trigger.style.cursor = 'pointer';
-    trigger.style.position = 'fixed';
-    trigger.style.bottom = '15px';
-    trigger.style.right = '15px';
-    trigger.addEventListener('click', toggleTrigger);
+    launcher.id = 'thx-launcher';
+    launcher.style.width = '52px';
+    launcher.style.height = '52px';
+    launcher.style.backgroundColor = '#5942C1';
+    launcher.style.borderRadius = '50%';
+    launcher.style.cursor = 'pointer';
+    launcher.style.position = 'fixed';
+    launcher.style.bottom = '15px';
+    launcher.style.right = '15px';
+
+    launcher.addEventListener('click', toggleTrigger);
 
     main.appendChild(iframe);
-    main.appendChild(trigger);
+    main.appendChild(launcher);
 
     document.body.appendChild(main);
 }
