@@ -1,27 +1,26 @@
-@import url('https://fonts.googleapis.com/css?family=Exo+2:200,400,400i,700,700i,900,900i');
-
-// Required
+@import url('https://fonts.googleapis.com/css?family=Exo+2:200,400,400i,700,700i,800,800i,900,900i');
 @import '~bootstrap/scss/mixins';
 @import '~bootstrap/scss/functions';
 @import '@thxnetwork/scss/_variables.scss';
+
+// Required
 @import '~bootstrap/scss/variables';
 
 // Optional
+@import '~bootstrap/scss/reboot';
 @import '~bootstrap/scss/utilities';
 @import '~bootstrap/scss/root';
-@import '~bootstrap/scss/reboot';
 @import '~bootstrap/scss/type';
 
 // Defaults
 @import '~bootstrap/scss/card';
 @import '~bootstrap/scss/badge';
 @import '~bootstrap/scss/forms';
-@import '~bootstrap/scss/dropdown';
 @import '~bootstrap/scss/custom-forms';
 @import '~bootstrap/scss/list-group';
 @import '~bootstrap/scss/alert';
+@import '~bootstrap/scss/grid';
 @import '~bootstrap/scss/modal';
-@import '~bootstrap/scss/toasts';
 @import '~bootstrap/scss/close';
 @import '~bootstrap/scss/tooltip';
 @import '~bootstrap/scss/transitions';
@@ -29,34 +28,27 @@
 @import '~bootstrap/scss/spinners';
 @import '~bootstrap/scss/nav';
 @import '~bootstrap/scss/navbar';
-@import '~bootstrap/scss/media';
-@import '~bootstrap/scss/input-group';
-@import '~bootstrap/scss/grid';
-@import '~bootstrap/scss/code';
-@import '~bootstrap/scss/popover';
-@import '~bootstrap/scss/jumbotron';
-@import '~bootstrap/scss/progress';
-@import '~bootstrap/scss/pagination';
-
-// Bootstrap Vue
-@import '~bootstrap-vue/src/index.scss';
+@import '~bootstrap/scss/images';
+@import '~bootstrap/scss/tables';
 
 // Reset
 @import '@thxnetwork/scss/_root.scss';
+@import '@thxnetwork/scss/_utilities.scss';
 
-// Custom
+// Regions
+@import '@thxnetwork/scss/_jumbotron.scss';
+@import '@thxnetwork/scss/_card.scss';
+@import '@thxnetwork/scss/_contact.scss';
+@import '@thxnetwork/scss/_team.scss';
+@import '@thxnetwork/scss/_hooper.scss';
+
+// UI Components
+@import '@thxnetwork/scss/_custom-switch.scss';
 @import '@thxnetwork/scss/_buttons.scss';
 @import '@thxnetwork/scss/_navbar.scss';
-@import '@thxnetwork/scss/_forms.scss';
-@import '@thxnetwork/scss/_custom-forms.scss';
-@import '@thxnetwork/scss/_custom-switch.scss';
-@import '@thxnetwork/scss/_sidebar.scss';
-@import '@thxnetwork/scss/_jumbotron.scss';
-@import '@thxnetwork/scss/_modals.scss';
-@import '@thxnetwork/scss/_utilities.scss';
-@import '@thxnetwork/scss/_identicon.scss';
-@import '@thxnetwork/scss/_alert.scss';
-@import '@thxnetwork/scss/_popover.scss';
+@import '@thxnetwork/scss/_tab.scss';
+@import '@thxnetwork/scss/_number.scss';
+@import '@thxnetwork/scss/_token-distribution.scss';
 
 // Bootstrap Vue
 @import '~bootstrap-vue/src/index.scss';
