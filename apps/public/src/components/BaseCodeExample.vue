@@ -3,7 +3,7 @@
         <div class="container py-5">
             <div class="row pb-lg-5">
                 <div class="col-lg-6 order-1 order-lg-0 align-items-center d-flex">
-                    <pre class="rounded p-5 w-100 text-white" style="background-color: #282c34;">
+                    <pre class="rounded p-5 w-100 text-white" style="background-color: #282c34">
 <code class="language-common" v-html="codeExample"></code>
                     </pre>
                 </div>
@@ -29,35 +29,35 @@
                         </div>
                         <div class="card-logo mb-3 mr-md-3">
                             <img
-                                :src="require('../../public/img/thx_ethereum.png')"
+                                :src="require('../../public/assets/img/thx_ethereum.png')"
                                 width="35"
                                 :alt="ALT_TEXT.HOME_LOGO_UNDP_TECH_ETH"
                             />
                         </div>
                         <div class="card-logo mb-3 mr-md-3">
                             <img
-                                :src="require('../../public/img/thx_polygon.png')"
+                                :src="require('../../public/assets/img/thx_polygon.png')"
                                 width="35"
                                 :alt="ALT_TEXT.HOME_LOGO_UNDP_TECH_POL"
                             />
                         </div>
                         <div class="card-logo mb-3 mr-md-3">
                             <img
-                                :src="require('../../public/img/thx_oidc.png')"
+                                :src="require('../../public/assets/img/thx_oidc.png')"
                                 width="35"
                                 :alt="ALT_TEXT.HOME_LOGO_UNDP_TECH_OID"
                             />
                         </div>
                         <div class="card-logo mb-3 mr-md-3">
                             <img
-                                :src="require('../../public/img/thx_ipfs.png')"
+                                :src="require('../../public/assets/img/thx_ipfs.png')"
                                 width="35"
                                 :alt="ALT_TEXT.HOME_LOGO_UNDP_TECH_IPF"
                             />
                         </div>
                         <div class="card-logo mb-3 mr-md-3">
                             <img
-                                :src="require('../../public/img/thx_amazon.png')"
+                                :src="require('../../public/assets/img/thx_amazon.png')"
                                 width="55"
                                 :alt="ALT_TEXT.HOME_LOGO_UNDP_TECH_AMA"
                             />
@@ -69,13 +69,13 @@
                     <h5 class="mb-4">Extensions</h5>
                     <div class="d-flex justify-content-between">
                         <div class="card-logo mr-3 mb-3">
-                            <img :src="require('../../public/img/thx_slack.png')" width="35" alt="logo undp" />
+                            <img :src="require('../../public/assets/img/thx_slack.png')" width="35" alt="logo undp" />
                         </div>
                         <div class="card-logo mr-3 mb-3">
-                            <img :src="require('../../public/img/thx_discord.png')" width="35" alt="logo undp" />
+                            <img :src="require('../../public/assets/img/thx_discord.png')" width="35" alt="logo undp" />
                         </div>
                         <div class="card-logo mr-3 mb-3">
-                            <img :src="require('../../public/img/thx_drupal.png')" width="35" alt="logo undp" />
+                            <img :src="require('../../public/assets/img/thx_drupal.png')" width="35" alt="logo undp" />
                         </div>
                     </div>
                     <p class="lead font-weight-light">

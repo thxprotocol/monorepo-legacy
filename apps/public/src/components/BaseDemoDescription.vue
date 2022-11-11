@@ -7,7 +7,7 @@
                         width="100%"
                         height="auto"
                         class="img-fluid"
-                        :src="require('../../public/img/ui-demo.png')"
+                        :src="require('../../public/assets/img/ui-demo.png')"
                         alt=""
                     />
                 </div>
@@ -28,7 +28,7 @@
                             <img
                                 width="50"
                                 class="rounded-pill p-1 bg-white d-inline mr-2"
-                                :src="require('../../public/img/calendly-mieszko.png')"
+                                :src="require('../../public/assets/img/calendly-mieszko.png')"
                                 alt=""
                             />
                             Schedule a demo with Mieszko
@@ -38,7 +38,7 @@
                             <img
                                 width="50"
                                 class="rounded-pill p-1 bg-white d-inline mr-2"
-                                :src="require('../../public/img/calendly-steffen.jpg')"
+                                :src="require('../../public/assets/img/calendly-steffen.jpg')"
                                 alt=""
                             />
                             Schedule a demo with Steffen
