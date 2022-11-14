@@ -24,7 +24,8 @@
             "@thxnetwork/dashboard*": ["apps/dashboard/src*"],
             "@thxnetwork/scss*": ["libs/common/src/lib/scss*"],
             "@thxnetwork/sdk*": ["libs/sdk/src/lib*"],
-            "@thxnetwork/wallet*": ["apps/wallet/src*"]
+            "@thxnetwork/wallet*": ["apps/wallet/src*"],
+            "@thxnetwork/public*": ["apps/public/src*"]
         }
     },
     "exclude": ["node_modules", "tmp"]

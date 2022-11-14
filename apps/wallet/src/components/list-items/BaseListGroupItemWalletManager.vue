@@ -15,7 +15,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { TWalletManager } from '@thxnetwork/wallet/types/WalletManagers';
+import { type TWalletManager } from '@thxnetwork/wallet/types/WalletManagers';
 
 @Component({
     components: {},
