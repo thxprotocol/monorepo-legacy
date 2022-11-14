@@ -1,0 +1,177 @@
+@import url('https://fonts.googleapis.com/css?family=Exo+2:200,400,400i,700,700i,800,800i,900,900i');
+@import '~bootstrap/scss/mixins';
+@import '~bootstrap/scss/functions';
+@import '@thxnetwork/scss/_variables.scss';
+
+// Required
+@import '~bootstrap/scss/variables';
+
+// Optional
+@import '~bootstrap/scss/reboot';
+@import '~bootstrap/scss/utilities';
+@import '~bootstrap/scss/root';
+@import '~bootstrap/scss/type';
+
+// Defaults
+@import '~bootstrap/scss/card';
+@import '~bootstrap/scss/badge';
+@import '~bootstrap/scss/forms';
+@import '~bootstrap/scss/custom-forms';
+@import '~bootstrap/scss/list-group';
+@import '~bootstrap/scss/alert';
+@import '~bootstrap/scss/grid';
+@import '~bootstrap/scss/modal';
+@import '~bootstrap/scss/close';
+@import '~bootstrap/scss/tooltip';
+@import '~bootstrap/scss/transitions';
+@import '~bootstrap/scss/buttons';
+@import '~bootstrap/scss/spinners';
+@import '~bootstrap/scss/nav';
+@import '~bootstrap/scss/navbar';
+@import '~bootstrap/scss/images';
+@import '~bootstrap/scss/tables';
+
+// Reset
+@import '@thxnetwork/scss/_root.scss';
+@import '@thxnetwork/scss/_utilities.scss';
+
+// Regions
+@import '@thxnetwork/scss/_jumbotron.scss';
+@import '@thxnetwork/scss/_card.scss';
+@import '@thxnetwork/scss/_contact.scss';
+@import '@thxnetwork/scss/_team.scss';
+@import '@thxnetwork/scss/_hooper.scss';
+
+// UI Components
+@import '@thxnetwork/scss/_custom-switch.scss';
+@import '@thxnetwork/scss/_buttons.scss';
+@import '@thxnetwork/scss/_navbar.scss';
+@import '@thxnetwork/scss/_tab.scss';
+@import '@thxnetwork/scss/_number.scss';
+@import '@thxnetwork/scss/_token-distribution.scss';
+
+// Bootstrap Vue
+@import '~bootstrap-vue/src/index.scss';
+
+body {
+    overflow-x: hidden;
+}
+
+.bg-bubble {
+    &::before {
+        content: '';
+        display: block;
+        top: 0;
+        right: 0;
+        position: absolute;
+        background: url('../public/assets/img/thx_bubble.png') no-repeat;
+        background-size: contain;
+        background-position: top right;
+        height: 300px;
+        width: 300px;
+
+        @media (min-width: map-get($grid-breakpoints, 'lg')) {
+            height: 600px;
+            width: 600px;
+        }
+    }
+}
+
+.bg-circle {
+    position: relative;
+
+    &::before {
+        content: '';
+        display: block;
+        border: 1px solid $dark;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        margin-left: -200px;
+        width: 400px;
+        height: 400px;
+        border-radius: 50%;
+    }
+
+    .lead {
+        font-size: 2rem;
+
+        @media (min-width: map-get($grid-breakpoints, 'sm')) {
+            font-size: 2.5rem;
+        }
+
+        @media (min-width: map-get($grid-breakpoints, 'lg')) {
+            font-size: 2.5rem;
+        }
+
+        @media (min-width: map-get($grid-breakpoints, 'xl')) {
+            font-size: 3.5rem;
+        }
+    }
+}
+
+.icon-circle {
+    border-radius: 20px;
+    width: 22px;
+    height: 22px;
+    font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    margin-right: 0.5rem;
+}
+
+.icon-circle-opaque {
+    background-color: rgba(0, 0, 0, 0.15);
+    color: $dark;
+}
+
+.icon-circle-dark {
+    background-color: $dark;
+    color: $secondary;
+}
+
+.icon-circle-secondary {
+    background-color: $secondary;
+    color: $dark;
+}
+
+.modal-title {
+    margin: 0;
+    color: $dark;
+}
+
+.bg-yellow {
+    background-color: $yellow;
+}
+
+.card-pricing {
+    border-radius: 10px;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+}
+.form-control,
+.custom-select {
+    border-width: 2px;
+    font-family: 'Exo 2', Arial, sans-serif;
+}
+
+.fill-white,
+.fill-white path {
+    fill: white;
+    stroke: white;
+}
+
+.pricing-costs {
+    margin: 0;
+    font-size: 1.3rem;
+
+    strong {
+        font-size: 2rem;
+    }
+}
+
+.eu-project {
+    font-size: 14px;
+}
