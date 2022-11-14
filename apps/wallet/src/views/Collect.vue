@@ -161,9 +161,6 @@ export default class Collect extends Vue {
             claimId: state.claimId,
             rewardHash: state.rewardHash,
         });
-        if (!claim) {
-            return null;
-        }
         const reward = await this.$store.dispatch('assetpools/getReward', {
             rewardId: claim.rewardId,
             poolId: claim.poolId,
@@ -177,9 +174,6 @@ export default class Collect extends Vue {
 
     async verifyOSSAuth() {
         const reward = await this.getReward();
-        if (!reward) {
-            throw new Error('Could not find the Reward');
-        }
 
         if (reward.withdrawCondition === undefined) {
             return;
