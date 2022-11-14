@@ -148,14 +148,14 @@
                         </b-form-group>
                         <b-form-group>
                             <template v-if="channel && action && action.items && action.items.length > 0">
-                                <base-dropdown-youtube-uploads
+                                <!-- <base-dropdown-youtube-uploads
                                     v-if="action.type === ChannelAction.YouTubeLike"
                                     @selected="item = $event"
                                     :items="action.items"
                                     :item="
                                         reward && reward.withdrawCondition ? reward.withdrawCondition.channelItem : null
                                     "
-                                />
+                                /> -->
                                 <base-dropdown-youtube-channels
                                     v-if="action.type === ChannelAction.YouTubeSubscribe"
                                     @selected="item = $event"

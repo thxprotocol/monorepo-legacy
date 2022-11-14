@@ -82,6 +82,48 @@
                     </div>
                 </div>
                 <hr />
+                <b-alert varian="info" show>
+                    We will use your social account to verify if you
+                    <a
+                        v-if="reward.withdrawCondition.channelAction == ChannelAction.YouTubeLike"
+                        target="_blank"
+                        :href="`https://www.youtube.com/watch?v=${reward.withdrawCondition.channelItem}`"
+                        class="font-weight-bold"
+                        >liked this video</a
+                    >
+
+                    <a
+                        v-if="reward.withdrawCondition.channelAction == ChannelAction.YouTubeSubscribe"
+                        target="_blank"
+                        :href="`https://www.youtube.com/channel/${reward.withdrawCondition.channelItem}`"
+                        class="font-weight-bold"
+                        >subscribed to this channel</a
+                    >
+
+                    <a
+                        v-if="reward.withdrawCondition.channelAction == ChannelAction.TwitterLike"
+                        target="_blank"
+                        :href="`https://www.twitter.com/twitter/status/${reward.withdrawCondition.channelItem}`"
+                        class="font-weight-bold"
+                        >liked this tweet</a
+                    >
+
+                    <a
+                        v-if="reward.withdrawCondition.channelAction == ChannelAction.TwitterRetweet"
+                        target="_blank"
+                        :href="`https://www.twitter.com/twitter/status/${reward.withdrawCondition.channelItem}`"
+                        class="font-weight-bold"
+                        >retweeted this tweet</a
+                    >
+
+                    <a
+                        v-if="reward.withdrawCondition.channelAction == ChannelAction.TwitterFollow"
+                        target="_blank"
+                        :href="`https://www.twitter.com/i/user/${reward.withdrawCondition.channelItem}`"
+                        class="font-weight-bold"
+                        >follow this account</a
+                    >
+                </b-alert>
                 <p class="text-muted">Please, connect to this channel to claim your reward.</p>
                 <b-button @click="connect(currentChannel)" variant="primary" block class="rounded-pill">
                     Connect
@@ -102,6 +144,14 @@ import { mapGetters, mapState } from 'vuex';
 import poll from 'promise-poller';
 import { UserProfile } from '../store/modules/account';
 import { ChannelType } from '../types/enums/ChannelType';
+
+export enum ChannelAction {
+    YouTubeLike = 0,
+    YouTubeSubscribe = 1,
+    TwitterLike = 2,
+    TwitterRetweet = 3,
+    TwitterFollow = 4,
+}
 
 @Component({
     computed: {
@@ -126,10 +176,12 @@ export default class Collect extends Vue {
 
     erc721s!: { [id: string]: ERC721 };
     user!: User;
+    reward!: any;
 
     profile!: UserProfile;
     notAuthorized = false;
     ChannelType = ChannelType;
+    ChannelAction = ChannelAction;
     currentChannel: ChannelType | null = null;
 
     get erc721() {
@@ -142,7 +194,7 @@ export default class Collect extends Vue {
     }
 
     async mounted() {
-        await this.verifyOSSAuth();
+        await this.verifySSOAuth();
 
         if (this.notAuthorized) {
             this.isLoading = false;
@@ -153,7 +205,7 @@ export default class Collect extends Vue {
     }
 
     async getReward() {
-        if (!this.user.state) {
+        if (this.user && !this.user.state) {
             return null;
         }
         const state: any = this.user.state;
@@ -164,32 +216,29 @@ export default class Collect extends Vue {
         if (!claim) {
             return null;
         }
-        const reward = await this.$store.dispatch('assetpools/getReward', {
+
+        this.reward = await this.$store.dispatch('assetpools/getReward', {
             rewardId: claim.rewardId,
             poolId: claim.poolId,
         });
-
-        if (!reward) {
-            return null;
-        }
-        return reward;
     }
 
-    async verifyOSSAuth() {
-        const reward = await this.getReward();
-        if (!reward) {
+    async verifySSOAuth() {
+        await this.getReward();
+
+        if (!this.reward) {
             throw new Error('Could not find the Reward');
         }
 
-        if (reward.withdrawCondition === undefined) {
+        if (this.reward.withdrawCondition === undefined) {
             return;
         }
-        if (reward.withdrawCondition.channelType === ChannelType.Google && !this.profile.googleAccess) {
+        if (this.reward.withdrawCondition.channelType === ChannelType.Google && !this.profile.googleAccess) {
             this.notAuthorized = true;
             this.currentChannel = ChannelType.Google;
             return;
         }
-        if (reward.withdrawCondition.channelType === ChannelType.Twitter && !this.profile.twitterAccess) {
+        if (this.reward.withdrawCondition.channelType === ChannelType.Twitter && !this.profile.twitterAccess) {
             this.notAuthorized = true;
             this.currentChannel = ChannelType.Twitter;
         }
