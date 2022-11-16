@@ -84,45 +84,50 @@
                 <hr />
                 <b-alert varian="info" show>
                     We will use your social account to verify if you
-                    <a
+                    <b-link
                         v-if="reward.withdrawCondition.channelAction == ChannelAction.YouTubeLike"
                         target="_blank"
                         :href="`https://www.youtube.com/watch?v=${String(reward.withdrawCondition.channelItem)}`"
                         class="font-weight-bold"
-                        >liked this video</a
                     >
+                        liked this video
+                    </b-link>
 
-                    <a
+                    <b-link
                         v-if="reward.withdrawCondition.channelAction == ChannelAction.YouTubeSubscribe"
                         target="_blank"
                         :href="`https://www.youtube.com/channel/${String(reward.withdrawCondition.channelItem)}`"
                         class="font-weight-bold"
-                        >subscribed to this channel</a
                     >
+                        subscribed to this channel
+                    </b-link>
 
-                    <a
+                    <b-link
                         v-if="reward.withdrawCondition.channelAction == ChannelAction.TwitterLike"
                         target="_blank"
                         :href="`https://www.twitter.com/twitter/status/${String(reward.withdrawCondition.channelItem)}`"
                         class="font-weight-bold"
-                        >liked this tweet</a
                     >
+                        liked this tweet
+                    </b-link>
 
-                    <a
+                    <b-link
                         v-if="reward.withdrawCondition.channelAction == ChannelAction.TwitterRetweet"
                         target="_blank"
                         :href="`https://www.twitter.com/twitter/status/${String(reward.withdrawCondition.channelItem)}`"
                         class="font-weight-bold"
-                        >retweeted this tweet</a
                     >
+                        retweeted this tweet
+                    </b-link>
 
-                    <a
+                    <b-link
                         v-if="reward.withdrawCondition.channelAction == ChannelAction.TwitterFollow"
                         target="_blank"
                         :href="`https://www.twitter.com/i/user/${String(reward.withdrawCondition.channelItem)}`"
                         class="font-weight-bold"
-                        >follow this account</a
                     >
+                        follow this account
+                    </b-link>
                 </b-alert>
                 <p class="text-muted">Please, connect to this channel to claim your reward.</p>
                 <b-button @click="connect(currentChannel)" variant="primary" block class="rounded-pill">
