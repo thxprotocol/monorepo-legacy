@@ -87,7 +87,7 @@
                     <a
                         v-if="reward.withdrawCondition.channelAction == ChannelAction.YouTubeLike"
                         target="_blank"
-                        :href="`https://www.youtube.com/watch?v=${reward.withdrawCondition.channelItem}`"
+                        :href="`https://www.youtube.com/watch?v=${String(reward.withdrawCondition.channelItem)}`"
                         class="font-weight-bold"
                         >liked this video</a
                     >
@@ -95,7 +95,7 @@
                     <a
                         v-if="reward.withdrawCondition.channelAction == ChannelAction.YouTubeSubscribe"
                         target="_blank"
-                        :href="`https://www.youtube.com/channel/${reward.withdrawCondition.channelItem}`"
+                        :href="`https://www.youtube.com/channel/${String(reward.withdrawCondition.channelItem)}`"
                         class="font-weight-bold"
                         >subscribed to this channel</a
                     >
@@ -103,7 +103,7 @@
                     <a
                         v-if="reward.withdrawCondition.channelAction == ChannelAction.TwitterLike"
                         target="_blank"
-                        :href="`https://www.twitter.com/twitter/status/${reward.withdrawCondition.channelItem}`"
+                        :href="`https://www.twitter.com/twitter/status/${String(reward.withdrawCondition.channelItem)}`"
                         class="font-weight-bold"
                         >liked this tweet</a
                     >
@@ -111,7 +111,7 @@
                     <a
                         v-if="reward.withdrawCondition.channelAction == ChannelAction.TwitterRetweet"
                         target="_blank"
-                        :href="`https://www.twitter.com/twitter/status/${reward.withdrawCondition.channelItem}`"
+                        :href="`https://www.twitter.com/twitter/status/${String(reward.withdrawCondition.channelItem)}`"
                         class="font-weight-bold"
                         >retweeted this tweet</a
                     >
@@ -119,7 +119,7 @@
                     <a
                         v-if="reward.withdrawCondition.channelAction == ChannelAction.TwitterFollow"
                         target="_blank"
-                        :href="`https://www.twitter.com/i/user/${reward.withdrawCondition.channelItem}`"
+                        :href="`https://www.twitter.com/i/user/${String(reward.withdrawCondition.channelItem)}`"
                         class="font-weight-bold"
                         >follow this account</a
                     >
@@ -350,7 +350,7 @@ export default class Collect extends Vue {
         this.$router.push({ path });
     }
 
-    connect(channelType: ChannelType) {
+    connect(channelType: ChannelType | null) {
         if (!this.user.state) {
             return;
         }
