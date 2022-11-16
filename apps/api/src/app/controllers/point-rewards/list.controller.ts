@@ -1,36 +1,40 @@
 import { Request, Response } from 'express';
-import { RewardVariant, BrandVariant } from '@thxnetwork/types/index';
+import { RewardVariant } from '@thxnetwork/types/index';
+import { Reward } from '@thxnetwork/api/models/Reward';
+import { PointReward } from '@thxnetwork/api/models/PointReward';
+import RewardService from '@thxnetwork/api/services/RewardService';
+import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
+import { IAccount } from '@thxnetwork/api/models/Account';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Point Rewards']
+    const rewards = await Reward.find({ poolId: req.assetPool._id });
+    const pointRewards = await PointReward.find({ poolId: req.assetPool._id });
 
-    res.json([
-        {
-            amount: 50,
-            title: 'Refer a friend',
-            description:
-                'Help us onboard more users to our great game and get rewarded for it with ICE and our forever gratitude.',
-            variant: RewardVariant.Referral,
-            claimed: false,
-            brand: BrandVariant.None,
-        },
-        {
-            amount: 500,
-            title: 'Follow us on Twitter',
-            description: 'Verify your follow by connecting your Twitter account before submitting your claim.',
-            variant: RewardVariant.ERC20,
-            claimed: false,
-            brand: BrandVariant.None,
-        },
-        {
-            amount: 50,
-            title: 'Like this video on Youtube',
-            description: 'Verify your follow by connecting your Twitter account before submitting your claim.',
-            variant: RewardVariant.ERC721,
-            claimed: true,
-            brand: BrandVariant.Google,
-        },
-    ]);
+    let account: IAccount;
+    if (req.auth?.sub) {
+        account = await AccountProxy.getById(req.auth.sub);
+    }
+
+    pointRewards.map(async (r) => ({
+        amount: r.amount,
+        title: r.title,
+        description: r.description,
+        claimed: account ? !(await RewardService.canClaim(req.assetPool, r, account)) : false,
+    }));
+
+    rewards.map(async (r) => ({
+        amount: r.withdrawAmount,
+        title: r.title,
+        description:
+            'Help us onboard more users to our great game and get rewarded for it with ICE and our forever gratitude.',
+        // Variant property will introduce different collection in later work
+        variant: r.erc721metadataId ? RewardVariant.ERC721 : RewardVariant.ERC20,
+        claimed: account ? !(await RewardService.canClaim(req.assetPool, r, account)) : false,
+        brand: r.withdrawCondition ? r.withdrawCondition.channelType : undefined,
+    }));
+
+    res.json(await Promise.all([...pointRewards, ...rewards]));
 };
 
 export default { controller };

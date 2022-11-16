@@ -1,5 +1,6 @@
 export enum RewardVariant {
-    Referral = 0,
-    ERC20 = 1,
-    ERC721 = 2,
+    Default = 0,
+    Referral = 1,
+    ERC20 = 2,
+    ERC721 = 3,
 }

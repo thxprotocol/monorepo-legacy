@@ -11,6 +11,7 @@ import withdrawalsRouter from './withdrawals/withdrawals.router';
 import membershipsRouter from './memberships/memberships.router';
 import tokenRouter from './token/token.router';
 import pointRewardsRouter from './point-rewards/point-rewards.router';
+import pointBalancesRouter from './point-balances/point-balances.router';
 import promotionsRouter from './promotions/promotions.router';
 import depositsRouter from './deposits/deposits.router';
 import paymentsRouter from './payments/payments.router';
@@ -39,6 +40,7 @@ router.use('/point-rewards', pointRewardsRouter);
 
 router.use(checkJwt);
 router.use(corsHandler);
+router.use('/point-balances', pointBalancesRouter);
 router.use('/account', accountRouter);
 router.use('/pools', poolsRouter);
 router.use('/metrics', metricsRouter);
