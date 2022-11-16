@@ -1,9 +1,9 @@
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { Claim } from '@thxnetwork/api/models/Claim';
-import { RewardDocument } from '@thxnetwork/api/models/Reward';
 import { TClaim } from '@thxnetwork/api/types/TClaim';
 import AssetPoolService from './AssetPoolService';
 import db from '@thxnetwork/api/util/database';
+import { RewardBaseDocument } from '../types/RewardBase';
 export default {
     create: (data: { poolId: string; rewardId: string; erc20Id?: string; erc721Id?: string }) => {
         const claim = { id: db.createUUID(), ...data } as TClaim;
@@ -15,7 +15,7 @@ export default {
     findByPool: (pool: AssetPoolDocument) => {
         return Claim.find({ poolId: String(pool._id) });
     },
-    findByReward: (reward: RewardDocument) => {
+    findByReward: (reward: RewardBaseDocument) => {
         return Claim.find({ rewardId: reward.id, poolId: reward.poolId });
     },
     findByHash: async (hash: string) => {

@@ -2,6 +2,7 @@ import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
+import RewardNftService from '@thxnetwork/api/services/RewardNftService';
 import RewardService from '@thxnetwork/api/services/RewardService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 
@@ -210,6 +211,36 @@ export const createReward = async (assetPool: AssetPoolDocument, config: any) =>
                 erc20Id,
                 erc721Id,
                 rewardId: reward.id,
+            }),
+        ),
+    );
+
+    return { reward, claims };
+};
+
+export const createRewardNft = async (assetPool: AssetPoolDocument, config: any) => {
+    const metadata = await ERC721Service.findMetadataById(config.erc721metadataId);
+    if (!metadata) {
+        throw new NotFoundError('could not find the Metadata for this metadataId');
+    }
+    const amount = config.amount | 1;
+    const reward = await RewardNftService.create(assetPool, {
+        title: config.title,
+        slug: config.slug,
+        limit: config.withdrawLimit || 0,
+        expiryDate: config.expiryDate,
+        erc721metadataId: config.erc721metadataId,
+        rewardConditionId: config.rewardConditionId,
+        amount,
+    });
+
+    const claims = await Promise.all(
+        Array.from({ length: amount }).map(() =>
+            ClaimService.create({
+                poolId: assetPool._id,
+                erc20Id: null,
+                erc721Id: metadata.erc721,
+                rewardId: reward.rewardBaseId,
             }),
         ),
     );

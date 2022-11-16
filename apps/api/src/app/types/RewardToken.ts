@@ -1,22 +1,9 @@
-import mongoose from 'mongoose';
-import { RewardBaseSchema, TRewardBase } from './RewardBase';
+import { TRewardBase } from './RewardBase';
 
-export type RewardToken = TRewardBase & {
+export type TRewardToken = {
+    id: string;
     rewardBaseId: string;
     amount: number;
-    rewardConditionId: string;
+    rewardConditionId?: string;
+    rewardBase: TRewardBase;
 };
-
-export type RewardTokenDocument = mongoose.Document & RewardToken;
-
-const rewardTokenSchema = new mongoose.Schema(
-    {
-        ...RewardBaseSchema.obj,
-        rewardBaseId: String,
-        amount: Number,
-        rewardConditionId: String,
-    },
-    { timestamps: true },
-);
-
-export const RewardToken = mongoose.model<RewardTokenDocument>('RewardToken', rewardTokenSchema);

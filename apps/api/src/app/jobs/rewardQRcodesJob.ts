@@ -9,13 +9,13 @@ import BrandService from '@thxnetwork/api/services/BrandService';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
 import ImageService from '@thxnetwork/api/services/ImageService';
 import MailService from '@thxnetwork/api/services/MailService';
-import RewardService from '@thxnetwork/api/services/RewardService';
 import { ClaimDocument } from '@thxnetwork/api/types/TClaim';
 import { logger } from '@thxnetwork/api/util/logger';
 import { s3PrivateClient } from '@thxnetwork/api/util/s3';
 import { createArchiver } from '@thxnetwork/api/util/zip';
 import { Upload } from '@aws-sdk/lib-storage';
 import ejs from 'ejs';
+import RewardBaseService from '../services/RewardBaseService';
 const ROOT_PATH = './apps/api/src/app';
 export const generateRewardQRCodesJob = async ({ attrs }: Job) => {
     if (!attrs.data) return;
@@ -26,7 +26,7 @@ export const generateRewardQRCodesJob = async ({ attrs }: Job) => {
         const pool = await AssetPoolService.getById(poolId);
         if (!pool) throw new Error('Reward not found');
 
-        const reward = await RewardService.get(pool, rewardId);
+        const reward = await RewardBaseService.get(pool, rewardId);
         if (!reward) throw new Error('Reward not found');
 
         const account = await AccountProxy.getById(sub);
