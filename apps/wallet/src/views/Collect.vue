@@ -1,6 +1,6 @@
 <template>
     <div class="d-flex align-items-center justify-content-center bg-dark p-5">
-        <div class="flex-row text-white" v-if="!notAuthorized">
+        <div class="flex-row text-white">
             <div v-if="isLoading && !error" class="text-center">
                 <b-spinner variant="secondary" large /><br />
                 <span class="text-muted mt-2">{{ info }}</span>
@@ -16,37 +16,38 @@
 
                 <template v-if="isClaimFailed">
                     <b-alert show variant="danger">
-                        Oops, we did not manage to claim your token reward at this time, please try again later.
+                        Oops, we did not manage to claim your token reward at this time, please visit your claim URL or
+                        scan your QR code again.
                     </b-alert>
-                    <b-button block variant="primary" class="rounded-pill" @click="claimReward()"> Try again </b-button>
                 </template>
             </template>
 
-            <template v-if="claim">
-                <template v-if="claim.erc20">
+            <template v-if="claimedReward">
+                <template v-if="claimedReward.erc20">
                     <div class="img-treasure" :style="`background-image: url(${imgUrl});`"></div>
                     <h2 class="text-secondary text-center my-3">
                         <strong>Congratulations!</strong> You've earned
-                        <strong>{{ claim.amount }} {{ claim.erc20.symbol }}</strong>
+                        <strong>{{ claimedReward.amount }} {{ claimedReward.erc20.symbol }}</strong>
                     </h2>
                     <p class="lead text-center">
                         Collect, swap or redeem these tokens for promotions.<br />
-                        <small class="text-muted" v-if="claim.unlockDate">
+                        <small class="text-muted" v-if="claimedReward.unlockDate">
                             Unlocks at
-                            {{ format(new Date(claim.unlockDate), 'MMMM dd, yyyy') }}
+                            {{ format(new Date(claimedReward.unlockDate), 'MMMM dd, yyyy') }}
                         </small>
                     </p>
                 </template>
-                <b-row v-if="claim.erc721Id">
+                <b-row v-if="claimedReward.erc721Id">
                     <b-col xs="12" md="6" class="d-flex align-items-center">
                         <b-img-lazy :src="imgUrl" class="d-block w-100" />
                     </b-col>
                     <b-col xs="12" md="6">
                         <h2 class="text-secondary my-3"><strong>Congratulations!</strong> You've claimed an NFT.</h2>
                         <p class="lead">
-                            {{ claim.metadata.title || 'title' }}<br />
+                            {{ claimedReward.metadata.title || 'title' }}<br />
                             <small class="text-muted">{{
-                                claim.metadata.description || 'Lorem ipsum dolor sit amet, nunct copesitas randum.'
+                                claimedReward.metadata.description ||
+                                'Lorem ipsum dolor sit amet, nunct copesitas randum.'
                             }}</small>
                         </p>
                     </b-col>
@@ -57,84 +58,37 @@
                 </b-button>
             </template>
         </div>
-        <template v-else>
-            <b-card class="mb-3">
-                <div v-if="currentChannel === ChannelType.Twitter">
-                    <div class="mb-3 d-flex align-items-center">
-                        <img
-                            height="30"
-                            class="mr-3"
-                            :src="require('../../public/assets/img/thx_twitter.png')"
-                            alt=""
-                        />
-                        <strong> Twitter </strong>
-                    </div>
+
+        <b-card class="mb-3" v-if="reward && reward.withdrawCondition && !hasValidAccessToken">
+            <div v-if="reward.withdrawCondition.channelType === ChannelType.Twitter">
+                <div class="mb-3 d-flex align-items-center">
+                    <img height="30" class="mr-3" :src="require('../../public/assets/img/thx_twitter.png')" alt="" />
+                    <strong> Twitter </strong>
                 </div>
-                <div v-else>
-                    <div class="mb-3 d-flex align-items-center">
-                        <img
-                            height="30"
-                            class="mr-3"
-                            :src="require('../../public/assets/img/thx_youtube.png')"
-                            alt=""
-                        />
-                        <strong> Youtube </strong>
-                    </div>
+            </div>
+            <div v-else>
+                <div class="mb-3 d-flex align-items-center">
+                    <img height="30" class="mr-3" :src="require('../../public/assets/img/thx_youtube.png')" alt="" />
+                    <strong> Youtube </strong>
                 </div>
-                <hr />
-                <b-alert varian="info" show>
-                    We will use your social account to verify if you
-                    <b-link
-                        v-if="reward.withdrawCondition.channelAction == ChannelAction.YouTubeLike"
-                        target="_blank"
-                        :href="`https://www.youtube.com/watch?v=${String(reward.withdrawCondition.channelItem)}`"
-                        class="font-weight-bold"
-                    >
-                        liked this video
-                    </b-link>
-
-                    <b-link
-                        v-if="reward.withdrawCondition.channelAction == ChannelAction.YouTubeSubscribe"
-                        target="_blank"
-                        :href="`https://www.youtube.com/channel/${String(reward.withdrawCondition.channelItem)}`"
-                        class="font-weight-bold"
-                    >
-                        subscribed to this channel
-                    </b-link>
-
-                    <b-link
-                        v-if="reward.withdrawCondition.channelAction == ChannelAction.TwitterLike"
-                        target="_blank"
-                        :href="`https://www.twitter.com/twitter/status/${String(reward.withdrawCondition.channelItem)}`"
-                        class="font-weight-bold"
-                    >
-                        liked this tweet
-                    </b-link>
-
-                    <b-link
-                        v-if="reward.withdrawCondition.channelAction == ChannelAction.TwitterRetweet"
-                        target="_blank"
-                        :href="`https://www.twitter.com/twitter/status/${String(reward.withdrawCondition.channelItem)}`"
-                        class="font-weight-bold"
-                    >
-                        retweeted this tweet
-                    </b-link>
-
-                    <b-link
-                        v-if="reward.withdrawCondition.channelAction == ChannelAction.TwitterFollow"
-                        target="_blank"
-                        :href="`https://www.twitter.com/i/user/${String(reward.withdrawCondition.channelItem)}`"
-                        class="font-weight-bold"
-                    >
-                        follow this account
-                    </b-link>
-                </b-alert>
-                <p class="text-muted">Please, connect to this channel to claim your reward.</p>
-                <b-button @click="connect(currentChannel)" variant="primary" block class="rounded-pill">
-                    Connect
-                </b-button>
-            </b-card>
-        </template>
+            </div>
+            <hr />
+            <b-alert varian="info" show>
+                We will use your social account to verify if you
+                <b-link v-if="reward.itemUrl" target="_blank" :href="reward.itemUrl.href" class="font-weight-bold">
+                    {{ reward.itemUrl.label }}
+                </b-link>
+            </b-alert>
+            <p class="text-muted">Please, connect to this channel to claim your reward.</p>
+            <b-button
+                @click="connect(reward.withdrawCondition.channelType)"
+                variant="primary"
+                block
+                class="rounded-pill"
+            >
+                Connect
+            </b-button>
+        </b-card>
     </div>
 </template>
 
@@ -149,14 +103,7 @@ import { mapGetters, mapState } from 'vuex';
 import poll from 'promise-poller';
 import { UserProfile } from '../store/modules/account';
 import { ChannelType } from '../types/enums/ChannelType';
-
-export enum ChannelAction {
-    YouTubeLike = 0,
-    YouTubeSubscribe = 1,
-    TwitterLike = 2,
-    TwitterRetweet = 3,
-    TwitterFollow = 4,
-}
+import { ChannelAction } from '../store/modules/assetPools';
 
 @Component({
     computed: {
@@ -177,14 +124,16 @@ export default class Collect extends Vue {
     claimStarted = false;
     isClaimFailed = false;
     isClaimInvalid = false;
-    claim: (Withdrawal & TERC721Token) | null = null;
+    claim: (Withdrawal & TERC721Token & { poolId: string }) | null = null;
+    claimedReward: (Withdrawal & TERC721Token & { poolId: string }) | null = null;
+    state!: { claimId: string; rewardHash: string };
 
     erc721s!: { [id: string]: ERC721 };
     user!: User;
-    reward!: any;
+    reward: any = null;
 
     profile!: UserProfile;
-    notAuthorized = false;
+    hasValidAccessToken = false;
     ChannelType = ChannelType;
     ChannelAction = ChannelAction;
     currentChannel: ChannelType | null = null;
@@ -199,75 +148,65 @@ export default class Collect extends Vue {
     }
 
     async mounted() {
-        await this.verifySSOAuth();
-
-        if (this.notAuthorized) {
-            this.isLoading = false;
-            return;
+        if (!this.user || !this.user.state) {
+            this.$router.push({ path: 'memberships' });
         }
 
-        this.claimReward();
-    }
+        // Store state locally to solve type issues
+        this.state = this.user.state as { claimId: string; rewardHash: string };
 
-    async getReward() {
-        if (this.user && !this.user.state) {
-            return null;
-        }
-        const state: any = this.user.state;
-        const claim = await this.$store.dispatch('assetpools/getClaim', {
-            claimId: state.claimId,
-            rewardHash: state.rewardHash,
+        // Get claim information based on url claimId or rewardHash. rewardHash will be deprecated
+        this.claim = await this.$store.dispatch('assetpools/getClaim', {
+            claimId: this.state.claimId,
+            rewardHash: this.state.rewardHash,
         });
-        if (!claim) {
-            return null;
-        }
+        if (!this.claim) return;
 
+        // Get reward information based on claims rewardId
         this.reward = await this.$store.dispatch('assetpools/getReward', {
-            rewardId: claim.rewardId,
-            poolId: claim.poolId,
+            rewardId: this.claim.rewardId,
+            poolId: this.claim.poolId,
         });
-    }
+        if (!this.reward) return;
 
-    async verifySSOAuth() {
-        await this.getReward();
-
-        if (!this.reward) {
-            throw new Error('Could not find the Reward');
+        // If no condition applies claim directly
+        if (!this.reward.withdrawCondition) {
+            return await this.claimReward();
         }
 
-        if (this.reward.withdrawCondition === undefined) {
-            return;
+        // Check validity of current access token
+        switch (this.reward.withdrawCondition.channelType) {
+            case ChannelType.Google:
+                this.hasValidAccessToken = this.profile.googleAccess;
+                break;
+            case ChannelType.Twitter:
+                this.hasValidAccessToken = this.profile.twitterAccess;
+                break;
         }
-        if (this.reward.withdrawCondition.channelType === ChannelType.Google && !this.profile.googleAccess) {
-            this.notAuthorized = true;
-            this.currentChannel = ChannelType.Google;
-            return;
-        }
-        if (this.reward.withdrawCondition.channelType === ChannelType.Twitter && !this.profile.twitterAccess) {
-            this.notAuthorized = true;
-            this.currentChannel = ChannelType.Twitter;
+
+        // Claim directly if condition applies and access token is valid
+        if (!this.hasValidAccessToken) {
+            this.isLoading = false;
+        } else {
+            this.claimReward();
         }
     }
 
     async claimReward() {
-        this.isLoading = true;
-
-        if (!this.user) this.$router.push({ path: 'memberships' });
-
         try {
-            const state: any = this.user.state;
-            const claim = await this.$store.dispatch('assetpools/claimReward', {
-                claimId: state.claimId,
-                rewardHash: state.rewardHash,
+            this.claimedReward = await this.$store.dispatch('assetpools/claimReward', {
+                claimId: this.state.claimId,
+                rewardHash: this.state.rewardHash,
             });
+            if (!this.claimedReward) return;
+
             this.claimStarted = true;
 
-            if (claim?.erc20) {
-                await this.waitForWithdrawn(claim);
+            if (this.claimedReward?.erc20) {
+                await this.waitForWithdrawn(this.claimedReward);
             } else {
-                await this.waitForMinted(claim);
+                await this.waitForMinted(this.claimedReward);
             }
-            this.claim = claim;
 
             this.startConfetti();
 
@@ -290,16 +229,13 @@ export default class Collect extends Vue {
         } finally {
             this.claimStarted = false;
             this.isLoading = false;
-            this.notAuthorized = false;
-            this.currentChannel = null;
         }
     }
 
     async waitForWithdrawn(withdrawal: Withdrawal) {
-        const state: any = this.user.state;
         const claim = await this.$store.dispatch('assetpools/getClaim', {
-            claimId: state.claimId,
-            rewardHash: state.rewardHash,
+            claimId: this.state.claimId,
+            rewardHash: this.state.rewardHash,
         });
 
         const taskFn = async () => {
@@ -359,10 +295,9 @@ export default class Collect extends Vue {
         if (!this.user.state) {
             return;
         }
-        const state: any = this.user.state;
         this.$store.dispatch('account/connectRedirect', {
             channel: channelType,
-            path: `/claim/${state.claimId ? state.claimId : state.rewardHash}`,
+            path: `/claim/${this.state.claimId ? this.state.claimId : this.state.rewardHash}`,
         });
     }
 }
