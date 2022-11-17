@@ -1,6 +1,14 @@
 import axios from 'axios';
 import { Module, VuexModule, Action } from 'vuex-module-decorators';
 
+export enum ChannelAction {
+    YouTubeLike = 0,
+    YouTubeSubscribe = 1,
+    TwitterLike = 2,
+    TwitterRetweet = 3,
+    TwitterFollow = 4,
+}
+
 interface SignedCall {
     call: string;
     nonce: number;
@@ -34,6 +42,44 @@ class AssetPoolModule extends VuexModule {
             url: `/rewards/${rewardId}`,
             headers: { 'X-PoolId': poolId },
         });
+        if (data.withdrawCondition) {
+            let itemUrl;
+            const { channelAction, channelItem } = data.withdrawCondition;
+            switch (channelAction) {
+                case ChannelAction.YouTubeLike:
+                    itemUrl = {
+                        href: `https://www.youtube.com/watch?v=${channelItem}`,
+                        label: 'liked this video',
+                    };
+                    break;
+                case ChannelAction.YouTubeSubscribe:
+                    itemUrl = {
+                        href: `https://www.youtube.com/channel/${channelItem}`,
+                        label: 'subscribed to this channel',
+                    };
+                    break;
+                case ChannelAction.TwitterLike:
+                    itemUrl = {
+                        href: `https://www.twitter.com/twitter/status/${channelItem}`,
+                        label: 'liked this tweet',
+                    };
+                    break;
+                case ChannelAction.TwitterRetweet:
+                    itemUrl = {
+                        href: `https://www.twitter.com/twitter/status/${channelItem}`,
+                        label: 'retweeted this tweet',
+                    };
+                    break;
+                case ChannelAction.TwitterFollow:
+                    itemUrl = {
+                        href: `https://www.twitter.com/i/user/${channelItem}`,
+                        label: 'follow this account',
+                    };
+                    break;
+            }
+            data.itemUrl = itemUrl;
+        }
+
         return data;
     }
 
