@@ -56,6 +56,7 @@ const controller = async (req: Request, res: Response) => {
             logger.info(`INVALID EXTENSION, FILE SKIPPED: ${file}`);
             continue;
         }
+
         // CREATE THE FILE BUFFER
         const buffer = await zip.file(file).async('nodebuffer');
 
@@ -111,7 +112,7 @@ const controller = async (req: Request, res: Response) => {
     }
 
     const metadatas: ERC721MetadataDocument[] = await Promise.all(promises);
-
+    checkMemory('execute promises');
     res.status(201).json({ metadatas });
 };
 
@@ -127,5 +128,14 @@ async function isValidFileType(buffer: Buffer) {
     }
 
     return true;
+}
+
+function checkMemory(functionName: string) {
+    const used = process.memoryUsage().heapUsed / 1024 / 1024;
+    console.log(
+        `----------------------------The script '${functionName}' uses approximately ${
+            Math.round(used * 100) / 100
+        } MB`,
+    );
 }
 export default { controller, validation };
