@@ -20,5 +20,4 @@ const options: CustomAuthArgs = {
 if (TORUS_NETWORK === 'testnet' && ROPSTEN_RPC) {
     options.networkUrl = ROPSTEN_RPC;
 }
-console.log(options, ROPSTEN_RPC, TORUS_NETWORK);
 export const torusClient = new CustomAuth(options);
