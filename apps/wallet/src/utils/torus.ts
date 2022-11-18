@@ -14,10 +14,11 @@ export function mockPrivateKeyForSubject(subject: string) {
 
 const options: CustomAuthArgs = {
     baseUrl: `${location.origin}/serviceworker`,
-    enableLogging: false,
+    enableLogging: TORUS_NETWORK !== 'mainnet',
     network: TORUS_NETWORK as any,
 };
 if (TORUS_NETWORK === 'testnet' && ROPSTEN_RPC) {
     options.networkUrl = ROPSTEN_RPC;
 }
+console.log(options, ROPSTEN_RPC, TORUS_NETWORK);
 export const torusClient = new CustomAuth(options);
