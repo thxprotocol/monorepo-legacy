@@ -25,7 +25,7 @@ export default class BaseIdenticon extends Vue {
     width = 40;
     height = 40;
 
-    @Prop() size!: string;
+    @Prop() size!: string | number;
     @Prop() variant!: string;
     @Prop() rounded!: boolean;
     @Prop() uri!: string;

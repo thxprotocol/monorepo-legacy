@@ -33,11 +33,7 @@ async function controller(req: Request, res: Response) {
             return res.redirect(`/oidc/${uid}/connect`);
         }
         case 'login': {
-            if (params.reward_hash || params.claim_id) {
-                return res.redirect(`/oidc/${uid}/claim`);
-            } else {
-                return res.redirect(`/oidc/${uid}/signin`);
-            }
+            return res.redirect(`/oidc/${uid}/signin`);
         }
     }
 }

@@ -1,12 +1,14 @@
 import { Request, Response } from 'express';
 import { NotFoundError } from '../../util/errors';
 import { AccountService } from '../../services/AccountService';
+import { YouTubeService } from '@thxnetwork/auth/services/YouTubeService';
 
-function formatAccountRes(account) {
+async function formatAccountRes(account) {
     let protectedPrivateKey;
     if (account.privateKey) {
         protectedPrivateKey = { privateKey: account.privateKey };
     }
+
     return {
         ...{
             id: account._id,
@@ -16,9 +18,12 @@ function formatAccountRes(account) {
             company: account.company,
             plan: account.plan,
             email: account.email,
-            googleAccess: account.googleAccessToken && account.googleAccessTokenExpires > Date.now(),
-            twitterAccess: account.twitterAccessToken && account.twitterAccessTokenExpires > Date.now(),
-            spotifyAccess: account.spotifyAccessToken && account.spotifyAccessTokenExpires > Date.now(),
+            googleAccess:
+                account.googleAccessToken !== undefined &&
+                account.googleAccessTokenExpires > Date.now() &&
+                (await YouTubeService.haveExpandedScopes(account.googleAccessToken)),
+            twitterAccess: account.twitterAccessToken !== undefined && account.twitterAccessTokenExpires > Date.now(),
+            spotifyAccess: account.spotifyAccessToken !== undefined && account.spotifyAccessTokenExpires > Date.now(),
         },
         ...protectedPrivateKey,
     };
@@ -29,8 +34,7 @@ export const getAccount = async (req: Request, res: Response) => {
     if (!account) {
         throw new NotFoundError();
     }
-
-    res.send(formatAccountRes(account));
+    res.send(await formatAccountRes(account));
 };
 
 export const getAccountByAddress = async (req: Request, res: Response) => {
@@ -38,7 +42,7 @@ export const getAccountByAddress = async (req: Request, res: Response) => {
     if (!account) {
         throw new NotFoundError();
     }
-    res.send(formatAccountRes(account));
+    res.send(await formatAccountRes(account));
 };
 
 export const getAccountByEmail = async (req: Request, res: Response) => {
@@ -48,5 +52,5 @@ export const getAccountByEmail = async (req: Request, res: Response) => {
         throw new NotFoundError();
     }
 
-    res.send(formatAccountRes(account));
+    res.send(await formatAccountRes(account));
 };

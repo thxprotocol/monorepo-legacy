@@ -18,7 +18,7 @@ export default class ClientProxy {
 
     static async get(id: string): Promise<TClient> {
         const client = await Client.findById(id);
-        return this.getCredentials(client);
+        return await this.getCredentials(client);
     }
 
     static async isAllowedOrigin(origin: string) {

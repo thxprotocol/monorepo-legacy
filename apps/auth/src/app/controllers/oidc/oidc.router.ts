@@ -7,7 +7,6 @@ import ReadSignin from './signin/get';
 import CreateSignin from './signin/post';
 import CreateSignup from './signup/post';
 import ReadSignup from './signup/get';
-import ReadClaim from './claim/get';
 import ReadReset from './reset/get';
 import ReadConfirm from './confirm/get';
 import ReadConfirmEmail from './account/email/get';
@@ -36,7 +35,6 @@ router.get('/callback/twitter', ReadCallbackTwitter.controller);
 router.get('/callback/spotify', ReadCallbackSpotify.controller);
 router.get('/callback/github', ReadCallbackGithub.controller);
 
-
 // Routes require no auth
 router.get('/:uid', assertInteraction, ReadOIDC.controller);
 router.get('/:uid/signin', assertInteraction, ReadSignin.controller);
@@ -44,7 +42,6 @@ router.get('/:uid/signup', assertInteraction, ReadSignup.controller);
 router.get('/:uid/confirm', assertInteraction, ReadConfirm.controller);
 router.get('/:uid/confirm/email', assertInteraction, ReadConfirmEmail.controller);
 router.get('/:uid/reset', assertInteraction, ReadReset.controller);
-router.get('/:uid/claim', assertInteraction, ReadClaim.controller);
 router.post(
     '/:uid/signin',
     urlencoded({ extended: false }),
