@@ -1,4 +1,4 @@
-import RewardService from '@thxnetwork/api/services/RewardService';
+import RewardNftService from '@thxnetwork/api/services/RewardNftService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
@@ -10,10 +10,10 @@ const validation = [
 ];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Rewards']
-    const reward = await RewardService.get(req.assetPool, req.params.id);
+    // #swagger.tags = ['RewardsNft']
+    const reward = await RewardNftService.get(req.params.id);
     if (!reward) throw new NotFoundError('Could not find reward for this id');
-    const result = await RewardService.update(reward, req.body);
+    const result = await RewardNftService.update(reward, req.body);
     return res.json(result);
 };
 

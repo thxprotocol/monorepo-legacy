@@ -4,7 +4,7 @@ import { body, param } from 'express-validator';
 import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { agenda, EVENT_SEND_DOWNLOAD_METADATA_QR_EMAIL } from '@thxnetwork/api/util/agenda';
-import { createReward } from '@thxnetwork/api/controllers/rewards/utils';
+import { createRewardNft } from '../../rewards-utils';
 
 const validation = [
     param('id').isMongoId(),
@@ -38,13 +38,14 @@ const controller = async (req: Request, res: Response) => {
     }
 
     // GENERATE A NEW REWARD and CLAIMS FOR THE NEW METADATA
-    const { reward, claims } = await createReward(req.assetPool, {
+    const { reward, claims } = await createRewardNft(req.assetPool, {
         erc721metadataId: metadata._id,
-        withdrawAmount: 0,
-        withdrawDuration: 0,
-        withdrawLimit: 1,
+        amount: 0,
+        limit: 1,
         isClaimOnce: true,
-        isMembershipRequired: false,
+        expiryDate: null,
+        slug: null,
+        title: null,
     });
 
     // Regenerate THE METADATA QRCODES ZIP FILE WITHOUT SENDING THE NOTIFICATION EMAIL
@@ -62,5 +63,4 @@ const controller = async (req: Request, res: Response) => {
 
     res.status(201).json({ ...metadata.toJSON(), tokens, reward, claims });
 };
-
 export default { controller, validation };

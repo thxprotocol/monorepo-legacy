@@ -3,17 +3,17 @@ import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { param } from 'express-validator';
 import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
-import RewardNftService from '@thxnetwork/api/services/RewardNftService';
-import { RewardBaseDocument } from '@thxnetwork/api/types/RewardBase';
+import RewardReferralService from '@thxnetwork/api/services/RewardReferralService';
+import { RewardBaseDocument } from '@thxnetwork/api/models/RewardBase';
 
 const validation = [param('id').exists()];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['RewardsNft']
-    const reward = await RewardNftService.get(req.params.id);
+    // #swagger.tags = ['Rewards']
+    const reward = await RewardReferralService.get(req.params.id);
     if (!reward) throw new NotFoundError();
 
-    const claims = await ClaimService.findByReward(reward.rewardBase as RewardBaseDocument);
+    const claims = await ClaimService.findByReward((await reward.rewardBase) as RewardBaseDocument);
     const withdrawals = await WithdrawalService.findByQuery({
         poolId: String(req.assetPool._id),
         rewardId: reward.id,

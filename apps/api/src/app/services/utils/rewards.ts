@@ -1,15 +1,13 @@
 import { IAccount } from '@thxnetwork/api/models/Account';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { ChannelAction, RewardState } from '@thxnetwork/api/models/Reward';
-import { RewardNftDocument } from '@thxnetwork/api/models/RewardNft';
-import { RewardTokenDocument } from '@thxnetwork/api/models/RewardToken';
+import { RewardConditionDocument } from '@thxnetwork/api/types/RewardCondition';
 import TwitterDataProxy from '@thxnetwork/api/proxies/TwitterDataProxy';
 import YouTubeDataProxy from '@thxnetwork/api/proxies/YoutubeDataProxy';
-import { RewardVariant } from '@thxnetwork/api/types/enums/RewardVariant';
-import { RewardBaseDocument, TRewardBase } from '@thxnetwork/api/types/RewardBase';
-import { RewardCondition, RewardConditionDocument } from '@thxnetwork/api/types/RewardCondition';
-import { TRewardNft } from '@thxnetwork/api/types/RewardNft';
 import WithdrawalService from '../WithdrawalService';
+import { RewardVariant } from '@thxnetwork/api/types/enums/RewardVariant';
+import { RewardBase, RewardBaseDocument } from '@thxnetwork/api/models/RewardBase';
+import db from '@thxnetwork/api/util/database';
 
 export const validateCondition = async (
     account: IAccount,
@@ -45,7 +43,7 @@ export const validateCondition = async (
     return { result: true };
 };
 
-export const canClaim = async (
+export const validateRewardBase = async (
     assetPool: AssetPoolDocument,
     reward: RewardBaseDocument,
     account: IAccount,
@@ -72,28 +70,41 @@ export const canClaim = async (
         if (Date.now() > expiryTimestamp) return { error: 'This reward URL has expired' };
     }
 
-    const hasClaimedOnce = await WithdrawalService.hasClaimedOnce(String(assetPool._id), account.id, reward.id);
+    if (reward.isClaimOnce) {
+        const hasClaimedOnce = await WithdrawalService.hasClaimedOnce(String(assetPool._id), account.id, reward.id);
 
-    // Can only claim this reward once and a withdrawal already exists
-    if (hasClaimedOnce) {
-        return { error: 'You have already claimed this reward' };
-    }
-
-    switch (reward.variant) {
-        case RewardVariant.RewardNFT:
-        case RewardVariant.RewardToken: {
-            const typedReward: RewardNftDocument | RewardTokenDocument = await reward.getReward();
-
-            if (!typedReward.rewardConditionId) {
-                return { result: true };
-            }
-
-            const rewardCondition = await RewardCondition.findById(typedReward.rewardConditionId);
-
-            return await validateCondition(account, rewardCondition);
+        // Can only claim this reward once and a withdrawal already exists
+        if (reward.isClaimOnce && hasClaimedOnce) {
+            return { error: 'You have already claimed this reward' };
         }
-
-        default:
-            return { result: true };
     }
+
+    return { result: true };
+};
+
+export const createRewardBase = async (
+    assetPool: AssetPoolDocument,
+    variant: RewardVariant,
+    data: {
+        title: string;
+        slug: string;
+        limit: number;
+        expiryDate: Date;
+        amount: number;
+        isClaimOnce: boolean;
+    },
+) => {
+    const expiryDateObj = data.expiryDate && new Date(data.expiryDate);
+    return RewardBase.create({
+        id: db.createUUID(),
+        title: data.title,
+        slug: data.slug,
+        variant,
+        poolId: assetPool._id,
+        limit: data.limit,
+        expiryDate: expiryDateObj,
+        state: RewardState.Enabled,
+        amount: data.amount,
+        isClaimOnce: data.isClaimOnce,
+    });
 };

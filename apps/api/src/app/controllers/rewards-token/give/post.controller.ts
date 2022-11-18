@@ -1,22 +1,18 @@
 import { Request, Response } from 'express';
 import { WithdrawalState, WithdrawalType } from '@thxnetwork/api/types/enums';
-import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
+import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import RewardService from '@thxnetwork/api/services/RewardService';
 import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
-import MemberService from '@thxnetwork/api/services/MemberService';
 import { WithdrawalDocument } from '@thxnetwork/api/models/Withdrawal';
 import { param, body } from 'express-validator';
+import RewardTokenService from '@thxnetwork/api/services/RewardTokenService';
 
 const validation = [param('id').exists(), body('member').exists()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
-    const reward = await RewardService.get(req.assetPool, req.params.id);
+    const reward = await RewardTokenService.get(req.params.id);
     if (!reward) throw new BadRequestError('Could not find a reward for this id');
-
-    const isMember = await MemberService.isMember(req.assetPool, req.body.member);
-    if (!isMember && reward.isMembershipRequired) throw new ForbiddenError();
 
     const account = await AccountProxy.getByAddress(req.body.member);
     if (!account) throw new NotFoundError();
@@ -25,11 +21,11 @@ const controller = async (req: Request, res: Response) => {
         req.assetPool,
         WithdrawalType.ClaimRewardFor,
         account.id,
-        reward.withdrawAmount,
+        reward.amount,
         // Accounts with stored (encrypted) privateKeys are custodial and should not be processed before
         // they have logged into their wallet to update their account with a new wallet address.
         account.privateKey ? WithdrawalState.Deferred : WithdrawalState.Pending,
-        reward.withdrawUnlockDate,
+        null,
         req.params.id,
     );
 

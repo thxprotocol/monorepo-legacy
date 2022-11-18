@@ -31,7 +31,7 @@ class AssetPoolModule extends VuexModule {
     async getReward({ rewardId, poolId }: { rewardId: string; poolId: string }) {
         const { data } = await axios({
             method: 'GET',
-            url: `/rewards/${rewardId}`,
+            url: `/rewards-token/${rewardId}`,
             headers: { 'X-PoolId': poolId },
         });
         return data;

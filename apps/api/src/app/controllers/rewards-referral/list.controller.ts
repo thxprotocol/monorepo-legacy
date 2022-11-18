@@ -1,11 +1,15 @@
 import { Request, Response } from 'express';
-import RewardService from '@thxnetwork/api/services/RewardService';
 import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
+import RewardReferralService from '@thxnetwork/api/services/RewardReferralService';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
-    const rewards = await RewardService.findByPool(req.assetPool, Number(req.query.page), Number(req.query.limit));
+    const rewards = await RewardReferralService.findByPool(
+        req.assetPool,
+        Number(req.query.page),
+        Number(req.query.limit),
+    );
 
     const promises = rewards.results.map(async (r, i) => {
         const rewardBaseId = String(r.rewardBaseId);

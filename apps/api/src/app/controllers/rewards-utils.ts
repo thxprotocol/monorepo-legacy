@@ -3,8 +3,20 @@ import ClaimService from '@thxnetwork/api/services/ClaimService';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import RewardNftService from '@thxnetwork/api/services/RewardNftService';
+import RewardReferralService from '@thxnetwork/api/services/RewardReferralService';
 import RewardService from '@thxnetwork/api/services/RewardService';
+import RewardTokenService from '@thxnetwork/api/services/RewardTokenService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
+import { agenda, EVENT_SEND_DOWNLOAD_QR_EMAIL } from '@thxnetwork/api/util/agenda';
+import { AWS_S3_PRIVATE_BUCKET_NAME } from '@thxnetwork/api/config/secrets';
+import { s3PrivateClient } from '@thxnetwork/api/util/s3';
+import { GetObjectCommand } from '@aws-sdk/client-s3';
+import { Readable } from 'stream';
+import { logger } from '@thxnetwork/api/util/logger';
+import { Response } from 'express';
+import { RewardNftDocument } from '../models/RewardNft';
+import { RewardReferralDocument } from '../models/RewardReferral';
+import { RewardTokenDocument } from '../models/RewardToken';
 
 export function addMinutes(date: Date, minutes: number) {
     return new Date(date.getTime() + minutes * 60000);
@@ -32,10 +44,7 @@ export function getRewardConfiguration(slug: RewardSlug) {
                 title: 'No limit and claim one disabled',
                 slug: 'no-limit-and-claim-one-disabled',
                 withdrawAmount: 1,
-                withdrawLimit: 0,
-                withdrawDuration: 0,
-                isClaimOnce: false,
-                isMembershipRequired: false,
+                limit: 0,
                 amount: 1,
             };
         }
@@ -51,32 +60,7 @@ export function getRewardConfiguration(slug: RewardSlug) {
                 amount: 1,
             };
         }
-        case 'withdraw-date-is-today': {
-            return {
-                title: 'Withdraw date is today',
-                slug: 'withdraw-date-is-today',
-                withdrawAmount: 1,
-                withdrawDuration: 0,
-                withdrawLimit: 0,
-                withdrawUnlockDate: formatDate(new Date()),
-                isClaimOnce: false,
-                isMembershipRequired: false,
-                amount: 1,
-            };
-        }
-        case 'withdraw-date-is-tomorrow': {
-            return {
-                title: 'Withdraw date is tomorrow',
-                slug: 'withdraw-date-is-tomorrow',
-                withdrawAmount: 1,
-                withdrawDuration: 0,
-                withdrawLimit: 0,
-                withdrawUnlockDate: formatDate(addMinutes(new Date(), 24 * 60)),
-                isClaimOnce: false,
-                isMembershipRequired: false,
-                amount: 1,
-            };
-        }
+
         case 'expiration-date-is-next-30-min': {
             return {
                 title: 'Expiration date is next 30 min',
@@ -103,18 +87,7 @@ export function getRewardConfiguration(slug: RewardSlug) {
                 amount: 1,
             };
         }
-        case 'membership-is-required': {
-            return {
-                title: 'Membership is required',
-                slug: 'membership-is-required',
-                withdrawAmount: 1,
-                withdrawDuration: 0,
-                withdrawLimit: 0,
-                isClaimOnce: false,
-                isMembershipRequired: true,
-                amount: 1,
-            };
-        }
+
         case 'claim-one-is-enabled': {
             return {
                 title: 'Claim one is enabled',
@@ -157,68 +130,25 @@ export function getRewardConfiguration(slug: RewardSlug) {
 type RewardSlug =
     | 'no-limit-and-claim-one-disabled'
     | 'one-limit-and-claim-one-disabled'
-    | 'withdraw-date-is-tomorrow'
-    | 'withdraw-date-is-today'
     | 'expiration-date-is-next-30-min'
     | 'expiration-date-is-previous-30-min'
-    | 'membership-is-required'
     | 'claim-one-is-enabled'
     | 'claim-one-is-enabled-and-amount-is-greather-than-1'
     | 'claim-one-is-disabled';
 
-export const createReward = async (assetPool: AssetPoolDocument, config: any) => {
-    let withdrawUnlockDate = config.withdrawUnlockDate;
-
-    if (!withdrawUnlockDate) {
-        const now = new Date();
-        withdrawUnlockDate = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`;
-    }
-
-    const reward = await RewardService.create(assetPool, {
-        title: config.title,
-        slug: config.slug,
-        withdrawLimit: config.withdrawLimit || 0,
-        withdrawAmount: config.withdrawAmount,
-        withdrawDuration: config.withdrawDuration,
-        isMembershipRequired: config.isMembershipRequired,
-        isClaimOnce: config.isClaimOnce,
-        withdrawUnlockDate: new Date(withdrawUnlockDate),
-        withdrawCondition: config.withdrawCondition,
-        expiryDate: config.expiryDate,
-        erc721metadataId: config.erc721metadataId,
-        amount: config.amount,
-    });
-
-    let erc20Id: string, erc721Id: string;
-    if (reward.erc721metadataId) {
-        const metadata = await ERC721Service.findMetadataById(reward.erc721metadataId);
-        if (!metadata) {
-            throw new NotFoundError('could not find the Metadata for this metadataId');
-        }
-        erc721Id = metadata.erc721;
-    } else {
-        const erc20 = await ERC20Service.findByPool(assetPool);
-        if (!erc20) {
-            throw new NotFoundError('could not find the ERC20 for this pool');
-        }
-        erc20Id = erc20._id;
-    }
-
-    const claims = await Promise.all(
-        Array.from({ length: reward.amount }).map(() =>
-            ClaimService.create({
-                poolId: assetPool._id,
-                erc20Id,
-                erc721Id,
-                rewardId: reward.id,
-            }),
-        ),
-    );
-
-    return { reward, claims };
-};
-
-export const createRewardNft = async (assetPool: AssetPoolDocument, config: any) => {
+export const createRewardNft = async (
+    assetPool: AssetPoolDocument,
+    config: {
+        title: string;
+        slug: string;
+        limit: number;
+        expiryDate: Date;
+        erc721metadataId: string;
+        rewardConditionId?: string;
+        amount: number;
+        isClaimOnce: boolean;
+    },
+) => {
     const metadata = await ERC721Service.findMetadataById(config.erc721metadataId);
     if (!metadata) {
         throw new NotFoundError('could not find the Metadata for this metadataId');
@@ -227,11 +157,12 @@ export const createRewardNft = async (assetPool: AssetPoolDocument, config: any)
     const reward = await RewardNftService.create(assetPool, {
         title: config.title,
         slug: config.slug,
-        limit: config.withdrawLimit || 0,
+        limit: config.limit || 0,
         expiryDate: config.expiryDate,
         erc721metadataId: config.erc721metadataId,
         rewardConditionId: config.rewardConditionId,
         amount,
+        isClaimOnce: config.isClaimOnce,
     });
 
     const claims = await Promise.all(
@@ -246,4 +177,116 @@ export const createRewardNft = async (assetPool: AssetPoolDocument, config: any)
     );
 
     return { reward, claims };
+};
+
+export const createRewardToken = async (
+    assetPool: AssetPoolDocument,
+    config: {
+        title: string;
+        slug: string;
+        limit: number;
+        expiryDate: Date;
+        rewardConditionId?: string;
+        withdrawAmount: number;
+        amount: number;
+        isClaimOnce: boolean;
+    },
+) => {
+    const amount = config.amount | 1;
+    const reward = await RewardTokenService.create(assetPool, {
+        title: config.title,
+        slug: config.slug,
+        limit: config.limit || 0,
+        expiryDate: config.expiryDate,
+        rewardConditionId: config.rewardConditionId,
+        withdrawAmount: config.withdrawAmount,
+        amount,
+        isClaimOnce: config.isClaimOnce,
+    });
+
+    const claims = await Promise.all(
+        Array.from({ length: amount }).map(() =>
+            ClaimService.create({
+                poolId: assetPool._id,
+                erc20Id: assetPool.erc20Id,
+                rewardId: reward.rewardBaseId,
+            }),
+        ),
+    );
+
+    return { reward, claims };
+};
+
+export const createRewardReferral = async (
+    assetPool: AssetPoolDocument,
+    config: {
+        title: string;
+        slug: string;
+        limit: number;
+        expiryDate: Date;
+        amount: number;
+        isClaimOnce: boolean;
+    },
+) => {
+    const amount = config.amount | 1;
+    const reward = await RewardReferralService.create(assetPool, {
+        title: config.title,
+        slug: config.slug,
+        limit: config.limit || 0,
+        expiryDate: config.expiryDate,
+        amount,
+        isClaimOnce: config.isClaimOnce,
+    });
+
+    const claims = await Promise.all(
+        Array.from({ length: amount }).map(() =>
+            ClaimService.create({
+                poolId: assetPool._id,
+                erc20Id: assetPool.erc20Id,
+                rewardId: reward.rewardBaseId,
+            }),
+        ),
+    );
+
+    return { reward, claims };
+};
+
+export const getQrcode = async (
+    fileName: string,
+    res: Response,
+    reward: RewardNftDocument | RewardReferralDocument | RewardTokenDocument,
+    assetPool: AssetPoolDocument,
+) => {
+    try {
+        const response = await s3PrivateClient.send(
+            new GetObjectCommand({
+                Bucket: AWS_S3_PRIVATE_BUCKET_NAME,
+                Key: fileName,
+            }),
+        );
+        (response.Body as Readable).pipe(res).attachment(fileName);
+    } catch (err) {
+        if (err.$metadata && err.$metadata.httpStatusCode == 404) {
+            const rewardId = reward.id;
+            const poolId = String(assetPool._id);
+            const sub = assetPool.sub;
+            const equalJobs = await agenda.jobs({
+                name: EVENT_SEND_DOWNLOAD_QR_EMAIL,
+                data: { poolId, rewardId, sub, fileName },
+            });
+
+            if (!equalJobs.length) {
+                agenda.now(EVENT_SEND_DOWNLOAD_QR_EMAIL, {
+                    poolId,
+                    rewardId,
+                    sub,
+                    fileName,
+                });
+            }
+            res.status(201).end();
+        } else {
+            logger.error(err);
+            throw err;
+        }
+    }
 };

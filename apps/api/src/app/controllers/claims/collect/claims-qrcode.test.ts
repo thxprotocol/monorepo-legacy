@@ -4,7 +4,7 @@ import { ChainId, ERC20Type } from '../../../types/enums';
 import { dashboardAccessToken, tokenName, tokenSymbol } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { getRewardConfiguration } from '../../rewards/utils';
+import { getRewardConfiguration } from '../../rewards-utils';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { agenda, EVENT_SEND_DOWNLOAD_QR_EMAIL } from '@thxnetwork/api/util/agenda';
 import { RewardDocument } from '@thxnetwork/api/models/Reward';
@@ -51,9 +51,9 @@ describe('Claims', () => {
             .expect(201, done);
     });
 
-    describe('A reward with limit is 0 (unlimited) and claim_one enabled and amount is greather tham 1', () => {
+    describe('A RewardToken with limit is 0 (unlimited) and claim_one enabled and amount is greather tham 1', () => {
         it('Create reward', (done) => {
-            user.post('/v1/rewards/')
+            user.post('/v1/rewards-token/')
                 .set({ 'X-PoolId': pool._id, 'Authorization': dashboardAccessToken })
                 .send(getRewardConfiguration('claim-one-is-enabled-and-amount-is-greather-than-1'))
                 .expect((res: request.Response) => {
@@ -65,7 +65,7 @@ describe('Claims', () => {
     });
     describe('multiple qrcodes generation', () => {
         it('should generate multiple qurcode images', (done) => {
-            user.get(`/v1/rewards/${reward.id}/claims/qrcode`)
+            user.get(`/v1/rewards-token/${reward.id}/claims/qrcode`)
                 .set({ 'X-PoolId': pool._id, 'Authorization': dashboardAccessToken })
                 .expect(201, done);
         });

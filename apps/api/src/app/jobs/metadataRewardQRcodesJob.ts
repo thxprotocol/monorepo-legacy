@@ -14,9 +14,8 @@ import { logger } from '@thxnetwork/api/util/logger';
 import { s3PrivateClient } from '@thxnetwork/api/util/s3';
 import { createArchiver } from '@thxnetwork/api/util/zip';
 import { Upload } from '@aws-sdk/lib-storage';
-
-import { RewardBase, RewardBaseDocument } from '../types/RewardBase';
 import { RewardVariant } from '../types/enums/RewardVariant';
+import { RewardBase, RewardBaseDocument } from '../models/RewardBase';
 const ROOT_PATH = './apps/api/src/app';
 
 export const generateMetadataRewardQRCodesJob = async ({ attrs }: Job) => {

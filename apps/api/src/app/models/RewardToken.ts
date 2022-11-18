@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
-import { RewardBase } from '../types/RewardBase';
+
 import { TRewardToken } from '../types/RewardToken';
+import { RewardBase } from './RewardBase';
 
 export type RewardTokenDocument = mongoose.Document & TRewardToken;
 
@@ -14,6 +15,6 @@ const rewardTokenSchema = new mongoose.Schema(
     { timestamps: true },
 );
 rewardTokenSchema.virtual('rewardBase').get(async function () {
-    return await RewardBase.findById(this.rewardBaseId);
+    return await RewardBase.findOne({ id: this.rewardBaseId });
 });
 export const RewardToken = mongoose.model<RewardTokenDocument>('RewardToken', rewardTokenSchema);

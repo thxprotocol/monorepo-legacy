@@ -50,7 +50,7 @@ describe('Widgets', () => {
     describe('POST /rewards', () => {
         it('HTTP 200', async () => {
             await user
-                .post('/v1/rewards/')
+                .post('/v1/rewards-token/')
                 .set({ 'X-PoolId': pool._id, 'Authorization': dashboardAccessToken })
                 .send({
                     title,

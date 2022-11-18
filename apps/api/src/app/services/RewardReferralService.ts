@@ -3,10 +3,9 @@ import type { IAccount } from '@thxnetwork/api/models/Account';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import { RewardReferral, RewardReferralDocument } from '../models/RewardReferral';
-import { IRewardBaseUpdates, RewardBase, RewardBaseDocument } from '../types/RewardBase';
 import { RewardVariant } from '../types/enums/RewardVariant';
-import { canClaim } from './utils/rewards';
-import { RewardState } from '../types/enums/RewardState';
+import { createRewardBase, validateRewardBase } from './utils/rewards';
+import { IRewardBaseUpdates, RewardBase, RewardBaseDocument } from '../models/RewardBase';
 
 export default class RewardService {
     static async get(rewardId: string): Promise<RewardReferralDocument> {
@@ -36,7 +35,14 @@ export default class RewardService {
         reward: RewardReferralDocument,
         account: IAccount,
     ): Promise<{ result?: boolean; error?: string }> {
-        return canClaim(assetPool, reward.rewardBase as RewardBaseDocument, account);
+        // validate specific fields for rewardBase
+        const validationResult = await validateRewardBase(
+            assetPool,
+            (await reward.rewardBase) as RewardBaseDocument,
+            account,
+        );
+
+        return validationResult;
     }
 
     static async removeAllForPool(assetPool: AssetPoolDocument) {
@@ -53,22 +59,11 @@ export default class RewardService {
             slug: string;
             limit: number;
             expiryDate: Date;
-            rewardConditionId?: string;
             amount: number;
+            isClaimOnce: boolean;
         },
     ) {
-        const expiryDateObj = data.expiryDate && new Date(data.expiryDate);
-        const rewardBase = await RewardBase.create({
-            id: db.createUUID(),
-            title: data.title,
-            slug: data.slug,
-            variant: RewardVariant.RewardReferral,
-            poolId: assetPool._id,
-            limit: data.limit,
-            expiryDate: expiryDateObj,
-            state: RewardState.Enabled,
-            amount: data.amount,
-        });
+        const rewardBase = await createRewardBase(assetPool, RewardVariant.RewardReferral, data);
         return RewardReferral.create({
             id: db.createUUID(),
             rewardBaseId: rewardBase.id,

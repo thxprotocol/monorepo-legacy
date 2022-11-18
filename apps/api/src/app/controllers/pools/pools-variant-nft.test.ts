@@ -7,7 +7,7 @@ import { account2, dashboardAccessToken } from '@thxnetwork/api/util/jest/consta
 import { createImage } from '@thxnetwork/api/util/jest/images';
 import { createArchiver } from '@thxnetwork/api/util/zip';
 import { agenda, EVENT_SEND_DOWNLOAD_METADATA_QR_EMAIL } from '@thxnetwork/api/util/agenda';
-import { getRewardConfiguration } from '../rewards/utils';
+import { getRewardConfiguration } from '../rewards-utils';
 const user = request.agent(app);
 
 describe('NFT Pool', () => {

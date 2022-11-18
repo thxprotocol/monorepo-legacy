@@ -5,8 +5,8 @@ import { check, param } from 'express-validator';
 import { Readable } from 'stream';
 import { logger } from '@thxnetwork/api/util/logger';
 import CsvReadableStream from 'csv-reader';
-import { createReward } from '@thxnetwork/api/controllers/rewards/utils';
 import { agenda, EVENT_SEND_DOWNLOAD_METADATA_QR_EMAIL } from '@thxnetwork/api/util/agenda';
+import { createRewardNft } from '@thxnetwork/api/controllers/rewards-utils';
 
 const validation = [
     param('id').isMongoId(),
@@ -71,13 +71,14 @@ const controller = async (req: Request, res: Response) => {
                             const body = {
                                 ...req.body,
                                 erc721metadataId: metadata._id,
-                                withdrawAmount: 0,
-                                withdrawDuration: 0,
-                                withdrawLimit: 1,
+                                amount: 0,
+                                limit: 1,
                                 isClaimOnce: true,
-                                isMembershipRequired: false,
+                                expiryDate: null,
+                                slug: null,
+                                title: null,
                             };
-                            createReward(req.assetPool, body);
+                            createRewardNft(req.assetPool, body);
                         }
                     } catch (err) {
                         logger.error(err);

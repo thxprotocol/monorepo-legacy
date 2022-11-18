@@ -3,7 +3,8 @@ import { Claim } from '@thxnetwork/api/models/Claim';
 import { TClaim } from '@thxnetwork/api/types/TClaim';
 import AssetPoolService from './AssetPoolService';
 import db from '@thxnetwork/api/util/database';
-import { RewardBaseDocument } from '../types/RewardBase';
+import { RewardBaseDocument } from '../models/RewardBase';
+
 export default {
     create: (data: { poolId: string; rewardId: string; erc20Id?: string; erc721Id?: string }) => {
         const claim = { id: db.createUUID(), ...data } as TClaim;

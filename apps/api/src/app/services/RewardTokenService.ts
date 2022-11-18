@@ -3,10 +3,11 @@ import type { IAccount } from '@thxnetwork/api/models/Account';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import { RewardToken, RewardTokenDocument } from '../models/RewardToken';
-import { IRewardBaseUpdates, RewardBase, RewardBaseDocument } from '../types/RewardBase';
 import { RewardVariant } from '../types/enums/RewardVariant';
-import { canClaim } from './utils/rewards';
-import { RewardState } from '../types/enums/RewardState';
+import { createRewardBase, validateCondition, validateRewardBase } from './utils/rewards';
+import WithdrawalService from './WithdrawalService';
+import { RewardCondition } from '../types/RewardCondition';
+import { IRewardBaseUpdates, RewardBase, RewardBaseDocument } from '../models/RewardBase';
 
 export default class RewardService {
     static async get(rewardId: string): Promise<RewardTokenDocument> {
@@ -36,7 +37,33 @@ export default class RewardService {
         reward: RewardTokenDocument,
         account: IAccount,
     ): Promise<{ result?: boolean; error?: string }> {
-        return canClaim(assetPool, reward.rewardBase as RewardBaseDocument, account);
+        // validate specific fields for rewardBase
+        const rewardBase = (await reward.rewardBase) as RewardBaseDocument;
+        const validationResult = await validateRewardBase(assetPool, rewardBase, account);
+        if (validationResult.error) {
+            return validationResult;
+        }
+
+        // Can only claim this reward once and a withdrawal already exists
+        if (rewardBase.isClaimOnce) {
+            const hasClaimedOnce = await WithdrawalService.hasClaimedOnce(
+                String(assetPool._id),
+                account.id,
+                reward.rewardBaseId,
+            );
+            if (hasClaimedOnce) {
+                return { error: 'You have already claimed this reward' };
+            }
+        }
+
+        // Validate reward condition
+        if (!reward.rewardConditionId) {
+            return { result: true };
+        }
+
+        const rewardCondition = await RewardCondition.findById(reward.rewardConditionId);
+
+        return await validateCondition(account, rewardCondition);
     }
 
     static async removeAllForPool(assetPool: AssetPoolDocument) {
@@ -54,25 +81,17 @@ export default class RewardService {
             limit: number;
             expiryDate: Date;
             rewardConditionId?: string;
+            withdrawAmount: number;
             amount: number;
+            isClaimOnce: boolean;
         },
     ) {
-        const expiryDateObj = data.expiryDate && new Date(data.expiryDate);
-        const rewardBase = await RewardBase.create({
-            id: db.createUUID(),
-            title: data.title,
-            slug: data.slug,
-            variant: RewardVariant.RewardToken,
-            poolId: assetPool._id,
-            limit: data.limit,
-            expiryDate: expiryDateObj,
-            state: RewardState.Enabled,
-            amount: data.amount,
-        });
+        const rewardBase = await createRewardBase(assetPool, RewardVariant.RewardToken, data);
         return RewardToken.create({
             id: db.createUUID(),
             rewardBaseId: rewardBase.id,
             rewardConditionId: data.rewardConditionId,
+            amount: data.withdrawAmount,
         });
     }
 

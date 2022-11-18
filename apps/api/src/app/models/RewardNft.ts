@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
-import { RewardBase } from '../types/RewardBase';
+
 import { TRewardNft } from '../types/RewardNft';
+import { RewardBase } from './RewardBase';
 
 export type RewardNftDocument = mongoose.Document & TRewardNft;
 
@@ -14,7 +15,7 @@ const rewardNftSchema = new mongoose.Schema(
     { timestamps: true },
 );
 rewardNftSchema.virtual('rewardBase').get(async function () {
-    return await RewardBase.findById(this.rewardBaseId);
+    return await RewardBase.findOne({ id: this.rewardBaseId });
 });
 
 export const RewardNft = mongoose.model<RewardNftDocument>('RewardNft', rewardNftSchema);

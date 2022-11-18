@@ -11,7 +11,7 @@ import { fromBuffer } from 'file-type';
 import { Request, Response } from 'express';
 import { body, check, param } from 'express-validator';
 import short from 'short-uuid';
-import { createReward } from '@thxnetwork/api/controllers/rewards/utils';
+import { createRewardNft } from '@thxnetwork/api/controllers/rewards-utils';
 
 const validation = [
     param('id').isMongoId(),
@@ -93,13 +93,14 @@ const controller = async (req: Request, res: Response) => {
                         { key: req.body.propName, value: url },
                     ]);
 
-                    createReward(req.assetPool, {
+                    createRewardNft(req.assetPool, {
                         erc721metadataId: String(metadata._id),
-                        withdrawAmount: 0,
-                        withdrawDuration: 0,
-                        withdrawLimit: 1,
+                        amount: 0,
+                        limit: 1,
                         isClaimOnce: true,
-                        isMembershipRequired: false,
+                        expiryDate: null,
+                        slug: null,
+                        title: null,
                     });
 
                     return metadata;
