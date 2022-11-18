@@ -16,3 +16,4 @@ export const TORUS_NETWORK = process.env.VUE_APP_TORUS_NETWORK || '';
 export const TEST_KEY = process.env.VUE_APP_TEST_KEY;
 export const PKG_ENV = process.env.VUE_APP_PKG_ENV || 'prod';
 export const NODE_ENV = process.env.NODE_ENV;
+export const ROPSTEN_RPC = process.env.VUE_APP_ROPSTEN_RPC;
