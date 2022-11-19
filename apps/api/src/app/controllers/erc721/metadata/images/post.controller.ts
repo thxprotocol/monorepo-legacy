@@ -4,7 +4,7 @@ import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import ImageService from '@thxnetwork/api/services/ImageService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { logger } from '@thxnetwork/api/util/logger';
-import { s3, s3Client } from '@thxnetwork/api/util/s3';
+import { s3Client } from '@thxnetwork/api/util/s3';
 
 import { createArchiver } from '@thxnetwork/api/util/zip';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
@@ -13,7 +13,6 @@ import { Request, Response } from 'express';
 import { body, check, param } from 'express-validator';
 import short from 'short-uuid';
 import { createReward } from '@thxnetwork/api/controllers/rewards/utils';
-import { completeMultiUpload, createMultipartUpload, generatePresignedUrlsParts, uploadParts } from './multipartUpload';
 const validation = [
     param('id').isMongoId(),
     body('propName').exists().isString(),
@@ -28,7 +27,7 @@ const validation = [
         }
     }),
 ];
-const CHUNK_SIZE = 1000;
+
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721']
     const erc721 = await ERC721Service.findById(req.params.id);
@@ -77,24 +76,16 @@ const controller = async (req: Request, res: Response) => {
                         `.${extension}`;
                     // --------------------------------------------------------------------
                     // PREPARE PARAMS FOR UPLOAD TO S3 BUCKET
-                    // const uploadParams = {
-                    //     Key: filename,
-                    //     Bucket: AWS_S3_PUBLIC_BUCKET_NAME,
-                    //     ACL: 'public-read',
-                    //     Body: buffer,
-                    // };
+                    const uploadParams = {
+                        Key: filename,
+                        Bucket: AWS_S3_PUBLIC_BUCKET_NAME,
+                        ACL: 'public-read',
+                        Body: buffer,
+                    };
 
                     // UPLOAD THE FILE TO S3
-                    //await s3Client.send(new PutObjectCommand(uploadParams));
+                    await s3Client.send(new PutObjectCommand(uploadParams));
                     // --------------------------------------------------------------------
-                    const params = { Bucket: AWS_S3_PUBLIC_BUCKET_NAME, Key: filename };
-                    const uploadId = await createMultipartUpload(params);
-
-                    const urls = await generatePresignedUrlsParts(uploadId, 4, params);
-
-                    const parts = await uploadParts(buffer, urls);
-                    const result = await completeMultiUpload(uploadId, parts, params);
-                    console.log('------------------------RESULT', result);
 
                     // COLLECT THE URL
                     const url = ImageService.getPublicUrl(filename);
@@ -122,7 +113,7 @@ const controller = async (req: Request, res: Response) => {
     }
 
     const metadatas: ERC721MetadataDocument[] = await Promise.all(promises);
-    checkMemory('execute promises');
+
     res.status(201).json({ metadatas });
 };
 
@@ -140,12 +131,4 @@ async function isValidFileType(buffer: Buffer) {
     return true;
 }
 
-function checkMemory(functionName: string) {
-    const used = process.memoryUsage().heapUsed / 1024 / 1024;
-    console.log(
-        `----------------------------The script '${functionName}' uses approximately ${
-            Math.round(used * 100) / 100
-        } MB`,
-    );
-}
 export default { controller, validation };
