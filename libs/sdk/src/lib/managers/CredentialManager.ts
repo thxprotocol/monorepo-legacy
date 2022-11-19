@@ -61,6 +61,7 @@ export default class CredentialManager extends CacheManager<Credential> {
 
     public async clientCredential() {
         try {
+            const env = this.client.credential.cached.env;
             const toEncodeParam = `${this.cached.clientId}:${this.cached.clientSecret}`;
             const encodedParam = Buffer.from(toEncodeParam).toString('base64');
             const code = 'Basic ' + encodedParam;
@@ -69,7 +70,7 @@ export default class CredentialManager extends CacheManager<Credential> {
             params.append('grant_type', 'client_credentials');
             params.append('scope', this.cached.scopes || '');
 
-            const res = await fetch(`${URL_CONFIG['AUTH_URL']}/token`, {
+            const res = await fetch(`${URL_CONFIG[env]['AUTH_URL']}/token`, {
                 method: 'POST',
                 headers: new Headers({
                     'Content-Type': 'application/x-www-form-urlencoded',
