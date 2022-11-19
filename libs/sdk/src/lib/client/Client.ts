@@ -1,4 +1,4 @@
-import { User, UserManager as BaseUserManager, UserManagerSettings } from 'oidc-client-ts';
+import { UserManager as BaseUserManager, UserManagerSettings } from 'oidc-client-ts';
 
 import { URL_CONFIG } from '../configs';
 import CredentialManager from '../managers/CredentialManager';

@@ -1,4 +1,3 @@
-import { URL_CONFIG } from '../configs/index';
 import { THXClient } from '../../index';
 import BaseManager from './BaseManager';
 import { ChainId } from '../types/enums/ChainId';
@@ -9,12 +8,12 @@ class ERC20Manager extends BaseManager {
     }
 
     async list() {
-        const res = await this.client.request.get(`${URL_CONFIG['API_URL']}/v1/erc20/token`);
+        const res = await this.client.request.get('/v1/erc20/token');
         return await res.json();
     }
 
     async get(id: string) {
-        const res = await this.client.request.get(`${URL_CONFIG['API_URL']}/v1/erc20/token/${id}`);
+        const res = await this.client.request.get(`/v1/erc20/token/${id}`);
         return await res.json();
     }
 
@@ -25,7 +24,7 @@ class ERC20Manager extends BaseManager {
         params.append('to', to);
         params.append('amount', amount);
         params.append('chainId', chainId.toString());
-        const res = await this.client.request.post(`${URL_CONFIG['API_URL']}/v1/erc20/transfer`, { body: params });
+        const res = await this.client.request.post(`/v1/erc20/transfer`, { body: params });
 
         return await res.json();
     }
