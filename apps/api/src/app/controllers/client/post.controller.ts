@@ -33,6 +33,7 @@ export default {
                 payload = {
                     application_type: 'web',
                     grant_types: [grantType],
+                    request_uris: [],
                     redirect_uris: [],
                     response_types: [],
                     scope: 'openid withdrawals:read withdrawals:write',

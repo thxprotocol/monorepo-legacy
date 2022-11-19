@@ -6,6 +6,8 @@ import { BASE_URL } from '@thxnetwork/wallet/utils/secrets';
 import { thxClient } from '../../utils/oidc';
 import UserManager from '@thxnetwork/sdk/managers/UserManager';
 import { User } from 'oidc-client-ts';
+import { AccountVariant } from '../../types/Accounts';
+import { ChannelType } from '../../types/enums/ChannelType';
 const AUTH_REQUEST_TYPED_MESSAGE =
     "Welcome! Please make sure you have selected your preferred account and sign this message to verify it's ownership.";
 
@@ -14,6 +16,9 @@ export interface UserProfile {
     privateKey: string;
     authRequestMessage: string;
     authRequestSignature: string;
+    variant: AccountVariant;
+    googleAccess: boolean;
+    twitterAccess: boolean;
 }
 
 @Module({ namespaced: true })
@@ -179,6 +184,17 @@ class AccountModule extends VuexModule {
     @Action({ rawError: true })
     signinSilentCallback() {
         this.userManager.cached.signinSilentCallback();
+    }
+
+    @Action({ rawError: true })
+    async connectRedirect(payload: { channel: ChannelType; path: string }) {
+        await this.userManager.cached.signinRedirect({
+            extraQueryParams: {
+                channel: payload.channel,
+                prompt: 'connect',
+                return_url: BASE_URL + payload.path,
+            },
+        });
     }
 }
 
