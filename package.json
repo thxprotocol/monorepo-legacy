@@ -27,7 +27,6 @@
         "@vee-validate/rules": "^4.6.7",
         "agenda": "^4.3.0",
         "airtable": "^0.11.2",
-        "aws-sdk": "^2.1257.0",
         "axios": "^0.21.3",
         "axios-better-stacktrace": "^2.1.2",
         "bcrypt-nodejs": "^0.0.3",

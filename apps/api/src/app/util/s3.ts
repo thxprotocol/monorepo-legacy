@@ -1,5 +1,4 @@
 import { S3Client } from '@aws-sdk/client-s3';
-import { S3 } from 'aws-sdk';
 import {
     AWS_ACCESS_KEY_ID,
     AWS_SECRET_ACCESS_KEY,
@@ -22,8 +21,4 @@ const s3PrivateClient = new S3Client({
     credentials,
 });
 
-const s3 = new S3({
-    region: AWS_S3_PUBLIC_BUCKET_REGION,
-    credentials,
-});
-export { s3Client, s3PrivateClient, s3 };
+export { s3Client, s3PrivateClient };
