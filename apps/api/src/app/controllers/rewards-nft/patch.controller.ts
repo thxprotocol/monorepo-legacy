@@ -5,8 +5,8 @@ import { body, param } from 'express-validator';
 
 const validation = [
     param('id').exists(),
-    body('withdrawAmount').optional().isNumeric(),
-    body('withdrawDuration').optional().isNumeric(),
+    body('isClaimOnce').optional().isBoolean(),
+    body('state').optional().isNumeric(),
 ];
 
 const controller = async (req: Request, res: Response) => {

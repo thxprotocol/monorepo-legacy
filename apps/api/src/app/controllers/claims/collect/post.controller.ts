@@ -20,6 +20,7 @@ const validation = [param('id').exists().isString(), query('forceSync').optional
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
+    console.log('SONO QUIIIII ---------------------------------------------------------');
     let claim = await ClaimService.findById(req.params.id);
     if (!claim) {
         // maintain compatibility with old the claim urls
@@ -37,6 +38,7 @@ const controller = async (req: Request, res: Response) => {
     if (!reward) throw new BadRequestError('The reward for this ID does not exist.');
 
     const { result, error } = await RewardBaseService.canClaim(pool, reward, account);
+    console.log('-------------------- can claim', { result, error });
     if (!result && error) throw new ForbiddenError(error);
 
     const hasMembership = await MembershipService.hasMembership(pool, account.id);
@@ -54,7 +56,7 @@ const controller = async (req: Request, res: Response) => {
 
     if (reward.variant === RewardVariant.RewardToken && claim.erc20Id) {
         const rewardToken = (await reward.getReward()) as RewardTokenDocument;
-        console.log('SONO QUI 3 ---------------------------------------------------------', rewardToken);
+
         let w: WithdrawalDocument = await WithdrawalService.schedule(
             pool,
             WithdrawalType.ClaimReward,
@@ -73,11 +75,15 @@ const controller = async (req: Request, res: Response) => {
 
     if (reward.variant === RewardVariant.RewardNFT && claim.erc721Id) {
         const rewardNft = (await reward.getReward()) as RewardNftDocument;
+
         const metadata = await ERC721Service.findMetadataById(rewardNft.erc721metadataId);
         const erc721 = await ERC721Service.findById(metadata.erc721);
         const token = await ERC721Service.mint(pool, erc721, metadata, account, forceSync);
+        console.log('SONO QUI 3 token ---------------------------------------------------------', token);
         return res.json({ ...token.toJSON(), erc721: erc721.toJSON(), metadata: metadata.toJSON() });
     }
+
+    throw new BadRequestError('Invalid Reward Type');
 };
 
 export default { controller, validation };

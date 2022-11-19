@@ -127,6 +127,82 @@ export function getRewardConfiguration(slug: RewardSlug) {
     }
 }
 
+export function getRewardNftConfiguration(slug: RewardSlug, erc721metadataId: string) {
+    switch (slug) {
+        case 'no-limit-and-claim-one-disabled': {
+            return {
+                title: 'RewardNft No limit and claim one disabled',
+                slug: 'no-limit-and-claim-one-disabled',
+                erc721metadataId,
+                limit: 0,
+                amount: 1,
+                isClaimOnce: false,
+            };
+        }
+        case 'one-limit-and-claim-one-disabled': {
+            return {
+                title: '1 limit and claim one disabled',
+                slug: 'one-limit-and-claim-one-disabled',
+                erc721metadataId,
+                isClaimOnce: false,
+                amount: 1,
+            };
+        }
+
+        case 'expiration-date-is-next-30-min': {
+            return {
+                title: 'Expiration date is next 30 min',
+                slug: 'expiration-date-is-next-30-min',
+                erc721metadataId,
+                isClaimOnce: false,
+                expiryDate: addMinutes(new Date(), 30),
+                amount: 1,
+            };
+        }
+        case 'expiration-date-is-previous-30-min': {
+            return {
+                title: 'Expiration date is previous 30 min',
+                slug: 'expiration-date-is-previous-30-min',
+                erc721metadataId,
+                isClaimOnce: false,
+                expiryDate: minusMinutes(new Date(), 24 * 60),
+                amount: 1,
+            };
+        }
+
+        case 'claim-one-is-enabled': {
+            return {
+                title: 'Claim one is enabled',
+                slug: 'claim-one-is-enabled',
+                erc721metadataId,
+                isClaimOnce: true,
+                isMembershipRequired: false,
+                amount: 1,
+            };
+        }
+        case 'claim-one-is-enabled-and-amount-is-greather-than-1': {
+            return {
+                title: 'Claim one is enabled and amount is greather than 1',
+                slug: 'claim-one-is-enabled-and-amount-is-greather-than-1',
+                erc721metadataId,
+                isClaimOnce: true,
+                isMembershipRequired: false,
+                amount: 10,
+            };
+        }
+        case 'claim-one-is-disabled': {
+            return {
+                title: 'Claim one is disabled',
+                slug: 'claim-one-is-disabled',
+                erc721metadataId,
+                isClaimOnce: false,
+                isMembershipRequired: false,
+                amount: 1,
+            };
+        }
+    }
+}
+
 type RewardSlug =
     | 'no-limit-and-claim-one-disabled'
     | 'one-limit-and-claim-one-disabled'

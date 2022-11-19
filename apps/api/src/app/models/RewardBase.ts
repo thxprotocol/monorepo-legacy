@@ -7,7 +7,8 @@ import { RewardVariant } from '../types/enums/RewardVariant';
 import { TRewardBase } from '../types/RewardBase';
 
 export interface IRewardBaseUpdates {
-    state: RewardState;
+    state?: RewardState;
+    isClaimOnce?: boolean;
 }
 
 interface IRewardBaseMethods {

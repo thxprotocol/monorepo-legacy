@@ -4,8 +4,7 @@ import { ChainId } from '../../types/enums';
 import { dashboardAccessToken, walletAccessToken, walletAccessToken2 } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { WithdrawalState } from '@thxnetwork/api/types/enums';
-import { getRewardConfiguration } from '@thxnetwork/api/controllers/rewards-utils';
+import { getRewardNftConfiguration } from '@thxnetwork/api/controllers/rewards-utils';
 import { ClaimDocument } from '@thxnetwork/api/types/TClaim';
 import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
 
@@ -13,7 +12,7 @@ const user = request.agent(app);
 const user2 = request.agent(app);
 
 describe('RewardNft Claim', () => {
-    let poolId: string, withdrawalDocumentId: string;
+    let poolId: string, erc721metadataId: string;
 
     beforeAll(async () => {
         await beforeAllCallback();
@@ -97,6 +96,7 @@ describe('RewardNft Claim', () => {
                         expect(body.attributes[0].value).toBe(value1);
                         expect(body.attributes[1].value).toBe(value2);
                         claims = body.claims;
+                        erc721metadataId = body._id;
                     })
                     .expect(201, done);
             });
@@ -127,120 +127,99 @@ describe('RewardNft Claim', () => {
         });
     });
 
-    describe('A token reward with claim once enabled', () => {
-        let claim: ClaimDocument;
+    describe('A reward with limit is 0 (unlimited) and claim_one disabled to enabled', () => {
+        let claim: ClaimDocument, rewardNftId: string;
+
         it('Create reward', (done) => {
             user.post('/v1/rewards-nft/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .send(getRewardConfiguration('claim-one-is-enabled'))
+                .send(getRewardNftConfiguration('claim-one-is-disabled', erc721metadataId))
                 .expect((res: request.Response) => {
                     expect(res.body.id).toBeDefined();
                     expect(res.body.claims).toBeDefined();
+                    expect(res.body.claims.length).toBe(1);
                     expect(res.body.claims[0].id).toBeDefined();
                     claim = res.body.claims[0];
+                    rewardNftId = res.body.id;
                 })
                 .expect(201, done);
         });
 
-        describe('POST /v1/claims/:id/collect', () => {
-            it('should return a 200 and withdrawal id', (done) => {
-                user.post(`/v1/claims/${claim.id}/collect`)
-                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
-                    .expect((res: request.Response) => {
-                        expect(res.body._id).toBeDefined();
-                        expect(res.body.state).toEqual(WithdrawalState.Withdrawn);
-
-                        withdrawalDocumentId = res.body._id;
-                    })
-                    .expect(200, done);
-            });
-
-            it('should return Withdrawn state', (done) => {
-                user.get(`/v1/withdrawals/${withdrawalDocumentId}`)
-                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
-                    .expect((res: request.Response) => {
-                        expect(res.body.state).toEqual(WithdrawalState.Withdrawn);
-                    })
-                    .expect(200, done);
-            });
-
-            it('should return a 403 for this second claim', (done) => {
-                user.post(`/v1/claims/${claim.id}/collect`)
-                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
-                    .expect(403, done);
-            });
-        });
-    });
-
-    describe('A token reward with claim once disabled', () => {
-        let claim: ClaimDocument;
-        it('Create reward', (done) => {
-            user.post('/v1/rewards-nft/')
-                .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .send(getRewardConfiguration('claim-one-is-disabled'))
-                .expect((res: request.Response) => {
-                    expect(res.body.id).toBeDefined();
-                    expect(res.body.claims).toBeDefined();
-                    expect(res.body.claims[0].id).toBeDefined();
-                    claim = res.body.claims[0];
-                })
-                .expect(201, done);
-        });
-
-        describe('POST /v1/claims/:id/collect', () => {
-            it('should return a 200 and withdrawal id', (done) => {
-                user.post(`/v1/claims/${claim.id}/collect`)
-                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
-                    .expect((res: request.Response) => {
-                        expect(res.body._id).toBeDefined();
-                        expect(res.body.state).toEqual(WithdrawalState.Withdrawn);
-
-                        withdrawalDocumentId = res.body._id;
-                    })
-                    .expect(200, done);
-            });
-
-            it('should return Withdrawn state', (done) => {
-                user.get(`/v1/withdrawals/${withdrawalDocumentId}`)
-                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
-                    .expect((res: request.Response) => {
-                        expect(res.body.state).toEqual(WithdrawalState.Withdrawn);
-                    })
-                    .expect(200, done);
-            });
-
-            it('should return a 200 for this second claim', (done) => {
-                user.post(`/v1/claims/${claim.id}/collect`)
-                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
-                    .expect(200, done);
-            });
-        });
-    });
-
-    describe('Edit a token reward with claim once disabled to enabled', () => {
-        let id = '';
-        it('Create reward', (done) => {
-            user.post('/v1/rewards-nft/')
-                .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .send(getRewardConfiguration('claim-one-is-disabled'))
-                .expect((res: request.Response) => {
-                    expect(res.body.id).toBeDefined();
-                    expect(res.body.claims).toBeDefined();
-                    expect(res.body.claims[0].id).toBeDefined();
-                    id = res.body.id;
-                })
-                .expect(201, done);
-        });
-
-        describe('PATCH /rewards-token/:id', () => {
+        describe('PATCH /rewards-nft/:id', () => {
             it('Should return 200 when edit the claim', (done) => {
-                user.patch(`/v1/rewards-nft/${id}`)
+                user.patch(`/v1/rewards-nft/${rewardNftId}`)
                     .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                    .send(getRewardConfiguration('claim-one-is-enabled'))
+                    .send(getRewardNftConfiguration('claim-one-is-enabled', erc721metadataId))
                     .expect((res: request.Response) => {
                         expect(res.body.isClaimOnce).toEqual(true);
                     })
                     .expect(200, done);
+            });
+        });
+
+        describe('POST /claims/:id/collect', () => {
+            it('should return a 200 and NFT minted', (done) => {
+                user.post(`/v1/claims/${claim.id}/collect`)
+                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
+                    .expect((res: request.Response) => {
+                        expect(res.body._id).toBeDefined();
+                        expect(res.body.state).toBe(ERC721TokenState.Minted);
+                    })
+                    .expect(200, done);
+            });
+        });
+    });
+
+    describe('A token reward with an expiration date set to t plus 30 minute', () => {
+        let claim: ClaimDocument;
+        it('Create reward', (done) => {
+            user.post('/v1/rewards-nft/')
+                .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
+                .send(getRewardNftConfiguration('expiration-date-is-next-30-min', erc721metadataId))
+                .expect((res: request.Response) => {
+                    expect(res.body.id).toBeDefined();
+                    expect(res.body.claims).toBeDefined();
+                    expect(res.body.claims[0].id).toBeDefined();
+                    claim = res.body.claims[0];
+                })
+                .expect(201, done);
+        });
+
+        describe('POST /v1/claims/:id/collect', () => {
+            describe('POST /claims/:id/collect', () => {
+                it('should return a 200 and NFT minted', (done) => {
+                    user.post(`/v1/claims/${claim.id}/collect`)
+                        .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
+                        .expect((res: request.Response) => {
+                            expect(res.body._id).toBeDefined();
+                            expect(res.body.state).toBe(ERC721TokenState.Minted);
+                        })
+                        .expect(200, done);
+                });
+            });
+        });
+    });
+
+    describe('A token reward with an expiration date set to t minus 30 minute', () => {
+        let claim: ClaimDocument;
+        it('Create reward', (done) => {
+            user.post('/v1/rewards-nft/')
+                .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
+                .send(getRewardNftConfiguration('expiration-date-is-previous-30-min', erc721metadataId))
+                .expect((res: request.Response) => {
+                    expect(res.body.id).toBeDefined();
+                    expect(res.body.claims).toBeDefined();
+                    expect(res.body.claims[0].id).toBeDefined();
+                    claim = res.body.claims[0];
+                })
+                .expect(201, done);
+        });
+
+        describe('POST /v1/claims/:id/collect', () => {
+            it('should return a 403', (done) => {
+                user.post(`/v1/claims/${claim.id}/collect`)
+                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
+                    .expect(403, done);
             });
         });
     });
