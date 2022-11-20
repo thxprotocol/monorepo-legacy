@@ -32,6 +32,13 @@ export interface TAccount {
     githubRefreshToken: string;
     githubAccessTokenExpires: number;
     githubAccessTokenRefresh: number;
+    discordAccessToken: string;
+    discordRefreshToken: string;
+    discordAccessTokenExpires: number;
+    discordAccessTokenRefresh: number;
+    twitchAccessToken: string;
+    twitchRefreshToken: string;
+    twitchAccessTokenRefresh: number;
     twitterId?: string;
     spotifyAccessToken: string;
     spotifyRefreshToken: string;

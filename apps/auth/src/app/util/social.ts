@@ -3,6 +3,7 @@ import { TwitterService } from '../services/TwitterService';
 import { YouTubeService } from '../services/YouTubeService';
 import { ChannelAction } from '../models/Reward';
 import { SPOTIFY_API_SCOPE, SpotifyService } from '../services/SpotifyService';
+import { DiscordService } from '../services/DiscordService';
 
 function getChannelScopes(channelAction: ChannelAction) {
     switch (channelAction) {
@@ -28,6 +29,7 @@ function getLoginLinkForChannelAction(uid: string) {
         twitterLoginUrl: TwitterService.getLoginURL(uid, {}),
         spotifyLoginUrl: SpotifyService.getLoginURL(uid, {}),
         githubLoginUrl: GithubService.getLoginURL(uid, {}),
+        discordLoginUrl: DiscordService.getLoginURL(uid, {}),
     };
 }
 

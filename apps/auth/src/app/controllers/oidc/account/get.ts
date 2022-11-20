@@ -1,4 +1,6 @@
-import { Request, Response } from 'express';
+
+import { Request, Response } from 'express'
+import { DiscordService } from '../../../services/DiscordService';
 import { SpotifyService } from '../../../services/SpotifyService';
 import { TwitterService } from '../../../services/TwitterService';
 import { YouTubeService } from '../../../services/YouTubeService';
@@ -13,8 +15,9 @@ async function controller(req: Request, res: Response) {
     params.googleLoginUrl = YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getBasicScopes());
     params.twitterLoginUrl = TwitterService.getLoginURL(uid, {});
     params.spotifyLoginUrl = SpotifyService.getLoginURL(uid, {});
+    params.discordLoginUrl = DiscordService.getLoginURL(uid, {});
 
-    const googleScopes = await YouTubeService.getScopesOfAccessToken(account.googleAccessToken);
+    // const googleScopes = await YouTubeService.getScopesOfAccessToken(account.googleAccessToken);
 
     return res.render('account', {
         uid,
