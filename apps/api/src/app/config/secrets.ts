@@ -92,5 +92,11 @@ export const POLYGON_RELAYER_API_SECRET = process.env.POLYGON_RELAYER_API_SECRET
 export const LOCAL_CERT = process.env.LOCAL_CERT;
 export const LOCAL_CERT_KEY = process.env.LOCAL_CERT_KEY;
 
+export const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
+export const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
+export const DISCORD_REDIRECT_URI = process.env.DISCORD_REDIRECT_URI;
+
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 export const RELAYER_SPEED = 'fastest';
+
+console.log(HARDHAT_RPC);
