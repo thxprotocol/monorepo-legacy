@@ -9021,6 +9021,13 @@ textarea.form-control-underlined {
   text-align: left;
 }
 
+.btn-discord {
+  background-color: #7289da;
+}
+.btn-discord:active {
+  background-color: #7289da;
+}
+
 .btn-google {
   background-color: #4285f4;
 }
