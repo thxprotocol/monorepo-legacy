@@ -36,10 +36,10 @@ router.use('/token', tokenRouter);
 router.use('/docs', docsRouter);
 router.use('/metadata', erc721MetadataRouter);
 router.use('/payments', paymentsRouter);
-router.use('/point-rewards', pointRewardsRouter);
 
 router.use(checkJwt);
 router.use(corsHandler);
+router.use('/point-rewards', pointRewardsRouter);
 router.use('/point-balances', pointBalancesRouter);
 router.use('/account', accountRouter);
 router.use('/pools', poolsRouter);

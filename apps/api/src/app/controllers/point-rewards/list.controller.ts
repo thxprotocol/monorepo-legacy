@@ -8,22 +8,22 @@ import { IAccount } from '@thxnetwork/api/models/Account';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Point Rewards']
-    const rewards = await Reward.find({ poolId: req.assetPool._id });
-    const pointRewards = await PointReward.find({ poolId: req.assetPool._id });
-
+    let rewards: any = await Reward.find({ poolId: req.assetPool._id });
+    let pointRewards: any = await PointReward.find({ poolId: req.assetPool._id });
     let account: IAccount;
+
     if (req.auth?.sub) {
         account = await AccountProxy.getById(req.auth.sub);
     }
 
-    pointRewards.map(async (r) => ({
+    pointRewards = pointRewards.map((r) => ({
         amount: r.amount,
         title: r.title,
         description: r.description,
-        claimed: account ? !(await RewardService.canClaim(req.assetPool, r, account)) : false,
+        // claimed: account ? !(await RewardService.canClaim(req.assetPool, r, account)) : false,
     }));
 
-    rewards.map(async (r) => ({
+    rewards = rewards.map(async (r) => ({
         amount: r.withdrawAmount,
         title: r.title,
         description:

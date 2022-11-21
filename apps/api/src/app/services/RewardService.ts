@@ -15,6 +15,7 @@ import ERC721Service from './ERC721Service';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import db from '@thxnetwork/api/util/database';
+import { TPointReward } from '../models/PointReward';
 
 export default class RewardService {
     static async get(assetPool: AssetPoolDocument, rewardId: string): Promise<RewardDocument> {
