@@ -22,7 +22,7 @@ export class MailService {
 
         const verifyUrl = `${returnUrl}/verify?signup_token=${account.signupToken}&return_url=${returnUrl}`;
         const html = await ejs.renderFile(
-            path.dirname(__dirname) + '/views/mail/signupConfirm.ejs',
+            __dirname + '/assets/views/mail/signupConfirm.ejs',
             {
                 verifyUrl,
                 returnUrl,
@@ -45,7 +45,7 @@ export class MailService {
 
         const verifyUrl = `${returnUrl}verify_email?verifyEmailToken=${account.verifyEmailToken}&return_url=${returnUrl}`;
         const html = await ejs.renderFile(
-            path.dirname(__dirname) + '/views/mail/emailConfirm.ejs',
+            __dirname + '/assets/views/mail/emailConfirm.ejs',
             {
                 verifyUrl,
                 returnUrl,
@@ -71,7 +71,7 @@ export class MailService {
 
         const loginUrl = `${WALLET_URL}/login?authentication_token=${encryptedAuthToken}&secure_key=${secureKey}`;
         const html = await ejs.renderFile(
-            path.dirname(__dirname) + '/views/mail/loginLink.ejs',
+            __dirname + '/assets/views/mail/loginLink.ejs',
             {
                 loginUrl,
                 returnUrl: WALLET_URL,
@@ -94,7 +94,7 @@ export class MailService {
 
         const resetUrl = `${returnUrl}/reset?passwordResetToken=${account.passwordResetToken}`;
         const html = await ejs.renderFile(
-            path.dirname(__dirname) + '/views/mail/resetPassword.ejs',
+            __dirname + '/assets/views/mail/resetPassword.ejs',
             {
                 resetUrl,
                 returnUrl,

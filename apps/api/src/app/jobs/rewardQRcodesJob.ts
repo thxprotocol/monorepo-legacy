@@ -48,7 +48,7 @@ export const generateRewardQRCodesJob = async ({ attrs }: Job) => {
                 // Fail silently and fallback to default logo img
             }
         } else {
-            logoPath = path.resolve(getBasePath() + '/public/qr-logo.jpg');
+            logoPath = path.resolve(__dirname, '/assets/qr-logo.jpg');
         }
         const logo = logoPath || logoBuffer;
 
@@ -80,7 +80,7 @@ export const generateRewardQRCodesJob = async ({ attrs }: Job) => {
         await multipartUpload.done();
         const dashboardUrl = `${DASHBOARD_URL}/pool/${reward.poolId}/rewards`;
         const html = await ejs.renderFile(
-            path.resolve(getBasePath() + '/templates/email/qrcodesReady.ejs'),
+            path.resolve(__dirname, '/assets/views/email/qrcodesReady.ejs'),
             {
                 dashboardUrl,
                 baseUrl: API_URL,
