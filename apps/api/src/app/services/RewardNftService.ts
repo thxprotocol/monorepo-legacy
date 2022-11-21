@@ -99,6 +99,6 @@ export default class RewardNftService {
     }
 
     static update(reward: RewardNftDocument, updates: IRewardBaseUpdates) {
-        return RewardNft.findByIdAndUpdate(reward.rewardBaseId, updates, { new: true });
+        return RewardNft.updateOne({ id: reward.id }, updates, { new: true });
     }
 }

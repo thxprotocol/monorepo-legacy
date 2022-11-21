@@ -135,6 +135,7 @@ describe('RewardNft Claim', () => {
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .send(getRewardNftConfiguration('claim-one-is-disabled', erc721metadataId))
                 .expect((res: request.Response) => {
+                    console.log('RES BODY', res.body);
                     expect(res.body.id).toBeDefined();
                     expect(res.body.claims).toBeDefined();
                     expect(res.body.claims.length).toBe(1);
@@ -147,11 +148,13 @@ describe('RewardNft Claim', () => {
 
         describe('PATCH /rewards-nft/:id', () => {
             it('Should return 200 when edit the claim', (done) => {
+                console.log('rewardNftId', rewardNftId);
                 user.patch(`/v1/rewards-nft/${rewardNftId}`)
                     .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                     .send(getRewardNftConfiguration('claim-one-is-enabled', erc721metadataId))
                     .expect((res: request.Response) => {
                         expect(res.body.isClaimOnce).toEqual(true);
+                        console.log('BODYYYYY', res.body);
                     })
                     .expect(200, done);
             });

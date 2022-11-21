@@ -176,7 +176,6 @@ export function getRewardNftConfiguration(slug: RewardSlug, erc721metadataId: st
                 slug: 'claim-one-is-enabled',
                 erc721metadataId,
                 isClaimOnce: true,
-                isMembershipRequired: false,
                 amount: 1,
             };
         }

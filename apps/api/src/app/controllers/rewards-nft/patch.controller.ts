@@ -11,10 +11,14 @@ const validation = [
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['RewardsNft']
-    const reward = await RewardNftService.get(req.params.id);
+    let reward = await RewardNftService.get(req.params.id);
+    console.log('SONO QUIIIIIII-------------------------------', reward);
     if (!reward) throw new NotFoundError('Could not find reward for this id');
     const result = await RewardNftService.update(reward, req.body);
-    return res.json(result);
+    console.log('SONO QUIIIIIII-------------------------------', result);
+    reward = await RewardNftService.get(req.params.id);
+    console.log('SONO QUIIIIIII-------------------------------', reward);
+    return res.json(reward);
 };
 
 export default { controller, validation };

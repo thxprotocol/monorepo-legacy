@@ -28,9 +28,7 @@ export const generateMetadataRewardQRCodesJob = async ({ attrs }: Job) => {
         if (!pool) throw new Error('Reward not found');
 
         const rewards = await RewardBase.find({ poolId, variant: RewardVariant.RewardNFT });
-        console.log('--------------------------------------ATTRS', attrs.data);
         if (!rewards.length) throw new Error('Rewards not found');
-        console.log('--------------------------------------REWARDS', rewards);
         const account = await AccountProxy.getById(sub);
         if (!account) throw new Error('Account not found');
         if (!account.email) throw new Error('E-mail address for account not set');
@@ -61,7 +59,6 @@ export const generateMetadataRewardQRCodesJob = async ({ attrs }: Job) => {
                         return archive.file(`${id}.png`, base64Data, { base64: true });
                     }),
                 );
-                console.log('--------------------------------------sono quaaaaaaaaa');
             }),
         );
         const uploadStream = new stream.PassThrough();
@@ -77,7 +74,6 @@ export const generateMetadataRewardQRCodesJob = async ({ attrs }: Job) => {
         });
 
         await multipartUpload.done();
-        console.log('--------------------------------------UPLOAD DONE');
         if (notify) {
             await MailService.send(
                 account.email,
