@@ -2,13 +2,7 @@ import { Job } from 'agenda';
 import axios from 'axios';
 import stream from 'stream';
 import path from 'path';
-import {
-    API_URL,
-    AWS_S3_PRIVATE_BUCKET_NAME,
-    DASHBOARD_URL,
-    NODE_ENV,
-    WALLET_URL,
-} from '@thxnetwork/api/config/secrets';
+import { API_URL, AWS_S3_PRIVATE_BUCKET_NAME, DASHBOARD_URL, WALLET_URL } from '@thxnetwork/api/config/secrets';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import AssetPoolService from '@thxnetwork/api/services/AssetPoolService';
 import BrandService from '@thxnetwork/api/services/BrandService';
@@ -22,8 +16,7 @@ import { s3PrivateClient } from '@thxnetwork/api/util/s3';
 import { createArchiver } from '@thxnetwork/api/util/zip';
 import { Upload } from '@aws-sdk/lib-storage';
 import ejs from 'ejs';
-
-const ROOT_PATH = NODE_ENV !== 'production' ? './apps/api/src/app' : '/usr/src/app/src/app';
+import { getBasePath } from '../util/path';
 
 export const generateRewardQRCodesJob = async ({ attrs }: Job) => {
     if (!attrs.data) return;
@@ -55,7 +48,7 @@ export const generateRewardQRCodesJob = async ({ attrs }: Job) => {
                 // Fail silently and fallback to default logo img
             }
         } else {
-            logoPath = path.resolve(process.cwd(), ROOT_PATH + '/public/qr-logo.jpg');
+            logoPath = path.resolve(getBasePath() + '/public/qr-logo.jpg');
         }
         const logo = logoPath || logoBuffer;
 
@@ -87,7 +80,7 @@ export const generateRewardQRCodesJob = async ({ attrs }: Job) => {
         await multipartUpload.done();
         const dashboardUrl = `${DASHBOARD_URL}/pool/${reward.poolId}/rewards`;
         const html = await ejs.renderFile(
-            path.resolve(process.cwd(), ROOT_PATH + '/templates/email/qrcodesReady.ejs'),
+            path.resolve(getBasePath() + '/templates/email/qrcodesReady.ejs'),
             {
                 dashboardUrl,
                 baseUrl: API_URL,
