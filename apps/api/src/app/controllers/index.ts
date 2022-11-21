@@ -26,6 +26,7 @@ import erc20SwapRouter from './swaps/swaps.router';
 import claimsRouter from './claims/claims.router';
 import brandsRouter from './brands/brands.router';
 import walletsRouter from './wallets/wallets.router';
+import widgetRouter from './widget/widget.router';
 import { checkJwt, corsHandler } from '@thxnetwork/api/middlewares';
 
 const router = express.Router();
@@ -36,10 +37,11 @@ router.use('/token', tokenRouter);
 router.use('/docs', docsRouter);
 router.use('/metadata', erc721MetadataRouter);
 router.use('/payments', paymentsRouter);
+router.use('/point-rewards', pointRewardsRouter);
+router.use('/widget', widgetRouter);
 
 router.use(checkJwt);
 router.use(corsHandler);
-router.use('/point-rewards', pointRewardsRouter);
 router.use('/point-balances', pointBalancesRouter);
 router.use('/account', accountRouter);
 router.use('/pools', poolsRouter);
