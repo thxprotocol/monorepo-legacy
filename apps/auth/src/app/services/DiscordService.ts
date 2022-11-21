@@ -25,25 +25,33 @@ class DiscordService {
     }
 
     static async requestTokens(code: string) {
+        const body = new URLSearchParams();
+
+        body.append('code', code);
+        body.append('grant_type', 'authorization_code');
+        body.append('redirect_uri', DISCORD_REDIRECT_URI);
+        body.append('client_secret', DISCORD_CLIENT_SECRET);
+        body.append('client_id', DISCORD_CLIENT_ID);
+
         const r = await discordClient({
             url: 'https://discord.com/api/oauth2/token',
             method: 'POST',
-            data: {
-                code,
-                redirect_uri: DISCORD_REDIRECT_URI,
-                client_secret: DISCORD_CLIENT_SECRET,
-                client_id: DISCORD_CLIENT_ID,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
             },
+            data: body,
         });
 
         if (r.status !== 200) {
             throw new Error(ERROR_TOKEN_REQUEST_FAILED);
         }
+
         return r.data;
     }
 
     static async refreshTokens(refreshToken: string) {
         const body = new URLSearchParams();
+
         body.append('grant_type', 'refresh_token');
         body.append('refresh_token', refreshToken);
         body.append('client_secret', DISCORD_CLIENT_SECRET);
@@ -65,7 +73,7 @@ class DiscordService {
 
     static async getUser(accessToken: string) {
         const r = await discordClient({
-            url: 'https://discord.com/api/oauth2/@me',
+            url: '/oauth2/@me',
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
