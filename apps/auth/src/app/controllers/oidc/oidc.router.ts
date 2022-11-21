@@ -16,6 +16,7 @@ import CreateForgot from './forgot/post';
 import CreateReset from './reset/post';
 import ReadCallbackGoogle from './callback/google/get.controller';
 import ReadCallbackTwitter from './callback/twitter/get.controller';
+import ReadCallbackDiscord from './callback/discord/get.controller';
 import ReadCallbackGithub from './callback/github/get.controller';
 import ReadAccount from './account/get';
 import UpdateAccount from './account/post';
@@ -31,6 +32,7 @@ const router = express.Router();
 router.get('/callback/google', ReadCallbackGoogle.controller);
 router.get('/callback/twitter', ReadCallbackTwitter.controller);
 router.get('/callback/github', ReadCallbackGithub.controller);
+router.get('/callback/discord', ReadCallbackDiscord.controller);
 
 // Routes require no auth
 router.get('/:uid', assertInteraction, ReadOIDC.controller);
