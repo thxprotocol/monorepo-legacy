@@ -36,16 +36,20 @@ export const generateRewardQRCodesJob = async ({ attrs }: Job) => {
         const claims = await ClaimService.findByReward(reward);
         if (!claims.length) throw new Error('Claims not found');
 
+        let logoPath: string, logoBuffer: Buffer;
+
         const brand = await BrandService.get(poolId);
-        let logo = path.resolve(process.cwd(), ROOT_PATH + '/public/qr-logo.jpg');
         if (brand && brand.logoImgUrl) {
             try {
                 const response = await axios.get(brand.logoImgUrl, { responseType: 'arraybuffer' });
-                logo = Buffer.from(response.data, 'utf-8').toString();
+                logoBuffer = Buffer.from(response.data, 'utf-8');
             } catch {
                 // Fail silently and fallback to default logo img
             }
+        } else {
+            logoPath = path.resolve(process.cwd(), ROOT_PATH + '/public/qr-logo.jpg');
         }
+        const logo = logoPath || logoBuffer;
 
         // Create an instance of jsZip and build an archive
         const { jsZip, archive } = createArchiver();

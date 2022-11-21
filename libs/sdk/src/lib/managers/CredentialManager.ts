@@ -9,31 +9,31 @@ export default class CredentialManager extends CacheManager<Credential> {
     }
 
     public async authorizationCode() {
-        const payload: any = new URLSearchParams(window.location.search);
+        const params = new URLSearchParams(window.location.search);
         const isRedirectBack =
-            payload['code'] ||
-            payload['signup_token'] ||
-            payload['password_reset_token'] ||
-            payload['verifyEmailToken'];
+            params.get('code') ||
+            params.get('signup_token') ||
+            params.get('password_reset_token') ||
+            params.get('verifyEmailToken');
 
         if (isRedirectBack) {
             const extraQueryParams: any = {
                 return_url: window.location.origin,
             };
 
-            if (payload['signup_token']) {
+            if (params.get('signup_token')) {
                 extraQueryParams['prompt'] = 'confirm';
-                extraQueryParams['signup_token'] = payload['signup_token'];
+                extraQueryParams['signup_token'] = params.get('signup_token');
             }
 
-            if (payload['password_reset_token']) {
+            if (params.get('password_reset_token')) {
                 extraQueryParams['prompt'] = 'reset';
-                extraQueryParams['password_reset_token'] = payload['password_reset_token'];
+                extraQueryParams['password_reset_token'] = params.get('password_reset_token');
             }
 
-            if (payload['verifyEmailToken']) {
+            if (params.get('verifyEmailToken')) {
                 extraQueryParams['prompt'] = 'verify_email';
-                extraQueryParams['verifyEmailToken'] = payload['verifyEmailToken'];
+                extraQueryParams['verifyEmailToken'] = params.get('verifyEmailToken');
             }
 
             if (extraQueryParams['prompt']) {
