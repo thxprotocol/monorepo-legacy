@@ -6,12 +6,14 @@ import { TwitterService } from '../../../services/TwitterService';
 import { YouTubeService } from '../../../services/YouTubeService';
 import { AUTH_REQUEST_TYPED_MESSAGE, createTypedMessage } from '../../../util/typedMessage';
 import { DiscordService } from '@thxnetwork/auth/services/DiscordService';
+import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
 
 async function controller(req: Request, res: Response) {
     const { uid, params } = req.interaction;
     params.googleLoginUrl = YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getBasicScopes());
     params.githubLoginUrl = GithubService.getLoginURL(uid, {});
     params.discordLoginUrl = DiscordService.getLoginURL(uid, {})
+    params.twitchLoginUrl = TwitchService.getLoginURL(uid, {});
 
     if (params.return_url === WALLET_URL) {
         params.githubLoginUrl = GithubService.getLoginURL(uid, {});

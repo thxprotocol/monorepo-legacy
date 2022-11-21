@@ -17,6 +17,8 @@ import { getSpotifyUserFollow, getSpotifyPlaylistFollow } from './spotify/get.fo
 import { getSpotifyTrackPlaying, getSpotifyTrackRecent, getSpotifyTrackSaved } from './spotify/get.track.action';
 import { getSpotify } from './spotify/get.action';
 import { createLoginValidation, postLogin } from './login/post.controller';
+import { getDiscord } from './discord/get.action';
+import { getTwitch } from './twitch/get.action';
 
 const router = express.Router();
 
@@ -39,6 +41,10 @@ router.get('/:sub/spotify/playlist_follow/:item', guard.check(['accounts:read'])
 router.get('/:sub/spotify/track_playing/:item', guard.check(['accounts:read']), getSpotifyTrackPlaying);
 router.get('/:sub/spotify/track_recent/:item', guard.check(['accounts:read']), getSpotifyTrackRecent);
 router.get('/:sub/spotify/track_saved/:item', guard.check(['accounts:read']), getSpotifyTrackSaved);
+
+router.get('/:sub/discord', guard.check(['accounts:read']), getDiscord);
+
+router.get('/:sub/twitch', guard.check(['accounts:read']), getTwitch);
 
 router.get('/address/:address', guard.check(['accounts:read']), validate([]), getAccountByAddress);
 router.get('/email/:email', guard.check(['accounts:read']), validate([]), getAccountByEmail);

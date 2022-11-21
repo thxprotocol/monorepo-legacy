@@ -36,6 +36,7 @@ export const GITHUB_API_ENDPOINT = 'https://api.github.com';
 export const TWITTER_API_ENDPOINT = 'https://api.twitter.com/2';
 export const SPOTIFY_API_ENDPOINT = 'https://api.spotify.com/v1';
 export const DISCORD_API_ENDPOINT = 'https://discord.com/api/v10';
+export const TWITCH_API_ENDPOINT = 'https://api.twitch.tv/helix'
 
 export const NODE_ENV = process.env.NODE_ENV;
 export const AUTH_URL = process.env.AUTH_URL;

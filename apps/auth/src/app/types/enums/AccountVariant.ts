@@ -6,4 +6,5 @@ export enum AccountVariant {
     Metamask = 4,
     SSOGithub = 5,
     SSODiscord = 6,
+    SSOTwitch = 7,
 }

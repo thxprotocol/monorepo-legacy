@@ -4,6 +4,7 @@ import { YouTubeService } from '../services/YouTubeService';
 import { ChannelAction } from '../models/Reward';
 import { SPOTIFY_API_SCOPE, SpotifyService } from '../services/SpotifyService';
 import { DiscordService } from '../services/DiscordService';
+import { TwitchService } from '../services/TwitchService';
 
 function getChannelScopes(channelAction: ChannelAction) {
     switch (channelAction) {
@@ -30,6 +31,8 @@ function getLoginLinkForChannelAction(uid: string) {
         spotifyLoginUrl: SpotifyService.getLoginURL(uid, {}),
         githubLoginUrl: GithubService.getLoginURL(uid, {}),
         discordLoginUrl: DiscordService.getLoginURL(uid, {}),
+        twitchLoginUrl: TwitchService.getLoginURL(uid, {}),
+
     };
 }
 

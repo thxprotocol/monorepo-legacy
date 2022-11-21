@@ -93,7 +93,9 @@ export const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
 export const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
 export const DISCORD_REDIRECT_URI = process.env.DISCORD_REDIRECT_URI;
 
+export const TWITCH_CLIENT_ID = process.env.TWITCH_CLIENT_ID;
+export const TWITCH_CLIENT_SECRET = process.env.TWITCH_CLIENT_SECRET;
+export const TWITCH_REDIRECT_URI = process.env.TWITCH_REDIRECT_URI;
+
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 export const RELAYER_SPEED = 'fastest';
-
-console.log(HARDHAT_RPC);

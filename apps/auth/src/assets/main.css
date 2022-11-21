@@ -9020,42 +9020,42 @@ textarea.form-control-underlined {
   flex: 1;
   text-align: left;
 }
-
 .btn-discord {
   background-color: #7289da;
 }
 .btn-discord:active {
   background-color: #7289da;
 }
-
 .btn-google {
   background-color: #4285f4;
 }
 .btn-google:active {
   background-color: #3367d6;
 }
-
+.btn-twitch {
+  background-color: #6441a5;
+}
+.btn-twitch:active {
+  background-color: #b9a3e3;
+}
 .btn-twitter {
   background-color: #0098ff;
 }
 .btn-twitter:active {
   background-color: #3367d6;
 }
-
 .btn-spotify {
   background-color: #1d75de;
 }
 .btn-spotify:active {
   background-color: #1865c2;
 }
-
 .btn-github {
   background-color: #171515;
 }
 .btn-github:active {
   background-color: #171515;
 }
-
 .btn-metamask {
   background-color: #037dd6;
 }
