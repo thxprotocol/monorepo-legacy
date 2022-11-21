@@ -39,6 +39,7 @@ export interface TAccount {
     twitchAccessToken: string;
     twitchRefreshToken: string;
     twitchAccessTokenRefresh: number;
+    twitchAccessTokenExpires: number;
     twitterId?: string;
     verifyEmailToken: string;
     verifyEmailTokenExpires: number;

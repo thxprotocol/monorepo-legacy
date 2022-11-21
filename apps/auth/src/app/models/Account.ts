@@ -46,6 +46,7 @@ const accountSchema = new mongoose.Schema(
         twitchAccessToken: String,
         twitchRefreshToken: String,
         twitchAccessTokenRefresh: Number,
+        twitchAccessTokenExpires: Number,
         verifyEmailToken: String,
         verifyEmailTokenExpires: Number,
         acceptTermsPrivacy: Boolean,

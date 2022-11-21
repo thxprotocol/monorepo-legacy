@@ -18,6 +18,7 @@ import ReadCallbackGoogle from './callback/google/get.controller';
 import ReadCallbackTwitter from './callback/twitter/get.controller';
 import ReadCallbackDiscord from './callback/discord/get.controller';
 import ReadCallbackGithub from './callback/github/get.controller';
+import ReadCallbackTwitch from './callback/twitch/get.controller';
 import ReadAccount from './account/get';
 import UpdateAccount from './account/post';
 import UpdateAccountTOTP from './account/totp/post';
@@ -33,6 +34,7 @@ router.get('/callback/google', ReadCallbackGoogle.controller);
 router.get('/callback/twitter', ReadCallbackTwitter.controller);
 router.get('/callback/github', ReadCallbackGithub.controller);
 router.get('/callback/discord', ReadCallbackDiscord.controller);
+router.get('/callback/twitch', ReadCallbackTwitch.controller);
 
 // Routes require no auth
 router.get('/:uid', assertInteraction, ReadOIDC.controller);

@@ -39,6 +39,7 @@ export const TWITTER_API_ENDPOINT = 'https://api.twitter.com/2';
 export const GOOGLE_API_ENDPOINT = 'https://www.googleapis.com';
 export const SPOTIFY_API_ENDPOINT = 'https://api.spotify.com/v1';
 export const DISCORD_API_ENDPOINT = 'https://discord.com/api/v10';
+export const TWITCH_API_ENDPOINT = 'https://api.twitch.tv/helix'
 
 export const CWD = process.env.CWD || path.resolve(__dirname, '../../../apps/auth/src');
 

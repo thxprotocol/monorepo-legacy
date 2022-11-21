@@ -1,10 +1,10 @@
-
-import { Request, Response } from 'express'
+import { Request, Response } from 'express';
 import { DiscordService } from '../../../services/DiscordService';
 import { TwitterService } from '../../../services/TwitterService';
 import { YouTubeService } from '../../../services/YouTubeService';
 import { AccountService } from '../../../services/AccountService';
 import { GithubService } from '../../../services/GithubServices';
+import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
 
 async function controller(req: Request, res: Response) {
     const { uid, params, alert, session } = req.interaction;
@@ -14,6 +14,7 @@ async function controller(req: Request, res: Response) {
     params.googleLoginUrl = YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getBasicScopes());
     params.twitterLoginUrl = TwitterService.getLoginURL(uid, {});
     params.discordLoginUrl = DiscordService.getLoginURL(uid, {});
+    params.twitchLoginUrl = TwitchService.getLoginURL(uid, {});
 
     return res.render('account', {
         uid,

@@ -1,6 +1,5 @@
 import { RewardConditionInteraction } from '@thxnetwork/types/index';
 
-import { ChannelAction } from '../models/Reward';
 import { DiscordService } from '../services/DiscordService';
 import { TwitterService } from '../services/TwitterService';
 import { YouTubeService } from '../services/YouTubeService';
@@ -24,6 +23,7 @@ function getLoginLinkForChannelAction(uid: string) {
         twitterLoginUrl: TwitterService.getLoginURL(uid, {}),
         githubLoginUrl: GithubService.getLoginURL(uid, {}),
         discordLoginUrl: DiscordService.getLoginURL(uid, {}),
+
     };
 }
 
