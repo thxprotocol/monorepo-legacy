@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { AccountDocument } from '../../../../models/Account';
-import GithubService from '../../../../services/GithubServices';
 import { AccountService } from '../../../../services/AccountService';
 import { ERROR_NO_ACCOUNT } from '../../../../util/messages';
 import { getAccountByEmail, getInteraction, saveInteraction } from '../../../../util/oidc';
@@ -8,10 +7,10 @@ import { AccountVariant } from '../../../../types/enums/AccountVariant';
 import { DiscordService } from '@thxnetwork/auth/services/DiscordService';
 
 async function updateTokens(account: AccountDocument, tokens: any): Promise<AccountDocument> {
-    account.githubAccessToken = tokens.access_token || account.githubAccessToken;
-    account.githubRefreshToken = tokens.refresh_token || account.githubRefreshToken;
-    account.githubAccessTokenExpires =
-        Date.now() + Number(tokens.expires_in) * 1000 || account.githubAccessTokenExpires;
+    account.discordAccessToken = tokens.access_token || account.discordAccessToken;
+    account.discordRefreshToken = tokens.refresh_token || account.discordRefreshToken;
+    account.discordAccessTokenExpires =
+        Date.now() + Number(tokens.expires_in) * 1000 || account.discordAccessTokenExpires;
 
     return await account.save();
 }
@@ -43,7 +42,7 @@ async function controller(req: Request, res: Response) {
             ? // If so, get account for sub
               await getAccountBySub(interaction.session.accountId)
             : // If not, get account for email claim
-              await getAccountByEmail(email, AccountVariant.SSOGithub);
+              await getAccountByEmail(email, AccountVariant.SSODiscord);
 
     // Actions after successfully login
     await AccountService.update(account, {
