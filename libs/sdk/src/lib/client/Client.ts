@@ -1,4 +1,4 @@
-import { User, UserManager as BaseUserManager, UserManagerSettings } from 'oidc-client-ts';
+import { UserManager as BaseUserManager, UserManagerSettings } from 'oidc-client-ts';
 
 import { URL_CONFIG } from '../configs';
 import CredentialManager from '../managers/CredentialManager';
@@ -30,14 +30,15 @@ export default class THXClient {
     account: AccountManager;
 
     constructor({ scopes = 'openid', ...rest }: Props) {
+        const env = rest.env || 'prod';
         const settings: UserManagerSettings = {
-            authority: URL_CONFIG['AUTH_URL'],
+            authority: URL_CONFIG[env]['AUTH_URL'],
             client_id: rest.clientId,
             client_secret: rest.clientSecret,
             redirect_uri: rest.redirectUrl!,
             response_type: 'code',
             revokeTokenTypes: ['refresh_token'],
-            resource: URL_CONFIG['API_URL'],
+            resource: URL_CONFIG[env]['API_URL'],
             automaticSilentRenew: rest.automaticSilentRenew,
             silent_redirect_uri: rest.silent_redirect_uri,
             loadUserInfo: false,

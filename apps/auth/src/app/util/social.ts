@@ -22,27 +22,13 @@ function getChannelScopes(channelAction: ChannelAction) {
     }
 }
 
-function getLoginLinkForChannelAction(uid: string, channelAction: ChannelAction) {
-    switch (channelAction) {
-        case ChannelAction.YouTubeLike:
-        case ChannelAction.YouTubeSubscribe:
-            return { googleLoginUrl: YouTubeService.getLoginUrl(uid, YouTubeService.getExpandedScopes()) };
-        case ChannelAction.TwitterLike:
-        case ChannelAction.TwitterRetweet:
-        case ChannelAction.TwitterFollow:
-            return { twitterLoginUrl: TwitterService.getLoginURL(uid, {}) };
-        case ChannelAction.SpotifyPlaylistFollow:
-        case ChannelAction.SpotifyTrackPlaying:
-        case ChannelAction.SpotifyTrackRecent:
-        case ChannelAction.SpotifyTrackSaved:
-        case ChannelAction.SpotifyUserFollow:
-            return { spotifyLoginUrl: SpotifyService.getLoginURL(uid, {}) };
-        case ChannelAction.GithubIssueCommented:
-        case ChannelAction.GithubIssueCreated:
-        case ChannelAction.GithubPullRequestMerged:
-          return { githubLoginUrl: GithubService.getLoginURL(uid, {}) };
-
-    }
+function getLoginLinkForChannelAction(uid: string) {
+    return {
+        googleLoginUrl: YouTubeService.getLoginUrl(uid, YouTubeService.getExpandedScopes()),
+        twitterLoginUrl: TwitterService.getLoginURL(uid, {}),
+        spotifyLoginUrl: SpotifyService.getLoginURL(uid, {}),
+        githubLoginUrl: GithubService.getLoginURL(uid, {}),
+    };
 }
 
 export { getChannelScopes, getLoginLinkForChannelAction };

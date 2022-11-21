@@ -9,20 +9,25 @@ class RequestManager extends BaseManager {
         super(client);
     }
 
-    private async getHeaders() {
+    private getUrl(path: string) {
+        const env = this.client.credential.cached.env;
+        return URL_CONFIG[env as string]['API_URL'] + path;
+    }
+
+    private getHeaders() {
         const accessToken = this.client.session.cached.accessToken;
         return { authorization: `Bearer ${accessToken}` };
     }
 
-    private async preflight() {
+    private preflight() {
         if (this.client.session.cached.user || this.client.session.cached.accessToken) return;
         throw new THXError(ErrorCode.SIGN_IN_REQUIRED);
     }
 
-    async get(url: string, config?: RequestInit) {
-        await this.preflight();
-        const headers = await this.getHeaders();
-
+    async get(path: string, config?: RequestInit) {
+        this.preflight();
+        const headers = this.getHeaders();
+        const url = this.getUrl(path);
         const response = await fetch(url, {
             ...config,
             mode: 'cors',
@@ -41,7 +46,8 @@ class RequestManager extends BaseManager {
     async silentSignin() {
         if (this.client.credential.cached.grantType === 'authorization_code') {
             const clientId = this.client.credential.cached.clientId;
-            const name = `oidc.user:${URL_CONFIG['AUTH_URL']}:${clientId}`;
+            const env = this.client.credential.cached.env;
+            const name = `oidc.user:${URL_CONFIG[env]['AUTH_URL']}:${clientId}`;
             const user = await this.client.userManager.cached.signinSilent();
             await this.client.userManager.cached.storeUser(user);
             sessionStorage.setItem(name, JSON.stringify(user));
@@ -50,11 +56,11 @@ class RequestManager extends BaseManager {
         }
     }
 
-    async post(url: string, config?: RequestInit) {
-        await this.preflight();
-        const headers = await this.getHeaders();
-
-        const response = await fetch(url, {
+    async post(path: string, config?: RequestInit) {
+        this.preflight();
+        const headers = this.getHeaders();
+        const env = this.client.credential.cached.env;
+        const response = await fetch(URL_CONFIG[env]['API_URL'] + path, {
             ...config,
             mode: 'cors',
             method: 'POST',
@@ -69,10 +75,10 @@ class RequestManager extends BaseManager {
         return response;
     }
 
-    async patch(url: string, config?: RequestInit) {
-        await this.preflight();
-        const headers = await this.getHeaders();
-
+    async patch(path: string, config?: RequestInit) {
+        this.preflight();
+        const headers = this.getHeaders();
+        const url = this.getUrl(path);
         const response = await fetch(url, {
             ...config,
             mode: 'cors',
@@ -88,10 +94,10 @@ class RequestManager extends BaseManager {
         return response;
     }
 
-    async put(url: string, config?: RequestInit) {
-        await this.preflight();
-        const headers = await this.getHeaders();
-
+    async put(path: string, config?: RequestInit) {
+        this.preflight();
+        const headers = this.getHeaders();
+        const url = this.getUrl(path);
         const response = await fetch(url, {
             ...config,
             mode: 'cors',
@@ -107,10 +113,10 @@ class RequestManager extends BaseManager {
         return response;
     }
 
-    async delete(url: string, config?: RequestInit) {
-        await this.preflight();
-        const headers = await this.getHeaders();
-
+    async delete(path: string, config?: RequestInit) {
+        this.preflight();
+        const headers = this.getHeaders();
+        const url = this.getUrl(path);
         const response = await fetch(url, {
             ...config,
             mode: 'cors',

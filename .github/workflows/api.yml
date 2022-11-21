@@ -38,9 +38,9 @@ jobs:
                   projectBaseDir: apps/api
 
     bumpVersion:
-        name: 'Bump Version on main'
+        name: 'Bump Version on develop'
         runs-on: ubuntu-latest
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/develop'
         needs: buildAndTest
         outputs:
             newTag: ${{ steps.version-bump.outputs.newTag }}
@@ -64,7 +64,7 @@ jobs:
     buildAndPushImage:
         name: Build and Push docker image
         runs-on: ubuntu-latest
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/develop'
         needs: bumpVersion
         steps:
             - name: Checkout
@@ -159,9 +159,9 @@ jobs:
                   labels: ${{ steps.meta.outputs.labels }}
 
     autodeploy:
-        name: Auto deploy main to dev.api.thx.network
+        name: Auto deploy develop to dev.api.thx.network
         runs-on: ubuntu-latest
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/develop'
         needs: buildAndPushImage
         steps:
             - name: Install Node.js 16.x

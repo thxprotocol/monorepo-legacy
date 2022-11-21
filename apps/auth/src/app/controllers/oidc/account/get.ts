@@ -14,6 +14,8 @@ async function controller(req: Request, res: Response) {
     params.twitterLoginUrl = TwitterService.getLoginURL(uid, {});
     params.spotifyLoginUrl = SpotifyService.getLoginURL(uid, {});
 
+    const googleScopes = await YouTubeService.getScopesOfAccessToken(account.googleAccessToken);
+
     return res.render('account', {
         uid,
         alert,
@@ -25,6 +27,7 @@ async function controller(req: Request, res: Response) {
             profileImg: account.profileImg,
             organisation: account.organisation,
             address: account.address,
+            walletAddress: account.walletAddress,
             plan: account.plan,
             otpSecret: account.otpSecret,
             googleAccess: account.googleAccessToken && account.googleAccessTokenExpires > Date.now(),

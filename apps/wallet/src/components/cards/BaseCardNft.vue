@@ -9,12 +9,12 @@
                 <b-badge
                     variant="darker"
                     v-b-tooltip
-                    :title="value"
+                    :title="attr.value"
                     class="p-2 mr-1 mb-1 rounded-pill"
                     :key="key"
-                    v-for="(value, key) in mdata.attributes"
+                    v-for="(attr, key) in mdata.attributes"
                 >
-                    {{ key }}
+                    {{ attr.key }}
                 </b-badge>
             </b-form-group>
             <hr />
