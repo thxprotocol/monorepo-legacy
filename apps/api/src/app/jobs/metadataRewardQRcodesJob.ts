@@ -51,7 +51,7 @@ export const generateMetadataRewardQRCodesJob = async ({ attrs }: Job) => {
                         // Fail silently and fallback to default logo img
                     }
                 } else {
-                    logoPath = path.resolve(assetsPath, '/qr-logo.jpg');
+                    logoPath = path.resolve(assetsPath, 'qr-logo.jpg');
                 }
                 const logo = logoPath || logoBuffer;
 
