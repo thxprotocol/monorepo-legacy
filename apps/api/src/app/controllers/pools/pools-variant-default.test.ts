@@ -173,7 +173,7 @@ describe('Default Pool', () => {
                     expect(res.body.rewardBase.state).toEqual(1);
                     expect(res.body.rewardBase.title).toEqual(title);
                     expect(res.body.rewardBase.slug).toEqual(slug);
-                    expect(res.body.amount).toEqual(rewardWithdrawAmount);
+                    expect(res.body.withdrawAmount).toEqual(rewardWithdrawAmount);
                     expect(res.body.claims).toBeDefined();
                 })
                 .expect(200, done);
