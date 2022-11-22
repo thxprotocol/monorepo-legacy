@@ -17,6 +17,7 @@ import { Response } from 'express';
 import { RewardNftDocument } from '../models/RewardNft';
 import { RewardReferralDocument } from '../models/RewardReferral';
 import { RewardTokenDocument } from '../models/RewardToken';
+import { TRewardNft } from '../types/RewardNft';
 
 export function addMinutes(date: Date, minutes: number) {
     return new Date(date.getTime() + minutes * 60000);
@@ -364,4 +365,14 @@ export const getQrcode = async (
             throw err;
         }
     }
+};
+
+export const formatRewardNft = async (reward: RewardNftDocument) => {
+    return {
+        id: reward.id,
+        erc721metadataId: reward.erc721metadataId,
+        rewardBaseId: reward.rewardBaseId,
+        rewardConditionId: reward.rewardConditionId,
+        rewardBase: await reward.rewardBase,
+    } as TRewardNft;
 };

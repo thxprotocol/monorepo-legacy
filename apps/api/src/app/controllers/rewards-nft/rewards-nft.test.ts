@@ -127,15 +127,14 @@ describe('RewardNft Claim', () => {
         });
     });
 
-    describe('A reward with limit is 0 (unlimited) and claim_one disabled to enabled', () => {
+    describe('A reward with limit is 0 (unlimited) and claim_one enabled to disabled', () => {
         let claim: ClaimDocument, rewardNftId: string;
 
         it('Create reward', (done) => {
             user.post('/v1/rewards-nft/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .send(getRewardNftConfiguration('claim-one-is-disabled', erc721metadataId))
+                .send(getRewardNftConfiguration('claim-one-is-enabled', erc721metadataId))
                 .expect((res: request.Response) => {
-                    console.log('RES BODY', res.body);
                     expect(res.body.id).toBeDefined();
                     expect(res.body.claims).toBeDefined();
                     expect(res.body.claims.length).toBe(1);
@@ -148,13 +147,11 @@ describe('RewardNft Claim', () => {
 
         describe('PATCH /rewards-nft/:id', () => {
             it('Should return 200 when edit the claim', (done) => {
-                console.log('rewardNftId', rewardNftId);
                 user.patch(`/v1/rewards-nft/${rewardNftId}`)
                     .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                    .send(getRewardNftConfiguration('claim-one-is-enabled', erc721metadataId))
+                    .send(getRewardNftConfiguration('claim-one-is-disabled', erc721metadataId))
                     .expect((res: request.Response) => {
-                        expect(res.body.isClaimOnce).toEqual(true);
-                        console.log('BODYYYYY', res.body);
+                        expect(res.body.rewardBase.isClaimOnce).toEqual(false);
                     })
                     .expect(200, done);
             });
@@ -224,6 +221,32 @@ describe('RewardNft Claim', () => {
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
                     .expect(403, done);
             });
+        });
+    });
+
+    describe('GET /rewards-nft', () => {
+        it('Create reward', (done) => {
+            user.post('/v1/rewards-nft/')
+                .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
+                .send(getRewardNftConfiguration('expiration-date-is-next-30-min', erc721metadataId))
+                .expect((res: request.Response) => {
+                    expect(res.body.id).toBeDefined();
+                    expect(res.body.claims).toBeDefined();
+                    expect(res.body.claims[0].id).toBeDefined();
+                })
+                .expect(201, done);
+        });
+
+        it('Should return a list of rewards', (done) => {
+            user.get('/v1/rewards-nft')
+                .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
+
+                .expect((res: request.Response) => {
+                    expect(res.body.results.length).toBe(5);
+                    expect(res.body.results[0].claims).toBeDefined();
+                    expect(res.body.limit).toBe(10);
+                })
+                .expect(200, done);
         });
     });
 });

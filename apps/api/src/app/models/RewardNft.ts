@@ -1,9 +1,14 @@
 import mongoose from 'mongoose';
 
 import { TRewardNft } from '../types/RewardNft';
-import { RewardBase } from './RewardBase';
+import { IRewardBaseUpdates, RewardBase } from './RewardBase';
 
 export type RewardNftDocument = mongoose.Document & TRewardNft;
+
+export interface IRewardNftUpdates extends IRewardBaseUpdates {
+    erc721metadataId?: string;
+    rewardConditionId?: string;
+}
 
 const rewardNftSchema = new mongoose.Schema(
     {

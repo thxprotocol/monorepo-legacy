@@ -1,3 +1,4 @@
+import { RewardState } from './enums/RewardState';
 import { RewardVariant } from './enums/RewardVariant';
 
 export type TRewardBase = {
@@ -8,7 +9,7 @@ export type TRewardBase = {
     poolId: string;
     limit: number;
     expiryDate: Date;
-    state: number;
+    state: RewardState;
     amount: number;
     isClaimOnce: boolean;
 };

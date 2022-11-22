@@ -11,7 +11,6 @@ import CreateRewardNft from './post.controller';
 import ReadRewardNft from './get.controller';
 import UpdateRewardNft from './patch.controller';
 import ListRewardNft from './list.controller';
-import ListClaimsQRCode from './claims/qrcode/get.controller';
 
 const router = express.Router();
 
@@ -55,10 +54,10 @@ router.get(
     '/:id/claims/qrcode',
     guard.check(['rewards:read', 'claims:read']),
     assertAssetPoolAccess,
-    assertRequestInput(ListClaimsQRCode.validation),
+    assertRequestInput(ListRewardNft.validation),
     requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
-    ListClaimsQRCode.controller,
+    ListRewardNft.controller,
 );
 
 export default router;

@@ -4,7 +4,7 @@ import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import { RewardVariant } from '../types/enums/RewardVariant';
 import { IAccount } from '../models/Account';
 import { validateRewardBase, validateCondition, createRewardBase } from './utils/rewards';
-import { RewardNft, RewardNftDocument } from '../models/RewardNft';
+import { IRewardNftUpdates, RewardNft, RewardNftDocument } from '../models/RewardNft';
 import { RewardCondition } from '../types/RewardCondition';
 import ERC721Service from './ERC721Service';
 import { IRewardBaseUpdates, RewardBase, RewardBaseDocument } from '../models/RewardBase';
@@ -98,7 +98,8 @@ export default class RewardNftService {
         });
     }
 
-    static update(reward: RewardNftDocument, updates: IRewardBaseUpdates) {
-        return RewardNft.updateOne({ id: reward.id }, updates, { new: true });
+    static async update(reward: RewardNftDocument, updates: IRewardNftUpdates) {
+        await RewardBase.updateOne({ id: reward.rewardBaseId }, updates, { new: true });
+        return RewardNft.findByIdAndUpdate(reward._id, updates, { new: true });
     }
 }
