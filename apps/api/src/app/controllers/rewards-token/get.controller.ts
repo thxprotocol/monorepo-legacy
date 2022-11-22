@@ -9,7 +9,7 @@ import { RewardBaseDocument } from '@thxnetwork/api/models/RewardBase';
 const validation = [param('id').exists()];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Rewards']
+    // #swagger.tags = ['RewardsToken']
     const reward = await RewardReferralService.get(req.params.id);
     if (!reward) throw new NotFoundError();
 

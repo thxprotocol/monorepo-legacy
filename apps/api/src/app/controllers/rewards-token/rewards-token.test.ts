@@ -324,10 +324,24 @@ describe('RewardToken Claim', () => {
                     .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                     .send(getRewardConfiguration('claim-one-is-enabled'))
                     .expect((res: request.Response) => {
-                        expect(res.body.isClaimOnce).toEqual(true);
+                        expect(res.body.rewardBase.isClaimOnce).toEqual(true);
                     })
                     .expect(200, done);
             });
+        });
+    });
+
+    describe('GET /rewards-nft', () => {
+        it('Should return a list of rewards', (done) => {
+            user.get('/v1/rewards-token')
+                .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
+
+                .expect((res: request.Response) => {
+                    expect(res.body.results.length).toBe(7);
+                    expect(res.body.results[0].claims).toBeDefined();
+                    expect(res.body.limit).toBe(10);
+                })
+                .expect(200, done);
         });
     });
 });

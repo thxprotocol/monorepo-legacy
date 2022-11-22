@@ -7,7 +7,7 @@ import RewardTokenService from '@thxnetwork/api/services/RewardTokenService';
 const validation = [param('id').exists().isString()];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['RewardsNft']
+    // #swagger.tags = ['RewardsToken']
     if (req.auth.sub !== req.assetPool.sub) throw new SubjectUnauthorizedError();
 
     const reward = await RewardTokenService.get(req.params.id);

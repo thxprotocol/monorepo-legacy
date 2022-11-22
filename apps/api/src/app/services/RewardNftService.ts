@@ -7,7 +7,7 @@ import { validateRewardBase, validateCondition, createRewardBase } from './utils
 import { IRewardNftUpdates, RewardNft, RewardNftDocument } from '../models/RewardNft';
 import { RewardCondition } from '../types/RewardCondition';
 import ERC721Service from './ERC721Service';
-import { IRewardBaseUpdates, RewardBase, RewardBaseDocument } from '../models/RewardBase';
+import { RewardBase, RewardBaseDocument } from '../models/RewardBase';
 
 export default class RewardNftService {
     static async get(id: string): Promise<RewardNftDocument> {

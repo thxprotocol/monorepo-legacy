@@ -11,7 +11,6 @@ import CreateRewardToken from './post.controller';
 import ReadRewardToken from './get.controller';
 import UpdateRewardToken from './patch.controller';
 import ListRewardToken from './list.controller';
-import ListClaimsQRCode from './claims/qrcode/get.controller';
 
 const router = express.Router();
 
@@ -55,10 +54,10 @@ router.get(
     '/:id/claims/qrcode',
     guard.check(['rewards:read', 'claims:read']),
     assertAssetPoolAccess,
-    assertRequestInput(ListClaimsQRCode.validation),
+    assertRequestInput(ListRewardToken.validation),
     requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
-    ListClaimsQRCode.controller,
+    ListRewardToken.controller,
 );
 
 export default router;

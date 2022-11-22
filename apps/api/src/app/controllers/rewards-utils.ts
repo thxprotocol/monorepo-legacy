@@ -18,6 +18,7 @@ import { RewardNftDocument } from '../models/RewardNft';
 import { RewardReferralDocument } from '../models/RewardReferral';
 import { RewardTokenDocument } from '../models/RewardToken';
 import { TRewardNft } from '../types/RewardNft';
+import { TRewardToken } from '../types/RewardToken';
 
 export function addMinutes(date: Date, minutes: number) {
     return new Date(date.getTime() + minutes * 60000);
@@ -54,10 +55,8 @@ export function getRewardConfiguration(slug: RewardSlug) {
                 title: '1 limit and claim one disabled',
                 slug: 'one-limit-and-claim-one-disabled',
                 withdrawAmount: 1,
-                withdrawDuration: 0,
-                withdrawLimit: 1,
+                limit: 1,
                 isClaimOnce: false,
-                isMembershipRequired: false,
                 amount: 1,
             };
         }
@@ -67,10 +66,8 @@ export function getRewardConfiguration(slug: RewardSlug) {
                 title: 'Expiration date is next 30 min',
                 slug: 'expiration-date-is-next-30-min',
                 withdrawAmount: 1,
-                withdrawDuration: 0,
-                withdrawLimit: 0,
+                limit: 0,
                 isClaimOnce: false,
-                isMembershipRequired: false,
                 expiryDate: addMinutes(new Date(), 30),
                 amount: 1,
             };
@@ -80,10 +77,8 @@ export function getRewardConfiguration(slug: RewardSlug) {
                 title: 'Expiration date is previous 30 min',
                 slug: 'expiration-date-is-previous-30-min',
                 withdrawAmount: 1,
-                withdrawDuration: 0,
-                withdrawLimit: 0,
+                limit: 0,
                 isClaimOnce: false,
-                isMembershipRequired: false,
                 expiryDate: minusMinutes(new Date(), 24 * 60),
                 amount: 1,
             };
@@ -94,10 +89,8 @@ export function getRewardConfiguration(slug: RewardSlug) {
                 title: 'Claim one is enabled',
                 slug: 'claim-one-is-enabled',
                 withdrawAmount: 1,
-                withdrawDuration: 0,
-                withdrawLimit: 0,
+                limit: 0,
                 isClaimOnce: true,
-                isMembershipRequired: false,
                 amount: 1,
             };
         }
@@ -106,10 +99,8 @@ export function getRewardConfiguration(slug: RewardSlug) {
                 title: 'Claim one is enabled and amount is greather than 1',
                 slug: 'claim-one-is-enabled-and-amount-is-greather-than-1',
                 withdrawAmount: 1,
-                withdrawDuration: 0,
-                withdrawLimit: 0,
+                limit: 0,
                 isClaimOnce: true,
-                isMembershipRequired: false,
                 amount: 10,
             };
         }
@@ -118,10 +109,8 @@ export function getRewardConfiguration(slug: RewardSlug) {
                 title: 'Claim one is disabled',
                 slug: 'claim-one-is-disabled',
                 withdrawAmount: 1,
-                withdrawDuration: 0,
-                withdrawLimit: 0,
+                limit: 0,
                 isClaimOnce: false,
-                isMembershipRequired: false,
                 amount: 1,
             };
         }
@@ -375,4 +364,14 @@ export const formatRewardNft = async (reward: RewardNftDocument) => {
         rewardConditionId: reward.rewardConditionId,
         rewardBase: await reward.rewardBase,
     } as TRewardNft;
+};
+
+export const formatRewardToken = async (reward: RewardTokenDocument) => {
+    return {
+        id: reward.id,
+        amount: reward.amount,
+        rewardBaseId: reward.rewardBaseId,
+        rewardConditionId: reward.rewardConditionId,
+        rewardBase: await reward.rewardBase,
+    } as TRewardToken;
 };

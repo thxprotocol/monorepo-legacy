@@ -13,12 +13,9 @@ const controller = async (req: Request, res: Response) => {
     const page = req.query.page ? Number(req.query.page) : 1;
     const rewards = await RewardNftService.findByPool(req.assetPool, page, limit);
 
-    console.log('REWARDSSSSSS', rewards);
     const promises = rewards.results.map(async (r, i) => {
         const claims = await ClaimService.findByReward(r);
         const reward = await formatRewardNft(r);
-        console.log('REWARDDDDD', reward);
-
         rewards.results[i] = {
             claims,
             ...reward,

@@ -2,16 +2,16 @@ import db from '@thxnetwork/api/util/database';
 import type { IAccount } from '@thxnetwork/api/models/Account';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
-import { RewardToken, RewardTokenDocument } from '../models/RewardToken';
+import { IRewardTokenUpdates, RewardToken, RewardTokenDocument } from '../models/RewardToken';
 import { RewardVariant } from '../types/enums/RewardVariant';
 import { createRewardBase, validateCondition, validateRewardBase } from './utils/rewards';
 import WithdrawalService from './WithdrawalService';
 import { RewardCondition } from '../types/RewardCondition';
-import { IRewardBaseUpdates, RewardBase, RewardBaseDocument } from '../models/RewardBase';
+import { RewardBase, RewardBaseDocument } from '../models/RewardBase';
 
 export default class RewardService {
     static async get(rewardId: string): Promise<RewardTokenDocument> {
-        const reward = await RewardToken.findById(rewardId);
+        const reward = await RewardToken.findOne({ id: rewardId });
         if (!reward) return null;
         return reward;
     }
@@ -95,7 +95,8 @@ export default class RewardService {
         });
     }
 
-    static update(reward: RewardTokenDocument, updates: IRewardBaseUpdates) {
-        return RewardToken.findByIdAndUpdate(reward.rewardBaseId, updates, { new: true });
+    static async update(reward: RewardTokenDocument, updates: IRewardTokenUpdates) {
+        await RewardBase.updateOne({ id: reward.rewardBaseId }, updates, { new: true });
+        return RewardToken.findByIdAndUpdate(reward._id, updates, { new: true });
     }
 }

@@ -225,24 +225,12 @@ describe('RewardNft Claim', () => {
     });
 
     describe('GET /rewards-nft', () => {
-        it('Create reward', (done) => {
-            user.post('/v1/rewards-nft/')
-                .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .send(getRewardNftConfiguration('expiration-date-is-next-30-min', erc721metadataId))
-                .expect((res: request.Response) => {
-                    expect(res.body.id).toBeDefined();
-                    expect(res.body.claims).toBeDefined();
-                    expect(res.body.claims[0].id).toBeDefined();
-                })
-                .expect(201, done);
-        });
-
         it('Should return a list of rewards', (done) => {
             user.get('/v1/rewards-nft')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
 
                 .expect((res: request.Response) => {
-                    expect(res.body.results.length).toBe(5);
+                    expect(res.body.results.length).toBe(4);
                     expect(res.body.results[0].claims).toBeDefined();
                     expect(res.body.limit).toBe(10);
                 })

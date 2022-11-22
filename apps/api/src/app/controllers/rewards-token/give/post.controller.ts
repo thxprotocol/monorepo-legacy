@@ -10,7 +10,7 @@ import RewardTokenService from '@thxnetwork/api/services/RewardTokenService';
 const validation = [param('id').exists(), body('member').exists()];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Rewards']
+    // #swagger.tags = ['RewardsToken']
     const reward = await RewardTokenService.get(req.params.id);
     if (!reward) throw new BadRequestError('Could not find a reward for this id');
 

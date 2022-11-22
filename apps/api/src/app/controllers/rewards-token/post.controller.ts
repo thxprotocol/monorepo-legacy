@@ -12,6 +12,7 @@ const validation = [
 ];
 
 const controller = async (req: Request, res: Response) => {
+    // #swagger.tags = ['RewardsToken']
     const { reward, claims } = await createRewardToken(req.assetPool, req.body);
     res.status(201).json({ ...reward.toJSON(), claims });
 };

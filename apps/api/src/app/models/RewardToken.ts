@@ -1,9 +1,14 @@
 import mongoose from 'mongoose';
 
 import { TRewardToken } from '../types/RewardToken';
-import { RewardBase } from './RewardBase';
+import { IRewardBaseUpdates, RewardBase } from './RewardBase';
 
 export type RewardTokenDocument = mongoose.Document & TRewardToken;
+
+export interface IRewardTokenUpdates extends IRewardBaseUpdates {
+    amount?: number;
+    rewardConditionId?: string;
+}
 
 const rewardTokenSchema = new mongoose.Schema(
     {
