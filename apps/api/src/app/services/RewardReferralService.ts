@@ -2,7 +2,7 @@ import db from '@thxnetwork/api/util/database';
 import type { IAccount } from '@thxnetwork/api/models/Account';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
-import { RewardReferral, RewardReferralDocument } from '../models/RewardReferral';
+import { IRewardReferralUpdates, RewardReferral, RewardReferralDocument } from '../models/RewardReferral';
 import { RewardVariant } from '../types/enums/RewardVariant';
 import { createRewardBase, validateRewardBase } from './utils/rewards';
 import { IRewardBaseUpdates, RewardBase, RewardBaseDocument } from '../models/RewardBase';
@@ -70,7 +70,8 @@ export default class RewardReferralService {
         });
     }
 
-    static update(reward: RewardReferralDocument, updates: IRewardBaseUpdates) {
-        return RewardReferral.findByIdAndUpdate(reward.rewardBaseId, updates, { new: true });
+    static async update(reward: RewardReferralDocument, updates: IRewardReferralUpdates) {
+        await RewardBase.updateOne({ id: reward.rewardBaseId }, updates, { new: true });
+        return RewardReferral.findByIdAndUpdate(reward._id, updates, { new: true });
     }
 }

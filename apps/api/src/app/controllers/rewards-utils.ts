@@ -17,6 +17,7 @@ import { RewardReferralDocument } from '../models/RewardReferral';
 import { RewardTokenDocument } from '../models/RewardToken';
 import { TRewardNft } from '../types/RewardNft';
 import { TRewardToken } from '../types/RewardToken';
+import { TRewardReferral } from '../types/RewardReferral';
 
 export function addMinutes(date: Date, minutes: number) {
     return new Date(date.getTime() + minutes * 60000);
@@ -374,4 +375,13 @@ export const formatRewardToken = async (reward: RewardTokenDocument) => {
         rewardConditionId: reward.rewardConditionId,
         rewardBase: await reward.rewardBase,
     } as TRewardToken;
+};
+
+export const formatRewardReferral = async (reward: RewardReferralDocument) => {
+    return {
+        id: reward.id,
+        rewardBaseId: reward.rewardBaseId,
+        amount: reward.amount,
+        rewardBase: await reward.rewardBase,
+    } as TRewardReferral;
 };

@@ -10,9 +10,9 @@ const validation = [
 ];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Rewards']
+    // #swagger.tags = ['RewardsReferral']
     const reward = await RewardReferralService.get(req.params.id);
-    if (!reward) throw new NotFoundError('Could not find reward for this id');
+    if (!reward) throw new NotFoundError('Could not find the reward for this id');
     const result = await RewardReferralService.update(reward, req.body);
     return res.json(result);
 };

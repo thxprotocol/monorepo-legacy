@@ -1,29 +1,27 @@
 import { Request, Response } from 'express';
-import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
 import RewardReferralService from '@thxnetwork/api/services/RewardReferralService';
+import { query } from 'express-validator';
+import { formatRewardReferral } from '../rewards-utils';
+
+export const validation = [query('limit').optional().isInt({ gt: 0 }), query('page').optional().isInt({ gt: 0 })];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Rewards']
-    const rewards = await RewardReferralService.findByPool(
-        req.assetPool,
-        Number(req.query.page),
-        Number(req.query.limit),
-    );
+    // #swagger.tags = ['RewardsReferral']
+    const limit = req.query.limit ? Number(req.query.limit) : 10;
+    const page = req.query.page ? Number(req.query.page) : 1;
+
+    const rewards = await RewardReferralService.findByPool(req.assetPool, page, limit);
 
     const promises = rewards.results.map(async (r, i) => {
-        const rewardBaseId = String(r.rewardBaseId);
-        const withdrawals = await WithdrawalService.findByQuery({
-            poolId: String(req.assetPool._id),
-            rewardId: rewardBaseId,
-        });
-        const claims = await ClaimService.findByReward(r);
+        const rewardBaseId = r.rewardBaseId;
 
+        const claims = await ClaimService.findByReward(r);
+        const reward = await formatRewardReferral(r);
         rewards.results[i] = {
             claims,
             id: rewardBaseId,
-            progress: withdrawals.length,
-            ...r,
+            ...reward,
         };
 
         return rewards;
@@ -34,4 +32,4 @@ const controller = async (req: Request, res: Response) => {
     res.json(rewards);
 };
 
-export default { controller };
+export default { controller, validation };

@@ -1,9 +1,13 @@
 import mongoose from 'mongoose';
 
 import { TRewardReferral } from '../types/RewardReferral';
-import { RewardBase } from './RewardBase';
+import { IRewardBaseUpdates, RewardBase } from './RewardBase';
 
 export type RewardReferralDocument = mongoose.Document & TRewardReferral;
+
+export interface IRewardReferralUpdates extends IRewardBaseUpdates {
+    amount?: number;
+}
 
 const rewardReferralSchema = new mongoose.Schema(
     {

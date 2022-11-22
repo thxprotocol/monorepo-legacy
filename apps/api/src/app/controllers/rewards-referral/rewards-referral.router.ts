@@ -19,6 +19,7 @@ router.get(
     guard.check(['rewards:read']),
     assertAssetPoolAccess,
     requireAssetPoolHeader,
+    assertRequestInput(ListRewardReferral.validation),
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
     ListRewardReferral.controller,
 );
