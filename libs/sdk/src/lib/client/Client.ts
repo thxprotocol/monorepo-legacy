@@ -36,6 +36,7 @@ export default class THXClient {
             client_id: rest.clientId,
             client_secret: rest.clientSecret,
             redirect_uri: rest.redirectUrl!,
+            post_logout_redirect_uri: rest.redirectUrl!,
             response_type: 'code',
             revokeTokenTypes: ['refresh_token'],
             resource: URL_CONFIG[env]['API_URL'],
