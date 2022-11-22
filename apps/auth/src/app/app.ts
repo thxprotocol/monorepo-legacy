@@ -8,16 +8,13 @@ import expressEJSLayouts from 'express-ejs-layouts';
 import { xssProtection } from 'lusca';
 import path from 'path';
 
-import {
-    DASHBOARD_URL, GTM, MONGODB_URI, NODE_ENV, PORT, PUBLIC_URL, WALLET_URL
-} from './config/secrets';
+import { DASHBOARD_URL, GTM, MONGODB_URI, PORT, PUBLIC_URL, WALLET_URL } from './config/secrets';
 import { mainRouter } from './controllers';
-import {
-    corsHandler, errorLogger, errorNormalizer, errorOutput, notFoundHandler
-} from './middlewares';
+import { corsHandler, errorLogger, errorNormalizer, errorOutput, notFoundHandler } from './middlewares';
 import db from './util/database';
 import { helmetInstance } from './util/helmet';
 import { requestLogger } from './util/logger';
+import { assetsPath } from './util/path';
 
 axiosBetterStacktrace(axios);
 
@@ -29,15 +26,14 @@ app.set('port', PORT);
 app.set('trust proxy', true);
 app.set('layout', './layouts/default');
 app.set('view engine', 'ejs');
-
-app.set('views', path.join(__dirname, (NODE_ENV === 'test' ? '..' : '.') + '/assets/views'));
+app.set('views', path.join(assetsPath, 'views'));
 app.use(compression());
 app.use(helmetInstance);
 app.use(corsHandler);
 app.use(requestLogger);
 app.use(expressEJSLayouts);
 app.use(xssProtection(true));
-app.use(express.static(path.join(__dirname, './assets'), { maxAge: 31557600000 }));
+app.use(express.static(assetsPath, { maxAge: 31557600000 }));
 app.use('/', mainRouter);
 app.use(notFoundHandler);
 app.use(errorLogger);

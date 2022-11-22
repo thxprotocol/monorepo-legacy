@@ -14,9 +14,10 @@ import { logger } from '@thxnetwork/api/util/logger';
 import { s3PrivateClient } from '@thxnetwork/api/util/s3';
 import { createArchiver } from '@thxnetwork/api/util/zip';
 import { Upload } from '@aws-sdk/lib-storage';
+
 import { RewardVariant } from '../types/enums/RewardVariant';
 import { RewardBase, RewardBaseDocument } from '../models/RewardBase';
-const ROOT_PATH = './apps/api/src/app';
+import { assetsPath } from '../util/path';
 
 export const generateMetadataRewardQRCodesJob = async ({ attrs }: Job) => {
     if (!attrs.data) return;
@@ -41,16 +42,20 @@ export const generateMetadataRewardQRCodesJob = async ({ attrs }: Job) => {
                 const claims = await ClaimService.findByReward(reward);
                 if (!claims.length) throw new Error('Claims not found');
 
+                let logoPath: string, logoBuffer: Buffer;
+
                 const brand = await BrandService.get(poolId);
-                let logo = path.resolve(process.cwd(), ROOT_PATH + '/public/qr-logo.jpg');
                 if (brand && brand.logoImgUrl) {
                     try {
                         const response = await axios.get(brand.logoImgUrl, { responseType: 'arraybuffer' });
-                        logo = Buffer.from(response.data, 'utf-8').toString();
+                        logoBuffer = Buffer.from(response.data, 'utf-8');
                     } catch {
                         // Fail silently and fallback to default logo img
                     }
+                } else {
+                    logoPath = path.resolve(assetsPath, 'qr-logo.jpg');
                 }
+                const logo = logoPath || logoBuffer;
 
                 // Create QR code for every claim
                 await Promise.all(

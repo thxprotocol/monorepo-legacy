@@ -148,7 +148,7 @@ export class YouTubeService {
         const response = await axios({
             url: `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${token}`,
         });
-
+        console.log(response.data);
         return response.data['scope'].split(' ');
     }
 

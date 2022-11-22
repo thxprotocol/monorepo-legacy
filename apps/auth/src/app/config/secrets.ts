@@ -7,6 +7,7 @@ const required = [
     'MONGODB_URI',
     'PORT',
     'SECURE_KEY',
+    'CWD',
 ];
 
 // For production (docker containers) we should require JWKS_JSON to be set since otherwise each container
@@ -32,9 +33,10 @@ if (process.env.NODE_ENV === 'test') {
 }
 
 export const VERSION = 'v1';
-export const GITHUB_API_ENDPOINT = 'https://api.github.com'
+export const GITHUB_API_ENDPOINT = 'https://api.github.com';
 export const TWITTER_API_ENDPOINT = 'https://api.twitter.com/2';
 export const SPOTIFY_API_ENDPOINT = 'https://api.spotify.com/v1';
+export const CWD = process.env.CWD;
 export const NODE_ENV = process.env.NODE_ENV;
 export const AUTH_URL = process.env.AUTH_URL;
 export const API_URL = process.env.API_URL;

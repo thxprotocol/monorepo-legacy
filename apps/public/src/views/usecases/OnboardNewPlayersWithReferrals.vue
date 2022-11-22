@@ -1,6 +1,9 @@
 <template>
     <section>
-        <b-jumbotron class="large" v-lazy:background-image="require('../../../public/assets/img/thx_jumbotron_token_bg.webp')">
+        <b-jumbotron
+            class="large"
+            v-lazy:background-image="require('../../../public/assets/img/thx_jumbotron_token_bg.webp')"
+        >
             <div class="container">
                 <div class="row py-md-5">
                     <div class="brand-intro text-white col-md-5 col-lg-4 order-1 order-md-0">
@@ -9,15 +12,31 @@
                             <p class="lead mb-4">
                                 The next generation growth hack for blockchain gaming companies and growth hackers
                             </p>
-                            <b-button
-                                class="rounded-pill"
-                                variant="outline-secondary"
-                                href="https://calendly.com/mieszko/demo"
-                                title=""
-                            >
-                                <span>Request a demo</span>
-                                <i class="fas fa-chevron-right"></i>
-                            </b-button>
+                            <BaseCardSubscribe border="dark" variant="darker" button="secondary"></BaseCardSubscribe>
+                            <p class="text-muted mt-1">
+                                Don't want to leave your e-mail?
+                                <b-link
+                                    class="text-secondary"
+                                    href="https://discord.com/invite/TzbbSmkE7Y"
+                                    target="_blank"
+                                >
+                                    Leave a message in our Discord <strong>#beta channel</strong></b-link
+                                >.
+                            </p>
+                            <ul class="list-unstyled">
+                                <li class="pb-2">
+                                    <span class="fa fa-check text-success mr-2" aria-hidden="true"></span> Free 3 month
+                                    premium upgrade!
+                                </li>
+                                <li class="pb-2">
+                                    <span class="fa fa-check text-success mr-2" aria-hidden="true"></span> Private
+                                    Discord channel to share what you need
+                                </li>
+                                <li class="pb-2">
+                                    <span class="fa fa-check text-success mr-2" aria-hidden="true"></span> Earn $THX for
+                                    valuable feedback
+                                </li>
+                            </ul>
                         </div>
                     </div>
                     <div class="col-md-7 col-lg-8 pb-5 py-md-5 order-0 order-md-1">
@@ -39,17 +58,29 @@
                 <div
                     class="col-lg-3 pb-3 p-md-0 offset-lg-2 d-flex justify-content-start justify-content-md-center align-items-center"
                 >
-                    <img v-lazy="require('../../../public/assets/img/thx_logo_womentech.png')" width="150" class="img-fluid" />
+                    <img
+                        v-lazy="require('../../../public/assets/img/thx_logo_womentech.png')"
+                        width="150"
+                        class="img-fluid"
+                    />
                 </div>
                 <div
                     class="col-lg-3 pb-5 p-md-0 d-flex justify-content-start justify-content-md-center align-items-center"
                 >
-                    <img v-lazy="require('../../../public/assets/img/thx_logo_undp.png')" width="110" class="img-fluid" />
+                    <img
+                        v-lazy="require('../../../public/assets/img/thx_logo_undp.png')"
+                        width="110"
+                        class="img-fluid"
+                    />
                 </div>
                 <div
                     class="col-lg-3 pb-3 p-md-0 d-flex justify-content-start justify-content-md-center align-items-center"
                 >
-                    <img v-lazy="require('../../../public/assets/img/thx_logo_novacreed.png')" width="250" class="img-fluid" />
+                    <img
+                        v-lazy="require('../../../public/assets/img/thx_logo_novacreed.png')"
+                        width="250"
+                        class="img-fluid"
+                    />
                 </div>
             </div>
             <div class="row">
@@ -66,11 +97,9 @@
         <div class="container">
             <div class="row pt-5 pt-lg-5 pb-lg-10 pb-5">
                 <div class="col-lg-5 offset-lg-1 pb-3">
-                    <div class=" pt-5 pt-lg-5 pt-xl-4">
+                    <div class="pt-5 pt-lg-5 pt-xl-4">
                         <h2 class="h5">Integration</h2>
-                        <p class="lead mb-2">
-                            Low-code referral widget
-                        </p>
+                        <p class="lead mb-2">Low-code referral widget</p>
                     </div>
                     <p class="lead">
                         Include a small JavaScript snippet and benefit from a full gamification suite right in your
@@ -79,12 +108,46 @@
                     <img v-lazy="require('../../../public/assets/img/thx_widget_launcher.png')" class="img-fluid" />
                 </div>
                 <div class="col-lg-5 offset-lg-1 pt-10">
-                    <pre class="rounded p-5 w-100 text-white" style="background-color: #282c34;">
+                    <pre class="rounded p-5 w-100 text-white" style="background-color: #282c34">
                         <code class="language-common" v-html="codeExample"></code>
                     </pre>
                 </div>
             </div>
         </div>
+        <section class="bg-light py-5">
+            <div class="container py-5">
+                <div class="row">
+                    <div class="col-lg-6 offset-lg-4 pb-3">
+                        <div class="pt-5 pt-lg-5 pt-xl-4">
+                            <h2 class="h5">Try for free</h2>
+                            <p class="lead mb-2">Sign up for the private beta</p>
+                        </div>
+                        <p class="lead">Participate in the feature development beta to test the product early.</p>
+                        <ul class="list-unstyled">
+                            <li class="pb-2 lead">
+                                <span class="fa fa-check text-success mr-2" aria-hidden="true"></span> Free 3 month
+                                premium upgrade!
+                            </li>
+                            <li class="pb-2 lead">
+                                <span class="fa fa-check text-success mr-2" aria-hidden="true"></span> Private Discord
+                                channel to share what you need
+                            </li>
+                            <li class="pb-2 lead">
+                                <span class="fa fa-check text-success mr-2" aria-hidden="true"></span> Earn $THX for
+                                valuable feedback
+                            </li>
+                        </ul>
+                        <BaseCardSubscribe border="gray" variant="light" button="primary"></BaseCardSubscribe>
+                        <p class="text-muted mt-1">
+                            Don't want to leave your e-mail?
+                            <b-link href="https://discord.com/invite/TzbbSmkE7Y" target="_blank">
+                                Leave a message in our Discord <strong>#beta channel</strong></b-link
+                            >.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
         <base-metrics />
         <div class="container">
             <div class="row pt-5 pt-lg-10 pb-5">
@@ -94,9 +157,7 @@
                 <div class="col-lg-5 offset-lg-1 pt-5">
                     <div class="pt-5 pt-lg-5 pt-xl-4">
                         <h2 class="h5">Reward Configuration</h2>
-                        <p class="lead mb-4 font-size-l">
-                            Reward player activity and engagement
-                        </p>
+                        <p class="lead mb-4 font-size-l">Reward player activity and engagement</p>
                     </div>
                     <p class="lead">
                         A number of reward variations offer powerful player incentives for important in-game or in-app
@@ -122,9 +183,7 @@
                 <div class="col-lg-5 offset-lg-1 pt-5">
                     <div class="pt-5 pt-lg-5 pt-xl-4">
                         <h2 class="h5">Perk Configuration</h2>
-                        <p class="lead mb-4 font-size-l">
-                            Redeem points for perks
-                        </p>
+                        <p class="lead mb-4 font-size-l">Redeem points for perks</p>
                     </div>
                     <p class="lead">
                         Create new or bring your own coins and build new NFT collections. Configure perks for the assets
@@ -145,16 +204,14 @@
         </div>
 
         <div class="container">
-            <div class="row pt-5 pt-lg-10 pb-5 pb-lg-10 ">
+            <div class="row pt-5 pt-lg-10 pb-5 pb-lg-10">
                 <div class="col-lg-6 pb-3 text-center">
                     <img v-lazy="require('../../../public/assets/img/thx_widget_lottery.png')" class="img-fluid" />
                 </div>
                 <div class="col-lg-5 offset-lg-1 pt-5">
                     <div class="pt-5 pt-lg-5 pt-xl-4">
                         <h2 class="h5">Free Lottery Perk</h2>
-                        <p class="lead mb-4 font-size-l">
-                            Weekly THX Lottery
-                        </p>
+                        <p class="lead mb-4 font-size-l">Weekly THX Lottery</p>
                     </div>
                     <p class="lead">
                         Keep your players active by offering them an opt-in tokenized lottery. Every week $THX tokens
@@ -185,9 +242,7 @@
                     <div class="col-lg-5 offset-lg-1">
                         <div class="pt-5 pt-lg-5 pt-xl-4">
                             <h2 class="h5 text-dark">Referral</h2>
-                            <p class="lead mb-4 font-size-l">
-                                Why marketers ❤️ referral programs
-                            </p>
+                            <p class="lead mb-4 font-size-l">Why marketers ❤️ referral programs</p>
                         </div>
                         <ul class="list-unstyled">
                             <li class="pb-2 lead">
@@ -212,9 +267,7 @@
                 <div class="col-lg-6 offset-lg-3 pb-3 text-center">
                     <div class="text-center pt-5 pt-lg-5 pt-xl-4">
                         <h2 class="h5">Technology</h2>
-                        <p class="lead mb-4 font-size-l">
-                            Why Blockchain?
-                        </p>
+                        <p class="lead mb-4 font-size-l">Why Blockchain?</p>
                     </div>
                     <p>
                         Rewards earned with blockchain powered gamification can easily be shared across technology
@@ -225,7 +278,11 @@
             </div>
             <div class="row">
                 <div class="col-lg-8 offset-lg-2 text-center">
-                    <img class="img-fluid" v-lazy="require('../../../public/assets/img/thx_landing_pulse.webp')" alt="" />
+                    <img
+                        class="img-fluid"
+                        v-lazy="require('../../../public/assets/img/thx_landing_pulse.webp')"
+                        alt=""
+                    />
                 </div>
             </div>
         </div>
@@ -248,6 +305,7 @@ import BaseTestimonials from '@thxnetwork/public/components/BaseTestimonials.vue
 import BaseContact from '@thxnetwork/public/components/BaseContact.vue';
 import BaseUseCaseContact from '@thxnetwork/public/components/BaseUseCaseContact.vue';
 import BaseMetrics from '@thxnetwork/public/components/BaseMetrics.vue';
+import BaseCardSubscribe from '@thxnetwork/public/components/BaseCardSubscribe.vue';
 import { USE_CASES_BOOST_TAGS, TWITTER_TAGS, LINKS } from '@thxnetwork/public/utils/constants';
 
 import hljs from 'highlight.js/lib/core';
@@ -278,6 +336,7 @@ hljs.registerLanguage('javascript', JavaScript);
         link: [{ rel: 'canonical', href: LINKS.USE_CASES_BOOST }],
     },
     components: {
+        BaseCardSubscribe,
         BaseMetrics,
         BaseFeatures,
         BaseUseCaseContact,

@@ -1,12 +1,14 @@
 import ejs from 'ejs';
-import sgMail from '@sendgrid/mail';
 import path from 'path';
-
+import sgMail from '@sendgrid/mail';
 import { AccountDocument } from '../models/Account';
 import { createRandomToken } from '../util/tokens';
 import { AUTH_URL, SECURE_KEY, WALLET_URL, SENDGRID_API_KEY } from '../config/secrets';
 import { encryptString } from '../util/encrypt';
 import { logger } from '../util/logger';
+import { assetsPath } from '../util/path';
+
+const mailTemplatePath = path.join(assetsPath, 'views', 'mail');
 
 if (SENDGRID_API_KEY) {
     sgMail.setApiKey(SENDGRID_API_KEY);
@@ -22,7 +24,7 @@ export class MailService {
 
         const verifyUrl = `${returnUrl}/verify?signup_token=${account.signupToken}&return_url=${returnUrl}`;
         const html = await ejs.renderFile(
-            path.dirname(__dirname) + '/views/mail/signupConfirm.ejs',
+            path.join(mailTemplatePath, 'signupConfirm.ejs'),
             {
                 verifyUrl,
                 returnUrl,
@@ -45,7 +47,7 @@ export class MailService {
 
         const verifyUrl = `${returnUrl}verify_email?verifyEmailToken=${account.verifyEmailToken}&return_url=${returnUrl}`;
         const html = await ejs.renderFile(
-            path.dirname(__dirname) + '/views/mail/emailConfirm.ejs',
+            path.join(mailTemplatePath, 'emailConfirm.ejs'),
             {
                 verifyUrl,
                 returnUrl,
@@ -71,7 +73,7 @@ export class MailService {
 
         const loginUrl = `${WALLET_URL}/login?authentication_token=${encryptedAuthToken}&secure_key=${secureKey}`;
         const html = await ejs.renderFile(
-            path.dirname(__dirname) + '/views/mail/loginLink.ejs',
+            path.join(mailTemplatePath, 'loginLink.ejs'),
             {
                 loginUrl,
                 returnUrl: WALLET_URL,
@@ -94,7 +96,7 @@ export class MailService {
 
         const resetUrl = `${returnUrl}/reset?passwordResetToken=${account.passwordResetToken}`;
         const html = await ejs.renderFile(
-            path.dirname(__dirname) + '/views/mail/resetPassword.ejs',
+            path.join(mailTemplatePath, 'resetPassword.ejs'),
             {
                 resetUrl,
                 returnUrl,
