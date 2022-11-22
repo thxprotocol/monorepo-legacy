@@ -40,7 +40,7 @@ const controller = async (req: Request, res: Response) => {
     // GENERATE A NEW REWARD and CLAIMS FOR THE NEW METADATA
     const { reward, claims } = await createRewardNft(req.assetPool, {
         erc721metadataId: metadata._id,
-        amount: 0,
+        amount: 1,
         limit: 1,
         isClaimOnce: true,
         expiryDate: null,

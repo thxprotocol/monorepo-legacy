@@ -9,7 +9,7 @@ import WithdrawalService from './WithdrawalService';
 import { RewardCondition } from '../types/RewardCondition';
 import { RewardBase, RewardBaseDocument } from '../models/RewardBase';
 
-export default class RewardService {
+export default class RewardTokenService {
     static async get(rewardId: string): Promise<RewardTokenDocument> {
         const reward = await RewardToken.findOne({ id: rewardId });
         if (!reward) return null;

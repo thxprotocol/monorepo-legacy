@@ -71,14 +71,14 @@ const controller = async (req: Request, res: Response) => {
                             const body = {
                                 ...req.body,
                                 erc721metadataId: metadata._id,
-                                amount: 0,
+                                amount: 1,
                                 limit: 1,
                                 isClaimOnce: true,
                                 expiryDate: null,
                                 slug: null,
                                 title: null,
                             };
-                            createRewardNft(req.assetPool, body);
+                            await createRewardNft(req.assetPool, body);
                         }
                     } catch (err) {
                         logger.error(err);

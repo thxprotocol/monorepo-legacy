@@ -4,7 +4,7 @@ import { ChainId, ERC20Type } from '../../../types/enums';
 import { dashboardAccessToken, tokenName, tokenSymbol } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { getRewardConfiguration } from '../../rewards-utils';
+import { getRewardTokenConfiguration } from '../../rewards-utils';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { agenda, EVENT_SEND_DOWNLOAD_QR_EMAIL } from '@thxnetwork/api/util/agenda';
 import { RewardDocument } from '@thxnetwork/api/models/Reward';
@@ -55,7 +55,7 @@ describe('Claims', () => {
         it('Create reward', (done) => {
             user.post('/v1/rewards-token/')
                 .set({ 'X-PoolId': pool._id, 'Authorization': dashboardAccessToken })
-                .send(getRewardConfiguration('claim-one-is-enabled-and-amount-is-greather-than-1'))
+                .send(getRewardTokenConfiguration('claim-one-is-enabled-and-amount-is-greather-than-1'))
                 .expect((res: request.Response) => {
                     expect(res.body.amount).toEqual(10);
                     reward = res.body;

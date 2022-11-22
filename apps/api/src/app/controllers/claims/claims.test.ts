@@ -5,7 +5,7 @@ import { dashboardAccessToken, tokenName, tokenSymbol, walletAccessToken } from 
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { WithdrawalState } from '@thxnetwork/api/types/enums';
-import { getRewardConfiguration } from '../rewards-utils';
+import { getRewardTokenConfiguration } from '../rewards-utils';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { RewardDocument } from '@thxnetwork/api/models/Reward';
 import { ClaimDocument } from '@thxnetwork/api/types/TClaim';
@@ -59,7 +59,7 @@ describe('Claims', () => {
     it('Create reward', (done) => {
         user.post('/v1/rewards-token/')
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-            .send(getRewardConfiguration('no-limit-and-claim-one-disabled'))
+            .send(getRewardTokenConfiguration('no-limit-and-claim-one-disabled'))
             .expect((res: request.Response) => {
                 expect(res.body.id).toBeDefined();
                 expect(res.body.claims).toBeDefined();

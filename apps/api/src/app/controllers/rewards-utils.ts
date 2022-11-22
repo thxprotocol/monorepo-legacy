@@ -1,10 +1,8 @@
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
-import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import RewardNftService from '@thxnetwork/api/services/RewardNftService';
 import RewardReferralService from '@thxnetwork/api/services/RewardReferralService';
-import RewardService from '@thxnetwork/api/services/RewardService';
 import RewardTokenService from '@thxnetwork/api/services/RewardTokenService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { agenda, EVENT_SEND_DOWNLOAD_QR_EMAIL } from '@thxnetwork/api/util/agenda';
@@ -39,7 +37,7 @@ export function formatDate(date: Date) {
     return yyyy + '-' + mm + '-' + dd;
 }
 
-export function getRewardConfiguration(slug: RewardSlug) {
+export function getRewardTokenConfiguration(slug: RewardSlug) {
     switch (slug) {
         case 'no-limit-and-claim-one-disabled': {
             return {
@@ -167,6 +165,7 @@ export function getRewardNftConfiguration(slug: RewardSlug, erc721metadataId: st
                 erc721metadataId,
                 isClaimOnce: true,
                 amount: 1,
+                limit: 0,
             };
         }
         case 'claim-one-is-enabled-and-amount-is-greather-than-1': {

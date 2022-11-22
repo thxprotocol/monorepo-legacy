@@ -93,9 +93,9 @@ const controller = async (req: Request, res: Response) => {
                         { key: req.body.propName, value: url },
                     ]);
 
-                    createRewardNft(req.assetPool, {
+                    await createRewardNft(req.assetPool, {
                         erc721metadataId: String(metadata._id),
-                        amount: 0,
+                        amount: 1,
                         limit: 1,
                         isClaimOnce: true,
                         expiryDate: null,

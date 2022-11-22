@@ -1,22 +1,14 @@
 import request, { Response } from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId, ERC20Type } from '../../types/enums';
-import {
-    dashboardAccessToken,
-    tokenName,
-    tokenSymbol,
-    walletAccessToken,
-    walletAccessToken2,
-} from '@thxnetwork/api/util/jest/constants';
+import { dashboardAccessToken, tokenName, tokenSymbol, walletAccessToken } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { WithdrawalState } from '@thxnetwork/api/types/enums';
-import { getRewardConfiguration } from '@thxnetwork/api/controllers/rewards-utils';
+import { getRewardTokenConfiguration } from '@thxnetwork/api/controllers/rewards-utils';
 import { ClaimDocument } from '@thxnetwork/api/types/TClaim';
-import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
 
 const user = request.agent(app);
-const user2 = request.agent(app);
 
 describe('RewardToken Claim', () => {
     let poolId: string, withdrawalDocumentId: string, tokenAddress: string;
@@ -63,7 +55,7 @@ describe('RewardToken Claim', () => {
         it('Create reward', (done) => {
             user.post('/v1/rewards-token/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .send(getRewardConfiguration('no-limit-and-claim-one-disabled'))
+                .send(getRewardTokenConfiguration('no-limit-and-claim-one-disabled'))
                 .expect((res: request.Response) => {
                     expect(res.body.id).toBeDefined();
                     expect(res.body.claims).toBeDefined();
@@ -110,7 +102,7 @@ describe('RewardToken Claim', () => {
         it('Create reward', (done) => {
             user.post('/v1/rewards-token/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .send(getRewardConfiguration('one-limit-and-claim-one-disabled'))
+                .send(getRewardTokenConfiguration('one-limit-and-claim-one-disabled'))
                 .expect((res: request.Response) => {
                     expect(res.body.id).toBeDefined();
                     expect(res.body.claims).toBeDefined();
@@ -155,7 +147,7 @@ describe('RewardToken Claim', () => {
         it('Create reward', (done) => {
             user.post('/v1/rewards-token/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .send(getRewardConfiguration('expiration-date-is-next-30-min'))
+                .send(getRewardTokenConfiguration('expiration-date-is-next-30-min'))
                 .expect((res: request.Response) => {
                     expect(res.body.id).toBeDefined();
                     expect(res.body.claims).toBeDefined();
@@ -194,7 +186,7 @@ describe('RewardToken Claim', () => {
         it('Create reward', (done) => {
             user.post('/v1/rewards-token/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .send(getRewardConfiguration('expiration-date-is-previous-30-min'))
+                .send(getRewardTokenConfiguration('expiration-date-is-previous-30-min'))
                 .expect((res: request.Response) => {
                     expect(res.body.id).toBeDefined();
                     expect(res.body.claims).toBeDefined();
@@ -218,7 +210,7 @@ describe('RewardToken Claim', () => {
         it('Create reward', (done) => {
             user.post('/v1/rewards-token/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .send(getRewardConfiguration('claim-one-is-enabled'))
+                .send(getRewardTokenConfiguration('claim-one-is-enabled'))
                 .expect((res: request.Response) => {
                     expect(res.body.id).toBeDefined();
                     expect(res.body.claims).toBeDefined();
@@ -263,7 +255,7 @@ describe('RewardToken Claim', () => {
         it('Create reward', (done) => {
             user.post('/v1/rewards-token/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .send(getRewardConfiguration('claim-one-is-disabled'))
+                .send(getRewardTokenConfiguration('claim-one-is-disabled'))
                 .expect((res: request.Response) => {
                     expect(res.body.id).toBeDefined();
                     expect(res.body.claims).toBeDefined();
@@ -308,7 +300,7 @@ describe('RewardToken Claim', () => {
         it('Create reward', (done) => {
             user.post('/v1/rewards-token/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .send(getRewardConfiguration('claim-one-is-disabled'))
+                .send(getRewardTokenConfiguration('claim-one-is-disabled'))
                 .expect((res: request.Response) => {
                     expect(res.body.id).toBeDefined();
                     expect(res.body.claims).toBeDefined();
@@ -322,7 +314,7 @@ describe('RewardToken Claim', () => {
             it('Should return 200 when edit the claim', (done) => {
                 user.patch(`/v1/rewards-token/${id}`)
                     .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                    .send(getRewardConfiguration('claim-one-is-enabled'))
+                    .send(getRewardTokenConfiguration('claim-one-is-enabled'))
                     .expect((res: request.Response) => {
                         expect(res.body.rewardBase.isClaimOnce).toEqual(true);
                     })

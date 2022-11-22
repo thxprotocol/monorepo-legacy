@@ -7,7 +7,7 @@ import { RewardVariant } from '../types/enums/RewardVariant';
 import { createRewardBase, validateRewardBase } from './utils/rewards';
 import { IRewardBaseUpdates, RewardBase, RewardBaseDocument } from '../models/RewardBase';
 
-export default class RewardService {
+export default class RewardReferralService {
     static async get(rewardId: string): Promise<RewardReferralDocument> {
         const reward = await RewardReferral.findById(rewardId);
         if (!reward) return null;

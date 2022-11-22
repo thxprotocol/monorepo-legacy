@@ -25,7 +25,8 @@ export const generateMetadataRewardQRCodesJob = async ({ attrs }: Job) => {
         const { poolId, sub, fileName, notify } = attrs.data;
 
         const pool = await AssetPoolService.getById(poolId);
-        if (!pool) throw new Error('Reward not found');
+
+        if (!pool) throw new Error('Pool not found');
 
         const rewards = await RewardBase.find({ poolId, variant: RewardVariant.RewardNFT });
         if (!rewards.length) throw new Error('Rewards not found');

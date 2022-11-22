@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { param } from 'express-validator';
-import RewardService from '@thxnetwork/api/services/RewardService';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import AssetPoolService from '@thxnetwork/api/services/AssetPoolService';
