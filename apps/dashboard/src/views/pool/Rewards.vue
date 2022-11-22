@@ -6,13 +6,22 @@
             </b-col>
             <b-col class="d-flex justify-content-end">
                 <b-button
+                    v-b-modal="'modalRewardPointsCreate'"
+                    @click="editingReward = null"
+                    class="rounded-pill"
+                    variant="primary"
+                >
+                    <i class="fas fa-plus mr-2"></i>
+                    <span class="d-none d-md-inline">Points reward</span>
+                </b-button>
+                <b-button
                     v-b-modal="'modalRewardCreate'"
                     @click="editingReward = null"
                     class="rounded-pill"
                     variant="primary"
                 >
                     <i class="fas fa-plus mr-2"></i>
-                    <span class="d-none d-md-inline">Create a reward</span>
+                    <span class="d-none d-md-inline">Reward</span>
                 </b-button>
             </b-col>
         </b-row>
@@ -46,6 +55,7 @@
             :filteredMetadata="filteredMetadata"
             @submit="onSubmit"
         />
+        <base-modal-reward-points-create :pool="pool" :erc721="erc721" />
     </div>
 </template>
 
@@ -54,6 +64,7 @@ import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseModalRewardCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardCreate.vue';
+import BaseModalRewardPointsCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardPointsCreate.vue';
 import BaseCardReward from '@thxnetwork/dashboard/components/list-items/BaseListItemReward.vue';
 import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
 import { TReward, TRewardState } from '@thxnetwork/dashboard/store/modules/rewards';
@@ -64,6 +75,7 @@ import { Reward } from '@thxnetwork/dashboard/types/rewards';
     components: {
         BaseNothingHere,
         BaseModalRewardCreate,
+        BaseModalRewardPointsCreate,
         BaseCardReward,
     },
     computed: mapGetters({

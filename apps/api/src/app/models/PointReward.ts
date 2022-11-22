@@ -1,11 +1,5 @@
+import { TPointReward } from '@thxnetwork/types/interfaces/PointReward';
 import mongoose from 'mongoose';
-
-export type TPointReward = {
-    poolId: string;
-    amount: string;
-    title: string;
-    description: string;
-};
 
 export type PointRewardDocument = mongoose.Document & TPointReward;
 
