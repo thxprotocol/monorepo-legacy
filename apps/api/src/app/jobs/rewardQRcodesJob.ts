@@ -16,7 +16,9 @@ import { s3PrivateClient } from '@thxnetwork/api/util/s3';
 import { createArchiver } from '@thxnetwork/api/util/zip';
 import { Upload } from '@aws-sdk/lib-storage';
 import ejs from 'ejs';
-import { getBasePath } from '../util/path';
+import { assetsPath } from '../util/path';
+
+const mailTemplatePath = path.join(assetsPath, 'views', 'email');
 
 export const generateRewardQRCodesJob = async ({ attrs }: Job) => {
     if (!attrs.data) return;
@@ -48,7 +50,7 @@ export const generateRewardQRCodesJob = async ({ attrs }: Job) => {
                 // Fail silently and fallback to default logo img
             }
         } else {
-            logoPath = path.resolve(__dirname, '/assets/qr-logo.jpg');
+            logoPath = path.resolve(assetsPath, 'qr-logo.jpg');
         }
         const logo = logoPath || logoBuffer;
 
@@ -57,8 +59,7 @@ export const generateRewardQRCodesJob = async ({ attrs }: Job) => {
 
         // Create QR code for every claim
         await Promise.all(
-            claims.map(async ({ _id }: ClaimDocument) => {
-                const id = String(_id);
+            claims.map(async ({ id }: ClaimDocument) => {
                 const base64Data: string = await ImageService.createQRCode(`${WALLET_URL}/claim/${id}`, logo);
                 // Adds file to the qrcode archive
                 return archive.file(`${id}.png`, base64Data, { base64: true });
@@ -78,9 +79,10 @@ export const generateRewardQRCodesJob = async ({ attrs }: Job) => {
         });
 
         await multipartUpload.done();
+
         const dashboardUrl = `${DASHBOARD_URL}/pool/${reward.poolId}/rewards`;
         const html = await ejs.renderFile(
-            path.resolve(__dirname, '/assets/views/email/qrcodesReady.ejs'),
+            path.resolve(mailTemplatePath, 'qrcodesReady.ejs'),
             {
                 dashboardUrl,
                 baseUrl: API_URL,

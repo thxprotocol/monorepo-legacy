@@ -2,7 +2,7 @@ import { Job } from 'agenda';
 import axios from 'axios';
 import stream from 'stream';
 import path from 'path';
-import { AWS_S3_PRIVATE_BUCKET_NAME, DASHBOARD_URL, NODE_ENV, WALLET_URL } from '@thxnetwork/api/config/secrets';
+import { AWS_S3_PRIVATE_BUCKET_NAME, DASHBOARD_URL, WALLET_URL } from '@thxnetwork/api/config/secrets';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import AssetPoolService from '@thxnetwork/api/services/AssetPoolService';
 import BrandService from '@thxnetwork/api/services/BrandService';
@@ -15,6 +15,7 @@ import { s3PrivateClient } from '@thxnetwork/api/util/s3';
 import { createArchiver } from '@thxnetwork/api/util/zip';
 import { Upload } from '@aws-sdk/lib-storage';
 import { Reward, RewardDocument } from '@thxnetwork/api/models/Reward';
+import { assetsPath } from '../util/path';
 
 export const generateMetadataRewardQRCodesJob = async ({ attrs }: Job) => {
     if (!attrs.data) return;
@@ -50,7 +51,7 @@ export const generateMetadataRewardQRCodesJob = async ({ attrs }: Job) => {
                         // Fail silently and fallback to default logo img
                     }
                 } else {
-                    logoPath = path.resolve(__dirname, '/assets/qr-logo.jpg');
+                    logoPath = path.resolve(assetsPath, '/qr-logo.jpg');
                 }
                 const logo = logoPath || logoBuffer;
 
