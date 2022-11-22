@@ -7,8 +7,8 @@ import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/c
 import { WithdrawalState } from '@thxnetwork/api/types/enums';
 import { getRewardTokenConfiguration } from '../rewards-utils';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { RewardDocument } from '@thxnetwork/api/models/Reward';
 import { ClaimDocument } from '@thxnetwork/api/types/TClaim';
+import { RewardTokenDocument } from '@thxnetwork/api/models/RewardToken';
 
 const user = request.agent(app);
 
@@ -16,7 +16,7 @@ describe('Claims', () => {
     let pool: AssetPoolDocument,
         poolId: string,
         poolAddress: string,
-        reward: RewardDocument,
+        reward: RewardTokenDocument,
         claim: ClaimDocument,
         tokenAddress: string;
 
@@ -78,8 +78,8 @@ describe('Claims', () => {
                     expect(res.body.id).toBeDefined();
                     expect(res.body.poolAddress).toEqual(poolAddress);
                     expect(res.body.tokenSymbol).toEqual(tokenSymbol);
-                    expect(res.body.withdrawAmount).toEqual(reward.withdrawAmount);
-                    expect(res.body.rewardId).toEqual(reward.id);
+                    expect(res.body.withdrawAmount).toEqual(reward.amount);
+                    expect(res.body.rewardId).toEqual(reward.rewardBaseId);
                     expect(res.body.chainId).toEqual(pool.chainId);
                 })
                 .expect(200, done);
@@ -88,16 +88,17 @@ describe('Claims', () => {
 
     describe('GET /claims/hash/:hash', () => {
         it('should return ClaimURLData', (done) => {
-            const hash = Buffer.from(JSON.stringify({ poolAddress: pool.address, rewardId: reward.id })).toString(
-                'base64',
-            );
+            const hash = Buffer.from(
+                JSON.stringify({ poolAddress: pool.address, rewardId: reward.rewardBaseId }),
+            ).toString('base64');
             user.get(`/v1/claims/hash/${hash}`)
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect((res: request.Response) => {
-                    expect(res.body.rewardId).toEqual(reward.id);
+                    console.log('BODYYYYY', res.body);
+                    expect(res.body.rewardId).toEqual(reward.rewardBaseId);
                     expect(res.body.poolAddress).toEqual(poolAddress);
                     expect(res.body.tokenSymbol).toEqual(tokenSymbol);
-                    expect(res.body.withdrawAmount).toEqual(reward.withdrawAmount);
+                    expect(res.body.withdrawAmount).toEqual(reward.amount);
                     expect(res.body.chainId).toEqual(pool.chainId);
                 })
                 .expect(200, done);
