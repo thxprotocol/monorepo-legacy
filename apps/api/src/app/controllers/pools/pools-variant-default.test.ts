@@ -22,8 +22,8 @@ import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/c
 import { getByteCodeForContractName, getContract, getContractFromName } from '@thxnetwork/api/config/contracts';
 import { currentVersion } from '@thxnetwork/contracts/exports';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
-import { RewardDocument } from '@thxnetwork/api/models/Reward';
 import { ClaimDocument } from '@thxnetwork/api/types/TClaim';
+import { RewardTokenDocument } from '@thxnetwork/api/models/RewardToken';
 
 const user = request.agent(app);
 
@@ -35,7 +35,7 @@ describe('Default Pool', () => {
         tokenAddress: string,
         userWallet: Account,
         poolId: string,
-        reward: RewardDocument,
+        reward: RewardTokenDocument,
         claim: ClaimDocument;
 
     beforeAll(async () => {
@@ -170,10 +170,10 @@ describe('Default Pool', () => {
             user.get('/v1/rewards-token/' + reward.id)
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect(async (res: request.Response) => {
-                    expect(res.body.state).toEqual(1);
-                    expect(res.body.title).toEqual(title);
-                    expect(res.body.slug).toEqual(slug);
-                    expect(res.body.withdrawAmount).toEqual(rewardWithdrawAmount);
+                    expect(res.body.rewardBase.state).toEqual(1);
+                    expect(res.body.rewardBase.title).toEqual(title);
+                    expect(res.body.rewardBase.slug).toEqual(slug);
+                    expect(res.body.amount).toEqual(rewardWithdrawAmount);
                     expect(res.body.claims).toBeDefined();
                 })
                 .expect(200, done);
@@ -273,19 +273,21 @@ describe('Default Pool', () => {
         });
 
         it('HTTP 200 and returns 1 item for state = 1 and rewardId = reward.id', (done) => {
-            user.get(`/v1/withdrawals?state=1&rewardId=${reward.id}&page=1&limit=2`)
+            user.get(`/v1/withdrawals?state=1&rewardId=${reward.rewardBaseId}&page=1&limit=2`)
                 .set({ 'X-PoolId': poolId, 'Authorization': adminAccessToken })
                 .expect(async (res: request.Response) => {
-                    expect(res.body.results.length).toBe(2);
+                    expect(res.body.results.length).toBe(1);
                 })
                 .expect(200, done);
         });
 
         it('HTTP 200 and returns 1 item state = 1 and rewardId = reward.id and member address', (done) => {
-            user.get(`/v1/withdrawals?member=${userWallet.address}&state=1&rewardId=${reward.id}&page=1&limit=2`)
+            user.get(
+                `/v1/withdrawals?member=${userWallet.address}&state=1&rewardId=${reward.rewardBaseId}&page=1&limit=2`,
+            )
                 .set({ 'X-PoolId': poolId, 'Authorization': adminAccessToken })
                 .expect(async (res: request.Response) => {
-                    expect(res.body.results.length).toBe(2);
+                    expect(res.body.results.length).toBe(1);
                 })
                 .expect(200, done);
         });

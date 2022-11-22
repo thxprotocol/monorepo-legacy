@@ -11,6 +11,7 @@ import CreateRewardToken from './post.controller';
 import ReadRewardToken from './get.controller';
 import UpdateRewardToken from './patch.controller';
 import ListRewardToken from './list.controller';
+import GiveRewardToken from './give/post.controller';
 
 const router = express.Router();
 
@@ -40,6 +41,17 @@ router.post(
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
     CreateRewardToken.controller,
 );
+
+router.post(
+    '/:id/give',
+    guard.check(['rewards:read', 'withdrawals:write']),
+    assertAssetPoolAccess,
+    assertRequestInput(GiveRewardToken.validation),
+    requireAssetPoolHeader,
+    assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
+    GiveRewardToken.controller,
+);
+
 router.patch(
     '/:id',
     guard.check(['rewards:write', 'rewards:read']),
