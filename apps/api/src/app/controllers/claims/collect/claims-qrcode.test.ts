@@ -7,12 +7,12 @@ import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/c
 import { getRewardTokenConfiguration } from '../../rewards-utils';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { agenda, EVENT_SEND_DOWNLOAD_QR_EMAIL } from '@thxnetwork/api/util/agenda';
-import { RewardDocument } from '@thxnetwork/api/models/Reward';
+import { RewardTokenDocument } from '@thxnetwork/api/models/RewardToken';
 
 const user = request.agent(app);
 
 describe('Claims', () => {
-    let pool: AssetPoolDocument, reward: RewardDocument, tokenAddress: string;
+    let pool: AssetPoolDocument, reward: RewardTokenDocument, tokenAddress: string;
 
     beforeAll(async () => {
         await beforeAllCallback();
@@ -53,11 +53,11 @@ describe('Claims', () => {
 
     describe('A RewardToken with limit is 0 (unlimited) and claim_one enabled and amount is greather tham 1', () => {
         it('Create reward', (done) => {
-            user.post('/v1/rewards-token/')
+            user.post('/v1/rewards-token')
                 .set({ 'X-PoolId': pool._id, 'Authorization': dashboardAccessToken })
                 .send(getRewardTokenConfiguration('claim-one-is-enabled-and-amount-is-greather-than-1'))
                 .expect((res: request.Response) => {
-                    expect(res.body.amount).toEqual(10);
+                    expect(res.body.rewardBase.amount).toEqual(10);
                     reward = res.body;
                 })
                 .expect(201, done);

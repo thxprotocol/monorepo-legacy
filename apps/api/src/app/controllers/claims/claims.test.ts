@@ -78,7 +78,7 @@ describe('Claims', () => {
                     expect(res.body.id).toBeDefined();
                     expect(res.body.poolAddress).toEqual(poolAddress);
                     expect(res.body.tokenSymbol).toEqual(tokenSymbol);
-                    expect(res.body.withdrawAmount).toEqual(reward.amount);
+                    expect(res.body.withdrawAmount).toEqual(reward.withdrawAmount);
                     expect(res.body.rewardId).toEqual(reward.rewardBaseId);
                     expect(res.body.chainId).toEqual(pool.chainId);
                 })
@@ -94,11 +94,10 @@ describe('Claims', () => {
             user.get(`/v1/claims/hash/${hash}`)
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect((res: request.Response) => {
-                    console.log('BODYYYYY', res.body);
                     expect(res.body.rewardId).toEqual(reward.rewardBaseId);
                     expect(res.body.poolAddress).toEqual(poolAddress);
                     expect(res.body.tokenSymbol).toEqual(tokenSymbol);
-                    expect(res.body.withdrawAmount).toEqual(reward.amount);
+                    expect(res.body.withdrawAmount).toEqual(reward.withdrawAmount);
                     expect(res.body.chainId).toEqual(pool.chainId);
                 })
                 .expect(200, done);

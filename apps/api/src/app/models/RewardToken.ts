@@ -6,7 +6,7 @@ import { IRewardBaseUpdates, RewardBase } from './RewardBase';
 export type RewardTokenDocument = mongoose.Document & TRewardToken;
 
 export interface IRewardTokenUpdates extends IRewardBaseUpdates {
-    amount?: number;
+    withdrawAmount?: number;
     rewardConditionId?: string;
 }
 
@@ -14,7 +14,7 @@ const rewardTokenSchema = new mongoose.Schema(
     {
         id: String,
         rewardBaseId: String,
-        amount: Number,
+        withdrawAmount: Number,
         rewardConditionId: String,
     },
     { timestamps: true },

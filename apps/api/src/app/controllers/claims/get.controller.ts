@@ -45,7 +45,7 @@ const controller = async (req: Request, res: Response) => {
             poolId: claim.poolId,
             erc20Id: claim.erc20Id,
             rewardId: claim.rewardId,
-            withdrawAmount: rewardToken.amount,
+            withdrawAmount: rewardToken.withdrawAmount,
             withdrawCondition: await RewardCondition.findById(rewardToken.rewardConditionId),
             chainId: pool.chainId,
             clientId: pool.clientId,

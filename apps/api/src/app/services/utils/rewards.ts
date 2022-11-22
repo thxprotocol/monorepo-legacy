@@ -95,6 +95,7 @@ export const createRewardBase = async (
     },
 ) => {
     const expiryDateObj = data.expiryDate && new Date(data.expiryDate);
+
     return RewardBase.create({
         id: db.createUUID(),
         title: data.title,

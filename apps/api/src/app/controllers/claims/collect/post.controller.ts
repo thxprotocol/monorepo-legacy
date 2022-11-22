@@ -58,7 +58,7 @@ const controller = async (req: Request, res: Response) => {
             pool,
             WithdrawalType.ClaimReward,
             req.auth.sub,
-            rewardToken.amount,
+            rewardToken.withdrawAmount,
             WithdrawalState.Pending,
             null,
             reward.id,

@@ -21,7 +21,7 @@ const controller = async (req: Request, res: Response) => {
         req.assetPool,
         WithdrawalType.ClaimRewardFor,
         account.id,
-        reward.amount,
+        reward.withdrawAmount,
         // Accounts with stored (encrypted) privateKeys are custodial and should not be processed before
         // they have logged into their wallet to update their account with a new wallet address.
         account.privateKey ? WithdrawalState.Deferred : WithdrawalState.Pending,

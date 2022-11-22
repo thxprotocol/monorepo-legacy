@@ -91,7 +91,7 @@ export default class RewardTokenService {
             id: db.createUUID(),
             rewardBaseId: rewardBase.id,
             rewardConditionId: data.rewardConditionId,
-            amount: data.withdrawAmount,
+            withdrawAmount: data.withdrawAmount,
         });
     }
 

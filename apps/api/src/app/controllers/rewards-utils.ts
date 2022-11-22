@@ -256,7 +256,7 @@ export const createRewardToken = async (
         isClaimOnce: boolean;
     },
 ) => {
-    const amount = config.amount | 1;
+    const amount = config.amount || 1;
     const reward = await RewardTokenService.create(assetPool, {
         title: config.title,
         slug: config.slug,
@@ -328,10 +328,11 @@ export const getQrcode = async (
                 Key: fileName,
             }),
         );
+
         (response.Body as Readable).pipe(res).attachment(fileName);
     } catch (err) {
         if (err.$metadata && err.$metadata.httpStatusCode == 404) {
-            const rewardId = reward.id;
+            const rewardId = reward.rewardBaseId;
             const poolId = String(assetPool._id);
             const sub = assetPool.sub;
             const equalJobs = await agenda.jobs({
@@ -368,7 +369,7 @@ export const formatRewardNft = async (reward: RewardNftDocument) => {
 export const formatRewardToken = async (reward: RewardTokenDocument) => {
     return {
         id: reward.id,
-        amount: reward.amount,
+        withdrawAmount: reward.withdrawAmount,
         rewardBaseId: reward.rewardBaseId,
         rewardConditionId: reward.rewardConditionId,
         rewardBase: await reward.rewardBase,
