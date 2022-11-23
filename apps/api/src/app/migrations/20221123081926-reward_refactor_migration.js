@@ -3,26 +3,40 @@ const { v4 } = require('uuid');
 module.exports = {
   async up(db) {
     const rewardsColl = db.collection('rewards');
-    const claimsColl = db.collection('claims');
-    const widgetsColl = db.collection('widget');
-    const withdrawalsColl = db.collection('withdrawals');
     const rewardsBaseColl = db.collection('rewardbases');
     const rewardsTokensColl = db.collection('rewardtokens');
     const rewardsNftColl = db.collection('rewardnfts');
     const rewardConditionsColl = db.collection('rewardconditions');
     const RewardToken = 0;
-    const RewardNFT = 1;  
+    const RewardNFT = 1; 
 
-    const rewards = await (await rewardsColl.find()).toArray();
-    // for each reward:
+     // for each reward that isn't already copied as rewardBase:
     // 1. create a rewardBase: the rewardBase.id field will have the same value as the reward.id field, 
-    // so that, we don't need to update all the rewards linked collections
-    // 2. update the Claim, Wisdget and Withdrawal collections with the rewardBase Id (UUID)
-    // 3. create a RewardToken or a RewardNft based on the type of Reward
+    //    so that, we don't need to update all the rewards linked collections (claims, widgets, withdrawals)
+    // 2. create a RewardToken or a RewardNft based on the type of Reward
+
+    const rewards = await (await rewardsColl.aggregate([
+      {
+        "$lookup": {
+          "from": "rewardbases",
+          "localField": "id",
+          "foreignField": "id",
+          "as": "bases"
+        }
+      },
+      {
+        "$match": {
+          "bases.id": {
+            "$exists": false
+          }
+        }
+      }
+    ])).toArray();
+   
     const promises = (await rewards).map(async (reward) => {
       try {
           const variant = reward.erc721metadataId ? RewardNFT : RewardToken
-          // 1. create a rewardBase
+          
           await rewardsBaseColl.insertOne({
             id: reward.id,
             title: reward.title,
@@ -35,24 +49,6 @@ module.exports = {
             amount: reward.amount,
             isClaimOnce: reward.isClaimOnce
           })
-         
-          // // 2a. update the Claims
-          // await claimsColl.updateOne(
-          //   { rewardId: reward.id },
-          //   { $set: { rewardId: rewardBase.id } },
-          // );
-          // // 2b. update the Widgets
-          // await widgetsColl.updateOne(
-          //   { rewardId: reward.id },
-          //   { $set: { rewardId: rewardBase.id } },
-          // );
-          // // 2c. update the Withdrawals
-          // await withdrawalsColl.updateOne(
-          //   { rewardId: reward.id },
-          //   { $set: { rewardId: rewardBase.id } },
-          // );
-          // 3. create the Reward Variant
-          // 3a. create the reward condition if reward.withdrawCondition is filled
           let rewardCondition;
           if(reward.withdrawCondition) {
             rewardCondition = await rewardConditionsColl.insertOne({
