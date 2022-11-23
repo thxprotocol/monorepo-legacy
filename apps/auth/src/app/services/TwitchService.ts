@@ -1,4 +1,4 @@
-import { TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET, TWITCH_REDIRECT_URI } from '@thxnetwork/api/config/secrets';
+import { TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET, TWITCH_REDIRECT_URI } from '@thxnetwork/auth/config/secrets';
 import CommonOauthLoginOptions from '../types/CommonOauthLoginOptions';
 import { twitchClient } from '../util/axios';
 
