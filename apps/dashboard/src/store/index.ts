@@ -5,6 +5,7 @@ import AccountStore from './modules/account';
 import PoolStore from './modules/pools';
 import PromotionStore from './modules/promotions';
 import RewardStore from './modules/rewards';
+import PointRewardStore from './modules/pointRewards';
 import WidgetStore from './modules/widgets';
 import ERC20Store from './modules/erc20';
 import ERC721Store from './modules/erc721';
@@ -25,6 +26,7 @@ const modules = {
     pools: PoolStore,
     promotions: PromotionStore,
     rewards: RewardStore,
+    pointRewards: PointRewardStore,
     widgets: WidgetStore,
     erc20: ERC20Store,
     erc721: ERC721Store,
