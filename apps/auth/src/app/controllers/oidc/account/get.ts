@@ -14,8 +14,6 @@ async function controller(req: Request, res: Response) {
     params.twitterLoginUrl = TwitterService.getLoginURL(uid, {});
     params.spotifyLoginUrl = SpotifyService.getLoginURL(uid, {});
 
-    const googleScopes = await YouTubeService.getScopesOfAccessToken(account.googleAccessToken);
-
     return res.render('account', {
         uid,
         alert,

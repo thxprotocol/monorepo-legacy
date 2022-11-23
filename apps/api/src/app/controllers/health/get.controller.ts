@@ -10,6 +10,7 @@ import { getProvider } from '@thxnetwork/api/util/network';
 import { currentVersion, diamondVariants } from '@thxnetwork/contracts/exports';
 
 import { license, name, version } from '../../../../package.json';
+import { assetsPath } from '@thxnetwork/api/util/path';
 
 function handleError(error: Error) {
     newrelic.noticeError(error);
@@ -90,6 +91,8 @@ export const getHealth = async (_req: Request, res: Response) => {
         result.testnet = mumbai;
         result.mainnet = polygon;
     }
+
+    result.assetPath = assetsPath;
 
     res.header('Content-Type', 'application/json').send(JSON.stringify(result, null, 4));
 };

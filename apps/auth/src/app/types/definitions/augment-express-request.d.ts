@@ -1,5 +1,3 @@
-import { InteractionResults } from 'oidc-provider';
-
 export {};
 
 declare global {

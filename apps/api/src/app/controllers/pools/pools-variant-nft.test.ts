@@ -7,7 +7,7 @@ import { account2, dashboardAccessToken } from '@thxnetwork/api/util/jest/consta
 import { createImage } from '@thxnetwork/api/util/jest/images';
 import { createArchiver } from '@thxnetwork/api/util/zip';
 import { agenda, EVENT_SEND_DOWNLOAD_METADATA_QR_EMAIL } from '@thxnetwork/api/util/agenda';
-import { getRewardConfiguration } from '../rewards/utils';
+import { getRewardNftConfiguration } from '../rewards-utils';
 const user = request.agent(app);
 
 describe('NFT Pool', () => {
@@ -209,7 +209,8 @@ describe('NFT Pool', () => {
             zipFolder.file('image3.jpg', image3, { binary: true });
 
             const zipFile = await zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' });
-            const rewardFields = getRewardConfiguration('claim-one-is-enabled');
+            const rewardFields = getRewardNftConfiguration('claim-one-is-enabled', metadataId);
+
             await user
                 .post('/v1/erc721/' + erc721ID + '/metadata/zip')
                 .set('Authorization', dashboardAccessToken)
@@ -220,13 +221,9 @@ describe('NFT Pool', () => {
                     description,
                     propName,
                     createReward: true,
-                    //title: rewardFields.title,
                     slug: rewardFields.slug,
-                    withdrawAmount: rewardFields.withdrawAmount,
-                    withdrawDuration: rewardFields.withdrawDuration,
-                    withdrawLimit: rewardFields.withdrawLimit,
+                    limit: rewardFields.limit,
                     isClaimOnce: rewardFields.isClaimOnce,
-                    isMembershipRequired: rewardFields.isMembershipRequired,
                     amount: rewardFields.amount,
                 })
                 .expect(({ body }: request.Response) => {
@@ -236,7 +233,7 @@ describe('NFT Pool', () => {
         });
 
         it('should return created reward', (done) => {
-            user.get('/v1/rewards')
+            user.get('/v1/rewards-nft')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect(async (res: request.Response) => {
                     expect(res.body.total).toBe(5);
@@ -317,7 +314,7 @@ describe('NFT Pool', () => {
 
         it('should upload and parse the metadata csv and create the rewards', (done) => {
             const buffer = Buffer.from(csvFile, 'utf-8');
-            const rewardFields = getRewardConfiguration('claim-one-is-enabled');
+            const rewardFields = getRewardNftConfiguration('claim-one-is-enabled', metadataId);
 
             user.post('/v1/erc721/' + erc721ID + '/metadata/csv')
                 .set('Authorization', dashboardAccessToken)
@@ -330,18 +327,15 @@ describe('NFT Pool', () => {
                     createReward: true,
                     title: rewardFields.title,
                     slug: rewardFields.slug,
-                    withdrawAmount: rewardFields.withdrawAmount,
-                    withdrawDuration: rewardFields.withdrawDuration,
-                    withdrawLimit: rewardFields.withdrawLimit,
+                    limit: rewardFields.limit,
                     isClaimOnce: rewardFields.isClaimOnce,
-                    isMembershipRequired: rewardFields.isMembershipRequired,
                     amount: rewardFields.amount,
                 })
                 .expect(201, done);
         });
 
         it('should return created reward', (done) => {
-            user.get('/v1/rewards')
+            user.get('/v1/rewards-nft')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect(async (res: request.Response) => {
                     expect(res.body.total).toBe(7);

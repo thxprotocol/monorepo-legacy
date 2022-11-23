@@ -22,8 +22,8 @@ import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/c
 import { getByteCodeForContractName, getContract, getContractFromName } from '@thxnetwork/api/config/contracts';
 import { currentVersion } from '@thxnetwork/contracts/exports';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
-import { RewardDocument } from '@thxnetwork/api/models/Reward';
 import { ClaimDocument } from '@thxnetwork/api/types/TClaim';
+import { RewardTokenDocument } from '@thxnetwork/api/models/RewardToken';
 
 const user = request.agent(app);
 
@@ -35,7 +35,7 @@ describe('Default Pool', () => {
         tokenAddress: string,
         userWallet: Account,
         poolId: string,
-        reward: RewardDocument,
+        reward: RewardTokenDocument,
         claim: ClaimDocument;
 
     beforeAll(async () => {
@@ -129,9 +129,9 @@ describe('Default Pool', () => {
         });
     });
 
-    describe('POST /rewards/', () => {
+    describe('POST /rewards-token/', () => {
         it('HTTP 302 when reward is added', (done) => {
-            user.post('/v1/rewards/')
+            user.post('/v1/rewards-token/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .send({
                     title,
@@ -151,28 +151,28 @@ describe('Default Pool', () => {
         });
     });
 
-    describe('GET /rewards/:id', () => {
+    describe('GET /rewards-token/:id', () => {
         it('HTTP 200 when successful', (done) => {
-            user.get('/v1/rewards/' + reward.id)
+            user.get('/v1/rewards-token/' + reward.id)
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect(200, done);
         });
 
         it('HTTP 404 if reward can not be found', (done) => {
-            user.get('/v1/rewards/62cf04437dff7cbc49e0c687')
+            user.get('/v1/rewards-token/62cf04437dff7cbc49e0c687')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect(404, done);
         });
     });
 
-    describe('GET /rewards/:id (after finalizing)', () => {
+    describe('GET /rewards-token/:id (after finalizing)', () => {
         it('HTTP 200 and return updated withdrawAmount and state 1', (done) => {
-            user.get('/v1/rewards/' + reward.id)
+            user.get('/v1/rewards-token/' + reward.id)
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect(async (res: request.Response) => {
-                    expect(res.body.state).toEqual(1);
-                    expect(res.body.title).toEqual(title);
-                    expect(res.body.slug).toEqual(slug);
+                    expect(res.body.rewardBase.state).toEqual(1);
+                    expect(res.body.rewardBase.title).toEqual(title);
+                    expect(res.body.rewardBase.slug).toEqual(slug);
                     expect(res.body.withdrawAmount).toEqual(rewardWithdrawAmount);
                     expect(res.body.claims).toBeDefined();
                 })
@@ -180,7 +180,7 @@ describe('Default Pool', () => {
         });
     });
 
-    describe('POST /rewards/:id/claim', () => {
+    describe('POST /rewards-token/:id/claim', () => {
         it('HTTP 302 when tx is handled', async () => {
             await user
                 .post(`/v1/claims/${claim.id}/collect`)
@@ -202,9 +202,9 @@ describe('Default Pool', () => {
         });
     });
 
-    describe('POST /rewards/:id/give', () => {
+    describe('POST /rewards-token/:id/give', () => {
         it('HTTP 200 when tx is handled', (done) => {
-            user.post(`/v1/rewards/${reward.id}/give`)
+            user.post(`/v1/rewards-token/${reward.id}/give`)
                 .send({
                     member: userWallet.address,
                 })
@@ -273,19 +273,21 @@ describe('Default Pool', () => {
         });
 
         it('HTTP 200 and returns 1 item for state = 1 and rewardId = reward.id', (done) => {
-            user.get(`/v1/withdrawals?state=1&rewardId=${reward.id}&page=1&limit=2`)
+            user.get(`/v1/withdrawals?state=1&rewardId=${reward.rewardBaseId}&page=1&limit=2`)
                 .set({ 'X-PoolId': poolId, 'Authorization': adminAccessToken })
                 .expect(async (res: request.Response) => {
-                    expect(res.body.results.length).toBe(2);
+                    expect(res.body.results.length).toBe(1);
                 })
                 .expect(200, done);
         });
 
         it('HTTP 200 and returns 1 item state = 1 and rewardId = reward.id and member address', (done) => {
-            user.get(`/v1/withdrawals?member=${userWallet.address}&state=1&rewardId=${reward.id}&page=1&limit=2`)
+            user.get(
+                `/v1/withdrawals?member=${userWallet.address}&state=1&rewardId=${reward.rewardBaseId}&page=1&limit=2`,
+            )
                 .set({ 'X-PoolId': poolId, 'Authorization': adminAccessToken })
                 .expect(async (res: request.Response) => {
-                    expect(res.body.results.length).toBe(2);
+                    expect(res.body.results.length).toBe(1);
                 })
                 .expect(200, done);
         });
