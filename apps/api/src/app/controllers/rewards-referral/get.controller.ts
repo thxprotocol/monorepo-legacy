@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { param } from 'express-validator';
-import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
 import { RewardBaseDocument } from '@thxnetwork/api/models/RewardBase';
 import { formatRewardReferral } from '../rewards-utils';
