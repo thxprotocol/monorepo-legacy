@@ -146,6 +146,10 @@ export default class RewardService {
         return Reward.findByIdAndUpdate(reward._id, updates, { new: true });
     }
 
+    static delete(reward: RewardDocument) {
+        return Reward.findOneAndDelete(reward._id);
+    }
+
     static async validateCondition(
         account: IAccount,
         channelAction: ChannelAction,
