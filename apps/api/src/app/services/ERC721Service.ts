@@ -12,12 +12,8 @@ import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { ChainId, TransactionState } from '@thxnetwork/api/types/enums';
 import { TAssetPool } from '@thxnetwork/api/types/TAssetPool';
 import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
-import {
-    TERC721DeployCallbackArgs, TERC721TokenMintCallbackArgs
-} from '@thxnetwork/api/types/TTransaction';
-import {
-    assertEvent, ExpectedEventNotFound, findEvent, parseLogs
-} from '@thxnetwork/api/util/events';
+import { TERC721DeployCallbackArgs, TERC721TokenMintCallbackArgs } from '@thxnetwork/api/types/TTransaction';
+import { assertEvent, ExpectedEventNotFound, findEvent, parseLogs } from '@thxnetwork/api/util/events';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
 
@@ -101,6 +97,10 @@ export async function createMetadata(
         description,
         attributes,
     });
+}
+
+export async function deleteMetadata(id: string) {
+    return ERC721Metadata.findOneAndDelete({ _id: id });
 }
 
 export async function mint(
@@ -248,6 +248,7 @@ export default {
     deployCallback,
     findById,
     createMetadata,
+    deleteMetadata,
     mint,
     mintCallback,
     queryMintTransaction,
