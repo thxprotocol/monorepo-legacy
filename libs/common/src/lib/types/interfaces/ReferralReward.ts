@@ -1,5 +1,6 @@
 import { TBaseReward } from './BaseReward';
 
-export type TPointReward = TBaseReward & {
+export type TReferralReward = TBaseReward & {
     amount: string;
+    sub: string;
 };

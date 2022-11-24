@@ -6,7 +6,7 @@ import { Readable } from 'stream';
 import { logger } from '@thxnetwork/api/util/logger';
 import CsvReadableStream from 'csv-reader';
 import { agenda, EVENT_SEND_DOWNLOAD_METADATA_QR_EMAIL } from '@thxnetwork/api/util/agenda';
-import { createRewardNft } from '@thxnetwork/api/controllers/rewards-utils';
+import { createERC721Reward } from '@thxnetwork/api/controllers/rewards-utils';
 
 const validation = [
     param('id').isMongoId(),
@@ -78,7 +78,7 @@ const controller = async (req: Request, res: Response) => {
                                 slug: null,
                                 title: null,
                             };
-                            await createRewardNft(req.assetPool, body);
+                            await createERC721Reward(req.assetPool, body);
                         }
                     } catch (err) {
                         logger.error(err);

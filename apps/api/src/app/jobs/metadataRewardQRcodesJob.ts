@@ -14,23 +14,22 @@ import { logger } from '@thxnetwork/api/util/logger';
 import { s3PrivateClient } from '@thxnetwork/api/util/s3';
 import { createArchiver } from '@thxnetwork/api/util/zip';
 import { Upload } from '@aws-sdk/lib-storage';
-
-import { RewardVariant } from '../types/enums/RewardVariant';
-import { RewardBase, RewardBaseDocument } from '../models/RewardBase';
 import { assetsPath } from '../util/path';
+import { TBaseReward } from '@thxnetwork/types/';
+import { ERC721Reward } from '../models/ERC721Reward';
 
 export const generateMetadataRewardQRCodesJob = async ({ attrs }: Job) => {
     if (!attrs.data) return;
 
     try {
         const { poolId, sub, fileName, notify } = attrs.data;
-
         const pool = await AssetPoolService.getById(poolId);
 
         if (!pool) throw new Error('Pool not found');
 
-        const rewards = await RewardBase.find({ poolId, variant: RewardVariant.RewardNFT });
+        const rewards = await ERC721Reward.find({ poolId });
         if (!rewards.length) throw new Error('Rewards not found');
+
         const account = await AccountProxy.getById(sub);
         if (!account) throw new Error('Account not found');
         if (!account.email) throw new Error('E-mail address for account not set');
@@ -38,7 +37,7 @@ export const generateMetadataRewardQRCodesJob = async ({ attrs }: Job) => {
         // Create an instance of jsZip and build an archive
         const { jsZip, archive } = createArchiver();
         await Promise.all(
-            rewards.map(async (reward: RewardBaseDocument) => {
+            rewards.map(async (reward: TBaseReward) => {
                 const claims = await ClaimService.findByReward(reward);
                 if (!claims.length) throw new Error('Claims not found');
 

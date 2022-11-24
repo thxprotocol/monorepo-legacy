@@ -1,6 +1,6 @@
 import { body } from 'express-validator';
 import { Request, Response } from 'express';
-import { createRewardNft, formatRewardNft } from '../rewards-utils';
+import { createERC721Reward } from '../rewards-utils';
 
 const validation = [
     body('title').exists().isString(),
@@ -13,9 +13,8 @@ const validation = [
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['RewardsNft']
-    const { reward, claims } = await createRewardNft(req.assetPool, req.body);
-    const rewardFormatted = await formatRewardNft(reward);
-    res.status(201).json({ ...rewardFormatted, claims });
+    const { reward, claims } = await createERC721Reward(req.assetPool, req.body);
+    res.status(201).json({ ...reward.toJSON(), claims });
 };
 
 export default { controller, validation };

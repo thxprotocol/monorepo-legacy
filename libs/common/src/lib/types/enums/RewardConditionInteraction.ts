@@ -1,4 +1,4 @@
-export enum ChannelAction {
+export enum RewardConditionInteraction {
     YouTubeLike = 0,
     YouTubeSubscribe = 1,
     TwitterLike = 2,

@@ -1,5 +1,5 @@
 <template>
-    <base-modal size="xl" title="Create Points Reward" id="modalRewardPointsCreate" :error="error" :loading="isLoading">
+    <base-modal size="xl" title="Create ERC20 Reward" id="modalRewardERC20Create" :error="error" :loading="isLoading">
         <template #modal-body v-if="!isLoading">
             <p class="text-gray">
                 Points rewards are distributed to your customers achieving milestones in your customer journey.
@@ -52,11 +52,12 @@
 import { type IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { TPointReward } from '@thxnetwork/types/interfaces/PointReward';
-import { channelList, channelActionList } from '@thxnetwork/dashboard/types/rewards';
+import { channelList, channelActionList, IChannelAction, IChannel } from '@thxnetwork/dashboard/types/rewards';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardCondition from '../cards/BaseCardRewardCondition.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardRewardQRCodes from '../cards/BaseCardRewardQRCodes.vue';
+import { TReward } from '@thxnetwork/dashboard/store/modules/erc20Rewards';
 
 @Component({
     components: {
@@ -66,7 +67,7 @@ import BaseCardRewardQRCodes from '../cards/BaseCardRewardQRCodes.vue';
         BaseCardRewardQRCodes,
     },
 })
-export default class ModalRewardPointsCreate extends Vue {
+export default class ModalRewardERC20Create extends Vue {
     isSubmitDisabled = false;
     isLoading = false;
     error = '';
@@ -75,23 +76,27 @@ export default class ModalRewardPointsCreate extends Vue {
     description = '';
     isClaimOnce = true;
     rewardExpiry = {};
-    rewardCondition = {
+    rewardCondition: { platform: IChannel; interaction: IChannelAction; content: string } = {
         platform: channelList[0],
         interaction: channelActionList[0],
         content: '',
     };
 
     @Prop() pool!: IPool;
-    @Prop({ required: false }) reward!: TPointReward;
+    @Prop({ required: false }) reward!: TReward;
 
     mounted() {
         if (this.reward) {
             this.title = this.reward.title;
-            this.amount = this.reward.amount;
-            this.description = this.reward.description;
-            // this.rewardCondition.platform = this.reward.platform;
-            // this.rewardCondition.interaction = this.reward.interaction;
-            // this.rewardCondition.interaction = this.reward.content;
+            this.amount = String(this.reward.withdrawAmount);
+            // this.description = this.reward.description;
+            this.rewardCondition.platform = channelList.find(
+                (c) => c.type === this.reward.withdrawCondition.channelType,
+            ) as IChannel;
+            this.rewardCondition.interaction = channelActionList.find(
+                (a) => a.type === this.reward.withdrawCondition.channelAction,
+            ) as IChannelAction;
+            this.rewardCondition.content = this.reward.withdrawCondition.channelItem;
         }
     }
 

@@ -1,23 +1,47 @@
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import ClaimService from '@thxnetwork/api/services/ClaimService';
-import ERC721Service from '@thxnetwork/api/services/ERC721Service';
-import RewardNftService from '@thxnetwork/api/services/RewardNftService';
-import RewardReferralService from '@thxnetwork/api/services/RewardReferralService';
-import RewardTokenService from '@thxnetwork/api/services/RewardTokenService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { agenda, EVENT_SEND_DOWNLOAD_QR_EMAIL } from '@thxnetwork/api/util/agenda';
 import { AWS_S3_PRIVATE_BUCKET_NAME } from '@thxnetwork/api/config/secrets';
 import { s3PrivateClient } from '@thxnetwork/api/util/s3';
 import { GetObjectCommand } from '@aws-sdk/client-s3';
+import { TERC721Reward, TERC20Reward, TBaseReward, TReferralReward } from '@thxnetwork/types/';
 import { Readable } from 'stream';
 import { logger } from '@thxnetwork/api/util/logger';
 import { Response } from 'express';
-import { RewardNftDocument } from '../models/RewardNft';
-import { RewardReferralDocument } from '../models/RewardReferral';
-import { RewardTokenDocument } from '../models/RewardToken';
-import { TRewardNft } from '../types/RewardNft';
-import { TRewardToken } from '../types/RewardToken';
-import { TRewardReferral } from '../types/RewardReferral';
+import { ERC20Reward, ERC20RewardDocument } from '../models/ERC20Reward';
+import { ERC721Reward, ERC721RewardDocument } from '../models/ERC721Reward';
+import { ReferralReward, ReferralRewardDocument } from '../models/ReferralReward';
+import { IAccount } from '../models/Account';
+import ClaimService from '@thxnetwork/api/services/ClaimService';
+import ERC721Service from '@thxnetwork/api/services/ERC721Service';
+import RewardNftService from '@thxnetwork/api/services/ERC721RewardService';
+import ERC20RewardService from '../services/ERC20RewardService';
+import ERC721RewardService from '@thxnetwork/api/services/ERC721RewardService';
+import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardService';
+
+export async function canClaimReward(pool: AssetPoolDocument, reward: TBaseReward, account: IAccount) {
+    if (isTERC20Reward(reward)) {
+        return await ERC20RewardService.canClaim(pool, reward, account);
+    }
+    if (isTERC721Reward(reward)) {
+        return await ERC721RewardService.canClaim(reward, account);
+    }
+}
+
+export async function findRewardById(rewardId: string) {
+    const erc20Reward = await ERC20Reward.findById(rewardId);
+    const erc721Reward = await ERC721Reward.findById(rewardId);
+    const referralReward = await ReferralReward.findById(rewardId);
+    return erc20Reward || erc721Reward || referralReward;
+}
+
+export function isTERC20Reward(r: any): r is TERC20Reward {
+    return;
+}
+
+export function isTERC721Reward(r: any): r is TERC721Reward {
+    return;
+}
 
 export function addMinutes(date: Date, minutes: number) {
     return new Date(date.getTime() + minutes * 60000);
@@ -38,7 +62,7 @@ export function formatDate(date: Date) {
     return yyyy + '-' + mm + '-' + dd;
 }
 
-export function getRewardTokenConfiguration(slug: RewardSlug) {
+export function getERC20RewardConfiguration(slug: RewardSlug) {
     switch (slug) {
         case 'no-limit-and-claim-one-disabled': {
             return {
@@ -116,7 +140,7 @@ export function getRewardTokenConfiguration(slug: RewardSlug) {
     }
 }
 
-export function getRewardNftConfiguration(slug: RewardSlug, erc721metadataId: string) {
+export function getERC721RewardConfiguration(slug: RewardSlug, erc721metadataId: string) {
     switch (slug) {
         case 'no-limit-and-claim-one-disabled': {
             return {
@@ -201,42 +225,19 @@ type RewardSlug =
     | 'claim-one-is-enabled-and-amount-is-greather-than-1'
     | 'claim-one-is-disabled';
 
-export const createRewardNft = async (
-    assetPool: AssetPoolDocument,
-    config: {
-        title: string;
-        slug: string;
-        limit: number;
-        expiryDate: Date;
-        erc721metadataId: string;
-        rewardConditionId?: string;
-        amount: number;
-        isClaimOnce: boolean;
-    },
-) => {
+export const createERC721Reward = async (assetPool: AssetPoolDocument, config: TERC721Reward) => {
     const metadata = await ERC721Service.findMetadataById(config.erc721metadataId);
     if (!metadata) {
         throw new NotFoundError('could not find the Metadata for this metadataId');
     }
-    const amount = config.amount | 1;
-    const reward = await RewardNftService.create(assetPool, {
-        title: config.title,
-        slug: config.slug,
-        limit: config.limit || 0,
-        expiryDate: config.expiryDate,
-        erc721metadataId: config.erc721metadataId,
-        rewardConditionId: config.rewardConditionId,
-        amount,
-        isClaimOnce: config.isClaimOnce,
-    });
-
+    const reward = await RewardNftService.create(assetPool, config);
     const claims = await Promise.all(
-        Array.from({ length: amount }).map(() =>
+        Array.from({ length: Number(config.claimAmount) }).map(() =>
             ClaimService.create({
                 poolId: assetPool._id,
                 erc20Id: null,
                 erc721Id: metadata.erc721,
-                rewardId: reward.rewardBaseId,
+                rewardId: String(reward._id),
             }),
         ),
     );
@@ -244,37 +245,14 @@ export const createRewardNft = async (
     return { reward, claims };
 };
 
-export const createRewardToken = async (
-    assetPool: AssetPoolDocument,
-    config: {
-        title: string;
-        slug: string;
-        limit: number;
-        expiryDate: Date;
-        rewardConditionId?: string;
-        withdrawAmount: number;
-        amount: number;
-        isClaimOnce: boolean;
-    },
-) => {
-    const amount = config.amount || 1;
-    const reward = await RewardTokenService.create(assetPool, {
-        title: config.title,
-        slug: config.slug,
-        limit: config.limit || 0,
-        expiryDate: config.expiryDate,
-        rewardConditionId: config.rewardConditionId,
-        withdrawAmount: config.withdrawAmount,
-        amount,
-        isClaimOnce: config.isClaimOnce,
-    });
-
+export const createERC20Reward = async (assetPool: AssetPoolDocument, payload: TERC20Reward) => {
+    const reward = await ERC20RewardService.create(assetPool, payload);
     const claims = await Promise.all(
-        Array.from({ length: amount }).map(() =>
+        Array.from({ length: Number(payload.claimAmount) }).map(() =>
             ClaimService.create({
                 poolId: assetPool._id,
                 erc20Id: assetPool.erc20Id,
-                rewardId: reward.rewardBaseId,
+                rewardId: String(reward._id),
             }),
         ),
     );
@@ -282,44 +260,24 @@ export const createRewardToken = async (
     return { reward, claims };
 };
 
-export const createRewardReferral = async (
-    assetPool: AssetPoolDocument,
-    config: {
-        title: string;
-        slug: string;
-        limit: number;
-        expiryDate: Date;
-        amount: number;
-        isClaimOnce: boolean;
-    },
-) => {
-    const amount = config.amount | 1;
-    const reward = await RewardReferralService.create(assetPool, {
-        title: config.title,
-        slug: config.slug,
-        limit: config.limit || 0,
-        expiryDate: config.expiryDate,
-        amount,
-        isClaimOnce: config.isClaimOnce,
-    });
-
+export const createReferralReward = async (assetPool: AssetPoolDocument, config: TReferralReward) => {
+    const reward = await ReferralRewardService.create(assetPool, config);
     const claims = await Promise.all(
-        Array.from({ length: amount }).map(() =>
+        Array.from({ length: Number(reward.claimAmount) }).map(() =>
             ClaimService.create({
                 poolId: assetPool._id,
                 erc20Id: assetPool.erc20Id,
-                rewardId: reward.rewardBaseId,
+                rewardId: String(reward._id),
             }),
         ),
     );
-
     return { reward, claims };
 };
 
 export const getQrcode = async (
     fileName: string,
     res: Response,
-    reward: RewardNftDocument | RewardReferralDocument | RewardTokenDocument,
+    reward: ERC20RewardDocument | ReferralRewardDocument | ERC721RewardDocument,
     assetPool: AssetPoolDocument,
 ) => {
     try {
@@ -333,7 +291,7 @@ export const getQrcode = async (
         (response.Body as Readable).pipe(res).attachment(fileName);
     } catch (err) {
         if (err.$metadata && err.$metadata.httpStatusCode == 404) {
-            const rewardId = reward.rewardBaseId;
+            const rewardId = String(reward._id);
             const poolId = String(assetPool._id);
             const sub = assetPool.sub;
             const equalJobs = await agenda.jobs({
@@ -355,33 +313,4 @@ export const getQrcode = async (
             throw err;
         }
     }
-};
-
-export const formatRewardNft = async (reward: RewardNftDocument) => {
-    return {
-        id: reward.id,
-        erc721metadataId: reward.erc721metadataId,
-        rewardBaseId: reward.rewardBaseId,
-        rewardConditionId: reward.rewardConditionId,
-        rewardBase: await reward.rewardBase,
-    } as TRewardNft;
-};
-
-export const formatRewardToken = async (reward: RewardTokenDocument) => {
-    return {
-        id: reward.id,
-        withdrawAmount: reward.withdrawAmount,
-        rewardBaseId: reward.rewardBaseId,
-        rewardConditionId: reward.rewardConditionId,
-        rewardBase: await reward.rewardBase,
-    } as TRewardToken;
-};
-
-export const formatRewardReferral = async (reward: RewardReferralDocument) => {
-    return {
-        id: reward.id,
-        rewardBaseId: reward.rewardBaseId,
-        amount: reward.amount,
-        rewardBase: await reward.rewardBase,
-    } as TRewardReferral;
 };

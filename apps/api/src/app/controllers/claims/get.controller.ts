@@ -6,11 +6,9 @@ import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import AssetPoolService from '@thxnetwork/api/services/AssetPoolService';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
 import { Claim } from '@thxnetwork/api/models/Claim';
-import RewardBaseService from '@thxnetwork/api/services/RewardBaseService';
-import { RewardCondition } from '@thxnetwork/api/types/RewardCondition';
-import { RewardTokenDocument } from '@thxnetwork/api/models/RewardToken';
 import { RewardVariant } from '@thxnetwork/api/types/enums/RewardVariant';
-import { RewardNftDocument } from '@thxnetwork/api/models/RewardNft';
+import { ERC20RewardDocument } from '@thxnetwork/api/models/ERC20Reward';
+import { findRewardById, isTERC20Reward, isTERC721Reward } from '../rewards-utils';
 
 const validation = [param('id').exists().isString()];
 
@@ -32,32 +30,29 @@ const controller = async (req: Request, res: Response) => {
     const pool = await AssetPoolService.getById(claim.poolId);
     if (!pool) throw new NotFoundError('Could not find this pool');
 
-    const reward = await RewardBaseService.get(pool, claim.rewardId);
+    const reward = await findRewardById(claim.rewardId);
     if (!reward) throw new NotFoundError('Could not find this reward');
 
-    if (reward.variant === RewardVariant.RewardToken && claim.erc20Id) {
+    if (isTERC20Reward(reward) && claim.erc20Id) {
         const erc20 = await ERC20Service.getById(claim.erc20Id);
 
-        const rewardToken = (await reward.getReward()) as RewardTokenDocument;
         res.json({
             _id: claim._id,
             id: claim.id,
             poolId: claim.poolId,
             erc20Id: claim.erc20Id,
             rewardId: claim.rewardId,
-            withdrawAmount: rewardToken.withdrawAmount,
-            withdrawCondition: await RewardCondition.findById(rewardToken.rewardConditionId),
+            withdrawAmount: reward.amount,
             chainId: pool.chainId,
             clientId: pool.clientId,
             poolAddress: pool.address,
             tokenSymbol: erc20.symbol,
         });
-    } else if (reward.variant === RewardVariant.RewardNFT && claim.erc721Id) {
+    } else if (isTERC721Reward(reward) && claim.erc721Id) {
         let nftImageUrl, nftTitle, nftDescription;
         const erc721 = await ERC721Service.findById(claim.erc721Id);
-        const rewardNft = (await reward.getReward()) as RewardNftDocument;
+        const metadata = await ERC721Service.findMetadataById(reward.erc721metadataId);
 
-        const metadata = await ERC721Service.findMetadataById(rewardNft.erc721metadataId);
         if (metadata) {
             nftTitle = metadata.title;
             nftDescription = metadata.description;
@@ -78,7 +73,6 @@ const controller = async (req: Request, res: Response) => {
             poolId: claim.poolId,
             erc721Id: claim.erc721Id,
             rewardId: claim.rewardId,
-            withdrawCondition: await RewardCondition.findById(rewardNft.rewardConditionId),
             chainId: pool.chainId,
             clientId: pool.clientId,
             poolAddress: pool.address,

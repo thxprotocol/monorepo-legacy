@@ -1,9 +1,7 @@
-import RewardNftService from '@thxnetwork/api/services/RewardNftService';
+import ERC721RewardService from '@thxnetwork/api/services/ERC721RewardService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
-
 import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
-import { formatRewardNft } from '../rewards-utils';
 
 const validation = [
     param('id').exists(),
@@ -13,13 +11,12 @@ const validation = [
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['RewardsNft']
-    let reward = await RewardNftService.get(req.params.id);
+    let reward = await ERC721RewardService.get(req.params.id);
     if (!reward) {
         throw new NotFoundError('Could not find the reward');
     }
-    reward = await RewardNftService.update(reward, req.body);
-    const result = await formatRewardNft(reward);
-    return res.json(result);
+    reward = await ERC721RewardService.update(reward, req.body);
+    return res.json(reward);
 };
 
 export default { controller, validation };

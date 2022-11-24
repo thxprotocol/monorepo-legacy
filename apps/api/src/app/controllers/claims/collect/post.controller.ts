@@ -3,23 +3,22 @@ import { param, query } from 'express-validator';
 import { BadRequestError, ForbiddenError } from '@thxnetwork/api/util/errors';
 import { WithdrawalState, WithdrawalType } from '@thxnetwork/api/types/enums';
 import { WithdrawalDocument } from '@thxnetwork/api/models/Withdrawal';
+import { Claim } from '@thxnetwork/api/models/Claim';
+
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
-import MembershipService from '@thxnetwork/api/services/MembershipService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import AssetPoolService from '@thxnetwork/api/services/AssetPoolService';
-import { Claim } from '@thxnetwork/api/models/Claim';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
-import RewardBaseService from '@thxnetwork/api/services/RewardBaseService';
-import { RewardVariant } from '@thxnetwork/api/types/enums/RewardVariant';
-import { RewardTokenDocument } from '../../../models/RewardToken';
-import { RewardNftDocument } from '@thxnetwork/api/models/RewardNft';
+import { canClaimReward, findRewardById, isTERC20Reward, isTERC721Reward } from '../../rewards-utils';
+import MembershipService from '@thxnetwork/api/services/MembershipService';
 
 const validation = [param('id').exists().isString(), query('forceSync').optional().isBoolean()];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Rewards']
+    // #swagger.tags = ['Claims']
+
     let claim = await ClaimService.findById(req.params.id);
     if (!claim) {
         // maintain compatibility with old the claim urls
@@ -33,10 +32,11 @@ const controller = async (req: Request, res: Response) => {
     const account = await AccountProxy.getById(req.auth.sub);
     if (!account.address) throw new BadRequestError('The authenticated account has not accessed its wallet.');
 
-    const reward = await RewardBaseService.get(pool, claim.rewardId);
+    const reward = await findRewardById(claim.rewardId);
     if (!reward) throw new BadRequestError('The reward for this ID does not exist.');
 
-    const { result, error } = await RewardBaseService.canClaim(pool, reward, account);
+    // Validate the claim
+    const { result, error } = await canClaimReward(pool, reward, account);
     if (!result && error) throw new ForbiddenError(error);
 
     const hasMembership = await MembershipService.hasMembership(pool, account.id);
@@ -52,16 +52,15 @@ const controller = async (req: Request, res: Response) => {
     // Force sync by default but allow the requester to do async calls.
     const forceSync = req.query.forceSync !== undefined ? req.query.forceSync === 'true' : true;
 
-    if (reward.variant === RewardVariant.RewardToken && claim.erc20Id) {
-        const rewardToken = (await reward.getReward()) as RewardTokenDocument;
+    if (isTERC20Reward(reward) && claim.erc20Id) {
         let w: WithdrawalDocument = await WithdrawalService.schedule(
             pool,
             WithdrawalType.ClaimReward,
             req.auth.sub,
-            rewardToken.withdrawAmount,
+            Number(reward.amount),
             WithdrawalState.Pending,
             null,
-            reward.id,
+            String(reward._id),
         );
         const erc20 = await ERC20Service.getById(claim.erc20Id);
 
@@ -70,12 +69,11 @@ const controller = async (req: Request, res: Response) => {
         return res.json({ ...w.toJSON(), erc20 });
     }
 
-    if (reward.variant === RewardVariant.RewardNFT && claim.erc721Id) {
-        const rewardNft = (await reward.getReward()) as RewardNftDocument;
-
-        const metadata = await ERC721Service.findMetadataById(rewardNft.erc721metadataId);
+    if (isTERC721Reward(reward) && claim.erc721Id) {
+        const metadata = await ERC721Service.findMetadataById(reward.erc721metadataId);
         const erc721 = await ERC721Service.findById(metadata.erc721);
         const token = await ERC721Service.mint(pool, erc721, metadata, account, forceSync);
+
         return res.json({ ...token.toJSON(), erc721: erc721.toJSON(), metadata: metadata.toJSON() });
     }
 

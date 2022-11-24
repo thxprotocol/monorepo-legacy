@@ -7,70 +7,59 @@ import {
     assertPlan,
 } from '@thxnetwork/api/middlewares';
 import { AccountPlanType } from '@thxnetwork/api/types/enums';
-import CreateRewardToken from './post.controller';
-import ReadRewardToken from './get.controller';
-import UpdateRewardToken from './patch.controller';
-import ListRewardToken from './list.controller';
-import ClaimRewardToken from './claims/qrcode/get.controller';
-import GiveRewardToken from './give/post.controller';
+import CreateERC20Reward from './post.controller';
+import ReadERC20Reward from './get.controller';
+import UpdateERC20Reward from './patch.controller';
+import ListERC20Reward from './list.controller';
+import ClaimERC20Reward from './claims/qrcode/get.controller';
 
 const router = express.Router();
 
 router.get(
     '/',
-    guard.check(['rewards:read']),
+    guard.check(['erc20_rewards:read']),
     assertAssetPoolAccess,
     requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
-    ListRewardToken.controller,
+    ListERC20Reward.controller,
 );
 router.get(
     '/:id',
-    guard.check(['rewards:read']),
+    guard.check(['erc20_rewards:read']),
     //assertAssetPoolAccess,
-    assertRequestInput(ReadRewardToken.validation),
+    assertRequestInput(ReadERC20Reward.validation),
     requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
-    ReadRewardToken.controller,
+    ReadERC20Reward.controller,
 );
 router.post(
     '/',
-    guard.check(['rewards:write', 'rewards:read']),
+    guard.check(['erc20_rewards:write', 'erc20_rewards:read']),
     assertAssetPoolAccess,
-    assertRequestInput(CreateRewardToken.validation),
+    assertRequestInput(CreateERC20Reward.validation),
     requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
-    CreateRewardToken.controller,
-);
-
-router.post(
-    '/:id/give',
-    guard.check(['rewards:read', 'withdrawals:write']),
-    assertAssetPoolAccess,
-    assertRequestInput(GiveRewardToken.validation),
-    requireAssetPoolHeader,
-    assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
-    GiveRewardToken.controller,
+    CreateERC20Reward.controller,
 );
 
 router.patch(
     '/:id',
-    guard.check(['rewards:write', 'rewards:read']),
+    guard.check(['erc20_rewards:write', 'erc20_rewards:read']),
     assertAssetPoolAccess,
-    assertRequestInput(UpdateRewardToken.validation),
+    assertRequestInput(UpdateERC20Reward.validation),
     requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
-    UpdateRewardToken.controller,
+    UpdateERC20Reward.controller,
 );
 
 router.get(
     '/:id/claims/qrcode',
-    guard.check(['rewards:read', 'claims:read']),
+    guard.check(['erc20_rewards:read', 'erc20_rewards:read']),
     assertAssetPoolAccess,
-    assertRequestInput(ClaimRewardToken.validation),
+    assertRequestInput(ClaimERC20Reward.validation),
     requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
-    ClaimRewardToken.controller,
+    ClaimERC20Reward.controller,
 );
 
 export default router;

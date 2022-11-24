@@ -5,14 +5,14 @@ import ImageService from '@thxnetwork/api/services/ImageService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { logger } from '@thxnetwork/api/util/logger';
 import { s3Client } from '@thxnetwork/api/util/s3';
-
 import { createArchiver } from '@thxnetwork/api/util/zip';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { fromBuffer } from 'file-type';
 import { Request, Response } from 'express';
 import { body, check, param } from 'express-validator';
+import { createERC721Reward } from '@thxnetwork/api/controllers/rewards-utils';
 import short from 'short-uuid';
-import { createRewardNft } from '@thxnetwork/api/controllers/rewards-utils';
+import db from '@thxnetwork/api/util/database';
 
 const validation = [
     param('id').isMongoId(),
@@ -96,14 +96,16 @@ const controller = async (req: Request, res: Response) => {
                         { key: req.body.propName, value: url },
                     ]);
 
-                    await createRewardNft(req.assetPool, {
+                    await createERC721Reward(req.assetPool, {
+                        poolId: String(req.assetPool._id),
                         erc721metadataId: String(metadata._id),
-                        amount: 1,
-                        limit: 1,
+                        claimAmount: '1',
+                        rewardLimit: 1,
                         isClaimOnce: true,
                         expiryDate: null,
-                        slug: null,
-                        title: null,
+                        title: '',
+                        description: '',
+                        uuid: db.createUUID(),
                     });
 
                     return metadata;

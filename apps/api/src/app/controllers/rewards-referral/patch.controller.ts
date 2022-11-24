@@ -1,7 +1,7 @@
-import RewardReferralService from '@thxnetwork/api/services/RewardReferralService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
+import RewardReferralService from '@thxnetwork/api/services/ReferralRewardService';
 
 const validation = [
     param('id').exists(),

@@ -15,9 +15,8 @@ import { s3PrivateClient } from '@thxnetwork/api/util/s3';
 import { createArchiver } from '@thxnetwork/api/util/zip';
 import { Upload } from '@aws-sdk/lib-storage';
 import ejs from 'ejs';
-
-import RewardBaseService from '../services/RewardBaseService';
 import { assetsPath } from '../util/path';
+import { findRewardById } from '../controllers/rewards-utils';
 
 const mailTemplatePath = path.join(assetsPath, 'views', 'email');
 
@@ -30,7 +29,7 @@ export const generateRewardQRCodesJob = async ({ attrs }: Job) => {
         const pool = await AssetPoolService.getById(poolId);
         if (!pool) throw new Error('Reward not found');
 
-        const reward = await RewardBaseService.get(pool, rewardId);
+        const reward = await findRewardById(rewardId);
         if (!reward) throw new Error('Reward not found');
 
         const account = await AccountProxy.getById(sub);
