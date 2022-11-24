@@ -1,5 +1,5 @@
+import { DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, DISCORD_REDIRECT_URI } from '../config/secrets';
 import CommonOauthLoginOptions from '../types/CommonOauthLoginOptions';
-import { DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, DISCORD_REDIRECT_URI } from '../../../../api/src/app/config/secrets';
 import { discordClient } from '../util/axios';
 
 export const DISCORD_API_SCOPE = ['identify', 'email', 'guilds.members.read'];
