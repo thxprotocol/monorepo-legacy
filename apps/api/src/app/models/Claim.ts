@@ -8,6 +8,7 @@ const schema = new mongoose.Schema(
         erc20Id: String,
         erc721Id: String,
         rewardId: String,
+        claimed: Boolean,
     },
     { timestamps: true },
 );

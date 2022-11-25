@@ -54,7 +54,7 @@ const controller = async (req: Request, res: Response) => {
     const forceSync = req.query.forceSync !== undefined ? req.query.forceSync === 'true' : true;
 
     if (claim.erc20Id) {
-        let w: WithdrawalDocument = await WithdrawalService.schedule(
+        let w: WithdrawalDocument = await WithdrawalService.create(
             pool,
             WithdrawalType.ClaimReward,
             req.auth.sub,
@@ -67,6 +67,8 @@ const controller = async (req: Request, res: Response) => {
 
         w = await WithdrawalService.withdrawFor(pool, w, account, forceSync);
 
+        await claim.updateOne({ claimed: true });
+
         return res.json({ ...w.toJSON(), erc20 });
     }
 
@@ -74,6 +76,8 @@ const controller = async (req: Request, res: Response) => {
         const metadata = await ERC721Service.findMetadataById(reward.erc721metadataId);
         const erc721 = await ERC721Service.findById(metadata.erc721);
         const token = await ERC721Service.mint(pool, erc721, metadata, account, forceSync);
+
+        await claim.updateOne({ claimed: true });
 
         return res.json({ ...token.toJSON(), erc721: erc721.toJSON(), metadata: metadata.toJSON() });
     }

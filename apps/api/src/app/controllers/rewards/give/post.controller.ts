@@ -21,7 +21,7 @@ const controller = async (req: Request, res: Response) => {
     const account = await AccountProxy.getByAddress(req.body.member);
     if (!account) throw new NotFoundError();
 
-    let w: WithdrawalDocument = await WithdrawalService.schedule(
+    let w: WithdrawalDocument = await WithdrawalService.create(
         req.assetPool,
         WithdrawalType.ClaimRewardFor,
         account.id,
