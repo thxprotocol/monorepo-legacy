@@ -58,6 +58,11 @@ class ERC721Module extends VuexModule {
     }
 
     @Mutation
+    clearMetadata(payload: { erc721: TERC721 }) {
+        Vue.set(this._all[payload.erc721._id], 'metadata', []);
+    }
+
+    @Mutation
     setTotal({ erc721, total }: { erc721: TERC721; total: number }) {
         Vue.set(this._totalsMetadata, erc721._id, total);
     }
@@ -93,6 +98,8 @@ class ERC721Module extends VuexModule {
 
         this.context.commit('setTotal', { erc721, total: data.total });
 
+        if (data?.results?.length === 0) this.context.commit('clearMetadata', { erc721 });
+
         for (const metadata of data.results) {
             metadata.page = page;
             this.context.commit('setMetadata', { erc721, metadata });
@@ -112,6 +119,16 @@ class ERC721Module extends VuexModule {
             erc721,
             metadata: { ...metadata, ...data },
         });
+    }
+
+    @Action({ rawError: true })
+    async deleteMetadata({ pool, erc721, metadataId }: { pool: IPool; erc721: TERC721; metadataId: string }) {
+        const { status }: TMetadataResponse = await axios({
+            method: 'DELETE',
+            url: `/erc721/${erc721._id}/metadata/${metadataId}`,
+            headers: { 'X-PoolId': pool._id },
+        });
+        return status === 200;
     }
 
     @Action({ rawError: true })

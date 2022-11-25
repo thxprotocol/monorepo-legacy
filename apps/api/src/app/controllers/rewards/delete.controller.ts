@@ -9,8 +9,8 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
     const reward = await RewardService.get(req.assetPool, req.params.id);
     if (!reward) throw new NotFoundError('Could not find reward for this id');
-    const result = await RewardService.delete(reward);
-    return res.json(result);
+    await RewardService.delete(reward);
+    return res.status(200).send();
 };
 
 export default { validation, controller };

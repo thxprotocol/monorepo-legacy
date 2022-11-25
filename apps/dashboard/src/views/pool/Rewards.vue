@@ -24,6 +24,7 @@
             @clicked="$bvModal.show('modalRewardCreate')"
         />
         <base-card-reward
+            @delete="listRewards"
             @edit="onEdit"
             :pool="pool"
             :reward="reward"
