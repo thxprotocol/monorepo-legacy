@@ -43,8 +43,8 @@ class ERC20RewardModule extends VuexModule {
     }
 
     @Mutation
-    setTotal({ poolId, total }: { poolId: string; total: number }) {
-        Vue.set(this._totals, poolId, total);
+    setTotal({ pool, total }: { pool: IPool; total: number }) {
+        Vue.set(this._totals, pool._id, total);
     }
 
     @Action({ rawError: true })
@@ -69,8 +69,6 @@ class ERC20RewardModule extends VuexModule {
 
     @Action({ rawError: true })
     async create({ pool, payload }: { pool: IPool; payload: TERC20Reward }) {
-        console.log(payload);
-        debugger;
         const r = await axios({
             method: 'POST',
             url: '/erc20-rewards',
@@ -91,8 +89,8 @@ class ERC20RewardModule extends VuexModule {
         });
 
         this.context.commit('set', {
-            pool: pool._id,
-            reward: { ...reward, ...data },
+            pool: pool,
+            reward: data,
         });
     }
 

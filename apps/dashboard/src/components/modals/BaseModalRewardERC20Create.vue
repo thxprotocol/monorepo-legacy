@@ -97,26 +97,34 @@ export default class ModalRewardERC20Create extends Vue {
                 interaction: this.reward.interaction as RewardConditionInteraction,
                 content: this.reward.content as string,
             };
+            this.isClaimOnce = this.reward.isClaimOnce;
         }
     }
 
     onSubmit() {
-        this.$store.dispatch(`erc20Rewards/${this.reward ? 'update' : 'create'}`, {
-            pool: this.pool,
-            reward: this.reward,
-            payload: {
-                poolId: String(this.pool._id),
-                title: this.title,
-                description: this.description,
-                amount: this.amount,
-                claimAmount: this.claimAmount,
-                rewardLimit: this.rewardLimit,
-                platform: this.rewardCondition.platform,
-                interaction: this.rewardCondition.interaction,
-                content: this.rewardCondition.content,
-            },
-        });
-        this.$emit('submit');
+        this.isLoading = true;
+        this.$store
+            .dispatch(`erc20Rewards/${this.reward ? 'update' : 'create'}`, {
+                pool: this.pool,
+                reward: this.reward,
+                payload: {
+                    poolId: String(this.pool._id),
+                    title: this.title,
+                    description: this.description,
+                    amount: this.amount,
+                    isClaimOnce: this.isClaimOnce,
+                    claimAmount: this.claimAmount,
+                    rewardLimit: this.rewardLimit,
+                    platform: this.rewardCondition.platform,
+                    interaction: this.rewardCondition.interaction,
+                    content: this.rewardCondition.content,
+                },
+            })
+            .then(() => {
+                this.$emit('submit');
+                this.$bvModal.hide(this.id);
+                this.isLoading = false;
+            });
     }
 }
 </script>

@@ -19,13 +19,14 @@
         </b-row>
         <BCard variant="white" body-class="p-0 shadow-sm">
             <BTable hover :busy="isLoading" :items="rewardsByPage" responsive="sm">
-                <template #cell(rewardCondition)="{ item }">{{
-                    RewardConditionPlatform[item.rewardCondition.platform]
-                }}</template>
+                <template #cell(rewardCondition)="{ item }">
+                    {{ RewardConditionPlatform[item.rewardCondition.platform] }}
+                </template>
                 <template #cell(actions)="{ item }">
-                    <b-link v-b-modal="'modalRewardERC20Create' + item.actions">
-                        <i class="fas fa-edit mr-3 text-dark"></i>
-                    </b-link>
+                    <b-dropdown variant="link" size="sm">
+                        <b-dropdown-item v-b-modal="'modalRewardERC20Create' + item.actions">Edit</b-dropdown-item>
+                        <b-dropdown-item disabled>Delete</b-dropdown-item>
+                    </b-dropdown>
                     <BaseModalRewardERC20Create
                         :id="'modalRewardERC20Create' + item.actions"
                         :pool="pool"
@@ -33,9 +34,6 @@
                         :filteredRewards="rewardsByPage"
                         @submit="onSubmit"
                     />
-                    <b-link @click="">
-                        <i class="fas fa-trash-alt text-danger"></i>
-                    </b-link>
                 </template>
             </BTable>
         </BCard>
@@ -59,7 +57,6 @@ import BaseCardReward from '@thxnetwork/dashboard/components/list-items/BaseList
 import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
 import { TRewardState } from '@thxnetwork/dashboard/store/modules/erc20Rewards';
 import type { IERC721s } from '@thxnetwork/dashboard/types/erc721';
-import { Reward } from '@thxnetwork/dashboard/types/rewards';
 import { RewardConditionPlatform, RewardConditionInteraction, TERC20Reward } from '@thxnetwork/types/index';
 
 @Component({
@@ -78,7 +75,7 @@ export default class ERC20RewardsView extends Vue {
     RewardConditionPlatform = RewardConditionPlatform;
     RewardConditionInteraction = RewardConditionInteraction;
     isLoading = true;
-    limit = 5;
+    limit = 10;
     page = 1;
 
     pools!: IPools;
@@ -97,10 +94,14 @@ export default class ERC20RewardsView extends Vue {
     get rewardsByPage() {
         if (!this.erc20Rewards[this.$route.params.id]) return [];
         return Object.values(this.erc20Rewards[this.$route.params.id])
-            .filter((reward: TERC20Reward) => reward.page === this.page)
+            .filter((reward: TERC20Reward) => {
+                console.log(reward.page, this.page, this.limit);
+                return reward.page === this.page;
+            })
             .sort((a, b) => (a.createdAt && b.createdAt && a.createdAt < b.createdAt ? 1 : -1))
             .map((r: TERC20Reward) => ({
                 title: r.title,
+                amount: r.amount,
                 progress: r.rewardLimit > 0 ? `${r.progress}/${r.rewardLimit}` : r.progress,
                 rewardCondition: {
                     platform: r.platform,

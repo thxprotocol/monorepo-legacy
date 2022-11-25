@@ -8,9 +8,7 @@ import { validateCondition } from '../util/condition';
 import { TERC20Reward } from '@thxnetwork/types/';
 
 export async function get(rewardId: string): Promise<ERC20RewardDocument> {
-    const reward = await ERC20Reward.findOne({ id: rewardId });
-    if (!reward) return null;
-    return reward;
+    return await ERC20Reward.findById(rewardId);
 }
 
 export async function findByPool(assetPool: AssetPoolDocument, page: number, limit: number) {
@@ -72,9 +70,8 @@ export async function create(pool: AssetPoolDocument, payload: TERC20Reward) {
     });
 }
 
-export async function update(reward: ERC20RewardDocument, updates: unknown) {
-    await ERC20Reward.updateOne({ _id: reward._id }, updates, { new: true });
-    return ERC20Reward.findByIdAndUpdate(reward._id, updates, { new: true });
+export async function update(reward: ERC20RewardDocument, payload: TERC20Reward) {
+    return await ERC20Reward.findByIdAndUpdate(reward._id, payload, { new: true });
 }
 
 export default { get, findByPool, canClaim, removeAllForPool, create, update };

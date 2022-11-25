@@ -185,8 +185,8 @@ export default class BaseCardRewardCondition extends Vue {
 
     change() {
         this.$emit('change', {
-            platform: this.platform,
-            interaction: this.interaction,
+            platform: this.platform.type,
+            interaction: this.interaction.type,
             content: this.content,
         });
     }
