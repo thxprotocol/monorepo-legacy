@@ -52,7 +52,7 @@
 import { type IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { TPointReward } from '@thxnetwork/types/interfaces/PointReward';
-import { channelList, channelActionList } from '@thxnetwork/dashboard/types/rewards';
+import { platformInteractionList, platformList } from '@thxnetwork/dashboard/types/rewards';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardCondition from '../cards/BaseCardRewardCondition.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
@@ -76,8 +76,8 @@ export default class ModalRewardPointsCreate extends Vue {
     isClaimOnce = true;
     rewardExpiry = {};
     rewardCondition = {
-        platform: channelList[0],
-        interaction: channelActionList[0],
+        platform: platformList[0],
+        interaction: platformInteractionList[0],
         content: '',
     };
 

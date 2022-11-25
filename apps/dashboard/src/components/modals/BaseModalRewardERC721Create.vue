@@ -1,5 +1,5 @@
 <template>
-    <base-modal size="xl" title="Create ERC20 Reward" id="modalRewardERC20Create" :error="error" :loading="isLoading">
+    <base-modal size="xl" title="Create ERC721 Reward" id="modalRewardERC20Create" :error="error" :loading="isLoading">
         <template #modal-body v-if="!isLoading">
             <p class="text-gray">
                 Points rewards are distributed to your customers achieving milestones in your customer journey.
@@ -51,8 +51,7 @@
 <script lang="ts">
 import { type IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { TPointReward } from '@thxnetwork/types/interfaces/PointReward';
-import { channelList, channelActionList, IChannelAction, IChannel } from '@thxnetwork/dashboard/types/rewards';
+import { platformList, platformInteractionList, IChannelAction, IChannel } from '@thxnetwork/dashboard/types/rewards';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardCondition from '../cards/BaseCardRewardCondition.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
@@ -67,7 +66,7 @@ import { TReward } from '@thxnetwork/dashboard/store/modules/erc20Rewards';
         BaseCardRewardQRCodes,
     },
 })
-export default class ModalRewardERC20Create extends Vue {
+export default class ModalRewardER721Create extends Vue {
     isSubmitDisabled = false;
     isLoading = false;
     error = '';
@@ -77,8 +76,8 @@ export default class ModalRewardERC20Create extends Vue {
     isClaimOnce = true;
     rewardExpiry = {};
     rewardCondition: { platform: IChannel; interaction: IChannelAction; content: string } = {
-        platform: channelList[0],
-        interaction: channelActionList[0],
+        platform: platformList[0],
+        interaction: platformInteractionList[0],
         content: '',
     };
 
@@ -90,10 +89,10 @@ export default class ModalRewardERC20Create extends Vue {
             this.title = this.reward.title;
             this.amount = String(this.reward.withdrawAmount);
             // this.description = this.reward.description;
-            this.rewardCondition.platform = channelList.find(
+            this.rewardCondition.platform = platformList.find(
                 (c) => c.type === this.reward.withdrawCondition.channelType,
             ) as IChannel;
-            this.rewardCondition.interaction = channelActionList.find(
+            this.rewardCondition.interaction = platformInteractionList.find(
                 (a) => a.type === this.reward.withdrawCondition.channelAction,
             ) as IChannelAction;
             this.rewardCondition.content = this.reward.withdrawCondition.channelItem;

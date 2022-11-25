@@ -1,9 +1,9 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { IRewardCondition, Reward } from '@thxnetwork/dashboard/types/rewards';
+import { Reward } from '@thxnetwork/dashboard/types/rewards';
 import { IPool } from './pools';
-import { TERC20Reward } from '@thxnetwork/types/';
+import { TERC20Reward } from '@thxnetwork/types/index';
 
 export type TReward = { page: number } & Reward;
 
@@ -18,7 +18,7 @@ export type TRewardState = {
 };
 
 export type RewardListProps = {
-    poolId: string;
+    pool: IPool;
     page: number;
     limit: number;
 };
@@ -37,11 +37,9 @@ class ERC20RewardModule extends VuexModule {
     }
 
     @Mutation
-    set({ pool, reward }: { reward: Reward; pool: string }) {
-        if (!this._all[pool]) {
-            Vue.set(this._all, pool, {});
-        }
-        Vue.set(this._all[pool], reward.id, reward);
+    set({ pool, reward }: { reward: Reward; pool: IPool }) {
+        if (!this._all[pool._id]) Vue.set(this._all, pool._id, {});
+        Vue.set(this._all[pool._id], reward._id, reward);
     }
 
     @Mutation
@@ -50,63 +48,51 @@ class ERC20RewardModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async list({ poolId, page, limit }: RewardListProps) {
+    async list({ pool, page, limit }: RewardListProps) {
         const { data } = await axios({
             method: 'GET',
             url: '/erc20-rewards',
-            headers: { 'X-PoolId': poolId },
+            headers: { 'X-PoolId': pool._id },
             params: {
                 page: String(page),
                 limit: String(limit),
             },
         });
 
-        this.context.commit('setTotal', { poolId, total: data.total });
+        this.context.commit('setTotal', { pool, total: data.total });
 
-        data.results.forEach((reward: TReward) => {
+        data.results.forEach((reward: TERC20Reward) => {
             reward.page = page;
-            this.context.commit('set', { pool: poolId, reward });
+            this.context.commit('set', { pool, reward });
         });
     }
 
     @Action({ rawError: true })
-    async create(payload: {
-        poolId: string;
-        slug: string;
-        title: string;
-        erc721metadataId: string;
-        withdrawLimit: number;
-        withdrawAmount: number;
-        withdrawDuration: number;
-        withdrawUnlockDate: Date;
-        isClaimOnce: boolean;
-        isMembershipRequired: boolean;
-        withdrawCondition?: IRewardCondition;
-        expiryDate?: string;
-        amount: number;
-    }) {
+    async create({ pool, payload }: { pool: IPool; payload: TERC20Reward }) {
+        console.log(payload);
+        debugger;
         const r = await axios({
             method: 'POST',
             url: '/erc20-rewards',
-            headers: { 'X-PoolId': payload.poolId },
+            headers: { 'X-PoolId': pool._id },
             data: payload,
         });
 
-        this.context.commit('set', { pool: payload.poolId, reward: r.data });
+        this.context.commit('set', { pool: payload, reward: r.data });
     }
 
     @Action({ rawError: true })
-    async update({ pool, reward }: { pool: IPool; reward: TReward }) {
-        const r = await axios({
+    async update({ pool, reward, payload }: { pool: IPool; reward: TERC20Reward; payload: TERC20Reward }) {
+        const { data } = await axios({
             method: 'PATCH',
-            url: `/erc20-rewardsn/${reward.id}`,
+            url: `/erc20-rewards/${reward._id}`,
             headers: { 'X-PoolId': pool._id },
-            data: reward,
+            data: payload,
         });
 
         this.context.commit('set', {
-            pool: reward.poolId,
-            reward: { ...reward, ...r.data },
+            pool: pool._id,
+            reward: { ...reward, ...data },
         });
     }
 

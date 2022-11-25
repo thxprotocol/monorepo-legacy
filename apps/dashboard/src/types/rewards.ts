@@ -45,22 +45,7 @@ export interface IRewards {
     [poolId: string]: { [id: string]: Reward };
 }
 
-export enum ChannelType {
-    None = 0,
-    YouTube = 1,
-    Twitter = 2,
-}
-
-export enum ChannelAction {
-    None = -1,
-    YouTubeLike = 0,
-    YouTubeSubscribe = 1,
-    TwitterLike = 2,
-    TwitterRetweet = 3,
-    TwitterFollow = 4,
-}
-
-export const channelList: IChannel[] = [
+export const platformList: IChannel[] = [
     {
         type: RewardConditionPlatform.None,
         name: RewardConditionPlatform[0],
@@ -84,7 +69,7 @@ export const channelList: IChannel[] = [
         ],
     },
 ];
-export const channelActionList = [
+export const platformInteractionList = [
     {
         type: RewardConditionInteraction.None,
         name: 'None',

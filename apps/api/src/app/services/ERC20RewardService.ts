@@ -1,12 +1,11 @@
 import db from '@thxnetwork/api/util/database';
+import WithdrawalService from './WithdrawalService';
 import type { IAccount } from '@thxnetwork/api/models/Account';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import { ERC20Reward, ERC20RewardDocument } from '../models/ERC20Reward';
-import { RewardVariant } from '../types/enums/RewardVariant';
 import { validateCondition } from '../util/condition';
 import { TERC20Reward } from '@thxnetwork/types/';
-import WithdrawalService from './WithdrawalService';
 
 export async function get(rewardId: string): Promise<ERC20RewardDocument> {
     const reward = await ERC20Reward.findOne({ id: rewardId });
@@ -15,19 +14,11 @@ export async function get(rewardId: string): Promise<ERC20RewardDocument> {
 }
 
 export async function findByPool(assetPool: AssetPoolDocument, page: number, limit: number) {
-    const rewardToken = [];
-    const results = await paginatedResults(ERC20Reward, page, limit, {
+    const result = await paginatedResults(ERC20Reward, page, limit, {
         poolId: assetPool._id,
-        variant: RewardVariant.RewardToken,
     });
-
-    for (const r of results.results) {
-        rewardToken.push(await ERC20Reward.findOne({ rewardBaseId: r.id }));
-    }
-
-    results.results = rewardToken.map((r) => r.toJSON());
-
-    return results;
+    result.results = result.results.map((r) => r.toJSON());
+    return result;
 }
 
 export async function canClaim(

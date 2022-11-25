@@ -1,55 +1,63 @@
 <template>
-    <b-card body-class="bg-light">
+    <b-card body-class="bg-light p-0">
         <div class="d-flex align-items-center justify-content-between">
-            <strong>Reward condition</strong>
-            <b-button variant="link" v-b-toggle.collapse-card-condition>
+            <strong class="pl-3">Reward condition</strong>
+            <b-button variant="light" v-b-toggle.collapse-card-condition>
                 <i class="fas fa-chevron-down m-0"></i>
             </b-button>
         </div>
         <b-collapse id="collapse-card-condition">
-            <hr />
-            <p class="text-gray">Configure under what conditions your customers are eligible for this reward claim.</p>
-            <b-form-group label="Platform">
-                <BaseDropdownChannelTypes @selected="onSelectChannel" :channel="platform" />
-            </b-form-group>
-            <b-alert variant="info" show v-if="platform.type !== ChannelType.None && !isAuthorized">
-                <p>
-                    <i class="fas fa-info-circle mr-1"></i> Connect with your {{ platform.name }} account to create
-                    conditions for your content.
+            <hr class="mt-0" />
+            <div class="px-3">
+                <p class="text-gray">
+                    Configure under what conditions your customers are eligible for this reward claim.
                 </p>
-                <b-button block variant="dark" @click="$store.dispatch('account/connectRedirect', platform.type)">
-                    <img :src="platform.logoURI" width="20" class="mr-2" /> Connect account
-                </b-button>
-            </b-alert>
-            <template v-else-if="platform.type !== ChannelType.None">
-                <b-form-group label="Interaction">
-                    <BaseDropdownChannelActions
-                        @selected="onSelectInteraction"
-                        :actions="actions"
-                        :action="interaction"
-                    />
+                <b-form-group label="Platform">
+                    <BaseDropdownChannelTypes @selected="onSelectPlatform" :platform="platform" />
                 </b-form-group>
-                <component
-                    v-if="interaction"
-                    :is="interactionComponent"
-                    @selected="content = $event"
-                    :items="interaction.items"
-                    :item="content"
-            /></template>
+                <BSpinner v-if="isLoadingPlatform" variant="dark" small />
+                <template v-if="platform && platform.type !== RewardConditionPlatform.None && !isLoadingPlatform">
+                    <template v-if="isAuthorized">
+                        <b-form-group label="Interaction">
+                            <BaseDropdownChannelActions
+                                @selected="onSelectInteraction"
+                                :actions="actions"
+                                :action="interaction"
+                            />
+                        </b-form-group>
+                        <component
+                            v-if="interaction"
+                            :is="interactionComponent"
+                            @selected="content = $event"
+                            :items="interaction.items"
+                            :item="content"
+                        />
+                    </template>
+                    <b-alert v-else variant="info" show>
+                        <p>
+                            <i class="fas fa-info-circle mr-1"></i> Connect with your {{ platform.name }} account to
+                            create conditions for your content.
+                        </p>
+                        <b-button
+                            block
+                            variant="dark"
+                            @click="$store.dispatch('account/connectRedirect', platform.type)"
+                        >
+                            <img :src="platform.logoURI" width="20" class="mr-2" /> Connect account
+                        </b-button>
+                    </b-alert>
+                </template>
+            </div>
         </b-collapse>
     </b-card>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import {
-    ChannelType,
-    ChannelAction,
-    channelList,
-    channelActionList,
-    IChannel,
-    IChannelAction,
-} from '@thxnetwork/dashboard/types/rewards';
+import { mapGetters } from 'vuex';
+import { UserProfile } from 'oidc-client-ts';
+import { platformList, platformInteractionList, IChannel, IChannelAction } from '@thxnetwork/dashboard/types/rewards';
+import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
 import BaseDropdownChannelTypes from '../dropdowns/BaseDropdownChannelTypes.vue';
 import BaseDropdownChannelActions from '../dropdowns/BaseDropdownChannelActions.vue';
 import BaseDropdownYoutubeChannels from '../dropdowns/BaseDropdownYoutubeChannels.vue';
@@ -57,8 +65,6 @@ import BaseDropdownYoutubeUploads from '../dropdowns/BaseDropdownYoutubeUploads.
 import BaseDropdownYoutubeVideo from '../dropdowns/BaseDropdownYoutubeVideo.vue';
 import BaseDropdownTwitterTweets from '../dropdowns/BaseDropdownTwitterTweets.vue';
 import BaseDropdownTwitterUsers from '../dropdowns/BaseDropdownTwitterUsers.vue';
-import { mapGetters } from 'vuex';
-import { UserProfile } from 'oidc-client-ts';
 
 @Component({
     components: {
@@ -77,17 +83,18 @@ import { UserProfile } from 'oidc-client-ts';
     }),
 })
 export default class BaseCardRewardCondition extends Vue {
-    ChannelType = ChannelType;
-    ChannelAction = ChannelAction;
+    RewardConditionInteraction = RewardConditionInteraction;
+    RewardConditionPlatform = RewardConditionPlatform;
     isSubmitDisabled = false;
     isLoading = false;
+    isLoadingPlatform = false;
     interactionComponent = '';
     error = '';
     title = '';
     amount = '0';
     description = '';
-    platform: IChannel = channelList[0];
-    interaction: IChannelAction = channelActionList[0];
+    platform: IChannel = platformList[0];
+    interaction: IChannelAction = platformInteractionList[0];
     content = '';
     isAuthorized = false;
 
@@ -95,35 +102,39 @@ export default class BaseCardRewardCondition extends Vue {
     youtube!: any;
     twitter!: any;
 
-    @Prop({ required: false }) rewardCondition!: { platform: ChannelType; interaction: ChannelAction; content: string };
+    @Prop({ required: false }) rewardCondition!: {
+        platform: RewardConditionPlatform;
+        interaction: RewardConditionInteraction;
+        content: string;
+    };
 
     get actions() {
-        return channelActionList.filter((a) => this.platform.actions.includes(a.type));
+        return platformInteractionList.filter((a) => this.platform.actions.includes(a.type));
     }
 
     mounted() {
-        if (this.rewardCondition) {
-            const { platform, interaction, content } = this.rewardCondition;
-            this.platform = channelList.find((c) => c.type === platform) as IChannel;
-            this.interaction = channelActionList.find((i) => i.type === interaction) as IChannelAction;
-            this.content = content;
-        }
+        const { platform, interaction, content } = this.rewardCondition;
+        this.platform = platformList.find((c) => c.type === platform) as IChannel;
+        this.onSelectPlatform(this.platform);
+        this.interaction = platformInteractionList.find((i) => i.type === interaction) as IChannelAction;
+        this.content = content;
     }
 
-    async onSelectChannel(channel: IChannel) {
-        this.platform = channel;
+    async onSelectPlatform(platform: IChannel) {
+        this.isLoadingPlatform = true;
+        this.platform = platform;
         this.content = '';
 
-        switch (channel.type) {
-            case ChannelType.YouTube: {
+        switch (platform.type) {
+            case RewardConditionPlatform.Google: {
                 await this.$store.dispatch('account/getYoutube');
-                this.interaction = this.getInteraction(ChannelAction.YouTubeLike);
+                this.interaction = this.getInteraction(RewardConditionInteraction.YouTubeLike);
                 this.isAuthorized = !!this.youtube;
                 break;
             }
-            case ChannelType.Twitter: {
+            case RewardConditionPlatform.Twitter: {
                 await this.$store.dispatch('account/getTwitter');
-                this.interaction = this.getInteraction(ChannelAction.TwitterLike);
+                this.interaction = this.getInteraction(RewardConditionInteraction.TwitterLike);
                 this.isAuthorized = !!this.twitter;
                 break;
             }
@@ -131,6 +142,7 @@ export default class BaseCardRewardCondition extends Vue {
         }
         this.onSelectInteraction(this.interaction);
         this.change();
+        this.isLoadingPlatform = false;
     }
 
     onSelectInteraction(interaction: IChannelAction) {
@@ -138,23 +150,23 @@ export default class BaseCardRewardCondition extends Vue {
         this.content = '';
 
         switch (this.interaction.type) {
-            case ChannelAction.YouTubeLike: {
+            case RewardConditionInteraction.YouTubeLike: {
                 if (!this.youtube) return;
                 this.interaction.items = this.youtube.videos;
                 break;
             }
-            case ChannelAction.YouTubeSubscribe: {
+            case RewardConditionInteraction.YouTubeSubscribe: {
                 if (!this.youtube) return;
                 this.interaction.items = this.youtube.channels;
                 break;
             }
-            case ChannelAction.TwitterLike:
-            case ChannelAction.TwitterRetweet: {
+            case RewardConditionInteraction.TwitterLike:
+            case RewardConditionInteraction.TwitterRetweet: {
                 if (!this.twitter) return;
                 this.interaction.items = this.twitter.tweets;
                 break;
             }
-            case ChannelAction.TwitterFollow: {
+            case RewardConditionInteraction.TwitterFollow: {
                 if (!this.twitter) return;
                 this.interaction.items = this.twitter.users;
                 break;
@@ -173,30 +185,30 @@ export default class BaseCardRewardCondition extends Vue {
 
     change() {
         this.$emit('change', {
-            platform: this.platform.type,
-            interaction: this.interaction.type,
+            platform: this.platform,
+            interaction: this.interaction,
             content: this.content,
         });
     }
 
     getInteractionComponent() {
         switch (this.interaction.type) {
-            case ChannelAction.YouTubeSubscribe:
+            case RewardConditionInteraction.YouTubeSubscribe:
                 return 'BaseDropdownYoutubeChannels';
-            case ChannelAction.YouTubeLike:
+            case RewardConditionInteraction.YouTubeLike:
                 return 'BaseDropdownYoutubeVideo';
-            case ChannelAction.TwitterLike:
-            case ChannelAction.TwitterRetweet:
+            case RewardConditionInteraction.TwitterLike:
+            case RewardConditionInteraction.TwitterRetweet:
                 return 'BaseDropdownTwitterTweets';
-            case ChannelAction.TwitterFollow:
+            case RewardConditionInteraction.TwitterFollow:
                 return 'BaseDropdownTwitterUsers';
             default:
                 return '';
         }
     }
 
-    getInteraction(interactionType: ChannelAction): IChannelAction {
-        return channelActionList.find((a) => a.type === interactionType) as IChannelAction;
+    getInteraction(interactionType: RewardConditionInteraction): IChannelAction {
+        return platformInteractionList.find((a) => a.type === interactionType) as IChannelAction;
     }
 }
 </script>

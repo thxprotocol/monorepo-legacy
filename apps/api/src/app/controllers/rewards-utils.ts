@@ -245,13 +245,13 @@ export const createERC721Reward = async (assetPool: AssetPoolDocument, config: T
     return { reward, claims };
 };
 
-export const createERC20Reward = async (assetPool: AssetPoolDocument, payload: TERC20Reward) => {
-    const reward = await ERC20RewardService.create(assetPool, payload);
+export const createERC20Reward = async (pool: AssetPoolDocument, payload: TERC20Reward) => {
+    const reward = await ERC20RewardService.create(pool, payload);
     const claims = await Promise.all(
         Array.from({ length: Number(payload.claimAmount) }).map(() =>
             ClaimService.create({
-                poolId: assetPool._id,
-                erc20Id: assetPool.erc20Id,
+                poolId: pool._id,
+                erc20Id: pool.erc20Id,
                 rewardId: String(reward._id),
             }),
         ),

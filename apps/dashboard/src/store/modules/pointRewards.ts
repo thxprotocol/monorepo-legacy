@@ -1,8 +1,8 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { IChannel, IChannelAction, IRewardCondition, Reward } from '@thxnetwork/dashboard/types/rewards';
-import { TPointReward } from '@thxnetwork/types/interfaces/PointReward';
+import { IChannel, IChannelAction } from '@thxnetwork/dashboard/types/rewards';
+import { type TPointReward } from '@thxnetwork/types/';
 
 @Module({ namespaced: true })
 class PointRewardModule extends VuexModule {

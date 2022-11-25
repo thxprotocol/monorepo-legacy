@@ -8,6 +8,6 @@ export const rewardBaseSchema = {
     rewardLimit: Number,
     isClaimOnce: Boolean,
     platform: Number,
-    condition: Number,
+    interaction: Number,
     content: String,
 };

@@ -51,12 +51,12 @@
 <script lang="ts">
 import { type IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { channelList, channelActionList, IChannelAction, IChannel } from '@thxnetwork/dashboard/types/rewards';
+import { platformList, platformInteractionList, IChannelAction, IChannel } from '@thxnetwork/dashboard/types/rewards';
+import { RewardConditionInteraction, RewardConditionPlatform, TERC20Reward } from '@thxnetwork/types/index';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardCondition from '../cards/BaseCardRewardCondition.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardRewardQRCodes from '../cards/BaseCardRewardQRCodes.vue';
-import { TERC20Reward } from '@thxnetwork/types/index';
 
 @Component({
     components: {
@@ -77,9 +77,9 @@ export default class ModalRewardERC20Create extends Vue {
     rewardExpiry = {};
     claimAmount = 1;
     rewardLimit = 0;
-    rewardCondition: { platform: IChannel; interaction: IChannelAction; content: string } = {
-        platform: channelList[0],
-        interaction: channelActionList[0],
+    rewardCondition: { platform: RewardConditionPlatform; interaction: RewardConditionInteraction; content: string } = {
+        platform: platformList[0].type,
+        interaction: platformInteractionList[0].type,
         content: '',
     };
 
@@ -91,27 +91,32 @@ export default class ModalRewardERC20Create extends Vue {
         if (this.reward) {
             this.title = this.reward.title;
             this.amount = String(this.reward.amount);
-            // this.description = this.reward.description;
-            this.rewardCondition.platform = channelList.find((c) => c.type === this.reward.platform) as IChannel;
-            this.rewardCondition.interaction = channelActionList.find(
-                (a) => a.type === this.reward.interaction,
-            ) as IChannelAction;
-            this.rewardCondition.content = this.reward.content as string;
+            this.description = this.reward.description;
+            this.rewardCondition = {
+                platform: this.reward.platform as RewardConditionPlatform,
+                interaction: this.reward.interaction as RewardConditionInteraction,
+                content: this.reward.content as string,
+            };
         }
     }
 
     onSubmit() {
-        this.$store.dispatch('erc20Rewards/create', {
-            poolId: String(this.pool._id),
-            title: this.title,
-            description: this.description,
-            amount: this.amount,
-            claimAmount: this.claimAmount,
-            rewardLimit: this.rewardLimit,
-            platform: this.rewardCondition.platform,
-            interaction: this.rewardCondition.interaction,
-            content: this.rewardCondition.content,
+        this.$store.dispatch(`erc20Rewards/${this.reward ? 'update' : 'create'}`, {
+            pool: this.pool,
+            reward: this.reward,
+            payload: {
+                poolId: String(this.pool._id),
+                title: this.title,
+                description: this.description,
+                amount: this.amount,
+                claimAmount: this.claimAmount,
+                rewardLimit: this.rewardLimit,
+                platform: this.rewardCondition.platform,
+                interaction: this.rewardCondition.interaction,
+                content: this.rewardCondition.content,
+            },
         });
+        this.$emit('submit');
     }
 }
 </script>

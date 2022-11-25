@@ -1,7 +1,7 @@
 <template>
     <div>
         <label> Your Tweets:</label>
-        <b-dropdown variant="link" class="dropdown-select bg-white">
+        <b-dropdown variant="link" class="dropdown-select bg-white mb-3">
             <template #button-content>
                 <div v-if="selected" class="text-overflow-ellipsis">
                     {{ selected.text }}
