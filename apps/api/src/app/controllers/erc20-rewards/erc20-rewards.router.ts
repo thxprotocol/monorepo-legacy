@@ -17,7 +17,7 @@ const router = express.Router();
 
 router.get(
     '/',
-    guard.check(['erc20_rewards:read']),
+    guard.check(['rewards:read']),
     assertAssetPoolAccess,
     requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
@@ -25,7 +25,7 @@ router.get(
 );
 router.get(
     '/:id',
-    guard.check(['erc20_rewards:read']),
+    guard.check(['rewards:read']),
     //assertAssetPoolAccess,
     assertRequestInput(ReadERC20Reward.validation),
     requireAssetPoolHeader,
@@ -34,7 +34,7 @@ router.get(
 );
 router.post(
     '/',
-    guard.check(['erc20_rewards:write', 'erc20_rewards:read']),
+    guard.check(['rewards:write', 'rewards:read']),
     assertAssetPoolAccess,
     assertRequestInput(CreateERC20Reward.validation),
     requireAssetPoolHeader,
@@ -44,7 +44,7 @@ router.post(
 
 router.patch(
     '/:id',
-    guard.check(['erc20_rewards:write', 'erc20_rewards:read']),
+    guard.check(['rewards:write', 'rewards:read']),
     assertAssetPoolAccess,
     assertRequestInput(UpdateERC20Reward.validation),
     requireAssetPoolHeader,
@@ -54,7 +54,7 @@ router.patch(
 
 router.get(
     '/:id/claims/qrcode',
-    guard.check(['erc20_rewards:read', 'erc20_rewards:read']),
+    guard.check(['rewards:read', 'rewards:read']),
     assertAssetPoolAccess,
     assertRequestInput(ClaimERC20Reward.validation),
     requireAssetPoolHeader,

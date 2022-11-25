@@ -1,4 +1,5 @@
 import { TClaim } from '@thxnetwork/dashboard/store/modules/claims';
+import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
 
 export enum RewardState {
     Disabled = 0,
@@ -61,72 +62,76 @@ export enum ChannelAction {
 
 export const channelList: IChannel[] = [
     {
-        type: ChannelType.None,
-        name: ChannelType[0],
+        type: RewardConditionPlatform.None,
+        name: RewardConditionPlatform[0],
         logoURI: '',
         actions: [],
     },
     {
-        type: ChannelType.YouTube,
-        name: ChannelType[1],
+        type: RewardConditionPlatform.Google,
+        name: RewardConditionPlatform[1],
         logoURI: require('@thxnetwork/dashboard/../public/assets/logo-youtube.png'),
-        actions: [ChannelAction.YouTubeLike, ChannelAction.YouTubeSubscribe],
+        actions: [RewardConditionInteraction.YouTubeLike, RewardConditionInteraction.YouTubeSubscribe],
     },
     {
-        type: ChannelType.Twitter,
-        name: ChannelType[2],
+        type: RewardConditionPlatform.Twitter,
+        name: RewardConditionPlatform[2],
         logoURI: require('@thxnetwork/dashboard/../public/assets/logo-twitter.png'),
-        actions: [ChannelAction.TwitterLike, ChannelAction.TwitterRetweet, ChannelAction.TwitterFollow],
+        actions: [
+            RewardConditionInteraction.TwitterLike,
+            RewardConditionInteraction.TwitterRetweet,
+            RewardConditionInteraction.TwitterFollow,
+        ],
     },
 ];
 export const channelActionList = [
     {
-        type: ChannelAction.None,
+        type: RewardConditionInteraction.None,
         name: 'None',
         items: [],
     },
     {
-        type: ChannelAction.YouTubeLike,
+        type: RewardConditionInteraction.YouTubeLike,
         name: 'Like',
         items: [],
     },
     {
-        type: ChannelAction.YouTubeSubscribe,
+        type: RewardConditionInteraction.YouTubeSubscribe,
         name: 'Subscribe',
         items: [],
     },
     {
-        type: ChannelAction.TwitterLike,
+        type: RewardConditionInteraction.TwitterLike,
         name: 'Like',
         items: [],
     },
     {
-        type: ChannelAction.TwitterRetweet,
+        type: RewardConditionInteraction.TwitterRetweet,
         name: 'Retweet',
         items: [],
     },
     {
-        type: ChannelAction.TwitterFollow,
+        type: RewardConditionInteraction.TwitterFollow,
         name: 'Follow',
         items: [],
     },
 ];
 
 export interface IRewardCondition {
-    channelType: ChannelType;
-    channelAction: ChannelAction;
+    channelType: RewardConditionPlatform;
+    channelAction: RewardConditionInteraction;
     channelItem: any;
 }
 
 export interface IChannel {
-    type: ChannelType;
+    type: RewardConditionPlatform;
     name: string;
     logoURI: string;
-    actions: ChannelAction[];
+    actions: RewardConditionInteraction[];
 }
 
 export interface IChannelAction {
-    type: ChannelAction;
+    type: RewardConditionInteraction;
     name: string;
     items: any[];
 }

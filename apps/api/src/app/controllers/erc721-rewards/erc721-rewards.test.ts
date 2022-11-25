@@ -4,7 +4,7 @@ import { ChainId } from '../../types/enums';
 import { dashboardAccessToken, walletAccessToken, walletAccessToken2 } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { getRewardNftConfiguration } from '@thxnetwork/api/controllers/rewards-utils';
+import { getERC721RewardConfiguration } from '@thxnetwork/api/controllers/rewards-utils';
 import { ClaimDocument } from '@thxnetwork/api/types/TClaim';
 import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
 
@@ -133,7 +133,7 @@ describe('RewardNft Claim', () => {
         it('Create reward', (done) => {
             user.post('/v1/rewards-nft/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .send(getRewardNftConfiguration('claim-one-is-enabled', erc721metadataId))
+                .send(getERC721RewardConfiguration('claim-one-is-enabled', erc721metadataId))
                 .expect((res: request.Response) => {
                     expect(res.body.id).toBeDefined();
                     expect(res.body.claims).toBeDefined();
@@ -149,7 +149,7 @@ describe('RewardNft Claim', () => {
             it('Should return 200 when edit the claim', (done) => {
                 user.patch(`/v1/rewards-nft/${rewardNftId}`)
                     .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                    .send(getRewardNftConfiguration('claim-one-is-disabled', erc721metadataId))
+                    .send(getERC721RewardConfiguration('claim-one-is-disabled', erc721metadataId))
                     .expect((res: request.Response) => {
                         expect(res.body.rewardBase.isClaimOnce).toEqual(false);
                     })
@@ -175,7 +175,7 @@ describe('RewardNft Claim', () => {
         it('Create reward', (done) => {
             user.post('/v1/rewards-nft/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .send(getRewardNftConfiguration('expiration-date-is-next-30-min', erc721metadataId))
+                .send(getERC721RewardConfiguration('expiration-date-is-next-30-min', erc721metadataId))
                 .expect((res: request.Response) => {
                     expect(res.body.id).toBeDefined();
                     expect(res.body.claims).toBeDefined();
@@ -205,7 +205,7 @@ describe('RewardNft Claim', () => {
         it('Create reward', (done) => {
             user.post('/v1/rewards-nft/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .send(getRewardNftConfiguration('expiration-date-is-previous-30-min', erc721metadataId))
+                .send(getERC721RewardConfiguration('expiration-date-is-previous-30-min', erc721metadataId))
                 .expect((res: request.Response) => {
                     expect(res.body.id).toBeDefined();
                     expect(res.body.claims).toBeDefined();

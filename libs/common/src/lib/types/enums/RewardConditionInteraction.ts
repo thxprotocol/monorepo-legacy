@@ -1,4 +1,5 @@
 export enum RewardConditionInteraction {
+    None = -1,
     YouTubeLike = 0,
     YouTubeSubscribe = 1,
     TwitterLike = 2,

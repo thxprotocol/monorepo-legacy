@@ -10,7 +10,7 @@ class PointRewardModule extends VuexModule {
 
     @Mutation
     set(reward: TPointReward) {
-        Vue.set(this._all, reward._id, reward);
+        Vue.set(this._all, String(reward._id), reward);
     }
 
     @Action({ rawError: true })

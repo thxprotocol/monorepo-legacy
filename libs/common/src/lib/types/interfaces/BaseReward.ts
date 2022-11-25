@@ -14,4 +14,6 @@ export type TBaseReward = {
     platform?: RewardConditionPlatform;
     interaction?: RewardConditionInteraction;
     content?: string;
+    createdAt?: string;
+    updatedAt?: string;
 };

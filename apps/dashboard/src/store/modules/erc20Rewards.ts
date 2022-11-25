@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { IRewardCondition, Reward } from '@thxnetwork/dashboard/types/rewards';
 import { IPool } from './pools';
+import { TERC20Reward } from '@thxnetwork/types/';
 
 export type TReward = { page: number } & Reward;
 
@@ -12,7 +13,7 @@ export type RewardByPage = {
 
 export type TRewardState = {
     [poolId: string]: {
-        [id: string]: TReward;
+        [id: string]: TERC20Reward;
     };
 };
 
@@ -50,17 +51,16 @@ class ERC20RewardModule extends VuexModule {
 
     @Action({ rawError: true })
     async list({ poolId, page, limit }: RewardListProps) {
-        debugger;
         const { data } = await axios({
             method: 'GET',
-            url: '/rewards-token',
+            url: '/erc20-rewards',
             headers: { 'X-PoolId': poolId },
             params: {
                 page: String(page),
                 limit: String(limit),
             },
         });
-        debugger;
+
         this.context.commit('setTotal', { poolId, total: data.total });
 
         data.results.forEach((reward: TReward) => {
@@ -87,7 +87,7 @@ class ERC20RewardModule extends VuexModule {
     }) {
         const r = await axios({
             method: 'POST',
-            url: '/rewards',
+            url: '/erc20-rewards',
             headers: { 'X-PoolId': payload.poolId },
             data: payload,
         });
@@ -99,7 +99,7 @@ class ERC20RewardModule extends VuexModule {
     async update({ pool, reward }: { pool: IPool; reward: TReward }) {
         const r = await axios({
             method: 'PATCH',
-            url: `/rewards-token/${reward.id}`,
+            url: `/erc20-rewardsn/${reward.id}`,
             headers: { 'X-PoolId': pool._id },
             data: reward,
         });
@@ -114,7 +114,7 @@ class ERC20RewardModule extends VuexModule {
     async getQRCodes({ reward }: { reward: Reward }) {
         const { status, data } = await axios({
             method: 'GET',
-            url: `/rewards-token/${reward.id}/claims/qrcode`,
+            url: `/erc20-rewards/${reward.id}/claims/qrcode`,
             headers: { 'X-PoolId': reward.poolId },
             responseType: 'blob',
         });

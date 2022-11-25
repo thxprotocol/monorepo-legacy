@@ -3,12 +3,14 @@ import { Request, Response } from 'express';
 import { createERC20Reward } from '../rewards-utils';
 
 const validation = [
-    body('title').exists().isString(),
-    body('slug').exists().isString(),
+    body('title').isString(),
+    body('description').isString(),
+    body('amount').exists().isInt({ gt: 0 }),
     body('expiryDate').optional().isString(),
-    body('rewardConditionId').optional().isString(),
-    body('withdrawAmount').exists().isInt({ gt: 0 }),
-    body('amount').optional().isInt({ gt: 0 }),
+    body('claimAmount').optional().isInt({ gt: 0 }),
+    body('platform').optional().isNumeric(),
+    body('interaction').optional().isNumeric(),
+    body('content').optional().isString(),
 ];
 
 const controller = async (req: Request, res: Response) => {
