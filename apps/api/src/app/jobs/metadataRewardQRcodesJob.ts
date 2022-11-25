@@ -9,12 +9,11 @@ import BrandService from '@thxnetwork/api/services/BrandService';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
 import ImageService from '@thxnetwork/api/services/ImageService';
 import MailService from '@thxnetwork/api/services/MailService';
-import { ClaimDocument } from '@thxnetwork/api/types/TClaim';
 import { logger } from '@thxnetwork/api/util/logger';
 import { s3PrivateClient } from '@thxnetwork/api/util/s3';
 import { createArchiver } from '@thxnetwork/api/util/zip';
 import { Upload } from '@aws-sdk/lib-storage';
-import { Reward, RewardDocument } from '@thxnetwork/api/models/Reward';
+import { Reward } from '@thxnetwork/api/models/Reward';
 import { assetsPath } from '../util/path';
 
 export const generateMetadataRewardQRCodesJob = async ({ attrs }: Job) => {
@@ -35,36 +34,32 @@ export const generateMetadataRewardQRCodesJob = async ({ attrs }: Job) => {
 
         // Create an instance of jsZip and build an archive
         const { jsZip, archive } = createArchiver();
-        await Promise.all(
-            rewards.map(async (reward: RewardDocument) => {
-                const claims = await ClaimService.findByReward(reward);
-                if (!claims.length) throw new Error('Claims not found');
 
-                let logoPath: string, logoBuffer: Buffer;
+        for (const reward of rewards) {
+            const claims = await ClaimService.findByReward(reward);
+            if (!claims.length) throw new Error('Claims not found');
 
-                const brand = await BrandService.get(poolId);
-                if (brand && brand.logoImgUrl) {
-                    try {
-                        const response = await axios.get(brand.logoImgUrl, { responseType: 'arraybuffer' });
-                        logoBuffer = Buffer.from(response.data, 'utf-8');
-                    } catch {
-                        // Fail silently and fallback to default logo img
-                    }
-                } else {
-                    logoPath = path.resolve(assetsPath, 'qr-logo.jpg');
+            let logoPath: string, logoBuffer: Buffer;
+            const brand = await BrandService.get(poolId);
+
+            if (brand && brand.logoImgUrl) {
+                try {
+                    const response = await axios.get(brand.logoImgUrl, { responseType: 'arraybuffer' });
+                    logoBuffer = Buffer.from(response.data, 'utf-8');
+                } catch {
+                    // Fail silently and fallback to default logo img
                 }
-                const logo = logoPath || logoBuffer;
+            } else {
+                logoPath = path.resolve(assetsPath, 'qr-logo.jpg');
+            }
 
-                // Create QR code for every claim
-                await Promise.all(
-                    claims.map(async ({ id }: ClaimDocument) => {
-                        const base64Data: string = await ImageService.createQRCode(`${WALLET_URL}/claim/${id}`, logo);
-                        // Adds file to the qrcode archive
-                        return archive.file(`${id}.png`, base64Data, { base64: true });
-                    }),
-                );
-            }),
-        );
+            const logo = logoPath || logoBuffer;
+            for (const { id } of claims) {
+                const base64Data: string = await ImageService.createQRCode(`${WALLET_URL}/claim/${id}`, logo);
+                archive.file(`${id}.png`, base64Data, { base64: true });
+            }
+        }
+
         const uploadStream = new stream.PassThrough();
         jsZip.generateNodeStream({ type: 'nodebuffer', streamFiles: true }).pipe(uploadStream);
 
@@ -74,6 +69,7 @@ export const generateMetadataRewardQRCodesJob = async ({ attrs }: Job) => {
                 Key: fileName,
                 Bucket: AWS_S3_PRIVATE_BUCKET_NAME,
                 Body: uploadStream,
+                CacheControl: 'no-cache',
             },
         });
 
