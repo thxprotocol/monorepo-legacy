@@ -1,10 +1,9 @@
 import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
-import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
+import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { agenda, EVENT_SEND_DOWNLOAD_METADATA_QR_EMAIL } from '@thxnetwork/api/util/agenda';
 import { createERC721Reward } from '../../rewards-utils';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
-import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import db from '@thxnetwork/api/util/database';
 
 const validation = [
@@ -30,15 +29,10 @@ const controller = async (req: Request, res: Response) => {
     );
 
     const tokens = metadata.tokens || [];
-    if (req.body.recipient) {
-        const account = await AccountProxy.getByAddress(req.body.recipient);
-        if (!account) throw new ForbiddenError('You can currently only mint to THX Web Wallet addresses');
-        const token = await ERC721Service.mint(req.assetPool, erc721, metadata, account);
-        tokens.push(token);
-    }
 
     // Generate a new reward and claims for the metadata
     const { reward, claims } = await createERC721Reward(req.assetPool, {
+        _id: '',
         poolId: String(req.assetPool._id),
         erc721metadataId: String(metadata._id),
         claimAmount: '1',

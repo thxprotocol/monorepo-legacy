@@ -1,12 +1,14 @@
 <template>
     <b-card body-class="bg-light p-0">
-        <div class="d-flex align-items-center justify-content-between">
-            <strong class="pl-3">Expiration</strong>
-            <b-button variant="light" v-b-toggle.collapse-card-expiry>
-                <i :class="`fa-chevron-${visible ? 'up' : 'down'}`" class="fas m-0"></i>
-            </b-button>
-        </div>
-        <b-collapse id="collapse-card-expiry" v-model="visible">
+        <b-button
+            class="d-flex align-items-center justify-content-between w-100"
+            variant="light"
+            v-b-toggle.collapse-card-expiry
+        >
+            <strong>Expiry &amp; limit</strong>
+            <i :class="`fa-chevron-${isVisible ? 'up' : 'down'}`" class="fas m-0"></i>
+        </b-button>
+        <b-collapse id="collapse-card-expiry" v-model="isVisible">
             <hr class="mt-0" />
             <div class="px-3">
                 <p class="text-gray">
@@ -36,7 +38,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component({})
 export default class BaseCardRewardCondition extends Vue {
-    visible = false;
+    isVisible = false;
     expireDate: Date | null = null;
     expireTime = '00:00:00';
     withdrawLimit = 0;

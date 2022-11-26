@@ -1,23 +1,21 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { IRewardCondition, Reward } from '@thxnetwork/dashboard/types/rewards';
 import { IPool } from './pools';
-
-export type TReward = { page: number } & Reward;
+import { TERC721Reward } from '@thxnetwork/types/index';
 
 export type RewardByPage = {
-    [page: number]: TReward[];
+    [page: number]: TERC721Reward[];
 };
 
 export type TRewardState = {
     [poolId: string]: {
-        [id: string]: TReward;
+        [id: string]: TERC721Reward;
     };
 };
 
 export type RewardListProps = {
-    poolId: string;
+    pool: IPool;
     page: number;
     limit: number;
 };
@@ -36,80 +34,68 @@ class ERC721RewardModule extends VuexModule {
     }
 
     @Mutation
-    set({ pool, reward }: { reward: Reward; pool: string }) {
-        if (!this._all[pool]) {
-            Vue.set(this._all, pool, {});
-        }
-        Vue.set(this._all[pool], reward.id, reward);
+    set({ pool, reward }: { reward: TERC721Reward; pool: IPool }) {
+        if (!this._all[pool._id]) Vue.set(this._all, pool._id, {});
+        Vue.set(this._all[pool._id], reward._id, reward);
     }
 
     @Mutation
-    setTotal({ poolId, total }: { poolId: string; total: number }) {
-        Vue.set(this._totals, poolId, total);
+    setTotal({ pool, total }: { pool: IPool; total: number }) {
+        Vue.set(this._totals, pool._id, total);
     }
 
     @Action({ rawError: true })
-    async list({ poolId, page, limit }: RewardListProps) {
+    async list({ pool, page, limit }: RewardListProps) {
         const { data } = await axios({
             method: 'GET',
-            url: '/rewards-nft',
-            headers: { 'X-PoolId': poolId },
+            url: '/erc721-rewards',
+            headers: { 'X-PoolId': pool._id },
             params: {
                 page: String(page),
                 limit: String(limit),
             },
         });
 
-        this.context.commit('setTotal', { poolId, total: data.total });
+        this.context.commit('setTotal', { pool, total: data.total });
 
-        data.results.forEach((reward: TReward) => {
+        data.results.forEach((reward: TERC721Reward) => {
             reward.page = page;
-            this.context.commit('set', { pool: poolId, reward });
+            this.context.commit('set', { pool, reward });
         });
     }
 
     @Action({ rawError: true })
-    async create(payload: {
-        poolId: string;
-        title: string;
-        amount: number;
-        erc721MetadataId: string;
-        isClaimOnce: boolean;
-        claimAmount: number;
-        rewardLimit: number;
-        expiryDate?: string;
-        rewardCondition?: IRewardCondition;
-    }) {
+    async create({ pool, payload }: { pool: IPool; payload: TERC721Reward }) {
         const r = await axios({
             method: 'POST',
-            url: '/rewards',
-            headers: { 'X-PoolId': payload.poolId },
+            url: '/erc721-rewards',
+            headers: { 'X-PoolId': pool._id },
             data: payload,
         });
 
-        this.context.commit('set', { pool: payload.poolId, reward: r.data });
+        this.context.commit('set', { pool, reward: r.data });
     }
 
     @Action({ rawError: true })
-    async update({ pool, reward }: { pool: IPool; reward: TReward }) {
-        const r = await axios({
+    async update({ pool, reward, payload }: { pool: IPool; reward: TERC721Reward; payload: TERC721Reward }) {
+        console.log(reward._id);
+        const { data } = await axios({
             method: 'PATCH',
-            url: `/rewards-token/${reward.id}`,
+            url: `/erc721-rewards/${reward._id}`,
             headers: { 'X-PoolId': pool._id },
-            data: reward,
+            data: payload,
         });
-
         this.context.commit('set', {
-            pool: reward.poolId,
-            reward: { ...reward, ...r.data },
+            pool,
+            reward: { ...reward, ...data },
         });
     }
 
     @Action({ rawError: true })
-    async getQRCodes({ reward }: { reward: Reward }) {
+    async getQRCodes({ reward }: { reward: TERC721Reward }) {
         const { status, data } = await axios({
             method: 'GET',
-            url: `/rewards-token/${reward.id}/claims/qrcode`,
+            url: `/erc721-rewards/${reward._id}/claims/qrcode`,
             headers: { 'X-PoolId': reward.poolId },
             responseType: 'blob',
         });
@@ -120,7 +106,7 @@ class ERC721RewardModule extends VuexModule {
             // Fake an anchor click to trigger a download in the browser
             const anchor = document.createElement('a');
             anchor.href = window.URL.createObjectURL(new Blob([data]));
-            anchor.setAttribute('download', `${reward.id}_qrcodes.zip`);
+            anchor.setAttribute('download', `${reward._id}_qrcodes.zip`);
             document.body.appendChild(anchor);
             anchor.click();
         }

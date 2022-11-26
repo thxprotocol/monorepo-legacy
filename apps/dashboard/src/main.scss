@@ -95,3 +95,42 @@ widgetbot {
     overflow: hidden;
     width: 75px;
 }
+
+.b-table-sticky-header, .table-responsive, [class*=table-responsive-] {
+    margin: 0;
+}
+
+
+.table {
+    th,
+    td {
+        vertical-align: middle;
+
+        &:last-of-type {
+            text-align: right;
+        }
+    }
+
+    thead tr {
+        background-color: #f8f9fa;
+
+        th {
+            font-weight: normal;
+            color: gray;
+            vertical-align: middle;
+        }
+    }
+    .custom-checkbox {
+        margin: 0;
+        .custom-control-label {
+            border: 0;
+            padding-left: 0;
+            padding-right: 0;
+
+            &:before,
+            &:after {
+                left: 0;
+            }
+        }
+    }
+}

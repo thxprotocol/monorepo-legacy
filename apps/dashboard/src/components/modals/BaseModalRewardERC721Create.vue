@@ -1,9 +1,7 @@
 <template>
-    <base-modal size="xl" title="Create ERC721 Reward" id="modalRewardERC20Create" :error="error" :loading="isLoading">
+    <base-modal size="xl" title="Create ERC721 Reward" :id="id" :error="error" :loading="isLoading">
         <template #modal-body v-if="!isLoading">
-            <p class="text-gray">
-                Points rewards are distributed to your customers achieving milestones in your customer journey.
-            </p>
+            <p class="text-gray">ERC721 rewards let your customers claim NFTs for the metadata in your collection.</p>
             <form v-on:submit.prevent="onSubmit()" id="formRewardPointsCreate">
                 <b-row>
                     <b-col md="6">
@@ -13,8 +11,12 @@
                         <b-form-group label="Description">
                             <b-textarea v-model="description" />
                         </b-form-group>
-                        <b-form-group label="Amount">
-                            <b-form-input v-model="amount" />
+                        <b-form-group label="Metadata">
+                            <BaseDropdownERC721Metadata
+                                :erc721metadataId="erc721metadataId"
+                                :pool="pool"
+                                @selected="onSelectMetadata"
+                            />
                         </b-form-group>
                     </b-col>
                     <b-col md="6">
@@ -24,10 +26,10 @@
                             @change="rewardCondition = $event"
                         />
                         <BaseCardRewardExpiry class="mb-3" :expiry="rewardExpiry" @change="rewardExpiry = $event" />
-                        <BaseCardRewardQRCodes class="mb-3" @change="rewardExpiry = $event" />
+                        <!-- <BaseCardRewardQRCodes class="mb-3" @change="rewardExpiry = $event" /> -->
                         <b-form-checkbox class="mb-0" v-model="isClaimOnce">
                             <strong> Claim once </strong>
-                            <p>Allows the user to claim the reward only once.</p>
+                            <p>Only allow one claim per account.</p>
                         </b-form-checkbox>
                     </b-col>
                 </b-row>
@@ -51,12 +53,14 @@
 <script lang="ts">
 import { type IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { platformList, platformInteractionList, IChannelAction, IChannel } from '@thxnetwork/dashboard/types/rewards';
+import { platformList, platformInteractionList } from '@thxnetwork/dashboard/types/rewards';
+import { RewardConditionInteraction, RewardConditionPlatform, TERC721Reward } from '@thxnetwork/types/index';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardCondition from '../cards/BaseCardRewardCondition.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardRewardQRCodes from '../cards/BaseCardRewardQRCodes.vue';
-import { TReward } from '@thxnetwork/dashboard/store/modules/erc20Rewards';
+import BaseDropdownERC721Metadata from '../dropdowns/BaseDropdownERC721Metadata.vue';
+import { IERC721s, TERC721, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
 
 @Component({
     components: {
@@ -64,50 +68,80 @@ import { TReward } from '@thxnetwork/dashboard/store/modules/erc20Rewards';
         BaseCardRewardCondition,
         BaseCardRewardExpiry,
         BaseCardRewardQRCodes,
+        BaseDropdownERC721Metadata,
     },
 })
-export default class ModalRewardER721Create extends Vue {
+export default class ModalRewardERC721Create extends Vue {
     isSubmitDisabled = false;
     isLoading = false;
     error = '';
     title = '';
-    amount = '0';
+    erc721metadataId = '';
     description = '';
     isClaimOnce = true;
     rewardExpiry = {};
-    rewardCondition: { platform: IChannel; interaction: IChannelAction; content: string } = {
-        platform: platformList[0],
-        interaction: platformInteractionList[0],
+    claimAmount = 1;
+    rewardLimit = 0;
+    rewardCondition: { platform: RewardConditionPlatform; interaction: RewardConditionInteraction; content: string } = {
+        platform: platformList[0].type,
+        interaction: platformInteractionList[0].type,
         content: '',
     };
+    erc721s!: IERC721s;
 
+    @Prop() id!: string;
     @Prop() pool!: IPool;
-    @Prop({ required: false }) reward!: TReward;
+    @Prop({ required: false }) reward!: TERC721Reward;
+    @Prop() erc721metadata!: TERC721Metadata[];
+
+    get erc721(): TERC721 | null {
+        if (!this.pool.erc721) return null;
+        return this.erc721s[this.pool.erc721._id];
+    }
 
     mounted() {
         if (this.reward) {
+            this.erc721metadataId = this.reward.erc721metadataId;
             this.title = this.reward.title;
-            this.amount = String(this.reward.withdrawAmount);
-            // this.description = this.reward.description;
-            this.rewardCondition.platform = platformList.find(
-                (c) => c.type === this.reward.withdrawCondition.channelType,
-            ) as IChannel;
-            this.rewardCondition.interaction = platformInteractionList.find(
-                (a) => a.type === this.reward.withdrawCondition.channelAction,
-            ) as IChannelAction;
-            this.rewardCondition.content = this.reward.withdrawCondition.channelItem;
+            this.description = this.reward.description;
+            this.rewardCondition = {
+                platform: this.reward.platform as RewardConditionPlatform,
+                interaction: this.reward.interaction as RewardConditionInteraction,
+                content: this.reward.content as string,
+            };
+            this.isClaimOnce = this.reward.isClaimOnce;
         }
     }
 
+    onSelectMetadata(metadata: TERC721Metadata) {
+        if (!metadata) return;
+        this.erc721metadataId = metadata._id;
+    }
+
     onSubmit() {
-        this.$store.dispatch('pointRewards/create', {
-            title: this.title,
-            description: this.description,
-            amount: this.amount,
-            platform: this.rewardCondition.platform,
-            interaction: this.rewardCondition.interaction,
-            content: this.rewardCondition.content,
-        });
+        this.isLoading = true;
+        debugger;
+        this.$store
+            .dispatch(`erc721Rewards/${this.reward ? 'update' : 'create'}`, {
+                pool: this.pool,
+                reward: this.reward,
+                payload: {
+                    title: this.title,
+                    description: this.description,
+                    erc721metadataId: this.erc721metadataId,
+                    isClaimOnce: this.isClaimOnce,
+                    claimAmount: this.claimAmount,
+                    rewardLimit: this.rewardLimit,
+                    platform: this.rewardCondition.platform,
+                    interaction: this.rewardCondition.interaction,
+                    content: this.rewardCondition.content,
+                },
+            })
+            .then(() => {
+                this.$emit('submit');
+                this.$bvModal.hide(this.id);
+                this.isLoading = false;
+            });
     }
 }
 </script>

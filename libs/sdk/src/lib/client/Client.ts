@@ -35,8 +35,8 @@ export default class THXClient {
             authority: URL_CONFIG[env]['AUTH_URL'],
             client_id: rest.clientId,
             client_secret: rest.clientSecret,
-            redirect_uri: rest.redirectUrl!,
-            post_logout_redirect_uri: rest.redirectUrl!,
+            redirect_uri: rest.redirectUrl || '',
+            post_logout_redirect_uri: rest.post_logout_redirect_uri || rest.redirectUrl,
             response_type: 'code',
             revokeTokenTypes: ['refresh_token'],
             resource: URL_CONFIG[env]['API_URL'],
@@ -82,7 +82,7 @@ export default class THXClient {
 
         await this.userManager.cached.signinRedirect({
             extraQueryParams: {
-                return_url: this.credential.cached.redirectUrl!,
+                return_url: this.credential.cached.redirectUrl || '',
             },
         });
     }

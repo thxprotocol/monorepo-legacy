@@ -1,7 +1,7 @@
 import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/';
 
 export type TBaseReward = {
-    _id?: string;
+    _id: string;
     uuid: string;
     poolId: string;
     title: string;
@@ -16,4 +16,6 @@ export type TBaseReward = {
     content?: string;
     createdAt?: string;
     updatedAt?: string;
+    progress?: number;
+    page?: number;
 };

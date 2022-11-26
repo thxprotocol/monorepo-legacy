@@ -27,7 +27,7 @@
                         <!-- <BaseCardRewardQRCodes class="mb-3" @change="rewardExpiry = $event" /> -->
                         <b-form-checkbox class="mb-0" v-model="isClaimOnce">
                             <strong> Claim once </strong>
-                            <p>Allows the user to claim the reward only once.</p>
+                            <p>Only allow one claim for this reward per account.</p>
                         </b-form-checkbox>
                     </b-col>
                 </b-row>

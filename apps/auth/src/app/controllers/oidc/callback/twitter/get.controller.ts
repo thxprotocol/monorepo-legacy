@@ -53,7 +53,7 @@ export async function controller(req: Request, res: Response) {
     createWallet(String(account._id));
 
     const returnTo = await saveInteraction(interaction, account._id.toString());
-
+    console.log(returnTo);
     await updateTokens(account, tokens);
 
     return res.redirect(returnTo);

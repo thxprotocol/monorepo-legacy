@@ -1,49 +1,4 @@
-import { TClaim } from '@thxnetwork/dashboard/store/modules/claims';
 import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
-
-export enum RewardState {
-    Disabled = 0,
-    Enabled = 1,
-}
-
-interface Poll {
-    id: number;
-    startTime: number;
-    endTime: number;
-    totalVoted: number;
-    withdrawAmount: number;
-    withdrawDuration: number;
-    withdrawUnlockDate: Date;
-    yesCounter: number;
-    noCounter: number;
-}
-
-export interface Reward {
-    _id: string;
-    id: string;
-    expiryDate: Date;
-    withdrawLimit: number;
-    withdrawAmount: number;
-    withdrawDuration: number;
-    withdrawUnlockDate: Date;
-    state: RewardState;
-    poolId: string;
-    poll: Poll;
-    withdrawCondition: IRewardCondition;
-    progress: number;
-    isClaimOnce: boolean;
-    isMembershipRequired: boolean;
-    title: string;
-    claims: TClaim[];
-    amount: number;
-    createdAt: Date;
-    updatedAt: Date;
-    erc721metadataId: string;
-}
-
-export interface IRewards {
-    [poolId: string]: { [id: string]: Reward };
-}
 
 export const platformList: IChannel[] = [
     {
@@ -103,9 +58,9 @@ export const platformInteractionList = [
 ];
 
 export interface IRewardCondition {
-    channelType: RewardConditionPlatform;
-    channelAction: RewardConditionInteraction;
-    channelItem: any;
+    platform: RewardConditionPlatform;
+    interaction: RewardConditionInteraction;
+    content: string;
 }
 
 export interface IChannel {

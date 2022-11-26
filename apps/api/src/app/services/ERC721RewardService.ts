@@ -1,7 +1,6 @@
 import db from '@thxnetwork/api/util/database';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { paginatedResults, PaginationResult } from '@thxnetwork/api/util/pagination';
-import { RewardVariant } from '../types/enums/RewardVariant';
 import { IAccount } from '../models/Account';
 import { validateCondition } from '../util/condition';
 import { TERC721Reward } from '@thxnetwork/types/';
@@ -9,26 +8,15 @@ import { ERC721Reward, ERC721RewardDocument } from '../models/ERC721Reward';
 import ERC721Service from './ERC721Service';
 
 export async function get(id: string): Promise<ERC721RewardDocument> {
-    const rewardNft = await ERC721Reward.findOne({ id });
-    if (!rewardNft) return null;
-
-    return rewardNft;
+    return await ERC721Reward.findById(id);
 }
 
 export async function findByPool(assetPool: AssetPoolDocument, page: number, limit: number): Promise<PaginationResult> {
-    const rewards = [];
-    const results = await paginatedResults(ERC721Reward, page, limit, {
+    const result = await paginatedResults(ERC721Reward, page, limit, {
         poolId: assetPool._id,
-        variant: RewardVariant.RewardNFT,
     });
-
-    for (const r of results.results) {
-        rewards.push(await ERC721Reward.findOne({ rewardBaseId: r.id }));
-    }
-
-    results.results = rewards.map((r) => r.toJSON());
-
-    return results;
+    result.results = result.results.map((r) => r.toJSON());
+    return result;
 }
 
 export async function canClaim(
@@ -74,8 +62,7 @@ export async function create(pool: AssetPoolDocument, payload: TERC721Reward) {
 }
 
 export async function update(reward: ERC721RewardDocument, updates: TERC721Reward) {
-    await ERC721Reward.updateOne({ _id: reward._id }, updates, { new: true });
-    return ERC721Reward.findByIdAndUpdate(reward._id, updates, { new: true });
+    return await ERC721Reward.findByIdAndUpdate(reward._id, updates, { new: true });
 }
 
 export default { get, canClaim, findByPool, removeAllForPool, create, update };

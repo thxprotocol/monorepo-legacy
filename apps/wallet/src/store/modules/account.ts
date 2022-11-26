@@ -23,7 +23,6 @@ export interface UserProfile {
 
 @Module({ namespaced: true })
 class AccountModule extends VuexModule {
-    userManager: UserManager = thxClient.userManager;
     _user: User | null = null;
     _profile: UserProfile | null = null;
 
@@ -47,7 +46,7 @@ class AccountModule extends VuexModule {
 
     @Action({ rawError: true })
     async getUser() {
-        const user = await this.userManager.getUser();
+        const user = await thxClient.userManager.getUser();
         if (user?.expired) return;
 
         this.context.commit('setUser', user);
@@ -133,9 +132,9 @@ class AccountModule extends VuexModule {
             extraQueryParams['claim_id'] = payload.claimId;
         }
 
-        await this.userManager.cached.clearStaleState();
+        await thxClient.userManager.cached.clearStaleState();
 
-        return await this.userManager.cached.signinRedirect({
+        return await thxClient.userManager.cached.signinRedirect({
             state: {
                 toPath: payload.toPath,
                 rewardHash: payload.rewardHash,
@@ -147,15 +146,15 @@ class AccountModule extends VuexModule {
 
     @Action({ rawError: true })
     async signinRedirectCallback() {
-        const user = await this.userManager.signinRedirectCallback();
+        const user = await thxClient.userManager.signinRedirectCallback();
         this.context.commit('setUser', user);
         return user;
     }
 
     @Action({ rawError: true })
     async signupRedirect() {
-        await this.userManager.cached.clearStaleState();
-        await this.userManager.cached.signinRedirect({
+        await thxClient.userManager.cached.clearStaleState();
+        await thxClient.userManager.cached.signinRedirect({
             prompt: 'create',
             extraQueryParams: { return_url: BASE_URL },
         });
@@ -163,7 +162,7 @@ class AccountModule extends VuexModule {
 
     @Action({ rawError: true })
     async accountRedirect(path: string) {
-        await this.userManager.cached.signinRedirect({
+        await thxClient.userManager.cached.signinRedirect({
             extraQueryParams: {
                 prompt: 'account-settings',
                 return_url: BASE_URL + path,
@@ -173,22 +172,22 @@ class AccountModule extends VuexModule {
 
     @Action({ rawError: true })
     async signoutRedirect(toPath: string) {
-        await this.userManager.cached.signoutRedirect({ state: { toPath } });
+        await thxClient.userManager.cached.signoutRedirect({ state: { toPath } });
     }
 
     @Action({ rawError: true })
     signinSilent() {
-        this.userManager.cached.signinSilent();
+        thxClient.userManager.cached.signinSilent();
     }
 
     @Action({ rawError: true })
     signinSilentCallback() {
-        this.userManager.cached.signinSilentCallback();
+        thxClient.userManager.cached.signinSilentCallback();
     }
 
     @Action({ rawError: true })
     async connectRedirect(payload: { channel: ChannelType; path: string }) {
-        await this.userManager.cached.signinRedirect({
+        await thxClient.userManager.cached.signinRedirect({
             extraQueryParams: {
                 channel: payload.channel,
                 prompt: 'connect',

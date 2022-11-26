@@ -1,7 +1,6 @@
 <template>
-    <div>
-        <label> Your Profiles:</label>
-        <b-dropdown variant="link" class="dropdown-select bg-white mb-3">
+    <b-form-group label="Your Profiles">
+        <b-dropdown variant="link" class="dropdown-select bg-white">
             <template #button-content>
                 <div v-if="item" class="text-overflow-ellipsis">
                     {{ item.name }}<b-badge class="ml-2" variant="secondary">@{{ item.username }}</b-badge>
@@ -11,7 +10,7 @@
                 {{ item.name }}<b-badge class="ml-2" variant="secondary">@{{ item.username }}</b-badge>
             </b-dropdown-item-button>
         </b-dropdown>
-    </div>
+    </b-form-group>
 </template>
 
 <script lang="ts">

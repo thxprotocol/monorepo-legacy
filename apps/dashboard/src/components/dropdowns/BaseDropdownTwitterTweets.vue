@@ -1,6 +1,5 @@
 <template>
-    <div>
-        <label> Your Tweets:</label>
+    <b-form-group label="Your Tweets">
         <b-dropdown variant="link" class="dropdown-select bg-white mb-3">
             <template #button-content>
                 <div v-if="selected" class="text-overflow-ellipsis">
@@ -18,7 +17,7 @@
                 {{ item.text }}
             </b-dropdown-item-button>
         </b-dropdown>
-    </div>
+    </b-form-group>
 </template>
 
 <script lang="ts">
@@ -38,6 +37,7 @@ export default class BaseDropdownTwitterTweets extends Vue {
     selected: any = null;
 
     mounted() {
+        debugger;
         if (!this.item) {
             this.onItemClick(this.items[0]);
         } else {

@@ -97,6 +97,7 @@ const controller = async (req: Request, res: Response) => {
                     ]);
 
                     await createERC721Reward(req.assetPool, {
+                        _id: '',
                         poolId: String(req.assetPool._id),
                         erc721metadataId: String(metadata._id),
                         claimAmount: '1',

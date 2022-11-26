@@ -1,6 +1,5 @@
 <template>
-    <div>
-        <label> Your Uploads:</label>
+    <b-form-group label="Your Uploads">
         <b-dropdown variant="link" class="dropdown-select bg-white">
             <template #button-content>
                 <div v-if="item" class="text-overflow-ellipsis">
@@ -38,7 +37,7 @@
                 </div>
             </b-dropdown-item-button>
         </b-dropdown>
-    </div>
+    </b-form-group>
 </template>
 
 <script lang="ts">

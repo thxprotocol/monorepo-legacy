@@ -12,21 +12,17 @@ const ERROR_NO_DATA = 'Could not find an youtube data for this accesstoken';
 export class YouTubeService {
     static async getYoutubeClient(account: AccountDocument) {
         client.setCredentials({
+            refresh_token: account.googleRefreshToken,
             access_token: account.googleAccessToken,
         });
 
-        if (Date.now() > account.googleAccessTokenExpires) {
-            client.setCredentials({
-                access_token: account.googleAccessToken,
-                refresh_token: account.googleRefreshToken,
-            });
-            const { credentials } = await client.refreshAccessToken();
+        const { token } = await client.getAccessToken();
+        const { expiry_date } = await client.getTokenInfo(token);
 
-            account.googleAccessToken = credentials.access_token;
-            account.googleAccessTokenExpires = credentials.expiry_date;
-
-            await account.save();
-        }
+        await account.updateOne({
+            googleAccessToken: token,
+            googleAccessTokenExpires: expiry_date,
+        });
 
         return google.youtube({ version: 'v3' });
     }
@@ -148,15 +144,12 @@ export class YouTubeService {
         const response = await axios({
             url: `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${token}`,
         });
-        console.log(response.data);
         return response.data['scope'].split(' ');
     }
 
     static async haveExpandedScopes(token: string): Promise<boolean> {
         const expanedScopes = this.getExpandedScopes();
-
         const scopes = await YouTubeService.getScopesOfAccessToken(token);
-
         const missingScope = scopes.length !== expanedScopes.length;
 
         return !missingScope;

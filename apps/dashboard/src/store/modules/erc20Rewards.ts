@@ -1,14 +1,11 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { Reward } from '@thxnetwork/dashboard/types/rewards';
 import { IPool } from './pools';
 import { TERC20Reward } from '@thxnetwork/types/index';
 
-export type TReward = { page: number } & Reward;
-
 export type RewardByPage = {
-    [page: number]: TReward[];
+    [page: number]: TERC20Reward[];
 };
 
 export type TRewardState = {
@@ -37,7 +34,7 @@ class ERC20RewardModule extends VuexModule {
     }
 
     @Mutation
-    set({ pool, reward }: { reward: Reward; pool: IPool }) {
+    set({ pool, reward }: { reward: TERC20Reward; pool: IPool }) {
         if (!this._all[pool._id]) Vue.set(this._all, pool._id, {});
         Vue.set(this._all[pool._id], reward._id, reward);
     }
@@ -95,10 +92,10 @@ class ERC20RewardModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async getQRCodes({ reward }: { reward: Reward }) {
+    async getQRCodes({ reward }: { reward: TERC20Reward }) {
         const { status, data } = await axios({
             method: 'GET',
-            url: `/erc20-rewards/${reward.id}/claims/qrcode`,
+            url: `/erc20-rewards/${reward._id}/claims/qrcode`,
             headers: { 'X-PoolId': reward.poolId },
             responseType: 'blob',
         });
@@ -109,7 +106,7 @@ class ERC20RewardModule extends VuexModule {
             // Fake an anchor click to trigger a download in the browser
             const anchor = document.createElement('a');
             anchor.href = window.URL.createObjectURL(new Blob([data]));
-            anchor.setAttribute('download', `${reward.id}_qrcodes.zip`);
+            anchor.setAttribute('download', `${reward.uuid}_qrcodes.zip`);
             document.body.appendChild(anchor);
             anchor.click();
         }

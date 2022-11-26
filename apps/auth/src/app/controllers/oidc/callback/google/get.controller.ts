@@ -5,8 +5,6 @@ import { parseJwt } from '../../../../util/jwt';
 import { AccountDocument } from '../../../../models/Account';
 import { getAccountByEmail, saveInteraction } from '../../../../util/oidc';
 import { YouTubeService } from '../../../../services/YouTubeService';
-import { WALLET_URL } from '../../../../config/secrets';
-import { getChannelScopes } from '../../../../util/social';
 import { AccountVariant } from '../../../../types/enums/AccountVariant';
 import { createWallet } from '@thxnetwork/auth/util/wallet';
 
@@ -35,30 +33,6 @@ export async function controller(req: Request, res: Response) {
 
     // Get all token information
     const tokens = await YouTubeService.getTokens(code);
-
-    // Only do this for reward claims
-    if (interaction.params.reward_hash) {
-        // Decode the reward hash to see which scopes are requested
-        const rewardData = JSON.parse(Buffer.from(interaction.params.reward_hash, 'base64').toString());
-
-        if (rewardData.rewardCondition && rewardData.rewardCondition.channelAction) {
-            const { channelScopes } = getChannelScopes(rewardData.rewardCondition.channelAction);
-            // Loop through the scopes for the channel action to verify if they are in tokens.scope
-            for (const scope of channelScopes) {
-                if (!tokens.scope.includes(scope)) {
-                    // Redirect to error page and inform user about issue
-                    return res.render('error', {
-                        rewardUrl: WALLET_URL + `/claim?hash=${interaction.params.reward_hash}`,
-                        alert: {
-                            variant: 'danger',
-                            message: `Missing consent for scope "${scope}". Make sure to give consent for all requested scopes.`,
-                        },
-                    });
-                }
-            }
-        }
-    }
-
     const claims = await parseJwt(tokens.id_token);
 
     // Check if there is an active session for this interaction

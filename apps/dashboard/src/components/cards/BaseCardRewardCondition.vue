@@ -1,12 +1,14 @@
 <template>
     <b-card body-class="bg-light p-0">
-        <div class="d-flex align-items-center justify-content-between">
-            <strong class="pl-3">Reward condition</strong>
-            <b-button variant="light" v-b-toggle.collapse-card-condition>
-                <i class="fas fa-chevron-down m-0"></i>
-            </b-button>
-        </div>
-        <b-collapse id="collapse-card-condition">
+        <b-button
+            class="d-flex align-items-center justify-content-between w-100"
+            variant="light"
+            v-b-toggle.collapse-card-condition
+        >
+            <strong>Reward condition</strong>
+            <i :class="`fa-chevron-${isVisible ? 'up' : 'down'}`" class="fas m-0"></i>
+        </b-button>
+        <b-collapse id="collapse-card-condition" v-model="isVisible">
             <hr class="mt-0" />
             <div class="px-3">
                 <p class="text-gray">
@@ -28,7 +30,7 @@
                         <component
                             v-if="interaction"
                             :is="interactionComponent"
-                            @selected="content = $event"
+                            @selected="onSelectContent"
                             :items="interaction.items"
                             :item="content"
                         />
@@ -85,11 +87,8 @@ import BaseDropdownTwitterUsers from '../dropdowns/BaseDropdownTwitterUsers.vue'
 export default class BaseCardRewardCondition extends Vue {
     RewardConditionInteraction = RewardConditionInteraction;
     RewardConditionPlatform = RewardConditionPlatform;
-    isSubmitDisabled = false;
-    isLoading = false;
     isLoadingPlatform = false;
     interactionComponent = '';
-    error = '';
     title = '';
     amount = '0';
     description = '';
@@ -97,6 +96,7 @@ export default class BaseCardRewardCondition extends Vue {
     interaction: IChannelAction = platformInteractionList[0];
     content = '';
     isAuthorized = false;
+    isVisible = false;
 
     profile!: UserProfile;
     youtube!: any;
@@ -121,6 +121,8 @@ export default class BaseCardRewardCondition extends Vue {
     }
 
     async onSelectPlatform(platform: IChannel) {
+        if (!platform) return;
+
         this.isLoadingPlatform = true;
         this.platform = platform;
         this.content = '';
@@ -146,6 +148,8 @@ export default class BaseCardRewardCondition extends Vue {
     }
 
     onSelectInteraction(interaction: IChannelAction) {
+        if (!interaction) return;
+
         this.interaction = interaction;
         this.content = '';
 
@@ -179,7 +183,14 @@ export default class BaseCardRewardCondition extends Vue {
         this.change();
     }
 
-    onSelectContent() {
+    onSelectContent(content: any) {
+        this.content =
+            content &&
+            content.referenced_tweets &&
+            content.referenced_tweets[0] &&
+            content.referenced_tweets[0].type === 'retweeted'
+                ? content.referenced_tweets[0].id
+                : content.id;
         this.change();
     }
 
