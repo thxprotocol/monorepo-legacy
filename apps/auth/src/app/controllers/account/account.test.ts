@@ -5,7 +5,7 @@ import db from '../../util/database';
 import { AccountService } from '../../services/AccountService';
 import { INITIAL_ACCESS_TOKEN } from '../../config/secrets';
 import { accountAddress, accountEmail, accountSecret } from '../../util/jest';
-import { SPOTIFY_API_ENDPOINT, TWITTER_API_ENDPOINT } from '../../config/secrets';
+import { TWITTER_API_ENDPOINT } from '../../config/secrets';
 
 const http = request.agent(app);
 
@@ -135,10 +135,6 @@ describe('Account Controller', () => {
 
     describe('GET /account/:sub/twitter', () => {
         beforeAll(async () => {
-            nock(SPOTIFY_API_ENDPOINT)
-                .persist()
-                .get(/.*?/)
-                .reply(200, { data: { items: [] } });
             nock(TWITTER_API_ENDPOINT)
                 .persist()
                 .get(/.*?/)
@@ -202,39 +198,6 @@ describe('Account Controller', () => {
 
             const res = await http
                 .get(`/account/${accountId}/twitter`)
-                .set({
-                    Authorization: authHeader,
-                })
-                .send();
-            expect(res.body.isAuthorized).toEqual(true);
-        });
-    });
-
-    describe('GET /account/:sub/spotify', () => {
-        it('Denice Access if there no authorization header', async () => {
-            const res = await http.get(`/account/${accountId}/spotify`).send();
-            expect(res.status).toEqual(401);
-        });
-
-        it('Throw Error if there no linked spotify', async () => {
-            const res = await http
-                .get(`/account/${accountId}/spotify`)
-                .set({
-                    Authorization: authHeader,
-                })
-                .send();
-            expect(res.body.isAuthorized).toEqual(false);
-        });
-
-        it('Successfully get linked Spotify info with a correct infomation', async () => {
-            const account = await AccountService.getByEmail(accountEmail);
-            account.spotifyAccessToken = 'TOKEN';
-            account.spotifyRefreshToken = 'REFRESH';
-            account.spotifyAccessTokenExpires = (Date.now() + 1000000) * 1000;
-            await account.save();
-
-            const res = await http
-                .get(`/account/${accountId}/spotify`)
                 .set({
                     Authorization: authHeader,
                 })

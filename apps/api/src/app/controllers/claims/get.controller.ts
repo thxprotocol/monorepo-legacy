@@ -4,10 +4,7 @@ import { param } from 'express-validator';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import AssetPoolService from '@thxnetwork/api/services/AssetPoolService';
-import ClaimService from '@thxnetwork/api/services/ClaimService';
 import { Claim } from '@thxnetwork/api/models/Claim';
-import { RewardVariant } from '@thxnetwork/api/types/enums/RewardVariant';
-import { ERC20RewardDocument } from '@thxnetwork/api/models/ERC20Reward';
 import { findRewardById, isTERC20Reward, isTERC721Reward } from '../rewards-utils';
 
 const validation = [param('id').exists().isString()];
@@ -20,11 +17,8 @@ const controller = async (req: Request, res: Response) => {
         schema: { $ref: '#/definitions/Claim' } 
     }
     */
-    let claim = await ClaimService.findById(req.params.id);
-    if (!claim) {
-        // maintain compatibility with old the claim urls
-        claim = await Claim.findById(req.params.id);
-    }
+    const claim = await Claim.findOne({ id: req.params.id });
+    console.log(claim);
     if (!claim) throw new NotFoundError('Could not find this claim');
 
     const pool = await AssetPoolService.getById(claim.poolId);

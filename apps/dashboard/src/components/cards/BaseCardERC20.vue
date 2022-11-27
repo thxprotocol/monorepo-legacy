@@ -5,8 +5,8 @@
             <i class="ml-1 fas fa-archive text-white small" v-if="erc20.archived"></i>
         </template>
         <template #card-body v-if="!isLoading && erc20.address">
-            <base-dropdown-token-menu :erc20="erc20" @archive="archive" />
             <base-badge-network class="mr-2" :chainId="erc20.chainId" />
+            <base-dropdown-token-menu :erc20="erc20" @archive="archive" class="float-right" />
             <div class="my-3 d-flex align-items-center" v-if="erc20.name">
                 <base-identicon class="mr-2" size="40" :rounded="true" variant="darker" :uri="erc20.logoImgUrl" />
                 <div>
@@ -109,7 +109,7 @@ export default class BaseCardERC20 extends Vue {
     }
 
     onClick() {
-        if (this.erc20.poolId) this.$router.push({ path: `/pool/${this.erc20.poolId}/rewards` });
+        if (this.erc20.poolId) this.$router.push({ path: `/pool/${this.erc20.poolId}/erc20-rewards` });
     }
 }
 </script>

@@ -8,15 +8,12 @@
         no-close-on-backdrop
         centered
         :body-bg-variant="loading ? 'light' : 'white'"
-        :hide-footer="loading"
+        :hide-footer="loading || hideFooter"
         :hide-header="loading"
     >
         <div class="w-100 center-center bg-light py-3" v-if="loading">
             <div class="text-center w-100">
                 <b-spinner variant="gray" class="mb-3" />
-                <!-- <i class="fas fa-hourglass-half text-gray mb-2" style="font-size: 2rem"> </i> -->
-                <!-- <p class="text-muted">Please give us ~20 seconds to process your request.</p> -->
-                <!-- <b-progress class="w-100 my-3" variant="gray" :value="100" animated></b-progress> -->
                 <p class="text-muted">{{ info }}</p>
             </div>
         </div>

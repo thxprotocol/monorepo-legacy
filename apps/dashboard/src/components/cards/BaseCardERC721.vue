@@ -5,8 +5,8 @@
             <i class="ml-1 fas fa-archive text-white small" v-if="erc721.archived"></i>
         </template>
         <template #card-body v-if="!isLoading && erc721.address">
-            <base-dropdown-menu-nft :erc721="erc721" @archive="archive" />
             <base-badge-network class="mr-2" :chainId="erc721.chainId" />
+            <base-dropdown-menu-nft :erc721="erc721" @archive="archive" class="float-right" />
             <div class="my-3 d-flex align-items-center">
                 <base-identicon class="mr-2" size="40" :rounded="true" variant="darker" :uri="erc721.logoURI" />
                 <div>
@@ -106,7 +106,7 @@ export default class BaseCardERC721 extends Vue {
     }
 
     onClick() {
-        if (this.erc721.poolId) this.$router.push({ path: `/pool/${this.erc721.poolId}/rewards` });
+        if (this.erc721.poolId) this.$router.push({ path: `/pool/${this.erc721.poolId}/metadata` });
     }
 
     openTokenUrl() {

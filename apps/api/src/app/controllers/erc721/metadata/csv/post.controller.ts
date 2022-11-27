@@ -7,6 +7,8 @@ import { logger } from '@thxnetwork/api/util/logger';
 import CsvReadableStream from 'csv-reader';
 import { agenda, EVENT_SEND_DOWNLOAD_METADATA_QR_EMAIL } from '@thxnetwork/api/util/agenda';
 import { createERC721Reward } from '@thxnetwork/api/controllers/rewards-utils';
+import { RewardConditionPlatform } from '@thxnetwork/types/index';
+import db from '../../../../util/database';
 
 const validation = [
     param('id').isMongoId(),
@@ -68,17 +70,19 @@ const controller = async (req: Request, res: Response) => {
                             metadata = await ERC721Service.createMetadata(erc721, '', '', attributes);
 
                             // GENERATE A NEW REWARD and CLAIMS FOR THE NEW METADATA
-                            const body = {
-                                ...req.body,
+                            const config = {
+                                uuid: db.createUUID(),
                                 erc721metadataId: metadata._id,
-                                amount: 1,
-                                limit: 1,
-                                isClaimOnce: true,
+                                poolId: String(req.assetPool._id),
+                                title: '',
+                                description: '',
                                 expiryDate: null,
-                                slug: null,
-                                title: null,
+                                claimAmount: 1,
+                                rewardLimit: 1,
+                                isClaimOnce: true,
+                                platform: RewardConditionPlatform.None,
                             };
-                            await createERC721Reward(req.assetPool, body);
+                            await createERC721Reward(req.assetPool, config);
                         }
                     } catch (err) {
                         logger.error(err);

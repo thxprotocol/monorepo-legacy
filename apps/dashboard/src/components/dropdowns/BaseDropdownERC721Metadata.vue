@@ -1,8 +1,8 @@
 <template>
     <b-dropdown variant="link" class="dropdown-select">
-        <template #button-content>{{
-            selectedMetadata ? selectedMetadata.title || '&nbsp;' : 'Select the NFT to Mint'
-        }}</template>
+        <template #button-content>
+            {{ selectedMetadata ? selectedMetadata.title || '&nbsp;' : 'Select the NFT to Mint' }}
+        </template>
         <b-dropdown-form>
             <b-form-input class="mb-2" placeholder="Search..." @input="onSearch" v-model="query" />
         </b-dropdown-form>

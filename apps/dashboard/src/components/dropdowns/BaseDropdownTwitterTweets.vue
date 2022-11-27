@@ -37,7 +37,6 @@ export default class BaseDropdownTwitterTweets extends Vue {
     selected: any = null;
 
     mounted() {
-        debugger;
         if (!this.item) {
             this.onItemClick(this.items[0]);
         } else {

@@ -11,6 +11,7 @@ import { fromBuffer } from 'file-type';
 import { Request, Response } from 'express';
 import { body, check, param } from 'express-validator';
 import { createERC721Reward } from '@thxnetwork/api/controllers/rewards-utils';
+import { RewardConditionPlatform, TERC721Reward } from '@thxnetwork/types/index';
 import short from 'short-uuid';
 import db from '@thxnetwork/api/util/database';
 
@@ -97,17 +98,17 @@ const controller = async (req: Request, res: Response) => {
                     ]);
 
                     await createERC721Reward(req.assetPool, {
-                        _id: '',
-                        poolId: String(req.assetPool._id),
+                        uuid: db.createUUID(),
                         erc721metadataId: String(metadata._id),
-                        claimAmount: '1',
-                        rewardLimit: 1,
-                        isClaimOnce: true,
-                        expiryDate: null,
+                        poolId: String(req.assetPool._id),
                         title: '',
                         description: '',
-                        uuid: db.createUUID(),
-                    });
+                        expiryDate: null,
+                        claimAmount: 1,
+                        rewardLimit: 1,
+                        isClaimOnce: true,
+                        platform: RewardConditionPlatform.None,
+                    } as TERC721Reward);
 
                     return metadata;
                 } catch (err) {

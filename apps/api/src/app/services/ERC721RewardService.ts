@@ -5,7 +5,7 @@ import { IAccount } from '../models/Account';
 import { validateCondition } from '../util/condition';
 import { TERC721Reward } from '@thxnetwork/types/';
 import { ERC721Reward, ERC721RewardDocument } from '../models/ERC721Reward';
-import ERC721Service from './ERC721Service';
+import { Claim } from '../models/Claim';
 
 export async function get(id: string): Promise<ERC721RewardDocument> {
     return await ERC721Reward.findById(id);
@@ -23,17 +23,26 @@ export async function canClaim(
     reward: TERC721Reward,
     account: IAccount,
 ): Promise<{ result?: boolean; error?: string }> {
-    // Can only claim this reward once, metadata exists, but is not minted
-    if (reward.isClaimOnce) {
-        const tokensForSub = await ERC721Service.findTokensByMetadataAndSub(reward.erc721metadataId, account);
-        if (tokensForSub.length) {
-            return { error: 'You have already claimed this NFT' };
+    if (reward.expiryDate) {
+        const expiryTimestamp = new Date(reward.expiryDate).getTime();
+        if (Date.now() > expiryTimestamp) {
+            return { error: 'This reward claim has expired.' };
         }
-        const metadata = await ERC721Service.findMetadataById(reward.erc721metadataId);
-        const tokens = await ERC721Service.findTokensByMetadata(metadata);
+    }
 
-        if (reward.rewardLimit > 0 && tokens.length >= reward.rewardLimit) {
-            return { error: 'This NFT has already been claimed' };
+    // Can only claim this reward once and a withdrawal already exists
+    if (reward.isClaimOnce) {
+        const hasClaimedOnce = await Claim.exists({ sub: account.id });
+        if (hasClaimedOnce) {
+            return { error: 'You can only claim this reward once.' };
+        }
+    }
+
+    // Can only claim this reward once and a withdrawal already exists
+    if (reward.rewardLimit > 0) {
+        const amountOfClaims = await Claim.countDocuments({ rewardId: String(reward._id) });
+        if (amountOfClaims > reward.rewardLimit) {
+            return { error: 'You have already claimed this reward' };
         }
     }
 
@@ -56,7 +65,6 @@ export async function create(pool: AssetPoolDocument, payload: TERC721Reward) {
     return ERC721Reward.create({
         poolId: String(pool._id),
         uuid: db.createUUID(),
-        erc721metadataId: payload.erc721metadataId,
         ...payload,
     });
 }

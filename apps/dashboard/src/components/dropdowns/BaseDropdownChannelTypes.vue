@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import { platformList, IChannel } from '@thxnetwork/dashboard/types/rewards';
+import { platformList, type IChannel } from '@thxnetwork/dashboard/types/rewards';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component({})

@@ -26,7 +26,7 @@
 </template>
 
 <script lang="ts">
-import { TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
+import { type TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component({})

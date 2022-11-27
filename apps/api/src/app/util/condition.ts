@@ -7,6 +7,7 @@ export const validateCondition = async (
     account: IAccount,
     reward: TBaseReward,
 ): Promise<{ result?: boolean; error?: string }> => {
+    console.log(reward.interaction, RewardConditionInteraction[reward.interaction]);
     switch (reward.interaction) {
         case RewardConditionInteraction.YouTubeLike: {
             const result = await YouTubeDataProxy.validateLike(account, reward.content);

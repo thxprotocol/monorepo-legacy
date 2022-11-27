@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
-import { agenda, EVENT_SEND_DOWNLOAD_METADATA_QR_EMAIL } from '@thxnetwork/api/util/agenda';
 import { createERC721Reward } from '../../rewards-utils';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import db from '@thxnetwork/api/util/database';
+import { RewardConditionPlatform, TERC721Reward } from '@thxnetwork/types/index';
 
 const validation = [
     param('id').isMongoId(),
@@ -31,31 +31,18 @@ const controller = async (req: Request, res: Response) => {
     const tokens = metadata.tokens || [];
 
     // Generate a new reward and claims for the metadata
-    const { reward, claims } = await createERC721Reward(req.assetPool, {
-        _id: '',
+    const config = {
+        uuid: db.createUUID(),
         poolId: String(req.assetPool._id),
-        erc721metadataId: String(metadata._id),
-        claimAmount: '1',
-        rewardLimit: 1,
-        isClaimOnce: true,
-        expiryDate: null,
         title: '',
         description: '',
-        uuid: db.createUUID(),
-    });
-
-    // Regenerate the metadata QR codes file without sending the notification email
-    const poolId = String(req.assetPool._id);
-    const sub = req.assetPool.sub;
-    const notify = false;
-    const fileName = `${req.assetPool._id}_metadata.zip`;
-
-    await agenda.now(EVENT_SEND_DOWNLOAD_METADATA_QR_EMAIL, {
-        poolId,
-        sub,
-        fileName,
-        notify,
-    });
+        expiryDate: null,
+        claimAmount: 1,
+        rewardLimit: 1,
+        isClaimOnce: true,
+        platform: RewardConditionPlatform.None,
+    } as TERC721Reward;
+    const { reward, claims } = await createERC721Reward(req.assetPool, config);
 
     res.status(201).json({ ...metadata.toJSON(), tokens, reward, claims });
 };

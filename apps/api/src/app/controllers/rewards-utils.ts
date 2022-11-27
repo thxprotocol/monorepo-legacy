@@ -4,7 +4,7 @@ import { agenda, EVENT_SEND_DOWNLOAD_QR_EMAIL } from '@thxnetwork/api/util/agend
 import { AWS_S3_PRIVATE_BUCKET_NAME } from '@thxnetwork/api/config/secrets';
 import { s3PrivateClient } from '@thxnetwork/api/util/s3';
 import { GetObjectCommand } from '@aws-sdk/client-s3';
-import { TERC721Reward, TERC20Reward, TBaseReward, TReferralReward } from '@thxnetwork/types/';
+import { TERC721Reward, TERC20Reward, TReferralReward } from '@thxnetwork/types/';
 import { Readable } from 'stream';
 import { logger } from '@thxnetwork/api/util/logger';
 import { Response } from 'express';
@@ -14,12 +14,11 @@ import { ReferralReward, ReferralRewardDocument } from '../models/ReferralReward
 import { IAccount } from '../models/Account';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
-import RewardNftService from '@thxnetwork/api/services/ERC721RewardService';
 import ERC20RewardService from '../services/ERC20RewardService';
 import ERC721RewardService from '@thxnetwork/api/services/ERC721RewardService';
 import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardService';
 
-export async function canClaimReward(pool: AssetPoolDocument, reward: TBaseReward, account: IAccount) {
+export async function canClaimReward(pool: AssetPoolDocument, reward: TERC20Reward | TERC721Reward, account: IAccount) {
     if (isTERC20Reward(reward)) {
         return await ERC20RewardService.canClaim(pool, reward, account);
     }
@@ -35,12 +34,12 @@ export async function findRewardById(rewardId: string) {
     return erc20Reward || erc721Reward || referralReward;
 }
 
-export function isTERC20Reward(r: any): r is TERC20Reward {
-    return;
+export function isTERC20Reward(reward: TERC20Reward | TERC721Reward): reward is TERC20Reward {
+    return (reward as TERC20Reward).amount !== undefined;
 }
 
-export function isTERC721Reward(r: any): r is TERC721Reward {
-    return;
+export function isTERC721Reward(reward: TERC20Reward | TERC721Reward): reward is TERC721Reward {
+    return (reward as TERC721Reward).erc721metadataId !== undefined;
 }
 
 export function addMinutes(date: Date, minutes: number) {
@@ -227,10 +226,9 @@ type RewardSlug =
 
 export const createERC721Reward = async (assetPool: AssetPoolDocument, config: TERC721Reward) => {
     const metadata = await ERC721Service.findMetadataById(config.erc721metadataId);
-    if (!metadata) {
-        throw new NotFoundError('could not find the Metadata for this metadataId');
-    }
-    const reward = await RewardNftService.create(assetPool, config);
+    if (!metadata) throw new NotFoundError('could not find the Metadata for this metadataId');
+
+    const reward = await ERC721RewardService.create(assetPool, config);
     const claims = await Promise.all(
         Array.from({ length: Number(config.claimAmount) }).map(() =>
             ClaimService.create({

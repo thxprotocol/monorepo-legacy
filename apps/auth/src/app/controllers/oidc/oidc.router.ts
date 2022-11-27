@@ -16,7 +16,6 @@ import CreateForgot from './forgot/post';
 import CreateReset from './reset/post';
 import ReadCallbackGoogle from './callback/google/get.controller';
 import ReadCallbackTwitter from './callback/twitter/get.controller';
-import ReadCallbackSpotify from './callback/spotify/get.controller';
 import ReadCallbackGithub from './callback/github/get.controller';
 import ReadAccount from './account/get';
 import UpdateAccount from './account/post';
@@ -24,7 +23,6 @@ import UpdateAccountTOTP from './account/totp/post';
 import ReadAccountTOTP from './account/totp/get';
 import PostGoogleDisconnect from './account/google/disconnect/post.controller';
 import PostTwitterDisconnect from './account/twitter/disconnect/post.controller';
-import PostSpotifyDisconnect from './account/spotify/disconnect/post.controller';
 import ReadAccountEmailVerify from './account/email/get';
 import { assertInput, assertAuthorization, assertInteraction } from '../../middlewares';
 
@@ -32,7 +30,6 @@ const router = express.Router();
 
 router.get('/callback/google', ReadCallbackGoogle.controller);
 router.get('/callback/twitter', ReadCallbackTwitter.controller);
-router.get('/callback/spotify', ReadCallbackSpotify.controller);
 router.get('/callback/github', ReadCallbackGithub.controller);
 
 // Routes require no auth
@@ -63,12 +60,6 @@ router.get('/:uid/connect', assertInteraction, assertAuthorization, ReadConnect.
 router.get('/:uid/account', assertInteraction, assertAuthorization, ReadAccount.controller);
 
 router.post('/:uid/account/google/disconnect', assertInteraction, assertAuthorization, PostGoogleDisconnect.controller);
-router.post(
-    '/:uid/account/spotify/disconnect',
-    assertInteraction,
-    assertAuthorization,
-    PostSpotifyDisconnect.controller,
-);
 router.post(
     '/:uid/account/twitter/disconnect',
     assertInteraction,

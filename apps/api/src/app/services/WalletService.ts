@@ -1,7 +1,7 @@
 import { ContractName, diamondFacetConfigs, DiamondVariant } from '@thxnetwork/contracts/exports';
 import { getByteCodeForContractName, getContractFromName } from '../config/contracts';
 import { IAccount } from '../models/Account';
-import Wallet, { WalletDocument } from '../models/Wallet';
+import { Wallet, WalletDocument } from '../models/Wallet';
 import { ChainId } from '../types/enums';
 import { TWalletDeployCallbackArgs } from '../types/TTransaction';
 import { getProvider, getSelectors } from '../util/network';

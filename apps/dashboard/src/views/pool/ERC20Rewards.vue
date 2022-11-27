@@ -13,20 +13,17 @@
             </b-col>
         </b-row>
         <BCard variant="white" body-class="p-0 shadow-sm">
-            <div class="p-3 d-flex align-items-center justify-content-end">
-                <span class="text-muted mr-2">
-                    Selected <strong>{{ selected.length }}</strong> item{{ selected.length === 1 ? '' : 's' }}
-                </span>
-                <span class="text-muted mr-2">Limit</span>
-                <b-form-select
-                    @change="onChange"
-                    style="max-width: 75px"
-                    size="sm"
-                    :value="limit"
-                    :options="[5, 10, 25, 50, 100]"
-                />
-            </div>
-            <BTable hover :busy="isLoading" :items="rewardsByPage" responsive="sm" show-empty>
+            <BaseCardTableHeader
+                :page="page"
+                :limit="limit"
+                :pool="pool"
+                :rewards="erc20Rewards[pool._id]"
+                :totals="totals"
+                :selectedItems="selectedItems"
+                @change-page="onChangePage"
+                @change-limit="onChangeLimit"
+            />
+            <BTable hover :busy="isLoading" :items="rewardsByPage" responsive="lg" show-empty>
                 <!-- Head formatting -->
                 <template #head(checkbox)>
                     <b-form-checkbox @change="onChecked" />
@@ -38,7 +35,7 @@
 
                 <!-- Cell formatting -->
                 <template #cell(checkbox)="{ item }">
-                    <b-form-checkbox :value="item.checkbox" v-model="selected" />
+                    <b-form-checkbox :value="item.checkbox" v-model="selectedItems" />
                 </template>
                 <template #cell(amount)="{ item }">
                     <b-badge variant="success" class="p-2"> {{ item.amount }} {{ pool.erc20.symbol }} </b-badge>
@@ -80,15 +77,6 @@
                 </template>
             </BTable>
         </BCard>
-        <b-pagination
-            v-if="total > limit"
-            class="mt-3"
-            @change="onChangePage"
-            v-model="page"
-            :per-page="limit"
-            :total-rows="total"
-            align="center"
-        ></b-pagination>
     </div>
 </template>
 
@@ -97,20 +85,20 @@ import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseModalRewardERC20Create from '@thxnetwork/dashboard/components/modals/BaseModalRewardERC20Create.vue';
-import BaseCardReward from '@thxnetwork/dashboard/components/list-items/BaseListItemReward.vue';
 import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
 import { TRewardState } from '@thxnetwork/dashboard/store/modules/erc20Rewards';
 import type { IERC721s } from '@thxnetwork/dashboard/types/erc721';
 import { RewardConditionPlatform, RewardConditionInteraction, TERC20Reward } from '@thxnetwork/types/index';
 import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/badges/BaseBadgeRewardConditionPreview.vue';
 import { platformInteractionList, platformList } from '@thxnetwork/dashboard/types/rewards';
+import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 
 @Component({
     components: {
         BaseNothingHere,
         BaseModalRewardERC20Create,
-        BaseCardReward,
         BaseBadgeRewardConditionPreview,
+        BaseCardTableHeader,
     },
     computed: mapGetters({
         pools: 'pools/all',
@@ -124,7 +112,7 @@ export default class ERC20RewardsView extends Vue {
     isLoading = true;
     limit = 10;
     page = 1;
-    selected: string[] = [];
+    selectedItems: string[] = [];
 
     pools!: IPools;
     totals!: { [poolId: string]: number };
@@ -177,13 +165,13 @@ export default class ERC20RewardsView extends Vue {
             .then(() => (this.isLoading = false));
     }
 
-    onChange(limit: number) {
+    onChangeLimit(limit: number) {
         this.limit = limit;
         this.listRewards();
     }
 
     onChecked(checked: boolean) {
-        this.selected = checked ? this.rewardsByPage.map((r) => r.id) : [];
+        this.selectedItems = checked ? this.rewardsByPage.map((r) => r.id) : [];
     }
 
     onChangePage(page: number) {

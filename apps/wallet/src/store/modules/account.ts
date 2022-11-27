@@ -8,6 +8,7 @@ import UserManager from '@thxnetwork/sdk/managers/UserManager';
 import { User } from 'oidc-client-ts';
 import { AccountVariant } from '../../types/Accounts';
 import { ChannelType } from '../../types/enums/ChannelType';
+import { RewardConditionPlatform } from '@thxnetwork/types';
 const AUTH_REQUEST_TYPED_MESSAGE =
     "Welcome! Please make sure you have selected your preferred account and sign this message to verify it's ownership.";
 
@@ -186,12 +187,12 @@ class AccountModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async connectRedirect(payload: { channel: ChannelType; path: string }) {
+    async connectRedirect({ platform, path }: { platform: RewardConditionPlatform; path: string }) {
         await thxClient.userManager.cached.signinRedirect({
             extraQueryParams: {
-                channel: payload.channel,
+                channel: platform,
                 prompt: 'connect',
-                return_url: BASE_URL + payload.path,
+                return_url: BASE_URL + path,
             },
         });
     }

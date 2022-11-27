@@ -4,7 +4,7 @@ import { oidc } from '../../util/oidc';
 async function controller(req: Request, res: Response) {
     const interaction = await oidc.interactionDetails(req, res);
     const { uid, prompt, params } = interaction;
-    console.log(prompt, params);
+
     // Prompt params are used for unauthenticated routes
     switch (params.prompt) {
         case 'create': {

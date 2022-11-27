@@ -51,8 +51,8 @@
 <script lang="ts">
 import { type IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { platformList, platformInteractionList, IChannelAction, IChannel } from '@thxnetwork/dashboard/types/rewards';
-import { RewardConditionInteraction, RewardConditionPlatform, TERC20Reward } from '@thxnetwork/types/index';
+import { platformList, platformInteractionList } from '@thxnetwork/dashboard/types/rewards';
+import { RewardConditionInteraction, RewardConditionPlatform, type TERC20Reward } from '@thxnetwork/types/index';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardCondition from '../cards/BaseCardRewardCondition.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';

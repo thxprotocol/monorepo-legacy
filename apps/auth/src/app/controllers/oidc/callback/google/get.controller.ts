@@ -54,6 +54,7 @@ export async function controller(req: Request, res: Response) {
     const returnTo = await saveInteraction(interaction, account._id.toString());
 
     await updateTokens(account, tokens);
+
     return res.redirect(returnTo);
 }
 

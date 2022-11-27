@@ -1,7 +1,7 @@
 import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
 import { WalletDocument } from '../models/Wallet';
 import WalletManager, { WalletManagerDocument } from '../models/WalletManager';
-import Wallet from '../models/Wallet';
+import { Wallet } from '../models/Wallet';
 import { assertEvent, parseLogs } from '../util/events';
 import TransactionService from './TransactionService';
 import { TransactionReceipt } from 'web3-core';

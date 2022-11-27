@@ -1,11 +1,11 @@
 import db from '@thxnetwork/api/util/database';
-import WithdrawalService from './WithdrawalService';
 import type { IAccount } from '@thxnetwork/api/models/Account';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import { ERC20Reward, ERC20RewardDocument } from '../models/ERC20Reward';
 import { validateCondition } from '../util/condition';
 import { TERC20Reward } from '@thxnetwork/types/';
+import { Claim } from '../models/Claim';
 
 export async function get(rewardId: string): Promise<ERC20RewardDocument> {
     return await ERC20Reward.findById(rewardId);
@@ -24,25 +24,23 @@ export async function canClaim(
     reward: TERC20Reward,
     account: IAccount,
 ): Promise<{ result?: boolean; error?: string }> {
-    if (reward.rewardLimit > 0) {
-        const withdrawals = await WithdrawalService.findByQuery({
-            poolId: String(assetPool._id),
-            rewardId: reward._id,
-        });
-        if (withdrawals.length >= reward.rewardLimit) {
-            return { error: 'This reward is reached it limit' };
-        }
-    }
-
     if (reward.expiryDate) {
         const expiryTimestamp = new Date(reward.expiryDate).getTime();
-        if (Date.now() > expiryTimestamp) return { error: 'This reward URL has expired' };
+        if (Date.now() > expiryTimestamp) return { error: 'This reward claim has expired.' };
     }
 
     // Can only claim this reward once and a withdrawal already exists
     if (reward.isClaimOnce) {
-        const hasClaimedOnce = await WithdrawalService.hasClaimedOnce(String(assetPool._id), account.id, reward._id);
+        const hasClaimedOnce = await Claim.exists({ sub: account.id });
         if (hasClaimedOnce) {
+            return { error: 'You have already claimed this reward' };
+        }
+    }
+
+    // Can only claim this reward once and a withdrawal already exists
+    if (reward.rewardLimit > 0) {
+        const amountOfClaims = await Claim.countDocuments({ rewardId: String(reward._id) });
+        if (amountOfClaims > reward.rewardLimit) {
             return { error: 'You have already claimed this reward' };
         }
     }

@@ -13,23 +13,20 @@
             </b-col>
         </b-row>
         <BCard variant="white" body-class="p-0 shadow-sm">
-            <div class="p-3 d-flex align-items-center justify-content-end">
-                <span class="text-muted mr-2">
-                    Selected <strong>{{ selected.length }}</strong> item{{ selected.length === 1 ? '' : 's' }}
-                </span>
-                <span class="text-muted mr-2">Limit</span>
-                <b-form-select
-                    @change="onChange"
-                    style="max-width: 75px"
-                    size="sm"
-                    :value="limit"
-                    :options="[5, 10, 25, 50, 100]"
-                />
-            </div>
-            <BTable hover :busy="isLoading" :items="rewardsByPage" responsive="sm">
+            <BaseCardTableHeader
+                :page="page"
+                :limit="limit"
+                :pool="pool"
+                :rewards="erc721Rewards[pool._id]"
+                :totals="totals"
+                :selectedItems="selectedItems"
+                @change-page="onChangePage"
+                @change-limit="onChangeLimit"
+            />
+            <BTable hover :busy="isLoading" :items="rewardsByPage" responsive="lg" show-empty>
                 <!-- Head formatting -->
                 <template #head(checkbox)>
-                    <b-form-checkbox @change="onChecked" />
+                    <b-form-checkbox @change="onSelectAll" />
                 </template>
                 <template #head(title)> Title </template>
                 <template #head(progress)> Progress </template>
@@ -39,7 +36,7 @@
 
                 <!-- Cell formatting -->
                 <template #cell(checkbox)="{ item }">
-                    <b-form-checkbox :value="item.checkbox" v-model="selected" />
+                    <b-form-checkbox :value="item.checkbox" v-model="selectedItems" />
                 </template>
                 <template #cell(erc721metadataId)="{ index, item }">
                     <BaseBadgeMetadataPreview
@@ -61,6 +58,15 @@
                             :max="item.progress.limit || item.progress.progress"
                         />
                     </b-progress>
+                </template>
+                <template #cell(claims)="{ item }">
+                    <b-link v-b-modal="`modalRewardClaimsDownload${item.id}`"> Download </b-link>
+                    <BaseModalRewardClaimsDownload
+                        :id="`modalRewardClaimsDownload${item.id}`"
+                        :pool="pool"
+                        :selectedItems="[item.id]"
+                        :rewards="erc721Rewards[pool._id]"
+                    />
                 </template>
                 <template #cell(rewardCondition)="{ item }">
                     <BaseBadgeRewardConditionPreview
@@ -85,16 +91,6 @@
                 </template>
             </BTable>
         </BCard>
-
-        <b-pagination
-            v-if="total > limit"
-            class="mt-3"
-            @change="onChangePage"
-            v-model="page"
-            :per-page="limit"
-            :total-rows="total"
-            align="center"
-        ></b-pagination>
     </div>
 </template>
 
@@ -103,19 +99,21 @@ import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseModalRewardERC721Create from '@thxnetwork/dashboard/components/modals/BaseModalRewardERC721Create.vue';
-import BaseCardReward from '@thxnetwork/dashboard/components/list-items/BaseListItemReward.vue';
 import BaseBadgeMetadataPreview from '@thxnetwork/dashboard/components/badges/BaseBadgeMetadataPreview.vue';
 import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/badges/BaseBadgeRewardConditionPreview.vue';
+import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import { RewardConditionPlatform, RewardConditionInteraction, TERC721Reward } from '@thxnetwork/types/index';
 import { IERC721s, TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import { platformInteractionList, platformList } from '@thxnetwork/dashboard/types/rewards';
+import BaseModalRewardClaimsDownload from '@thxnetwork/dashboard/components/modals/BaseModalRewardClaimsDownload.vue';
 
 @Component({
     components: {
         BaseModalRewardERC721Create,
         BaseBadgeMetadataPreview,
         BaseBadgeRewardConditionPreview,
-        BaseCardReward,
+        BaseModalRewardClaimsDownload,
+        BaseCardTableHeader,
     },
     computed: mapGetters({
         pools: 'pools/all',
@@ -130,7 +128,7 @@ export default class ERC721RewardsView extends Vue {
     isLoading = true;
     limit = 10;
     page = 1;
-    selected: string[] = [];
+    selectedItems: string[] = [];
 
     pools!: IPools;
     erc721s!: IERC721s;
@@ -167,6 +165,7 @@ export default class ERC721RewardsView extends Vue {
                     limit: r.rewardLimit,
                     progress: r.progress,
                 },
+                claims: r.claims,
                 id: r._id,
             }))
             .slice(0, this.limit);
@@ -194,13 +193,13 @@ export default class ERC721RewardsView extends Vue {
             .then(() => (this.isLoading = false));
     }
 
-    onChange(limit: number) {
+    onChangeLimit(limit: number) {
         this.limit = limit;
         this.listRewards();
     }
 
-    onChecked(checked: boolean) {
-        this.selected = checked ? this.rewardsByPage.map((r) => r.id) : [];
+    onSelectAll(isSelectAll: boolean) {
+        this.selectedItems = isSelectAll ? this.rewardsByPage.map((r) => r.id) : [];
     }
 
     onChangePage(page: number) {
