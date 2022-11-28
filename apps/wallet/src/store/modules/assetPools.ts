@@ -46,24 +46,6 @@ function getItemUrl(withdrawCondition: { interaction: RewardConditionInteraction
 @Module({ namespaced: true })
 class AssetPoolModule extends VuexModule {
     @Action({ rawError: true })
-    async upgradeAddress({ poolId, newAddress, data }: { poolId: string; newAddress: string; data: SignedCall }) {
-        const r = await axios({
-            method: 'POST',
-            url: '/gas_station/upgrade_address',
-            headers: {
-                'X-PoolId': poolId,
-            },
-            data: { newAddress, ...data },
-        });
-
-        if (r.status !== 200) {
-            throw new Error('POST upgrade address failed.');
-        }
-
-        return r.data;
-    }
-
-    @Action({ rawError: true })
     async getERC721Reward({ rewardId, poolId }: { rewardId: string; poolId: string }) {
         const { data } = await axios({
             method: 'GET',
