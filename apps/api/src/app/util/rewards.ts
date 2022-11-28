@@ -11,21 +11,11 @@ import { Response } from 'express';
 import { ERC20Reward, ERC20RewardDocument } from '../models/ERC20Reward';
 import { ERC721Reward, ERC721RewardDocument } from '../models/ERC721Reward';
 import { ReferralReward, ReferralRewardDocument } from '../models/ReferralReward';
-import { IAccount } from '../models/Account';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import ERC20RewardService from '../services/ERC20RewardService';
 import ERC721RewardService from '@thxnetwork/api/services/ERC721RewardService';
 import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardService';
-
-export async function canClaimReward(pool: AssetPoolDocument, reward: TERC20Reward | TERC721Reward, account: IAccount) {
-    if (isTERC20Reward(reward)) {
-        return await ERC20RewardService.canClaim(pool, reward, account);
-    }
-    if (isTERC721Reward(reward)) {
-        return await ERC721RewardService.canClaim(reward, account);
-    }
-}
 
 export async function findRewardById(rewardId: string) {
     const erc20Reward = await ERC20Reward.findById(rewardId);

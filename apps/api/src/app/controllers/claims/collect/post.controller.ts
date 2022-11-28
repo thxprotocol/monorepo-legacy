@@ -4,8 +4,8 @@ import { BadRequestError, ForbiddenError } from '@thxnetwork/api/util/errors';
 import { WithdrawalState, WithdrawalType } from '@thxnetwork/api/types/enums';
 import { WithdrawalDocument } from '@thxnetwork/api/models/Withdrawal';
 import { Claim } from '@thxnetwork/api/models/Claim';
-import { canClaimReward, findRewardById, isTERC20Reward, isTERC721Reward } from '@thxnetwork/api/util/rewards';
-
+import { findRewardById, isTERC20Reward, isTERC721Reward } from '@thxnetwork/api/util/rewards';
+import { canClaim } from '@thxnetwork/api/util/condition';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
@@ -13,7 +13,7 @@ import AssetPoolService from '@thxnetwork/api/services/AssetPoolService';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
 import MembershipService from '@thxnetwork/api/services/MembershipService';
-import db from '../../../util/database';
+import db from '@thxnetwork/api/util/database';
 
 const validation = [param('id').exists().isString(), query('forceSync').optional().isBoolean()];
 
@@ -33,7 +33,7 @@ const controller = async (req: Request, res: Response) => {
     if (!reward) throw new BadRequestError('The reward for this ID does not exist.');
 
     // Validate the claim
-    const { result, error } = await canClaimReward(pool, reward, account);
+    const { result, error } = await canClaim(reward, account);
     if (!result || error) throw new ForbiddenError(error);
 
     // Memberships could be removed but tokens should be created
