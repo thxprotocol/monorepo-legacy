@@ -5,10 +5,10 @@ import { createERC20Reward } from '@thxnetwork/api/util/rewards';
 const validation = [
     body('title').isString(),
     body('description').isString(),
-    body('amount').exists().isInt({ gt: 0 }),
-    body('expiryDate').optional().isString(),
-    body('claimAmount').optional().isInt({ gt: 0 }),
-    body('platform').optional().isNumeric(),
+    body('amount').isInt({ gt: 0 }),
+    body('expiryDate').isString(),
+    body('claimAmount').isInt({ gt: 0 }),
+    body('platform').isNumeric(),
     body('interaction').optional().isNumeric(),
     body('content').optional().isString(),
 ];

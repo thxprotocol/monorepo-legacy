@@ -5,25 +5,18 @@ import { dashboardAccessToken, tokenName, tokenSymbol, walletAccessToken } from 
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { WithdrawalState } from '@thxnetwork/api/types/enums';
-import { getRewardTokenConfiguration } from '../rewards-utils';
-import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { ClaimDocument } from '@thxnetwork/api/types/TClaim';
-import { RewardTokenDocument } from '@thxnetwork/api/models/RewardToken';
+import { addMinutes } from '@thxnetwork/api/util/rewards';
 
 const user = request.agent(app);
 
 describe('Claims', () => {
-    let pool: AssetPoolDocument,
-        poolId: string,
-        poolAddress: string,
-        reward: RewardTokenDocument,
-        claim: ClaimDocument,
-        tokenAddress: string;
+    let poolId: string, poolAddress: string, claim: ClaimDocument, tokenAddress: string;
 
     beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
 
-    it('Create ERC20', (done) => {
+    it('POST /erc20', (done) => {
         user.post('/v1/erc20')
             .set('Authorization', dashboardAccessToken)
             .send({
@@ -40,7 +33,7 @@ describe('Claims', () => {
             .expect(201, done);
     });
 
-    it('Create Asset Pool', (done) => {
+    it('POST /pools', (done) => {
         user.post('/v1/pools')
             .set('Authorization', dashboardAccessToken)
             .send({
@@ -51,20 +44,27 @@ describe('Claims', () => {
                 expect(isAddress(res.body.address)).toBe(true);
                 poolId = res.body._id;
                 poolAddress = res.body.address;
-                pool = res.body;
             })
             .expect(201, done);
     });
 
-    it('Create reward', (done) => {
-        user.post('/v1/rewards-token/')
+    it('POST /erc20-rewards', (done) => {
+        const expiryDate = addMinutes(new Date(), 30);
+        user.post('/v1/erc20-rewards/')
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-            .send(getRewardTokenConfiguration('no-limit-and-claim-one-disabled'))
+            .send({
+                title: 'Expiration date is next 30 min',
+                description: 'Lorem ipsum dolor sit amet',
+                amount: 1,
+                platform: 0,
+                expiryDate,
+                rewardLimit: 0,
+                claimAmount: 1,
+            })
             .expect((res: request.Response) => {
-                expect(res.body.id).toBeDefined();
+                expect(res.body._id).toBeDefined();
                 expect(res.body.claims).toBeDefined();
                 expect(res.body.claims[0].id).toBeDefined();
-                reward = res.body;
                 claim = res.body.claims[0];
             })
             .expect(201, done);
@@ -75,30 +75,10 @@ describe('Claims', () => {
             user.get(`/v1/claims/${claim.id}`)
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect((res: request.Response) => {
-                    expect(res.body.id).toBeDefined();
-                    expect(res.body.poolAddress).toEqual(poolAddress);
-                    expect(res.body.tokenSymbol).toEqual(tokenSymbol);
-                    expect(res.body.withdrawAmount).toEqual(reward.withdrawAmount);
-                    expect(res.body.rewardId).toEqual(reward.rewardBaseId);
-                    expect(res.body.chainId).toEqual(pool.chainId);
-                })
-                .expect(200, done);
-        });
-    });
-
-    describe('GET /claims/hash/:hash', () => {
-        it('should return ClaimURLData', (done) => {
-            const hash = Buffer.from(
-                JSON.stringify({ poolAddress: pool.address, rewardId: reward.rewardBaseId }),
-            ).toString('base64');
-            user.get(`/v1/claims/hash/${hash}`)
-                .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .expect((res: request.Response) => {
-                    expect(res.body.rewardId).toEqual(reward.rewardBaseId);
-                    expect(res.body.poolAddress).toEqual(poolAddress);
-                    expect(res.body.tokenSymbol).toEqual(tokenSymbol);
-                    expect(res.body.withdrawAmount).toEqual(reward.withdrawAmount);
-                    expect(res.body.chainId).toEqual(pool.chainId);
+                    expect(res.body.claim.id).toBeDefined();
+                    expect(res.body.pool.address).toEqual(poolAddress);
+                    expect(res.body.erc20.symbol).toEqual(tokenSymbol);
+                    expect(res.body.reward).toBeDefined();
                 })
                 .expect(200, done);
         });
@@ -109,8 +89,9 @@ describe('Claims', () => {
             user.post(`/v1/claims/${claim.id}/collect`)
                 .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
                 .expect((res: request.Response) => {
-                    expect(res.body._id).toBeDefined();
-                    expect(res.body.state).toEqual(WithdrawalState.Withdrawn);
+                    console.log(res.body);
+                    expect(res.body.claim.sub).toBeDefined();
+                    expect(res.body.withdrawal.state).toEqual(WithdrawalState.Withdrawn);
                 })
                 .expect(200, done);
         });

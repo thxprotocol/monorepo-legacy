@@ -233,7 +233,7 @@ describe('NFT Pool', () => {
         });
 
         it('should return created reward', (done) => {
-            user.get('/v1/rewards-nft')
+            user.get('/v1/erc721-rewards')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect(async (res: request.Response) => {
                     expect(res.body.total).toBe(5);
@@ -335,7 +335,7 @@ describe('NFT Pool', () => {
         });
 
         it('should return created reward', (done) => {
-            user.get('/v1/rewards-nft')
+            user.get('/v1/erc721-rewards')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect(async (res: request.Response) => {
                     expect(res.body.total).toBe(7);

@@ -129,9 +129,9 @@ describe('Default Pool', () => {
         });
     });
 
-    describe('POST /rewards-token/', () => {
+    describe('POST /erc20-rewards/', () => {
         it('HTTP 302 when reward is added', (done) => {
-            user.post('/v1/rewards-token/')
+            user.post('/v1/erc20-rewards/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .send({
                     title,
@@ -151,23 +151,23 @@ describe('Default Pool', () => {
         });
     });
 
-    describe('GET /rewards-token/:id', () => {
+    describe('GET /erc20-rewards/:id', () => {
         it('HTTP 200 when successful', (done) => {
-            user.get('/v1/rewards-token/' + reward.id)
+            user.get('/v1/erc20-rewards/' + reward.id)
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect(200, done);
         });
 
         it('HTTP 404 if reward can not be found', (done) => {
-            user.get('/v1/rewards-token/62cf04437dff7cbc49e0c687')
+            user.get('/v1/erc20-rewards/62cf04437dff7cbc49e0c687')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect(404, done);
         });
     });
 
-    describe('GET /rewards-token/:id (after finalizing)', () => {
+    describe('GET /erc20-rewards/:id (after finalizing)', () => {
         it('HTTP 200 and return updated withdrawAmount and state 1', (done) => {
-            user.get('/v1/rewards-token/' + reward.id)
+            user.get('/v1/erc20-rewards/' + reward.id)
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect(async (res: request.Response) => {
                     expect(res.body.rewardBase.state).toEqual(1);
@@ -180,7 +180,7 @@ describe('Default Pool', () => {
         });
     });
 
-    describe('POST /rewards-token/:id/claim', () => {
+    describe('POST /erc20-rewards/:id/claim', () => {
         it('HTTP 302 when tx is handled', async () => {
             await user
                 .post(`/v1/claims/${claim.id}/collect`)
@@ -202,9 +202,9 @@ describe('Default Pool', () => {
         });
     });
 
-    describe('POST /rewards-token/:id/give', () => {
+    describe('POST /erc20-rewards/:id/give', () => {
         it('HTTP 200 when tx is handled', (done) => {
-            user.post(`/v1/rewards-token/${reward.id}/give`)
+            user.post(`/v1/erc20-rewards/${reward.id}/give`)
                 .send({
                     member: userWallet.address,
                 })

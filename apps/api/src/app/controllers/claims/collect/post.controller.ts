@@ -20,7 +20,7 @@ const validation = [param('id').exists().isString(), query('forceSync').optional
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Claims']
 
-    const claim = await ClaimService.findById(req.params.id);
+    let claim = await ClaimService.findById(req.params.id);
     if (!claim) throw new BadRequestError('This claim URL is invalid.');
 
     const pool = await AssetPoolService.getById(claim.poolId);
@@ -66,9 +66,9 @@ const controller = async (req: Request, res: Response) => {
         // When more than one claim is created for this reward we update the existing ones,
         // since the check on rewardLimit will take into account the claims with existing sub
         if (reward.claimAmount > 1) {
-            await claim.updateOne({ sub: req.auth.sub });
+            claim = await Claim.findByIdAndUpdate(claim._id, { sub: req.auth.sub });
         } else {
-            await Claim.create({
+            claim = await Claim.create({
                 sub: req.auth.sub,
                 erc20Id: claim.erc20Id,
                 rewardId: claim.rewardId,
@@ -90,9 +90,9 @@ const controller = async (req: Request, res: Response) => {
         // When more than one claim is created for this reward we update the existing ones,
         // since the check on rewardLimit will take into account the claims with existing sub
         if (reward.claimAmount > 1) {
-            await claim.updateOne({ sub: req.auth.sub });
+            claim = await Claim.findByIdAndUpdate(claim._id, { sub: req.auth.sub });
         } else {
-            await Claim.create({
+            claim = await Claim.create({
                 sub: req.auth.sub,
                 erc721Id: claim.erc721Id,
                 rewardId: claim.rewardId,

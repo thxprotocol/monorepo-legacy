@@ -4,14 +4,14 @@ import { ChainId } from '../../types/enums';
 import { dashboardAccessToken, walletAccessToken, walletAccessToken2 } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { getERC721RewardConfiguration } from '@thxnetwork/api/controllers/rewards-utils';
 import { ClaimDocument } from '@thxnetwork/api/types/TClaim';
 import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
+import { addMinutes } from '@thxnetwork/api/util/rewards';
 
 const user = request.agent(app);
 const user2 = request.agent(app);
 
-describe('RewardNft Claim', () => {
+describe('ERC721 Rewards', () => {
     let poolId: string, erc721metadataId: string;
 
     beforeAll(async () => {
@@ -107,20 +107,32 @@ describe('RewardNft Claim', () => {
                 user.post(`/v1/claims/${claims[0].id}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
                     .expect((res: request.Response) => {
-                        expect(res.body._id).toBeDefined();
-                        expect(res.body.state).toBe(ERC721TokenState.Minted);
+                        expect(res.body.claim).toBeDefined();
+                        expect(res.body.metadata).toBeDefined();
+                        expect(res.body.erc721).toBeDefined();
+                        expect(res.body.reward).toBeDefined();
+                        expect(res.body.token).toBeDefined();
                     })
                     .expect(200, done);
             });
-        });
-
-        describe('POST /claims/:id/collect', () => {
-            it('should NOT allows to collect again the same claim', (done) => {
+            it('should return 403 for claim from the same account', (done) => {
                 user2
                     .post(`/v1/claims/${claims[0].id}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken2 })
                     .expect(({ body }: Response) => {
-                        expect(body.error.message).toEqual('This NFT has already been claimed');
+                        expect(body.error.message).toEqual("This reward has reached it's limit");
+                    })
+                    .expect(403, done);
+            });
+        });
+
+        describe('POST /claims/:id/collect', () => {
+            it('should return 403 for claim from another account', (done) => {
+                user2
+                    .post(`/v1/claims/${claims[0].id}/collect`)
+                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken2 })
+                    .expect(({ body }: Response) => {
+                        expect(body.error.message).toEqual("This reward has reached it's limit");
                     })
                     .expect(403, done);
             });
@@ -128,30 +140,49 @@ describe('RewardNft Claim', () => {
     });
 
     describe('A reward with limit is 0 (unlimited) and claim_one enabled to disabled', () => {
-        let claim: ClaimDocument, rewardNftId: string;
+        let claim: ClaimDocument, erc721RewardId: string;
 
-        it('Create reward', (done) => {
-            user.post('/v1/rewards-nft/')
+        it('POST /erc721-rewards', (done) => {
+            const expiryDate = addMinutes(new Date(), 30);
+            user.post('/v1/erc721-rewards/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .send(getERC721RewardConfiguration('claim-one-is-enabled', erc721metadataId))
+                .send({
+                    title: 'Expiration date is next 30 min',
+                    description: 'Lorem ipsum dolor sit amet',
+                    erc721metadataId,
+                    platform: 0,
+                    expiryDate,
+                    rewardLimit: 1,
+                    claimAmount: 1,
+                })
                 .expect((res: request.Response) => {
-                    expect(res.body.id).toBeDefined();
-                    expect(res.body.claims).toBeDefined();
+                    expect(res.body._id).toBeDefined();
                     expect(res.body.claims.length).toBe(1);
                     expect(res.body.claims[0].id).toBeDefined();
                     claim = res.body.claims[0];
-                    rewardNftId = res.body.id;
+                    erc721RewardId = res.body._id;
                 })
                 .expect(201, done);
         });
 
-        describe('PATCH /rewards-nft/:id', () => {
+        describe('PATCH /erc721-rewards/:id', () => {
             it('Should return 200 when edit the claim', (done) => {
-                user.patch(`/v1/rewards-nft/${rewardNftId}`)
+                const expiryDate = addMinutes(new Date(), 60);
+                const title = 'Expiration date is next 60 min';
+                user.patch(`/v1/erc721-rewards/${erc721RewardId}`)
                     .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                    .send(getERC721RewardConfiguration('claim-one-is-disabled', erc721metadataId))
+                    .send({
+                        title,
+                        description: 'Lorem ipsum dolor sit amet',
+                        erc721metadataId,
+                        platform: 0,
+                        expiryDate,
+                        rewardLimit: 0,
+                        claimAmount: 1,
+                    })
                     .expect((res: request.Response) => {
-                        expect(res.body.rewardBase.isClaimOnce).toEqual(false);
+                        expect(res.body.title).toEqual(title);
+                        expect(new Date(res.body.expiryDate).getTime()).toBe(expiryDate.getTime());
                     })
                     .expect(200, done);
             });
@@ -162,77 +193,27 @@ describe('RewardNft Claim', () => {
                 user.post(`/v1/claims/${claim.id}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
                     .expect((res: request.Response) => {
-                        expect(res.body._id).toBeDefined();
-                        expect(res.body.state).toBe(ERC721TokenState.Minted);
+                        expect(res.body.claim).toBeDefined();
+                        expect(res.body.metadata).toBeDefined();
+                        expect(res.body.erc721).toBeDefined();
+                        expect(res.body.reward).toBeDefined();
+                        expect(res.body.token).toBeDefined();
                     })
                     .expect(200, done);
             });
         });
     });
 
-    describe('A token reward with an expiration date set to t plus 30 minute', () => {
-        let claim: ClaimDocument;
-        it('Create reward', (done) => {
-            user.post('/v1/rewards-nft/')
-                .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .send(getERC721RewardConfiguration('expiration-date-is-next-30-min', erc721metadataId))
-                .expect((res: request.Response) => {
-                    expect(res.body.id).toBeDefined();
-                    expect(res.body.claims).toBeDefined();
-                    expect(res.body.claims[0].id).toBeDefined();
-                    claim = res.body.claims[0];
-                })
-                .expect(201, done);
-        });
-
-        describe('POST /v1/claims/:id/collect', () => {
-            describe('POST /claims/:id/collect', () => {
-                it('should return a 200 and NFT minted', (done) => {
-                    user.post(`/v1/claims/${claim.id}/collect`)
-                        .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
-                        .expect((res: request.Response) => {
-                            expect(res.body._id).toBeDefined();
-                            expect(res.body.state).toBe(ERC721TokenState.Minted);
-                        })
-                        .expect(200, done);
-                });
-            });
-        });
-    });
-
-    describe('A token reward with an expiration date set to t minus 30 minute', () => {
-        let claim: ClaimDocument;
-        it('Create reward', (done) => {
-            user.post('/v1/rewards-nft/')
-                .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .send(getERC721RewardConfiguration('expiration-date-is-previous-30-min', erc721metadataId))
-                .expect((res: request.Response) => {
-                    expect(res.body.id).toBeDefined();
-                    expect(res.body.claims).toBeDefined();
-                    expect(res.body.claims[0].id).toBeDefined();
-                    claim = res.body.claims[0];
-                })
-                .expect(201, done);
-        });
-
-        describe('POST /v1/claims/:id/collect', () => {
-            it('should return a 403', (done) => {
-                user.post(`/v1/claims/${claim.id}/collect`)
-                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
-                    .expect(403, done);
-            });
-        });
-    });
-
-    describe('GET /rewards-nft', () => {
+    describe('GET /erc721-rewards', () => {
         it('Should return a list of rewards', (done) => {
-            user.get('/v1/rewards-nft')
+            user.get('/v1/erc721-rewards')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
 
                 .expect((res: request.Response) => {
-                    expect(res.body.results.length).toBe(4);
+                    expect(res.body.results.length).toBe(2);
                     expect(res.body.results[0].claims).toBeDefined();
                     expect(res.body.limit).toBe(10);
+                    expect(res.body.total).toBe(2);
                 })
                 .expect(200, done);
         });

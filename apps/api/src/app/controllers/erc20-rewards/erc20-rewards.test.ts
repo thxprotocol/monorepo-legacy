@@ -1,17 +1,24 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId, ERC20Type } from '../../types/enums';
-import { dashboardAccessToken, tokenName, tokenSymbol, walletAccessToken } from '@thxnetwork/api/util/jest/constants';
+import {
+    dashboardAccessToken,
+    tokenName,
+    tokenSymbol,
+    walletAccessToken,
+    walletAccessToken2,
+    walletAccessToken3,
+} from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { WithdrawalState } from '@thxnetwork/api/types/enums';
-import { getERC20RewardConfiguration } from '@thxnetwork/api/controllers/rewards-utils';
 import { ClaimDocument } from '@thxnetwork/api/types/TClaim';
+import { addMinutes, subMinutes } from '@thxnetwork/api/util/rewards';
 
 const user = request.agent(app);
 
-describe('RewardToken Claim', () => {
-    let poolId: string, withdrawalDocumentId: string, tokenAddress: string;
+describe('ERC20 Rewards', () => {
+    let poolId: string, tokenAddress: string;
 
     beforeAll(async () => {
         await beforeAllCallback();
@@ -19,7 +26,7 @@ describe('RewardToken Claim', () => {
 
     afterAll(afterAllCallback);
 
-    it('Create ERC20', (done) => {
+    it('POST /erc20', (done) => {
         user.post('/v1/erc20')
             .set('Authorization', dashboardAccessToken)
             .send({
@@ -36,7 +43,7 @@ describe('RewardToken Claim', () => {
             .expect(201, done);
     });
 
-    it('Create Asset Pool', (done) => {
+    it('POST /pools', (done) => {
         user.post('/v1/pools')
             .set('Authorization', dashboardAccessToken)
             .send({
@@ -50,15 +57,24 @@ describe('RewardToken Claim', () => {
             .expect(201, done);
     });
 
-    describe('A reward with limit is 0 (unlimited) and claim_one disabled', () => {
+    describe('Reward Limit === 0', () => {
         let claim: ClaimDocument;
-        it('Create reward', (done) => {
-            user.post('/v1/rewards-token/')
+        it('POST /erc20-rewards', (done) => {
+            const expiryDate = addMinutes(new Date(), 30);
+            user.post('/v1/erc20-rewards/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .send(getERC20RewardConfiguration('no-limit-and-claim-one-disabled'))
+                .send({
+                    title: 'Expiration date is next 30 min',
+                    description: 'Lorem ipsum dolor sit amet',
+                    amount: 1,
+                    platform: 0,
+                    expiryDate,
+                    rewardLimit: 0,
+                    claimAmount: 1,
+                })
                 .expect((res: request.Response) => {
-                    expect(res.body.id).toBeDefined();
-                    expect(res.body.claims).toBeDefined();
+                    expect(res.body.uuid).toBeDefined();
+                    expect(new Date(res.body.expiryDate).getTime()).toBe(expiryDate.getTime());
                     expect(res.body.claims.length).toBe(1);
                     expect(res.body.claims[0].id).toBeDefined();
                     claim = res.body.claims[0];
@@ -66,46 +82,51 @@ describe('RewardToken Claim', () => {
                 .expect(201, done);
         });
 
-        describe('POST /rewards-token/:id/claim', () => {
+        describe('POST /erc20-rewards/:id/claim', () => {
             it('should return a 200 and withdrawal id', (done) => {
                 user.post(`/v1/claims/${claim.id}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
                     .expect((res: request.Response) => {
-                        expect(res.body._id).toBeDefined();
-                        expect(res.body.state).toEqual(WithdrawalState.Withdrawn);
-
-                        withdrawalDocumentId = res.body._id;
+                        expect(res.body.claim._id).toBeDefined();
+                        expect(res.body.withdrawal.state).toEqual(WithdrawalState.Withdrawn);
                     })
                     .expect(200, done);
             });
 
-            it('should return Withdrawn state', (done) => {
-                user.get(`/v1/withdrawals/${withdrawalDocumentId}`)
-                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
-                    .expect((res: request.Response) => {
-                        expect(res.body.state).toEqual(WithdrawalState.Withdrawn);
-                    })
-                    .expect(200, done);
-            });
-
-            it('should return a 200 for this second claim', (done) => {
+            it('should return a 403 for this second claim from the same account', (done) => {
                 user.post(`/v1/claims/${claim.id}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
+                    .expect((res: request.Response) => {
+                        expect(res.body.error.message).toBe('You can only claim this reward once.');
+                    })
+                    .expect(403, done);
+            });
+
+            it('should return a 200 for this second claim from another account', (done) => {
+                user.post(`/v1/claims/${claim.id}/collect`)
+                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken2 })
                     .expect(200, done);
             });
         });
     });
 
-    describe('A reward with limit is 1 and claim_once disabled', () => {
-        let claim: ClaimDocument;
-
-        it('Create reward', (done) => {
-            user.post('/v1/rewards-token/')
+    describe('Reward Limit === 1', () => {
+        let claim: ClaimDocument, claim1: ClaimDocument;
+        it('POST /erc20-rewards', (done) => {
+            user.post('/v1/erc20-rewards/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .send(getERC20RewardConfiguration('one-limit-and-claim-one-disabled'))
+                .send({
+                    title: 'Expiration date is next 30 min',
+                    description: 'Lorem ipsum dolor sit amet',
+                    amount: 1,
+                    platform: 0,
+                    rewardLimit: 2,
+                    expiryDate: addMinutes(new Date(), 30),
+                    claimAmount: 1,
+                })
                 .expect((res: request.Response) => {
-                    expect(res.body.id).toBeDefined();
-                    expect(res.body.claims).toBeDefined();
+                    expect(res.body._id).toBeDefined();
+                    expect(res.body.claims.length).toBe(1);
                     expect(res.body.claims[0].id).toBeDefined();
                     claim = res.body.claims[0];
                 })
@@ -113,43 +134,63 @@ describe('RewardToken Claim', () => {
         });
 
         describe('POST /v1/claims/:id/collect', () => {
-            it('should return a 200 and withdrawal id', (done) => {
+            it('should return a 200', (done) => {
                 user.post(`/v1/claims/${claim.id}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
-                    .expect((res: request.Response) => {
-                        expect(res.body._id).toBeDefined();
-                        expect(res.body.state).toEqual(WithdrawalState.Withdrawn);
-
-                        withdrawalDocumentId = res.body._id;
-                    })
                     .expect(200, done);
             });
 
-            it('should return Withdrawn state', (done) => {
-                user.get(`/v1/withdrawals/${withdrawalDocumentId}`)
+            it('should return a 403 for the second claim on the same account', (done) => {
+                user.post(`/v1/claims/${claim.id}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
                     .expect((res: request.Response) => {
-                        expect(res.body.state).toEqual(WithdrawalState.Withdrawn);
+                        expect(res.body.error.message).toBe('You can only claim this reward once.');
                     })
+                    .expect(403, done);
+            });
+
+            it('should return a 200 for the second claim on another account', (done) => {
+                user.post(`/v1/claims/${claim.id}/collect`)
+                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken2 })
                     .expect(200, done);
             });
 
-            it('should return a 403 for this second claim', (done) => {
+            it('should return a 403 for the second claim on the same account', (done) => {
                 user.post(`/v1/claims/${claim.id}/collect`)
-                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
+                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken2 })
+                    .expect((res: request.Response) => {
+                        expect(res.body.error.message).toBe("This reward has reached it's limit");
+                    })
+                    .expect(403, done);
+            });
+
+            it('should return a 403 for the third claim on another account', (done) => {
+                user.post(`/v1/claims/${claim.id}/collect`)
+                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken3 })
+                    .expect((res: request.Response) => {
+                        expect(res.body.error.message).toBe("This reward has reached it's limit");
+                    })
                     .expect(403, done);
             });
         });
     });
 
-    describe('A token reward with an expiration date set to t plus 30 minute', () => {
+    describe('Expiration Date < Date.now', () => {
         let claim: ClaimDocument;
-        it('Create reward', (done) => {
-            user.post('/v1/rewards-token/')
+        it('POST /erc20-rewards', (done) => {
+            user.post('/v1/erc20-rewards/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .send(getERC20RewardConfiguration('expiration-date-is-next-30-min'))
+                .send({
+                    title: 'Expiration date is next 30 min',
+                    description: 'Lorem ipsum dolor sit amet',
+                    amount: 1,
+                    platform: 0,
+                    rewardLimit: 0,
+                    expiryDate: subMinutes(new Date(), 30),
+                    claimAmount: 1,
+                })
                 .expect((res: request.Response) => {
-                    expect(res.body.id).toBeDefined();
+                    expect(res.body._id).toBeDefined();
                     expect(res.body.claims).toBeDefined();
                     expect(res.body.claims[0].id).toBeDefined();
                     claim = res.body.claims[0];
@@ -158,180 +199,26 @@ describe('RewardToken Claim', () => {
         });
 
         describe('POST /v1/claims/:id/collect', () => {
-            it('should return a 200 and withdrawal id', (done) => {
+            it('should return a 403', (done) => {
                 user.post(`/v1/claims/${claim.id}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
                     .expect((res: request.Response) => {
-                        expect(res.body._id).toBeDefined();
-                        expect(res.body.state).toEqual(WithdrawalState.Withdrawn);
-
-                        withdrawalDocumentId = res.body._id;
+                        expect(res.body.error.message).toBe('This reward claim has expired.');
                     })
-                    .expect(200, done);
-            });
-
-            it('should return Withdrawn state', (done) => {
-                user.get(`/v1/withdrawals/${withdrawalDocumentId}`)
-                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
-                    .expect((res: request.Response) => {
-                        expect(res.body.state).toEqual(WithdrawalState.Withdrawn);
-                    })
-                    .expect(200, done);
-            });
-        });
-    });
-
-    describe('A token reward with an expiration date set to t minus 30 minute', () => {
-        let claim: ClaimDocument;
-        it('Create reward', (done) => {
-            user.post('/v1/rewards-token/')
-                .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .send(getERC20RewardConfiguration('expiration-date-is-previous-30-min'))
-                .expect((res: request.Response) => {
-                    expect(res.body.id).toBeDefined();
-                    expect(res.body.claims).toBeDefined();
-                    expect(res.body.claims[0].id).toBeDefined();
-                    claim = res.body.claims[0];
-                })
-                .expect(201, done);
-        });
-
-        describe('POST /v1/claims/:id/collect', () => {
-            it('should return a 403 and withdrawal id', (done) => {
-                user.post(`/v1/claims/${claim.id}/collect`)
-                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
                     .expect(403, done);
             });
         });
     });
 
-    describe('A token reward with claim once enabled', () => {
-        let claim: ClaimDocument;
-        it('Create reward', (done) => {
-            user.post('/v1/rewards-token/')
-                .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .send(getERC20RewardConfiguration('claim-one-is-enabled'))
-                .expect((res: request.Response) => {
-                    expect(res.body.id).toBeDefined();
-                    expect(res.body.claims).toBeDefined();
-                    expect(res.body.claims[0].id).toBeDefined();
-                    claim = res.body.claims[0];
-                })
-                .expect(201, done);
-        });
-
-        describe('POST /v1/claims/:id/collect', () => {
-            it('should return a 200 and withdrawal id', (done) => {
-                user.post(`/v1/claims/${claim.id}/collect`)
-                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
-                    .expect((res: request.Response) => {
-                        expect(res.body._id).toBeDefined();
-                        expect(res.body.state).toEqual(WithdrawalState.Withdrawn);
-
-                        withdrawalDocumentId = res.body._id;
-                    })
-                    .expect(200, done);
-            });
-
-            it('should return Withdrawn state', (done) => {
-                user.get(`/v1/withdrawals/${withdrawalDocumentId}`)
-                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
-                    .expect((res: request.Response) => {
-                        expect(res.body.state).toEqual(WithdrawalState.Withdrawn);
-                    })
-                    .expect(200, done);
-            });
-
-            it('should return a 403 for this second claim', (done) => {
-                user.post(`/v1/claims/${claim.id}/collect`)
-                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
-                    .expect(403, done);
-            });
-        });
-    });
-
-    describe('A token reward with claim once disabled', () => {
-        let claim: ClaimDocument;
-        it('Create reward', (done) => {
-            user.post('/v1/rewards-token/')
-                .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .send(getERC20RewardConfiguration('claim-one-is-disabled'))
-                .expect((res: request.Response) => {
-                    expect(res.body.id).toBeDefined();
-                    expect(res.body.claims).toBeDefined();
-                    expect(res.body.claims[0].id).toBeDefined();
-                    claim = res.body.claims[0];
-                })
-                .expect(201, done);
-        });
-
-        describe('POST /v1/claims/:id/collect', () => {
-            it('should return a 200 and withdrawal id', (done) => {
-                user.post(`/v1/claims/${claim.id}/collect`)
-                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
-                    .expect((res: request.Response) => {
-                        expect(res.body._id).toBeDefined();
-                        expect(res.body.state).toEqual(WithdrawalState.Withdrawn);
-
-                        withdrawalDocumentId = res.body._id;
-                    })
-                    .expect(200, done);
-            });
-
-            it('should return Withdrawn state', (done) => {
-                user.get(`/v1/withdrawals/${withdrawalDocumentId}`)
-                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
-                    .expect((res: request.Response) => {
-                        expect(res.body.state).toEqual(WithdrawalState.Withdrawn);
-                    })
-                    .expect(200, done);
-            });
-
-            it('should return a 200 for this second claim', (done) => {
-                user.post(`/v1/claims/${claim.id}/collect`)
-                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
-                    .expect(200, done);
-            });
-        });
-    });
-
-    describe('Edit a token reward with claim once disabled to enabled', () => {
-        let id = '';
-        it('Create reward', (done) => {
-            user.post('/v1/rewards-token/')
-                .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .send(getERC20RewardConfiguration('claim-one-is-disabled'))
-                .expect((res: request.Response) => {
-                    expect(res.body.id).toBeDefined();
-                    expect(res.body.claims).toBeDefined();
-                    expect(res.body.claims[0].id).toBeDefined();
-                    id = res.body.id;
-                })
-                .expect(201, done);
-        });
-
-        describe('PATCH /rewards-token/:id', () => {
-            it('Should return 200 when edit the claim', (done) => {
-                user.patch(`/v1/rewards-token/${id}`)
-                    .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                    .send(getERC20RewardConfiguration('claim-one-is-enabled'))
-                    .expect((res: request.Response) => {
-                        expect(res.body.rewardBase.isClaimOnce).toEqual(true);
-                    })
-                    .expect(200, done);
-            });
-        });
-    });
-
-    describe('GET /rewards-nft', () => {
+    describe('GET /erc721-rewards', () => {
         it('Should return a list of rewards', (done) => {
-            user.get('/v1/rewards-token')
+            user.get('/v1/erc20-rewards')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-
                 .expect((res: request.Response) => {
-                    expect(res.body.results.length).toBe(7);
+                    expect(res.body.results.length).toBe(3);
                     expect(res.body.results[0].claims).toBeDefined();
                     expect(res.body.limit).toBe(10);
+                    expect(res.body.total).toBe(3);
                 })
                 .expect(200, done);
         });
