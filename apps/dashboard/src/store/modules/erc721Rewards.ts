@@ -34,7 +34,7 @@ class ERC721RewardModule extends VuexModule {
     }
 
     @Mutation
-    set({ pool, reward }: { reward: TERC721Reward; pool: IPool }) {
+    set({ pool, reward }: { reward: TERC721Reward & { _id: string }; pool: IPool }) {
         if (!this._all[pool._id]) Vue.set(this._all, pool._id, {});
         Vue.set(this._all[pool._id], reward._id, reward);
     }

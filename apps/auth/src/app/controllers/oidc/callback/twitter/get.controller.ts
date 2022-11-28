@@ -1,9 +1,9 @@
+import { AccountDocument } from '@thxnetwork/auth/models/Account';
 import { Request, Response } from 'express';
 import { AccountService } from '../../../../services/AccountService';
 import { TwitterService } from '../../../../services/TwitterService';
 import { getAccountByTwitterId, getInteraction, saveInteraction } from '../../../../util/oidc';
 import { createWallet } from '../../../../util/wallet';
-import { AccountDocument } from '../../../../models/account';
 
 async function updateTokens(account: AccountDocument, tokens): Promise<AccountDocument> {
     account.twitterAccessToken = tokens.access_token || account.twitterAccessToken;

@@ -4,7 +4,7 @@ import { BadRequestError, ForbiddenError } from '@thxnetwork/api/util/errors';
 import { WithdrawalState, WithdrawalType } from '@thxnetwork/api/types/enums';
 import { WithdrawalDocument } from '@thxnetwork/api/models/Withdrawal';
 import { Claim } from '@thxnetwork/api/models/Claim';
-import { canClaimReward, findRewardById, isTERC20Reward, isTERC721Reward } from '../../rewards-utils';
+import { canClaimReward, findRewardById, isTERC20Reward, isTERC721Reward } from '@thxnetwork/api/util/rewards';
 
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
@@ -64,10 +64,10 @@ const controller = async (req: Request, res: Response) => {
         withdrawal = await WithdrawalService.withdrawFor(pool, withdrawal, account, forceSync);
 
         reward.rewardLimit > 0
-            ? await claim.updateOne({ sub: req.auth.sub })
+            ? await Claim.findByIdAndUpdate(claim._id, { sub: req.auth.sub })
             : await Claim.create({ ...claim.toJSON(), sub: req.auth.sub });
 
-        return res.json({ ...withdrawal.toJSON(), erc20 });
+        return res.json({ withdrawal, erc20, reward, claim });
     }
 
     if (isTERC721Reward(reward) && claim.erc721Id) {
@@ -86,7 +86,7 @@ const controller = async (req: Request, res: Response) => {
                   id: db.createUUID(),
               });
 
-        return res.json({ ...token.toJSON(), erc721: erc721.toJSON(), metadata: metadata.toJSON() });
+        return res.json({ token, erc721, metadata, reward, claim });
     }
 
     throw new BadRequestError('Invalid Reward Type');

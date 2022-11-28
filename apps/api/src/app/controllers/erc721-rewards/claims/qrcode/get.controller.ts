@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import { NotFoundError, SubjectUnauthorizedError } from '@thxnetwork/api/util/errors';
 import RewardNftService from '@thxnetwork/api/services/ERC721RewardService';
-import { getQrcode } from '@thxnetwork/api/controllers/rewards-utils';
+import { getQrcode } from '@thxnetwork/api/util/rewards';
 
 const validation = [param('id').exists().isString()];
 

@@ -16,7 +16,7 @@ import { createArchiver } from '@thxnetwork/api/util/zip';
 import { Upload } from '@aws-sdk/lib-storage';
 import ejs from 'ejs';
 import { assetsPath } from '../util/path';
-import { findRewardById } from '../controllers/rewards-utils';
+import { findRewardById } from '@thxnetwork/api/util/rewards';
 
 const mailTemplatePath = path.join(assetsPath, 'views', 'email');
 

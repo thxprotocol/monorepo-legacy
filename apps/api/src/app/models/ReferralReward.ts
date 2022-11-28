@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { TReferralReward } from '@thxnetwork/types/';
-import { rewardBaseSchema } from '../util/rewards';
+import { rewardBaseSchema } from '@thxnetwork/api/util/rewards';
 
 export type ReferralRewardDocument = mongoose.Document & TReferralReward;
 

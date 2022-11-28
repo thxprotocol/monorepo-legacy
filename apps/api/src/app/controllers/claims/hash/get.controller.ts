@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { param } from 'express-validator';
-import { findRewardById, isTERC20Reward, isTERC721Reward } from '../../rewards-utils';
+import { findRewardById, isTERC20Reward, isTERC721Reward } from '@thxnetwork/api/util/rewards';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import AssetPoolService from '@thxnetwork/api/services/AssetPoolService';

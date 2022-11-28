@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
-import { TERC20Reward, TERC721Reward } from '@thxnetwork/types/';
-import { rewardBaseSchema } from '../util/rewards';
+import { TERC20Reward } from '@thxnetwork/types/';
+import { rewardBaseSchema } from '@thxnetwork/api/util/rewards';
 
-export type ERC20RewardDocument = mongoose.Document & TERC721Reward;
+export type ERC20RewardDocument = mongoose.Document & TERC20Reward;
 
 const schema = new mongoose.Schema(
     {

@@ -1,6 +1,6 @@
 import { body } from 'express-validator';
 import { Request, Response } from 'express';
-import { createERC721Reward } from '../rewards-utils';
+import { createERC721Reward } from '@thxnetwork/api/util/rewards';
 
 const validation = [
     body('title').isString(),

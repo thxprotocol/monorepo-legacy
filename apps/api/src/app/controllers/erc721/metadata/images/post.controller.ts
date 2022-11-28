@@ -10,7 +10,7 @@ import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { fromBuffer } from 'file-type';
 import { Request, Response } from 'express';
 import { body, check, param } from 'express-validator';
-import { createERC721Reward } from '@thxnetwork/api/controllers/rewards-utils';
+import { createERC721Reward } from '@thxnetwork/api/util/rewards';
 import { RewardConditionPlatform, TERC721Reward } from '@thxnetwork/types/index';
 import short from 'short-uuid';
 import db from '@thxnetwork/api/util/database';

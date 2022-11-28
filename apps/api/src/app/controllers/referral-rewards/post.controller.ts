@@ -1,6 +1,6 @@
 import { body } from 'express-validator';
 import { Request, Response } from 'express';
-import { createReferralReward } from '../rewards-utils';
+import { createReferralReward } from '@thxnetwork/api/util/rewards';
 
 const validation = [
     body('title').exists().isString(),

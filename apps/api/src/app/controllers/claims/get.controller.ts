@@ -5,7 +5,7 @@ import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import AssetPoolService from '@thxnetwork/api/services/AssetPoolService';
 import { Claim } from '@thxnetwork/api/models/Claim';
-import { findRewardById, isTERC20Reward, isTERC721Reward } from '../rewards-utils';
+import { findRewardById, isTERC20Reward, isTERC721Reward } from '@thxnetwork/api/util/rewards';
 
 const validation = [param('id').exists().isString()];
 
