@@ -45,7 +45,6 @@
                     </b-form-group>
                 </b-col>
                 <b-col>
-                    {{ claims }}
                     <BCard bg-variant="light" :header="`Download ${claims.length} QR Codes`" class="mb-3">
                         <p class="text-gray">
                             You will receive a ZIP file containing QR code PDF's that you can share with your customers.
