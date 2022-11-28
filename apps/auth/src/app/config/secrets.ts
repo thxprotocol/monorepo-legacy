@@ -35,6 +35,7 @@ if (process.env.NODE_ENV === 'test') {
 export const VERSION = 'v1';
 export const GITHUB_API_ENDPOINT = 'https://api.github.com';
 export const TWITTER_API_ENDPOINT = 'https://api.twitter.com/2';
+export const GOOGLE_API_ENDPOINT = 'https://www.googleapis.com';
 export const CWD = process.env.CWD;
 export const NODE_ENV = process.env.NODE_ENV;
 export const AUTH_URL = process.env.AUTH_URL;

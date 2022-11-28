@@ -3,9 +3,8 @@ import request from 'supertest';
 import app from '../../app';
 import db from '../../util/database';
 import { AccountService } from '../../services/AccountService';
-import { INITIAL_ACCESS_TOKEN } from '../../config/secrets';
+import { GOOGLE_API_ENDPOINT, TWITTER_API_ENDPOINT, INITIAL_ACCESS_TOKEN } from '../../config/secrets';
 import { accountAddress, accountEmail, accountSecret } from '../../util/jest';
-import { TWITTER_API_ENDPOINT } from '../../config/secrets';
 
 const http = request.agent(app);
 
@@ -174,6 +173,13 @@ describe('Account Controller', () => {
     });
 
     describe('GET /account/:sub/google/youtube', () => {
+        beforeAll(async () => {
+            nock(GOOGLE_API_ENDPOINT)
+                .persist()
+                .get(/.*?/)
+                .reply(200, { scope: 'scope1 scope2', data: { data: {} } });
+        });
+
         it('Denice Access if there no authorization header', async () => {
             const res = await http.get(`/account/${accountId}/google/youtube`).send();
             expect(res.status).toEqual(401);
@@ -186,6 +192,7 @@ describe('Account Controller', () => {
                     Authorization: authHeader,
                 })
                 .send();
+            console.log(res.body);
             expect(res.body.isAuthorized).toEqual(false);
         });
 
