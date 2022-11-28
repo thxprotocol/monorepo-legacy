@@ -11,7 +11,6 @@ import CreateERC20Reward from './post.controller';
 import ReadERC20Reward from './get.controller';
 import UpdateERC20Reward from './patch.controller';
 import ListERC20Reward from './list.controller';
-import ClaimERC20Reward from './claims/qrcode/get.controller';
 
 const router = express.Router();
 
@@ -50,16 +49,6 @@ router.patch(
     requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
     UpdateERC20Reward.controller,
-);
-
-router.get(
-    '/:id/claims/qrcode',
-    guard.check(['rewards:read', 'rewards:read']),
-    assertAssetPoolAccess,
-    assertRequestInput(ClaimERC20Reward.validation),
-    requireAssetPoolHeader,
-    assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
-    ClaimERC20Reward.controller,
 );
 
 export default router;

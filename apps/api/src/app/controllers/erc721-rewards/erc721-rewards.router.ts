@@ -50,14 +50,4 @@ router.patch(
     UpdateRewardNft.controller,
 );
 
-router.get(
-    '/:id/claims/qrcode',
-    guard.check(['rewards:read', 'claims:read']),
-    assertAssetPoolAccess,
-    assertRequestInput(ListRewardNft.validation),
-    requireAssetPoolHeader,
-    assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
-    ListRewardNft.controller,
-);
-
 export default router;

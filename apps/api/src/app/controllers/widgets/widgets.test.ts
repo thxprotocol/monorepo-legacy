@@ -14,15 +14,13 @@ import { Contract } from 'web3-eth-contract';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { getContract } from '@thxnetwork/api/config/contracts';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { RewardDocument } from '@thxnetwork/api/models/Reward';
+import { ERC20RewardDocument } from '@thxnetwork/api/models/ERC20Reward';
+import { addMinutes } from '@thxnetwork/api/util/rewards';
 
 const user = request.agent(app);
 
 describe('Widgets', () => {
-    const title = 'Welcome Package',
-        slug = 'welcome-package';
-
-    let pool: AssetPoolDocument, testToken: Contract, clientId: string, reward: RewardDocument;
+    let pool: AssetPoolDocument, testToken: Contract, clientId: string, reward: ERC20RewardDocument;
 
     beforeAll(async () => {
         await beforeAllCallback();
@@ -49,16 +47,18 @@ describe('Widgets', () => {
 
     describe('POST /rewards', () => {
         it('HTTP 200', async () => {
+            const expiryDate = addMinutes(new Date(), 30);
             await user
                 .post('/v1/erc20-rewards/')
                 .set({ 'X-PoolId': pool._id, 'Authorization': dashboardAccessToken })
                 .send({
-                    title,
-                    slug,
-                    withdrawAmount: rewardWithdrawAmount,
-                    withdrawDuration: rewardWithdrawDuration,
-                    withdrawUnlockDate: rewardWithdrawUnlockDate,
+                    title: 'Expiration date is next 30 min',
+                    description: 'Lorem ipsum dolor sit amet',
                     amount: 1,
+                    platform: 0,
+                    expiryDate,
+                    rewardLimit: 0,
+                    claimAmount: 1,
                 })
                 .expect(({ body }: request.Response) => {
                     reward = body;
