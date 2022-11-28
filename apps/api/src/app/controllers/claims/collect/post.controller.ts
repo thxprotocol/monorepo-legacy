@@ -34,7 +34,8 @@ const controller = async (req: Request, res: Response) => {
 
     // Validate the claim
     const { result, error } = await canClaimReward(pool, reward, account);
-    if (!result && error) throw new ForbiddenError(error);
+    console.log(result, error);
+    if (!result || error) throw new ForbiddenError(error);
 
     // Memberships could be removed but tokens should be created
     const hasMembership = await MembershipService.hasMembership(pool, account.id);
@@ -64,8 +65,14 @@ const controller = async (req: Request, res: Response) => {
         withdrawal = await WithdrawalService.withdrawFor(pool, withdrawal, account, forceSync);
 
         reward.rewardLimit > 0
-            ? await Claim.findByIdAndUpdate(claim._id, { sub: req.auth.sub })
-            : await Claim.create({ ...claim.toJSON(), sub: req.auth.sub });
+            ? await claim.updateOne({ sub: req.auth.sub })
+            : await Claim.create({
+                  sub: req.auth.sub,
+                  erc721Id: claim.erc721Id,
+                  rewardId: claim.rewardId,
+                  poolId: claim.poolId,
+                  id: db.createUUID(),
+              });
 
         return res.json({ withdrawal, erc20, reward, claim });
     }
@@ -76,7 +83,7 @@ const controller = async (req: Request, res: Response) => {
         const token = await ERC721Service.mint(pool, erc721, metadata, account, forceSync);
 
         reward.rewardLimit > 0
-            ? await Claim.findByIdAndUpdate(claim._id, { sub: req.auth.sub })
+            ? await claim.updateOne({ sub: req.auth.sub })
             : await Claim.create({
                   sub: req.auth.sub,
                   erc721Id: claim.erc721Id,

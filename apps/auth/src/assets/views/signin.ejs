@@ -38,8 +38,8 @@
       <% } %>
 
       <!--
-                This part is used for the invite flow
-            -->
+          This part is used for the invite flow
+      -->
       <% if (params.authentication_token && params.secure_key) { %>
       <form action="/oidc/<%= uid %>/password" method="post">
         <div class="form-group">

@@ -3,7 +3,7 @@
         <div class="flex-row text-white">
             <div v-if="isLoading && !error" class="text-center">
                 <b-spinner variant="secondary" large /><br />
-                <span class="text-muted mt-2">{{ info }}</span>
+                <span class="text-muted mt-2">Claiming your reward...</span>
             </div>
             <template v-else>
                 <template v-if="isClaimInvalid">
@@ -22,20 +22,14 @@
                 </template>
             </template>
 
-            <template v-if="claimedReward">
+            <template v-if="!isLoading && claimedReward">
                 <template v-if="claimedReward.erc20">
                     <div class="img-treasure" :style="`background-image: url(${imgUrl});`"></div>
                     <h2 class="text-secondary text-center my-3">
                         <strong>Congratulations!</strong> You've earned
-                        <strong>{{ claimedReward.amount }} {{ claimedReward.erc20.symbol }}</strong>
+                        <strong>{{ claimedReward.withdrawal.amount }} {{ claimedReward.erc20.symbol }}</strong>
                     </h2>
-                    <p class="lead text-center">
-                        Collect, swap or redeem these tokens for promotions.<br />
-                        <small class="text-muted" v-if="claimedReward.unlockDate">
-                            Unlocks at
-                            {{ format(new Date(claimedReward.unlockDate), 'MMMM dd, yyyy') }}
-                        </small>
-                    </p>
+                    <p class="lead text-center">Collect, swap or redeem these tokens for promotions.<br /></p>
                 </template>
                 <b-row v-if="claimedReward.erc721">
                     <b-col xs="12" md="6" class="d-flex align-items-center">
@@ -44,8 +38,8 @@
                     <b-col xs="12" md="6">
                         <h2 class="text-secondary my-3"><strong>Congratulations!</strong> You've claimed an NFT.</h2>
                         <p class="lead">
-                            {{ claimedReward.metadata.title }}<br />
-                            <small class="text-muted">{{ claimedReward.metadata.description }}</small>
+                            {{ claimedReward.token.metadata.title }}<br />
+                            <small class="text-muted">{{ claimedReward.token.metadata.description }}</small>
                         </p>
                     </b-col>
                 </b-row>
@@ -93,7 +87,8 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters, mapState } from 'vuex';
 import poll from 'promise-poller';
 import { UserProfile } from '../store/modules/account';
-import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
+import { RewardConditionInteraction, RewardConditionPlatform, TBaseReward } from '@thxnetwork/types/index';
+import { TERC20 } from '../store/modules/erc20';
 
 @Component({
     computed: {
@@ -115,7 +110,13 @@ export default class Collect extends Vue {
     isClaimFailed = false;
     isClaimInvalid = false;
     claim: (Withdrawal & TERC721Token & { poolId: string; erc20Id: string }) | null = null;
-    claimedReward: (Withdrawal & TERC721Token & { poolId: string }) | null = null;
+    claimedReward: {
+        withdrawal: Withdrawal;
+        token: TERC721Token;
+        reward: TBaseReward;
+        erc721: ERC721;
+        erc20: TERC20;
+    } | null = null;
     state!: { claimId: string; rewardHash: string };
 
     erc721s!: { [id: string]: ERC721 };
@@ -131,10 +132,6 @@ export default class Collect extends Vue {
     get erc721() {
         if (!this.claim) return null;
         return this.erc721s[this.claim.erc721Id];
-    }
-
-    get info() {
-        return this.claimStarted ? 'Claim transaction pending...' : 'Claiming your reward...';
     }
 
     async mounted() {
@@ -189,15 +186,16 @@ export default class Collect extends Vue {
 
     async claimReward() {
         try {
+            this.isLoading = true;
+
             this.claimedReward = await this.$store.dispatch('assetpools/claimReward', this.state.claimId);
+            debugger;
             if (!this.claimedReward) return;
 
-            this.claimStarted = true;
-
             if (this.claimedReward?.erc20) {
-                await this.waitForWithdrawn(this.claimedReward);
+                await this.waitForWithdrawn(this.claimedReward.withdrawal);
             } else {
-                await this.waitForMinted(this.claimedReward);
+                await this.waitForMinted(this.claimedReward.token);
             }
 
             this.startConfetti();
@@ -219,7 +217,6 @@ export default class Collect extends Vue {
                 this.error = res?.data.error.message;
             }
         } finally {
-            this.claimStarted = false;
             this.isLoading = false;
         }
     }

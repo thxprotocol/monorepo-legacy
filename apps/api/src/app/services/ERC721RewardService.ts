@@ -41,8 +41,9 @@ export async function canClaim(
     // Can only claim this reward once and a withdrawal already exists
     if (reward.rewardLimit > 0) {
         const amountOfClaims = await Claim.countDocuments({ rewardId: String(reward._id) });
-        if (amountOfClaims > reward.rewardLimit) {
-            return { error: 'You have already claimed this reward' };
+        console.log('amountOfClaims', amountOfClaims);
+        if (amountOfClaims >= reward.rewardLimit) {
+            return { error: "This reward has reached i'ts limit" };
         }
     }
 
