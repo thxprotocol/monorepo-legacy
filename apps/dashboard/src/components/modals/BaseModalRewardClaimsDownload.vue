@@ -93,7 +93,7 @@ export default class BaseModalRewardClaimsDownload extends Vue {
     fileFormats = '.jpg, .jpeg, .gif, .png';
 
     @Prop() id!: string;
-    @Prop() rewards!: { [id: string]: TBaseReward & { claims: TClaim[] } };
+    @Prop() rewards!: { [id: string]: TBaseReward & { claims: TClaim[]; _id: string } };
     @Prop() selectedItems!: string[];
     @Prop() pool!: IPool;
 

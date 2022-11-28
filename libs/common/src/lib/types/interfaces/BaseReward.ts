@@ -11,7 +11,6 @@ export type TBaseReward = {
     rewardLimit: number;
     isClaimOnce: boolean;
     platform: RewardConditionPlatform;
-    isConditional?: boolean;
     interaction?: RewardConditionInteraction;
     content?: string;
     createdAt?: string;

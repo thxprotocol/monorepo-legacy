@@ -21,6 +21,7 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Claims']
 
     const claim = await ClaimService.findById(req.params.id);
+    console.log(claim, req.params.id);
     if (!claim) throw new BadRequestError('This claim URL is invalid.');
 
     const pool = await AssetPoolService.getById(claim.poolId);
@@ -34,7 +35,7 @@ const controller = async (req: Request, res: Response) => {
 
     // Validate the claim
     const { result, error } = await canClaimReward(pool, reward, account);
-    console.log(result, error);
+
     if (!result || error) throw new ForbiddenError(error);
 
     // Memberships could be removed but tokens should be created
@@ -68,7 +69,7 @@ const controller = async (req: Request, res: Response) => {
             ? await claim.updateOne({ sub: req.auth.sub })
             : await Claim.create({
                   sub: req.auth.sub,
-                  erc721Id: claim.erc721Id,
+                  erc20Id: claim.erc20Id,
                   rewardId: claim.rewardId,
                   poolId: claim.poolId,
                   id: db.createUUID(),

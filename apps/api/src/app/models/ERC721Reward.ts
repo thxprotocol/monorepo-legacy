@@ -12,8 +12,4 @@ const erc721RewardSchema = new mongoose.Schema(
     { timestamps: true },
 );
 
-erc721RewardSchema.virtual('isConditional', (r: TERC721Reward) => {
-    return r.platform && r.interaction && r.content;
-});
-
 export const ERC721Reward = mongoose.model<ERC721RewardDocument>('erc721rewards', erc721RewardSchema);

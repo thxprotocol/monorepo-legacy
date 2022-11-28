@@ -87,8 +87,22 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters, mapState } from 'vuex';
 import poll from 'promise-poller';
 import { UserProfile } from '../store/modules/account';
-import { RewardConditionInteraction, RewardConditionPlatform, TBaseReward } from '@thxnetwork/types/index';
+import {
+    RewardConditionInteraction,
+    RewardConditionPlatform,
+    TERC20Reward,
+    TERC721Reward,
+} from '@thxnetwork/types/index';
 import { TERC20 } from '../store/modules/erc20';
+
+type TClaim = {
+    metadata: TERC721Metadata;
+    reward:
+        | (TERC20Reward & { itemUrl: { href: string; label: string } })
+        | (TERC721Reward & { itemUrl: { href: string; label: string } });
+    erc721: ERC721;
+    erc20: TERC20;
+};
 
 @Component({
     computed: {
@@ -109,20 +123,17 @@ export default class Collect extends Vue {
     claimStarted = false;
     isClaimFailed = false;
     isClaimInvalid = false;
-    claim: (Withdrawal & TERC721Token & { poolId: string; erc20Id: string }) | null = null;
-    claimedReward: {
-        withdrawal: Withdrawal;
-        token: TERC721Token;
-        reward: TBaseReward;
-        erc721: ERC721;
-        erc20: TERC20;
-    } | null = null;
+    claim: TClaim | null = null;
+    claimedReward: (TClaim & { withdrawal: Withdrawal; token: TERC721Token }) | null = null;
     state!: { claimId: string; rewardHash: string };
 
     erc721s!: { [id: string]: ERC721 };
     user!: User;
-    reward: any = null;
 
+    reward:
+        | null
+        | (TERC20Reward & { itemUrl: { href: string; label: string } })
+        | (TERC721Reward & { itemUrl: { href: string; label: string } }) = null;
     profile!: UserProfile;
     hasValidAccessToken = false;
     RewardConditionPlatform = RewardConditionPlatform;
@@ -131,7 +142,7 @@ export default class Collect extends Vue {
 
     get erc721() {
         if (!this.claim) return null;
-        return this.erc721s[this.claim.erc721Id];
+        return this.erc721s[this.claim.erc721._id];
     }
 
     async mounted() {
@@ -145,29 +156,15 @@ export default class Collect extends Vue {
         // Get claim information based on url claimId or rewardHash. rewardHash will be deprecated
         this.claim = await this.$store.dispatch('assetpools/getClaim', this.state.claimId);
         if (!this.claim) return;
-
-        // Get reward information based on claims rewardId
-        if (this.claim.erc20Id) {
-            this.reward = await this.$store.dispatch('assetpools/getERC20Reward', {
-                rewardId: this.claim.rewardId,
-                poolId: this.claim.poolId,
-            });
-        }
-        if (this.claim.erc721Id) {
-            this.reward = await this.$store.dispatch('assetpools/getERC721Reward', {
-                rewardId: this.claim.rewardId,
-                poolId: this.claim.poolId,
-            });
-        }
-        if (!this.reward) return;
+        this.reward = this.claim.reward;
 
         // If no condition applies claim directly
-        if (this.reward.platform === RewardConditionPlatform.None) {
+        if (this.claim.reward.platform === RewardConditionPlatform.None) {
             return await this.claimReward();
         }
 
         // Check validity of current access token
-        switch (this.reward.platform) {
+        switch (this.claim.reward.platform) {
             case RewardConditionPlatform.Google:
                 this.hasValidAccessToken = this.profile.googleAccess;
                 break;
@@ -187,9 +184,7 @@ export default class Collect extends Vue {
     async claimReward() {
         try {
             this.isLoading = true;
-
             this.claimedReward = await this.$store.dispatch('assetpools/claimReward', this.state.claimId);
-            debugger;
             if (!this.claimedReward) return;
 
             if (this.claimedReward?.erc20) {
@@ -200,10 +195,10 @@ export default class Collect extends Vue {
 
             this.startConfetti();
 
-            if (this.claim && this.claim.erc721Id) {
+            if (this.claim && this.claim.erc721) {
                 await this.$store.dispatch('network/connect', this.claim.erc721.chainId);
                 this.$store.commit('erc721/set', this.claim.erc721);
-
+                debugger;
                 const imgUrl = this.firstImageURL(this.claim.metadata);
                 if (imgUrl) this.imgUrl = imgUrl;
             } else if (this.claim && this.claim.erc20) {
@@ -216,17 +211,18 @@ export default class Collect extends Vue {
             if (res?.status === 403) {
                 this.error = res?.data.error.message;
             }
+            debugger;
         } finally {
             this.isLoading = false;
         }
     }
 
     async waitForWithdrawn(withdrawal: Withdrawal) {
-        const claim = await this.$store.dispatch('assetpools/getClaim', this.state.claimId);
         const taskFn = async () => {
+            if (!this.reward) return;
             const w = await this.$store.dispatch('withdrawals/get', {
                 id: withdrawal._id,
-                poolId: claim.poolId,
+                poolId: this.reward.poolId,
             });
             if (w && w.state === WithdrawalState.Withdrawn) {
                 return Promise.resolve(w);
@@ -253,7 +249,7 @@ export default class Collect extends Vue {
 
     firstImageURL(metadata: TERC721Metadata) {
         let url = '';
-        this.erc721?.properties.forEach((p) => {
+        this.claim?.erc721.properties.forEach((p) => {
             if (p.propType === 'image') {
                 const prop = metadata.attributes.find((a: { value: string; key: string }) => a.key === p.name);
                 url = prop?.value;
@@ -273,7 +269,7 @@ export default class Collect extends Vue {
 
     goToWallet() {
         (this as any).$confetti.stop();
-        const path = this.erc721 ? 'collectibles' : 'tokens';
+        const path = this.claim?.erc721 ? 'collectibles' : 'tokens';
         this.$router.push({ path });
     }
 

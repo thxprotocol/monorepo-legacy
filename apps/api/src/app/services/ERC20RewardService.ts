@@ -4,7 +4,7 @@ import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import { ERC20Reward, ERC20RewardDocument } from '../models/ERC20Reward';
 import { validateCondition } from '../util/condition';
-import { TERC20Reward } from '@thxnetwork/types/';
+import { RewardConditionPlatform, TERC20Reward } from '@thxnetwork/types/index';
 import { Claim } from '../models/Claim';
 
 export async function get(rewardId: string): Promise<ERC20RewardDocument> {
@@ -46,7 +46,7 @@ export async function canClaim(
     }
 
     // Validate reward condition
-    if (!reward.isConditional) {
+    if (reward.platform === RewardConditionPlatform.None) {
         return { result: true };
     }
 

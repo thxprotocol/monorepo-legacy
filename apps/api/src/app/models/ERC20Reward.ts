@@ -25,8 +25,4 @@ const erc20RewardSchema = new mongoose.Schema(
     { timestamps: true },
 );
 
-erc20RewardSchema.virtual('isConditional', (r: TERC20Reward) => {
-    return r.platform && r.interaction && r.content;
-});
-
 export const ERC20Reward = mongoose.model<ERC20RewardDocument>('erc20rewards', erc20RewardSchema);

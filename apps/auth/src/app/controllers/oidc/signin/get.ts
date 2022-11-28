@@ -11,11 +11,13 @@ async function controller(req: Request, res: Response) {
     let claim,
         alert = {};
 
+    console.log(params);
+
     if (params.claim_id) {
         claim = await ClaimProxy.get(params.claim_id);
         alert = {
             variant: 'success',
-            message: 'Claim ' + 1 + '!',
+            message: 'Sign in and claim your reward!',
         };
     }
 

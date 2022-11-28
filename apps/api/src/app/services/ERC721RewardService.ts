@@ -3,7 +3,7 @@ import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { paginatedResults, PaginationResult } from '@thxnetwork/api/util/pagination';
 import { IAccount } from '@thxnetwork/api/models/Account';
 import { validateCondition } from '@thxnetwork/api/util/condition';
-import { TERC721Reward } from '@thxnetwork/types/';
+import { RewardConditionPlatform, TERC721Reward } from '@thxnetwork/types/index';
 import { ERC721Reward, ERC721RewardDocument } from '@thxnetwork/api/models/ERC721Reward';
 import { Claim } from '@thxnetwork/api/models/Claim';
 
@@ -31,27 +31,28 @@ export async function canClaim(
     }
 
     // Can only claim this reward once and a withdrawal already exists
+    if (reward.rewardLimit > 0) {
+        const amountOfClaims = await Claim.countDocuments({ rewardId: String(reward._id), sub: { $exists: true } });
+        console.log('amountOfClaims', amountOfClaims);
+        if (amountOfClaims >= reward.rewardLimit) {
+            return { error: "This reward has reached it's limit" };
+        }
+    }
+
+    // Can only claim this reward once and a withdrawal already exists
     if (reward.isClaimOnce) {
-        const hasClaimedOnce = await Claim.exists({ sub: account.id });
+        const hasClaimedOnce = await Claim.exists({ rewardId: String(reward._id), sub: account.id });
         if (hasClaimedOnce) {
             return { error: 'You can only claim this reward once.' };
         }
     }
 
-    // Can only claim this reward once and a withdrawal already exists
-    if (reward.rewardLimit > 0) {
-        const amountOfClaims = await Claim.countDocuments({ rewardId: String(reward._id) });
-        console.log('amountOfClaims', amountOfClaims);
-        if (amountOfClaims >= reward.rewardLimit) {
-            return { error: "This reward has reached i'ts limit" };
-        }
-    }
-
-    // Validate reward condition
-    if (!reward.isConditional) {
+    // If not platform skip condition validation
+    if (reward.platform === RewardConditionPlatform.None) {
         return { result: true };
     }
 
+    // Validate reward condition
     return await validateCondition(account, reward);
 }
 
