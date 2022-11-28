@@ -15,7 +15,7 @@ async function controller(req: Request, res: Response) {
         claim = await ClaimProxy.get(params.claim_id);
         alert = {
             variant: 'success',
-            message: 'Claim ' + 1 + '!',
+            message: 'Sign in and claim your reward!',
         };
     }
 

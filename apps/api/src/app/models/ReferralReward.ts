@@ -12,8 +12,4 @@ const schema = new mongoose.Schema(
     { timestamps: true },
 );
 
-schema.virtual('isConditional', (r: TReferralReward) => {
-    return r.platform && r.interaction && r.content;
-});
-
 export const ReferralReward = mongoose.model<ReferralRewardDocument>('ReferralRewards', schema);

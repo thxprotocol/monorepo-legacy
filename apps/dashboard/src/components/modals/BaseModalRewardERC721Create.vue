@@ -27,10 +27,6 @@
                         />
                         <BaseCardRewardExpiry class="mb-3" :expiry="rewardExpiry" @change="rewardExpiry = $event" />
                         <!-- <BaseCardRewardQRCodes class="mb-3" @change="rewardExpiry = $event" /> -->
-                        <b-form-checkbox class="mb-0" v-model="isClaimOnce">
-                            <strong> Claim once </strong>
-                            <p>Only allow one claim per account.</p>
-                        </b-form-checkbox>
                     </b-col>
                 </b-row>
             </form>
@@ -78,7 +74,6 @@ export default class ModalRewardERC721Create extends Vue {
     title = '';
     erc721metadataId = '';
     description = '';
-    isClaimOnce = true;
     rewardExpiry = {};
     claimAmount = 1;
     rewardLimit = 0;
@@ -109,7 +104,6 @@ export default class ModalRewardERC721Create extends Vue {
                 interaction: this.reward.interaction as RewardConditionInteraction,
                 content: this.reward.content as string,
             };
-            this.isClaimOnce = this.reward.isClaimOnce;
         }
     }
 
@@ -120,7 +114,6 @@ export default class ModalRewardERC721Create extends Vue {
 
     onSubmit() {
         this.isLoading = true;
-        debugger;
         this.$store
             .dispatch(`erc721Rewards/${this.reward ? 'update' : 'create'}`, {
                 pool: this.pool,
@@ -129,7 +122,6 @@ export default class ModalRewardERC721Create extends Vue {
                     title: this.title,
                     description: this.description,
                     erc721metadataId: this.erc721metadataId,
-                    isClaimOnce: this.isClaimOnce,
                     claimAmount: this.claimAmount,
                     rewardLimit: this.rewardLimit,
                     platform: this.rewardCondition.platform,

@@ -25,10 +25,6 @@
                         />
                         <BaseCardRewardExpiry class="mb-3" :expiry="rewardExpiry" @change="rewardExpiry = $event" />
                         <BaseCardRewardQRCodes class="mb-3" @change="rewardExpiry = $event" />
-                        <b-form-checkbox class="mb-0" v-model="isClaimOnce">
-                            <strong> Claim once </strong>
-                            <p>Allows the user to claim the reward only once.</p>
-                        </b-form-checkbox>
                     </b-col>
                 </b-row>
             </form>
@@ -73,7 +69,6 @@ export default class ModalRewardPointsCreate extends Vue {
     title = '';
     amount = '0';
     description = '';
-    isClaimOnce = true;
     rewardExpiry = {};
     rewardCondition = {
         platform: platformList[0],

@@ -16,7 +16,6 @@ const validation = [
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721 Rewards']
     const { reward, claims } = await createERC721Reward(req.assetPool, req.body);
-    console.log(reward);
     res.status(201).json({ ...reward.toJSON(), claims });
 };
 

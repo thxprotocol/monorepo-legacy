@@ -81,8 +81,8 @@ class AssetPoolModule extends VuexModule {
         const claim = await this.context.dispatch('getClaim', claimId);
         const r = await axios({
             method: 'POST',
-            url: `/claims/${claim.id}/collect`,
-            headers: { 'X-PoolId': claim.poolId },
+            url: `/claims/${claimId}/collect`,
+            headers: { 'X-PoolId': claim.claim.poolId },
             params: { forceSync: false },
         });
 

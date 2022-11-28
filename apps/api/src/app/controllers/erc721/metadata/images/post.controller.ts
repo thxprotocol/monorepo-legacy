@@ -106,7 +106,6 @@ const controller = async (req: Request, res: Response) => {
                         expiryDate: null,
                         claimAmount: 1,
                         rewardLimit: 1,
-                        isClaimOnce: true,
                         platform: RewardConditionPlatform.None,
                     } as TERC721Reward);
 

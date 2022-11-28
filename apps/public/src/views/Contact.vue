@@ -1,13 +1,13 @@
 <template>
     <section class="bg-secondary bg-bubble pt-5 pb-5 pb-lg-10">
-        <div class="container ">
+        <div class="container">
             <div class="row pb-5 pt-5 mt-5">
                 <div class="col-md-12 text-center">
                     <div class="lead">How can we help you?</div>
                     <h1 class="h1 font-size-xl mt-3 mb-3 text-uppercase">Contact</h1>
                 </div>
             </div>
-            <div class="row pt-5 ">
+            <div class="row pt-5">
                 <div class="col-lg-6">
                     <b-card bg-variant="darker" body-class="p-5" class="mb-5">
                         <h3>
@@ -152,7 +152,11 @@
                             </a>
                         </li>
                     </ul>
-                    <img class="img-fluid rounded mb-5" v-lazy="require('../../public/assets/img/thx_contact_team.webp')" alt="" />
+                    <img
+                        class="img-fluid rounded mb-5"
+                        v-lazy="require('../../public/assets/img/thx_contact_team.webp')"
+                        alt=""
+                    />
 
                     <h3 class="text-dark">Media Materials</h3>
                     <p class="mb-3">
@@ -274,7 +278,6 @@ export default class Contact extends Vue {
         } catch (e) {
             this.error =
                 'Oops! Something went wrong... Try reaching us on <a href="https://discord.gg/TzbbSmkE7Y" target="_blank">Discord</a>!';
-            console.log(e);
         } finally {
             this.loading = false;
         }
