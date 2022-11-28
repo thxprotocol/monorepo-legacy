@@ -9,7 +9,6 @@ export const rewardBaseSchema = {
     expiryDate: Date,
     claimAmount: Number,
     rewardLimit: Number,
-    isClaimOnce: Boolean,
     platform: Number,
     interaction: Number,
     content: String,

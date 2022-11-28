@@ -38,8 +38,10 @@
                     <b-col xs="12" md="6">
                         <h2 class="text-secondary my-3"><strong>Congratulations!</strong> You've claimed an NFT.</h2>
                         <p class="lead">
-                            {{ claimedReward.token.metadata.title }}<br />
-                            <small class="text-muted">{{ claimedReward.token.metadata.description }}</small>
+                            {{ claimedReward.metadata.attributes.find((a) => a.key === 'name').value }}<br />
+                            <small class="text-muted">{{
+                                claimedReward.metadata.attributes.find((a) => a.key === 'description').value
+                            }}</small>
                         </p>
                     </b-col>
                 </b-row>
@@ -70,9 +72,7 @@
                 </b-link>
             </b-alert>
             <p class="text-muted">Please, connect to this channel to claim your reward.</p>
-            <b-button @click="connect(reward.platform)" variant="primary" block class="rounded-pill">
-                Connect
-            </b-button>
+            <b-button @click="connect" variant="primary" block class="rounded-pill"> Connect </b-button>
         </b-card>
     </div>
 </template>
@@ -273,10 +273,10 @@ export default class Collect extends Vue {
         this.$router.push({ path });
     }
 
-    connect(platform: RewardConditionPlatform | null) {
+    connect() {
         if (!this.user.state) return;
         this.$store.dispatch('account/connectRedirect', {
-            platform,
+            platform: this.reward?.platform,
             path: `/claim/${this.state.claimId}`,
         });
     }

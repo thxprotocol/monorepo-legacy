@@ -30,19 +30,17 @@ export async function canClaim(
     }
 
     // Can only claim this reward once and a withdrawal already exists
-    if (reward.isClaimOnce) {
-        const hasClaimedOnce = await Claim.exists({ sub: account.id });
-        if (hasClaimedOnce) {
-            return { error: 'You have already claimed this reward' };
+    if (reward.rewardLimit > 0) {
+        const amountOfClaims = await Claim.countDocuments({ rewardId: String(reward._id) });
+        if (amountOfClaims > reward.rewardLimit) {
+            return { error: "This reward claim has reached it's limit." };
         }
     }
 
     // Can only claim this reward once and a withdrawal already exists
-    if (reward.rewardLimit > 0) {
-        const amountOfClaims = await Claim.countDocuments({ rewardId: String(reward._id) });
-        if (amountOfClaims > reward.rewardLimit) {
-            return { error: 'You have already claimed this reward' };
-        }
+    const hasClaimedOnce = await Claim.exists({ rewardId: String(reward._id), sub: account.id });
+    if (hasClaimedOnce) {
+        return { error: 'You have already claimed this reward' };
     }
 
     // Validate reward condition
@@ -61,7 +59,6 @@ export async function removeAllForPool(assetPool: AssetPoolDocument) {
 }
 
 export async function create(pool: AssetPoolDocument, payload: TERC20Reward) {
-    console.log(payload);
     return await ERC20Reward.create({
         poolId: String(pool._id),
         uuid: db.createUUID(),

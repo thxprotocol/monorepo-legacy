@@ -21,7 +21,6 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Claims']
 
     const claim = await ClaimService.findById(req.params.id);
-    console.log(claim, req.params.id);
     if (!claim) throw new BadRequestError('This claim URL is invalid.');
 
     const pool = await AssetPoolService.getById(claim.poolId);
@@ -35,7 +34,6 @@ const controller = async (req: Request, res: Response) => {
 
     // Validate the claim
     const { result, error } = await canClaimReward(pool, reward, account);
-
     if (!result || error) throw new ForbiddenError(error);
 
     // Memberships could be removed but tokens should be created
@@ -65,15 +63,19 @@ const controller = async (req: Request, res: Response) => {
         const erc20 = await ERC20Service.getById(claim.erc20Id);
         withdrawal = await WithdrawalService.withdrawFor(pool, withdrawal, account, forceSync);
 
-        reward.rewardLimit > 0
-            ? await claim.updateOne({ sub: req.auth.sub })
-            : await Claim.create({
-                  sub: req.auth.sub,
-                  erc20Id: claim.erc20Id,
-                  rewardId: claim.rewardId,
-                  poolId: claim.poolId,
-                  id: db.createUUID(),
-              });
+        // When more than one claim is created for this reward we update the existing ones,
+        // since the check on rewardLimit will take into account the claims with existing sub
+        if (reward.claimAmount > 1) {
+            await claim.updateOne({ sub: req.auth.sub });
+        } else {
+            await Claim.create({
+                sub: req.auth.sub,
+                erc20Id: claim.erc20Id,
+                rewardId: claim.rewardId,
+                poolId: claim.poolId,
+                id: db.createUUID(),
+            });
+        }
 
         return res.json({ withdrawal, erc20, reward, claim });
     }
@@ -83,20 +85,24 @@ const controller = async (req: Request, res: Response) => {
         const erc721 = await ERC721Service.findById(metadata.erc721);
         const token = await ERC721Service.mint(pool, erc721, metadata, account, forceSync);
 
-        reward.rewardLimit > 0
-            ? await claim.updateOne({ sub: req.auth.sub })
-            : await Claim.create({
-                  sub: req.auth.sub,
-                  erc721Id: claim.erc721Id,
-                  rewardId: claim.rewardId,
-                  poolId: claim.poolId,
-                  id: db.createUUID(),
-              });
+        // TODO make abstract method for this. Take note of difference in claim creation.
+
+        // When more than one claim is created for this reward we update the existing ones,
+        // since the check on rewardLimit will take into account the claims with existing sub
+        if (reward.claimAmount > 1) {
+            await claim.updateOne({ sub: req.auth.sub });
+        } else {
+            await Claim.create({
+                sub: req.auth.sub,
+                erc721Id: claim.erc721Id,
+                rewardId: claim.rewardId,
+                poolId: claim.poolId,
+                id: db.createUUID(),
+            });
+        }
 
         return res.json({ token, erc721, metadata, reward, claim });
     }
-
-    throw new BadRequestError('Invalid Reward Type');
 };
 
 export default { controller, validation };

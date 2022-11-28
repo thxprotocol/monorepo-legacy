@@ -1,9 +1,9 @@
 import ERC721RewardService from '@thxnetwork/api/services/ERC721RewardService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { Request, Response } from 'express';
-import { body, param } from 'express-validator';
+import { param } from 'express-validator';
 
-const validation = [param('id').exists(), body('isClaimOnce').optional().isBoolean()];
+const validation = [param('id').exists()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['RewardsNft']

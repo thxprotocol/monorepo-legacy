@@ -4,7 +4,7 @@
             <p class="text-gray">
                 Points rewards are distributed to your customers achieving milestones in your customer journey.
             </p>
-            <form v-on:submit.prevent="onSubmit()" id="formRewardPointsCreate">
+            <form v-on:submit.prevent="onSubmit" id="formRewardPointsCreate">
                 <b-row>
                     <b-col md="6">
                         <b-form-group label="Title">
@@ -25,10 +25,6 @@
                         />
                         <BaseCardRewardExpiry class="mb-3" :expiry="rewardExpiry" @change="rewardExpiry = $event" />
                         <!-- <BaseCardRewardQRCodes class="mb-3" @change="rewardExpiry = $event" /> -->
-                        <b-form-checkbox class="mb-0" v-model="isClaimOnce">
-                            <strong> Claim once </strong>
-                            <p>Only allow one claim for this reward per account.</p>
-                        </b-form-checkbox>
                     </b-col>
                 </b-row>
             </form>
@@ -73,7 +69,6 @@ export default class ModalRewardERC20Create extends Vue {
     title = '';
     amount = '0';
     description = '';
-    isClaimOnce = true;
     rewardExpiry = {};
     claimAmount = 1;
     rewardLimit = 0;
@@ -97,7 +92,6 @@ export default class ModalRewardERC20Create extends Vue {
                 interaction: this.reward.interaction as RewardConditionInteraction,
                 content: this.reward.content as string,
             };
-            this.isClaimOnce = this.reward.isClaimOnce;
         }
     }
 
@@ -112,7 +106,6 @@ export default class ModalRewardERC20Create extends Vue {
                     title: this.title,
                     description: this.description,
                     amount: this.amount,
-                    isClaimOnce: this.isClaimOnce,
                     claimAmount: this.claimAmount,
                     rewardLimit: this.rewardLimit,
                     platform: this.rewardCondition.platform,

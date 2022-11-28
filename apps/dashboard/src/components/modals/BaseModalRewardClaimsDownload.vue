@@ -45,6 +45,7 @@
                     </b-form-group>
                 </b-col>
                 <b-col>
+                    {{ claims }}
                     <BCard bg-variant="light" :header="`Download ${claims.length} QR Codes`" class="mb-3">
                         <p class="text-gray">
                             You will receive a ZIP file containing QR code PDF's that you can share with your customers.
@@ -99,9 +100,14 @@ export default class BaseModalRewardClaimsDownload extends Vue {
 
     get claims() {
         if (!this.rewards) return [];
-        const selected = Object.values(this.rewards).filter((r) => this.selectedItems.includes(r._id));
+        const selectedRewards = Object.values(this.rewards).filter((r) => this.selectedItems.includes(r._id));
         let claims: TClaim[] = [];
-        for (const r of selected) claims = claims.concat(r.claims);
+        for (const r of selectedRewards) {
+            const pendingClaims = r.claims.filter((c) => {
+                return !c.sub;
+            });
+            claims = claims.concat(pendingClaims);
+        }
         return claims;
     }
 
@@ -149,6 +155,7 @@ export default class BaseModalRewardClaimsDownload extends Vue {
     onClickCreateCSV() {
         const filename = `${new Date().getTime()}_${this.pool._id}_claim_urls`;
         const data = this.claims.map((c) => [`${WALLET_URL}/claim/${c.id}`]);
+        debugger;
         const csvContent = 'data:text/csv;charset=utf-8,' + data.map((e) => e.join(',')).join('\n');
 
         saveAs(encodeURI(csvContent), `${filename}.csv`);
