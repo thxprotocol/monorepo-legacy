@@ -90,6 +90,8 @@
 import BaseModal from './BaseModal.vue';
 import JSZip from 'jszip';
 import QRCode from 'qrcode';
+import QRCodeSVG from 'qrcode-svg';
+import xml2js from 'xml2js';
 import { jsPDF } from 'jspdf';
 import { type IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
@@ -111,6 +113,15 @@ const acceptedUnits: { [format: string]: string[] } = {
     pdf: ['px', 'cm', 'in', 'mm'],
 };
 
+function hex2Rgb(hex: string) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex) as string[];
+    return {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
+    };
+}
+
 @Component({
     components: {
         BaseModal,
@@ -120,7 +131,7 @@ export default class BaseModalRewardClaimsDownload extends Vue {
     isSubmitDisabled = false;
     isLoading = false;
     color = '000000';
-    size = 220;
+    size = 256;
     file: File | null = null;
     selectedFormat = 'png';
     selectedUnit = unitList[0];
@@ -150,12 +161,12 @@ export default class BaseModalRewardClaimsDownload extends Vue {
     }
 
     async createQRCode(url: string) {
-        const imgSize = this.size / 4;
+        const imgSize = (this.size / 4) * 1.1;
         const canvas = createCanvas(this.size, this.size);
 
         await QRCode.toCanvas(canvas, url, {
             errorCorrectionLevel: 'H',
-            margin: 1,
+            margin: 0,
             color: {
                 dark: this.color,
                 light: '#ffffff',
@@ -173,13 +184,40 @@ export default class BaseModalRewardClaimsDownload extends Vue {
         ctx.drawImage(img, positionX, positionY, imgSize, imgSize);
 
         const qrCode = canvas.toDataURL('image/png');
+
         return qrCode.replace(/^data:image\/png;base64,/, '');
     }
 
     async createQRCodeSvg(url: string) {
-        const image = await this.createQRCode(url);
+        const qrcode = new QRCodeSVG({
+            content: url,
+            margin: 0,
+            padding: 0,
+            ecl: 'M',
+        });
+        qrcode.options.height = this.size;
+        qrcode.options.width = this.size;
+        // this.size = qrcode.options.height;
+        const imgSize = this.size / 4;
+        const positionX = this.size / 2 - imgSize / 2;
+        const positionY = this.size / 2 - imgSize / 2;
+        const svg = qrcode.svg();
+        const xml = await xml2js.parseStringPromise(svg);
+
         const pdf = new jsPDF({ unit: this.selectedUnit.value, format: [this.size, this.size] });
-        await pdf.addImage(image, 'PNG', 0, 0, this.size, this.size, '', 'NONE');
+        for (let i = 1; i < xml.svg.rect.length; i++) {
+            const rect = xml.svg.rect[i].$;
+            const rgb = hex2Rgb(this.color);
+
+            pdf.setFillColor(rgb.r, rgb.g, rgb.b);
+            pdf.rect(rect.x, rect.y, rect.width, rect.height, 'F');
+        }
+
+        const img = !this.file
+            ? await loadImage(BASE_URL + '/assets/qr-logo.jpg')
+            : await loadImage(URL.createObjectURL(this.file));
+        pdf.addImage(img.src, 'JPG', positionX, positionY, imgSize, imgSize, '', 'NONE');
+
         return pdf.output('arraybuffer');
     }
 
