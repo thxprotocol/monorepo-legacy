@@ -10,26 +10,44 @@
             <b-row>
                 <b-col>
                     <b-form-group label="File format">
-                        <b-form-radio v-model="fileFormats" name="fileFormat" value=".jpg, .jpeg, .gif, .png">
+                        <b-form-radio v-model="selectedFormat" name="fileFormat" value="png">
                             <p>
                                 <strong>PNG</strong><br />
                                 You are planning to use your QR codes digitally.
                             </p>
                         </b-form-radio>
-                        <b-form-radio v-model="fileFormats" name="fileFormat" value=".svg">
+                        <b-form-radio v-model="selectedFormat" name="fileFormat" value="pdf">
                             <p>
                                 <strong>PDF</strong><br />
                                 You are planning to print your QR codes.
                             </p>
                         </b-form-radio>
                     </b-form-group>
+
+                    <b-form-group label="Size" description="Dimensions of the image.">
+                        <b-input-group>
+                            <b-form-input v-model="size" type="number" />
+                            <template #append>
+                                <b-dropdown :text="selectedUnit.label" variant="light">
+                                    <b-dropdown-item
+                                        @click="selectedUnit = unit"
+                                        :key="key"
+                                        v-for="(unit, key) of units"
+                                    >
+                                        {{ unit.label }}
+                                    </b-dropdown-item>
+                                </b-dropdown>
+                            </template>
+                        </b-input-group>
+                    </b-form-group>
+
                     <b-form-group
                         label="Image"
-                        :description="`Visible in the center of your QR code. Only accepts ${fileFormats}.`"
+                        :description="`Visible in the center of your QR code. Only accepts .jpg, .jpeg, .gif, .png.`"
                     >
                         <b-form-file
                             v-model="file"
-                            :accept="fileFormats"
+                            accept=".jpg, .jpeg, .gif, .png"
                             placeholder="Choose or drop here..."
                             drop-placeholder="Drop file here..."
                         ></b-form-file>
@@ -69,22 +87,29 @@
 </template>
 
 <script lang="ts">
+import BaseModal from './BaseModal.vue';
+import JSZip from 'jszip';
+import QRCode from 'qrcode';
+import { jsPDF } from 'jspdf';
 import { type IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import BaseModal from './BaseModal.vue';
 import { TBaseReward } from '@thxnetwork/types/index';
 import { WALLET_URL, BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { TClaim } from '@thxnetwork/dashboard/store/modules/claims';
-import JSZip from 'jszip';
-import QRCode from 'qrcode';
 import { createCanvas, loadImage } from 'canvas';
 import { saveAs } from 'file-saver';
-import QRCodeSVG from 'qrcode-svg';
-import PDFDocument from 'pdfkit';
-import xml2js from 'xml2js';
-import SVGtoPDF from 'svg-to-pdfkit';
-import qrCodeLogoBackground from '../../../public/assets/qr_code_logo_background.svg';
-import thxLogoSVG from '../../../public/assets/thx_logo.svg';
+
+const unitList = [
+    { label: 'Pixels', value: 'px' },
+    { label: 'Centimeters', value: 'cm' },
+    { label: 'Inch', value: 'in' },
+    { label: 'Millimeters', value: 'mm' },
+];
+
+const acceptedUnits: { [format: string]: string[] } = {
+    png: ['px'],
+    pdf: ['px', 'cm', 'in', 'mm'],
+};
 
 @Component({
     components: {
@@ -95,13 +120,21 @@ export default class BaseModalRewardClaimsDownload extends Vue {
     isSubmitDisabled = false;
     isLoading = false;
     color = '000000';
+    size = 220;
     file: File | null = null;
-    fileFormats = '.jpg, .jpeg, .gif, .png';
+    selectedFormat = 'png';
+    selectedUnit = unitList[0];
 
     @Prop() id!: string;
     @Prop() rewards!: { [id: string]: TBaseReward & { claims: TClaim[]; _id: string } };
     @Prop() selectedItems!: string[];
     @Prop() pool!: IPool;
+
+    get units() {
+        return unitList.filter((u) => {
+            return acceptedUnits[this.selectedFormat].includes(u.value);
+        });
+    }
 
     get claims() {
         if (!this.rewards) return [];
@@ -117,9 +150,8 @@ export default class BaseModalRewardClaimsDownload extends Vue {
     }
 
     async createQRCode(url: string) {
-        const canvasSize = 220;
-        const imgSize = 58;
-        const canvas = createCanvas(canvasSize, canvasSize);
+        const imgSize = this.size / 4;
+        const canvas = createCanvas(this.size, this.size);
 
         await QRCode.toCanvas(canvas, url, {
             errorCorrectionLevel: 'H',
@@ -128,7 +160,7 @@ export default class BaseModalRewardClaimsDownload extends Vue {
                 dark: this.color,
                 light: '#ffffff',
             },
-            width: canvasSize,
+            width: this.size,
         });
 
         const ctx = canvas.getContext('2d');
@@ -145,80 +177,29 @@ export default class BaseModalRewardClaimsDownload extends Vue {
     }
 
     async createQRCodeSvg(url: string) {
-        var qrcode = new QRCodeSVG({
-            content: 'http://github.com/',
-            padding: 0,
-            color: '#' + this.color,
-            background: '#ffffff',
-            ecl: 'M',
-        });
-        console.log('qrcode', qrcode);
-        const canvasSize = qrcode.options.height;
-        const imgSize = (canvasSize * 15) / 100;
-        const pdfPadding = (canvasSize * 25) / 100;
-        const docSize = canvasSize - pdfPadding;
-        const doc = new PDFDocument({ size: [docSize, docSize], margins: 0 });
+        const image = await this.createQRCode(url);
+        const pdf = new jsPDF({ unit: this.selectedUnit.value, format: [this.size, this.size] });
+        await pdf.addImage(image, 'PNG', 0, 0, this.size, this.size, '', 'NONE');
 
-        const positionX = docSize / 2 - imgSize / 2;
-        const positionY = docSize / 2 - imgSize / 2;
-
-        var builder = new xml2js.Builder();
-
-        let svgQrCode = qrcode.svg();
-        let xml = await xml2js.parseStringPromise(svgQrCode);
-        xml.svg.$.width = `${canvasSize}`;
-        xml.svg.$.height = `${canvasSize}`;
-        svgQrCode = builder.buildObject(xml);
-
-        let svgBackground = qrCodeLogoBackground;
-        xml = await xml2js.parseStringPromise(svgBackground);
-        xml.svg.$.width = `${imgSize}`;
-        xml.svg.$.height = `${imgSize}`;
-        xml.svg.rect[0].$.width = `${imgSize}`;
-        xml.svg.rect[0].$.height = `${imgSize}`;
-        svgBackground = builder.buildObject(xml);
-
-        let svgLogo = thxLogoSVG;
-        xml = await xml2js.parseStringPromise(svgLogo);
-        xml.svg.$.width = `${imgSize}`;
-        xml.svg.$.height = `${imgSize}`;
-
-        svgLogo = builder.buildObject(xml);
-
-        SVGtoPDF(doc, svgQrCode);
-        SVGtoPDF(doc, svgBackground.toString(), positionX, positionY);
-        SVGtoPDF(doc, svgLogo, positionX, positionY);
-
-        //doc.image('./thx_logo.jpg', positionX, positionY, { height: imgSize });
-
-        let buffers: any[] = [];
-        doc.on('data', buffers.push.bind(buffers));
-        const result = doc.on('end', () => {
-            const pdfData = Buffer.concat(buffers);
-
-            return pdfData;
-        });
-        doc.end();
-        return result;
+        return pdf.save('test.pdf'); // TODO return pdf buffer here and add to zip
     }
 
     async onClickCreateZip() {
         const filename = `${new Date().getTime()}_${this.pool._id}_claim_qr_codes`;
         const zip = new JSZip();
         const archive = zip.folder(filename) as JSZip;
-        console.log('this.fileFormats', this.fileFormats);
-        console.log('claims', this.claims);
+
         for (const claim of this.claims) {
             let base64Data: string;
             const url = `${WALLET_URL}/claim/${claim.id}`;
 
-            switch (this.fileFormats) {
-                case '.svg': {
+            switch (this.selectedFormat) {
+                case 'pdf': {
                     base64Data = await this.createQRCodeSvg(url);
                     archive.file(`${claim.id}.pdf`, base64Data, { base64: true });
                     break;
                 }
-                default: {
+                case 'png': {
                     base64Data = await this.createQRCode(url);
                     archive.file(`${claim.id}.png`, base64Data, { base64: true });
                     break;
@@ -232,7 +213,6 @@ export default class BaseModalRewardClaimsDownload extends Vue {
     onClickCreateCSV() {
         const filename = `${new Date().getTime()}_${this.pool._id}_claim_urls`;
         const data = this.claims.map((c) => [`${WALLET_URL}/claim/${c.id}`]);
-        debugger;
         const csvContent = 'data:text/csv;charset=utf-8,' + data.map((e) => e.join(',')).join('\n');
 
         saveAs(encodeURI(csvContent), `${filename}.csv`);

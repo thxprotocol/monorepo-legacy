@@ -67,6 +67,7 @@
         "http-proxy": "^1.18.1",
         "https": "^1.0.0",
         "jsonwebtoken": "^8.5.1",
+        "jspdf": "^2.5.1",
         "jszip": "^3.10.0",
         "jwks-rsa": "^2.1.4",
         "lodash": "^4.17.21",

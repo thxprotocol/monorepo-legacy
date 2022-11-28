@@ -6,3 +6,4 @@ declare module 'vue-qr';
 declare module 'promise-poller';
 declare module '@thxnetwork/dashboard';
 declare module 'file-saver';
+declare module 'jspdf';
