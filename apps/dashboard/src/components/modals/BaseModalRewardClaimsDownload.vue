@@ -180,8 +180,7 @@ export default class BaseModalRewardClaimsDownload extends Vue {
         const image = await this.createQRCode(url);
         const pdf = new jsPDF({ unit: this.selectedUnit.value, format: [this.size, this.size] });
         await pdf.addImage(image, 'PNG', 0, 0, this.size, this.size, '', 'NONE');
-
-        return pdf.save('test.pdf'); // TODO return pdf buffer here and add to zip
+        return pdf.output('arraybuffer');
     }
 
     async onClickCreateZip() {
