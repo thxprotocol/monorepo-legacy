@@ -41,8 +41,6 @@ const controller = async (req: Request, res: Response) => {
     } as TERC721Reward;
     const { reward, claims } = await createERC721Reward(req.assetPool, config);
 
-    console.log(reward, claims);
-
     res.status(201).json({ ...metadata.toJSON(), tokens, reward, claims });
 };
 export default { controller, validation };

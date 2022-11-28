@@ -1,11 +1,11 @@
 import db from '@thxnetwork/api/util/database';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { paginatedResults, PaginationResult } from '@thxnetwork/api/util/pagination';
-import { IAccount } from '../models/Account';
-import { validateCondition } from '../util/condition';
+import { IAccount } from '@thxnetwork/api/models/Account';
+import { validateCondition } from '@thxnetwork/api/util/condition';
 import { TERC721Reward } from '@thxnetwork/types/';
-import { ERC721Reward, ERC721RewardDocument } from '../models/ERC721Reward';
-import { Claim } from '../models/Claim';
+import { ERC721Reward, ERC721RewardDocument } from '@thxnetwork/api/models/ERC721Reward';
+import { Claim } from '@thxnetwork/api/models/Claim';
 
 export async function get(id: string): Promise<ERC721RewardDocument> {
     return await ERC721Reward.findById(id);
@@ -62,11 +62,14 @@ export async function removeAllForPool(pool: AssetPoolDocument) {
 }
 
 export async function create(pool: AssetPoolDocument, payload: TERC721Reward) {
-    return ERC721Reward.create({
+    console.log(payload);
+    const data = {
         poolId: String(pool._id),
         uuid: db.createUUID(),
         ...payload,
-    });
+    };
+    console.log(data);
+    return await ERC721Reward.create(data);
 }
 
 export async function update(reward: ERC721RewardDocument, updates: TERC721Reward) {

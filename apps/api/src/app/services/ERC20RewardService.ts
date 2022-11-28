@@ -61,7 +61,8 @@ export async function removeAllForPool(assetPool: AssetPoolDocument) {
 }
 
 export async function create(pool: AssetPoolDocument, payload: TERC20Reward) {
-    return ERC20Reward.create({
+    console.log(payload);
+    return await ERC20Reward.create({
         poolId: String(pool._id),
         uuid: db.createUUID(),
         ...payload,

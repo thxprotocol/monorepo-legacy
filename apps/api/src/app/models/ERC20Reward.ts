@@ -1,10 +1,23 @@
 import mongoose from 'mongoose';
 import { TERC20Reward } from '@thxnetwork/types/';
-import { rewardBaseSchema } from '@thxnetwork/api/util/rewards';
+
+export const rewardBaseSchema = {
+    uuid: String,
+    poolId: String,
+    title: String,
+    description: String,
+    expiryDate: Date,
+    claimAmount: Number,
+    rewardLimit: Number,
+    isClaimOnce: Boolean,
+    platform: Number,
+    interaction: Number,
+    content: String,
+};
 
 export type ERC20RewardDocument = mongoose.Document & TERC20Reward;
 
-const schema = new mongoose.Schema(
+const erc20RewardSchema = new mongoose.Schema(
     {
         ...rewardBaseSchema,
         amount: String,
@@ -12,8 +25,8 @@ const schema = new mongoose.Schema(
     { timestamps: true },
 );
 
-schema.virtual('isConditional', (r: TERC20Reward) => {
+erc20RewardSchema.virtual('isConditional', (r: TERC20Reward) => {
     return r.platform && r.interaction && r.content;
 });
 
-export const ERC20Reward = mongoose.model<ERC20RewardDocument>('erc20rewards', schema);
+export const ERC20Reward = mongoose.model<ERC20RewardDocument>('erc20rewards', erc20RewardSchema);

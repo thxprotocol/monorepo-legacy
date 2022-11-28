@@ -75,7 +75,6 @@ const controller = async (req: Request, res: Response) => {
         const erc721 = await ERC721Service.findById(metadata.erc721);
         const token = await ERC721Service.mint(pool, erc721, metadata, account, forceSync);
 
-        console.log(reward);
         reward.rewardLimit > 0
             ? await Claim.findByIdAndUpdate(claim._id, { sub: req.auth.sub })
             : await Claim.create({

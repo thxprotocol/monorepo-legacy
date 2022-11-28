@@ -18,20 +18,6 @@ import ERC20RewardService from '../services/ERC20RewardService';
 import ERC721RewardService from '@thxnetwork/api/services/ERC721RewardService';
 import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardService';
 
-export const rewardBaseSchema = {
-    uuid: String,
-    poolId: String,
-    title: String,
-    description: String,
-    expiryDate: Date,
-    claimAmount: Number,
-    rewardLimit: Number,
-    isClaimOnce: Boolean,
-    platform: Number,
-    interaction: Number,
-    content: String,
-};
-
 export async function canClaimReward(pool: AssetPoolDocument, reward: TERC20Reward | TERC721Reward, account: IAccount) {
     if (isTERC20Reward(reward)) {
         return await ERC20RewardService.canClaim(pool, reward, account);

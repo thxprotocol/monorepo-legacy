@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
 import { TERC721Reward } from '@thxnetwork/types/';
-import { rewardBaseSchema } from '../util/rewards';
+import { rewardBaseSchema } from '@thxnetwork/api/models/ERC20Reward';
 
 export type ERC721RewardDocument = mongoose.Document & TERC721Reward;
 
-const schema = new mongoose.Schema(
+const erc721RewardSchema = new mongoose.Schema(
     {
         ...rewardBaseSchema,
         erc721metadataId: String,
@@ -12,8 +12,8 @@ const schema = new mongoose.Schema(
     { timestamps: true },
 );
 
-schema.virtual('isConditional', (r: TERC721Reward) => {
+erc721RewardSchema.virtual('isConditional', (r: TERC721Reward) => {
     return r.platform && r.interaction && r.content;
 });
 
-export const ERC721Reward = mongoose.model<ERC721RewardDocument>('erc721rewards', schema);
+export const ERC721Reward = mongoose.model<ERC721RewardDocument>('erc721rewards', erc721RewardSchema);
