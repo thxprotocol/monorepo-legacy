@@ -16,7 +16,7 @@
                                 You are planning to use your QR codes digitally.
                             </p>
                         </b-form-radio>
-                        <b-form-radio v-model="fileFormats" name="fileFormat" value=".svg" disabled>
+                        <b-form-radio v-model="fileFormats" name="fileFormat" value=".svg">
                             <p>
                                 <strong>PDF</strong><br />
                                 You are planning to print your QR codes.
@@ -79,6 +79,12 @@ import JSZip from 'jszip';
 import QRCode from 'qrcode';
 import { createCanvas, loadImage } from 'canvas';
 import { saveAs } from 'file-saver';
+import QRCodeSVG from 'qrcode-svg';
+import PDFDocument from 'pdfkit';
+import xml2js from 'xml2js';
+import SVGtoPDF from 'svg-to-pdfkit';
+import qrCodeLogoBackground from '../../../public/assets/qr_code_logo_background.svg';
+import thxLogoSVG from '../../../public/assets/thx_logo.svg';
 
 @Component({
     components: {
@@ -133,14 +139,86 @@ export default class BaseModalRewardClaimsDownload extends Vue {
         return qrCode.replace(/^data:image\/png;base64,/, '');
     }
 
+    async createQRCodeSvg(url: string) {
+        var qrcode = new QRCodeSVG({
+            content: 'http://github.com/',
+            padding: 0,
+            color: '#' + this.color,
+            background: '#ffffff',
+            ecl: 'M',
+        });
+        console.log('qrcode', qrcode);
+        const canvasSize = qrcode.options.height;
+        const imgSize = (canvasSize * 15) / 100;
+        const pdfPadding = (canvasSize * 25) / 100;
+        const docSize = canvasSize - pdfPadding;
+        const doc = new PDFDocument({ size: [docSize, docSize], margins: 0 });
+
+        const positionX = docSize / 2 - imgSize / 2;
+        const positionY = docSize / 2 - imgSize / 2;
+
+        var builder = new xml2js.Builder();
+
+        let svgQrCode = qrcode.svg();
+        let xml = await xml2js.parseStringPromise(svgQrCode);
+        xml.svg.$.width = `${canvasSize}`;
+        xml.svg.$.height = `${canvasSize}`;
+        svgQrCode = builder.buildObject(xml);
+
+        let svgBackground = qrCodeLogoBackground;
+        xml = await xml2js.parseStringPromise(svgBackground);
+        xml.svg.$.width = `${imgSize}`;
+        xml.svg.$.height = `${imgSize}`;
+        xml.svg.rect[0].$.width = `${imgSize}`;
+        xml.svg.rect[0].$.height = `${imgSize}`;
+        svgBackground = builder.buildObject(xml);
+
+        let svgLogo = thxLogoSVG;
+        xml = await xml2js.parseStringPromise(svgLogo);
+        xml.svg.$.width = `${imgSize}`;
+        xml.svg.$.height = `${imgSize}`;
+
+        svgLogo = builder.buildObject(xml);
+
+        SVGtoPDF(doc, svgQrCode);
+        SVGtoPDF(doc, svgBackground.toString(), positionX, positionY);
+        SVGtoPDF(doc, svgLogo, positionX, positionY);
+
+        //doc.image('./thx_logo.jpg', positionX, positionY, { height: imgSize });
+
+        let buffers: any[] = [];
+        doc.on('data', buffers.push.bind(buffers));
+        const result = doc.on('end', () => {
+            const pdfData = Buffer.concat(buffers);
+
+            return pdfData;
+        });
+        doc.end();
+        return result;
+    }
+
     async onClickCreateZip() {
         const filename = `${new Date().getTime()}_${this.pool._id}_claim_qr_codes`;
         const zip = new JSZip();
         const archive = zip.folder(filename) as JSZip;
-
+        console.log('this.fileFormats', this.fileFormats);
+        console.log('claims', this.claims);
         for (const claim of this.claims) {
-            const base64Data = await this.createQRCode(`${WALLET_URL}/claim/${claim.id}`);
-            archive.file(`${claim.id}.png`, base64Data, { base64: true });
+            let base64Data: string;
+            const url = `${WALLET_URL}/claim/${claim.id}`;
+
+            switch (this.fileFormats) {
+                case '.svg': {
+                    base64Data = await this.createQRCodeSvg(url);
+                    archive.file(`${claim.id}.pdf`, base64Data, { base64: true });
+                    break;
+                }
+                default: {
+                    base64Data = await this.createQRCode(url);
+                    archive.file(`${claim.id}.png`, base64Data, { base64: true });
+                    break;
+                }
+            }
         }
 
         zip.generateAsync({ type: 'blob' }).then((content) => saveAs(content, `${filename}.zip`));
