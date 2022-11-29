@@ -1,28 +1,32 @@
 const { v4 } = require('uuid');
 
-const isUndefined = (r) => typeof r.withdrawCondition.channelType === undefined;
+const isUndefined = (value) => typeof value === 'undefined' || value == undefined || value == 'undefined';
 
 module.exports = {
     async up(db) {
         const rewardsColl = db.collection('rewards');
+        const erc20RewardsColl = db.collection('erc20rewards');
         const erc721RewardsColl = db.collection('erc721rewards');
-        const claimsColl = db.collection('claims');
-        const rewards = await rewardsColl.find({}).toArray();
-
+        const rewards = await (await rewardsColl.find({})).toArray();
         const promises = rewards.map(async (r) => {
             try {
+                if (!r) return;
+                if (!r.state) return;
+                if (!r.poolId) return;
+
                 const payload = {
                     uuid: r.id || v4(),
-                    title: r.title || undefined,
-                    expiryDate: r.expiryDate,
+                    title: r.title || '',
+                    description: r.description || '',
+                    expiryDate: r.expiryDate || null,
                     poolId: r.poolId,
-                    rewardLimit: r.withdrawLimit,
-                    claimAmount: r.amount,
+                    rewardLimit: r.withdrawLimit || 1,
+                    claimAmount: r.amount || 1,
                     createdAt: r.createdAt,
                     updatedAt: r.updatedAt,
                 };
 
-                if (r.withdrawCondition) {
+                if (!isUndefined(r.withdrawCondition)) {
                     if (!isUndefined(r.withdrawCondition.platform)) {
                         payload.platform = r.withdrawCondition.channelType;
                     } else {
@@ -39,23 +43,17 @@ module.exports = {
                 }
 
                 if (!isUndefined(r.erc721metadataId)) {
-                    const erc721Reward = await erc721RewardsColl.insertOne({
+                    await erc721RewardsColl.insertOne({
                         ...payload,
                         erc721metadataId: r.erc721metadataId,
                     });
-                    await claimsColl.updateMany(
-                        { rewardId: String(r._id) },
-                        { $set: { rewardId: String(erc721Reward._id) } },
-                    );
-                } else {
-                    const erc20Reward = await erc721RewardsColl.insertOne({
+                } else if (!isUndefined(r.withdrawAmount)) {
+                    await erc20RewardsColl.insertOne({
                         ...payload,
                         amount: r.withdrawAmount,
                     });
-                    await claimsColl.updateMany(
-                        { rewardId: String(r._id) },
-                        { $set: { rewardId: String(erc20Reward._id) } },
-                    );
+                } else {
+                    console.log('Could not migrate ', String(r._id, r));
                 }
             } catch (error) {
                 console.error(error);

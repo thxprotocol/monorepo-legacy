@@ -13,6 +13,7 @@
                         </b-form-group>
                         <b-form-group label="Metadata">
                             <BaseDropdownERC721Metadata
+                                :erc721metadata="erc721metadata"
                                 :erc721metadataId="erc721metadataId"
                                 :pool="pool"
                                 @selected="onSelectMetadata"

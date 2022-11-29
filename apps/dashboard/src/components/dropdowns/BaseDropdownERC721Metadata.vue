@@ -7,7 +7,11 @@
             <b-form-input class="mb-2" placeholder="Search..." @input="onSearch" v-model="query" />
         </b-dropdown-form>
         <div style="height: 250px; overflow-y: scroll">
-            <b-dropdown-item-button v-for="metadata of erc721metadata" :key="metadata._id" @click="onClick(metadata)">
+            <b-dropdown-item-button
+                v-for="metadata of erc721metadataByPage"
+                :key="metadata._id"
+                @click="onClick(metadata)"
+            >
                 <div class="d-flex justify-content-between">
                     <div>{{ metadata.title }}</div>
                     <div>
@@ -70,19 +74,25 @@ export default class BaseDropdownERC721Metadata extends Vue {
         return this.erc721s[this.pool.erc721._id];
     }
 
-    get erc721metadata() {
+    get erc721metadataByPage() {
         return (
             this.erc721 &&
-            Object.values(this.erc721.metadata).filter((m) => m.page === this.page && m.title.includes(this.query))
+            Object.values(this.erc721.metadata).filter((m) => {
+                const attrName = m.attributes.find((attr) => (attr.key = 'name'));
+                return m.page === this.page && attrName?.value.includes(this.query);
+            })
         );
     }
 
     @Prop() pool!: IPool;
+    @Prop() erc721metadata!: TERC721Metadata[];
     @Prop({ required: false }) erc721metadataId!: string;
 
     mounted() {
         if (this.erc721metadataId) {
-            this.selectedMetadata = this.erc721metadata.find((m) => m._id === this.erc721metadataId) as TERC721Metadata;
+            this.selectedMetadata = this.erc721metadata?.find(
+                (m) => m._id === this.erc721metadataId,
+            ) as TERC721Metadata;
         }
         this.searchMetadata();
     }
