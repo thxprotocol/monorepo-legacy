@@ -13,9 +13,6 @@ import { getTwitterFollow } from './twitter/getFollow.action';
 import { getYoutube } from './google/get.controller';
 import { getYoutubeLike } from './google/youtube/like/get.controller';
 import { getYoutubeSubscribe } from './google/youtube/subscribe/get.controller';
-import { getSpotifyUserFollow, getSpotifyPlaylistFollow } from './spotify/get.follow.action';
-import { getSpotifyTrackPlaying, getSpotifyTrackRecent, getSpotifyTrackSaved } from './spotify/get.track.action';
-import { getSpotify } from './spotify/get.action';
 import { createLoginValidation, postLogin } from './login/post.controller';
 
 const router = express.Router();
@@ -32,13 +29,6 @@ router.get('/:sub/twitter/follow/:item', guard.check(['accounts:read']), getTwit
 router.get('/:sub/google/youtube', guard.check(['accounts:read']), getYoutube);
 router.get('/:sub/google/youtube/like/:item', guard.check(['accounts:read']), getYoutubeLike);
 router.get('/:sub/google/youtube/subscribe/:item', guard.check(['accounts:read']), getYoutubeSubscribe);
-
-router.get('/:sub/spotify', guard.check(['accounts:read']), getSpotify);
-router.get('/:sub/spotify/user_follow/:item', guard.check(['accounts:read']), getSpotifyUserFollow);
-router.get('/:sub/spotify/playlist_follow/:item', guard.check(['accounts:read']), getSpotifyPlaylistFollow);
-router.get('/:sub/spotify/track_playing/:item', guard.check(['accounts:read']), getSpotifyTrackPlaying);
-router.get('/:sub/spotify/track_recent/:item', guard.check(['accounts:read']), getSpotifyTrackRecent);
-router.get('/:sub/spotify/track_saved/:item', guard.check(['accounts:read']), getSpotifyTrackSaved);
 
 router.get('/address/:address', guard.check(['accounts:read']), validate([]), getAccountByAddress);
 router.get('/email/:email', guard.check(['accounts:read']), validate([]), getAccountByEmail);

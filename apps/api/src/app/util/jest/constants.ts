@@ -5,7 +5,7 @@ import { toWei } from 'web3-utils';
 export const tokenName = 'Volunteers United';
 export const tokenSymbol = 'VUT';
 export const tokenTotalSupply = toWei('100000000');
-export const rewardWithdrawAmount = 1000;
+export const rewardWithdrawAmount = '1000';
 export const rewardWithdrawDuration = 60;
 export const rewardWithdrawUnlockDate = '2022-04-20';
 export const VOTER_PK = '0x97093724e1748ebfa6aa2d2ec4ec68df8678423ab9a12eb2d27ddc74e35e5db9';
@@ -55,3 +55,4 @@ export const walletScopes =
     'openid rewards:read erc20:read erc721:read withdrawals:read withdrawals:write deposits:read deposits:write account:read account:write memberships:read memberships:write promotions:read payments:write payments:read relay:write transactions:read transactions:write swap:read swap:write swaprule:read claims:read wallets:read wallets:write';
 export const walletAccessToken = getToken(walletScopes);
 export const walletAccessToken2 = getToken(walletScopes, sub);
+export const walletAccessToken3 = getToken(walletScopes, sub2);

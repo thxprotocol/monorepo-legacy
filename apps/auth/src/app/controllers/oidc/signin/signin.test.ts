@@ -7,6 +7,7 @@ import { getPath, accountEmail, accountSecret } from '../../../util/jest';
 import { AccountVariant } from '../../../types/enums/AccountVariant';
 import { ChainId } from '../../..//types/enums/chainId';
 import { mockWalletProxy } from '../../../util/jest/mock';
+
 const REDIRECT_URL = 'https://localhost:8082/signin-oidc';
 const http = request.agent(app);
 

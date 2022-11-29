@@ -1,27 +1,21 @@
+import { AccountDocument } from '@thxnetwork/auth/models/Account';
 import { Request, Response } from 'express';
 import { AccountService } from '../../../../services/AccountService';
 import { TwitterService } from '../../../../services/TwitterService';
-import { AccountDocument } from '../../../../models/Account';
-import { ERROR_NO_ACCOUNT } from '../../../../util/messages';
 import { getAccountByTwitterId, getInteraction, saveInteraction } from '../../../../util/oidc';
-import { createWallet } from '@thxnetwork/auth/util/wallet';
+import { createWallet } from '../../../../util/wallet';
+
+async function updateTokens(account: AccountDocument, tokens): Promise<AccountDocument> {
+    account.twitterAccessToken = tokens.access_token || account.twitterAccessToken;
+    account.twitterRefreshToken = tokens.refresh_token || account.twitterRefreshToken;
+    account.twitterAccessTokenExpires = tokens.expires_in
+        ? Date.now() + Number(tokens.expires_in) * 1000
+        : account.twitterAccessTokenExpires;
+
+    return await account.save();
+}
 
 export async function controller(req: Request, res: Response) {
-    async function getAccountBySub(sub: string) {
-        const account = await AccountService.get(sub);
-        if (!account) throw new Error(ERROR_NO_ACCOUNT);
-        return account;
-    }
-
-    async function updateTokens(account: AccountDocument, tokens: any) {
-        account.twitterAccessToken = tokens.access_token || account.twitterAccessToken;
-        account.twitterRefreshToken = tokens.refresh_token || account.twitterRefreshToken;
-        account.twitterAccessTokenExpires =
-            Date.now() + Number(tokens.expires_in) * 1000 || account.twitterAccessTokenExpires;
-
-        return await account.save();
-    }
-
     const code = req.query.code as string;
     const uid = req.query.state as string;
     const error = req.query.error as string;
@@ -30,7 +24,6 @@ export async function controller(req: Request, res: Response) {
 
     // Get all token information
     const tokens = await TwitterService.requestTokens(code);
-
     const user = await TwitterService.getUser(tokens.access_token);
 
     // Get the interaction based on the state
@@ -40,21 +33,18 @@ export async function controller(req: Request, res: Response) {
     const account =
         interaction.session && interaction.session.accountId
             ? // If so, get account for sub
-              await getAccountBySub(interaction.session.accountId)
+              await AccountService.get(interaction.session.accountId)
             : // If not, get account for email claim
               await getAccountByTwitterId(user.id);
-
-    // Actions after successfully login
-    await AccountService.update(account, {
-        lastLoginAt: Date.now(),
-    });
 
     //Check if a SharedWallet must be created for a specific chainId
     createWallet(String(account._id));
 
+    // Set successful login state
     const returnTo = await saveInteraction(interaction, account._id.toString());
 
     await updateTokens(account, tokens);
+    await account.updateOne({ lastLoginAt: Date.now() });
 
     return res.redirect(returnTo);
 }

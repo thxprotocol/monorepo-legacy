@@ -5,14 +5,16 @@ import ImageService from '@thxnetwork/api/services/ImageService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { logger } from '@thxnetwork/api/util/logger';
 import { s3Client } from '@thxnetwork/api/util/s3';
-
 import { createArchiver } from '@thxnetwork/api/util/zip';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { fromBuffer } from 'file-type';
 import { Request, Response } from 'express';
 import { body, check, param } from 'express-validator';
+import { createERC721Reward } from '@thxnetwork/api/util/rewards';
+import { RewardConditionPlatform, TERC721Reward } from '@thxnetwork/types/index';
 import short from 'short-uuid';
-import { createReward } from '@thxnetwork/api/controllers/rewards/utils';
+import db from '@thxnetwork/api/util/database';
+
 const validation = [
     param('id').isMongoId(),
     body('propName').exists().isString(),
@@ -91,18 +93,21 @@ const controller = async (req: Request, res: Response) => {
                     const url = ImageService.getPublicUrl(filename);
 
                     // CREATE THE METADATA
-                    const metadata = await ERC721Service.createMetadata(erc721, '', '', [
+                    const metadata = await ERC721Service.createMetadata(erc721, [
                         { key: req.body.propName, value: url },
                     ]);
 
-                    createReward(req.assetPool, {
+                    await createERC721Reward(req.assetPool, {
+                        uuid: db.createUUID(),
                         erc721metadataId: String(metadata._id),
-                        withdrawAmount: 0,
-                        withdrawDuration: 0,
-                        withdrawLimit: 1,
-                        isClaimOnce: true,
-                        isMembershipRequired: false,
-                    });
+                        poolId: String(req.assetPool._id),
+                        title: '',
+                        description: '',
+                        expiryDate: null,
+                        claimAmount: 1,
+                        rewardLimit: 1,
+                        platform: RewardConditionPlatform.None,
+                    } as TERC721Reward);
 
                     return metadata;
                 } catch (err) {

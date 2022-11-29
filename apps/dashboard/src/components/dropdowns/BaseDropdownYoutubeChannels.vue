@@ -1,6 +1,5 @@
 <template>
-    <div>
-        <label> Your Channels:</label>
+    <b-form-group label="Your Channels">
         <b-dropdown variant="link" class="dropdown-select bg-white">
             <template #button-content>
                 <div v-if="item" class="d-flex align-items-center text-overflow-ellipsis">
@@ -28,7 +27,7 @@
                 </div>
             </b-dropdown-item-button>
         </b-dropdown>
-    </div>
+    </b-form-group>
 </template>
 
 <script lang="ts">

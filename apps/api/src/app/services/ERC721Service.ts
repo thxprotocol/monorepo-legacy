@@ -85,16 +85,9 @@ export async function findBySub(sub: string): Promise<ERC721Document[]> {
     return ERC721.find({ sub });
 }
 
-export async function createMetadata(
-    erc721: ERC721Document,
-    title: string,
-    description: string,
-    attributes: any,
-): Promise<ERC721MetadataDocument> {
+export async function createMetadata(erc721: ERC721Document, attributes: any): Promise<ERC721MetadataDocument> {
     return ERC721Metadata.create({
         erc721: String(erc721._id),
-        title,
-        description,
         attributes,
     });
 }

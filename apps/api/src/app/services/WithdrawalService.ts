@@ -41,7 +41,7 @@ export default class WithdrawalService {
         });
     }
 
-    static schedule(
+    static create(
         assetPool: AssetPoolDocument,
         type: WithdrawalType,
         sub: string,

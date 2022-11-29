@@ -1,6 +1,5 @@
 <template>
-    <div>
-        <label> Your Profiles:</label>
+    <b-form-group label="Your Profiles">
         <b-dropdown variant="link" class="dropdown-select bg-white">
             <template #button-content>
                 <div v-if="item" class="text-overflow-ellipsis">
@@ -11,7 +10,7 @@
                 {{ item.name }}<b-badge class="ml-2" variant="secondary">@{{ item.username }}</b-badge>
             </b-dropdown-item-button>
         </b-dropdown>
-    </div>
+    </b-form-group>
 </template>
 
 <script lang="ts">
@@ -43,13 +42,3 @@ export default class BaseDropdownTwitterUsers extends Vue {
     }
 }
 </script>
-<style scoped lang="scss">
-.dropdown-select .dropdown-item {
-    white-space: normal;
-    border-bottom: 1px solid white;
-
-    &:last-child {
-        border-bottom: 0;
-    }
-}
-</style>

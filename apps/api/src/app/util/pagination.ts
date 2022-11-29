@@ -1,4 +1,4 @@
-interface PaginationResult {
+export interface PaginationResult {
     results: any[];
     next?: { page: number };
     previous?: { page: number };

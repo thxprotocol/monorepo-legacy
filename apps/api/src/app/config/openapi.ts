@@ -12,10 +12,10 @@ import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
 import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
 import { Payment } from '@thxnetwork/api/models/Payment';
 import { Promotion } from '@thxnetwork/api/models/Promotion';
-import { Reward } from '@thxnetwork/api/models/Reward';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
 import { Withdrawal } from '@thxnetwork/api/models/Withdrawal';
 import { AssetPool } from '@thxnetwork/api/models/AssetPool';
+import { Wallet } from '@thxnetwork/api//models/Wallet';
 import { Claim } from '@thxnetwork/api/models/Claim';
 import { Client } from '@thxnetwork/api/models/Client';
 import { Deposit } from '@thxnetwork/api/models/Deposit';
@@ -52,8 +52,8 @@ const doc: any = {
         ERC721Token: m2s(ERC721Token).properties,
         Payment: m2s(Payment).properties,
         Promotion: m2s(Promotion).properties,
-        Reward: m2s(Reward).properties,
         Transaction: m2s(Transaction).properties,
+        Wallet: m2s(Wallet).properties,
         Withdrawal: m2s(Withdrawal).properties,
     },
 };

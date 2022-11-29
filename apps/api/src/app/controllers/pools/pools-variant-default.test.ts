@@ -6,10 +6,7 @@ import { toWei, isAddress } from 'web3-utils';
 import { createWallet } from '@thxnetwork/api/util/jest/network';
 import {
     rewardWithdrawAmount,
-    rewardWithdrawDuration,
-    rewardWithdrawUnlockDate,
     userWalletPrivateKey2,
-    sub2,
     tokenName,
     tokenSymbol,
     tokenTotalSupply,
@@ -22,20 +19,20 @@ import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/c
 import { getByteCodeForContractName, getContract, getContractFromName } from '@thxnetwork/api/config/contracts';
 import { currentVersion } from '@thxnetwork/contracts/exports';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
-import { RewardDocument } from '@thxnetwork/api/models/Reward';
 import { ClaimDocument } from '@thxnetwork/api/types/TClaim';
+import { ERC20RewardDocument } from '@thxnetwork/api/models/ERC20Reward';
+import { addMinutes } from '@thxnetwork/api/util/rewards';
 
 const user = request.agent(app);
 
 describe('Default Pool', () => {
-    const title = 'Welcome Package',
-        slug = 'welcome-package';
+    const title = 'Welcome Package';
 
     let poolAddress: string,
         tokenAddress: string,
         userWallet: Account,
         poolId: string,
-        reward: RewardDocument,
+        reward: ERC20RewardDocument,
         claim: ClaimDocument;
 
     beforeAll(async () => {
@@ -129,58 +126,58 @@ describe('Default Pool', () => {
         });
     });
 
-    describe('POST /rewards/', () => {
+    describe('POST /erc20-rewards/', () => {
         it('HTTP 302 when reward is added', (done) => {
-            user.post('/v1/rewards/')
+            const expiryDate = addMinutes(new Date(), 30);
+            user.post('/v1/erc20-rewards/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .send({
                     title,
-                    slug,
-                    withdrawAmount: rewardWithdrawAmount,
-                    withdrawDuration: rewardWithdrawDuration,
-                    rewardWithdrawUnlockDate: rewardWithdrawUnlockDate,
-                    amount: 1,
+                    description: 'Lorem ipsum dolor sit amet',
+                    amount: rewardWithdrawAmount,
+                    platform: 0,
+                    expiryDate,
+                    rewardLimit: 1,
+                    claimAmount: 1,
                 })
                 .expect(async (res: request.Response) => {
-                    expect(res.body.id).toBeDefined();
+                    expect(res.body._id).toBeDefined();
                     expect(res.body.claims[0].id).toBeDefined();
-                    reward = res.body;
                     claim = res.body.claims[0];
+                    reward = res.body;
                 })
                 .expect(201, done);
         });
     });
 
-    describe('GET /rewards/:id', () => {
+    describe('GET /erc20-rewards/:id', () => {
         it('HTTP 200 when successful', (done) => {
-            user.get('/v1/rewards/' + reward.id)
+            user.get('/v1/erc20-rewards/' + reward._id)
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect(200, done);
         });
 
         it('HTTP 404 if reward can not be found', (done) => {
-            user.get('/v1/rewards/62cf04437dff7cbc49e0c687')
+            user.get('/v1/erc20-rewards/62cf04437dff7cbc49e0c687')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect(404, done);
         });
     });
 
-    describe('GET /rewards/:id (after finalizing)', () => {
+    describe('GET /erc20-rewards/:id (after finalizing)', () => {
         it('HTTP 200 and return updated withdrawAmount and state 1', (done) => {
-            user.get('/v1/rewards/' + reward.id)
+            user.get('/v1/erc20-rewards/' + reward._id)
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect(async (res: request.Response) => {
-                    expect(res.body.state).toEqual(1);
                     expect(res.body.title).toEqual(title);
-                    expect(res.body.slug).toEqual(slug);
-                    expect(res.body.withdrawAmount).toEqual(rewardWithdrawAmount);
+                    expect(res.body.amount).toEqual(rewardWithdrawAmount);
                     expect(res.body.claims).toBeDefined();
                 })
                 .expect(200, done);
         });
     });
 
-    describe('POST /rewards/:id/claim', () => {
+    describe('POST /erc20-rewards/:id/claim', () => {
         it('HTTP 302 when tx is handled', async () => {
             await user
                 .post(`/v1/claims/${claim.id}/collect`)
@@ -195,27 +192,7 @@ describe('Default Pool', () => {
                     const index = res.body.results.length - 1;
                     const withdrawal = res.body.results[index];
                     expect(withdrawal.state).toEqual(WithdrawalState.Withdrawn);
-                    expect(withdrawal.amount).toEqual(rewardWithdrawAmount);
-                    expect(withdrawal.unlockDate).not.toBe(undefined);
-                })
-                .expect(200, done);
-        });
-    });
-
-    describe('POST /rewards/:id/give', () => {
-        it('HTTP 200 when tx is handled', (done) => {
-            user.post(`/v1/rewards/${reward.id}/give`)
-                .send({
-                    member: userWallet.address,
-                })
-                .set({ 'X-PoolId': poolId, 'Authorization': adminAccessToken })
-                .expect(async ({ body }: request.Response) => {
-                    expect(body._id).toBeDefined();
-                    expect(body.sub).toEqual(sub2);
-                    expect(body.amount).toEqual(rewardWithdrawAmount);
-                    expect(body.state).toEqual(1);
-                    expect(body.createdAt).toBeDefined();
-                    expect(body.unlockDate).not.toBe(undefined);
+                    expect(String(withdrawal.amount)).toEqual(rewardWithdrawAmount);
                 })
                 .expect(200, done);
         });
@@ -227,18 +204,18 @@ describe('Default Pool', () => {
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect(async (res: request.Response) => {
                     // Total supply - 2.5% = 250000 deposit fee  - 2.5% = 25 withdraw fee
-                    expect(res.body.erc20.poolBalance).toBe(toWei('97497950'));
+                    expect(res.body.erc20.poolBalance).toBe(toWei('97498975'));
                 })
                 .expect(200, done);
         });
     });
 
     describe('GET /withdrawals (before proposed withdrawal)', () => {
-        it('HTTP 200 and returns 2 items', (done) => {
+        it('HTTP 200 and returns 1 item', (done) => {
             user.get(`/v1/withdrawals?member=${userWallet.address}&page=1&limit=2`)
                 .set({ 'X-PoolId': poolId, 'Authorization': adminAccessToken })
                 .expect(async (res: request.Response) => {
-                    expect(res.body.results.length).toBe(2);
+                    expect(res.body.results.length).toBe(1);
                 })
                 .expect(200, done);
         });
@@ -249,7 +226,7 @@ describe('Default Pool', () => {
             user.get('/v1/withdrawals?state=1&page=1&limit=2')
                 .set({ 'X-PoolId': poolId, 'Authorization': adminAccessToken })
                 .expect(async (res: request.Response) => {
-                    expect(res.body.results.length).toBe(2);
+                    expect(res.body.results.length).toBe(1);
                 })
                 .expect(200, done);
         });
@@ -273,19 +250,19 @@ describe('Default Pool', () => {
         });
 
         it('HTTP 200 and returns 1 item for state = 1 and rewardId = reward.id', (done) => {
-            user.get(`/v1/withdrawals?state=1&rewardId=${reward.id}&page=1&limit=2`)
+            user.get(`/v1/withdrawals?state=1&rewardId=${reward._id}&page=1&limit=2`)
                 .set({ 'X-PoolId': poolId, 'Authorization': adminAccessToken })
                 .expect(async (res: request.Response) => {
-                    expect(res.body.results.length).toBe(2);
+                    expect(res.body.results.length).toBe(1);
                 })
                 .expect(200, done);
         });
 
         it('HTTP 200 and returns 1 item state = 1 and rewardId = reward.id and member address', (done) => {
-            user.get(`/v1/withdrawals?member=${userWallet.address}&state=1&rewardId=${reward.id}&page=1&limit=2`)
+            user.get(`/v1/withdrawals?member=${userWallet.address}&state=1&rewardId=${reward._id}&page=1&limit=2`)
                 .set({ 'X-PoolId': poolId, 'Authorization': adminAccessToken })
                 .expect(async (res: request.Response) => {
-                    expect(res.body.results.length).toBe(2);
+                    expect(res.body.results.length).toBe(1);
                 })
                 .expect(200, done);
         });
@@ -303,7 +280,7 @@ describe('Default Pool', () => {
             user.get('/v1/withdrawals?page=1&limit=2')
                 .set({ 'X-PoolId': poolId, 'Authorization': adminAccessToken })
                 .expect(async (res: request.Response) => {
-                    expect(res.body.results.length).toBe(2);
+                    expect(res.body.results.length).toBe(1);
                     expect(res.body.previous).toBeUndefined();
                 })
                 .expect(200, done);
@@ -318,7 +295,6 @@ describe('Default Pool', () => {
                     archived: true,
                 })
                 .expect(({ body }: request.Response) => {
-                    expect(body).toBeDefined();
                     expect(body.archived).toBe(true);
                 })
                 .expect(200, done);

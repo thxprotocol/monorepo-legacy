@@ -42,19 +42,9 @@ class ERC721Module extends VuexModule {
     }
 
     @Mutation
-    setMetadata(payload: { erc721: TERC721; metadata: TERC721Metadata }) {
-        if (!this._all[payload.erc721._id].metadata) {
-            return Vue.set(this._all[payload.erc721._id], 'metadata', [payload.metadata]);
-        }
-        const index = payload.erc721.metadata
-            ? payload.erc721.metadata.findIndex((m: TERC721Metadata) => m._id === payload.metadata._id) || 0
-            : 0;
-
-        Vue.set(
-            this._all[payload.erc721._id]['metadata'],
-            index > -1 ? index : payload.erc721.metadata.length++,
-            payload.metadata,
-        );
+    setMetadata({ erc721, metadata }: { erc721: TERC721; metadata: TERC721Metadata }) {
+        if (!this._all[erc721._id].metadata) Vue.set(this._all[erc721._id], 'metadata', {});
+        Vue.set(this._all[erc721._id]['metadata'], metadata._id, metadata);
     }
 
     @Mutation
@@ -83,17 +73,17 @@ class ERC721Module extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async listMetadata({ page = 1, limit, erc721, q }: MetadataListProps) {
+    async listMetadata({ page = 1, limit, erc721 }: MetadataListProps) {
         if (!erc721) return;
 
         const params = new URLSearchParams();
         params.set('page', String(page));
         params.set('limit', String(limit));
-        params.set('q', String(q));
 
         const { data }: TMetadataResponse = await axios({
             method: 'GET',
-            url: `/erc721/${erc721._id}/metadata?${String(params)}`,
+            url: `/erc721/${erc721._id}/metadata`,
+            params,
         });
 
         this.context.commit('setTotal', { erc721, total: data.total });
@@ -104,8 +94,29 @@ class ERC721Module extends VuexModule {
             metadata.page = page;
             this.context.commit('setMetadata', { erc721, metadata });
         }
+    }
 
-        return data;
+    @Action({ rawError: true })
+    async searchMetadata({ page = 1, limit, erc721, query }: MetadataListProps) {
+        if (!erc721) return;
+
+        const params = new URLSearchParams();
+        params.set('page', String(page));
+        params.set('limit', String(limit));
+        params.set('q', String(query));
+
+        const { data }: TMetadataResponse = await axios({
+            method: 'GET',
+            url: `/erc721/${erc721._id}/metadata`,
+            params,
+        });
+
+        this.context.commit('setTotal', { erc721, total: data.total });
+
+        for (const metadata of data.results) {
+            metadata.page = page;
+            this.context.commit('setMetadata', { erc721, metadata });
+        }
     }
 
     @Action({ rawError: true })

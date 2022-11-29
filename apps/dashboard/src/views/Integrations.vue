@@ -1,33 +1,33 @@
 <template>
-  <div>
-    <div class="container-xl">
-      <b-jumbotron
-        bg-variant="light"
-        class="mt-3 jumbotron-header"
-        :style="{
-          'min-height': 'none',
-          'border-radius': '1rem',
-          'background-size': 'cover',
-          'background-image': `url(${require('../../public/assets/thx_jumbotron.webp')})`,
-        }"
-      >
-        <div class="container container-md py-5">
-          <p class="brand-text">Integrations</p>
+    <div>
+        <div class="container-xl">
+            <b-jumbotron
+                bg-variant="light"
+                class="mt-3 jumbotron-header"
+                :style="{
+                    'min-height': 'none',
+                    'border-radius': '1rem',
+                    'background-size': 'cover',
+                    'background-image': `url(${require('../../public/assets/thx_jumbotron.webp')})`,
+                }"
+            >
+                <div class="container container-md py-5">
+                    <p class="brand-text">Integrations</p>
+                </div>
+            </b-jumbotron>
         </div>
-      </b-jumbotron>
-    </div>
 
-    <div class="container container-md" v-if="profile">
-      <div class="row">
-        <div class="col-md-6 col-lg-4">
-          <base-integration-youtube />
+        <div class="container container-md" v-if="profile">
+            <div class="row">
+                <div class="col-md-6 col-lg-4">
+                    <base-integration-youtube />
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <base-integration-twitter />
+                </div>
+            </div>
         </div>
-        <div class="col-md-6 col-lg-4">
-          <base-integration-twitter />
-        </div>
-      </div>
     </div>
-  </div>
 </template>
 
 <script lang="ts">
@@ -38,19 +38,19 @@ import BaseIntegrationTwitter from '@thxnetwork/dashboard/components/cards/BaseI
 import { UserProfile } from 'oidc-client-ts';
 
 @Component({
-  components: {
-    BaseIntegrationYoutube,
-    BaseIntegrationTwitter,
-  },
-  computed: mapGetters({
-    profile: 'account/profile',
-  }),
+    components: {
+        BaseIntegrationYoutube,
+        BaseIntegrationTwitter,
+    },
+    computed: mapGetters({
+        profile: 'account/profile',
+    }),
 })
 export default class Home extends Vue {
-  profile!: UserProfile;
+    profile!: UserProfile;
 
-  mounted() {
-    this.$store.dispatch('account/getProfile');
-  }
+    mounted() {
+        this.$store.dispatch('account/getProfile');
+    }
 }
 </script>

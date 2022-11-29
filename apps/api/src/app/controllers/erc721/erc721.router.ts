@@ -7,16 +7,14 @@ import ListERC721Token from './token/list.controller';
 import ReadERC721Token from './token/get.controller';
 import CreateERC721 from './post.controller';
 import CreateERC721Metadata from './metadata/post.controller';
-import MintERC721Metadata from './metadata/mint/post.controller';
 import CreateMultipleERC721Metadata from './metadata/images/post.controller';
 import DownloadERC721MetadataCSV from './metadata/csv/get.controller';
 import UploadERC721MetadataCSV from './metadata/csv/post.controller';
 import { upload } from '@thxnetwork/api/util/multer';
 import UpdateERC721 from './patch.controller';
 import ReadERC721Metadata from './metadata/get.controller';
-import DeleteERC721Metadata from './metadata/delete.controller';
-import DownloadERC721MetadataZip from './metadata/rewards/claims/qrcode/get.controller';
 import PatchERC721Metadata from './metadata/patch.controller';
+import DeleteERC721Metadata from './metadata/delete.controller';
 
 const router = express.Router();
 
@@ -30,14 +28,6 @@ router.post(
     guard.check(['erc721:read', 'erc721:write']),
     assertRequestInput(CreateERC721.validation),
     CreateERC721.controller,
-);
-
-router.post(
-    '/:id/metadata/:metadataId/mint',
-    guard.check(['erc721:write']),
-    requireAssetPoolHeader,
-    assertRequestInput(MintERC721Metadata.validation),
-    MintERC721Metadata.controller,
 );
 
 router.patch(
@@ -73,13 +63,6 @@ router.post(
     requireAssetPoolHeader,
     assertRequestInput(CreateMultipleERC721Metadata.validation),
     CreateMultipleERC721Metadata.controller,
-);
-
-router.get(
-    '/:id/metadata/zip',
-    guard.check(['erc721:read', 'rewards:read']),
-    requireAssetPoolHeader,
-    DownloadERC721MetadataZip.controller,
 );
 
 router.get(

@@ -23,7 +23,7 @@ const controller = async (req: Request, res: Response) => {
         withdrawUnlockDate = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`;
     }
 
-    let withdrawal: WithdrawalDocument = await WithdrawalService.schedule(
+    let withdrawal: WithdrawalDocument = await WithdrawalService.create(
         req.assetPool,
         WithdrawalType.ProposeWithdraw,
         account.id,

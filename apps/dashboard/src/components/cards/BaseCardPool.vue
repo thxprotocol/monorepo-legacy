@@ -12,12 +12,13 @@
                 Please contact us in
                 <b-link href="https://discord.com/invite/TzbbSmkE7Y" target="_blank"> Discord </b-link>
             </b-alert>
+            <base-badge-network :chainId="pool.chainId" class="mr-1" />
             <base-dropdown-menu-pool
+                class="float-right"
                 :pool="pool"
                 @archive="archive"
                 @remove="$bvModal.show(`modalDelete-${pool.address}`)"
             />
-            <base-badge-network :chainId="pool.chainId" class="mr-1" />
             <p class="mt-3 mb-0" v-if="pool.erc20">
                 <span class="text-muted">Balance:</span><br />
                 <span class="font-weight-bold text-primary h3">
@@ -126,7 +127,7 @@ export default class BaseCardPool extends Vue {
 
     openPoolUrl() {
         this.$router.push({
-            path: `pool/${this.pool._id}/${this.pool.isNFTPool ? 'metadata' : 'rewards'}`,
+            path: `pool/${this.pool._id}/${this.pool.erc20 ? 'erc20-rewards' : 'erc721-rewards'}`,
         });
     }
 

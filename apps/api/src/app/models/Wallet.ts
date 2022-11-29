@@ -28,4 +28,4 @@ walletSchema.virtual('contract').get(function () {
     return new readProvider.eth.Contract(abi, this.address, { from: defaultAccount });
 });
 
-export default mongoose.model<WalletDocument>('wallet', walletSchema);
+export const Wallet = mongoose.model<WalletDocument>('wallet', walletSchema);

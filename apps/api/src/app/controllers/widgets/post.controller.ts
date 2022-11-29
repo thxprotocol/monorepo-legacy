@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { body } from 'express-validator';
 
-import { WIDGETS_URL } from '@thxnetwork/api/config/secrets';
+import { WIDGET_URL } from '@thxnetwork/api/config/secrets';
 import ClientProxy from '@thxnetwork/api/proxies/ClientProxy';
 import WidgetService from '@thxnetwork/api/services/WidgetService';
 import { TClientPayload } from '@thxnetwork/api/models/Client';
@@ -14,7 +14,7 @@ const controller = async (req: Request, res: Response) => {
         application_type: 'web',
         grant_types: ['authorization_code'],
         request_uris: req.body.requestUris,
-        redirect_uris: [WIDGETS_URL],
+        redirect_uris: [WIDGET_URL],
         post_logout_redirect_uris: req.body.postLogoutRedirectUris,
         response_types: ['code'],
         scope: 'openid rewards:read withdrawals:write',

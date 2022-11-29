@@ -3,7 +3,7 @@ import WalletService from '@thxnetwork/api/services/WalletService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { body } from 'express-validator';
 import { UnauthorizedError } from '@thxnetwork/api/util/errors';
-import Wallet from '../../models/Wallet';
+import { Wallet } from '../../models/Wallet';
 import { ChainId } from '@thxnetwork/api/types/enums';
 
 export const validation = [

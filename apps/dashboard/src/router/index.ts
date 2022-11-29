@@ -51,8 +51,16 @@ const routes: Array<RouteConfig> = [
                 component: () => import('../views/pool/Metadata.vue'),
             },
             {
-                path: 'rewards',
-                component: () => import('../views/pool/Rewards.vue'),
+                path: 'point-rewards',
+                component: () => import('../views/pool/PointRewards.vue'),
+            },
+            {
+                path: 'erc20-rewards',
+                component: () => import('../views/pool/ERC20Rewards.vue'),
+            },
+            {
+                path: 'erc721-rewards',
+                component: () => import('../views/pool/ERC721Rewards.vue'),
             },
             {
                 path: 'widgets',

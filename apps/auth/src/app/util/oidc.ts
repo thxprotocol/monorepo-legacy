@@ -71,7 +71,7 @@ async function getAccountByTwitterId(twitterId: string) {
 async function saveInteraction(interaction, sub: string) {
     interaction.result = { login: { accountId: sub } };
     await interaction.save(Date.now() + 10000);
-    return interaction.returnTo;
+    return interaction.prompt.name === 'connect' ? interaction.params.return_url : interaction.returnTo;
 }
 
 async function getInteraction(uid: string) {

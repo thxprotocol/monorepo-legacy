@@ -1,10 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import { GITHUB_API_ENDPOINT, SPOTIFY_API_ENDPOINT, TWITTER_API_ENDPOINT } from '../config/secrets';
-
-export function spotifyClient(config: AxiosRequestConfig) {
-    config.baseURL = SPOTIFY_API_ENDPOINT;
-    return axios(config);
-}
+import { GITHUB_API_ENDPOINT, TWITTER_API_ENDPOINT } from '../config/secrets';
 
 export function twitterClient(config: AxiosRequestConfig) {
     config.baseURL = TWITTER_API_ENDPOINT;

@@ -1,0 +1,70 @@
+<template>
+    <b-card body-class="bg-light p-0">
+        <b-button
+            class="d-flex align-items-center justify-content-between w-100"
+            variant="light"
+            v-b-toggle.collapse-card-expiry
+        >
+            <strong>Expiry &amp; limit</strong>
+            <i :class="`fa-chevron-${isVisible ? 'up' : 'down'}`" class="fas m-0"></i>
+        </b-button>
+        <b-collapse id="collapse-card-expiry" v-model="isVisible">
+            <hr class="mt-0" />
+            <div class="px-3">
+                <p class="text-gray">
+                    Configure until what date and time your customers are allowed to claim this reward. You can also
+                    provide a limit to determine the max amount of rewards available.
+                </p>
+                <b-form-group>
+                    <b-row>
+                        <b-col md="6">
+                            <b-datepicker value-as-date :min="minDate" v-model="expireDate" />
+                        </b-col>
+                        <b-col md="6">
+                            <b-timepicker :disabled="!expireDate" v-model="expireTime" />
+                        </b-col>
+                    </b-row>
+                </b-form-group>
+                <b-form-group label="Reward Limit">
+                    <b-form-input @change-limit="$emit('rewardLimit', $event)" type="number" :value="rewardLimit" />
+                </b-form-group>
+            </div>
+        </b-collapse>
+    </b-card>
+</template>
+
+<script lang="ts">
+import { Component, Prop, Vue } from 'vue-property-decorator';
+
+@Component({})
+export default class BaseCardRewardCondition extends Vue {
+    isVisible = false;
+    expireDate: Date | null = null;
+    expireTime = '00:00:00';
+    selectedRewardLimit = 0;
+
+    @Prop() rewardExpiry!: { date: Date | null; time: string; limit: number };
+    @Prop() rewardLimit!: number;
+
+    mounted() {
+        if (this.rewardExpiry) {
+            this.expireDate = this.rewardExpiry.date;
+            this.expireTime = this.rewardExpiry.time;
+        }
+    }
+
+    get minDate() {
+        const date = new Date();
+        date.setDate(date.getDate() + 1);
+        return date;
+    }
+
+    change() {
+        this.$emit('change', {
+            date: this.expireDate,
+            time: this.expireTime,
+            limit: this.rewardLimit,
+        });
+    }
+}
+</script>

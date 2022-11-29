@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { SpotifyService } from '../../../services/SpotifyService';
 import { TwitterService } from '../../../services/TwitterService';
 import { YouTubeService } from '../../../services/YouTubeService';
 import { AccountService } from '../../../services/AccountService';
@@ -12,7 +11,6 @@ async function controller(req: Request, res: Response) {
     params.githubLoginUrl = GithubService.getLoginURL(uid, {});
     params.googleLoginUrl = YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getBasicScopes());
     params.twitterLoginUrl = TwitterService.getLoginURL(uid, {});
-    params.spotifyLoginUrl = SpotifyService.getLoginURL(uid, {});
 
     return res.render('account', {
         uid,
@@ -30,7 +28,6 @@ async function controller(req: Request, res: Response) {
             otpSecret: account.otpSecret,
             googleAccess: account.googleAccessToken && account.googleAccessTokenExpires > Date.now(),
             twitterAccess: account.twitterAccessToken && account.twitterAccessTokenExpires > Date.now(),
-            spotifyAccess: account.spotifyAccessToken && account.spotifyAccessTokenExpires > Date.now(),
         },
     });
 }
