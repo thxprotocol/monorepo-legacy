@@ -35,4 +35,8 @@ export async function update(reward: ERC721RewardDocument, updates: TERC721Rewar
     return await ERC721Reward.findByIdAndUpdate(reward._id, updates, { new: true });
 }
 
-export default { get, findByPool, removeAllForPool, create, update };
+export async function remove (reward: ERC721RewardDocument) {
+    return ERC721Reward.findOneAndDelete(reward._id);
+}
+
+export default { get, findByPool, removeAllForPool, create, update, remove };

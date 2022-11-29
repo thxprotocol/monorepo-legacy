@@ -14,6 +14,7 @@ import { upload } from '@thxnetwork/api/util/multer';
 import UpdateERC721 from './patch.controller';
 import ReadERC721Metadata from './metadata/get.controller';
 import PatchERC721Metadata from './metadata/patch.controller';
+import DeleteERC721Metadata from './metadata/delete.controller';
 
 const router = express.Router();
 
@@ -35,6 +36,14 @@ router.patch(
     requireAssetPoolHeader,
     assertRequestInput(PatchERC721Metadata.validation),
     PatchERC721Metadata.controller,
+);
+
+router.delete(
+    '/:id/metadata/:metadataId',
+    guard.check(['erc721:write']),
+    requireAssetPoolHeader,
+    assertRequestInput(DeleteERC721Metadata.validation),
+    DeleteERC721Metadata.controller,
 );
 
 router.get('/:id/metadata', guard.check(['erc721:read']), ListERC721Metadata.controller);

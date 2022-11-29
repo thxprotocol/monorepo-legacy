@@ -92,6 +92,10 @@ export async function createMetadata(erc721: ERC721Document, attributes: any): P
     });
 }
 
+export async function deleteMetadata(id: string) {
+    return ERC721Metadata.findOneAndDelete({ _id: id });
+}
+
 export async function mint(
     assetPool: AssetPoolDocument,
     erc721: ERC721Document,
@@ -237,6 +241,7 @@ export default {
     deployCallback,
     findById,
     createMetadata,
+    deleteMetadata,
     mint,
     mintCallback,
     queryMintTransaction,

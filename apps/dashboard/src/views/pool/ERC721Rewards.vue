@@ -80,7 +80,11 @@
                             <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
                         </template>
                         <b-dropdown-item v-b-modal="'modalRewardERC721Create' + item.id">Edit</b-dropdown-item>
-                        <b-dropdown-item disabled>Delete</b-dropdown-item>
+                        <b-dropdown-item
+                            @click="$store.dispatch('erc721Rewards/delete', erc721Rewards[pool._id][item.id])"
+                        >
+                            Delete
+                        </b-dropdown-item>
                     </b-dropdown>
                     <BaseModalRewardERC721Create
                         :id="'modalRewardERC721Create' + item.id"

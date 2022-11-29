@@ -1,3 +1,5 @@
+import path from 'path';
+
 const required = [
     'AUTH_URL',
     'API_URL',
@@ -16,7 +18,6 @@ const required = [
     'RATE_LIMIT_REWARD_GIVE_WINDOW',
     'INITIAL_ACCESS_TOKEN',
     'MAX_FEE_PER_GAS',
-    'CWD',
 ];
 
 if (process.env.NODE_ENV === 'production') {
@@ -40,7 +41,7 @@ if (process.env.NODE_ENV === 'test') {
 }
 
 export const VERSION = 'v1';
-export const CWD = process.env.CWD;
+export const CWD = process.env.CWD || path.resolve(__dirname, '../../../apps/api/src');
 export const NODE_ENV = process.env.NODE_ENV || 'development';
 export const AUTH_URL = process.env.AUTH_URL;
 export const API_URL = process.env.API_URL;

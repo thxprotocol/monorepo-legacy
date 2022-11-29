@@ -35,4 +35,8 @@ export async function update(reward: ERC20RewardDocument, payload: TERC20Reward)
     return await ERC20Reward.findByIdAndUpdate(reward._id, payload, { new: true });
 }
 
-export default { get, findByPool, removeAllForPool, create, update };
+export async function remove(reward: ERC20RewardDocument) {
+    return await ERC20Reward.findOneAndDelete(reward._id);
+}
+
+export default { get, findByPool, removeAllForPool, create, update, remove };

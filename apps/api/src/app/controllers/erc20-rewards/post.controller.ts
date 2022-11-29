@@ -6,7 +6,7 @@ const validation = [
     body('title').isString(),
     body('description').isString(),
     body('amount').isInt({ gt: 0 }),
-    body('expiryDate').isString(),
+    body('expiryDate').optional().isString(),
     body('claimAmount').isInt({ gt: 0 }),
     body('platform').isNumeric(),
     body('interaction').optional().isNumeric(),

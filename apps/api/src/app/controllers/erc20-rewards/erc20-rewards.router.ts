@@ -11,6 +11,7 @@ import CreateERC20Reward from './post.controller';
 import ReadERC20Reward from './get.controller';
 import UpdateERC20Reward from './patch.controller';
 import ListERC20Reward from './list.controller';
+import DeleteERC20Reward from './delete.controller';
 
 const router = express.Router();
 
@@ -49,6 +50,15 @@ router.patch(
     requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
     UpdateERC20Reward.controller,
+);
+
+router.delete(
+    '/:id',
+    guard.check(['rewards:write', 'rewards:read']),
+    assertAssetPoolAccess,
+    requireAssetPoolHeader,
+    assertRequestInput(DeleteERC20Reward.validation),
+    DeleteERC20Reward.controller,
 );
 
 export default router;

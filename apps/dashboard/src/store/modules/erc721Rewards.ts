@@ -41,6 +41,11 @@ class ERC721RewardModule extends VuexModule {
     }
 
     @Mutation
+    unset(reward: TERC721Reward) {
+        Vue.delete(this._all[reward.poolId], reward._id as string);
+    }
+
+    @Mutation
     setTotal({ pool, total }: { pool: IPool; total: number }) {
         Vue.set(this._totals, pool._id, total);
     }
@@ -111,6 +116,16 @@ class ERC721RewardModule extends VuexModule {
             document.body.appendChild(anchor);
             anchor.click();
         }
+    }
+
+    @Action({ rawError: true })
+    async delete(reward: TERC721Reward) {
+        await axios({
+            method: 'DELETE',
+            url: `/erc721-rewards/${reward._id}`,
+            headers: { 'X-PoolId': reward.poolId },
+        });
+        this.context.commit('unset', reward);
     }
 }
 
