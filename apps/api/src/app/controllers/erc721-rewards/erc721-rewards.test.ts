@@ -5,7 +5,6 @@ import { dashboardAccessToken, walletAccessToken, walletAccessToken2 } from '@th
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { ClaimDocument } from '@thxnetwork/api/types/TClaim';
-import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
 import { addMinutes } from '@thxnetwork/api/util/rewards';
 
 const user = request.agent(app);
@@ -71,17 +70,13 @@ describe('ERC721 Rewards', () => {
 
         describe('POST /erc721/:id/metadata', () => {
             it('should create a Metadada and reward', (done) => {
-                const title = 'NFT title 1',
-                    description = 'NFT description 1',
-                    value1 = 'blue',
+                const value1 = 'blue',
                     value2 = 'small';
 
                 user.post('/v1/erc721/' + erc721ID + '/metadata')
                     .set('Authorization', dashboardAccessToken)
                     .set('X-PoolId', poolId)
                     .send({
-                        title,
-                        description,
                         attributes: [
                             { key: schema[0].name, value: value1 },
                             { key: schema[1].name, value: value2 },
@@ -89,8 +84,6 @@ describe('ERC721 Rewards', () => {
                     })
                     .expect(({ body }: request.Response) => {
                         expect(body._id).toBeDefined();
-                        expect(body.title).toBe(title);
-                        expect(body.description).toBe(description);
                         expect(body.attributes[0].key).toBe(schema[0].name);
                         expect(body.attributes[1].key).toBe(schema[1].name);
                         expect(body.attributes[0].value).toBe(value1);
