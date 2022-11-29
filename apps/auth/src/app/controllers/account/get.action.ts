@@ -23,7 +23,6 @@ async function formatAccountRes(account) {
                 account.googleAccessTokenExpires > Date.now() &&
                 (await YouTubeService.haveExpandedScopes(account.googleAccessToken)),
             twitterAccess: account.twitterAccessToken !== undefined && account.twitterAccessTokenExpires > Date.now(),
-            spotifyAccess: account.spotifyAccessToken !== undefined && account.spotifyAccessTokenExpires > Date.now(),
         },
         ...protectedPrivateKey,
     };

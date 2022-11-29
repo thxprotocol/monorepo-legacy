@@ -5,5 +5,12 @@
         "types": ["webpack-env", "node"]
     },
     "exclude": ["**/*.spec.ts", "**/*.spec.tsx"],
-    "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "../../libs/contracts/**/*.json",  "../../libs/sdk/**/*.ts"]
+    "include": [
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "src/**/*.vue",
+        "../../libs/contracts/**/*.json",
+        "../../libs/sdk/**/*.ts",
+        "../../libs/common/**/*.ts"
+    ]
 }

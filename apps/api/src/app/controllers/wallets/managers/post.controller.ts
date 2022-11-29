@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import WalletManagerService from '@thxnetwork/api/services/WalletManagerService';
-import Wallet from '@thxnetwork/api/models/Wallet';
+import { Wallet } from '@thxnetwork/api/models/Wallet';
 
 export const validation = [param('id').exists().isMongoId(), body('address').exists().isString()];
 

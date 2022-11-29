@@ -1,18 +1,15 @@
 <template>
-    <div>
-        <label>YouTube Video URL:</label>
+    <b-form-group label="YouTube Video URL">
         <b-form-input
             :value="value"
             :class="{ 'is-valid': videoId.length }"
-            class="mb-3"
             placeholder="https://www.youtube.com/watch?v=ckoegYJ1FR4"
             @input="onChange"
         />
-
-        <b-alert show variant="info" v-if="videoId">
+        <b-alert show class="mt-2" variant="info" v-if="videoId">
             YouTube Video ID: <strong> {{ videoId }}</strong>
         </b-alert>
-    </div>
+    </b-form-group>
 </template>
 
 <script lang="ts">

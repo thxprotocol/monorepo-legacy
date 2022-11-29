@@ -1,7 +1,6 @@
 <template>
-    <div>
-        <label> Your Tweets:</label>
-        <b-dropdown variant="link" class="dropdown-select bg-white">
+    <b-form-group label="Your Tweets">
+        <b-dropdown variant="link" class="dropdown-select bg-white mb-3">
             <template #button-content>
                 <div v-if="selected" class="text-overflow-ellipsis">
                     {{ selected.text }}
@@ -18,7 +17,7 @@
                 {{ item.text }}
             </b-dropdown-item-button>
         </b-dropdown>
-    </div>
+    </b-form-group>
 </template>
 
 <script lang="ts">

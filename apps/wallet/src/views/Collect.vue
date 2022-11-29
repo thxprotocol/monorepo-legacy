@@ -3,7 +3,7 @@
         <div class="flex-row text-white">
             <div v-if="isLoading && !error" class="text-center">
                 <b-spinner variant="secondary" large /><br />
-                <span class="text-muted mt-2">{{ info }}</span>
+                <span class="text-muted mt-2">Claiming your reward...</span>
             </div>
             <template v-else>
                 <template v-if="isClaimInvalid">
@@ -22,32 +22,25 @@
                 </template>
             </template>
 
-            <template v-if="claimedReward">
+            <template v-if="!isLoading && claimedReward">
                 <template v-if="claimedReward.erc20">
                     <div class="img-treasure" :style="`background-image: url(${imgUrl});`"></div>
                     <h2 class="text-secondary text-center my-3">
                         <strong>Congratulations!</strong> You've earned
-                        <strong>{{ claimedReward.amount }} {{ claimedReward.erc20.symbol }}</strong>
+                        <strong>{{ claimedReward.withdrawal.amount }} {{ claimedReward.erc20.symbol }}</strong>
                     </h2>
-                    <p class="lead text-center">
-                        Collect, swap or redeem these tokens for promotions.<br />
-                        <small class="text-muted" v-if="claimedReward.unlockDate">
-                            Unlocks at
-                            {{ format(new Date(claimedReward.unlockDate), 'MMMM dd, yyyy') }}
-                        </small>
-                    </p>
+                    <p class="lead text-center">Collect, swap or redeem these tokens for promotions.<br /></p>
                 </template>
-                <b-row v-if="claimedReward.erc721Id">
+                <b-row v-if="claimedReward.erc721">
                     <b-col xs="12" md="6" class="d-flex align-items-center">
                         <b-img-lazy :src="imgUrl" class="d-block w-100" />
                     </b-col>
                     <b-col xs="12" md="6">
                         <h2 class="text-secondary my-3"><strong>Congratulations!</strong> You've claimed an NFT.</h2>
                         <p class="lead">
-                            {{ claimedReward.metadata.title || 'title' }}<br />
+                            {{ claimedReward.metadata.attributes.find((a) => a.key === 'name').value }}<br />
                             <small class="text-muted">{{
-                                claimedReward.metadata.description ||
-                                'Lorem ipsum dolor sit amet, nunct copesitas randum.'
+                                claimedReward.metadata.attributes.find((a) => a.key === 'description').value
                             }}</small>
                         </p>
                     </b-col>
@@ -58,15 +51,14 @@
                 </b-button>
             </template>
         </div>
-
-        <b-card class="mb-3" v-if="reward && reward.withdrawCondition && !hasValidAccessToken">
-            <div v-if="reward.withdrawCondition.channelType === ChannelType.Twitter">
+        <b-card class="mb-3" v-if="reward && reward.platform !== RewardConditionPlatform.None && !hasValidAccessToken">
+            <div v-if="reward.platform === RewardConditionPlatform.Twitter">
                 <div class="mb-3 d-flex align-items-center">
                     <img height="30" class="mr-3" :src="require('../../public/assets/img/thx_twitter.png')" alt="" />
                     <strong> Twitter </strong>
                 </div>
             </div>
-            <div v-else>
+            <div v-if="reward.platform === RewardConditionPlatform.Google">
                 <div class="mb-3 d-flex align-items-center">
                     <img height="30" class="mr-3" :src="require('../../public/assets/img/thx_youtube.png')" alt="" />
                     <strong> Youtube </strong>
@@ -80,20 +72,13 @@
                 </b-link>
             </b-alert>
             <p class="text-muted">Please, connect to this channel to claim your reward.</p>
-            <b-button
-                @click="connect(reward.withdrawCondition.channelType)"
-                variant="primary"
-                block
-                class="rounded-pill"
-            >
-                Connect
-            </b-button>
+            <b-button @click="connect" variant="primary" block class="rounded-pill"> Connect </b-button>
         </b-card>
     </div>
 </template>
 
 <script lang="ts">
-import { ERC721, TERC721Token } from '@thxnetwork/wallet/store/modules/erc721';
+import { ERC721, TERC721Metadata, TERC721Token } from '@thxnetwork/wallet/store/modules/erc721';
 import { Withdrawal, WithdrawalState } from '@thxnetwork/wallet/store/modules/withdrawals';
 import { AxiosError } from 'axios';
 import { format } from 'date-fns';
@@ -102,8 +87,22 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters, mapState } from 'vuex';
 import poll from 'promise-poller';
 import { UserProfile } from '../store/modules/account';
-import { ChannelType } from '../types/enums/ChannelType';
-import { ChannelAction } from '../store/modules/assetPools';
+import {
+    RewardConditionInteraction,
+    RewardConditionPlatform,
+    TERC20Reward,
+    TERC721Reward,
+} from '@thxnetwork/types/index';
+import { TERC20 } from '../store/modules/erc20';
+
+type TClaim = {
+    metadata: TERC721Metadata;
+    reward:
+        | (TERC20Reward & { itemUrl: { href: string; label: string } })
+        | (TERC721Reward & { itemUrl: { href: string; label: string } });
+    erc721: ERC721;
+    erc20: TERC20;
+};
 
 @Component({
     computed: {
@@ -124,27 +123,26 @@ export default class Collect extends Vue {
     claimStarted = false;
     isClaimFailed = false;
     isClaimInvalid = false;
-    claim: (Withdrawal & TERC721Token & { poolId: string }) | null = null;
-    claimedReward: (Withdrawal & TERC721Token & { poolId: string }) | null = null;
+    claim: TClaim | null = null;
+    claimedReward: (TClaim & { withdrawal: Withdrawal; token: TERC721Token }) | null = null;
     state!: { claimId: string; rewardHash: string };
 
     erc721s!: { [id: string]: ERC721 };
     user!: User;
-    reward: any = null;
 
+    reward:
+        | null
+        | (TERC20Reward & { itemUrl: { href: string; label: string } })
+        | (TERC721Reward & { itemUrl: { href: string; label: string } }) = null;
     profile!: UserProfile;
     hasValidAccessToken = false;
-    ChannelType = ChannelType;
-    ChannelAction = ChannelAction;
-    currentChannel: ChannelType | null = null;
+    RewardConditionPlatform = RewardConditionPlatform;
+    RewardConditionInteraction = RewardConditionInteraction;
+    currentChannel: RewardConditionPlatform | null = null;
 
     get erc721() {
         if (!this.claim) return null;
-        return this.erc721s[this.claim.erc721Id];
-    }
-
-    get info() {
-        return this.claimStarted ? 'Claim transaction pending...' : 'Claiming your reward...';
+        return this.erc721s[this.claim.erc721._id];
     }
 
     async mounted() {
@@ -156,30 +154,21 @@ export default class Collect extends Vue {
         this.state = this.user.state as { claimId: string; rewardHash: string };
 
         // Get claim information based on url claimId or rewardHash. rewardHash will be deprecated
-        this.claim = await this.$store.dispatch('assetpools/getClaim', {
-            claimId: this.state.claimId,
-            rewardHash: this.state.rewardHash,
-        });
+        this.claim = await this.$store.dispatch('assetpools/getClaim', this.state.claimId);
         if (!this.claim) return;
-
-        // Get reward information based on claims rewardId
-        this.reward = await this.$store.dispatch('assetpools/getReward', {
-            rewardId: this.claim.rewardId,
-            poolId: this.claim.poolId,
-        });
-        if (!this.reward) return;
+        this.reward = this.claim.reward;
 
         // If no condition applies claim directly
-        if (!this.reward.withdrawCondition) {
+        if (this.claim.reward.platform === RewardConditionPlatform.None) {
             return await this.claimReward();
         }
 
         // Check validity of current access token
-        switch (this.reward.withdrawCondition.channelType) {
-            case ChannelType.Google:
+        switch (this.claim.reward.platform) {
+            case RewardConditionPlatform.Google:
                 this.hasValidAccessToken = this.profile.googleAccess;
                 break;
-            case ChannelType.Twitter:
+            case RewardConditionPlatform.Twitter:
                 this.hasValidAccessToken = this.profile.twitterAccess;
                 break;
         }
@@ -194,26 +183,22 @@ export default class Collect extends Vue {
 
     async claimReward() {
         try {
-            this.claimedReward = await this.$store.dispatch('assetpools/claimReward', {
-                claimId: this.state.claimId,
-                rewardHash: this.state.rewardHash,
-            });
+            this.isLoading = true;
+            this.claimedReward = await this.$store.dispatch('assetpools/claimReward', this.state.claimId);
             if (!this.claimedReward) return;
 
-            this.claimStarted = true;
-
             if (this.claimedReward?.erc20) {
-                await this.waitForWithdrawn(this.claimedReward);
+                await this.waitForWithdrawn(this.claimedReward.withdrawal);
             } else {
-                await this.waitForMinted(this.claimedReward);
+                await this.waitForMinted(this.claimedReward.token);
             }
 
             this.startConfetti();
 
-            if (this.claim && this.claim.erc721Id) {
+            if (this.claim && this.claim.erc721) {
                 await this.$store.dispatch('network/connect', this.claim.erc721.chainId);
                 this.$store.commit('erc721/set', this.claim.erc721);
-
+                debugger;
                 const imgUrl = this.firstImageURL(this.claim.metadata);
                 if (imgUrl) this.imgUrl = imgUrl;
             } else if (this.claim && this.claim.erc20) {
@@ -226,22 +211,18 @@ export default class Collect extends Vue {
             if (res?.status === 403) {
                 this.error = res?.data.error.message;
             }
+            debugger;
         } finally {
-            this.claimStarted = false;
             this.isLoading = false;
         }
     }
 
     async waitForWithdrawn(withdrawal: Withdrawal) {
-        const claim = await this.$store.dispatch('assetpools/getClaim', {
-            claimId: this.state.claimId,
-            rewardHash: this.state.rewardHash,
-        });
-
         const taskFn = async () => {
+            if (!this.reward) return;
             const w = await this.$store.dispatch('withdrawals/get', {
                 id: withdrawal._id,
-                poolId: claim.poolId,
+                poolId: this.reward.poolId,
             });
             if (w && w.state === WithdrawalState.Withdrawn) {
                 return Promise.resolve(w);
@@ -266,11 +247,12 @@ export default class Collect extends Vue {
         return poll({ taskFn, interval: 3000, retries: 10 });
     }
 
-    firstImageURL(metadata: any) {
+    firstImageURL(metadata: TERC721Metadata) {
         let url = '';
-        this.erc721?.properties.forEach((p) => {
+        this.claim?.erc721.properties.forEach((p) => {
             if (p.propType === 'image') {
-                url = metadata.attributes.find((a: { value: string; key: string }) => a.key === p.name).value;
+                const prop = metadata.attributes.find((a: { value: string; key: string }) => a.key === p.name);
+                url = prop?.value;
             }
         });
         return url;
@@ -287,17 +269,15 @@ export default class Collect extends Vue {
 
     goToWallet() {
         (this as any).$confetti.stop();
-        const path = this.erc721 ? 'collectibles' : 'tokens';
+        const path = this.claim?.erc721 ? 'collectibles' : 'tokens';
         this.$router.push({ path });
     }
 
-    connect(channelType: ChannelType | null) {
-        if (!this.user.state) {
-            return;
-        }
+    connect() {
+        if (!this.user.state) return;
         this.$store.dispatch('account/connectRedirect', {
-            channel: channelType,
-            path: `/claim/${this.state.claimId ? this.state.claimId : this.state.rewardHash}`,
+            platform: this.reward?.platform,
+            path: `/claim/${this.state.claimId}`,
         });
     }
 }

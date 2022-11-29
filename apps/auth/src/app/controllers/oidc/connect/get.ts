@@ -1,25 +1,19 @@
 import { Request, Response } from 'express';
 import { oidc } from '../../../util/oidc';
-import { ChannelType } from '../../../models/Reward';
-import { AccountService } from '../../../services/AccountService';
-import { SpotifyService } from '../../../services/SpotifyService';
+import { RewardConditionPlatform } from '@thxnetwork/types/index';
 import { TwitterService } from '../../../services/TwitterService';
 import { YouTubeService } from '../../../services/YouTubeService';
 import { GithubService } from '@thxnetwork/auth/services/GithubServices';
 
 async function controller(req: Request, res: Response) {
-    const { uid, params, session } = req.interaction;
-
-    const account = await AccountService.get(session.accountId);
+    const { uid, params } = req.interaction;
     let redirect = '';
 
-    if (params.channel == ChannelType.Google) {
+    if (params.channel == RewardConditionPlatform.Google) {
         redirect = YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getExpandedScopes());
-    } else if (params.channel == ChannelType.Twitter && !account.twitterAccessToken) {
+    } else if (params.channel == RewardConditionPlatform.Twitter) {
         redirect = TwitterService.getLoginURL(uid, {});
-    } else if (params.channel == ChannelType.Spotify && !account.spotifyAccessToken) {
-        redirect = SpotifyService.getLoginURL(uid, {});
-    } else if (params.channel == ChannelType.Github && !account.githubAccessToken) {
+    } else if (params.channel == RewardConditionPlatform.Github) {
         redirect = GithubService.getLoginURL(uid, {});
     }
 

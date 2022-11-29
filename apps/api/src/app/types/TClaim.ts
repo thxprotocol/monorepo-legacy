@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 export type TClaim = {
+    sub?: string;
     id: string;
     poolId: string;
     rewardId: string;

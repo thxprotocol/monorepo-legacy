@@ -80,6 +80,7 @@ export class TwitterService {
     static async getTweets(accessToken: string) {
         const user = await this.getUser(accessToken);
         if (!user) throw new Error('Could not find Twitter user.');
+
         const r = await twitterClient({
             url: `/users/${user.id}/tweets?tweet.fields=id,referenced_tweets,created_at`,
             method: 'GET',

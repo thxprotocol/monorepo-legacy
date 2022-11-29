@@ -91,7 +91,7 @@ describe('Propose Withdrawal', () => {
                 .expect(({ body }: request.Response) => {
                     expect(body._id).toBeDefined();
                     expect(body.sub).toEqual(sub2);
-                    expect(body.amount).toEqual(rewardWithdrawAmount);
+                    expect(String(body.amount)).toEqual(rewardWithdrawAmount);
                     expect(body.state).toEqual(WithdrawalState.Withdrawn);
                     expect(body.createdAt).toBeDefined();
                     expect(body.unlockDate).not.toBe(undefined);
