@@ -16,4 +16,5 @@ export type TBaseReward = {
     updatedAt?: string;
     progress?: number;
     page?: number;
+    claims?: any[];
 };

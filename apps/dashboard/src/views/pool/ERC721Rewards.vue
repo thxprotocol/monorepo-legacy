@@ -203,7 +203,7 @@ export default class ERC721RewardsView extends Vue {
     }
 
     onSelectAll(isSelectAll: boolean) {
-        this.selectedItems = isSelectAll ? this.rewardsByPage.map((r) => r.id) : [];
+        this.selectedItems = isSelectAll ? (this.rewardsByPage.map((r) => r.id) as string[]) : [];
     }
 
     onChangePage(page: number) {

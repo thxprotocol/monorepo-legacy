@@ -125,7 +125,7 @@ class ERC721Module extends VuexModule {
             method: 'GET',
             url: `/erc721/${erc721._id}/metadata/${metadataId}`,
         });
-        const metadata = this._all[erc721._id].metadata.find((m) => m._id === metadataId);
+        const metadata = this._all[erc721._id].metadata[metadataId];
         this.context.commit('setMetadata', {
             erc721,
             metadata: { ...metadata, ...data },

@@ -13,7 +13,6 @@
                         </b-form-group>
                         <b-form-group label="Metadata">
                             <BaseDropdownERC721Metadata
-                                :erc721metadata="erc721metadata"
                                 :erc721metadataId="erc721metadataId"
                                 :pool="pool"
                                 @selected="onSelectMetadata"
@@ -88,7 +87,6 @@ export default class ModalRewardERC721Create extends Vue {
     @Prop() id!: string;
     @Prop() pool!: IPool;
     @Prop({ required: false }) reward!: TERC721Reward;
-    @Prop() erc721metadata!: TERC721Metadata[];
 
     get erc721(): TERC721 | null {
         if (!this.pool.erc721) return null;

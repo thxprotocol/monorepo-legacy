@@ -4,6 +4,9 @@
         "declaration": true,
         "types": ["webpack-env", "node"]
     },
+    "vueCompilerOptions": {
+        "target": 2.7
+    },
     "exclude": ["**/*.spec.ts", "**/*.spec.tsx"],
     "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "../../libs/common/**/*"]
 }

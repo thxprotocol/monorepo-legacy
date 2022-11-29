@@ -40,7 +40,7 @@ export type TERC721 = {
     totalSupply: string;
     logoURI: string;
     properties: TERC721DefaultProp[];
-    metadata: TERC721Metadata[];
+    metadata: { [id: string]: TERC721Metadata };
     archived: boolean;
     poolId?: string;
 };
