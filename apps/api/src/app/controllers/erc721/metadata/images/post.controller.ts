@@ -93,7 +93,7 @@ const controller = async (req: Request, res: Response) => {
                     const url = ImageService.getPublicUrl(filename);
 
                     // CREATE THE METADATA
-                    const metadata = await ERC721Service.createMetadata(erc721, '', '', [
+                    const metadata = await ERC721Service.createMetadata(erc721, [
                         { key: req.body.propName, value: url },
                     ]);
 

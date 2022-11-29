@@ -12,12 +12,8 @@ import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { ChainId, TransactionState } from '@thxnetwork/api/types/enums';
 import { TAssetPool } from '@thxnetwork/api/types/TAssetPool';
 import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
-import {
-    TERC721DeployCallbackArgs, TERC721TokenMintCallbackArgs
-} from '@thxnetwork/api/types/TTransaction';
-import {
-    assertEvent, ExpectedEventNotFound, findEvent, parseLogs
-} from '@thxnetwork/api/util/events';
+import { TERC721DeployCallbackArgs, TERC721TokenMintCallbackArgs } from '@thxnetwork/api/types/TTransaction';
+import { assertEvent, ExpectedEventNotFound, findEvent, parseLogs } from '@thxnetwork/api/util/events';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
 
@@ -89,16 +85,9 @@ export async function findBySub(sub: string): Promise<ERC721Document[]> {
     return ERC721.find({ sub });
 }
 
-export async function createMetadata(
-    erc721: ERC721Document,
-    title: string,
-    description: string,
-    attributes: any,
-): Promise<ERC721MetadataDocument> {
+export async function createMetadata(erc721: ERC721Document, attributes: any): Promise<ERC721MetadataDocument> {
     return ERC721Metadata.create({
         erc721: String(erc721._id),
-        title,
-        description,
         attributes,
     });
 }

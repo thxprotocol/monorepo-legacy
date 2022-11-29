@@ -67,7 +67,7 @@ const controller = async (req: Request, res: Response) => {
                             metadata.save();
                         } else {
                             // CREATE NEW METADATA
-                            metadata = await ERC721Service.createMetadata(erc721, '', '', attributes);
+                            metadata = await ERC721Service.createMetadata(erc721, attributes);
 
                             // GENERATE A NEW REWARD and CLAIMS FOR THE NEW METADATA
                             const config = {

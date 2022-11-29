@@ -66,6 +66,7 @@ describe('NFT Pool', () => {
                     erc721tokens: [tokenAddress],
                 })
                 .expect(({ body }: request.Response) => {
+                    console.log(body);
                     expect(isAddress(body.address)).toBe(true);
                     poolId = body._id;
                 })
@@ -75,8 +76,6 @@ describe('NFT Pool', () => {
 
     describe('POST /erc721/:id/metadata', () => {
         const recipient = account2.address,
-            title = 'NFT title',
-            description = 'NFT description',
             value1 = 'red',
             value2 = 'large',
             value3 = 'http://imageURL';
@@ -86,21 +85,14 @@ describe('NFT Pool', () => {
                 .set('Authorization', dashboardAccessToken)
                 .set('X-PoolId', poolId)
                 .send({
-                    title,
-                    description,
                     attributes: [
                         { key: schema[0].name, value: value1 },
                         { key: schema[1].name, value: value2 },
                         { key: schema[2].name, value: value3 },
                     ],
-                    recipient,
                 })
                 .expect(({ body }: request.Response) => {
                     expect(body._id).toBeDefined();
-                    expect(body.tokens[0].tokenId).toBe(1);
-                    expect(body.tokens[0].recipient).toBe(recipient);
-                    expect(body.title).toBe(title);
-                    expect(body.description).toBe(description);
                     expect(body.attributes[0].key).toBe(schema[0].name);
                     expect(body.attributes[0].value).toBe(value1);
                     expect(body.attributes[1].key).toBe(schema[1].name);
@@ -132,8 +124,6 @@ describe('NFT Pool', () => {
                 })
                 .expect(({ body }: request.Response) => {
                     expect(body._id).toBeDefined();
-                    expect(body.title).toBe(title);
-                    expect(body.description).toBe(description);
                     expect(body.attributes[0].key).toBe(schema[0].name);
                     expect(body.attributes[0].value).toBe(value1);
                     expect(body.attributes[1].key).toBe(schema[1].name);
@@ -158,8 +148,6 @@ describe('NFT Pool', () => {
                 .set('X-PoolId', poolId)
                 .set('Authorization', dashboardAccessToken)
                 .send({
-                    title: metaTitle,
-                    description: metaDesc,
                     attributes: [
                         { key: schema[0].name, value: value1 },
                         { key: schema[1].name, value: value2 },
@@ -172,24 +160,6 @@ describe('NFT Pool', () => {
                     expect(res.body.attributes[2].value).toBe(value3);
                 })
                 .expect(200, done);
-        });
-    });
-
-    describe('POST /erc721/:id/metadata/:metadataId/mint', () => {
-        it('should 201 when token is minted', (done) => {
-            const recipient = account2.address;
-
-            user.post('/v1/erc721/' + erc721ID + '/metadata/' + metadataId + '/mint')
-                .set('Authorization', dashboardAccessToken)
-                .set('X-PoolId', poolId)
-                .send({
-                    recipient,
-                })
-                .expect(({ body }: request.Response) => {
-                    expect(body.tokens[0].tokenId).toBe(2);
-                    expect(body.tokens[0].recipient).toBe(recipient);
-                })
-                .expect(201, done);
         });
     });
 
@@ -307,8 +277,6 @@ describe('NFT Pool', () => {
                 .set('Authorization', dashboardAccessToken)
                 .set('X-PoolId', poolId)
                 .expect(({ body }: request.Response) => {
-                    expect(body.results[0].title).toBe('');
-                    expect(body.results[0].description).toBe('');
                     expect(body.results[0].attributes[0].key).toBe(schema[0].name);
                     expect(body.results[0].attributes[0].value).toBe('pink');
                     expect(body.results[0].attributes[1].key).toBe(schema[1].name);
@@ -366,7 +334,7 @@ describe('NFT Pool', () => {
                 .set('Authorization', dashboardAccessToken)
                 .set('X-PoolId', poolId)
                 .send()
-                .expect(200, done);
+                .expect(201, done);
         });
         it('should cast a success event for sendDownloadMetadataQrEmail event', (done) => {
             const callback = async () => {

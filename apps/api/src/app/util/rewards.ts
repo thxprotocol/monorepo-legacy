@@ -1,16 +1,9 @@
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
-import { agenda, EVENT_SEND_DOWNLOAD_QR_EMAIL } from '@thxnetwork/api/util/agenda';
-import { AWS_S3_PRIVATE_BUCKET_NAME } from '@thxnetwork/api/config/secrets';
-import { s3PrivateClient } from '@thxnetwork/api/util/s3';
-import { GetObjectCommand } from '@aws-sdk/client-s3';
 import { TERC721Reward, TERC20Reward, TReferralReward } from '@thxnetwork/types/';
-import { Readable } from 'stream';
-import { logger } from '@thxnetwork/api/util/logger';
-import { Response } from 'express';
-import { ERC20Reward, ERC20RewardDocument } from '../models/ERC20Reward';
-import { ERC721Reward, ERC721RewardDocument } from '../models/ERC721Reward';
-import { ReferralReward, ReferralRewardDocument } from '../models/ReferralReward';
+import { ERC20Reward } from '../models/ERC20Reward';
+import { ERC721Reward } from '../models/ERC721Reward';
+import { ReferralReward } from '../models/ReferralReward';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import ERC20RewardService from '../services/ERC20RewardService';
@@ -50,15 +43,6 @@ export function formatDate(date: Date) {
 
     return yyyy + '-' + mm + '-' + dd;
 }
-
-type RewardSlug =
-    | 'no-limit-and-claim-one-disabled'
-    | 'one-limit-and-claim-one-disabled'
-    | 'expiration-date-is-next-30-min'
-    | 'expiration-date-is-previous-30-min'
-    | 'claim-one-is-enabled'
-    | 'claim-one-is-enabled-and-amount-is-greather-than-1'
-    | 'claim-one-is-disabled';
 
 export const createERC721Reward = async (assetPool: AssetPoolDocument, config: TERC721Reward) => {
     const metadata = await ERC721Service.findMetadataById(config.erc721metadataId);
@@ -106,45 +90,4 @@ export const createReferralReward = async (assetPool: AssetPoolDocument, config:
         ),
     );
     return { reward, claims };
-};
-
-export const getQrcode = async (
-    fileName: string,
-    res: Response,
-    reward: ERC20RewardDocument | ReferralRewardDocument | ERC721RewardDocument,
-    assetPool: AssetPoolDocument,
-) => {
-    try {
-        const response = await s3PrivateClient.send(
-            new GetObjectCommand({
-                Bucket: AWS_S3_PRIVATE_BUCKET_NAME,
-                Key: fileName,
-            }),
-        );
-
-        (response.Body as Readable).pipe(res).attachment(fileName);
-    } catch (err) {
-        if (err.$metadata && err.$metadata.httpStatusCode == 404) {
-            const rewardId = String(reward._id);
-            const poolId = String(assetPool._id);
-            const sub = assetPool.sub;
-            const equalJobs = await agenda.jobs({
-                name: EVENT_SEND_DOWNLOAD_QR_EMAIL,
-                data: { poolId, rewardId, sub, fileName },
-            });
-
-            if (!equalJobs.length) {
-                agenda.now(EVENT_SEND_DOWNLOAD_QR_EMAIL, {
-                    poolId,
-                    rewardId,
-                    sub,
-                    fileName,
-                });
-            }
-            res.status(201).end();
-        } else {
-            logger.error(err);
-            throw err;
-        }
-    }
 };

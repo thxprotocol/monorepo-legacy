@@ -89,7 +89,6 @@ describe('Claims', () => {
             user.post(`/v1/claims/${claim.id}/collect`)
                 .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
                 .expect((res: request.Response) => {
-                    console.log(res.body);
                     expect(res.body.claim.sub).toBeDefined();
                     expect(res.body.withdrawal.state).toEqual(WithdrawalState.Withdrawn);
                 })

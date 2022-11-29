@@ -6,13 +6,7 @@ import { RewardConditionPlatform, TERC721Reward } from '@thxnetwork/types/index'
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import db from '@thxnetwork/api/util/database';
 
-const validation = [
-    param('id').isMongoId(),
-    body('title').isString().isLength({ min: 0, max: 100 }),
-    body('description').isString().isLength({ min: 0, max: 400 }),
-    body('attributes').exists(),
-    body('recipient').optional().isEthereumAddress(),
-];
+const validation = [param('id').isMongoId(), body('attributes').exists()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721']
@@ -20,12 +14,7 @@ const controller = async (req: Request, res: Response) => {
     const erc721 = await ERC721Service.findById(req.params.id);
     if (!erc721) throw new NotFoundError('Could not find this NFT in the database');
 
-    const metadata = await ERC721Service.createMetadata(
-        erc721,
-        req.body.title,
-        req.body.description,
-        req.body.attributes,
-    );
+    const metadata = await ERC721Service.createMetadata(erc721, req.body.attributes);
     const tokens = metadata.tokens || [];
     const config = {
         uuid: db.createUUID(),
