@@ -16,7 +16,7 @@ const router = express.Router();
 
 router.get(
     '/',
-    guard.check(['rewards:read']),
+    guard.check(['referral_rewards:read']),
     assertAssetPoolAccess,
     requireAssetPoolHeader,
     assertRequestInput(ListRewardReferral.validation),
@@ -25,7 +25,7 @@ router.get(
 );
 router.get(
     '/:id',
-    guard.check(['rewards:read']),
+    guard.check(['referral_rewards:read']),
     //assertAssetPoolAccess,
     assertRequestInput(ReadRewardReferral.validation),
     requireAssetPoolHeader,
@@ -34,7 +34,7 @@ router.get(
 );
 router.post(
     '/',
-    guard.check(['rewards:write', 'rewards:read']),
+    guard.check(['referral_rewards:write', 'referral_rewards:read']),
     assertAssetPoolAccess,
     assertRequestInput(CreateRewardReferral.validation),
     requireAssetPoolHeader,
@@ -43,7 +43,7 @@ router.post(
 );
 router.patch(
     '/:id',
-    guard.check(['rewards:write', 'rewards:read']),
+    guard.check(['referral_rewards:write', 'referral_rewards:read']),
     assertAssetPoolAccess,
     assertRequestInput(UpdateRewardReferral.validation),
     requireAssetPoolHeader,
