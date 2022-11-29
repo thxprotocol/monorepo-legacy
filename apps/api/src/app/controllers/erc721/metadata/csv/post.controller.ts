@@ -5,7 +5,6 @@ import { check, param } from 'express-validator';
 import { Readable } from 'stream';
 import { logger } from '@thxnetwork/api/util/logger';
 import CsvReadableStream from 'csv-reader';
-import { agenda, EVENT_SEND_DOWNLOAD_METADATA_QR_EMAIL } from '@thxnetwork/api/util/agenda';
 import { createERC721Reward } from '@thxnetwork/api/util/rewards';
 import { RewardConditionPlatform } from '@thxnetwork/types/index';
 import db from '@thxnetwork/api/util/database';
@@ -98,19 +97,6 @@ const controller = async (req: Request, res: Response) => {
             })
             .on('end', async () => {
                 await Promise.all(promises);
-
-                const poolId = String(req.assetPool._id);
-                const sub = req.assetPool.sub;
-                const notify = false; // IT WILL RE-CREATE THE FILE WITHOUT SENDING THE EMAIL
-                const fileName = `${req.assetPool._id}_metadata.zip`;
-
-                await agenda.now(EVENT_SEND_DOWNLOAD_METADATA_QR_EMAIL, {
-                    poolId,
-                    sub,
-                    fileName,
-                    notify,
-                });
-
                 res.status(201).json({}).end();
             });
     } catch (err) {

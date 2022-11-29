@@ -6,18 +6,11 @@ import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/c
 import { account2, dashboardAccessToken, rewardWithdrawAmount } from '@thxnetwork/api/util/jest/constants';
 import { createImage } from '@thxnetwork/api/util/jest/images';
 import { createArchiver } from '@thxnetwork/api/util/zip';
-import { agenda, EVENT_SEND_DOWNLOAD_METADATA_QR_EMAIL } from '@thxnetwork/api/util/agenda';
 import { addMinutes } from '@thxnetwork/api/util/rewards';
 const user = request.agent(app);
 
 describe('NFT Pool', () => {
-    let poolId: string,
-        tokenAddress: string,
-        erc721ID: string,
-        metadataId: string,
-        metaTitle: string,
-        metaDesc: string,
-        csvFile: string;
+    let poolId: string, tokenAddress: string, erc721ID: string, metadataId: string, csvFile: string;
 
     const chainId = ChainId.Hardhat,
         name = 'Planets of the Galaxy',
@@ -66,7 +59,6 @@ describe('NFT Pool', () => {
                     erc721tokens: [tokenAddress],
                 })
                 .expect(({ body }: request.Response) => {
-                    console.log(body);
                     expect(isAddress(body.address)).toBe(true);
                     poolId = body._id;
                 })
@@ -75,8 +67,7 @@ describe('NFT Pool', () => {
     });
 
     describe('POST /erc721/:id/metadata', () => {
-        const recipient = account2.address,
-            value1 = 'red',
+        const value1 = 'red',
             value2 = 'large',
             value3 = 'http://imageURL';
 
@@ -131,8 +122,6 @@ describe('NFT Pool', () => {
                     expect(body.attributes[2].key).toBe(schema[2].name);
                     expect(body.attributes[2].value).toBe(value3);
                     metadataId = body._id;
-                    metaTitle = body.title;
-                    metaDesc = body.description;
                 })
                 .expect(201, done);
         });
@@ -292,7 +281,6 @@ describe('NFT Pool', () => {
             const rewardFields = {
                 title: 'Lorem ipsum',
                 description: 'Lorem ipsum dolor sit amet',
-                amount: rewardWithdrawAmount,
                 platform: 0,
                 expiryDate: addMinutes(new Date(), 30),
                 rewardLimit: 1,
@@ -311,7 +299,7 @@ describe('NFT Pool', () => {
                     createReward: true,
                     title: rewardFields.title,
                     limit: rewardFields.rewardLimit,
-                    amount: rewardFields.amount,
+                    amount: rewardFields.claimAmount,
                 })
                 .expect(201, done);
         });
@@ -325,23 +313,6 @@ describe('NFT Pool', () => {
                     expect(res.body.results[3].claims).toBeDefined();
                 })
                 .expect(200, done);
-        });
-    });
-
-    describe('GET /erc721/:id/metadata/zip', () => {
-        it('should generate and download the qrcodes for the metadata rewards in a zip file', (done) => {
-            user.get('/v1/erc721/' + erc721ID + '/metadata/zip')
-                .set('Authorization', dashboardAccessToken)
-                .set('X-PoolId', poolId)
-                .send()
-                .expect(201, done);
-        });
-        it('should cast a success event for sendDownloadMetadataQrEmail event', (done) => {
-            const callback = async () => {
-                agenda.off(`success:${EVENT_SEND_DOWNLOAD_METADATA_QR_EMAIL}`, callback);
-                done();
-            };
-            agenda.on(`success:${EVENT_SEND_DOWNLOAD_METADATA_QR_EMAIL}`, callback);
         });
     });
 });
