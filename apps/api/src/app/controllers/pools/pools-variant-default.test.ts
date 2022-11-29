@@ -6,10 +6,7 @@ import { toWei, isAddress } from 'web3-utils';
 import { createWallet } from '@thxnetwork/api/util/jest/network';
 import {
     rewardWithdrawAmount,
-    rewardWithdrawDuration,
-    rewardWithdrawUnlockDate,
     userWalletPrivateKey2,
-    sub2,
     tokenName,
     tokenSymbol,
     tokenTotalSupply,
