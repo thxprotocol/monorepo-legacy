@@ -11,4 +11,9 @@ export default class AccountManager extends BaseManager {
         const res = await this.client.request.get('/v1/account');
         return await res.json();
     }
+
+    async patch(body: any) {
+        const res = await this.client.request.patch('/v1/account', { body });
+        return await res.json();
+    }
 }
