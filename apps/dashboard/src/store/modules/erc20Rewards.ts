@@ -2,7 +2,7 @@ import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { IPool } from './pools';
-import { TERC20Reward } from '@thxnetwork/types/index';
+import { RewardConditionPlatform, TERC20Reward } from '@thxnetwork/types/index';
 
 export type RewardByPage = {
     [page: number]: TERC20Reward[];
@@ -36,6 +36,7 @@ class ERC20RewardModule extends VuexModule {
     @Mutation
     set({ pool, reward }: { reward: TERC20Reward & { _id: string }; pool: IPool }) {
         if (!this._all[pool._id]) Vue.set(this._all, pool._id, {});
+        if (typeof reward.platform === 'undefined') reward.platform = RewardConditionPlatform.None; // Temp fix for corrupt data
         Vue.set(this._all[pool._id], reward._id, reward);
     }
 

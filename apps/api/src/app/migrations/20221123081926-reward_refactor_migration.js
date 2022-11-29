@@ -22,6 +22,7 @@ module.exports = {
                     poolId: r.poolId,
                     rewardLimit: r.withdrawLimit || 1,
                     claimAmount: r.amount || 1,
+                    platform: 0,
                     createdAt: r.createdAt,
                     updatedAt: r.updatedAt,
                 };
@@ -29,8 +30,6 @@ module.exports = {
                 if (!isUndefined(r.withdrawCondition)) {
                     if (!isUndefined(r.withdrawCondition.platform)) {
                         payload.platform = r.withdrawCondition.channelType;
-                    } else {
-                        payload.platform = 0;
                     }
 
                     if (!isUndefined(r.withdrawCondition.channelAction)) {
