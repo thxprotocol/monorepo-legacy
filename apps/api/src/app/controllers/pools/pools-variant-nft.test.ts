@@ -3,10 +3,11 @@ import app from '@thxnetwork/api/';
 import { ChainId } from '@thxnetwork/api/types/enums';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { account2, dashboardAccessToken } from '@thxnetwork/api/util/jest/constants';
+import { account2, dashboardAccessToken, rewardWithdrawAmount } from '@thxnetwork/api/util/jest/constants';
 import { createImage } from '@thxnetwork/api/util/jest/images';
 import { createArchiver } from '@thxnetwork/api/util/zip';
 import { agenda, EVENT_SEND_DOWNLOAD_METADATA_QR_EMAIL } from '@thxnetwork/api/util/agenda';
+import { addMinutes } from '@thxnetwork/api/util/rewards';
 const user = request.agent(app);
 
 describe('NFT Pool', () => {
@@ -208,7 +209,16 @@ describe('NFT Pool', () => {
             zipFolder.file('image3.jpg', image3, { binary: true });
 
             const zipFile = await zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' });
-            const rewardFields = getRewardNftConfiguration('claim-one-is-enabled', metadataId);
+            const rewardFields = {
+                title,
+                description: 'Lorem ipsum dolor sit amet',
+                amount: rewardWithdrawAmount,
+                platform: 0,
+                expiryDate: addMinutes(new Date(), 30),
+                rewardLimit: 1,
+                claimAmount: 1,
+                erc20metadataId: metadataId,
+            };
 
             await user
                 .post('/v1/erc721/' + erc721ID + '/metadata/zip')
@@ -220,9 +230,7 @@ describe('NFT Pool', () => {
                     description,
                     propName,
                     createReward: true,
-                    slug: rewardFields.slug,
-                    limit: rewardFields.limit,
-                    isClaimOnce: rewardFields.isClaimOnce,
+                    rewardLimit: rewardFields.rewardLimit,
                     amount: rewardFields.amount,
                 })
                 .expect(({ body }: request.Response) => {
@@ -313,7 +321,16 @@ describe('NFT Pool', () => {
 
         it('should upload and parse the metadata csv and create the rewards', (done) => {
             const buffer = Buffer.from(csvFile, 'utf-8');
-            const rewardFields = getRewardNftConfiguration('claim-one-is-enabled', metadataId);
+            const rewardFields = {
+                title: 'Lorem ipsum',
+                description: 'Lorem ipsum dolor sit amet',
+                amount: rewardWithdrawAmount,
+                platform: 0,
+                expiryDate: addMinutes(new Date(), 30),
+                rewardLimit: 1,
+                claimAmount: 1,
+                erc20metadataId: metadataId,
+            };
 
             user.post('/v1/erc721/' + erc721ID + '/metadata/csv')
                 .set('Authorization', dashboardAccessToken)
@@ -325,9 +342,7 @@ describe('NFT Pool', () => {
                 .field({
                     createReward: true,
                     title: rewardFields.title,
-                    slug: rewardFields.slug,
-                    limit: rewardFields.limit,
-                    isClaimOnce: rewardFields.isClaimOnce,
+                    limit: rewardFields.rewardLimit,
                     amount: rewardFields.amount,
                 })
                 .expect(201, done);
