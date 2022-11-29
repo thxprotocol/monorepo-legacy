@@ -8,6 +8,7 @@ import './main.scss';
 import VueClipboard from 'vue-clipboard2';
 import VueConfetti from 'vue-confetti';
 import { fromWei } from 'web3-utils';
+import { thxClient } from './utils/oidc';
 
 // Set Axios default config
 axios.defaults.withCredentials = true;
@@ -16,7 +17,7 @@ axios.defaults.maxRedirects = 0;
 
 // Add a request interceptor
 axios.interceptors.request.use(async (config: AxiosRequestConfig) => {
-    const user = store.getters['account/user'];
+    const user = thxClient.session.user;
     if (user && !user.expired) {
         config.headers = config.headers || {};
         config.headers.Authorization = `Bearer ${user.access_token}`;

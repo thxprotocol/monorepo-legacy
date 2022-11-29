@@ -13,19 +13,19 @@ import { logger } from '@thxnetwork/api/util/logger';
 import { s3PrivateClient } from '@thxnetwork/api/util/s3';
 import { createArchiver } from '@thxnetwork/api/util/zip';
 import { Upload } from '@aws-sdk/lib-storage';
-import { Reward } from '@thxnetwork/api/models/Reward';
 import { assetsPath } from '../util/path';
+import { ERC721Reward } from '../models/ERC721Reward';
 
 export const generateMetadataRewardQRCodesJob = async ({ attrs }: Job) => {
     if (!attrs.data) return;
 
     try {
         const { poolId, sub, fileName, notify } = attrs.data;
-
         const pool = await AssetPoolService.getById(poolId);
-        if (!pool) throw new Error('Reward not found');
 
-        const rewards = await Reward.find({ poolId, erc721metadataId: { $ne: null } });
+        if (!pool) throw new Error('Pool not found');
+
+        const rewards = await ERC721Reward.find({ poolId });
         if (!rewards.length) throw new Error('Rewards not found');
 
         const account = await AccountProxy.getById(sub);
@@ -74,7 +74,6 @@ export const generateMetadataRewardQRCodesJob = async ({ attrs }: Job) => {
         });
 
         await multipartUpload.done();
-
         if (notify) {
             await MailService.send(
                 account.email,

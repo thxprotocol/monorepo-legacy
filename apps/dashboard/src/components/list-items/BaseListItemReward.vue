@@ -5,16 +5,11 @@
     </template>
     <template #card-footer v-if="!reward.erc721metadataId && reward.progress">
       <b-progress style="border-radius: 0 0 0.3rem 0.3rem">
-        <b-progress-bar
-          :label="
-            reward.withdrawLimit
-              ? `${reward.progress}/${reward.withdrawLimit}`
-              : String(reward.progress)
-          "
-          :value="reward.progress"
-          :min="0"
-          :max="reward.withdrawLimit || reward.progress"
-        />
+        <b-progress-bar :label="
+          reward.withdrawLimit
+            ? `${reward.progress}/${reward.withdrawLimit}`
+            : String(reward.progress)
+        " :value="reward.progress" :min="0" :max="reward.withdrawLimit || reward.progress" />
       </b-progress>
     </template>
     <template #card-body>
@@ -33,25 +28,15 @@
         <h3 v-if="reward.erc721metadataId" class="text-primary">
           1 {{ pool.erc721.symbol }}
         </h3>
-        <b-badge v-if="reward.erc721metadataId" variant="dark" class="mb-2 mx-2"
-          >NFT</b-badge
-        >
-        <sup
-          class="fas fa-circle ml-1 mr-auto"
-          :class="{
-            'text-danger': !reward.state,
-            'text-success': reward.state,
-          }"
-          style="font-size: 0.8rem"
-        >
+        <b-badge v-if="reward.erc721metadataId" variant="dark" class="mb-2 mx-2">NFT</b-badge>
+        <sup class="fas fa-circle ml-1 mr-auto" :class="{
+          'text-danger': !reward.state,
+          'text-success': reward.state,
+        }" style="font-size: 0.8rem">
         </sup>
         <b-dropdown size="sm" variant="white" no-caret right>
           <template #button-content>
-            <i
-              class="fas fa-ellipsis-v m-0 p-1 px-2 text-muted"
-              style="font-size: 1.2rem"
-              aria-hidden="true"
-            ></i>
+            <i class="fas fa-ellipsis-v m-0 p-1 px-2 text-muted" style="font-size: 1.2rem" aria-hidden="true"></i>
           </template>
           <b-dropdown-item @click="onEdit()">
             <i class="fas fa-pen mr-2"></i> Edit reward
@@ -59,10 +44,7 @@
           <b-dropdown-item v-clipboard:copy="reward.id">
             <i class="fas fa-clipboard mr-3"></i>Copy ID
           </b-dropdown-item>
-          <b-dropdown-item-button
-            v-if="reward.amount > 1"
-            @click="getQRCodes()"
-          >
+          <b-dropdown-item-button v-if="reward.amount > 1" @click="getQRCodes()">
             <i class="fas fa-qrcode mr-3"></i>Download {{ reward.amount }} QR
             codes
           </b-dropdown-item-button>
@@ -70,8 +52,10 @@
             <i class="fas fa-qrcode mr-3"></i>Download QR code
           </b-dropdown-item>
           <b-dropdown-item @click="toggleState()">
-            <i class="fas fa-power-off mr-3"></i
-            >{{ reward.state ? 'Disable' : 'Enable' }}
+            <i class="fas fa-power-off mr-3"></i>{{ reward.state ? 'Disable' : 'Enable' }}
+          </b-dropdown-item>
+          <b-dropdown-item @click="remove()">
+            <i class="fas fa-trash mr-3"></i>Delete
           </b-dropdown-item>
         </b-dropdown>
       </div>
@@ -85,61 +69,32 @@
       </b-input-group>
       <hr />
       <div>
-        <b-badge
-          v-b-tooltip
-          title="Amount of times the user is able to claim this reward per account."
-          class="border p-2 mb-1 mr-1"
-          variant="light"
-        >
+        <b-badge v-b-tooltip title="Amount of times the user is able to claim this reward per account."
+          class="border p-2 mb-1 mr-1" variant="light">
           {{ reward.isClaimOnce ? 'Claim once' : 'Claim unlimited' }}
         </b-badge>
 
-        <b-badge
-          v-b-tooltip
-          title="Verifies that the user claiming the reward has a membership for the pool."
-          class="border p-2 mb-1 mr-1"
-          v-if="reward.isMembershipRequired"
-          variant="light"
-        >
+        <b-badge v-b-tooltip title="Verifies that the user claiming the reward has a membership for the pool."
+          class="border p-2 mb-1 mr-1" v-if="reward.isMembershipRequired" variant="light">
           Members only
         </b-badge>
-        <b-link
-          v-if="channelItemURL"
-          v-b-tooltip
-          title="Verifies that the user has engaged with a given item in a social channel."
-          target="_blank"
-          :href="channelItemURL"
-        >
+        <b-link v-if="channelItemURL" v-b-tooltip
+          title="Verifies that the user has engaged with a given item in a social channel." target="_blank"
+          :href="channelItemURL">
           <b-badge class="border p-2 mb-1 mr-1" variant="light">
-            <img
-              v-if="channelType"
-              height="10"
-              class="mr-1"
-              :src="
-                require(`../../../public/assets/logo-${channelType.toLowerCase()}.png`)
-              "
-              alt=""
-            />
+            <img v-if="channelType" height="10" class="mr-1" :src="
+              require(`../../../public/assets/logo-${channelType.toLowerCase()}.png`)
+            " alt="" />
             {{ channelAction }}
           </b-badge>
         </b-link>
-        <b-badge
-          v-b-tooltip
-          v-if="reward.expiryDate"
-          class="border p-2 mb-1 mr-1 font-weight-normal"
-          title="Until this date and time the reward could be claimed.'"
-          variant="light"
-        >
+        <b-badge v-b-tooltip v-if="reward.expiryDate" class="border p-2 mb-1 mr-1 font-weight-normal"
+          title="Until this date and time the reward could be claimed.'" variant="light">
           <strong>Expiry:</strong>
           {{ new Date(reward.expiryDate).toLocaleString() }}
         </b-badge>
-        <b-badge
-          v-b-tooltip
-          title="This reward could be claimed, but only withdrawn after this date."
-          v-if="reward.withdrawUnlockDate"
-          class="border p-2 mb-1 mr-1 font-weight-normal"
-          variant="light"
-        >
+        <b-badge v-b-tooltip title="This reward could be claimed, but only withdrawn after this date."
+          v-if="reward.withdrawUnlockDate" class="border p-2 mb-1 mr-1 font-weight-normal" variant="light">
           <strong>Unlocked:</strong>
           {{ new Date(reward.withdrawUnlockDate).toLocaleString() }}
         </b-badge>
@@ -239,7 +194,7 @@ export default class BaseCardReward extends Vue {
         const logoImgUrl = this.brand
           ? this.brand.logoImgUrl
           : BASE_URL +
-            require('@thxnetwork/dashboard/../public/assets/qr-logo.jpg');
+          require('@thxnetwork/dashboard/../public/assets/qr-logo.jpg');
         this.claimURL = `${WALLET_URL}/claim/${this.reward.claims[0].id}`;
         getBase64Image(logoImgUrl).then((data) => {
           this.imgData = data;
@@ -292,6 +247,16 @@ export default class BaseCardReward extends Vue {
       }
     );
     this.isDownloading = false;
+  }
+
+  async remove() {
+    await this.$store.dispatch(
+      'rewards/delete',
+      {
+        reward: this.reward
+      }
+    );
+    this.$emit('delete')    
   }
 }
 </script>

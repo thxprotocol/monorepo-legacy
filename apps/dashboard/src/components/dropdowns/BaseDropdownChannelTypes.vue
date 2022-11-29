@@ -1,62 +1,26 @@
 <template>
-  <b-dropdown variant="link" class="dropdown-select bg-white">
-    <template #button-content>
-      <div v-if="channel">
-        <img
-          :src="channel.logoURI"
-          v-if="channel.logoURI"
-          width="20"
-          class="mr-2"
-          :alt="channel.name"
-        />
-        {{ channel.name }}
-      </div>
-    </template>
-    <b-dropdown-item-button
-      :key="channel.type"
-      v-for="channel of channelList"
-      @click="$emit('selected', channel)"
-    >
-      <img
-        :src="channel.logoURI"
-        v-if="channel.logoURI"
-        width="20"
-        class="mr-3"
-        :alt="channel.name"
-      />
-      {{ channel.name }}
-    </b-dropdown-item-button>
-  </b-dropdown>
+    <b-dropdown variant="link" class="dropdown-select bg-white">
+        <template #button-content>
+            <div v-if="platform">
+                <img :src="platform.logoURI" v-if="platform.logoURI" width="20" class="mr-2" :alt="platform.name" />
+                {{ platform.name }}
+            </div>
+        </template>
+        <b-dropdown-item-button :key="p.type" v-for="p of platformList" @click="$emit('selected', p)">
+            <img :src="p.logoURI" v-if="p.logoURI" width="20" class="mr-3" :alt="p.name" />
+            {{ p.name }}
+        </b-dropdown-item-button>
+    </b-dropdown>
 </template>
 
 <script lang="ts">
-import { channelList } from '@thxnetwork/dashboard/types/rewards';
-import type { IChannel } from '@thxnetwork/dashboard/types/rewards';
-import {
-  BDropdown,
-  BDropdownItemButton,
-  BBadge,
-  BSpinner,
-} from 'bootstrap-vue';
+import { platformList, type IChannel } from '@thxnetwork/dashboard/types/rewards';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { mapGetters } from 'vuex';
 
-@Component({
-  components: {
-    BBadge,
-    BDropdown,
-    BDropdownItemButton,
-    BSpinner,
-  },
-  computed: mapGetters({}),
-})
+@Component({})
 export default class BaseDropdownChannelTypes extends Vue {
-  channelList = channelList;
+    platformList = platformList;
 
-  @Prop() channel!: IChannel;
-
-  mounted() {
-    this.$emit('selected', this.channel ? this.channel : this.channelList[0]);
-  }
+    @Prop({ default: () => platformList[0] }) platform!: IChannel;
 }
 </script>

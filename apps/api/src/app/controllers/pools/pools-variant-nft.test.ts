@@ -3,21 +3,14 @@ import app from '@thxnetwork/api/';
 import { ChainId } from '@thxnetwork/api/types/enums';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { account2, dashboardAccessToken } from '@thxnetwork/api/util/jest/constants';
+import { account2, dashboardAccessToken, rewardWithdrawAmount } from '@thxnetwork/api/util/jest/constants';
 import { createImage } from '@thxnetwork/api/util/jest/images';
 import { createArchiver } from '@thxnetwork/api/util/zip';
-import { agenda, EVENT_SEND_DOWNLOAD_METADATA_QR_EMAIL } from '@thxnetwork/api/util/agenda';
-import { getRewardConfiguration } from '../rewards/utils';
+import { addMinutes } from '@thxnetwork/api/util/rewards';
 const user = request.agent(app);
 
 describe('NFT Pool', () => {
-    let poolId: string,
-        tokenAddress: string,
-        erc721ID: string,
-        metadataId: string,
-        metaTitle: string,
-        metaDesc: string,
-        csvFile: string;
+    let poolId: string, tokenAddress: string, erc721ID: string, metadataId: string, csvFile: string;
 
     const chainId = ChainId.Hardhat,
         name = 'Planets of the Galaxy',
@@ -74,10 +67,7 @@ describe('NFT Pool', () => {
     });
 
     describe('POST /erc721/:id/metadata', () => {
-        const recipient = account2.address,
-            title = 'NFT title',
-            description = 'NFT description',
-            value1 = 'red',
+        const value1 = 'red',
             value2 = 'large',
             value3 = 'http://imageURL';
 
@@ -86,21 +76,14 @@ describe('NFT Pool', () => {
                 .set('Authorization', dashboardAccessToken)
                 .set('X-PoolId', poolId)
                 .send({
-                    title,
-                    description,
                     attributes: [
                         { key: schema[0].name, value: value1 },
                         { key: schema[1].name, value: value2 },
                         { key: schema[2].name, value: value3 },
                     ],
-                    recipient,
                 })
                 .expect(({ body }: request.Response) => {
                     expect(body._id).toBeDefined();
-                    expect(body.tokens[0].tokenId).toBe(1);
-                    expect(body.tokens[0].recipient).toBe(recipient);
-                    expect(body.title).toBe(title);
-                    expect(body.description).toBe(description);
                     expect(body.attributes[0].key).toBe(schema[0].name);
                     expect(body.attributes[0].value).toBe(value1);
                     expect(body.attributes[1].key).toBe(schema[1].name);
@@ -132,8 +115,6 @@ describe('NFT Pool', () => {
                 })
                 .expect(({ body }: request.Response) => {
                     expect(body._id).toBeDefined();
-                    expect(body.title).toBe(title);
-                    expect(body.description).toBe(description);
                     expect(body.attributes[0].key).toBe(schema[0].name);
                     expect(body.attributes[0].value).toBe(value1);
                     expect(body.attributes[1].key).toBe(schema[1].name);
@@ -141,8 +122,6 @@ describe('NFT Pool', () => {
                     expect(body.attributes[2].key).toBe(schema[2].name);
                     expect(body.attributes[2].value).toBe(value3);
                     metadataId = body._id;
-                    metaTitle = body.title;
-                    metaDesc = body.description;
                 })
                 .expect(201, done);
         });
@@ -158,8 +137,6 @@ describe('NFT Pool', () => {
                 .set('X-PoolId', poolId)
                 .set('Authorization', dashboardAccessToken)
                 .send({
-                    title: metaTitle,
-                    description: metaDesc,
                     attributes: [
                         { key: schema[0].name, value: value1 },
                         { key: schema[1].name, value: value2 },
@@ -172,24 +149,6 @@ describe('NFT Pool', () => {
                     expect(res.body.attributes[2].value).toBe(value3);
                 })
                 .expect(200, done);
-        });
-    });
-
-    describe('POST /erc721/:id/metadata/:metadataId/mint', () => {
-        it('should 201 when token is minted', (done) => {
-            const recipient = account2.address;
-
-            user.post('/v1/erc721/' + erc721ID + '/metadata/' + metadataId + '/mint')
-                .set('Authorization', dashboardAccessToken)
-                .set('X-PoolId', poolId)
-                .send({
-                    recipient,
-                })
-                .expect(({ body }: request.Response) => {
-                    expect(body.tokens[0].tokenId).toBe(2);
-                    expect(body.tokens[0].recipient).toBe(recipient);
-                })
-                .expect(201, done);
         });
     });
 
@@ -209,7 +168,17 @@ describe('NFT Pool', () => {
             zipFolder.file('image3.jpg', image3, { binary: true });
 
             const zipFile = await zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' });
-            const rewardFields = getRewardConfiguration('claim-one-is-enabled');
+            const rewardFields = {
+                title,
+                description: 'Lorem ipsum dolor sit amet',
+                amount: rewardWithdrawAmount,
+                platform: 0,
+                expiryDate: addMinutes(new Date(), 30),
+                rewardLimit: 1,
+                claimAmount: 1,
+                erc20metadataId: metadataId,
+            };
+
             await user
                 .post('/v1/erc721/' + erc721ID + '/metadata/zip')
                 .set('Authorization', dashboardAccessToken)
@@ -220,13 +189,7 @@ describe('NFT Pool', () => {
                     description,
                     propName,
                     createReward: true,
-                    //title: rewardFields.title,
-                    slug: rewardFields.slug,
-                    withdrawAmount: rewardFields.withdrawAmount,
-                    withdrawDuration: rewardFields.withdrawDuration,
-                    withdrawLimit: rewardFields.withdrawLimit,
-                    isClaimOnce: rewardFields.isClaimOnce,
-                    isMembershipRequired: rewardFields.isMembershipRequired,
+                    rewardLimit: rewardFields.rewardLimit,
                     amount: rewardFields.amount,
                 })
                 .expect(({ body }: request.Response) => {
@@ -236,7 +199,7 @@ describe('NFT Pool', () => {
         });
 
         it('should return created reward', (done) => {
-            user.get('/v1/rewards')
+            user.get('/v1/erc721-rewards')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect(async (res: request.Response) => {
                     expect(res.body.total).toBe(5);
@@ -303,8 +266,6 @@ describe('NFT Pool', () => {
                 .set('Authorization', dashboardAccessToken)
                 .set('X-PoolId', poolId)
                 .expect(({ body }: request.Response) => {
-                    expect(body.results[0].title).toBe('');
-                    expect(body.results[0].description).toBe('');
                     expect(body.results[0].attributes[0].key).toBe(schema[0].name);
                     expect(body.results[0].attributes[0].value).toBe('pink');
                     expect(body.results[0].attributes[1].key).toBe(schema[1].name);
@@ -317,7 +278,15 @@ describe('NFT Pool', () => {
 
         it('should upload and parse the metadata csv and create the rewards', (done) => {
             const buffer = Buffer.from(csvFile, 'utf-8');
-            const rewardFields = getRewardConfiguration('claim-one-is-enabled');
+            const rewardFields = {
+                title: 'Lorem ipsum',
+                description: 'Lorem ipsum dolor sit amet',
+                platform: 0,
+                expiryDate: addMinutes(new Date(), 30),
+                rewardLimit: 1,
+                claimAmount: 1,
+                erc20metadataId: metadataId,
+            };
 
             user.post('/v1/erc721/' + erc721ID + '/metadata/csv')
                 .set('Authorization', dashboardAccessToken)
@@ -329,19 +298,14 @@ describe('NFT Pool', () => {
                 .field({
                     createReward: true,
                     title: rewardFields.title,
-                    slug: rewardFields.slug,
-                    withdrawAmount: rewardFields.withdrawAmount,
-                    withdrawDuration: rewardFields.withdrawDuration,
-                    withdrawLimit: rewardFields.withdrawLimit,
-                    isClaimOnce: rewardFields.isClaimOnce,
-                    isMembershipRequired: rewardFields.isMembershipRequired,
-                    amount: rewardFields.amount,
+                    limit: rewardFields.rewardLimit,
+                    amount: rewardFields.claimAmount,
                 })
                 .expect(201, done);
         });
 
         it('should return created reward', (done) => {
-            user.get('/v1/rewards')
+            user.get('/v1/erc721-rewards')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect(async (res: request.Response) => {
                     expect(res.body.total).toBe(7);
@@ -349,23 +313,6 @@ describe('NFT Pool', () => {
                     expect(res.body.results[3].claims).toBeDefined();
                 })
                 .expect(200, done);
-        });
-    });
-
-    describe('GET /erc721/:id/metadata/zip', () => {
-        it('should generate and download the qrcodes for the metadata rewards in a zip file', (done) => {
-            user.get('/v1/erc721/' + erc721ID + '/metadata/zip')
-                .set('Authorization', dashboardAccessToken)
-                .set('X-PoolId', poolId)
-                .send()
-                .expect(200, done);
-        });
-        it('should cast a success event for sendDownloadMetadataQrEmail event', (done) => {
-            const callback = async () => {
-                agenda.off(`success:${EVENT_SEND_DOWNLOAD_METADATA_QR_EMAIL}`, callback);
-                done();
-            };
-            agenda.on(`success:${EVENT_SEND_DOWNLOAD_METADATA_QR_EMAIL}`, callback);
         });
     });
 });

@@ -4,6 +4,7 @@
         class="dropdown-select bg-white"
         @change="onChangeAction"
         :options="options"
+        :disabled="disabled"
     ></b-form-select>
 </template>
 
@@ -14,6 +15,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 export default class BaseDropdownChannelActions extends Vue {
     @Prop() actions!: any;
     @Prop() action!: any;
+    @Prop() disabled!: boolean;
 
     get options() {
         return this.actions.map((action: any) => ({

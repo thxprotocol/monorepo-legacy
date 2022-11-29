@@ -6,10 +6,7 @@
       </b-col>
       <b-dropdown variant="light" dropleft no-caret size="sm" class="ml-2">
         <template #button-content>
-          <i
-            class="fas fa-ellipsis-v m-0 p-1 px-2 text-muted"
-            style="font-size: 1.2rem"
-          ></i>
+          <i class="fas fa-ellipsis-v m-0 p-1 px-2 text-muted" style="font-size: 1.2rem"></i>
         </template>
         <b-dropdown-item v-b-modal="'modalNFTCreate'" @click="onCreate()">
           <i class="fas fa-plus mr-2"></i>
@@ -39,49 +36,18 @@
         Downloading your QR codes
       </b-alert>
     </b-row>
-    <base-nothing-here
-      v-if="erc721 && !erc721.metadata"
-      text-submit="Create NFT Metadata"
+    <base-nothing-here v-if="erc721 && !erc721.metadata" text-submit="Create NFT Metadata"
       title="You have not created NFT Metadata yet"
       description="NFT Metadata is the actual data that is attached to your token."
-      @clicked="$bvModal.show('modalNFTCreate')"
-    />
-    <base-card-erc721-metadata
-      @edit="onEdit"
-      v-if="erc721 && erc721.metadata"
-      :erc721="erc721"
-      :metadata="metadataByPage"
-      :pool="pool"
-    />
-    <b-pagination
-      v-if="erc721s && erc721 && erc721.metadata && total > limit"
-      class="mt-3"
-      @change="onChangePage"
-      v-model="page"
-      :per-page="limit"
-      :total-rows="total"
-      align="center"
-    ></b-pagination>
-    <base-modal-erc721-metadata-create
-      v-if="erc721"
-      @hidden="reset"
-      :metadata="editingMeta"
-      :pool="pool"
-      :erc721="erc721"
-      @success="listMetadata()"
-    />
-    <base-modal-erc721-metadata-bulk-create
-      v-if="erc721"
-      :pool="pool"
-      :erc721="erc721"
-      @success="listMetadata()"
-    />
-    <BaseModalErc721MetadataUploadCSV
-      v-if="erc721"
-      :pool="pool"
-      :erc721="erc721"
-      @success="onSuccess()"
-    />
+      @clicked="$bvModal.show('modalNFTCreate')" />
+    <base-card-erc721-metadata @edit="onEdit" @delete="onDelete" v-if="erc721 && erc721.metadata" :erc721="erc721"
+      :metadata="metadataByPage" :pool="pool" />
+    <b-pagination v-if="erc721s && erc721 && erc721.metadata && total > limit" class="mt-3" @change="onChangePage"
+      v-model="page" :per-page="limit" :total-rows="total" align="center"></b-pagination>
+    <base-modal-erc721-metadata-create v-if="erc721" @hidden="reset" :metadata="editingMeta" :pool="pool"
+      :erc721="erc721" @success="listMetadata()" />
+    <base-modal-erc721-metadata-bulk-create v-if="erc721" :pool="pool" :erc721="erc721" @success="listMetadata()" />
+    <BaseModalErc721MetadataUploadCSV v-if="erc721" :pool="pool" :erc721="erc721" @success="onSuccess()" />
   </div>
 </template>
 
@@ -167,6 +133,11 @@ export default class MetadataView extends Vue {
   onEdit(metadata: TERC721Metadata) {
     Vue.set(this, 'editingMeta', metadata);
     this.$bvModal.show('modalNFTCreate');
+  }
+
+  async onDelete(metadata: TERC721Metadata) {
+    await this.$store.dispatch('erc721/deleteMetadata', { pool: this.pool, erc721: this.erc721, metadataId: metadata._id });
+    this.listMetadata()
   }
 
   onCreate() {

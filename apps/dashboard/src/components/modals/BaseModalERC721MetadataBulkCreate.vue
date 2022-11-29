@@ -99,7 +99,6 @@ export default class ModalERC721MetadataBulkCreate extends Vue {
 
             //this.$emit('success');
         } catch (err) {
-            console.log('ERROR ON SUBMIT', err);
             /* NO-OP */
         } finally {
             this.$bvModal.hide('modalNFTBulkCreate');

@@ -1,3 +1,5 @@
+import path from 'path';
+
 const required = [
     'API_URL',
     'AUTH_URL',
@@ -7,7 +9,6 @@ const required = [
     'MONGODB_URI',
     'PORT',
     'SECURE_KEY',
-    'CWD',
 ];
 
 // For production (docker containers) we should require JWKS_JSON to be set since otherwise each container
@@ -35,8 +36,8 @@ if (process.env.NODE_ENV === 'test') {
 export const VERSION = 'v1';
 export const GITHUB_API_ENDPOINT = 'https://api.github.com';
 export const TWITTER_API_ENDPOINT = 'https://api.twitter.com/2';
-export const SPOTIFY_API_ENDPOINT = 'https://api.spotify.com/v1';
-export const CWD = process.env.CWD;
+export const GOOGLE_API_ENDPOINT = 'https://www.googleapis.com';
+export const CWD = process.env.CWD || path.resolve(__dirname, '../../../apps/auth/src');
 export const NODE_ENV = process.env.NODE_ENV;
 export const AUTH_URL = process.env.AUTH_URL;
 export const API_URL = process.env.API_URL;
@@ -58,9 +59,6 @@ export const INITIAL_ACCESS_TOKEN = process.env.INITIAL_ACCESS_TOKEN;
 export const TWITTER_CLIENT_ID = process.env.TWITTER_CLIENT_ID;
 export const TWITTER_REDIRECT_URI = process.env.TWITTER_REDIRECT_URI;
 export const TWITTER_CLIENT_SECRET = process.env.TWITTER_CLIENT_SECRET;
-export const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
-export const SPOTIFY_REDIRECT_URI = process.env.SPOTIFY_REDIRECT_URI;
-export const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
 export const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 export const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
 export const GITHUB_REDIRECT_URI = process.env.GITHUB_REDIRECT_URI;

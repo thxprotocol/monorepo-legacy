@@ -23,7 +23,6 @@ import { getProvider } from '@thxnetwork/api/util/network';
 import { HARDHAT_RPC, PRIVATE_KEY, WALLET_URL } from '@thxnetwork/api/config/secrets';
 import Web3 from 'web3';
 import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
-import { agenda, EVENT_SEND_DOWNLOAD_METADATA_QR_EMAIL } from '@thxnetwork/api/util/agenda';
 
 const http = request.agent(app);
 
@@ -212,17 +211,13 @@ describe('Payment Request', () => {
 
         describe('POST /erc721/:id/metadata', () => {
             it('should create a Metadada', (done) => {
-                const title = 'NFT title 2',
-                    description = 'NFT description 2',
-                    value1 = 'blue',
+                const value1 = 'blue',
                     value2 = 'small';
 
                 http.post('/v1/erc721/' + erc721ID + '/metadata')
                     .set('Authorization', dashboardAccessToken)
                     .set('X-PoolId', poolId)
                     .send({
-                        title,
-                        description,
                         attributes: [
                             { key: schema[0].name, value: value1 },
                             { key: schema[1].name, value: value2 },
@@ -230,8 +225,6 @@ describe('Payment Request', () => {
                     })
                     .expect(({ body }: request.Response) => {
                         expect(body._id).toBeDefined();
-                        expect(body.title).toBe(title);
-                        expect(body.description).toBe(description);
                         expect(body.attributes[0].key).toBe(schema[0].name);
                         expect(body.attributes[1].key).toBe(schema[1].name);
                         expect(body.attributes[0].value).toBe(value1);
@@ -330,13 +323,6 @@ describe('Payment Request', () => {
                         expect(body[0].transactions.length).toBe(1);
                     })
                     .expect(200, done);
-            });
-            it('should cast a success event for sendDownloadMetadataQrEmail event', (done) => {
-                const callback = async () => {
-                    agenda.off(`success:${EVENT_SEND_DOWNLOAD_METADATA_QR_EMAIL}`, callback);
-                    done();
-                };
-                agenda.on(`success:${EVENT_SEND_DOWNLOAD_METADATA_QR_EMAIL}`, callback);
             });
         });
     });

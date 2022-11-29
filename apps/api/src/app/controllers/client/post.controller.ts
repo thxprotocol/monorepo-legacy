@@ -26,7 +26,7 @@ export default {
                     redirect_uris: [redirectUri],
                     post_logout_redirect_uris: [requestUri],
                     response_types: ['code'],
-                    scope: 'openid accounts:read erc20:read erc721:read',
+                    scope: 'openid account:read erc20:read erc721:read point_rewards:read point_balances:read',
                 };
                 break;
             case GrantType.ClientCredentials:

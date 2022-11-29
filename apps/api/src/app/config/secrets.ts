@@ -1,3 +1,5 @@
+import path from 'path';
+
 const required = [
     'AUTH_URL',
     'API_URL',
@@ -16,7 +18,6 @@ const required = [
     'RATE_LIMIT_REWARD_GIVE_WINDOW',
     'INITIAL_ACCESS_TOKEN',
     'MAX_FEE_PER_GAS',
-    'CWD',
 ];
 
 if (process.env.NODE_ENV === 'production') {
@@ -40,13 +41,13 @@ if (process.env.NODE_ENV === 'test') {
 }
 
 export const VERSION = 'v1';
-export const CWD = process.env.CWD;
+export const CWD = process.env.CWD || path.resolve(__dirname, '../../../apps/api/src');
 export const NODE_ENV = process.env.NODE_ENV || 'development';
 export const AUTH_URL = process.env.AUTH_URL;
 export const API_URL = process.env.API_URL;
 export const WALLET_URL = process.env.WALLET_URL;
 export const DASHBOARD_URL = process.env.DASHBOARD_URL;
-export const WIDGETS_URL = process.env.WIDGETS_URL;
+export const WIDGET_URL = process.env.WIDGET_URL;
 export const HARDHAT_RPC = process.env.HARDHAT_RPC;
 export const HARDHAT_NAME = process.env.HARDHAT_NAME;
 export const POLYGON_MUMBAI_RPC = process.env.POLYGON_MUMBAI_RPC;
