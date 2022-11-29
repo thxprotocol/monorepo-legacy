@@ -23,7 +23,12 @@
                             :rewardCondition="rewardCondition"
                             @change="rewardCondition = $event"
                         />
-                        <BaseCardRewardExpiry class="mb-3" :expiry="rewardExpiry" @change="rewardExpiry = $event" />
+                        <BaseCardRewardExpiry
+                            class="mb-3"
+                            :rewardLimit="rewardLimit"
+                            :expiry="rewardExpiry"
+                            @change="rewardExpiry = $event"
+                        />
                         <!-- <BaseCardRewardQRCodes class="mb-3" @change="rewardExpiry = $event" /> -->
                     </b-col>
                 </b-row>
@@ -87,6 +92,7 @@ export default class ModalRewardERC20Create extends Vue {
             this.title = this.reward.title;
             this.amount = String(this.reward.amount);
             this.description = this.reward.description;
+            this.rewardExpiry.limit = this.reward.rewardLimit;
             this.rewardCondition = {
                 platform: this.reward.platform as RewardConditionPlatform,
                 interaction: this.reward.interaction as RewardConditionInteraction,

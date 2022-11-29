@@ -26,7 +26,7 @@
                     </b-row>
                 </b-form-group>
                 <b-form-group label="Reward Limit">
-                    <b-form-input type="number" v-model="withdrawLimit" />
+                    <b-form-input @change-limit="$emit('rewardLimit', $event)" type="number" :value="rewardLimit" />
                 </b-form-group>
             </div>
         </b-collapse>
@@ -41,15 +41,15 @@ export default class BaseCardRewardCondition extends Vue {
     isVisible = false;
     expireDate: Date | null = null;
     expireTime = '00:00:00';
-    withdrawLimit = 0;
+    selectedRewardLimit = 0;
 
-    @Prop({ required: false }) rewardExpiry!: { date: Date | null; time: string; limit: number };
+    @Prop() rewardExpiry!: { date: Date | null; time: string; limit: number };
+    @Prop() rewardLimit!: number;
 
     mounted() {
         if (this.rewardExpiry) {
             this.expireDate = this.rewardExpiry.date;
             this.expireTime = this.rewardExpiry.time;
-            this.withdrawLimit = this.rewardExpiry.limit;
         }
     }
 
@@ -63,7 +63,7 @@ export default class BaseCardRewardCondition extends Vue {
         this.$emit('change', {
             date: this.expireDate,
             time: this.expireTime,
-            limit: this.withdrawLimit,
+            limit: this.rewardLimit,
         });
     }
 }

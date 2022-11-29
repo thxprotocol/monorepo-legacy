@@ -9,6 +9,7 @@ const validation = [
     body('description').isString(),
     body('amount').exists().isInt({ gt: 0 }),
     body('expiryDate').optional().isString(),
+    body('rewardLimit').isNumeric(),
     body('claimAmount').optional().isInt({ gt: 0 }),
     body('platform').optional().isNumeric(),
     body('interaction').optional().isNumeric(),

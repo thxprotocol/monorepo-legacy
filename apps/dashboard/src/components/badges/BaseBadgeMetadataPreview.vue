@@ -1,27 +1,26 @@
 <template>
-    <div variant="light" class="d-flex align-items-center">
+    <div>
         <b-tooltip :target="`tooltip-target-${metadata._id}-${index}`" triggers="hover">
-            <b-link :href="image" target="_blank">
+            <b-link :href="image" target="_blank" v-if="image">
                 <img :src="image" class="mt-2 rounded" width="180" height="auto" />
             </b-link>
             <strong>{{ name }}</strong>
             {{ description }}
             <b-link :href="external_url" target="_blank">External URL</b-link>
         </b-tooltip>
-        <img
-            v-if="image"
-            :id="`tooltip-target-${metadata._id}-${index}`"
-            :src="image"
-            class="mr-2 rounded"
-            width="auto"
-            height="30"
-        />
-        <p style="line-height: 1" class="text-muted m-0">
-            <span>{{ name }}</span>
-            <i v-if="external_url" class="fas fa-external-link-alt ml-1" style="font-size: 0.8rem"></i>
-            <br />
-            <span v-if="description">{{ description.substring(0, 25) }}... </span>
-        </p>
+        <div class="d-flex align-items-center">
+            <div class="d-flex mr-2 rounded bg-dark text-white p-2" :id="`tooltip-target-${metadata._id}-${index}`">
+                <i class="fas fa-photo-video"></i>
+            </div>
+            <p style="line-height: 1" class="text-muted m-0">
+                <strong>{{ name }}</strong>
+                <b-link v-if="external_url" :href="external_url" target="_blank" class="ml-1">
+                    <i class="fas fa-external-link-alt" style="font-size: 0.8rem"></i>
+                </b-link>
+                <br />
+                <span v-if="description">{{ description.substring(0, 25) }}... </span>
+            </p>
+        </div>
     </div>
 </template>
 
