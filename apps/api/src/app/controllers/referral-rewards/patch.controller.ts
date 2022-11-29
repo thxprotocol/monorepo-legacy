@@ -3,11 +3,7 @@ import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
 import RewardReferralService from '@thxnetwork/api/services/ReferralRewardService';
 
-const validation = [
-    param('id').exists(),
-    body('withdrawAmount').optional().isNumeric(),
-    body('withdrawDuration').optional().isNumeric(),
-];
+const validation = [param('id').exists(), body('successUrl').optional().isURL()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['RewardsReferral']

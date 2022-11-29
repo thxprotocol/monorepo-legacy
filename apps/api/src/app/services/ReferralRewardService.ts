@@ -1,31 +1,23 @@
 import db from '@thxnetwork/api/util/database';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { paginatedResults } from '@thxnetwork/api/util/pagination';
-import { ReferralReward, ReferralRewardDocument } from '../models/ReferralReward';
-import { RewardVariant } from '../types/enums/RewardVariant';
-import { TReferralReward } from '@thxnetwork/types/';
+import { paginatedResults, PaginationResult } from '@thxnetwork/api/util/pagination';
+import { TReferralReward } from '@thxnetwork/types/index';
+import { ReferralReward, ReferralRewardDocument } from '@thxnetwork/api/models/ReferralReward';
 
-export async function get(rewardId: string): Promise<ReferralRewardDocument> {
-    return await ReferralReward.findById(rewardId);
+export async function get(id: string): Promise<ReferralRewardDocument> {
+    return await ReferralReward.findById(id);
 }
 
-export async function findByPool(assetPool: AssetPoolDocument, page: number, limit: number) {
-    const rewardToken = [];
-    const results = await paginatedResults(ReferralReward, page, limit, {
+export async function findByPool(assetPool: AssetPoolDocument, page: number, limit: number): Promise<PaginationResult> {
+    const result = await paginatedResults(ReferralReward, page, limit, {
         poolId: assetPool._id,
     });
-
-    for (const r of results.results) {
-        rewardToken.push(await ReferralReward.findOne({ rewardBaseId: r.id }));
-    }
-
-    results.results = rewardToken.map((r) => r.toJSON());
-
-    return results;
+    result.results = result.results.map((r) => r.toJSON());
+    return result;
 }
 
-export async function removeAllForPool(assetPool: AssetPoolDocument) {
-    const rewards = await ReferralReward.find({ poolId: assetPool._id, variant: RewardVariant.RewardReferral });
+export async function removeAllForPool(pool: AssetPoolDocument) {
+    const rewards = await ReferralReward.find({ poolId: pool._id });
     for (const r of rewards) {
         await r.remove();
     }
@@ -40,8 +32,11 @@ export async function create(pool: AssetPoolDocument, payload: TReferralReward) 
 }
 
 export async function update(reward: ReferralRewardDocument, updates: TReferralReward) {
-    await ReferralReward.updateOne({ id: reward._id }, updates, { new: true });
-    return ReferralReward.findByIdAndUpdate(reward._id, updates, { new: true });
+    return await ReferralReward.findByIdAndUpdate(reward._id, updates, { new: true });
 }
 
-export default { get, findByPool, removeAllForPool, create, update };
+export async function remove(reward: ReferralRewardDocument) {
+    return ReferralReward.findOneAndDelete(reward._id);
+}
+
+export default { get, findByPool, removeAllForPool, create, update, remove };

@@ -8,6 +8,7 @@ const schema = new mongoose.Schema(
     {
         ...rewardBaseSchema,
         amount: Number,
+        successUrl: String,
     },
     { timestamps: true },
 );

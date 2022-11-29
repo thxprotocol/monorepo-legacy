@@ -26,7 +26,7 @@ router.get(
 router.get(
     '/:id',
     guard.check(['referral_rewards:read']),
-    //assertAssetPoolAccess,
+    assertAssetPoolAccess,
     assertRequestInput(ReadRewardReferral.validation),
     requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),

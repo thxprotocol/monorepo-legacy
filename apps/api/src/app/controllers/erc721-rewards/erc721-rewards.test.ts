@@ -159,7 +159,7 @@ describe('ERC721 Rewards', () => {
         });
 
         describe('PATCH /erc721-rewards/:id', () => {
-            it('Should return 200 when edit the claim', (done) => {
+            it('Should return 200 when edit the reward', (done) => {
                 const expiryDate = addMinutes(new Date(), 60);
                 const title = 'Expiration date is next 60 min';
                 user.patch(`/v1/erc721-rewards/${erc721RewardId}`)

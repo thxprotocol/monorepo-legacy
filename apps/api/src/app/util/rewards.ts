@@ -9,6 +9,7 @@ import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import ERC20RewardService from '../services/ERC20RewardService';
 import ERC721RewardService from '@thxnetwork/api/services/ERC721RewardService';
 import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardService';
+import ReferralRewardClaimService from '../services/ReferralRewardClaimService';
 
 export async function findRewardById(rewardId: string) {
     const erc20Reward = await ERC20Reward.findById(rewardId);
@@ -82,10 +83,9 @@ export const createReferralReward = async (assetPool: AssetPoolDocument, config:
     const reward = await ReferralRewardService.create(assetPool, config);
     const claims = await Promise.all(
         Array.from({ length: Number(reward.claimAmount) }).map(() =>
-            ClaimService.create({
-                poolId: assetPool._id,
-                erc20Id: assetPool.erc20Id,
-                rewardId: String(reward._id),
+            ReferralRewardClaimService.create({
+                referralRewardId: String(reward._id),
+                sub: assetPool.sub,
             }),
         ),
     );

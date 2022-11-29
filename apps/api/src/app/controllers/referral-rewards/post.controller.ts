@@ -5,8 +5,8 @@ import { createReferralReward } from '@thxnetwork/api/util/rewards';
 const validation = [
     body('title').exists().isString(),
     body('slug').exists().isString(),
-    body('expiryDate').optional().isString(),
-    body('amount').optional().isInt({ gt: 0 }),
+    body('successUrl').exists().isURL(),
+    body('amount').exists().isInt({ gt: 0 }),
 ];
 
 const controller = async (req: Request, res: Response) => {
