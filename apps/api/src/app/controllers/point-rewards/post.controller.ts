@@ -5,31 +5,16 @@ import { body } from 'express-validator';
 const validation = [
     body('title').isString(),
     body('description').isString(),
-    body('amount').isString(),
-    body('platform').optional().isNumeric(),
+    body('amount').isInt({ gt: 0 }),
+    body('expiryDate').optional().isString(),
+    body('claimAmount').isInt({ gt: 0 }),
+    body('platform').isNumeric(),
     body('interaction').optional().isNumeric(),
     body('content').optional().isString(),
 ];
 
 const controller = async (req: Request, res: Response) => {
-    let rewardConditionId: string;
-
-    // if (req.body.platform && req.body.interaction && req.body.content) {
-    //     const rewardCondition = await RewardCondition.create({
-    //         platform: req.body.platform,
-    //         interaction: req.body.interaction,
-    //         content: req.body.content,
-    //     });
-    //     rewardConditionId = String(rewardCondition._id);
-    // }
-
-    const pointReward = await PointReward.create({
-        title: req.body.title,
-        description: req.body.description,
-        amount: req.body.amount,
-        rewardConditionId,
-    });
-
+    const pointReward = await PointReward.create(req.body);
     res.json(pointReward);
 };
 

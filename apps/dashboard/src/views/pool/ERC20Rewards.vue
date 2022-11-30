@@ -97,19 +97,17 @@
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import BaseModalRewardERC20Create from '@thxnetwork/dashboard/components/modals/BaseModalRewardERC20Create.vue';
-import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
-import { TRewardState } from '@thxnetwork/dashboard/store/modules/erc20Rewards';
-import type { IERC721s } from '@thxnetwork/dashboard/types/erc721';
+import { TERC20RewardState } from '@thxnetwork/dashboard/store/modules/erc20Rewards';
 import { RewardConditionPlatform, RewardConditionInteraction, TERC20Reward } from '@thxnetwork/types/index';
-import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/badges/BaseBadgeRewardConditionPreview.vue';
 import { platformInteractionList, platformList } from '@thxnetwork/dashboard/types/rewards';
+import type { IERC721s } from '@thxnetwork/dashboard/types/erc721';
+import BaseModalRewardERC20Create from '@thxnetwork/dashboard/components/modals/BaseModalRewardERC20Create.vue';
+import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/badges/BaseBadgeRewardConditionPreview.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseModalRewardClaimsDownload from '@thxnetwork/dashboard/components/modals/BaseModalRewardClaimsDownload.vue';
 
 @Component({
     components: {
-        BaseNothingHere,
         BaseModalRewardERC20Create,
         BaseBadgeRewardConditionPreview,
         BaseCardTableHeader,
@@ -131,7 +129,7 @@ export default class ERC20RewardsView extends Vue {
 
     pools!: IPools;
     totals!: { [poolId: string]: number };
-    erc20Rewards!: TRewardState;
+    erc20Rewards!: TERC20RewardState;
     erc721s!: IERC721s;
 
     get pool() {
@@ -187,7 +185,7 @@ export default class ERC20RewardsView extends Vue {
     }
 
     onChecked(checked: boolean) {
-        this.selectedItems = checked ? this.rewardsByPage.map((r) => r.id) : [];
+        this.selectedItems = checked ? (this.rewardsByPage.map((r) => r.id) as string[]) : [];
     }
 
     onChangePage(page: number) {

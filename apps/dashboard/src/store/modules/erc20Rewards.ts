@@ -8,7 +8,7 @@ export type RewardByPage = {
     [page: number]: TERC20Reward[];
 };
 
-export type TRewardState = {
+export type TERC20RewardState = {
     [poolId: string]: {
         [id: string]: TERC20Reward;
     };
@@ -22,7 +22,7 @@ export type RewardListProps = {
 
 @Module({ namespaced: true })
 class ERC20RewardModule extends VuexModule {
-    _all: TRewardState = {};
+    _all: TERC20RewardState = {};
     _totals: { [poolId: string]: number } = {};
 
     get all() {

@@ -1,5 +1,8 @@
 import { WIDGET_URL } from '@thxnetwork/api/config/secrets';
 import { Request, Response } from 'express';
+import { param } from 'express-validator';
+
+const validation = [param('id').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Point Rewards']
@@ -18,7 +21,7 @@ async function createBaseElements() {
 
     iframe.id = 'thx-iframe';
     iframe.style.zIndex = 9999999;
-    iframe.src = '${WIDGET_URL}?id=${req.query.id}';
+    iframe.src = '${WIDGET_URL}?id=${req.params.id}';
     iframe.style.display = 'flex';
     iframe.style.position = 'fixed';
     iframe.style.bottom = '100px';
@@ -113,4 +116,4 @@ initialize();
     }).send(data);
 };
 
-export default { controller };
+export default { controller, validation };

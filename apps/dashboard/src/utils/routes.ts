@@ -13,7 +13,7 @@ export const getRoutes = (pool: IPool) => {
             path: 'point-rewards',
             label: 'Point Rewards',
             iconClasses: 'fas fa-award',
-            visible: false,
+            visible: true,
         },
         {
             path: 'erc20-rewards',

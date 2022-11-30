@@ -1,14 +1,13 @@
 import { TPointReward } from '@thxnetwork/types/interfaces/PointReward';
 import mongoose from 'mongoose';
+import { rewardBaseSchema } from './ERC20Reward';
 
 export type PointRewardDocument = mongoose.Document & TPointReward;
 
 const pointRewardSchema = new mongoose.Schema(
     {
-        poolId: String,
+        ...rewardBaseSchema,
         amount: String,
-        title: String,
-        description: String,
     },
     { timestamps: true },
 );

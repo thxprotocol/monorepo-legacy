@@ -1,7 +1,7 @@
 import { requireAssetPoolHeader } from '@thxnetwork/api/middlewares';
 import express from 'express';
 import ListPointRewards from './list.controller';
-import CreatePointRewards from './list.controller';
+import CreatePointRewards from './post.controller';
 
 const router = express.Router();
 

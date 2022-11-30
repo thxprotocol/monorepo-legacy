@@ -103,6 +103,7 @@ export default class ModalRewardERC721Create extends Vue {
             this.erc721metadataId = this.reward.erc721metadataId;
             this.title = this.reward.title;
             this.description = this.reward.description;
+            this.rewardLimit = this.reward.rewardLimit;
             this.rewardCondition = {
                 platform: this.reward.platform as RewardConditionPlatform,
                 interaction: this.reward.interaction as RewardConditionInteraction,
@@ -134,7 +135,6 @@ export default class ModalRewardERC721Create extends Vue {
                 },
             })
             .then(() => {
-                this.$emit('submit');
                 this.$bvModal.hide(this.id);
                 this.isLoading = false;
             });
