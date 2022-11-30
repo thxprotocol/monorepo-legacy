@@ -20,14 +20,7 @@
                             <b-form-input v-model="successUrl" />
                         </b-form-group>
                     </b-col>
-                    <b-col md="6">
-                        <BaseCardRewardExpiry
-                            class="mb-3"
-                            :rewardLimit="rewardLimit"
-                            :expiry="rewardExpiry"
-                            @change="rewardExpiry = $event"
-                        />
-                    </b-col>
+                    <b-col md="6"> </b-col>
                 </b-row>
             </form>
         </template>
@@ -67,9 +60,7 @@ export default class ModalReferralRewardCreate extends Vue {
     amount = '0';
     successUrl = '';
     description = '';
-    rewardExpiry = {};
     claimAmount = 1;
-    rewardLimit = 0;
 
     @Prop() id!: string;
     @Prop() pool!: IPool;
@@ -80,7 +71,6 @@ export default class ModalReferralRewardCreate extends Vue {
             this.title = this.reward.title;
             this.amount = String(this.reward.amount);
             this.description = this.reward.description;
-            this.rewardExpiry.limit = this.reward.rewardLimit;
             this.successUrl = this.reward.successUrl;
         }
     }
@@ -97,11 +87,11 @@ export default class ModalReferralRewardCreate extends Vue {
                     description: this.description,
                     amount: this.amount,
                     claimAmount: this.claimAmount,
-                    rewardLimit: this.rewardLimit,
                     successUrl: this.successUrl,
                 },
             })
             .then(() => {
+                debugger;
                 this.$emit('submit');
                 this.$bvModal.hide(this.id);
                 this.isLoading = false;

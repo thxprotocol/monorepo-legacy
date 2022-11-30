@@ -1,6 +1,6 @@
 import { body } from 'express-validator';
 import { Request, Response } from 'express';
-import { createReferralReward } from '@thxnetwork/api/util/rewards';
+import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardService';
 
 const validation = [
     body('title').exists().isString(),
@@ -10,8 +10,8 @@ const validation = [
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['RewardsReferral']
-    const { reward, claims } = await createReferralReward(req.assetPool, req.body);
-    res.status(201).json({ ...reward.toJSON(), claims });
+    const reward = await ReferralRewardService.create(req.assetPool, req.body);
+    res.status(201).json(reward.toJSON());
 };
 
 export default { controller, validation };

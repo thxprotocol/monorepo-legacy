@@ -23,10 +23,7 @@
                               { variant: 1, label: 'Download CSV' },
                               { variant: 2, label: `Delete ${selectedItems.length} rewards` },
                           ]
-                        : [
-                              { variant: 0, label: 'Download CSV' },
-                              { variant: 1, label: `Delete ${selectedItems.length} rewards` },
-                          ]"
+                        : [{ variant: 0, label: `Delete ${selectedItems.length} rewards` }]"
                 >
                     {{ item.label }}
                 </b-dropdown-item>
@@ -82,7 +79,9 @@ export default class BaseCardTableHeader extends Vue {
     @Prop() pool!: IPool;
     @Prop() showDownloadQRCodes!: boolean;
 
-    selectedBulkAction = { variant: 0, label: this.showDownloadQRCodes ? 'Download QR codes' : 'Download CSV' };
+    selectedBulkAction = this.showDownloadQRCodes
+        ? { variant: 0, label: 'Download QR codes' }
+        : { variant: 2, label: 'Delete selected rewards' };
 
     get total() {
         return this.totals[this.$route.params.id];

@@ -78,16 +78,3 @@ export const createERC20Reward = async (pool: AssetPoolDocument, payload: TERC20
 
     return { reward, claims };
 };
-
-export const createReferralReward = async (assetPool: AssetPoolDocument, config: TReferralReward) => {
-    const reward = await ReferralRewardService.create(assetPool, config);
-    const claims = await Promise.all(
-        Array.from({ length: Number(reward.claimAmount) }).map(() =>
-            ReferralRewardClaimService.create({
-                referralRewardId: String(reward._id),
-                sub: assetPool.sub,
-            }),
-        ),
-    );
-    return { reward, claims };
-};

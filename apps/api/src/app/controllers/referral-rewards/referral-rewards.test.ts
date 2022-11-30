@@ -68,10 +68,6 @@ describe('Referral Rewards', () => {
                 expect(res.body.successUrl).toBe(successUrl);
                 expect(res.body.amount).toBe(100);
                 expect(new Date(res.body.expiryDate).getTime()).toBe(expiryDate.getTime());
-                expect(res.body.claims.length).toBe(1);
-                expect(res.body.claims[0].uuid).toBeDefined();
-                expect(res.body.claims[0].referralRewardId).toBe(res.body._id);
-                expect(res.body.claims[0].sub).toBeDefined();
                 referralRewardId = res.body._id;
                 referralReward = res.body;
             })
@@ -85,8 +81,6 @@ describe('Referral Rewards', () => {
                 expect(res.body.title).toEqual(referralReward.title);
                 expect(res.body.description).toEqual(referralReward.description);
                 expect(res.body.successUrl).toEqual(referralReward.successUrl);
-                expect(res.body.claims.length).toBe(referralReward.claims.length);
-                expect(res.body.claims[0].uuid).toBe(referralReward.claims[0].uuid);
             })
             .expect(200, done);
     });
@@ -96,7 +90,6 @@ describe('Referral Rewards', () => {
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .expect((res: request.Response) => {
                 expect(res.body.results.length).toBe(1);
-                expect(res.body.results[0].claims).toBeDefined();
                 expect(res.body.limit).toBe(10);
                 expect(res.body.total).toBe(1);
             })

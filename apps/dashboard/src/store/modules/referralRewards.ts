@@ -72,14 +72,14 @@ class ReferralRewardModule extends VuexModule {
 
     @Action({ rawError: true })
     async create({ pool, payload }: { pool: IPool; payload: TReferralReward }) {
-        const r = await axios({
+        const { data } = await axios({
             method: 'POST',
             url: '/referral-rewards',
             headers: { 'X-PoolId': pool._id },
             data: payload,
         });
 
-        this.context.commit('set', { pool: payload, reward: r.data });
+        this.context.commit('set', { pool, reward: data });
     }
 
     @Action({ rawError: true })
@@ -90,10 +90,9 @@ class ReferralRewardModule extends VuexModule {
             headers: { 'X-PoolId': pool._id },
             data: payload,
         });
-
         this.context.commit('set', {
-            pool: pool,
-            reward: data,
+            pool,
+            reward: { ...reward, ...data },
         });
     }
 
