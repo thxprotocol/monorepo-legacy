@@ -18,15 +18,26 @@
                 <b-form-group>
                     <b-row>
                         <b-col md="6">
-                            <b-datepicker value-as-date :min="minDate" v-model="expireDate" />
+                            <b-datepicker
+                                disabled
+                                value-as-date
+                                :min="minDate"
+                                :value="expirationDate"
+                                @change="onChangeDate"
+                            />
                         </b-col>
                         <b-col md="6">
-                            <b-timepicker :disabled="!expireDate" v-model="expireTime" />
+                            <b-timepicker disabled :value="expirationTime" @change="onChangeTime" />
+                            <!-- <b-timepicker
+                                :disabled="!expirationDate"
+                                :value="expirationTime"
+                                @change="onChangeTime"
+                            /> -->
                         </b-col>
                     </b-row>
                 </b-form-group>
                 <b-form-group label="Reward Limit">
-                    <b-form-input @change-limit="$emit('rewardLimit', $event)" type="number" :value="rewardLimit" />
+                    <b-form-input @change="$emit('change-limit', $event)" type="number" :value="selectedRewardLimit" />
                 </b-form-group>
             </div>
         </b-collapse>
@@ -39,17 +50,18 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 @Component({})
 export default class BaseCardRewardCondition extends Vue {
     isVisible = false;
-    expireDate: Date | null = null;
-    expireTime = '00:00:00';
+    expirationDate: Date | null = null;
+    expirationTime = '00:00:00';
     selectedRewardLimit = 0;
 
-    @Prop() rewardExpiry!: { date: Date | null; time: string; limit: number };
+    @Prop() expiryDate!: Date;
     @Prop() rewardLimit!: number;
 
     mounted() {
-        if (this.rewardExpiry) {
-            this.expireDate = this.rewardExpiry.date;
-            this.expireTime = this.rewardExpiry.time;
+        if (this.expiryDate) {
+            const date = new Date(this.expiryDate);
+            this.expirationDate = date;
+            this.expirationTime = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
         }
     }
 
@@ -59,12 +71,14 @@ export default class BaseCardRewardCondition extends Vue {
         return date;
     }
 
-    change() {
-        this.$emit('change', {
-            date: this.expireDate,
-            time: this.expireTime,
-            limit: this.rewardLimit,
-        });
+    onChangeDate() {
+        this.$emit('change-date', this.expirationDate);
+    }
+
+    onChangeTime() {
+        if (!this.expirationDate) return;
+
+        this.$emit('change-date', new Date(this.expirationDate).setTime(this.expirationTime));
     }
 }
 </script>

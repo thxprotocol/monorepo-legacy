@@ -2,7 +2,7 @@ import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { IPool } from './pools';
-import { RewardConditionPlatform, TERC721Reward } from '@thxnetwork/types/index';
+import { RewardConditionPlatform, type TERC721Reward } from '@thxnetwork/types/index';
 
 export type RewardByPage = {
     [page: number]: TERC721Reward[];
@@ -84,7 +84,6 @@ class ERC721RewardModule extends VuexModule {
 
     @Action({ rawError: true })
     async update({ pool, reward, payload }: { pool: IPool; reward: TERC721Reward; payload: TERC721Reward }) {
-        console.log(reward._id);
         const { data } = await axios({
             method: 'PATCH',
             url: `/erc721-rewards/${reward._id}`,
@@ -93,7 +92,7 @@ class ERC721RewardModule extends VuexModule {
         });
         this.context.commit('set', {
             pool,
-            reward: { ...reward, ...data },
+            reward: { ...reward, ...data, page: reward.page },
         });
     }
 

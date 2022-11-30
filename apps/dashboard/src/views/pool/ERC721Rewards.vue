@@ -40,11 +40,7 @@
                     <b-form-checkbox :value="item.checkbox" v-model="selectedItems" />
                 </template>
                 <template #cell(erc721metadataId)="{ index, item }">
-                    <BaseBadgeMetadataPreview
-                        v-if="erc721.metadata && erc721.metadata[item.erc721metadataId]"
-                        :index="index"
-                        :metadata="erc721.metadata[item.erc721metadataId]"
-                    />
+                    <BaseBadgeMetadataPreview :index="index" :erc721="erc721" :metadataId="item.erc721metadataId" />
                 </template>
                 <template #cell(progress)="{ item }">
                     <b-progress style="border-radius: 0.3rem">
@@ -59,6 +55,9 @@
                             :max="item.progress.limit || item.progress.progress"
                         />
                     </b-progress>
+                    <div class="text-center text-muted small">
+                        {{ !item.progress.limit ? 'unlimited' : `${item.progress.limit}x limit` }}
+                    </div>
                 </template>
                 <template #cell(claims)="{ item }">
                     <b-link v-b-modal="`modalRewardClaimsDownload${item.id}`"> Download </b-link>
@@ -187,15 +186,14 @@ export default class ERC721RewardsView extends Vue {
         });
     }
 
-    listRewards() {
+    async listRewards() {
         this.isLoading = true;
-        this.$store
-            .dispatch('erc721Rewards/list', {
-                page: this.page,
-                limit: this.limit,
-                pool: this.pool,
-            })
-            .then(() => (this.isLoading = false));
+        await this.$store.dispatch('erc721Rewards/list', {
+            page: this.page,
+            limit: this.limit,
+            pool: this.pool,
+        });
+        this.isLoading = false;
     }
 
     onChangeLimit(limit: number) {
@@ -204,7 +202,7 @@ export default class ERC721RewardsView extends Vue {
     }
 
     onSelectAll(isSelectAll: boolean) {
-        this.selectedItems = isSelectAll ? this.rewardsByPage.map((r) => r.id) : [];
+        this.selectedItems = isSelectAll ? (this.rewardsByPage.map((r) => r.id) as string[]) : [];
     }
 
     onChangePage(page: number) {

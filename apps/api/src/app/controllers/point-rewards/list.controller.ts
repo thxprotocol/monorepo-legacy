@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { PointReward } from '@thxnetwork/api/models/PointReward';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { IAccount } from '@thxnetwork/api/models/Account';
+import { canClaim } from '@thxnetwork/api/util/condition';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Point Rewards']
@@ -12,11 +13,11 @@ const controller = async (req: Request, res: Response) => {
         account = await AccountProxy.getById(req.auth.sub);
     }
 
-    pointRewards = pointRewards.map((r) => ({
+    pointRewards = pointRewards.map(async (r) => ({
         amount: r.amount,
         title: r.title,
         description: r.description,
-        // claimed: account ? !(await RewardService.canClaim(req.assetPool, r, account)) : false,
+        claimed: account ? !(await canClaim(r, account)) : false,
     }));
 
     res.json(await Promise.all([...pointRewards]));

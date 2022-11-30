@@ -1,19 +1,15 @@
 <template>
-    <b-dropdown variant="link" class="dropdown-select">
+    <b-dropdown no-flip variant="link" class="dropdown-select">
         <template #button-content>
-            {{ selectedMetadata ? selectedMetadata.title || '&nbsp;' : 'Select the NFT to Mint' }}
+            {{ selectedTitle }}
         </template>
-        <b-dropdown-form>
-            <b-form-input class="mb-2" placeholder="Search..." @input="onSearch" v-model="query" />
-        </b-dropdown-form>
-        <div style="height: 250px; overflow-y: scroll">
+        <b-dropdown-group style="max-height: 320px; overflow-y: auto">
             <b-dropdown-item-button
                 v-for="metadata of erc721metadataByPage"
                 :key="metadata._id"
                 @click="onClick(metadata)"
             >
                 <div class="d-flex justify-content-between">
-                    <div>{{ metadata.title }}</div>
                     <div>
                         <b-badge
                             :key="key"
@@ -31,10 +27,10 @@
                     </small>
                 </div>
             </b-dropdown-item-button>
-        </div>
+        </b-dropdown-group>
+        <b-dropdown-divider></b-dropdown-divider>
         <b-dropdown-form>
             <b-pagination
-                v-if="total > limit"
                 class="mt-3"
                 @change="onChangePage"
                 v-model="page"
@@ -57,42 +53,51 @@ import type { TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
 @Component({
     computed: mapGetters({
         erc721s: 'erc721/all',
-        total: 'erc721/totalsMetadata',
+        totals: 'erc721/totalsMetadata',
     }),
 })
 export default class BaseDropdownERC721Metadata extends Vue {
     format = format;
     erc721s!: IERC721s;
     selectedMetadata: TERC721Metadata | null = null;
-    limit = 25;
+    limit = 5;
     page = 1;
     query = '';
 
-    total!: number;
+    totals!: { [erc721Id: string]: number };
 
     get erc721(): TERC721 {
         return this.erc721s[this.pool.erc721._id];
     }
 
+    get total() {
+        return this.totals[this.erc721._id];
+    }
+
+    get selectedTitle() {
+        if (!this.selectedMetadata) return 'Select metadata';
+
+        const attr = this.selectedMetadata.attributes.find((attr) => attr.key === 'name');
+        if (!attr) return '...';
+
+        return attr.value;
+    }
+
     get erc721metadataByPage() {
         return (
             this.erc721 &&
-            Object.values(this.erc721.metadata).filter((m) => {
-                const attrName = m.attributes.find((attr) => (attr.key = 'name'));
-                return m.page === this.page && attrName?.value.includes(this.query);
-            })
+            Object.values(this.erc721.metadata)
+                .filter((m) => m.page === this.page)
+                .slice(0, this.limit)
         );
     }
 
     @Prop() pool!: IPool;
-    @Prop() erc721metadata!: TERC721Metadata[];
     @Prop({ required: false }) erc721metadataId!: string;
 
     mounted() {
         if (this.erc721metadataId) {
-            this.selectedMetadata = this.erc721metadata?.find(
-                (m) => m._id === this.erc721metadataId,
-            ) as TERC721Metadata;
+            this.selectedMetadata = this.erc721.metadata[this.erc721metadataId];
         }
         this.searchMetadata();
     }
@@ -125,5 +130,9 @@ export default class BaseDropdownERC721Metadata extends Vue {
 <style lang="scss">
 .dropdown-menu {
     background-color: #f8f9fa;
+}
+#formRewardPointsCreate .dropdown-select .dropdown-menu {
+    overflow-y: hidden;
+    max-height: none !important;
 }
 </style>

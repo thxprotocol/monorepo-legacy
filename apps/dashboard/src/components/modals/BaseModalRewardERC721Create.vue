@@ -13,7 +13,6 @@
                         </b-form-group>
                         <b-form-group label="Metadata">
                             <BaseDropdownERC721Metadata
-                                :erc721metadata="erc721metadata"
                                 :erc721metadataId="erc721metadataId"
                                 :pool="pool"
                                 @selected="onSelectMetadata"
@@ -26,8 +25,13 @@
                             :rewardCondition="rewardCondition"
                             @change="rewardCondition = $event"
                         />
-                        <BaseCardRewardExpiry class="mb-3" :expiry="rewardExpiry" @change="rewardExpiry = $event" />
-                        <!-- <BaseCardRewardQRCodes class="mb-3" @change="rewardExpiry = $event" /> -->
+                        <BaseCardRewardExpiry
+                            class="mb-3"
+                            :expiryDate="expiryDate"
+                            :rewardLimit="rewardLimit"
+                            @change-date="expiryDate = $event"
+                            @change-limit="rewardLimit = $event"
+                        />
                     </b-col>
                 </b-row>
             </form>
@@ -75,7 +79,7 @@ export default class ModalRewardERC721Create extends Vue {
     title = '';
     erc721metadataId = '';
     description = '';
-    rewardExpiry = {};
+    expiryDate: Date | null = null;
     claimAmount = 1;
     rewardLimit = 0;
     rewardCondition: { platform: RewardConditionPlatform; interaction: RewardConditionInteraction; content: string } = {
@@ -88,7 +92,6 @@ export default class ModalRewardERC721Create extends Vue {
     @Prop() id!: string;
     @Prop() pool!: IPool;
     @Prop({ required: false }) reward!: TERC721Reward;
-    @Prop() erc721metadata!: TERC721Metadata[];
 
     get erc721(): TERC721 | null {
         if (!this.pool.erc721) return null;
