@@ -25,8 +25,13 @@
                             :rewardCondition="rewardCondition"
                             @change="rewardCondition = $event"
                         />
-                        <BaseCardRewardExpiry class="mb-3" :expiry="rewardExpiry" @change="rewardExpiry = $event" />
-                        <!-- <BaseCardRewardQRCodes class="mb-3" @change="rewardExpiry = $event" /> -->
+                        <BaseCardRewardExpiry
+                            class="mb-3"
+                            :expiryDate="expiryDate"
+                            :rewardLimit="rewardLimit"
+                            @change-date="expiryDate = $event"
+                            @change-limit="rewardLimit = $event"
+                        />
                     </b-col>
                 </b-row>
             </form>
@@ -74,7 +79,7 @@ export default class ModalRewardERC721Create extends Vue {
     title = '';
     erc721metadataId = '';
     description = '';
-    rewardExpiry = {};
+    expiryDate: Date | null = null;
     claimAmount = 1;
     rewardLimit = 0;
     rewardCondition: { platform: RewardConditionPlatform; interaction: RewardConditionInteraction; content: string } = {

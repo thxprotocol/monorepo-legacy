@@ -1,35 +1,34 @@
 <template>
-    <b-dropdown variant="link" class="dropdown-select">
+    <b-dropdown no-flip variant="link" class="dropdown-select">
         <template #button-content>
-            {{ selectedMetadata ? getTitle(selectedMetadata) : 'Select metadata...' }}
+            {{ selectedTitle }}
         </template>
-        <template #default>
-            <div style="height: 350px; overflow-y: scroll">
-                <b-dropdown-item-button
-                    v-for="metadata of erc721metadataByPage"
-                    :key="metadata._id"
-                    @click="onClick(metadata)"
-                >
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <b-badge
-                                :key="key"
-                                v-for="(value, key) in metadata.attributes"
-                                variant="dark"
-                                v-b-tooltip
-                                :title="value.value"
-                                class="mr-2"
-                            >
-                                {{ value.key }}
-                            </b-badge>
-                        </div>
-                        <small class="text-muted">
-                            {{ format(new Date(metadata.createdAt), 'dd-MM-yyyy HH:mm') }}
-                        </small>
+        <b-dropdown-group style="max-height: 320px; overflow-y: auto">
+            <b-dropdown-item-button
+                v-for="metadata of erc721metadataByPage"
+                :key="metadata._id"
+                @click="onClick(metadata)"
+            >
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <b-badge
+                            :key="key"
+                            v-for="(value, key) in metadata.attributes"
+                            variant="dark"
+                            v-b-tooltip
+                            :title="value.value"
+                            class="mr-2"
+                        >
+                            {{ value.key }}
+                        </b-badge>
                     </div>
-                </b-dropdown-item-button>
-            </div>
-        </template>
+                    <small class="text-muted">
+                        {{ format(new Date(metadata.createdAt), 'dd-MM-yyyy HH:mm') }}
+                    </small>
+                </div>
+            </b-dropdown-item-button>
+        </b-dropdown-group>
+        <b-dropdown-divider></b-dropdown-divider>
         <b-dropdown-form>
             <b-pagination
                 class="mt-3"
@@ -61,7 +60,7 @@ export default class BaseDropdownERC721Metadata extends Vue {
     format = format;
     erc721s!: IERC721s;
     selectedMetadata: TERC721Metadata | null = null;
-    limit = 100;
+    limit = 5;
     page = 1;
     query = '';
 
@@ -85,7 +84,12 @@ export default class BaseDropdownERC721Metadata extends Vue {
     }
 
     get erc721metadataByPage() {
-        return this.erc721 && Object.values(this.erc721.metadata).filter((m) => m.page === this.page);
+        return (
+            this.erc721 &&
+            Object.values(this.erc721.metadata)
+                .filter((m) => m.page === this.page)
+                .slice(0, this.limit)
+        );
     }
 
     @Prop() pool!: IPool;
@@ -96,12 +100,6 @@ export default class BaseDropdownERC721Metadata extends Vue {
             this.selectedMetadata = this.erc721.metadata[this.erc721metadataId];
         }
         this.searchMetadata();
-    }
-
-    getTitle(metadata: TERC721Metadata) {
-        const attr = metadata.attributes.find((m) => m.key === 'name');
-        if (!attr) return '...';
-        return attr.value;
     }
 
     async searchMetadata() {
@@ -132,5 +130,9 @@ export default class BaseDropdownERC721Metadata extends Vue {
 <style lang="scss">
 .dropdown-menu {
     background-color: #f8f9fa;
+}
+#formRewardPointsCreate .dropdown-select .dropdown-menu {
+    overflow-y: hidden;
+    max-height: none !important;
 }
 </style>

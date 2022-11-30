@@ -84,7 +84,6 @@ class ERC721RewardModule extends VuexModule {
 
     @Action({ rawError: true })
     async update({ pool, reward, payload }: { pool: IPool; reward: TERC721Reward; payload: TERC721Reward }) {
-        console.log(reward._id);
         const { data } = await axios({
             method: 'PATCH',
             url: `/erc721-rewards/${reward._id}`,
@@ -93,7 +92,7 @@ class ERC721RewardModule extends VuexModule {
         });
         this.context.commit('set', {
             pool,
-            reward: { ...reward, ...data },
+            reward: { ...reward, ...data, page: reward.page },
         });
     }
 

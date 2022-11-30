@@ -1,47 +1,60 @@
 <template>
     <div>
-        <b-tooltip :target="`tooltip-target-${metadata._id}-${index}`" triggers="hover">
-            <b-link :href="image" target="_blank" v-if="image">
-                <img :src="image" class="mt-2 rounded" width="180" height="auto" />
+        <b-tooltip :target="`tooltip-target-${metadataId}-${index}`" triggers="hover">
+            <b-link :href="attributes.image" target="_blank" v-if="attributes.image">
+                <img :src="attributes.image" class="mt-2 rounded" width="180" height="auto" />
             </b-link>
-            <strong>{{ name }}</strong>
-            {{ description }}
-            <b-link :href="external_url" target="_blank">External URL</b-link>
+            <strong>{{ attributes.name }}</strong>
+            {{ attributes.description }}
+            <b-link :href="attributes.external_url" target="_blank">External URL</b-link>
         </b-tooltip>
         <div class="d-flex align-items-center">
-            <div class="d-flex mr-2 rounded bg-dark text-white p-2" :id="`tooltip-target-${metadata._id}-${index}`">
+            <div class="d-flex mr-2 rounded bg-dark text-white p-2" :id="`tooltip-target-${metadataId}-${index}`">
                 <i class="fas fa-photo-video"></i>
             </div>
             <p style="line-height: 1" class="text-muted m-0">
-                <strong>{{ name }}</strong>
-                <b-link v-if="external_url" :href="external_url" target="_blank" class="ml-1">
+                <strong>{{ attributes.name }}</strong>
+                <b-link
+                    v-if="attributes.external_url"
+                    :href="attributes.external_url"
+                    target="_blank"
+                    class="ml-2 text-muted"
+                >
                     <i class="fas fa-external-link-alt" style="font-size: 0.8rem"></i>
                 </b-link>
                 <br />
-                <span v-if="description">{{ description.substring(0, 25) }}... </span>
+                <span v-if="attributes.description">{{ attributes.description.substring(0, 25) }}... </span>
             </p>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-import { type TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
+import { TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component({})
 export default class BaseBadgeMetadataPreview extends Vue {
-    image = '';
-    name = '';
-    description = '';
-    external_url = '';
-
     @Prop() index!: number;
-    @Prop() metadata!: TERC721Metadata;
+    @Prop() erc721!: TERC721;
+    @Prop() metadataId!: string;
 
-    mounted() {
-        if (this.metadata) {
-            this.metadata.attributes.forEach((attr) => {
-                (this as any)[attr.key] = attr.value;
+    get attributes() {
+        if (!this.erc721.metadata[this.metadataId]) return {};
+
+        const attributes: { [key: string]: string } = {};
+        for (const attr of this.erc721.metadata[this.metadataId].attributes) {
+            attributes[attr.key] = attr.value;
+        }
+
+        return attributes;
+    }
+
+    async mounted() {
+        if (!this.erc721.metadata[this.metadataId]) {
+            await this.$store.dispatch('erc721/readMetadata', {
+                erc721: this.erc721,
+                metadataId: this.metadataId,
             });
         }
     }

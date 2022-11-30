@@ -68,7 +68,7 @@ class ERC721Module extends VuexModule {
         });
 
         for (const _id of data) {
-            this.context.commit('set', { _id, loading: true });
+            this.context.commit('set', { _id, metadata: {}, loading: true });
         }
     }
 
@@ -87,8 +87,6 @@ class ERC721Module extends VuexModule {
         });
 
         this.context.commit('setTotal', { erc721, total: data.total });
-
-        if (data?.results?.length === 0) this.context.commit('clearMetadata', { erc721 });
 
         for (const metadata of data.results) {
             metadata.page = page;
@@ -156,6 +154,7 @@ class ERC721Module extends VuexModule {
 
         const erc721 = {
             ...data,
+            metadata: {},
             loading: false,
             logoURI: data.logoImgUrl || `https://avatars.dicebear.com/api/identicon/${data.address}.svg`,
         };

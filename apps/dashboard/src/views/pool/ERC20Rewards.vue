@@ -38,7 +38,7 @@
                     <b-form-checkbox :value="item.checkbox" v-model="selectedItems" />
                 </template>
                 <template #cell(amount)="{ item }">
-                    <b-badge variant="success" class="p-2"> {{ item.amount }} {{ pool.erc20.symbol }} </b-badge>
+                    <b-badge variant="dark" class="p-2"> {{ item.amount }} {{ pool.erc20.symbol }} </b-badge>
                 </template>
                 <template #cell(progress)="{ item }">
                     <b-progress style="border-radius: 0.3rem">
@@ -58,6 +58,15 @@
                     <BaseBadgeRewardConditionPreview
                         v-if="item.rewardCondition.platform.type !== RewardConditionPlatform.None"
                         :rewardCondition="item.rewardCondition"
+                    />
+                </template>
+                <template #cell(claims)="{ item }">
+                    <b-link v-b-modal="`modalRewardClaimsDownload${item.id}`"> Download </b-link>
+                    <BaseModalRewardClaimsDownload
+                        :id="`modalRewardClaimsDownload${item.id}`"
+                        :pool="pool"
+                        :selectedItems="[item.id]"
+                        :rewards="erc20Rewards[pool._id]"
                     />
                 </template>
                 <template #cell(id)="{ item }">
@@ -96,6 +105,7 @@ import { RewardConditionPlatform, RewardConditionInteraction, TERC20Reward } fro
 import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/badges/BaseBadgeRewardConditionPreview.vue';
 import { platformInteractionList, platformList } from '@thxnetwork/dashboard/types/rewards';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
+import BaseModalRewardClaimsDownload from '@thxnetwork/dashboard/components/modals/BaseModalRewardClaimsDownload.vue';
 
 @Component({
     components: {
@@ -103,6 +113,7 @@ import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCard
         BaseModalRewardERC20Create,
         BaseBadgeRewardConditionPreview,
         BaseCardTableHeader,
+        BaseModalRewardClaimsDownload,
     },
     computed: mapGetters({
         pools: 'pools/all',
@@ -149,6 +160,7 @@ export default class ERC20RewardsView extends Vue {
                     limit: r.rewardLimit,
                     progress: r.progress,
                 },
+                claims: r.claims,
                 id: r._id,
             }))
             .slice(0, this.limit);
