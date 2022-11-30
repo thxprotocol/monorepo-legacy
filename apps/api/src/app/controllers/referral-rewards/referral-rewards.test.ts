@@ -62,7 +62,6 @@ describe('Referral Rewards', () => {
                 rewardLimit: 0,
                 claimAmount: 1,
                 successUrl,
-                slug: 'slug',
             })
             .expect((res: request.Response) => {
                 expect(res.body.uuid).toBeDefined();
@@ -121,5 +120,11 @@ describe('Referral Rewards', () => {
                 expect(res.body.successUrl).toEqual(successUrl);
             })
             .expect(200, done);
+    });
+
+    it('DELETE /referral-rewards/:id', (done) => {
+        user.delete(`/v1/referral-rewards/${referralRewardId}`)
+            .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
+            .expect(204, done);
     });
 });
