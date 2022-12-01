@@ -1,6 +1,6 @@
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
-import { TERC721Reward, TERC20Reward, TReferralReward } from '@thxnetwork/types/';
+import { TERC721Reward, TERC20Reward } from '@thxnetwork/types/';
 import { ERC20Reward } from '../models/ERC20Reward';
 import { ERC721Reward } from '../models/ERC721Reward';
 import { ReferralReward } from '../models/ReferralReward';
@@ -8,13 +8,11 @@ import ClaimService from '@thxnetwork/api/services/ClaimService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import ERC20RewardService from '../services/ERC20RewardService';
 import ERC721RewardService from '@thxnetwork/api/services/ERC721RewardService';
-import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardService';
-import ReferralRewardClaimService from '../services/ReferralRewardClaimService';
 
-export async function findRewardById(rewardId: string) {
-    const erc20Reward = await ERC20Reward.findById(rewardId);
-    const erc721Reward = await ERC721Reward.findById(rewardId);
-    const referralReward = await ReferralReward.findById(rewardId);
+export async function findRewardByUuid(uuid: string) {
+    const erc20Reward = await ERC20Reward.findOne({ uuid });
+    const erc721Reward = await ERC721Reward.findOne({ uuid });
+    const referralReward = await ReferralReward.findOne({ uuid });
     return erc20Reward || erc721Reward || referralReward;
 }
 
@@ -56,7 +54,7 @@ export const createERC721Reward = async (assetPool: AssetPoolDocument, config: T
                 poolId: assetPool._id,
                 erc20Id: null,
                 erc721Id: metadata.erc721,
-                rewardId: String(reward._id),
+                rewardId: reward.uuid,
             }),
         ),
     );
@@ -71,7 +69,7 @@ export const createERC20Reward = async (pool: AssetPoolDocument, payload: TERC20
             ClaimService.create({
                 poolId: pool._id,
                 erc20Id: pool.erc20Id,
-                rewardId: String(reward._id),
+                rewardId: reward.uuid,
             }),
         ),
     );

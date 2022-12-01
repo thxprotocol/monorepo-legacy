@@ -4,7 +4,7 @@ import { BadRequestError, ForbiddenError } from '@thxnetwork/api/util/errors';
 import { WithdrawalState, WithdrawalType } from '@thxnetwork/api/types/enums';
 import { WithdrawalDocument } from '@thxnetwork/api/models/Withdrawal';
 import { Claim } from '@thxnetwork/api/models/Claim';
-import { findRewardById, isTERC20Reward, isTERC721Reward } from '@thxnetwork/api/util/rewards';
+import { findRewardByUuid, isTERC20Reward, isTERC721Reward } from '@thxnetwork/api/util/rewards';
 import { canClaim } from '@thxnetwork/api/util/condition';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
@@ -29,7 +29,7 @@ const controller = async (req: Request, res: Response) => {
     const account = await AccountProxy.getById(req.auth.sub);
     if (!account.address) throw new BadRequestError('The authenticated account has not accessed its wallet.');
 
-    const reward = await findRewardById(claim.rewardId);
+    const reward = await findRewardByUuid(claim.rewardId);
     if (!reward) throw new BadRequestError('The reward for this ID does not exist.');
 
     // Validate the claim

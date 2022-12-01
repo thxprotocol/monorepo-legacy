@@ -11,23 +11,22 @@ const controller = async (req: Request, res: Response) => {
     const limit = req.query.limit ? Number(req.query.limit) : 10;
     const page = req.query.page ? Number(req.query.page) : 1;
     const rewards = await ERC20RewardService.findByPool(req.assetPool, page, limit);
-    const promises = rewards.results.map(async (r, i) => {
-        const withdrawals = await WithdrawalService.findByQuery({
-            poolId: String(req.assetPool._id),
-            rewardId: r._id,
-        });
-        const claims = await ClaimService.findByReward(r);
 
-        rewards.results[i] = {
-            claims,
-            progress: withdrawals.length,
-            ...r,
-        };
+    rewards.results = await Promise.all(
+        rewards.results.map(async (r) => {
+            const withdrawals = await WithdrawalService.findByQuery({
+                poolId: String(req.assetPool._id),
+                rewardId: r._id,
+            });
+            const claims = await ClaimService.findByReward(r);
 
-        return rewards;
-    });
-
-    await Promise.all(promises);
+            return {
+                ...r,
+                claims,
+                progress: withdrawals.length,
+            };
+        }),
+    );
 
     res.json(rewards);
 };

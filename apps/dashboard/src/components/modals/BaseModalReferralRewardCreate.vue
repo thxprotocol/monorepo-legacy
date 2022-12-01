@@ -6,7 +6,7 @@
             </p>
             <form v-on:submit.prevent="onSubmit" id="formRewardPointsCreate">
                 <b-row>
-                    <b-col md="6">
+                    <b-col md="12">
                         <b-form-group label="Title">
                             <b-form-input v-model="title" />
                         </b-form-group>
@@ -20,7 +20,6 @@
                             <b-form-input v-model="successUrl" />
                         </b-form-group>
                     </b-col>
-                    <b-col md="6"> </b-col>
                 </b-row>
             </form>
         </template>

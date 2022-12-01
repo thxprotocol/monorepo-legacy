@@ -5,7 +5,7 @@ import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import AssetPoolService from '@thxnetwork/api/services/AssetPoolService';
 import { Claim } from '@thxnetwork/api/models/Claim';
-import { findRewardById, isTERC20Reward, isTERC721Reward } from '@thxnetwork/api/util/rewards';
+import { findRewardByUuid, isTERC20Reward, isTERC721Reward } from '@thxnetwork/api/util/rewards';
 
 const validation = [param('id').exists().isString()];
 
@@ -23,7 +23,7 @@ const controller = async (req: Request, res: Response) => {
     const pool = await AssetPoolService.getById(claim.poolId);
     if (!pool) throw new NotFoundError('Could not find this pool');
 
-    const reward = await findRewardById(claim.rewardId);
+    const reward = await findRewardByUuid(claim.rewardId);
     if (!reward) throw new NotFoundError('Could not find this reward');
 
     if (isTERC20Reward(reward) && claim.erc20Id) {

@@ -14,14 +14,14 @@ export async function canClaim(reward: TBaseReward, account: IAccount): Promise<
 
     // Can only claim this reward once and a withdrawal already exists
     if (reward.rewardLimit > 0) {
-        const amountOfClaims = await Claim.countDocuments({ rewardId: String(reward._id), sub: { $exists: true } });
+        const amountOfClaims = await Claim.countDocuments({ rewardId: reward.uuid, sub: { $exists: true } });
         if (amountOfClaims >= reward.rewardLimit) {
             return { error: "This reward has reached it's limit" };
         }
     }
 
     // Can only claim this reward once and a withdrawal already exists
-    const hasClaimedOnce = await Claim.exists({ rewardId: String(reward._id), sub: account.id });
+    const hasClaimedOnce = await Claim.exists({ rewardId: reward.uuid, sub: account.id });
     if (hasClaimedOnce) {
         return { error: 'You can only claim this reward once.' };
     }
