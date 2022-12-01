@@ -1,6 +1,6 @@
 import { AccountPlanType } from './enums/AccountPlanType';
 import { AccountVariant } from './enums/AccountVariant';
-
+import { AccessTokenKind } from './enums/AccessTokenKind';
 export interface TAccount {
     firstName: string;
     lastName: string;
@@ -40,6 +40,14 @@ export interface TAccount {
     acceptUpdates: boolean;
     comparePassword: any;
     createdAt: Date;
+    tokens: IAccessToken[];
+}
+
+export interface IAccessToken {
+    kind: AccessTokenKind;
+    accessToken: string;
+    refreshToken?: string;
+    expiry: number;
 }
 export interface IAccountUpdates {
     acceptTermsPrivacy?: boolean;
