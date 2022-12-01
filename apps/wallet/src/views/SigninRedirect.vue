@@ -69,7 +69,7 @@ export default class Redirect extends Vue {
         let path = state.toPath || this.redirectPath;
 
         // If a reward hash or claim Id is found, redirect to the claim page instead
-        if (state.rewardHash || state.claimId) {
+        if (state.claimId) {
             path = '/collect';
         }
 

@@ -13,7 +13,6 @@
                     </b-alert>
                     <b-button block variant="primary" class="rounded-pill" to="/tokens"> Continue </b-button>
                 </template>
-
                 <template v-if="isClaimFailed">
                     <b-alert show variant="danger">
                         Oops, we did not manage to claim your token reward at this time, please visit your claim URL or
@@ -26,7 +25,7 @@
                 <template v-if="claimedReward.erc20">
                     <div class="img-treasure" :style="`background-image: url(${imgUrl});`"></div>
                     <h2 class="text-secondary text-center my-3">
-                        <strong>Congratulations!</strong> You've earned
+                        <strong>Congratulations!</strong> You have earned
                         <strong>{{ claimedReward.withdrawal.amount }} {{ claimedReward.erc20.symbol }}</strong>
                     </h2>
                     <p class="lead text-center">Collect, swap or redeem these tokens for promotions.<br /></p>
@@ -38,10 +37,8 @@
                     <b-col xs="12" md="6">
                         <h2 class="text-secondary my-3"><strong>Congratulations!</strong> You've claimed an NFT.</h2>
                         <p class="lead">
-                            {{ claimedReward.metadata.attributes.find((a) => a.key === 'name').value }}<br />
-                            <small class="text-muted">{{
-                                claimedReward.metadata.attributes.find((a) => a.key === 'description').value
-                            }}</small>
+                            {{ claimedReward.erc721.name }}<br />
+                            <small class="text-muted">{{ claimedReward.erc721.description }}</small>
                         </p>
                     </b-col>
                 </b-row>
@@ -51,7 +48,14 @@
                 </b-button>
             </template>
         </div>
-        <b-card class="mb-3" v-if="reward && reward.platform !== RewardConditionPlatform.None && !hasValidAccessToken">
+        <b-card
+            class="mb-3"
+            v-if="
+                reward &&
+                [RewardConditionPlatform.Google, RewardConditionPlatform.Twitter].includes(reward.platform) &&
+                !hasValidAccessToken
+            "
+        >
             <div v-if="reward.platform === RewardConditionPlatform.Twitter">
                 <div class="mb-3 d-flex align-items-center">
                     <img height="30" class="mr-3" :src="require('../../public/assets/img/thx_twitter.png')" alt="" />
@@ -159,7 +163,7 @@ export default class Collect extends Vue {
         this.reward = this.claim.reward;
 
         // If no condition applies claim directly
-        if (this.claim.reward.platform === RewardConditionPlatform.None) {
+        if (!this.claim.reward.platform) {
             return await this.claimReward();
         }
 
@@ -198,7 +202,6 @@ export default class Collect extends Vue {
             if (this.claim && this.claim.erc721) {
                 await this.$store.dispatch('network/connect', this.claim.erc721.chainId);
                 this.$store.commit('erc721/set', this.claim.erc721);
-                debugger;
                 const imgUrl = this.firstImageURL(this.claim.metadata);
                 if (imgUrl) this.imgUrl = imgUrl;
             } else if (this.claim && this.claim.erc20) {
@@ -211,7 +214,6 @@ export default class Collect extends Vue {
             if (res?.status === 403) {
                 this.error = res?.data.error.message;
             }
-            debugger;
         } finally {
             this.isLoading = false;
         }
