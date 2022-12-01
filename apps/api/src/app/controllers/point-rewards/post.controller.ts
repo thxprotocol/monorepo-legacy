@@ -24,13 +24,13 @@ const controller = async (req: Request, res: Response) => {
     // }
 
     const pointReward = await PointReward.create({
+        poolId: req.assetPool._id,
         title: req.body.title,
         description: req.body.description,
         amount: req.body.amount,
         rewardConditionId,
     });
-
-    res.json(pointReward);
+    res.status(201).json(pointReward);
 };
 
 export default { validation, controller };
