@@ -22,6 +22,7 @@
                 :selectedItems="selectedItems"
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
+                :showDownloadQRCodes="true"
             />
             <BTable hover :busy="isLoading" :items="rewardsByPage" responsive="lg" show-empty>
                 <!-- Head formatting -->

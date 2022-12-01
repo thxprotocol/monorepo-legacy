@@ -117,6 +117,12 @@ const config: Configuration = {
         'clients:read',
         'wallets:read',
         'wallets:write',
+        'erc20_rewards:read',
+        'erc20_rewards:write',
+        'erc721_rewards:read',
+        'erc721_rewards:write',
+        'referral_rewards:read',
+        'referral_rewards:write',
     ],
     claims: {
         openid: ['sub', 'email', 'variant', 'address'],

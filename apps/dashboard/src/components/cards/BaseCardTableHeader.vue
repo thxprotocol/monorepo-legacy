@@ -11,16 +11,19 @@
                 split
                 :text="selectedBulkAction.label"
                 class="mr-5"
+                :disabled="!selectedItems.length"
             >
                 <b-dropdown-item
                     class="small"
                     @click="selectedBulkAction = item"
                     :key="key"
-                    v-for="(item, key) of [
-                        { variant: 0, label: 'Download QR codes' },
-                        { variant: 1, label: 'Download CSV' },
-                        { variant: 2, label: `Delete ${selectedItems.length} rewards` },
-                    ]"
+                    v-for="(item, key) of showDownloadQRCodes
+                        ? [
+                              { variant: 0, label: 'Download QR codes' },
+                              { variant: 1, label: 'Download CSV' },
+                              { variant: 2, label: `Delete ${selectedItems.length} rewards` },
+                          ]
+                        : [{ variant: 0, label: `Delete ${selectedItems.length} rewards` }]"
                 >
                     {{ item.label }}
                 </b-dropdown-item>
@@ -68,14 +71,17 @@ import BaseModalRewardClaimsDownload from '../modals/BaseModalRewardClaimsDownlo
     },
 })
 export default class BaseCardTableHeader extends Vue {
-    selectedBulkAction = { variant: 0, label: 'Download QR codes' };
-
     @Prop() totals!: { [poolId: string]: number };
     @Prop() selectedItems!: string[];
     @Prop() rewards!: { [poolId: string]: { [id: string]: TBaseReward } };
     @Prop() page!: number;
     @Prop() limit!: number;
     @Prop() pool!: IPool;
+    @Prop() showDownloadQRCodes!: boolean;
+
+    selectedBulkAction = this.showDownloadQRCodes
+        ? { variant: 0, label: 'Download QR codes' }
+        : { variant: 2, label: 'Delete selected rewards' };
 
     get total() {
         return this.totals[this.$route.params.id];

@@ -11,12 +11,13 @@ import CreateRewardReferral from './post.controller';
 import ReadRewardReferral from './get.controller';
 import UpdateRewardReferral from './patch.controller';
 import ListRewardReferral from './list.controller';
+import DeleteReferralReward from './delete.controller';
 
 const router = express.Router();
 
 router.get(
     '/',
-    guard.check(['rewards:read']),
+    guard.check(['referral_rewards:read']),
     assertAssetPoolAccess,
     requireAssetPoolHeader,
     assertRequestInput(ListRewardReferral.validation),
@@ -25,8 +26,8 @@ router.get(
 );
 router.get(
     '/:id',
-    guard.check(['rewards:read']),
-    //assertAssetPoolAccess,
+    guard.check(['referral_rewards:read']),
+    assertAssetPoolAccess,
     assertRequestInput(ReadRewardReferral.validation),
     requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
@@ -34,7 +35,7 @@ router.get(
 );
 router.post(
     '/',
-    guard.check(['rewards:write', 'rewards:read']),
+    guard.check(['referral_rewards:write', 'referral_rewards:read']),
     assertAssetPoolAccess,
     assertRequestInput(CreateRewardReferral.validation),
     requireAssetPoolHeader,
@@ -43,11 +44,19 @@ router.post(
 );
 router.patch(
     '/:id',
-    guard.check(['rewards:write', 'rewards:read']),
+    guard.check(['referral_rewards:write', 'referral_rewards:read']),
     assertAssetPoolAccess,
     assertRequestInput(UpdateRewardReferral.validation),
     requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
     UpdateRewardReferral.controller,
+);
+router.delete(
+    '/:id',
+    guard.check(['referral_rewards:write', 'referral_rewards:read']),
+    assertAssetPoolAccess,
+    requireAssetPoolHeader,
+    assertRequestInput(DeleteReferralReward.validation),
+    DeleteReferralReward.controller,
 );
 export default router;

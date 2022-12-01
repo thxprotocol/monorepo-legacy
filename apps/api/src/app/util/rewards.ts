@@ -1,6 +1,6 @@
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
-import { TERC721Reward, TERC20Reward, TReferralReward } from '@thxnetwork/types/';
+import { TERC721Reward, TERC20Reward } from '@thxnetwork/types/';
 import { ERC20Reward } from '../models/ERC20Reward';
 import { ERC721Reward } from '../models/ERC721Reward';
 import { ReferralReward } from '../models/ReferralReward';
@@ -8,7 +8,6 @@ import ClaimService from '@thxnetwork/api/services/ClaimService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import ERC20RewardService from '../services/ERC20RewardService';
 import ERC721RewardService from '@thxnetwork/api/services/ERC721RewardService';
-import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardService';
 
 export async function findRewardByUuid(uuid: string) {
     const erc20Reward = await ERC20Reward.findOne({ uuid });
@@ -75,19 +74,5 @@ export const createERC20Reward = async (pool: AssetPoolDocument, payload: TERC20
         ),
     );
 
-    return { reward, claims };
-};
-
-export const createReferralReward = async (assetPool: AssetPoolDocument, config: TReferralReward) => {
-    const reward = await ReferralRewardService.create(assetPool, config);
-    const claims = await Promise.all(
-        Array.from({ length: Number(reward.claimAmount) }).map(() =>
-            ClaimService.create({
-                poolId: assetPool._id,
-                erc20Id: assetPool.erc20Id,
-                rewardId: reward.uuid,
-            }),
-        ),
-    );
     return { reward, claims };
 };

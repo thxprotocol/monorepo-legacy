@@ -63,6 +63,10 @@ const routes: Array<RouteConfig> = [
                 component: () => import('../views/pool/ERC721Rewards.vue'),
             },
             {
+                path: 'referral-rewards',
+                component: () => import('../views/pool/ReferralRewards.vue'),
+            },
+            {
                 path: 'widgets',
                 component: () => import('../views/pool/Widgets.vue'),
             },

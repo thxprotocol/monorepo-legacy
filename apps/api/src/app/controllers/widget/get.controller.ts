@@ -45,6 +45,7 @@ async function createBaseElements() {
         position: 'fixed',
         border: '0',
         opacity: '0',
+        boxShadow: 'rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px',
         transform: 'scaleY(0)',
         transformOrigin: 'bottom',
         transition: '.2s opacity ease, .1s transform ease'

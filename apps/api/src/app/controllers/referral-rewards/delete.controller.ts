@@ -1,15 +1,15 @@
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
-import ERC721RewardService from '@thxnetwork/api/services/ERC721RewardService';
+import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardService';
 
 const validation = [param('id').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['RewardsNft']
-    const reward = await ERC721RewardService.get(req.params.id);
+    // #swagger.tags = ['RewardsReferral']
+    const reward = await ReferralRewardService.get(req.params.id);
     if (!reward) throw new NotFoundError('Could not find the reward');
-    await ERC721RewardService.remove(reward);
+    await ReferralRewardService.remove(reward);
     return res.status(204).end();
 };
 

@@ -8,4 +8,5 @@ export * from './interfaces/ERC721Reward';
 export * from './interfaces/PointReward';
 export * from './interfaces/BaseReward';
 export * from './interfaces/ReferralReward';
+export * from './interfaces/ReferralRewardClaim';
 export * from './interfaces/BaseReward';

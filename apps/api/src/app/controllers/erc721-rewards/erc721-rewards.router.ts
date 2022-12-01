@@ -17,7 +17,7 @@ const router = express.Router();
 
 router.get(
     '/',
-    guard.check(['rewards:read']),
+    guard.check(['erc721_rewards:read']),
     assertAssetPoolAccess,
     requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
@@ -25,7 +25,7 @@ router.get(
 );
 router.get(
     '/:id',
-    guard.check(['rewards:read']),
+    guard.check(['erc721_rewards:read']),
     //assertAssetPoolAccess,
     assertRequestInput(ReadERC721Reward.validation),
     requireAssetPoolHeader,
@@ -34,7 +34,7 @@ router.get(
 );
 router.post(
     '/',
-    guard.check(['rewards:write', 'rewards:read']),
+    guard.check(['erc721_rewards:write', 'erc721_rewards:read']),
     assertAssetPoolAccess,
     assertRequestInput(CreateERC721Reward.validation),
     requireAssetPoolHeader,
@@ -43,7 +43,7 @@ router.post(
 );
 router.patch(
     '/:id',
-    guard.check(['rewards:write', 'rewards:read']),
+    guard.check(['erc721_rewards:write', 'erc721_rewards:read']),
     assertAssetPoolAccess,
     assertRequestInput(UpdateERC721Reward.validation),
     requireAssetPoolHeader,
@@ -52,7 +52,7 @@ router.patch(
 );
 router.delete(
     '/:id',
-    guard.check(['rewards:write', 'rewards:read']),
+    guard.check(['erc721_rewards:write', 'erc721_rewards:read']),
     assertAssetPoolAccess,
     requireAssetPoolHeader,
     assertRequestInput(DeleteERC721Reward.validation),

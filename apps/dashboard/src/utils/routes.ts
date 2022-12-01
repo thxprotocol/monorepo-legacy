@@ -28,6 +28,12 @@ export const getRoutes = (pool: IPool) => {
             visible: !!pool.erc721,
         },
         {
+            path: 'referral-rewards',
+            label: 'Referral Rewards',
+            iconClasses: 'fas fa-award',
+            visible: !!pool.erc20 || !!pool.erc721,
+        },
+        {
             path: 'metadata',
             label: 'Metadata',
             iconClasses: 'fas fa-palette',

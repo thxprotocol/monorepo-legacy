@@ -2,14 +2,14 @@
     <div>
         <b-row class="mb-3">
             <b-col class="d-flex align-items-center">
-                <h2 class="mb-0">ERC20 Rewards</h2>
+                <h2 class="mb-0">Referral Rewards</h2>
             </b-col>
             <b-col class="d-flex justify-content-end">
-                <b-button v-b-modal="'modalRewardERC20Create'" class="rounded-pill" variant="primary">
+                <b-button v-b-modal="'modalReferralRewardCreate'" class="rounded-pill" variant="primary">
                     <i class="fas fa-plus mr-2"></i>
-                    <span class="d-none d-md-inline">ERC20 Reward</span>
+                    <span class="d-none d-md-inline">Referral Reward</span>
                 </b-button>
-                <BaseModalRewardERC20Create :id="'modalRewardERC20Create'" :pool="pool" @submit="onSubmit" />
+                <BaseModalReferralRewardCreate :id="'modalReferralRewardCreate'" :pool="pool" @submit="onSubmit" />
             </b-col>
         </b-row>
         <BCard variant="white" body-class="p-0 shadow-sm">
@@ -17,12 +17,12 @@
                 :page="page"
                 :limit="limit"
                 :pool="pool"
-                :rewards="erc20Rewards[pool._id]"
+                :rewards="referralRewards[pool._id]"
                 :totals="totals"
                 :selectedItems="selectedItems"
-                :showDownloadQRCodes="true"
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
+                :showDownloadQRCodes="false"
             />
             <BTable hover :busy="isLoading" :items="rewardsByPage" responsive="lg" show-empty>
                 <!-- Head formatting -->
@@ -31,7 +31,6 @@
                 </template>
                 <template #head(title)> Title </template>
                 <template #head(progress)> Progress </template>
-                <template #head(rewardCondition)> Condition </template>
                 <template #head(id)> &nbsp; </template>
 
                 <!-- Cell formatting -->
@@ -39,7 +38,7 @@
                     <b-form-checkbox :value="item.checkbox" v-model="selectedItems" />
                 </template>
                 <template #cell(amount)="{ item }">
-                    <b-badge variant="dark" class="p-2"> {{ item.amount }} {{ pool.erc20.symbol }} </b-badge>
+                    <b-badge variant="success" class="p-2"> {{ item.amount }} {{ pool.erc20.symbol }} </b-badge>
                 </template>
                 <template #cell(progress)="{ item }">
                     <b-progress style="border-radius: 0.3rem">
@@ -55,37 +54,22 @@
                         />
                     </b-progress>
                 </template>
-                <template #cell(rewardCondition)="{ item }">
-                    <BaseBadgeRewardConditionPreview
-                        v-if="item.rewardCondition.platform.type !== RewardConditionPlatform.None"
-                        :rewardCondition="item.rewardCondition"
-                    />
-                </template>
-                <template #cell(claims)="{ item }">
-                    <b-link v-b-modal="`modalRewardClaimsDownload${item.id}`"> Download </b-link>
-                    <BaseModalRewardClaimsDownload
-                        :id="`modalRewardClaimsDownload${item.id}`"
-                        :pool="pool"
-                        :selectedItems="[item.id]"
-                        :rewards="erc20Rewards[pool._id]"
-                    />
-                </template>
                 <template #cell(id)="{ item }">
                     <b-dropdown variant="link" size="sm" no-caret>
                         <template #button-content>
                             <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
                         </template>
-                        <b-dropdown-item v-b-modal="'modalRewardERC20Create' + item.id">Edit</b-dropdown-item>
+                        <b-dropdown-item v-b-modal="'modalReferralRewardCreate' + item.id">Edit</b-dropdown-item>
                         <b-dropdown-item
-                            @click="$store.dispatch('erc20Rewards/delete', erc20Rewards[pool._id][item.id])"
+                            @click="$store.dispatch('referralRewards/delete', referralRewards[pool._id][item.id])"
                         >
                             Delete
                         </b-dropdown-item>
                     </b-dropdown>
-                    <BaseModalRewardERC20Create
-                        :id="'modalRewardERC20Create' + item.id"
+                    <BaseModalReferralRewardCreate
+                        :id="'modalReferralRewardCreate' + item.id"
                         :pool="pool"
-                        :reward="erc20Rewards[pool._id][item.id]"
+                        :reward="referralRewards[pool._id][item.id]"
                         @submit="onSubmit"
                     />
                 </template>
@@ -98,31 +82,27 @@
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { TERC20RewardState } from '@thxnetwork/dashboard/store/modules/erc20Rewards';
-import { RewardConditionPlatform, RewardConditionInteraction, TERC20Reward } from '@thxnetwork/types/index';
-import { platformInteractionList, platformList } from '@thxnetwork/dashboard/types/rewards';
-import type { IERC721s } from '@thxnetwork/dashboard/types/erc721';
-import BaseModalRewardERC20Create from '@thxnetwork/dashboard/components/modals/BaseModalRewardERC20Create.vue';
+import BaseModalReferralRewardCreate from '@thxnetwork/dashboard/components/modals/BaseModalReferralRewardCreate.vue';
+import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
+import { TRewardState } from '@thxnetwork/dashboard/store/modules/referralRewards';
+import { TReferralReward } from '@thxnetwork/types/index';
 import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/badges/BaseBadgeRewardConditionPreview.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
-import BaseModalRewardClaimsDownload from '@thxnetwork/dashboard/components/modals/BaseModalRewardClaimsDownload.vue';
 
 @Component({
     components: {
-        BaseModalRewardERC20Create,
+        BaseNothingHere,
+        BaseModalReferralRewardCreate,
         BaseBadgeRewardConditionPreview,
         BaseCardTableHeader,
-        BaseModalRewardClaimsDownload,
     },
     computed: mapGetters({
         pools: 'pools/all',
-        totals: 'erc20Rewards/totals',
-        erc20Rewards: 'erc20Rewards/all',
+        totals: 'referralRewards/totals',
+        referralRewards: 'referralRewards/all',
     }),
 })
-export default class ERC20RewardsView extends Vue {
-    RewardConditionPlatform = RewardConditionPlatform;
-    RewardConditionInteraction = RewardConditionInteraction;
+export default class ReferralRewardsView extends Vue {
     isLoading = true;
     limit = 10;
     page = 1;
@@ -130,8 +110,7 @@ export default class ERC20RewardsView extends Vue {
 
     pools!: IPools;
     totals!: { [poolId: string]: number };
-    erc20Rewards!: TERC20RewardState;
-    erc721s!: IERC721s;
+    referralRewards!: TRewardState;
 
     get pool() {
         return this.pools[this.$route.params.id];
@@ -142,24 +121,18 @@ export default class ERC20RewardsView extends Vue {
     }
 
     get rewardsByPage() {
-        if (!this.erc20Rewards[this.$route.params.id]) return [];
-        return Object.values(this.erc20Rewards[this.$route.params.id])
-            .filter((reward: TERC20Reward) => reward.page === this.page)
+        if (!this.referralRewards[this.$route.params.id]) return [];
+        return Object.values(this.referralRewards[this.$route.params.id])
+            .filter((reward: TReferralReward) => reward.page === this.page)
             .sort((a, b) => (a.createdAt && b.createdAt && a.createdAt < b.createdAt ? 1 : -1))
-            .map((r: TERC20Reward) => ({
+            .map((r: TReferralReward) => ({
                 checkbox: r._id,
                 amount: r.amount,
                 title: r.title,
-                rewardCondition: {
-                    platform: platformList.find((p) => r.platform === p.type),
-                    interaction: platformInteractionList.find((i) => r.interaction === i.type),
-                    content: r.content,
-                },
                 progress: {
                     limit: r.rewardLimit,
                     progress: r.progress,
                 },
-                claims: r.claims,
                 id: r._id,
             }))
             .slice(0, this.limit);
@@ -172,7 +145,7 @@ export default class ERC20RewardsView extends Vue {
     listRewards() {
         this.isLoading = true;
         this.$store
-            .dispatch('erc20Rewards/list', {
+            .dispatch('referralRewards/list', {
                 page: this.page,
                 limit: this.limit,
                 pool: this.pool,
@@ -186,7 +159,7 @@ export default class ERC20RewardsView extends Vue {
     }
 
     onChecked(checked: boolean) {
-        this.selectedItems = checked ? (this.rewardsByPage.map((r) => r.id) as string[]) : [];
+        this.selectedItems = checked ? this.rewardsByPage.map((r) => r.id) : [];
     }
 
     onChangePage(page: number) {

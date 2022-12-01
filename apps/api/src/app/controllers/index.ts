@@ -29,6 +29,7 @@ import claimsRouter from './claims/claims.router';
 import brandsRouter from './brands/brands.router';
 import walletsRouter from './wallets/wallets.router';
 import widgetRouter from './widget/widget.router';
+import rewardsRouter from './rewards/rewards.router';
 import { checkJwt, corsHandler } from '@thxnetwork/api/middlewares';
 
 const router = express.Router();
@@ -68,5 +69,6 @@ router.use('/clients', clientRouter);
 router.use('/transactions', transactionsRouter);
 router.use('/claims', claimsRouter);
 router.use('/wallets', walletsRouter);
+router.use('/rewards', rewardsRouter);
 
 export default router;
