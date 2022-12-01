@@ -7,7 +7,7 @@ import ReferralRewardClaimService from '@thxnetwork/api/services/ReferralRewardC
 const validation = [param('id').exists()];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['RewardsReferral']
+    // #swagger.tags = ['Rewards Referral']
     const reward = await RewardReferralService.get(req.params.id);
     if (!reward) throw new NotFoundError();
 

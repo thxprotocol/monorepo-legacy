@@ -6,7 +6,7 @@ import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardServic
 const validation = [param('id').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['RewardsReferral']
+    // #swagger.tags = ['Rewards Referral']
     const reward = await ReferralRewardService.get(req.params.id);
     if (!reward) throw new NotFoundError('Could not find the reward');
     await ReferralRewardService.remove(reward);

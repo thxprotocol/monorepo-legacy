@@ -1,4 +1,4 @@
-import { guard, requireAssetPoolHeader } from '@thxnetwork/api/middlewares';
+import { requireAssetPoolHeader } from '@thxnetwork/api/middlewares';
 import express from 'express';
 import ListRewards from './list.controller';
 

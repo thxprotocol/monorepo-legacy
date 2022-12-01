@@ -3,6 +3,7 @@ import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { paginatedResults, PaginationResult } from '@thxnetwork/api/util/pagination';
 import { TReferralReward } from '@thxnetwork/types/index';
 import { ReferralReward, ReferralRewardDocument } from '@thxnetwork/api/models/ReferralReward';
+import { ReferralRewardClaim } from '../models/ReferralRewardClaim';
 
 export async function get(id: string): Promise<ReferralRewardDocument> {
     return await ReferralReward.findById(id);
@@ -36,7 +37,9 @@ export async function update(reward: ReferralRewardDocument, updates: TReferralR
 }
 
 export async function remove(reward: ReferralRewardDocument) {
-    return ReferralReward.findOneAndDelete(reward._id);
+    const deleteResult = ReferralReward.findOneAndDelete(reward._id);
+    await ReferralRewardClaim.deleteMany({ referralRewardId: reward._id });
+    return deleteResult;
 }
 
 export default { get, findByPool, removeAllForPool, create, update, remove };
