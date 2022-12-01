@@ -21,4 +21,6 @@ export const getDiscord = async (req: Request, res: Response) => {
         const tokens = await DiscordService.refreshTokens(account.discordRefreshToken);
         account = await updateTokens(account, tokens);
     }
+
+    return res.json({ isAuthorized: true });
 };

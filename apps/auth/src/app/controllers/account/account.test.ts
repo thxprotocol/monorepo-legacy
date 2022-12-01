@@ -1,3 +1,4 @@
+import { DISCORD_API_ENDPOINT } from './../../config/secrets';
 import nock from 'nock';
 import request from 'supertest';
 import app from '../../app';
@@ -172,6 +173,46 @@ describe('Account Controller', () => {
         });
     });
 
+    describe('GET /account/:sub/discord', () => {
+        beforeAll(async () => {
+            nock(DISCORD_API_ENDPOINT)
+                .persist()
+                .get(/.*?/)
+                .reply(200, { data: { data: {} } });
+        });
+
+        it('Denice Access if there no authorization header', async () => {
+            const res = await http.get(`/account/${accountId}/discord`).send();
+            expect(res.status).toEqual(401);
+        });
+
+        it('Throw Error if there no linked discord', async () => {
+            const res = await http
+                .get(`/account/${accountId}/discord`)
+                .set({
+                    Authorization: authHeader,
+                })
+                .send();
+            expect(res.body.isAuthorized).toEqual(false);
+        });
+
+        it('Successfully get linked Discord info with a correct infomation', async () => {
+            const account = await AccountService.getByEmail(accountEmail);
+            account.discordAccessToken = 'TOKEN';
+            account.discordRefreshToken = 'REFRESH';
+            account.discordAccessTokenExpires = (Date.now() + 1000000) * 1000;
+            await account.save();
+
+            const res = await http
+                .get(`/account/${accountId}/discord`)
+                .set({
+                    Authorization: authHeader,
+                })
+                .send();
+            expect(res.body.isAuthorized).toEqual(true);
+        });
+    });
+
     describe('GET /account/:sub/google/youtube', () => {
         beforeAll(async () => {
             nock(GOOGLE_API_ENDPOINT)
@@ -212,4 +253,6 @@ describe('Account Controller', () => {
             expect(res.body.isAuthorized).toEqual(true);
         });
     });
+
+    
 });
