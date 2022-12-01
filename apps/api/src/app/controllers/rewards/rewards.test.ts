@@ -95,7 +95,7 @@ describe('Referral Rewards', () => {
 
     it('GET /rewards', (done) => {
         user.get(`/v1/rewards`)
-            .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
+            .set({ 'X-PoolId': poolId })
             .expect((res: request.Response) => {
                 expect(res.body.referralRewards.length).toBe(1);
                 expect(res.body.pointRewards.length).toBe(1);

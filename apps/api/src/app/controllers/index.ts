@@ -40,11 +40,12 @@ router.use('/token', tokenRouter);
 router.use('/docs', docsRouter);
 router.use('/metadata', erc721MetadataRouter);
 router.use('/payments', paymentsRouter);
-router.use('/point-rewards', pointRewardsRouter);
 router.use('/widget', widgetRouter);
+router.use('/rewards', rewardsRouter);
 
 router.use(checkJwt);
 router.use(corsHandler);
+router.use('/point-rewards', pointRewardsRouter);
 router.use('/point-balances', pointBalancesRouter);
 router.use('/account', accountRouter);
 router.use('/pools', poolsRouter);
@@ -69,6 +70,5 @@ router.use('/clients', clientRouter);
 router.use('/transactions', transactionsRouter);
 router.use('/claims', claimsRouter);
 router.use('/wallets', walletsRouter);
-router.use('/rewards', rewardsRouter);
 
 export default router;

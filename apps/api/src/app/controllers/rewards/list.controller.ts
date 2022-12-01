@@ -8,15 +8,17 @@ const controller = async (req: Request, res: Response) => {
     const pointRewards = await PointReward.find({ poolId: req.assetPool._id });
 
     res.json({
-        ...referralRewards.map((r) => {
+        referralRewards: referralRewards.map((r) => {
             return {
+                uuid: r.uuid,
                 title: r.title,
                 description: r.description,
                 amount: r.amount,
             };
         }),
-        ...pointRewards.map((r) => {
+        pointRewards: pointRewards.map((r) => {
             return {
+                uuid: r.uuid,
                 title: r.title,
                 description: r.description,
                 amount: r.amount,

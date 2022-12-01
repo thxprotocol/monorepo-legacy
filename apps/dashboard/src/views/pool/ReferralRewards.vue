@@ -38,7 +38,7 @@
                     <b-form-checkbox :value="item.checkbox" v-model="selectedItems" />
                 </template>
                 <template #cell(amount)="{ item }">
-                    <b-badge variant="success" class="p-2"> {{ item.amount }} {{ pool.erc20.symbol }} </b-badge>
+                    <b-badge variant="dark" class="p-2"> {{ item.amount }} Points </b-badge>
                 </template>
                 <template #cell(progress)="{ item }">
                     <b-progress style="border-radius: 0.3rem">
@@ -159,7 +159,7 @@ export default class ReferralRewardsView extends Vue {
     }
 
     onChecked(checked: boolean) {
-        this.selectedItems = checked ? this.rewardsByPage.map((r) => r.id) : [];
+        this.selectedItems = checked ? (this.rewardsByPage.map((r) => r.id) as string[]) : [];
     }
 
     onChangePage(page: number) {
