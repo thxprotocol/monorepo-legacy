@@ -4,10 +4,28 @@ import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
-    const pointRewards = await PointReward.find({ poolId: req.assetPool._id });
     const referralRewards = await ReferralReward.find({ poolId: req.assetPool._id });
+    const pointRewards = await PointReward.find({ poolId: req.assetPool._id });
 
-    res.json({ pointRewards, referralRewards });
+    res.json({
+        ...referralRewards.map((r) => {
+            return {
+                title: r.title,
+                description: r.description,
+                amount: r.amount,
+            };
+        }),
+        ...pointRewards.map((r) => {
+            return {
+                title: r.title,
+                description: r.description,
+                amount: r.amount,
+                platform: r.platform,
+                interaction: r.interaction,
+                content: r.content,
+            };
+        }),
+    });
 };
 
 export default { controller };
