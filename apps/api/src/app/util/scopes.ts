@@ -48,6 +48,8 @@ export const userScopes = [
     'erc20_rewards:read',
     'erc721_rewards:read',
     'referral_rewards:read',
+    'referal_reward_claims:read',
+    'referal_reward_claims:write',
 ];
 
 export const opneIdAdminScopes = `${openId} ${adminScopes.join(' ')}`;

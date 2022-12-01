@@ -12,4 +12,7 @@ export default {
     findByReferralReward: (referralReward: ReferralRewardDocument) => {
         return ReferralRewardClaim.find({ referralRewardId: referralReward._id });
     },
+    findBySub: (referralReward: ReferralRewardDocument, sub: string) => {
+        return ReferralRewardClaim.find({ referralRewardId: referralReward._id, sub });
+    },
 };

@@ -123,6 +123,8 @@ const config: Configuration = {
         'erc721_rewards:write',
         'referral_rewards:read',
         'referral_rewards:write',
+        'referal_reward_claims:read',
+        'referal_reward_claims:write',
     ],
     claims: {
         openid: ['sub', 'email', 'variant', 'address'],
