@@ -4,6 +4,6 @@ import ListRewards from './list.controller';
 
 const router = express.Router();
 
-router.get('/', guard.check(['rewards:read']), requireAssetPoolHeader, ListRewards.controller);
+router.get('/', requireAssetPoolHeader, ListRewards.controller);
 
 export default router;
