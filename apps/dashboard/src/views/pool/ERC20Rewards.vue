@@ -9,7 +9,7 @@
                     <i class="fas fa-plus mr-2"></i>
                     <span class="d-none d-md-inline">ERC20 Reward</span>
                 </b-button>
-                <BaseModalRewardERC20Create :id="'modalRewardERC20Create'" :pool="pool" @submit="onSubmit" />
+                <BaseModalRewardERC20Create :id="'modalRewardERC20Create'" :pool="pool" />
             </b-col>
         </b-row>
         <BCard variant="white" body-class="p-0 shadow-sm">
@@ -23,6 +23,7 @@
                 :showDownloadQRCodes="true"
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
+                @delete="onDelete"
             />
             <BTable hover :busy="isLoading" :items="rewardsByPage" responsive="lg" show-empty>
                 <!-- Head formatting -->
@@ -86,7 +87,6 @@
                         :id="'modalRewardERC20Create' + item.id"
                         :pool="pool"
                         :reward="erc20Rewards[pool._id][item.id]"
-                        @submit="onSubmit"
                     />
                 </template>
             </BTable>
@@ -194,9 +194,10 @@ export default class ERC20RewardsView extends Vue {
         this.listRewards();
     }
 
-    onSubmit() {
-        this.page = 1;
-        this.listRewards();
+    onDelete(items: string[]) {
+        for (const id of Object.values(items)) {
+            this.$store.dispatch('erc20Rewards/delete', this.erc20Rewards[this.pool._id][id]);
+        }
     }
 }
 </script>

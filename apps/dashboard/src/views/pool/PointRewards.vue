@@ -22,6 +22,7 @@
                 :selectedItems="selectedItems"
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
+                @delete="onDelete"
             />
             <BTable hover :busy="isLoading" :items="rewardsByPage" responsive="lg" show-empty>
                 <!-- Head formatting -->
@@ -40,20 +41,6 @@
                 <template #cell(amount)="{ item }">
                     <b-badge variant="dark" class="p-2"> {{ item.amount }} Points </b-badge>
                 </template>
-                <template #cell(progress)="{ item }">
-                    <b-progress style="border-radius: 0.3rem">
-                        <b-progress-bar
-                            :label="
-                                item.progress.limit
-                                    ? `${item.progress.progress}/${item.progress.limit}`
-                                    : String(item.progress.progress)
-                            "
-                            :value="item.progress.progress"
-                            :min="0"
-                            :max="item.progress.limit || item.progress.progress"
-                        />
-                    </b-progress>
-                </template>
                 <template #cell(rewardCondition)="{ item }">
                     <BaseBadgeRewardConditionPreview
                         v-if="item.rewardCondition.platform.type !== RewardConditionPlatform.None"
@@ -67,7 +54,7 @@
                         </template>
                         <b-dropdown-item v-b-modal="'modalRewardPointsCreate' + item.id">Edit</b-dropdown-item>
                         <b-dropdown-item
-                            @click="$store.dispatch('erc20Rewards/delete', pointRewards[pool._id][item.id])"
+                            @click="$store.dispatch('pointRewards/delete', pointRewards[pool._id][item.id])"
                         >
                             Delete
                         </b-dropdown-item>
@@ -93,6 +80,7 @@ import { platformInteractionList, platformList } from '@thxnetwork/dashboard/typ
 import BaseModalRewardPointsCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardPointsCreate.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/badges/BaseBadgeRewardConditionPreview.vue';
+import store from '@thxnetwork/dashboard/store';
 
 @Component({
     components: {
@@ -136,10 +124,6 @@ export default class AssetPoolView extends Vue {
                     interaction: platformInteractionList.find((i) => r.interaction === i.type),
                     content: r.content,
                 },
-                progress: {
-                    limit: r.rewardLimit,
-                    progress: r.progress,
-                },
                 id: r._id,
             }))
             .slice(0, this.limit);
@@ -167,6 +151,12 @@ export default class AssetPoolView extends Vue {
     onChangePage(page: number) {
         this.page = page;
         this.listRewards();
+    }
+
+    onDelete(items: string[]) {
+        for (const id of Object.values(items)) {
+            this.$store.dispatch('pointRewards/delete', this.pointRewards[this.pool._id][id]);
+        }
     }
 }
 </script>

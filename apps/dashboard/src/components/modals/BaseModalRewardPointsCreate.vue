@@ -102,7 +102,8 @@ export default class ModalRewardPointsCreate extends Vue {
     onSubmit() {
         this.isLoading = true;
         this.$store
-            .dispatch('pointRewards/create', {
+            .dispatch(`pointRewards/${this.reward ? 'update' : 'create'}`, {
+                _id: this.reward ? this.reward._id : undefined,
                 poolId: this.pool._id,
                 title: this.title,
                 description: this.description,
@@ -111,6 +112,7 @@ export default class ModalRewardPointsCreate extends Vue {
                 platform: this.rewardCondition.platform,
                 interaction: this.rewardCondition.interaction,
                 content: this.rewardCondition.content,
+                page: this.reward ? this.reward.page : 1,
             })
             .then(() => {
                 this.$bvModal.hide(this.id);

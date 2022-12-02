@@ -9,7 +9,7 @@
                     <i class="fas fa-plus mr-2"></i>
                     <span class="d-none d-md-inline">ERC721 Reward</span>
                 </b-button>
-                <BaseModalRewardERC721Create :id="'modalRewardERC721Create'" :pool="pool" @submit="onSubmit" />
+                <BaseModalRewardERC721Create :id="'modalRewardERC721Create'" :pool="pool" />
             </b-col>
         </b-row>
         <BCard variant="white" body-class="p-0 shadow-sm">
@@ -22,7 +22,7 @@
                 :selectedItems="selectedItems"
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
-                :showDownloadQRCodes="true"
+                @delete="onDelete"
             />
             <BTable hover :busy="isLoading" :items="rewardsByPage" responsive="lg" show-empty>
                 <!-- Head formatting -->
@@ -90,7 +90,6 @@
                         :id="'modalRewardERC721Create' + item.id"
                         :pool="pool"
                         :reward="erc721Rewards[pool._id][item.id]"
-                        @submit="onSubmit"
                     />
                 </template>
             </BTable>
@@ -210,9 +209,10 @@ export default class ERC721RewardsView extends Vue {
         this.listRewards();
     }
 
-    onSubmit() {
-        this.page = 1;
-        this.listRewards();
+    onDelete(items: string[]) {
+        for (const id of Object.values(items)) {
+            this.$store.dispatch('erc721Rewards/delete', this.erc721Rewards[this.pool._id][id]);
+        }
     }
 }
 </script>

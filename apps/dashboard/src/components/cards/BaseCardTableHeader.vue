@@ -17,13 +17,7 @@
                     class="small"
                     @click="selectedBulkAction = item"
                     :key="key"
-                    v-for="(item, key) of showDownloadQRCodes
-                        ? [
-                              { variant: 0, label: 'Download QR codes' },
-                              { variant: 1, label: 'Download CSV' },
-                              { variant: 2, label: `Delete ${selectedItems.length} rewards` },
-                          ]
-                        : [{ variant: 0, label: `Delete ${selectedItems.length} rewards` }]"
+                    v-for="(item, key) of items"
                 >
                     {{ item.label }}
                 </b-dropdown-item>
@@ -77,20 +71,32 @@ export default class BaseCardTableHeader extends Vue {
     @Prop() page!: number;
     @Prop() limit!: number;
     @Prop() pool!: IPool;
-    @Prop() showDownloadQRCodes!: boolean;
 
-    selectedBulkAction = this.showDownloadQRCodes
-        ? { variant: 0, label: 'Download QR codes' }
-        : { variant: 2, label: 'Delete selected rewards' };
+    defaultAction = { variant: 2, label: `Delete rewards` };
+    selectedBulkAction = this.defaultAction;
 
     get total() {
         return this.totals[this.$route.params.id];
+    }
+
+    get items() {
+        if (!this.rewards) return [];
+        const result = Object.values(this.rewards).filter((r: any) => r.claims && r.claims.length);
+        if (!result.length) return [this.defaultAction];
+        return [
+            ...[this.defaultAction],
+            { variant: 0, label: 'Download QR codes' },
+            { variant: 1, label: 'Download CSV' },
+        ];
     }
 
     onClickBulkAction() {
         switch (this.selectedBulkAction.variant) {
             case 0:
                 this.$bvModal.show('modalRewardClaimsDownload');
+                break;
+            case 2:
+                this.$emit('delete', this.selectedItems);
                 break;
         }
     }

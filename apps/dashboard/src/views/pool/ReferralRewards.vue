@@ -9,7 +9,7 @@
                     <i class="fas fa-plus mr-2"></i>
                     <span class="d-none d-md-inline">Referral Reward</span>
                 </b-button>
-                <BaseModalReferralRewardCreate :id="'modalReferralRewardCreate'" :pool="pool" @submit="onSubmit" />
+                <BaseModalReferralRewardCreate :id="'modalReferralRewardCreate'" :pool="pool" />
             </b-col>
         </b-row>
         <BCard variant="white" body-class="p-0 shadow-sm">
@@ -22,7 +22,7 @@
                 :selectedItems="selectedItems"
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
-                :showDownloadQRCodes="false"
+                @delete="onDelete"
             />
             <BTable hover :busy="isLoading" :items="rewardsByPage" responsive="lg" show-empty>
                 <!-- Head formatting -->
@@ -70,7 +70,6 @@
                         :id="'modalReferralRewardCreate' + item.id"
                         :pool="pool"
                         :reward="referralRewards[pool._id][item.id]"
-                        @submit="onSubmit"
                     />
                 </template>
             </BTable>
@@ -167,9 +166,10 @@ export default class ReferralRewardsView extends Vue {
         this.listRewards();
     }
 
-    onSubmit() {
-        this.page = 1;
-        this.listRewards();
+    onDelete(items: string[]) {
+        for (const id of Object.values(items)) {
+            this.$store.dispatch('referralRewards/delete', this.referralRewards[this.pool._id][id]);
+        }
     }
 }
 </script>

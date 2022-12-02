@@ -25,6 +25,11 @@ class PointRewardModule extends VuexModule {
     }
 
     @Mutation
+    unset(reward: TPointReward) {
+        Vue.delete(this._all[reward.poolId], reward._id as string);
+    }
+
+    @Mutation
     set(reward: TPointReward) {
         if (!this._all[reward.poolId]) Vue.set(this._all, reward.poolId, {});
         if (typeof reward.platform === 'undefined') reward.platform = RewardConditionPlatform.None; // Temp fix for corrupt data
@@ -54,7 +59,29 @@ class PointRewardModule extends VuexModule {
             data: payload,
         });
 
-        this.context.commit('set', { pool: payload.poolId, reward: r.data });
+        this.context.commit('set', { ...payload, ...r.data });
+    }
+
+    @Action({ rawError: true })
+    async update(reward: TPointReward) {
+        const { data } = await axios({
+            method: 'PATCH',
+            url: `/point-rewards/${reward._id}`,
+            headers: { 'X-PoolId': reward.poolId },
+            data: reward,
+        });
+
+        this.context.commit('set', { ...reward, ...data });
+    }
+
+    @Action({ rawError: true })
+    async delete(reward: TPointReward) {
+        await axios({
+            method: 'DELETE',
+            url: `/point-rewards/${reward._id}`,
+            headers: { 'X-PoolId': reward.poolId },
+        });
+        this.context.commit('unset', reward);
     }
 }
 
