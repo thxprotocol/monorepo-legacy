@@ -9044,16 +9044,13 @@ textarea.form-control-underlined {
 .btn-twitter:active {
   background-color: #3367d6;
 }
-<<<<<<< HEAD
 
-=======
 .btn-spotify {
   background-color: #1d75de;
 }
 .btn-spotify:active {
   background-color: #1865c2;
 }
->>>>>>> 637012b (feat: integrate with twitch tv)
 .btn-github {
   background-color: #171515;
 }
