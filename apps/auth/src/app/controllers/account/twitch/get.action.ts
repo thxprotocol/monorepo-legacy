@@ -21,4 +21,7 @@ export const getTwitch = async (req: Request, res: Response) => {
         const tokens = await TwitchService.refreshTokens(account.twitchRefreshToken);
         account = await updateTokens(account, tokens);
     }
+
+    return res.json({ isAuthorized: true });
+
 };

@@ -1,4 +1,4 @@
-import { DISCORD_API_ENDPOINT } from './../../config/secrets';
+import { DISCORD_API_ENDPOINT, TWITCH_API_ENDPOINT } from './../../config/secrets';
 import nock from 'nock';
 import request from 'supertest';
 import app from '../../app';
@@ -205,6 +205,46 @@ describe('Account Controller', () => {
 
             const res = await http
                 .get(`/account/${accountId}/discord`)
+                .set({
+                    Authorization: authHeader,
+                })
+                .send();
+            expect(res.body.isAuthorized).toEqual(true);
+        });
+    });
+
+    describe('GET /account/:sub/twitch', () => {
+        beforeAll(async () => {
+            nock(TWITCH_API_ENDPOINT)
+                .persist()
+                .get(/.*?/)
+                .reply(200, { data: { data: {} } });
+        });
+
+        it('Denice Access if there no authorization header', async () => {
+            const res = await http.get(`/account/${accountId}/twitch`).send();
+            expect(res.status).toEqual(401);
+        });
+
+        it('Throw Error if there no linked twitch', async () => {
+            const res = await http
+                .get(`/account/${accountId}/twitch`)
+                .set({
+                    Authorization: authHeader,
+                })
+                .send();
+            expect(res.body.isAuthorized).toEqual(false);
+        });
+
+        it('Successfully get linked twitch info with a correct infomation', async () => {
+            const account = await AccountService.getByEmail(accountEmail);
+            account.twitchAccessToken = 'TOKEN';
+            account.twitchRefreshToken = 'REFRESH';
+            account.twitchAccessTokenRefresh = (Date.now() + 1000000) * 1000;
+            await account.save();
+
+            const res = await http
+                .get(`/account/${accountId}/twitch`)
                 .set({
                     Authorization: authHeader,
                 })
