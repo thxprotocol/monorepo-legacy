@@ -13,7 +13,18 @@ class ERC721Manager extends BaseManager {
     }
 
     async get(id: string) {
-        return await this.client.request.get(`/v1/erc721/token/${id}`);
+        const res = await this.client.request.get(`/v1/erc721/token/${id}`);
+        return await res.json()
+    }
+
+    async getContract(id: string) {
+        const res = await this.client.request.get(`/v1/erc721/${id}`);
+        return await res.json();
+    }
+
+    async getMetadata(erc721Id: string, metadataId: string) {
+        const res = await this.client.request.get(`/erc721/${erc721Id}/metadata/${metadataId}`);
+        return await res.json();
     }
 }
 
