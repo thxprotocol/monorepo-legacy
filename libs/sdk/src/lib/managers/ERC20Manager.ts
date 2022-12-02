@@ -7,12 +7,19 @@ class ERC20Manager extends BaseManager {
         super(client);
     }
 
-    async list() {
-        return await this.client.request.get('/v1/erc20/token');
+    async list(props: { chainId: string }) {
+        const params = new URLSearchParams(props);
+        const res = await this.client.request.get(`/v1/erc20/token?${params.toString()}`);
+        return await res.json();
     }
 
     async get(id: string) {
         return await this.client.request.get(`/v1/erc20/token/${id}`);
+    }
+
+    async getContract(id: string) {
+        const res = await this.client.request.get(`/v1/erc20/${id}`);
+        return await res.json();
     }
 
     async transferFrom(erc20: string, from: string, to: string, amount: string, chainId: ChainId) {

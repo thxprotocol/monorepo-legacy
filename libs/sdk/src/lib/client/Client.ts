@@ -14,6 +14,7 @@ import RewardsManager from '../managers/RewardsManager';
 import PointRewardManager from '../managers/PointRewardManager';
 import PerksManager from '../managers/PerksManager';
 import PointBalanceManager from '../managers/PointBalanceManager';
+import DepositManager from '../managers/DepositManager';
 
 type Props = Omit<Credential, 'grantType'>;
 
@@ -25,6 +26,7 @@ export default class THXClient {
     request: RequestManager;
     session: SessionManager;
     userManager: UserManager;
+    deposit: DepositManager;
     credential: CredentialManager;
     walletManager: WalletManager;
     referralRewardManager: ReferralRewardManager;
@@ -73,6 +75,7 @@ export default class THXClient {
         this.referralRewardManager = new ReferralRewardManager(this);
         this.pointRewardManager = new PointRewardManager(this);
         this.pointBalanceManager = new PointBalanceManager(this);
+        this.deposit = new DepositManager(this);
     }
 
     public async init() {

@@ -6,8 +6,10 @@ class ERC721Manager extends BaseManager {
         super(client);
     }
 
-    async list() {
-        return await this.client.request.get('/v1/erc721/token');
+    async list(params: { chainId: string }) {
+        const obj = new URLSearchParams(params);
+        const res = await this.client.request.get(`/v1/erc721/token?${obj.toString()}`);
+        return await res.json();
     }
 
     async get(id: string) {

@@ -55,12 +55,8 @@ class AccountModule extends VuexModule {
 
     @Action({ rawError: true })
     async getProfile() {
-        const r = await axios({
-            method: 'GET',
-            url: '/account',
-        });
-
-        this.context.commit('setUserProfile', r.data);
+        const user = await thxClient.userManager.getUser();
+        this.context.commit('setUserProfile', user);
     }
 
     @Action({ rawError: true })
