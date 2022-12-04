@@ -10,6 +10,7 @@ const controller = async (req: Request, res: Response) => {
     res.json({
         referralRewards: referralRewards.map((r) => {
             return {
+                _id: r._id,
                 uuid: r.uuid,
                 title: r.title,
                 description: r.description,
@@ -18,6 +19,7 @@ const controller = async (req: Request, res: Response) => {
         }),
         pointRewards: pointRewards.map((r) => {
             return {
+                _id: r._id,
                 uuid: r.uuid,
                 title: r.title,
                 description: r.description,

@@ -95,6 +95,9 @@ export default class BaseCardTableHeader extends Vue {
             case 0:
                 this.$bvModal.show('modalRewardClaimsDownload');
                 break;
+            case 1:
+                this.$bvModal.show('modalRewardClaimsDownload');
+                break;
             case 2:
                 this.$emit('delete', this.selectedItems);
                 break;

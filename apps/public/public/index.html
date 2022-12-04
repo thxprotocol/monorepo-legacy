@@ -41,7 +41,17 @@
 
 
 <body class="loading">
-  <script src="https://localhost:3000/v1/widget/63886359e4123afac0823a52.js"></script>
+  <script src=""></script>
+  <script>
+    const script = document.createElement('script');
+    if (window.location.href.startsWith('https://dev-www.thx.network')) {
+      script.src = 'https://dev.api/v1/widget/62f3cad8f838cc0640563e41.js'
+    }
+    if (window.location.href.startsWith('https://localhost:8081')) {
+      script.src = 'https://localhost:3000/v1/widget/63886359e4123afac0823a52.js'
+    }
+    document.body.appendChild(script)
+  </script>
   <noscript>
     <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled.
       Please enable it to continue.</strong>

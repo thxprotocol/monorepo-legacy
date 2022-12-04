@@ -8,12 +8,14 @@ import ClaimService from '@thxnetwork/api/services/ClaimService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import ERC20RewardService from '../services/ERC20RewardService';
 import ERC721RewardService from '@thxnetwork/api/services/ERC721RewardService';
+import { PointReward } from '../models/PointReward';
 
 export async function findRewardByUuid(uuid: string) {
     const erc20Reward = await ERC20Reward.findOne({ uuid });
     const erc721Reward = await ERC721Reward.findOne({ uuid });
     const referralReward = await ReferralReward.findOne({ uuid });
-    return erc20Reward || erc721Reward || referralReward;
+    const pointReward = await PointReward.findOne({ uuid });
+    return erc20Reward || erc721Reward || referralReward || pointReward;
 }
 
 export function isTERC20Reward(reward: TERC20Reward | TERC721Reward): reward is TERC20Reward {

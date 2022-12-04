@@ -10,3 +10,4 @@ export * from './interfaces/BaseReward';
 export * from './interfaces/ReferralReward';
 export * from './interfaces/ReferralRewardClaim';
 export * from './interfaces/BaseReward';
+export * from './interfaces/PointRewardClaim';

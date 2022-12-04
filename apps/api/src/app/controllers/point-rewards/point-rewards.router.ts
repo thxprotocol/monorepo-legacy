@@ -1,6 +1,7 @@
 import { assertAssetPoolAccess, assertRequestInput, requireAssetPoolHeader } from '@thxnetwork/api/middlewares';
 import express from 'express';
 import ListPointRewards from './list.controller';
+import ReadPointRewards from './get.controller';
 import CreatePointRewards from './post.controller';
 import DeletePointRewards from './delete.controller';
 import UpdatePointRewards from './patch.controller';
@@ -8,6 +9,13 @@ import UpdatePointRewards from './patch.controller';
 const router = express.Router();
 
 router.get('/', assertAssetPoolAccess, requireAssetPoolHeader, ListPointRewards.controller);
+router.get(
+    '/:id',
+    assertRequestInput(ReadPointRewards.validation),
+    assertAssetPoolAccess,
+    requireAssetPoolHeader,
+    ReadPointRewards.controller,
+);
 router.post(
     '/',
     assertRequestInput(CreatePointRewards.validation),
