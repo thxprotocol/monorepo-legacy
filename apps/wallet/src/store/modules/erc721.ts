@@ -2,7 +2,7 @@ import Vue from 'vue';
 import { default as ERC721Abi } from '@thxnetwork/contracts/exports/abis/NonFungibleToken.json';
 import { Contract } from 'web3-eth-contract';
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
-import axios from 'axios';
+
 import { chainInfo } from '@thxnetwork/wallet/utils/chains';
 import { ChainId } from '@thxnetwork/wallet/types/enums/ChainId';
 import { thxClient } from '@thxnetwork/wallet/utils/oidc';
