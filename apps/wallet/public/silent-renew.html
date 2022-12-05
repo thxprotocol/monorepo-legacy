@@ -15,7 +15,7 @@
     <script>
         const config = JSON.parse(localStorage.getItem('thx:wallet:oidc'));
         const mgr = new window.oidc.UserManager(config);
-        mgr.signinSilentCallback().then(console.log).catch(console.error);
+        mgr.signinSilentCallback().catch(console.error);
     </script>
 </body>
 
