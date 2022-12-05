@@ -14,11 +14,13 @@ export default class StoreManager extends BaseManager {
         window.sessionStorage.setItem(key, value);
     }
 
-    storeValueFromURL(key: string) {
-        const urlSearchParams = new URLSearchParams(window.location.search);
-        const params = Object.fromEntries(urlSearchParams.entries());
-        if (params[key]) {
-            window.sessionStorage.setItem(key, params[key]);
+    storeValueFromURL(key?: string) {
+        if (!key) return;
+
+        const params = new URLSearchParams(window.location.search);
+        const value = params.get(key);
+        if (value) {
+            window.sessionStorage.setItem(key, value);
         }
     }
 }

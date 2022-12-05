@@ -11,6 +11,7 @@ import UserManager from '../managers/UserManager';
 import WalletManager from '../managers/WalletManager';
 import ReferralRewardManager from '../managers/ReferralRewardManager';
 import RewardsManager from '../managers/RewardsManager';
+import StoreManager from '../managers/StoreManager';
 
 type Props = Omit<Credential, 'grantType'>;
 
@@ -28,6 +29,7 @@ export default class THXClient {
     walletManager: WalletManager;
     referralRewardManager: ReferralRewardManager;
     rewardsManager: RewardsManager;
+    storeManager: StoreManager;
 
     /* External managers */
     account: AccountManager;
@@ -67,11 +69,13 @@ export default class THXClient {
         this.erc721 = new ERC721Manager(this);
         this.walletManager = new WalletManager(this);
         this.rewardsManager = new RewardsManager(this);
+        this.storeManager = new StoreManager(this);
 
         // TODO Part 1
         // Introduce and construct StorageManager
         // Read query string param `ref` value from URL
         // If any, store in sessionStorage
+        this.storeManager.storeValueFromURL('ref');
 
         // TODO Part 2
         // Introduce URL change listener that functions well cross browser
