@@ -11,8 +11,7 @@ import UserManager from '../managers/UserManager';
 import WalletManager from '../managers/WalletManager';
 import ReferralRewardManager from '../managers/ReferralRewardManager';
 import RewardsManager from '../managers/RewardsManager';
-import StoreManager from '../managers/StoreManager';
-import ReferralRewardClaimManager from '../managers/ReferralRewardClaimManager';
+import PointRewardManager from '../managers/PointRewardManager';
 
 type Props = Omit<Credential, 'grantType'>;
 
@@ -29,9 +28,8 @@ export default class THXClient {
     credential: CredentialManager;
     walletManager: WalletManager;
     referralRewardManager: ReferralRewardManager;
-    referralRewardClaimManager: ReferralRewardClaimManager;
+    pointRewardManager: PointRewardManager;
     rewardsManager: RewardsManager;
-    storeManager: StoreManager;
 
     /* External managers */
     account: AccountManager;
@@ -71,25 +69,8 @@ export default class THXClient {
         this.erc721 = new ERC721Manager(this);
         this.walletManager = new WalletManager(this);
         this.rewardsManager = new RewardsManager(this);
-        this.storeManager = new StoreManager(this);
-
-        // TODO Part 1
-        // Introduce and construct StorageManager
-        // Read query string param `ref` value from URL
-        // If any, store in sessionStorage
-        this.storeManager.storeValueFromURL('ref');
-
-        // TODO Part 2
-        // Introduce URL change listener that functions well cross browser
-        // See if you can find a small and good lib for this to steal code from
-        // Make sure to start but also stop listening under the correct conditions (no UUID in storage for example)
         this.referralRewardManager = new ReferralRewardManager(this);
-        this.referralRewardClaimManager = new ReferralRewardClaimManager(this);
-
-        // TODO Part 3
-        // Introduce and construct ReferralRewardManager
-        // Provide a claim method that calls POST /referral-rewards/:uuid/claim
-        // URL change listener will trigger referralReward.claim(uuid) (@Peter)
+        this.pointRewardManager = new PointRewardManager(this);
     }
 
     public async init() {

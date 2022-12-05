@@ -8,9 +8,7 @@ import {
 } from '@thxnetwork/api/middlewares';
 import { AccountPlanType } from '@thxnetwork/api/types/enums';
 import CreateReferralReward from './post.controller';
-import CreateReferralRewardClaim from './claims/post.controller';
 import ReadReferralReward from './get.controller';
-import ReadReferralRewardClaim from './claims/get.controller';
 import UpdateReferralReward from './patch.controller';
 import ListReferralReward from './list.controller';
 import DeleteReferralReward from './delete.controller';
@@ -34,24 +32,6 @@ router.get(
     requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
     ReadReferralReward.controller,
-);
-router.get(
-    '/:id/claims',
-    guard.check(['referral_rewards:read']),
-    assertAssetPoolAccess,
-    assertRequestInput(ReadReferralRewardClaim.validation),
-    requireAssetPoolHeader,
-    assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
-    ReadReferralRewardClaim.controller,
-);
-router.post(
-    '/:id/claims',
-    guard.check(['referral_rewards:read', 'referal_reward_claims:read', 'referal_reward_claims:write']),
-    assertAssetPoolAccess,
-    assertRequestInput(CreateReferralRewardClaim.validation),
-    requireAssetPoolHeader,
-    assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
-    CreateReferralRewardClaim.controller,
 );
 router.post(
     '/',
