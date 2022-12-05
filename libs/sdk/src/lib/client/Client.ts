@@ -1,5 +1,5 @@
 import { UserManager as BaseUserManager, UserManagerSettings } from 'oidc-client-ts';
-
+import type { Credential } from '../types';
 import { URL_CONFIG } from '../configs';
 import CredentialManager from '../managers/CredentialManager';
 import ERC20Manager from '../managers/ERC20Manager';
@@ -8,9 +8,9 @@ import RequestManager from '../managers/RequestManager';
 import AccountManager from '../managers/AccountManager';
 import SessionManager from '../managers/SessionManager';
 import UserManager from '../managers/UserManager';
-
-import type { Credential } from '../types';
 import WalletManager from '../managers/WalletManager';
+import ReferralRewardManager from '../managers/ReferralRewardManager';
+import RewardsManager from '../managers/RewardsManager';
 
 type Props = Omit<Credential, 'grantType'>;
 
@@ -26,6 +26,9 @@ export default class THXClient {
     userManager: UserManager;
     credential: CredentialManager;
     walletManager: WalletManager;
+    referralRewardManager: ReferralRewardManager;
+    rewardsManager: RewardsManager;
+
     /* External managers */
     account: AccountManager;
 
@@ -63,6 +66,7 @@ export default class THXClient {
         this.erc20 = new ERC20Manager(this);
         this.erc721 = new ERC721Manager(this);
         this.walletManager = new WalletManager(this);
+        this.rewardsManager = new RewardsManager(this);
 
         // TODO Part 1
         // Introduce and construct StorageManager
@@ -73,6 +77,7 @@ export default class THXClient {
         // Introduce URL change listener that functions well cross browser
         // See if you can find a small and good lib for this to steal code from
         // Make sure to start but also stop listening under the correct conditions (no UUID in storage for example)
+        this.referralRewardManager = new ReferralRewardManager(this);
 
         // TODO Part 3
         // Introduce and construct ReferralRewardManager
