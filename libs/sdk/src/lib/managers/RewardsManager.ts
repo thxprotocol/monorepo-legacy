@@ -9,11 +9,9 @@ class RewardsManager extends BaseManager {
         this.rewards = [];
     }
 
-    async list(poolId: string) {
-        const res = await this.client.request.get(`/v1/rewards`, { headers: { 'X-PoolId': poolId } });
-        const rewards = await res.json();
-        this.rewards = rewards;
-        return rewards;
+    async list() {
+        const res = await this.client.request.get(`/v1/rewards`);
+        return await res.json();
     }
 }
 

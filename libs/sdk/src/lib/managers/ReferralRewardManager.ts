@@ -2,21 +2,23 @@ import { THXClient } from '../../index';
 import BaseManager from './BaseManager';
 
 class ReferralRewardManager extends BaseManager {
+    timer!: number;
+
     constructor(client: THXClient) {
         super(client);
-    }
 
-    list() {
-        // TODO check if there is a UUID in storage
-        // TODO check if there is a referral reward for the pool
-        let oldLocation = window.location.href;
-        function checkURLchange() {
-            if (window.location.href !== oldLocation) {
-                console.log('url changed!');
-                oldLocation = window.location.href;
-            }
+        if (this.client.session.poolId) {
+            this.client.rewardsManager.list().then(({ referralRewards }) => {
+                this.timer = window.setInterval(async () => {
+                    if (window.location.href !== referralRewards[0].successUrl) return;
+
+                    const sub = this.client.storeManager.getValue('ref');
+                    await this.client.referralRewardClaimManager.post({ uuid: referralRewards[0]._id, sub });
+
+                    window.clearInterval(this.timer);
+                }, 500);
+            });
         }
-        window.setInterval(checkURLchange, 500);
     }
 }
 

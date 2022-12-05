@@ -1,6 +1,4 @@
 import { URL_CONFIG } from '../configs';
-import THXError from '../errors/Error';
-import ErrorCode from '../errors/ErrorCode';
 import { THXClient } from '../../index';
 import BaseManager from './BaseManager';
 
@@ -15,17 +13,17 @@ class RequestManager extends BaseManager {
     }
 
     private getHeaders() {
-        const accessToken = this.client.session.cached.accessToken;
-        return { authorization: `Bearer ${accessToken}` };
-    }
-
-    private preflight() {
-        if (this.client.session.cached.user || this.client.session.cached.accessToken) return;
-        throw new THXError(ErrorCode.SIGN_IN_REQUIRED);
+        const headers: any = {};
+        if (this.client.session.user?.access_token) {
+            headers['authorization'] = `Bearer ${this.client.session.user?.access_token}`;
+        }
+        if (this.client.session.poolId) {
+            headers['X-PoolId'] = this.client.session.poolId;
+        }
+        return headers;
     }
 
     async get(path: string, config?: RequestInit) {
-        this.preflight();
         const headers = this.getHeaders();
         const url = this.getUrl(path);
         const response = await fetch(url, {
@@ -57,7 +55,6 @@ class RequestManager extends BaseManager {
     }
 
     async post(path: string, config?: RequestInit) {
-        this.preflight();
         const headers = this.getHeaders();
         const env = this.client.credential.cached.env;
         const response = await fetch(URL_CONFIG[env]['API_URL'] + path, {
@@ -76,7 +73,6 @@ class RequestManager extends BaseManager {
     }
 
     async patch(path: string, config?: RequestInit) {
-        this.preflight();
         const headers = this.getHeaders();
         const url = this.getUrl(path);
         const response = await fetch(url, {
@@ -95,7 +91,6 @@ class RequestManager extends BaseManager {
     }
 
     async put(path: string, config?: RequestInit) {
-        this.preflight();
         const headers = this.getHeaders();
         const url = this.getUrl(path);
         const response = await fetch(url, {
@@ -114,7 +109,6 @@ class RequestManager extends BaseManager {
     }
 
     async delete(path: string, config?: RequestInit) {
-        this.preflight();
         const headers = this.getHeaders();
         const url = this.getUrl(path);
         const response = await fetch(url, {

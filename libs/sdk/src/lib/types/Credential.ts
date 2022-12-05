@@ -1,9 +1,10 @@
 export default interface Credential {
     clientId: string;
     clientSecret: string;
-    grantType: 'client_credentials' | 'authorization_code';
     env: string;
     /* Optionals */
+    grantType?: 'client_credentials' | 'authorization_code';
+    poolId?: string;
     requestUrl?: string;
     redirectUrl?: string;
     scopes?: string;

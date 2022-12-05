@@ -7,11 +7,11 @@ export default class StoreManager extends BaseManager {
     }
 
     getValue(key: string) {
-        return window.sessionStorage.getItem(key);
+        return window.sessionStorage.getItem(`thx:sdk:${key}`) as string;
     }
 
     storeValue(key: string, value: string) {
-        window.sessionStorage.setItem(key, value);
+        window.sessionStorage.setItem(`thx:sdk:${key}`, value);
     }
 
     storeValueFromURL(key?: string) {
@@ -19,8 +19,8 @@ export default class StoreManager extends BaseManager {
 
         const params = new URLSearchParams(window.location.search);
         const value = params.get(key);
-        if (value) {
-            window.sessionStorage.setItem(key, value);
-        }
+        if (!value) return;
+
+        window.sessionStorage.setItem(`thx:sdk:${key}`, value as string);
     }
 }

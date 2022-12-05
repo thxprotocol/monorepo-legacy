@@ -12,6 +12,7 @@ import WalletManager from '../managers/WalletManager';
 import ReferralRewardManager from '../managers/ReferralRewardManager';
 import RewardsManager from '../managers/RewardsManager';
 import StoreManager from '../managers/StoreManager';
+import ReferralRewardClaimManager from '../managers/ReferralRewardClaimManager';
 
 type Props = Omit<Credential, 'grantType'>;
 
@@ -28,6 +29,7 @@ export default class THXClient {
     credential: CredentialManager;
     walletManager: WalletManager;
     referralRewardManager: ReferralRewardManager;
+    referralRewardClaimManager: ReferralRewardClaimManager;
     rewardsManager: RewardsManager;
     storeManager: StoreManager;
 
@@ -63,7 +65,7 @@ export default class THXClient {
             grantType,
         });
         this.userManager = new UserManager(this, userManager);
-        this.session = new SessionManager(this, {});
+        this.session = new SessionManager(this, { poolId: rest.poolId });
         this.account = new AccountManager(this);
         this.erc20 = new ERC20Manager(this);
         this.erc721 = new ERC721Manager(this);
@@ -82,6 +84,7 @@ export default class THXClient {
         // See if you can find a small and good lib for this to steal code from
         // Make sure to start but also stop listening under the correct conditions (no UUID in storage for example)
         this.referralRewardManager = new ReferralRewardManager(this);
+        this.referralRewardClaimManager = new ReferralRewardClaimManager(this);
 
         // TODO Part 3
         // Introduce and construct ReferralRewardManager

@@ -15,6 +15,7 @@ const controller = async (req: Request, res: Response) => {
                 title: r.title,
                 description: r.description,
                 amount: r.amount,
+                successUrl: r.successUrl,
             };
         }),
         pointRewards: pointRewards.map((r) => {
