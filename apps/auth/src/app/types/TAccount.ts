@@ -20,8 +20,8 @@ export interface TAccount {
     //signupTokenExpires: number;
     //authenticationToken: string;
     //authenticationTokenExpires: number;
-    passwordResetToken: string;
-    passwordResetExpires: number;
+    //passwordResetToken: string;
+    //passwordResetExpires: number;
     googleAccessToken: string;
     googleRefreshToken: string;
     googleAccessTokenExpires: number;
@@ -40,16 +40,17 @@ export interface TAccount {
     acceptUpdates: boolean;
     comparePassword: any;
     getToken: any;
-    setToken: any;
+    createToken: any;
+    updateToken: any;
     createdAt: Date;
     tokens: IAccessToken[];
 }
 
 export interface IAccessToken {
     kind: AccessTokenKind;
-    accessToken: string;
+    accessToken?: string;
     refreshToken?: string;
-    expiry: number;
+    expiry?: number;
 }
 export interface IAccountUpdates {
     acceptTermsPrivacy?: boolean;

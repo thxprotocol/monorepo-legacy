@@ -110,13 +110,10 @@ export class AccountService {
             account.acceptUpdates = acceptUpdates || account.acceptTermsPrivacy;
         }
         if (authenticationToken || authenticationTokenExpires) {
-            let token = account.getToken(AccessTokenKind.Auth);
-            if (!token) {
-                token = {} as IAccessToken;
-            }
-            token.accessToken = authenticationToken || token.accessToken;
-            token.expiry = authenticationTokenExpires || token.expiry;
-            account.setToken(token);
+            account.updateToken(AccessTokenKind.Auth, {
+                accessToken: authenticationToken,
+                expiry: authenticationTokenExpires,
+            });
         }
 
         account.address = address || account.address ? toChecksumAddress(address || account.address) : undefined;
@@ -193,7 +190,7 @@ export class AccountService {
                 accessToken: createRandomToken(),
                 expiry: DURATION_TWENTYFOUR_HOURS,
             } as IAccessToken;
-            account.setToken(token);
+            account.createToken(token);
         }
 
         return account;
@@ -228,9 +225,8 @@ export class AccountService {
         if (token.expiry < Date.now()) {
             return { error: ERROR_SIGNUP_TOKEN_EXPIRED };
         }
-        token.expiry = null;
-        token.accessToken = '';
-        account.setToken(token);
+
+        account.updateToken(AccessTokenKind.Signup, { expiry: null, accessToken: '' });
         account.active = true;
         account.isEmailVerified = true;
 
@@ -249,14 +245,11 @@ export class AccountService {
             return { error: ERROR_VERIFY_EMAIL_TOKEN_INVALID };
         }
         const token: IAccessToken = account.getToken(AccessTokenKind.VerifyEmail);
-
-        if (account.verifyEmailTokenExpires < Date.now()) {
+        if (token.expiry < Date.now()) {
             return { error: ERROR_VERIFY_EMAIL_EXPIRED };
         }
 
-        token.expiry = null;
-        token.accessToken = '';
-        account.setToken(token);
+        account.updateToken(AccessTokenKind.VerifyEmail, { expiry: null, accessToken: '' });
         account.isEmailVerified = true;
 
         await account.save();

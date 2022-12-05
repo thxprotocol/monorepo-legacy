@@ -28,7 +28,7 @@ export class MailService {
             accessToken: createRandomToken(),
             expiry: DURATION_TWENTYFOUR_HOURS,
         } as IAccessToken;
-        account.setToken(token);
+        account.createToken(token);
 
         const verifyUrl = `${returnUrl}/verify?signup_token=${token.accessToken}&return_url=${returnUrl}`;
         const html = await ejs.renderFile(
@@ -55,7 +55,7 @@ export class MailService {
             accessToken: createRandomToken(),
             expiry: DURATION_TWENTYFOUR_HOURS,
         } as IAccessToken;
-        account.setToken(token);
+        account.createToken(token);
 
         const verifyUrl = `${returnUrl}verify_email?verifyEmailToken=${token.accessToken}&return_url=${returnUrl}`;
         const html = await ejs.renderFile(
@@ -95,22 +95,27 @@ export class MailService {
         );
 
         await this.sendMail(account.email, 'A sign in is requested for your Web Wallet', html, loginUrl);
-        let token = account.getToken(AccessTokenKind.Auth);
-        if (!token) {
-            token = {} as IAccessToken;
-        }
-        token.accessToken = encryptedAuthToken;
-        token.expiry = Date.now() + 10 * 60 * 1000; // 10 minutes
-        account.setToken(token);
+        const token = {
+            kind: AccessTokenKind.Auth,
+            accessToken: encryptedAuthToken,
+            expiry: Date.now() + 10 * 60 * 1000, // 10 minutes
+        } as IAccessToken;
+
+        account.createToken(token);
 
         await account.save();
     }
 
     static async sendResetPasswordEmail(account: AccountDocument, returnUrl: string) {
-        account.passwordResetToken = createRandomToken();
-        account.passwordResetExpires = Date.now() + 1000 * 60 * 20; // 20 minutes,
+        const token = {
+            kind: AccessTokenKind.PasswordReset,
+            accessToken: createRandomToken(),
+            expiry: Date.now() + 1000 * 60 * 20, // 20 minutes,
+        } as IAccessToken;
 
-        const resetUrl = `${returnUrl}/reset?passwordResetToken=${account.passwordResetToken}`;
+        account.createToken(token);
+
+        const resetUrl = `${returnUrl}/reset?passwordResetToken=${token.accessToken}`;
         const html = await ejs.renderFile(
             path.join(mailTemplatePath, 'resetPassword.ejs'),
             {

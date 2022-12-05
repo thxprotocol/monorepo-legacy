@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import { AccessTokenKind } from '../types/enums/AccessTokenKind';
 import { IAccessToken, TAccount } from '../types/TAccount';
 import { encryptString } from '../util/encrypt';
+import { NotFoundError } from '../util/errors';
 
 export type AccountDocument = mongoose.Document & TAccount;
 
@@ -28,8 +29,8 @@ const accountSchema = new mongoose.Schema(
         //signupTokenExpires: Date,
         //authenticationToken: String,
         //authenticationTokenExpires: Date,
-        passwordResetToken: String,
-        passwordResetExpires: Date,
+        //passwordResetToken: String,
+        //passwordResetExpires: Date,
         googleAccessToken: String,
         googleRefreshToken: String,
         googleAccessTokenExpires: Number,
@@ -86,7 +87,7 @@ const getToken = function (tokenKind: AccessTokenKind): IAccessToken {
     return this.tokens.find((x: IAccessToken) => x.kind === tokenKind);
 };
 
-const setToken = function (token: IAccessToken) {
+const createToken = function (token: IAccessToken) {
     const index = this.tokens.findIndex((x: IAccessToken) => x.kind === token.kind);
     if (index >= 0) {
         this.tokens[index] = token;
@@ -95,8 +96,24 @@ const setToken = function (token: IAccessToken) {
     }
 };
 
+const updateToken = function (
+    kind: AccessTokenKind,
+    updates: { accessToken?: string; refreshToken?: string; expiry?: number },
+) {
+    const index = this.tokens.findIndex((x: IAccessToken) => x.kind === kind);
+    if (index < 0) {
+        throw new NotFoundError('Could not find the Token');
+    }
+    const token: IAccessToken = this.tokens[index];
+    token.accessToken = updates.accessToken || token.accessToken;
+    token.refreshToken = updates.refreshToken || token.refreshToken;
+    token.expiry = updates.expiry || token.expiry;
+    this.tokens[index] = token;
+};
+
 accountSchema.methods.comparePassword = comparePassword;
 accountSchema.methods.getToken = getToken;
-accountSchema.methods.setToken = setToken;
+accountSchema.methods.createToken = createToken;
+accountSchema.methods.createToken = updateToken;
 
 export const Account = mongoose.model<AccountDocument>('Account', accountSchema);
