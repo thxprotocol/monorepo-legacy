@@ -63,6 +63,21 @@ export default class THXClient {
         this.erc20 = new ERC20Manager(this);
         this.erc721 = new ERC721Manager(this);
         this.walletManager = new WalletManager(this);
+
+        // TODO Part 1
+        // Introduce and construct StorageManager
+        // Read query string param `ref` value from URL
+        // If any, store in sessionStorage
+
+        // TODO Part 2
+        // Introduce URL change listener that functions well cross browser
+        // See if you can find a small and good lib for this to steal code from
+        // Make sure to start but also stop listening under the correct conditions (no UUID in storage for example)
+
+        // TODO Part 3
+        // Introduce and construct ReferralRewardManager
+        // Provide a claim method that calls POST /referral-rewards/:uuid/claim
+        // URL change listener will trigger referralReward.claim(uuid) (@Peter)
     }
 
     public async init() {
