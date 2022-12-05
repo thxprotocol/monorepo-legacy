@@ -102,7 +102,8 @@ const updateToken = function (
 ) {
     const index = this.tokens.findIndex((x: IAccessToken) => x.kind === kind);
     if (index < 0) {
-        throw new NotFoundError('Could not find the Token');
+        console.log('KIIIIIIIIIIIIIND------------------------------------------------', kind);
+        throw new NotFoundError();
     }
     const token: IAccessToken = this.tokens[index];
     token.accessToken = updates.accessToken || token.accessToken;
@@ -114,6 +115,6 @@ const updateToken = function (
 accountSchema.methods.comparePassword = comparePassword;
 accountSchema.methods.getToken = getToken;
 accountSchema.methods.createToken = createToken;
-accountSchema.methods.createToken = updateToken;
+accountSchema.methods.updateToken = updateToken;
 
 export const Account = mongoose.model<AccountDocument>('Account', accountSchema);
