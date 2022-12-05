@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt-nodejs';
 import mongoose from 'mongoose';
-import { TAccount } from '../types/TAccount';
+import { AccessTokenKind } from '../types/enums/AccessTokenKind';
+import { IAccessToken, TAccount } from '../types/TAccount';
 import { encryptString } from '../util/encrypt';
 
 export type AccountDocument = mongoose.Document & TAccount;
@@ -22,11 +23,11 @@ const accountSchema = new mongoose.Schema(
         walletAddress: { type: String, unique: true, sparse: true },
         variant: Number,
         privateKey: String,
-        signupToken: String,
+        //signupToken: String,
         otpSecret: String,
-        signupTokenExpires: Date,
-        authenticationToken: String,
-        authenticationTokenExpires: Date,
+        //signupTokenExpires: Date,
+        //authenticationToken: String,
+        //authenticationTokenExpires: Date,
         passwordResetToken: String,
         passwordResetExpires: Date,
         googleAccessToken: String,
@@ -81,6 +82,21 @@ const comparePassword = function (candidatePassword: string) {
     return bcrypt.compareSync(candidatePassword, this.password);
 };
 
+const getToken = function (tokenKind: AccessTokenKind): IAccessToken {
+    return this.tokens.find((x: IAccessToken) => x.kind === tokenKind);
+};
+
+const setToken = function (token: IAccessToken) {
+    const index = this.tokens.findIndex((x: IAccessToken) => x.kind === token.kind);
+    if (index >= 0) {
+        this.tokens[index] = token;
+    } else {
+        this.tokens.push(token);
+    }
+};
+
 accountSchema.methods.comparePassword = comparePassword;
+accountSchema.methods.getToken = getToken;
+accountSchema.methods.setToken = setToken;
 
 export const Account = mongoose.model<AccountDocument>('Account', accountSchema);

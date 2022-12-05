@@ -192,7 +192,6 @@ describe('Account Controller', () => {
                     Authorization: authHeader,
                 })
                 .send();
-            console.log(res.body);
             expect(res.body.isAuthorized).toEqual(false);
         });
 

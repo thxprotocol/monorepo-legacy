@@ -15,11 +15,11 @@ export interface TAccount {
     walletAddress: string;
     variant: AccountVariant;
     privateKey: string;
-    signupToken: string;
+    //signupToken: string;
     otpSecret: string;
-    signupTokenExpires: number;
-    authenticationToken: string;
-    authenticationTokenExpires: number;
+    //signupTokenExpires: number;
+    //authenticationToken: string;
+    //authenticationTokenExpires: number;
     passwordResetToken: string;
     passwordResetExpires: number;
     googleAccessToken: string;
@@ -39,6 +39,8 @@ export interface TAccount {
     acceptTermsPrivacy: boolean;
     acceptUpdates: boolean;
     comparePassword: any;
+    getToken: any;
+    setToken: any;
     createdAt: Date;
     tokens: IAccessToken[];
 }
