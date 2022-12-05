@@ -5,6 +5,8 @@ import db from '../../util/database';
 import { AccountService } from '../../services/AccountService';
 import { GOOGLE_API_ENDPOINT, TWITTER_API_ENDPOINT, INITIAL_ACCESS_TOKEN } from '../../config/secrets';
 import { accountAddress, accountEmail, accountSecret } from '../../util/jest';
+import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
+import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
 
 const http = request.agent(app);
 
@@ -197,9 +199,14 @@ describe('Account Controller', () => {
 
         it('Successfully get linked Youtube info with a correct infomation', async () => {
             const account = await AccountService.getByEmail(accountEmail);
-            account.googleAccessToken = 'TOKEN';
-            account.googleRefreshToken = 'REFRESH';
-            account.googleAccessTokenExpires = (Date.now() + 1000000) * 1000;
+            const token = {
+                kind: AccessTokenKind.Google,
+                accessToken: 'TOKEN',
+                refreshToken: 'REFRESH',
+                expiry: (Date.now() + 1000000) * 1000,
+            } as IAccessToken;
+            account.createToken(token);
+
             await account.save();
 
             const res = await http

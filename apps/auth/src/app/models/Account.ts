@@ -31,9 +31,9 @@ const accountSchema = new mongoose.Schema(
         //authenticationTokenExpires: Date,
         //passwordResetToken: String,
         //passwordResetExpires: Date,
-        googleAccessToken: String,
-        googleRefreshToken: String,
-        googleAccessTokenExpires: Number,
+        // googleAccessToken: String,
+        // googleRefreshToken: String,
+        //googleAccessTokenExpires: Number,
         twitterAccessToken: String,
         twitterRefreshToken: String,
         twitterAccessTokenExpires: Number,
@@ -102,7 +102,6 @@ const updateToken = function (
 ) {
     const index = this.tokens.findIndex((x: IAccessToken) => x.kind === kind);
     if (index < 0) {
-        console.log('KIIIIIIIIIIIIIND------------------------------------------------', kind);
         throw new NotFoundError();
     }
     const token: IAccessToken = this.tokens[index];

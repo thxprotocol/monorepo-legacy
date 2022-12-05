@@ -3,6 +3,8 @@ import { TwitterService } from '../../../services/TwitterService';
 import { YouTubeService } from '../../../services/YouTubeService';
 import { AccountService } from '../../../services/AccountService';
 import { GithubService } from '../../../services/GithubServices';
+import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
+import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
 
 async function controller(req: Request, res: Response) {
     const { uid, params, alert, session } = req.interaction;
@@ -11,6 +13,12 @@ async function controller(req: Request, res: Response) {
     params.githubLoginUrl = GithubService.getLoginURL(uid, {});
     params.googleLoginUrl = YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getBasicScopes());
     params.twitterLoginUrl = TwitterService.getLoginURL(uid, {});
+
+    let googleAccess = false;
+    const token: IAccessToken | undefined = account.getToken(AccessTokenKind.Google);
+    if (token) {
+        googleAccess = token.accessToken !== undefined && token.expiry > Date.now();
+    }
 
     return res.render('account', {
         uid,
@@ -26,7 +34,7 @@ async function controller(req: Request, res: Response) {
             walletAddress: account.walletAddress,
             plan: account.plan,
             otpSecret: account.otpSecret,
-            googleAccess: account.googleAccessToken && account.googleAccessTokenExpires > Date.now(),
+            googleAccess,
             twitterAccess: account.twitterAccessToken && account.twitterAccessTokenExpires > Date.now(),
         },
     });

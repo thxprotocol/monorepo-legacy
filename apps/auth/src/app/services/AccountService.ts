@@ -126,15 +126,11 @@ export class AccountService {
                 newrelic.noticeError(error);
                 logger.error('Unable to revoke YouTube access', error);
             }
-            account.googleAccessToken = '';
-            account.googleRefreshToken = '';
-            account.googleAccessTokenExpires = null;
+            account.updateToken(AccessTokenKind.Google, { accessToken: '', refreshToken: '', expiry: null });
         }
 
         if (twitterAccess === false) {
-            account.twitterAccessToken = '';
-            account.twitterRefreshToken = '';
-            account.twitterAccessTokenExpires = null;
+            account.updateToken(AccessTokenKind.Twitter, { accessToken: '', refreshToken: '', expiry: null });
         }
 
         return await account.save();

@@ -2,13 +2,22 @@ import { Request, Response } from 'express';
 import { NotFoundError } from '../../util/errors';
 import { AccountService } from '../../services/AccountService';
 import { YouTubeService } from '@thxnetwork/auth/services/YouTubeService';
+import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
+import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
 
 async function formatAccountRes(account) {
     let protectedPrivateKey;
     if (account.privateKey) {
         protectedPrivateKey = { privateKey: account.privateKey };
     }
-
+    let googleAccess = false;
+    const token: IAccessToken | undefined = account.getToken(AccessTokenKind.Google);
+    if (token) {
+        googleAccess =
+            token.accessToken !== undefined &&
+            token.expiry > Date.now() &&
+            (await YouTubeService.haveExpandedScopes(token.accessToken));
+    }
     return {
         ...{
             id: account._id,
@@ -18,10 +27,7 @@ async function formatAccountRes(account) {
             company: account.company,
             plan: account.plan,
             email: account.email,
-            googleAccess:
-                account.googleAccessToken !== undefined &&
-                account.googleAccessTokenExpires > Date.now() &&
-                (await YouTubeService.haveExpandedScopes(account.googleAccessToken)),
+            googleAccess,
             twitterAccess: account.twitterAccessToken !== undefined && account.twitterAccessTokenExpires > Date.now(),
         },
         ...protectedPrivateKey,

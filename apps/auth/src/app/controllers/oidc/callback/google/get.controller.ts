@@ -7,12 +7,15 @@ import { getAccountByEmail, saveInteraction } from '../../../../util/oidc';
 import { YouTubeService } from '../../../../services/YouTubeService';
 import { AccountVariant } from '../../../../types/enums/AccountVariant';
 import { createWallet } from '@thxnetwork/auth/util/wallet';
+import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
 
 async function updateTokens(account: AccountDocument, tokens: any) {
-    account.googleAccessToken = tokens.access_token || account.googleAccessToken;
-    account.googleRefreshToken = tokens.refresh_token || account.googleRefreshToken;
-    account.googleAccessTokenExpires = Number(tokens.expiry_date) || account.googleAccessTokenExpires;
-
+    account.createToken({
+        kind: AccessTokenKind.Google,
+        accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token,
+        expiry: tokens.expiry_date ? Number(tokens.expiry_date) : undefined,
+    });
     await account.save();
 }
 

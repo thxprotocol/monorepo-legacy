@@ -22,9 +22,9 @@ export interface TAccount {
     //authenticationTokenExpires: number;
     //passwordResetToken: string;
     //passwordResetExpires: number;
-    googleAccessToken: string;
-    googleRefreshToken: string;
-    googleAccessTokenExpires: number;
+    // googleAccessToken: string;
+    // googleRefreshToken: string;
+    // googleAccessTokenExpires: number;
     twitterAccessToken: string;
     twitterRefreshToken: string;
     twitterAccessTokenExpires: number;
