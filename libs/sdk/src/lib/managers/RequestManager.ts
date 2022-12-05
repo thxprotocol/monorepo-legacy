@@ -14,8 +14,9 @@ class RequestManager extends BaseManager {
 
     private getHeaders() {
         const headers: any = {};
+
         if (this.client.session.user?.access_token) {
-            headers['authorization'] = `Bearer ${this.client.session.user?.access_token}`;
+            headers['Authorization'] = `Bearer ${this.client.session.user?.access_token}`;
         }
         if (this.client.session.poolId) {
             headers['X-PoolId'] = this.client.session.poolId;
@@ -38,7 +39,7 @@ class RequestManager extends BaseManager {
             await this.silentSignin();
         }
 
-        return response;
+        return await response.json();
     }
 
     async silentSignin() {
@@ -62,14 +63,19 @@ class RequestManager extends BaseManager {
             mode: 'cors',
             method: 'POST',
             credentials: 'omit',
-            headers: new Headers({ ...config?.headers, ...headers }),
+            headers: new Headers({
+                ...config?.headers,
+                ...headers,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }),
         });
 
         if (response.status === 401) {
             await this.silentSignin();
         }
 
-        return response;
+        return await response.json();
     }
 
     async patch(path: string, config?: RequestInit) {
@@ -80,14 +86,19 @@ class RequestManager extends BaseManager {
             mode: 'cors',
             method: 'PATCH',
             credentials: 'omit',
-            headers: new Headers({ ...config?.headers, ...headers }),
+            headers: new Headers({
+                ...config?.headers,
+                ...headers,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }),
         });
 
         if (response.status === 401) {
             await this.silentSignin();
         }
 
-        return response;
+        return await response.json();
     }
 
     async put(path: string, config?: RequestInit) {
@@ -98,14 +109,19 @@ class RequestManager extends BaseManager {
             mode: 'cors',
             method: 'PUT',
             credentials: 'omit',
-            headers: new Headers({ ...config?.headers, ...headers }),
+            headers: new Headers({
+                ...config?.headers,
+                ...headers,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }),
         });
 
         if (response.status === 401) {
             await this.silentSignin();
         }
 
-        return response;
+        return await response.json();
     }
 
     async delete(path: string, config?: RequestInit) {
@@ -123,7 +139,7 @@ class RequestManager extends BaseManager {
             await this.silentSignin();
         }
 
-        return response;
+        return await response.json();
     }
 }
 

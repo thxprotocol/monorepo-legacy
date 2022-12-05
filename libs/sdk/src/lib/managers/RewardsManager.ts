@@ -10,8 +10,7 @@ class RewardsManager extends BaseManager {
     }
 
     async list() {
-        const res = await this.client.request.get(`/v1/rewards`);
-        return await res.json();
+        return await this.client.request.get(`/v1/rewards`);
     }
 
     async claimPointsReward(uuid: string) {

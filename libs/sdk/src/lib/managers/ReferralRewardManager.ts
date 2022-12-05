@@ -7,8 +7,7 @@ class ReferralRewardManager extends BaseManager {
     }
 
     async get(id: string) {
-        const r = await this.client.request.get(`/v1/referral-rewards/${id}`);
-        return await r.json();
+        return await this.client.request.get(`/v1/referral-rewards/${id}`);
     }
 }
 
