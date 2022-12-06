@@ -6,6 +6,7 @@ import UploadProxy from '../../../proxies/UploadProxy';
 import { AccountService } from '../../../services/AccountService';
 import { DURATION_TWENTYFOUR_HOURS, ERROR_NO_ACCOUNT } from '../../../util/messages';
 import { createRandomToken } from '../../../util/tokens';
+import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
 
 export const validation = [
     body('email').optional().isEmail(),
@@ -45,8 +46,10 @@ export async function controller(req: Request, res: Response) {
 
     if (isEmailChanged) {
         account.isEmailVerified = false;
-        account.verifyEmailToken = createRandomToken();
-        account.verifyEmailTokenExpires = DURATION_TWENTYFOUR_HOURS;
+        account.updateToken(AccessTokenKind.VerifyEmail, {
+            accessToken: createRandomToken(),
+            expiry: DURATION_TWENTYFOUR_HOURS,
+        });
         await account.save();
 
         // SEND VERIFICATION REQUEST FOR THE NEW EMAIL
