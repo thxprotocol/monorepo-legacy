@@ -15,9 +15,14 @@ async function controller(req: Request, res: Response) {
     params.twitterLoginUrl = TwitterService.getLoginURL(uid, {});
 
     let googleAccess = false;
-    const token: IAccessToken | undefined = account.getToken(AccessTokenKind.Google);
+    let token: IAccessToken | undefined = account.getToken(AccessTokenKind.Google);
     if (token) {
         googleAccess = token.accessToken !== undefined && token.expiry > Date.now();
+    }
+    let twitterAccess = false;
+    token = account.getToken(AccessTokenKind.Twitter);
+    if (token) {
+        twitterAccess = token.accessToken !== undefined && token.expiry > Date.now();
     }
 
     return res.render('account', {
@@ -35,7 +40,7 @@ async function controller(req: Request, res: Response) {
             plan: account.plan,
             otpSecret: account.otpSecret,
             googleAccess,
-            twitterAccess: account.twitterAccessToken && account.twitterAccessTokenExpires > Date.now(),
+            twitterAccess,
         },
     });
 }

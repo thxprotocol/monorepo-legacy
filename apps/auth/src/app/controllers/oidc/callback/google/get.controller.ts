@@ -8,14 +8,25 @@ import { YouTubeService } from '../../../../services/YouTubeService';
 import { AccountVariant } from '../../../../types/enums/AccountVariant';
 import { createWallet } from '@thxnetwork/auth/util/wallet';
 import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
+import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
 
 async function updateTokens(account: AccountDocument, tokens: any) {
-    account.createToken({
-        kind: AccessTokenKind.Google,
-        accessToken: tokens.access_token,
-        refreshToken: tokens.refresh_token,
-        expiry: tokens.expiry_date ? Number(tokens.expiry_date) : undefined,
-    });
+    const token: IAccessToken | undefined = account.getToken(AccessTokenKind.Google);
+    const expiry = tokens.expiry_date ? Date.now() + Number(tokens.expiry_date) * 1000 : undefined;
+    if (!token) {
+        account.createToken({
+            kind: AccessTokenKind.Google,
+            accessToken: tokens.access_token,
+            refreshToken: tokens.refresh_token,
+            expiry,
+        } as IAccessToken);
+    } else {
+        account.updateToken(AccessTokenKind.Google, {
+            accessToken: tokens.access_token,
+            refreshToken: tokens.refresh_token,
+            expiry,
+        });
+    }
     await account.save();
 }
 

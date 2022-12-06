@@ -11,12 +11,17 @@ async function formatAccountRes(account) {
         protectedPrivateKey = { privateKey: account.privateKey };
     }
     let googleAccess = false;
-    const token: IAccessToken | undefined = account.getToken(AccessTokenKind.Google);
+    let token: IAccessToken | undefined = account.getToken(AccessTokenKind.Google);
     if (token) {
         googleAccess =
             token.accessToken !== undefined &&
             token.expiry > Date.now() &&
             (await YouTubeService.haveExpandedScopes(token.accessToken));
+    }
+    let twitterAccess = false;
+    token = account.getToken(AccessTokenKind.Twitter);
+    if (token) {
+        twitterAccess = token.accessToken !== undefined && token.expiry > Date.now();
     }
     return {
         ...{
@@ -28,7 +33,7 @@ async function formatAccountRes(account) {
             plan: account.plan,
             email: account.email,
             googleAccess,
-            twitterAccess: account.twitterAccessToken !== undefined && account.twitterAccessTokenExpires > Date.now(),
+            twitterAccess,
         },
         ...protectedPrivateKey,
     };
