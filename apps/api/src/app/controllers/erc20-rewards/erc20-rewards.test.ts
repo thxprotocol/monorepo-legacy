@@ -61,6 +61,8 @@ describe('ERC20 Rewards', () => {
         let claim: ClaimDocument;
         it('POST /erc20-rewards', (done) => {
             const expiryDate = addMinutes(new Date(), 30);
+            const pointPrice = 200;
+            const image = 'http://myimage.com/1';
             user.post('/v1/erc20-rewards/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .send({
@@ -71,9 +73,13 @@ describe('ERC20 Rewards', () => {
                     expiryDate,
                     rewardLimit: 0,
                     claimAmount: 1,
+                    pointPrice,
+                    image,
                 })
                 .expect((res: request.Response) => {
                     expect(res.body.uuid).toBeDefined();
+                    expect(res.body.pointPrice).toBe(pointPrice);
+                    expect(res.body.image).toBe(image);
                     expect(new Date(res.body.expiryDate).getTime()).toBe(expiryDate.getTime());
                     expect(res.body.claims.length).toBe(1);
                     expect(res.body.claims[0].id).toBeDefined();

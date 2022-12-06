@@ -11,6 +11,8 @@ const validation = [
     body('platform').optional().isNumeric(),
     body('interaction').optional().isNumeric(),
     body('content').optional().isString(),
+    body('pointPrice').optional().isNumeric(),
+    body('image').optional().isString(),
 ];
 
 const controller = async (req: Request, res: Response) => {

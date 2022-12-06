@@ -20,6 +20,8 @@ const erc20RewardSchema = new mongoose.Schema(
     {
         ...rewardBaseSchema,
         amount: String,
+        pointPrice: Number,
+        image: String,
     },
     { timestamps: true },
 );

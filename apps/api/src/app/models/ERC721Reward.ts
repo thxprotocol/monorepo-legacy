@@ -8,6 +8,8 @@ const erc721RewardSchema = new mongoose.Schema(
     {
         ...rewardBaseSchema,
         erc721metadataId: String,
+        pointPrice: Number,
+        image: String,
     },
     { timestamps: true },
 );

@@ -137,6 +137,8 @@ describe('ERC721 Rewards', () => {
 
         it('POST /erc721-rewards', (done) => {
             const expiryDate = addMinutes(new Date(), 30);
+            const pointPrice = 200;
+            const image = 'http://myimage.com/1';
             user.post('/v1/erc721-rewards/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .send({
@@ -147,9 +149,13 @@ describe('ERC721 Rewards', () => {
                     expiryDate,
                     rewardLimit: 1,
                     claimAmount: 1,
+                    pointPrice,
+                    image,
                 })
                 .expect((res: request.Response) => {
                     expect(res.body._id).toBeDefined();
+                    expect(res.body.pointPrice).toBe(pointPrice);
+                    expect(res.body.image).toBe(image);
                     expect(res.body.claims.length).toBe(1);
                     expect(res.body.claims[0].id).toBeDefined();
                     claim = res.body.claims[0];

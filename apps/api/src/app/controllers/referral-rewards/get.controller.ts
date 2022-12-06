@@ -14,7 +14,7 @@ const controller = async (req: Request, res: Response) => {
 
     const claim = await ReferralRewardClaimDocument.findOne({ referralRewardId: reward._id, sub: req.auth.sub });
     if (!claim) {
-        await claim.updateOne(
+        await ReferralRewardClaimDocument.updateOne(
             { referralRewardId: reward._id, sub: req.auth.sub, uuid: db.createUUID() },
             { upsert: true },
         );
