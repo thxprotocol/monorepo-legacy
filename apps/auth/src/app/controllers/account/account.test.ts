@@ -159,9 +159,13 @@ describe('Account Controller', () => {
 
         it('Successfully get linked Twitter info with a correct infomation', async () => {
             const account = await AccountService.getByEmail(accountEmail);
-            account.twitterAccessToken = 'TOKEN';
-            account.twitterRefreshToken = 'REFRESH';
-            account.twitterAccessTokenExpires = (Date.now() + 1000000) * 1000;
+            const token: IAccessToken = {
+                kind: AccessTokenKind.Twitter,
+                accessToken: 'TOKEN',
+                refreshToken: 'REFRESH',
+                expiry: (Date.now() + 1000000) * 1000,
+            };
+            account.createToken(token);
             await account.save();
 
             const res = await http

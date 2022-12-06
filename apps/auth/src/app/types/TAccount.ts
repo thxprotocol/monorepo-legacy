@@ -25,9 +25,9 @@ export interface TAccount {
     // googleAccessToken: string;
     // googleRefreshToken: string;
     // googleAccessTokenExpires: number;
-    twitterAccessToken: string;
-    twitterRefreshToken: string;
-    twitterAccessTokenExpires: number;
+    // twitterAccessToken: string;
+    // twitterRefreshToken: string;
+    // twitterAccessTokenExpires: number;
     githubAccessToken: string;
     githubRefreshToken: string;
     githubAccessTokenExpires: number;
