@@ -1,7 +1,7 @@
-import { RewardConditionInteraction } from '@thxnetwork/types';
 import { THXClient } from '../../index';
 import BaseManager from './BaseManager';
 import { ChainId } from '../types/enums/ChainId';
+import RewardConditionInteraction from '../types/RewardConditionInteraction';
 
 class ERC20Manager extends BaseManager {
     constructor(client: THXClient) {

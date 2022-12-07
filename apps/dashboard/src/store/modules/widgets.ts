@@ -1,7 +1,34 @@
 import axios from 'axios';
 import { Vue } from 'vue-property-decorator';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
+import { TBaseReward } from '@thxnetwork/types/index';
 import { type IPool } from './pools';
+
+export class Widget {
+    clientId: string;
+    clientSecret: string;
+    registrationAccessToken: string;
+    requestUri: string;
+    metadata: any;
+    reward: TBaseReward | null = null;
+
+    constructor(data: any) {
+        this.clientId = data.clientId;
+        this.clientSecret = data.clientSecret;
+        this.registrationAccessToken = data.registrationAccessToken;
+        this.requestUri = data.requestUris[0];
+        this.metadata = {
+            height: 60,
+            width: 310,
+            rewardId: data.metadata.rewardId,
+            poolAddress: data.metadata.poolAddress,
+        };
+    }
+
+    setReward(reward: TBaseReward) {
+        this.reward = reward;
+    }
+}
 
 export type TWidget = {
     uuid: string;

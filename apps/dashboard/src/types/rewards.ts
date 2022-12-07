@@ -1,4 +1,4 @@
-import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
+import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types';
 
 export const platformList: IChannel[] = [
     {

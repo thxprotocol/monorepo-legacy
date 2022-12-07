@@ -1,5 +1,4 @@
 import { Vue } from 'vue-property-decorator';
-import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import type { ITransactions, TTransaction } from '@thxnetwork/wallet/types/Transactions';
 import { thxClient } from '@thxnetwork/wallet/utils/oidc';
