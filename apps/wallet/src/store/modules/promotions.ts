@@ -2,6 +2,7 @@ import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { TMembership } from './memberships';
+import { thxClient } from '@thxnetwork/wallet/utils/oidc';
 
 export type TPromotion = {
     id: string;
@@ -47,24 +48,13 @@ class PromotionModule extends VuexModule {
 
     @Action({ rawError: true })
     async filter({ membership, page = 1, limit = 10 }: { membership: TMembership; page: number; limit: number }) {
-        const params = new URLSearchParams();
-        params.append('page', String(page));
-        params.append('limit', String(limit));
-
-        const r = await axios({
-            method: 'GET',
-            url: '/promotions',
-            params,
-            headers: { 'X-PoolId': membership.poolId },
-        });
-
+        const data = await thxClient.promotions.filter({ poolId: membership.poolId, page, limit });
         this.context.commit('clear');
-
-        for (const promotion of r.data.results) {
+        for (const promotion of data.results) {
             this.context.commit('set', { promotion, membership });
         }
 
-        return { pagination: r.data };
+        return { pagination: data };
     }
 }
 
