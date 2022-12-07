@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { Module, VuexModule, Action } from 'vuex-module-decorators';
 import { RewardConditionInteraction } from '@thxnetwork/types/index';
+import { thxClient } from '@thxnetwork/wallet/utils/oidc';
 
 function getItemUrl(withdrawCondition: { interaction: RewardConditionInteraction; content: string }) {
     if (!withdrawCondition) return;
@@ -46,47 +47,28 @@ function getItemUrl(withdrawCondition: { interaction: RewardConditionInteraction
 @Module({ namespaced: true })
 class AssetPoolModule extends VuexModule {
     @Action({ rawError: true })
-    async getERC721Perk({ rewardUuid, poolId }: { rewardUuid: string; poolId: string }) {
-        const { data } = await axios({
-            method: 'GET',
-            url: `/erc721-perks/${rewardUuid}`,
-            headers: { 'X-PoolId': poolId },
-        });
-        data.itemUrl = getItemUrl(data);
+    async getERC721Reward({ rewardId, poolId }: { rewardId: string; poolId: string }) {
+        const data = await thxClient.erc721.getReward({ poolId, rewardId });
         return data;
     }
 
     @Action({ rawError: true })
-    async getERC20Perk({ rewardUuid, poolId }: { rewardUuid: string; poolId: string }) {
-        const { data } = await axios({
-            method: 'GET',
-            url: `/erc20-perks/${rewardUuid}`,
-            headers: { 'X-PoolId': poolId },
-        });
-        data.itemUrl = getItemUrl(data);
+    async getERC20Reward({ rewardId, poolId }: { rewardId: string; poolId: string }) {
+        const data = await thxClient.erc20.getReward({ poolId, rewardId });
         return data;
     }
 
     @Action({ rawError: true })
-    async getClaim(claimUuid: string) {
-        const { data } = await axios({
-            method: 'GET',
-            url: `/claims/${claimUuid}`,
-        });
+    async getClaim(claimId: string) {
+        const data = await thxClient.claims.get(claimId);
         return data;
     }
 
     @Action({ rawError: true })
-    async claimReward(claimUuid: string) {
-        const claim = await this.context.dispatch('getClaim', claimUuid);
-        const r = await axios({
-            method: 'POST',
-            url: `/claims/${claimUuid}/collect`,
-            headers: { 'X-PoolId': claim.claim.poolId },
-            params: { forceSync: false },
-        });
-
-        return r.data;
+    async claimReward(claimId: string) {
+        const claim = await this.context.dispatch('getClaim', claimId);
+        const data = await thxClient.claims.collect({ poolId: claim.claim.poolId, claimId });
+        return data;
     }
 }
 
