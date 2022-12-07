@@ -17,9 +17,6 @@ import PointBalanceManager from '../managers/PointBalanceManager';
 import DepositManager from '../managers/DepositManager';
 import MembershipManager from '../managers/MembershipManager';
 import PaymentManager from '../managers/PaymentManager';
-import PromotionManager from '../managers/PromotionManager';
-import SwapruleManager from '../managers/SwapruleManager';
-import SwapManager from '../managers/SwapManager';
 
 type Props = Omit<Credential, 'grantType'>;
 
@@ -34,20 +31,13 @@ export default class THXClient {
     deposit: DepositManager;
     credential: CredentialManager;
     walletManager: WalletManager;
-<<<<<<< HEAD
     referralRewardManager: ReferralRewardManager;
     pointRewardManager: PointRewardManager;
     rewardsManager: RewardsManager;
     perksManager: PerksManager;
-=======
     memberships: MembershipManager;
-    promotions: PromotionManager;
-    swaprules: SwapruleManager;
     payments: PaymentManager;
-    swaps: SwapManager;
-
     /* External managers */
->>>>>>> ae005d0 (feat: add Memberships and Payments Manager)
     account: AccountManager;
     pointBalanceManager: PointBalanceManager;
 
@@ -92,10 +82,7 @@ export default class THXClient {
         this.pointBalanceManager = new PointBalanceManager(this);
         this.deposit = new DepositManager(this);
         this.memberships = new MembershipManager(this);
-        this.promotions = new PromotionManager(this);
-        this.swaprules = new SwapruleManager(this);
         this.payments = new PaymentManager(this);
-        this.swaps = new SwapruleManager(this);
     }
 
     public async init() {

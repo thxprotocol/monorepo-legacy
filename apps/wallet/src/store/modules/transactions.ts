@@ -2,6 +2,7 @@ import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import type { ITransactions, TTransaction } from '@thxnetwork/wallet/types/Transactions';
+import { thxClient } from '@thxnetwork/wallet/utils/oidc';
 
 @Module({ namespaced: true })
 class WithdrawalModule extends VuexModule {
@@ -28,14 +29,9 @@ class WithdrawalModule extends VuexModule {
 
     @Action({ rawError: true })
     async read(id: string) {
-        const r = await axios({
-            method: 'GET',
-            url: `/transactions/${id}`,
-        });
-
-        this.context.commit('set', r.data);
-
-        return r.data;
+        const data = await thxClient.transactions.read(id);
+        this.context.commit('set', data);
+        return data;
     }
 }
 

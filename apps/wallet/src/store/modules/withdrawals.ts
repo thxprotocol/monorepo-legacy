@@ -1,9 +1,9 @@
 import { Vue } from 'vue-property-decorator';
-import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { TMembership } from './memberships';
 import type { TTransaction } from '@thxnetwork/wallet/types/Transactions';
 import { TERC20 } from './erc20';
+import { thxClient } from '@thxnetwork/wallet/utils/oidc';
 
 export enum WithdrawalState {
     Pending = 0,
@@ -86,46 +86,25 @@ class WithdrawalModule extends VuexModule {
 
     @Action({ rawError: true })
     async read({ membership, id }: { membership: TMembership; id: string }) {
-        const r = await axios({
-            method: 'GET',
-            url: '/withdrawals/' + id,
-            headers: { 'X-PoolId': membership.poolId },
-        });
-        this.context.commit('set', { withdrawal: r.data, membership: membership });
+        const data = await thxClient.withdrawals.read({ id, poolId: membership.poolId });
+        this.context.commit('set', { withdrawal: data, membership: membership });
     }
 
     @Action({ rawError: true })
     async get({ poolId, id }: { poolId: string; id: string }) {
-        const r = await axios({
-            method: 'GET',
-            url: '/withdrawals/' + id,
-            headers: { 'X-PoolId': poolId },
-        });
-        return r.data;
+        const data = await thxClient.withdrawals.get({ poolId, id });
+        return data;
     }
 
     @Action({ rawError: true })
     async withdraw({ membership, id }: { membership: TMembership; id: string }) {
-        await axios({
-            method: 'POST',
-            url: `/withdrawals/${id}/withdraw`,
-            headers: {
-                'X-PoolId': membership.poolId,
-            },
-        });
+        await thxClient.withdrawals.withdraw({ poolId: membership.poolId, id });
         await this.context.dispatch('read', { membership, id });
     }
 
     @Action({ rawError: true })
     async remove({ membership, withdrawal }: { membership: TMembership; withdrawal: Withdrawal }) {
-        await axios({
-            method: 'DELETE',
-            url: `/withdrawals/${withdrawal._id}`,
-            headers: {
-                'X-PoolId': membership.poolId,
-            },
-        });
-
+        await thxClient.withdrawals.remove({ poolId: membership.poolId, id: withdrawal._id });
         this.context.commit('unset', { membership, withdrawal });
     }
 
@@ -147,24 +126,21 @@ class WithdrawalModule extends VuexModule {
         params.append('page', String(page));
         params.append('limit', String(limit));
 
-        if (state === WithdrawalState.Pending || state === WithdrawalState.Withdrawn) {
-            params.append('state', String(state));
-        }
-
-        const r = await axios({
-            method: 'get',
-            url: '/withdrawals',
-            params,
-            headers: { 'X-PoolId': membership.poolId },
+        const data = await thxClient.withdrawals.filter({
+            poolId: membership.poolId,
+            page,
+            limit,
+            address: profile.address,
+            state,
         });
 
         this.context.commit('clear');
 
-        for (const withdrawal of r.data.results) {
+        for (const withdrawal of data.results) {
             this.context.commit('set', { withdrawal: new Withdrawal(withdrawal, page), membership });
         }
 
-        return { pagination: r.data };
+        return { pagination: data };
     }
 }
 

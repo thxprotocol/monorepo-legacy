@@ -10,16 +10,16 @@ class MembershipManager extends BaseManager {
         // method: 'GET',
         // url: '/memberships',
         const params = new URLSearchParams({ chainId });
-        const res = await this.client.request.get(`/v1/Memberships?${params.toString()}`);
+        const res = await this.client.request.get(`/v1/memberships?${params.toString()}`);
         return await res.json();
     }
 
     async delete(id: string) {
-        const res = await this.client.request.delete(`/v1/Memberships/${id}`);
+        const res = await this.client.request.delete(`/v1/memberships/${id}`);
         return await res.json();
     }
     async get(id: string) {
-        const res = await this.client.request.get(`/v1/Memberships/${id}`);
+        const res = await this.client.request.get(`/v1/memberships/${id}`);
         return await res.json();
     }
 }
