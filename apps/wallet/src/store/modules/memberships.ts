@@ -2,6 +2,7 @@ import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { ChainId } from '@thxnetwork/wallet/types/enums/ChainId';
+import { thxClient } from '@thxnetwork/wallet/utils/oidc';
 
 export type TMembership = {
     _id: string;
@@ -41,11 +42,7 @@ class MembershipModule extends VuexModule {
 
     @Action({ rawError: true })
     async list() {
-        const { data } = await axios({
-            method: 'GET',
-            url: '/memberships',
-            params: { chainId: this.context.rootGetters['network/chainId'] },
-        });
+        const data = await thxClient.memberships.list({ chainId: this.context.rootGetters['network/chainId'] });
 
         await Promise.all(
             data.map(async ({ _id }: TMembership) => {
@@ -60,20 +57,13 @@ class MembershipModule extends VuexModule {
 
     @Action({ rawError: true })
     async delete(_id: string) {
-        await axios({
-            method: 'DELETE',
-            url: `/memberships/${_id}`,
-        });
-
+        await thxClient.memberships.delete(_id);
         this.context.commit('unset', { _id });
     }
 
     @Action({ rawError: true })
     async get(_id: string) {
-        const { data } = await axios({
-            method: 'GET',
-            url: '/memberships/' + _id,
-        });
+        const data = await thxClient.memberships.get(_id);
         this.context.commit('set', data);
     }
 }
