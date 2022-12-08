@@ -11,7 +11,7 @@ const validation = [
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards Referral']
     const reward = await ReferralRewardService.create(req.assetPool, req.body);
-    res.status(201).json(reward.toJSON());
+    res.status(201).json(reward);
 };
 
 export default { controller, validation };

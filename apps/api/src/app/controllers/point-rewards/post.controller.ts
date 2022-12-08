@@ -24,7 +24,7 @@ const controller = async (req: Request, res: Response) => {
         interaction,
         content,
     });
-    res.json(pointReward);
+    res.status(201).json(pointReward);
 };
 
 export default { validation, controller };
