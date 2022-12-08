@@ -10,7 +10,6 @@ export type TPointRewardState = {
         [id: string]: TPointReward;
     };
 };
-
 @Module({ namespaced: true })
 class PointRewardModule extends VuexModule {
     _all: TPointRewardState = {};
