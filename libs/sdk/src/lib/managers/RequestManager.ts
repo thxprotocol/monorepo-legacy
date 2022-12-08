@@ -21,6 +21,7 @@ class RequestManager extends BaseManager {
         if (this.client.session.poolId) {
             headers['X-PoolId'] = this.client.session.poolId;
         }
+
         return headers;
     }
 

@@ -19,7 +19,7 @@ const controller = async (req: Request, res: Response) => {
         sub: req.body.sub,
     });
 
-    await PointBalanceService.add(req.assetPool, req.auth.sub, reward.amount);
+    await PointBalanceService.add(req.assetPool, req.body.sub, reward.amount);
 
     res.json(claim);
 };

@@ -40,11 +40,10 @@ const controller = async (req: Request, res: Response) => {
             if (!settings) return console.error("THXWidget requires a settings object.");
             this.settings = settings;
             this.iframe = this.createIframe(settings.widgetUrl, settings.poolId, settings.origin);
-            this.notifications = this.createNotifications(3);
+            this.notifications = this.createNotifications(0);
             this.launcher = this.createLauncher(this.notifications);
             this.container = this.createContainer(this.iframe, this.launcher);
     
-            
             window.matchMedia('(max-width: 990px)').addListener(this.onMatchMedia.bind(this));
             window.onmessage = this.onMessage.bind(this);
             
@@ -164,19 +163,22 @@ const controller = async (req: Request, res: Response) => {
         }
     
         createReferralRewardClaim(sub) {
+            if (!sub) return;
             this.iframe.contentWindow.postMessage({ message: 'thx.referral.claim.create', uuid: this.settings.referral.uuid, sub}, this.settings.widgetUrl);
+            sessionStorage.removeItem('thx:widget:' + this.settings.poolId + ':ref');
         }
     
         onMessage(event) {
             if (!this.settings.widgetUrl || event.origin !== this.settings.widgetUrl) return;
-            switch (event.data) {
-                case 'thx.close': {
-                    this.iframe.style.opacity = this.iframe.style.opacity === '0' ? '1' : '0';
-                    this.iframe.style.transform = this.iframe.style.transform === 'scale(0)' ? 'scale(1)' : 'scale(0)';
+            const { message, amount } = event.data;
+            switch (message) {
+                case 'thx.reward.amount': {
+                    this.notifications.innerText = amount;
                     break;
                 }
-                case 'thx.reward.claimed': {
-                    this.notifications.innerHTML = Number(this.notifications.innerHTML) - 1;
+                case 'thx.widget.close': {
+                    this.iframe.style.opacity = this.iframe.style.opacity === '0' ? '1' : '0';
+                    this.iframe.style.transform = this.iframe.style.transform === 'scale(0)' ? 'scale(1)' : 'scale(0)';
                     break;
                 }
             }
@@ -212,11 +214,11 @@ const controller = async (req: Request, res: Response) => {
     });
 `;
     const result = await minify(data, {
-        mangle: { properties: true, toplevel: true },
+        mangle: { toplevel: true },
         sourceMap: NODE_ENV !== 'production',
     });
-    res.set({ 'Content-Type': 'application/javascript' }).send(data);
-    // res.set({ 'Content-Type': 'application/javascript' }).send(result.code);
+
+    res.set({ 'Content-Type': 'application/javascript' }).send(result.code);
 };
 
 export default { controller, validation };
