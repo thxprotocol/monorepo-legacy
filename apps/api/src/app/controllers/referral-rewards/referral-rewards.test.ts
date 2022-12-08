@@ -1,13 +1,7 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId, ERC20Type } from '../../types/enums';
-import {
-    dashboardAccessToken,
-    sub,
-    tokenName,
-    tokenSymbol,
-    widgetAccessToken,
-} from '@thxnetwork/api/util/jest/constants';
+import { dashboardAccessToken, tokenName, tokenSymbol } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { addMinutes } from '@thxnetwork/api/util/rewards';
@@ -117,32 +111,6 @@ describe('Referral Rewards', () => {
                 expect(res.body.title).toEqual(title);
                 expect(res.body.description).toEqual(description);
                 expect(res.body.successUrl).toEqual(successUrl);
-            })
-            .expect(200, done);
-    });
-
-    it('POST /referral-rewards/:id/claim', (done) => {
-        user.post(`/v1/referral-rewards/${referralRewardId}/claims`)
-            .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
-            .expect((res: request.Response) => {
-                expect(res.body.uuid).toBe(referralReward.uuid);
-                expect(res.body.claims).toBeDefined();
-                expect(res.body.claims.length).toBe(1);
-                expect(res.body.claims[0].referralRewardId).toBe(referralReward._id);
-                expect(res.body.claims[0].sub).toBe(sub);
-            })
-            .expect(201, done);
-    });
-
-    it('GET /referral-rewards/:id/claim', (done) => {
-        user.get(`/v1/referral-rewards/${referralRewardId}/claims`)
-            .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
-            .expect((res: request.Response) => {
-                expect(res.body.uuid).toBe(referralReward.uuid);
-                expect(res.body.claims).toBeDefined();
-                expect(res.body.claims.length).toBe(1);
-                expect(res.body.claims[0].referralRewardId).toBe(referralReward._id);
-                expect(res.body.claims[0].sub).toBe(sub);
             })
             .expect(200, done);
     });
