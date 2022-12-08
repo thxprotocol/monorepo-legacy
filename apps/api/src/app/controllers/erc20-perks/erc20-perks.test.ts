@@ -59,9 +59,11 @@ describe('ERC20 Rewards', () => {
 
     describe('Reward Limit === 0', () => {
         let claim: ClaimDocument;
-        it('POST /erc20-rewards', (done) => {
+        it('POST /erc20-perks', (done) => {
             const expiryDate = addMinutes(new Date(), 30);
-            user.post('/v1/erc20-rewards/')
+            const pointPrice = 200;
+            const image = 'http://myimage.com/1';
+            user.post('/v1/erc20-perks/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .send({
                     title: 'Expiration date is next 30 min',
@@ -71,9 +73,13 @@ describe('ERC20 Rewards', () => {
                     expiryDate,
                     rewardLimit: 0,
                     claimAmount: 1,
+                    pointPrice,
+                    image,
                 })
                 .expect((res: request.Response) => {
                     expect(res.body.uuid).toBeDefined();
+                    expect(res.body.pointPrice).toBe(pointPrice);
+                    expect(res.body.image).toBe(image);
                     expect(new Date(res.body.expiryDate).getTime()).toBe(expiryDate.getTime());
                     expect(res.body.claims.length).toBe(1);
                     expect(res.body.claims[0].id).toBeDefined();
@@ -82,7 +88,7 @@ describe('ERC20 Rewards', () => {
                 .expect(201, done);
         });
 
-        describe('POST /erc20-rewards/:id/claim', () => {
+        describe('POST /erc20-perks/:id/claim', () => {
             it('should return a 200 and withdrawal id', (done) => {
                 user.post(`/v1/claims/${claim.id}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
@@ -112,8 +118,8 @@ describe('ERC20 Rewards', () => {
 
     describe('Reward Limit === 1', () => {
         let claim: ClaimDocument, claim1: ClaimDocument;
-        it('POST /erc20-rewards', (done) => {
-            user.post('/v1/erc20-rewards/')
+        it('POST /erc20-perks', (done) => {
+            user.post('/v1/erc20-perks/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .send({
                     title: 'Expiration date is next 30 min',
@@ -177,8 +183,8 @@ describe('ERC20 Rewards', () => {
 
     describe('Expiration Date < Date.now', () => {
         let claim: ClaimDocument;
-        it('POST /erc20-rewards', (done) => {
-            user.post('/v1/erc20-rewards/')
+        it('POST /erc20-perks', (done) => {
+            user.post('/v1/erc20-perks/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .send({
                     title: 'Expiration date is next 30 min',
@@ -210,9 +216,9 @@ describe('ERC20 Rewards', () => {
         });
     });
 
-    describe('GET /erc721-rewards', () => {
+    describe('GET /erc721-perks', () => {
         it('Should return a list of rewards', (done) => {
-            user.get('/v1/erc20-rewards')
+            user.get('/v1/erc20-perks')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect((res: request.Response) => {
                     expect(res.body.results.length).toBe(3);

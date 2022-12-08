@@ -8,7 +8,7 @@ import { addMinutes } from '@thxnetwork/api/util/rewards';
 
 const user = request.agent(app);
 
-describe('Referral Rewards', () => {
+describe('Rewards', () => {
     let poolId: string, tokenAddress: string, referralReward: any, pointReward: any;
 
     beforeAll(async () => {
@@ -74,6 +74,7 @@ describe('Referral Rewards', () => {
     });
 
     it('POST /point-rewards', (done) => {
+        const expiryDate = addMinutes(new Date(), 30);
         const title = 'title';
         const description = 'description';
         const amount = '160';
@@ -83,6 +84,10 @@ describe('Referral Rewards', () => {
                 title,
                 description,
                 amount,
+                platform: 0,
+                expiryDate,
+                rewardLimit: 1,
+                claimAmount: 1,
             })
             .expect((res: request.Response) => {
                 expect(res.body.title).toBe(title);

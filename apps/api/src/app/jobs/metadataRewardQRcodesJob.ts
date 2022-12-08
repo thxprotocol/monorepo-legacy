@@ -14,7 +14,7 @@ import { s3PrivateClient } from '@thxnetwork/api/util/s3';
 import { createArchiver } from '@thxnetwork/api/util/zip';
 import { Upload } from '@aws-sdk/lib-storage';
 import { assetsPath } from '../util/path';
-import { ERC721Reward } from '../models/ERC721Reward';
+import { ERC721Perk } from '../models/ERC721Perk';
 
 export const generateMetadataRewardQRCodesJob = async ({ attrs }: Job) => {
     if (!attrs.data) return;
@@ -25,7 +25,7 @@ export const generateMetadataRewardQRCodesJob = async ({ attrs }: Job) => {
 
         if (!pool) throw new Error('Pool not found');
 
-        const rewards = await ERC721Reward.find({ poolId });
+        const rewards = await ERC721Perk.find({ poolId });
         if (!rewards.length) throw new Error('Rewards not found');
 
         const account = await AccountProxy.getById(sub);

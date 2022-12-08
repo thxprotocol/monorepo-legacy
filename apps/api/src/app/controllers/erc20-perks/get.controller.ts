@@ -3,13 +3,13 @@ import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { param } from 'express-validator';
 import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
-import ERC20RewardService from '@thxnetwork/api/services/ERC20RewardService';
+import ERC20PerkService from '@thxnetwork/api/services/ERC20PerkService';
 
 const validation = [param('id').exists()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['RewardsToken']
-    const reward = await ERC20RewardService.get(req.params.id);
+    const reward = await ERC20PerkService.get(req.params.id);
     if (!reward) throw new NotFoundError();
 
     const claims = await ClaimService.findByReward(reward);

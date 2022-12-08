@@ -5,7 +5,7 @@ import { check, param } from 'express-validator';
 import { Readable } from 'stream';
 import { logger } from '@thxnetwork/api/util/logger';
 import CsvReadableStream from 'csv-reader';
-import { createERC721Reward } from '@thxnetwork/api/util/rewards';
+import { createERC721Perk } from '@thxnetwork/api/util/rewards';
 import { RewardConditionPlatform } from '@thxnetwork/types/index';
 import db from '@thxnetwork/api/util/database';
 
@@ -80,7 +80,7 @@ const controller = async (req: Request, res: Response) => {
                                 rewardLimit: 1,
                                 platform: RewardConditionPlatform.None,
                             };
-                            await createERC721Reward(req.assetPool, config);
+                            await createERC721Perk(req.assetPool, config);
                         }
                     } catch (err) {
                         logger.error(err);

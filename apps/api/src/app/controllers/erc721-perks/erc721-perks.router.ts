@@ -7,11 +7,11 @@ import {
     assertPlan,
 } from '@thxnetwork/api/middlewares';
 import { AccountPlanType } from '@thxnetwork/api/types/enums';
-import CreateERC721Reward from './post.controller';
-import ReadERC721Reward from './get.controller';
-import UpdateERC721Reward from './patch.controller';
-import ListERC721Reward from './list.controller';
-import DeleteERC721Reward from './delete.controller';
+import CreateERC721Perk from './post.controller';
+import ReadERC721Perk from './get.controller';
+import UpdateERC721Perk from './patch.controller';
+import ListERC721Perk from './list.controller';
+import DeleteERC721Perk from './delete.controller';
 
 const router = express.Router();
 
@@ -21,42 +21,42 @@ router.get(
     assertAssetPoolAccess,
     requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
-    ListERC721Reward.controller,
+    ListERC721Perk.controller,
 );
 router.get(
     '/:id',
     guard.check(['erc721_rewards:read']),
     //assertAssetPoolAccess,
-    assertRequestInput(ReadERC721Reward.validation),
+    assertRequestInput(ReadERC721Perk.validation),
     requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
-    ReadERC721Reward.controller,
+    ReadERC721Perk.controller,
 );
 router.post(
     '/',
     guard.check(['erc721_rewards:write', 'erc721_rewards:read']),
     assertAssetPoolAccess,
-    assertRequestInput(CreateERC721Reward.validation),
+    assertRequestInput(CreateERC721Perk.validation),
     requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
-    CreateERC721Reward.controller,
+    CreateERC721Perk.controller,
 );
 router.patch(
     '/:id',
     guard.check(['erc721_rewards:write', 'erc721_rewards:read']),
     assertAssetPoolAccess,
-    assertRequestInput(UpdateERC721Reward.validation),
+    assertRequestInput(UpdateERC721Perk.validation),
     requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
-    UpdateERC721Reward.controller,
+    UpdateERC721Perk.controller,
 );
 router.delete(
     '/:id',
     guard.check(['erc721_rewards:write', 'erc721_rewards:read']),
     assertAssetPoolAccess,
     requireAssetPoolHeader,
-    assertRequestInput(DeleteERC721Reward.validation),
-    DeleteERC721Reward.controller,
+    assertRequestInput(DeleteERC721Perk.validation),
+    DeleteERC721Perk.controller,
 );
 
 export default router;

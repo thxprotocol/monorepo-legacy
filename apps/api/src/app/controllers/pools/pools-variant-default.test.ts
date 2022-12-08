@@ -20,7 +20,7 @@ import { getByteCodeForContractName, getContract, getContractFromName } from '@t
 import { currentVersion } from '@thxnetwork/contracts/exports';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
 import { ClaimDocument } from '@thxnetwork/api/types/TClaim';
-import { ERC20RewardDocument } from '@thxnetwork/api/models/ERC20Reward';
+import { ERC20PerkDocument } from '@thxnetwork/api/models/ERC20Perk';
 import { addMinutes } from '@thxnetwork/api/util/rewards';
 
 const user = request.agent(app);
@@ -32,7 +32,7 @@ describe('Default Pool', () => {
         tokenAddress: string,
         userWallet: Account,
         poolId: string,
-        reward: ERC20RewardDocument,
+        reward: ERC20PerkDocument,
         claim: ClaimDocument;
 
     beforeAll(async () => {
@@ -126,10 +126,10 @@ describe('Default Pool', () => {
         });
     });
 
-    describe('POST /erc20-rewards/', () => {
+    describe('POST /erc20-perks/', () => {
         it('HTTP 302 when reward is added', (done) => {
             const expiryDate = addMinutes(new Date(), 30);
-            user.post('/v1/erc20-rewards/')
+            user.post('/v1/erc20-perks/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .send({
                     title,
@@ -150,23 +150,23 @@ describe('Default Pool', () => {
         });
     });
 
-    describe('GET /erc20-rewards/:id', () => {
+    describe('GET /erc20-perks/:id', () => {
         it('HTTP 200 when successful', (done) => {
-            user.get('/v1/erc20-rewards/' + reward._id)
+            user.get('/v1/erc20-perks/' + reward._id)
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect(200, done);
         });
 
         it('HTTP 404 if reward can not be found', (done) => {
-            user.get('/v1/erc20-rewards/62cf04437dff7cbc49e0c687')
+            user.get('/v1/erc20-perks/62cf04437dff7cbc49e0c687')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect(404, done);
         });
     });
 
-    describe('GET /erc20-rewards/:id (after finalizing)', () => {
+    describe('GET /erc20-perks/:id (after finalizing)', () => {
         it('HTTP 200 and return updated withdrawAmount and state 1', (done) => {
-            user.get('/v1/erc20-rewards/' + reward._id)
+            user.get('/v1/erc20-perks/' + reward._id)
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect(async (res: request.Response) => {
                     expect(res.body.title).toEqual(title);
@@ -177,7 +177,7 @@ describe('Default Pool', () => {
         });
     });
 
-    describe('POST /erc20-rewards/:id/claim', () => {
+    describe('POST /erc20-perks/:id/claim', () => {
         it('HTTP 302 when tx is handled', async () => {
             await user
                 .post(`/v1/claims/${claim.id}/collect`)

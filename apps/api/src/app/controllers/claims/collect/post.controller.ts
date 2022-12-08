@@ -4,7 +4,7 @@ import { BadRequestError, ForbiddenError } from '@thxnetwork/api/util/errors';
 import { WithdrawalState, WithdrawalType } from '@thxnetwork/api/types/enums';
 import { WithdrawalDocument } from '@thxnetwork/api/models/Withdrawal';
 import { Claim } from '@thxnetwork/api/models/Claim';
-import { findRewardByUuid, isTERC20Reward, isTERC721Reward } from '@thxnetwork/api/util/rewards';
+import { findRewardByUuid, isTERC20Perk, isTERC721Perk } from '@thxnetwork/api/util/rewards';
 import { canClaim } from '@thxnetwork/api/util/condition';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
@@ -50,7 +50,7 @@ const controller = async (req: Request, res: Response) => {
     // Force sync by default but allow the requester to do async calls.
     const forceSync = req.query.forceSync !== undefined ? req.query.forceSync === 'true' : true;
 
-    if (isTERC20Reward(reward) && claim.erc20Id) {
+    if (isTERC20Perk(reward) && claim.erc20Id) {
         let withdrawal: WithdrawalDocument = await WithdrawalService.create(
             pool,
             WithdrawalType.ClaimReward,
@@ -80,7 +80,7 @@ const controller = async (req: Request, res: Response) => {
         return res.json({ withdrawal, erc20, reward, claim });
     }
 
-    if (isTERC721Reward(reward) && claim.erc721Id) {
+    if (isTERC721Perk(reward) && claim.erc721Id) {
         const metadata = await ERC721Service.findMetadataById(reward.erc721metadataId);
         const erc721 = await ERC721Service.findById(metadata.erc721);
         const token = await ERC721Service.mint(pool, erc721, metadata, account, forceSync);

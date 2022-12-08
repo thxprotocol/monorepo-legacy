@@ -133,11 +133,13 @@ describe('ERC721 Rewards', () => {
     });
 
     describe('A reward with limit is 0 (unlimited) and claim_one enabled to disabled', () => {
-        let claim: ClaimDocument, erc721RewardId: string;
+        let claim: ClaimDocument, erc721PerkId: string;
 
-        it('POST /erc721-rewards', (done) => {
+        it('POST /erc721-perks', (done) => {
             const expiryDate = addMinutes(new Date(), 30);
-            user.post('/v1/erc721-rewards/')
+            const pointPrice = 200;
+            const image = 'http://myimage.com/1';
+            user.post('/v1/erc721-perks/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .send({
                     title: 'Expiration date is next 30 min',
@@ -147,22 +149,26 @@ describe('ERC721 Rewards', () => {
                     expiryDate,
                     rewardLimit: 1,
                     claimAmount: 1,
+                    pointPrice,
+                    image,
                 })
                 .expect((res: request.Response) => {
                     expect(res.body._id).toBeDefined();
+                    expect(res.body.pointPrice).toBe(pointPrice);
+                    expect(res.body.image).toBe(image);
                     expect(res.body.claims.length).toBe(1);
                     expect(res.body.claims[0].id).toBeDefined();
                     claim = res.body.claims[0];
-                    erc721RewardId = res.body._id;
+                    erc721PerkId = res.body._id;
                 })
                 .expect(201, done);
         });
 
-        describe('PATCH /erc721-rewards/:id', () => {
+        describe('PATCH /erc721-perks/:id', () => {
             it('Should return 200 when edit the reward', (done) => {
                 const expiryDate = addMinutes(new Date(), 60);
                 const title = 'Expiration date is next 60 min';
-                user.patch(`/v1/erc721-rewards/${erc721RewardId}`)
+                user.patch(`/v1/erc721-perks/${erc721PerkId}`)
                     .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                     .send({
                         title,
@@ -197,9 +203,9 @@ describe('ERC721 Rewards', () => {
         });
     });
 
-    describe('GET /erc721-rewards', () => {
+    describe('GET /erc721-perks', () => {
         it('Should return a list of rewards', (done) => {
-            user.get('/v1/erc721-rewards')
+            user.get('/v1/erc721-perks')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
 
                 .expect((res: request.Response) => {

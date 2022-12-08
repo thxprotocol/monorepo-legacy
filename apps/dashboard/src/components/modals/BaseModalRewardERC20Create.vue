@@ -53,7 +53,7 @@
 import { type IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { platformList, platformInteractionList } from '@thxnetwork/dashboard/types/rewards';
-import { RewardConditionInteraction, RewardConditionPlatform, type TERC20Reward } from '@thxnetwork/types/index';
+import { RewardConditionInteraction, RewardConditionPlatform, type TERC20Perk } from '@thxnetwork/types/index';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardCondition from '../cards/BaseCardRewardCondition.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
@@ -85,7 +85,7 @@ export default class ModalRewardERC20Create extends Vue {
 
     @Prop() id!: string;
     @Prop() pool!: IPool;
-    @Prop({ required: false }) reward!: TERC20Reward;
+    @Prop({ required: false }) reward!: TERC20Perk;
 
     mounted() {
         if (this.reward) {
@@ -104,7 +104,7 @@ export default class ModalRewardERC20Create extends Vue {
     onSubmit() {
         this.isLoading = true;
         this.$store
-            .dispatch(`erc20Rewards/${this.reward ? 'update' : 'create'}`, {
+            .dispatch(`erc20Perks/${this.reward ? 'update' : 'create'}`, {
                 pool: this.pool,
                 reward: this.reward,
                 payload: {

@@ -2,15 +2,15 @@ import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { IPool } from './pools';
-import { RewardConditionPlatform, type TERC20Reward } from '@thxnetwork/types/index';
+import { RewardConditionPlatform, type TERC721Perk } from '@thxnetwork/types/index';
 
 export type RewardByPage = {
-    [page: number]: TERC20Reward[];
+    [page: number]: TERC721Perk[];
 };
 
-export type TERC20RewardState = {
+export type TRewardState = {
     [poolId: string]: {
-        [id: string]: TERC20Reward;
+        [id: string]: TERC721Perk;
     };
 };
 
@@ -21,8 +21,8 @@ export type RewardListProps = {
 };
 
 @Module({ namespaced: true })
-class ERC20RewardModule extends VuexModule {
-    _all: TERC20RewardState = {};
+class ERC721PerkModule extends VuexModule {
+    _all: TRewardState = {};
     _totals: { [poolId: string]: number } = {};
 
     get all() {
@@ -34,14 +34,14 @@ class ERC20RewardModule extends VuexModule {
     }
 
     @Mutation
-    set({ pool, reward }: { reward: TERC20Reward & { _id: string }; pool: IPool }) {
+    set({ pool, reward }: { reward: TERC721Perk & { _id: string }; pool: IPool }) {
         if (!this._all[pool._id]) Vue.set(this._all, pool._id, {});
         if (typeof reward.platform === 'undefined') reward.platform = RewardConditionPlatform.None; // Temp fix for corrupt data
         Vue.set(this._all[pool._id], reward._id, reward);
     }
 
     @Mutation
-    unset(reward: TERC20Reward) {
+    unset(reward: TERC721Perk) {
         Vue.delete(this._all[reward.poolId], reward._id as string);
     }
 
@@ -54,7 +54,7 @@ class ERC20RewardModule extends VuexModule {
     async list({ pool, page, limit }: RewardListProps) {
         const { data } = await axios({
             method: 'GET',
-            url: '/erc20-rewards',
+            url: '/erc721-perks',
             headers: { 'X-PoolId': pool._id },
             params: {
                 page: String(page),
@@ -64,44 +64,43 @@ class ERC20RewardModule extends VuexModule {
 
         this.context.commit('setTotal', { pool, total: data.total });
 
-        data.results.forEach((reward: TERC20Reward) => {
+        data.results.forEach((reward: TERC721Perk) => {
             reward.page = page;
             this.context.commit('set', { pool, reward });
         });
     }
 
     @Action({ rawError: true })
-    async create({ pool, payload }: { pool: IPool; payload: TERC20Reward }) {
+    async create({ pool, payload }: { pool: IPool; payload: TERC721Perk }) {
         const r = await axios({
             method: 'POST',
-            url: '/erc20-rewards',
+            url: '/erc721-perks',
             headers: { 'X-PoolId': pool._id },
             data: payload,
         });
 
-        this.context.commit('set', { pool: payload, reward: r.data });
+        this.context.commit('set', { pool, reward: r.data });
     }
 
     @Action({ rawError: true })
-    async update({ pool, reward, payload }: { pool: IPool; reward: TERC20Reward; payload: TERC20Reward }) {
+    async update({ pool, reward, payload }: { pool: IPool; reward: TERC721Perk; payload: TERC721Perk }) {
         const { data } = await axios({
             method: 'PATCH',
-            url: `/erc20-rewards/${reward._id}`,
+            url: `/erc721-perks/${reward._id}`,
             headers: { 'X-PoolId': pool._id },
             data: payload,
         });
-
         this.context.commit('set', {
-            pool: pool,
-            reward: data,
+            pool,
+            reward: { ...reward, ...data, page: reward.page },
         });
     }
 
     @Action({ rawError: true })
-    async getQRCodes({ reward }: { reward: TERC20Reward }) {
+    async getQRCodes({ reward }: { reward: TERC721Perk }) {
         const { status, data } = await axios({
             method: 'GET',
-            url: `/erc20-rewards/${reward._id}/claims/qrcode`,
+            url: `/erc721-perks/${reward._id}/claims/qrcode`,
             headers: { 'X-PoolId': reward.poolId },
             responseType: 'blob',
         });
@@ -112,21 +111,21 @@ class ERC20RewardModule extends VuexModule {
             // Fake an anchor click to trigger a download in the browser
             const anchor = document.createElement('a');
             anchor.href = window.URL.createObjectURL(new Blob([data]));
-            anchor.setAttribute('download', `${reward.uuid}_qrcodes.zip`);
+            anchor.setAttribute('download', `${reward._id}_qrcodes.zip`);
             document.body.appendChild(anchor);
             anchor.click();
         }
     }
 
     @Action({ rawError: true })
-    async delete(reward: TERC20Reward) {
+    async delete(reward: TERC721Perk) {
         await axios({
             method: 'DELETE',
-            url: `/erc20-rewards/${reward._id}`,
+            url: `/erc721-perks/${reward._id}`,
             headers: { 'X-PoolId': reward.poolId },
         });
         this.context.commit('unset', reward);
     }
 }
 
-export default ERC20RewardModule;
+export default ERC721PerkModule;

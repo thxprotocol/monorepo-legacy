@@ -7,9 +7,9 @@ import PromotionStore from './modules/promotions';
 import PointRewardStore from './modules/pointRewards';
 import WidgetStore from './modules/widgets';
 import ERC20Store from './modules/erc20';
-import ERC20RewardsStore from './modules/erc20Rewards';
+import ERC20PerksStore from './modules/erc20Perks';
 import ERC721Store from './modules/erc721';
-import ERC721RewardsStore from './modules/erc721Rewards';
+import ERC721PerksStore from './modules/erc721Perks';
 import ReferralRewardRewardsStore from './modules/referralRewards';
 import PaymentStore from './modules/payments';
 import TransactionStore from './modules/transactions';
@@ -30,9 +30,9 @@ const modules = {
     pointRewards: PointRewardStore,
     widgets: WidgetStore,
     erc20: ERC20Store,
-    erc20Rewards: ERC20RewardsStore,
+    erc20Perks: ERC20PerksStore,
     erc721: ERC721Store,
-    erc721Rewards: ERC721RewardsStore,
+    erc721Perks: ERC721PerksStore,
     referralRewards: ReferralRewardRewardsStore,
     payments: PaymentStore,
     transactions: TransactionStore,
