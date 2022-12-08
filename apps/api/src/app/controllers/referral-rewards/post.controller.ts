@@ -4,7 +4,7 @@ import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardServic
 
 const validation = [
     body('title').exists().isString(),
-    body('successUrl').exists().isURL(),
+    body('successUrl').exists().isURL({ require_tld: false }),
     body('amount').exists().isInt({ gt: 0 }),
 ];
 

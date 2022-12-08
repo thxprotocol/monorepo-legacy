@@ -1,5 +1,7 @@
 import { API_URL, NODE_ENV, WIDGET_URL } from '@thxnetwork/api/config/secrets';
 import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
+import AssetPoolService from '@thxnetwork/api/services/AssetPoolService';
+import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import { minify } from 'terser';
@@ -11,6 +13,8 @@ const controller = async (req: Request, res: Response) => {
     const referralReward = await ReferralReward.findOne({
         poolId: req.params.id,
     });
+    const pool = await AssetPoolService.getById(req.params.id);
+    if (!pool) throw new NotFoundError('Pool not found.');
 
     const data = `
     class THXWidget {
@@ -39,7 +43,7 @@ const controller = async (req: Request, res: Response) => {
         constructor(settings) {
             if (!settings) return console.error("THXWidget requires a settings object.");
             this.settings = settings;
-            this.iframe = this.createIframe(settings.widgetUrl, settings.poolId, settings.origin);
+            this.iframe = this.createIframe(settings.widgetUrl, settings.poolId, settings.chainId, settings.origin);
             this.notifications = this.createNotifications(0);
             this.launcher = this.createLauncher(this.notifications);
             this.container = this.createContainer(this.iframe, this.launcher);
@@ -63,12 +67,12 @@ const controller = async (req: Request, res: Response) => {
             window.location.href = url;
         }
     
-        createIframe(widgetUrl, poolId, origin) {
+        createIframe(widgetUrl, poolId, chainId, origin) {
             const iframe = document.createElement('iframe');
             const styles = window.innerWidth < this.MD_BREAKPOINT ? this.defaultStyles['sm'] : this.defaultStyles['md'];
     
             iframe.id = 'thx-iframe';
-            iframe.src = widgetUrl +'?id=' + poolId + '&origin=' + origin;
+            iframe.src = widgetUrl +'?id=' + poolId + '&origin=' + origin + '&chainId=' + chainId;
             Object.assign(iframe.style, {
                 ...styles,
                 zIndex: 99999999,
@@ -206,10 +210,11 @@ const controller = async (req: Request, res: Response) => {
         apiUrl: '${API_URL}',
         widgetUrl: '${WIDGET_URL}',
         poolId: '${req.params.id}',
+        chainId: '${pool.chainId}',
         origin: '${new URL(req.header('Referrer')).origin}',
         referral: {
-            uuid: '${referralReward.uuid}',
-            successUrl: '${referralReward.successUrl}',
+            uuid: '${referralReward && referralReward.uuid}',
+            successUrl: '${referralReward && referralReward.successUrl}',
         }
     });
 `;
