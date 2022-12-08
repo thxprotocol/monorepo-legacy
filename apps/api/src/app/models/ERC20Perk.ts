@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { TERC20Reward } from '@thxnetwork/types/';
+import { TERC20Perk } from '@thxnetwork/types/';
 
 export const rewardBaseSchema = {
     uuid: String,
@@ -14,9 +14,9 @@ export const rewardBaseSchema = {
     content: String,
 };
 
-export type ERC20RewardDocument = mongoose.Document & TERC20Reward;
+export type ERC20PerkDocument = mongoose.Document & TERC20Perk;
 
-const erc20RewardSchema = new mongoose.Schema(
+const erc20PerkSchema = new mongoose.Schema(
     {
         ...rewardBaseSchema,
         amount: String,
@@ -26,4 +26,4 @@ const erc20RewardSchema = new mongoose.Schema(
     { timestamps: true },
 );
 
-export const ERC20Reward = mongoose.model<ERC20RewardDocument>('erc20rewards', erc20RewardSchema);
+export const ERC20Perk = mongoose.model<ERC20PerkDocument>('erc20perks', erc20PerkSchema);

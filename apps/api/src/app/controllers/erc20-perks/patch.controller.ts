@@ -1,7 +1,7 @@
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
-import ERC20RewardService from '@thxnetwork/api/services/ERC20RewardService';
+import ERC20PerkService from '@thxnetwork/api/services/ERC20PerkService';
 
 const validation = [
     param('id').exists(),
@@ -18,9 +18,9 @@ const validation = [
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['RewardsToken']
-    let reward = await ERC20RewardService.get(req.params.id);
+    let reward = await ERC20PerkService.get(req.params.id);
     if (!reward) throw new NotFoundError('Could not find the reward');
-    reward = await ERC20RewardService.update(reward, req.body);
+    reward = await ERC20PerkService.update(reward, req.body);
     return res.json(reward.toJSON());
 };
 

@@ -5,7 +5,7 @@ import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import AssetPoolService from '@thxnetwork/api/services/AssetPoolService';
 import { Claim } from '@thxnetwork/api/models/Claim';
-import { findRewardByUuid, isTERC20Reward, isTERC721Reward } from '@thxnetwork/api/util/rewards';
+import { findRewardByUuid, isTERC20Perk, isTERC721Perk } from '@thxnetwork/api/util/rewards';
 
 const validation = [param('id').exists().isString()];
 
@@ -26,13 +26,13 @@ const controller = async (req: Request, res: Response) => {
     const reward = await findRewardByUuid(claim.rewardId);
     if (!reward) throw new NotFoundError('Could not find this reward');
 
-    if (isTERC20Reward(reward) && claim.erc20Id) {
+    if (isTERC20Perk(reward) && claim.erc20Id) {
         const erc20 = await ERC20Service.getById(claim.erc20Id);
 
         return res.json({ erc20, claim, pool, reward });
     }
 
-    if (isTERC721Reward(reward) && claim.erc721Id) {
+    if (isTERC721Perk(reward) && claim.erc721Id) {
         const erc721 = await ERC721Service.findById(claim.erc721Id);
         const metadata = await ERC721Service.findMetadataById(reward.erc721metadataId);
 

@@ -1,6 +1,6 @@
 import { body } from 'express-validator';
 import { Request, Response } from 'express';
-import { createERC721Reward } from '@thxnetwork/api/util/rewards';
+import { createERC721Perk } from '@thxnetwork/api/util/rewards';
 
 const validation = [
     body('title').isString(),
@@ -17,7 +17,7 @@ const validation = [
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721 Rewards']
-    const { reward, claims } = await createERC721Reward(req.assetPool, req.body);
+    const { reward, claims } = await createERC721Perk(req.assetPool, req.body);
     res.status(201).json({ ...reward.toJSON(), claims });
 };
 

@@ -133,7 +133,7 @@ describe('ERC721 Rewards', () => {
     });
 
     describe('A reward with limit is 0 (unlimited) and claim_one enabled to disabled', () => {
-        let claim: ClaimDocument, erc721RewardId: string;
+        let claim: ClaimDocument, erc721PerkId: string;
 
         it('POST /erc721-rewards', (done) => {
             const expiryDate = addMinutes(new Date(), 30);
@@ -159,7 +159,7 @@ describe('ERC721 Rewards', () => {
                     expect(res.body.claims.length).toBe(1);
                     expect(res.body.claims[0].id).toBeDefined();
                     claim = res.body.claims[0];
-                    erc721RewardId = res.body._id;
+                    erc721PerkId = res.body._id;
                 })
                 .expect(201, done);
         });
@@ -168,7 +168,7 @@ describe('ERC721 Rewards', () => {
             it('Should return 200 when edit the reward', (done) => {
                 const expiryDate = addMinutes(new Date(), 60);
                 const title = 'Expiration date is next 60 min';
-                user.patch(`/v1/erc721-rewards/${erc721RewardId}`)
+                user.patch(`/v1/erc721-rewards/${erc721PerkId}`)
                     .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                     .send({
                         title,

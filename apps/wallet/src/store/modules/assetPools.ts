@@ -46,7 +46,7 @@ function getItemUrl(withdrawCondition: { interaction: RewardConditionInteraction
 @Module({ namespaced: true })
 class AssetPoolModule extends VuexModule {
     @Action({ rawError: true })
-    async getERC721Reward({ rewardId, poolId }: { rewardId: string; poolId: string }) {
+    async getERC721Perk({ rewardId, poolId }: { rewardId: string; poolId: string }) {
         const { data } = await axios({
             method: 'GET',
             url: `/erc721-rewards/${rewardId}`,
@@ -57,7 +57,7 @@ class AssetPoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async getERC20Reward({ rewardId, poolId }: { rewardId: string; poolId: string }) {
+    async getERC20Perk({ rewardId, poolId }: { rewardId: string; poolId: string }) {
         const { data } = await axios({
             method: 'GET',
             url: `/erc20-rewards/${rewardId}`,

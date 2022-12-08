@@ -20,7 +20,7 @@ import { getByteCodeForContractName, getContract, getContractFromName } from '@t
 import { currentVersion } from '@thxnetwork/contracts/exports';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
 import { ClaimDocument } from '@thxnetwork/api/types/TClaim';
-import { ERC20RewardDocument } from '@thxnetwork/api/models/ERC20Reward';
+import { ERC20PerkDocument } from '@thxnetwork/api/models/ERC20Perk';
 import { addMinutes } from '@thxnetwork/api/util/rewards';
 
 const user = request.agent(app);
@@ -32,7 +32,7 @@ describe('Default Pool', () => {
         tokenAddress: string,
         userWallet: Account,
         poolId: string,
-        reward: ERC20RewardDocument,
+        reward: ERC20PerkDocument,
         claim: ClaimDocument;
 
     beforeAll(async () => {

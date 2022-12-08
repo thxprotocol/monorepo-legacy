@@ -3,7 +3,7 @@ import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { param } from 'express-validator';
 import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
-import RewardNftService from '@thxnetwork/api/services/ERC721RewardService';
+import RewardNftService from '@thxnetwork/api/services/ERC721PerkService';
 
 const validation = [param('id').exists()];
 
