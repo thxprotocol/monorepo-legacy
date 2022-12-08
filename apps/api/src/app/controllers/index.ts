@@ -30,6 +30,7 @@ import brandsRouter from './brands/brands.router';
 import walletsRouter from './wallets/wallets.router';
 import widgetRouter from './widget/widget.router';
 import rewardsRouter from './rewards/rewards.router';
+import perksRouter from './perks/perks.router';
 import { checkJwt, corsHandler } from '@thxnetwork/api/middlewares';
 
 const router = express.Router();
@@ -42,6 +43,7 @@ router.use('/metadata', erc721MetadataRouter);
 router.use('/payments', paymentsRouter);
 router.use('/widget', widgetRouter);
 router.use('/rewards', rewardsRouter);
+router.use('/perks', perksRouter);
 
 router.use(checkJwt);
 router.use(corsHandler);
