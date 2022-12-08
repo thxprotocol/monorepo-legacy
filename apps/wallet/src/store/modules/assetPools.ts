@@ -49,7 +49,7 @@ class AssetPoolModule extends VuexModule {
     async getERC721Perk({ rewardId, poolId }: { rewardId: string; poolId: string }) {
         const { data } = await axios({
             method: 'GET',
-            url: `/erc721-rewards/${rewardId}`,
+            url: `/erc721-perks/${rewardId}`,
             headers: { 'X-PoolId': poolId },
         });
         data.itemUrl = getItemUrl(data);
@@ -60,7 +60,7 @@ class AssetPoolModule extends VuexModule {
     async getERC20Perk({ rewardId, poolId }: { rewardId: string; poolId: string }) {
         const { data } = await axios({
             method: 'GET',
-            url: `/erc20-rewards/${rewardId}`,
+            url: `/erc20-perks/${rewardId}`,
             headers: { 'X-PoolId': poolId },
         });
         data.itemUrl = getItemUrl(data);

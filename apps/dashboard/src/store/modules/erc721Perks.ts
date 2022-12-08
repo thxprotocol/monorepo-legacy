@@ -54,7 +54,7 @@ class ERC721PerkModule extends VuexModule {
     async list({ pool, page, limit }: RewardListProps) {
         const { data } = await axios({
             method: 'GET',
-            url: '/erc721-rewards',
+            url: '/erc721-perks',
             headers: { 'X-PoolId': pool._id },
             params: {
                 page: String(page),
@@ -74,7 +74,7 @@ class ERC721PerkModule extends VuexModule {
     async create({ pool, payload }: { pool: IPool; payload: TERC721Perk }) {
         const r = await axios({
             method: 'POST',
-            url: '/erc721-rewards',
+            url: '/erc721-perks',
             headers: { 'X-PoolId': pool._id },
             data: payload,
         });
@@ -86,7 +86,7 @@ class ERC721PerkModule extends VuexModule {
     async update({ pool, reward, payload }: { pool: IPool; reward: TERC721Perk; payload: TERC721Perk }) {
         const { data } = await axios({
             method: 'PATCH',
-            url: `/erc721-rewards/${reward._id}`,
+            url: `/erc721-perks/${reward._id}`,
             headers: { 'X-PoolId': pool._id },
             data: payload,
         });
@@ -100,7 +100,7 @@ class ERC721PerkModule extends VuexModule {
     async getQRCodes({ reward }: { reward: TERC721Perk }) {
         const { status, data } = await axios({
             method: 'GET',
-            url: `/erc721-rewards/${reward._id}/claims/qrcode`,
+            url: `/erc721-perks/${reward._id}/claims/qrcode`,
             headers: { 'X-PoolId': reward.poolId },
             responseType: 'blob',
         });
@@ -121,7 +121,7 @@ class ERC721PerkModule extends VuexModule {
     async delete(reward: TERC721Perk) {
         await axios({
             method: 'DELETE',
-            url: `/erc721-rewards/${reward._id}`,
+            url: `/erc721-perks/${reward._id}`,
             headers: { 'X-PoolId': reward.poolId },
         });
         this.context.commit('unset', reward);

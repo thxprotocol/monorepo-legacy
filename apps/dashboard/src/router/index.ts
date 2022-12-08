@@ -55,11 +55,11 @@ const routes: Array<RouteConfig> = [
                 component: () => import('../views/pool/PointRewards.vue'),
             },
             {
-                path: 'erc20-rewards',
+                path: 'erc20-perks',
                 component: () => import('../views/pool/ERC20Perks.vue'),
             },
             {
-                path: 'erc721-rewards',
+                path: 'erc721-perks',
                 component: () => import('../views/pool/ERC721Perks.vue'),
             },
             {

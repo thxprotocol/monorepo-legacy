@@ -49,7 +49,7 @@ describe('Widgets', () => {
         it('HTTP 200', async () => {
             const expiryDate = addMinutes(new Date(), 30);
             await user
-                .post('/v1/erc20-rewards/')
+                .post('/v1/erc20-perks/')
                 .set({ 'X-PoolId': pool._id, 'Authorization': dashboardAccessToken })
                 .send({
                     title: 'Expiration date is next 30 min',

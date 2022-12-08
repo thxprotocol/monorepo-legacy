@@ -109,7 +109,7 @@ export default class BaseCardERC20 extends Vue {
     }
 
     onClick() {
-        if (this.erc20.poolId) this.$router.push({ path: `/pool/${this.erc20.poolId}/erc20-rewards` });
+        if (this.erc20.poolId) this.$router.push({ path: `/pool/${this.erc20.poolId}/erc20-perks` });
     }
 }
 </script>
