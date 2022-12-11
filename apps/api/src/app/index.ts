@@ -20,8 +20,9 @@ const app = express();
 
 db.connect(MONGODB_URI);
 
-app.set('trust proxy', true);
 app.set('port', PORT);
+app.set('trust proxy', true);
+app.set('layout', './layouts/default');
 app.use(requestLogger);
 app.use(compression());
 app.use(lusca.xframe('SAMEORIGIN'));

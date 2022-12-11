@@ -18,9 +18,11 @@ async function controller(req: Request, res: Response) {
     let redirect = '';
 
     if (params.channel == RewardConditionPlatform.Google) {
-        redirect = isExpired(account.googleAccessTokenExpires)
-            ? YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getExpandedScopes())
-            : params.redirect_uri;
+        redirect =
+            isExpired(account.googleAccessTokenExpires) ||
+            !(await YouTubeService.haveExpandedScopes(account.googleAccessToken))
+                ? YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getExpandedScopes())
+                : params.redirect_uri;
     } else if (params.channel == RewardConditionPlatform.Twitter) {
         redirect = isExpired(account.twitterAccessTokenExpires)
             ? TwitterService.getLoginURL(uid, {})

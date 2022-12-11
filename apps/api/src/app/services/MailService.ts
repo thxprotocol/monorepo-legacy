@@ -7,6 +7,8 @@ if (SENDGRID_API_KEY) {
 }
 
 const send = (to: string, subject: string, html: string, link = '') => {
+    if (!to) return;
+
     if (SENDGRID_API_KEY) {
         const options = {
             to,

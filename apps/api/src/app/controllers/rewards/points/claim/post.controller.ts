@@ -17,6 +17,7 @@ const controller = async (req: Request, res: Response) => {
         rewardId: reward.uuid,
         poolId: req.assetPool._id,
         sub: req.auth.sub,
+        amount: reward.amount,
     });
 
     await PointBalanceService.add(req.assetPool, req.auth.sub, reward.amount);

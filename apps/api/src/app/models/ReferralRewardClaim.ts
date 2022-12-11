@@ -8,6 +8,7 @@ const schema = new mongoose.Schema(
         referralRewardId: String,
         sub: String,
         uuid: String,
+        amount: String,
     },
     { timestamps: true },
 );
