@@ -12,14 +12,14 @@ import WalletManager from '../managers/WalletManager';
 import ReferralRewardManager from '../managers/ReferralRewardManager';
 import RewardsManager from '../managers/RewardsManager';
 import PointRewardManager from '../managers/PointRewardManager';
+import PerksManager from '../managers/PerksManager';
+import PointBalanceManager from '../managers/PointBalanceManager';
 
 type Props = Omit<Credential, 'grantType'>;
 
 export default class THXClient {
     initialized = false;
     authenticated = false;
-
-    /* Internal managers */
     erc20: ERC20Manager;
     erc721: ERC721Manager;
     request: RequestManager;
@@ -30,9 +30,9 @@ export default class THXClient {
     referralRewardManager: ReferralRewardManager;
     pointRewardManager: PointRewardManager;
     rewardsManager: RewardsManager;
-
-    /* External managers */
+    perksManager: PerksManager;
     account: AccountManager;
+    pointBalanceManager: PointBalanceManager;
 
     constructor({ scopes = 'openid', ...rest }: Props) {
         const env = rest.env || 'prod';
@@ -69,8 +69,10 @@ export default class THXClient {
         this.erc721 = new ERC721Manager(this);
         this.walletManager = new WalletManager(this);
         this.rewardsManager = new RewardsManager(this);
+        this.perksManager = new PerksManager(this);
         this.referralRewardManager = new ReferralRewardManager(this);
         this.pointRewardManager = new PointRewardManager(this);
+        this.pointBalanceManager = new PointBalanceManager(this);
     }
 
     public async init() {

@@ -70,7 +70,6 @@ export class TwitterService {
                 Authorization: `Bearer ${accessToken}`,
             },
         });
-        console.log(r);
 
         if (r.status !== 200) throw new Error(ERROR_NOT_AUTHORIZED);
         if (!r.data) throw new Error(ERROR_NO_DATA);
