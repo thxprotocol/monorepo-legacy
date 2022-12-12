@@ -78,6 +78,7 @@ const controller = async (req: Request, res: Response) => {
                                 expiryDate: null,
                                 claimAmount: 1,
                                 rewardLimit: 1,
+                                pointPrice: 0,
                                 platform: RewardConditionPlatform.None,
                             };
                             await createERC721Perk(req.assetPool, config);

@@ -1,4 +1,5 @@
 import { THXClient } from '../../index';
+import { ChainId } from '../types/enums/ChainId';
 import BaseManager from './BaseManager';
 
 class ERC721Manager extends BaseManager {
@@ -6,8 +7,8 @@ class ERC721Manager extends BaseManager {
         super(client);
     }
 
-    async list() {
-        return await this.client.request.get(`/v1/erc721/token`);
+    async list(chainId: ChainId) {
+        return await this.client.request.get(`/v1/erc721/token?chainId=${chainId}`);
     }
 
     async get(id: string) {

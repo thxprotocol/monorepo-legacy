@@ -8,13 +8,13 @@ async function add(pool: AssetPoolDocument, sub: string, amount: string) {
     await PointBalance.updateOne({ poolId: pool._id, sub }, { poolId: pool._id, sub, balance }, { upsert: true });
 }
 
-async function subtract(pool: AssetPoolDocument, sub: string, amount: string) {
-    const currentBalance = await PointBalance.findOne({ poolid: pool._id, sub });
+async function subtract(pool: AssetPoolDocument, sub: string, price: number) {
+    if (!price) return;
 
-    const balance =
-        currentBalance && Number(currentBalance.balance) >= Number(amount)
-            ? Number(currentBalance.balance) - Number(amount)
-            : 0;
+    const currentBalance = await PointBalance.findOne({ poolid: pool._id, sub });
+    if (!currentBalance) return;
+
+    const balance = Number(currentBalance.balance) >= price ? Number(currentBalance.balance) - price : 0;
 
     await PointBalance.updateOne({ poolId: pool._id, sub }, { poolId: pool._id, sub, balance }, { upsert: true });
 }

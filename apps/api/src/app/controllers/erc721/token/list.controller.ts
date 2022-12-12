@@ -1,11 +1,22 @@
 import { Request, Response } from 'express';
-import { ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
+import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
 import type { TERC721, TERC721Token } from '@thxnetwork/api/types/TERC721';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
+import WalletService from '@thxnetwork/api/services/WalletService';
 
 export const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721']
-    const tokens = await ERC721Service.findTokensBySub(req.auth.sub);
+    let tokens = await ERC721Service.findTokensBySub(req.auth.sub);
+
+    if (req.query.chainId) {
+        const wallet = await WalletService.findOneByQuery({ sub: req.auth.sub, chainId: Number(req.query.chainId) });
+
+        if (wallet) {
+            const walletTokens = await ERC721Token.find({ address: wallet.address });
+            tokens = tokens.concat(walletTokens);
+        }
+    }
+
     const result = await Promise.all(
         tokens.map(async (token: ERC721TokenDocument) => {
             const erc721 = await ERC721Service.findById(token.erc721Id);

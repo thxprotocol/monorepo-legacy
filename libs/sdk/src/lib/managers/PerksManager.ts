@@ -14,17 +14,21 @@ class PerksManager extends BaseManager {
         get: async (uuid: string) => {
             return await this.client.request.get(`/v1/perks/erc20/${uuid}`);
         },
-        redeem: async (uuid: string) => {
-            return await this.client.request.post(`/v1/perks/erc20/${uuid}/redeem`);
+        payment: {
+            post: async (uuid: string) => {
+                return await this.client.request.post(`/v1/perks/erc20/${uuid}/payment`);
+            },
         },
     };
 
-    erc2721 = {
+    erc721 = {
         get: async (uuid: string) => {
-            return await this.client.request.get(`/v1/perks/erc2721/${uuid}`);
+            return await this.client.request.get(`/v1/perks/erc721/${uuid}`);
         },
-        redeem: async (uuid: string) => {
-            return await this.client.request.post(`/v1/perks/erc721/${uuid}/redeem`);
+        payment: {
+            post: async (uuid: string) => {
+                return await this.client.request.post(`/v1/perks/erc721/${uuid}/payment`);
+            },
         },
     };
 }

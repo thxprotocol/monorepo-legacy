@@ -1,4 +1,4 @@
-export type TERC721PerkPurchase = {
+export type TERC721PerkPayment = {
     perkId: string;
     sub: string;
 };

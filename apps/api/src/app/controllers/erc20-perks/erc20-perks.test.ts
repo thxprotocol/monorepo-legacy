@@ -310,7 +310,7 @@ describe('ERC20 Rewards', () => {
                 })
                 .expect((res: request.Response) => {
                     expect(res.body.erc20Transfer).toBeDefined();
-                    expect(res.body.erc20PerkPurchase).toBeDefined();
+                    expect(res.body.ERC20PerkPayment).toBeDefined();
                 })
                 .expect(200, done);
         });
