@@ -11,9 +11,7 @@
         <b-collapse id="collapse-card-condition" v-model="isVisible">
             <hr class="mt-0" />
             <div class="px-3">
-                <p class="text-gray">
-                    Configure under what conditions your customers are eligible for this reward claim.
-                </p>
+                <p class="text-gray">Configure under what conditions your customers are eligible for this claim.</p>
                 <b-form-group label="Platform">
                     <BaseDropdownChannelTypes @selected="onSelectPlatform" :platform="platform" />
                 </b-form-group>

@@ -18,6 +18,9 @@
                                 @selected="onSelectMetadata"
                             />
                         </b-form-group>
+                        <b-form-group label="Point Price">
+                            <b-form-input type="number" v-model="pointPrice" />
+                        </b-form-group>
                     </b-col>
                     <b-col md="6">
                         <BaseCardRewardCondition
@@ -82,6 +85,7 @@ export default class ModalRewardERC721Create extends Vue {
     expiryDate: Date | null = null;
     claimAmount = 1;
     rewardLimit = 0;
+    pointPrice = 0;
     rewardCondition: { platform: RewardConditionPlatform; interaction: RewardConditionInteraction; content: string } = {
         platform: platformList[0].type,
         interaction: platformInteractionList[0].type,
@@ -104,6 +108,7 @@ export default class ModalRewardERC721Create extends Vue {
             this.title = this.reward.title;
             this.description = this.reward.description;
             this.rewardLimit = this.reward.rewardLimit;
+            this.pointPrice = this.reward.pointPrice;
             this.rewardCondition = {
                 platform: this.reward.platform as RewardConditionPlatform,
                 interaction: this.reward.interaction as RewardConditionInteraction,
@@ -129,6 +134,7 @@ export default class ModalRewardERC721Create extends Vue {
                     erc721metadataId: this.erc721metadataId,
                     claimAmount: this.claimAmount,
                     rewardLimit: this.rewardLimit,
+                    pointPrice: this.pointPrice,
                     platform: this.rewardCondition.platform,
                     interaction: this.rewardCondition.interaction,
                     content: this.rewardCondition.content,
