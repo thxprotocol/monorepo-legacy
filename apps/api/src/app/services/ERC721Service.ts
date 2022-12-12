@@ -180,8 +180,7 @@ async function findTokensByMetadataAndSub(metadataId: string, account: IAccount)
 }
 
 async function findTokensBySub(sub: string): Promise<ERC721TokenDocument[]> {
-    const { address } = await AccountProxy.getById(sub);
-    return ERC721Token.find({ recipient: address });
+    return ERC721Token.find({ sub });
 }
 
 async function findMetadataById(id: string): Promise<ERC721MetadataDocument> {

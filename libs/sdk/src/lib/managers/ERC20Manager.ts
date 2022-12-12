@@ -7,8 +7,8 @@ class ERC20Manager extends BaseManager {
         super(client);
     }
 
-    async list(chainId: ChainId) {
-        return await this.client.request.get(`/v1/erc20/token?chainId=${chainId}`);
+    async list() {
+        return await this.client.request.get('/v1/erc20/token');
     }
 
     async get(id: string) {
