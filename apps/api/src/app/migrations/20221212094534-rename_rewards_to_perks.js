@@ -20,7 +20,7 @@ module.exports = {
           }
         });
         await Promise.all(promises);
-        console.log(`COPIED erc20rewards ROWS TO erc20perks`);
+        console.log(`COPIED ${rows.length} erc20rewards ROWS TO erc20perks`);
       }
     }
 
@@ -42,7 +42,7 @@ module.exports = {
           }
         });
         await Promise.all(promises);
-        console.log(`COPIED erc721rewards ROWS TO erc721perks`)
+        console.log(`COPIED ${rows.length} erc721rewards ROWS TO erc721perks`)
       }
     }
   },
