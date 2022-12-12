@@ -28,6 +28,7 @@ export const account = {
     address: userWalletAddress,
     plan: AccountPlanType.Basic,
     email: 'account@test.thx.network',
+    walletAddress: userWalletAddress,
 };
 export const account2 = {
     id: sub2,

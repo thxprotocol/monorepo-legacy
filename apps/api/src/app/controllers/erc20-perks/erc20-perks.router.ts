@@ -12,6 +12,7 @@ import ReadERC20Perk from './get.controller';
 import UpdateERC20Perk from './patch.controller';
 import ListERC20Perk from './list.controller';
 import DeleteERC20Perk from './delete.controller';
+import PurchaseERC20Perk from '../perks/erc20/purchase/post.controller';
 
 const router = express.Router();
 
@@ -40,6 +41,16 @@ router.post(
     requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
     CreateERC20Perk.controller,
+);
+
+router.post(
+    '/:id/purchase',
+    guard.check(['erc20_rewards:read', 'erc20:read', 'account:read']),
+    assertAssetPoolAccess,
+    assertRequestInput(PurchaseERC20Perk.validation),
+    requireAssetPoolHeader,
+    assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
+    PurchaseERC20Perk.controller,
 );
 
 router.patch(

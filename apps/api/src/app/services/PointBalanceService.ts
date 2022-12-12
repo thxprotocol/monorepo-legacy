@@ -8,6 +8,17 @@ async function add(pool: AssetPoolDocument, sub: string, amount: string) {
     await PointBalance.updateOne({ poolId: pool._id, sub }, { poolId: pool._id, sub, balance }, { upsert: true });
 }
 
+async function subtract(pool: AssetPoolDocument, sub: string, amount: string) {
+    const currentBalance = await PointBalance.findOne({ poolid: pool._id, sub });
+
+    const balance =
+        currentBalance && Number(currentBalance.balance) >= Number(amount)
+            ? Number(currentBalance.balance) - Number(amount)
+            : 0;
+
+    await PointBalance.updateOne({ poolId: pool._id, sub }, { poolId: pool._id, sub, balance }, { upsert: true });
+}
+
 export const PointBalance = PointBalanceDocument;
 
-export default { add };
+export default { add, subtract };
