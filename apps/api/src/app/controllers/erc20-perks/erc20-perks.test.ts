@@ -17,7 +17,7 @@ import { addMinutes, subMinutes } from '@thxnetwork/api/util/rewards';
 
 const user = request.agent(app);
 
-describe('ERC20 Rewards', () => {
+describe('ERC20 Perks', () => {
     let poolId: string, tokenAddress: string;
 
     beforeAll(async () => {

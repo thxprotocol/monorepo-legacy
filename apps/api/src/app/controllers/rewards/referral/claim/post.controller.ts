@@ -29,7 +29,7 @@ const controller = async (req: Request, res: Response) => {
         `Congratulations! Your referral link has been used and ${reward.amount} points have been transferred to your wallet.`,
     );
 
-    res.json(claim);
+    res.status(201).json(claim);
 };
 
 export default { controller };

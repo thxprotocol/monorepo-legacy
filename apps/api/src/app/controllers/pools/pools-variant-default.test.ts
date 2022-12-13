@@ -71,7 +71,7 @@ describe('Default Pool', () => {
                 .expect(201, done);
         });
 
-        it('HTTP 201 (success)', (done) => {
+        it('HTTP 200 (success)', (done) => {
             user.get(`/v1/pools/${poolId}`)
                 .set('Authorization', dashboardAccessToken)
                 .expect((res: request.Response) => {

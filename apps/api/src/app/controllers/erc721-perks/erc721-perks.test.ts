@@ -10,7 +10,7 @@ import { addMinutes } from '@thxnetwork/api/util/rewards';
 const user = request.agent(app);
 const user2 = request.agent(app);
 
-describe('ERC721 Rewards', () => {
+describe('ERC721 Perks', () => {
     let poolId: string, erc721metadataId: string;
 
     beforeAll(async () => {

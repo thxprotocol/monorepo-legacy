@@ -22,7 +22,7 @@ const controller = async (req: Request, res: Response) => {
 
     await PointBalanceService.add(req.assetPool, req.auth.sub, reward.amount);
 
-    res.json(claim);
+    res.status(201).json(claim);
 };
 
 export default { controller };
