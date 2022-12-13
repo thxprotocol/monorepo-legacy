@@ -52,6 +52,7 @@ export class AccountService {
             acceptUpdates,
             address,
             privateKey,
+            twitchAccess,
             googleAccess,
             twitterAccess,
             authenticationToken,
@@ -129,6 +130,12 @@ export class AccountService {
             account.twitterAccessToken = '';
             account.twitterRefreshToken = '';
             account.twitterAccessTokenExpires = null;
+        }
+
+        if (twitchAccess === false) {
+            account.twitchAccessToken = '';
+            account.twitchRefreshToken = '';
+            account.twitchAccessTokenExpires = null;
         }
 
         return await account.save();

@@ -11,6 +11,7 @@ export const patchAccount = async (req: Request, res: Response) => {
         address: req.body.address,
         googleAccess: req.body.googleAccess,
         twitterAccess: req.body.twitterAccess,
+        twitchAccess: req.body.twitchAccess,
         authenticationToken: req.body.authenticationToken,
         authenticationTokenExpires: req.body.authenticationTokenExpires,
         plan: req.body.plan,

@@ -55,6 +55,7 @@ export interface IAccountUpdates {
     address?: string;
     privateKey?: string;
     googleAccess?: boolean;
+    twitchAccess?: boolean;
     twitterAccess?: boolean;
     authenticationToken?: string;
     authenticationTokenExpires?: number;

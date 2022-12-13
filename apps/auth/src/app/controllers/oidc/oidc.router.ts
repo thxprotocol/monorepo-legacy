@@ -25,6 +25,7 @@ import UpdateAccountTOTP from './account/totp/post';
 import ReadAccountTOTP from './account/totp/get';
 import PostGoogleDisconnect from './account/google/disconnect/post.controller';
 import PostTwitterDisconnect from './account/twitter/disconnect/post.controller';
+import PostTwitchDisconnect from './account/twitch/disconnect/post.controller';
 import ReadAccountEmailVerify from './account/email/get';
 import { assertInput, assertAuthorization, assertInteraction } from '../../middlewares';
 
@@ -70,6 +71,7 @@ router.post(
     assertAuthorization,
     PostTwitterDisconnect.controller,
 );
+router.post('/:uid/account/twitch/disconnect', assertInteraction, assertAuthorization, PostTwitchDisconnect.controller);
 
 router.post(
     '/:uid/account',

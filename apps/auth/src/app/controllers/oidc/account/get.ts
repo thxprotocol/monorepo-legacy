@@ -32,6 +32,7 @@ async function controller(req: Request, res: Response) {
             otpSecret: account.otpSecret,
             googleAccess: account.googleAccessToken && account.googleAccessTokenExpires > Date.now(),
             twitterAccess: account.twitterAccessToken && account.twitterAccessTokenExpires > Date.now(),
+            twitchAccess: account.twitchAccessToken && account.twitchAccessTokenExpires > Date.now(),
         },
     });
 }
