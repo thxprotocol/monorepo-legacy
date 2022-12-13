@@ -44,6 +44,8 @@ const controller = async (req: Request, res: Response) => {
     // ITERATE THE CONTENT BY OBJECT KEYS
     const objectKeys = Object.keys(contents.files);
 
+    console.log(req);
+
     const promises = [];
 
     for (const file of objectKeys) {
@@ -94,7 +96,22 @@ const controller = async (req: Request, res: Response) => {
 
                     // CREATE THE METADATA
                     const metadata = await ERC721Service.createMetadata(erc721, [
-                        { key: req.body.propName, value: url },
+                        {
+                            key: req.body.propName,
+                            value: url,
+                        },
+                        {
+                            key: 'name',
+                            value: req.body.name,
+                        },
+                        {
+                            key: 'description',
+                            value: req.body.description,
+                        },
+                        {
+                            key: 'external_url',
+                            value: req.body.external_url,
+                        },
                     ]);
 
                     await createERC721Reward(req.assetPool, {
