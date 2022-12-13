@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 import { AccessTokenKind } from '../types/enums/AccessTokenKind';
 import { IAccessToken, TAccount } from '../types/TAccount';
 import { encryptString } from '../util/encrypt';
-import { NotFoundError } from '../util/errors';
 
 export type AccountDocument = mongoose.Document & TAccount;
 
@@ -70,33 +69,21 @@ const getToken = function (tokenKind: AccessTokenKind): IAccessToken {
     return this.tokens.find((x: IAccessToken) => x.kind === tokenKind);
 };
 
-const createToken = function (token: IAccessToken) {
-    const index = this.tokens.findIndex((x: IAccessToken) => x.kind === token.kind);
-    if (index >= 0) {
-        this.tokens[index] = token;
-    } else {
-        this.tokens.push(token);
-    }
-};
-
-const updateToken = function (
-    kind: AccessTokenKind,
-    updates: { accessToken?: string; refreshToken?: string; expiry?: number },
-) {
-    const index = this.tokens.findIndex((x: IAccessToken) => x.kind === kind);
+const setToken = function (data: IAccessToken) {
+    const index = this.tokens.findIndex((x: IAccessToken) => x.kind === data.kind);
     if (index < 0) {
-        throw new NotFoundError();
+        this.tokens.push(data);
+        return;
     }
     const token: IAccessToken = this.tokens[index];
-    token.accessToken = updates.accessToken || token.accessToken;
-    token.refreshToken = updates.refreshToken || token.refreshToken;
-    token.expiry = updates.expiry || token.expiry;
+    token.accessToken = data.accessToken || token.accessToken;
+    token.refreshToken = data.refreshToken || token.refreshToken;
+    token.expiry = data.expiry || token.expiry;
     this.tokens[index] = token;
 };
 
 accountSchema.methods.comparePassword = comparePassword;
 accountSchema.methods.getToken = getToken;
-accountSchema.methods.createToken = createToken;
-accountSchema.methods.updateToken = updateToken;
+accountSchema.methods.setToken = setToken;
 
 export const Account = mongoose.model<AccountDocument>('Account', accountSchema);

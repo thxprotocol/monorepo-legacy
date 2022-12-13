@@ -11,22 +11,15 @@ import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
 import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
 
 async function updateTokens(account: AccountDocument, tokens: any) {
-    const token: IAccessToken | undefined = account.getToken(AccessTokenKind.Google);
     const expiry = tokens.expiry_date ? Date.now() + Number(tokens.expiry_date) * 1000 : undefined;
-    if (!token) {
-        account.createToken({
-            kind: AccessTokenKind.Google,
-            accessToken: tokens.access_token,
-            refreshToken: tokens.refresh_token,
-            expiry,
-        } as IAccessToken);
-    } else {
-        account.updateToken(AccessTokenKind.Google, {
-            accessToken: tokens.access_token,
-            refreshToken: tokens.refresh_token,
-            expiry,
-        });
-    }
+
+    account.setToken({
+        kind: AccessTokenKind.Google,
+        accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token,
+        expiry,
+    } as IAccessToken);
+
     await account.save();
 }
 

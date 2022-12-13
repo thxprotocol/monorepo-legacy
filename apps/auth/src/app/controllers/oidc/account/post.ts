@@ -7,6 +7,7 @@ import { AccountService } from '../../../services/AccountService';
 import { DURATION_TWENTYFOUR_HOURS, ERROR_NO_ACCOUNT } from '../../../util/messages';
 import { createRandomToken } from '../../../util/tokens';
 import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
+import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
 
 export const validation = [
     body('email').optional().isEmail(),
@@ -46,10 +47,11 @@ export async function controller(req: Request, res: Response) {
 
     if (isEmailChanged) {
         account.isEmailVerified = false;
-        account.updateToken(AccessTokenKind.VerifyEmail, {
+        account.setToken({
+            kind: AccessTokenKind.VerifyEmail,
             accessToken: createRandomToken(),
             expiry: DURATION_TWENTYFOUR_HOURS,
-        });
+        } as IAccessToken);
         await account.save();
 
         // SEND VERIFICATION REQUEST FOR THE NEW EMAIL

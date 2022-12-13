@@ -22,8 +22,7 @@ export interface TAccount {
     acceptUpdates: boolean;
     comparePassword: any;
     getToken: any;
-    createToken: any;
-    updateToken: any;
+    setToken: any;
     createdAt: Date;
     tokens: IAccessToken[];
 }
@@ -40,6 +39,7 @@ export interface IAccountUpdates {
     address?: string;
     privateKey?: string;
     googleAccess?: boolean;
+    twitchAccess?: boolean;
     twitterAccess?: boolean;
     authenticationToken?: string;
     authenticationTokenExpires?: number;

@@ -19,6 +19,7 @@ const controller = async (req: Request, res: Response) => {
         email: account.email,
         googleAccess: account.googleAccess,
         twitterAccess: account.twitterAccess,
+        twitchAccess: account.twitchAccess,
     });
 };
 export default { controller, validation };

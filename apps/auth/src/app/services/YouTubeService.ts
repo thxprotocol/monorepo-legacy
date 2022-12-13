@@ -22,7 +22,7 @@ export class YouTubeService {
         const { token } = await client.getAccessToken();
         const { expiry_date } = await client.getTokenInfo(token);
 
-        account.updateToken(AccessTokenKind.Google, { accessToken: token, expiry: expiry_date });
+        account.setToken({ kind: AccessTokenKind.Google, accessToken: token, expiry: expiry_date } as IAccessToken);
         await account.save();
         return google.youtube({ version: 'v3' });
     }

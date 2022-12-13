@@ -88,6 +88,22 @@
         <div class="label">Sign in with Google</div>
       </a>
       <% } %>
+      <% if (params.twitchLoginUrl) { %>
+        <a class="btn btn-twitch btn-sign-in btn-block" href="<%= params.twitchLoginUrl %>" download>
+          <div class="logo">
+            <img src="/img/twitch-logo.png" alt="twitch logo" />
+          </div>
+          <div class="label">Sign in with Twitch</div>
+        </a>
+      <% } %>
+      <% if (params.discordLoginUrl) { %>
+        <a class="btn btn-sign-in btn-google btn-discord btn-block" href="<%= params.discordLoginUrl %>" download>
+          <div class="logo">
+            <img src="/img/discord-logo.png" alt="Discord logo" />
+          </div>
+          <div class="label">Sign in with Discord</div>
+        </a>
+      <% } %>
       <% if (params.twitterLoginUrl) { %>
       <a class="btn btn-sign-in btn-twitter btn-block" href="<%= params.twitterLoginUrl %>">
         <div class="logo">

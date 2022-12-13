@@ -54,6 +54,7 @@ export class AccountService {
             acceptUpdates,
             address,
             privateKey,
+            twitchAccess,
             googleAccess,
             twitterAccess,
             authenticationToken,
@@ -110,10 +111,11 @@ export class AccountService {
             account.acceptUpdates = acceptUpdates || account.acceptTermsPrivacy;
         }
         if (authenticationToken || authenticationTokenExpires) {
-            account.updateToken(AccessTokenKind.Auth, {
+            account.setToken({
+                kind: AccessTokenKind.Auth,
                 accessToken: authenticationToken,
                 expiry: authenticationTokenExpires,
-            });
+            } as IAccessToken);
         }
 
         account.address = address || account.address ? toChecksumAddress(address || account.address) : undefined;
@@ -126,11 +128,30 @@ export class AccountService {
                 newrelic.noticeError(error);
                 logger.error('Unable to revoke YouTube access', error);
             }
-            account.updateToken(AccessTokenKind.Google, { accessToken: '', refreshToken: '', expiry: null });
+            account.setToken({
+                kind: AccessTokenKind.Google,
+                accessToken: '',
+                refreshToken: '',
+                expiry: null,
+            } as IAccessToken);
         }
 
         if (twitterAccess === false) {
-            account.updateToken(AccessTokenKind.Twitter, { accessToken: '', refreshToken: '', expiry: null });
+            account.setToken({
+                kind: AccessTokenKind.Twitter,
+                accessToken: '',
+                refreshToken: '',
+                expiry: null,
+            } as IAccessToken);
+        }
+
+        if (twitchAccess === false) {
+            account.setToken({
+                kind: AccessTokenKind.Twitch,
+                accessToken: '',
+                refreshToken: '',
+                expiry: null,
+            } as IAccessToken);
         }
 
         return await account.save();
@@ -186,7 +207,7 @@ export class AccountService {
                 accessToken: createRandomToken(),
                 expiry: DURATION_TWENTYFOUR_HOURS,
             } as IAccessToken;
-            account.createToken(token);
+            account.setToken(token);
         }
 
         return account;
@@ -222,7 +243,7 @@ export class AccountService {
             return { error: ERROR_SIGNUP_TOKEN_EXPIRED };
         }
 
-        account.updateToken(AccessTokenKind.Signup, { expiry: null, accessToken: '' });
+        account.setToken({ kind: AccessTokenKind.Signup, expiry: null, accessToken: '' } as IAccessToken);
         account.active = true;
         account.isEmailVerified = true;
 
@@ -245,7 +266,7 @@ export class AccountService {
             return { error: ERROR_VERIFY_EMAIL_EXPIRED };
         }
 
-        account.updateToken(AccessTokenKind.VerifyEmail, { expiry: null, accessToken: '' });
+        account.setToken({ kind: AccessTokenKind.VerifyEmail, expiry: null, accessToken: '' } as IAccessToken);
         account.isEmailVerified = true;
 
         await account.save();

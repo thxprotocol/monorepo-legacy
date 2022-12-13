@@ -1,18 +1,18 @@
 import { Request, Response } from 'express';
 import { AccountDocument } from '../../../../models/Account';
-import GithubService from '../../../../services/GithubServices';
 import { AccountService } from '../../../../services/AccountService';
 import { ERROR_NO_ACCOUNT } from '../../../../util/messages';
 import { getAccountByEmail, getInteraction, saveInteraction } from '../../../../util/oidc';
 import { AccountVariant } from '../../../../types/enums/AccountVariant';
-import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
+import { DiscordService } from '@thxnetwork/auth/services/DiscordService';
 import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
+import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
 
 async function updateTokens(account: AccountDocument, tokens: any): Promise<AccountDocument> {
     const expiry = tokens.expires_in ? Date.now() + Number(tokens.expires_in) * 1000 : undefined;
 
     account.setToken({
-        kind: AccessTokenKind.Github,
+        kind: AccessTokenKind.Discord,
         accessToken: tokens.access_token,
         refreshToken: tokens.refresh_token,
         expiry,
@@ -34,10 +34,10 @@ async function controller(req: Request, res: Response) {
     if (error) return res.redirect(`/oidc/${uid}`);
 
     // Get all token information
-    const tokens = await GithubService.requestTokens(code);
+    const tokens = await DiscordService.requestTokens(code);
 
-    const user = await GithubService.getUser(tokens.access_token);
-    const email = user.email;
+    const user = await DiscordService.getUser(tokens.access_token);
+    const email = user.user.email;
 
     // Get the interaction based on the state
     const interaction = await getInteraction(uid);
@@ -48,7 +48,7 @@ async function controller(req: Request, res: Response) {
             ? // If so, get account for sub
               await getAccountBySub(interaction.session.accountId)
             : // If not, get account for email claim
-              await getAccountByEmail(email, AccountVariant.SSOGithub);
+              await getAccountByEmail(email, AccountVariant.SSODiscord);
 
     // Actions after successfully login
     await AccountService.update(account, {

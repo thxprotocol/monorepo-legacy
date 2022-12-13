@@ -5,5 +5,7 @@ export enum AccessTokenKind {
     Google = 'google',
     Twitter = 'twitter',
     Github = 'github',
+    Discord = 'discord',
+    Twitch = 'twitch',
     VerifyEmail = 'verify-email',
 }

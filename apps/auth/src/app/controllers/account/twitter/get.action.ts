@@ -6,22 +6,14 @@ import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
 import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
 
 async function updateTokens(account: AccountDocument, tokens): Promise<AccountDocument> {
-    const token: IAccessToken | undefined = account.getToken(AccessTokenKind.Twitter);
     const expiry = tokens.expires_in ? Date.now() + Number(tokens.expires_in) * 1000 : undefined;
-    if (!token) {
-        account.createToken({
-            kind: AccessTokenKind.Twitter,
-            accessToken: tokens.access_token,
-            refreshToken: tokens.refresh_token,
-            expiry,
-        } as IAccessToken);
-    } else {
-        account.updateToken(AccessTokenKind.Twitter, {
-            accessToken: tokens.access_token,
-            refreshToken: tokens.refresh_token,
-            expiry,
-        });
-    }
+
+    account.setToken({
+        kind: AccessTokenKind.Twitter,
+        accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token,
+        expiry,
+    } as IAccessToken);
 
     return await account.save();
 }

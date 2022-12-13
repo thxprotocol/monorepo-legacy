@@ -28,7 +28,7 @@ export class MailService {
             accessToken: createRandomToken(),
             expiry: DURATION_TWENTYFOUR_HOURS,
         } as IAccessToken;
-        account.createToken(token);
+        account.setToken(token);
 
         const verifyUrl = `${returnUrl}/verify?signup_token=${token.accessToken}&return_url=${returnUrl}`;
         const html = await ejs.renderFile(
@@ -55,7 +55,7 @@ export class MailService {
             accessToken: createRandomToken(),
             expiry: DURATION_TWENTYFOUR_HOURS,
         } as IAccessToken;
-        account.createToken(token);
+        account.setToken(token);
 
         const verifyUrl = `${returnUrl}verify_email?verifyEmailToken=${token.accessToken}&return_url=${returnUrl}`;
         const html = await ejs.renderFile(
@@ -101,7 +101,7 @@ export class MailService {
             expiry: Date.now() + 10 * 60 * 1000, // 10 minutes
         } as IAccessToken;
 
-        account.createToken(token);
+        account.setToken(token);
 
         await account.save();
     }
@@ -113,7 +113,7 @@ export class MailService {
             expiry: Date.now() + 1000 * 60 * 20, // 20 minutes,
         } as IAccessToken;
 
-        account.createToken(token);
+        account.setToken(token);
 
         const resetUrl = `${returnUrl}/reset?passwordResetToken=${token.accessToken}`;
         const html = await ejs.renderFile(

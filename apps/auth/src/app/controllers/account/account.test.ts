@@ -1,3 +1,4 @@
+import { DISCORD_API_ENDPOINT, TWITCH_API_ENDPOINT } from './../../config/secrets';
 import nock from 'nock';
 import request from 'supertest';
 import app from '../../app';
@@ -165,11 +166,98 @@ describe('Account Controller', () => {
                 refreshToken: 'REFRESH',
                 expiry: (Date.now() + 1000000) * 1000,
             };
-            account.createToken(token);
+            account.setToken(token);
             await account.save();
 
             const res = await http
                 .get(`/account/${accountId}/twitter`)
+                .set({
+                    Authorization: authHeader,
+                })
+                .send();
+            expect(res.body.isAuthorized).toEqual(true);
+        });
+    });
+
+    describe('GET /account/:sub/discord', () => {
+        beforeAll(async () => {
+            nock(DISCORD_API_ENDPOINT)
+                .persist()
+                .get(/.*?/)
+                .reply(200, { data: { data: {} } });
+        });
+
+        it('Denice Access if there no authorization header', async () => {
+            const res = await http.get(`/account/${accountId}/discord`).send();
+            expect(res.status).toEqual(401);
+        });
+
+        it('Throw Error if there no linked discord', async () => {
+            const res = await http
+                .get(`/account/${accountId}/discord`)
+                .set({
+                    Authorization: authHeader,
+                })
+                .send();
+            expect(res.body.isAuthorized).toEqual(false);
+        });
+
+        it('Successfully get linked Discord info with a correct infomation', async () => {
+            const account = await AccountService.getByEmail(accountEmail);
+            account.setToken({
+                kind: AccessTokenKind.Discord,
+                accessToken: 'TOKEN',
+                refreshToken: 'TOKEN',
+                expiry: (Date.now() + 1000000) * 1000,
+            } as IAccessToken);
+
+            await account.save();
+
+            const res = await http
+                .get(`/account/${accountId}/discord`)
+                .set({
+                    Authorization: authHeader,
+                })
+                .send();
+            expect(res.body.isAuthorized).toEqual(true);
+        });
+    });
+
+    describe('GET /account/:sub/twitch', () => {
+        beforeAll(async () => {
+            nock(TWITCH_API_ENDPOINT)
+                .persist()
+                .get(/.*?/)
+                .reply(200, { data: { data: {} } });
+        });
+
+        it('Denice Access if there no authorization header', async () => {
+            const res = await http.get(`/account/${accountId}/twitch`).send();
+            expect(res.status).toEqual(401);
+        });
+
+        it('Throw Error if there no linked twitch', async () => {
+            const res = await http
+                .get(`/account/${accountId}/twitch`)
+                .set({
+                    Authorization: authHeader,
+                })
+                .send();
+            expect(res.body.isAuthorized).toEqual(false);
+        });
+
+        it('Successfully get linked twitch info with a correct infomation', async () => {
+            const account = await AccountService.getByEmail(accountEmail);
+            account.setToken({
+                kind: AccessTokenKind.Twitch,
+                accessToken: 'TOKEN',
+                refreshToken: 'REFRESH',
+                expiry: (Date.now() + 1000000) * 1000,
+            } as IAccessToken);
+            await account.save();
+
+            const res = await http
+                .get(`/account/${accountId}/twitch`)
                 .set({
                     Authorization: authHeader,
                 })
@@ -209,7 +297,7 @@ describe('Account Controller', () => {
                 refreshToken: 'REFRESH',
                 expiry: (Date.now() + 1000000) * 1000,
             } as IAccessToken;
-            account.createToken(token);
+            account.setToken(token);
 
             await account.save();
 
