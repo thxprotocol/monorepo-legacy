@@ -8,7 +8,7 @@ import TransactionService from './TransactionService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { TWithdrawForCallbackArgs } from '@thxnetwork/api/types/TTransaction';
 import { TransactionReceipt } from 'web3-core';
-import AssetPoolService from './AssetPoolService';
+import PoolService from './PoolService';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
 
@@ -94,7 +94,7 @@ export default class WithdrawalService {
 
     static async withdrawForCallback(args: TWithdrawForCallbackArgs, receipt: TransactionReceipt) {
         const { assetPoolId, withdrawalId } = args;
-        const { contract } = await AssetPoolService.getById(assetPoolId);
+        const { contract } = await PoolService.getById(assetPoolId);
         const events = parseLogs(contract.options.jsonInterface, receipt.logs);
 
         assertEvent('ERC20WithdrawFor', events);

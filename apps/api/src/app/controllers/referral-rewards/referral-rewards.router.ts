@@ -7,47 +7,56 @@ import {
     assertPlan,
 } from '@thxnetwork/api/middlewares';
 import { AccountPlanType } from '@thxnetwork/api/types/enums';
-import CreateRewardReferral from './post.controller';
-import ReadRewardReferral from './get.controller';
-import UpdateRewardReferral from './patch.controller';
-import ListRewardReferral from './list.controller';
+import CreateReferralReward from './post.controller';
+import ReadReferralReward from './get.controller';
+import UpdateReferralReward from './patch.controller';
+import ListReferralReward from './list.controller';
+import DeleteReferralReward from './delete.controller';
 
 const router = express.Router();
 
 router.get(
     '/',
-    guard.check(['rewards:read']),
+    guard.check(['referral_rewards:read']),
     assertAssetPoolAccess,
     requireAssetPoolHeader,
-    assertRequestInput(ListRewardReferral.validation),
+    assertRequestInput(ListReferralReward.validation),
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
-    ListRewardReferral.controller,
+    ListReferralReward.controller,
 );
 router.get(
     '/:id',
-    guard.check(['rewards:read']),
-    //assertAssetPoolAccess,
-    assertRequestInput(ReadRewardReferral.validation),
+    guard.check(['referral_rewards:read']),
+    assertAssetPoolAccess,
+    assertRequestInput(ReadReferralReward.validation),
     requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
-    ReadRewardReferral.controller,
+    ReadReferralReward.controller,
 );
 router.post(
     '/',
-    guard.check(['rewards:write', 'rewards:read']),
+    guard.check(['referral_rewards:write', 'referral_rewards:read']),
     assertAssetPoolAccess,
-    assertRequestInput(CreateRewardReferral.validation),
+    assertRequestInput(CreateReferralReward.validation),
     requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
-    CreateRewardReferral.controller,
+    CreateReferralReward.controller,
 );
 router.patch(
     '/:id',
-    guard.check(['rewards:write', 'rewards:read']),
+    guard.check(['referral_rewards:write', 'referral_rewards:read']),
     assertAssetPoolAccess,
-    assertRequestInput(UpdateRewardReferral.validation),
+    assertRequestInput(UpdateReferralReward.validation),
     requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
-    UpdateRewardReferral.controller,
+    UpdateReferralReward.controller,
+);
+router.delete(
+    '/:id',
+    guard.check(['referral_rewards:write', 'referral_rewards:read']),
+    assertAssetPoolAccess,
+    requireAssetPoolHeader,
+    assertRequestInput(DeleteReferralReward.validation),
+    DeleteReferralReward.controller,
 );
 export default router;

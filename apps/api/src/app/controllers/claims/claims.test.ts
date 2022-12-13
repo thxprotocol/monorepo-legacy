@@ -48,9 +48,9 @@ describe('Claims', () => {
             .expect(201, done);
     });
 
-    it('POST /erc20-rewards', (done) => {
+    it('POST /erc20-perks', (done) => {
         const expiryDate = addMinutes(new Date(), 30);
-        user.post('/v1/erc20-rewards/')
+        user.post('/v1/erc20-perks/')
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .send({
                 title: 'Expiration date is next 30 min',

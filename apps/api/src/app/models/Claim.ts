@@ -9,6 +9,7 @@ const schema = new mongoose.Schema(
         erc20Id: String,
         erc721Id: String,
         rewardId: String,
+        amount: String,
     },
     { timestamps: true },
 );

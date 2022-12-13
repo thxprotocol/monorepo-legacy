@@ -14,13 +14,13 @@ import { Contract } from 'web3-eth-contract';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { getContract } from '@thxnetwork/api/config/contracts';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { ERC20RewardDocument } from '@thxnetwork/api/models/ERC20Reward';
+import { ERC20PerkDocument } from '@thxnetwork/api/models/ERC20Perk';
 import { addMinutes } from '@thxnetwork/api/util/rewards';
 
 const user = request.agent(app);
 
 describe('Widgets', () => {
-    let pool: AssetPoolDocument, testToken: Contract, clientId: string, reward: ERC20RewardDocument;
+    let pool: AssetPoolDocument, testToken: Contract, clientId: string, reward: ERC20PerkDocument;
 
     beforeAll(async () => {
         await beforeAllCallback();
@@ -49,7 +49,7 @@ describe('Widgets', () => {
         it('HTTP 200', async () => {
             const expiryDate = addMinutes(new Date(), 30);
             await user
-                .post('/v1/erc20-rewards/')
+                .post('/v1/erc20-perks/')
                 .set({ 'X-PoolId': pool._id, 'Authorization': dashboardAccessToken })
                 .send({
                     title: 'Expiration date is next 30 min',

@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
-import { createERC721Reward } from '@thxnetwork/api/util/rewards';
-import { RewardConditionPlatform, TERC721Reward } from '@thxnetwork/types/index';
+import { createERC721Perk } from '@thxnetwork/api/util/rewards';
+import { RewardConditionPlatform, TERC721Perk } from '@thxnetwork/types/index';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import db from '@thxnetwork/api/util/database';
 
@@ -26,8 +26,8 @@ const controller = async (req: Request, res: Response) => {
         claimAmount: 1,
         rewardLimit: 1,
         platform: RewardConditionPlatform.None,
-    } as TERC721Reward;
-    const { reward, claims } = await createERC721Reward(req.assetPool, config);
+    } as TERC721Perk;
+    const { reward, claims } = await createERC721Perk(req.assetPool, config);
 
     res.status(201).json({ ...metadata.toJSON(), tokens, reward, claims });
 };

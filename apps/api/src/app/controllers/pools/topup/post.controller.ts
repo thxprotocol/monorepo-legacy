@@ -7,7 +7,7 @@ import { ethers } from 'ethers';
 import { ERC20Type } from '@thxnetwork/api/types/enums';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
-import AssetPoolService from '@thxnetwork/api/services/AssetPoolService';
+import PoolService from '@thxnetwork/api/services/PoolService';
 
 export const validation = [param('id').isMongoId(), body('amount').isInt({ gt: 0 })];
 
@@ -33,7 +33,7 @@ const controller = async (req: Request, res: Response) => {
         );
     }
 
-    const topup = await AssetPoolService.topup(req.assetPool, amount);
+    const topup = await PoolService.topup(req.assetPool, amount);
 
     res.json(topup);
 };

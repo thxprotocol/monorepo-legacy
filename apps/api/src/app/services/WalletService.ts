@@ -19,6 +19,10 @@ function findOneByAddress(address: string) {
     return Wallet.findOne({ address });
 }
 
+async function findOneByQuery(query: { sub?: string; chainId?: number }) {
+    return await Wallet.findOne(query);
+}
+
 async function findByQuery(query: { sub?: string; chainId?: number }) {
     return await Wallet.find(query);
 }
@@ -62,4 +66,4 @@ async function deployCallback(args: TWalletDeployCallbackArgs, receipt: Transact
     await WalletManagerService.setupManagerRoleAdmin(wallet, args.owner);
 }
 
-export default { create, findOneByAddress, findByQuery, deploy, deployCallback };
+export default { create, findOneByAddress, findByQuery, deploy, deployCallback, findOneByQuery };

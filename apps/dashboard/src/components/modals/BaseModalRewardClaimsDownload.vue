@@ -152,6 +152,7 @@ export default class BaseModalRewardClaimsDownload extends Vue {
         const selectedRewards = Object.values(this.rewards).filter((r) => this.selectedItems.includes(r._id));
         let claims: TClaim[] = [];
         for (const r of selectedRewards) {
+            if (!r.claims) continue;
             const pendingClaims = r.claims.filter((c) => {
                 return !c.sub;
             });

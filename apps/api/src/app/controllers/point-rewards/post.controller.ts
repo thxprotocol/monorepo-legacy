@@ -1,36 +1,30 @@
 import { PointReward } from '@thxnetwork/api/services/PointRewardService';
 import { Request, Response } from 'express';
 import { body } from 'express-validator';
+import db from '@thxnetwork/api/util/database';
 
 const validation = [
     body('title').isString(),
     body('description').isString(),
-    body('amount').isString(),
-    body('platform').optional().isNumeric(),
+    body('amount').isInt({ gt: 0 }),
+    body('platform').isNumeric(),
     body('interaction').optional().isNumeric(),
     body('content').optional().isString(),
 ];
 
 const controller = async (req: Request, res: Response) => {
-    let rewardConditionId: string;
-
-    // if (req.body.platform && req.body.interaction && req.body.content) {
-    //     const rewardCondition = await RewardCondition.create({
-    //         platform: req.body.platform,
-    //         interaction: req.body.interaction,
-    //         content: req.body.content,
-    //     });
-    //     rewardConditionId = String(rewardCondition._id);
-    // }
-
+    const { title, description, amount, platform, interaction, content } = req.body;
     const pointReward = await PointReward.create({
-        title: req.body.title,
-        description: req.body.description,
-        amount: req.body.amount,
-        rewardConditionId,
+        uuid: db.createUUID(),
+        poolId: req.assetPool._id,
+        title,
+        description,
+        amount,
+        platform,
+        interaction,
+        content,
     });
-
-    res.json(pointReward);
+    res.status(201).json(pointReward);
 };
 
 export default { validation, controller };

@@ -11,16 +11,13 @@
                 split
                 :text="selectedBulkAction.label"
                 class="mr-5"
+                :disabled="!selectedItems.length"
             >
                 <b-dropdown-item
                     class="small"
                     @click="selectedBulkAction = item"
                     :key="key"
-                    v-for="(item, key) of [
-                        { variant: 0, label: 'Download QR codes' },
-                        { variant: 1, label: 'Download CSV' },
-                        { variant: 2, label: `Delete ${selectedItems.length} rewards` },
-                    ]"
+                    v-for="(item, key) of items"
                 >
                     {{ item.label }}
                 </b-dropdown-item>
@@ -68,8 +65,6 @@ import BaseModalRewardClaimsDownload from '../modals/BaseModalRewardClaimsDownlo
     },
 })
 export default class BaseCardTableHeader extends Vue {
-    selectedBulkAction = { variant: 0, label: 'Download QR codes' };
-
     @Prop() totals!: { [poolId: string]: number };
     @Prop() selectedItems!: string[];
     @Prop() rewards!: { [poolId: string]: { [id: string]: TBaseReward } };
@@ -77,14 +72,34 @@ export default class BaseCardTableHeader extends Vue {
     @Prop() limit!: number;
     @Prop() pool!: IPool;
 
+    defaultAction = { variant: 2, label: `Delete rewards` };
+    selectedBulkAction = this.defaultAction;
+
     get total() {
         return this.totals[this.$route.params.id];
+    }
+
+    get items() {
+        if (!this.rewards) return [];
+        const result = Object.values(this.rewards).filter((r: any) => r.claims && r.claims.length);
+        if (!result.length) return [this.defaultAction];
+        return [
+            ...[this.defaultAction],
+            { variant: 0, label: 'Download QR codes' },
+            { variant: 1, label: 'Download CSV' },
+        ];
     }
 
     onClickBulkAction() {
         switch (this.selectedBulkAction.variant) {
             case 0:
                 this.$bvModal.show('modalRewardClaimsDownload');
+                break;
+            case 1:
+                this.$bvModal.show('modalRewardClaimsDownload');
+                break;
+            case 2:
+                this.$emit('delete', this.selectedItems);
                 break;
         }
     }

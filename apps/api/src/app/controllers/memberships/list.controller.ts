@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
 import { TMembership } from '@thxnetwork/api/models/Membership';
 import MembershipService from '@thxnetwork/api/services/MembershipService';
-import AssetPoolService from '@thxnetwork/api/services/AssetPoolService';
+import PoolService from '@thxnetwork/api/services/PoolService';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Memberships']
     const membershipDocs = await MembershipService.findForSub(req.auth.sub);
     const memberships = membershipDocs.map(async (membership) => {
         const m = membership.toJSON();
-        const pool = await AssetPoolService.getById(membership.poolId);
+        const pool = await PoolService.getById(membership.poolId);
         if (!pool) {
             m.isRemoved = true;
         } else {

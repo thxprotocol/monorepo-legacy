@@ -14,6 +14,5 @@ const config = {
 localStorage.setItem('thx:wallet:oidc', JSON.stringify(config));
 
 const thxClient = new THXClient(config);
-// thxClient.init();
 
 export { thxClient };

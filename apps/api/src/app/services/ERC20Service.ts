@@ -14,7 +14,6 @@ import { TransactionReceipt } from 'web3-core';
 import { TERC20DeployCallbackArgs, TERC20TransferFromCallBackArgs } from '@thxnetwork/api/types/TTransaction';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
 import ERC20Transfer from '../models/ERC20Transfer';
-import AssetPoolService from './AssetPoolService';
 
 function getDeployArgs(erc20: ERC20Document, totalSupply?: string) {
     const { defaultAccount } = getProvider(erc20.chainId);

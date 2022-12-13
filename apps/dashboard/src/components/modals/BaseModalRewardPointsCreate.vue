@@ -1,5 +1,5 @@
 <template>
-    <base-modal size="xl" title="Create Points Reward" id="modalRewardPointsCreate" :error="error" :loading="isLoading">
+    <base-modal size="xl" title="Create Points Reward" :id="id" :error="error" :loading="isLoading">
         <template #modal-body v-if="!isLoading">
             <p class="text-gray">
                 Points rewards are distributed to your customers achieving milestones in your customer journey.
@@ -24,7 +24,6 @@
                             @change="rewardCondition = $event"
                         />
                         <BaseCardRewardExpiry class="mb-3" :expiry="rewardExpiry" @change="rewardExpiry = $event" />
-                        <BaseCardRewardQRCodes class="mb-3" @change="rewardExpiry = $event" />
                     </b-col>
                 </b-row>
             </form>
@@ -53,6 +52,8 @@ import BaseModal from './BaseModal.vue';
 import BaseCardRewardCondition from '../cards/BaseCardRewardCondition.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardRewardQRCodes from '../cards/BaseCardRewardQRCodes.vue';
+import { mapGetters } from 'vuex';
+import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
 
 @Component({
     components: {
@@ -61,6 +62,9 @@ import BaseCardRewardQRCodes from '../cards/BaseCardRewardQRCodes.vue';
         BaseCardRewardExpiry,
         BaseCardRewardQRCodes,
     },
+    computed: mapGetters({
+        totals: 'pointRewards/totals',
+    }),
 })
 export default class ModalRewardPointsCreate extends Vue {
     isSubmitDisabled = false;
@@ -70,12 +74,14 @@ export default class ModalRewardPointsCreate extends Vue {
     amount = '0';
     description = '';
     rewardExpiry = {};
-    rewardCondition = {
-        platform: platformList[0],
-        interaction: platformInteractionList[0],
+    rewardLimit = 0;
+    rewardCondition: { platform: RewardConditionPlatform; interaction: RewardConditionInteraction; content: string } = {
+        platform: platformList[0].type,
+        interaction: platformInteractionList[0].type,
         content: '',
     };
 
+    @Prop() id!: string;
     @Prop() pool!: IPool;
     @Prop({ required: false }) reward!: TPointReward;
 
@@ -84,21 +90,34 @@ export default class ModalRewardPointsCreate extends Vue {
             this.title = this.reward.title;
             this.amount = this.reward.amount;
             this.description = this.reward.description;
-            // this.rewardCondition.platform = this.reward.platform;
-            // this.rewardCondition.interaction = this.reward.interaction;
-            // this.rewardCondition.interaction = this.reward.content;
+            this.rewardLimit = this.reward.rewardLimit;
+            this.rewardCondition = {
+                platform: this.reward.platform as RewardConditionPlatform,
+                interaction: this.reward.interaction as RewardConditionInteraction,
+                content: this.reward.content as string,
+            };
         }
     }
 
     onSubmit() {
-        this.$store.dispatch('pointRewards/create', {
-            title: this.title,
-            description: this.description,
-            amount: this.amount,
-            platform: this.rewardCondition.platform,
-            interaction: this.rewardCondition.interaction,
-            content: this.rewardCondition.content,
-        });
+        this.isLoading = true;
+        this.$store
+            .dispatch(`pointRewards/${this.reward ? 'update' : 'create'}`, {
+                _id: this.reward ? this.reward._id : undefined,
+                poolId: this.pool._id,
+                title: this.title,
+                description: this.description,
+                amount: this.amount,
+                rewardLimit: this.rewardLimit,
+                platform: this.rewardCondition.platform,
+                interaction: this.rewardCondition.interaction,
+                content: this.rewardCondition.content,
+                page: this.reward ? this.reward.page : 1,
+            })
+            .then(() => {
+                this.$bvModal.hide(this.id);
+                this.isLoading = false;
+            });
     }
 }
 </script>

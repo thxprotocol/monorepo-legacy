@@ -4,7 +4,7 @@ import stream from 'stream';
 import path from 'path';
 import { AWS_S3_PRIVATE_BUCKET_NAME, DASHBOARD_URL, WALLET_URL } from '@thxnetwork/api/config/secrets';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import AssetPoolService from '@thxnetwork/api/services/AssetPoolService';
+import PoolService from '@thxnetwork/api/services/PoolService';
 import BrandService from '@thxnetwork/api/services/BrandService';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
 import ImageService from '@thxnetwork/api/services/ImageService';
@@ -14,18 +14,18 @@ import { s3PrivateClient } from '@thxnetwork/api/util/s3';
 import { createArchiver } from '@thxnetwork/api/util/zip';
 import { Upload } from '@aws-sdk/lib-storage';
 import { assetsPath } from '../util/path';
-import { ERC721Reward } from '../models/ERC721Reward';
+import { ERC721Perk } from '../models/ERC721Perk';
 
 export const generateMetadataRewardQRCodesJob = async ({ attrs }: Job) => {
     if (!attrs.data) return;
 
     try {
         const { poolId, sub, fileName, notify } = attrs.data;
-        const pool = await AssetPoolService.getById(poolId);
+        const pool = await PoolService.getById(poolId);
 
         if (!pool) throw new Error('Pool not found');
 
-        const rewards = await ERC721Reward.find({ poolId });
+        const rewards = await ERC721Perk.find({ poolId });
         if (!rewards.length) throw new Error('Rewards not found');
 
         const account = await AccountProxy.getById(sub);

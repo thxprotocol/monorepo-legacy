@@ -11,7 +11,7 @@ class CreateAccountError extends THXError {
 class AccountApiError extends THXError {}
 
 export default class AccountProxy {
-    static async getById(sub: string) {
+    static async getById(sub: string): Promise<IAccount> {
         const r = await authClient({
             method: 'GET',
             url: `/account/${sub}`,
