@@ -44,8 +44,6 @@ const controller = async (req: Request, res: Response) => {
     // ITERATE THE CONTENT BY OBJECT KEYS
     const objectKeys = Object.keys(contents.files);
 
-    console.log(req);
-
     const promises = [];
 
     for (const file of objectKeys) {
@@ -99,7 +97,7 @@ const controller = async (req: Request, res: Response) => {
                         {
                             key: req.body.propName,
                             value: url,
-                        },
+                        },3
                         {
                             key: 'name',
                             value: req.body.name,
