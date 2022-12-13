@@ -5,7 +5,7 @@ import { NotFoundError } from '@thxnetwork/api/util/errors';
 import MembershipService from '@thxnetwork/api/services/MembershipService';
 import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import AssetPoolService from '@thxnetwork/api/services/AssetPoolService';
+import PoolService from '@thxnetwork/api/services/PoolService';
 
 const validation = [param('id').isMongoId()];
 
@@ -17,7 +17,7 @@ const controller = async (req: Request, res: Response) => {
     const account = await AccountProxy.getById(req.auth.sub);
     if (!account) throw new NotFoundError('No Account');
 
-    const pool = await AssetPoolService.getById(membership.poolId);
+    const pool = await PoolService.getById(membership.poolId);
     if (!pool) return res.send(membership);
 
     let poolBalance;

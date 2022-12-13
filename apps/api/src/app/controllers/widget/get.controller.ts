@@ -1,6 +1,6 @@
 import { API_URL, NODE_ENV, WIDGET_URL } from '@thxnetwork/api/config/secrets';
 import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
-import AssetPoolService from '@thxnetwork/api/services/AssetPoolService';
+import PoolService from '@thxnetwork/api/services/PoolService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
@@ -13,7 +13,7 @@ const controller = async (req: Request, res: Response) => {
     const referralReward = await ReferralReward.findOne({
         poolId: req.params.id,
     });
-    const pool = await AssetPoolService.getById(req.params.id);
+    const pool = await PoolService.getById(req.params.id);
     if (!pool) throw new NotFoundError('Pool not found.');
 
     const data = `

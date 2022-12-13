@@ -17,7 +17,7 @@ import { assertEvent, ExpectedEventNotFound, findEvent, parseLogs } from '@thxne
 import { getProvider } from '@thxnetwork/api/util/network';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
 
-import AssetPoolService from './AssetPoolService';
+import PoolService from './PoolService';
 import MembershipService from './MembershipService';
 import TransactionService from './TransactionService';
 
@@ -127,7 +127,7 @@ export async function mint(
 
 export async function mintCallback(args: TERC721TokenMintCallbackArgs, receipt: TransactionReceipt) {
     const { assetPoolId, erc721tokenId } = args;
-    const { contract } = await AssetPoolService.getById(assetPoolId);
+    const { contract } = await PoolService.getById(assetPoolId);
     const events = parseLogs(contract.options.jsonInterface, receipt.logs);
 
     const event = assertEvent('ERC721Minted', events);

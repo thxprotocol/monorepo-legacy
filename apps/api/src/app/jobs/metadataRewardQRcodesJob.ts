@@ -4,7 +4,7 @@ import stream from 'stream';
 import path from 'path';
 import { AWS_S3_PRIVATE_BUCKET_NAME, DASHBOARD_URL, WALLET_URL } from '@thxnetwork/api/config/secrets';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import AssetPoolService from '@thxnetwork/api/services/AssetPoolService';
+import PoolService from '@thxnetwork/api/services/PoolService';
 import BrandService from '@thxnetwork/api/services/BrandService';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
 import ImageService from '@thxnetwork/api/services/ImageService';
@@ -21,7 +21,7 @@ export const generateMetadataRewardQRCodesJob = async ({ attrs }: Job) => {
 
     try {
         const { poolId, sub, fileName, notify } = attrs.data;
-        const pool = await AssetPoolService.getById(poolId);
+        const pool = await PoolService.getById(poolId);
 
         if (!pool) throw new Error('Pool not found');
 

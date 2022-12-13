@@ -1,8 +1,14 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId, ERC20Type } from '@thxnetwork/api/types/enums';
-import { dashboardAccessToken, tokenName, tokenSymbol, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
-import { isAddress } from 'web3-utils';
+import {
+    dashboardAccessToken,
+    sub,
+    tokenName,
+    tokenSymbol,
+    widgetAccessToken,
+} from '@thxnetwork/api/util/jest/constants';
+import { fromWei, isAddress, toWei } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { addMinutes } from '@thxnetwork/api/util/rewards';
 
@@ -10,12 +16,29 @@ const user = request.agent(app);
 
 describe('ERC20 Perk Payment', () => {
     let tokenAddress: string, poolId: string, rewardUuid: string, perkUuid: string;
+    const totalSupply = toWei('100000');
 
     beforeAll(async () => {
         await beforeAllCallback();
     });
 
     afterAll(afterAllCallback);
+
+    it('POST /wallets', (done) => {
+        user.post('/v1/wallets')
+            .set({ Authorization: widgetAccessToken })
+            .send({
+                chainId: ChainId.Hardhat,
+                sub,
+                forceSync: true,
+            })
+            .expect((res: request.Response) => {
+                expect(res.body.sub).toEqual(sub);
+                expect(res.body.chainId).toEqual(ChainId.Hardhat);
+                expect(res.body.address).toBeDefined();
+            })
+            .expect(201, done);
+    });
 
     it('POST /erc20', (done) => {
         user.post('/v1/erc20')
@@ -24,7 +47,8 @@ describe('ERC20 Perk Payment', () => {
                 chainId: ChainId.Hardhat,
                 name: tokenName,
                 symbol: tokenSymbol,
-                type: ERC20Type.Unlimited,
+                type: ERC20Type.Limited,
+                totalSupply,
             })
             .expect(({ body }: request.Response) => {
                 expect(isAddress(body.address)).toBe(true);
@@ -45,6 +69,14 @@ describe('ERC20 Perk Payment', () => {
                 poolId = res.body._id;
             })
             .expect(201, done);
+    });
+
+    it('POST /pools/:id/topup', (done) => {
+        const amount = fromWei(totalSupply, 'ether'); // 100 eth
+        user.post(`/v1/pools/${poolId}/topup`)
+            .set({ 'Authorization': dashboardAccessToken, 'X-PoolId': poolId })
+            .send({ amount })
+            .expect(200, done);
     });
 
     it('POST /point-rewards', (done) => {
@@ -97,8 +129,7 @@ describe('ERC20 Perk Payment', () => {
         user.post(`/v1/perks/erc20/${perkUuid}/payment`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
             .expect((res: request.Response) => {
-                console.log(res.body);
-                expect(res.body.erc20Transfer).toBeDefined();
+                expect(res.body.withdrawal).toBeDefined();
                 expect(res.body.erc20PerkPayment).toBeDefined();
             })
             .expect(200, done);

@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { param } from 'express-validator';
 
 import ClientProxy from '@thxnetwork/api/proxies/ClientProxy';
-import AssetPoolService from '@thxnetwork/api/services/AssetPoolService';
+import PoolService from '@thxnetwork/api/services/PoolService';
 import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
 import ERC20PerkService from '@thxnetwork/api/services/ERC20PerkService';
 import ERC721PerkService from '@thxnetwork/api/services/ERC721PerkService';
@@ -15,7 +15,7 @@ const controller = async (req: Request, res: Response) => {
     await ERC721PerkService.removeAllForPool(req.assetPool);
     await WithdrawalService.removeAllForPool(req.assetPool);
     await ClientProxy.remove(req.assetPool.clientId);
-    await AssetPoolService.remove(req.assetPool);
+    await PoolService.remove(req.assetPool);
 
     res.status(204).end();
 };

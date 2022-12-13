@@ -3,7 +3,7 @@ import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { param } from 'express-validator';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
-import AssetPoolService from '@thxnetwork/api/services/AssetPoolService';
+import PoolService from '@thxnetwork/api/services/PoolService';
 import { Claim } from '@thxnetwork/api/models/Claim';
 import { findRewardByUuid, isTERC20Perk, isTERC721Perk } from '@thxnetwork/api/util/rewards';
 
@@ -20,7 +20,7 @@ const controller = async (req: Request, res: Response) => {
     const claim = await Claim.findOne({ id: req.params.id });
     if (!claim) throw new NotFoundError('Could not find this claim');
 
-    const pool = await AssetPoolService.getById(claim.poolId);
+    const pool = await PoolService.getById(claim.poolId);
     if (!pool) throw new NotFoundError('Could not find this pool');
 
     const reward = await findRewardByUuid(claim.rewardId);

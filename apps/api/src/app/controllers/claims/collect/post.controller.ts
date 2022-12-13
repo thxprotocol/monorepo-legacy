@@ -9,7 +9,7 @@ import { canClaim } from '@thxnetwork/api/util/condition';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
-import AssetPoolService from '@thxnetwork/api/services/AssetPoolService';
+import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
 import MembershipService from '@thxnetwork/api/services/MembershipService';
@@ -23,7 +23,7 @@ const controller = async (req: Request, res: Response) => {
     let claim = await ClaimService.findById(req.params.id);
     if (!claim) throw new BadRequestError('This claim URL is invalid.');
 
-    const pool = await AssetPoolService.getById(claim.poolId);
+    const pool = await PoolService.getById(claim.poolId);
     if (!pool) throw new BadRequestError('The pool for this rewards has been removed.');
 
     const account = await AccountProxy.getById(req.auth.sub);

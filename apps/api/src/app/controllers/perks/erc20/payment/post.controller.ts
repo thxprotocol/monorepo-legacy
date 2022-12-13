@@ -6,9 +6,12 @@ import { InsufficientBalanceError, NotFoundError } from '@thxnetwork/api/util/er
 import { getContractFromName } from '@thxnetwork/api/config/contracts';
 import { BigNumber } from 'ethers';
 import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
+import { WithdrawalState, WithdrawalType } from '@thxnetwork/api/types/enums';
+import { IAccount } from '@thxnetwork/api/models/Account';
 import PointBalanceService, { PointBalance } from '@thxnetwork/api/services/PointBalanceService';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import WalletService from '@thxnetwork/api/services/WalletService';
+import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
 
 const validation = [param('uuid').exists()];
 
@@ -21,7 +24,7 @@ const controller = async (req: Request, res: Response) => {
     const erc20 = await ERC20Service.findByPool(req.assetPool);
     if (!erc20Perk) throw new NotFoundError('Could not find the erc20 for this perk');
 
-    const contract = getContractFromName(req.body.chainId, 'LimitedSupplyToken', erc20.address);
+    const contract = getContractFromName(req.assetPool.chainId, 'LimitedSupplyToken', erc20.address);
     const amount = toWei(erc20Perk.amount).toString();
 
     const balanceOfPool = await contract.methods.balanceOf(req.assetPool.address).call();
@@ -32,20 +35,24 @@ const controller = async (req: Request, res: Response) => {
         throw new InsufficientBalanceError('Not enough points on this account for this pool.');
 
     const wallet = await WalletService.findOneByQuery({ sub: req.auth.sub, chainId: req.assetPool.chainId });
-    const erc20Transfer = await ERC20Service.transferFrom(
-        erc20,
-        req.assetPool.address,
-        wallet.address,
-        amount,
-        req.assetPool.chainId,
+
+    let withdrawal = await WithdrawalService.create(
+        req.assetPool,
+        WithdrawalType.ClaimReward,
         req.auth.sub,
+        Number(erc20Perk.amount),
+        WithdrawalState.Pending,
     );
+
+    withdrawal = await WithdrawalService.withdrawFor(req.assetPool, withdrawal, {
+        address: wallet.address,
+    } as IAccount);
 
     const erc20PerkPayment = await ERC20PerkPayment.create({ perkId: erc20Perk.id, sub: req.auth.sub });
 
     await PointBalanceService.subtract(req.assetPool, req.auth.sub, erc20Perk.pointPrice);
 
-    res.status(201).json({ erc20Transfer, erc20PerkPayment });
+    res.status(201).json({ withdrawal, erc20PerkPayment });
 };
 
 export default { controller, validation };

@@ -10,7 +10,7 @@ import type { IAccount } from '@thxnetwork/api/models/Account';
 import { ERC20Document } from '@thxnetwork/api/models/ERC20';
 import { TSwapCreateCallbackArgs } from '@thxnetwork/api/types/TTransaction';
 import { TransactionReceipt } from 'web3-core';
-import AssetPoolService from './AssetPoolService';
+import PoolService from './PoolService';
 
 async function get(id: string): Promise<ERC20SwapDocument> {
     const erc20Swap = await ERC20Swap.findById(id);
@@ -46,7 +46,7 @@ async function create(
 }
 
 async function createCallback({ swapId, assetPoolId }: TSwapCreateCallbackArgs, receipt: TransactionReceipt) {
-    const { contract } = await AssetPoolService.getById(assetPoolId);
+    const { contract } = await PoolService.getById(assetPoolId);
     const events = parseLogs(contract.options.jsonInterface, receipt.logs);
 
     const swapEvent = assertEvent('ERC20SwapFor', events);

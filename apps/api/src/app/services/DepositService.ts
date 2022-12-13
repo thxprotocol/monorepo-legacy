@@ -5,7 +5,7 @@ import { DepositState } from '@thxnetwork/api/types/enums/DepositState';
 import TransactionService from './TransactionService';
 import { assertEvent, parseLogs } from '@thxnetwork/api/util/events';
 import { TDepositCallbackArgs } from '@thxnetwork/api/types/TTransaction';
-import AssetPoolService from './AssetPoolService';
+import PoolService from './PoolService';
 import { TransactionReceipt } from 'web3-core';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 
@@ -41,7 +41,7 @@ async function deposit(assetPool: AssetPoolDocument, account: IAccount, amount: 
 }
 
 async function depositCallback({ depositId, assetPoolId }: TDepositCallbackArgs, receipt: TransactionReceipt) {
-    const { contract } = await AssetPoolService.getById(assetPoolId);
+    const { contract } = await PoolService.getById(assetPoolId);
     const events = parseLogs(contract.options.jsonInterface, receipt.logs);
 
     assertEvent('ERC20DepositFrom', events);

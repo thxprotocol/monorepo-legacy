@@ -5,7 +5,7 @@ import { ChainId } from '@thxnetwork/api/types/enums';
 import { isAddress } from 'web3-utils';
 import { Contract } from 'web3-eth-contract';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import AssetPoolService from '@thxnetwork/api/services/AssetPoolService';
+import PoolService from '@thxnetwork/api/services/PoolService';
 import { updateDiamondContract } from '@thxnetwork/api/util/upgrades';
 import { getContract } from '@thxnetwork/api/config/contracts';
 import { currentVersion } from '@thxnetwork/contracts/exports';
@@ -40,18 +40,18 @@ describe('Upgrades', () => {
 
     describe('Test pool upgrades', () => {
         it('Switch between different diamond facet configurations', async () => {
-            const pool = await AssetPoolService.getById(poolId);
+            const pool = await PoolService.getById(poolId);
 
-            expect(await AssetPoolService.contractVersionVariant(pool)).toEqual({
+            expect(await PoolService.contractVersionVariant(pool)).toEqual({
                 variant: 'defaultDiamond',
                 version: currentVersion,
             });
 
             await updateDiamondContract(pool.chainId, pool.contract, 'registry');
-            expect((await AssetPoolService.contractVersionVariant(pool)).variant).toBe('registry');
+            expect((await PoolService.contractVersionVariant(pool)).variant).toBe('registry');
 
-            await AssetPoolService.updateAssetPool(pool);
-            expect(await AssetPoolService.contractVersionVariant(pool)).toEqual({
+            await PoolService.updateAssetPool(pool);
+            expect(await PoolService.contractVersionVariant(pool)).toEqual({
                 variant: 'defaultDiamond',
                 version: currentVersion,
             });
