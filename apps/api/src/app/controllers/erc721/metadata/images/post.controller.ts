@@ -97,7 +97,7 @@ const controller = async (req: Request, res: Response) => {
                         {
                             key: req.body.propName,
                             value: url,
-                        },3
+                        },
                         {
                             key: 'name',
                             value: req.body.name,
