@@ -130,6 +130,15 @@ describe('ERC721 Perks', () => {
                     .expect(403, done);
             });
         });
+
+        describe('DELETE /erc721/:id/metadata/:metadataID', () => {
+            it('should successfully delete erc721 metadata', (done) => {
+                user.delete(`/v1/erc721/${erc721ID}/metadata/${erc721metadataId}`)
+                    .set('Authorization', dashboardAccessToken)
+                    .set('X-PoolId', poolId)
+                    .expect(200, done);
+            });
+        });
     });
 
     describe('A reward with limit is 0 (unlimited) and claim_one enabled to disabled', () => {
