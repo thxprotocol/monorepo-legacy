@@ -225,7 +225,6 @@ describe('ERC20 Perks', () => {
                     expect(res.body.results[0].claims).toBeDefined();
                     expect(res.body.limit).toBe(10);
                     expect(res.body.total).toBe(3);
-                    erc20Perk = res.body.results[0];
                 })
                 .expect(200, done);
         });

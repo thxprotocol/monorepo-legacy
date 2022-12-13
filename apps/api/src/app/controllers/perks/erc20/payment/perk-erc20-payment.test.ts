@@ -132,6 +132,6 @@ describe('ERC20 Perk Payment', () => {
                 expect(res.body.withdrawal).toBeDefined();
                 expect(res.body.erc20PerkPayment).toBeDefined();
             })
-            .expect(200, done);
+            .expect(201, done);
     });
 });
