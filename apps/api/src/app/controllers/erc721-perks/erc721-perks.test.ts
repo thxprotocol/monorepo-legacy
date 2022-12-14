@@ -21,6 +21,7 @@ describe('ERC721 Perks', () => {
 
     describe('an NFT reward with withdrawLimit = 1 is claimed by wallet user A and then should not be claimed again throught he same claim URL by wallet user B', () => {
         let erc721ID: string, erc721Address: string, claims: any;
+
         const name = 'Planets of the Galaxy',
             symbol = 'GLXY',
             description = 'description',
@@ -95,6 +96,42 @@ describe('ERC721 Perks', () => {
             });
         });
 
+        describe('DELETE /erc721/:id/metadata/:metadataID', () => {
+            it('should successfully delete erc721 metadata', (done) => {
+                user.delete(`/v1/erc721/${erc721ID}/metadata/${erc721metadataId}`)
+                    .set('Authorization', dashboardAccessToken)
+                    .set('X-PoolId', poolId)
+                    .expect(200, done);
+            });
+        });
+
+        describe('POST /erc721/:id/metadata', () => {
+            it('should create a Metadada and reward', (done) => {
+                const value1 = 'blue',
+                    value2 = 'small';
+
+                user.post('/v1/erc721/' + erc721ID + '/metadata')
+                    .set('Authorization', dashboardAccessToken)
+                    .set('X-PoolId', poolId)
+                    .send({
+                        attributes: [
+                            { key: schema[0].name, value: value1 },
+                            { key: schema[1].name, value: value2 },
+                        ],
+                    })
+                    .expect(({ body }: request.Response) => {
+                        expect(body._id).toBeDefined();
+                        expect(body.attributes[0].key).toBe(schema[0].name);
+                        expect(body.attributes[1].key).toBe(schema[1].name);
+                        expect(body.attributes[0].value).toBe(value1);
+                        expect(body.attributes[1].value).toBe(value2);
+                        claims = body.claims;
+                        erc721metadataId = body._id;
+                    })
+                    .expect(201, done);
+            });
+        });
+
         describe('POST /claims/:id/collect', () => {
             it('should return a 200 and NFT minted', (done) => {
                 user.post(`/v1/claims/${claims[0].id}/collect`)
@@ -131,14 +168,6 @@ describe('ERC721 Perks', () => {
             });
         });
 
-        describe('DELETE /erc721/:id/metadata/:metadataID', () => {
-            it('should successfully delete erc721 metadata', (done) => {
-                user.delete(`/v1/erc721/${erc721ID}/metadata/${erc721metadataId}`)
-                    .set('Authorization', dashboardAccessToken)
-                    .set('X-PoolId', poolId)
-                    .expect(200, done);
-            });
-        });
     });
 
     describe('A reward with limit is 0 (unlimited) and claim_one enabled to disabled', () => {
