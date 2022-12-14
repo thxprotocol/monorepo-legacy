@@ -14,7 +14,7 @@ const controller = async (req: Request, res: Response) => {
     if (!result || error) return res.json({ error });
 
     const claim = await Claim.create({
-        rewardId: reward.uuid,
+        rewardUuid: reward.uuid,
         poolId: req.assetPool._id,
         sub: req.auth.sub,
         amount: reward.amount,

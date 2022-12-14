@@ -73,7 +73,7 @@ describe('Widgets', () => {
                 .set({ 'X-PoolId': pool._id, 'Authorization': dashboardAccessToken })
                 .send({
                     metadata: {
-                        rewardId: reward.id,
+                        rewardUuid: reward.uuid,
                         poolId: pool._id,
                     },
                     requestUris,
@@ -104,7 +104,7 @@ describe('Widgets', () => {
                     expect(res.body.requestUris[0]).toBe(requestUris[0]);
                     expect(res.body.clientId).toBeDefined();
                     expect(res.body.clientSecret).toBeDefined();
-                    expect(res.body.metadata.rewardId).toBe(reward.id);
+                    expect(res.body.metadata.rewardUuid).toBe(reward.uuid);
                     expect(res.body.metadata.poolId).toBe(pool._id);
                 })
                 .expect(200, done);

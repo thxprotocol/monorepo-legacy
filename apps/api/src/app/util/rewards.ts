@@ -56,7 +56,7 @@ export const createERC721Perk = async (assetPool: AssetPoolDocument, config: TER
                 poolId: assetPool._id,
                 erc20Id: null,
                 erc721Id: metadata.erc721,
-                rewardId: reward.uuid,
+                rewardUuid: reward.uuid,
             }),
         ),
     );
@@ -71,7 +71,7 @@ export const createERC20Perk = async (pool: AssetPoolDocument, payload: TERC20Pe
             ClaimService.create({
                 poolId: pool._id,
                 erc20Id: pool.erc20Id,
-                rewardId: reward.uuid,
+                rewardUuid: reward.uuid,
             }),
         ),
     );

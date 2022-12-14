@@ -29,7 +29,7 @@ const controller = async (req: Request, res: Response) => {
     const account = await AccountProxy.getById(req.auth.sub);
     if (!account.address) throw new BadRequestError('The authenticated account has not accessed its wallet.');
 
-    const reward = await findRewardByUuid(claim.rewardId);
+    const reward = await findRewardByUuid(claim.rewardUuid);
     if (!reward) throw new BadRequestError('The reward for this ID does not exist.');
 
     // Validate the claim
@@ -71,7 +71,7 @@ const controller = async (req: Request, res: Response) => {
             claim = await Claim.create({
                 sub: req.auth.sub,
                 erc20Id: claim.erc20Id,
-                rewardId: claim.rewardId,
+                rewardUuid: claim.rewardUuid,
                 poolId: claim.poolId,
                 id: db.createUUID(),
             });
@@ -95,7 +95,7 @@ const controller = async (req: Request, res: Response) => {
             claim = await Claim.create({
                 sub: req.auth.sub,
                 erc721Id: claim.erc721Id,
-                rewardId: claim.rewardId,
+                rewardUuid: claim.rewardUuid,
                 poolId: claim.poolId,
                 id: db.createUUID(),
             });
