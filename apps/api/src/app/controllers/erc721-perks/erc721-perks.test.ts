@@ -105,33 +105,6 @@ describe('ERC721 Perks', () => {
             });
         });
 
-        describe('POST /erc721/:id/metadata', () => {
-            it('should create a Metadada and reward', (done) => {
-                const value1 = 'blue',
-                    value2 = 'small';
-
-                user.post('/v1/erc721/' + erc721ID + '/metadata')
-                    .set('Authorization', dashboardAccessToken)
-                    .set('X-PoolId', poolId)
-                    .send({
-                        attributes: [
-                            { key: schema[0].name, value: value1 },
-                            { key: schema[1].name, value: value2 },
-                        ],
-                    })
-                    .expect(({ body }: request.Response) => {
-                        expect(body._id).toBeDefined();
-                        expect(body.attributes[0].key).toBe(schema[0].name);
-                        expect(body.attributes[1].key).toBe(schema[1].name);
-                        expect(body.attributes[0].value).toBe(value1);
-                        expect(body.attributes[1].value).toBe(value2);
-                        claims = body.claims;
-                        erc721metadataId = body._id;
-                    })
-                    .expect(201, done);
-            });
-        });
-
         describe('POST /claims/:id/collect', () => {
             it('should return a 200 and NFT minted', (done) => {
                 user.post(`/v1/claims/${claims[0].id}/collect`)
@@ -167,7 +140,6 @@ describe('ERC721 Perks', () => {
                     .expect(403, done);
             });
         });
-
     });
 
     describe('A reward with limit is 0 (unlimited) and claim_one enabled to disabled', () => {
