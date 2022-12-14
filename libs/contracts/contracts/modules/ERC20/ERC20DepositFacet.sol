@@ -25,20 +25,22 @@ contract ERC20DepositFacet is Access, IERC20DepositFacet {
         }
     }
 
-    function _deposit(address _sender, uint256 _amount) internal {
+    function _deposit(address _sender, uint256 _amount, address tokneAddress) internal {
         LibRegistryProxyStorage.RegistryProxyStorage storage rs = LibRegistryProxyStorage.s();
         LibERC20Storage.ERC20Storage storage s = LibERC20Storage.s();
         IRegistryFacet registry = IRegistryFacet(rs.registry);
 
         uint256 fee = _amount.mul(registry.feePercentage()).div(10**18);
         uint256 amount = _amount.sub(fee);
-
+         IERC20 token = IERC20(tokneAddress);
+         
         if (fee > 0) {
-            s.token.safeTransferFrom(_sender, registry.feeCollector(), fee);
+           
+            token.safeTransferFrom(_sender, registry.feeCollector(), fee);
             emit ERC20DepositFeeCollected(fee);
         }
 
-        s.token.safeTransferFrom(_sender, address(this), amount);
+        token.safeTransferFrom(_sender, address(this), amount);
         emit ERC20DepositFrom(_sender, amount);
     }
 }
