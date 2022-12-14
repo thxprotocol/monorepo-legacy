@@ -98,6 +98,7 @@
         "svg-to-pdfkit": "^0.1.8",
         "swagger-autogen": "^2.21.1",
         "swagger-ui-express": "^4.1.4",
+        "terser": "^5.16.1",
         "tsconfig-paths": "^4.1.0",
         "tslib": "^2.3.0",
         "vee-validate": "^3.4.5",
