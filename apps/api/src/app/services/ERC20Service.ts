@@ -65,7 +65,9 @@ export async function deployCallback({ erc20Id }: TERC20DeployCallbackArgs, rece
         throw new ExpectedEventNotFound('Transfer or OwnershipTransferred');
     }
 
-    await ERC20.findByIdAndUpdate(erc20Id, { address: receipt.contractAddress });
+    await ERC20.findByIdAndUpdate(erc20Id, {
+        address: receipt.contractAddress,
+    });
 }
 
 export async function queryDeployTransaction(erc20: ERC20Document): Promise<ERC20Document> {

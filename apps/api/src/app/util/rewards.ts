@@ -1,6 +1,6 @@
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
-import { TERC721Perk, TERC20Perk } from '@thxnetwork/types/';
+import { TERC721Perk, TERC20Perk, TReferralReward, TPointReward } from '@thxnetwork/types/';
 import { ERC20Perk } from '../models/ERC20Perk';
 import { ERC721Perk } from '../models/ERC721Perk';
 import { ReferralReward } from '../models/ReferralReward';
@@ -18,11 +18,13 @@ export async function findRewardByUuid(uuid: string) {
     return erc20Perk || erc721Perk || referralReward || pointReward;
 }
 
-export function isTERC20Perk(reward: TERC20Perk | TERC721Perk): reward is TERC20Perk {
+export function isTERC20Perk(reward: TERC20Perk | TERC721Perk | TReferralReward | TPointReward): reward is TERC20Perk {
     return (reward as TERC20Perk).amount !== undefined;
 }
 
-export function isTERC721Perk(reward: TERC20Perk | TERC721Perk): reward is TERC721Perk {
+export function isTERC721Perk(
+    reward: TERC20Perk | TERC721Perk | TReferralReward | TPointReward,
+): reward is TERC721Perk {
     return (reward as TERC721Perk).erc721metadataId !== undefined;
 }
 

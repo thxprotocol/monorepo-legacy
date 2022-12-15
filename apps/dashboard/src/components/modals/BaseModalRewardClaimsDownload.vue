@@ -98,8 +98,8 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { TBaseReward } from '@thxnetwork/types/index';
 import { WALLET_URL, BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { TClaim } from '@thxnetwork/dashboard/store/modules/claims';
-import { createCanvas, loadImage } from 'canvas';
 import { saveAs } from 'file-saver';
+import { Context } from 'vm';
 
 const unitList = [
     { label: 'Pixels', value: 'px' },
@@ -107,6 +107,7 @@ const unitList = [
     { label: 'Inch', value: 'in' },
     { label: 'Millimeters', value: 'mm' },
 ];
+type UnitValues = 'px' | 'cm' | 'in' | 'mm';
 
 const acceptedUnits: { [format: string]: string[] } = {
     png: ['px'],
@@ -163,7 +164,9 @@ export default class BaseModalRewardClaimsDownload extends Vue {
 
     async createQRCode(url: string) {
         const imgSize = (this.size / 4) * 1.1;
-        const canvas = createCanvas(this.size, this.size);
+        const canvas = document.createElement('canvas');
+        canvas.width = this.size;
+        canvas.height = this.size;
 
         await QRCode.toCanvas(canvas, url, {
             errorCorrectionLevel: 'H',
@@ -175,7 +178,7 @@ export default class BaseModalRewardClaimsDownload extends Vue {
             width: this.size,
         });
 
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
         const img = !this.file
             ? await loadImage(BASE_URL + '/assets/qr-logo.jpg')
             : await loadImage(URL.createObjectURL(this.file));
@@ -205,7 +208,7 @@ export default class BaseModalRewardClaimsDownload extends Vue {
         const svg = qrcode.svg();
         const xml = await xml2js.parseStringPromise(svg);
 
-        const pdf = new jsPDF({ unit: this.selectedUnit.value, format: [this.size, this.size] });
+        const pdf = new jsPDF({ unit: this.selectedUnit.value as UnitValues, format: [this.size, this.size] });
         for (let i = 1; i < xml.svg.rect.length; i++) {
             const rect = xml.svg.rect[i].$;
             const rgb = hex2Rgb(this.color);
