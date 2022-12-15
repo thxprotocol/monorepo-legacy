@@ -270,7 +270,15 @@ class ERC721Module extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async uploadMultipleMetadataImages(payload: { pool: IPool; erc721: TERC721; file: File; propName: string }) {
+    async uploadMultipleMetadataImages(payload: {
+        pool: IPool;
+        erc721: TERC721;
+        file: File;
+        propName: string;
+        name: string;
+        description: string;
+        external_url: string;
+    }) {
         const now = Date.now();
         const zip = new JSZip();
         const zipFolder = zip.folder(`nft-images_${now}`);
@@ -286,6 +294,11 @@ class ERC721Module extends VuexModule {
         const files = new File([zipFile], `images_${now}.zip`);
 
         const formData = new FormData();
+
+        formData.set('name', payload.name);
+        formData.set('description', payload.description);
+        formData.set('external_url', payload.external_url);
+
         formData.set('propName', payload.propName);
         formData.append('file', files);
 
