@@ -91,7 +91,6 @@ export default class ModalRewardPointsCreate extends Vue {
 
     setValues(reward?: TPointReward) {
         if (!reward) return;
-        console.log('SONO QUIIIIII', reward);
         this.title = this.reward.title;
         this.amount = this.reward.amount;
         this.description = this.reward.description;
@@ -103,11 +102,8 @@ export default class ModalRewardPointsCreate extends Vue {
         };
     }
 
-    onRewardConditionChange(content: any) {}
-
     onSubmit() {
         this.isLoading = true;
-        console.log('STO PER MANDARE:', this.rewardCondition);
         this.$store
             .dispatch(`pointRewards/${this.reward ? 'update' : 'create'}`, {
                 _id: this.reward ? this.reward._id : undefined,

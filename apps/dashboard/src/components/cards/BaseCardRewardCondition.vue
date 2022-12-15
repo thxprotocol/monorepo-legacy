@@ -111,7 +111,16 @@ export default class BaseCardRewardCondition extends Vue {
     }
 
     mounted() {
-        const { platform, interaction, content } = this.rewardCondition;
+        this.setValues(this.rewardCondition);
+    }
+
+    // @Watch('rewardCondition')
+    // onRewardConditionChange(rewardCondition: any) {
+    //     this.setValues(rewardCondition);
+    // }
+
+    setValues(rewardCondition: any) {
+        const { platform, interaction, content } = rewardCondition;
         this.platform = platformList.find((c) => c.type === platform) as IChannel;
         this.onSelectPlatform(this.platform);
         this.interaction = platformInteractionList.find((i) => i.type === interaction) as IChannelAction;
