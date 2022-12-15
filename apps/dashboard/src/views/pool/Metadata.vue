@@ -83,8 +83,8 @@
       </BTable>
     </BCard>
 
-    <base-modal-erc721-metadata-create v-if="erc721 && editingMeta" :erc721="erc721" @hidden="reset"
-      :metadata="editingMeta" :pool="pool" />
+    <base-modal-erc721-metadata-create v-if="erc721" :erc721="erc721" @hidden="reset" :metadata="editingMeta"
+      :pool="pool" />
 
   </div>
 </template>
@@ -161,7 +161,7 @@ export default class MetadataView extends Vue {
   }
 
   get metadataByPage() {
-    if (!this.erc721s[this.erc721?._id].metadata) return [];
+    if (!this.erc721s[this.erc721?._id]?.metadata) return [];
     return Object.values(this.erc721s[this.erc721._id].metadata)
       .filter((metadata: TERC721Metadata) => metadata.page === this.page)
       .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
