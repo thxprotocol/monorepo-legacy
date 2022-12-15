@@ -99,7 +99,7 @@ import { TBaseReward } from '@thxnetwork/types/index';
 import { WALLET_URL, BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { TClaim } from '@thxnetwork/dashboard/store/modules/claims';
 import { saveAs } from 'file-saver';
-import { Context } from 'vm';
+import { loadImage } from '@thxnetwork/dashboard/utils/loadImage';
 
 const unitList = [
     { label: 'Pixels', value: 'px' },
@@ -231,18 +231,18 @@ export default class BaseModalRewardClaimsDownload extends Vue {
         const archive = zip.folder(filename) as JSZip;
 
         for (const claim of this.claims) {
-            let base64Data: string;
+            let data: string | ArrayBuffer;
             const url = `${WALLET_URL}/claim/${claim.id}`;
 
             switch (this.selectedFormat) {
                 case 'pdf': {
-                    base64Data = await this.createQRCodeSvg(url);
-                    archive.file(`${claim.id}.pdf`, base64Data, { base64: true });
+                    data = await this.createQRCodeSvg(url);
+                    archive.file(`${claim.id}.pdf`, data, { base64: true });
                     break;
                 }
                 case 'png': {
-                    base64Data = await this.createQRCode(url);
-                    archive.file(`${claim.id}.png`, base64Data, { base64: true });
+                    data = await this.createQRCode(url);
+                    archive.file(`${claim.id}.png`, data, { base64: true });
                     break;
                 }
             }
