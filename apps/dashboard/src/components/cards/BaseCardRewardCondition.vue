@@ -11,9 +11,7 @@
         <b-collapse id="collapse-card-condition" v-model="isVisible">
             <hr class="mt-0" />
             <div class="px-3">
-                <p class="text-gray">
-                    Configure under what conditions your customers are eligible for this reward claim.
-                </p>
+                <p class="text-gray">Configure under what conditions your customers are eligible for this claim.</p>
                 <b-form-group label="Platform">
                     <BaseDropdownChannelTypes @selected="onSelectPlatform" :platform="platform" />
                 </b-form-group>
@@ -55,7 +53,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { UserProfile } from 'oidc-client-ts';
 import { platformList, platformInteractionList, IChannel, IChannelAction } from '@thxnetwork/dashboard/types/rewards';
@@ -112,12 +110,15 @@ export default class BaseCardRewardCondition extends Vue {
         return platformInteractionList.filter((a) => this.platform.actions.includes(a.type));
     }
 
-    mounted() {
-        const { platform, interaction, content } = this.rewardCondition;
-        this.platform = platformList.find((c) => c.type === platform) as IChannel;
-        this.onSelectPlatform(this.platform);
-        this.interaction = platformInteractionList.find((i) => i.type === interaction) as IChannelAction;
-        this.content = content;
+    async mounted() {
+        if (this.rewardCondition) {
+            const { platform, interaction, content } = this.rewardCondition;
+            this.platform = platformList.find((c) => c.type === platform) as IChannel;
+            this.interaction = platformInteractionList.find((i) => i.type === interaction) as IChannelAction;
+            this.content = content;
+            await this.onSelectPlatform(this.platform);
+            this.isVisible = !!this.platform.type;
+        }
     }
 
     async onSelectPlatform(platform: IChannel) {
@@ -125,23 +126,21 @@ export default class BaseCardRewardCondition extends Vue {
 
         this.isLoadingPlatform = true;
         this.platform = platform;
-        this.content = '';
 
         switch (platform.type) {
             case RewardConditionPlatform.Google: {
                 await this.$store.dispatch('account/getYoutube');
-                this.interaction = this.getInteraction(RewardConditionInteraction.YouTubeLike);
                 this.isAuthorized = !!this.youtube;
                 break;
             }
             case RewardConditionPlatform.Twitter: {
                 await this.$store.dispatch('account/getTwitter');
-                this.interaction = this.getInteraction(RewardConditionInteraction.TwitterLike);
                 this.isAuthorized = !!this.twitter;
                 break;
             }
             default:
         }
+
         this.onSelectInteraction(this.interaction);
         this.change();
         this.isLoadingPlatform = false;
@@ -151,7 +150,6 @@ export default class BaseCardRewardCondition extends Vue {
         if (!interaction) return;
 
         this.interaction = interaction;
-        this.content = '';
 
         switch (this.interaction.type) {
             case RewardConditionInteraction.YouTubeLike: {

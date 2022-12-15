@@ -4,12 +4,12 @@ import { BadRequestError, ForbiddenError } from '@thxnetwork/api/util/errors';
 import { WithdrawalState, WithdrawalType } from '@thxnetwork/api/types/enums';
 import { WithdrawalDocument } from '@thxnetwork/api/models/Withdrawal';
 import { Claim } from '@thxnetwork/api/models/Claim';
-import { findRewardByUuid, isTERC20Reward, isTERC721Reward } from '@thxnetwork/api/util/rewards';
+import { findRewardByUuid, isTERC20Perk, isTERC721Perk } from '@thxnetwork/api/util/rewards';
 import { canClaim } from '@thxnetwork/api/util/condition';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
-import AssetPoolService from '@thxnetwork/api/services/AssetPoolService';
+import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
 import MembershipService from '@thxnetwork/api/services/MembershipService';
@@ -23,13 +23,13 @@ const controller = async (req: Request, res: Response) => {
     let claim = await ClaimService.findById(req.params.id);
     if (!claim) throw new BadRequestError('This claim URL is invalid.');
 
-    const pool = await AssetPoolService.getById(claim.poolId);
+    const pool = await PoolService.getById(claim.poolId);
     if (!pool) throw new BadRequestError('The pool for this rewards has been removed.');
 
     const account = await AccountProxy.getById(req.auth.sub);
     if (!account.address) throw new BadRequestError('The authenticated account has not accessed its wallet.');
 
-    const reward = await findRewardByUuid(claim.rewardId);
+    const reward = await findRewardByUuid(claim.rewardUuid);
     if (!reward) throw new BadRequestError('The reward for this ID does not exist.');
 
     // Validate the claim
@@ -50,7 +50,7 @@ const controller = async (req: Request, res: Response) => {
     // Force sync by default but allow the requester to do async calls.
     const forceSync = req.query.forceSync !== undefined ? req.query.forceSync === 'true' : true;
 
-    if (isTERC20Reward(reward) && claim.erc20Id) {
+    if (isTERC20Perk(reward) && claim.erc20Id) {
         let withdrawal: WithdrawalDocument = await WithdrawalService.create(
             pool,
             WithdrawalType.ClaimReward,
@@ -71,7 +71,7 @@ const controller = async (req: Request, res: Response) => {
             claim = await Claim.create({
                 sub: req.auth.sub,
                 erc20Id: claim.erc20Id,
-                rewardId: claim.rewardId,
+                rewardUuid: claim.rewardUuid,
                 poolId: claim.poolId,
                 id: db.createUUID(),
             });
@@ -80,7 +80,7 @@ const controller = async (req: Request, res: Response) => {
         return res.json({ withdrawal, erc20, reward, claim });
     }
 
-    if (isTERC721Reward(reward) && claim.erc721Id) {
+    if (isTERC721Perk(reward) && claim.erc721Id) {
         const metadata = await ERC721Service.findMetadataById(reward.erc721metadataId);
         const erc721 = await ERC721Service.findById(metadata.erc721);
         const token = await ERC721Service.mint(pool, erc721, metadata, account, forceSync);
@@ -95,7 +95,7 @@ const controller = async (req: Request, res: Response) => {
             claim = await Claim.create({
                 sub: req.auth.sub,
                 erc721Id: claim.erc721Id,
-                rewardId: claim.rewardId,
+                rewardUuid: claim.rewardUuid,
                 poolId: claim.poolId,
                 id: db.createUUID(),
             });

@@ -14,7 +14,7 @@ import { PaymentState } from '@thxnetwork/api/types/enums/PaymentState';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { getProvider } from '@thxnetwork/api/util/network';
 import MemberService from '@thxnetwork/api/services/MemberService';
-import AssetPoolService from '@thxnetwork/api/services/AssetPoolService';
+import PoolService from '@thxnetwork/api/services/PoolService';
 
 const validation = [param('id').exists().isString()];
 
@@ -45,7 +45,7 @@ const controller = async (req: Request, res: Response) => {
     payment.sender = account.address;
 
     if (payment.promotionId) {
-        const assetPool = await AssetPoolService.getById(payment.poolId);
+        const assetPool = await PoolService.getById(payment.poolId);
         if (!MemberService.isMember(assetPool, account.address)) {
             throw new ForbiddenError('Account is not a member of the pool');
         }

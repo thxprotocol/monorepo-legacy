@@ -11,7 +11,7 @@ export type TClaim = {
     poolId: string;
     erc20Id?: string;
     erc721Id?: string;
-    rewardId: string;
+    rewardUuid: string;
 };
 
 export type TClaimURLData = TClaim & {
@@ -62,10 +62,10 @@ class ClaimModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async list(rewardId: number, poolId: string) {
+    async list(rewardUuid: number, poolId: string) {
         const r = await axios({
             method: 'GET',
-            url: `/claims/reward/${rewardId}`,
+            url: `/claims/reward/${rewardUuid}`,
             headers: { 'X-PoolId': poolId },
         });
 

@@ -3,7 +3,7 @@ import { getContract } from '../src/app/config/contracts';
 import { MONGODB_URI } from '../src/app/config/secrets';
 import { AssetPool, AssetPoolDocument } from '../src/app/models/AssetPool';
 import AccountProxy from '../src/app/proxies/AccountProxy';
-import AssetPoolService from '../src/app/services/AssetPoolService';
+import PoolService from '../src/app/services/PoolService';
 import { AccountPlanType, ChainId } from '../src/app/types/enums';
 import db from '../src/app/util/database';
 import { updateDiamondContract } from '../src/app/util/upgrades';
@@ -50,7 +50,7 @@ async function main() {
     for (const pool of pools) {
         try {
             console.log(`${counter++}/${pools.length}`);
-            const isUpgraded = await AssetPoolService.updateAssetPool(pool, currentVersion);
+            const isUpgraded = await PoolService.updateAssetPool(pool, currentVersion);
             if (isUpgraded) {
                 console.log('Upgrade:', pool.address, `${pool.variant} ${pool.version} -> ${currentVersion}`);
             }

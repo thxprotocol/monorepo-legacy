@@ -3,7 +3,7 @@ import { body } from 'express-validator';
 import { isAddress } from 'web3-utils';
 
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import AssetPoolService from '@thxnetwork/api/services/AssetPoolService';
+import PoolService from '@thxnetwork/api/services/PoolService';
 import { checkAndUpgradeToBasicPlan } from '@thxnetwork/api/util/plans';
 import ClientProxy from '@thxnetwork/api/proxies/ClientProxy';
 import { ADDRESS_ZERO } from '@thxnetwork/api/config/secrets';
@@ -33,7 +33,7 @@ const controller = async (req: Request, res: Response) => {
 
     await checkAndUpgradeToBasicPlan(account, req.body.chainId);
 
-    const pool = await AssetPoolService.deploy(
+    const pool = await PoolService.deploy(
         req.auth.sub,
         req.body.chainId,
         req.body.erc20tokens && req.body.erc20tokens.length ? req.body.erc20tokens[0] : ADDRESS_ZERO,

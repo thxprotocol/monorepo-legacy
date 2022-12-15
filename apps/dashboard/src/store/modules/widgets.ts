@@ -19,7 +19,7 @@ export class Widget {
         this.metadata = {
             height: 60,
             width: 310,
-            rewardId: data.metadata.rewardId,
+            rewardUuid: data.metadata.rewardUuid,
             poolAddress: data.metadata.poolAddress,
         };
     }
@@ -73,7 +73,7 @@ class WidgetModule extends VuexModule {
 
     @Action({ rawError: true })
     async create(data: {
-        metadata: { rewardId: number; poolId: string };
+        metadata: { rewardUuid: number; poolId: string };
         requestUris: string[];
         redirectUris: string[];
         postLogoutRedirectUris: string[];

@@ -24,7 +24,7 @@ describe('ERC721', () => {
 
     describe('POST /erc721', () => {
         it('should create and return contract details', async () => {
-            const logoImg = await createImage('image1');
+            const logoImg = await createImage();
             await user
                 .post('/v1/erc721')
                 .set('Authorization', dashboardAccessToken)

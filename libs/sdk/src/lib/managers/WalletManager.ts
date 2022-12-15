@@ -8,13 +8,11 @@ class WalletManager extends BaseManager {
     }
 
     async list(chainId: ChainId, sub: string) {
-        const res = await this.client.request.get(`/v1/wallets?sub=${sub}&chainId=${chainId.toString()}`);
-        return await res.json();
+        return await this.client.request.get(`/v1/wallets?sub=${sub}&chainId=${chainId.toString()}`);
     }
 
     async get(id: string) {
-        const res = await this.client.request.get(`/v1/wallets/${id}`);
-        return await res.json();
+        return await this.client.request.get(`/v1/wallets/${id}`);
     }
 
     async create(chainId: ChainId, forceSync?: boolean) {
@@ -24,28 +22,23 @@ class WalletManager extends BaseManager {
         params.append('chainId', chainId.toString());
         if (forceSync) params.append('forceSync', forceSync.toString());
 
-        const res = await this.client.request.post(`/v1/wallets`, { body: params });
-
-        return await res.json();
+        return await this.client.request.post(`/v1/wallets`, { body: params });
     }
 
     async getManagers(walletId: string) {
-        const res = await this.client.request.get(`/v1/wallets/${walletId}/managers`);
-        return await res.json();
+        return await this.client.request.get(`/v1/wallets/${walletId}/managers`);
     }
 
     async addManager(walletId: string, address: string) {
         const params = new URLSearchParams();
         params.append('address', address);
-        const res = await this.client.request.post(`/v1/wallets/${walletId}/managers`, {
+        return await this.client.request.post(`/v1/wallets/${walletId}/managers`, {
             body: params,
         });
-        return await res.json();
     }
 
     async deleteManager(walletManagerId: string) {
-        const res = await this.client.request.delete(`/v1/wallets/managers/${walletManagerId}`);
-        return res.status;
+        return await this.client.request.delete(`/v1/wallets/managers/${walletManagerId}`);
     }
 }
 

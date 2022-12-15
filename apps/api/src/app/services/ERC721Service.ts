@@ -8,7 +8,6 @@ import { ERC721, ERC721Document, IERC721Updates } from '@thxnetwork/api/models/E
 import { ERC721Metadata, ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
 import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
-import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { ChainId, TransactionState } from '@thxnetwork/api/types/enums';
 import { TAssetPool } from '@thxnetwork/api/types/TAssetPool';
 import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
@@ -17,7 +16,7 @@ import { assertEvent, ExpectedEventNotFound, findEvent, parseLogs } from '@thxne
 import { getProvider } from '@thxnetwork/api/util/network';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
 
-import AssetPoolService from './AssetPoolService';
+import PoolService from './PoolService';
 import MembershipService from './MembershipService';
 import TransactionService from './TransactionService';
 
@@ -127,7 +126,7 @@ export async function mint(
 
 export async function mintCallback(args: TERC721TokenMintCallbackArgs, receipt: TransactionReceipt) {
     const { assetPoolId, erc721tokenId } = args;
-    const { contract } = await AssetPoolService.getById(assetPoolId);
+    const { contract } = await PoolService.getById(assetPoolId);
     const events = parseLogs(contract.options.jsonInterface, receipt.logs);
 
     const event = assertEvent('ERC721Minted', events);
@@ -180,8 +179,7 @@ async function findTokensByMetadataAndSub(metadataId: string, account: IAccount)
 }
 
 async function findTokensBySub(sub: string): Promise<ERC721TokenDocument[]> {
-    const { address } = await AccountProxy.getById(sub);
-    return ERC721Token.find({ recipient: address });
+    return ERC721Token.find({ sub });
 }
 
 async function findMetadataById(id: string): Promise<ERC721MetadataDocument> {

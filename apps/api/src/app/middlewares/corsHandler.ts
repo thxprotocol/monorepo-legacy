@@ -12,10 +12,8 @@ export const corsHandler = cors(async (req: any, callback: any) => {
     }
 
     if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, {
-            credentials: true,
-            origin: allowedOrigins.push(origin),
-        });
+        allowedOrigins.push(origin);
+        callback(null, { credentials: true, origin: allowedOrigins });
     } else {
         callback(new Error(`${origin} is not allowed by CORS`));
     }

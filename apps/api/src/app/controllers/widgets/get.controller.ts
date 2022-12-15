@@ -25,7 +25,7 @@ const controller = async (req: Request, res: Response) => {
         clientSecret: client.clientSecret,
         registrationAccessToken: req.params.rat,
         metadata: {
-            rewardId: widget.metadata.rewardId,
+            rewardUuid: widget.metadata.rewardUuid,
             poolId: widget.metadata.poolId,
         },
     });

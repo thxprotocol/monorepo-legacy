@@ -9,15 +9,15 @@
 <% } %>
 
 <div class="col-md-6 offset-md-3 col-xl-4 offset-xl-4 order-0 order-sm-1">
-  <div class="text-center py-4">
+  <div class="text-center pb-4">
     <% if (params.logoImgUrl) { %>
     <img src="<%- params.logoImgUrl %>" width="60" alt="THX Logo" />
     <% } else { %>
     <img src="/img/logo.png" width="60" alt="THX Logo" />
     <% } %>
   </div>
-  <div class="card shadow-sm mb-5">
-    <div class="card-body p-sm-5">
+  <div class="card shadow-sm">
+    <div class="card-body p-sm-4">
       <% if (params.authRequestMessage) { %>
       <div v-if="alert && alert.message" class="alert" :class="`alert-${alert.variant}`">
         <i class="fas fa-exclamation-circle mr-2"></i>
@@ -30,7 +30,6 @@
       </strong>
       <p>You are invited to access your THX Web Wallet. Set a password and accept the invite!</p>
       <% } %>
-
       <% if (locals.alert && alert.message) { %>
       <div class="alert alert-<%= alert.variant %>">
         <%- alert.message %>
@@ -77,49 +76,38 @@
         </button>
       </form>
       <% } else { %>
-      <!--
-                    This part is used for regular login flow and only visibile if links are available
-                -->
+      <!-- This part is used for regular login flow and only visibile if links are available -->
       <% if (params.googleLoginUrl) { %>
-      <a class="btn btn-sign-in btn-google btn-block" href="<%= params.googleLoginUrl %>" download>
+      <a class="btn btn-sign-in" href="<%= params.googleLoginUrl %>">
         <div class="logo">
           <img src="/img/g-logo.png" alt="Google logo" />
         </div>
-        <div class="label">Sign in with Google</div>
       </a>
       <% } %>
       <% if (params.twitterLoginUrl) { %>
-      <a class="btn btn-sign-in btn-twitter btn-block" href="<%= params.twitterLoginUrl %>">
+      <a class="btn btn-sign-in" href="<%= params.twitterLoginUrl %>">
         <div class="logo">
           <img src="/img/t-logo.png" alt="Twitter logo" />
         </div>
-        <div class="label">Sign in with Twitter</div>
       </a>
       <% } %>
       <% if (params.githubLoginUrl) { %>
-      <a class="btn btn-sign-in btn-github btn-block" href="<%= params.githubLoginUrl %>">
+      <a class="btn btn-sign-in" href="<%= params.githubLoginUrl %>">
         <div class="logo">
           <img src="/img/github-logo.png" alt="github logo" />
         </div>
-        <div class="label">Sign in with Github</div>
       </a>
       <% } %>
       <% if (params.authRequestMessage) { %>
-      <hr />
-      <a class="btn btn-sign-in btn-metamask btn-block" @click="signin()">
+      <a class="btn btn-sign-in" @click="signin()">
         <div class="logo">
           <img src="/img/mm-logo.svg" width="30" height="30" alt="Metamask logo" />
-        </div>
-        <div class="label">
-          Sign in with Metamask
         </div>
       </a>
       <% } %>
       <hr>
 
-      <!--
-                    This part is used for regular login flow
-                -->
+      <!-- This part is used for regular login flow -->
       <form id="form-signin" action="/oidc/<%= uid %>/signin" method="post" class="mb-4">
 
         <div class="form-group">
@@ -144,7 +132,7 @@
         <% } %>
 
         <input type="hidden" name="returnUrl" value="<%= params.return_url %>" />
-        <button type="submit" class="btn rounded-pill btn-primary btn-block">
+        <button type="submit" class="btn rounded-pill btn-primary btn-block" :disabled="isDisabled">
           Sign in
           <i class="fas fa-chevron-right" aria-hidden="true"></i>
         </button>

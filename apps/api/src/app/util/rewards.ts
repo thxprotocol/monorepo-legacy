@@ -1,28 +1,31 @@
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
-import { TERC721Reward, TERC20Reward, TReferralReward } from '@thxnetwork/types/';
-import { ERC20Reward } from '../models/ERC20Reward';
-import { ERC721Reward } from '../models/ERC721Reward';
+import { TERC721Perk, TERC20Perk, TReferralReward, TPointReward } from '@thxnetwork/types/';
+import { ERC20Perk } from '../models/ERC20Perk';
+import { ERC721Perk } from '../models/ERC721Perk';
 import { ReferralReward } from '../models/ReferralReward';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
-import ERC20RewardService from '../services/ERC20RewardService';
-import ERC721RewardService from '@thxnetwork/api/services/ERC721RewardService';
-import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardService';
+import ERC20PerkService from '../services/ERC20PerkService';
+import ERC721PerkService from '@thxnetwork/api/services/ERC721PerkService';
+import { PointReward } from '../models/PointReward';
 
 export async function findRewardByUuid(uuid: string) {
-    const erc20Reward = await ERC20Reward.findOne({ uuid });
-    const erc721Reward = await ERC721Reward.findOne({ uuid });
+    const erc20Perk = await ERC20Perk.findOne({ uuid });
+    const erc721Perk = await ERC721Perk.findOne({ uuid });
     const referralReward = await ReferralReward.findOne({ uuid });
-    return erc20Reward || erc721Reward || referralReward;
+    const pointReward = await PointReward.findOne({ uuid });
+    return erc20Perk || erc721Perk || referralReward || pointReward;
 }
 
-export function isTERC20Reward(reward: TERC20Reward | TERC721Reward): reward is TERC20Reward {
-    return (reward as TERC20Reward).amount !== undefined;
+export function isTERC20Perk(reward: TERC20Perk | TERC721Perk | TReferralReward | TPointReward): reward is TERC20Perk {
+    return (reward as TERC20Perk).amount !== undefined;
 }
 
-export function isTERC721Reward(reward: TERC20Reward | TERC721Reward): reward is TERC721Reward {
-    return (reward as TERC721Reward).erc721metadataId !== undefined;
+export function isTERC721Perk(
+    reward: TERC20Perk | TERC721Perk | TReferralReward | TPointReward,
+): reward is TERC721Perk {
+    return (reward as TERC721Perk).erc721metadataId !== undefined;
 }
 
 export function addMinutes(date: Date, minutes: number) {
@@ -44,18 +47,18 @@ export function formatDate(date: Date) {
     return yyyy + '-' + mm + '-' + dd;
 }
 
-export const createERC721Reward = async (assetPool: AssetPoolDocument, config: TERC721Reward) => {
+export const createERC721Perk = async (assetPool: AssetPoolDocument, config: TERC721Perk) => {
     const metadata = await ERC721Service.findMetadataById(config.erc721metadataId);
     if (!metadata) throw new NotFoundError('could not find the Metadata for this metadataId');
 
-    const reward = await ERC721RewardService.create(assetPool, config);
+    const reward = await ERC721PerkService.create(assetPool, config);
     const claims = await Promise.all(
         Array.from({ length: Number(config.claimAmount) }).map(() =>
             ClaimService.create({
                 poolId: assetPool._id,
                 erc20Id: null,
                 erc721Id: metadata.erc721,
-                rewardId: reward.uuid,
+                rewardUuid: reward.uuid,
             }),
         ),
     );
@@ -63,31 +66,17 @@ export const createERC721Reward = async (assetPool: AssetPoolDocument, config: T
     return { reward, claims };
 };
 
-export const createERC20Reward = async (pool: AssetPoolDocument, payload: TERC20Reward) => {
-    const reward = await ERC20RewardService.create(pool, payload);
+export const createERC20Perk = async (pool: AssetPoolDocument, payload: TERC20Perk) => {
+    const reward = await ERC20PerkService.create(pool, payload);
     const claims = await Promise.all(
         Array.from({ length: Number(payload.claimAmount) }).map(() =>
             ClaimService.create({
                 poolId: pool._id,
                 erc20Id: pool.erc20Id,
-                rewardId: reward.uuid,
+                rewardUuid: reward.uuid,
             }),
         ),
     );
 
-    return { reward, claims };
-};
-
-export const createReferralReward = async (assetPool: AssetPoolDocument, config: TReferralReward) => {
-    const reward = await ReferralRewardService.create(assetPool, config);
-    const claims = await Promise.all(
-        Array.from({ length: Number(reward.claimAmount) }).map(() =>
-            ClaimService.create({
-                poolId: assetPool._id,
-                erc20Id: assetPool.erc20Id,
-                rewardId: reward.uuid,
-            }),
-        ),
-    );
     return { reward, claims };
 };

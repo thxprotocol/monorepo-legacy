@@ -10,12 +10,12 @@ export default class WidgetService {
         return widgets.map((widget) => widget.clientId);
     }
 
-    static async create(sub: string, clientId: string, rewardId: number, poolId: string) {
+    static async create(sub: string, clientId: string, rewardUuid: number, poolId: string) {
         return Widget.create({
             sub,
             clientId,
             metadata: {
-                rewardId,
+                rewardUuid,
                 poolId,
             },
         });

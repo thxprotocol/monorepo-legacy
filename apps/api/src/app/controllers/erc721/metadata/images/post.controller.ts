@@ -10,8 +10,8 @@ import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { fromBuffer } from 'file-type';
 import { Request, Response } from 'express';
 import { body, check, param } from 'express-validator';
-import { createERC721Reward } from '@thxnetwork/api/util/rewards';
-import { RewardConditionPlatform, TERC721Reward } from '@thxnetwork/types/index';
+import { createERC721Perk } from '@thxnetwork/api/util/rewards';
+import { RewardConditionPlatform, TERC721Perk } from '@thxnetwork/types/index';
 import short from 'short-uuid';
 import db from '@thxnetwork/api/util/database';
 
@@ -94,10 +94,25 @@ const controller = async (req: Request, res: Response) => {
 
                     // CREATE THE METADATA
                     const metadata = await ERC721Service.createMetadata(erc721, [
-                        { key: req.body.propName, value: url },
+                        {
+                            key: req.body.propName,
+                            value: url,
+                        },
+                        {
+                            key: 'name',
+                            value: req.body.name,
+                        },
+                        {
+                            key: 'description',
+                            value: req.body.description,
+                        },
+                        {
+                            key: 'external_url',
+                            value: req.body.external_url,
+                        },
                     ]);
 
-                    await createERC721Reward(req.assetPool, {
+                    await createERC721Perk(req.assetPool, {
                         uuid: db.createUUID(),
                         erc721metadataId: String(metadata._id),
                         poolId: String(req.assetPool._id),
@@ -107,7 +122,7 @@ const controller = async (req: Request, res: Response) => {
                         claimAmount: 1,
                         rewardLimit: 1,
                         platform: RewardConditionPlatform.None,
-                    } as TERC721Reward);
+                    } as TERC721Perk);
 
                     return metadata;
                 } catch (err) {

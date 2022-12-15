@@ -91,19 +91,14 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters, mapState } from 'vuex';
 import poll from 'promise-poller';
 import { UserProfile } from '../store/modules/account';
-import {
-    RewardConditionInteraction,
-    RewardConditionPlatform,
-    TERC20Reward,
-    TERC721Reward,
-} from '@thxnetwork/types/index';
+import { RewardConditionInteraction, RewardConditionPlatform, TERC20Perk, TERC721Perk } from '@thxnetwork/types/index';
 import { TERC20 } from '../store/modules/erc20';
 
 type TClaim = {
     metadata: TERC721Metadata;
     reward:
-        | (TERC20Reward & { itemUrl: { href: string; label: string } })
-        | (TERC721Reward & { itemUrl: { href: string; label: string } });
+        | (TERC20Perk & { itemUrl: { href: string; label: string } })
+        | (TERC721Perk & { itemUrl: { href: string; label: string } });
     erc721: ERC721;
     erc20: TERC20;
 };
@@ -136,8 +131,8 @@ export default class Collect extends Vue {
 
     reward:
         | null
-        | (TERC20Reward & { itemUrl: { href: string; label: string } })
-        | (TERC721Reward & { itemUrl: { href: string; label: string } }) = null;
+        | (TERC20Perk & { itemUrl: { href: string; label: string } })
+        | (TERC721Perk & { itemUrl: { href: string; label: string } }) = null;
     profile!: UserProfile;
     hasValidAccessToken = false;
     RewardConditionPlatform = RewardConditionPlatform;

@@ -8,7 +8,8 @@ const schema = new mongoose.Schema(
         poolId: String,
         erc20Id: String,
         erc721Id: String,
-        rewardId: String,
+        rewardUuid: String,
+        amount: String,
     },
     { timestamps: true },
 );

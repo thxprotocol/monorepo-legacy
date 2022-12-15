@@ -4,7 +4,7 @@ export type TClaim = {
     sub?: string;
     id: string;
     poolId: string;
-    rewardId: string;
+    rewardUuid: string;
     erc20Id?: string;
     erc721Id?: string;
 };

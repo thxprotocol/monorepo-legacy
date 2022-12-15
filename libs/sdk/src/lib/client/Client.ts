@@ -1,5 +1,5 @@
 import { UserManager as BaseUserManager, UserManagerSettings } from 'oidc-client-ts';
-
+import type { Credential } from '../types';
 import { URL_CONFIG } from '../configs';
 import CredentialManager from '../managers/CredentialManager';
 import ERC20Manager from '../managers/ERC20Manager';
@@ -8,17 +8,18 @@ import RequestManager from '../managers/RequestManager';
 import AccountManager from '../managers/AccountManager';
 import SessionManager from '../managers/SessionManager';
 import UserManager from '../managers/UserManager';
-
-import type { Credential } from '../types';
 import WalletManager from '../managers/WalletManager';
+import ReferralRewardManager from '../managers/ReferralRewardManager';
+import RewardsManager from '../managers/RewardsManager';
+import PointRewardManager from '../managers/PointRewardManager';
+import PerksManager from '../managers/PerksManager';
+import PointBalanceManager from '../managers/PointBalanceManager';
 
 type Props = Omit<Credential, 'grantType'>;
 
 export default class THXClient {
     initialized = false;
     authenticated = false;
-
-    /* Internal managers */
     erc20: ERC20Manager;
     erc721: ERC721Manager;
     request: RequestManager;
@@ -26,8 +27,12 @@ export default class THXClient {
     userManager: UserManager;
     credential: CredentialManager;
     walletManager: WalletManager;
-    /* External managers */
+    referralRewardManager: ReferralRewardManager;
+    pointRewardManager: PointRewardManager;
+    rewardsManager: RewardsManager;
+    perksManager: PerksManager;
     account: AccountManager;
+    pointBalanceManager: PointBalanceManager;
 
     constructor({ scopes = 'openid', ...rest }: Props) {
         const env = rest.env || 'prod';
@@ -58,11 +63,16 @@ export default class THXClient {
             grantType,
         });
         this.userManager = new UserManager(this, userManager);
-        this.session = new SessionManager(this, {});
+        this.session = new SessionManager(this, { poolId: rest.poolId });
         this.account = new AccountManager(this);
         this.erc20 = new ERC20Manager(this);
         this.erc721 = new ERC721Manager(this);
         this.walletManager = new WalletManager(this);
+        this.rewardsManager = new RewardsManager(this);
+        this.perksManager = new PerksManager(this);
+        this.referralRewardManager = new ReferralRewardManager(this);
+        this.pointRewardManager = new PointRewardManager(this);
+        this.pointBalanceManager = new PointBalanceManager(this);
     }
 
     public async init() {

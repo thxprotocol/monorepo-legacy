@@ -5,8 +5,8 @@ const isUndefined = (value) => typeof value === 'undefined' || value == undefine
 module.exports = {
     async up(db) {
         const rewardsColl = db.collection('rewards');
-        const erc20RewardsColl = db.collection('erc20rewards');
-        const erc721RewardsColl = db.collection('erc721rewards');
+        const erc20PerksColl = db.collection('erc20perks');
+        const erc721PerksColl = db.collection('erc721perks');
         const rewards = await (await rewardsColl.find({})).toArray();
         const promises = rewards.map(async (r) => {
             try {
@@ -42,12 +42,12 @@ module.exports = {
                 }
 
                 if (!isUndefined(r.erc721metadataId)) {
-                    await erc721RewardsColl.insertOne({
+                    await erc721PerksColl.insertOne({
                         ...payload,
                         erc721metadataId: r.erc721metadataId,
                     });
                 } else if (!isUndefined(r.withdrawAmount)) {
-                    await erc20RewardsColl.insertOne({
+                    await erc20PerksColl.insertOne({
                         ...payload,
                         amount: r.withdrawAmount,
                     });
