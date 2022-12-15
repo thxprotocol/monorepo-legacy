@@ -22,7 +22,7 @@ async function controller(req: Request, res: Response) {
     params.googleLoginUrl = YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getBasicScopes());
     params.githubLoginUrl = GithubService.getLoginURL(uid, {});
 
-    if (params.return_url === WALLET_URL) {
+    if (DASHBOARD_URL !== params.return_url) {
         params.twitterLoginUrl = TwitterService.getLoginURL(uid, {});
         params.authRequestMessage = createTypedMessage(AUTH_REQUEST_TYPED_MESSAGE, AUTH_URL, uid);
     }
