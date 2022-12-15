@@ -53,7 +53,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { UserProfile } from 'oidc-client-ts';
 import { platformList, platformInteractionList, IChannel, IChannelAction } from '@thxnetwork/dashboard/types/rewards';
@@ -111,6 +111,15 @@ export default class BaseCardRewardCondition extends Vue {
     }
 
     mounted() {
+        const { platform, interaction, content } = this.rewardCondition;
+        this.platform = platformList.find((c) => c.type === platform) as IChannel;
+        this.onSelectPlatform(this.platform);
+        this.interaction = platformInteractionList.find((i) => i.type === interaction) as IChannelAction;
+        this.content = content;
+    }
+
+    @Watch('rewardCondition')
+    onRewardConditionChange(rewardCondition: any) {
         const { platform, interaction, content } = this.rewardCondition;
         this.platform = platformList.find((c) => c.type === platform) as IChannel;
         this.onSelectPlatform(this.platform);

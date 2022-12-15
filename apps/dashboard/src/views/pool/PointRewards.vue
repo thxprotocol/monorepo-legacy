@@ -52,7 +52,9 @@
                         <template #button-content>
                             <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
                         </template>
-                        <b-dropdown-item v-b-modal="'modalRewardPointsCreate' + item.id">Edit</b-dropdown-item>
+                        <b-dropdown-item v-b-modal="'modalRewardPointsCreate' + item.id"
+                            >Edit {{ item.id }}</b-dropdown-item
+                        >
                         <b-dropdown-item
                             @click="$store.dispatch('pointRewards/delete', pointRewards[pool._id][item.id])"
                         >
@@ -80,7 +82,6 @@ import { platformInteractionList, platformList } from '@thxnetwork/dashboard/typ
 import BaseModalRewardPointsCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardPointsCreate.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/badges/BaseBadgeRewardConditionPreview.vue';
-import store from '@thxnetwork/dashboard/store';
 
 @Component({
     components: {
