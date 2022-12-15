@@ -5,6 +5,8 @@ import { TwitterService } from '../../../services/TwitterService';
 import { YouTubeService } from '../../../services/YouTubeService';
 import { GithubService } from '@thxnetwork/auth/services/GithubServices';
 import { AccountService } from '@thxnetwork/auth/services/AccountService';
+import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
+import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
 
 const isExpired = (expiry?: number) => {
     if (!expiry) return true;
@@ -18,17 +20,17 @@ async function controller(req: Request, res: Response) {
     let redirect = '';
 
     if (params.channel == RewardConditionPlatform.Google) {
+        const token: IAccessToken = account.getToken(AccessTokenKind.Google).expiry;
         redirect =
-            isExpired(account.googleAccessTokenExpires) ||
-            !(await YouTubeService.haveExpandedScopes(account.googleAccessToken))
+            isExpired(token.expiry) || !(await YouTubeService.haveExpandedScopes(token.accessToken))
                 ? YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getExpandedScopes())
                 : params.redirect_uri;
     } else if (params.channel == RewardConditionPlatform.Twitter) {
-        redirect = isExpired(account.twitterAccessTokenExpires)
+        redirect = isExpired(account.getToken(AccessTokenKind.Twitch).expiry)
             ? TwitterService.getLoginURL(uid, {})
             : params.redirect_uri;
     } else if (params.channel == RewardConditionPlatform.Github) {
-        redirect = isExpired(account.githubAccessTokenExpires)
+        redirect = isExpired(account.getToken(AccessTokenKind.Github).expiry)
             ? GithubService.getLoginURL(uid, {})
             : params.redirect_uri;
     }
