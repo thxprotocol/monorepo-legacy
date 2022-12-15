@@ -110,21 +110,15 @@ export default class BaseCardRewardCondition extends Vue {
         return platformInteractionList.filter((a) => this.platform.actions.includes(a.type));
     }
 
-    mounted() {
-        this.setValues(this.rewardCondition);
-    }
-
-    // @Watch('rewardCondition')
-    // onRewardConditionChange(rewardCondition: any) {
-    //     this.setValues(rewardCondition);
-    // }
-
-    setValues(rewardCondition: any) {
-        const { platform, interaction, content } = rewardCondition;
-        this.platform = platformList.find((c) => c.type === platform) as IChannel;
-        this.onSelectPlatform(this.platform);
-        this.interaction = platformInteractionList.find((i) => i.type === interaction) as IChannelAction;
-        this.content = content;
+    async mounted() {
+        if (this.rewardCondition) {
+            const { platform, interaction, content } = this.rewardCondition;
+            this.platform = platformList.find((c) => c.type === platform) as IChannel;
+            this.interaction = platformInteractionList.find((i) => i.type === interaction) as IChannelAction;
+            this.content = content;
+            await this.onSelectPlatform(this.platform);
+            this.isVisible = !!this.platform.type;
+        }
     }
 
     async onSelectPlatform(platform: IChannel) {
@@ -132,23 +126,21 @@ export default class BaseCardRewardCondition extends Vue {
 
         this.isLoadingPlatform = true;
         this.platform = platform;
-        this.content = '';
 
         switch (platform.type) {
             case RewardConditionPlatform.Google: {
                 await this.$store.dispatch('account/getYoutube');
-                this.interaction = this.getInteraction(RewardConditionInteraction.YouTubeLike);
                 this.isAuthorized = !!this.youtube;
                 break;
             }
             case RewardConditionPlatform.Twitter: {
                 await this.$store.dispatch('account/getTwitter');
-                this.interaction = this.getInteraction(RewardConditionInteraction.TwitterLike);
                 this.isAuthorized = !!this.twitter;
                 break;
             }
             default:
         }
+
         this.onSelectInteraction(this.interaction);
         this.change();
         this.isLoadingPlatform = false;
@@ -158,7 +150,6 @@ export default class BaseCardRewardCondition extends Vue {
         if (!interaction) return;
 
         this.interaction = interaction;
-        this.content = '';
 
         switch (this.interaction.type) {
             case RewardConditionInteraction.YouTubeLike: {
