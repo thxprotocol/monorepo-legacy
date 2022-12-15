@@ -112,8 +112,12 @@ export default class AssetPoolView extends Vue {
     get rewardsByPage() {
         if (!this.pointRewards[this.$route.params.id]) return [];
         return Object.values(this.pointRewards[this.$route.params.id])
+            .sort((a, b) => {
+                const createdAtTime = new Date(a.createdAt as string).getTime();
+                const nextCreatedAtTime = new Date(b.createdAt as string).getTime();
+                return createdAtTime < nextCreatedAtTime ? 1 : -1;
+            })
             .filter((reward: TPointReward) => reward.page === this.page)
-            .sort((a, b) => (a.createdAt && b.createdAt && a.createdAt < b.createdAt ? 1 : -1))
             .map((r: TPointReward) => ({
                 checkbox: r._id,
                 amount: r.amount,

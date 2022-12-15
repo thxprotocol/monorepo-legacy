@@ -106,6 +106,7 @@ export default class ModalRewardPointsCreate extends Vue {
         this.isLoading = true;
         this.$store
             .dispatch(`pointRewards/${this.reward ? 'update' : 'create'}`, {
+                ...this.reward,
                 _id: this.reward ? this.reward._id : undefined,
                 poolId: this.pool._id,
                 title: this.title,
