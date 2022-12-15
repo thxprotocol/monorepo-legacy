@@ -23,7 +23,7 @@ const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(claim.poolId);
     if (!pool) throw new NotFoundError('Could not find this pool');
 
-    const reward = await findRewardByUuid(claim.rewardId);
+    const reward = await findRewardByUuid(claim.rewardUuid);
     if (!reward) throw new NotFoundError('Could not find this reward');
 
     if (isTERC20Perk(reward) && claim.erc20Id) {

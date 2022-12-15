@@ -4,7 +4,7 @@ import { TClaim } from '@thxnetwork/api/types/TClaim';
 import { TBaseReward } from '@thxnetwork/types/';
 import db from '@thxnetwork/api/util/database';
 
-function create(data: { poolId: string; rewardId: string; erc20Id?: string; erc721Id?: string }) {
+function create(data: { poolId: string; rewardUuid: string; erc20Id?: string; erc721Id?: string }) {
     const claim = { id: db.createUUID(), ...data } as TClaim;
     return Claim.create(claim);
 }
@@ -15,7 +15,7 @@ function findByPool(pool: AssetPoolDocument) {
     return Claim.find({ poolId: String(pool._id) });
 }
 function findByReward(reward: TBaseReward) {
-    return Claim.find({ rewardId: reward.uuid, poolId: reward.poolId });
+    return Claim.find({ rewardUuid: reward.uuid, poolId: reward.poolId });
 }
 
 export default { create, findById, findByPool, findByReward };
