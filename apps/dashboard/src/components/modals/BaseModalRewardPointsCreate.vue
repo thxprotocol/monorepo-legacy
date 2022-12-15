@@ -1,5 +1,5 @@
 <template>
-    <base-modal size="xl" title="Create Points Reward" :id="id" :error="error" :loading="isLoading">
+    <base-modal size="xl" title="Create Points Reward" :id="id" :error="error" :loading="isLoading" @show="onShow">
         <template #modal-body v-if="!isLoading">
             <p class="text-gray">
                 Points rewards are distributed to your customers achieving milestones in your customer journey.
@@ -85,12 +85,7 @@ export default class ModalRewardPointsCreate extends Vue {
     @Prop() pool!: IPool;
     @Prop({ required: false }) reward!: TPointReward;
 
-    @Watch('reward')
-    onRewardChange(reward?: TPointReward) {
-        this.setValues(reward);
-    }
-
-    mounted() {
+    onShow() {
         this.setValues(this.reward);
     }
 

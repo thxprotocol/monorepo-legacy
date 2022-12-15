@@ -52,9 +52,7 @@
                         <template #button-content>
                             <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
                         </template>
-                        <b-dropdown-item v-b-modal="'modalRewardPointsCreate' + item.id"
-                            >Edit {{ item.id }}</b-dropdown-item
-                        >
+                        <b-dropdown-item v-b-modal="'modalRewardPointsCreate' + item.id">Edit</b-dropdown-item>
                         <b-dropdown-item
                             @click="$store.dispatch('pointRewards/delete', pointRewards[pool._id][item.id])"
                         >
