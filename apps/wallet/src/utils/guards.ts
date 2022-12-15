@@ -18,7 +18,7 @@ export function redirectLoginLink(to: Route) {
 export function redirectRewardLink(to: Route) {
     return store.dispatch('account/signinRedirect', {
         rewardHash: to.query.hash || null,
-        claimId: to.params.id || null,
+        claimUuid: to.params.id || null,
     });
 }
 
