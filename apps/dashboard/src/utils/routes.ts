@@ -22,12 +22,6 @@ export const getRoutes = (pool: IPool) => {
             visible: !!pool.erc20 || !!pool.erc721,
         },
         {
-            path: 'erc20-perks',
-            label: 'Currency Perks',
-            iconClasses: 'fas fa-coin',
-            visible: !!pool.erc20,
-        },
-        {
             path: 'metadata',
             label: 'NFT Metadata',
             iconClasses: 'fas fa-palette',
@@ -38,6 +32,12 @@ export const getRoutes = (pool: IPool) => {
             label: 'NFT Perks',
             iconClasses: 'fas fa-award',
             visible: !!pool.erc721,
+        },
+        {
+            path: 'erc20-perks',
+            label: 'Currency Perks',
+            iconClasses: 'fas fa-coins',
+            visible: !!pool.erc20,
         },
         {
             path: 'payments',
