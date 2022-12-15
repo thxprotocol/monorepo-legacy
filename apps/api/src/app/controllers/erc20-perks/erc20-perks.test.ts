@@ -196,7 +196,6 @@ describe('ERC20 Perks', () => {
                     claimAmount: 1,
                 })
                 .expect((res: request.Response) => {
-                    console.log('BODY', res.body);
                     expect(res.body._id).toBeDefined();
                     expect(res.body.claims).toBeDefined();
                     expect(res.body.claims[0].uuid).toBeDefined();
