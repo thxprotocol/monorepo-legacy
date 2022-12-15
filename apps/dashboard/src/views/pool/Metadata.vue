@@ -79,7 +79,8 @@
 
           <base-modal-erc721-metadata-mint :pool="pool" :erc721="erc721" :erc721Metadata="item" />
         </template>
-
+        <b-pagination size="sm" class="my-0" @change="onChangePage($event)" v-model="page" :per-page="limit"
+          :total-rows="total" align="center"></b-pagination>
       </BTable>
     </BCard>
 
