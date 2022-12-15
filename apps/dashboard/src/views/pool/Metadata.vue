@@ -36,22 +36,61 @@
         Downloading your QR codes
       </b-alert>
     </b-row>
-    <base-nothing-here v-if="erc721 && !erc721.metadata" text-submit="Create NFT Metadata"
-      title="You have not created NFT Metadata yet"
-      description="NFT Metadata is the actual data that is attached to your token."
-      @clicked="$bvModal.show('modalNFTCreate')" />
-    <base-card-erc721-metadata @edit="onEdit" @delete="onDelete" v-if="erc721 && erc721.metadata" :erc721="erc721"
-      :metadata="metadataByPage" :pool="pool" />
-    <b-pagination v-if="erc721s && erc721 && erc721.metadata && total > limit" class="mt-3" @change="onChangePage"
-      v-model="page" :per-page="limit" :total-rows="total" align="center"></b-pagination>
-    <base-modal-erc721-metadata-create v-if="erc721" @hidden="reset" :metadata="editingMeta" :pool="pool"
-      :erc721="erc721" @success="listMetadata()" />
-    <base-modal-erc721-metadata-bulk-create v-if="erc721" :pool="pool" :erc721="erc721" @success="listMetadata()" />
-    <BaseModalErc721MetadataUploadCSV v-if="erc721" :pool="pool" :erc721="erc721" @success="onSuccess()" />
+
+    <BCard variant="white" body-class="p-0 shadow-sm">
+      <BTable hover :busy="isLoading" :items="metadataByPage" responsive="lg" :fields="fields" show-empty>
+        <!-- Head formatting -->
+        <template #head(checkbox)>
+          <b-form-checkbox @change="onChecked" />
+        </template>
+        <template #head(title)> Created </template>
+        <template #head(progress)> Attributes </template>
+        <template #head(rewardCondition)> Tokens </template>
+        <template #head(id)> &nbsp; </template>
+
+        <!-- Cell formatting -->
+        <template #cell(checkbox)="{ item }">
+          <b-form-checkbox v-model="selectedItems" />
+        </template>
+        <template #cell(attributes)="{ item }">
+          <b-badge :key="key" v-for="(atribute, key) in item.attributes" variant="dark" v-b-tooltip
+            :title="atribute.value" class="mr-2">
+            {{ atribute.key }}
+          </b-badge>
+        </template>
+        <template #cell(tokens)="{ item }">
+          <b-badge class="mr-2" variant="dark" :key="token.tokenId" v-for="token of item.tokens" v-b-tooltip :title="`Minted at: ${format(
+            new Date(token.createdAt),
+            'dd-MM-yyyy HH:mm'
+          )}`">
+            #{{ token.tokenId }}
+          </b-badge>
+        </template>
+        <template #cell(createdAt)="{ item }">
+          {{ format(new Date(item.createdAt), 'dd-MM-yyyy HH:mm') }}
+        </template>
+        <template #cell(id)="{ item }">
+          <b-dropdown size="sm" class="float-right" variant="light">
+            <b-dropdown-item :disabled="!!item.tokens.length" @click="onEdit(item)">Edit</b-dropdown-item>
+            <b-dropdown-item target="_blank" :href="`${apiUrl}/v1/metadata/${item._id}`">View</b-dropdown-item>
+            <b-dropdown-item v-b-modal="`modalNFTMint${item._id}`">Mint</b-dropdown-item>
+            <b-dropdown-item :disabled="!!item.tokens.length" @click="onDelete(item)">Delete</b-dropdown-item>
+          </b-dropdown>
+
+          <base-modal-erc721-metadata-mint :pool="pool" :erc721="erc721" :erc721Metadata="item" />
+        </template>
+
+      </BTable>
+    </BCard>
+
+    <base-modal-erc721-metadata-create v-if="erc721 && editingMeta" :erc721="erc721" @hidden="reset"
+      :metadata="editingMeta" :pool="pool" />
+
   </div>
 </template>
 
 <script lang="ts">
+import { format } from 'date-fns';
 import { IPool, IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
@@ -66,6 +105,9 @@ import BaseModalErc721MetadataCreate from '@thxnetwork/dashboard/components/moda
 import BaseModalErc721MetadataBulkCreate from '@thxnetwork/dashboard/components/modals/BaseModalERC721MetadataBulkCreate.vue';
 import BaseModalErc721MetadataUploadCSV from '@thxnetwork/dashboard/components/modals/BaseModalERC721MetadataUploadCSV.vue';
 import BaseModalErc721MetadataCreateCSV from '@thxnetwork/dashboard/components/modals/BaseModalERC721MetadataCreateCSV.vue';
+import BaseModalErc721MetadataMint from '@thxnetwork/dashboard/components/modals/BaseModalERC721MetadataMint.vue';
+
+
 
 @Component({
   components: {
@@ -75,6 +117,7 @@ import BaseModalErc721MetadataCreateCSV from '@thxnetwork/dashboard/components/m
     BaseModalErc721MetadataBulkCreate,
     BaseModalErc721MetadataUploadCSV,
     BaseModalErc721MetadataCreateCSV,
+    BaseModalErc721MetadataMint,
   },
   computed: mapGetters({
     pools: 'pools/all',
@@ -86,6 +129,7 @@ export default class MetadataView extends Vue {
   page = 1;
   limit = 15;
   isLoading = true;
+  format = format
 
   totals!: { [erc721Id: string]: number };
 
@@ -96,10 +140,13 @@ export default class MetadataView extends Vue {
   qrURL = '';
   isDownloading = false;
   isDownloadScheduled = false;
+  selectedItems: any[] = []
 
   pools!: IPools;
   erc721s!: IERC721s;
   editingMeta: TERC721Metadata | null = null;
+
+  fields = ["createdAt", "attributes", "tokens", "id"];
 
   get pool(): IPool {
     return this.pools[this.$route.params.id];
@@ -110,11 +157,11 @@ export default class MetadataView extends Vue {
   }
 
   get total() {
-    return this.totals[this.erc721._id];
+    return this.erc721 ? this.totals[this.erc721._id] : 0;
   }
 
   get metadataByPage() {
-    if (!this.erc721s[this.erc721._id].metadata) return [];
+    if (!this.erc721s[this.erc721?._id].metadata) return [];
     return Object.values(this.erc721s[this.erc721._id].metadata)
       .filter((metadata: TERC721Metadata) => metadata.page === this.page)
       .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
@@ -124,6 +171,10 @@ export default class MetadataView extends Vue {
   onChangePage(page: number) {
     this.page = page;
     this.listMetadata();
+  }
+
+  onChecked(checked: boolean) {
+    this.selectedItems = checked ? (this.metadataByPage.map((r) => r._id) as string[]) : [];
   }
 
   reset() {
