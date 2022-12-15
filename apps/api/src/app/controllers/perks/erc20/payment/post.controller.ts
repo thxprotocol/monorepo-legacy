@@ -6,7 +6,7 @@ import { InsufficientBalanceError, NotFoundError } from '@thxnetwork/api/util/er
 import { getContractFromName } from '@thxnetwork/api/config/contracts';
 import { BigNumber } from 'ethers';
 import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
-import { WithdrawalState, WithdrawalType } from '@thxnetwork/api/types/enums';
+import { ERC20Type, WithdrawalState, WithdrawalType } from '@thxnetwork/api/types/enums';
 import { IAccount } from '@thxnetwork/api/models/Account';
 import PointBalanceService, { PointBalance } from '@thxnetwork/api/services/PointBalanceService';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
@@ -22,17 +22,23 @@ const controller = async (req: Request, res: Response) => {
     if (!erc20Perk) throw new NotFoundError('Could not find this perk');
 
     const erc20 = await ERC20Service.findByPool(req.assetPool);
-    if (!erc20Perk) throw new NotFoundError('Could not find the erc20 for this perk');
+    if (!erc20) throw new NotFoundError('Could not find the erc20 for this perk');
 
     const contract = getContractFromName(req.assetPool.chainId, 'LimitedSupplyToken', erc20.address);
     const amount = toWei(erc20Perk.amount).toString();
 
     const balanceOfPool = await contract.methods.balanceOf(req.assetPool.address).call();
-    if (BigNumber.from(balanceOfPool).lt(BigNumber.from(amount))) throw new InsufficientBalanceError();
+    if (
+        [ERC20Type.Unknown, ERC20Type.Limited].includes(erc20.type) &&
+        BigNumber.from(balanceOfPool).lt(BigNumber.from(amount))
+    ) {
+        throw new InsufficientBalanceError();
+    }
 
     const { balance } = await PointBalance.findOne({ sub: req.auth.sub, poolId: req.assetPool._id });
-    if (Number(balance) < Number(erc20Perk.pointPrice))
+    if (Number(balance) < Number(erc20Perk.pointPrice)) {
         throw new InsufficientBalanceError('Not enough points on this account for this pool.');
+    }
 
     const wallet = await WalletService.findOneByQuery({ sub: req.auth.sub, chainId: req.assetPool.chainId });
 

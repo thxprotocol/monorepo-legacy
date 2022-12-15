@@ -16,6 +16,9 @@
                         <b-form-group label="Amount">
                             <b-form-input v-model="amount" />
                         </b-form-group>
+                        <b-form-group label="Point Price">
+                            <b-form-input type="number" v-model="pointPrice" />
+                        </b-form-group>
                     </b-col>
                     <b-col md="6">
                         <BaseCardRewardCondition
@@ -77,6 +80,7 @@ export default class ModalRewardERC20Create extends Vue {
     rewardExpiry = {};
     claimAmount = 1;
     rewardLimit = 0;
+    pointPrice = 0;
     rewardCondition: { platform: RewardConditionPlatform; interaction: RewardConditionInteraction; content: string } = {
         platform: platformList[0].type,
         interaction: platformInteractionList[0].type,
@@ -92,7 +96,7 @@ export default class ModalRewardERC20Create extends Vue {
             this.title = this.reward.title;
             this.amount = String(this.reward.amount);
             this.description = this.reward.description;
-            this.rewardExpiry.limit = this.reward.rewardLimit;
+            this.pointPrice = this.reward.pointPrice;
             this.rewardCondition = {
                 platform: this.reward.platform as RewardConditionPlatform,
                 interaction: this.reward.interaction as RewardConditionInteraction,
@@ -112,6 +116,7 @@ export default class ModalRewardERC20Create extends Vue {
                     title: this.title,
                     description: this.description,
                     amount: this.amount,
+                    pointPrice: this.pointPrice,
                     claimAmount: this.claimAmount,
                     rewardLimit: this.rewardLimit,
                     platform: this.rewardCondition.platform,
@@ -122,6 +127,17 @@ export default class ModalRewardERC20Create extends Vue {
             .then(() => {
                 this.$emit('submit');
                 this.$bvModal.hide(this.id);
+                this.title = '';
+                this.amount = '0';
+                this.description = '';
+                this.rewardExpiry = {};
+                this.claimAmount = 1;
+                this.rewardLimit = 0;
+                this.rewardCondition = {
+                    platform: platformList[0].type,
+                    interaction: platformInteractionList[0].type,
+                    content: '',
+                };
                 this.isLoading = false;
             });
     }

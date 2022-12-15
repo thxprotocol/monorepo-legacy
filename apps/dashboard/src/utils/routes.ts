@@ -11,32 +11,32 @@ export const getRoutes = (pool: IPool) => {
     const routes: RouteDefinition[] = [
         {
             path: 'point-rewards',
-            label: 'Point Rewards',
-            iconClasses: 'fas fa-award',
+            label: 'Points',
+            iconClasses: 'fas fa-trophy',
             visible: true,
         },
         {
-            path: 'erc20-perks',
-            label: 'ERC20 Rewards',
-            iconClasses: 'fas fa-award',
-            visible: !!pool.erc20,
-        },
-        {
-            path: 'erc721-perks',
-            label: 'ERC721 Rewards',
-            iconClasses: 'fas fa-award',
-            visible: !!pool.erc721,
-        },
-        {
             path: 'referral-rewards',
-            label: 'Referral Rewards',
-            iconClasses: 'fas fa-award',
+            label: 'Referrals',
+            iconClasses: 'fas fa-comments',
             visible: !!pool.erc20 || !!pool.erc721,
         },
         {
+            path: 'erc20-perks',
+            label: 'Currency Perks',
+            iconClasses: 'fas fa-coin',
+            visible: !!pool.erc20,
+        },
+        {
             path: 'metadata',
-            label: 'Metadata',
+            label: 'NFT Metadata',
             iconClasses: 'fas fa-palette',
+            visible: !!pool.erc721,
+        },
+        {
+            path: 'erc721-perks',
+            label: 'NFT Perks',
+            iconClasses: 'fas fa-award',
             visible: !!pool.erc721,
         },
         {
@@ -52,18 +52,6 @@ export const getRoutes = (pool: IPool) => {
             visible: !!pool.erc20,
         },
         {
-            path: 'widgets',
-            label: 'Widgets',
-            iconClasses: 'fas fa-code',
-            visible: !!pool.erc20,
-        },
-        {
-            path: 'members',
-            label: 'Members',
-            iconClasses: 'fas fa-user',
-            visible: !!pool.erc20 || !!pool.erc721,
-        },
-        {
             path: 'transactions',
             label: 'Analytics',
             iconClasses: 'fas fa-chart-line',
@@ -77,20 +65,14 @@ export const getRoutes = (pool: IPool) => {
         },
         {
             path: 'theme',
-            label: 'Theme',
-            iconClasses: 'fas fa-palette',
+            label: 'Settings',
+            iconClasses: 'fas fa-cogs',
             visible: !!pool.erc20 || !!pool.erc721,
         },
         {
             path: 'clients',
             label: 'API Keys',
             iconClasses: 'fas fa-key',
-            visible: !!pool.erc20 || !!pool.erc721,
-        },
-        {
-            path: 'info',
-            label: 'Contracts',
-            iconClasses: 'fas fa-info-circle',
             visible: !!pool.erc20 || !!pool.erc721,
         },
     ];

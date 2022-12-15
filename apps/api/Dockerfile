@@ -7,7 +7,7 @@ WORKDIR /usr/src/app
 
 ENV NODE_OPTIONS="--max_old_space_size=8192"
 
-RUN apk --no-cache add g++ make py3-pip build-base cairo-dev jpeg-dev pango pango-dev giflib-dev imagemagick freetype fontconfig
+RUN apk --no-cache add g++ make py3-pip
 COPY package.json yarn.lock ./
 RUN yarn
 COPY . .
@@ -36,9 +36,6 @@ ENV NODE_ENV=production
 
 WORKDIR /usr/src/app
 COPY --from=build ./usr/src/app/dist/apps/api/package.json ./usr/src/app/dist/apps/api/yarn.lock  ./
-
-# install node-canvas dependencies
-RUN apk add --no-cache build-base cairo-dev jpeg-dev pango pango-dev giflib-dev imagemagick freetype fontconfig
 
 RUN apk add --no-cache --virtual .build g++ make py3-pip && \
     yarn && \

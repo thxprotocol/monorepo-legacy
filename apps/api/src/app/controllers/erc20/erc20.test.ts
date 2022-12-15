@@ -5,6 +5,8 @@ import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/c
 import { isAddress } from 'ethers/lib/utils';
 import { dashboardAccessToken } from '@thxnetwork/api/util/jest/constants';
 import { createImage } from '@thxnetwork/api/util/jest/images';
+import fs from 'fs';
+import { CWD } from '@thxnetwork/api/config/secrets';
 
 const http = request.agent(app);
 
@@ -26,11 +28,14 @@ describe('ERC20', () => {
             symbol = 'TTK';
 
         it('Able to create limited token and return address', async () => {
-            const logoImg = await createImage('image1');
+            const image = createImage();
             await http
                 .post('/v1/erc20')
                 .set('Authorization', ACCESS_TOKEN)
-                .attach('file', logoImg, { filename: 'logoImg.jpg', contentType: 'image/jpg' })
+                .attach('file', image, {
+                    filename: 'test.jpg',
+                    contentType: 'image/jpg',
+                })
                 .field({
                     name,
                     symbol,

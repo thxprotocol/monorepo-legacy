@@ -37,7 +37,6 @@
         "bootstrap": "^4.6.1",
         "bootstrap-vue": "^2.21.2",
         "buffer": "^6.0.3",
-        "canvas": "^2.9.3",
         "change-case": "^4.1.2",
         "chart.js": "^3.8.0",
         "compression": "^1.7.4",
