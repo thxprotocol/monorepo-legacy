@@ -1,9 +1,9 @@
-import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import { ERC20TokenDocument } from '@thxnetwork/api/models/ERC20Token';
 import { Request, Response } from 'express';
 import { TERC20, TERC20Token } from '@thxnetwork/api/types/TERC20';
-import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { fromWei } from 'web3-utils';
+import ERC20Service from '@thxnetwork/api/services/ERC20Service';
+import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 
 export const controller = async (req: Request, res: Response) => {
     /*
@@ -25,8 +25,9 @@ export const controller = async (req: Request, res: Response) => {
             const erc20 = await ERC20Service.getById(token.erc20Id);
             const balanceInWei = await erc20.contract.methods.balanceOf(account.address).call();
             const balance = Number(fromWei(balanceInWei, 'ether'));
+            const logoImg = erc20.logoImgUrl || `https://avatars.dicebear.com/api/identicon/${erc20.address}.svg`;
 
-            return { ...(token.toJSON() as TERC20Token), balanceInWei, balance, erc20 };
+            return { ...(token.toJSON() as TERC20Token), balanceInWei, balance, erc20, logoImg };
         }),
     );
 

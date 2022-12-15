@@ -8,6 +8,9 @@ export const adminScopes = [
     'rewards:read',
     'wallets:read',
     'wallets:write',
+    'erc20_rewards:read',
+    'erc721_rewards:read',
+    'referral_rewards:read',
 ];
 export const dashboardScopes = [
     'asset_pools:read',
@@ -22,6 +25,12 @@ export const dashboardScopes = [
     'claims:read',
     'swaprule:read',
     'swaprule:write',
+    'erc20_rewards:read',
+    'erc20_rewards:write',
+    'erc721_rewards:read',
+    'erc721_rewards:write',
+    'referral_rewards:read',
+    'referral_rewards:write',
 ];
 export const userScopes = [
     'asset_pools:read',
@@ -36,6 +45,11 @@ export const userScopes = [
     'swaprule:read',
     'swap:read',
     'swap:write',
+    'erc20_rewards:read',
+    'erc721_rewards:read',
+    'referral_rewards:read',
+    'referal_reward_claims:read',
+    'referal_reward_claims:write',
 ];
 
 export const opneIdAdminScopes = `${openId} ${adminScopes.join(' ')}`;

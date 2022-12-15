@@ -1,7 +1,7 @@
 import { Response, Request } from 'express';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { ChainId } from '@thxnetwork/api/types/enums';
-import AssetPoolService from '@thxnetwork/api/services/AssetPoolService';
+import PoolService from '@thxnetwork/api/services/PoolService';
 import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
 import MembershipService from '@thxnetwork/api/services/MembershipService';
 
@@ -12,8 +12,8 @@ const controller = async (_req: Request, res: Response) => {
 
     const metrics = {
         count_asset_pools: {
-            mainnet: await AssetPoolService.countByNetwork(ChainId.Polygon),
-            testnet: await AssetPoolService.countByNetwork(ChainId.PolygonMumbai),
+            mainnet: await PoolService.countByNetwork(ChainId.Polygon),
+            testnet: await PoolService.countByNetwork(ChainId.PolygonMumbai),
         },
         count_memberships: {
             mainnet: await MembershipService.countByNetwork(ChainId.Polygon),

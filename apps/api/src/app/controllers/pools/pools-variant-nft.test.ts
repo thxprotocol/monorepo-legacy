@@ -158,9 +158,9 @@ describe('NFT Pool', () => {
         const propName = 'img';
 
         it('should upload multiple metadata images and create metadata and create rewards', async () => {
-            const image1 = await createImage('image1');
-            const image2 = await createImage('image3');
-            const image3 = await createImage('image3');
+            const image1 = await createImage();
+            const image2 = await createImage();
+            const image3 = await createImage();
             const zip = createArchiver().jsZip;
             const zipFolder = zip.folder('testImages');
             zipFolder.file('image1.jpg', image1, { binary: true });
@@ -199,7 +199,7 @@ describe('NFT Pool', () => {
         });
 
         it('should return created reward', (done) => {
-            user.get('/v1/erc721-rewards')
+            user.get('/v1/erc721-perks')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect(async (res: request.Response) => {
                     expect(res.body.total).toBe(5);
@@ -305,7 +305,7 @@ describe('NFT Pool', () => {
         });
 
         it('should return created reward', (done) => {
-            user.get('/v1/erc721-rewards')
+            user.get('/v1/erc721-perks')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect(async (res: request.Response) => {
                     expect(res.body.total).toBe(7);

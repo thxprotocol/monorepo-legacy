@@ -76,7 +76,7 @@ router.get(
 router.post(
     '/:id/metadata/csv',
     upload.single('file'),
-    guard.check(['erc721:read', 'erc721:write', 'rewards:write', 'rewards:read']),
+    guard.check(['erc721:read', 'erc721:write', 'erc721_rewards:write', 'erc721_rewards:read']),
     requireAssetPoolHeader,
     assertRequestInput(UploadERC721MetadataCSV.validation),
     UploadERC721MetadataCSV.controller,

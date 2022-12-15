@@ -8,13 +8,11 @@ class ERC20Manager extends BaseManager {
     }
 
     async list() {
-        const res = await this.client.request.get('/v1/erc20/token');
-        return await res.json();
+        return await this.client.request.get('/v1/erc20/token');
     }
 
     async get(id: string) {
-        const res = await this.client.request.get(`/v1/erc20/token/${id}`);
-        return await res.json();
+        return await this.client.request.get(`/v1/erc20/token/${id}`);
     }
 
     async transferFrom(erc20: string, from: string, to: string, amount: string, chainId: ChainId) {
@@ -24,9 +22,7 @@ class ERC20Manager extends BaseManager {
         params.append('to', to);
         params.append('amount', amount);
         params.append('chainId', chainId.toString());
-        const res = await this.client.request.post(`/v1/erc20/transfer`, { body: params });
-
-        return await res.json();
+        return await this.client.request.post(`/v1/erc20/transfer`, { body: params });
     }
 }
 

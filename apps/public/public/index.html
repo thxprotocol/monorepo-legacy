@@ -41,7 +41,17 @@
 
 
 <body class="loading">
-  <script src="https://localhost:3000/v1/widget/inject.js?id=637cc396834e1550ceeb5527"></script>
+  <script src=""></script>
+  <script>
+    const script = document.createElement('script');
+    if (window.location.href.startsWith('https://dev-www.thx.network')) {
+      script.src = 'https://dev.api.thx.network/v1/widget/62f3cad8f838cc0640563e41.js'
+    }
+    if (window.location.href.startsWith('https://localhost:8081')) {
+      script.src = 'https://localhost:3000/v1/widget/639065600c5c975b569241dc.js'
+    }
+    document.body.appendChild(script)
+  </script>
   <noscript>
     <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled.
       Please enable it to continue.</strong>
@@ -73,14 +83,6 @@
       var r = ml_jQuery || jQuery;
       r('.ml-subscribe-form-5025221 .row-success').show(),
         r('.ml-subscribe-form-5025221 .row-form').hide();
-    }
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/@widgetbot/crate@3" async defer>
-    if (window.location.hostname !== 'localhost') {
-      new Crate({
-        server: '836147176270856243',
-        channel: '836147176832368642',
-      })
     }
   </script>
   <img src="https://track.mailerlite.com/webforms/o/5025221/t1e6s0?v1637181053" width="1" height="1"

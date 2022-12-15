@@ -10,7 +10,7 @@ import { Contract } from 'web3-eth-contract';
 import ERC721Service from './ERC721Service';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { logger } from '@thxnetwork/api/util/logger';
-import AssetPoolService from './AssetPoolService';
+import PoolService from './PoolService';
 import { getContractFromName } from '@thxnetwork/api/config/contracts';
 import { TransactionReceipt } from 'web3-core';
 import { TPayCallbackArgs } from '@thxnetwork/api/types/TTransaction';
@@ -98,7 +98,7 @@ async function payCallback(args: TPayCallbackArgs, receipt: TransactionReceipt) 
         try {
             const metadata = await ERC721Service.findMetadataById(payment.metadataId);
             const erc721 = await ERC721Service.findById(metadata.erc721);
-            const assetPool = await AssetPoolService.getById(payment.poolId);
+            const assetPool = await PoolService.getById(payment.poolId);
             const account = await AccountProxy.getByAddress(payment.sender);
             await ERC721Service.mint(assetPool, erc721, metadata, account);
         } catch (err) {

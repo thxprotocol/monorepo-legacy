@@ -12,8 +12,8 @@
             <hr class="mt-0" />
             <div class="px-3">
                 <p class="text-gray">
-                    Configure until what date and time your customers are allowed to claim this reward. You can also
-                    provide a limit to determine the max amount of rewards available.
+                    Configure until what date and time your customers are allowed for this claim. You can also provide a
+                    limit to determine the max amount of claims to be made.
                 </p>
                 <b-form-group>
                     <b-row>
@@ -36,7 +36,7 @@
                         </b-col>
                     </b-row>
                 </b-form-group>
-                <b-form-group label="Reward Limit">
+                <b-form-group label="Claim Limit">
                     <b-form-input @change="$emit('change-limit', $event)" type="number" :value="selectedRewardLimit" />
                 </b-form-group>
             </div>

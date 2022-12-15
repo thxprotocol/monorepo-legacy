@@ -20,6 +20,7 @@ export const getYoutube = async (req: Request, res: Response) => {
 
     const channels = haveExpandedScopes ? await YouTubeService.getChannelList(account) : [];
     const videos = haveExpandedScopes ? await YouTubeService.getVideoList(account) : [];
+
     res.json({
         isAuthorized: haveExpandedScopes,
         channels,

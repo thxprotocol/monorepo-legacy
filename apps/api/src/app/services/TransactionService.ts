@@ -8,7 +8,7 @@ import { TransactionReceipt } from 'web3-core';
 import { toChecksumAddress } from 'web3-utils';
 import { poll } from '@thxnetwork/api/util/polling';
 import { deployCallback as erc20DeployCallback } from './ERC20Service';
-import AssetPoolService from './AssetPoolService';
+import PoolService from './PoolService';
 import DepositService from './DepositService';
 import ERC20SwapService from './ERC20SwapService';
 import ERC721Service from './ERC721Service';
@@ -218,10 +218,10 @@ async function executeCallback(tx: TransactionDocument, receipt: TransactionRece
             await ERC721Service.deployCallback(tx.callback.args, receipt);
             break;
         case 'assetPoolDeployCallback':
-            await AssetPoolService.deployCallback(tx.callback.args, receipt);
+            await PoolService.deployCallback(tx.callback.args, receipt);
             break;
         case 'topupCallback':
-            await AssetPoolService.topupCallback(tx.callback.args, receipt);
+            await PoolService.topupCallback(tx.callback.args, receipt);
             break;
         case 'depositCallback':
             await DepositService.depositCallback(tx.callback.args, receipt);

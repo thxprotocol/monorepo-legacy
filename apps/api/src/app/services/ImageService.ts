@@ -1,5 +1,3 @@
-import { createCanvas, loadImage } from 'canvas';
-import QRCode from 'qrcode';
 import short from 'short-uuid';
 import { AWS_S3_PUBLIC_BUCKET_NAME, AWS_S3_PUBLIC_BUCKET_REGION } from '@thxnetwork/api/config/secrets';
 import { s3Client } from '@thxnetwork/api/util/s3';
@@ -28,32 +26,5 @@ export default {
     },
     getPublicUrl: (key: string) => {
         return `https://${AWS_S3_PUBLIC_BUCKET_NAME}.s3.${AWS_S3_PUBLIC_BUCKET_REGION}.amazonaws.com/${key}`;
-    },
-    createQRCode: async (url: string, logo: Buffer | string) => {
-        const canvasSize = 220;
-        const imgSize = 58;
-        const canvas = createCanvas(canvasSize, canvasSize);
-
-        await QRCode.toCanvas(canvas, url, {
-            errorCorrectionLevel: 'H',
-            margin: 1,
-            color: {
-                dark: '#000000',
-                light: '#ffffff',
-            },
-            width: canvasSize,
-        });
-
-        const ctx = canvas.getContext('2d');
-
-        const img = await loadImage(logo);
-
-        const positionX = ctx.canvas.height / 2 - imgSize / 2;
-        const positionY = ctx.canvas.width / 2 - imgSize / 2;
-
-        ctx.drawImage(img, positionX, positionY, imgSize, imgSize);
-
-        const qrCode = canvas.toDataURL('image/png');
-        return qrCode.replace(/^data:image\/png;base64,/, '');
     },
 };
