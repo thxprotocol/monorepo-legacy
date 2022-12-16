@@ -73,7 +73,7 @@ describe('Default Pool', () => {
 
         it('HTTP 200 (success)', (done) => {
             user.get(`/v1/pools/${poolId}`)
-                .set('Authorization', dashboardAccessToken)
+                .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect((res: request.Response) => {
                     expect(isAddress(res.body.address)).toBe(true);
                     poolAddress = res.body.address;

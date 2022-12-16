@@ -24,8 +24,8 @@ export const controller = async (req: Request, res: Response) => {
         metrics: {
             claims: await Claim.count({ poolId: String(req.assetPool._id) }),
             referrals: await ReferralRewardClaim.count({ poolId: String(req.assetPool._id) }),
-            withdrawals: await WithdrawalService.countByPool(req.assetPool),
-            mints: await ERC721Token.count({ erc721Id: String(erc721._id) }),
+            withdrawals: erc20 && (await WithdrawalService.countByPool(req.assetPool)),
+            mints: erc721 && (await ERC721Token.count({ erc721Id: String(erc721._id) })),
         },
     };
 
