@@ -1,113 +1,92 @@
-import request from 'supertest';
+import request, { Response } from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId } from '@thxnetwork/api/types/enums';
-import {
-    rewardWithdrawAmount,
-    rewardWithdrawDuration,
-    rewardWithdrawUnlockDate,
-    requestUris,
-    redirectUris,
-    postLogoutRedirectUris,
-    dashboardAccessToken,
-} from '@thxnetwork/api/util/jest/constants';
+import { dashboardAccessToken } from '@thxnetwork/api/util/jest/constants';
 import { Contract } from 'web3-eth-contract';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { getContract } from '@thxnetwork/api/config/contracts';
-import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { ERC20PerkDocument } from '@thxnetwork/api/models/ERC20Perk';
-import { addMinutes } from '@thxnetwork/api/util/rewards';
+import { WidgetDocument } from '@thxnetwork/api/models/Widget';
 
 const user = request.agent(app);
 
 describe('Widgets', () => {
-    let pool: AssetPoolDocument, testToken: Contract, clientId: string, reward: ERC20PerkDocument;
+    let poolId: string, testToken: Contract, widget: WidgetDocument;
+    const color = '#FF0000',
+        bgColor = '#0000FF',
+        newColor = '#00FF00',
+        newBgColor = '#0F0F0F';
 
     beforeAll(async () => {
         await beforeAllCallback();
-
         testToken = getContract(ChainId.Hardhat, 'LimitedSupplyToken');
     });
 
     afterAll(afterAllCallback);
 
-    describe('POST /pools', () => {
-        it('HTTP 200', (done) => {
-            user.post('/v1/pools')
-                .set({ Authorization: dashboardAccessToken })
-                .send({
-                    chainId: ChainId.Hardhat,
-                    erc20tokens: [testToken.options.address],
-                })
-                .expect(({ body }: request.Response) => {
-                    pool = body;
-                })
-                .expect(201, done);
-        });
+    it('POST /pools', (done) => {
+        user.post('/v1/pools')
+            .set({ Authorization: dashboardAccessToken })
+            .send({
+                chainId: ChainId.Hardhat,
+                erc20tokens: [testToken.options.address],
+            })
+            .expect(({ body }: Response) => {
+                poolId = body._id;
+            })
+            .expect(201, done);
     });
 
-    describe('POST /rewards', () => {
-        it('HTTP 200', async () => {
-            const expiryDate = addMinutes(new Date(), 30);
-            await user
-                .post('/v1/erc20-perks/')
-                .set({ 'X-PoolId': pool._id, 'Authorization': dashboardAccessToken })
-                .send({
-                    title: 'Expiration date is next 30 min',
-                    description: 'Lorem ipsum dolor sit amet',
-                    amount: 1,
-                    platform: 0,
-                    expiryDate,
-                    rewardLimit: 0,
-                    claimAmount: 1,
-                })
-                .expect(({ body }: request.Response) => {
-                    reward = body;
-                })
-                .expect(201);
-        });
+    it('POST /widgets/', (done) => {
+        user.post('/v1/widgets/')
+            .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
+            .send({
+                color,
+                bgColor,
+            })
+            .expect(({ body }: Response) => {
+                expect(body.uuid).toBeDefined();
+                expect(body.color).toEqual(color);
+                expect(body.bgColor).toEqual(bgColor);
+
+                widget = body;
+            })
+            .expect(201, done);
     });
 
-    describe('POST /widgets/', () => {
-        it('HTTP 200', (done) => {
-            user.post('/v1/widgets/')
-                .set({ 'X-PoolId': pool._id, 'Authorization': dashboardAccessToken })
-                .send({
-                    metadata: {
-                        rewardUuid: reward.uuid,
-                        poolId: pool._id,
-                    },
-                    requestUris,
-                    redirectUris,
-                    postLogoutRedirectUris,
-                })
-                .expect(201, done);
-        });
+    it('GET /widgets', (done) => {
+        user.get('/v1/widgets')
+            .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
+            .expect(({ body }: Response) => {
+                expect(body[0].uuid).toBeDefined();
+                expect(body[0].color).toEqual(color);
+                expect(body[0].bgColor).toEqual(bgColor);
+            })
+            .expect(200, done);
     });
 
-    describe('GET /widgets', () => {
-        it('HTTP 200', (done) => {
-            user.get('/v1/widgets?poolId=' + pool._id)
-                .set({ 'X-PoolId': pool._id, 'Authorization': dashboardAccessToken })
-                .expect((res: request.Response) => {
-                    expect(res.body.length).toBe(1);
-                    clientId = res.body[0];
-                })
-                .expect(200, done);
-        });
+    it('PATCH /widgets/:uuid', (done) => {
+        user.patch('/v1/widgets/' + widget.uuid)
+            .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
+            .send({
+                color: newColor,
+                bgColor: newBgColor,
+            })
+            .expect(({ body }: Response) => {
+                expect(body.uuid).toBeDefined();
+                expect(body.color).toEqual(newColor);
+                expect(body.bgColor).toEqual(newBgColor);
+            })
+            .expect(200, done);
     });
 
-    describe('GET /widgets/:clientId', () => {
-        it('HTTP 200', (done) => {
-            user.get('/v1/widgets/' + clientId)
-                .set({ 'X-PoolId': pool._id, 'Authorization': dashboardAccessToken })
-                .expect((res: request.Response) => {
-                    expect(res.body.requestUris[0]).toBe(requestUris[0]);
-                    expect(res.body.clientId).toBeDefined();
-                    expect(res.body.clientSecret).toBeDefined();
-                    expect(res.body.metadata.rewardUuid).toBe(reward.uuid);
-                    expect(res.body.metadata.poolId).toBe(pool._id);
-                })
-                .expect(200, done);
-        });
+    it('GET /widgets/:uuid', (done) => {
+        user.get('/v1/widgets/' + widget.uuid)
+            .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
+            .expect(({ body }: Response) => {
+                expect(body.uuid).toBeDefined();
+                expect(body.color).toEqual(newColor);
+                expect(body.bgColor).toEqual(newBgColor);
+            })
+            .expect(200, done);
     });
 });
