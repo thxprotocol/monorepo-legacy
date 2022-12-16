@@ -72,7 +72,7 @@
         <template #cell(id)="{ item }">
           <b-dropdown size="sm" class="float-right" variant="light">
             <b-dropdown-item :disabled="!!item.tokens.length" @click="onEdit(item)">Edit</b-dropdown-item>
-            <b-dropdown-item target="_blank" :href="`${apiUrl}/v1/metadata/${item._id}`">View</b-dropdown-item>
+            <b-dropdown-item target="_blank" v-bind:href="`${apiUrl}/v1/metadata/${item._id}`">View</b-dropdown-item>
             <b-dropdown-item v-b-modal="`modalNFTMint${item._id}`">Mint</b-dropdown-item>
             <b-dropdown-item :disabled="!!item.tokens.length" @click="onDelete(item)">Delete</b-dropdown-item>
           </b-dropdown>
