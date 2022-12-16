@@ -4,8 +4,8 @@ import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import { ERC20Perk, ERC20PerkDocument } from '../models/ERC20Perk';
 import { TERC20Perk } from '@thxnetwork/types/index';
 
-export async function get(rewardId: string): Promise<ERC20PerkDocument> {
-    return await ERC20Perk.findById(rewardId);
+export async function get(rewardUuid: string): Promise<ERC20PerkDocument> {
+    return await ERC20Perk.findById(rewardUuid);
 }
 
 export async function findByPool(assetPool: AssetPoolDocument, page: number, limit: number) {

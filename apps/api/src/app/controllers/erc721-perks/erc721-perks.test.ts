@@ -97,7 +97,7 @@ describe('ERC721 Perks', () => {
 
         describe('POST /claims/:id/collect', () => {
             it('should return a 200 and NFT minted', (done) => {
-                user.post(`/v1/claims/${claims[0].id}/collect`)
+                user.post(`/v1/claims/${claims[0].uuid}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
                     .expect((res: request.Response) => {
                         expect(res.body.claim).toBeDefined();
@@ -110,7 +110,7 @@ describe('ERC721 Perks', () => {
             });
             it('should return 403 for claim from the same account', (done) => {
                 user2
-                    .post(`/v1/claims/${claims[0].id}/collect`)
+                    .post(`/v1/claims/${claims[0].uuid}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken2 })
                     .expect(({ body }: Response) => {
                         expect(body.error.message).toEqual("This reward has reached it's limit");
@@ -122,7 +122,7 @@ describe('ERC721 Perks', () => {
         describe('POST /claims/:id/collect', () => {
             it('should return 403 for claim from another account', (done) => {
                 user2
-                    .post(`/v1/claims/${claims[0].id}/collect`)
+                    .post(`/v1/claims/${claims[0].uuid}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken2 })
                     .expect(({ body }: Response) => {
                         expect(body.error.message).toEqual("This reward has reached it's limit");
@@ -157,7 +157,7 @@ describe('ERC721 Perks', () => {
                     expect(res.body.pointPrice).toBe(pointPrice);
                     expect(res.body.image).toBe(image);
                     expect(res.body.claims.length).toBe(1);
-                    expect(res.body.claims[0].id).toBeDefined();
+                    expect(res.body.claims[0].uuid).toBeDefined();
                     claim = res.body.claims[0];
                     erc721PerkId = res.body._id;
                 })
@@ -189,7 +189,7 @@ describe('ERC721 Perks', () => {
 
         describe('POST /claims/:id/collect', () => {
             it('should return a 200 and NFT minted', (done) => {
-                user.post(`/v1/claims/${claim.id}/collect`)
+                user.post(`/v1/claims/${claim.uuid}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
                     .expect((res: request.Response) => {
                         expect(res.body.claim).toBeDefined();

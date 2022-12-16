@@ -1,24 +1,22 @@
 import mongoose from 'mongoose';
 
 export type WidgetDocument = mongoose.Document & {
-    sub: string;
-    clientId: string;
-    metadata: {
-        rewardId: string;
-        poolId: string;
-    };
+    uuid: string;
+    poolId: string;
+    color: string;
+    bgColor: string;
+    theme: string;
 };
 
 const widgetSchema = new mongoose.Schema(
     {
-        sub: String,
-        clientId: String,
-        metadata: {
-            rewardId: String,
-            poolId: String,
-        },
+        uuid: String,
+        poolId: String,
+        color: String,
+        bgColor: String,
+        theme: String,
     },
     { timestamps: true },
 );
 
-export const Widget = mongoose.model<WidgetDocument>('Widget', widgetSchema, 'widget');
+export const Widget = mongoose.model<WidgetDocument>('Widget', widgetSchema, 'widgets');

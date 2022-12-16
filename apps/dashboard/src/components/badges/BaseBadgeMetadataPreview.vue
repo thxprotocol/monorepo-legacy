@@ -30,7 +30,7 @@
 </template>
 
 <script lang="ts">
-import { TERC721 } from '@thxnetwork/dashboard/types/erc721';
+import { type TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component({})

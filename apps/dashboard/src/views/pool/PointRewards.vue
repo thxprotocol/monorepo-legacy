@@ -2,7 +2,7 @@
     <div>
         <b-row class="mb-3">
             <b-col class="d-flex align-items-center">
-                <h2 class="mb-0">Point Rewards</h2>
+                <h2 class="mb-0">Points</h2>
             </b-col>
             <b-col class="d-flex justify-content-end">
                 <b-button v-b-modal="'modalRewardPointsCreate'" class="rounded-pill" variant="primary">
@@ -80,7 +80,6 @@ import { platformInteractionList, platformList } from '@thxnetwork/dashboard/typ
 import BaseModalRewardPointsCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardPointsCreate.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/badges/BaseBadgeRewardConditionPreview.vue';
-import store from '@thxnetwork/dashboard/store';
 
 @Component({
     components: {
@@ -113,8 +112,12 @@ export default class AssetPoolView extends Vue {
     get rewardsByPage() {
         if (!this.pointRewards[this.$route.params.id]) return [];
         return Object.values(this.pointRewards[this.$route.params.id])
+            .sort((a, b) => {
+                const createdAtTime = new Date(a.createdAt as string).getTime();
+                const nextCreatedAtTime = new Date(b.createdAt as string).getTime();
+                return createdAtTime < nextCreatedAtTime ? 1 : -1;
+            })
             .filter((reward: TPointReward) => reward.page === this.page)
-            .sort((a, b) => (a.createdAt && b.createdAt && a.createdAt < b.createdAt ? 1 : -1))
             .map((r: TPointReward) => ({
                 checkbox: r._id,
                 amount: r.amount,

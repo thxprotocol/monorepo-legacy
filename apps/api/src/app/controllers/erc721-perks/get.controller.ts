@@ -15,7 +15,7 @@ const controller = async (req: Request, res: Response) => {
     const claims = await ClaimService.findByReward(reward);
     const withdrawals = await WithdrawalService.findByQuery({
         poolId: String(req.assetPool._id),
-        rewardId: reward.id,
+        rewardId: reward._id,
     });
 
     res.json({ ...reward.toJSON(), claims, poolAddress: req.assetPool.address, progress: withdrawals.length });

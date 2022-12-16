@@ -1,14 +1,10 @@
 import { Request, Response } from 'express';
-import WidgetService from '@thxnetwork/api/services/WidgetService';
-import { query } from 'express-validator';
-
-const validation = [query('asset_pool').optional().isString()];
+import { Widget } from '@thxnetwork/api/services/WidgetService';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Widgets']
-    const result = await WidgetService.getForUserByPool(req.auth.sub, String(req.query.poolId));
-
-    res.json(result);
+    const widgets = await Widget.find({ poolId: req.assetPool._id });
+    res.json(widgets);
 };
 
-export default { controller, validation };
+export default { controller };

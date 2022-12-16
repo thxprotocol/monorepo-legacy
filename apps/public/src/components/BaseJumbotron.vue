@@ -1,13 +1,16 @@
 <template>
     <div>
-        <b-jumbotron bg-variant="secondary" v-lazy:background-image="require('../../public/assets/img/thx_jumbotron_bg.jpg')">
+        <b-jumbotron
+            bg-variant="secondary"
+            v-lazy:background-image="require('../../public/assets/img/thx_jumbotron_bg.jpg')"
+        >
             <div class="container">
                 <div class="row py-md-5">
                     <div class="brand-intro col-lg-4 offset-lg-1 order-1 order-md-0">
                         <div>
-                            <h1 class="brand-text mb-3">Embed tokens in any app or website.</h1>
+                            <h1 class="brand-text mb-3">Token powered loyalty in any app or website.</h1>
                             <p class="lead mb-4">
-                                Integrate a robust tokenization API powered by the Ethereum blockchain and Polygon
+                                Integrate a robust gamification API powered by the Ethereum blockchain and Polygon
                                 side-chain.
                             </p>
                             <b-form id="formSignupRedirect" class="row" v-on:submit.prevent="submit">
@@ -62,7 +65,7 @@
             <div class="row">
                 <div class="col-lg-4 offset-lg-4">
                     <div class="d-flex align-items-center pt-5">
-                        <div class="flex-0 mr-3 rounded" style="background-color: #00349f;">
+                        <div class="flex-0 mr-3 rounded" style="background-color: #00349f">
                             <img
                                 v-lazy="require('../../public/assets/images/euflag.png')"
                                 class="img-fluid rounded"
