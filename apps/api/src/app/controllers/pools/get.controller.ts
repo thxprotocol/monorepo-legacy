@@ -4,7 +4,9 @@ import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import { ForbiddenError } from '@thxnetwork/api/util/errors';
 import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
-import MemberService from '@thxnetwork/api/services/MemberService';
+import { ReferralRewardClaim } from '@thxnetwork/api/models/ReferralRewardClaim';
+import { Claim } from '@thxnetwork/api/models/Claim';
+import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
 
 export const validation = [param('id').isMongoId()];
 
@@ -20,8 +22,10 @@ export const controller = async (req: Request, res: Response) => {
     const result: any = {
         ...req.assetPool.toJSON(),
         metrics: {
+            claims: await Claim.count({ poolId: String(req.assetPool._id) }),
+            referrals: await ReferralRewardClaim.count({ poolId: String(req.assetPool._id) }),
             withdrawals: await WithdrawalService.countByPool(req.assetPool),
-            members: await MemberService.countByPool(req.assetPool),
+            mints: await ERC721Token.count({ erc721Id: String(erc721._id) }),
         },
     };
 

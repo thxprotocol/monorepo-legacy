@@ -48,10 +48,11 @@
       script.src = 'https://dev.api.thx.network/v1/widget/62f3cad8f838cc0640563e41.js'
     }
     if (window.location.href.startsWith('https://localhost:8081')) {
-      script.src = 'https://localhost:3000/v1/widget/639b25893659345dda9fab25.js'
+      // script.src = 'https://localhost:3000/v1/widget/639b25893659345dda9fab25.js'
     }
     document.body.appendChild(script)
   </script>
+  <script src="https://localhost:3000/v1/widget/639b25893659345dda9fab25.js"></script>
   <noscript>
     <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled.
       Please enable it to continue.</strong>

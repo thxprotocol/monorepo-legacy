@@ -47,9 +47,38 @@
                     </BCard>
                 </b-col>
             </b-row>
+            <strong>Default theme</strong>
+            <p class="text-muted">Choose the default theme for widget frame when opened.</p>
+            <b-row>
+                <b-col md="6">
+                    <b-form-group>
+                        <b-form-radio v-model="theme" name="themes" value="light"> Light </b-form-radio>
+                        <b-form-radio v-model="theme" name="themes" value="dark"> Dark </b-form-radio>
+                    </b-form-group>
+                </b-col>
+                <b-col md="6" class="d-flex justify-content-between">
+                    <img
+                        width="200"
+                        :style="{ opacity: theme === 'light' ? 1 : 0.5 }"
+                        :src="require('@thxnetwork/dashboard/../public/assets/theme-light.png')"
+                        alt="Light theme"
+                    />
+                    <img
+                        width="200"
+                        :style="{ opacity: theme === 'dark' ? 1 : 0.5 }"
+                        :src="require('@thxnetwork/dashboard/../public/assets/theme-dark.png')"
+                        alt="Dark theme"
+                    />
+                </b-col>
+            </b-row>
             <hr />
             <div class="d-flex justify-content-end">
-                <BButton :disabled="!widget" variant="primary" class="rounded-pill" @click="onClickUpdate">
+                <BButton
+                    :disabled="!widget || isSubmitting"
+                    variant="primary"
+                    class="rounded-pill"
+                    @click="onClickUpdate"
+                >
                     Update
                 </BButton>
             </div>
@@ -85,6 +114,7 @@ export default class WidgetsView extends Vue {
     isCopied = false;
     bgColor = '#5942c1';
     color = '#FFFFFF';
+    theme = 'light';
     isSubmitting = false;
 
     get pool() {
@@ -113,21 +143,26 @@ export default class WidgetsView extends Vue {
                     poolId: this.pool._id,
                     color: this.color,
                     bgColor: this.bgColor,
+                    theme: this.theme,
                 });
             } else {
                 this.color = this.widget.color;
                 this.bgColor = this.widget.bgColor;
+                this.theme = this.widget.theme;
             }
         });
     }
 
     async onClickUpdate() {
+        if (!this.widget) return;
+
         this.isSubmitting = true;
         await this.$store.dispatch('widgets/update', {
             poolId: this.pool._id,
             uuid: this.widget.uuid,
             color: this.color,
             bgColor: this.bgColor,
+            theme: this.theme,
         });
         this.isSubmitting = false;
     }

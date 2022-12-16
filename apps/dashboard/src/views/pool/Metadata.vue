@@ -2,7 +2,7 @@
     <div>
         <b-row class="mb-3">
             <b-col class="d-flex align-items-center">
-                <h2 class="mb-0">Metadata</h2>
+                <h2 class="mb-0">NFT Metadata</h2>
             </b-col>
             <b-dropdown variant="light" dropleft no-caret size="sm" class="ml-2">
                 <template #button-content>

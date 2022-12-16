@@ -23,26 +23,6 @@
                 </b-dropdown>
             </div>
         </div>
-        <div v-if="pool.erc20" class="d-flex">
-            <span class="lead">
-                {{ pool.erc20.name }}
-            </span>
-            <b-button
-                size="sm"
-                variant="link"
-                class="rounded-pill pl-3 ml-2"
-                v-b-modal="`modalDepositCreate-${pool.erc20._id}`"
-            >
-                Top up
-                <i class="fas fa-arrow-down ml-1 mr-1"></i>
-            </b-button>
-        </div>
-        <div v-if="pool.erc721">
-            <span class="lead">
-                {{ pool.erc721.name }}
-            </span>
-            <b-badge variant="dark" class="ml-1">NFT</b-badge>
-        </div>
         <hr />
         <router-view></router-view>
         <base-modal-deposit-create
