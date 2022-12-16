@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.get('/', guard.check(['widgets:read']), assertRequestInput(ListWidgets.validation), ListWidgets.controller);
 router.get(
-    '/:clientId',
+    '/:uuid',
     guard.check(['widgets:read']),
     assertRequestInput(ReadWidget.validation),
     validateClientAccess,
@@ -23,7 +23,7 @@ router.post(
     CreateWidget.controller,
 );
 router.delete(
-    '/:clientId',
+    '/:uuid',
     guard.check(['widgets:write']),
     assertRequestInput(DeleteWidget.validation),
     validateClientAccess,
