@@ -79,10 +79,12 @@
 
           <base-modal-erc721-metadata-mint :pool="pool" :erc721="erc721" :erc721Metadata="item" />
         </template>
-        <b-pagination size="sm" class="my-0" @change="onChangePage($event)" v-model="page" :per-page="limit"
-          :total-rows="total" align="center"></b-pagination>
       </BTable>
     </BCard>
+
+    <b-pagination class="my-2" @change="onChangePage($event)" v-model="page" :per-page="limit" :total-rows="total"
+      align="center"></b-pagination>
+
 
     <base-modal-erc721-metadata-create v-if="erc721" :erc721="erc721" @hidden="reset" :metadata="editingMeta"
       :pool="pool" />
@@ -200,6 +202,7 @@ export default class MetadataView extends Vue {
   downloadQrCodes() {
     this.$store.dispatch('erc721/getQRCodes', { erc721: this.erc721 });
   }
+
 
   async listMetadata() {
     this.isLoading = true;
