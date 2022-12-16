@@ -8994,20 +8994,20 @@ textarea.form-control-underlined {
 .btn-sign-in {
   display: inline-flex;
   align-items: center;
-  /* border: 1px solid #ced4da; */
+  border: 1px solid #ced4da;
   padding: 0;
 }
 .btn-sign-in .logo {
   margin-right: 0.5rem;
   background: white;
   border-radius: 3px;
-  margin: 2px;
+  margin: 1px;
   padding: 5px;
   flex: 0 38px;
   display: flex;
   align-items: center;
   justify-content: center;
-  /* margin-right: 15px; */
+  margin-right: 15px;
 }
 .btn-sign-in .logo img {
   height: 22px;
