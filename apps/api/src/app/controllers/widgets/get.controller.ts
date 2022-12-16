@@ -2,11 +2,11 @@ import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import { Widget } from '@thxnetwork/api/services/WidgetService';
 
-const validation = [param('clientId').exists()];
+const validation = [param('uuid').exists()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Widgets']
-    const widget = await Widget.findOne({ poolId: req.assetPool._id, uuid: req.body.uuid });
+    const widget = await Widget.findOne({ uuid: req.params.uuid });
     res.json(widget);
 };
 

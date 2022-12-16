@@ -6,12 +6,11 @@ const validation = [body('color').isHexColor(), body('bgColor').isHexColor()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Widgets']
-    let widget = await Widget.findOne({ uuid: req.params.uuid });
-    widget = await Widget.findByIdAndUpdate(widget._id, {
-        color: req.body.color,
-        bgColor: req.body.bgColor,
-    });
-
+    const widget = await Widget.findOneAndUpdate(
+        { uuid: req.params.uuid },
+        { color: req.body.color, bgColor: req.body.bgColor },
+        { new: true },
+    );
     res.json(widget);
 };
 
