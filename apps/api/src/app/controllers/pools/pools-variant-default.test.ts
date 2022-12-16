@@ -142,7 +142,7 @@ describe('Default Pool', () => {
                 })
                 .expect(async (res: request.Response) => {
                     expect(res.body._id).toBeDefined();
-                    expect(res.body.claims[0].id).toBeDefined();
+                    expect(res.body.claims[0].uuid).toBeDefined();
                     claim = res.body.claims[0];
                     reward = res.body;
                 })
@@ -180,7 +180,7 @@ describe('Default Pool', () => {
     describe('POST /erc20-perks/:id/claim', () => {
         it('HTTP 302 when tx is handled', async () => {
             await user
-                .post(`/v1/claims/${claim.id}/collect`)
+                .post(`/v1/claims/${claim.uuid}/collect`)
                 .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
                 .expect(200);
         });

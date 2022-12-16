@@ -97,7 +97,7 @@ class AccountModule extends VuexModule {
             passwordResetToken?: string;
             rewardHash?: string;
             toPath?: string;
-            claimId?: string;
+            claimUuid?: string;
         } = {},
     ) {
         const extraQueryParams: any = {
@@ -126,8 +126,8 @@ class AccountModule extends VuexModule {
             extraQueryParams['reward_hash'] = payload.rewardHash;
         }
 
-        if (payload.claimId) {
-            extraQueryParams['claim_id'] = payload.claimId;
+        if (payload.claimUuid) {
+            extraQueryParams['claim_id'] = payload.claimUuid;
         }
 
         await thxClient.userManager.cached.clearStaleState();
@@ -136,7 +136,7 @@ class AccountModule extends VuexModule {
             state: {
                 toPath: payload.toPath,
                 rewardHash: payload.rewardHash,
-                claimId: payload.claimId,
+                claimUuid: payload.claimUuid,
             },
             extraQueryParams,
         });

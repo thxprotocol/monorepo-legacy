@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 export type TClaim = {
     sub?: string;
-    id: string;
+    uuid: string;
     poolId: string;
     rewardUuid: string;
     erc20Id?: string;

@@ -17,7 +17,7 @@ const controller = async (req: Request, res: Response) => {
         schema: { $ref: '#/definitions/Claim' } 
     }
     */
-    const claim = await Claim.findOne({ id: req.params.id });
+    const claim = await Claim.findOne({ uuid: req.params.id });
     if (!claim) throw new NotFoundError('Could not find this claim');
 
     const pool = await PoolService.getById(claim.poolId);
