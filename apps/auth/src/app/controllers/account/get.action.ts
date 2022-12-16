@@ -13,6 +13,7 @@ async function formatAccountRes(account) {
         ...{
             id: account._id,
             address: account.address,
+            walletAddress: account.walletAddress,
             firstName: account.firstName,
             lastName: account.lastName,
             company: account.company,

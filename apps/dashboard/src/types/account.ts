@@ -13,6 +13,7 @@ export interface IAccount {
     company: string;
     plan: AccountPlanType;
     email?: string;
+    walletAddress: string;
 }
 export interface IAccountUpdates {
     address: string;

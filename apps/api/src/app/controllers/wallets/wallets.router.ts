@@ -8,7 +8,6 @@ import CreateWalletManager from './managers/post.controller';
 import DeleteWalletManager from './managers/delete.controller';
 
 const router = express.Router();
-
 router.get('/', guard.check(['wallets:read']), assertRequestInput(ListWallets.validation), ListWallets.controller);
 router.get('/:id', guard.check(['wallets:read']), assertRequestInput(ReadWallets.validation), ReadWallets.controller);
 router.post('/', guard.check(['wallets:write']), assertRequestInput(CreateWallet.validation), CreateWallet.controller);

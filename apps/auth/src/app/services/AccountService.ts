@@ -51,6 +51,7 @@ export class AccountService {
             acceptTermsPrivacy,
             acceptUpdates,
             address,
+            walletAddress,
             privateKey,
             googleAccess,
             twitterAccess,
@@ -111,6 +112,10 @@ export class AccountService {
         account.authenticationToken = authenticationToken || account.authenticationToken;
         account.authenticationTokenExpires = authenticationTokenExpires || account.authenticationTokenExpires;
         account.address = address || account.address ? toChecksumAddress(address || account.address) : undefined;
+        account.walletAddress =
+            walletAddress || account.walletAddress
+                ? toChecksumAddress(walletAddress || account.walletAddress)
+                : undefined;
         account.privateKey = privateKey || account.privateKey;
 
         if (googleAccess === false) {
