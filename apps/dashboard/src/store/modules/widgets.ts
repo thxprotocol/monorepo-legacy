@@ -10,7 +10,7 @@ export type TWidget = {
     poolId: string;
 };
 export interface IWidgets {
-    [poolId: string]: TWidget[];
+    [poolId: string]: { [widgetUuid: string]: TWidget };
 }
 
 @Module({ namespaced: true })
@@ -42,7 +42,9 @@ class WidgetModule extends VuexModule {
             headers: { 'X-PoolId': pool._id },
         });
 
-        this.context.commit('set', r.data);
+        r.data.forEach((w: TWidget) => {
+            this.context.commit('set', w);
+        });
     }
 
     @Action({ rawError: true })
