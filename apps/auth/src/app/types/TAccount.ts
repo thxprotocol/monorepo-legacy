@@ -1,6 +1,6 @@
 import { AccountPlanType } from './enums/AccountPlanType';
 import { AccountVariant } from './enums/AccountVariant';
-
+import { AccessTokenKind } from './enums/AccessTokenKind';
 export interface TAccount {
     firstName: string;
     lastName: string;
@@ -15,31 +15,23 @@ export interface TAccount {
     walletAddress: string;
     variant: AccountVariant;
     privateKey: string;
-    signupToken: string;
     otpSecret: string;
-    signupTokenExpires: number;
-    authenticationToken: string;
-    authenticationTokenExpires: number;
-    passwordResetToken: string;
-    passwordResetExpires: number;
-    googleAccessToken: string;
-    googleRefreshToken: string;
-    googleAccessTokenExpires: number;
-    twitterAccessToken: string;
-    twitterRefreshToken: string;
-    twitterAccessTokenExpires: number;
-    githubAccessToken: string;
-    githubRefreshToken: string;
-    githubAccessTokenExpires: number;
-    githubAccessTokenRefresh: number;
     twitterId?: string;
-    verifyEmailToken: string;
-    verifyEmailTokenExpires: number;
     lastLoginAt: number;
     acceptTermsPrivacy: boolean;
     acceptUpdates: boolean;
     comparePassword: any;
+    getToken: any;
+    setToken: any;
     createdAt: Date;
+    tokens: IAccessToken[];
+}
+
+export interface IAccessToken {
+    kind: AccessTokenKind;
+    accessToken?: string;
+    refreshToken?: string;
+    expiry?: number;
 }
 export interface IAccountUpdates {
     acceptTermsPrivacy?: boolean;
@@ -47,6 +39,7 @@ export interface IAccountUpdates {
     address?: string;
     privateKey?: string;
     googleAccess?: boolean;
+    twitchAccess?: boolean;
     twitterAccess?: boolean;
     authenticationToken?: string;
     authenticationTokenExpires?: number;

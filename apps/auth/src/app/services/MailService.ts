@@ -7,6 +7,9 @@ import { AUTH_URL, SECURE_KEY, WALLET_URL, SENDGRID_API_KEY } from '../config/se
 import { encryptString } from '../util/encrypt';
 import { logger } from '../util/logger';
 import { assetsPath } from '../util/path';
+import { AccessTokenKind } from '../types/enums/AccessTokenKind';
+import { IAccessToken } from '../types/TAccount';
+import { DURATION_TWENTYFOUR_HOURS } from '../util/messages';
 
 const mailTemplatePath = path.join(assetsPath, 'views', 'mail');
 
@@ -19,10 +22,15 @@ export class MailService {
         if (!account.email) {
             throw new Error('Account email not set.');
         }
-        account.signupToken = createRandomToken();
-        account.signupTokenExpires = Date.now() + 1000 * 60 * 60 * 24; // 24 hours,
 
-        const verifyUrl = `${returnUrl}/verify?signup_token=${account.signupToken}&return_url=${returnUrl}`;
+        const token = {
+            kind: AccessTokenKind.Signup,
+            accessToken: createRandomToken(),
+            expiry: DURATION_TWENTYFOUR_HOURS,
+        } as IAccessToken;
+        account.setToken(token);
+
+        const verifyUrl = `${returnUrl}/verify?signup_token=${token.accessToken}&return_url=${returnUrl}`;
         const html = await ejs.renderFile(
             path.join(mailTemplatePath, 'signupConfirm.ejs'),
             {
@@ -42,10 +50,14 @@ export class MailService {
         if (!account.email) {
             throw new Error('Account email not set.');
         }
-        account.signupToken = createRandomToken();
-        account.signupTokenExpires = Date.now() + 1000 * 60 * 60 * 24; // 24 hours,
+        const token = {
+            kind: AccessTokenKind.VerifyEmail,
+            accessToken: createRandomToken(),
+            expiry: DURATION_TWENTYFOUR_HOURS,
+        } as IAccessToken;
+        account.setToken(token);
 
-        const verifyUrl = `${returnUrl}verify_email?verifyEmailToken=${account.verifyEmailToken}&return_url=${returnUrl}`;
+        const verifyUrl = `${returnUrl}verify_email?verifyEmailToken=${token.accessToken}&return_url=${returnUrl}`;
         const html = await ejs.renderFile(
             path.join(mailTemplatePath, 'emailConfirm.ejs'),
             {
@@ -83,18 +95,27 @@ export class MailService {
         );
 
         await this.sendMail(account.email, 'A sign in is requested for your Web Wallet', html, loginUrl);
+        const token = {
+            kind: AccessTokenKind.Auth,
+            accessToken: encryptedAuthToken,
+            expiry: Date.now() + 10 * 60 * 1000, // 10 minutes
+        } as IAccessToken;
 
-        account.authenticationToken = encryptedAuthToken;
-        account.authenticationTokenExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+        account.setToken(token);
 
         await account.save();
     }
 
     static async sendResetPasswordEmail(account: AccountDocument, returnUrl: string) {
-        account.passwordResetToken = createRandomToken();
-        account.passwordResetExpires = Date.now() + 1000 * 60 * 20; // 20 minutes,
+        const token = {
+            kind: AccessTokenKind.PasswordReset,
+            accessToken: createRandomToken(),
+            expiry: Date.now() + 1000 * 60 * 20, // 20 minutes,
+        } as IAccessToken;
 
-        const resetUrl = `${returnUrl}/reset?passwordResetToken=${account.passwordResetToken}`;
+        account.setToken(token);
+
+        const resetUrl = `${returnUrl}/reset?passwordResetToken=${token.accessToken}`;
         const html = await ejs.renderFile(
             path.join(mailTemplatePath, 'resetPassword.ejs'),
             {

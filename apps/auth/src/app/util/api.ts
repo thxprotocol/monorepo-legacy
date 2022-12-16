@@ -16,7 +16,6 @@ async function requestAuthAccessToken() {
     data.append('grant_type', 'client_credentials');
     data.append('resource', API_URL);
     data.append('scope', 'openid brands:read claims:read wallets:read wallets:write');
-
     const r = await axios({
         baseURL: AUTH_URL,
         url: '/token',
@@ -29,7 +28,6 @@ async function requestAuthAccessToken() {
     });
 
     if (r.status !== 200) throw new ApiAccesTokenRequestError();
-
     return r.data;
 }
 

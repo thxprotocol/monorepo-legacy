@@ -79,7 +79,7 @@ class ERC20PerkModule extends VuexModule {
             data: payload,
         });
 
-        this.context.commit('set', { pool: payload, reward: r.data });
+        this.context.commit('set', { pool, reward: { ...payload, ...r.data } });
     }
 
     @Action({ rawError: true })
