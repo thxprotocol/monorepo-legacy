@@ -112,6 +112,7 @@ export default class ModalRewardERC20Create extends Vue {
                 pool: this.pool,
                 reward: this.reward,
                 payload: {
+                    page: 1,
                     poolId: String(this.pool._id),
                     title: this.title,
                     description: this.description,
