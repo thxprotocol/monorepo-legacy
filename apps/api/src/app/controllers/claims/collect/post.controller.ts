@@ -20,7 +20,7 @@ const validation = [param('id').exists().isString(), query('forceSync').optional
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Claims']
 
-    let claim = await ClaimService.findById(req.params.id);
+    let claim = await ClaimService.findByUuid(req.params.id);
     if (!claim) throw new BadRequestError('This claim URL is invalid.');
 
     const pool = await PoolService.getById(claim.poolId);
@@ -73,7 +73,7 @@ const controller = async (req: Request, res: Response) => {
                 erc20Id: claim.erc20Id,
                 rewardUuid: claim.rewardUuid,
                 poolId: claim.poolId,
-                id: db.createUUID(),
+                uuid: db.createUUID(),
             });
         }
 
@@ -97,7 +97,7 @@ const controller = async (req: Request, res: Response) => {
                 erc721Id: claim.erc721Id,
                 rewardUuid: claim.rewardUuid,
                 poolId: claim.poolId,
-                id: db.createUUID(),
+                uuid: db.createUUID(),
             });
         }
 

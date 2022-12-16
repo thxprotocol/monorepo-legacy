@@ -232,17 +232,17 @@ export default class BaseModalRewardClaimsDownload extends Vue {
 
         for (const claim of this.claims) {
             let data: string | ArrayBuffer;
-            const url = `${WALLET_URL}/claim/${claim.id}`;
+            const url = `${WALLET_URL}/claim/${claim.uuid}`;
 
             switch (this.selectedFormat) {
                 case 'pdf': {
                     data = await this.createQRCodeSvg(url);
-                    archive.file(`${claim.id}.pdf`, data, { base64: true });
+                    archive.file(`${claim.uuid}.pdf`, data, { base64: true });
                     break;
                 }
                 case 'png': {
                     data = await this.createQRCode(url);
-                    archive.file(`${claim.id}.png`, data, { base64: true });
+                    archive.file(`${claim.uuid}.png`, data, { base64: true });
                     break;
                 }
             }
