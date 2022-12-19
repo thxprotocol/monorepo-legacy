@@ -31,7 +31,7 @@ describe('ERC20DepositFacet', function () {
         expect(await diamond.balanceOf(await collector.getAddress())).to.eq(0);
 
         await erc20.approve(diamond.address, constants.MaxUint256);
-        const tx = diamond.depositFrom(await owner.getAddress(), parseEther('100'));
+        const tx = diamond.depositFrom(await owner.getAddress(), parseEther('100'), erc20.address);
 
         await expect(tx).to.emit(diamond, 'ERC20DepositFeeCollected');
         await expect(tx).to.emit(diamond, 'ERC20DepositFrom');

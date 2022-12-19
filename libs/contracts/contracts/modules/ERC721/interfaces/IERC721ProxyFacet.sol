@@ -3,11 +3,11 @@ pragma solidity ^0.7.6;
 
 interface IERC721ProxyFacet {
     event ERC721Updated(address old, address current);
-    event ERC721Minted(address recipient, uint256 tokenId);
+    event ERC721Minted(address recipient, uint256 tokenId, address _tokenAddress);
 
     function setERC721(address _token) external;
 
     function getERC721() external view returns (address);
 
-    function mintFor(address recipient, string memory tokenUri) external;
+    function mintFor(address recipient, string memory tokenUri, address _tokenAddress) external;
 }

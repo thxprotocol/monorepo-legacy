@@ -56,7 +56,7 @@ describe('ERC20SwapFacet', function () {
         // Bob swaps 10 token in Alice her pool
         expect(await erc20B.balanceOf(await bob.getAddress())).to.eq(parseEther('1000000'));
         expect(await erc20B.balanceOf(await registry.feeCollector())).to.eq(parseEther('0'));
-        await expect(diamond.swapFor(await bob.getAddress(), parseEther('10'), erc20B.address)).to.emit(
+        await expect(diamond.swapFor(await bob.getAddress(), parseEther('10'), erc20B.address, erc20A.address)).to.emit(
             diamond,
             'ERC20SwapFor',
         );

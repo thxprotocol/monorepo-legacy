@@ -42,12 +42,17 @@ describe('ERC721ProxyFacet', function () {
 
     it('can NOT mint erc721 if not owner', async () => {
         const uri = '1234567890.json';
-        await expect(diamond.connect(newOwner).mintFor(await recipient.getAddress(), uri)).to.revertedWith('NOT_OWNER');
+        await expect(
+            diamond.connect(newOwner).mintFor(await recipient.getAddress(), uri, erc721.address),
+        ).to.revertedWith('NOT_OWNER');
     });
 
     it('can mint erc721 from the pool', async () => {
         const uri = '1234567890.json';
-        await expect(diamond.mintFor(await recipient.getAddress(), uri)).to.emit(diamond, 'ERC721Minted');
+        await expect(diamond.mintFor(await recipient.getAddress(), uri, erc721.address)).to.emit(
+            diamond,
+            'ERC721Minted',
+        );
         expect(await erc721.balanceOf(await recipient.getAddress())).to.eq(1);
         expect(await erc721.tokenURI(1)).to.eq(baseUrl + uri);
     });

@@ -33,7 +33,7 @@ describe('ERC20WithdrawFacet', function () {
         expect(await diamond.balanceOf(await collector.getAddress())).to.eq(0);
         expect(await diamond.balanceOf(await recipient.getAddress())).to.eq(0);
 
-        const tx = diamond.withdrawFor(await recipient.getAddress(), parseEther('10'));
+        const tx = diamond.withdrawFor(await recipient.getAddress(), parseEther('10'), erc20.address);
 
         await expect(tx).to.emit(diamond, 'ERC20WithdrawFeeCollected');
         await expect(tx).to.emit(diamond, 'ERC20WithdrawFor');

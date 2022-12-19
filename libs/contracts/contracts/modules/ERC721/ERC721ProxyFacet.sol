@@ -39,13 +39,12 @@ contract ERC721ProxyFacet is Access, IERC721ProxyFacet {
      * @param _recipient Address of recipient for this token
      * @param _tokenUri URI of the token
      */
-    function mintFor(address _recipient, string memory _tokenUri) external override onlyOwner {
-        LibERC721Storage.ERC721Storage storage s = LibERC721Storage.s();
-        require(s.token != INonFungibleToken(0), 'NO_TOKEN');
+    function mintFor(address _recipient, string memory _tokenUri, address _tokenAddress) external override onlyOwner {
+        require(_tokenAddress != address(0), 'NO_TOKEN');
 
-        INonFungibleToken nft = INonFungibleToken(LibERC721Storage.s().token);
+        INonFungibleToken nft = INonFungibleToken(_tokenAddress);
         uint256 tokenId = nft.mint(_recipient, _tokenUri);
 
-        emit ERC721Minted(_recipient, tokenId);
+        emit ERC721Minted(_recipient, tokenId, _tokenAddress);
     }
 }

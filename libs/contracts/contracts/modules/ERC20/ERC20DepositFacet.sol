@@ -14,33 +14,31 @@ contract ERC20DepositFacet is Access, IERC20DepositFacet {
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
 
-    function depositFrom(address _sender, uint256 _amount) external override {
+    function depositFrom(address _sender, uint256 _amount, address tokneAddress) external override {
         require(_amount > 0, 'ZERO_AMOUNT');
-        _deposit(_sender, _amount);
+        _deposit(_sender, _amount, tokneAddress);
     }
 
-    function depositFromMany(address[] memory _senders, uint256[] memory _amounts) external override {
+    function depositFromMany(address[] memory _senders, uint256[] memory _amounts, address[] calldata tokenAddresses) external override {
         for (uint256 i = 0; i < _senders.length; i++) {
-            _deposit(_senders[i], _amounts[i]);
+            _deposit(_senders[i], _amounts[i], tokenAddresses[i]);
         }
     }
 
     function _deposit(address _sender, uint256 _amount, address tokneAddress) internal {
         LibRegistryProxyStorage.RegistryProxyStorage storage rs = LibRegistryProxyStorage.s();
-        LibERC20Storage.ERC20Storage storage s = LibERC20Storage.s();
         IRegistryFacet registry = IRegistryFacet(rs.registry);
 
         uint256 fee = _amount.mul(registry.feePercentage()).div(10**18);
         uint256 amount = _amount.sub(fee);
-         IERC20 token = IERC20(tokneAddress);
+        IERC20 token = IERC20(tokneAddress);
          
         if (fee > 0) {
-           
             token.safeTransferFrom(_sender, registry.feeCollector(), fee);
             emit ERC20DepositFeeCollected(fee);
         }
 
         token.safeTransferFrom(_sender, address(this), amount);
-        emit ERC20DepositFrom(_sender, amount);
+        emit ERC20DepositFrom(_sender, amount, tokneAddress);
     }
 }
