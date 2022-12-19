@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { param, query } from 'express-validator';
-import { BadRequestError, ForbiddenError } from '@thxnetwork/api/util/errors';
+import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { WithdrawalState, WithdrawalType } from '@thxnetwork/api/types/enums';
 import { WithdrawalDocument } from '@thxnetwork/api/models/Withdrawal';
 import { Claim } from '@thxnetwork/api/models/Claim';
@@ -82,6 +82,7 @@ const controller = async (req: Request, res: Response) => {
 
     if (isTERC721Perk(reward) && claim.erc721Id) {
         const metadata = await ERC721Service.findMetadataById(reward.erc721metadataId);
+        if (!metadata) throw new NotFoundError('No metatdata found for reward');
         const erc721 = await ERC721Service.findById(metadata.erc721);
         const token = await ERC721Service.mint(pool, erc721, metadata, account, forceSync);
 

@@ -11,7 +11,7 @@ const user = request.agent(app);
 const user2 = request.agent(app);
 
 describe('ERC721 Perks', () => {
-    let poolId: string, erc721metadataId: string;
+    let poolId: string, erc721ID: string, erc721metadataId: string;
 
     beforeAll(async () => {
         await beforeAllCallback();
@@ -20,7 +20,7 @@ describe('ERC721 Perks', () => {
     afterAll(afterAllCallback);
 
     describe('an NFT reward with withdrawLimit = 1 is claimed by wallet user A and then should not be claimed again throught he same claim URL by wallet user B', () => {
-        let erc721ID: string, erc721Address: string, claims: any;
+        let erc721Address: string, claims: any;
 
         const name = 'Planets of the Galaxy',
             symbol = 'GLXY',
@@ -93,15 +93,6 @@ describe('ERC721 Perks', () => {
                         erc721metadataId = body._id;
                     })
                     .expect(201, done);
-            });
-        });
-
-        describe('DELETE /erc721/:id/metadata/:metadataID', () => {
-            it('should successfully delete erc721 metadata', (done) => {
-                user.delete(`/v1/erc721/${erc721ID}/metadata/${erc721metadataId}`)
-                    .set('Authorization', dashboardAccessToken)
-                    .set('X-PoolId', poolId)
-                    .expect(200, done);
             });
         });
 
@@ -224,6 +215,15 @@ describe('ERC721 Perks', () => {
                     expect(res.body.limit).toBe(10);
                     expect(res.body.total).toBe(2);
                 })
+                .expect(200, done);
+        });
+    });
+
+    describe('DELETE /erc721/:id/metadata/:metadataID', () => {
+        it('should successfully delete erc721 metadata', (done) => {
+            user.delete(`/v1/erc721/${erc721ID}/metadata/${erc721metadataId}`)
+                .set('Authorization', dashboardAccessToken)
+                .set('X-PoolId', poolId)
                 .expect(200, done);
         });
     });
