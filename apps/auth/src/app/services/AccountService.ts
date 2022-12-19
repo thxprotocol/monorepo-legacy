@@ -98,26 +98,26 @@ export class AccountService {
             updates.address || account.address ? toChecksumAddress(updates.address || account.address) : undefined;
 
         if (updates.googleAccess === false) {
-            await YouTubeService.revokeAccess(account);
-            await account.unsetToken(AccessTokenKind.Google);
+            YouTubeService.revokeAccess(account);
+            account.unsetToken(AccessTokenKind.Google);
         }
 
         if (updates.twitterAccess === false) {
-            await account.unsetToken(AccessTokenKind.Twitter);
+            account.unsetToken(AccessTokenKind.Twitter);
         }
 
         if (updates.githubAccess === false) {
-            await account.unsetToken(AccessTokenKind.Github);
+            account.unsetToken(AccessTokenKind.Github);
         }
 
         if (updates.twitchAccess === false) {
-            await account.unsetToken(AccessTokenKind.Twitch);
+            account.unsetToken(AccessTokenKind.Twitch);
         }
 
         if (updates.discordAccess === false) {
-            await account.unsetToken(AccessTokenKind.Discord);
+            account.unsetToken(AccessTokenKind.Discord);
         }
-        console.log(await account.save());
+        await account.save();
     }
 
     static async signinWithAddress(addr: string) {

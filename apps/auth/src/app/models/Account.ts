@@ -81,7 +81,6 @@ const setToken = async function (data: IAccessToken) {
         this.tokens.push(data);
     } else {
         this.tokens[index] = { ...this.tokens[index], ...data };
-        await this.save();
     }
 };
 

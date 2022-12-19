@@ -23,7 +23,7 @@ export interface TAccount {
     comparePassword: any;
     tokens: IAccessToken[];
     getToken: (token: AccessTokenKind) => IAccessToken;
-    setToken: (token: IAccessToken) => Promise<IAccessToken>;
+    setToken: (token: IAccessToken) => IAccessToken;
     unsetToken: (token: AccessTokenKind) => void;
     createdAt: Date;
     updatedAt: Date;
