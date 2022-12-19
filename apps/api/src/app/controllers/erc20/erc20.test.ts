@@ -98,6 +98,38 @@ describe('ERC20', () => {
                 .expect(200, done);
         });
     });
+
+    describe('DELETE /erc20/:id', () => {
+        let TOKEN_ID = '';
+
+        const TOTAL_SUPPLY = 1000;
+        const TOKEN_NAME = 'Signature Transform Technique';
+        const SYMBOL = 'STT';
+        it('Able to return a created token', (done) => {
+            http.post('/v1/erc20')
+                .set('Authorization', ACCESS_TOKEN)
+                .send({
+                    name: TOKEN_NAME,
+                    symbol: SYMBOL,
+                    chainId: ChainId.Hardhat,
+                    totalSupply: TOTAL_SUPPLY,
+                    type: ERC20Type.Unlimited,
+                })
+                .expect(({ body }: request.Response) => {
+                    TOKEN_ID = body._id;
+                    expect(isAddress(body._id)).toBeDefined();
+                    expect(isAddress(body.address)).toBe(true);
+                })
+                .expect(201, done);
+        });
+
+        it('Able to delete created token', (done) => {
+            http.delete('/v1/erc20/' + TOKEN_ID)
+                .set('Authorization', ACCESS_TOKEN)
+                .expect(204, done);
+        });
+    });
+
     describe('PATCH /erc20', () => {
         it('should to update a created token', (done) => {
             http.patch('/v1/erc20/' + tokenId)

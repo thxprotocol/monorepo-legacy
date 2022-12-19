@@ -21,6 +21,7 @@ describe('ERC721 Perks', () => {
 
     describe('an NFT reward with withdrawLimit = 1 is claimed by wallet user A and then should not be claimed again throught he same claim URL by wallet user B', () => {
         let erc721ID: string, erc721Address: string, claims: any;
+
         const name = 'Planets of the Galaxy',
             symbol = 'GLXY',
             description = 'description',
@@ -92,6 +93,15 @@ describe('ERC721 Perks', () => {
                         erc721metadataId = body._id;
                     })
                     .expect(201, done);
+            });
+        });
+
+        describe('DELETE /erc721/:id/metadata/:metadataID', () => {
+            it('should successfully delete erc721 metadata', (done) => {
+                user.delete(`/v1/erc721/${erc721ID}/metadata/${erc721metadataId}`)
+                    .set('Authorization', dashboardAccessToken)
+                    .set('X-PoolId', poolId)
+                    .expect(200, done);
             });
         });
 
