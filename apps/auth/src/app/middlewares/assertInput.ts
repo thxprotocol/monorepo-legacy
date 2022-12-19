@@ -11,7 +11,7 @@ export function assertInput(validations: any) {
         if (!req.interaction) throw new Error('no interaction');
 
         req.interaction.alert = { variant: 'danger', message: errors };
-        await req.interaction.save();
+        await req.interaction.save(Date.now() + 1000);
 
         next();
     };
