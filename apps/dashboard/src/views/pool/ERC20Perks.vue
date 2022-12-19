@@ -17,13 +17,22 @@
                 :page="page"
                 :limit="limit"
                 :pool="pool"
-                :rewards="erc20Perks[pool._id]"
-                :totals="totals"
+                :total-rows="totals[pool._id]"
                 :selectedItems="selectedItems"
-                :showDownloadQRCodes="true"
+                :actions="[
+                    { variant: 0, label: `Delete perks` },
+                    { variant: 1, label: 'Download QR codes' },
+                    { variant: 2, label: 'Download CSV' },
+                ]"
+                @click-action="onClickAction"
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
-                @delete="onDelete"
+            />
+            <BaseModalRewardClaimsDownload
+                id="modalRewardClaimsDownload"
+                :pool="pool"
+                :selectedItems="selectedItems"
+                :rewards="erc20Perks[pool._id]"
             />
             <BTable hover :busy="isLoading" :items="rewardsByPage" responsive="lg" show-empty>
                 <!-- Head formatting -->
@@ -192,9 +201,19 @@ export default class ERC20PerksView extends Vue {
         this.listRewards();
     }
 
-    onDelete(items: string[]) {
-        for (const id of Object.values(items)) {
-            this.$store.dispatch('erc20Perks/delete', this.erc20Perks[this.pool._id][id]);
+    onClickAction(action: { variant: number; label: string }) {
+        switch (action.variant) {
+            case 0:
+                for (const id of Object.values(this.selectedItems)) {
+                    this.$store.dispatch('erc20Perks/delete', this.erc20Perks[this.pool._id][id]);
+                }
+                break;
+            case 1:
+                this.$bvModal.show('modalRewardClaimsDownload');
+                break;
+            case 2:
+                this.$bvModal.show('modalRewardClaimsDownload');
+                break;
         }
     }
 }

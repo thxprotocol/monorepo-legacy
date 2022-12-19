@@ -5,29 +5,18 @@
                 Selected <strong>{{ selectedItems.length }}</strong> item{{ selectedItems.length === 1 ? '' : 's' }}
             </span>
             <b-dropdown
-                @click="onClickBulkAction"
                 variant="dark"
                 size="sm"
                 split
-                :text="selectedBulkAction.label"
                 class="mr-5"
+                :text="selectedBulkAction ? selectedBulkAction.label : ''"
                 :disabled="!selectedItems.length"
+                @click="selectedBulkAction ? onClickAction(selectedBulkAction) : null"
             >
-                <b-dropdown-item
-                    class="small"
-                    @click="selectedBulkAction = item"
-                    :key="key"
-                    v-for="(item, key) of items"
-                >
+                <b-dropdown-item class="small" @click="onClickAction(item)" :key="key" v-for="(item, key) of actions">
                     {{ item.label }}
                 </b-dropdown-item>
             </b-dropdown>
-            <BaseModalRewardClaimsDownload
-                :id="`modalRewardClaimsDownload`"
-                :pool="pool"
-                :rewards="rewards"
-                :selectedItems="selectedItems"
-            />
         </div>
         <div class="d-flex align-items-center">
             <span class="text-muted mr-2">Limit</span>
@@ -46,7 +35,7 @@
                 @change="$emit('change-page', $event)"
                 v-model="page"
                 :per-page="limit"
-                :total-rows="total"
+                :total-rows="totalRows"
                 align="center"
             ></b-pagination>
         </div>
@@ -59,6 +48,8 @@ import { type TBaseReward } from '@thxnetwork/types/index';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import BaseModalRewardClaimsDownload from '../modals/BaseModalRewardClaimsDownload.vue';
 
+export type TTableBulkAction = { variant: number; label: string };
+
 @Component({
     components: {
         BaseModalRewardClaimsDownload,
@@ -67,41 +58,21 @@ import BaseModalRewardClaimsDownload from '../modals/BaseModalRewardClaimsDownlo
 export default class BaseCardTableHeader extends Vue {
     @Prop() totals!: { [poolId: string]: number };
     @Prop() selectedItems!: string[];
-    @Prop() rewards!: { [poolId: string]: { [id: string]: TBaseReward } };
+    @Prop() actions!: TTableBulkAction[];
     @Prop() page!: number;
     @Prop() limit!: number;
     @Prop() pool!: IPool;
+    @Prop() totalRows!: number;
 
-    defaultAction = { variant: 2, label: `Delete rewards` };
-    selectedBulkAction = this.defaultAction;
+    selectedBulkAction: TTableBulkAction | null = null;
 
-    get total() {
-        return this.totals[this.$route.params.id];
+    mounted() {
+        this.selectedBulkAction = this.actions[0];
     }
 
-    get items() {
-        if (!this.rewards) return [];
-        const result = Object.values(this.rewards).filter((r: any) => r.claims && r.claims.length);
-        if (!result.length) return [this.defaultAction];
-        return [
-            ...[this.defaultAction],
-            { variant: 0, label: 'Download QR codes' },
-            { variant: 1, label: 'Download CSV' },
-        ];
-    }
-
-    onClickBulkAction() {
-        switch (this.selectedBulkAction.variant) {
-            case 0:
-                this.$bvModal.show('modalRewardClaimsDownload');
-                break;
-            case 1:
-                this.$bvModal.show('modalRewardClaimsDownload');
-                break;
-            case 2:
-                this.$emit('delete', this.selectedItems);
-                break;
-        }
+    onClickAction(item: TTableBulkAction) {
+        this.selectedBulkAction = item;
+        this.$emit('click-action', item);
     }
 }
 </script>

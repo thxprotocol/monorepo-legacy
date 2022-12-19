@@ -253,7 +253,7 @@ export default class BaseModalRewardClaimsDownload extends Vue {
 
     onClickCreateCSV() {
         const filename = `${new Date().getTime()}_${this.pool._id}_claim_urls`;
-        const data = this.claims.map((c) => [`${WALLET_URL}/claim/${c.id}`]);
+        const data = this.claims.map((c) => [`${WALLET_URL}/claim/${c.uuid}`]);
         const csvContent = 'data:text/csv;charset=utf-8,' + data.map((e) => e.join(',')).join('\n');
 
         saveAs(encodeURI(csvContent), `${filename}.csv`);

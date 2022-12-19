@@ -72,14 +72,14 @@ class ERC20PerkModule extends VuexModule {
 
     @Action({ rawError: true })
     async create({ pool, payload }: { pool: IPool; payload: TERC20Perk }) {
-        const r = await axios({
+        const { data } = await axios({
             method: 'POST',
             url: '/erc20-perks',
             headers: { 'X-PoolId': pool._id },
             data: payload,
         });
 
-        this.context.commit('set', { pool, reward: { ...payload, ...r.data } });
+        this.context.commit('set', { pool, reward: { ...payload, ...data } });
     }
 
     @Action({ rawError: true })
@@ -93,29 +93,8 @@ class ERC20PerkModule extends VuexModule {
 
         this.context.commit('set', {
             pool: pool,
-            reward: data,
+            reward: { ...reward, ...data },
         });
-    }
-
-    @Action({ rawError: true })
-    async getQRCodes({ reward }: { reward: TERC20Perk }) {
-        const { status, data } = await axios({
-            method: 'GET',
-            url: `/erc20-perks/${reward._id}/claims/qrcode`,
-            headers: { 'X-PoolId': reward.poolId },
-            responseType: 'blob',
-        });
-        // Check if job has been queued, meaning file is not available yet
-        if (status === 201) return true;
-        // Check if response is zip file, meaning job has completed
-        if (status === 200 && data.type == 'application/zip') {
-            // Fake an anchor click to trigger a download in the browser
-            const anchor = document.createElement('a');
-            anchor.href = window.URL.createObjectURL(new Blob([data]));
-            anchor.setAttribute('download', `${reward.uuid}_qrcodes.zip`);
-            document.body.appendChild(anchor);
-            anchor.click();
-        }
     }
 
     @Action({ rawError: true })
