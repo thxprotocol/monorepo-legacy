@@ -16,8 +16,6 @@ async function controller(req: Request, res: Response) {
     params.discordLoginUrl = DiscordService.getLoginURL(uid, {});
     params.twitchLoginUrl = TwitchService.getLoginURL(uid, {});
 
-    console.log(await TwitterService.isAuthorized(account));
-
     return res.render('account', {
         uid,
         alert,
@@ -34,9 +32,9 @@ async function controller(req: Request, res: Response) {
             otpSecret: account.otpSecret,
             googleAccess: await YouTubeService.isAuthorized(account),
             twitterAccess: await TwitterService.isAuthorized(account),
-            githubAccess: await GithubService.isAuthorized(account),
+            githubAccess: GithubService.isAuthorized(account),
             discordAccess: await DiscordService.isAuthorized(account),
-            twitchAccess: await TwitchService.isAuthorized(account),
+            twitchAccess: TwitchService.isAuthorized(account),
         },
     });
 }

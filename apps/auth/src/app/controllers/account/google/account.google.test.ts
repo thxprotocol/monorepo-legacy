@@ -5,7 +5,6 @@ import db from '../../../util/database';
 import { AccountService } from '../../../services/AccountService';
 import { GOOGLE_API_ENDPOINT, INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
 import { accountEmail, accountSecret } from '../../../util/jest';
-import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
 import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
 
 const http = request.agent(app);
@@ -75,12 +74,12 @@ describe('Account Controller', () => {
     });
 
     describe('GET /account/:sub/google/youtube', () => {
-        let account, nockScopeApi, nockScopeOAuth;
+        let account;
         beforeAll(async () => {
-            nockScopeApi = nock(GOOGLE_API_ENDPOINT).persist().get(/.*?/).reply(200, {
+            nock(GOOGLE_API_ENDPOINT).persist().get(/.*?/).reply(200, {
                 scope: 'https://www.googleapis.com/auth/userinfo.email openid',
             });
-            nockScopeOAuth = nock('https://oauth2.googleapis.com/tokeninfo').persist().post(/.*?/).reply(200, {
+            nock('https://oauth2.googleapis.com/tokeninfo').persist().post(/.*?/).reply(200, {
                 scope: 'https://www.googleapis.com/auth/userinfo.email openid',
             });
             nock('https://youtube.googleapis.com/').persist().get(/.*?/).reply(200, { data: {} });
@@ -140,9 +139,13 @@ describe('Account Controller', () => {
             nock(GOOGLE_API_ENDPOINT).persist(true).get(/.*?/).reply(200, {
                 scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/youtube openid',
             });
-            nock('https://oauth2.googleapis.com/tokeninfo').persist(true).post(/.*?/).reply(200, {
-                scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/youtube openid',
-            });
+            nock('https://oauth2.googleapis.com/tokeninfo')
+                .persist(true)
+                .post(/.*?/)
+                .reply(200, {
+                    scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/youtube openid',
+                    expiry_date: Date.now() + 3600,
+                });
             nock('https://youtube.googleapis.com/').persist().get(/.*?/).reply(200, { data: {} });
 
             const res = await http

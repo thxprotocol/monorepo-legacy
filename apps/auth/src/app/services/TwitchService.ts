@@ -11,7 +11,7 @@ const ERROR_NOT_AUTHORIZED = 'Not authorized for Twitch API';
 const ERROR_TOKEN_REQUEST_FAILED = 'Failed to request access token';
 
 class TwitchService {
-    static async isAuthorized(account: AccountDocument) {
+    static isAuthorized(account: AccountDocument) {
         const token = account.getToken(AccessTokenKind.Twitch);
         if (!token || !token.accessToken) return false;
         const isExpired = Date.now() > token.expiry;

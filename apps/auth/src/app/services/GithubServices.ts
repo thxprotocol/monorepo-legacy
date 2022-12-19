@@ -9,7 +9,7 @@ import { AccessTokenKind } from '../types/enums/AccessTokenKind';
 export const GITHUB_API_SCOPE = ['public_repo']; // https://docs.github.com/en/developers/apps/building-oauth-apps/scopes-for-oauth-apps
 
 export class GithubService {
-    static async isAuthorized(account: AccountDocument) {
+    static isAuthorized(account: AccountDocument) {
         const token = account.getToken(AccessTokenKind.Github);
         if (!token || !token.accessToken) return false;
         const isExpired = Date.now() > token.expiry;
