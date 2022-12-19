@@ -15,7 +15,7 @@ const controller = async (req: Request, res: Response) => {
     await MemberService.removeMember(req.assetPool, req.params.address);
 
     const account = await AccountProxy.getByAddress(req.params.address);
-    await MembershipService.removeMembership(account.id, req.assetPool);
+    await MembershipService.removeMembership(account.sub, req.assetPool);
 
     res.status(204).end();
 };

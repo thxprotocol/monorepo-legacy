@@ -26,7 +26,7 @@ const controller = async (req: Request, res: Response) => {
 
     const account = await AccountProxy.signupFor(req.body.email, req.body.password, req.body.address);
 
-    res.status(201).json({ id: account.id, address: account.address });
+    res.status(201).json({ id: account.sub, address: account.address });
 };
 
 export default { controller, validation };

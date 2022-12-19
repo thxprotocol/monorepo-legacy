@@ -11,7 +11,7 @@ import { FacetCutAction } from '../util/upgrades';
 import WalletManagerService from './WalletManagerService';
 
 async function create(chainId: ChainId, account: IAccount, forceSync = true) {
-    const wallet = await Wallet.create({ sub: String(account.id), chainId });
+    const wallet = await Wallet.create({ sub: String(account.sub), chainId });
     return this.deploy(wallet, chainId, forceSync);
 }
 

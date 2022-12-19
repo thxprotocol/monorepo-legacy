@@ -50,7 +50,7 @@ describe('Account', () => {
                     password: userPassword2,
                 })
                 .expect((res: request.Response) => {
-                    expect(res.body.id).toBe(account2.id);
+                    expect(res.body.sub).toBe(account2.sub);
                     expect(res.body.address).toBe(account2.address);
 
                     userWalletAddress = res.body.address;

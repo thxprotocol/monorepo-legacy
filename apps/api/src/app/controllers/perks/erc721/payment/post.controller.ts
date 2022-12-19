@@ -30,7 +30,7 @@ const controller = async (req: Request, res: Response) => {
     const wallet = await WalletService.findOneByQuery({ sub: req.auth.sub, chainId: req.assetPool.chainId });
     if (!wallet) throw new NotFoundError('Could not find walle tfor this account.');
 
-    const account = { id: req.auth.sub, address: wallet.address } as IAccount;
+    const account = { sub: req.auth.sub, address: wallet.address } as IAccount;
     const erc721Token = await ERC721Service.mint(req.assetPool, erc721, metadata, account);
     const erc721PerkPayment = await ERC20PerkPayment.create({ perkId: erc721Perk._id, sub: req.auth.sub });
 

@@ -1,6 +1,6 @@
 import { AccountPlanType, ChainId } from '@thxnetwork/api/types/enums';
 export interface IAccount {
-    id?: string;
+    sub?: string;
     address: string;
     walletAddress: string;
     privateKey: string;
