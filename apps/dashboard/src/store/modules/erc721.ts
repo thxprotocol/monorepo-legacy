@@ -48,6 +48,11 @@ class ERC721Module extends VuexModule {
     }
 
     @Mutation
+    unsetMetadata({ erc721, metadata }: { erc721: TERC721; metadata: TERC721Metadata }) {
+        Vue.delete(this._all[erc721._id]['metadata'], metadata._id);
+    }
+
+    @Mutation
     clearMetadata(payload: { erc721: TERC721 }) {
         Vue.set(this._all[payload.erc721._id], 'metadata', []);
     }
@@ -69,6 +74,19 @@ class ERC721Module extends VuexModule {
 
         for (const _id of data) {
             this.context.commit('set', { _id, metadata: {}, loading: true });
+        }
+    }
+
+    @Action({ rawError: true })
+    async update({ erc721, data }: { erc721: TERC721; data: { archived: boolean } }) {
+        await axios({
+            method: 'PATCH',
+            url: `/erc721/${erc721._id}`,
+            data,
+        });
+        this.context.commit('set', { ...erc721, ...data });
+        if (data.archived) {
+            this.context.commit('unset', erc721);
         }
     }
 
@@ -131,13 +149,13 @@ class ERC721Module extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async deleteMetadata({ pool, erc721, metadataId }: { pool: IPool; erc721: TERC721; metadataId: string }) {
-        const { status }: TMetadataResponse = await axios({
+    async deleteMetadata({ pool, erc721, metadata }: { pool: IPool; erc721: TERC721; metadata: TERC721Metadata }) {
+        await axios({
             method: 'DELETE',
-            url: `/erc721/${erc721._id}/metadata/${metadataId}`,
+            url: `/erc721/${erc721._id}/metadata/${metadata._id}`,
             headers: { 'X-PoolId': pool._id },
         });
-        return status === 200;
+        this.context.commit('unsetMetadata', { erc721, metadata });
     }
 
     @Action({ rawError: true })
@@ -194,79 +212,40 @@ class ERC721Module extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async createMetadata(payload: {
-        pool: IPool;
-        erc721: TERC721;
-        title?: string;
-        description?: string;
-        attributes: any;
-        recipient?: string;
-    }) {
+    async createMetadata({ erc721, metadata }: { erc721: TERC721; metadata: TERC721Metadata }) {
         const { data } = await axios({
             method: 'POST',
-            url: `/erc721/${payload.erc721._id}/metadata`,
-            headers: { 'X-PoolId': payload.pool._id },
+            url: `/erc721/${erc721._id}/metadata`,
+            headers: { 'X-PoolId': erc721.poolId },
             data: {
-                title: payload.title,
-                description: payload.description,
-                attributes: payload.attributes,
-                recipient: payload.recipient,
+                title: metadata.title,
+                description: metadata.description,
+                attributes: metadata.attributes,
             },
         });
         this.context.commit('setMetadata', {
-            erc721: payload.erc721,
-            metadata: data,
+            erc721,
+            metadata: { ...metadata, ...data },
         });
     }
 
     @Action({ rawError: true })
-    async updateMetadata(payload: {
-        pool: IPool;
-        erc721: TERC721;
-        title?: string;
-        description?: string;
-        attributes: any;
-        recipient?: string;
-        id?: string;
-    }) {
+    async updateMetadata({ erc721, metadata }: { erc721: TERC721; metadata: TERC721Metadata }) {
         const { data } = await axios({
             method: 'PATCH',
-            url: `/erc721/${payload.erc721._id}/metadata/${payload.id}`,
-            headers: { 'X-PoolId': payload.pool._id },
+            url: `/erc721/${erc721._id}/metadata/${metadata._id}`,
+            headers: { 'X-PoolId': erc721.poolId },
             data: {
-                title: payload.title,
-                description: payload.description,
-                attributes: payload.attributes,
-                recipient: payload.recipient,
+                title: metadata.title,
+                description: metadata.description,
+                attributes: metadata.attributes,
             },
         });
-        this.context.commit('setMetadata', {
-            erc721: payload.erc721,
-            metadata: data,
-        });
-    }
 
-    @Action({ rawError: true })
-    async mint({
-        pool,
-        erc721,
-        erc721Metadata,
-        recipient,
-    }: {
-        pool: IPool;
-        erc721: TERC721;
-        erc721Metadata: TERC721Metadata;
-        recipient?: string;
-    }) {
-        const { data } = await axios({
-            method: 'POST',
-            url: `/erc721/${erc721._id}/metadata/${erc721Metadata._id}/mint`,
-            headers: { 'X-PoolId': pool._id },
-            data: {
-                recipient,
-            },
+        this.context.commit('setMetadata', {
+            erc721,
+            metadata: { ...metadata, ...data },
         });
-        this.context.commit('setMetadata', { erc721, metadata: data });
     }
 
     @Action({ rawError: true })
@@ -283,22 +262,15 @@ class ERC721Module extends VuexModule {
         const zip = new JSZip();
         const zipFolder = zip.folder(`nft-images_${now}`);
 
-        // await Promise.all(
-        //     [...(payload.files as any)].map((x: File) => {
-        //         return zipFolder?.file(x.name, x);
-        //     }),
-        // );
         zipFolder?.file(payload.file.name, payload.file);
+
         const zipFile = await zip.generateAsync({ type: 'blob' });
-
         const files = new File([zipFile], `images_${now}.zip`);
-
         const formData = new FormData();
 
         formData.set('name', payload.name);
         formData.set('description', payload.description);
         formData.set('external_url', payload.external_url);
-
         formData.set('propName', payload.propName);
         formData.append('file', files);
 
@@ -353,40 +325,6 @@ class ERC721Module extends VuexModule {
             },
             data: formData,
         });
-    }
-
-    @Action({ rawError: true })
-    async update({ erc721, data }: { erc721: TERC721; data: { archived: boolean } }) {
-        await axios({
-            method: 'PATCH',
-            url: `/erc721/${erc721._id}`,
-            data,
-        });
-        this.context.commit('set', { ...erc721, ...data });
-        if (data.archived) {
-            this.context.commit('unset', erc721);
-        }
-    }
-
-    @Action({ rawError: true })
-    async getMetadataQRCodes({ pool, erc721 }: { pool: IPool; erc721: TERC721 }) {
-        const { status, data } = await axios({
-            method: 'GET',
-            url: `/erc721/${erc721._id}/metadata/zip`,
-            headers: { 'X-PoolId': pool._id },
-            responseType: 'blob',
-        });
-        // Check if job has been queued, meaning file is not available yet
-        if (status === 201) return true;
-        // Check if response is zip file, meaning job has completed
-        if (status === 200 && data.type == 'application/zip') {
-            // Fake an anchor click to trigger a download in the browser
-            const anchor = document.createElement('a');
-            anchor.href = window.URL.createObjectURL(new Blob([data]));
-            anchor.setAttribute('download', `${pool._id}_metadata_qrcodes.zip`);
-            document.body.appendChild(anchor);
-            anchor.click();
-        }
     }
 }
 

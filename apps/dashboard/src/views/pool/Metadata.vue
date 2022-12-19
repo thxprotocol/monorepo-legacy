@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="erc721">
         <b-row class="mb-3">
             <b-col class="d-flex align-items-center">
                 <h2 class="mb-0">NFT Metadata</h2>
@@ -8,26 +8,39 @@
                 <template #button-content>
                     <i class="fas fa-ellipsis-v m-0 p-1 px-2 text-muted" style="font-size: 1.2rem"></i>
                 </template>
-                <b-dropdown-item v-b-modal="'modalNFTCreate'" @click="onCreate()">
+                <b-dropdown-item v-b-modal="'modalERC721MetadataCreate'">
                     <i class="fas fa-plus mr-2"></i>
                     Create Metadata
                 </b-dropdown-item>
-                <b-dropdown-item v-b-modal="'modalNFTBulkCreate'">
+                <b-dropdown-item v-b-modal="'modalERC721MetadataBulkCreate'">
                     <i class="fas fa-upload mr-2"></i>
                     Upload Images
                 </b-dropdown-item>
-                <b-dropdown-item v-b-modal="'modalNFTUploadMetadataCsv'">
+                <b-dropdown-item v-b-modal="'modalERC721MetadataCsv'">
                     <i class="fas fa-exchange-alt mr-2"></i>
                     Import/Export
                 </b-dropdown-item>
-                <b-dropdown-item @click="getQRCodes()">
-                    <i class="fas fa-download mr-2"></i>
-                    Download Rewards
-                </b-dropdown-item>
             </b-dropdown>
+            <base-modal-erc721-metadata-create
+                @update="listMetadata"
+                id="modalERC721MetadataCreate"
+                :erc721="erc721"
+                :pool="pool"
+            />
         </b-row>
-        
+
         <BCard variant="white" body-class="p-0 shadow-sm">
+            <BaseCardTableHeader
+                :page="page"
+                :limit="limit"
+                :pool="pool"
+                :total-rows="totals[erc721._id]"
+                :selectedItems="selectedItems"
+                :actions="[{ variant: 0, label: `Delete metadata` }]"
+                @click-action="onClickAction"
+                @change-limit="onChangeLimit"
+                @change-page="onChangePage"
+            />
             <b-alert variant="success" show v-if="isDownloadScheduled">
                 <i class="fas fa-clock mr-2"></i>
                 You will receive an e-mail when your download is ready!
@@ -36,19 +49,22 @@
                 <i class="fas fa-hourglass-half mr-2"></i>
                 Downloading your QR codes
             </b-alert>
-            <BTable hover :busy="isLoading" :items="metadataByPage" responsive="lg" :fields="fields" show-empty>
+            <BTable hover :busy="isLoading" :items="metadataByPage" responsive="lg" show-empty>
                 <!-- Head formatting -->
                 <template #head(checkbox)>
-                    <b-form-checkbox @change="onChecked" />
+                    <b-form-checkbox @change="onSelectAll" />
                 </template>
-                <template #head(title)> Created </template>
-                <template #head(progress)> Attributes </template>
-                <template #head(rewardCondition)> Tokens </template>
+                <template #head(created)> Created </template>
+                <template #head(attributes)> Attributes </template>
+                <template #head(tokens)> Tokens </template>
                 <template #head(id)> &nbsp; </template>
 
                 <!-- Cell formatting -->
                 <template #cell(checkbox)="{ item }">
-                    <b-form-checkbox v-model="selectedItems" />
+                    <b-form-checkbox :value="item.checkbox" v-model="selectedItems" />
+                </template>
+                <template #cell(created)="{ item }">
+                    {{ format(new Date(item.created), 'dd-MM-yyyy HH:mm') }}
                 </template>
                 <template #cell(attributes)="{ item }">
                     <b-badge
@@ -74,44 +90,38 @@
                         #{{ token.tokenId }}
                     </b-badge>
                 </template>
-                <template #cell(createdAt)="{ item }">
-                    {{ format(new Date(item.createdAt), 'dd-MM-yyyy HH:mm') }}
-                </template>
                 <template #cell(id)="{ item }">
-                    <b-dropdown size="sm" class="float-right" variant="light">
-                        <b-dropdown-item :disabled="!!item.tokens.length" @click="onEdit(item)">Edit</b-dropdown-item>
-                        <b-dropdown-item target="_blank" v-bind:href="`${apiUrl}/v1/metadata/${item._id}`"
-                            >View</b-dropdown-item
+                    <b-dropdown no-caret size="sm" variant="link">
+                        <template #button-content>
+                            <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
+                        </template>
+                        <b-dropdown-item
+                            :disabled="!!item.tokens.length"
+                            v-b-modal="'modalERC721MetadataCreate' + item.id"
                         >
-                        <b-dropdown-item v-b-modal="`modalNFTMint${item._id}`">Mint</b-dropdown-item>
-                        <b-dropdown-item :disabled="!!item.tokens.length" @click="onDelete(item)"
-                            >Delete</b-dropdown-item
+                            Edit
+                        </b-dropdown-item>
+                        <b-dropdown-item target="_blank" v-bind:href="`${apiUrl}/v1/metadata/${item.id}`">
+                            View JSON
+                        </b-dropdown-item>
+                        <b-dropdown-item
+                            :disabled="!!item.tokens.length"
+                            @click="onClickDelete(erc721.metadata[item.id])"
                         >
+                            Delete
+                        </b-dropdown-item>
+                        <base-modal-erc721-metadata-create
+                            @update="listMetadata"
+                            :id="`modalERC721MetadataCreate${item.id}`"
+                            :erc721="erc721"
+                            :metadata="erc721.metadata[item.id]"
+                            :pool="pool"
+                        />
                     </b-dropdown>
-
-                    <base-modal-erc721-metadata-mint :pool="pool" :erc721="erc721" :erc721Metadata="item" />
                 </template>
             </BTable>
         </BCard>
-
-        <b-pagination
-            class="my-2"
-            @change="onChangePage($event)"
-            v-model="page"
-            :per-page="limit"
-            :total-rows="total"
-            align="center"
-        ></b-pagination>
-
-        <base-modal-erc721-metadata-create
-            v-if="erc721"
-            :erc721="erc721"
-            @hidden="reset"
-            :metadata="editingMeta"
-            :pool="pool"
-        />
-
-</div>
+    </div>
 </template>
 
 <script lang="ts">
@@ -126,7 +136,7 @@ import BaseModalErc721MetadataCreate from '@thxnetwork/dashboard/components/moda
 import BaseModalErc721MetadataBulkCreate from '@thxnetwork/dashboard/components/modals/BaseModalERC721MetadataBulkCreate.vue';
 import BaseModalErc721MetadataUploadCSV from '@thxnetwork/dashboard/components/modals/BaseModalERC721MetadataUploadCSV.vue';
 import BaseModalErc721MetadataCreateCSV from '@thxnetwork/dashboard/components/modals/BaseModalERC721MetadataCreateCSV.vue';
-import BaseModalErc721MetadataMint from '@thxnetwork/dashboard/components/modals/BaseModalERC721MetadataMint.vue';
+import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 
 @Component({
     components: {
@@ -136,7 +146,7 @@ import BaseModalErc721MetadataMint from '@thxnetwork/dashboard/components/modals
         BaseModalErc721MetadataBulkCreate,
         BaseModalErc721MetadataUploadCSV,
         BaseModalErc721MetadataCreateCSV,
-        BaseModalErc721MetadataMint,
+        BaseCardTableHeader,
     },
     computed: mapGetters({
         pools: 'pools/all',
@@ -146,7 +156,7 @@ import BaseModalErc721MetadataMint from '@thxnetwork/dashboard/components/modals
 })
 export default class MetadataView extends Vue {
     page = 1;
-    limit = 15;
+    limit = 5;
     isLoading = true;
     format = format;
     totals!: { [erc721Id: string]: number };
@@ -159,10 +169,8 @@ export default class MetadataView extends Vue {
     selectedItems: any[] = [];
     pools!: IPools;
     erc721s!: IERC721s;
-    editingMeta: TERC721Metadata | null = null;
-    fields = ['createdAt', 'attributes', 'tokens', 'id'];
 
-get pool(): IPool {
+    get pool(): IPool {
         return this.pools[this.$route.params.id];
     }
 
@@ -170,16 +178,23 @@ get pool(): IPool {
         return this.erc721s[this.pool.erc721Id];
     }
 
-    get total() {
-        return this.erc721 ? this.totals[this.erc721._id] : 0;
-    }
-
     get metadataByPage() {
-        if (!this.erc721s[this.erc721._id].metadata) return [];
+        if (!this.erc721) return [];
         return Object.values(this.erc721s[this.erc721._id].metadata)
             .filter((metadata: TERC721Metadata) => metadata.page === this.page)
             .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
+            .map((r: TERC721Metadata) => ({
+                checkbox: r._id,
+                created: r.createdAt,
+                attributes: r.attributes,
+                tokens: r.tokens,
+                id: r._id,
+            }))
             .slice(0, this.limit);
+    }
+
+    async mounted() {
+        this.listMetadata();
     }
 
     onChangePage(page: number) {
@@ -187,35 +202,40 @@ get pool(): IPool {
         this.listMetadata();
     }
 
-    onChecked(checked: boolean) {
-        this.selectedItems = checked ? (this.metadataByPage.map((r) => r._id) as string[]) : [];
-    }
-
-    reset() {
-        Vue.set(this, 'editingMeta', null);
-    }
-
-    onEdit(metadata: TERC721Metadata) {
-        Vue.set(this, 'editingMeta', metadata);
-        this.$bvModal.show('modalNFTCreate');
-    }
-
-    async onDelete(metadata: TERC721Metadata) {
+    async onClickDelete(metadata: TERC721Metadata) {
         await this.$store.dispatch('erc721/deleteMetadata', {
             pool: this.pool,
             erc721: this.erc721,
-            metadataId: metadata._id,
+            metadata,
         });
+    }
+
+    onSelectAll(isSelectAll: boolean) {
+        this.selectedItems = isSelectAll ? (this.metadataByPage.map((r) => r.id) as string[]) : [];
+    }
+
+    onChangeLimit(limit: number) {
+        this.limit = limit;
         this.listMetadata();
     }
 
-    onCreate() {
-        this.reset();
-        this.$bvModal.show('modalNFTCreate');
-    }
-
-    downloadQrCodes() {
-        this.$store.dispatch('erc721/getQRCodes', { erc721: this.erc721 });
+    onClickAction(action: { variant: number; label: string }) {
+        switch (action.variant) {
+            case 0:
+                for (const id of Object.values(this.selectedItems)) {
+                    this.$store.dispatch('erc721/deleteMetadata', {
+                        pool: this.pool,
+                        erc721: this.erc721,
+                        metadata: this.erc721.metadata[id],
+                    });
+                }
+                break;
+            case 1:
+                this.$bvModal.show('modalRewardClaimsDownload');
+            case 2:
+                this.$bvModal.show('modalRewardClaimsDownload');
+                break;
+        }
     }
 
     async listMetadata() {
@@ -228,27 +248,6 @@ get pool(): IPool {
             });
         });
         this.isLoading = false;
-    }
-
-    async onSuccess() {
-        await this.listMetadata();
-        this.reset();
-    }
-
-    async mounted() {
-        this.listMetadata();
-        if (this.$route.query.qrcodes === '1') {
-            await this.getQRCodes();
-        }
-    }
-
-    async getQRCodes() {
-        this.isDownloading = true;
-        this.isDownloadScheduled = await this.$store.dispatch('erc721/getMetadataQRCodes', {
-            pool: this.pool,
-            erc721: this.erc721,
-        });
-        this.isDownloading = false;
     }
 }
 </script>
