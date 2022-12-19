@@ -1,5 +1,7 @@
 import { TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET, TWITCH_REDIRECT_URI } from '@thxnetwork/auth/config/secrets';
+import { AccountDocument } from '../models/Account';
 import CommonOauthLoginOptions from '../types/CommonOauthLoginOptions';
+import { AccessTokenKind } from '../types/enums/AccessTokenKind';
 import { twitchClient } from '../util/axios';
 
 export const TWITCH_API_SCOPE = ['user:read:follows', 'user:read:email', 'user:read:broadcast'];
@@ -9,6 +11,14 @@ const ERROR_NOT_AUTHORIZED = 'Not authorized for Twitch API';
 const ERROR_TOKEN_REQUEST_FAILED = 'Failed to request access token';
 
 class TwitchService {
+    static async isAuthorized(account: AccountDocument) {
+        const token = account.getToken(AccessTokenKind.Twitch);
+        if (!token || !token.accessToken) return false;
+        const isExpired = Date.now() > token.expiry;
+        if (isExpired) return false;
+        return true;
+    }
+
     static getLoginURL(
         state: string,
         { scope = TWITCH_API_SCOPE, redirectUrl = TWITCH_REDIRECT_URI }: CommonOauthLoginOptions,

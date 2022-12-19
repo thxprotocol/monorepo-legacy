@@ -1,4 +1,3 @@
-import newrelic from 'newrelic';
 import Web3 from 'web3';
 import { IAccessToken, IAccountUpdates } from '../types/TAccount';
 import { Account, AccountDocument } from '../models/Account';
@@ -21,7 +20,6 @@ import {
     ERROR_VERIFY_EMAIL_EXPIRED,
 } from '../util/messages';
 import { YouTubeService } from './YouTubeService';
-import { logger } from '../util/logger';
 import { AccountPlanType } from '../types/enums/AccountPlanType';
 import { AccountVariant } from '../types/enums/AccountVariant';
 import { AccessTokenKind } from '../types/enums/AccessTokenKind';
@@ -53,10 +51,11 @@ export class AccountService {
             acceptTermsPrivacy,
             acceptUpdates,
             address,
-            privateKey,
-            twitchAccess,
             googleAccess,
             twitterAccess,
+            githubAccess,
+            twitchAccess,
+            discordAccess,
             authenticationToken,
             authenticationTokenExpires,
             lastLoginAt,
@@ -115,25 +114,20 @@ export class AccountService {
                 kind: AccessTokenKind.Auth,
                 accessToken: authenticationToken,
                 expiry: authenticationTokenExpires,
-            } as IAccessToken);
+            });
         }
 
         account.address = address || account.address ? toChecksumAddress(address || account.address) : undefined;
-        account.privateKey = privateKey || account.privateKey;
 
         if (googleAccess === false) {
-            try {
-                await YouTubeService.revokeAccess(account);
-            } catch (error) {
-                newrelic.noticeError(error);
-                logger.error('Unable to revoke YouTube access', error);
-            }
+            await YouTubeService.revokeAccess(account);
+
             account.setToken({
                 kind: AccessTokenKind.Google,
                 accessToken: '',
                 refreshToken: '',
                 expiry: null,
-            } as IAccessToken);
+            });
         }
 
         if (twitterAccess === false) {
@@ -142,7 +136,16 @@ export class AccountService {
                 accessToken: '',
                 refreshToken: '',
                 expiry: null,
-            } as IAccessToken);
+            });
+        }
+
+        if (githubAccess === false) {
+            account.setToken({
+                kind: AccessTokenKind.Github,
+                accessToken: '',
+                refreshToken: '',
+                expiry: null,
+            });
         }
 
         if (twitchAccess === false) {
@@ -151,7 +154,16 @@ export class AccountService {
                 accessToken: '',
                 refreshToken: '',
                 expiry: null,
-            } as IAccessToken);
+            });
+        }
+
+        if (discordAccess === false) {
+            account.setToken({
+                kind: AccessTokenKind.Discord,
+                accessToken: '',
+                refreshToken: '',
+                expiry: null,
+            });
         }
 
         return await account.save();

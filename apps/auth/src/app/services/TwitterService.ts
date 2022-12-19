@@ -2,12 +2,35 @@ import CommonOauthLoginOptions from '@thxnetwork/auth/types/CommonOauthLoginOpti
 import { URLSearchParams } from 'url';
 import { twitterClient } from '../util/axios';
 import { TWITTER_CLIENT_ID, TWITTER_CLIENT_SECRET, TWITTER_REDIRECT_URI } from '../config/secrets';
+import { AccountDocument } from '../models/Account';
+import { AccessTokenKind } from '../types/enums/AccessTokenKind';
 
 const ERROR_NO_DATA = 'Could not find an youtube data for this accesstoken';
 const ERROR_NOT_AUTHORIZED = 'Not authorized for Twitter API';
 const ERROR_TOKEN_REQUEST_FAILED = 'Failed to request access token';
 
 export class TwitterService {
+    static async isAuthorized(account: AccountDocument) {
+        const token = account.getToken(AccessTokenKind.Twitter);
+        if (!token || !token.accessToken) return false;
+        const isExpired = Date.now() > token.expiry;
+        if (isExpired) {
+            try {
+                const tokens = await this.refreshTokens(token.refreshToken);
+                const expiry = tokens.expires_in ? Date.now() + Number(tokens.expires_in) * 1000 : undefined;
+                account.setToken({
+                    kind: AccessTokenKind.Twitter,
+                    accessToken: tokens.access_token,
+                    refreshToken: tokens.refresh_token,
+                    expiry,
+                });
+                await account.save();
+            } catch (error) {
+                return false;
+            }
+        }
+        return true;
+    }
     static async validateLike(accessToken: string, channelItem: string) {
         const user = await this.getUser(accessToken);
         if (!user) throw new Error('Could not find Twitter user.');

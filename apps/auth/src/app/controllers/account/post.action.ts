@@ -20,7 +20,7 @@ export const postAccount = async (req: Request, res: Response) => {
     }
 
     res.status(201).json({
-        id: account._id,
+        sub: account._id,
         address: account.address,
     });
 };

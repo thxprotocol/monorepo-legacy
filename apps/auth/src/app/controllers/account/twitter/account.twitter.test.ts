@@ -1,9 +1,11 @@
-import { INITIAL_ACCESS_TOKEN } from '@thxnetwork/auth/config/secrets';
 import nock from 'nock';
 import request from 'supertest';
-import app from '../../app';
-import db from '../../util/database';
-import { accountAddress, accountEmail, accountSecret } from '../../util/jest';
+import app from '../../../app';
+import db from '../../../util/database';
+import { AccountService } from '../../../services/AccountService';
+import { TWITTER_API_ENDPOINT, INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
+import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
+import { accountEmail, accountSecret } from '@thxnetwork/auth/util/jest';
 
 const http = request.agent(app);
 
@@ -71,58 +73,59 @@ describe('Account Controller', () => {
         });
     });
 
-    describe('GET /account/:id', () => {
-        it('HTTP 200', async () => {
+    describe('GET /account/:sub/twitter', () => {
+        let account;
+        beforeAll(async () => {
+            nock(TWITTER_API_ENDPOINT)
+                .persist()
+                .get(/.*?/)
+                .reply(200, { data: { data: {} } });
+            account = await AccountService.get(sub);
+        });
+
+        it('Return isAuthorized = false when account has no Youtube access', async () => {
             const res = await http
-                .get(`/account/${sub}`)
+                .get(`/account/${sub}/twitter`)
                 .set({
                     Authorization: authHeader,
                 })
                 .send();
-            expect(res.status).toBe(200);
-            expect(res.body.address).toBeDefined();
-        });
-    });
-
-    describe('PATCH /account/:id', () => {
-        it('HTTP 200', async () => {
-            const res = await http
-                .patch(`/account/${sub}`)
-                .set({
-                    Authorization: authHeader,
-                })
-                .send({
-                    address: accountAddress,
-                });
-            expect(res.status).toBe(204);
+            expect(res.body.isAuthorized).toEqual(false);
         });
 
-        it('HTTP 200', async () => {
+        it('Return isAuthorized = false when Youtube access is expired', async () => {
+            account.setToken({
+                kind: AccessTokenKind.Twitter,
+                accessToken: 'TOKEN',
+                refreshToken: 'REFRESH',
+                expiry: Date.now() - 3600,
+            });
+            await account.save();
+
             const res = await http
-                .get(`/account/${sub}`)
+                .get(`/account/${sub}/twitter`)
                 .set({
                     Authorization: authHeader,
                 })
                 .send();
-            expect(res.status).toBe(200);
-            expect(res.body.address).toBe(accountAddress);
+            expect(res.body.isAuthorized).toEqual(false);
         });
-    });
 
-    describe('POST /account (generate address)', () => {
-        it('HTTP 200', async () => {
+        it('Return isAuthorized = true when account has Youtube access', async () => {
+            account.setToken({
+                kind: AccessTokenKind.Twitter,
+                accessToken: 'NEWTOKEN',
+                expiry: Date.now() + 3600,
+            });
+            await account.save();
+
             const res = await http
-                .post('/account')
+                .get(`/account/${sub}/twitter`)
                 .set({
                     Authorization: authHeader,
                 })
-                .send({
-                    email: accountEmail,
-                    password: accountSecret,
-                });
-            expect(res.status).toBe(201);
-            expect(res.body.sub).toBe(sub);
-            expect(res.body.address).toBeDefined();
+                .send();
+            expect(res.body.isAuthorized).toEqual(true);
         });
     });
 });

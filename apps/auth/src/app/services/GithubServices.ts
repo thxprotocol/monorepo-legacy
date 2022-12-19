@@ -3,10 +3,26 @@ import { URLSearchParams } from 'url';
 import CommonOauthLoginOptions from '../types/CommonOauthLoginOptions';
 import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, GITHUB_REDIRECT_URI } from '@thxnetwork/auth/config/secrets';
 import { githubClient } from '../util/axios';
+import { AccountDocument } from '../models/Account';
+import { AccessTokenKind } from '../types/enums/AccessTokenKind';
 
 export const GITHUB_API_SCOPE = ['public_repo']; // https://docs.github.com/en/developers/apps/building-oauth-apps/scopes-for-oauth-apps
 
 export class GithubService {
+    static async isAuthorized(account: AccountDocument) {
+        const token = account.getToken(AccessTokenKind.Github);
+        if (!token || !token.accessToken) return false;
+        const isExpired = Date.now() > token.expiry;
+        if (isExpired) {
+            try {
+                // TODO no refresh implementation yet
+            } catch {
+                return false;
+            }
+        }
+        return true;
+    }
+
     static getLoginURL(
         state: string,
         { scope = GITHUB_API_SCOPE, redirectUrl = GITHUB_REDIRECT_URI }: CommonOauthLoginOptions,

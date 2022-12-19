@@ -21,10 +21,12 @@ export interface IAccountUpdates {
     acceptUpdates?: boolean;
     address?: string;
     walletAddress?: string;
-    privateKey?: string;
     authenticationToken?: string;
     authenticationTokenExpires?: number;
-    googleAccess?: string;
-    twitterAccess?: string;
+    googleAccess?: boolean;
+    twitterAccess?: boolean;
+    githubAccess?: boolean;
+    twitchAccess?: boolean;
+    discordAccess?: boolean;
     plan?: AccountPlanType;
 }
