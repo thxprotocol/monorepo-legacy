@@ -13,6 +13,12 @@
         "internalType": "uint256",
         "name": "tokenId",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_tokenAddress",
+        "type": "address"
       }
     ],
     "name": "ERC721Minted",
@@ -61,6 +67,11 @@
         "internalType": "string",
         "name": "_tokenUri",
         "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "_tokenAddress",
+        "type": "address"
       }
     ],
     "name": "mintFor",

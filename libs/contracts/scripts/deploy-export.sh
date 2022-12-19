@@ -22,7 +22,7 @@ fi
 npx hardhat deploy --network hardhat --export exports/hardhat/latest.json
 
 # Deploy and export for all networks.
-for NETWORK in mumbaidev maticdev mumbai matic
+for NETWORK in hardhat
 do
     echo ""
     echo "Deploying to $NETWORK:"
