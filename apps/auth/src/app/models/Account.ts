@@ -69,11 +69,10 @@ const getToken = function (kind: AccessTokenKind): IAccessToken {
     return this.tokens.find((x: IAccessToken) => x.kind === kind);
 };
 
-const unsetToken = async function (kind: AccessTokenKind) {
+const unsetToken = function (kind: AccessTokenKind) {
     const index = this.tokens.findIndex((x: IAccessToken) => x.kind === kind);
     if (index < 0) return;
     this.tokens.splice(index, 1);
-    await this.save();
 };
 
 const setToken = async function (data: IAccessToken) {

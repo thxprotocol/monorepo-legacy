@@ -24,7 +24,7 @@ export interface TAccount {
     tokens: IAccessToken[];
     getToken: (token: AccessTokenKind) => IAccessToken;
     setToken: (token: IAccessToken) => Promise<IAccessToken>;
-    unsetToken: (token: AccessTokenKind) => Promise<void>;
+    unsetToken: (token: AccessTokenKind) => void;
     createdAt: Date;
     updatedAt: Date;
 }
