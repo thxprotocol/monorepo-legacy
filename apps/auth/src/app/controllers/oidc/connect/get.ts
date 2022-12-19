@@ -21,22 +21,16 @@ async function controller(req: Request, res: Response) {
 
     if (params.channel == RewardConditionPlatform.Google) {
         token = account.getToken(AccessTokenKind.Google);
-        if (token) {
-            redirect =
-                isExpired(token.expiry) || !(await YouTubeService.haveExpandedScopes(token.accessToken))
-                    ? YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getExpandedScopes())
-                    : params.redirect_uri;
-        }
+        redirect =
+            !token || isExpired(token.expiry) || !(await YouTubeService.haveExpandedScopes(token.accessToken))
+                ? YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getExpandedScopes())
+                : params.redirect_uri;
     } else if (params.channel == RewardConditionPlatform.Twitter) {
         token = account.getToken(AccessTokenKind.Twitter);
-        if (token) {
-            redirect = isExpired(token.expiry) ? TwitterService.getLoginURL(uid, {}) : params.redirect_uri;
-        }
+        redirect = !token || isExpired(token.expiry) ? TwitterService.getLoginURL(uid, {}) : params.redirect_uri;
     } else if (params.channel == RewardConditionPlatform.Github) {
         token = account.getToken(AccessTokenKind.Github);
-        if (token) {
-            redirect = isExpired(token.expiry) ? GithubService.getLoginURL(uid, {}) : params.redirect_uri;
-        }
+        redirect = !token || isExpired(token.expiry) ? GithubService.getLoginURL(uid, {}) : params.redirect_uri;
     }
 
     if (!redirect) {
