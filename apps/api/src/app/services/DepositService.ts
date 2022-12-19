@@ -8,6 +8,7 @@ import { TDepositCallbackArgs } from '@thxnetwork/api/types/TTransaction';
 import PoolService from './PoolService';
 import { TransactionReceipt } from 'web3-core';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
+import { ERC20Document } from '../models/ERC20';
 
 async function get(assetPool: TAssetPool, depositId: number): Promise<DepositDocument> {
     const deposit = await Deposit.findOne({ poolAddress: assetPool.address, id: depositId });
@@ -19,7 +20,13 @@ async function getAll(assetPool: TAssetPool): Promise<DepositDocument[]> {
     return Deposit.find({ poolAddress: assetPool.address });
 }
 
-async function deposit(assetPool: AssetPoolDocument, account: IAccount, amount: string, item: string) {
+async function deposit(
+    assetPool: AssetPoolDocument,
+    account: IAccount,
+    amount: string,
+    item: string,
+    erc20: ERC20Document,
+) {
     const deposit = await Deposit.create({
         sub: account.id,
         sender: account.address,
@@ -31,7 +38,7 @@ async function deposit(assetPool: AssetPoolDocument, account: IAccount, amount: 
 
     const txId = await TransactionService.sendAsync(
         assetPool.contract.options.address,
-        assetPool.contract.methods.depositFrom(account.address, amount),
+        assetPool.contract.methods.depositFrom(account.address, amount, erc20.address),
         assetPool.chainId,
         true,
         { type: 'depositCallback', args: { depositId: String(deposit._id), assetPoolId: String(assetPool._id) } },

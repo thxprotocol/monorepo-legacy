@@ -13,12 +13,13 @@ const controller = async (req: Request, res: Response) => {
     const swapRule = await SwapRuleService.get(req.body.swapRuleId);
     if (!swapRule) throw new NotFoundError('Could not find this Swap Rule');
 
-    const erc20 = await ERC20Service.getById(swapRule.tokenInId);
+    const erc20In = await ERC20Service.getById(swapRule.tokenInId);
+    const erc20Out = await ERC20Service.getById(req.assetPool.erc20Id);
     const account = await AccountProxy.getById(req.auth.sub);
-    const userBalance = await erc20.contract.methods.balanceOf(account.address).call();
+    const userBalance = await erc20In.contract.methods.balanceOf(account.address).call();
     if (Number(userBalance) < Number(req.body.amountIn)) throw new InsufficientBalanceError();
 
-    const swap = await SwapService.create(req.assetPool, account, swapRule, erc20, req.body.amountIn);
+    const swap = await SwapService.create(req.assetPool, account, swapRule, erc20In, erc20Out, req.body.amountIn);
 
     res.json(swap);
 };

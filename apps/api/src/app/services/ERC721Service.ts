@@ -112,7 +112,7 @@ export async function mint(
 
     const txId = await TransactionService.sendAsync(
         assetPool.contract.options.address,
-        assetPool.contract.methods.mintFor(account.address, String(metadata._id)),
+        assetPool.contract.methods.mintFor(account.address, String(metadata._id), erc721.address),
         assetPool.chainId,
         forceSync,
         {

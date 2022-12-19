@@ -61,7 +61,7 @@ const controller = async (req: Request, res: Response) => {
             String(reward._id),
         );
         const erc20 = await ERC20Service.getById(claim.erc20Id);
-        withdrawal = await WithdrawalService.withdrawFor(pool, withdrawal, account, forceSync);
+        withdrawal = await WithdrawalService.withdrawFor(pool, withdrawal, account, erc20, forceSync);
 
         // When more than one claim is created for this reward we update the existing ones,
         // since the check on rewardLimit will take into account the claims with existing sub

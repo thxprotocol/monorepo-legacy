@@ -6,6 +6,7 @@ import { WithdrawalState, WithdrawalType } from '@thxnetwork/api/types/enums';
 import MemberService from '@thxnetwork/api/services/MemberService';
 import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
+import ERC20 from '@thxnetwork/api/models/ERC20';
 
 const validation = [body('member').isEthereumAddress(), body('amount').exists().isNumeric()];
 
@@ -33,8 +34,8 @@ const controller = async (req: Request, res: Response) => {
         account.privateKey ? WithdrawalState.Deferred : WithdrawalState.Pending,
         withdrawUnlockDate,
     );
-
-    withdrawal = await WithdrawalService.withdrawFor(req.assetPool, withdrawal, account);
+    const erc20 = await ERC20.findById(req.assetPool.erc20Id);
+    withdrawal = await WithdrawalService.withdrawFor(req.assetPool, withdrawal, account, erc20);
 
     res.status(201).json({
         ...withdrawal.toJSON(),

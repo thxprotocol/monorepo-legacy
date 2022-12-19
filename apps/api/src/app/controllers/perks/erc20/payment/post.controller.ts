@@ -50,9 +50,14 @@ const controller = async (req: Request, res: Response) => {
         WithdrawalState.Pending,
     );
 
-    withdrawal = await WithdrawalService.withdrawFor(req.assetPool, withdrawal, {
-        address: wallet.address,
-    } as IAccount);
+    withdrawal = await WithdrawalService.withdrawFor(
+        req.assetPool,
+        withdrawal,
+        {
+            address: wallet.address,
+        } as IAccount,
+        erc20,
+    );
 
     const erc20PerkPayment = await ERC20PerkPayment.create({ perkId: erc20Perk.id, sub: req.auth.sub });
 
