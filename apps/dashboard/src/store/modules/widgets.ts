@@ -1,36 +1,17 @@
 import axios from 'axios';
 import { Vue } from 'vue-property-decorator';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { TBaseReward } from '@thxnetwork/types/index';
+import { type IPool } from './pools';
 
-export class Widget {
-    clientId: string;
-    clientSecret: string;
-    registrationAccessToken: string;
-    requestUri: string;
-    metadata: any;
-    reward: TBaseReward | null = null;
-
-    constructor(data: any) {
-        this.clientId = data.clientId;
-        this.clientSecret = data.clientSecret;
-        this.registrationAccessToken = data.registrationAccessToken;
-        this.requestUri = data.requestUris[0];
-        this.metadata = {
-            height: 60,
-            width: 310,
-            rewardUuid: data.metadata.rewardUuid,
-            poolAddress: data.metadata.poolAddress,
-        };
-    }
-
-    setReward(reward: TBaseReward) {
-        this.reward = reward;
-    }
-}
-
+export type TWidget = {
+    uuid: string;
+    color: string;
+    bgColor: string;
+    poolId: string;
+    theme: string;
+};
 export interface IWidgets {
-    [poolAddress: string]: Widget[];
+    [poolId: string]: { [widgetUuid: string]: TWidget };
 }
 
 @Module({ namespaced: true })
@@ -42,61 +23,64 @@ class WidgetModule extends VuexModule {
     }
 
     @Mutation
-    set(widget: Widget) {
-        if (!this._all[widget.metadata.poolAddress]) {
-            Vue.set(this._all, widget.metadata.poolAddress, {});
+    set(widget: TWidget) {
+        if (!this._all[widget.poolId]) {
+            Vue.set(this._all, widget.poolId, {});
         }
-        Vue.set(this._all[widget.metadata.poolAddress], widget.clientId, widget);
+        Vue.set(this._all[widget.poolId], widget.uuid, widget);
     }
 
     @Mutation
-    unset(data: { clientId: string; poolAddress: string }) {
-        Vue.delete(this._all[data.poolAddress], data.clientId);
+    unset(widget: TWidget) {
+        Vue.delete(this._all[widget.poolId], widget.uuid);
     }
 
     @Action({ rawError: true })
-    async list(poolAddress: string) {
+    async list(pool: IPool) {
         const r = await axios({
             method: 'GET',
-            url: '/widgets?asset_pool=' + poolAddress,
+            url: '/widgets',
+            headers: { 'X-PoolId': pool._id },
         });
 
-        for (const rat of r.data) {
-            const r = await axios({
-                method: 'GET',
-                url: '/widgets/' + rat,
-            });
-
-            this.context.commit('set', new Widget(r.data));
-        }
+        r.data.forEach((w: TWidget) => {
+            this.context.commit('set', w);
+        });
     }
 
     @Action({ rawError: true })
-    async create(data: {
-        metadata: { rewardUuid: number; poolId: string };
-        requestUris: string[];
-        redirectUris: string[];
-        postLogoutRedirectUris: string[];
-    }) {
-        await axios({
+    async read(widget: TWidget) {
+        const r = await axios({
+            method: 'GET',
+            url: `/widgets/${widget.uuid}`,
+            headers: { 'X-PoolId': widget.poolId },
+        });
+
+        this.context.commit('set', r.data);
+    }
+
+    @Action({ rawError: true })
+    async create(widget: TWidget) {
+        const r = await axios({
             method: 'POST',
             url: '/widgets',
-            data,
-            headers: { 'X-PoolId': data.metadata.poolId },
+            data: widget,
+            headers: { 'X-PoolId': widget.poolId },
         });
+
+        this.context.commit('set', { ...widget, ...r.data });
     }
 
     @Action({ rawError: true })
-    async remove(data: { clientId: string; poolId: string }) {
-        await axios({
-            method: 'DELETE',
-            url: '/widgets/' + data.clientId,
+    async update(widget: TWidget) {
+        const r = await axios({
+            method: 'PATCH',
+            url: `/widgets/${widget.uuid}`,
+            data: widget,
+            headers: { 'X-PoolId': widget.poolId },
         });
 
-        this.context.commit('unset', {
-            clientId: data.clientId,
-            poolId: data.poolId,
-        });
+        this.context.commit('set', { ...widget, ...r.data });
     }
 }
 

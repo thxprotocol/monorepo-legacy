@@ -2,7 +2,7 @@
     <div>
         <b-row class="mb-3">
             <b-col md="9" class="d-flex align-items-center">
-                <h2 class="mb-0 mr-2">ERC721 Rewards</h2>
+                <h2 class="mb-0 mr-2">NFT Perks</h2>
             </b-col>
             <b-col md="3" class="d-flex justify-content-end">
                 <b-button v-b-modal="'modalRewardERC721Create'" class="rounded-pill" variant="primary">

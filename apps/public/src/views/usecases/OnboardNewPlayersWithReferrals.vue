@@ -99,7 +99,7 @@
                 <div class="col-lg-5 offset-lg-1 pb-3">
                     <div class="pt-5 pt-lg-5 pt-xl-4">
                         <h2 class="h5">Integration</h2>
-                        <p class="lead mb-2">Low-code referral widget</p>
+                        <p class="lead mb-2">Low-code loyalty widget</p>
                     </div>
                     <p class="lead">
                         Include a small JavaScript snippet and benefit from a full gamification suite right in your

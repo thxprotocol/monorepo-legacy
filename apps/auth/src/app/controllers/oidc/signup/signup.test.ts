@@ -4,6 +4,7 @@ import app from '../../../app';
 import { AccountService } from '../../../services/AccountService';
 import db from '../../../util/database';
 import { API_URL, INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
+import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
 
 const http = request.agent(app);
 
@@ -128,7 +129,7 @@ describe('Sign up', () => {
 
             it('Create a new Interaction for Signup Verify', async () => {
                 const account = await AccountService.getByEmail(NEW_ACCOUNT_EMAIL);
-                const signUpKey = account.signupToken;
+                const signUpKey = account.getToken(AccessTokenKind.Signup).accessToken;
 
                 const params = new URLSearchParams({
                     client_id: CLIENT_ID,

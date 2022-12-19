@@ -82,7 +82,7 @@ describe('ERC20 Perks', () => {
                     expect(res.body.image).toBe(image);
                     expect(new Date(res.body.expiryDate).getTime()).toBe(expiryDate.getTime());
                     expect(res.body.claims.length).toBe(1);
-                    expect(res.body.claims[0].id).toBeDefined();
+                    expect(res.body.claims[0].uuid).toBeDefined();
                     claim = res.body.claims[0];
                 })
                 .expect(201, done);
@@ -90,7 +90,7 @@ describe('ERC20 Perks', () => {
 
         describe('POST /erc20-perks/:id/claim', () => {
             it('should return a 200 and withdrawal id', (done) => {
-                user.post(`/v1/claims/${claim.id}/collect`)
+                user.post(`/v1/claims/${claim.uuid}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
                     .expect((res: request.Response) => {
                         expect(res.body.claim._id).toBeDefined();
@@ -100,7 +100,7 @@ describe('ERC20 Perks', () => {
             });
 
             it('should return a 403 for this second claim from the same account', (done) => {
-                user.post(`/v1/claims/${claim.id}/collect`)
+                user.post(`/v1/claims/${claim.uuid}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
                     .expect((res: request.Response) => {
                         expect(res.body.error.message).toBe('You can only claim this reward once.');
@@ -109,7 +109,7 @@ describe('ERC20 Perks', () => {
             });
 
             it('should return a 200 for this second claim from another account', (done) => {
-                user.post(`/v1/claims/${claim.id}/collect`)
+                user.post(`/v1/claims/${claim.uuid}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken2 })
                     .expect(200, done);
             });
@@ -133,7 +133,7 @@ describe('ERC20 Perks', () => {
                 .expect((res: request.Response) => {
                     expect(res.body._id).toBeDefined();
                     expect(res.body.claims.length).toBe(1);
-                    expect(res.body.claims[0].id).toBeDefined();
+                    expect(res.body.claims[0].uuid).toBeDefined();
                     claim = res.body.claims[0];
                 })
                 .expect(201, done);
@@ -141,13 +141,13 @@ describe('ERC20 Perks', () => {
 
         describe('POST /v1/claims/:id/collect', () => {
             it('should return a 200', (done) => {
-                user.post(`/v1/claims/${claim.id}/collect`)
+                user.post(`/v1/claims/${claim.uuid}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
                     .expect(200, done);
             });
 
             it('should return a 403 for the second claim on the same account', (done) => {
-                user.post(`/v1/claims/${claim.id}/collect`)
+                user.post(`/v1/claims/${claim.uuid}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
                     .expect((res: request.Response) => {
                         expect(res.body.error.message).toBe('You can only claim this reward once.');
@@ -156,13 +156,13 @@ describe('ERC20 Perks', () => {
             });
 
             it('should return a 200 for the second claim on another account', (done) => {
-                user.post(`/v1/claims/${claim.id}/collect`)
+                user.post(`/v1/claims/${claim.uuid}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken2 })
                     .expect(200, done);
             });
 
             it('should return a 403 for the second claim on the same account', (done) => {
-                user.post(`/v1/claims/${claim.id}/collect`)
+                user.post(`/v1/claims/${claim.uuid}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken2 })
                     .expect((res: request.Response) => {
                         expect(res.body.error.message).toBe("This reward has reached it's limit");
@@ -171,7 +171,7 @@ describe('ERC20 Perks', () => {
             });
 
             it('should return a 403 for the third claim on another account', (done) => {
-                user.post(`/v1/claims/${claim.id}/collect`)
+                user.post(`/v1/claims/${claim.uuid}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken3 })
                     .expect((res: request.Response) => {
                         expect(res.body.error.message).toBe("This reward has reached it's limit");
@@ -198,7 +198,7 @@ describe('ERC20 Perks', () => {
                 .expect((res: request.Response) => {
                     expect(res.body._id).toBeDefined();
                     expect(res.body.claims).toBeDefined();
-                    expect(res.body.claims[0].id).toBeDefined();
+                    expect(res.body.claims[0].uuid).toBeDefined();
                     claim = res.body.claims[0];
                 })
                 .expect(201, done);
@@ -206,7 +206,7 @@ describe('ERC20 Perks', () => {
 
         describe('POST /v1/claims/:id/collect', () => {
             it('should return a 403', (done) => {
-                user.post(`/v1/claims/${claim.id}/collect`)
+                user.post(`/v1/claims/${claim.uuid}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
                     .expect((res: request.Response) => {
                         expect(res.body.error.message).toBe('This reward claim has expired.');

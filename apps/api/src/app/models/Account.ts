@@ -16,11 +16,6 @@ export interface ERC20Token {
     address: string;
 }
 
-export interface AuthToken {
-    accessToken: string;
-    kind: string;
-}
-
 export interface IAccountUpdates {
     acceptTermsPrivacy?: boolean;
     acceptUpdates?: boolean;

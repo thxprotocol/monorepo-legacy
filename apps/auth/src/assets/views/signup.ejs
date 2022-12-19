@@ -1,11 +1,11 @@
 <script type="module" src="/js/signup.js"></script>
 
 <div class="col-lg-5 offset-lg-1 pt-3">
-    <div class="text-center pb-4 pt-4">
+    <div class="text-center pb-4">
         <img src="/img/logo.png" width="60" alt="THX Logo" />
     </div>
-    <div class="card shadow-lg mb-5">
-        <div class="card-body p-sm-5">
+    <div class="card shadow-lg">
+        <div class="card-body p-sm-4">
             <% if (locals.alert && alert.message && alert.variant==='danger' ) { %>
             <div class="alert alert-<%= alert.variant %>">
                 <%= alert.message %>
@@ -21,15 +21,15 @@
             <% } else { %>
             <form autocomplete="off" action="/oidc/<%= uid %>/signup" method="post">
                 <div class="form-group">
-                    <label>E-mail:</label>
-                    <input class="form-control" type="email" name="email" v-model="email" required :class="{
+                    <input placeholder="E-mail" class="form-control" type="email" name="email" v-model="email" required
+                           :class="{
                         'is-valid': email && validEmail, 'is-invalid': email && !validEmail
                     }" />
                 </div>
                 <div class="form-group position-relative">
-                    <label>Password:</label>
-                    <input @blur="showPopover = false" @focus="showPopover = true" class="form-control" autocomplete
-                           required type="password" name="password" v-model="password" :class="{
+                    <input placeholder="Password" @blur="showPopover = false" @focus="showPopover = true"
+                           class="form-control" autocomplete required type="password" name="password" v-model="password"
+                           :class="{
                             'is-valid': password && validPassword, 'is-invalid': password && !validPassword
                         }">
                     <div class="popover" v-if="showPopover"
@@ -45,9 +45,8 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Password again:</label>
-                    <input class="form-control" autocomplete required type="password" name="confirmPassword"
-                           v-model="passwordRepeat" :class="{
+                    <input placeholder="Password again" class="form-control" autocomplete required type="password"
+                           name="confirmPassword" v-model="passwordRepeat" :class="{
                             'is-valid': passwordRepeat && validPasswordRepeat, 'is-invalid': passwordRepeat && !validPasswordRepeat
                         }">
                 </div>
@@ -76,13 +75,15 @@
                                 :disabled="!validPassword || !validPasswordRepeat || !acceptTermsPrivacy">
                             Sign-up
                         </button>
-                        <a class="btn btn-block btn-link" href="/oidc/<%= uid %>/signin">
-                            Already have an account? Sign in.
-                        </a>
                     </div>
                 </div>
             </form>
             <% } %>
+        </div>
+        <div class="card-footer">
+            <a class="btn btn-block p-0 btn-link" href="/oidc/<%= uid %>/signin">
+                Already have an account? Sign in.
+            </a>
         </div>
     </div>
 </div>
