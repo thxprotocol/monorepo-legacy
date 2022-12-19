@@ -140,9 +140,7 @@ export default class BaseCardRewardCondition extends Vue {
             }
             default:
         }
-
         this.onSelectInteraction(this.interaction);
-        this.change();
         this.isLoadingPlatform = false;
     }
 
@@ -178,7 +176,6 @@ export default class BaseCardRewardCondition extends Vue {
         }
 
         this.interactionComponent = this.getInteractionComponent();
-        this.change();
     }
 
     onSelectContent(content: any) {
@@ -193,6 +190,7 @@ export default class BaseCardRewardCondition extends Vue {
     }
 
     change() {
+        if (!this.platform.type) return;
         this.$emit('change', {
             platform: this.platform.type,
             interaction: this.interaction.type,

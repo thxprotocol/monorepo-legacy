@@ -76,24 +76,6 @@ describe('Account', () => {
         });
     });
 
-    // describe('POST /gas_station/upgrade_address', () => {
-    //     it('HTTP 200 if OK', (done) => {
-    //         const nonce = '',
-    //             call = '',
-    //             sig = '';
-
-    //         user.post('/v1/gas_station/upgrade_address')
-    //             .set({ 'X-PoolId': poolId, Authorization: walletAccessToken })
-    //             .send({
-    //                 newAddress: '',
-    //                 nonce,
-    //                 call,
-    //                 sig,
-    //             })
-    //             .expect(200, done);
-    //     });
-    // });
-
     describe('GET /account/', () => {
         it('HTTP 200 if OK', (done) => {
             user.get('/v1/account/')

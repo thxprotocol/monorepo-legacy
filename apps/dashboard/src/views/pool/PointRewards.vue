@@ -17,12 +17,12 @@
                 :page="page"
                 :limit="limit"
                 :pool="pool"
-                :rewards="pointRewards[pool._id]"
-                :totals="totals"
+                :total-rows="totals[pool._id]"
                 :selectedItems="selectedItems"
+                :actions="[{ variant: 0, label: `Delete point rewards` }]"
+                @click-action="onClickAction"
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
-                @delete="onDelete"
             />
             <BTable hover :busy="isLoading" :items="rewardsByPage" responsive="lg" show-empty>
                 <!-- Head formatting -->
@@ -159,6 +159,16 @@ export default class AssetPoolView extends Vue {
     onDelete(items: string[]) {
         for (const id of Object.values(items)) {
             this.$store.dispatch('pointRewards/delete', this.pointRewards[this.pool._id][id]);
+        }
+    }
+
+    onClickAction(action: { variant: number; label: string }) {
+        switch (action.variant) {
+            case 0:
+                for (const id of Object.values(this.selectedItems)) {
+                    this.$store.dispatch('pointRewards/delete', this.pointRewards[this.pool._id][id]);
+                }
+                break;
         }
     }
 }
