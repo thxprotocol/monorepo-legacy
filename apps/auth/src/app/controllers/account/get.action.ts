@@ -1,46 +1,31 @@
 import { Request, Response } from 'express';
 import { NotFoundError } from '../../util/errors';
 import { AccountService } from '../../services/AccountService';
+import { GithubService } from '../../services/GithubServices';
 import { YouTubeService } from '@thxnetwork/auth/services/YouTubeService';
-import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
-import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
+import { TwitterService } from '@thxnetwork/auth/services/TwitterService';
+import { DiscordService } from '@thxnetwork/auth/services/DiscordService';
+import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
 
 async function formatAccountRes(account) {
-    let protectedPrivateKey;
-    if (account.privateKey) {
-        protectedPrivateKey = { privateKey: account.privateKey };
-    }
-    let googleAccess = false;
-    let token: IAccessToken | undefined = account.getToken(AccessTokenKind.Google);
-    if (token) {
-        googleAccess =
-            token.accessToken !== undefined &&
-            token.expiry > Date.now() &&
-            (await YouTubeService.haveExpandedScopes(token.accessToken));
-    }
-    let twitterAccess = false;
-    token = account.getToken(AccessTokenKind.Twitter);
-    if (token) {
-        twitterAccess = token.accessToken !== undefined && token.expiry > Date.now();
-    }
     return {
-        ...{
-            id: account._id,
-            address: account.address,
-            firstName: account.firstName,
-            lastName: account.lastName,
-            company: account.company,
-            plan: account.plan,
-            email: account.email,
-            googleAccess,
-            twitterAccess,
-        },
-        ...protectedPrivateKey,
+        sub: String(account._id),
+        address: account.address,
+        firstName: account.firstName,
+        lastName: account.lastName,
+        company: account.company,
+        plan: account.plan,
+        email: account.email,
+        googleAccess: await YouTubeService.isAuthorized(account),
+        twitterAccess: TwitterService.isAuthorized(account),
+        githubAccess: GithubService.isAuthorized(account),
+        discordAccess: DiscordService.isAuthorized(account),
+        twitchAccess: TwitchService.isAuthorized(account),
     };
 }
 
 export const getAccount = async (req: Request, res: Response) => {
-    const account = await AccountService.get(req.params.id);
+    const account = await AccountService.get(req.params.sub);
     if (!account) {
         throw new NotFoundError();
     }

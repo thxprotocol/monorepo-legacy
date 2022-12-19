@@ -21,10 +21,12 @@ export interface TAccount {
     acceptTermsPrivacy: boolean;
     acceptUpdates: boolean;
     comparePassword: any;
-    getToken: any;
-    setToken: any;
-    createdAt: Date;
     tokens: IAccessToken[];
+    getToken: (token: AccessTokenKind) => IAccessToken;
+    setToken: (token: IAccessToken) => IAccessToken;
+    unsetToken: (token: AccessTokenKind) => void;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface IAccessToken {
@@ -39,8 +41,10 @@ export interface IAccountUpdates {
     address?: string;
     privateKey?: string;
     googleAccess?: boolean;
-    twitchAccess?: boolean;
     twitterAccess?: boolean;
+    githubAccess?: boolean;
+    twitchAccess?: boolean;
+    discordAccess?: boolean;
     authenticationToken?: string;
     authenticationTokenExpires?: number;
     lastLoginAt?: number;

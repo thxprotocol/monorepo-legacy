@@ -14,7 +14,7 @@ describe('OAuth2 Grants', () => {
         await db.truncate();
 
         const account = await AccountService.invite(accountEmail, accountSecret);
-        accountId = account.id;
+        accountId = account._id;
     });
 
     afterAll(async () => {

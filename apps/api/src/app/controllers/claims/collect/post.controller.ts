@@ -37,13 +37,13 @@ const controller = async (req: Request, res: Response) => {
     if (!result || error) throw new ForbiddenError(error);
 
     // Memberships could be removed but tokens should be created
-    const hasMembership = await MembershipService.hasMembership(pool, account.id);
+    const hasMembership = await MembershipService.hasMembership(pool, account.sub);
     if (!hasMembership) {
         if (claim.erc20Id) {
-            await MembershipService.addERC20Membership(account.id, pool);
+            await MembershipService.addERC20Membership(account.sub, pool);
         }
         if (claim.erc721Id) {
-            await MembershipService.addERC721Membership(account.id, pool);
+            await MembershipService.addERC721Membership(account.sub, pool);
         }
     }
 

@@ -5,34 +5,43 @@ import { TwitterService } from '../../../services/TwitterService';
 import { YouTubeService } from '../../../services/YouTubeService';
 import { GithubService } from '@thxnetwork/auth/services/GithubServices';
 import { AccountService } from '@thxnetwork/auth/services/AccountService';
-import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
-import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
+import { DiscordService } from '@thxnetwork/auth/services/DiscordService';
+import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
 
-const isExpired = (expiry?: number) => {
-    if (!expiry) return true;
-    return Date.now() > expiry;
-};
-
+/* 
+This controller is used for connecting OAuth2 supporting platforms to a user account
+Then tokens are not available, expired or dont have the proper scopes we redirect
+users to the platform to authorize themselves. If all that is the case we redirect
+them to the redirect_uri for the requesting client application. 
+*/
 async function controller(req: Request, res: Response) {
     const { uid, params, session } = req.interaction;
     const account = await AccountService.get(session.accountId);
 
     let redirect = '';
-
-    if (params.channel == RewardConditionPlatform.Google) {
-        const token: IAccessToken = account.getToken(AccessTokenKind.Google).expiry;
-        redirect =
-            isExpired(token.expiry) || !(await YouTubeService.haveExpandedScopes(token.accessToken))
-                ? YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getExpandedScopes())
-                : params.redirect_uri;
-    } else if (params.channel == RewardConditionPlatform.Twitter) {
-        redirect = isExpired(account.getToken(AccessTokenKind.Twitch).expiry)
-            ? TwitterService.getLoginURL(uid, {})
-            : params.redirect_uri;
-    } else if (params.channel == RewardConditionPlatform.Github) {
-        redirect = isExpired(account.getToken(AccessTokenKind.Github).expiry)
-            ? GithubService.getLoginURL(uid, {})
-            : params.redirect_uri;
+    switch (params.channel) {
+        case RewardConditionPlatform.Google: {
+            redirect = (await YouTubeService.isAuthorized(account))
+                ? params.redirect_uri
+                : YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getYoutubeScopes());
+            break;
+        }
+        case RewardConditionPlatform.Twitter: {
+            redirect = TwitterService.isAuthorized(account) ? params.redirect_uri : TwitterService.getLoginURL(uid, {});
+            break;
+        }
+        case RewardConditionPlatform.Github: {
+            redirect = GithubService.isAuthorized(account) ? params.redirect_uri : GithubService.getLoginURL(uid, {});
+            break;
+        }
+        case RewardConditionPlatform.Twitch: {
+            redirect = TwitchService.isAuthorized(account) ? params.redirect_uri : GithubService.getLoginURL(uid, {});
+            break;
+        }
+        case RewardConditionPlatform.Discord: {
+            redirect = DiscordService.isAuthorized(account) ? params.redirect_uri : GithubService.getLoginURL(uid, {});
+            break;
+        }
     }
 
     if (!redirect) {

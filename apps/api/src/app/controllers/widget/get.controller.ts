@@ -47,6 +47,7 @@ const controller = async (req: Request, res: Response) => {
             if (!settings) return console.error("THXWidget requires a settings object.");
             this.settings = settings;
             this.iframe = this.createIframe(settings.widgetUrl, settings.poolId, settings.chainId, settings.origin, settings.theme);
+            this.iframe.setAttribute('data-hj-allow-iframe', true);
             this.notifications = this.createNotifications(0);
             this.launcher = this.createLauncher(this.notifications);
             this.container = this.createContainer(this.iframe, this.launcher);

@@ -1,5 +1,7 @@
 import { DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, DISCORD_REDIRECT_URI } from '../config/secrets';
+import { AccountDocument } from '../models/Account';
 import CommonOauthLoginOptions from '../types/CommonOauthLoginOptions';
+import { AccessTokenKind } from '../types/enums/AccessTokenKind';
 import { discordClient } from '../util/axios';
 
 export const DISCORD_API_SCOPE = ['identify', 'email', 'guilds.members.read'];
@@ -9,6 +11,26 @@ const ERROR_NOT_AUTHORIZED = 'Not authorized for Discord API';
 const ERROR_TOKEN_REQUEST_FAILED = 'Failed to request access token';
 
 class DiscordService {
+    static async isAuthorized(account: AccountDocument) {
+        const token = account.getToken(AccessTokenKind.Discord);
+        if (!token || !token.accessToken) return false;
+        const isExpired = Date.now() > token.expiry;
+        if (isExpired) {
+            try {
+                const accessToken = await this.refreshTokens(token.refreshToken);
+                account.setToken({
+                    kind: AccessTokenKind.Discord,
+                    accessToken,
+                    expiry: Date.now() + Number(3600) * 1000,
+                });
+                await account.save();
+            } catch {
+                return false;
+            }
+        }
+        return true;
+    }
+
     static getLoginURL(
         state: string,
         { scope = DISCORD_API_SCOPE, redirectUrl = DISCORD_REDIRECT_URI }: CommonOauthLoginOptions,

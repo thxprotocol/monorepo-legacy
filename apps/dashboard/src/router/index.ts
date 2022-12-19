@@ -101,12 +101,6 @@ const routes: Array<RouteConfig> = [
         beforeEnter: assertAuthorization,
     },
     {
-        path: '/integrations',
-        name: 'Integrations',
-        component: () => import('../views/Integrations.vue'),
-        beforeEnter: assertAuthorization,
-    },
-    {
         path: '/signin-oidc',
         component: () => import('../views/SigninRedirect.vue'),
     },
