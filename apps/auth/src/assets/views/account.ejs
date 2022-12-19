@@ -29,7 +29,7 @@
                         <input class="form-control" name="profile" type="file" accept="image/*">
                     </div>
                 </div>
-                <div class=" row pb-3">
+                <div class="row pb-3">
                     <div class="d-flex col-4 align-items-center font-weight-bold">
                         Email:
                     </div>
@@ -130,6 +130,24 @@
 
                 <div class="d-flex col-8">
                     <div class="w-100 d-flex flex-column">
+                        <% if (params.twitchLoginUrl && !params.twitchAccess) { %>
+                        <a class="btn btn-sign-in btn-twitch btn-block my-1" href="<%= params.twitchLoginUrl %>">
+                            <div class="logo">
+                                <img src="/img/twitch-logo.png" alt="twitch logo" />
+                            </div>
+                            <div class="label">Sign in with Twitch</div>
+                        </a>
+                        <% } %>
+                        <% if (params.twitchAccess) { %>
+                        <form method="post" action="/oidc/<%= uid %>/account/twitch/disconnect">
+                            <button class="btn btn-sign-in btn-twitch bg-gray btn-block my-1" type="submit">
+                                <div class="logo">
+                                    <img src="/img/twitch-logo.png" alt="Twitch logo" />
+                                </div>
+                                <div class="label">Disconnect Twitch</div>
+                            </button>
+                        </form>
+                        <% } %>
                         <% if (params.googleLoginUrl && !params.googleAccess) { %>
                         <a class="btn btn-sign-in btn-google btn-block my-1" href="<%= params.googleLoginUrl %>">
                             <div class="logo">

@@ -46,10 +46,10 @@ function getItemUrl(withdrawCondition: { interaction: RewardConditionInteraction
 @Module({ namespaced: true })
 class AssetPoolModule extends VuexModule {
     @Action({ rawError: true })
-    async getERC721Perk({ rewardId, poolId }: { rewardId: string; poolId: string }) {
+    async getERC721Perk({ rewardUuid, poolId }: { rewardUuid: string; poolId: string }) {
         const { data } = await axios({
             method: 'GET',
-            url: `/erc721-perks/${rewardId}`,
+            url: `/erc721-perks/${rewardUuid}`,
             headers: { 'X-PoolId': poolId },
         });
         data.itemUrl = getItemUrl(data);
@@ -57,10 +57,10 @@ class AssetPoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async getERC20Perk({ rewardId, poolId }: { rewardId: string; poolId: string }) {
+    async getERC20Perk({ rewardUuid, poolId }: { rewardUuid: string; poolId: string }) {
         const { data } = await axios({
             method: 'GET',
-            url: `/erc20-perks/${rewardId}`,
+            url: `/erc20-perks/${rewardUuid}`,
             headers: { 'X-PoolId': poolId },
         });
         data.itemUrl = getItemUrl(data);
@@ -68,20 +68,20 @@ class AssetPoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async getClaim(claimId: string) {
+    async getClaim(claimUuid: string) {
         const { data } = await axios({
             method: 'GET',
-            url: `/claims/${claimId}`,
+            url: `/claims/${claimUuid}`,
         });
         return data;
     }
 
     @Action({ rawError: true })
-    async claimReward(claimId: string) {
-        const claim = await this.context.dispatch('getClaim', claimId);
+    async claimReward(claimUuid: string) {
+        const claim = await this.context.dispatch('getClaim', claimUuid);
         const r = await axios({
             method: 'POST',
-            url: `/claims/${claimId}/collect`,
+            url: `/claims/${claimUuid}/collect`,
             headers: { 'X-PoolId': claim.claim.poolId },
             params: { forceSync: false },
         });

@@ -7,17 +7,16 @@
   }
 </style>
 <% } %>
-
 <div class="col-md-6 offset-md-3 col-xl-4 offset-xl-4 order-0 order-sm-1">
-  <div class="text-center py-4">
+  <div class="text-center pb-4">
     <% if (params.logoImgUrl) { %>
     <img src="<%- params.logoImgUrl %>" width="60" alt="THX Logo" />
     <% } else { %>
     <img src="/img/logo.png" width="60" alt="THX Logo" />
     <% } %>
   </div>
-  <div class="card shadow-sm mb-5">
-    <div class="card-body p-sm-5">
+  <div class="card shadow-sm">
+    <div class="card-body p-sm-4 pb-sm-0">
       <% if (params.authRequestMessage) { %>
       <div v-if="alert && alert.message" class="alert" :class="`alert-${alert.variant}`">
         <i class="fas fa-exclamation-circle mr-2"></i>
@@ -30,7 +29,6 @@
       </strong>
       <p>You are invited to access your THX Web Wallet. Set a password and accept the invite!</p>
       <% } %>
-
       <% if (locals.alert && alert.message) { %>
       <div class="alert alert-<%= alert.variant %>">
         <%- alert.message %>
@@ -77,59 +75,54 @@
         </button>
       </form>
       <% } else { %>
-      <!--
-                    This part is used for regular login flow and only visibile if links are available
-                -->
+      <!-- This part is used for regular login flow and only visibile if links are available -->
+      <% if (params.authRequestMessage) { %>
+      <a class="mr-3 btn p-0  btn-link" @click="signin()" data-toggle="tooltip" title="Sign in with Metamask">
+        <img width="30" src="/img/mm-logo.svg" alt="Metamask logo" />
+      </a>
+      <% } %>
       <% if (params.googleLoginUrl) { %>
-      <a class="btn btn-sign-in btn-google btn-block" href="<%= params.googleLoginUrl %>" download>
-        <div class="logo">
-          <img src="/img/g-logo.png" alt="Google logo" />
-        </div>
-        <div class="label">Sign in with Google</div>
+      <a class="mr-3 btn p-0 btn-link" href="<%= params.googleLoginUrl %>" data-toggle="tooltip"
+         title="Sign in with Google">
+        <img width="24" src="/img/g-logo.png" alt="Google logo" />
       </a>
       <% } %>
       <% if (params.twitterLoginUrl) { %>
-      <a class="btn btn-sign-in btn-twitter btn-block" href="<%= params.twitterLoginUrl %>">
-        <div class="logo">
-          <img src="/img/t-logo.png" alt="Twitter logo" />
-        </div>
-        <div class="label">Sign in with Twitter</div>
+      <a class="mr-3 btn p-0  btn-link" href="<%= params.twitterLoginUrl %>" data-toggle="tooltip"
+         title="Sign in with Twitter">
+        <img width="24" src="/img/t-logo.png" alt="Twitter logo" />
+      </a>
+      <% } %>
+      <% if (params.discordLoginUrl) { %>
+      <a class="mr-3 btn p-0  btn-link" href="<%= params.discordLoginUrl %>" data-toggle="tooltip"
+         title="Sign in with Discord">
+        <img width="24" src="/img/discord-logo.png" alt="Discord logo" />
       </a>
       <% } %>
       <% if (params.githubLoginUrl) { %>
-      <a class="btn btn-sign-in btn-github btn-block" href="<%= params.githubLoginUrl %>">
-        <div class="logo">
-          <img src="/img/github-logo.png" alt="github logo" />
-        </div>
-        <div class="label">Sign in with Github</div>
+      <a class="mr-3 btn p-0 btn-link" href="<%= params.githubLoginUrl %>" data-toggle="tooltip"
+         title="Sign in with Github">
+        <img width="24" src="/img/github-logo.png" alt="github logo" />
       </a>
       <% } %>
-      <% if (params.authRequestMessage) { %>
-      <hr />
-      <a class="btn btn-sign-in btn-metamask btn-block" @click="signin()">
-        <div class="logo">
-          <img src="/img/mm-logo.svg" width="30" height="30" alt="Metamask logo" />
-        </div>
-        <div class="label">
-          Sign in with Metamask
-        </div>
+      <% if (params.twitchLoginUrl) { %>
+      <a class="mr-3 btn p-0  btn-link" href="<%= params.twitchLoginUrl %>" data-toggle="tooltip"
+         title="Sign in with Twitch">
+        <img width="20" src="/img/twitch-logo.png" alt="twitch logo" />
       </a>
       <% } %>
-      <hr>
-
-      <!--
-                    This part is used for regular login flow
-                -->
-      <form id="form-signin" action="/oidc/<%= uid %>/signin" method="post" class="mb-4">
+      <br />
+      <p class="mt-2 text-muted">Or sign in with</p>
+      <!-- This part is used for regular login flow -->
+      <form id="form-signin" action="/oidc/<%= uid %>/signin" method="post" class="mt-3">
 
         <div class="form-group">
-          <label>E-mail:</label>
-          <input class="form-control" required type="email" value="<%= params.email %>" name="email">
+          <input placeholder="E-mail" class="form-control" class="form-control" required type="email"
+                 value="<%= params.email %>" name="email">
         </div>
         <div class="form-group">
-          <label>Password:</label>
-          <input class="form-control" required autocomplete type="password" value="<%= params.password %>"
-                 name="password">
+          <input placeholder="Password" class=" form-control" required autocomplete type="password"
+                 value="<%= params.password %>" name="password">
         </div>
 
         <% if (params.mfaEnabled) { %>
@@ -144,23 +137,21 @@
         <% } %>
 
         <input type="hidden" name="returnUrl" value="<%= params.return_url %>" />
-        <button type="submit" class="btn rounded-pill btn-primary btn-block">
+        <button type="submit" class="btn rounded-pill btn-primary btn-block" :disabled="isDisabled">
           Sign in
           <i class="fas fa-chevron-right" aria-hidden="true"></i>
         </button>
       </form>
-      <hr>
-      <div class="text-center">
-        <a class="btn btn-link" href="/oidc/<%= uid %>/forgot">
-          Can't sign in?
-        </a>
-        <span class="text-muted">|</span>
-        <a class="btn btn-link" href="/oidc/<%= uid %>/signup?returnUrl=<%= params.return_url%>">
-          Sign up for an account
-        </a>
-      </div>
-
-      <% } %>
     </div>
+    <div class="card-footer mt-0 text-center">
+      <a class="btn btn-link p-1" href="/oidc/<%= uid %>/forgot">
+        Can't sign in?
+      </a>
+      <span class="text-muted">|</span>
+      <a class="btn btn-link p-1" href="/oidc/<%= uid %>/signup?returnUrl=<%= params.return_url%>">
+        Sign up for an account
+      </a>
+    </div>
+    <% } %>
   </div>
 </div>

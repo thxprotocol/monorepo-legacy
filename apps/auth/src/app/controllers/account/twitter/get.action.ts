@@ -2,31 +2,37 @@ import { Request, Response } from 'express';
 import { AccountDocument } from '../../../models/Account';
 import { TwitterService } from '../../../services/TwitterService';
 import { AccountService } from '../../../services/AccountService';
+import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
+import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
 
 async function updateTokens(account: AccountDocument, tokens): Promise<AccountDocument> {
-    account.twitterAccessToken = tokens.access_token || account.twitterAccessToken;
-    account.twitterRefreshToken = tokens.refresh_token || account.twitterRefreshToken;
-    account.twitterAccessTokenExpires = tokens.expires_in
-        ? Date.now() + Number(tokens.expires_in) * 1000
-        : account.twitterAccessTokenExpires;
+    const expiry = tokens.expires_in ? Date.now() + Number(tokens.expires_in) * 1000 : undefined;
+
+    account.setToken({
+        kind: AccessTokenKind.Twitter,
+        accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token,
+        expiry,
+    } as IAccessToken);
 
     return await account.save();
 }
 
 export const getTwitter = async (req: Request, res: Response) => {
     let account: AccountDocument = await AccountService.get(req.params.sub);
+    const token: IAccessToken | undefined = account.getToken(AccessTokenKind.Twitter);
 
-    if (!account.twitterAccessToken || !account.twitterRefreshToken) {
+    if (!token || !token.accessToken || !token.refreshToken || !token.expiry) {
         return res.json({ isAuthorized: false });
     }
 
-    if (Date.now() > account.twitterAccessTokenExpires) {
-        const tokens = await TwitterService.refreshTokens(account.twitterRefreshToken);
+    if (Date.now() > token.expiry) {
+        const tokens = await TwitterService.refreshTokens(token.refreshToken);
         account = await updateTokens(account, tokens);
     }
 
-    const tweets = await TwitterService.getTweets(account.twitterAccessToken);
-    const user = await TwitterService.getUser(account.twitterAccessToken);
+    const tweets = await TwitterService.getTweets(token.accessToken);
+    const user = await TwitterService.getUser(token.accessToken);
 
     res.json({
         isAuthorized: true,

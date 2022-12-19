@@ -4,6 +4,7 @@ import { TERC20, TERC20Token } from '@thxnetwork/api/types/TERC20';
 import { fromWei } from 'web3-utils';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
+import WalletService from '@thxnetwork/api/services/WalletService';
 
 export const controller = async (req: Request, res: Response) => {
     /*
@@ -23,11 +24,17 @@ export const controller = async (req: Request, res: Response) => {
     const result = await Promise.all(
         tokens.map(async (token: ERC20TokenDocument) => {
             const erc20 = await ERC20Service.getById(token.erc20Id);
+
+            const wallet = await WalletService.findOneByQuery({ sub: req.auth.sub, chainId: erc20.chainId });
+            const walletBalanceInWei = await erc20.contract.methods.balanceOf(wallet.address).call();
+            const walletBalance = Number(fromWei(walletBalanceInWei, 'ether'));
+
             const balanceInWei = await erc20.contract.methods.balanceOf(account.address).call();
             const balance = Number(fromWei(balanceInWei, 'ether'));
+
             const logoImg = erc20.logoImgUrl || `https://avatars.dicebear.com/api/identicon/${erc20.address}.svg`;
 
-            return { ...(token.toJSON() as TERC20Token), balanceInWei, balance, erc20, logoImg };
+            return { ...(token.toJSON() as TERC20Token), balanceInWei, balance, walletBalance, erc20, logoImg };
         }),
     );
 

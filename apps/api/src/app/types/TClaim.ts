@@ -2,9 +2,9 @@ import mongoose from 'mongoose';
 
 export type TClaim = {
     sub?: string;
-    id: string;
+    uuid: string;
     poolId: string;
-    rewardId: string;
+    rewardUuid: string;
     erc20Id?: string;
     erc721Id?: string;
 };

@@ -8992,7 +8992,7 @@ textarea.form-control-underlined {
 }
 
 .btn-sign-in {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   border: 1px solid #ced4da;
   padding: 0;
@@ -9002,16 +9002,16 @@ textarea.form-control-underlined {
   background: white;
   border-radius: 3px;
   margin: 1px;
-  padding: 15px;
-  flex: 0 48px;
+  padding: 5px;
+  flex: 0 38px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 15px;
 }
 .btn-sign-in .logo img {
-  height: 18px;
-  width: 18px;
+  height: 22px;
+  width: 22px;
 }
 .btn-sign-in .label {
   font-family: Roboto, sans-serif;
@@ -9020,14 +9020,24 @@ textarea.form-control-underlined {
   flex: 1;
   text-align: left;
 }
-
+.btn-discord {
+  background-color: #7289da;
+}
+.btn-discord:active {
+  background-color: #7289da;
+}
 .btn-google {
   background-color: #4285f4;
 }
 .btn-google:active {
   background-color: #3367d6;
 }
-
+.btn-twitch {
+  background-color: #6441a5;
+}
+.btn-twitch:active {
+  background-color: #b9a3e3;
+}
 .btn-twitter {
   background-color: #0098ff;
 }
@@ -9035,13 +9045,18 @@ textarea.form-control-underlined {
   background-color: #3367d6;
 }
 
+.btn-spotify {
+  background-color: #1d75de;
+}
+.btn-spotify:active {
+  background-color: #1865c2;
+}
 .btn-github {
   background-color: #171515;
 }
 .btn-github:active {
   background-color: #171515;
 }
-
 .btn-metamask {
   background-color: #037dd6;
 }

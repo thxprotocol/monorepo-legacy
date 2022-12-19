@@ -7,7 +7,7 @@ const validation = [];
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Point Rewards']
     const pointReward = await PointReward.findById(req.params.id);
-    const isClaimed = !!(await Claim.exists({ sub: req.auth.sub, rewardId: pointReward.uuid }));
+    const isClaimed = !!(await Claim.exists({ sub: req.auth.sub, rewardUuid: pointReward.uuid }));
 
     res.json({ ...pointReward.toJSON(), isClaimed });
 };

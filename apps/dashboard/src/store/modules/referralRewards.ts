@@ -2,7 +2,7 @@ import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { IPool } from './pools';
-import { RewardConditionPlatform, TReferralReward } from '@thxnetwork/types/index';
+import { RewardConditionPlatform, type TReferralReward } from '@thxnetwork/types/index';
 
 export type RewardByPage = {
     [page: number]: TReferralReward[];

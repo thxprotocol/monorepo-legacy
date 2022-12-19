@@ -2,7 +2,7 @@
     <div>
         <b-row class="mb-3">
             <b-col class="d-flex align-items-center">
-                <h2 class="mb-0">Metadata</h2>
+                <h2 class="mb-0">NFT Metadata</h2>
             </b-col>
             <b-dropdown variant="light" dropleft no-caret size="sm" class="ml-2">
                 <template #button-content>
@@ -26,7 +26,8 @@
                 </b-dropdown-item>
             </b-dropdown>
         </b-row>
-        <b-row>
+        
+        <BCard variant="white" body-class="p-0 shadow-sm">
             <b-alert variant="success" show v-if="isDownloadScheduled">
                 <i class="fas fa-clock mr-2"></i>
                 You will receive an e-mail when your download is ready!
@@ -35,9 +36,6 @@
                 <i class="fas fa-hourglass-half mr-2"></i>
                 Downloading your QR codes
             </b-alert>
-        </b-row>
-
-        <BCard variant="white" body-class="p-0 shadow-sm">
             <BTable hover :busy="isLoading" :items="metadataByPage" responsive="lg" :fields="fields" show-empty>
                 <!-- Head formatting -->
                 <template #head(checkbox)>
@@ -112,7 +110,8 @@
             :metadata="editingMeta"
             :pool="pool"
         />
-    </div>
+
+</div>
 </template>
 
 <script lang="ts">
@@ -150,25 +149,20 @@ export default class MetadataView extends Vue {
     limit = 15;
     isLoading = true;
     format = format;
-
     totals!: { [erc721Id: string]: number };
-
     docsUrl = process.env.VUE_APP_DOCS_URL;
     apiUrl = process.env.VUE_APP_API_ROOT;
     widgetUrl = process.env.VUE_APP_WIDGET_URL;
-
     qrURL = '';
     isDownloading = false;
     isDownloadScheduled = false;
     selectedItems: any[] = [];
-
     pools!: IPools;
     erc721s!: IERC721s;
     editingMeta: TERC721Metadata | null = null;
-
     fields = ['createdAt', 'attributes', 'tokens', 'id'];
 
-    get pool(): IPool {
+get pool(): IPool {
         return this.pools[this.$route.params.id];
     }
 
@@ -181,7 +175,7 @@ export default class MetadataView extends Vue {
     }
 
     get metadataByPage() {
-        if (!this.erc721s[this.erc721?._id]?.metadata) return [];
+        if (!this.erc721s[this.erc721._id].metadata) return [];
         return Object.values(this.erc721s[this.erc721._id].metadata)
             .filter((metadata: TERC721Metadata) => metadata.page === this.page)
             .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))

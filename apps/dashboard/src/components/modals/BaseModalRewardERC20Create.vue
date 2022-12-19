@@ -112,6 +112,7 @@ export default class ModalRewardERC20Create extends Vue {
                 pool: this.pool,
                 reward: this.reward,
                 payload: {
+                    page: 1,
                     poolId: String(this.pool._id),
                     title: this.title,
                     description: this.description,
@@ -127,6 +128,17 @@ export default class ModalRewardERC20Create extends Vue {
             .then(() => {
                 this.$emit('submit');
                 this.$bvModal.hide(this.id);
+                this.title = '';
+                this.amount = '0';
+                this.description = '';
+                this.rewardExpiry = {};
+                this.claimAmount = 1;
+                this.rewardLimit = 0;
+                this.rewardCondition = {
+                    platform: platformList[0].type,
+                    interaction: platformInteractionList[0].type,
+                    content: '',
+                };
                 this.isLoading = false;
             });
     }

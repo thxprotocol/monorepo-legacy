@@ -1,4 +1,6 @@
 import { AccountDocument } from '@thxnetwork/auth/models/Account';
+import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
+import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
 import { Request, Response } from 'express';
 import { AccountService } from '../../../../services/AccountService';
 import { TwitterService } from '../../../../services/TwitterService';
@@ -6,11 +8,14 @@ import { getAccountByTwitterId, getInteraction, saveInteraction } from '../../..
 import { createWallet } from '../../../../util/wallet';
 
 async function updateTokens(account: AccountDocument, tokens): Promise<AccountDocument> {
-    account.twitterAccessToken = tokens.access_token || account.twitterAccessToken;
-    account.twitterRefreshToken = tokens.refresh_token || account.twitterRefreshToken;
-    account.twitterAccessTokenExpires = tokens.expires_in
-        ? Date.now() + Number(tokens.expires_in) * 1000
-        : account.twitterAccessTokenExpires;
+    const expiry = tokens.expires_in ? Date.now() + Number(tokens.expires_in) * 1000 : undefined;
+
+    account.setToken({
+        kind: AccessTokenKind.Twitter,
+        accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token,
+        expiry,
+    } as IAccessToken);
 
     return await account.save();
 }

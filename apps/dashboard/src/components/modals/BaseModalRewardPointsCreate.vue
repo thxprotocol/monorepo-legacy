@@ -1,5 +1,5 @@
 <template>
-    <base-modal size="xl" title="Create Points Reward" :id="id" :error="error" :loading="isLoading">
+    <base-modal size="xl" title="Create Points Reward" :id="id" :error="error" :loading="isLoading" @show="onShow">
         <template #modal-body v-if="!isLoading">
             <p class="text-gray">
                 Points rewards are distributed to your customers achieving milestones in your customer journey.
@@ -45,7 +45,7 @@
 
 <script lang="ts">
 import { type IPool } from '@thxnetwork/dashboard/store/modules/pools';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { type TPointReward } from '@thxnetwork/types/interfaces/PointReward';
 import { platformInteractionList, platformList } from '@thxnetwork/dashboard/types/rewards';
 import BaseModal from './BaseModal.vue';
@@ -85,24 +85,28 @@ export default class ModalRewardPointsCreate extends Vue {
     @Prop() pool!: IPool;
     @Prop({ required: false }) reward!: TPointReward;
 
-    mounted() {
-        if (this.reward) {
-            this.title = this.reward.title;
-            this.amount = this.reward.amount;
-            this.description = this.reward.description;
-            this.rewardLimit = this.reward.rewardLimit;
-            this.rewardCondition = {
-                platform: this.reward.platform as RewardConditionPlatform,
-                interaction: this.reward.interaction as RewardConditionInteraction,
-                content: this.reward.content as string,
-            };
-        }
+    onShow() {
+        this.setValues(this.reward);
+    }
+
+    setValues(reward?: TPointReward) {
+        if (!reward) return;
+        this.title = this.reward.title;
+        this.amount = this.reward.amount;
+        this.description = this.reward.description;
+        this.rewardLimit = this.reward.rewardLimit;
+        this.rewardCondition = {
+            platform: this.reward.platform as RewardConditionPlatform,
+            interaction: this.reward.interaction as RewardConditionInteraction,
+            content: this.reward.content as string,
+        };
     }
 
     onSubmit() {
         this.isLoading = true;
         this.$store
             .dispatch(`pointRewards/${this.reward ? 'update' : 'create'}`, {
+                ...this.reward,
                 _id: this.reward ? this.reward._id : undefined,
                 poolId: this.pool._id,
                 title: this.title,
@@ -116,6 +120,16 @@ export default class ModalRewardPointsCreate extends Vue {
             })
             .then(() => {
                 this.$bvModal.hide(this.id);
+                this.title = '';
+                this.amount = '0';
+                this.description = '';
+                this.rewardExpiry = {};
+                this.rewardLimit = 0;
+                this.rewardCondition = {
+                    platform: platformList[0].type,
+                    interaction: platformInteractionList[0].type,
+                    content: '',
+                };
                 this.isLoading = false;
             });
     }
