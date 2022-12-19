@@ -45,128 +45,79 @@ export class AccountService {
         return await Account.exists({ email, active: true });
     }
 
-    static async update(
-        account: AccountDocument,
-        {
-            acceptTermsPrivacy,
-            acceptUpdates,
-            address,
-            googleAccess,
-            twitterAccess,
-            githubAccess,
-            twitchAccess,
-            discordAccess,
-            authenticationToken,
-            authenticationTokenExpires,
-            lastLoginAt,
-            organisation,
-            firstName,
-            profileImg,
-            lastName,
-            plan,
-            email,
-        }: IAccountUpdates,
-    ) {
-        if (email) {
-            account.email = email;
+    static async update(account: AccountDocument, updates: IAccountUpdates) {
+        if (updates.email) {
+            account.email = updates.email;
         }
         // No strict checking here since null == undefined
         if (account.acceptTermsPrivacy == null) {
-            account.acceptTermsPrivacy = acceptTermsPrivacy == null ? false : account.acceptTermsPrivacy;
+            account.acceptTermsPrivacy = updates.acceptTermsPrivacy == null ? false : account.acceptTermsPrivacy;
         } else {
-            account.acceptTermsPrivacy = acceptTermsPrivacy || account.acceptTermsPrivacy;
+            account.acceptTermsPrivacy = updates.acceptTermsPrivacy || account.acceptTermsPrivacy;
         }
 
-        if (organisation) {
-            account.organisation = organisation;
+        if (updates.organisation) {
+            account.organisation = updates.organisation;
         }
 
-        if (firstName) {
-            account.firstName = firstName;
+        if (updates.firstName) {
+            account.firstName = updates.firstName;
         }
 
-        if (lastName) {
-            account.lastName = lastName;
+        if (updates.lastName) {
+            account.lastName = updates.lastName;
         }
 
-        if (lastLoginAt) {
-            account.lastLoginAt = lastLoginAt;
+        if (updates.lastLoginAt) {
+            account.lastLoginAt = updates.lastLoginAt;
         }
 
-        if (profileImg) {
-            account.profileImg = profileImg;
+        if (updates.profileImg) {
+            account.profileImg = updates.profileImg;
         }
 
-        if (plan) {
-            if (account.plan === AccountPlanType.Free) {
-                // await MailService.
-            }
-            account.plan = plan;
+        if (updates.plan) {
+            account.plan = updates.plan;
         }
-        // No strict checking here since null == undefined
+
         if (account.acceptUpdates == null) {
-            account.acceptUpdates = acceptUpdates == null ? false : account.acceptUpdates;
+            account.acceptUpdates = updates.acceptUpdates == null ? false : account.acceptUpdates;
         } else {
-            account.acceptUpdates = acceptUpdates || account.acceptTermsPrivacy;
+            account.acceptUpdates = updates.acceptUpdates || account.acceptTermsPrivacy;
         }
-        if (authenticationToken || authenticationTokenExpires) {
+
+        if (updates.authenticationToken || updates.authenticationTokenExpires) {
             account.setToken({
                 kind: AccessTokenKind.Auth,
-                accessToken: authenticationToken,
-                expiry: authenticationTokenExpires,
+                accessToken: updates.authenticationToken,
+                expiry: updates.authenticationTokenExpires,
             });
         }
 
-        account.address = address || account.address ? toChecksumAddress(address || account.address) : undefined;
+        account.address =
+            updates.address || account.address ? toChecksumAddress(updates.address || account.address) : undefined;
 
-        if (googleAccess === false) {
+        if (updates.googleAccess === false) {
             await YouTubeService.revokeAccess(account);
-
-            account.setToken({
-                kind: AccessTokenKind.Google,
-                accessToken: '',
-                refreshToken: '',
-                expiry: null,
-            });
+            await account.unsetToken(AccessTokenKind.Google);
         }
 
-        if (twitterAccess === false) {
-            account.setToken({
-                kind: AccessTokenKind.Twitter,
-                accessToken: '',
-                refreshToken: '',
-                expiry: null,
-            });
+        if (updates.twitterAccess === false) {
+            await account.unsetToken(AccessTokenKind.Twitter);
         }
 
-        if (githubAccess === false) {
-            account.setToken({
-                kind: AccessTokenKind.Github,
-                accessToken: '',
-                refreshToken: '',
-                expiry: null,
-            });
+        if (updates.githubAccess === false) {
+            await account.unsetToken(AccessTokenKind.Github);
         }
 
-        if (twitchAccess === false) {
-            account.setToken({
-                kind: AccessTokenKind.Twitch,
-                accessToken: '',
-                refreshToken: '',
-                expiry: null,
-            });
+        if (updates.twitchAccess === false) {
+            await account.unsetToken(AccessTokenKind.Twitch);
         }
 
-        if (discordAccess === false) {
-            account.setToken({
-                kind: AccessTokenKind.Discord,
-                accessToken: '',
-                refreshToken: '',
-                expiry: null,
-            });
+        if (updates.discordAccess === false) {
+            await account.unsetToken(AccessTokenKind.Discord);
         }
-
-        return await account.save();
+        console.log(await account.save());
     }
 
     static async signinWithAddress(addr: string) {

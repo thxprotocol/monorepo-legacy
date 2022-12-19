@@ -65,25 +65,30 @@ const comparePassword = function (candidatePassword: string) {
     return bcrypt.compareSync(candidatePassword, this.password);
 };
 
-const getToken = function (tokenKind: AccessTokenKind): IAccessToken {
-    return this.tokens.find((x: IAccessToken) => x.kind === tokenKind);
+const getToken = function (kind: AccessTokenKind): IAccessToken {
+    return this.tokens.find((x: IAccessToken) => x.kind === kind);
 };
 
-const setToken = function (data: IAccessToken) {
+const unsetToken = async function (kind: AccessTokenKind) {
+    const index = this.tokens.findIndex((x: IAccessToken) => x.kind === kind);
+    if (index < 0) return;
+    this.tokens.splice(index, 1);
+    await this.save();
+};
+
+const setToken = async function (data: IAccessToken) {
     const index = this.tokens.findIndex((x: IAccessToken) => x.kind === data.kind);
     if (index < 0) {
         this.tokens.push(data);
-        return;
+    } else {
+        this.tokens[index] = { ...this.tokens[index], ...data };
+        await this.save();
     }
-    const token: IAccessToken = this.tokens[index];
-    token.accessToken = data.accessToken || token.accessToken;
-    token.refreshToken = data.refreshToken || token.refreshToken;
-    token.expiry = data.expiry || token.expiry;
-    this.tokens[index] = token;
 };
 
 accountSchema.methods.comparePassword = comparePassword;
 accountSchema.methods.getToken = getToken;
 accountSchema.methods.setToken = setToken;
+accountSchema.methods.unsetToken = unsetToken;
 
 export const Account = mongoose.model<AccountDocument>('Account', accountSchema);
