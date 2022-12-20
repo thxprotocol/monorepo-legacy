@@ -79,6 +79,7 @@ class ReferralRewardModule extends VuexModule {
             data: payload,
         });
 
+        data.page = 1;
         this.context.commit('set', { pool, reward: data });
     }
 

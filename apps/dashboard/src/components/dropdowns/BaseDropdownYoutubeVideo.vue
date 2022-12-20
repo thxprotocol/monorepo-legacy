@@ -1,9 +1,9 @@
 <template>
     <b-form-group label="YouTube Video URL">
         <b-form-input
-            :value="value"
+            :value="url"
             :class="{ 'is-valid': videoId.length }"
-            placeholder="https://www.youtube.com/watch?v=ckoegYJ1FR4"
+            :placeholder="baseUrl + 'ckoegYJ1FR4'"
             @input="onChange"
         />
         <b-alert show class="mt-2" variant="info" v-if="videoId">
@@ -13,32 +13,17 @@
 </template>
 
 <script lang="ts">
-import { BAlert, BButton, BFormInput, BInputGroup, BInputGroupAppend } from 'bootstrap-vue';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 
 @Component({
-    components: {
-        BAlert,
-        BButton,
-        BInputGroup,
-        BFormInput,
-        BInputGroupAppend,
-    },
     computed: mapGetters({}),
 })
 export default class BaseDropdownYoutubeVideo extends Vue {
-    @Prop() url!: string;
-    value = '';
+    @Prop() item!: string;
     videoId = '';
-
-    onUrlChange(url: string) {
-        const fallbackURL = `https://youtu.be/${url}`;
-        Vue.set(this, 'value', fallbackURL);
-        Vue.set(this, 'videoId', url);
-
-        this.$emit('selected', { id: url });
-    }
+    url = '';
+    baseUrl = 'https://www.youtube.com/watch?v=';
 
     onChange(url: string) {
         const result = /^https?:\/\/(www\.)?youtu\.be/.test(url)
@@ -54,7 +39,10 @@ export default class BaseDropdownYoutubeVideo extends Vue {
     }
 
     mounted() {
-        if (this.url) this.onUrlChange(this.url);
+        if (this.item) {
+            this.url = this.baseUrl + this.item;
+            this.onChange(this.url);
+        }
     }
 }
 </script>

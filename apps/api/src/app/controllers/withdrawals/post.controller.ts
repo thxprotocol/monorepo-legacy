@@ -27,7 +27,7 @@ const controller = async (req: Request, res: Response) => {
     let withdrawal: WithdrawalDocument = await WithdrawalService.create(
         req.assetPool,
         WithdrawalType.ProposeWithdraw,
-        account.id,
+        account.sub,
         req.body.amount,
         // Accounts with stored (encrypted) privateKeys are custodial and should not be processed before
         // they have logged into their wallet to update their account with a new wallet address.
@@ -39,7 +39,7 @@ const controller = async (req: Request, res: Response) => {
 
     res.status(201).json({
         ...withdrawal.toJSON(),
-        sub: account.id,
+        sub: account.sub,
         poolAddress: req.assetPool.address,
     });
 };

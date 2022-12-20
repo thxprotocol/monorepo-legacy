@@ -9,7 +9,7 @@ function getChannelScopes(channelAction: RewardConditionInteraction) {
     switch (channelAction) {
         case RewardConditionInteraction.YouTubeLike:
         case RewardConditionInteraction.YouTubeSubscribe:
-            return { channelScopes: YouTubeService.getExpandedScopes() };
+            return { channelScopes: YouTubeService.getYoutubeScopes() };
         case RewardConditionInteraction.TwitterLike:
         case RewardConditionInteraction.TwitterRetweet:
         case RewardConditionInteraction.TwitterFollow:
@@ -19,11 +19,10 @@ function getChannelScopes(channelAction: RewardConditionInteraction) {
 
 function getLoginLinkForChannelAction(uid: string) {
     return {
-        googleLoginUrl: YouTubeService.getLoginUrl(uid, YouTubeService.getExpandedScopes()),
+        googleLoginUrl: YouTubeService.getLoginUrl(uid, YouTubeService.getYoutubeScopes()),
         twitterLoginUrl: TwitterService.getLoginURL(uid, {}),
         githubLoginUrl: GithubService.getLoginURL(uid, {}),
         discordLoginUrl: DiscordService.getLoginURL(uid, {}),
-
     };
 }
 

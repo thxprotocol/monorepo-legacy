@@ -21,7 +21,7 @@ export async function canClaim(reward: TBaseReward, account: IAccount): Promise<
     }
 
     // Can only claim this reward once and a withdrawal already exists
-    const hasClaimedOnce = await Claim.exists({ rewardUuid: reward.uuid, sub: account.id });
+    const hasClaimedOnce = await Claim.exists({ rewardUuid: reward.uuid, sub: account.sub });
     if (hasClaimedOnce) {
         return { error: 'You can only claim this reward once.' };
     }

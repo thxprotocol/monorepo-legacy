@@ -12,6 +12,16 @@ google.options({ auth: client });
 const ERROR_NO_DATA = 'Could not find an youtube data for this accesstoken';
 
 export class YouTubeService {
+    static async isAuthorized(account: AccountDocument) {
+        const token = account.getToken(AccessTokenKind.Google);
+        if (!token || !token.accessToken) return false;
+        const isExpired = Date.now() > token.expiry;
+        if (isExpired) return false;
+        const hasYoutubeScopes = await this.hasYoutubeScopes(token.accessToken);
+        if (!hasYoutubeScopes) return false;
+        return true;
+    }
+
     static async getYoutubeClient(account: AccountDocument) {
         const googleToken: IAccessToken = account.getToken(AccessTokenKind.Google);
         client.setCredentials({
@@ -141,25 +151,22 @@ export class YouTubeService {
     }
 
     static async getScopesOfAccessToken(token: string): Promise<string[]> {
-        const response = await axios({
+        const r = await axios({
             url: `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${token}`,
         });
-        return response.data['scope'].split(' ');
+        return r.data['scope'].split(' ');
     }
 
-    static async haveExpandedScopes(token: string): Promise<boolean> {
-        const expanedScopes = this.getExpandedScopes();
+    static async hasYoutubeScopes(token: string): Promise<boolean> {
+        const youtubeScopes = this.getYoutubeScopes();
         const scopes = await YouTubeService.getScopesOfAccessToken(token);
-        const missingScope = scopes.length !== expanedScopes.length;
-
-        return !missingScope;
+        return scopes.length === youtubeScopes.length;
     }
 
     static async revokeAccess(account: AccountDocument) {
         const token: IAccessToken | undefined = account.getToken(AccessTokenKind.Google);
-        if (!token) {
-            throw new Error('Could not find the token');
-        }
+        if (!token) throw new Error('Could not find the token');
+
         const r = await axios({
             url: `https://oauth2.googleapis.com/revoke?token=${token.accessToken}`,
             method: 'POST',
@@ -187,7 +194,7 @@ export class YouTubeService {
         return ['https://www.googleapis.com/auth/userinfo.email', 'openid'];
     }
 
-    static getExpandedScopes() {
+    static getYoutubeScopes() {
         return ['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/youtube', 'openid'];
     }
 }

@@ -1,4 +1,3 @@
-import newrelic from 'newrelic';
 import Web3 from 'web3';
 import { IAccessToken, IAccountUpdates } from '../types/TAccount';
 import { Account, AccountDocument } from '../models/Account';
@@ -21,7 +20,6 @@ import {
     ERROR_VERIFY_EMAIL_EXPIRED,
 } from '../util/messages';
 import { YouTubeService } from './YouTubeService';
-import { logger } from '../util/logger';
 import { AccountPlanType } from '../types/enums/AccountPlanType';
 import { AccountVariant } from '../types/enums/AccountVariant';
 import { AccessTokenKind } from '../types/enums/AccessTokenKind';
@@ -47,114 +45,79 @@ export class AccountService {
         return await Account.exists({ email, active: true });
     }
 
-    static async update(
-        account: AccountDocument,
-        {
-            acceptTermsPrivacy,
-            acceptUpdates,
-            address,
-            privateKey,
-            twitchAccess,
-            googleAccess,
-            twitterAccess,
-            authenticationToken,
-            authenticationTokenExpires,
-            lastLoginAt,
-            organisation,
-            firstName,
-            profileImg,
-            lastName,
-            plan,
-            email,
-        }: IAccountUpdates,
-    ) {
-        if (email) {
-            account.email = email;
+    static async update(account: AccountDocument, updates: IAccountUpdates) {
+        if (updates.email) {
+            account.email = updates.email;
         }
         // No strict checking here since null == undefined
         if (account.acceptTermsPrivacy == null) {
-            account.acceptTermsPrivacy = acceptTermsPrivacy == null ? false : account.acceptTermsPrivacy;
+            account.acceptTermsPrivacy = updates.acceptTermsPrivacy == null ? false : account.acceptTermsPrivacy;
         } else {
-            account.acceptTermsPrivacy = acceptTermsPrivacy || account.acceptTermsPrivacy;
+            account.acceptTermsPrivacy = updates.acceptTermsPrivacy || account.acceptTermsPrivacy;
         }
 
-        if (organisation) {
-            account.organisation = organisation;
+        if (updates.organisation) {
+            account.organisation = updates.organisation;
         }
 
-        if (firstName) {
-            account.firstName = firstName;
+        if (updates.firstName) {
+            account.firstName = updates.firstName;
         }
 
-        if (lastName) {
-            account.lastName = lastName;
+        if (updates.lastName) {
+            account.lastName = updates.lastName;
         }
 
-        if (lastLoginAt) {
-            account.lastLoginAt = lastLoginAt;
+        if (updates.lastLoginAt) {
+            account.lastLoginAt = updates.lastLoginAt;
         }
 
-        if (profileImg) {
-            account.profileImg = profileImg;
+        if (updates.profileImg) {
+            account.profileImg = updates.profileImg;
         }
 
-        if (plan) {
-            if (account.plan === AccountPlanType.Free) {
-                // await MailService.
-            }
-            account.plan = plan;
+        if (updates.plan) {
+            account.plan = updates.plan;
         }
-        // No strict checking here since null == undefined
+
         if (account.acceptUpdates == null) {
-            account.acceptUpdates = acceptUpdates == null ? false : account.acceptUpdates;
+            account.acceptUpdates = updates.acceptUpdates == null ? false : account.acceptUpdates;
         } else {
-            account.acceptUpdates = acceptUpdates || account.acceptTermsPrivacy;
+            account.acceptUpdates = updates.acceptUpdates || account.acceptTermsPrivacy;
         }
-        if (authenticationToken || authenticationTokenExpires) {
+
+        if (updates.authenticationToken || updates.authenticationTokenExpires) {
             account.setToken({
                 kind: AccessTokenKind.Auth,
-                accessToken: authenticationToken,
-                expiry: authenticationTokenExpires,
-            } as IAccessToken);
+                accessToken: updates.authenticationToken,
+                expiry: updates.authenticationTokenExpires,
+            });
         }
 
-        account.address = address || account.address ? toChecksumAddress(address || account.address) : undefined;
-        account.privateKey = privateKey || account.privateKey;
+        account.address =
+            updates.address || account.address ? toChecksumAddress(updates.address || account.address) : undefined;
 
-        if (googleAccess === false) {
-            try {
-                await YouTubeService.revokeAccess(account);
-            } catch (error) {
-                newrelic.noticeError(error);
-                logger.error('Unable to revoke YouTube access', error);
-            }
-            account.setToken({
-                kind: AccessTokenKind.Google,
-                accessToken: '',
-                refreshToken: '',
-                expiry: null,
-            } as IAccessToken);
+        if (updates.googleAccess === false) {
+            YouTubeService.revokeAccess(account);
+            account.unsetToken(AccessTokenKind.Google);
         }
 
-        if (twitterAccess === false) {
-            account.setToken({
-                kind: AccessTokenKind.Twitter,
-                accessToken: '',
-                refreshToken: '',
-                expiry: null,
-            } as IAccessToken);
+        if (updates.twitterAccess === false) {
+            account.unsetToken(AccessTokenKind.Twitter);
         }
 
-        if (twitchAccess === false) {
-            account.setToken({
-                kind: AccessTokenKind.Twitch,
-                accessToken: '',
-                refreshToken: '',
-                expiry: null,
-            } as IAccessToken);
+        if (updates.githubAccess === false) {
+            account.unsetToken(AccessTokenKind.Github);
         }
 
-        return await account.save();
+        if (updates.twitchAccess === false) {
+            account.unsetToken(AccessTokenKind.Twitch);
+        }
+
+        if (updates.discordAccess === false) {
+            account.unsetToken(AccessTokenKind.Discord);
+        }
+        await account.save();
     }
 
     static async signinWithAddress(addr: string) {

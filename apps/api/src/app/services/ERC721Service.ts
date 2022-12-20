@@ -103,7 +103,7 @@ export async function mint(
     forceSync = true,
 ): Promise<ERC721TokenDocument> {
     const erc721token = await ERC721Token.create({
-        sub: account.id,
+        sub: account.sub,
         recipient: account.address,
         state: ERC721TokenState.Pending,
         erc721Id: String(erc721._id),
@@ -175,7 +175,7 @@ async function findTokenById(id: string): Promise<ERC721TokenDocument> {
 }
 
 async function findTokensByMetadataAndSub(metadataId: string, account: IAccount): Promise<ERC721TokenDocument[]> {
-    return ERC721Token.find({ sub: account.id, metadataId });
+    return ERC721Token.find({ sub: account.sub, metadataId });
 }
 
 async function findTokensBySub(sub: string): Promise<ERC721TokenDocument[]> {

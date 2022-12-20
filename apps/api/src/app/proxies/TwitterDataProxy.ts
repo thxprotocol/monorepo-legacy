@@ -25,7 +25,7 @@ export default class TwitterDataProxy {
     static async validateLike(account: IAccount, channelItem: string) {
         const r = await authClient({
             method: 'GET',
-            url: `/account/${account.id}/twitter/like/${channelItem}`,
+            url: `/account/${account.sub}/twitter/like/${channelItem}`,
             headers: {
                 Authorization: await getAuthAccessToken(),
             },
@@ -39,7 +39,7 @@ export default class TwitterDataProxy {
     static async validateRetweet(account: IAccount, channelItem: string) {
         const { data } = await authClient({
             method: 'GET',
-            url: `/account/${account.id}/twitter/retweet/${channelItem}`,
+            url: `/account/${account.sub}/twitter/retweet/${channelItem}`,
             headers: {
                 Authorization: await getAuthAccessToken(),
             },
@@ -53,7 +53,7 @@ export default class TwitterDataProxy {
     static async validateFollow(account: IAccount, channelItem: string) {
         const { data } = await authClient({
             method: 'GET',
-            url: `/account/${account.id}/twitter/follow/${channelItem}`,
+            url: `/account/${account.sub}/twitter/follow/${channelItem}`,
             headers: {
                 Authorization: await getAuthAccessToken(),
             },

@@ -28,7 +28,7 @@ async function deposit(
     erc20: ERC20Document,
 ) {
     const deposit = await Deposit.create({
-        sub: account.id,
+        sub: account.sub,
         sender: account.address,
         receiver: assetPool.address,
         amount,

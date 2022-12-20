@@ -17,12 +17,22 @@
                 :page="page"
                 :limit="limit"
                 :pool="pool"
-                :rewards="erc721Perks[pool._id]"
-                :totals="totals"
+                :total-rows="totals[pool._id]"
                 :selectedItems="selectedItems"
+                :actions="[
+                    { variant: 0, label: `Delete perks` },
+                    { variant: 1, label: 'Download QR codes' },
+                    { variant: 2, label: 'Download CSV' },
+                ]"
+                @click-action="onClickAction"
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
-                @delete="onDelete"
+            />
+            <BaseModalRewardClaimsDownload
+                id="modalRewardClaimsDownload"
+                :pool="pool"
+                :selectedItems="selectedItems"
+                :rewards="erc721Perks[pool._id]"
             />
             <BTable hover :busy="isLoading" :items="rewardsByPage" responsive="lg" show-empty>
                 <!-- Head formatting -->
@@ -30,9 +40,9 @@
                     <b-form-checkbox @change="onSelectAll" />
                 </template>
                 <template #head(title)> Title </template>
-                <template #head(progress)> Progress </template>
                 <template #head(erc721metadataId)> Metadata </template>
                 <template #head(rewardCondition)> Condition </template>
+                <template #head(progress)> Progress </template>
                 <template #head(id)> &nbsp; </template>
 
                 <!-- Cell formatting -->
@@ -207,9 +217,18 @@ export default class ERC721PerksView extends Vue {
         this.listRewards();
     }
 
-    onDelete(items: string[]) {
-        for (const id of Object.values(items)) {
-            this.$store.dispatch('erc721Perks/delete', this.erc721Perks[this.pool._id][id]);
+    onClickAction(action: { variant: number; label: string }) {
+        switch (action.variant) {
+            case 0:
+                for (const id of Object.values(this.selectedItems)) {
+                    this.$store.dispatch('erc721Perks/delete', this.erc721Perks[this.pool._id][id]);
+                }
+                break;
+            case 1:
+                this.$bvModal.show('modalRewardClaimsDownload');
+            case 2:
+                this.$bvModal.show('modalRewardClaimsDownload');
+                break;
         }
     }
 }

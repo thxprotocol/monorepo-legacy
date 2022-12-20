@@ -17,11 +17,11 @@ const controller = async (req: Request, res: Response) => {
     await MemberService.addMember(req.assetPool, req.body.address);
 
     if (req.assetPool.erc20Id) {
-        await MembershipService.addERC20Membership(account.id, req.assetPool);
+        await MembershipService.addERC20Membership(account.sub, req.assetPool);
     }
 
     if (req.assetPool.erc721Id) {
-        await MembershipService.addERC721Membership(account.id, req.assetPool);
+        await MembershipService.addERC721Membership(account.sub, req.assetPool);
     }
 
     res.status(200).send();

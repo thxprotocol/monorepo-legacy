@@ -24,14 +24,14 @@ export const userWalletAddress = '0xE1ea36CC205923b3fC3b46bb747BE4Fd6bE23E6C';
 export const userWalletAddress2 = '0xaf9d56684466fcFcEA0a2B7fC137AB864d642946';
 export const userWalletPrivateKey2 = '0x97093724e1748ebfa6aa2d2ec4ec68df8678423ab9a12eb2d27ddc74e35e5db9';
 export const account = {
-    id: sub,
+    sub,
     address: userWalletAddress,
     plan: AccountPlanType.Basic,
     email: 'account@test.thx.network',
     walletAddress: userWalletAddress,
 };
 export const account2 = {
-    id: sub2,
+    sub: sub2,
     address: userWalletAddress2,
     plan: AccountPlanType.Basic,
     email: 'account2@test.thx.network',
