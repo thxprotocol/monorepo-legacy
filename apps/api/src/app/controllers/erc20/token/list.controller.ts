@@ -29,7 +29,7 @@ export const controller = async (req: Request, res: Response) => {
             const walletBalanceInWei = await erc20.contract.methods.balanceOf(wallet.address).call();
             const walletBalance = Number(fromWei(walletBalanceInWei, 'ether'));
 
-            const balanceInWei = await erc20.contract.methods.balanceOf(account.address).call();
+            const balanceInWei = await erc20.contract.methods.balanceOf(account.walletAddress).call();
             const balance = Number(fromWei(balanceInWei, 'ether'));
 
             const logoImg = erc20.logoImgUrl || `https://avatars.dicebear.com/api/identicon/${erc20.address}.svg`;

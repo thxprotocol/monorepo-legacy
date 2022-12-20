@@ -104,7 +104,7 @@ export async function mint(
 ): Promise<ERC721TokenDocument> {
     const erc721token = await ERC721Token.create({
         sub: account.sub,
-        recipient: account.address,
+        recipient: account.walletAddress,
         state: ERC721TokenState.Pending,
         erc721Id: String(erc721._id),
         metadataId: String(metadata._id),
@@ -112,7 +112,7 @@ export async function mint(
 
     const txId = await TransactionService.sendAsync(
         assetPool.contract.options.address,
-        assetPool.contract.methods.mintFor(account.address, String(metadata._id)),
+        assetPool.contract.methods.mintFor(account.walletAddress, String(metadata._id)),
         assetPool.chainId,
         forceSync,
         {

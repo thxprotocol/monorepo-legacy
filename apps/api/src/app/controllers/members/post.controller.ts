@@ -11,8 +11,8 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Members']
     const account = await AccountProxy.getByAddress(req.body.address);
     if (!account) throw new NoUserFound();
-    const isMember = await MemberService.isMember(req.assetPool, account.address);
-    if (isMember) throw new AlreadyAMemberError(account.address, req.assetPool.address);
+    const isMember = await MemberService.isMember(req.assetPool, account.walletAddress);
+    if (isMember) throw new AlreadyAMemberError(account.walletAddress, req.assetPool.address);
 
     await MemberService.addMember(req.assetPool, req.body.address);
 

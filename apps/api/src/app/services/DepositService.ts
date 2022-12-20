@@ -22,7 +22,7 @@ async function getAll(assetPool: TAssetPool): Promise<DepositDocument[]> {
 async function deposit(assetPool: AssetPoolDocument, account: IAccount, amount: string, item: string) {
     const deposit = await Deposit.create({
         sub: account.sub,
-        sender: account.address,
+        sender: account.walletAddress,
         receiver: assetPool.address,
         amount,
         state: DepositState.Pending,
@@ -31,7 +31,7 @@ async function deposit(assetPool: AssetPoolDocument, account: IAccount, amount: 
 
     const txId = await TransactionService.sendAsync(
         assetPool.contract.options.address,
-        assetPool.contract.methods.depositFrom(account.address, amount),
+        assetPool.contract.methods.depositFrom(account.walletAddress, amount),
         assetPool.chainId,
         true,
         { type: 'depositCallback', args: { depositId: String(deposit._id), assetPoolId: String(assetPool._id) } },

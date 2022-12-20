@@ -21,16 +21,16 @@ const controller = async (req: Request, res: Response) => {
     const contract = getContractFromName(req.assetPool.chainId, 'LimitedSupplyToken', erc20.address);
 
     // Check allowance for admin to ensure throughput
-    const allowance = await contract.methods.allowance(account.address, req.assetPool.address).call();
+    const allowance = await contract.methods.allowance(account.walletAddress, req.assetPool.address).call();
     if (Number(allowance) >= Number(amount)) throw new ForbiddenError('Already approved for this amount');
 
-    const { receipt } = await TransactionService.sendValue(account.address, toWei('0.01'), req.assetPool.chainId);
+    const { receipt } = await TransactionService.sendValue(account.walletAddress, toWei('0.01'), req.assetPool.chainId);
 
     if (req.assetPool.chainId !== ChainId.Hardhat && SENDGRID_API_KEY && receipt.transactionHash) {
         await MailService.send(
             'peter@thx.network',
-            `0.01 MATIC -> ${account.address}`,
-            `${account.address} has requested a topup for 0.01 MATIC to interact with pool ${
+            `0.01 MATIC -> ${account.walletAddress}`,
+            `${account.walletAddress} has requested a topup for 0.01 MATIC to interact with pool ${
                 req.assetPool.address
             } and ERC20 contract ${erc20.address}. 
             <a href="https://${req.assetPool.chainId === ChainId.PolygonMumbai ? 'mumbai.' : ''}polygonscan.com/tx/${

@@ -22,5 +22,6 @@ export const postAccount = async (req: Request, res: Response) => {
     res.status(201).json({
         sub: account._id,
         address: account.address,
+        walletAddress: account.walletAddress,
     });
 };

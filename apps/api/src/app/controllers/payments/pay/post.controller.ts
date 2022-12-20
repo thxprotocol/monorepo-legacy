@@ -42,11 +42,11 @@ const controller = async (req: Request, res: Response) => {
 
     // Recover signer from message
     const account = await AccountProxy.getById(req.auth.sub);
-    payment.sender = account.address;
+    payment.sender = account.walletAddress;
 
     if (payment.promotionId) {
         const assetPool = await PoolService.getById(payment.poolId);
-        if (!MemberService.isMember(assetPool, account.address)) {
+        if (!MemberService.isMember(assetPool, account.walletAddress)) {
             throw new ForbiddenError('Account is not a member of the pool');
         }
     }

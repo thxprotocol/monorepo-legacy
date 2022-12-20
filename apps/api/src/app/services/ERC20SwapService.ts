@@ -36,7 +36,7 @@ async function create(
 
     const txId = await TransactionService.sendAsync(
         assetPool.contract.options.address,
-        assetPool.contract.methods.swapFor(account.address, amountInInWei, erc20TokenIn.address),
+        assetPool.contract.methods.swapFor(account.walletAddress, amountInInWei, erc20TokenIn.address),
         assetPool.chainId,
         true,
         { type: 'swapCreateCallback', args: { assetPoolId: String(assetPool._id), swapId: String(swap._id) } },

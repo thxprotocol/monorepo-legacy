@@ -22,7 +22,7 @@ const controller = async (req: Request, res: Response) => {
     if (!erc20) throw new NotFoundError('ERC20 not found');
 
     const account = await AccountProxy.getById(req.auth.sub);
-    const balanceInWei = await erc20.contract.methods.balanceOf(account.address).call();
+    const balanceInWei = await erc20.contract.methods.balanceOf(account.walletAddress).call();
     const balance = Number(fromWei(balanceInWei, 'ether'));
 
     res.status(200).json({

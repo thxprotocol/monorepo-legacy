@@ -27,7 +27,7 @@ const controller = async (req: Request, res: Response) => {
     if (!pool) throw new BadRequestError('The pool for this rewards has been removed.');
 
     const account = await AccountProxy.getById(req.auth.sub);
-    if (!account.address) throw new BadRequestError('The authenticated account has not accessed its wallet.');
+    if (!account.walletAddress) throw new BadRequestError('The authenticated account has not accessed its wallet.');
 
     const reward = await findRewardByUuid(claim.rewardUuid);
     if (!reward) throw new BadRequestError('The reward for this ID does not exist.');

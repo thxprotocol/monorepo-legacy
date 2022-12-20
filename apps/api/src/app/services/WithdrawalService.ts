@@ -80,7 +80,7 @@ export default class WithdrawalService {
 
         const txId = await TransactionService.sendAsync(
             pool.contract.options.address,
-            pool.contract.methods.withdrawFor(account.address, amountInWei),
+            pool.contract.methods.withdrawFor(account.walletAddress, amountInWei),
             pool.chainId,
             forceSync,
             {

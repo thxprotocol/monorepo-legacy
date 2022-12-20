@@ -15,7 +15,7 @@ const controller = async (req: Request, res: Response) => {
 
     const erc20 = await ERC20Service.getById(swapRule.tokenInId);
     const account = await AccountProxy.getById(req.auth.sub);
-    const userBalance = await erc20.contract.methods.balanceOf(account.address).call();
+    const userBalance = await erc20.contract.methods.balanceOf(account.walletAddress).call();
     if (Number(userBalance) < Number(req.body.amountIn)) throw new InsufficientBalanceError();
 
     const swap = await SwapService.create(req.assetPool, account, swapRule, erc20, req.body.amountIn);
