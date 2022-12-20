@@ -115,33 +115,18 @@ export default class BaseCardRewardCondition extends Vue {
 
         switch (platform.type) {
             case RewardConditionPlatform.Google: {
+                this.onSelectInteraction(platformInteractionList[1]);
                 await this.$store.dispatch('account/getYoutube');
                 this.isAuthorized = !!this.youtube;
                 break;
             }
             case RewardConditionPlatform.Twitter: {
                 await this.$store.dispatch('account/getTwitter');
+                this.onSelectInteraction(platformInteractionList[3]);
                 this.isAuthorized = !!this.twitter;
                 break;
             }
             default:
-        }
-
-        this.onSelectInteraction(this.interaction);
-
-        // Only initialize if there no `rewardCondition` prop inputed
-        if (!this.rewardCondition) {
-            switch (platform.type) {
-                case RewardConditionPlatform.Google: {
-                    this.onSelectInteraction(platformInteractionList[1]);
-                    break;
-                }
-                case RewardConditionPlatform.Twitter: {
-                    this.onSelectInteraction(platformInteractionList[3]);
-                    break;
-                }
-                default:
-            }
         }
 
         this.isLoadingPlatform = false;
