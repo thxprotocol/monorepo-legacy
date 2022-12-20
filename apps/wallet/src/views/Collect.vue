@@ -124,7 +124,7 @@ export default class Collect extends Vue {
     isClaimInvalid = false;
     claim: TClaim | null = null;
     claimedReward: (TClaim & { withdrawal: Withdrawal; token: TERC721Token }) | null = null;
-    state!: { claimId: string; rewardHash: string };
+    state!: { claimUuid: string; rewardHash: string };
 
     erc721s!: { [id: string]: ERC721 };
     user!: User;
@@ -150,10 +150,10 @@ export default class Collect extends Vue {
         }
 
         // Store state locally to solve type issues
-        this.state = this.user.state as { claimId: string; rewardHash: string };
+        this.state = this.user.state as { claimUuid: string; rewardHash: string };
 
-        // Get claim information based on url claimId or rewardHash. rewardHash will be deprecated
-        this.claim = await this.$store.dispatch('assetpools/getClaim', this.state.claimId);
+        // Get claim information based on url claimUuid or rewardHash. rewardHash will be deprecated
+        this.claim = await this.$store.dispatch('assetpools/getClaim', this.state.claimUuid);
         if (!this.claim) return;
         this.reward = this.claim.reward;
 
@@ -183,7 +183,7 @@ export default class Collect extends Vue {
     async claimReward() {
         try {
             this.isLoading = true;
-            this.claimedReward = await this.$store.dispatch('assetpools/claimReward', this.state.claimId);
+            this.claimedReward = await this.$store.dispatch('assetpools/claimReward', this.state.claimUuid);
             if (!this.claimedReward) return;
 
             if (this.claimedReward?.erc20) {
@@ -274,7 +274,7 @@ export default class Collect extends Vue {
         if (!this.user.state) return;
         this.$store.dispatch('account/connectRedirect', {
             platform: this.reward?.platform,
-            path: `/claim/${this.state.claimId}`,
+            path: `/claim/${this.state.claimUuid}`,
         });
     }
 }

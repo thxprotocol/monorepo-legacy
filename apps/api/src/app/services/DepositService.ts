@@ -21,7 +21,7 @@ async function getAll(assetPool: TAssetPool): Promise<DepositDocument[]> {
 
 async function deposit(assetPool: AssetPoolDocument, account: IAccount, amount: string, item: string) {
     const deposit = await Deposit.create({
-        sub: account.id,
+        sub: account.sub,
         sender: account.address,
         receiver: assetPool.address,
         amount,

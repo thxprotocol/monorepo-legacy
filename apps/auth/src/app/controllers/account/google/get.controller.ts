@@ -4,18 +4,11 @@ import { YouTubeService } from '../../../services/YouTubeService';
 
 export const getYoutube = async (req: Request, res: Response) => {
     const account = await AccountService.get(req.params.sub);
-    const haveExpandedScopes = await YouTubeService.haveExpandedScopes(account.googleAccessToken);
+    const isAuthorized = await YouTubeService.isAuthorized(account);
+    if (!isAuthorized) return res.json({ isAuthorized: false });
 
-    if (!account.googleAccessToken || !account.googleRefreshToken || !haveExpandedScopes) {
-        return res.json({ isAuthorized: false });
-    }
+    const channels = await YouTubeService.getChannelList(account);
+    const videos = await YouTubeService.getVideoList(account);
 
-    const channels = haveExpandedScopes ? await YouTubeService.getChannelList(account) : [];
-    const videos = haveExpandedScopes ? await YouTubeService.getVideoList(account) : [];
-
-    res.json({
-        isAuthorized: haveExpandedScopes,
-        channels,
-        videos,
-    });
+    res.json({ isAuthorized, channels, videos });
 };

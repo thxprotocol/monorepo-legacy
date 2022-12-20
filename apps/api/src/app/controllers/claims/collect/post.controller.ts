@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { param, query } from 'express-validator';
-import { BadRequestError, ForbiddenError } from '@thxnetwork/api/util/errors';
+import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { WithdrawalState, WithdrawalType } from '@thxnetwork/api/types/enums';
 import { WithdrawalDocument } from '@thxnetwork/api/models/Withdrawal';
 import { Claim } from '@thxnetwork/api/models/Claim';
@@ -20,7 +20,7 @@ const validation = [param('id').exists().isString(), query('forceSync').optional
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Claims']
 
-    let claim = await ClaimService.findById(req.params.id);
+    let claim = await ClaimService.findByUuid(req.params.id);
     if (!claim) throw new BadRequestError('This claim URL is invalid.');
 
     const pool = await PoolService.getById(claim.poolId);
@@ -37,13 +37,13 @@ const controller = async (req: Request, res: Response) => {
     if (!result || error) throw new ForbiddenError(error);
 
     // Memberships could be removed but tokens should be created
-    const hasMembership = await MembershipService.hasMembership(pool, account.id);
+    const hasMembership = await MembershipService.hasMembership(pool, account.sub);
     if (!hasMembership) {
         if (claim.erc20Id) {
-            await MembershipService.addERC20Membership(account.id, pool);
+            await MembershipService.addERC20Membership(account.sub, pool);
         }
         if (claim.erc721Id) {
-            await MembershipService.addERC721Membership(account.id, pool);
+            await MembershipService.addERC721Membership(account.sub, pool);
         }
     }
 
@@ -73,7 +73,7 @@ const controller = async (req: Request, res: Response) => {
                 erc20Id: claim.erc20Id,
                 rewardUuid: claim.rewardUuid,
                 poolId: claim.poolId,
-                id: db.createUUID(),
+                uuid: db.createUUID(),
             });
         }
 
@@ -82,6 +82,7 @@ const controller = async (req: Request, res: Response) => {
 
     if (isTERC721Perk(reward) && claim.erc721Id) {
         const metadata = await ERC721Service.findMetadataById(reward.erc721metadataId);
+        if (!metadata) throw new NotFoundError('No metatdata found for reward');
         const erc721 = await ERC721Service.findById(metadata.erc721);
         const token = await ERC721Service.mint(pool, erc721, metadata, account, forceSync);
 
@@ -97,7 +98,7 @@ const controller = async (req: Request, res: Response) => {
                 erc721Id: claim.erc721Id,
                 rewardUuid: claim.rewardUuid,
                 poolId: claim.poolId,
-                id: db.createUUID(),
+                uuid: db.createUUID(),
             });
         }
 

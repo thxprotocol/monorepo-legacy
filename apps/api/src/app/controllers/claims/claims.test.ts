@@ -64,7 +64,7 @@ describe('Claims', () => {
             .expect((res: request.Response) => {
                 expect(res.body._id).toBeDefined();
                 expect(res.body.claims).toBeDefined();
-                expect(res.body.claims[0].id).toBeDefined();
+                expect(res.body.claims[0].uuid).toBeDefined();
                 claim = res.body.claims[0];
             })
             .expect(201, done);
@@ -72,10 +72,10 @@ describe('Claims', () => {
 
     describe('GET /claims/:id', () => {
         it('should return 200', (done) => {
-            user.get(`/v1/claims/${claim.id}`)
+            user.get(`/v1/claims/${claim.uuid}`)
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect((res: request.Response) => {
-                    expect(res.body.claim.id).toBeDefined();
+                    expect(res.body.claim.uuid).toBeDefined();
                     expect(res.body.pool.address).toEqual(poolAddress);
                     expect(res.body.erc20.symbol).toEqual(tokenSymbol);
                     expect(res.body.reward).toBeDefined();
@@ -86,7 +86,7 @@ describe('Claims', () => {
 
     describe('POST /claims/:id/collect', () => {
         it('should return a 200 and withdrawal id', (done) => {
-            user.post(`/v1/claims/${claim.id}/collect`)
+            user.post(`/v1/claims/${claim.uuid}/collect`)
                 .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
                 .expect((res: request.Response) => {
                     expect(res.body.claim.sub).toBeDefined();

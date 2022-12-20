@@ -1,5 +1,5 @@
 <template>
-    <base-modal title="Import/export metadata" id="modalNFTUploadMetadataCsv">
+    <base-modal title="Import/export metadata" id="modalERC721MetadataCsv">
         <template #modal-body>
             <b-form-group label="Export metadata">
                 <p>

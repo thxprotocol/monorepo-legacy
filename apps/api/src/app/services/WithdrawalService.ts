@@ -64,7 +64,7 @@ export default class WithdrawalService {
     static async getPendingBalance(account: IAccount, poolId: string) {
         const withdrawals = await Withdrawal.find({
             poolId,
-            sub: account.id,
+            sub: account.sub,
             state: WithdrawalState.Pending,
         });
         return withdrawals.map((item) => item.amount).reduce((prev, curr) => prev + curr, 0);
@@ -133,7 +133,7 @@ export default class WithdrawalService {
         const account = beneficiary ? await AccountProxy.getByAddress(beneficiary) : undefined;
         const query = {
             ...(poolId ? { poolId } : {}),
-            ...(account ? { sub: account.id } : {}),
+            ...(account ? { sub: account.sub } : {}),
             ...(rewardId ? { rewardId } : {}),
             ...(state === 0 || state === 1 ? { state } : {}),
         };

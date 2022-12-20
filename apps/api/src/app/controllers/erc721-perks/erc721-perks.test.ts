@@ -11,7 +11,7 @@ const user = request.agent(app);
 const user2 = request.agent(app);
 
 describe('ERC721 Perks', () => {
-    let poolId: string, erc721metadataId: string;
+    let poolId: string, erc721ID: string, erc721metadataId: string;
 
     beforeAll(async () => {
         await beforeAllCallback();
@@ -20,7 +20,8 @@ describe('ERC721 Perks', () => {
     afterAll(afterAllCallback);
 
     describe('an NFT reward with withdrawLimit = 1 is claimed by wallet user A and then should not be claimed again throught he same claim URL by wallet user B', () => {
-        let erc721ID: string, erc721Address: string, claims: any;
+        let erc721Address: string, claims: any;
+
         const name = 'Planets of the Galaxy',
             symbol = 'GLXY',
             description = 'description',
@@ -97,7 +98,7 @@ describe('ERC721 Perks', () => {
 
         describe('POST /claims/:id/collect', () => {
             it('should return a 200 and NFT minted', (done) => {
-                user.post(`/v1/claims/${claims[0].id}/collect`)
+                user.post(`/v1/claims/${claims[0].uuid}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
                     .expect((res: request.Response) => {
                         expect(res.body.claim).toBeDefined();
@@ -110,7 +111,7 @@ describe('ERC721 Perks', () => {
             });
             it('should return 403 for claim from the same account', (done) => {
                 user2
-                    .post(`/v1/claims/${claims[0].id}/collect`)
+                    .post(`/v1/claims/${claims[0].uuid}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken2 })
                     .expect(({ body }: Response) => {
                         expect(body.error.message).toEqual("This reward has reached it's limit");
@@ -122,7 +123,7 @@ describe('ERC721 Perks', () => {
         describe('POST /claims/:id/collect', () => {
             it('should return 403 for claim from another account', (done) => {
                 user2
-                    .post(`/v1/claims/${claims[0].id}/collect`)
+                    .post(`/v1/claims/${claims[0].uuid}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken2 })
                     .expect(({ body }: Response) => {
                         expect(body.error.message).toEqual("This reward has reached it's limit");
@@ -157,7 +158,7 @@ describe('ERC721 Perks', () => {
                     expect(res.body.pointPrice).toBe(pointPrice);
                     expect(res.body.image).toBe(image);
                     expect(res.body.claims.length).toBe(1);
-                    expect(res.body.claims[0].id).toBeDefined();
+                    expect(res.body.claims[0].uuid).toBeDefined();
                     claim = res.body.claims[0];
                     erc721PerkId = res.body._id;
                 })
@@ -189,7 +190,7 @@ describe('ERC721 Perks', () => {
 
         describe('POST /claims/:id/collect', () => {
             it('should return a 200 and NFT minted', (done) => {
-                user.post(`/v1/claims/${claim.id}/collect`)
+                user.post(`/v1/claims/${claim.uuid}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
                     .expect((res: request.Response) => {
                         expect(res.body.claim).toBeDefined();
@@ -214,6 +215,15 @@ describe('ERC721 Perks', () => {
                     expect(res.body.limit).toBe(10);
                     expect(res.body.total).toBe(2);
                 })
+                .expect(200, done);
+        });
+    });
+
+    describe('DELETE /erc721/:id/metadata/:metadataID', () => {
+        it('should successfully delete erc721 metadata', (done) => {
+            user.delete(`/v1/erc721/${erc721ID}/metadata/${erc721metadataId}`)
+                .set('Authorization', dashboardAccessToken)
+                .set('X-PoolId', poolId)
                 .expect(200, done);
         });
     });

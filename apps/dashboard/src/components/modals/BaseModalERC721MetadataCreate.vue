@@ -1,5 +1,5 @@
 <template>
-    <base-modal @hidden="onHidden()" :error="error" :title="modalTitle" id="modalNFTCreate">
+    <base-modal @show="onShow" :error="error" :title="metadata ? 'Update metadata' : 'Create metadata'" :id="id">
         <template #modal-body>
             <b-form-group :key="key" v-for="(prop, key) of erc721.properties">
                 <template #label>
@@ -18,13 +18,13 @@
                             <b-spinner v-if="imgLoading == key.toString()" variant="primary"></b-spinner>
                         </div>
                         <b-form-file
-                            @change="onDescChange"
+                            @change="onFileChange"
                             class="col-md-10"
                             :data-key="key"
                             accept="image/*"
                             width="50%"
                             :placeholder="
-                                !isEditing || !prop.value
+                                !metadata || !prop.value
                                     ? 'Browse to upload the image'
                                     : 'Browse to change the image...'
                             "
@@ -42,17 +42,16 @@
             </b-form-group>
         </template>
         <template #btn-primary>
-            <b-button :disabled="loading" class="rounded-pill" @click="submit()" variant="primary" block>
-                {{ modalTitle }}
+            <b-button :disabled="isSubmitDisabled" class="rounded-pill" @click="submit()" variant="primary" block>
+                {{ metadata ? 'Update metadata' : 'Create metadata' }}
             </b-button>
         </template>
     </base-modal>
 </template>
 
 <script lang="ts">
-import type { IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import type { TERC721, TERC721DefaultProp, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseModal from './BaseModal.vue';
 
@@ -72,54 +71,34 @@ const PROPTYPE_MAP: { [key: string]: string } = {
 export default class ModalRewardCreate extends Vue {
     authUrl = process.env['VUE_APP_AUTH_URL'];
     docsUrl = process.env['VUE_APP_DOCS_URL'];
-    loading = false;
-
     error = '';
-
-    recipient = '';
+    isSubmitDisabled = false;
     title = '';
     description = '';
     imgLoading = '';
 
-    @Prop() pool!: IPool;
+    @Prop() id!: string;
     @Prop() erc721!: TERC721;
     @Prop({ required: false }) metadata!: TERC721Metadata;
-
-    get modalTitle() {
-        return this.metadata ? 'Edit metadata' : 'Create metadata';
-    }
-
-    get isSubmitDisabled() {
-        return this.loading;
-    }
-
-    get isEditing() {
-        return this.metadata ? true : false;
-    }
 
     parsePropType(propType: string) {
         return PROPTYPE_MAP[propType];
     }
 
-    async upload(file: File) {
-        const publicUrl = await this.$store.dispatch('images/upload', file);
-        return publicUrl;
-    }
-
-    async onDescChange(event: any) {
+    async onFileChange(event: any) {
         this.imgLoading = event.target.dataset.key;
-        this.loading = true;
-        const publicUrl = await this.upload(event.target.files[0]);
+        this.isSubmitDisabled = true;
+        const publicUrl = await this.$store.dispatch('images/upload', event.target.files[0]);
         Vue.set(this.erc721.properties[event.target.dataset['key']], 'value', publicUrl);
-        this.loading = false;
+        this.isSubmitDisabled = false;
         this.imgLoading = '';
     }
 
-    @Watch('metadata')
-    onMetadataChange() {
+    onShow() {
+        this.reset();
         if (this.metadata) {
-            this.title = this.metadata['title'];
-            this.description = this.metadata['description'];
+            this.title = this.metadata.title;
+            this.description = this.metadata.description;
             this.erc721.properties.forEach((prop, index) => {
                 this.metadata.attributes.forEach((attr) => {
                     if (prop.name === attr.key) {
@@ -138,11 +117,6 @@ export default class ModalRewardCreate extends Vue {
         });
     }
 
-    onHidden() {
-        this.reset();
-        this.$emit('hidden');
-    }
-
     submit() {
         const attributes: { key: string; value: string | number | undefined }[] = [];
 
@@ -156,30 +130,19 @@ export default class ModalRewardCreate extends Vue {
             });
         });
 
-        if (this.isEditing) {
-            this.$store.dispatch('erc721/updateMetadata', {
-                pool: this.pool,
-                erc721: this.erc721,
-                attributes,
-                title: this.title,
-                description: this.description,
-                recipient: this.recipient.length ? this.recipient : undefined,
-                id: this.metadata._id,
-            });
-        } else {
-            this.$store.dispatch('erc721/createMetadata', {
-                pool: this.pool,
-                erc721: this.erc721,
-                attributes,
-                title: this.title,
-                description: this.description,
-                recipient: this.recipient.length ? this.recipient : undefined,
-            });
-        }
-
-        this.$emit('success');
-        this.$bvModal.hide('modalNFTCreate');
-        this.reset();
+        this.$store.dispatch(`erc721/${this.metadata ? 'updateMetadata' : 'createMetadata'}`, {
+            erc721: this.erc721,
+            metadata: {
+                ...this.metadata,
+                ...{
+                    title: this.title,
+                    description: this.description,
+                    attributes,
+                },
+            },
+        });
+        this.$emit('update');
+        this.$bvModal.hide(this.id);
     }
 }
 </script>

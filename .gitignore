@@ -34,6 +34,7 @@ certs/*
 /.sass-cache
 /connect.lock
 /coverage
+tsconfig.app.tsbuildinfo
 /libpeerconnection.log
 npm-debug.log
 yarn-error.log

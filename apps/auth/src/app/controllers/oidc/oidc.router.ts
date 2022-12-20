@@ -16,13 +16,17 @@ import CreateForgot from './forgot/post';
 import CreateReset from './reset/post';
 import ReadCallbackGoogle from './callback/google/get.controller';
 import ReadCallbackTwitter from './callback/twitter/get.controller';
+import ReadCallbackDiscord from './callback/discord/get.controller';
 import ReadCallbackGithub from './callback/github/get.controller';
+import ReadCallbackTwitch from './callback/twitch/get.controller';
 import ReadAccount from './account/get';
 import UpdateAccount from './account/post';
 import UpdateAccountTOTP from './account/totp/post';
 import ReadAccountTOTP from './account/totp/get';
 import PostGoogleDisconnect from './account/google/disconnect/post.controller';
 import PostTwitterDisconnect from './account/twitter/disconnect/post.controller';
+import PostTwitchDisconnect from './account/twitch/disconnect/post.controller';
+import PostDiscordDisconnect from './account/discord/disconnect/post.controller';
 import ReadAccountEmailVerify from './account/email/get';
 import { assertInput, assertAuthorization, assertInteraction } from '../../middlewares';
 
@@ -31,6 +35,8 @@ const router = express.Router();
 router.get('/callback/google', ReadCallbackGoogle.controller);
 router.get('/callback/twitter', ReadCallbackTwitter.controller);
 router.get('/callback/github', ReadCallbackGithub.controller);
+router.get('/callback/discord', ReadCallbackDiscord.controller);
+router.get('/callback/twitch', ReadCallbackTwitch.controller);
 
 // Routes require no auth
 router.get('/:uid', assertInteraction, ReadOIDC.controller);
@@ -65,6 +71,13 @@ router.post(
     assertInteraction,
     assertAuthorization,
     PostTwitterDisconnect.controller,
+);
+router.post('/:uid/account/twitch/disconnect', assertInteraction, assertAuthorization, PostTwitchDisconnect.controller);
+router.post(
+    '/:uid/account/discord/disconnect',
+    assertInteraction,
+    assertAuthorization,
+    PostDiscordDisconnect.controller,
 );
 
 router.post(

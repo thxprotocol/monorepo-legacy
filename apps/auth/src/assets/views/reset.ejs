@@ -1,9 +1,9 @@
 <div class="col-md-6 offset-md-3 col-xl-4 offset-xl-4 order-0 order-sm-1">
-    <div class="text-center pb-4 pt-4">
+    <div class="text-center pb-4">
         <img src="/img/logo.png" width="60" alt="THX Logo" />
     </div>
-    <div class="card shadow-sm mb-5">
-        <div class="card-body p-sm-5">
+    <div class="card shadow-sm">
+        <div class="card-body p-sm-4">
             <% if (locals.alert && alert.message) { %>
             <div class="alert alert-<%= alert.variant %>">
                 <%= alert.message %>
@@ -19,19 +19,17 @@
             </a>
             <% } else { %>
             <form autocomplete="off" action="/oidc/<%= uid %>/reset" method="post">
-                <strong class="h2 d-block text-dark text-center mb-4">
-                    Reset password
-                </strong>
+                <h2>Reset password</h2>
                 <p class="text-muted">Passwords should have a minimal length of 8 characters
                     and contain lowercase, uppercase, special (!@#$%^&*) characters and a
                     number (0-9).</p>
                 <div class="form-group">
-                    <label>New password:</label>
-                    <input class="form-control" autocomplete="off" required type="password" name="password">
+                    <input placeholder="New password" class="form-control" autocomplete="off" required type="password"
+                           name="password">
                 </div>
                 <div class="form-group">
-                    <label>Repeat new password:</label>
-                    <input class="form-control" autocomplete="off" required type="password" name="passwordConfirm">
+                    <input placeholder="Repeat new password" class="form-control" autocomplete="off" required
+                           type="password" name="passwordConfirm">
                 </div>
                 <input type="hidden" name="returnUrl" value="<%= params.return_url %>" />
                 <input type="hidden" name="passwordResetToken" value="<%= params.password_reset_token %>" />

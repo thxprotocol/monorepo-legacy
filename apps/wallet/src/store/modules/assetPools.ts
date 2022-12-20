@@ -68,20 +68,20 @@ class AssetPoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async getClaim(claimId: string) {
+    async getClaim(claimUuid: string) {
         const { data } = await axios({
             method: 'GET',
-            url: `/claims/${claimId}`,
+            url: `/claims/${claimUuid}`,
         });
         return data;
     }
 
     @Action({ rawError: true })
-    async claimReward(claimId: string) {
-        const claim = await this.context.dispatch('getClaim', claimId);
+    async claimReward(claimUuid: string) {
+        const claim = await this.context.dispatch('getClaim', claimUuid);
         const r = await axios({
             method: 'POST',
-            url: `/claims/${claimId}/collect`,
+            url: `/claims/${claimUuid}/collect`,
             headers: { 'X-PoolId': claim.claim.poolId },
             params: { forceSync: false },
         });

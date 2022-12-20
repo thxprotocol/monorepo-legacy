@@ -24,7 +24,7 @@ export default class YoutubeDataProxy {
     static async validateLike(account: IAccount, channelItem: string) {
         const r = await authClient({
             method: 'GET',
-            url: `/account/${account.id}/google/youtube/like/${channelItem}`,
+            url: `/account/${account.sub}/google/youtube/like/${channelItem}`,
             headers: {
                 Authorization: await getAuthAccessToken(),
             },
@@ -38,7 +38,7 @@ export default class YoutubeDataProxy {
     static async validateSubscribe(account: IAccount, channelItem: string) {
         const r = await authClient({
             method: 'GET',
-            url: `/account/${account.id}/google/youtube/subscribe/${channelItem}`,
+            url: `/account/${account.sub}/google/youtube/subscribe/${channelItem}`,
             headers: {
                 Authorization: await getAuthAccessToken(),
             },

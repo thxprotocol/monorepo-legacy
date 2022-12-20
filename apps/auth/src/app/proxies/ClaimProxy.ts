@@ -1,10 +1,10 @@
 import { apiClient, getAuthAccessToken } from '../util/api';
 
 export default {
-    get: async (claimId: string) => {
+    get: async (claimUuid: string) => {
         const r = await apiClient({
             method: 'GET',
-            url: `/v1/claims/${claimId}`,
+            url: `/v1/claims/${claimUuid}`,
             headers: {
                 Authorization: await getAuthAccessToken(),
             },

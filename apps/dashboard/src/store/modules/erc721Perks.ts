@@ -79,7 +79,7 @@ class ERC721PerkModule extends VuexModule {
             data: payload,
         });
 
-        this.context.commit('set', { pool, reward: r.data });
+        this.context.commit('set', { pool, reward: { ...payload, ...r.data } });
     }
 
     @Action({ rawError: true })

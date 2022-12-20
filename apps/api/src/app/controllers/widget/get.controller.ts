@@ -1,5 +1,6 @@
 import { API_URL, NODE_ENV, WIDGET_URL } from '@thxnetwork/api/config/secrets';
 import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
+import { Widget } from '@thxnetwork/api/models/Widget';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { Request, Response } from 'express';
@@ -15,6 +16,8 @@ const controller = async (req: Request, res: Response) => {
     });
     const pool = await PoolService.getById(req.params.id);
     if (!pool) throw new NotFoundError('Pool not found.');
+
+    const widget = await Widget.findOne({ poolId: req.params.id });
 
     const data = `
     class THXWidget {
@@ -43,7 +46,8 @@ const controller = async (req: Request, res: Response) => {
         constructor(settings) {
             if (!settings) return console.error("THXWidget requires a settings object.");
             this.settings = settings;
-            this.iframe = this.createIframe(settings.widgetUrl, settings.poolId, settings.chainId, settings.origin);
+            this.iframe = this.createIframe(settings.widgetUrl, settings.poolId, settings.chainId, settings.origin, settings.theme);
+            this.iframe.setAttribute('data-hj-allow-iframe', true);
             this.notifications = this.createNotifications(0);
             this.launcher = this.createLauncher(this.notifications);
             this.container = this.createContainer(this.iframe, this.launcher);
@@ -67,12 +71,12 @@ const controller = async (req: Request, res: Response) => {
             window.location.href = url;
         }
     
-        createIframe(widgetUrl, poolId, chainId, origin) {
+        createIframe(widgetUrl, poolId, chainId, origin, theme) {
             const iframe = document.createElement('iframe');
             const styles = window.innerWidth < this.MD_BREAKPOINT ? this.defaultStyles['sm'] : this.defaultStyles['md'];
     
             iframe.id = 'thx-iframe';
-            iframe.src = widgetUrl +'?id=' + poolId + '&origin=' + origin + '&chainId=' + chainId;
+            iframe.src = widgetUrl +'?id=' + poolId + '&origin=' + origin + '&chainId=' + chainId + '&theme=' + theme;
             Object.assign(iframe.style, {
                 ...styles,
                 zIndex: 99999999,
@@ -113,7 +117,7 @@ const controller = async (req: Request, res: Response) => {
     
         createLauncher(notifications) {
             const svgGift =
-                '<svg id="thx-svg-gift" style="display:block; margin: auto; fill: white; width: 20px; height: 20px; transform: scale(1); transition: transform .2s ease;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M32 448c0 17.7 14.3 32 32 32h160V320H32v128zm256 32h160c17.7 0 32-14.3 32-32V320H288v160zm192-320h-42.1c6.2-12.1 10.1-25.5 10.1-40 0-48.5-39.5-88-88-88-41.6 0-68.5 21.3-103 68.3-34.5-47-61.4-68.3-103-68.3-48.5 0-88 39.5-88 88 0 14.5 3.8 27.9 10.1 40H32c-17.7 0-32 14.3-32 32v80c0 8.8 7.2 16 16 16h480c8.8 0 16-7.2 16-16v-80c0-17.7-14.3-32-32-32zm-326.1 0c-22.1 0-40-17.9-40-40s17.9-40 40-40c19.9 0 34.6 3.3 86.1 80h-86.1zm206.1 0h-86.1c51.4-76.5 65.7-80 86.1-80 22.1 0 40 17.9 40 40s-17.9 40-40 40z"/></svg>';
+                '<svg id="thx-svg-gift" style="display:block; margin: auto; fill: '+this.settings.color+'; width: 20px; height: 20px; transform: scale(1); transition: transform .2s ease;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M32 448c0 17.7 14.3 32 32 32h160V320H32v128zm256 32h160c17.7 0 32-14.3 32-32V320H288v160zm192-320h-42.1c6.2-12.1 10.1-25.5 10.1-40 0-48.5-39.5-88-88-88-41.6 0-68.5 21.3-103 68.3-34.5-47-61.4-68.3-103-68.3-48.5 0-88 39.5-88 88 0 14.5 3.8 27.9 10.1 40H32c-17.7 0-32 14.3-32 32v80c0 8.8 7.2 16 16 16h480c8.8 0 16-7.2 16-16v-80c0-17.7-14.3-32-32-32zm-326.1 0c-22.1 0-40-17.9-40-40s17.9-40 40-40c19.9 0 34.6 3.3 86.1 80h-86.1zm206.1 0h-86.1c51.4-76.5 65.7-80 86.1-80 22.1 0 40 17.9 40 40s-17.9 40-40 40z"/></svg>';
             const launcher = document.createElement('div');
             launcher.id = 'thx-launcher';
             Object.assign(launcher.style, {
@@ -121,7 +125,7 @@ const controller = async (req: Request, res: Response) => {
                 display: 'flex',
                 width: '60px',
                 height: '60px',
-                backgroundColor: '#5942C1',
+                backgroundColor: this.settings.bgColor,
                 borderRadius: '50%',
                 cursor: 'pointer',
                 position: 'fixed',
@@ -211,6 +215,9 @@ const controller = async (req: Request, res: Response) => {
         widgetUrl: '${WIDGET_URL}',
         poolId: '${req.params.id}',
         chainId: '${pool.chainId}',
+        color: '${widget.color}',
+        bgColor: '${widget.bgColor}',
+        theme: '${widget.theme}',
         origin: '${new URL(req.header('Referrer')).origin}',
         referral: {
             uuid: '${referralReward && referralReward.uuid}',
