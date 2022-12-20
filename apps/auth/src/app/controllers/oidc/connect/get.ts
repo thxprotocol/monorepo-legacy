@@ -19,7 +19,7 @@ async function controller(req: Request, res: Response) {
     const account = await AccountService.get(session.accountId);
 
     let redirect = '';
-    switch (params.channel) {
+    switch (Number(params.channel)) {
         case RewardConditionPlatform.Google: {
             redirect = (await YouTubeService.isAuthorized(account))
                 ? params.redirect_uri
@@ -27,7 +27,9 @@ async function controller(req: Request, res: Response) {
             break;
         }
         case RewardConditionPlatform.Twitter: {
-            redirect = TwitterService.isAuthorized(account) ? params.redirect_uri : TwitterService.getLoginURL(uid, {});
+            redirect = (await TwitterService.isAuthorized(account))
+                ? params.redirect_uri
+                : TwitterService.getLoginURL(uid, {});
             break;
         }
         case RewardConditionPlatform.Github: {
@@ -39,7 +41,9 @@ async function controller(req: Request, res: Response) {
             break;
         }
         case RewardConditionPlatform.Discord: {
-            redirect = DiscordService.isAuthorized(account) ? params.redirect_uri : GithubService.getLoginURL(uid, {});
+            redirect = (await DiscordService.isAuthorized(account))
+                ? params.redirect_uri
+                : GithubService.getLoginURL(uid, {});
             break;
         }
     }

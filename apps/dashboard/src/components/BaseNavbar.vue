@@ -70,26 +70,6 @@
                             </div>
                         </div>
                     </b-nav-item>
-                    <b-nav-item to="/integrations" class="nav-link-plain">
-                        <div class="nav-link-wrapper">
-                            <div class="nav-link-icon">
-                                <i class="fas fa-cogs"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <span>Integrations</span>
-                            </div>
-                        </div>
-                    </b-nav-item>
-                    <b-nav-item :href="docsUrl" target="_blank" class="nav-link-plain">
-                        <div class="nav-link-wrapper">
-                            <div class="nav-link-icon">
-                                <i class="far fa-file-alt"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <span>Documentation</span>
-                            </div>
-                        </div>
-                    </b-nav-item>
                 </b-navbar-nav>
             </div>
             <div class="d-flex justify-content-end flex-column flex-grow-0 w-100">
@@ -105,6 +85,16 @@
                                 <b-button size="sm" variant="darker" disabled href="https://docs.thx.network/pricing">
                                     Upgrade
                                 </b-button>
+                            </div>
+                        </div>
+                    </b-nav-item>
+                    <b-nav-item :href="docsUrl" target="_blank" class="nav-link-plain">
+                        <div class="nav-link-wrapper">
+                            <div class="nav-link-icon">
+                                <i class="far fa-file-alt"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <span>Documentation</span>
                             </div>
                         </div>
                     </b-nav-item>
