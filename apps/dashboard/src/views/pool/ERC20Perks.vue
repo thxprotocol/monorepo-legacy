@@ -14,7 +14,7 @@
         </b-row>
         <BCard variant="white" body-class="p-0 shadow-sm">
             <BaseCardTableHeader
-                :page="page"
+                :page="currentpage"
                 :limit="limit"
                 :pool="pool"
                 :total-rows="totals[pool._id]"
@@ -142,6 +142,10 @@ export default class ERC20PerksView extends Vue {
 
     get pool() {
         return this.pools[this.$route.params.id];
+    }
+
+    get currentpage() {
+        return this.page
     }
 
     get total() {

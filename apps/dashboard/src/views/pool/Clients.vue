@@ -17,7 +17,7 @@
           @hidden="onClose"
           :client="editingClient"
           :pool="pool"
-          :page="page"
+          :page="currentpage"
           @submit="onSubmit"
         />
       </b-col>
@@ -33,7 +33,7 @@
       v-if="total > limit"
       class="mt-3"
       @change="onChangePage"
-      v-model="page"
+      :value="page"
       :per-page="limit"
       :total-rows="total"
       align="center"
@@ -68,6 +68,10 @@ export default class Clients extends Vue {
   clients!: { [poolId: string]: { [id: string]: TClient } };
   editingClient: TClient | null = null;
   pools!: IPools;
+
+  get currentpage() {
+    return this.page
+  }
 
   get total() {
     return this.totals[this.$route.params.id];

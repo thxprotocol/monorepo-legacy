@@ -31,7 +31,7 @@
 
         <BCard variant="white" body-class="p-0 shadow-sm">
             <BaseCardTableHeader
-                :page="page"
+                :page="currentpage"
                 :limit="limit"
                 :pool="pool"
                 :total-rows="totals[erc721._id]"
@@ -172,6 +172,10 @@ export default class MetadataView extends Vue {
 
     get pool(): IPool {
         return this.pools[this.$route.params.id];
+    }
+
+    get currentpage() {
+        return this.page
     }
 
     get erc721(): TERC721 {
