@@ -1,5 +1,12 @@
 <template>
-    <base-modal size="xl" title="Create ERC20 Reward" :id="id" :error="error" :loading="isLoading">
+    <base-modal
+        @show="onShow"
+        size="xl"
+        :title="reward ? 'Update ERC20 Reward' : 'Create ERC20 Reward'"
+        :id="id"
+        :error="error"
+        :loading="isLoading"
+    >
         <template #modal-body v-if="!isLoading">
             <p class="text-gray">
                 Points rewards are distributed to your customers achieving milestones in your customer journey.
@@ -91,7 +98,7 @@ export default class ModalRewardERC20Create extends Vue {
     @Prop() pool!: IPool;
     @Prop({ required: false }) reward!: TERC20Perk;
 
-    mounted() {
+    onShow() {
         if (this.reward) {
             this.title = this.reward.title;
             this.amount = String(this.reward.amount);
@@ -112,6 +119,7 @@ export default class ModalRewardERC20Create extends Vue {
                 pool: this.pool,
                 reward: this.reward,
                 payload: {
+                    page: 1,
                     poolId: String(this.pool._id),
                     title: this.title,
                     description: this.description,

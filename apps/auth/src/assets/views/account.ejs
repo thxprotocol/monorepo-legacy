@@ -13,12 +13,12 @@
             </div>
             <% } %>
 
-            <form id="account_update" class="pt-5 mt-5" autocomplete="off" action="/oidc/<%= uid %>/account"
-                  enctype="multipart/form-data" method="POST">
+            <form id="account_update" autocomplete="off" action="/oidc/<%= uid %>/account" enctype="multipart/form-data"
+                  method="POST">
 
                 <% if (params.profileImg) { %>
                 <div class="row d-flex align-items-center justify-content-center pb-5">
-                    <img class="w-75" src="<%= params.profileImg %>" alt="profle-picture" />
+                    <img width="150" src="<%= params.profileImg %>" alt="profle-picture" />
                 </div>
                 <% } %>
                 <div class="row pb-3">
@@ -130,12 +130,48 @@
 
                 <div class="d-flex col-8">
                     <div class="w-100 d-flex flex-column">
+                        <% if (params.twitchLoginUrl && !params.twitchAccess) { %>
+                        <a class="btn btn-sign-in btn-twitch btn-block my-1" href="<%= params.twitchLoginUrl %>">
+                            <div class="logo">
+                                <img src="/img/twitch-logo.png" alt="twitch logo" />
+                            </div>
+                            <div class="label">Connect Twitch</div>
+                        </a>
+                        <% } %>
+                        <% if (params.twitchAccess) { %>
+                        <form method="post" action="/oidc/<%= uid %>/account/twitch/disconnect">
+                            <button class="btn btn-sign-in btn-discord bg-gray btn-block my-1" type="submit">
+                                <div class="logo">
+                                    <img src="/img/twitch-logo.png" alt="Twitch logo" />
+                                </div>
+                                <div class="label">Disconnect Twitch</div>
+                            </button>
+                        </form>
+                        <% } %>
+                        <% if (params.discordLoginUrl && !params.discordAccess) { %>
+                        <a class="btn btn-sign-in btn-discord btn-block my-1" href="<%= params.discordLoginUrl %>">
+                            <div class="logo">
+                                <img src="/img/discord-logo.png" alt="Discord logo" />
+                            </div>
+                            <div class="label">Connect Discord</div>
+                        </a>
+                        <% } %>
+                        <% if (params.discordAccess) { %>
+                        <form method="post" action="/oidc/<%= uid %>/account/discord/disconnect">
+                            <button class="btn btn-sign-in btn-twitch bg-gray btn-block my-1" type="submit">
+                                <div class="logo">
+                                    <img src="/img/discord-logo.png" alt="Twitch logo" />
+                                </div>
+                                <div class="label">Disconnect Discord</div>
+                            </button>
+                        </form>
+                        <% } %>
                         <% if (params.googleLoginUrl && !params.googleAccess) { %>
                         <a class="btn btn-sign-in btn-google btn-block my-1" href="<%= params.googleLoginUrl %>">
                             <div class="logo">
                                 <img src="/img/g-logo.png" alt="Google logo" />
                             </div>
-                            <div class="label">Sign in with Google</div>
+                            <div class="label">Connect Google (YouTube)</div>
                         </a>
                         <% } %>
                         <% if (params.googleAccess) { %>
@@ -153,7 +189,7 @@
                             <div class="logo">
                                 <img src="/img/t-logo.png" alt="Twitter logo" />
                             </div>
-                            <div class="label">Sign in with Twitter</div>
+                            <div class="label">Connect Twitter</div>
                         </a>
                         <% } %>
                         <% if (params.twitterAccess) { %>

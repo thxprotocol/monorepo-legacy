@@ -1,6 +1,6 @@
 import { AccountPlanType, ChainId } from '@thxnetwork/api/types/enums';
 export interface IAccount {
-    id?: string;
+    sub?: string;
     address: string;
     walletAddress: string;
     privateKey: string;
@@ -16,20 +16,17 @@ export interface ERC20Token {
     address: string;
 }
 
-export interface AuthToken {
-    accessToken: string;
-    kind: string;
-}
-
 export interface IAccountUpdates {
     acceptTermsPrivacy?: boolean;
     acceptUpdates?: boolean;
     address?: string;
     walletAddress?: string;
-    privateKey?: string;
     authenticationToken?: string;
     authenticationTokenExpires?: number;
-    googleAccess?: string;
-    twitterAccess?: string;
+    googleAccess?: boolean;
+    twitterAccess?: boolean;
+    githubAccess?: boolean;
+    twitchAccess?: boolean;
+    discordAccess?: boolean;
     plan?: AccountPlanType;
 }

@@ -19,7 +19,7 @@ export const getRoutes = (pool: IPool) => {
             path: 'referral-rewards',
             label: 'Referrals',
             iconClasses: 'fas fa-comments',
-            visible: !!pool.erc20 || !!pool.erc721,
+            visible: true,
         },
         {
             path: 'metadata',
@@ -55,7 +55,7 @@ export const getRoutes = (pool: IPool) => {
             path: 'transactions',
             label: 'Analytics',
             iconClasses: 'fas fa-chart-line',
-            visible: !!pool.erc20,
+            visible: true,
         },
         // {
         //     path: 'erc20swaps',
@@ -79,7 +79,13 @@ export const getRoutes = (pool: IPool) => {
             path: 'clients',
             label: 'API Keys',
             iconClasses: 'fas fa-key',
-            visible: !!pool.erc20 || !!pool.erc721,
+            visible: true,
+        },
+        {
+            path: 'info',
+            label: 'Smart Contracts',
+            iconClasses: 'fas fa-project-diagram',
+            visible: true,
         },
     ];
 

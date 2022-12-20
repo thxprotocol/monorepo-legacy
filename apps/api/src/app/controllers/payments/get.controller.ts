@@ -31,7 +31,7 @@ const controller = async (req: Request, res: Response) => {
         if (payment.sender) {
             const account = await AccountProxy.getByAddress(payment.sender);
             if (account) {
-                membership = await Membership.findOne({ poolId: payment.poolId, sub: account.id });
+                membership = await Membership.findOne({ poolId: payment.poolId, sub: account.sub });
             }
         }
     }

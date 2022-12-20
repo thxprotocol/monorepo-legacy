@@ -12,7 +12,7 @@ import WalletManagerService from './WalletManagerService';
 import AccountProxy from '../proxies/AccountProxy';
 
 async function create(chainId: ChainId, account: IAccount, forceSync = true) {
-    const sub = String(account.id);
+    const sub = String(account.sub);
     const wallet = await Wallet.create({ sub, chainId });
     return this.deploy(wallet, chainId, sub, forceSync);
 }

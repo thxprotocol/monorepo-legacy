@@ -232,17 +232,17 @@ export default class BaseModalRewardClaimsDownload extends Vue {
 
         for (const claim of this.claims) {
             let data: string | ArrayBuffer;
-            const url = `${WALLET_URL}/claim/${claim.id}`;
+            const url = `${WALLET_URL}/claim/${claim.uuid}`;
 
             switch (this.selectedFormat) {
                 case 'pdf': {
                     data = await this.createQRCodeSvg(url);
-                    archive.file(`${claim.id}.pdf`, data, { base64: true });
+                    archive.file(`${claim.uuid}.pdf`, data, { base64: true });
                     break;
                 }
                 case 'png': {
                     data = await this.createQRCode(url);
-                    archive.file(`${claim.id}.png`, data, { base64: true });
+                    archive.file(`${claim.uuid}.png`, data, { base64: true });
                     break;
                 }
             }
@@ -253,7 +253,7 @@ export default class BaseModalRewardClaimsDownload extends Vue {
 
     onClickCreateCSV() {
         const filename = `${new Date().getTime()}_${this.pool._id}_claim_urls`;
-        const data = this.claims.map((c) => [`${WALLET_URL}/claim/${c.id}`]);
+        const data = this.claims.map((c) => [`${WALLET_URL}/claim/${c.uuid}`]);
         const csvContent = 'data:text/csv;charset=utf-8,' + data.map((e) => e.join(',')).join('\n');
 
         saveAs(encodeURI(csvContent), `${filename}.csv`);

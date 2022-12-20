@@ -17,12 +17,12 @@
                 :page="page"
                 :limit="limit"
                 :pool="pool"
-                :rewards="referralRewards[pool._id]"
-                :totals="totals"
+                :total-rows="totals[pool._id]"
                 :selectedItems="selectedItems"
+                :actions="[{ variant: 0, label: `Delete referral rewards` }]"
+                @click-action="onClickAction"
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
-                @delete="onDelete"
             />
             <BTable hover :busy="isLoading" :items="rewardsByPage" responsive="lg" show-empty>
                 <!-- Head formatting -->
@@ -30,15 +30,22 @@
                     <b-form-checkbox @change="onChecked" />
                 </template>
                 <template #head(title)> Title </template>
-                <template #head(progress)> Progress </template>
+                <template #head(amount)> Amount </template>
+                <template #head(successUrl)> Success URL </template>
                 <template #head(id)> &nbsp; </template>
 
                 <!-- Cell formatting -->
                 <template #cell(checkbox)="{ item }">
                     <b-form-checkbox :value="item.checkbox" v-model="selectedItems" />
                 </template>
+                <template #cell(title)="{ item }">
+                    {{ item.title }}
+                </template>
                 <template #cell(amount)="{ item }">
                     <b-badge variant="dark" class="p-2"> {{ item.amount }} Points </b-badge>
+                </template>
+                <template #cell(successUrl)="{ item }">
+                    {{ item.successUrl }}
                 </template>
                 <template #cell(progress)="{ item }">
                     <b-progress style="border-radius: 0.3rem">
@@ -103,7 +110,7 @@ import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCard
 })
 export default class ReferralRewardsView extends Vue {
     isLoading = true;
-    limit = 10;
+    limit = 5;
     page = 1;
     selectedItems: string[] = [];
 
@@ -126,8 +133,9 @@ export default class ReferralRewardsView extends Vue {
             .sort((a, b) => (a.createdAt && b.createdAt && a.createdAt < b.createdAt ? 1 : -1))
             .map((r: TReferralReward) => ({
                 checkbox: r._id,
-                amount: r.amount,
                 title: r.title,
+                amount: r.amount,
+                successUrl: r.successUrl,
                 progress: {
                     limit: r.rewardLimit,
                     progress: r.progress,
@@ -169,6 +177,16 @@ export default class ReferralRewardsView extends Vue {
     onDelete(items: string[]) {
         for (const id of Object.values(items)) {
             this.$store.dispatch('referralRewards/delete', this.referralRewards[this.pool._id][id]);
+        }
+    }
+
+    onClickAction(action: { variant: number; label: string }) {
+        switch (action.variant) {
+            case 0:
+                for (const id of Object.values(this.selectedItems)) {
+                    this.$store.dispatch('referralRewards/delete', this.referralRewards[this.pool._id][id]);
+                }
+                break;
         }
     }
 }

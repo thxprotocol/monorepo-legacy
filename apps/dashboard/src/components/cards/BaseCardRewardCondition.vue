@@ -38,11 +38,7 @@
                             <i class="fas fa-info-circle mr-1"></i> Connect with your {{ platform.name }} account to
                             create conditions for your content.
                         </p>
-                        <b-button
-                            block
-                            variant="dark"
-                            @click="$store.dispatch('account/connectRedirect', platform.type)"
-                        >
+                        <b-button block variant="dark" @click="onClickConnect">
                             <img :src="platform.logoURI" width="20" class="mr-2" /> Connect account
                         </b-button>
                     </b-alert>
@@ -121,6 +117,13 @@ export default class BaseCardRewardCondition extends Vue {
         }
     }
 
+    onClickConnect() {
+        this.$store.dispatch('account/connectRedirect', {
+            platform: this.platform.type,
+            returnUrl: window.location.href,
+        });
+    }
+
     async onSelectPlatform(platform: IChannel) {
         if (!platform) return;
 
@@ -140,9 +143,7 @@ export default class BaseCardRewardCondition extends Vue {
             }
             default:
         }
-
         this.onSelectInteraction(this.interaction);
-        this.change();
         this.isLoadingPlatform = false;
     }
 
@@ -178,7 +179,6 @@ export default class BaseCardRewardCondition extends Vue {
         }
 
         this.interactionComponent = this.getInteractionComponent();
-        this.change();
     }
 
     onSelectContent(content: any) {
@@ -193,6 +193,7 @@ export default class BaseCardRewardCondition extends Vue {
     }
 
     change() {
+        if (!this.platform.type) return;
         this.$emit('change', {
             platform: this.platform.type,
             interaction: this.interaction.type,

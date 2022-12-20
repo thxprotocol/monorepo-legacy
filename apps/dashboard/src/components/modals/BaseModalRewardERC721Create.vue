@@ -129,6 +129,7 @@ export default class ModalRewardERC721Create extends Vue {
                 pool: this.pool,
                 reward: this.reward,
                 payload: {
+                    page: 1,
                     title: this.title,
                     description: this.description,
                     erc721metadataId: this.erc721metadataId,

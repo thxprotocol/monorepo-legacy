@@ -24,34 +24,13 @@
             </div>
             <div class="flex-grow-1 w-100 h-25 overflow-auto">
                 <b-navbar-nav>
-                    <b-nav-item to="/tokens" class="nav-link-plain">
-                        <div class="nav-link-wrapper">
-                            <div class="nav-link-icon">
-                                <i class="fas fa-coins"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <span>Tokens</span>
-                            </div>
-                        </div>
-                    </b-nav-item>
-                    <b-nav-item to="/nft" class="nav-link-plain">
-                        <div class="nav-link-wrapper">
-                            <div class="nav-link-icon">
-                                <i class="fas fa-palette"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <span class="mr-2">Collections</span>
-                            </div>
-                        </div>
-                    </b-nav-item>
                     <b-nav-item to="/pools" class="nav-link-plain">
                         <div class="nav-link-wrapper">
                             <div class="nav-link-icon">
                                 <i class="fas fa-chart-pie"></i>
                             </div>
                             <div class="flex-grow-1">
-                                <span class="mr-2">Pools</span>
-                                <small v-if="pool" class="text-truncate w-10 m-0">{{ pool.address }}</small>
+                                <span class="mr-2">Loyalty Network</span>
                             </div>
                         </div>
                         <div v-if="pool" class="p-0">
@@ -71,23 +50,23 @@
                             </b-nav-item>
                         </div>
                     </b-nav-item>
-                    <b-nav-item to="/integrations" class="nav-link-plain">
+                    <b-nav-item to="/tokens" class="nav-link-plain">
                         <div class="nav-link-wrapper">
                             <div class="nav-link-icon">
-                                <i class="fas fa-cogs"></i>
+                                <i class="fas fa-coins"></i>
                             </div>
                             <div class="flex-grow-1">
-                                <span>Integrations</span>
+                                <span>Currencies</span>
                             </div>
                         </div>
                     </b-nav-item>
-                    <b-nav-item :href="docsUrl" target="_blank" class="nav-link-plain">
+                    <b-nav-item to="/nft" class="nav-link-plain">
                         <div class="nav-link-wrapper">
                             <div class="nav-link-icon">
-                                <i class="far fa-file-alt"></i>
+                                <i class="fas fa-palette"></i>
                             </div>
                             <div class="flex-grow-1">
-                                <span>Documentation</span>
+                                <span class="mr-2">NFT</span>
                             </div>
                         </div>
                     </b-nav-item>
@@ -106,6 +85,16 @@
                                 <b-button size="sm" variant="darker" disabled href="https://docs.thx.network/pricing">
                                     Upgrade
                                 </b-button>
+                            </div>
+                        </div>
+                    </b-nav-item>
+                    <b-nav-item :href="docsUrl" target="_blank" class="nav-link-plain">
+                        <div class="nav-link-wrapper">
+                            <div class="nav-link-icon">
+                                <i class="far fa-file-alt"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <span>Documentation</span>
                             </div>
                         </div>
                     </b-nav-item>

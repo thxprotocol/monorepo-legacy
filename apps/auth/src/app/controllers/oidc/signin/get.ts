@@ -5,6 +5,8 @@ import { TwitterService } from '../../../services/TwitterService';
 import { YouTubeService } from '../../../services/YouTubeService';
 import { AUTH_REQUEST_TYPED_MESSAGE, createTypedMessage } from '../../../util/typedMessage';
 import ClaimProxy from '@thxnetwork/auth/proxies/ClaimProxy';
+import { DiscordService } from '@thxnetwork/auth/services/DiscordService';
+import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
 
 async function controller(req: Request, res: Response) {
     const { uid, params } = req.interaction;
@@ -21,6 +23,8 @@ async function controller(req: Request, res: Response) {
 
     params.googleLoginUrl = YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getBasicScopes());
     params.githubLoginUrl = GithubService.getLoginURL(uid, {});
+    params.discordLoginUrl = DiscordService.getLoginURL(uid, {})
+    params.twitchLoginUrl = TwitchService.getLoginURL(uid, {});
 
     if (DASHBOARD_URL !== params.return_url) {
         params.twitterLoginUrl = TwitterService.getLoginURL(uid, {});

@@ -1,36 +1,32 @@
 import { Request, Response } from 'express';
 import { NotFoundError } from '../../util/errors';
 import { AccountService } from '../../services/AccountService';
+import { GithubService } from '../../services/GithubServices';
 import { YouTubeService } from '@thxnetwork/auth/services/YouTubeService';
+import { TwitterService } from '@thxnetwork/auth/services/TwitterService';
+import { DiscordService } from '@thxnetwork/auth/services/DiscordService';
+import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
 
 async function formatAccountRes(account) {
-    let protectedPrivateKey;
-    if (account.privateKey) {
-        protectedPrivateKey = { privateKey: account.privateKey };
-    }
-
     return {
-        ...{
-            id: account._id,
-            address: account.address,
-            walletAddress: account.walletAddress,
-            firstName: account.firstName,
-            lastName: account.lastName,
-            company: account.company,
-            plan: account.plan,
-            email: account.email,
-            googleAccess:
-                account.googleAccessToken !== undefined &&
-                account.googleAccessTokenExpires > Date.now() &&
-                (await YouTubeService.haveExpandedScopes(account.googleAccessToken)),
-            twitterAccess: account.twitterAccessToken !== undefined && account.twitterAccessTokenExpires > Date.now(),
-        },
-        ...protectedPrivateKey,
+        sub: String(account._id),
+        address: account.address,
+        walletAddress: account.walletAddress,
+        firstName: account.firstName,
+        lastName: account.lastName,
+        company: account.company,
+        plan: account.plan,
+        email: account.email,
+        googleAccess: await YouTubeService.isAuthorized(account),
+        twitterAccess: await TwitterService.isAuthorized(account),
+        githubAccess: GithubService.isAuthorized(account),
+        discordAccess: await DiscordService.isAuthorized(account),
+        twitchAccess: TwitchService.isAuthorized(account),
     };
 }
 
 export const getAccount = async (req: Request, res: Response) => {
-    const account = await AccountService.get(req.params.id);
+    const account = await AccountService.get(req.params.sub);
     if (!account) {
         throw new NotFoundError();
     }

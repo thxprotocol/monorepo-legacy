@@ -5,12 +5,18 @@ import { AccountService } from '../../../../services/AccountService';
 import { ERROR_NO_ACCOUNT } from '../../../../util/messages';
 import { getAccountByEmail, getInteraction, saveInteraction } from '../../../../util/oidc';
 import { AccountVariant } from '../../../../types/enums/AccountVariant';
+import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
+import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
 
 async function updateTokens(account: AccountDocument, tokens: any): Promise<AccountDocument> {
-    account.githubAccessToken = tokens.access_token || account.githubAccessToken;
-    account.githubRefreshToken = tokens.refresh_token || account.githubRefreshToken;
-    account.githubAccessTokenExpires =
-        Date.now() + Number(tokens.expires_in) * 1000 || account.githubAccessTokenExpires;
+    const expiry = tokens.expires_in ? Date.now() + Number(tokens.expires_in) * 1000 : undefined;
+
+    account.setToken({
+        kind: AccessTokenKind.Github,
+        accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token,
+        expiry,
+    } as IAccessToken);
 
     return await account.save();
 }

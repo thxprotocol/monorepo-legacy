@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 const schema = new mongoose.Schema(
     {
         sub: String,
-        id: String,
+        uuid: String,
         poolId: String,
         erc20Id: String,
         erc721Id: String,

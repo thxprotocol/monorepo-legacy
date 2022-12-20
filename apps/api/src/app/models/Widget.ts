@@ -5,6 +5,7 @@ export type WidgetDocument = mongoose.Document & {
     poolId: string;
     color: string;
     bgColor: string;
+    theme: string;
 };
 
 const widgetSchema = new mongoose.Schema(
@@ -13,6 +14,7 @@ const widgetSchema = new mongoose.Schema(
         poolId: String,
         color: String,
         bgColor: String,
+        theme: String,
     },
     { timestamps: true },
 );

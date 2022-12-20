@@ -22,16 +22,6 @@ const routes: Array<RouteConfig> = [
         beforeEnter: assertAuthorization,
     },
     {
-        path: '/tokens',
-        component: () => import('../views/Tokens.vue'),
-        beforeEnter: assertAuthorization,
-    },
-    {
-        path: '/nft',
-        component: () => import('../views/NFT.vue'),
-        beforeEnter: assertAuthorization,
-    },
-    {
         path: '/pools',
         component: () => import('../views/Pools.vue'),
         beforeEnter: assertAuthorization,
@@ -101,9 +91,13 @@ const routes: Array<RouteConfig> = [
         ],
     },
     {
-        path: '/integrations',
-        name: 'Integrations',
-        component: () => import('../views/Integrations.vue'),
+        path: '/tokens',
+        component: () => import('../views/Tokens.vue'),
+        beforeEnter: assertAuthorization,
+    },
+    {
+        path: '/nft',
+        component: () => import('../views/NFT.vue'),
         beforeEnter: assertAuthorization,
     },
     {

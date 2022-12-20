@@ -50,7 +50,7 @@ describe('Account', () => {
                     password: userPassword2,
                 })
                 .expect((res: request.Response) => {
-                    expect(res.body.id).toBe(account2.id);
+                    expect(res.body.sub).toBe(account2.sub);
                     expect(res.body.address).toBe(account2.address);
 
                     userWalletAddress = res.body.address;
@@ -75,24 +75,6 @@ describe('Account', () => {
                 .expect(200, done);
         });
     });
-
-    // describe('POST /gas_station/upgrade_address', () => {
-    //     it('HTTP 200 if OK', (done) => {
-    //         const nonce = '',
-    //             call = '',
-    //             sig = '';
-
-    //         user.post('/v1/gas_station/upgrade_address')
-    //             .set({ 'X-PoolId': poolId, Authorization: walletAccessToken })
-    //             .send({
-    //                 newAddress: '',
-    //                 nonce,
-    //                 call,
-    //                 sig,
-    //             })
-    //             .expect(200, done);
-    //     });
-    // });
 
     describe('GET /account/', () => {
         it('HTTP 200 if OK', (done) => {

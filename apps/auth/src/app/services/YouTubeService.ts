@@ -2,6 +2,8 @@ import axios from 'axios';
 import { google, youtube_v3 } from 'googleapis';
 import { AccountDocument } from '../models/Account';
 import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI } from '../config/secrets';
+import { AccessTokenKind } from '../types/enums/AccessTokenKind';
+import { IAccessToken } from '../types/TAccount';
 
 const client = new google.auth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI);
 
@@ -10,19 +12,33 @@ google.options({ auth: client });
 const ERROR_NO_DATA = 'Could not find an youtube data for this accesstoken';
 
 export class YouTubeService {
+    static async isAuthorized(account: AccountDocument) {
+        const token = account.getToken(AccessTokenKind.Google);
+        if (!token || !token.accessToken) return false;
+        const isExpired = Date.now() > token.expiry;
+        if (isExpired) return false;
+        const hasYoutubeScopes = await this.hasYoutubeScopes(token.accessToken);
+        if (!hasYoutubeScopes) return false;
+        return true;
+    }
+
     static async getYoutubeClient(account: AccountDocument) {
+        const googleToken: IAccessToken = account.getToken(AccessTokenKind.Google);
         client.setCredentials({
-            refresh_token: account.googleRefreshToken,
-            access_token: account.googleAccessToken,
+            refresh_token: googleToken.refreshToken,
+            access_token: googleToken.accessToken,
         });
 
         const { token } = await client.getAccessToken();
         const { expiry_date } = await client.getTokenInfo(token);
 
-        await account.updateOne({
-            googleAccessToken: token,
-            googleAccessTokenExpires: expiry_date,
+        account.setToken({
+            kind: AccessTokenKind.Google,
+            accessToken: token,
+            expiry: expiry_date,
+            refreshToken: googleToken.refreshToken,
         });
+        await account.save();
 
         return google.youtube({ version: 'v3' });
     }
@@ -141,23 +157,24 @@ export class YouTubeService {
     }
 
     static async getScopesOfAccessToken(token: string): Promise<string[]> {
-        const response = await axios({
+        const r = await axios({
             url: `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${token}`,
         });
-        return response.data['scope'].split(' ');
+        return r.data['scope'].split(' ');
     }
 
-    static async haveExpandedScopes(token: string): Promise<boolean> {
-        const expanedScopes = this.getExpandedScopes();
+    static async hasYoutubeScopes(token: string): Promise<boolean> {
+        const youtubeScopes = this.getYoutubeScopes();
         const scopes = await YouTubeService.getScopesOfAccessToken(token);
-        const missingScope = scopes.length !== expanedScopes.length;
-
-        return !missingScope;
+        return scopes.length === youtubeScopes.length;
     }
 
     static async revokeAccess(account: AccountDocument) {
+        const token: IAccessToken | undefined = account.getToken(AccessTokenKind.Google);
+        if (!token) throw new Error('Could not find the token');
+
         const r = await axios({
-            url: `https://oauth2.googleapis.com/revoke?token=${account.googleAccessToken}`,
+            url: `https://oauth2.googleapis.com/revoke?token=${token.accessToken}`,
             method: 'POST',
         });
 
@@ -183,7 +200,7 @@ export class YouTubeService {
         return ['https://www.googleapis.com/auth/userinfo.email', 'openid'];
     }
 
-    static getExpandedScopes() {
+    static getYoutubeScopes() {
         return ['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/youtube', 'openid'];
     }
 }

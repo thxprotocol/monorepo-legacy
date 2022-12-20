@@ -1,6 +1,5 @@
-import newrelic from 'newrelic';
 import Web3 from 'web3';
-import { IAccountUpdates } from '../types/TAccount';
+import { IAccessToken, IAccountUpdates } from '../types/TAccount';
 import { Account, AccountDocument } from '../models/Account';
 import { createRandomToken } from '../util/tokens';
 import { decryptString } from '../util/decrypt';
@@ -21,9 +20,10 @@ import {
     ERROR_VERIFY_EMAIL_EXPIRED,
 } from '../util/messages';
 import { YouTubeService } from './YouTubeService';
-import { logger } from '../util/logger';
 import { AccountPlanType } from '../types/enums/AccountPlanType';
 import { AccountVariant } from '../types/enums/AccountVariant';
+import { AccessTokenKind } from '../types/enums/AccessTokenKind';
+
 export class AccountService {
     static get(sub: string) {
         return Account.findById(sub);
@@ -45,98 +45,84 @@ export class AccountService {
         return await Account.exists({ email, active: true });
     }
 
-    static async update(
-        account: AccountDocument,
-        {
-            acceptTermsPrivacy,
-            acceptUpdates,
-            address,
-            walletAddress,
-            privateKey,
-            googleAccess,
-            twitterAccess,
-            authenticationToken,
-            authenticationTokenExpires,
-            lastLoginAt,
-            organisation,
-            firstName,
-            profileImg,
-            lastName,
-            plan,
-            email,
-        }: IAccountUpdates,
-    ) {
-        if (email) {
-            account.email = email;
+    static async update(account: AccountDocument, updates: IAccountUpdates) {
+        if (updates.email) {
+            account.email = updates.email;
         }
         // No strict checking here since null == undefined
         if (account.acceptTermsPrivacy == null) {
-            account.acceptTermsPrivacy = acceptTermsPrivacy == null ? false : account.acceptTermsPrivacy;
+            account.acceptTermsPrivacy = updates.acceptTermsPrivacy == null ? false : account.acceptTermsPrivacy;
         } else {
-            account.acceptTermsPrivacy = acceptTermsPrivacy || account.acceptTermsPrivacy;
+            account.acceptTermsPrivacy = updates.acceptTermsPrivacy || account.acceptTermsPrivacy;
         }
 
-        if (organisation) {
-            account.organisation = organisation;
+        if (updates.organisation) {
+            account.organisation = updates.organisation;
         }
 
-        if (firstName) {
-            account.firstName = firstName;
+        if (updates.firstName) {
+            account.firstName = updates.firstName;
         }
 
-        if (lastName) {
-            account.lastName = lastName;
+        if (updates.lastName) {
+            account.lastName = updates.lastName;
         }
 
-        if (lastLoginAt) {
-            account.lastLoginAt = lastLoginAt;
+        if (updates.lastLoginAt) {
+            account.lastLoginAt = updates.lastLoginAt;
         }
 
-        if (profileImg) {
-            account.profileImg = profileImg;
+        if (updates.profileImg) {
+            account.profileImg = updates.profileImg;
         }
 
-        if (plan) {
-            if (account.plan === AccountPlanType.Free) {
-                // await MailService.
-            }
-            account.plan = plan;
+        if (updates.plan) {
+            account.plan = updates.plan;
         }
-        // No strict checking here since null == undefined
+
         if (account.acceptUpdates == null) {
-            account.acceptUpdates = acceptUpdates == null ? false : account.acceptUpdates;
+            account.acceptUpdates = updates.acceptUpdates == null ? false : account.acceptUpdates;
         } else {
-            account.acceptUpdates = acceptUpdates || account.acceptTermsPrivacy;
+            account.acceptUpdates = updates.acceptUpdates || account.acceptTermsPrivacy;
         }
 
-        account.authenticationToken = authenticationToken || account.authenticationToken;
-        account.authenticationTokenExpires = authenticationTokenExpires || account.authenticationTokenExpires;
-        account.address = address || account.address ? toChecksumAddress(address || account.address) : undefined;
+        if (updates.authenticationToken || updates.authenticationTokenExpires) {
+            account.setToken({
+                kind: AccessTokenKind.Auth,
+                accessToken: updates.authenticationToken,
+                expiry: updates.authenticationTokenExpires,
+            });
+        }
+
+        account.address =
+            updates.address || account.address ? toChecksumAddress(updates.address || account.address) : undefined;
+
         account.walletAddress =
-            walletAddress || account.walletAddress
-                ? toChecksumAddress(walletAddress || account.walletAddress)
+            updates.walletAddress || account.walletAddress
+                ? toChecksumAddress(updates.walletAddress || account.walletAddress)
                 : undefined;
-        account.privateKey = privateKey || account.privateKey;
 
-        if (googleAccess === false) {
-            try {
-                await YouTubeService.revokeAccess(account);
-            } catch (error) {
-                newrelic.noticeError(error);
-                logger.error('Unable to revoke YouTube access', error);
-            }
-            account.googleAccessToken = '';
-            account.googleRefreshToken = '';
-            account.googleAccessTokenExpires = null;
+        if (updates.googleAccess === false) {
+            YouTubeService.revokeAccess(account);
+            account.unsetToken(AccessTokenKind.Google);
         }
 
-        if (twitterAccess === false) {
-            account.twitterAccessToken = '';
-            account.twitterRefreshToken = '';
-            account.twitterAccessTokenExpires = null;
+        if (updates.twitterAccess === false) {
+            account.unsetToken(AccessTokenKind.Twitter);
         }
 
-        return await account.save();
+        if (updates.githubAccess === false) {
+            account.unsetToken(AccessTokenKind.Github);
+        }
+
+        if (updates.twitchAccess === false) {
+            account.unsetToken(AccessTokenKind.Twitch);
+        }
+
+        if (updates.discordAccess === false) {
+            account.unsetToken(AccessTokenKind.Discord);
+        }
+        await account.save();
     }
 
     static async signinWithAddress(addr: string) {
@@ -184,8 +170,12 @@ export class AccountService {
         account.twitterId = data.twitterId;
 
         if (!data.active) {
-            account.signupToken = createRandomToken();
-            account.signupTokenExpires = DURATION_TWENTYFOUR_HOURS;
+            const token = {
+                kind: AccessTokenKind.Signup,
+                accessToken: createRandomToken(),
+                expiry: DURATION_TWENTYFOUR_HOURS,
+            } as IAccessToken;
+            account.setToken(token);
         }
 
         return account;
@@ -207,18 +197,21 @@ export class AccountService {
     }
 
     static async verifySignupToken(signupToken: string) {
-        const account = await Account.findOne({ signupToken });
+        const account = await Account.findOne({
+            'tokens.kind': AccessTokenKind.Signup,
+            'tokens.accessToken': signupToken,
+        });
 
         if (!account) {
             return { error: ERROR_SIGNUP_TOKEN_INVALID };
         }
 
-        if (account.signupTokenExpires < Date.now()) {
+        const token: IAccessToken = account.getToken(AccessTokenKind.Signup);
+        if (token.expiry < Date.now()) {
             return { error: ERROR_SIGNUP_TOKEN_EXPIRED };
         }
 
-        account.signupToken = '';
-        account.signupTokenExpires = null;
+        account.setToken({ kind: AccessTokenKind.Signup, expiry: null, accessToken: '' } as IAccessToken);
         account.active = true;
         account.isEmailVerified = true;
 
@@ -228,18 +221,20 @@ export class AccountService {
     }
 
     static async verifyEmailToken(verifyEmailToken: string) {
-        const account = await Account.findOne({ verifyEmailToken });
+        const account = await Account.findOne({
+            'tokens.kind': AccessTokenKind.VerifyEmail,
+            'tokens.accessToken': verifyEmailToken,
+        });
 
         if (!account) {
             return { error: ERROR_VERIFY_EMAIL_TOKEN_INVALID };
         }
-
-        if (account.verifyEmailTokenExpires < Date.now()) {
+        const token: IAccessToken = account.getToken(AccessTokenKind.VerifyEmail);
+        if (token.expiry < Date.now()) {
             return { error: ERROR_VERIFY_EMAIL_EXPIRED };
         }
 
-        account.verifyEmailToken = '';
-        account.verifyEmailTokenExpires = null;
+        account.setToken({ kind: AccessTokenKind.VerifyEmail, expiry: null, accessToken: '' } as IAccessToken);
         account.isEmailVerified = true;
 
         await account.save();
@@ -253,10 +248,15 @@ export class AccountService {
         authenticationToken: string,
         secureKey: string,
     ) {
-        const account: AccountDocument = await Account.findOne({ authenticationToken })
-            .where('authenticationTokenExpires')
-            .gt(Date.now())
-            .exec();
+        // const account: AccountDocument = await Account.findOne({ authenticationToken })
+        //     .where('authenticationTokenExpires')
+        //     .gt(Date.now())
+        //     .exec();
+
+        const account = await Account.findOne({
+            'tokens.kind': AccessTokenKind.Auth,
+            'tokens.expiry': { $gt: Date.now() },
+        });
 
         if (!account) {
             throw new Error(ERROR_AUTHENTICATION_TOKEN_INVALID_OR_EXPIRED);
@@ -287,10 +287,15 @@ export class AccountService {
     }
 
     static async getSubForPasswordResetToken(password: string, passwordConfirm: string, passwordResetToken: string) {
-        const account: AccountDocument = await Account.findOne({ passwordResetToken })
-            .where('passwordResetExpires')
-            .gt(Date.now())
-            .exec();
+        // const account: AccountDocument = await Account.findOne({ passwordResetToken })
+        //     .where('passwordResetExpires')
+        //     .gt(Date.now())
+        //     .exec();
+        const account = await Account.findOne({
+            'tokens.kind': AccessTokenKind.PasswordReset,
+            'tokens.expiry': { $gt: Date.now() },
+        });
+
         const passwordStrength = checkPasswordStrength(password);
         if (!account) {
             throw new Error(ERROR_PASSWORD_RESET_TOKEN_INVALID_OR_EXPIRED);

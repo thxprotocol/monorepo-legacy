@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt-nodejs';
 import mongoose from 'mongoose';
-import { TAccount } from '../types/TAccount';
+import { AccessTokenKind } from '../types/enums/AccessTokenKind';
+import { IAccessToken, TAccount } from '../types/TAccount';
 import { encryptString } from '../util/encrypt';
 
 export type AccountDocument = mongoose.Document & TAccount;
@@ -22,28 +23,12 @@ const accountSchema = new mongoose.Schema(
         walletAddress: { type: String, unique: true, sparse: true },
         variant: Number,
         privateKey: String,
-        signupToken: String,
         otpSecret: String,
-        signupTokenExpires: Date,
-        authenticationToken: String,
-        authenticationTokenExpires: Date,
-        passwordResetToken: String,
-        passwordResetExpires: Date,
-        googleAccessToken: String,
-        googleRefreshToken: String,
-        googleAccessTokenExpires: Number,
-        twitterAccessToken: String,
-        twitterRefreshToken: String,
-        twitterAccessTokenExpires: Number,
         twitterId: String,
-        githubAccessToken: String,
-        githubRefreshToken: String,
-        githubAccessTokenRefresh: Number,
-        verifyEmailToken: String,
-        verifyEmailTokenExpires: Number,
         acceptTermsPrivacy: Boolean,
         acceptUpdates: Boolean,
         lastLoginAt: Date,
+        tokens: [{ kind: String, accessToken: String, refreshToken: String, expiry: Number }],
     },
     { timestamps: true },
 );
@@ -80,6 +65,28 @@ const comparePassword = function (candidatePassword: string) {
     return bcrypt.compareSync(candidatePassword, this.password);
 };
 
+const getToken = function (kind: AccessTokenKind): IAccessToken {
+    return this.tokens.find((x: IAccessToken) => x.kind === kind);
+};
+
+const unsetToken = function (kind: AccessTokenKind) {
+    const index = this.tokens.findIndex((x: IAccessToken) => x.kind === kind);
+    if (index < 0) return;
+    this.tokens.splice(index, 1);
+};
+
+const setToken = async function (data: IAccessToken) {
+    const index = this.tokens.findIndex((x: IAccessToken) => x.kind === data.kind);
+    if (index < 0) {
+        this.tokens.push(data);
+    } else {
+        this.tokens[index] = { ...this.tokens[index], ...data };
+    }
+};
+
 accountSchema.methods.comparePassword = comparePassword;
+accountSchema.methods.getToken = getToken;
+accountSchema.methods.setToken = setToken;
+accountSchema.methods.unsetToken = unsetToken;
 
 export const Account = mongoose.model<AccountDocument>('Account', accountSchema);

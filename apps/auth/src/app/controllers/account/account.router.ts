@@ -14,12 +14,14 @@ import { getYoutube } from './google/get.controller';
 import { getYoutubeLike } from './google/youtube/like/get.controller';
 import { getYoutubeSubscribe } from './google/youtube/subscribe/get.controller';
 import { createLoginValidation, postLogin } from './login/post.controller';
+import { getDiscord } from './discord/get.action';
+import { getTwitch } from './twitch/get.action';
 
 const router = express.Router();
 
 router.use(validateJwt);
 router.post('/', guard.check(['accounts:read', 'accounts:write']), validate(validations.postAccount), postAccount);
-router.get('/:id', guard.check(['accounts:read']), getAccount);
+router.get('/:sub', guard.check(['accounts:read']), getAccount);
 
 router.get('/:sub/twitter', guard.check(['accounts:read']), getTwitter);
 router.get('/:sub/twitter/like/:item', guard.check(['accounts:read']), getTwitterLike);
@@ -29,11 +31,13 @@ router.get('/:sub/twitter/follow/:item', guard.check(['accounts:read']), getTwit
 router.get('/:sub/google/youtube', guard.check(['accounts:read']), getYoutube);
 router.get('/:sub/google/youtube/like/:item', guard.check(['accounts:read']), getYoutubeLike);
 router.get('/:sub/google/youtube/subscribe/:item', guard.check(['accounts:read']), getYoutubeSubscribe);
+router.get('/:sub/discord', guard.check(['accounts:read']), getDiscord);
+router.get('/:sub/twitch', guard.check(['accounts:read']), getTwitch);
 
 router.get('/address/:address', guard.check(['accounts:read']), validate([]), getAccountByAddress);
 router.get('/email/:email', guard.check(['accounts:read']), validate([]), getAccountByEmail);
-router.patch('/:id', guard.check(['accounts:read', 'accounts:write']), patchAccount);
-router.delete('/:id', guard.check(['accounts:write']), deleteAccount);
+router.patch('/:sub', guard.check(['accounts:read', 'accounts:write']), patchAccount);
+router.delete('/:sub', guard.check(['accounts:write']), deleteAccount);
 
 router.post('/login', validate(createLoginValidation), guard.check(['accounts:write']), postLogin);
 
