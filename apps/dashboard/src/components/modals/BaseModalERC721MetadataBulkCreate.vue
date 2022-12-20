@@ -1,5 +1,11 @@
 <template>
-    <base-modal @show="onShow" :loading="loading" :error="error" title="Upload images" id="modalNFTBulkCreate">
+    <base-modal
+        @show="onShow"
+        :loading="loading"
+        :error="error"
+        title="Upload images"
+        id="modalERC721MetadataBulkCreate"
+    >
         <template #modal-body v-if="!loading">
             <label>Select image property</label>
             <b-dropdown variant="link" class="dropdown-select">

@@ -27,6 +27,8 @@
                 :erc721="erc721"
                 :pool="pool"
             />
+            <BaseModalErc721MetadataBulkCreate :pool="pool" :erc721="erc721" />
+            <BaseModalErc721MetadataUploadCSV :pool="pool" :erc721="erc721" />
         </b-row>
 
         <BCard variant="white" body-class="p-0 shadow-sm">
