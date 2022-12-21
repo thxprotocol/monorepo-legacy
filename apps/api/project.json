@@ -19,6 +19,10 @@
                     {
                         "entryPath": "apps/api/scripts/migrate-mongo.ts",
                         "entryName": "migrate-mongo"
+                    },
+                    {
+                        "entryPath": "apps/api/scripts/checkBalance.ts",
+                        "entryName": "checkBalance"
                     }
                 ],
                 "generatePackageJson": true
@@ -95,6 +99,13 @@
             "options": {
                 "command": "migrate-mongo create -f src/app/config/migrate-mongo-create-only.json",
                 "cwd": "apps/api"
+            }
+        },
+        "check-balance": {
+            "executor": "@nrwl/workspace:run-commands",
+            "outputs": [],
+            "options": {
+                "command": "nx run api:build && NODE_TLS_REJECT_UNAUTHORIZED='0' node dist/apps/api/checkBalance.js {args.chainid}"
             }
         }
     },
