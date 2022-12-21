@@ -43,6 +43,7 @@ import { ERC20Type } from '@thxnetwork/dashboard/types/erc20';
 import BaseBadgeNetwork from '@thxnetwork/dashboard/components/badges/BaseBadgeNetwork.vue';
 import BaseModalDepositCreate from '@thxnetwork/dashboard/components/modals/BaseModalDepositCreate.vue';
 import { fromWei } from 'web3-utils';
+import { IAccount, AccountPlanType } from '../types/account';
 
 @Component({
     components: {
@@ -51,10 +52,12 @@ import { fromWei } from 'web3-utils';
     },
     computed: mapGetters({
         pools: 'pools/all',
+        account: 'account/profile',
     }),
 })
 export default class PoolView extends Vue {
     chainId: ChainId = ChainId.PolygonMumbai;
+    account!: IAccount;
     pools!: IPools;
     ERC20Type = ERC20Type;
     fromWei = fromWei;
@@ -71,7 +74,7 @@ export default class PoolView extends Vue {
     }
 
     get visibleRoutes() {
-        return getRoutes(this.pool);
+        return getRoutes(this.pool, this.account.plan === AccountPlanType.Premium);
     }
 }
 </script>

@@ -1,18 +1,18 @@
 <template>
-    <b-dropdown size="sm" variant="link" no-caret toggle-class="d-flex align-items-center float-right">
+    <b-dropdown size="sm" variant="link" right no-caret toggle-class="d-flex align-items-center float-right">
         <template #button-content>
             <i class="fas fa-ellipsis-v m-0 p-1 px-2 text-muted" aria-hidden="true" style="font-size: 1rem"></i>
         </template>
-        <b-dropdown-item size="sm" variant="dark" @click="$emit('archive')">
+        <b-dropdown-item size="sm" variant="dark" @click.stop="$emit('archive')">
             <span class="text-muted"
                 ><i class="fas fa-archive mr-2"></i>
                 {{ !pool.archived ? 'Archive' : 'Unarchive' }}
             </span>
         </b-dropdown-item>
-        <b-dropdown-item v-clipboard:copy="pool._id">
+        <b-dropdown-item @click.stop="$copyText(pool._id)">
             <span class="text-muted"><i class="fas fa-clipboard mr-3"></i>Copy ID </span>
         </b-dropdown-item>
-        <b-dropdown-item size="sm" variant="dark" @click="$emit('remove')">
+        <b-dropdown-item size="sm" variant="dark" @click.stop="$emit('remove')">
             <span class="text-muted"><i class="fas fa-trash-alt mr-3"></i>Remove</span>
         </b-dropdown-item>
     </b-dropdown>

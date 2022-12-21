@@ -1,14 +1,28 @@
 import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
 
-type RouteDefinition = {
+export type RouteDefinition = {
     path: string;
     label: string;
     iconClasses: string;
     visible: boolean;
 };
 
-export const getRoutes = (pool: IPool) => {
+export const getRoutes = (pool: IPool, isPremium = false) => {
+    if (!pool || (pool && !pool.address)) return;
+
     const routes: RouteDefinition[] = [
+        {
+            path: 'transactions',
+            label: 'Dashboard',
+            iconClasses: 'fas fa-chart-line',
+            visible: true,
+        },
+        {
+            path: 'widget',
+            label: 'Widget',
+            iconClasses: 'fas fa-code',
+            visible: true,
+        },
         {
             path: 'point-rewards',
             label: 'Points',
@@ -51,24 +65,12 @@ export const getRoutes = (pool: IPool) => {
         //     iconClasses: 'fas fa-tags',
         //     visible: !!pool.erc20,
         // },
-        {
-            path: 'transactions',
-            label: 'Analytics',
-            iconClasses: 'fas fa-chart-line',
-            visible: true,
-        },
         // {
         //     path: 'erc20swaps',
         //     label: 'Swaps',
         //     iconClasses: 'fas fa-sync',
         //     visible: !!pool.erc20,
         // },
-        {
-            path: 'widget',
-            label: 'Widget',
-            iconClasses: 'fas fa-code',
-            visible: true,
-        },
         {
             path: 'theme',
             label: 'Settings',
@@ -79,11 +81,11 @@ export const getRoutes = (pool: IPool) => {
             path: 'clients',
             label: 'API Keys',
             iconClasses: 'fas fa-key',
-            visible: true,
+            visible: isPremium,
         },
         {
             path: 'info',
-            label: 'Smart Contracts',
+            label: 'Contracts',
             iconClasses: 'fas fa-project-diagram',
             visible: true,
         },

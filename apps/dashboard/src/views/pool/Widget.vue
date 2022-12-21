@@ -1,8 +1,6 @@
 <template>
     <div>
-        <b-row class="mb-3">
-            <h2 class="mb-0 mr-2">Loyalty Widget</h2>
-        </b-row>
+        <h2 class="mb-3">Loyalty Widget</h2>
         <BCard variant="white" body-class="shadow-sm">
             <strong>Embed code</strong>
             <p class="text-muted">

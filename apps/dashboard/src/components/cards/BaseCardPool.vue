@@ -1,42 +1,45 @@
 <template>
-    <base-card :loading="isLoading" :is-deploying="isDeploying">
+    <base-card
+        :is-loading="isLoading"
+        :body-bg-variant="pool.archived ? 'light' : null"
+        :is-deploying="isDeploying"
+        @click="openPoolUrl()"
+        class="cursor-pointer"
+    >
         <template #card-header>
-            <span v-if="pool.erc20 && pool.erc721">Token &amp; NFT Pool</span>
-            <span v-if="pool.erc20 && !pool.erc721">Token Pool</span>
-            <span v-if="!pool.erc20 && pool.erc721">Collectible Pool</span>
-            <i class="ml-1 fas fa-archive text-white small" v-if="pool.archived"></i>
-        </template>
-        <template #card-body>
-            <b-alert show variant="warning" v-if="outOfDate && artifacts">
-                <i class="fas fa-exclamation-circle mr-2"></i>
-                Please contact us in
-                <b-link href="https://discord.com/invite/TzbbSmkE7Y" target="_blank"> Discord </b-link>
-            </b-alert>
-            <base-badge-network :chainId="pool.chainId" class="mr-1" />
+            <div v-if="!isLoading">
+                <b-alert show variant="warning" v-if="outOfDate && artifacts">
+                    <i class="fas fa-exclamation-circle mr-2"></i>
+                    Please contact us in
+                    <b-link href="https://discord.com/invite/TzbbSmkE7Y" target="_blank"> Discord </b-link>
+                </b-alert>
+                <base-badge-network :chainId="pool.chainId" class="mr-1" />
+            </div>
             <base-dropdown-menu-pool
-                class="float-right"
+                class="ml-auto"
                 :pool="pool"
                 @archive="archive"
-                @remove="$bvModal.show(`modalDelete-${pool.address}`)"
+                @remove="$bvModal.show(`modalDelete-${pool._id}`)"
             />
-            <p class="mt-3 mb-0" v-if="pool.erc20">
+        </template>
+        <template #card-body>
+            <p class="mb-0">
                 <span class="text-muted">Balance:</span><br />
                 <span class="font-weight-bold text-primary h3">
-                    {{ fromWei(pool.erc20.poolBalance) }} {{ pool.erc20.symbol }}
+                    <template v-if="pool.erc20">
+                        {{ fromWei(pool.erc20.poolBalance) }} {{ pool.erc20.symbol }}
+                    </template>
+                    <template v-else> - </template>
                 </span>
             </p>
-            <p class="mt-3 mb-0" v-if="pool.erc721">
+            <p class="mt-3 mb-0">
                 <span class="text-muted">Minted NFTs:</span><br />
                 <span class="font-weight-bold text-primary h3">
-                    {{ pool.erc721.totalSupply }} {{ pool.erc721.symbol }}
+                    <template v-if="pool.erc721"> {{ pool.erc721.totalSupply }} {{ pool.erc721.symbol }} </template>
+                    <template v-else> - </template>
                 </span>
             </p>
-            <base-modal-delete :id="`modalDelete-${pool.address}`" :call="() => remove()" :subject="pool.address" />
-            <hr />
-            <b-button class="rounded-pill" variant="primary" @click="openPoolUrl()" block>
-                <i class="fas fa-cogs mr-2"></i>
-                Configuration
-            </b-button>
+            <base-modal-delete :id="`modalDelete-${pool._id}`" :call="() => remove()" :subject="pool._id" />
         </template>
     </base-card>
 </template>
