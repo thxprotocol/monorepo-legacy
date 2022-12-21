@@ -53,7 +53,8 @@
                             <i class="fas fa-handshake"></i>
                         </div>
                         <div class="flex-grow-1">
-                            <span>Partners</span>
+                            <span>Loyalty Partners</span>
+                            <b-badge variant="gray" class="ml-2 text-white">Soon</b-badge>
                         </div>
                     </b-nav-item>
                 </b-navbar-nav>
@@ -149,7 +150,7 @@
                             </div>
                         </div>
                     </b-nav-item>
-                    <b-nav-item href="https://discord.com/invite/TzbbSmkE7Y" class="nav-link-plain">
+                    <b-nav-item href="https://discord.com/invite/TzbbSmkE7Y" target="_blank" class="nav-link-plain">
                         <div class="nav-link-wrapper">
                             <div class="nav-link-icon">
                                 <i class="fas fa-question"></i>

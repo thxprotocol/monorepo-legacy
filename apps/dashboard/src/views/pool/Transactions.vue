@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h2 class="mb-0">Transactions</h2>
+        <h2 class="mb-0">Dashboard</h2>
         <div class="py-5" v-if="loading">
             <b-spinner variant="primary" />
         </div>
@@ -20,13 +20,13 @@
             </b-col>
             <b-col md="3" v-if="pool.erc721">
                 <b-card bg-variant="white shadow-sm">
-                    <span>ERC721 tokens minted</span><br />
+                    <span>Minted (ERC721)</span><br />
                     <div class="h2">{{ pool.metrics.mints }}</div>
                 </b-card>
             </b-col>
-            <b-col md="3" v-if="pool.erc721">
+            <b-col md="3" v-if="pool.erc20">
                 <b-card bg-variant="white shadow-sm">
-                    <span>ERC20 withdrawals</span><br />
+                    <span>Withdrawals (ERC20)</span><br />
                     <div class="h2">{{ pool.metrics.withdrawals }}</div>
                 </b-card>
             </b-col>
