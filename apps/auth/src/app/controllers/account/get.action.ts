@@ -17,9 +17,9 @@ async function formatAccountRes(account) {
         plan: account.plan,
         email: account.email,
         googleAccess: await YouTubeService.isAuthorized(account),
-        twitterAccess: TwitterService.isAuthorized(account),
+        twitterAccess: await TwitterService.isAuthorized(account),
         githubAccess: GithubService.isAuthorized(account),
-        discordAccess: DiscordService.isAuthorized(account),
+        discordAccess: await DiscordService.isAuthorized(account),
         twitchAccess: TwitchService.isAuthorized(account),
     };
 }

@@ -1,5 +1,5 @@
 <template>
-    <base-modal size="xl" title="Create ERC721 Reward" :id="id" :error="error" :loading="isLoading">
+    <base-modal :show="onShow" size="xl" title="Create ERC721 Reward" :id="id" :error="error" :loading="isLoading">
         <template #modal-body v-if="!isLoading">
             <p class="text-gray">ERC721 rewards let your customers claim NFTs for the metadata in your collection.</p>
             <form v-on:submit.prevent="onSubmit()" id="formRewardPointsCreate">
@@ -102,7 +102,7 @@ export default class ModalRewardERC721Create extends Vue {
         return this.erc721s[this.pool.erc721._id];
     }
 
-    mounted() {
+    onShow() {
         if (this.reward) {
             this.erc721metadataId = this.reward.erc721metadataId;
             this.title = this.reward.title;
