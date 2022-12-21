@@ -24,6 +24,8 @@ import BaseJumbotron from '@thxnetwork/public/components/BaseJumbotron.vue';
 import BaseNavbar from '@thxnetwork/public/components/BaseNavbar.vue';
 import CookieLaw from 'vue-cookie-law';
 import { TITLES } from './utils/constants';
+import { THXWidget } from '@thxnetwork/sdk/client';
+import { PKG_ENV, WIDGET_ID, GTM } from './config/secrets';
 
 @Component({
     metaInfo: {
@@ -57,7 +59,11 @@ export default class App extends Vue {
             j.async = true;
             j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
             f.parentNode.insertBefore(j, f);
-        })(window, document, 'script', 'dataLayer', process.env.VUE_APP_GTM);
+        })(window, document, 'script', 'dataLayer', GTM);
+    }
+
+    mounted() {
+        if (WIDGET_ID && PKG_ENV) new THXWidget({ env: PKG_ENV, poolId: WIDGET_ID });
     }
 }
 </script>

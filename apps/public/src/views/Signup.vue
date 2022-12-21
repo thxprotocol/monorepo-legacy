@@ -4,6 +4,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import { DASHBOARD_URL } from '../config/secrets';
 
 const META_TITLE = 'Signup';
 const META_DESCRIPTION = '';
@@ -29,7 +30,7 @@ const META_DESCRIPTION = '';
 })
 export default class Signup extends Vue {
     mounted() {
-        window.location.href = process.env.VUE_APP_DASHBOARD_URL + '/signup';
+        window.location.href = DASHBOARD_URL + '/signup';
     }
 }
 </script>
