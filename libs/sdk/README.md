@@ -26,16 +26,16 @@ Meant for machine to machine authentication in a server-side application.
 You can inject the loyalty widget with a script tag where `639b277c3659345dda9facca` is the ID of your loyalty pool.
 
 ```html
-<script src="https://api.thx.network/v1/widget/639b277c3659345dda9facca.js"></script>
+<script src="https://api.thx.network/v1/widget/POOL_ID.js"></script>
 ```
 
-You can also use the THXWidget class from the SDK
+You can also use the THXWidget class from the SDK to load the widget on your page.
 
 ```typescript
 import { THXWidget } from '@thxnetwork/sdk';
 
 const thxWidget = new THXWidget({
-    poolId: '639b277c3659345dda9facca',
+    poolId: 'POOL_ID',
 });
 ```
 
@@ -49,7 +49,6 @@ import { THXWidget } from '@thxnetwork/sdk';
 const thx = new THXClient({
     clientId: 'CLIENT_ID',
     clientSecret: 'CLIENT_SECRET',
-    grantType: 'authorization_code',
     redirectUrl: 'https://localhost:8080',
     scopes: 'openid account:read erc20:read erc721:read',
 });
@@ -69,7 +68,6 @@ import { THXWidget } from '@thxnetwork/sdk';
 const thx = new THXClient({
     clientId: 'CLIENT_ID',
     clientSecret: 'CLIENT_SECRET',
-    grantType: 'client_credentials',
     scopes: 'openid withdrawals:read withdrawals:write',
 });
 
