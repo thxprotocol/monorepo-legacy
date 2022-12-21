@@ -30,7 +30,8 @@ module.exports = {
       console.log('accountsToUpdate:', accountsToUpdate.length);
       let accountsUpdated = 0;
       const promises = accountsToUpdate.map(async (account) => {
-        const {data} = await axios({
+        try {
+          const {data} = await axios({
             url: `${process.env.API_URL}/v1/wallets?sub=${String(account._id)}`,
             method: 'GET',
             headers: {
@@ -46,6 +47,9 @@ module.exports = {
             );
             accountsUpdated++;
           }
+        } catch(err) {
+          console.log('ERROR ON WALLETS GET FOR ACCOUNT:', String(account._id))
+        }
       });
       await Promise.all(promises)
       console.log('accountsUpdated:', accountsUpdated);
