@@ -184,7 +184,7 @@ export default class ERC20PerksView extends Vue {
         this.isLoading = true;
         this.$store
             .dispatch('erc20Perks/list', {
-                page: this.page,
+                page: this.currentpage,
                 limit: this.limit,
                 pool: this.pool,
             })
