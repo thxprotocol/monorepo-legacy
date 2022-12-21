@@ -37,7 +37,7 @@ export default class BaseDropdownTwitterTweets extends Vue {
             this.onItemClick(this.items[0]);
         } else {
             for (const key in this.items) {
-                const id = this.items[key].id;
+                const id = this.items[key]?.referenced_tweets?.[0]?.id || this.items[key].id;
                 if (id === this.item) {
                     this.onItemClick(this.items[key]);
                     break;
