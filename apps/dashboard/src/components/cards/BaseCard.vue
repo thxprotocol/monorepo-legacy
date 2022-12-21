@@ -13,7 +13,7 @@
             </div>
         </template>
         <div v-if="isLoading" class="p-3 text-center">
-            <div class="w-100 py-3 text-gray text-center">
+            <div class="w-100 text-gray text-center">
                 <b-spinner variant="gray" class="mb-2" />
                 <p v-if="isDeploying" class="m-0">We are deploying your smart contract. Give us a moment!</p>
             </div>
