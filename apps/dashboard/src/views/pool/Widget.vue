@@ -16,6 +16,16 @@
                 </b-button>
                 <code class="language-html" v-html="codeExample"></code>
             </pre>
+            <b-alert show variant="info" class="d-flex justify-content-between">
+                <div>
+                    <i class="fas fa-info-circle mr-2"></i>
+                    Get our SDK on NPM and construct the THXWidget class in your SPA.
+                </div>
+                <b-link target="_blank" href="https://www.npmjs.com/package/@thxnetwork/sdk">
+                    Read more
+                    <i class="fas fa-chevron-right ml-2"></i>
+                </b-link>
+            </b-alert>
             <strong>Color scheme</strong>
             <p class="text-muted">Choose a color scheme for the widget launcher.</p>
             <b-row>
