@@ -55,7 +55,7 @@ class AccountModule extends VuexModule {
 
     @Action({ rawError: true })
     async getProfile() {
-        const user = await thxClient.userManager.getUser();
+        const user = await thxClient.account.get();
         this.context.commit('setUserProfile', user);
     }
 
