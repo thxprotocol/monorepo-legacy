@@ -73,9 +73,6 @@ export default class TransactionsView extends Vue {
         },
         responsive: true,
         maintainAspectRatio: false,
-        legend: {
-            display: false,
-        },
     };
 
     get pool() {

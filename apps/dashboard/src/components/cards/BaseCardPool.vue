@@ -39,7 +39,12 @@
                     <template v-else> - </template>
                 </span>
             </p>
-            <base-modal-delete :id="`modalDelete-${pool._id}`" :call="() => remove()" :subject="pool._id" />
+            <base-modal-delete
+                :id="`modalDelete-${pool._id}`"
+                @submit="remove(pool._id)"
+                :error="error"
+                :subject="pool._id"
+            />
         </template>
     </base-card>
 </template>
@@ -72,6 +77,7 @@ import { fromWei } from 'web3-utils';
 })
 export default class BaseCardPool extends Vue {
     warning = '';
+    error = '';
     isLoading = true;
     isDeploying = false;
     fromWei = fromWei;
@@ -134,10 +140,15 @@ export default class BaseCardPool extends Vue {
         });
     }
 
-    async remove() {
-        this.isLoading = true;
-        await this.$store.dispatch('pools/remove', this.pool);
-        this.isLoading = false;
+    async remove(_id: string) {
+        try {
+            this.isLoading = true;
+            await this.$store.dispatch('pools/remove', { _id });
+        } catch (error) {
+            this.error = error as string;
+        } finally {
+            this.isLoading = false;
+        }
     }
 
     async archive() {
