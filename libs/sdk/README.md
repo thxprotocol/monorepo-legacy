@@ -21,11 +21,31 @@ Meant for user authentication in a browser application. Upon signin a popup will
 
 Meant for machine to machine authentication in a server-side application.
 
-## Usage (browser)
+## Usage Widget (browser)
+
+You can inject the loyalty widget with a script tag where `639b277c3659345dda9facca` is the ID of your loyalty pool.
+
+```html
+<script src="https://api.thx.network/v1/widget/639b277c3659345dda9facca.js"></script>
+```
+
+You can also use the THXWidget class from the SDK
+
+```typescript
+import { THXWidget } from '@thxnetwork/sdk';
+
+const thxWidget = new THXWidget({
+    poolId: '639b277c3659345dda9facca',
+});
+```
+
+## Usage SDK (browser)
 
 Sign in and list the tokens owned by this account.
 
 ```typescript
+import { THXWidget } from '@thxnetwork/sdk';
+
 const thx = new THXClient({
     clientId: 'CLIENT_ID',
     clientSecret: 'CLIENT_SECRET',
@@ -34,16 +54,18 @@ const thx = new THXClient({
     scopes: 'openid account:read erc20:read erc721:read',
 });
 
-await thx.signin();
+await thx.userManager.cached.signinPopup();
 
 const tokens = await client.erc20.list();
 ```
 
-## Usage (server)
+## Usage SDK (server)
 
 Transfer tokens from your pool to another account.
 
 ```typescript
+import { THXWidget } from '@thxnetwork/sdk';
+
 const thx = new THXClient({
     clientId: 'CLIENT_ID',
     clientSecret: 'CLIENT_SECRET',

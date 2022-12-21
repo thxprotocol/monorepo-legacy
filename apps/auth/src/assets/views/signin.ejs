@@ -76,39 +76,39 @@
       </form>
       <% } else { %>
       <!-- This part is used for regular login flow and only visibile if links are available -->
-      <div class="d-flex align-items-center">
+      <div class="d-flex align-items-center justify-content-start flex-wrap">
         <% if (params.authRequestMessage) { %>
-        <a style="width: 45px; height: 45px;" class="mr-4 btn d-flex center-center  btn-light" @click="signin()"
+        <a style="width: 40px; height: 40px;" class="m-2 btn d-flex center-center  btn-light" @click="signin()"
            data-toggle="tooltip" title="Sign in with Metamask">
-          <img width="30" src="/img/mm-logo.svg" alt="Metamask logo" />
+          <img width="25" src="/img/mm-logo.svg" alt="Metamask logo" />
         </a>
         <% } %>
         <% if (params.googleLoginUrl) { %>
-        <a style="width: 45px; height: 45px;" class="mr-4 btn d-flex center-center btn-light"
+        <a style="width: 40px; height: 40px;" class="m-2 btn d-flex center-center btn-light"
            href="<%= params.googleLoginUrl %>" data-toggle="tooltip" title="Sign in with Google">
-          <img width="24" src="/img/g-logo.png" alt="Google logo" />
+          <img width="20" src="/img/g-logo.png" alt="Google logo" />
         </a>
         <% } %>
         <% if (params.twitterLoginUrl) { %>
-        <a style="width: 45px; height: 45px;" class="mr-4 btn d-flex center-center  btn-light"
+        <a style="width: 40px; height: 40px;" class="m-2 btn d-flex center-center  btn-light"
            href="<%= params.twitterLoginUrl %>" data-toggle="tooltip" title="Sign in with Twitter">
-          <img width="24" src="/img/t-logo.png" alt="Twitter logo" />
+          <img width="20" src="/img/t-logo.png" alt="Twitter logo" />
         </a>
         <% } %>
         <% if (params.discordLoginUrl) { %>
-        <a style="width: 45px; height: 45px;" class="mr-4 btn d-flex center-center  btn-light"
+        <a style="width: 40px; height: 40px;" class="m-2 btn d-flex center-center  btn-light"
            href="<%= params.discordLoginUrl %>" data-toggle="tooltip" title="Sign in with Discord">
-          <img width="24" src="/img/discord-logo.png" alt="Discord logo" />
+          <img width="20" src="/img/discord-logo.png" alt="Discord logo" />
         </a>
         <% } %>
         <% if (params.githubLoginUrl) { %>
-        <a style="width: 45px; height: 45px;" class="mr-4 btn d-flex center-center btn-light"
+        <a style="width: 40px; height: 40px;" class="m-2 btn d-flex center-center btn-light"
            href="<%= params.githubLoginUrl %>" data-toggle="tooltip" title="Sign in with Github">
-          <img width="24" src="/img/github-logo.png" alt="github logo" />
+          <img width="20" src="/img/github-logo.png" alt="github logo" />
         </a>
         <% } %>
         <% if (params.twitchLoginUrl) { %>
-        <a style="width: 45px; height: 45px;" class="mr-4 btn d-flex center-center  btn-light"
+        <a style="width: 40px; height: 40px;" class="m-2 btn d-flex center-center  btn-light"
            href="<%= params.twitchLoginUrl %>" data-toggle="tooltip" title="Sign in with Twitch">
           <img width="20" src="/img/twitch-logo.png" alt="twitch logo" />
         </a>

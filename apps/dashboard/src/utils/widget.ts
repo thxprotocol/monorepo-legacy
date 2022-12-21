@@ -1,7 +1,6 @@
-import { API_URL, WIDGET_ID } from './secrets';
+import { PKG_ENV, WIDGET_ID } from './secrets';
+import { THXWidget } from '@thxnetwork/sdk/client/index';
 
 export function initWidget() {
-    const script = document.createElement('script');
-    script.src = `${API_URL}/v1/widget/${WIDGET_ID}.js`;
-    document.body.appendChild(script);
+    return new THXWidget({ env: PKG_ENV, poolId: WIDGET_ID });
 }
