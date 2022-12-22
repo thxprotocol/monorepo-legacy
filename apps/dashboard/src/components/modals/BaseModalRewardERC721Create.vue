@@ -1,5 +1,5 @@
 <template>
-    <base-modal :show="onShow" size="xl" title="Create ERC721 Reward" :id="id" :error="error" :loading="isLoading">
+    <base-modal @show="onShow" size="xl" title="Create ERC721 Reward" :id="id" :error="error" :loading="isLoading">
         <template #modal-body v-if="!isLoading">
             <p class="text-gray">ERC721 rewards let your customers claim NFTs for the metadata in your collection.</p>
             <form v-on:submit.prevent="onSubmit()" id="formRewardPointsCreate">
@@ -20,6 +20,14 @@
                         </b-form-group>
                         <b-form-group label="Point Price">
                             <b-form-input type="number" v-model="pointPrice" />
+                        </b-form-group>
+                        <b-form-group label="Image">
+                            <div class="float-left" v-if="image">
+                                <img :src="image" width="20%" />
+                            </div>
+                            <div>
+                                <b-form-file v-model="imageFile" accept="image/*" @change="onImgChange" />
+                            </div>
                         </b-form-group>
                     </b-col>
                     <b-col md="6">
@@ -92,6 +100,8 @@ export default class ModalRewardERC721Create extends Vue {
         content: '',
     };
     erc721s!: IERC721s;
+    imageFile: File | null = null;
+    image = '';
 
     @Prop() id!: string;
     @Prop() pool!: IPool;
@@ -114,6 +124,9 @@ export default class ModalRewardERC721Create extends Vue {
                 interaction: this.reward.interaction as RewardConditionInteraction,
                 content: this.reward.content as string,
             };
+            if (this.reward.image) {
+                this.image = this.reward.image;
+            }
         }
     }
 
@@ -139,12 +152,29 @@ export default class ModalRewardERC721Create extends Vue {
                     platform: this.rewardCondition.platform,
                     interaction: this.rewardCondition.interaction,
                     content: this.rewardCondition.content,
+                    file: this.imageFile,
                 },
             })
             .then(() => {
+                this.title = '';
+                this.erc721metadataId = '';
+                this.description = '';
+                this.rewardLimit = 0;
+                this.claimAmount = 1;
+                this.rewardLimit = 0;
+                this.rewardCondition = {
+                    platform: platformList[0].type,
+                    interaction: platformInteractionList[0].type,
+                    content: '',
+                };
+                this.image = '';
                 this.$bvModal.hide(this.id);
                 this.isLoading = false;
             });
+    }
+
+    onImgChange() {
+        this.image = '';
     }
 }
 </script>

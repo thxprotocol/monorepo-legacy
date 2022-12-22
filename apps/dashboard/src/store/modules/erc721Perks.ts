@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { IPool } from './pools';
 import { RewardConditionPlatform, type TERC721Perk } from '@thxnetwork/types/index';
+import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 
 export type RewardByPage = {
     [page: number]: TERC721Perk[];
@@ -18,6 +19,10 @@ export type RewardListProps = {
     pool: IPool;
     page: number;
     limit: number;
+};
+
+type TERC721PerkInputData = TERC721Perk & {
+    file?: any;
 };
 
 @Module({ namespaced: true })
@@ -71,24 +76,26 @@ class ERC721PerkModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async create({ pool, payload }: { pool: IPool; payload: TERC721Perk }) {
+    async create({ pool, payload }: { pool: IPool; payload: TERC721PerkInputData }) {
+        const formData = prepareFormDataForUpload(payload);
         const r = await axios({
             method: 'POST',
             url: '/erc721-perks',
             headers: { 'X-PoolId': pool._id },
-            data: payload,
+            data: formData,
         });
 
         this.context.commit('set', { pool, reward: { ...payload, ...r.data } });
     }
 
     @Action({ rawError: true })
-    async update({ pool, reward, payload }: { pool: IPool; reward: TERC721Perk; payload: TERC721Perk }) {
+    async update({ pool, reward, payload }: { pool: IPool; reward: TERC721Perk; payload: TERC721PerkInputData }) {
+        const formData = prepareFormDataForUpload(payload);
         const { data } = await axios({
             method: 'PATCH',
             url: `/erc721-perks/${reward._id}`,
             headers: { 'X-PoolId': pool._id },
-            data: payload,
+            data: formData,
         });
         this.context.commit('set', {
             pool,
