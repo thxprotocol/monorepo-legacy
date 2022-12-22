@@ -40,6 +40,7 @@ import { BButton, BJumbotron } from 'bootstrap-vue';
 import { Component, Vue } from 'vue-property-decorator';
 import { Hooper, Slide } from 'hooper';
 import { TITLES } from '@thxnetwork/public/utils/constants';
+import { DASHBOARD_URL } from '../config/secrets';
 
 @Component({
     components: {
@@ -51,6 +52,6 @@ import { TITLES } from '@thxnetwork/public/utils/constants';
 })
 export default class BaseMetrics extends Vue {
     TITLES = TITLES;
-    dashboardUrl = process.env.VUE_APP_DASHBOARD_URL;
+    dashboardUrl = DASHBOARD_URL;
 }
 </script>

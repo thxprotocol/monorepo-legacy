@@ -11,6 +11,7 @@ import * as rules from 'vee-validate/dist/rules';
 import * as en from 'vee-validate/dist/locale/en.json';
 import VueLazyload from 'vue-lazyload';
 import './main.scss';
+import { CMS_URL } from './config/secrets';
 
 // Install VeeValidate rules and localization
 Object.keys(rules).forEach((rule) => {
@@ -23,7 +24,7 @@ localize('en', en);
 Vue.component('ValidationObserver', ValidationObserver);
 Vue.component('ValidationProvider', ValidationProvider);
 
-axios.defaults.baseURL = process.env.VUE_APP_CMS_URL;
+axios.defaults.baseURL = CMS_URL;
 axios.defaults.withCredentials = true;
 
 Vue.config.productionTip = false;

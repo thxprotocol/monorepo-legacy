@@ -50,12 +50,8 @@
             </b-form>
         </validation-observer>
         <template #modal-footer="{ cancel }">
-            <b-button variant="secondary" @click="cancel()">
-                Cancel
-            </b-button>
-            <b-button variant="primary" type="submit" form="modalSignupForm">
-                Submit
-            </b-button>
+            <b-button variant="secondary" @click="cancel()"> Cancel </b-button>
+            <b-button variant="primary" type="submit" form="modalSignupForm"> Submit </b-button>
         </template>
     </b-modal>
 </template>
@@ -63,6 +59,7 @@
 import axios from 'axios';
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { BForm, BButton, BModal, BSpinner } from 'bootstrap-vue';
+import { CMS_URL } from '../config/secrets';
 
 @Component({
     name: 'ModalWaitList',
@@ -93,7 +90,7 @@ export default class ModalWaitList extends Vue {
 
         try {
             await axios({
-                url: process.env.VUE_APP_CMS_URL + '/signups',
+                url: CMS_URL + '/signups',
                 method: 'POST',
                 data: {
                     email: this.email,

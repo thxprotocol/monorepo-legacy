@@ -10,5 +10,6 @@ export default interface Credential {
     scopes?: string;
     automaticSilentRenew?: boolean;
     post_logout_redirect_uri?: string;
+    popup_post_logout_redirect_uri?: string;
     silent_redirect_uri?: string;
 }
