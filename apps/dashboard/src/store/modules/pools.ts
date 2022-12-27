@@ -41,6 +41,7 @@ export interface IPool {
     isDefaultPool: boolean;
     version: string;
     archived: boolean;
+    sub: string;
 }
 
 export interface GetMembersProps {
