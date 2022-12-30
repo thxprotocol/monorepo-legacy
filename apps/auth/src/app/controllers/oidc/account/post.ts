@@ -4,10 +4,11 @@ import { MailService } from '../../../services/MailService';
 
 import UploadProxy from '../../../proxies/UploadProxy';
 import { AccountService } from '../../../services/AccountService';
-import { DURATION_TWENTYFOUR_HOURS, ERROR_NO_ACCOUNT } from '../../../util/messages';
+import { ERROR_NO_ACCOUNT } from '../../../util/messages';
 import { createRandomToken } from '../../../util/tokens';
 import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
 import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
+import { get24HoursExpiryTimestamp } from '@thxnetwork/auth/util/time';
 
 export const validation = [
     body('email').optional().isEmail(),
@@ -50,7 +51,7 @@ export async function controller(req: Request, res: Response) {
         account.setToken({
             kind: AccessTokenKind.VerifyEmail,
             accessToken: createRandomToken(),
-            expiry: DURATION_TWENTYFOUR_HOURS,
+            expiry: get24HoursExpiryTimestamp(),
         } as IAccessToken);
         await account.save();
 
