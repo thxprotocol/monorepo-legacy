@@ -23,6 +23,7 @@ import { getProvider } from '@thxnetwork/api/util/network';
 import { HARDHAT_RPC, PRIVATE_KEY, WALLET_URL } from '@thxnetwork/api/config/secrets';
 import Web3 from 'web3';
 import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
+import { addMinutes } from '@thxnetwork/api/util/rewards';
 
 const http = request.agent(app);
 
@@ -35,7 +36,9 @@ describe('Payment Request', () => {
         erc20: Contract,
         erc721Address: string,
         erc721ID: string,
-        metadataId: string;
+        metadataId: string,
+        claimId: string,
+        erc721PerkId: string;
 
     const amount = '1000',
         successUrl = 'https://exmaple.com/success',
@@ -233,6 +236,32 @@ describe('Payment Request', () => {
                     })
                     .expect(201, done);
             });
+        });
+
+        it('POST /erc721-perks', (done) => {
+            const expiryDate = addMinutes(new Date(), 30);
+            const pointPrice = 200;
+            http.post('/v1/erc721-perks/')
+                .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
+                .send({
+                    title: 'Expiration date is next 30 min',
+                    description: 'Lorem ipsum dolor sit amet',
+                    erc721metadataIds: [metadataId],
+                    platform: 0,
+                    expiryDate,
+                    rewardLimit: 1,
+                    claimAmount: 1,
+                    pointPrice,
+                })
+                .expect((res: request.Response) => {
+                    expect(res.body[0]._id).toBeDefined();
+                    expect(res.body[0].pointPrice).toBe(pointPrice);
+                    expect(res.body[0].claims.length).toBe(1);
+                    expect(res.body[0].claims[0].uuid).toBeDefined();
+                    claimId = res.body[0].claims[0]._id;
+                    erc721PerkId = res.body[0]._id;
+                })
+                .expect(201, done);
         });
 
         describe('POST payment', () => {
