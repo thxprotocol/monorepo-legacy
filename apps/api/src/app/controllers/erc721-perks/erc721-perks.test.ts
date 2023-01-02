@@ -6,6 +6,7 @@ import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { ClaimDocument } from '@thxnetwork/api/types/TClaim';
 import { addMinutes } from '@thxnetwork/api/util/rewards';
+import { createImage } from '@thxnetwork/api/util/jest/images';
 
 const user = request.agent(app);
 
@@ -101,22 +102,30 @@ describe('ERC721 Perks', () => {
         it('POST /erc721-perks', (done) => {
             const expiryDate = addMinutes(new Date(), 30);
             const pointPrice = 200;
+            const image = createImage();
+
             user.post('/v1/erc721-perks/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .send({
-                    title: 'Expiration date is next 30 min',
-                    description: 'Lorem ipsum dolor sit amet',
-                    erc721metadataIds: [erc721metadataId],
-                    platform: 0,
-                    expiryDate,
-                    rewardLimit: 1,
-                    claimAmount: 1,
+                .field({
+                    'title': 'Expiration date is next 30 min',
+                    'description': 'Lorem ipsum dolor sit amet',
+                    'platform': 0,
+                    'expiryDate': expiryDate.toString(),
+                    'rewardLimit': 1,
+                    'claimAmount': 1,
                     pointPrice,
-                    isPromoted: true,
+                    'erc721metadataIds[0]': erc721metadataId,
+                    'isPromoted': true,
+                })
+                .attach('file', image, {
+                    filename: 'test.jpg',
+                    contentType: 'image/jpg',
                 })
                 .expect((res: request.Response) => {
                     expect(res.body[0]._id).toBeDefined();
+                    expect(res.body[0].image).toBeDefined();
                     expect(res.body[0].pointPrice).toBe(pointPrice);
+                    expect(new Date(res.body[0].expiryDate).getDate()).toBe(expiryDate.getDate());
                     expect(res.body[0].isPromoted).toBe(true);
                     expect(res.body[0].claims.length).toBe(1);
                     expect(res.body[0].claims[0].uuid).toBeDefined();

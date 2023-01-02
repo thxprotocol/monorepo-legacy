@@ -21,8 +21,13 @@
                         <b-form-group label="Point Price">
                             <b-form-input type="number" v-model="pointPrice" />
                         </b-form-group>
-                        <b-form-group label="Claim Amount">
-                            <b-form-input type="number" v-model="claimAmount" />
+                        <b-form-group label="Image">
+                            <div class="float-left" v-if="image">
+                                <img :src="image" width="20%" />
+                            </div>
+                            <div>
+                                <b-form-file v-model="imageFile" accept="image/*" @change="onImgChange" />
+                            </div>
                         </b-form-group>
                         <b-form-group label="Is Promoted">
                             <b-form-checkbox v-model="isPromoted" />
@@ -98,6 +103,8 @@ export default class ModalRewardERC721Create extends Vue {
         content: '',
     };
     erc721s!: IERC721s;
+    imageFile: File | null = null;
+    image = '';
     isPromoted = false;
 
     @Prop() id!: string;
@@ -122,6 +129,9 @@ export default class ModalRewardERC721Create extends Vue {
                 interaction: this.reward.interaction as RewardConditionInteraction,
                 content: this.reward.content as string,
             };
+            if (this.reward.image) {
+                this.image = this.reward.image;
+            }
             this.isPromoted = this.reward.isPromoted;
         }
     }
@@ -148,10 +158,23 @@ export default class ModalRewardERC721Create extends Vue {
                     platform: this.rewardCondition.platform,
                     interaction: this.rewardCondition.interaction,
                     content: this.rewardCondition.content,
+                    file: this.imageFile,
                     isPromoted: this.isPromoted,
                 },
             })
             .then(() => {
+                this.title = '';
+                this.erc721metadataId = '';
+                this.description = '';
+                this.rewardLimit = 0;
+                this.claimAmount = 1;
+                this.rewardLimit = 0;
+                this.rewardCondition = {
+                    platform: platformList[0].type,
+                    interaction: platformInteractionList[0].type,
+                    content: '',
+                };
+                this.image = '';
                 this.$bvModal.hide(this.id);
                 this.isSubmitDisabled = false;
 
@@ -171,6 +194,10 @@ export default class ModalRewardERC721Create extends Vue {
                 this.isPromoted = false;
                 this.isLoading = false;
             });
+    }
+
+    onImgChange() {
+        this.image = '';
     }
 }
 </script>
