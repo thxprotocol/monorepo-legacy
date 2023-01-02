@@ -21,6 +21,9 @@
                         <b-form-group label="Point Price">
                             <b-form-input type="number" v-model="pointPrice" />
                         </b-form-group>
+                        <b-form-group label="Is Promoted">
+                            <b-form-checkbox v-model="isPromoted" />
+                        </b-form-group>
                     </b-col>
                     <b-col md="6">
                         <BaseCardRewardCondition
@@ -92,6 +95,7 @@ export default class ModalRewardERC721Create extends Vue {
         content: '',
     };
     erc721s!: IERC721s;
+    isPromoted = false;
 
     @Prop() id!: string;
     @Prop() pool!: IPool;
@@ -114,6 +118,7 @@ export default class ModalRewardERC721Create extends Vue {
                 interaction: this.reward.interaction as RewardConditionInteraction,
                 content: this.reward.content as string,
             };
+            this.isPromoted = this.reward.isPromoted;
         }
     }
 
@@ -139,10 +144,12 @@ export default class ModalRewardERC721Create extends Vue {
                     platform: this.rewardCondition.platform,
                     interaction: this.rewardCondition.interaction,
                     content: this.rewardCondition.content,
+                    isPromoted: this.isPromoted,
                 },
             })
             .then(() => {
                 this.$bvModal.hide(this.id);
+                this.isPromoted = false;
                 this.isLoading = false;
             });
     }

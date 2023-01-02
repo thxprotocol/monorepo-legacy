@@ -17,5 +17,4 @@ export type TBaseReward = {
     progress?: number;
     page?: number;
     claims?: any[];
-    isPromoted: boolean;
 };
