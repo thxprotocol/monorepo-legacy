@@ -1,5 +1,5 @@
 <template>
-    <base-modal :show="onShow" size="xl" title="Create ERC721 Reward" :id="id" :error="error" :loading="isLoading">
+    <base-modal :show="onShow" size="xl" title="Create ERC721 Perk" :id="id" :error="error" :loading="isLoading">
         <template #modal-body v-if="!isLoading">
             <p class="text-gray">ERC721 rewards let your customers claim NFTs for the metadata in your collection.</p>
             <form v-on:submit.prevent="onSubmit()" id="formRewardPointsCreate">
@@ -11,7 +11,7 @@
                         <b-form-group label="Description">
                             <b-textarea v-model="description" />
                         </b-form-group>
-                        <b-form-group label="Metadata">
+                        <b-form-group label="Metadata" v-if="!erc721SelectedMetadataIds">
                             <BaseDropdownERC721Metadata
                                 :erc721metadataId="erc721metadataId"
                                 :pool="pool"
@@ -20,6 +20,9 @@
                         </b-form-group>
                         <b-form-group label="Point Price">
                             <b-form-input type="number" v-model="pointPrice" />
+                        </b-form-group>
+                        <b-form-group label="Claim Amount">
+                            <b-form-input type="number" v-model="claimAmount" />
                         </b-form-group>
                         <b-form-group label="Is Promoted">
                             <b-form-checkbox v-model="isPromoted" />
@@ -51,7 +54,7 @@
                 variant="primary"
                 block
             >
-                {{ reward ? 'Update Reward' : 'Create Reward' }}
+                {{ reward ? 'Update Perk' : 'Create Perk' }}
             </b-button>
         </template>
     </base-modal>
@@ -100,6 +103,7 @@ export default class ModalRewardERC721Create extends Vue {
     @Prop() id!: string;
     @Prop() pool!: IPool;
     @Prop({ required: false }) reward!: TERC721Perk;
+    @Prop({ required: false }) erc721SelectedMetadataIds!: string[];
 
     get erc721(): TERC721 | null {
         if (!this.pool.erc721) return null;
@@ -137,7 +141,7 @@ export default class ModalRewardERC721Create extends Vue {
                     page: 1,
                     title: this.title,
                     description: this.description,
-                    erc721metadataId: this.erc721metadataId,
+                    erc721metadataIds: this.erc721metadataId ? [this.erc721metadataId] : this.erc721SelectedMetadataIds,
                     claimAmount: this.claimAmount,
                     rewardLimit: this.rewardLimit,
                     pointPrice: this.pointPrice,

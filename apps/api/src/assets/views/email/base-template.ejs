@@ -4,7 +4,7 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <title>Reset your Password</title>
+  <title><%= subject %></title>
   <style>
     /* -------------------------------------
           GLOBAL RESETS
@@ -370,17 +370,7 @@
                 <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                   <tr>
                     <td>
-                      <p style="font-size: 18px;">Hi!</p>
-                      <p style="font-size: 21px;">Your QR codes are ready!</p>
-                      <p>
-                        Visit THX Dashboard to download your your QR codes archive.
-                      </p>
-
-                      <p>
-                      <div class="btn">
-                        <a href="<%= dashboardUrl %>" target="_blank">Go to THX Dashboard</a>
-                      </div>
-                      </p>
+                        <%= htmlContent %>
                     </td>
                   </tr>
                 </table>
@@ -397,7 +387,7 @@
 
               <tr>
                 <td class="content-block powered-by">
-                  <img src="<%= baseUrl %>/logo.png" width="60" alt="THX Logo">
+                  <img src="<%= baseUrl %>/img/logo.png" width="60" alt="THX Logo">
                 </td>
               </tr>
             </table>
