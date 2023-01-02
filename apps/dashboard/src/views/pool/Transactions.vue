@@ -1,33 +1,32 @@
 <template>
     <div>
-        <h2 class="mb-0">Transactions (30 days)</h2>
+        <h2 class="mb-0">Dashboard</h2>
         <div class="py-5" v-if="loading">
             <b-spinner variant="primary" />
         </div>
         <bar-chart v-else :chartData="chartData" :chart-options="chartOptions" />
-        <hr />
-        <b-row>
+        <b-row v-if="pool.metrics" class="mt-5">
             <b-col md="3">
-                <b-card bg-variant="light">
+                <b-card bg-variant="white shadow-sm">
                     <span>Claims</span><br />
                     <div class="h2">{{ pool.metrics.claims }}</div>
                 </b-card>
             </b-col>
             <b-col md="3">
-                <b-card bg-variant="light">
+                <b-card bg-variant="white shadow-sm">
                     <span>Referrals</span><br />
                     <div class="h2">{{ pool.metrics.referrals }}</div>
                 </b-card>
             </b-col>
-            <b-col md="3">
-                <b-card bg-variant="light">
-                    <span>ERC721 tokens minted</span><br />
+            <b-col md="3" v-if="pool.erc721">
+                <b-card bg-variant="white shadow-sm">
+                    <span>Minted (ERC721)</span><br />
                     <div class="h2">{{ pool.metrics.mints }}</div>
                 </b-card>
             </b-col>
-            <b-col md="3">
-                <b-card bg-variant="light">
-                    <span>ERC20 withdrawals</span><br />
+            <b-col md="3" v-if="pool.erc20">
+                <b-card bg-variant="white shadow-sm">
+                    <span>Withdrawals (ERC20)</span><br />
                     <div class="h2">{{ pool.metrics.withdrawals }}</div>
                 </b-card>
             </b-col>
@@ -60,7 +59,7 @@ export default class TransactionsView extends Vue {
         labels: [],
         datasets: [
             {
-                label: 'Num of Transactions',
+                label: 'Transaction volume',
                 backgroundColor: '#5942c1',
                 data: [],
             },
@@ -69,19 +68,11 @@ export default class TransactionsView extends Vue {
 
     chartOptions = {
         scales: {
-            yAxes: [
-                {
-                    ticks: {
-                        beginAtZero: true,
-                    },
-                },
-            ],
+            x: { grid: { display: false } },
+            y: { display: false, grid: { display: false } },
         },
         responsive: true,
         maintainAspectRatio: false,
-        legend: {
-            display: false,
-        },
     };
 
     get pool() {
@@ -102,7 +93,7 @@ export default class TransactionsView extends Vue {
         lastDate.setHours(0, 0, 0, 0);
 
         let startDate = new Date(lastDate);
-        startDate.setDate(startDate.getDate() - 30); // subtract 30 days
+        startDate.setDate(startDate.getDate() - 14); // subtract 30 days
 
         const labels = [];
         const promises = [];

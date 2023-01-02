@@ -1,13 +1,17 @@
 <template>
-    <base-card :loading="isLoading" :is-deploying="isDeploying" classes="cursor-pointer" @click="onClick">
+    <base-card
+        :is-loading="isLoading"
+        :is-deploying="isDeploying"
+        :body-bg-variant="erc721.archived ? 'light' : null"
+        classes="cursor-pointer"
+        @click="onClick"
+    >
         <template #card-header>
-            NFT
-            <i class="ml-1 fas fa-archive text-white small" v-if="erc721.archived"></i>
+            <base-badge-network v-if="!isLoading" :chainId="erc721.chainId" />
+            <base-dropdown-menu-nft :erc721="erc721" @archive="archive" class="ml-auto" />
         </template>
-        <template #card-body v-if="!isLoading && erc721.address">
-            <base-badge-network class="mr-2" :chainId="erc721.chainId" />
-            <base-dropdown-menu-nft :erc721="erc721" @archive="archive" class="float-right" />
-            <div class="my-3 d-flex align-items-center">
+        <template #card-body>
+            <div class="mb-3 d-flex align-items-center">
                 <base-identicon class="mr-2" size="40" :rounded="true" variant="darker" :uri="erc721.logoURI" />
                 <div>
                     <strong class="m-0">{{ erc721.symbol }}</strong>

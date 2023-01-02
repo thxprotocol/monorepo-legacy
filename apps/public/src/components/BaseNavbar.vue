@@ -54,6 +54,7 @@
 import { BButton, BCollapse, BNavbar, BNavbarNav, BNavbarToggle, BNavItem } from 'bootstrap-vue';
 import { Component, Vue } from 'vue-property-decorator';
 import { ALT_TEXT, TITLES } from '@thxnetwork/public/utils/constants';
+import { DASHBOARD_URL, WALLET_URL, DOCS_URL } from '../config/secrets';
 
 @Component({
     components: {
@@ -66,9 +67,9 @@ import { ALT_TEXT, TITLES } from '@thxnetwork/public/utils/constants';
     },
 })
 export default class BaseNavbar extends Vue {
-    dashboardUrl = process.env.VUE_APP_DASHBOARD_URL;
-    walletUrl = process.env.VUE_APP_WALLET_URL;
-    docsUrl = process.env.VUE_APP_DOCS_URL;
+    dashboardUrl = DASHBOARD_URL;
+    walletUrl = WALLET_URL;
+    docsUrl = DOCS_URL;
     toggle = false;
     ALT_TEXT = ALT_TEXT;
     TITLES = TITLES;

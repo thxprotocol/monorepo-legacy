@@ -212,6 +212,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { CONTACT_TAGS, TWITTER_TAGS, LINKS, TITLES } from '@thxnetwork/public/utils/constants';
+import { GOOGLE_SITE_KEY, CMS_URL } from '../config/secrets';
 
 @Component({
     metaInfo: {
@@ -238,7 +239,7 @@ import { CONTACT_TAGS, TWITTER_TAGS, LINKS, TITLES } from '@thxnetwork/public/ut
 })
 export default class Contact extends Vue {
     TITLES = TITLES;
-    googleSiteKey = process.env.VUE_APP_GOOGLE_SITE_KEY;
+    googleSiteKey = GOOGLE_SITE_KEY;
     loading = false;
     error = '';
     success = '';
@@ -258,7 +259,7 @@ export default class Contact extends Vue {
 
         try {
             await axios({
-                url: process.env.VUE_APP_CMS_URL + '/form-contacts',
+                url: CMS_URL + '/form-contacts',
                 method: 'POST',
                 data: {
                     email: this.email,

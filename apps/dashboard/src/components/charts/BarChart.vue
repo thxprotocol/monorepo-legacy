@@ -1,18 +1,20 @@
 <template>
-    <Bar
-        :chart-options="chartOptions"
-        :chart-data="chartData"
-        :chart-id="chartId"
-        :dataset-id-key="datasetIdKey"
-        :plugins="plugins"
-        :css-classes="cssClasses"
-        :styles="styles"
-        :width="width"
-        :height="height"
-    />
+    <div>
+        <Bar
+            :chart-options="chartOptions"
+            :chart-data="chartData"
+            :chart-id="chartId"
+            :dataset-id-key="datasetIdKey"
+            :plugins="plugins"
+            :css-classes="cssClasses"
+            :styles="styles"
+            :width="width"
+            :height="height"
+        />
+    </div>
 </template>
 
-<script>
+<script lang="ts">
 import { Bar } from 'vue-chartjs/legacy';
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js';
 
@@ -61,7 +63,7 @@ export default {
         chartOptions: {
             type: Object,
             default: () => {
-                // function here
+                //
             },
         },
     },

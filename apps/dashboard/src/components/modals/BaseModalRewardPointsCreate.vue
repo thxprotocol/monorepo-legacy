@@ -2,7 +2,8 @@
     <base-modal size="xl" title="Create Points Reward" :id="id" :error="error" :loading="isLoading" @show="onShow">
         <template #modal-body v-if="!isLoading">
             <p class="text-gray">
-                Points rewards are distributed to your customers achieving milestones in your customer journey.
+                Points rewards are distributed to your customers that have completed reward conditions in external
+                platforms.
             </p>
             <form v-on:submit.prevent="onSubmit()" id="formRewardPointsCreate">
                 <b-row>

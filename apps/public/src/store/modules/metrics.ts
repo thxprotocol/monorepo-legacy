@@ -1,6 +1,7 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
+import { CMS_URL } from '../../config/secrets';
 
 export class Metric {
     id: string;
@@ -59,7 +60,7 @@ class MetricsModule extends VuexModule {
         try {
             const r = await axios({
                 method: 'GET',
-                url: process.env.VUE_APP_CMS_URL + '/metrics?_sort=createdAt:DESC&_limit=' + limit,
+                url: CMS_URL + '/metrics?_sort=createdAt:DESC&_limit=' + limit,
             });
 
             if (!r.data) {

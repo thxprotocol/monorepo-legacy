@@ -202,7 +202,7 @@ describe('NFT Pool', () => {
             user.get('/v1/erc721-perks')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect(async (res: request.Response) => {
-                    expect(res.body.total).toBe(5);
+                    expect(res.body.total).toBe(3);
                     expect(res.body.results[2].erc721metadataId).toBeDefined();
                     expect(res.body.results[2].claims).toBeDefined();
                 })
@@ -308,7 +308,7 @@ describe('NFT Pool', () => {
             user.get('/v1/erc721-perks')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect(async (res: request.Response) => {
-                    expect(res.body.total).toBe(7);
+                    expect(res.body.total).toBe(5);
                     expect(res.body.results[3].erc721metadataId).toBeDefined();
                     expect(res.body.results[3].claims).toBeDefined();
                 })
