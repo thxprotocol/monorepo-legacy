@@ -123,6 +123,7 @@ export default class ModalReferralRewardCreate extends Vue {
                 },
             })
             .then(() => {
+                this.$emit('submit')
                 this.$bvModal.hide(this.id);
                 this.isLoading = false;
             });

@@ -121,6 +121,7 @@ export default class ModalRewardPointsCreate extends Vue {
             })
             .then(() => {
                 this.$bvModal.hide(this.id);
+                this.$emit('submit')
                 this.title = '';
                 this.amount = '0';
                 this.description = '';
