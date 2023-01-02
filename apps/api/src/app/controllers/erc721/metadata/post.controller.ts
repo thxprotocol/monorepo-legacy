@@ -26,6 +26,7 @@ const controller = async (req: Request, res: Response) => {
         claimAmount: 1,
         rewardLimit: 1,
         platform: RewardConditionPlatform.None,
+        isPromoted: false,
     } as TERC721Perk;
     const { reward, claims } = await createERC721Perk(req.assetPool, config);
 

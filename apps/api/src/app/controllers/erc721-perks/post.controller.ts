@@ -13,6 +13,7 @@ const validation = [
     body('content').optional().isString(),
     body('pointPrice').optional().isNumeric(),
     body('image').optional().isString(),
+    body('isPromoted').optional().isBoolean(),
 ];
 
 const controller = async (req: Request, res: Response) => {
