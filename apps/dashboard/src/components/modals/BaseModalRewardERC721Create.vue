@@ -1,5 +1,5 @@
 <template>
-    <base-modal :show="onShow" size="xl" title="Create ERC721 Perk" :id="id" :error="error" :loading="isLoading">
+    <base-modal @show="onShow" size="xl" title="Create ERC721 Perk" :id="id" :error="error" :loading="isLoading">
         <template #modal-body v-if="!isLoading">
             <p class="text-gray">ERC721 rewards let your customers claim NFTs for the metadata in your collection.</p>
             <form v-on:submit.prevent="onSubmit()" id="formRewardPointsCreate">
@@ -153,6 +153,21 @@ export default class ModalRewardERC721Create extends Vue {
             })
             .then(() => {
                 this.$bvModal.hide(this.id);
+                this.isSubmitDisabled = false;
+
+                this.error = '';
+                this.title = '';
+                this.erc721metadataId = '';
+                this.description = '';
+                this.expiryDate = null;
+                this.claimAmount = 1;
+                this.rewardLimit = 0;
+                this.pointPrice = 0;
+                this.rewardCondition = {
+                    platform: platformList[0].type,
+                    interaction: platformInteractionList[0].type,
+                    content: '',
+                };
                 this.isPromoted = false;
                 this.isLoading = false;
             });
