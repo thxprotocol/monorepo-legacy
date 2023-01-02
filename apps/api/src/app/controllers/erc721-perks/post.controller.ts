@@ -7,7 +7,7 @@ import { TERC721Perk } from '@thxnetwork/types/interfaces/ERC721Perk';
 const validation = [
     body('title').isString(),
     body('description').isString(),
-    body('erc721metadataIds').exists().isArray(),
+    // body('erc721metadataIds').exists().isArray(),
     body('expiryDate').optional().isString(),
     body('claimAmount').optional().isInt({ gt: 0 }),
     body('platform').optional().isNumeric(),
@@ -24,18 +24,18 @@ const validation = [
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721 Rewards']
-    let image: string | undefined;
+    let image: string;
+
     if (req.file) {
         const response = await ImageService.upload(req.file);
         image = ImageService.getPublicUrl(response.key);
     }
 
-    const perks = [];
-    await Promise.all(
-        req.body.erc721metadataIds.map(async (metadataId: string) => {
+    const perks = await Promise.all(
+        req.body.erc721metadataIds.map(async (erc721metadataId: string) => {
             const config = {
                 poolId: String(req.assetPool._id),
-                erc721metadataId: metadataId,
+                erc721metadataId,
                 image,
                 title: req.body.title,
                 description: req.body.description,
@@ -45,7 +45,8 @@ const controller = async (req: Request, res: Response) => {
                 isPromoted: req.body.isPromoted,
             } as TERC721Perk;
             const { reward, claims } = await createERC721Perk(req.assetPool, config);
-            perks.push({ ...reward.toJSON(), claims });
+
+            return { ...reward.toJSON(), claims };
         }),
     );
 

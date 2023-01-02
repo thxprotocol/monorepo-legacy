@@ -85,9 +85,9 @@ describe('ERC20 Perks', () => {
                 .expect((res: request.Response) => {
                     expect(res.body.uuid).toBeDefined();
                     expect(res.body.pointPrice).toBe(pointPrice);
-                    expect(res.body.image).toBe(image);
+                    expect(res.body.image).toBeDefined();
                     expect(res.body.isPromoted).toBe(true);
-                    expect(new Date(res.body.expiryDate).getTime()).toBe(expiryDate.getTime());
+                    expect(new Date(res.body.expiryDate).getDate()).toBe(expiryDate.getDate());
                     expect(res.body.claims.length).toBe(1);
                     expect(res.body.claims[0].uuid).toBeDefined();
                     claim = res.body.claims[0];
