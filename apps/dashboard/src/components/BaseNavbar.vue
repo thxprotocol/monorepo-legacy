@@ -52,7 +52,7 @@
                         <div class="nav-link-icon">
                             <i class="fas fa-handshake"></i>
                         </div>
-                        <div class="flex-grow-1">
+                        <div class="flex-grow-1 justify-content-between d-flex align-items-center">
                             <span>Loyalty Partners</span>
                             <b-badge variant="gray" class="ml-2 text-white">Soon</b-badge>
                         </div>
@@ -107,8 +107,11 @@
                             <div class="nav-link-icon">
                                 <i :class="route.iconClasses"></i>
                             </div>
-                            <div class="flex-grow-1">
+                            <div class="flex-grow-1 justify-content-between d-flex align-items-center">
                                 <span>{{ route.label }}</span>
+                                <b-badge v-if="route.path === 'widget'" variant="danger" class="ml-2 text-white">
+                                    New
+                                </b-badge>
                             </div>
                         </b-nav-item>
                     </b-navbar-nav>

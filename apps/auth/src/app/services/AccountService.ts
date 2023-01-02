@@ -8,7 +8,6 @@ import { checkPasswordStrength } from '../util/passwordcheck';
 import { toChecksumAddress } from 'web3-utils';
 import {
     ERROR_NO_ACCOUNT,
-    DURATION_TWENTYFOUR_HOURS,
     ERROR_SIGNUP_TOKEN_INVALID,
     ERROR_SIGNUP_TOKEN_EXPIRED,
     SUCCESS_SIGNUP_COMPLETED,
@@ -23,6 +22,7 @@ import { YouTubeService } from './YouTubeService';
 import { AccountPlanType } from '../types/enums/AccountPlanType';
 import { AccountVariant } from '../types/enums/AccountVariant';
 import { AccessTokenKind } from '../types/enums/AccessTokenKind';
+import { get24HoursExpiryTimestamp } from '../util/time';
 
 export class AccountService {
     static get(sub: string) {
@@ -168,7 +168,7 @@ export class AccountService {
             const token = {
                 kind: AccessTokenKind.Signup,
                 accessToken: createRandomToken(),
-                expiry: DURATION_TWENTYFOUR_HOURS,
+                expiry: get24HoursExpiryTimestamp(),
             } as IAccessToken;
             account.setToken(token);
         }
@@ -206,7 +206,7 @@ export class AccountService {
             return { error: ERROR_SIGNUP_TOKEN_EXPIRED };
         }
 
-        account.setToken({ kind: AccessTokenKind.Signup, expiry: null, accessToken: '' } as IAccessToken);
+        account.unsetToken(AccessTokenKind.Signup);
         account.active = true;
         account.isEmailVerified = true;
 
@@ -224,12 +224,13 @@ export class AccountService {
         if (!account) {
             return { error: ERROR_VERIFY_EMAIL_TOKEN_INVALID };
         }
+
         const token: IAccessToken = account.getToken(AccessTokenKind.VerifyEmail);
         if (token.expiry < Date.now()) {
             return { error: ERROR_VERIFY_EMAIL_EXPIRED };
         }
 
-        account.setToken({ kind: AccessTokenKind.VerifyEmail, expiry: null, accessToken: '' } as IAccessToken);
+        account.unsetToken(AccessTokenKind.VerifyEmail);
         account.isEmailVerified = true;
 
         await account.save();

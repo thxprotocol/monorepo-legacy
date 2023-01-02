@@ -71,7 +71,7 @@ describe('ERC721 Perks', () => {
         });
 
         describe('POST /erc721/:id/metadata', () => {
-            it('should create a Metadada and reward', (done) => {
+            it('should create a Metadada', (done) => {
                 const value1 = 'blue',
                     value2 = 'small';
 
@@ -90,46 +90,9 @@ describe('ERC721 Perks', () => {
                         expect(body.attributes[1].key).toBe(schema[1].name);
                         expect(body.attributes[0].value).toBe(value1);
                         expect(body.attributes[1].value).toBe(value2);
-                        claims = body.claims;
                         erc721metadataId = body._id;
                     })
                     .expect(201, done);
-            });
-        });
-
-        describe('POST /claims/:id/collect', () => {
-            it('should return a 200 and NFT minted', (done) => {
-                user.post(`/v1/claims/${claims[0].uuid}/collect`)
-                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
-                    .expect((res: request.Response) => {
-                        expect(res.body.claim).toBeDefined();
-                        expect(res.body.metadata).toBeDefined();
-                        expect(res.body.erc721).toBeDefined();
-                        expect(res.body.reward).toBeDefined();
-                        expect(res.body.token).toBeDefined();
-                    })
-                    .expect(200, done);
-            });
-            it('should return 403 for claim from the same account', (done) => {
-                user2
-                    .post(`/v1/claims/${claims[0].uuid}/collect`)
-                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken2 })
-                    .expect(({ body }: Response) => {
-                        expect(body.error.message).toEqual("This reward has reached it's limit");
-                    })
-                    .expect(403, done);
-            });
-        });
-
-        describe('POST /claims/:id/collect', () => {
-            it('should return 403 for claim from another account', (done) => {
-                user2
-                    .post(`/v1/claims/${claims[0].uuid}/collect`)
-                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken2 })
-                    .expect(({ body }: Response) => {
-                        expect(body.error.message).toEqual("This reward has reached it's limit");
-                    })
-                    .expect(403, done);
             });
         });
     });
@@ -141,6 +104,7 @@ describe('ERC721 Perks', () => {
             const expiryDate = addMinutes(new Date(), 30);
             const pointPrice = 200;
             const image = createImage();
+
             user.post('/v1/erc721-perks/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .attach('file', image, {
@@ -150,23 +114,22 @@ describe('ERC721 Perks', () => {
                 .field({
                     title: 'Expiration date is next 30 min',
                     description: 'Lorem ipsum dolor sit amet',
-                    erc721metadataId,
+                    erc721metadataIds: [erc721metadataId],
                     platform: 0,
                     expiryDate: expiryDate.toString(),
                     rewardLimit: 1,
                     claimAmount: 1,
                     pointPrice,
-                    image,
                 })
-                .expect((res: request.Response) => {
-                    expect(res.body._id).toBeDefined();
-                    expect(res.body.pointPrice).toBe(pointPrice);
-                    expect(res.body.image).toBeDefined();
-                    expect(new Date(res.body.expiryDate).getDate()).toBe(expiryDate.getDate());
-                    expect(res.body.claims.length).toBe(1);
-                    expect(res.body.claims[0].uuid).toBeDefined();
-                    claim = res.body.claims[0];
-                    erc721PerkId = res.body._id;
+                .expect((res: request.Response) => { 
+                    expect(res.body[0]._id).toBeDefined();
+                    expect(res.body[0].image).toBeDefined();
+                    expect(res.body[0].pointPrice).toBe(pointPrice);
+                    expect(new Date(res.body[0].expiryDate).getDate()).toBe(expiryDate.getDate());
+                    expect(res.body[0].claims.length).toBe(1);
+                    expect(res.body[0].claims[0].uuid).toBeDefined();
+                    claim = res.body[0].claims[0];
+                    erc721PerkId = res.body[0]._id; 
                 })
                 .expect(201, done);
         });
@@ -214,12 +177,11 @@ describe('ERC721 Perks', () => {
         it('Should return a list of rewards', (done) => {
             user.get('/v1/erc721-perks')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-
                 .expect((res: request.Response) => {
-                    expect(res.body.results.length).toBe(2);
+                    expect(res.body.results.length).toBe(1);
                     expect(res.body.results[0].claims).toBeDefined();
                     expect(res.body.limit).toBe(10);
-                    expect(res.body.total).toBe(2);
+                    expect(res.body.total).toBe(1);
                 })
                 .expect(200, done);
         });

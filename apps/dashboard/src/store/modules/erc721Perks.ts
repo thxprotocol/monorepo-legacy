@@ -84,8 +84,9 @@ class ERC721PerkModule extends VuexModule {
             headers: { 'X-PoolId': pool._id },
             data: formData,
         });
-
-        this.context.commit('set', { pool, reward: { ...payload, ...r.data } });
+        r.data.forEach((data: any) => {
+            this.context.commit('set', { pool, reward: { ...payload, ...data } });
+        });
     }
 
     @Action({ rawError: true })
