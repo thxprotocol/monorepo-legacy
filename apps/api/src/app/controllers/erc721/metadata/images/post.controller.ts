@@ -122,6 +122,7 @@ const controller = async (req: Request, res: Response) => {
                         claimAmount: 1,
                         rewardLimit: 1,
                         platform: RewardConditionPlatform.None,
+                        isPromoted: false,
                     } as TERC721Perk);
 
                     return metadata;

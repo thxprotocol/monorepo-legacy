@@ -33,6 +33,8 @@
                             <div>
                                 <b-form-file v-model="imageFile" accept="image/*" @change="onImgChange" />
                             </div>
+                        <b-form-group label="Is Promoted">
+                            <b-form-checkbox v-model="isPromoted" />
                         </b-form-group>
                     </b-col>
                     <b-col md="6">
@@ -103,6 +105,7 @@ export default class ModalRewardERC20Create extends Vue {
         interaction: platformInteractionList[0].type,
         content: '',
     };
+    isPromoted = false;
 
     @Prop() id!: string;
     @Prop() pool!: IPool;
@@ -122,6 +125,7 @@ export default class ModalRewardERC20Create extends Vue {
             if (this.reward.image) {
                 this.image = this.reward.image;
             }
+            this.isPromoted = this.reward.isPromoted;
         }
     }
 
@@ -144,6 +148,7 @@ export default class ModalRewardERC20Create extends Vue {
                     interaction: this.rewardCondition.interaction,
                     content: this.rewardCondition.content,
                     file: this.imageFile,
+                    isPromoted: this.isPromoted,
                 },
             })
             .then(() => {
@@ -161,6 +166,7 @@ export default class ModalRewardERC20Create extends Vue {
                     content: '',
                 };
                 this.image = '';
+                this.isPromoted = false;
                 this.isLoading = false;
             });
     }

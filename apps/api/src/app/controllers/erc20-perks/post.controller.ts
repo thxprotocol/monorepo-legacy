@@ -18,6 +18,8 @@ const validation = [
         .custom((value, { req }) => {
             return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
         }),
+    body('image').optional().isString(),
+    body('isPromoted').optional().isBoolean(),
 ];
 
 const controller = async (req: Request, res: Response) => {

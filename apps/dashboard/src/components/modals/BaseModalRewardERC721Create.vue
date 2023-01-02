@@ -29,6 +29,9 @@
                                 <b-form-file v-model="imageFile" accept="image/*" @change="onImgChange" />
                             </div>
                         </b-form-group>
+                        <b-form-group label="Is Promoted">
+                            <b-form-checkbox v-model="isPromoted" />
+                        </b-form-group>
                     </b-col>
                     <b-col md="6">
                         <BaseCardRewardCondition
@@ -102,6 +105,7 @@ export default class ModalRewardERC721Create extends Vue {
     erc721s!: IERC721s;
     imageFile: File | null = null;
     image = '';
+    isPromoted = false;
 
     @Prop() id!: string;
     @Prop() pool!: IPool;
@@ -128,6 +132,7 @@ export default class ModalRewardERC721Create extends Vue {
             if (this.reward.image) {
                 this.image = this.reward.image;
             }
+            this.isPromoted = this.reward.isPromoted;
         }
     }
 
@@ -154,6 +159,7 @@ export default class ModalRewardERC721Create extends Vue {
                     interaction: this.rewardCondition.interaction,
                     content: this.rewardCondition.content,
                     file: this.imageFile,
+                    isPromoted: this.isPromoted,
                 },
             })
             .then(() => {
@@ -170,6 +176,22 @@ export default class ModalRewardERC721Create extends Vue {
                 };
                 this.image = '';
                 this.$bvModal.hide(this.id);
+                this.isSubmitDisabled = false;
+
+                this.error = '';
+                this.title = '';
+                this.erc721metadataId = '';
+                this.description = '';
+                this.expiryDate = null;
+                this.claimAmount = 1;
+                this.rewardLimit = 0;
+                this.pointPrice = 0;
+                this.rewardCondition = {
+                    platform: platformList[0].type,
+                    interaction: platformInteractionList[0].type,
+                    content: '',
+                };
+                this.isPromoted = false;
                 this.isLoading = false;
             });
     }

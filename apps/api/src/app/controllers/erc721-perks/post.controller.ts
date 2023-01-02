@@ -19,6 +19,7 @@ const validation = [
         .custom((value, { req }) => {
             return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
         }),
+    body('isPromoted').optional().isBoolean(),
 ];
 
 const controller = async (req: Request, res: Response) => {
@@ -28,7 +29,7 @@ const controller = async (req: Request, res: Response) => {
         const response = await ImageService.upload(req.file);
         image = ImageService.getPublicUrl(response.key);
     }
-    
+
     const perks = [];
     await Promise.all(
         req.body.erc721metadataIds.map(async (metadataId: string) => {
@@ -41,13 +42,14 @@ const controller = async (req: Request, res: Response) => {
                 expiryDate: req.body.expiryDate,
                 claimAmount: req.body.claimAmount,
                 pointPrice: req.body.pointPrice,
+                isPromoted: req.body.isPromoted,
             } as TERC721Perk;
             const { reward, claims } = await createERC721Perk(req.assetPool, config);
             perks.push({ ...reward.toJSON(), claims });
         }),
     );
 
-    res.status(201).json(perks); 
+    res.status(201).json(perks);
 };
 
 export default { controller, validation };
