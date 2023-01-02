@@ -50,7 +50,8 @@ export async function redirectSigninSilent() {
 
 export async function assertAuthorization(to: any, from: any, next: any) {
     try {
-        await thxClient.account.get();
+        const user = await store.dispatch('account/getUser')
+        if (!user) throw new Error('Authorization check failed, redirecting..')
         next();
     } catch {
         return redirectSignin();

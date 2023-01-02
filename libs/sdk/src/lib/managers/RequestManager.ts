@@ -2,9 +2,26 @@ import { URL_CONFIG } from '../configs';
 import { THXClient } from '../../index';
 import BaseManager from './BaseManager';
 
+interface Config extends RequestInit {
+    waitForAuth?: boolean;
+}
+
 class RequestManager extends BaseManager {
     constructor(client: THXClient) {
         super(client);
+    }
+
+    private waitForAuth() {
+        return new Promise((resolve) => {
+            const callback = () => {
+                if (this.client.session.cached.accessToken) {
+                    resolve(true);
+                    clearInterval(interval);
+                }
+            };
+
+            const interval = setInterval(callback, 100);
+        });
     }
 
     private getUrl(path: string) {
@@ -25,7 +42,9 @@ class RequestManager extends BaseManager {
         return headers;
     }
 
-    async get(path: string, config?: RequestInit) {
+    async get(path: string, config?: Config) {
+        if (config?.waitForAuth) await this.waitForAuth();
+
         const headers = this.getHeaders();
         const url = this.getUrl(path);
         const response = await fetch(url, {
@@ -56,7 +75,9 @@ class RequestManager extends BaseManager {
         }
     }
 
-    async post(path: string, config?: RequestInit) {
+    async post(path: string, config?: Config) {
+        if (config?.waitForAuth) await this.waitForAuth();
+
         const headers = this.getHeaders();
         const env = this.client.credential.cached.env;
         const response = await fetch(URL_CONFIG[env]['API_URL'] + path, {
@@ -79,7 +100,9 @@ class RequestManager extends BaseManager {
         return await response.json();
     }
 
-    async patch(path: string, config?: RequestInit) {
+    async patch(path: string, config?: Config) {
+        if (config?.waitForAuth) await this.waitForAuth();
+
         const headers = this.getHeaders();
         const url = this.getUrl(path);
         const response = await fetch(url, {
@@ -102,7 +125,9 @@ class RequestManager extends BaseManager {
         return await response.json();
     }
 
-    async put(path: string, config?: RequestInit) {
+    async put(path: string, config?: Config) {
+        if (config?.waitForAuth) await this.waitForAuth();
+
         const headers = this.getHeaders();
         const url = this.getUrl(path);
         const response = await fetch(url, {
@@ -125,7 +150,9 @@ class RequestManager extends BaseManager {
         return await response.json();
     }
 
-    async delete(path: string, config?: RequestInit) {
+    async delete(path: string, config?: Config) {
+        if (config?.waitForAuth) await this.waitForAuth();
+
         const headers = this.getHeaders();
         const url = this.getUrl(path);
         const response = await fetch(url, {
