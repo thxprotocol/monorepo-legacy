@@ -1,5 +1,5 @@
 <template>
-    <base-modal :show="onShow" size="xl" title="Create ERC721 Perk" :id="id" :error="error" :loading="isLoading">
+    <base-modal @show="onShow" size="xl" title="Create ERC721 Perk" :id="id" :error="error" :loading="isLoading">
         <template #modal-body v-if="!isLoading">
             <p class="text-gray">ERC721 rewards let your customers claim NFTs for the metadata in your collection.</p>
             <form v-on:submit.prevent="onSubmit()" id="formRewardPointsCreate">
@@ -23,6 +23,9 @@
                         </b-form-group>
                         <b-form-group label="Claim Amount">
                             <b-form-input type="number" v-model="claimAmount" />
+                        </b-form-group>
+                        <b-form-group label="Is Promoted">
+                            <b-form-checkbox v-model="isPromoted" />
                         </b-form-group>
                     </b-col>
                     <b-col md="6">
@@ -95,6 +98,7 @@ export default class ModalRewardERC721Create extends Vue {
         content: '',
     };
     erc721s!: IERC721s;
+    isPromoted = false;
 
     @Prop() id!: string;
     @Prop() pool!: IPool;
@@ -118,6 +122,7 @@ export default class ModalRewardERC721Create extends Vue {
                 interaction: this.reward.interaction as RewardConditionInteraction,
                 content: this.reward.content as string,
             };
+            this.isPromoted = this.reward.isPromoted;
         }
     }
 
@@ -143,10 +148,27 @@ export default class ModalRewardERC721Create extends Vue {
                     platform: this.rewardCondition.platform,
                     interaction: this.rewardCondition.interaction,
                     content: this.rewardCondition.content,
+                    isPromoted: this.isPromoted,
                 },
             })
             .then(() => {
                 this.$bvModal.hide(this.id);
+                this.isSubmitDisabled = false;
+
+                this.error = '';
+                this.title = '';
+                this.erc721metadataId = '';
+                this.description = '';
+                this.expiryDate = null;
+                this.claimAmount = 1;
+                this.rewardLimit = 0;
+                this.pointPrice = 0;
+                this.rewardCondition = {
+                    platform: platformList[0].type,
+                    interaction: platformInteractionList[0].type,
+                    content: '',
+                };
+                this.isPromoted = false;
                 this.isLoading = false;
             });
     }

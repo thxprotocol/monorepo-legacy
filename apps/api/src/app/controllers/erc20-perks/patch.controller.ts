@@ -14,6 +14,7 @@ const validation = [
     body('platform').optional().isNumeric(),
     body('interaction').optional().isNumeric(),
     body('content').optional().isString(),
+    body('isPromoted').optional().isBoolean(),
 ];
 
 const controller = async (req: Request, res: Response) => {

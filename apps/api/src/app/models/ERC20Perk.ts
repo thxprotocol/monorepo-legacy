@@ -12,6 +12,10 @@ export const rewardBaseSchema = {
     platform: Number,
     interaction: Number,
     content: String,
+    isPromoted: {
+        type: Boolean,
+        default: false,
+    },
 };
 
 export type ERC20PerkDocument = mongoose.Document & TERC20Perk;

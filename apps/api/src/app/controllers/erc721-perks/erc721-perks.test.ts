@@ -1,14 +1,13 @@
-import request, { Response } from 'supertest';
+import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId } from '../../types/enums';
-import { dashboardAccessToken, walletAccessToken, walletAccessToken2 } from '@thxnetwork/api/util/jest/constants';
+import { dashboardAccessToken, walletAccessToken } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { ClaimDocument } from '@thxnetwork/api/types/TClaim';
 import { addMinutes } from '@thxnetwork/api/util/rewards';
 
 const user = request.agent(app);
-const user2 = request.agent(app);
 
 describe('ERC721 Perks', () => {
     let poolId: string, erc721ID: string, erc721metadataId: string;
@@ -20,7 +19,7 @@ describe('ERC721 Perks', () => {
     afterAll(afterAllCallback);
 
     describe('an NFT reward with withdrawLimit = 1 is claimed by wallet user A and then should not be claimed again throught he same claim URL by wallet user B', () => {
-        let erc721Address: string, claims: any;
+        let erc721Address: string;
 
         const name = 'Planets of the Galaxy',
             symbol = 'GLXY',
@@ -113,10 +112,12 @@ describe('ERC721 Perks', () => {
                     rewardLimit: 1,
                     claimAmount: 1,
                     pointPrice,
+                    isPromoted: true,
                 })
                 .expect((res: request.Response) => {
                     expect(res.body[0]._id).toBeDefined();
                     expect(res.body[0].pointPrice).toBe(pointPrice);
+                    expect(res.body[0].isPromoted).toBe(true);
                     expect(res.body[0].claims.length).toBe(1);
                     expect(res.body[0].claims[0].uuid).toBeDefined();
                     claim = res.body[0].claims[0];

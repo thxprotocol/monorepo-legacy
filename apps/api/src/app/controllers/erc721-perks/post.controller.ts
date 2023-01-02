@@ -13,6 +13,7 @@ const validation = [
     body('interaction').optional().isNumeric(),
     body('content').optional().isString(),
     body('pointPrice').optional().isNumeric(),
+    body('isPromoted').optional().isBoolean(),
 ];
 
 const controller = async (req: Request, res: Response) => {
@@ -28,6 +29,7 @@ const controller = async (req: Request, res: Response) => {
                 expiryDate: req.body.expiryDate,
                 claimAmount: req.body.claimAmount,
                 pointPrice: req.body.pointPrice,
+                isPromoted: req.body.isPromoted,
             } as TERC721Perk;
             const { reward, claims } = await createERC721Perk(req.assetPool, config);
             perks.push({ ...reward.toJSON(), claims });
