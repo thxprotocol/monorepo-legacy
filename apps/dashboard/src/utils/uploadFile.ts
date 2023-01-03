@@ -22,7 +22,6 @@ export default {
             Body: Buffer.from(await file.arrayBuffer()),
         };
         const result = { ...(await s3Client.send(new PutObjectCommand(uploadParams))), key: filename, bucket };
-        console.log('result', result);
         return result;
     },
     getS3SignedUrl: async (bucket: string, key: string) => {

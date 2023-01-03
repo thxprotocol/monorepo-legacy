@@ -94,7 +94,7 @@ export default class AssetPoolView extends Vue {
     }
 
     async upload(file: File) {
-        return await this.$store.dispatch('images/upload', file);
+        return await this.$store.dispatch('images/upload', { file, folder: this.pool.sub });
     }
 
     async get() {

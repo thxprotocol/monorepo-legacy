@@ -50,6 +50,7 @@
 </template>
 
 <script lang="ts">
+import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import type { TERC721, TERC721DefaultProp, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
@@ -80,6 +81,7 @@ export default class ModalRewardCreate extends Vue {
     @Prop() id!: string;
     @Prop() erc721!: TERC721;
     @Prop({ required: false }) metadata!: TERC721Metadata;
+    @Prop() pool!: IPool;
 
     parsePropType(propType: string) {
         return PROPTYPE_MAP[propType];
@@ -88,7 +90,10 @@ export default class ModalRewardCreate extends Vue {
     async onFileChange(event: any) {
         this.imgLoading = event.target.dataset.key;
         this.isSubmitDisabled = true;
-        const publicUrl = await this.$store.dispatch('images/upload', event.target.files[0]);
+        const publicUrl = await this.$store.dispatch('images/upload', {
+            file: event.target.files[0],
+            folder: this.pool.sub,
+        });
         Vue.set(this.erc721.properties[event.target.dataset['key']], 'value', publicUrl);
         this.isSubmitDisabled = false;
         this.imgLoading = '';

@@ -77,12 +77,11 @@ class ERC721PerkModule extends VuexModule {
 
     @Action({ rawError: true })
     async create({ pool, payload }: { pool: IPool; payload: TERC721PerkInputData }) {
-        const formData = uploadManager.prepareFormDataForUpload(payload);
         const r = await axios({
             method: 'POST',
             url: '/erc721-perks',
             headers: { 'X-PoolId': pool._id },
-            data: formData,
+            data: payload,
         });
         r.data.forEach((data: any) => {
             this.context.commit('set', { pool, reward: { ...payload, ...data } });
@@ -91,12 +90,11 @@ class ERC721PerkModule extends VuexModule {
 
     @Action({ rawError: true })
     async update({ pool, reward, payload }: { pool: IPool; reward: TERC721Perk; payload: TERC721PerkInputData }) {
-        const formData = uploadManager.prepareFormDataForUpload(payload);
         const { data } = await axios({
             method: 'PATCH',
             url: `/erc721-perks/${reward._id}`,
             headers: { 'X-PoolId': pool._id },
-            data: formData,
+            data: payload,
         });
         this.context.commit('set', {
             pool,

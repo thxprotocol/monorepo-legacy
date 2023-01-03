@@ -9,7 +9,6 @@ const credentials = {
     accessKeyId: AWS_ACCESS_KEY_ID,
     secretAccessKey: AWS_SECRET_ACCESS_KEY,
 };
-
 const s3Client = new S3Client({
     region: AWS_S3_PUBLIC_BUCKET_REGION,
     credentials,

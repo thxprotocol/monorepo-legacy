@@ -6,7 +6,6 @@ import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { ClaimDocument } from '@thxnetwork/api/types/TClaim';
 import { addMinutes } from '@thxnetwork/api/util/rewards';
-import { createImage } from '@thxnetwork/api/util/jest/images';
 
 const user = request.agent(app);
 
@@ -102,11 +101,11 @@ describe('ERC721 Perks', () => {
         it('POST /erc721-perks', (done) => {
             const expiryDate = addMinutes(new Date(), 30);
             const pointPrice = 200;
-            const image = createImage();
+            const image = 'myImage';
 
             user.post('/v1/erc721-perks/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .field({
+                .send({
                     'title': 'Expiration date is next 30 min',
                     'description': 'Lorem ipsum dolor sit amet',
                     'platform': 0,
@@ -117,13 +116,9 @@ describe('ERC721 Perks', () => {
                     'erc721metadataIds[0]': erc721metadataId,
                     'isPromoted': true,
                 })
-                .attach('file', image, {
-                    filename: 'test.jpg',
-                    contentType: 'image/jpg',
-                })
                 .expect((res: request.Response) => {
                     expect(res.body[0]._id).toBeDefined();
-                    expect(res.body[0].image).toBeDefined();
+                    expect(res.body[0].image).toBe(image);
                     expect(res.body[0].pointPrice).toBe(pointPrice);
                     expect(new Date(res.body[0].expiryDate).getDate()).toBe(expiryDate.getDate());
                     expect(res.body[0].isPromoted).toBe(true);

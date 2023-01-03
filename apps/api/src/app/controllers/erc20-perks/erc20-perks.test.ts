@@ -14,7 +14,6 @@ import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/c
 import { WithdrawalState } from '@thxnetwork/api/types/enums';
 import { ClaimDocument } from '@thxnetwork/api/types/TClaim';
 import { addMinutes, subMinutes } from '@thxnetwork/api/util/rewards';
-import { createImage } from '@thxnetwork/api/util/jest/images';
 
 const user = request.agent(app);
 
@@ -63,14 +62,10 @@ describe('ERC20 Perks', () => {
         it('POST /erc20-perks', (done) => {
             const expiryDate = addMinutes(new Date(), 30);
             const pointPrice = 200;
-            const image = createImage();
+            const image = 'myImage';
             user.post('/v1/erc20-perks/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .attach('file', image, {
-                    filename: 'test.jpg',
-                    contentType: 'image/jpg',
-                })
-                .field({
+                .send({
                     title: 'Expiration date is next 30 min',
                     description: 'Lorem ipsum dolor sit amet',
                     amount: 1,
@@ -85,7 +80,7 @@ describe('ERC20 Perks', () => {
                 .expect((res: request.Response) => {
                     expect(res.body.uuid).toBeDefined();
                     expect(res.body.pointPrice).toBe(pointPrice);
-                    expect(res.body.image).toBeDefined();
+                    expect(res.body.image).toBe(image);
                     expect(res.body.isPromoted).toBe(true);
                     expect(new Date(res.body.expiryDate).getDate()).toBe(expiryDate.getDate());
                     expect(res.body.claims.length).toBe(1);

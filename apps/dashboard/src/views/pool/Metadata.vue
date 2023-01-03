@@ -250,6 +250,7 @@ export default class MetadataView extends Vue {
 
     async listMetadata() {
         this.isLoading = true;
+
         await this.$store.dispatch('erc721/read', this.pool.erc721._id).then(async () => {
             await this.$store.dispatch('erc721/listMetadata', {
                 erc721: this.erc721,

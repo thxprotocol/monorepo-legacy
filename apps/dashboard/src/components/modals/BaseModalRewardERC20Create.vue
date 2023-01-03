@@ -26,14 +26,26 @@
                         <b-form-group label="Point Price">
                             <b-form-input type="number" v-model="pointPrice" />
                         </b-form-group>
-                        <b-form-group label="Image">
-                            <div class="float-left" v-if="image">
-                                <img :src="image" width="20%" />
-                            </div>
-                            <div>
-                                <b-form-file v-model="imageFile" accept="image/*" @change="onImgChange" />
-                            </div>
-                        </b-form-group>
+                        <template>
+                            <b-form-group label="Image">
+                                <div class="col-md-2" v-if="imgLoading && imgLoading.length">
+                                    <b-spinner v-if="!image.length" variant="primary"></b-spinner>
+                                </div>
+                                <div class="col-md-2" v-else>
+                                    <img :src="image" width="100%" />
+                                </div>
+                                <b-form-file
+                                    @change="onFileChange"
+                                    class="col-md-10"
+                                    :data-key="image"
+                                    accept="image/*"
+                                    width="50%"
+                                    :placeholder="
+                                        !image ? 'Browse to upload the image' : 'Browse to change the image...'
+                                    "
+                                />
+                            </b-form-group>
+                        </template>
                         <b-form-group label="Promoted">
                             <b-form-checkbox v-model="isPromoted" />
                         </b-form-group>
@@ -99,14 +111,14 @@ export default class ModalRewardERC20Create extends Vue {
     claimAmount = 1;
     rewardLimit = 0;
     pointPrice = 0;
-    imageFile: File | null = null;
-    image = '';
     rewardCondition: { platform: RewardConditionPlatform; interaction: RewardConditionInteraction; content: string } = {
         platform: platformList[0].type,
         interaction: platformInteractionList[0].type,
         content: '',
     };
     isPromoted = false;
+    image = '';
+    imgLoading = '';
 
     @Prop() id!: string;
     @Prop() pool!: IPool;
@@ -148,7 +160,7 @@ export default class ModalRewardERC20Create extends Vue {
                     platform: this.rewardCondition.platform,
                     interaction: this.rewardCondition.interaction,
                     content: this.rewardCondition.content,
-                    file: this.imageFile,
+                    image: this.image,
                     isPromoted: this.isPromoted,
                 },
             })
@@ -167,13 +179,24 @@ export default class ModalRewardERC20Create extends Vue {
                     content: '',
                 };
                 this.image = '';
+                this.imgLoading = '';
                 this.isPromoted = false;
                 this.isLoading = false;
             });
     }
 
-    onImgChange() {
-        this.image = '';
+    async onFileChange(event: any) {
+        const file = event.target.files[0];
+        this.imgLoading = file.name;
+        this.isSubmitDisabled = true;
+        const publicUrl = await this.$store.dispatch('images/upload', {
+            file,
+            folder: this.pool.sub,
+        });
+        //Vue.set(this.reward.image, 'value', publicUrl);
+        this.image = publicUrl;
+        this.isSubmitDisabled = false;
+        this.imgLoading = '';
     }
 }
 </script>
