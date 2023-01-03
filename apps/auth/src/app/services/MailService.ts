@@ -48,37 +48,37 @@ export class MailService {
         await account.save();
     }
 
-    // static async sendVerificationEmail(account: AccountDocument, returnUrl: string) {
-    //     if (!account.email) {
-    //         throw new Error('Account email not set.');
-    //     }
-    //     const token = {
-    //         kind: AccessTokenKind.VerifyEmail,
-    //         accessToken: createRandomToken(),
-    //         expiry: get24HoursExpiryTimestamp(),
-    //     } as IAccessToken;
-    //     account.setToken(token);
+    static async sendVerificationEmail(account: AccountDocument, returnUrl: string) {
+        if (!account.email) {
+            throw new Error('Account email not set.');
+        }
+        const token = {
+            kind: AccessTokenKind.VerifyEmail,
+            accessToken: createRandomToken(),
+            expiry: get24HoursExpiryTimestamp(),
+        } as IAccessToken;
+        account.setToken(token);
 
-    //     const verifyUrl = `${returnUrl}verify_email?verifyEmailToken=${token.accessToken}&return_url=${returnUrl}`;
-    //     const html = await ejs.renderFile(
-    //         path.join(mailTemplatePath, 'emailConfirm.ejs'),
-    //         {
-    //             verifyUrl,
-    //             returnUrl,
-    //             baseUrl: AUTH_URL,
-    //         },
-    //         { async: true },
-    //     );
+        const verifyUrl = `${returnUrl}verify_email?verifyEmailToken=${token.accessToken}&return_url=${returnUrl}`;
+        const html = await ejs.renderFile(
+            path.join(mailTemplatePath, 'emailConfirm.ejs'),
+            {
+                verifyUrl,
+                returnUrl,
+                baseUrl: AUTH_URL,
+            },
+            { async: true },
+        );
 
-    //     await this.sendMail(
-    //         account.email,
-    //         'Please complete the e-mail verification for your THX Account',
-    //         html,
-    //         verifyUrl,
-    //     );
+        await this.sendMail(
+            account.email,
+            'Please complete the e-mail verification for your THX Account',
+            html,
+            verifyUrl,
+        );
 
-    //     await account.save();
-    // }
+        await account.save();
+    }
 
     static async sendLoginLinkEmail(account: AccountDocument, password: string) {
         const secureKey = encryptString(password, SECURE_KEY.split(',')[0]);
