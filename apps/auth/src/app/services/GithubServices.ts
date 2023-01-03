@@ -18,7 +18,7 @@ export class GithubService {
                 const tokens = await this.refreshAccess(token.refreshToken);
                 const expiry = tokens.expires_in ? Date.now() + Number(tokens.expires_in) * 1000 : undefined;
                 account.setToken({
-                    kind: AccessTokenKind.Twitter,
+                    kind: AccessTokenKind.Github,
                     accessToken: tokens.access_token,
                     refreshToken: tokens.refresh_token,
                     expiry,
