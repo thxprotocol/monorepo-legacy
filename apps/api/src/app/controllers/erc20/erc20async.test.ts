@@ -20,7 +20,7 @@ describe('ERC20async', () => {
         it('Able to create limited token and return address', (done) => {
             http.post('/v1/erc20')
                 .set('Authorization', ACCESS_TOKEN)
-                .field({
+                .send({
                     name,
                     symbol,
                     chainId: ChainId.Hardhat, //TODO: Switch to Polygon to actully make it async.

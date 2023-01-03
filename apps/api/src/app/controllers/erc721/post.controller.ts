@@ -10,22 +10,12 @@ const validation = [
     body('description').exists().isString(),
     body('chainId').exists().isNumeric(),
     body('schema').exists(),
-    check('file')
-        .optional()
-        .custom((value, { req }) => {
-            return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
-        }),
     query('forceSync').optional().isBoolean(),
+    body('logoImgUrl').optional().isString(),
 ];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721']
-
-    let logoImgUrl;
-    if (req.file) {
-        const response = await ImageService.upload(req.file);
-        logoImgUrl = ImageService.getPublicUrl(response.key);
-    }
     let properties: any;
     try {
         properties = typeof req.body.schema == 'string' ? JSON.parse(req.body.schema) : req.body.schema;
@@ -48,7 +38,7 @@ const controller = async (req: Request, res: Response) => {
             description: req.body.description,
             properties,
             archived: false,
-            logoImgUrl,
+            logoImgUrl: req.body.logoImgUrl,
         },
         forceSync,
     );

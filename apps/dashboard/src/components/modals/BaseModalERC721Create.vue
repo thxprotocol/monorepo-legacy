@@ -22,10 +22,24 @@
             </b-form-group>
             <b-row>
                 <b-col>
-                    <label>Token Icon</label>
-                    <b-form-group>
-                        <b-form-file v-model="logoImg" accept="image/*" />
-                    </b-form-group>
+                    <template>
+                        <label>Token Icon</label>
+                        <b-form-group>
+                            <div class="col-md-2" v-if="imgLoading && imgLoading.length">
+                                <b-spinner v-if="!image.length" variant="primary"></b-spinner>
+                            </div>
+                            <div class="col-md-2 float-left" v-else>
+                                <img :src="image" width="100%" />
+                            </div>
+                            <b-form-file
+                                @change="onFileChange"
+                                class="col-md-10 float-left"
+                                :data-key="image"
+                                accept="image/*"
+                                :placeholder="!image ? 'Browse to upload the image' : 'Browse to change the image...'"
+                            />
+                        </b-form-group>
+                    </template>
                 </b-col>
             </b-row>
             <b-form-group>
@@ -104,7 +118,7 @@ export default class ModalERC721Create extends Vue {
     name = '';
     symbol = '';
     description = '';
-    schema: TERC721DefaultProp[] = [
+    defaultSchema = [
         {
             name: 'description',
             propType: 'string',
@@ -130,7 +144,9 @@ export default class ModalERC721Create extends Vue {
             disabled: true,
         },
     ];
-    logoImg: File | null = null;
+    schema: TERC721DefaultProp[] = this.defaultSchema;
+    image = '';
+    imgLoading = '';
 
     async submit() {
         this.loading = true;
@@ -141,13 +157,30 @@ export default class ModalERC721Create extends Vue {
             symbol: this.symbol,
             description: this.description,
             schema: this.schema,
-            file: this.logoImg,
+            logoImgUrl: this.image,
         };
 
         await this.$store.dispatch('erc721/create', data);
 
         this.$bvModal.hide(`modalERC721Create`);
+        this.image = '';
+        this.imgLoading = '';
+        this.name = '';
+        this.symbol = '';
         this.loading = false;
+        this.description = '';
+        this.schema = this.defaultSchema;
+    }
+
+    async onFileChange(event: any) {
+        const file = event.target.files[0];
+        this.imgLoading = file.name;
+        const publicUrl = await this.$store.dispatch('images/upload', {
+            file,
+            folder: this.symbol,
+        });
+        this.image = publicUrl;
+        this.imgLoading = '';
     }
 }
 </script>

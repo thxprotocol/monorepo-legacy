@@ -123,7 +123,7 @@ describe('ERC20 Perks', () => {
         it('POST /erc20-perks', (done) => {
             user.post('/v1/erc20-perks/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .field({
+                .send({
                     title: 'Expiration date is next 30 min',
                     description: 'Lorem ipsum dolor sit amet',
                     amount: 1,
@@ -188,7 +188,7 @@ describe('ERC20 Perks', () => {
         it('POST /erc20-perks', (done) => {
             user.post('/v1/erc20-perks/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .field({
+                .send({
                     title: 'Expiration date is next 30 min',
                     description: 'Lorem ipsum dolor sit amet',
                     amount: 1,

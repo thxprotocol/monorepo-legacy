@@ -24,7 +24,6 @@ router.get('/', guard.check(['erc721:read']), assertRequestInput(ListERC721.vali
 router.get('/:id', guard.check(['erc721:read']), assertRequestInput(ReadERC721.validation), ReadERC721.controller);
 router.post(
     '/',
-    upload.single('file'),
     guard.check(['erc721:read', 'erc721:write']),
     assertRequestInput(CreateERC721.validation),
     CreateERC721.controller,

@@ -1,5 +1,5 @@
 <template>
-    <base-modal @show="onShow" :loading="loading" :error="error" title="Create Token Contract" id="modalERC20Create">
+    <base-modal :loading="loading" :error="error" title="Create Token Contract" id="modalERC20Create">
         <template #modal-body v-if="!loading">
             <base-form-select-network @selected="chainId = $event" :chainId="chainId" />
             <label>Variant</label>
@@ -122,12 +122,11 @@ export default class ModalERC20Create extends Vue {
         await this.$store.dispatch('erc20/create', data);
 
         this.$bvModal.hide(`modalERC20Create`);
-        this.loading = false;
-    }
-
-    onShow() {
         this.image = '';
         this.imgLoading = '';
+        this.name = '';
+        this.symbol = '';
+        this.loading = false;
     }
 
     async onFileChange(event: any) {

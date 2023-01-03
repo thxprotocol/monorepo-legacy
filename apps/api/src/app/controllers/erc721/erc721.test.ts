@@ -4,7 +4,6 @@ import { ChainId } from '@thxnetwork/api/types/enums';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { dashboardAccessToken } from '@thxnetwork/api/util/jest/constants';
-import { createImage } from '@thxnetwork/api/util/jest/images';
 
 const user = request.agent(app);
 
@@ -24,17 +23,17 @@ describe('ERC721', () => {
 
     describe('POST /erc721', () => {
         it('should create and return contract details', async () => {
-            const logoImg = await createImage();
+            const logoImg = 'myImage';
             await user
                 .post('/v1/erc721')
                 .set('Authorization', dashboardAccessToken)
-                .attach('file', logoImg, { filename: 'logoImg.jpg', contentType: 'image/jpg' })
-                .field({
+                .send({
                     chainId,
                     name,
                     symbol,
                     description,
                     schema: JSON.stringify(schema),
+                    logoImgUrl: logoImg,
                 })
                 .expect(({ body }: request.Response) => {
                     expect(body._id).toBeDefined();
@@ -50,7 +49,7 @@ describe('ERC721', () => {
                     expect(body.properties[1].propType).toBe(schema[1].propType);
                     expect(isAddress(body.address)).toBe(true);
                     expect(body.archived).toBe(false);
-                    expect(body.logoImgUrl).toBeDefined();
+                    expect(body.logoImgUrl).toBe(logoImg);
                     erc721ID = body._id;
                 })
                 .expect(201);
@@ -111,5 +110,4 @@ describe('ERC721', () => {
             });
         });
     });
-
 });
