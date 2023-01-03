@@ -9,7 +9,7 @@
                     <i class="fas fa-plus mr-2"></i>
                     <span class="d-none d-md-inline">Point Reward</span>
                 </b-button>
-                <BaseModalRewardPointsCreate :id="'modalRewardPointsCreate'" :pool="pool" />
+                <BaseModalRewardPointsCreate @submit="listRewards" :id="'modalRewardPointsCreate'" :pool="pool" />
             </b-col>
         </b-row>
         <BCard variant="white" body-class="p-0 shadow-sm">
@@ -60,6 +60,7 @@
                         </b-dropdown-item>
                     </b-dropdown>
                     <BaseModalRewardPointsCreate
+                        @submit="listRewards"
                         :id="'modalRewardPointsCreate' + item.id"
                         :pool="pool"
                         :reward="pointRewards[pool._id][item.id]"

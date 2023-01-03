@@ -9,7 +9,7 @@ import { logger } from '../util/logger';
 import { assetsPath } from '../util/path';
 import { AccessTokenKind } from '../types/enums/AccessTokenKind';
 import { IAccessToken } from '../types/TAccount';
-import { DURATION_TWENTYFOUR_HOURS } from '../util/messages';
+import { get24HoursExpiryTimestamp } from '../util/time';
 
 const mailTemplatePath = path.join(assetsPath, 'views', 'mail');
 
@@ -26,7 +26,7 @@ export class MailService {
         const token = {
             kind: AccessTokenKind.Signup,
             accessToken: createRandomToken(),
-            expiry: DURATION_TWENTYFOUR_HOURS,
+            expiry: get24HoursExpiryTimestamp(),
         } as IAccessToken;
         account.setToken(token);
 
@@ -53,7 +53,7 @@ export class MailService {
         const token = {
             kind: AccessTokenKind.VerifyEmail,
             accessToken: createRandomToken(),
-            expiry: DURATION_TWENTYFOUR_HOURS,
+            expiry: get24HoursExpiryTimestamp(),
         } as IAccessToken;
         account.setToken(token);
 

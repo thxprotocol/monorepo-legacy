@@ -9,7 +9,7 @@
                     <i class="fas fa-plus mr-2"></i>
                     <span class="d-none d-md-inline">ERC721 Reward</span>
                 </b-button>
-                <BaseModalRewardERC721Create :id="'modalRewardERC721Create'" :pool="pool" />
+                <BaseModalRewardERC721Create @submit="listRewards" :id="'modalRewardERC721Create'" :pool="pool" />
             </b-col>
         </b-row>
         <BCard variant="white" body-class="p-0 shadow-sm">
@@ -95,6 +95,7 @@
                         </b-dropdown-item>
                     </b-dropdown>
                     <BaseModalRewardERC721Create
+                        @submit="listRewards"
                         :id="'modalRewardERC721Create' + item.id"
                         :pool="pool"
                         :reward="erc721Perks[pool._id][item.id]"

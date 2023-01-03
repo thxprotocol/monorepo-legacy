@@ -16,8 +16,8 @@ class ImageModule extends VuexModule {
         //     data: formData,
         // });
         //return response.data.publicUrl;
-        const { bucket, key } = await uploadManager.upload(file, 'test');
-        const publicUrl = await uploadManager.getPublicUrl(bucket, key);
+        const { bucket, key } = await uploadManager.uploadTos3(file, 'test');
+        const publicUrl = uploadManager.getS3PublicUrl(bucket, key);
         console.log('result', publicUrl);
         return publicUrl;
     }

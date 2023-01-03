@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { IPool } from './pools';
 import { RewardConditionPlatform, type TERC20Perk } from '@thxnetwork/types/index';
+import uploadManager from '../../utils/uploadFile';
 
 export type RewardByPage = {
     [page: number]: TERC20Perk[];
@@ -18,6 +19,10 @@ export type RewardListProps = {
     pool: IPool;
     page: number;
     limit: number;
+};
+
+type TERC20PerkInputData = TERC20Perk & {
+    file?: any;
 };
 
 @Module({ namespaced: true })
@@ -71,24 +76,26 @@ class ERC20PerkModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async create({ pool, payload }: { pool: IPool; payload: TERC20Perk }) {
+    async create({ pool, payload }: { pool: IPool; payload: TERC20PerkInputData }) {
+        const formData = uploadManager.prepareFormDataForUpload(payload);
         const { data } = await axios({
             method: 'POST',
             url: '/erc20-perks',
             headers: { 'X-PoolId': pool._id },
-            data: payload,
+            data: formData,
         });
 
         this.context.commit('set', { pool, reward: { ...payload, ...data } });
     }
 
     @Action({ rawError: true })
-    async update({ pool, reward, payload }: { pool: IPool; reward: TERC20Perk; payload: TERC20Perk }) {
+    async update({ pool, reward, payload }: { pool: IPool; reward: TERC20Perk; payload: TERC20PerkInputData }) {
+        const formData = uploadManager.prepareFormDataForUpload(payload);
         const { data } = await axios({
             method: 'PATCH',
             url: `/erc20-perks/${reward._id}`,
             headers: { 'X-PoolId': pool._id },
-            data: payload,
+            data: formData,
         });
 
         this.context.commit('set', {

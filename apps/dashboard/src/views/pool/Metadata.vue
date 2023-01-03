@@ -38,7 +38,10 @@
                 :pool="pool"
                 :total-rows="totals[erc721._id]"
                 :selectedItems="selectedItems"
-                :actions="[{ variant: 0, label: `Delete metadata` }]"
+                :actions="[
+                    { variant: 0, label: `Delete metadata` },
+                    { variant: 1, label: `Create perk` },
+                ]"
                 @click-action="onClickAction"
                 @change-limit="onChangeLimit"
                 @change-page="onChangePage"
@@ -51,6 +54,11 @@
                 <i class="fas fa-hourglass-half mr-2"></i>
                 Downloading your QR codes
             </b-alert>
+            <BaseModalRewardERC721Create
+                id="modalRewardERC721Create"
+                :pool="pool"
+                :erc721SelectedMetadataIds="selectedItems"
+            />
             <BTable hover :busy="isLoading" :items="metadataByPage" responsive="lg" show-empty>
                 <!-- Head formatting -->
                 <template #head(checkbox)>
@@ -139,6 +147,7 @@ import BaseModalErc721MetadataBulkCreate from '@thxnetwork/dashboard/components/
 import BaseModalErc721MetadataUploadCSV from '@thxnetwork/dashboard/components/modals/BaseModalERC721MetadataUploadCSV.vue';
 import BaseModalErc721MetadataCreateCSV from '@thxnetwork/dashboard/components/modals/BaseModalERC721MetadataCreateCSV.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
+import BaseModalRewardERC721Create from '@thxnetwork/dashboard/components/modals/BaseModalRewardERC721Create.vue';
 
 @Component({
     components: {
@@ -149,6 +158,7 @@ import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCard
         BaseModalErc721MetadataUploadCSV,
         BaseModalErc721MetadataCreateCSV,
         BaseCardTableHeader,
+        BaseModalRewardERC721Create,
     },
     computed: mapGetters({
         pools: 'pools/all',
@@ -233,9 +243,7 @@ export default class MetadataView extends Vue {
                 }
                 break;
             case 1:
-                this.$bvModal.show('modalRewardClaimsDownload');
-            case 2:
-                this.$bvModal.show('modalRewardClaimsDownload');
+                this.$bvModal.show('modalRewardERC721Create');
                 break;
         }
     }
