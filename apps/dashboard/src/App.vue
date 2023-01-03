@@ -1,5 +1,5 @@
 <template>
-    <div id="app">
+    <div id="app" :class="{ 'is-authenticated': profile }">
         <base-navbar v-if="profile" />
         <div class="sidebar-sibling">
             <b-alert v-if="profile" show variant="primary" class="alert-top">
@@ -48,9 +48,26 @@ export default class App extends Vue {
 }
 </script>
 
-<style>
+<style lang="scss">
 .alert-top {
     border: 0;
     border-radius: 0;
+}
+
+#app {
+    opacity: 0;
+    transition: 0.25s opacity ease;
+
+    &.is-authenticated {
+        opacity: 1;
+    }
+
+    &:not(.is-authenticated) .sidebar-sibling {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        margin-left: 0;
+    }
 }
 </style>

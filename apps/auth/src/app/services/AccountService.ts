@@ -313,30 +313,6 @@ export class AccountService {
         Account.remove({ _id: id });
     }
 
-    static async post(
-        firstName: string,
-        lastName: string,
-        email: string,
-        password: string,
-        signupToken: string,
-        signupTokenExpires: number,
-    ) {
-        try {
-            const account = new Account({
-                firstName,
-                lastName,
-                email,
-                password,
-                signupToken,
-                signupTokenExpires,
-            });
-
-            await account.save();
-        } catch (error) {
-            return { error };
-        }
-    }
-
     static async count() {
         try {
             return await Account.countDocuments();
