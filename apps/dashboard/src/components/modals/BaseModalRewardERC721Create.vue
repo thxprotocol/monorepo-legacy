@@ -29,7 +29,7 @@
                                 <b-form-file v-model="imageFile" accept="image/*" @change="onImgChange" />
                             </div>
                         </b-form-group>
-                        <b-form-group label="Is Promoted">
+                        <b-form-group label="Promoted">
                             <b-form-checkbox v-model="isPromoted" />
                         </b-form-group>
                     </b-col>

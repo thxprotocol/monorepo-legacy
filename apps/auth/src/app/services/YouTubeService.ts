@@ -157,10 +157,14 @@ export class YouTubeService {
     }
 
     static async getScopesOfAccessToken(token: string): Promise<string[]> {
-        const r = await axios({
-            url: `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${token}`,
-        });
-        return r.data['scope'].split(' ');
+        try {
+            const r = await axios({
+                url: `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${token}`,
+            });
+            return r.data['scope'].split(' ');
+        } catch (error) {
+            return [];
+        }
     }
 
     static async hasYoutubeScopes(token: string): Promise<boolean> {
