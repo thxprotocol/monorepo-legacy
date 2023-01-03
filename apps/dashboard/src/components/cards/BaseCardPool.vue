@@ -136,7 +136,7 @@ export default class BaseCardPool extends Vue {
 
     openPoolUrl() {
         this.$router.push({
-            path: `pool/${this.pool._id}/point-rewards`,
+            path: `pool/${this.pool._id}`,
         });
     }
 

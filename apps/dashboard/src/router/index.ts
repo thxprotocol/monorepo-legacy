@@ -29,6 +29,7 @@ const routes: Array<RouteConfig> = [
     {
         name: 'pool',
         path: '/pool/:id',
+        redirect: '/pool/:id/transactions',
         component: () => import('../views/Pool.vue'),
         beforeEnter: assertAuthorization,
         children: [
