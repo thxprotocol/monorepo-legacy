@@ -1,23 +1,16 @@
 import { Request, Response } from 'express';
-import { body, check, query } from 'express-validator';
+import { body, query } from 'express-validator';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { checkAndUpgradeToBasicPlan } from '@thxnetwork/api/util/plans';
 
-import ImageService from '@thxnetwork/api/services/ImageService';
-
 export const validation = [
-    body('name').exists().isString(),
     body('symbol').exists().isString(),
     body('chainId').exists().isNumeric(),
     body('type').exists().isNumeric(),
     body('totalSupply').optional().isNumeric(),
-    check('file')
-        .optional()
-        .custom((value, { req }) => {
-            return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
-        }),
     query('forceSync').optional().isBoolean(),
+    body('logoImgUrl').optional().isString(),
 ];
 
 export const controller = async (req: Request, res: Response) => {
@@ -32,12 +25,6 @@ export const controller = async (req: Request, res: Response) => {
 
     await checkAndUpgradeToBasicPlan(account, req.body.chainId);
 
-    let logoImgUrl;
-    if (req.file) {
-        const response = await ImageService.upload(req.file);
-        logoImgUrl = ImageService.getPublicUrl(response.key);
-    }
-
     const forceSync = req.query.forceSync !== undefined ? req.query.forceSync === 'true' : false;
 
     const erc20 = await ERC20Service.deploy(
@@ -48,7 +35,7 @@ export const controller = async (req: Request, res: Response) => {
             totalSupply: req.body.totalSupply,
             type: req.body.type,
             sub: req.auth.sub,
-            logoImgUrl,
+            logoImgUrl: req.body.logoImgUrl,
         },
         forceSync,
     );

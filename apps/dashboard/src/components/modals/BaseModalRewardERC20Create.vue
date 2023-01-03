@@ -193,7 +193,6 @@ export default class ModalRewardERC20Create extends Vue {
             file,
             folder: this.pool.sub,
         });
-        //Vue.set(this.reward.image, 'value', publicUrl);
         this.image = publicUrl;
         this.isSubmitDisabled = false;
         this.imgLoading = '';

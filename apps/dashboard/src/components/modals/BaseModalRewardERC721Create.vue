@@ -213,6 +213,7 @@ export default class ModalRewardERC721Create extends Vue {
     }
 
     async onFileChange(event: any) {
+        this.image = '';
         const file = event.target.files[0];
         this.imgLoading = file.name;
         this.isSubmitDisabled = true;
@@ -220,7 +221,6 @@ export default class ModalRewardERC721Create extends Vue {
             file,
             folder: this.pool.sub,
         });
-        //Vue.set(this.reward.image, 'value', publicUrl);
         this.image = publicUrl;
         this.isSubmitDisabled = false;
         this.imgLoading = '';

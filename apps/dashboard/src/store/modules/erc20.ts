@@ -65,12 +65,10 @@ class ERC20Module extends VuexModule {
 
     @Action({ rawError: true })
     async create(payload: any) {
-        const formData = uploadManager.prepareFormDataForUpload(payload);
-
         const { data } = await axios({
             method: 'POST',
             url: '/erc20/',
-            data: formData,
+            data: payload,
         });
 
         this.context.commit('set', { _id: data._id, loading: true });
