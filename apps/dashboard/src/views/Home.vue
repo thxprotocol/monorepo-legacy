@@ -20,13 +20,7 @@
                         {{ greeting }}
                     </p>
                     <div class="lead mb-5">Welcome to your Loyalty Network</div>
-                    <b-button
-                        v-b-tooltip
-                        title="Deploy currencies"
-                        to="/tokens"
-                        class="rounded-pill mr-3"
-                        variant="primary"
-                    >
+                    <b-button v-b-tooltip title="Deploy coins" to="/tokens" class="rounded-pill mr-3" variant="primary">
                         <i class="fas fa-coins m-0"></i>
                     </b-button>
                     <b-button v-b-tooltip title="Deploy NFT" to="/nft" class="rounded-pill mr-3" variant="primary">
@@ -70,7 +64,7 @@
                         img-alt="Image"
                         img-top
                     >
-                        <strong>Currencies</strong>
+                        <strong>Coins</strong>
                         <p class="text-muted m-0">Create ERC-20 token variations.</p>
                     </b-card>
                 </b-col>

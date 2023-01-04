@@ -29,21 +29,25 @@ const routes: Array<RouteConfig> = [
     {
         name: 'pool',
         path: '/pool/:id',
-        redirect: '/pool/:id/transactions',
+        redirect: '/pool/:id/dashboard',
         component: () => import('../views/Pool.vue'),
         beforeEnter: assertAuthorization,
         children: [
             {
-                path: 'info',
-                component: () => import('../views/pool/Info.vue'),
+                path: 'dashboard',
+                component: () => import('../views/pool/Dashboard.vue'),
             },
             {
-                path: 'metadata',
-                component: () => import('../views/pool/Metadata.vue'),
+                path: 'widget',
+                component: () => import('../views/pool/Widget.vue'),
             },
             {
-                path: 'point-rewards',
-                component: () => import('../views/pool/PointRewards.vue'),
+                path: 'points',
+                component: () => import('../views/pool/Points.vue'),
+            },
+            {
+                path: 'referrals',
+                component: () => import('../views/pool/Referrals.vue'),
             },
             {
                 path: 'erc20-perks',
@@ -54,52 +58,50 @@ const routes: Array<RouteConfig> = [
                 component: () => import('../views/pool/ERC721Perks.vue'),
             },
             {
-                path: 'referral-rewards',
-                component: () => import('../views/pool/ReferralRewards.vue'),
-            },
-            {
-                path: 'widget',
-                component: () => import('../views/pool/Widget.vue'),
-            },
-            {
-                path: 'promotions',
-                component: () => import('../views/pool/Promotions.vue'),
-            },
-            {
-                path: 'members',
-                component: () => import('../views/pool/Members.vue'),
-            },
-            {
-                path: 'payments',
-                component: () => import('../views/pool/Payments.vue'),
-            },
-            {
-                path: 'transactions',
-                component: () => import('../views/pool/Transactions.vue'),
-            },
-            {
-                path: 'erc20swaps',
-                component: () => import('../views/pool/ERC20Swaps.vue'),
-            },
-            {
                 path: 'clients',
                 component: () => import('../views/pool/Clients.vue'),
             },
             {
-                path: 'theme',
-                component: () => import('../views/pool/Theme.vue'),
+                path: 'settings',
+                component: () => import('../views/pool/Settings.vue'),
             },
+            // {
+            //     path: 'metadata',
+            //     component: () => import('../views/pool/Metadata.vue'),
+            // },
+            // {
+            //     path: 'promotions',
+            //     component: () => import('../views/pool/Promotions.vue'),
+            // },
+            // {
+            //     path: 'members',
+            //     component: () => import('../views/pool/Members.vue'),
+            // },
+            // {
+            //     path: 'payments',
+            //     component: () => import('../views/pool/Payments.vue'),
+            // },
+            // {
+            //     path: 'erc20swaps',
+            //     component: () => import('../views/pool/ERC20Swaps.vue'),
+            // },
         ],
     },
     {
-        path: '/tokens',
-        component: () => import('../views/Tokens.vue'),
+        path: '/coins',
+        component: () => import('../views/Coins.vue'),
         beforeEnter: assertAuthorization,
     },
     {
         path: '/nft',
         component: () => import('../views/NFT.vue'),
         beforeEnter: assertAuthorization,
+        children: [
+            {
+                path: 'metadata',
+                component: () => import('../views/pool/Metadata.vue'),
+            },
+        ],
     },
     {
         path: '/signin-oidc',

@@ -19,7 +19,7 @@
                     </b-button>
                     <b-button to="/tokens" variant="link" class="text-light">
                         <i class="fas fa-coins mr-2"></i>
-                        <span>Create Currency</span>
+                        <span>Create Coin</span>
                     </b-button>
                     <b-button to="/nft" variant="link" class="text-light">
                         <i class="fas fa-palette mr-2"></i>

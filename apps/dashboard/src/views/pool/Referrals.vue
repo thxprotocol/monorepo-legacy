@@ -2,7 +2,7 @@
     <div>
         <b-row class="mb-3">
             <b-col class="d-flex align-items-center">
-                <h2 class="mb-0">Referral Rewards</h2>
+                <h2 class="mb-0">Referrals</h2>
             </b-col>
             <b-col class="d-flex justify-content-end">
                 <b-button v-b-modal="'modalReferralRewardCreate'" class="rounded-pill" variant="primary">
