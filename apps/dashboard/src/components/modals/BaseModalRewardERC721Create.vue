@@ -175,24 +175,10 @@ export default class ModalRewardERC721Create extends Vue {
                     content: '',
                 };
                 this.image = '';
-                this.$bvModal.hide(this.id);
                 this.isSubmitDisabled = false;
-
-                this.error = '';
-                this.title = '';
-                this.erc721metadataId = '';
-                this.description = '';
-                this.expiryDate = null;
-                this.claimAmount = 1;
-                this.rewardLimit = 0;
-                this.pointPrice = 0;
-                this.rewardCondition = {
-                    platform: platformList[0].type,
-                    interaction: platformInteractionList[0].type,
-                    content: '',
-                };
                 this.isPromoted = false;
                 this.isLoading = false;
+                this.$bvModal.hide(this.id);
             });
     }
 

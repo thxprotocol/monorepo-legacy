@@ -14,6 +14,10 @@ import RewardsManager from '../managers/RewardsManager';
 import PointRewardManager from '../managers/PointRewardManager';
 import PerksManager from '../managers/PerksManager';
 import PointBalanceManager from '../managers/PointBalanceManager';
+import DepositManager from '../managers/DepositManager';
+import MembershipManager from '../managers/MembershipManager';
+import PaymentManager from '../managers/PaymentManager';
+import ClaimsManager from '../managers/ClaimsManager';
 
 type Props = Omit<Credential, 'grantType'>;
 
@@ -33,6 +37,11 @@ export default class THXClient {
     perksManager: PerksManager;
     account: AccountManager;
     pointBalanceManager: PointBalanceManager;
+    memberships: MembershipManager;
+    payments: PaymentManager;
+    deposit: DepositManager;
+    claims: ClaimsManager;
+
 
     constructor({ scopes = 'openid', ...rest }: Props) {
         const env = rest.env || 'prod';
@@ -74,6 +83,11 @@ export default class THXClient {
         this.referralRewardManager = new ReferralRewardManager(this);
         this.pointRewardManager = new PointRewardManager(this);
         this.pointBalanceManager = new PointBalanceManager(this);
+        this.deposit = new DepositManager(this);
+        this.claims = new ClaimsManager(this);
+        this.memberships = new MembershipManager(this);
+        this.payments = new PaymentManager(this);
+        
     }
 
     public async init() {

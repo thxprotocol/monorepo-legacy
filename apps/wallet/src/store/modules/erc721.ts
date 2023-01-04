@@ -5,6 +5,7 @@ import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
 import axios from 'axios';
 import { chainInfo } from '@thxnetwork/wallet/utils/chains';
 import { ChainId } from '@thxnetwork/wallet/types/enums/ChainId';
+import { thxClient } from '@thxnetwork/wallet/utils/oidc';
 
 export interface ERC721 {
     _id: string;
@@ -81,11 +82,7 @@ class ERC721Module extends VuexModule {
 
     @Action({ rawError: true })
     async list() {
-        const { data } = await axios({
-            method: 'GET',
-            url: '/erc721/token',
-            params: { chainId: this.context.rootGetters['network/chainId'] },
-        });
+        const data = (await thxClient.erc721.list({ chainId: this.context.rootGetters['network/chainId'] })) || [];
 
         await Promise.all(
             data.map(async (token: TERC721Token) => {
@@ -110,10 +107,7 @@ class ERC721Module extends VuexModule {
     @Action({ rawError: true })
     async getToken(id: string) {
         try {
-            const { data } = await axios({
-                method: 'GET',
-                url: '/erc721/token/' + id,
-            });
+            const data = await thxClient.erc721.get(id);
 
             const token = data;
             const web3 = this.context.rootState.network.web3;
@@ -133,10 +127,7 @@ class ERC721Module extends VuexModule {
 
     @Action({ rawError: true })
     async get(id: string) {
-        const { data } = await axios({
-            method: 'GET',
-            url: '/erc721/' + id,
-        });
+        const data = await thxClient.erc721.get(id);
         const web3 = this.context.rootState.network.web3;
         const from = this.context.rootGetters['account/profile'].address;
         const contract = new web3.eth.Contract(ERC721Abi as any, data.address, {
@@ -156,10 +147,7 @@ class ERC721Module extends VuexModule {
 
     @Action({ rawError: true })
     async getMetadata(token: TERC721Token) {
-        const { data } = await axios({
-            method: 'GET',
-            url: `/erc721/${token.erc721Id}/metadata/${token.metadataId}`,
-        });
+        const data = await thxClient.erc721.getMetadata(token.erc721Id, token.metadataId);
         this.context.commit('setMetadata', { tokenId: token._id, metadata: data });
     }
 }

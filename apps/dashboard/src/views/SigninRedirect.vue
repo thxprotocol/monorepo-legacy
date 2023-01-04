@@ -10,6 +10,10 @@ export default class Redirect extends Vue {
     async mounted() {
         await this.$store.dispatch('account/signinRedirectCallback');
         await this.$store.dispatch('account/getProfile');
+
+        // TODO Get list of pools for account
+        // if 0 deploy a pool
+
         this.$router.push('/');
     }
 }

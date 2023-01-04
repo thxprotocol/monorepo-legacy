@@ -13,7 +13,7 @@
             <div class="flex-grow-1 w-100 h-25 overflow-auto">
                 <template v-if="selectedPool">
                     <div class="d-flex px-3 justify-content-between pt-4 pb-4 text-center">
-                        <router-link to="/" custom v-slot="{ navigate }">
+                        <router-link to="/" custom v-slot="{ navigate }" class="cursor-pointer">
                             <img
                                 :src="require('../../public/assets/logo.png')"
                                 width="40"
@@ -217,7 +217,7 @@ export default class BaseNavbar extends Vue {
 
     get configRoutes() {
         if (!this.selectedPool) return;
-        return [
+        const routes = [
             {
                 path: `/pool/${this.selectedPool._id}/dashboard`,
                 label: 'Dashboard',
@@ -228,11 +228,6 @@ export default class BaseNavbar extends Vue {
                 label: 'Widget',
                 iconClasses: 'fas fa-code',
                 isNew: true,
-            },
-            {
-                path: `/pool/${this.selectedPool._id}/metadata`,
-                label: 'Metadata',
-                iconClasses: 'fas fa-palette',
             },
             {
                 path: `/pool/${this.selectedPool._id}/clients`,
@@ -246,6 +241,16 @@ export default class BaseNavbar extends Vue {
                 iconClasses: 'fas fa-cog',
             },
         ];
+
+        if (this.selectedPool.erc721) {
+            routes.splice(2, 0, {
+                path: `/pool/${this.selectedPool._id}/metadata`,
+                label: 'Metadata',
+                iconClasses: 'fas fa-palette',
+            });
+        }
+
+        return routes;
     }
 
     get firstPool() {
