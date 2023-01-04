@@ -34,7 +34,7 @@ class ERC20Manager extends BaseManager {
     }
 
     async getReward({ rewardUuid, poolId }: { rewardUuid: string; poolId: string }) {
-        const data = await this.client.request.get(`/erc20-rewards/${rewardUuid}`, {
+        const data = await this.client.request.get(`/v1/erc20-perks/${rewardUuid}`, {
             headers: { 'X-PoolId': poolId },
         });
         data.itemUrl = this.getItemUrl(data);

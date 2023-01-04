@@ -11,7 +11,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { ERC20Type } from '@thxnetwork/dashboard/types/erc20';
 import { fromWei } from 'web3-utils';
-import { IAccount, AccountPlanType } from '../types/account';
+import { IAccount } from '../types/account';
 
 @Component({
     computed: mapGetters({
@@ -35,10 +35,6 @@ export default class PoolView extends Vue {
         await this.$store.dispatch('pools/read', this.$route.params.id).then(() => {
             this.chainId = this.pool.chainId;
         });
-    }
-
-    get visibleRoutes() {
-        return getRoutes(this.pool, this.account.plan === AccountPlanType.Premium);
     }
 }
 </script>

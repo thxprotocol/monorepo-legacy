@@ -13,8 +13,8 @@
             </div>
             <div class="flex-grow-1 justify-content-between d-flex align-items-center">
                 <span>{{ route.label }}</span>
-                <b-badge v-if="route.isNew" variant="danger" class="ml-2 text-white"> New </b-badge>
-                <b-badge v-if="route.isPremium" variant="primary" class="ml-2 text-white"> Premium </b-badge>
+                <b-badge v-if="route.isNew" variant="primary" class="ml-2 text-white"> New </b-badge>
+                <b-badge v-if="route.isPremium" variant="gray" class="ml-2 text-white"> Premium </b-badge>
                 <b-badge v-if="route.isSoon" variant="gray" class="ml-2 text-white"> Soon </b-badge>
             </div>
         </b-nav-item>

@@ -206,11 +206,13 @@ export default class BaseNavbar extends Vue {
                 path: `/pool/${this.selectedPool._id}/erc20-perks`,
                 label: 'Coin',
                 iconClasses: 'fas fa-coins',
+                isSoon: !this.selectedPool.erc20,
             },
             {
                 path: `/pool/${this.selectedPool._id}/erc721-perks`,
                 label: 'NFT',
                 iconClasses: 'fas fa-award',
+                isSoon: !this.selectedPool.erc721,
             },
         ];
     }
@@ -230,6 +232,12 @@ export default class BaseNavbar extends Vue {
                 isNew: true,
             },
             {
+                path: `/pool/${this.selectedPool._id}/metadata`,
+                label: 'Metadata',
+                iconClasses: 'fas fa-palette',
+                isSoon: !this.selectedPool.erc721,
+            },
+            {
                 path: `/pool/${this.selectedPool._id}/clients`,
                 label: 'Clients',
                 iconClasses: 'fas fa-key',
@@ -241,14 +249,6 @@ export default class BaseNavbar extends Vue {
                 iconClasses: 'fas fa-cog',
             },
         ];
-
-        if (this.selectedPool.erc721) {
-            routes.splice(2, 0, {
-                path: `/pool/${this.selectedPool._id}/metadata`,
-                label: 'Metadata',
-                iconClasses: 'fas fa-palette',
-            });
-        }
 
         return routes;
     }
