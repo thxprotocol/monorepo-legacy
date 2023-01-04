@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import type { IERC20s, TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import { ChainId } from '../enums/chainId';
+import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 
 @Module({ namespaced: true })
 class ERC20Module extends VuexModule {
@@ -64,17 +65,7 @@ class ERC20Module extends VuexModule {
 
     @Action({ rawError: true })
     async create(payload: any) {
-        const formData = new FormData();
-
-        Object.keys(payload).forEach((key) => {
-            if (key == 'file') {
-                if (payload.file) {
-                    formData.append('file', payload.file);
-                }
-            } else {
-                formData.set(key, payload[key]);
-            }
-        });
+        const formData = prepareFormDataForUpload(payload);
 
         const { data } = await axios({
             method: 'POST',

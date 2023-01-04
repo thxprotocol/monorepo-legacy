@@ -9,18 +9,53 @@ import { AccessTokenKind } from '../types/enums/AccessTokenKind';
 export const GITHUB_API_SCOPE = ['public_repo']; // https://docs.github.com/en/developers/apps/building-oauth-apps/scopes-for-oauth-apps
 
 export class GithubService {
-    static isAuthorized(account: AccountDocument) {
+    static async isAuthorized(account: AccountDocument) {
         const token = account.getToken(AccessTokenKind.Github);
         if (!token || !token.accessToken) return false;
         const isExpired = Date.now() > token.expiry;
         if (isExpired) {
             try {
-                // TODO no refresh implementation yet
+                const tokens = await this.refreshAccess(token.refreshToken);
+                const expiry = tokens.expires_in ? Date.now() + Number(tokens.expires_in) * 1000 : undefined;
+                account.setToken({
+                    kind: AccessTokenKind.Github,
+                    accessToken: tokens.access_token,
+                    refreshToken: tokens.refresh_token,
+                    expiry,
+                });
+                await account.save();
+                return true;
             } catch {
                 return false;
             }
         }
         return true;
+    }
+
+    static async refreshAccess(refreshToken: string) {
+        // {
+        //     "access_token": "ghu_16C7e42F292c6912E7710c838347Ae178B4a",
+        //     "expires_in": "28800",
+        //     "refresh_token": "ghr_1B4a2e77838347a7E420ce178F2E7c6912E169246c34E1ccbF66C46812d16D5B1A9Dc86A1498",
+        //     "refresh_token_expires_in": "15811200",
+        //     "scope": "",
+        //     "token_type": "bearer"
+        //   }
+        const r = await githubClient({
+            url: 'https://github.com/login/oauth/access_token',
+            method: 'POST',
+            data: {
+                refresh_token: refreshToken,
+                grant_type: 'authorization_code',
+                client_secret: GITHUB_CLIENT_SECRET,
+                client_id: GITHUB_CLIENT_ID,
+            },
+        });
+
+        if (r.status !== 200) {
+            throw new Error('Failed to request access token');
+        }
+        return r.data;
     }
 
     static getLoginURL(

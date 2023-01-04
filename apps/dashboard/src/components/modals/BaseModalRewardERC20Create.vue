@@ -26,6 +26,17 @@
                         <b-form-group label="Point Price">
                             <b-form-input type="number" v-model="pointPrice" />
                         </b-form-group>
+                        <b-form-group label="Image">
+                            <div class="float-left" v-if="image">
+                                <img :src="image" width="20%" />
+                            </div>
+                            <div>
+                                <b-form-file v-model="imageFile" accept="image/*" @change="onImgChange" />
+                            </div>
+                        </b-form-group>
+                        <b-form-group label="Promoted">
+                            <b-form-checkbox v-model="isPromoted" />
+                        </b-form-group>
                     </b-col>
                     <b-col md="6">
                         <BaseCardRewardCondition
@@ -88,11 +99,14 @@ export default class ModalRewardERC20Create extends Vue {
     claimAmount = 1;
     rewardLimit = 0;
     pointPrice = 0;
+    imageFile: File | null = null;
+    image = '';
     rewardCondition: { platform: RewardConditionPlatform; interaction: RewardConditionInteraction; content: string } = {
         platform: platformList[0].type,
         interaction: platformInteractionList[0].type,
         content: '',
     };
+    isPromoted = false;
 
     @Prop() id!: string;
     @Prop() pool!: IPool;
@@ -109,6 +123,10 @@ export default class ModalRewardERC20Create extends Vue {
                 interaction: this.reward.interaction as RewardConditionInteraction,
                 content: this.reward.content as string,
             };
+            if (this.reward.image) {
+                this.image = this.reward.image;
+            }
+            this.isPromoted = this.reward.isPromoted;
         }
     }
 
@@ -130,6 +148,8 @@ export default class ModalRewardERC20Create extends Vue {
                     platform: this.rewardCondition.platform,
                     interaction: this.rewardCondition.interaction,
                     content: this.rewardCondition.content,
+                    file: this.imageFile,
+                    isPromoted: this.isPromoted,
                 },
             })
             .then(() => {
@@ -146,8 +166,14 @@ export default class ModalRewardERC20Create extends Vue {
                     interaction: platformInteractionList[0].type,
                     content: '',
                 };
+                this.image = '';
+                this.isPromoted = false;
                 this.isLoading = false;
             });
+    }
+
+    onImgChange() {
+        this.image = '';
     }
 }
 </script>

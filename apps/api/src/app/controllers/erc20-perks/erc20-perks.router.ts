@@ -12,6 +12,7 @@ import ReadERC20Perk from './get.controller';
 import UpdateERC20Perk from './patch.controller';
 import ListERC20Perk from './list.controller';
 import DeleteERC20Perk from './delete.controller';
+import { upload } from '@thxnetwork/api/util/multer';
 
 const router = express.Router();
 
@@ -34,6 +35,7 @@ router.get(
 );
 router.post(
     '/',
+    upload.single('file'),
     guard.check(['erc20_rewards:write', 'erc20_rewards:read']),
     assertAssetPoolAccess,
     assertRequestInput(CreateERC20Perk.validation),
@@ -44,6 +46,7 @@ router.post(
 
 router.patch(
     '/:id',
+    upload.single('file'),
     guard.check(['erc20_rewards:write', 'erc20_rewards:read']),
     assertAssetPoolAccess,
     assertRequestInput(UpdateERC20Perk.validation),

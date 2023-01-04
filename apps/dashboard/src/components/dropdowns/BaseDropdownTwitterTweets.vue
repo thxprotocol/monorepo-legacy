@@ -6,14 +6,9 @@
                     {{ selected.text }}
                 </div>
             </template>
-            <b-dropdown-item-button
-                button-class="border-bottom small"
-                :key="item.id"
-                v-for="item of items"
-                @click="onItemClick(item)"
-            >
-                <span class="text-muted"> {{ format(new Date(item.created_at), 'HH:mm MMMM dd, yyyy') }}</span
-                ><br />
+            <b-dropdown-item-button button-class="border-bottom small" :key="item.id" v-for="item of items"
+                @click="onItemClick(item)">
+                <span class="text-muted"> {{ format(new Date(item.created_at), 'HH:mm MMMM dd, yyyy') }}</span><br />
                 {{ item.text }}
             </b-dropdown-item-button>
         </b-dropdown>
@@ -21,9 +16,10 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { format } from 'date-fns';
+import { watch } from 'fs';
 
 @Component({
     computed: mapGetters({}),
@@ -37,18 +33,19 @@ export default class BaseDropdownTwitterTweets extends Vue {
     selected: any = null;
 
     mounted() {
-        if (!this.item) {
+        if (!this.item && this.items[0]) {
             this.onItemClick(this.items[0]);
         } else {
             for (const key in this.items) {
-                const tweet = this.items[key].referenced_tweets[0];
-                if (tweet.id === this.item) {
+                const id = this.items[key]?.referenced_tweets?.[0]?.id || this.items[key].id;
+                if (id === this.item) {
                     this.onItemClick(this.items[key]);
                     break;
                 }
             }
         }
     }
+
 
     onItemClick(item: any) {
         this.selected = item;

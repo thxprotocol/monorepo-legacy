@@ -10,72 +10,32 @@
         :visible="true"
     >
         <b-navbar toggleable="lg" class="sidebar">
-            <div class="w-100 pt-4 pb-4 text-center">
-                <router-link to="/" custom v-slot="{ navigate }">
-                    <img
-                        :src="require('../../public/assets/logo.png')"
-                        width="40"
-                        alt="THX logo"
-                        @click="navigate"
-                        @keypress.enter="navigate"
-                        role="link"
-                    />
-                </router-link>
-            </div>
             <div class="flex-grow-1 w-100 h-25 overflow-auto">
-                <b-navbar-nav>
-                    <b-nav-item to="/tokens" class="nav-link-plain" link-classes="nav-link-wrapper">
-                        <div class="nav-link-icon">
-                            <i class="fas fa-coins"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <span>Currencies</span>
-                        </div>
-                    </b-nav-item>
-                    <b-nav-item to="/nft" class="nav-link-plain" link-classes="nav-link-wrapper">
-                        <div class="nav-link-icon">
-                            <i class="fas fa-palette"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <span class="mr-2">NFT</span>
-                        </div>
-                    </b-nav-item>
-                    <b-nav-item to="/pools" class="nav-link-plain" link-classes="nav-link-wrapper">
-                        <div class="nav-link-icon">
-                            <i class="fas fa-chart-pie"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <span>Loyalty Pools</span>
-                        </div>
-                    </b-nav-item>
-                    <b-nav-item to="/partners" class="nav-link-plain mb-3" link-classes="nav-link-wrapper" disabled>
-                        <div class="nav-link-icon">
-                            <i class="fas fa-handshake"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <span>Loyalty Partners</span>
-                            <b-badge variant="gray" class="ml-2 text-white">Soon</b-badge>
-                        </div>
-                    </b-nav-item>
-                </b-navbar-nav>
                 <template v-if="selectedPool">
-                    <hr class="m-0" />
-                    <div class="w-100 p-3">
-                        <label class="text-muted">Select loyalty pool:</label>
-                        <b-dropdown variant="light" class="" block size="sm" no-caret menu-class="w-100">
+                    <div class="d-flex px-3 justify-content-between pt-4 pb-4 text-center">
+                        <router-link to="/" custom v-slot="{ navigate }">
+                            <img
+                                :src="require('../../public/assets/logo.png')"
+                                width="40"
+                                alt="THX logo"
+                                @click="navigate"
+                                @keypress.enter="navigate"
+                                role="link"
+                            />
+                        </router-link>
+                        <b-dropdown variant="light" class="" size="sm" no-caret right>
                             <template #button-content>
                                 <div class="text-left d-flex align-items-center justify-content-between">
                                     <div class="align-items-center d-flex">
                                         <img
                                             width="20"
-                                            class="mr-2"
                                             :src="`https://avatars.dicebear.com/api/identicon/${selectedPool._id}.svg`"
                                         />
-                                        {{ selectedPool._id.substring(0, 18) }}...
                                     </div>
-                                    <i class="fas fa-caret-down"></i>
                                 </div>
                             </template>
+                            <b-dropdown-text class="text-muted small"> Loyalty Pools </b-dropdown-text>
+                            <b-dropdown-divider />
                             <b-dropdown-item-btn
                                 class="small"
                                 :key="key"
@@ -91,28 +51,22 @@
                                         />
                                         {{ p._id.substring(0, 18) }}...
                                     </div>
-                                    <i class="fas fa-caret-right"></i>
+                                    <i class="fas fa-caret-right ml-2"></i>
                                 </div>
                             </b-dropdown-item-btn>
                         </b-dropdown>
                     </div>
-                    <b-navbar-nav>
-                        <b-nav-item
-                            :to="`/pool/${selectedPool._id}/${route.path}`"
-                            link-classes="nav-link-wrapper"
-                            :key="key"
-                            v-for="(route, key) of visibleRoutes"
-                            class="nav-link-plain"
-                        >
-                            <div class="nav-link-icon">
-                                <i :class="route.iconClasses"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <span>{{ route.label }}</span>
-                            </div>
-                        </b-nav-item>
-                    </b-navbar-nav>
+                    <base-navbar-nav :selectedPool="selectedPool" :routes="configRoutes" />
+                    <hr />
+                    <label class="px-3 text-muted">Rewards</label>
+                    <base-navbar-nav :selectedPool="selectedPool" :routes="rewardRoutes" />
+                    <hr />
+                    <label class="px-3 text-muted">Perks</label>
+                    <base-navbar-nav :selectedPool="selectedPool" :routes="perkRoutes" />
                 </template>
+                <hr />
+                <label class="px-3 text-muted">Tokens</label>
+                <base-navbar-nav :selectedPool="selectedPool" :routes="tokenRoutes" />
             </div>
             <div class="d-flex justify-content-end flex-column flex-grow-0 w-100">
                 <b-navbar-nav>
@@ -178,14 +132,17 @@
 
 <script lang="ts">
 import { IPool, IPools } from '@thxnetwork/dashboard/store/modules/pools';
-import { AccountPlanType, type IAccount } from '@thxnetwork/dashboard/types/account';
 import { ERC20Type } from '@thxnetwork/dashboard/types/erc20';
 import { plans } from '@thxnetwork/dashboard/utils/plans';
-import { getRoutes } from '@thxnetwork/dashboard/utils/routes';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
+import { AccountPlanType, IAccount } from '../types/account';
+import BaseNavbarNav from './BaseNavbarNav.vue';
 
 @Component({
+    components: {
+        BaseNavbarNav,
+    },
     computed: mapGetters({
         pools: 'pools/all',
         account: 'account/profile',
@@ -196,13 +153,99 @@ export default class BaseNavbar extends Vue {
     ERC20Type = ERC20Type;
     docsUrl = process.env.VUE_APP_DOCS_URL;
     walletUrl = process.env.VUE_APP_WALLET_URL;
-    // selectedPool: IPool | null = null;
     pools!: IPools;
     account!: IAccount;
 
-    get visibleRoutes() {
+    get tokenRoutes() {
         if (!this.selectedPool) return;
-        return getRoutes(this.selectedPool, this.account.plan === AccountPlanType.Premium);
+        return [
+            {
+                path: '/coins',
+                label: 'Coins',
+                iconClasses: 'fas fa-coins',
+            },
+            {
+                path: '/nft',
+                label: 'NFT',
+                iconClasses: 'fas fa-palette',
+            },
+            {
+                path: '/pools',
+                label: 'Pools',
+                iconClasses: 'fas fa-chart-pie',
+            },
+        ];
+    }
+
+    get rewardRoutes() {
+        if (!this.selectedPool) return;
+        return [
+            {
+                path: `/pool/${this.selectedPool._id}/referrals`,
+                label: 'Referrals',
+                iconClasses: 'fas fa-comments',
+            },
+            {
+                path: `/pool/${this.selectedPool._id}/points`,
+                label: 'Conditional',
+                iconClasses: 'fas fa-trophy',
+            },
+            {
+                path: `/pool/${this.selectedPool._id}/milestones`,
+                label: 'Milestones',
+                iconClasses: 'fas fa-flag',
+                isSoon: true,
+            },
+        ];
+    }
+
+    get perkRoutes() {
+        if (!this.selectedPool) return;
+        return [
+            {
+                path: `/pool/${this.selectedPool._id}/erc20-perks`,
+                label: 'Coin',
+                iconClasses: 'fas fa-coins',
+            },
+            {
+                path: `/pool/${this.selectedPool._id}/erc721-perks`,
+                label: 'NFT',
+                iconClasses: 'fas fa-award',
+            },
+        ];
+    }
+
+    get configRoutes() {
+        if (!this.selectedPool) return;
+        return [
+            {
+                path: `/pool/${this.selectedPool._id}/dashboard`,
+                label: 'Dashboard',
+                iconClasses: 'fas fa-chart-line',
+            },
+            {
+                path: `/pool/${this.selectedPool._id}/widget`,
+                label: 'Widget',
+                iconClasses: 'fas fa-code',
+                isNew: true,
+            },
+            {
+                path: `/pool/${this.selectedPool._id}/metadata`,
+                label: 'Metadata',
+                iconClasses: 'fas fa-palette',
+            },
+            {
+                path: `/pool/${this.selectedPool._id}/clients`,
+                label: 'Clients',
+                iconClasses: 'fas fa-key',
+                isPremium: true,
+            },
+            {
+                path: `/pool/${this.selectedPool._id}/settings`,
+                label: 'Settings',
+                iconClasses: 'fas fa-cog',
+            },
+        ];
     }
 
     get firstPool() {
@@ -235,7 +278,7 @@ export default class BaseNavbar extends Vue {
         if (!pool.address) {
             await this.$store.dispatch('pools/read', pool._id);
         }
-        this.$router.push({ path: `/pool/${pool._id}/transactions`, params: { id: pool._id } });
+        this.$router.push({ path: `/pool/${pool._id}`, params: { id: pool._id } });
     }
 }
 </script>

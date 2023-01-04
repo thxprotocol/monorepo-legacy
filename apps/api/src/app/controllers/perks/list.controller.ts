@@ -19,6 +19,7 @@ const controller = async (req: Request, res: Response) => {
                 pointPrice: r.pointPrice,
                 image: r.image,
                 isOwned: false,
+                isPromoted: r.isPromoted,
             };
         }),
         erc721Perks: await Promise.all(
@@ -33,6 +34,7 @@ const controller = async (req: Request, res: Response) => {
                     pointPrice: r.pointPrice,
                     image: r.image,
                     isOwned: false,
+                    isPromoted: r.isPromoted,
                 };
             }),
         ),

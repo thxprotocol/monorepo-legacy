@@ -201,13 +201,11 @@ class AccountModule extends VuexModule {
     async signinRedirectCallback() {
         const user = await this.userManager.signinRedirectCallback();
         this.context.commit('setUser', user);
-        return user;
     }
 
     @Action({ rawError: true })
     async signoutRedirect() {
         await this.userManager.signoutRedirect({});
-
         this.context.commit('setUser', null);
     }
 
