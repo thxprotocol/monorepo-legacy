@@ -20,7 +20,7 @@
                         {{ greeting }}
                     </p>
                     <div class="lead mb-5">Welcome to your Loyalty Network</div>
-                    <b-button v-b-tooltip title="Deploy coins" to="/tokens" class="rounded-pill mr-3" variant="primary">
+                    <b-button v-b-tooltip title="Deploy coins" to="/coins" class="rounded-pill mr-3" variant="primary">
                         <i class="fas fa-coins m-0"></i>
                     </b-button>
                     <b-button v-b-tooltip title="Deploy NFT" to="/nft" class="rounded-pill mr-3" variant="primary">
@@ -58,7 +58,7 @@
             <b-row>
                 <b-col md="6">
                     <b-card
-                        @click="$router.push('/tokens')"
+                        @click="$router.push('/coins')"
                         class="mt-3 mb-3 shadow-sm cursor-pointer"
                         :img-src="require('../../public/assets/thx_tokens.webp')"
                         img-alt="Image"
