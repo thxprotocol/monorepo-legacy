@@ -1,3 +1,4 @@
+import { thxClient } from '@thxnetwork/wallet/utils/oidc';
 import axios from 'axios';
 import { Vue } from 'vue-property-decorator';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
@@ -41,18 +42,7 @@ class DepositsModule extends VuexModule {
 
     @Action({ rawError: true })
     async create({ membership, amount, item }: { membership: TMembership; amount: string; item?: string }) {
-        const { data } = await axios({
-            method: 'POST',
-            url: '/deposits',
-            headers: {
-                'X-PoolId': membership.poolId,
-            },
-            data: {
-                amount,
-                item,
-            },
-        });
-
+        const data = await thxClient.deposit.create({ poolId: membership.poolId, amount, item });
         this.context.commit('set', { deposit: data, membership });
     }
 }

@@ -1,3 +1,4 @@
+import { thxClient } from '@thxnetwork/wallet/utils/oidc';
 import axios from 'axios';
 import { Module, VuexModule, Action } from 'vuex-module-decorators';
 import { RewardConditionInteraction } from '@thxnetwork/types/index';
@@ -47,46 +48,27 @@ function getItemUrl(withdrawCondition: { interaction: RewardConditionInteraction
 class AssetPoolModule extends VuexModule {
     @Action({ rawError: true })
     async getERC721Perk({ rewardUuid, poolId }: { rewardUuid: string; poolId: string }) {
-        const { data } = await axios({
-            method: 'GET',
-            url: `/erc721-perks/${rewardUuid}`,
-            headers: { 'X-PoolId': poolId },
-        });
-        data.itemUrl = getItemUrl(data);
+        const data = await thxClient.erc721.getReward({ poolId, rewardUuid });
         return data;
     }
 
     @Action({ rawError: true })
     async getERC20Perk({ rewardUuid, poolId }: { rewardUuid: string; poolId: string }) {
-        const { data } = await axios({
-            method: 'GET',
-            url: `/erc20-perks/${rewardUuid}`,
-            headers: { 'X-PoolId': poolId },
-        });
-        data.itemUrl = getItemUrl(data);
+        const data = await thxClient.erc20.getReward({ poolId, rewardUuid });
         return data;
     }
 
     @Action({ rawError: true })
     async getClaim(claimUuid: string) {
-        const { data } = await axios({
-            method: 'GET',
-            url: `/claims/${claimUuid}`,
-        });
+        const data = await thxClient.claims.get(claimUuid);
         return data;
     }
 
     @Action({ rawError: true })
     async claimReward(claimUuid: string) {
         const claim = await this.context.dispatch('getClaim', claimUuid);
-        const r = await axios({
-            method: 'POST',
-            url: `/claims/${claimUuid}/collect`,
-            headers: { 'X-PoolId': claim.claim.poolId },
-            params: { forceSync: false },
-        });
-
-        return r.data;
+        const data = await thxClient.claims.collect({ poolId: claim.claim.poolId, claimUuid });
+        return data;
     }
 }
 

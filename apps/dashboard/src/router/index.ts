@@ -65,10 +65,10 @@ const routes: Array<RouteConfig> = [
                 path: 'settings',
                 component: () => import('../views/pool/Settings.vue'),
             },
-            // {
-            //     path: 'metadata',
-            //     component: () => import('../views/pool/Metadata.vue'),
-            // },
+            {
+                path: 'metadata',
+                component: () => import('../views/pool/Metadata.vue'),
+            },
             // {
             //     path: 'promotions',
             //     component: () => import('../views/pool/Promotions.vue'),

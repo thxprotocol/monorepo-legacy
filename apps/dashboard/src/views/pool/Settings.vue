@@ -17,7 +17,14 @@
                 <b-col>
                     <label>Preview</label>
                     <b-card body-class="py-3 text-center" class="mb-3" bg-variant="light">
-                        <img height="65" width="65" class="m-0" :src="logoImgUrl" v-if="logoImgUrl" />
+                        <img
+                            height="65"
+                            width="65"
+                            class="m-0"
+                            alt="Signin page logo image"
+                            :src="logoImgUrl"
+                            v-if="logoImgUrl"
+                        />
                         <span v-else class="text-gray">Please provide and image URL.</span>
                     </b-card>
                 </b-col>
@@ -34,7 +41,13 @@
                 <b-col>
                     <label>Preview</label>
                     <b-card body-class="py-3 text-center" class="mb-3" bg-variant="light">
-                        <img width="100%" class="m-0" :src="backgroundImgUrl" v-if="backgroundImgUrl" />
+                        <img
+                            width="100%"
+                            class="m-0"
+                            alt="Signin page background image"
+                            :src="backgroundImgUrl"
+                            v-if="backgroundImgUrl"
+                        />
                         <span v-else class="text-gray">Please provide and image URL.</span>
                     </b-card>
                 </b-col>
