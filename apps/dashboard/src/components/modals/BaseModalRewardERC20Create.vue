@@ -27,15 +27,14 @@
                             <b-form-input type="number" v-model="pointPrice" />
                         </b-form-group>
                         <b-form-group label="Image">
-                            <div class="float-left" v-if="image">
-                                <img :src="image" width="20%" />
-                            </div>
-                            <div>
+                            <b-input-group>
+                                <template #prepend v-if="image">
+                                    <div class="mr-2 bg-light p-2 border-radius-1">
+                                        <img :src="image" height="35" width="auto" />
+                                    </div>
+                                </template>
                                 <b-form-file v-model="imageFile" accept="image/*" @change="onImgChange" />
-                            </div>
-                        </b-form-group>
-                        <b-form-group label="Promoted">
-                            <b-form-checkbox v-model="isPromoted" />
+                            </b-input-group>
                         </b-form-group>
                     </b-col>
                     <b-col md="6">
@@ -50,7 +49,9 @@
                             :expiry="rewardExpiry"
                             @change="rewardExpiry = $event"
                         />
-                        <!-- <BaseCardRewardQRCodes class="mb-3" @change="rewardExpiry = $event" /> -->
+                        <b-form-group>
+                            <b-form-checkbox v-model="isPromoted">Promoted</b-form-checkbox>
+                        </b-form-group>
                     </b-col>
                 </b-row>
             </form>
