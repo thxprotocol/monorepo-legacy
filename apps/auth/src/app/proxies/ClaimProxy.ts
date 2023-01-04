@@ -9,6 +9,7 @@ export default {
                 Authorization: await getAuthAccessToken(),
             },
         });
+        console.log(r.data);
         return r.data;
     },
 
