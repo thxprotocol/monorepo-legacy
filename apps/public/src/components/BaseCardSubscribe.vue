@@ -40,6 +40,7 @@
 <script lang="ts">
 import axios from 'axios';
 import { Component, Vue, Prop } from 'vue-property-decorator';
+import { CMS_URL } from '../config/secrets';
 
 @Component({
     name: 'BaseCardSubscribe',
@@ -64,7 +65,7 @@ export default class BaseCardSubscribe extends Vue {
 
         try {
             await axios({
-                url: process.env.VUE_APP_CMS_URL + '/form-contacts',
+                url: CMS_URL + '/form-contacts',
                 method: 'POST',
                 data: {
                     email: this.email,

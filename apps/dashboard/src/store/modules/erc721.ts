@@ -84,7 +84,9 @@ class ERC721Module extends VuexModule {
             url: `/erc721/${erc721._id}`,
             data,
         });
+
         this.context.commit('set', { ...erc721, ...data });
+
         if (data.archived) {
             this.context.commit('unset', erc721);
         }

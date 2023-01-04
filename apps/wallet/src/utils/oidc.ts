@@ -1,5 +1,5 @@
 import { OIDC_CLIENT_ID, OIDC_CLIENT_SECRET, BASE_URL, PKG_ENV } from './secrets';
-import { Client as THXClient } from '@thxnetwork/sdk/client';
+import { THXClient } from '@thxnetwork/sdk/client';
 
 const config = {
     env: PKG_ENV,

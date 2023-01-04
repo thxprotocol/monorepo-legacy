@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
 import { ReferralRewardClaim } from '@thxnetwork/api/models/ReferralRewardClaim';
-import { NotFoundError } from '@thxnetwork/api/util/errors';
+import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import MailService from '@thxnetwork/api/services/MailService';
@@ -13,6 +13,11 @@ const controller = async (req: Request, res: Response) => {
 
     const account = await AccountProxy.getById(req.body.sub);
     if (!account) throw new NotFoundError('No account for that sub could be found.');
+
+    const isClaimCreatedInLast24h = await ReferralRewardClaim.exists({
+        createdAt: { $gte: new Date(new Date().setDate(new Date().getDate() - 1)) },
+    });
+    if (isClaimCreatedInLast24h) throw new ForbiddenError('A referral has been completed within 24h');
 
     const claim = await ReferralRewardClaim.create({
         referralRewardId: String(reward._id),

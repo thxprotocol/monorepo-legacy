@@ -7,23 +7,33 @@ import { AUTH_REQUEST_TYPED_MESSAGE, createTypedMessage } from '../../../util/ty
 import ClaimProxy from '@thxnetwork/auth/proxies/ClaimProxy';
 import { DiscordService } from '@thxnetwork/auth/services/DiscordService';
 import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
+import BrandProxy from '@thxnetwork/auth/proxies/BrandProxy';
 
 async function controller(req: Request, res: Response) {
     const { uid, params } = req.interaction;
-    let claim,
-        alert = {};
+    const alert = {};
+    let claim, brand;
 
     if (params.claim_id) {
         claim = await ClaimProxy.get(params.claim_id);
-        alert = {
-            variant: 'success',
-            message: 'Sign in and claim your reward!',
-        };
+        brand = await BrandProxy.get(claim.pool._id);
+
+        alert['variant'] = 'success';
+        if (claim.erc20) {
+            alert[
+                'message'
+            ] = `<i class="fas fa-gift mr-2" aria-hidden="true"></i>Sign in and claim your <strong>${claim.reward.amount} ${claim.erc20.symbol}!</strong>`;
+        }
+        if (claim.erc721) {
+            alert[
+                'message'
+            ] = `<i class="fas fa-gift mr-2" aria-hidden="true"></i>Sign in and claim your <strong>${claim.erc721.symbol} NFT!</strong>`;
+        }
     }
 
     params.googleLoginUrl = YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getBasicScopes());
     params.githubLoginUrl = GithubService.getLoginURL(uid, {});
-    params.discordLoginUrl = DiscordService.getLoginURL(uid, {})
+    params.discordLoginUrl = DiscordService.getLoginURL(uid, {});
     params.twitchLoginUrl = TwitchService.getLoginURL(uid, {});
 
     if (DASHBOARD_URL !== params.return_url) {
@@ -33,7 +43,7 @@ async function controller(req: Request, res: Response) {
 
     res.render('signin', {
         uid,
-        params: { ...params, claim },
+        params: { ...params, ...brand, claim },
         alert,
     });
 }

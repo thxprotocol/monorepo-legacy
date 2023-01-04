@@ -7,9 +7,9 @@
             <b-col md="3" class="d-flex justify-content-end">
                 <b-button v-b-modal="'modalRewardERC721Create'" class="rounded-pill" variant="primary">
                     <i class="fas fa-plus mr-2"></i>
-                    <span class="d-none d-md-inline">ERC721 Reward</span>
+                    <span class="d-none d-md-inline">ERC721 Perk</span>
                 </b-button>
-                <BaseModalRewardERC721Create :id="'modalRewardERC721Create'" :pool="pool" />
+                <BaseModalRewardERC721Create @submit="listRewards" :id="'modalRewardERC721Create'" :pool="pool" />
             </b-col>
         </b-row>
         <BCard variant="white" body-class="p-0 shadow-sm">
@@ -95,6 +95,7 @@
                         </b-dropdown-item>
                     </b-dropdown>
                     <BaseModalRewardERC721Create
+                        @submit="listRewards"
                         :id="'modalRewardERC721Create' + item.id"
                         :pool="pool"
                         :reward="erc721Perks[pool._id][item.id]"
@@ -146,7 +147,8 @@ export default class ERC721PerksView extends Vue {
     totals!: { [poolId: string]: number };
     erc721Perks!: { [poolId: string]: { [id: string]: TERC721Perk } };
 
-    get erc721(): TERC721 {
+    get erc721(): TERC721 | null {
+        if (!this.pool.erc721) return null;
         return this.erc721s[this.pool.erc721._id];
     }
 
@@ -182,8 +184,8 @@ export default class ERC721PerksView extends Vue {
             .slice(0, this.limit);
     }
 
-    mounted() {
-        this.listRewards();
+    async mounted() {
+        await this.listRewards();
         this.$store.dispatch('erc721/read', this.pool.erc721._id).then(async () => {
             await this.$store.dispatch('erc721/listMetadata', {
                 erc721: this.pool.erc721,

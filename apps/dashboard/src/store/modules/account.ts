@@ -124,12 +124,12 @@ class AccountModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async connectRedirect(channel: RewardConditionPlatform) {
+    async connectRedirect(payload: { platform: RewardConditionPlatform; returnUrl: string }) {
         await this.userManager.signinRedirect({
             extraQueryParams: {
-                channel,
                 prompt: 'connect',
-                return_url: BASE_URL + '/integrations',
+                channel: payload.platform,
+                return_url: payload.returnUrl,
             },
         });
     }
@@ -201,13 +201,11 @@ class AccountModule extends VuexModule {
     async signinRedirectCallback() {
         const user = await this.userManager.signinRedirectCallback();
         this.context.commit('setUser', user);
-        return user;
     }
 
     @Action({ rawError: true })
     async signoutRedirect() {
         await this.userManager.signoutRedirect({});
-
         this.context.commit('setUser', null);
     }
 

@@ -32,8 +32,14 @@ export class YouTubeService {
         const { token } = await client.getAccessToken();
         const { expiry_date } = await client.getTokenInfo(token);
 
-        account.setToken({ kind: AccessTokenKind.Google, accessToken: token, expiry: expiry_date } as IAccessToken);
+        account.setToken({
+            kind: AccessTokenKind.Google,
+            accessToken: token,
+            expiry: expiry_date,
+            refreshToken: googleToken.refreshToken,
+        });
         await account.save();
+
         return google.youtube({ version: 'v3' });
     }
 
@@ -151,10 +157,14 @@ export class YouTubeService {
     }
 
     static async getScopesOfAccessToken(token: string): Promise<string[]> {
-        const r = await axios({
-            url: `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${token}`,
-        });
-        return r.data['scope'].split(' ');
+        try {
+            const r = await axios({
+                url: `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${token}`,
+            });
+            return r.data['scope'].split(' ');
+        } catch (error) {
+            return [];
+        }
     }
 
     static async hasYoutubeScopes(token: string): Promise<boolean> {

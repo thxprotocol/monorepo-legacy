@@ -1,10 +1,7 @@
 <template>
     <b-card body-class="bg-light p-0">
-        <b-button
-            class="d-flex align-items-center justify-content-between w-100"
-            variant="light"
-            v-b-toggle.collapse-card-condition
-        >
+        <b-button class="d-flex align-items-center justify-content-between w-100" variant="light"
+            v-b-toggle.collapse-card-condition>
             <strong>Reward condition</strong>
             <i :class="`fa-chevron-${isVisible ? 'up' : 'down'}`" class="fas m-0"></i>
         </b-button>
@@ -19,30 +16,18 @@
                 <template v-if="platform && platform.type !== RewardConditionPlatform.None && !isLoadingPlatform">
                     <template v-if="isAuthorized">
                         <b-form-group label="Interaction">
-                            <BaseDropdownChannelActions
-                                @selected="onSelectInteraction"
-                                :actions="actions"
-                                :action="interaction"
-                            />
+                            <BaseDropdownChannelActions @selected="onSelectInteraction" :actions="actions"
+                                :action="interaction" />
                         </b-form-group>
-                        <component
-                            v-if="interaction"
-                            :is="interactionComponent"
-                            @selected="onSelectContent"
-                            :items="interaction.items"
-                            :item="content"
-                        />
+                        <component v-if="interaction" :is="interactionComponent" @selected="onSelectContent"
+                            :items="interaction.items" :item="content" />
                     </template>
                     <b-alert v-else variant="info" show>
                         <p>
                             <i class="fas fa-info-circle mr-1"></i> Connect with your {{ platform.name }} account to
                             create conditions for your content.
                         </p>
-                        <b-button
-                            block
-                            variant="dark"
-                            @click="$store.dispatch('account/connectRedirect', platform.type)"
-                        >
+                        <b-button block variant="dark" @click="onClickConnect">
                             <img :src="platform.logoURI" width="20" class="mr-2" /> Connect account
                         </b-button>
                     </b-alert>
@@ -121,6 +106,13 @@ export default class BaseCardRewardCondition extends Vue {
         }
     }
 
+    onClickConnect() {
+        this.$store.dispatch('account/connectRedirect', {
+            platform: this.platform.type,
+            returnUrl: window.location.href,
+        });
+    }
+
     async onSelectPlatform(platform: IChannel) {
         if (!platform) return;
 
@@ -129,18 +121,20 @@ export default class BaseCardRewardCondition extends Vue {
 
         switch (platform.type) {
             case RewardConditionPlatform.Google: {
+                this.onSelectInteraction(platformInteractionList[1]);
                 await this.$store.dispatch('account/getYoutube');
                 this.isAuthorized = !!this.youtube;
                 break;
             }
             case RewardConditionPlatform.Twitter: {
                 await this.$store.dispatch('account/getTwitter');
+                this.onSelectInteraction(platformInteractionList[3]);
                 this.isAuthorized = !!this.twitter;
                 break;
             }
             default:
         }
-        this.onSelectInteraction(this.interaction);
+
         this.isLoadingPlatform = false;
     }
 
@@ -181,9 +175,9 @@ export default class BaseCardRewardCondition extends Vue {
     onSelectContent(content: any) {
         this.content =
             content &&
-            content.referenced_tweets &&
-            content.referenced_tweets[0] &&
-            content.referenced_tweets[0].type === 'retweeted'
+                content.referenced_tweets &&
+                content.referenced_tweets[0] &&
+                content.referenced_tweets[0].type === 'retweeted'
                 ? content.referenced_tweets[0].id
                 : content.id;
         this.change();

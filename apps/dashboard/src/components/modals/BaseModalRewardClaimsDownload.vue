@@ -159,6 +159,7 @@ export default class BaseModalRewardClaimsDownload extends Vue {
             });
             claims = claims.concat(pendingClaims);
         }
+
         return claims;
     }
 

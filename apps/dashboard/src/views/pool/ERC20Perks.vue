@@ -2,14 +2,14 @@
     <div>
         <b-row class="mb-3">
             <b-col class="d-flex align-items-center">
-                <h2 class="mb-0">Currency Perks</h2>
+                <h2 class="mb-0">Coin Perks</h2>
             </b-col>
             <b-col class="d-flex justify-content-end">
                 <b-button v-b-modal="'modalRewardERC20Create'" class="rounded-pill" variant="primary">
                     <i class="fas fa-plus mr-2"></i>
-                    <span class="d-none d-md-inline">ERC20 Reward</span>
+                    <span class="d-none d-md-inline">ERC20 Perk</span>
                 </b-button>
-                <BaseModalRewardERC20Create :id="'modalRewardERC20Create'" :pool="pool" />
+                <BaseModalRewardERC20Create @submit="listRewards" :id="'modalRewardERC20Create'" :pool="pool" />
             </b-col>
         </b-row>
         <BCard variant="white" body-class="p-0 shadow-sm">
@@ -91,6 +91,7 @@
                         </b-dropdown-item>
                     </b-dropdown>
                     <BaseModalRewardERC20Create
+                        @submit="listRewards"
                         :id="'modalRewardERC20Create' + item.id"
                         :pool="pool"
                         :reward="erc20Perks[pool._id][item.id]"

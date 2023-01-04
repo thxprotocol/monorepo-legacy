@@ -54,9 +54,7 @@ const controller = async (req: Request, res: Response) => {
     
             window.matchMedia('(max-width: 990px)').addListener(this.onMatchMedia.bind(this));
             window.onmessage = this.onMessage.bind(this);
-            
-            this.storeReferrer()
-
+          
             if (this.settings.referral.uuid && this.settings.referral.successUrl) {
                 this.timer = window.setInterval(this.onMatchSuccessUrl.bind(this), 500);
             }
@@ -64,19 +62,23 @@ const controller = async (req: Request, res: Response) => {
 
         storeReferrer() {
             const url = new URL(window.location.href)
-            const value = url.searchParams.get('ref');
-            if (!value || value.length !== 24) return;
-            sessionStorage.setItem('thx:widget:' + this.settings.poolId + ':ref', value);
-            url.searchParams.delete('ref');
-            window.location.href = url;
+            const sub = url.searchParams.get('ref');
+            if (!sub || sub.length !== 24) return;
+            this.iframe.contentWindow.postMessage({ message: 'thx.config.ref', sub }, this.settings.widgetUrl);
         }
     
         createIframe(widgetUrl, poolId, chainId, origin, theme) {
             const iframe = document.createElement('iframe');
             const styles = window.innerWidth < this.MD_BREAKPOINT ? this.defaultStyles['sm'] : this.defaultStyles['md'];
     
+            const url = new URL(widgetUrl);
+            url.searchParams.append('id', poolId);
+            url.searchParams.append('origin', origin);
+            url.searchParams.append('chainId', chainId);
+            url.searchParams.append('theme', theme);
+            
             iframe.id = 'thx-iframe';
-            iframe.src = widgetUrl +'?id=' + poolId + '&origin=' + origin + '&chainId=' + chainId + '&theme=' + theme;
+            iframe.src = url;
             Object.assign(iframe.style, {
                 ...styles,
                 zIndex: 99999999,
@@ -170,16 +172,14 @@ const controller = async (req: Request, res: Response) => {
             return container;
         }
     
-        createReferralRewardClaim(sub) {
-            if (!sub) return;
-            this.iframe.contentWindow.postMessage({ message: 'thx.referral.claim.create', uuid: this.settings.referral.uuid, sub}, this.settings.widgetUrl);
-            sessionStorage.removeItem('thx:widget:' + this.settings.poolId + ':ref');
-        }
-    
         onMessage(event) {
             if (!this.settings.widgetUrl || event.origin !== this.settings.widgetUrl) return;
             const { message, amount } = event.data;
             switch (message) {
+                case 'thx.widget.ready':{
+                    this.storeReferrer()      
+                    break
+                }
                 case 'thx.reward.amount': {
                     this.notifications.innerText = amount;
                     break;
@@ -194,8 +194,7 @@ const controller = async (req: Request, res: Response) => {
     
         onMatchSuccessUrl(successUrl) {
             if (window.location.href !== this.settings.referral.successUrl) return;
-            const sub = sessionStorage.getItem('thx:widget:' + this.settings.poolId + ':ref');
-            this.createReferralRewardClaim(sub);
+            this.iframe.contentWindow.postMessage({ message: 'thx.referral.claim.create', uuid: this.settings.referral.uuid }, this.settings.widgetUrl);
             window.clearInterval(this.timer);
         }
     

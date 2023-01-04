@@ -91,6 +91,7 @@ import { BButton, BJumbotron, BFormInput } from 'bootstrap-vue';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { ALT_TEXT, TITLES } from '@thxnetwork/public/utils/constants';
+import { DASHBOARD_URL } from '../config/secrets';
 
 @Component({
     components: {
@@ -103,7 +104,7 @@ import { ALT_TEXT, TITLES } from '@thxnetwork/public/utils/constants';
     }),
 })
 export default class BaseJumbotron extends Vue {
-    dashboardUrl = process.env.VUE_APP_DASHBOARD_URL;
+    dashboardUrl = DASHBOARD_URL;
     metrics!: IMetrics;
     signupEmail = '';
     ALT_TEXT = ALT_TEXT;

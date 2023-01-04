@@ -36,7 +36,7 @@ export class TwitterService {
         if (!user) throw new Error('Could not find Twitter user.');
 
         const r = await twitterClient({
-            url: `/users/${user.id}/liked_tweets?max_results=100&tweet.fields=id`,
+            url: `/users/${user.id}/liked_tweets?max_results=100&tweet.fields=referenced_tweets&expansions=referenced_tweets.id`,
             method: 'GET',
             headers: {
                 Authorization: `Bearer ${accessToken}`,
