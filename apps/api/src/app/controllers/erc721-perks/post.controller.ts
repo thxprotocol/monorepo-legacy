@@ -7,7 +7,7 @@ import { TERC721Perk } from '@thxnetwork/types/interfaces/ERC721Perk';
 const validation = [
     body('title').isString(),
     body('description').isString(),
-    // body('erc721metadataIds').exists().isArray(),
+    body('erc721metadataIds').exists().isString(),
     body('expiryDate').optional().isString(),
     body('claimAmount').optional().isInt({ gt: 0 }),
     body('platform').optional().isNumeric(),
@@ -32,7 +32,7 @@ const controller = async (req: Request, res: Response) => {
     }
 
     const perks = await Promise.all(
-        req.body.erc721metadataIds.map(async (erc721metadataId: string) => {
+        JSON.parse(req.body.erc721metadataIds).map(async (erc721metadataId: string) => {
             const config = {
                 poolId: String(req.assetPool._id),
                 erc721metadataId,

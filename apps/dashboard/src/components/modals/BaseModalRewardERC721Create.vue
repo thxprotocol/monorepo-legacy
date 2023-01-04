@@ -151,7 +151,9 @@ export default class ModalRewardERC721Create extends Vue {
                     page: 1,
                     title: this.title,
                     description: this.description,
-                    erc721metadataIds: this.erc721metadataId ? [this.erc721metadataId] : this.erc721SelectedMetadataIds,
+                    erc721metadataIds: JSON.stringify(
+                        this.erc721metadataId ? [this.erc721metadataId] : this.erc721SelectedMetadataIds,
+                    ),
                     claimAmount: this.claimAmount,
                     rewardLimit: this.rewardLimit,
                     pointPrice: this.pointPrice,
@@ -166,7 +168,6 @@ export default class ModalRewardERC721Create extends Vue {
                 this.title = '';
                 this.erc721metadataId = '';
                 this.description = '';
-                this.rewardLimit = 0;
                 this.claimAmount = 1;
                 this.rewardLimit = 0;
                 this.rewardCondition = {
