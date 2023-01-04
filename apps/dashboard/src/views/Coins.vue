@@ -12,7 +12,7 @@
                 }"
             >
                 <div class="container container-md py-5">
-                    <p class="brand-text">Currencies</p>
+                    <p class="brand-text">Coins</p>
                     <b-button
                         v-b-modal="'modalERC20Create'"
                         class="rounded-pill mr-2"
@@ -22,7 +22,7 @@
                 and reputation metrics."
                     >
                         <i class="fas fa-plus mr-2"></i>
-                        <span>Create Currencies</span>
+                        <span>Create Coins</span>
                     </b-button>
                     <b-button
                         v-b-modal="'modalERC20Import'"
@@ -32,11 +32,11 @@
                         title="Import an existing ERC20 token contract, top up your pool and manage the distribution."
                     >
                         <i class="fas fa-arrow-down mr-2"></i>
-                        <span>Import Currency</span>
+                        <span>Import Coin</span>
                     </b-button>
                     <b-button to="/pools" variant="link" class="text-light">
                         <i class="fas fa-chart-pie mr-2"></i>
-                        <span>Deploy a currency pool</span>
+                        <span>Deploy a coin pool</span>
                     </b-button>
                 </div>
             </b-jumbotron>

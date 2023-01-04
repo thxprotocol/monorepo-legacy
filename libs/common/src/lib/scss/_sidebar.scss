@@ -56,23 +56,29 @@ body {
     .nav-link-plain {
         .nav-link {
             padding: 0rem;
-            margin: 0 0.5rem;
+            margin: 0 0.5rem 1px;
             border-radius: 5px;
             display: block;
             transition: 0.2s background-color ease;
-    
+            
+            i {
+                color: $gray-500;
+            }
+
             &:hover {
-                > .nav-link-icon i {
-                    color: $primary;
-                }
+                background-color: $gray-200;
+
+                // > .nav-link-icon i {
+                //     color: $black;
+                // }
             }
         }
         
         .router-link-active {
-            background-color: #f8f9fa;
+            background-color: $gray-200;
             
             span {
-                color: black;
+                color: $primary;
             }
 
             .nav-link-wrapper > .nav-link-icon i {
@@ -85,7 +91,7 @@ body {
         }
         
         .nav-link-wrapper {
-            padding: 0.7rem 1rem;
+            padding: 0.5rem 1rem;
             display: flex;
         }
     

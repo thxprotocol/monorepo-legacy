@@ -23,12 +23,14 @@ export class MailService {
             throw new Error('Account email not set.');
         }
 
-        const token = {
-            kind: AccessTokenKind.Signup,
-            accessToken: createRandomToken(),
-            expiry: get24HoursExpiryTimestamp(),
-        } as IAccessToken;
-        account.setToken(token);
+        let token = account.getToken(AccessTokenKind.Signup);
+        if (!token) {
+            token = account.setToken({
+                kind: AccessTokenKind.Signup,
+                accessToken: createRandomToken(),
+                expiry: get24HoursExpiryTimestamp(),
+            });
+        }
 
         const verifyUrl = `${returnUrl}/verify?signup_token=${token.accessToken}&return_url=${returnUrl}`;
         const html = await ejs.renderFile(

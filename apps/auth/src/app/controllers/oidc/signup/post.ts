@@ -31,15 +31,14 @@ async function controller(req: Request, res: Response) {
         return renderError('Email cannot be blank.');
     }
 
-    const signupData = {
+    const account = await AccountService.signup({
         email: req.body.email,
         password: req.body.password,
         variant: AccountVariant.EmailPassword,
         acceptTermsPrivacy: req.body.acceptTermsPrivacy,
         acceptUpdates: req.body.acceptUpdates,
         active: false,
-    };
-    const account = await AccountService.signup(signupData);
+    });
 
     if (account.email) {
         await MailService.sendConfirmationEmail(account, req.body.returnUrl);

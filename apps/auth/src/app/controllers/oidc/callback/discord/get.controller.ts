@@ -37,7 +37,6 @@ async function controller(req: Request, res: Response) {
     const tokens = await DiscordService.requestTokens(code);
 
     const user = await DiscordService.getUser(tokens.access_token);
-    console.log(user);
     const email = user.user.email;
 
     // Get the interaction based on the state
