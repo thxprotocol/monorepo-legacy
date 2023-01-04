@@ -9,7 +9,6 @@ import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { getRoutes } from '@thxnetwork/dashboard/utils/routes';
 import { ERC20Type } from '@thxnetwork/dashboard/types/erc20';
 import { fromWei } from 'web3-utils';
 import { IAccount, AccountPlanType } from '../types/account';

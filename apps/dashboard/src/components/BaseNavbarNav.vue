@@ -1,7 +1,7 @@
 <template>
     <b-navbar-nav class="py-0">
         <b-nav-item
-            :to="`/pool/${selectedPool._id}/${route.path}`"
+            :to="route.path"
             link-classes="nav-link-wrapper"
             :key="key"
             v-for="(route, key) of routes"

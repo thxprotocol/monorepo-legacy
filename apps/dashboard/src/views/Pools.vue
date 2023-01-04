@@ -12,10 +12,10 @@
                 }"
             >
                 <div class="container container-md py-5">
-                    <p class="brand-text">Loyalty Pools</p>
+                    <p class="brand-text">Pools</p>
                     <b-button v-b-modal="`modalAssetPoolCreate`" class="rounded-pill" variant="secondary">
                         <i class="fas fa-plus mr-2"></i>
-                        <span>Create Loyalty Pool</span>
+                        <span>Create Pool</span>
                     </b-button>
                     <b-button to="/tokens" variant="link" class="text-light">
                         <i class="fas fa-coins mr-2"></i>

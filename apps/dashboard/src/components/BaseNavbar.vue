@@ -66,41 +66,7 @@
                 </template>
                 <hr />
                 <label class="px-3 text-muted">Tokens</label>
-                <b-navbar-nav>
-                    <b-nav-item to="/tokens" class="nav-link-plain" link-classes="nav-link-wrapper">
-                        <div class="nav-link-icon">
-                            <i class="fas fa-coins"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <span>Coins</span>
-                        </div>
-                    </b-nav-item>
-                    <b-nav-item to="/nft" class="nav-link-plain" link-classes="nav-link-wrapper">
-                        <div class="nav-link-icon">
-                            <i class="fas fa-palette"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <span class="mr-2">NFT</span>
-                        </div>
-                    </b-nav-item>
-                    <b-nav-item to="/pools" class="nav-link-plain" link-classes="nav-link-wrapper">
-                        <div class="nav-link-icon">
-                            <i class="fas fa-chart-pie"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <span>Pools</span>
-                        </div>
-                    </b-nav-item>
-                    <!-- <b-nav-item to="/partners" class="nav-link-plain mb-3" link-classes="nav-link-wrapper" disabled>
-                        <div class="nav-link-icon">
-                            <i class="fas fa-handshake"></i>
-                        </div>
-                        <div class="flex-grow-1 justify-content-between d-flex align-items-center">
-                            <span>Loyalty Partners</span>
-                            <b-badge variant="gray" class="ml-2 text-white">Soon</b-badge>
-                        </div>
-                    </b-nav-item> -->
-                </b-navbar-nav>
+                <base-navbar-nav :selectedPool="selectedPool" :routes="tokenRoutes" />
             </div>
             <div class="d-flex justify-content-end flex-column flex-grow-0 w-100">
                 <b-navbar-nav>
@@ -190,21 +156,42 @@ export default class BaseNavbar extends Vue {
     pools!: IPools;
     account!: IAccount;
 
+    get tokenRoutes() {
+        if (!this.selectedPool) return;
+        return [
+            {
+                path: '/coins',
+                label: 'Coins',
+                iconClasses: 'fas fa-coins',
+            },
+            {
+                path: '/nft',
+                label: 'NFT',
+                iconClasses: 'fas fa-palette',
+            },
+            {
+                path: '/pools',
+                label: 'Pools',
+                iconClasses: 'fas fa-chart-pie',
+            },
+        ];
+    }
+
     get rewardRoutes() {
         if (!this.selectedPool) return;
         return [
             {
-                path: 'referrals',
+                path: `/pool/${this.selectedPool._id}/referrals`,
                 label: 'Referrals',
                 iconClasses: 'fas fa-comments',
             },
             {
-                path: 'points',
+                path: `/pool/${this.selectedPool._id}/points`,
                 label: 'Conditional',
                 iconClasses: 'fas fa-trophy',
             },
             {
-                path: 'milestones',
+                path: `/pool/${this.selectedPool._id}/milestones`,
                 label: 'Milestones',
                 iconClasses: 'fas fa-flag',
                 isSoon: true,
@@ -216,12 +203,12 @@ export default class BaseNavbar extends Vue {
         if (!this.selectedPool) return;
         return [
             {
-                path: 'erc20-perks',
+                path: `/pool/${this.selectedPool._id}/erc20-perks`,
                 label: 'Coin',
                 iconClasses: 'fas fa-coins',
             },
             {
-                path: 'erc721-perks',
+                path: `/pool/${this.selectedPool._id}/erc721-perks`,
                 label: 'NFT',
                 iconClasses: 'fas fa-award',
             },
@@ -232,29 +219,29 @@ export default class BaseNavbar extends Vue {
         if (!this.selectedPool) return;
         return [
             {
-                path: 'dashboard',
+                path: `/pool/${this.selectedPool._id}/dashboard`,
                 label: 'Dashboard',
                 iconClasses: 'fas fa-chart-line',
             },
             {
-                path: 'widget',
+                path: `/pool/${this.selectedPool._id}/widget`,
                 label: 'Widget',
                 iconClasses: 'fas fa-code',
                 isNew: true,
             },
-            // {
-            //     path: 'metadata',
-            //     label: 'NFT Metadata',
-            //     iconClasses: 'fas fa-palette',
-            // },
             {
-                path: 'clients',
+                path: `/pool/${this.selectedPool._id}/metadata`,
+                label: 'Metadata',
+                iconClasses: 'fas fa-palette',
+            },
+            {
+                path: `/pool/${this.selectedPool._id}/clients`,
                 label: 'Clients',
                 iconClasses: 'fas fa-key',
                 isPremium: true,
             },
             {
-                path: 'settings',
+                path: `/pool/${this.selectedPool._id}/settings`,
                 label: 'Settings',
                 iconClasses: 'fas fa-cog',
             },
