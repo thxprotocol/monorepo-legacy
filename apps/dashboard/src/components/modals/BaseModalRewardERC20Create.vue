@@ -32,7 +32,7 @@
                                     <b-spinner v-if="!image.length" variant="primary"></b-spinner>
                                 </div>
                                 <div class="col-md-2" v-else>
-                                    <img :src="image" width="100%" />
+                                    <img :src="image" width="100%" alt="Image for the Reward" />
                                 </div>
                                 <b-form-file
                                     @change="onFileChange"

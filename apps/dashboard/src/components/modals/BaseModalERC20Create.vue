@@ -50,7 +50,7 @@
                                 <b-spinner v-if="!image.length" variant="primary"></b-spinner>
                             </div>
                             <div class="col-md-2 float-left" v-else>
-                                <img :src="image" width="100%" />
+                                <img :src="image" width="100%" alt="Image of the token icon" />
                             </div>
                             <b-form-file
                                 @change="onFileChange"
