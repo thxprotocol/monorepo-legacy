@@ -28,6 +28,7 @@ export async function create(pool: AssetPoolDocument, payload: TReferralReward) 
     return await ReferralReward.create({
         poolId: String(pool._id),
         uuid: db.createUUID(),
+        token: db.createUUID(),
         ...payload,
     });
 }
