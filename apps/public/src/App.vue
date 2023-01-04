@@ -63,7 +63,7 @@ export default class App extends Vue {
     }
 
     mounted() {
-        if (WIDGET_ID && PKG_ENV) new THXWidget({ env: PKG_ENV, poolId: '63b2af5421cb9b34e2156e23' });
+        if (WIDGET_ID && PKG_ENV) new THXWidget({ env: PKG_ENV, poolId: WIDGET_ID });
     }
 }
 </script>
