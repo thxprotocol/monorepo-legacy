@@ -38,6 +38,7 @@ const controller = async (req: Request, res: Response) => {
         erc721metadataId: JSON.parse(req.body.erc721metadataIds)[0],
         image,
         title: req.body.title,
+        erc721Id: req.body.erc721Id,
         description: req.body.description,
         expiryDate: req.body.expiryDate,
         claimAmount: req.body.claimAmount,

@@ -80,35 +80,6 @@ async function deployCallback(args: TAssetPoolDeployCallbackArgs, receipt: Trans
     await pool.save();
 }
 
-async function topup(assetPool: TAssetPool, amount: string) {
-    const { defaultAccount } = getProvider(assetPool.chainId);
-    const deposit = await Deposit.create({
-        amount,
-        sender: defaultAccount,
-        receiver: assetPool.address,
-        state: DepositState.Pending,
-    });
-
-    const txId = await TransactionService.sendAsync(
-        assetPool.contract.options.address,
-        assetPool.contract.methods.transferFrom(defaultAccount, assetPool.address, amount),
-        assetPool.chainId,
-        true,
-        { type: 'topupCallback', args: { receiver: assetPool.address, depositId: String(deposit._id) } },
-    );
-
-    return Deposit.findByIdAndUpdate(deposit._id, { transactions: [txId] }, { new: true });
-}
-
-async function topupCallback({ receiver, depositId }: TTopupCallbackArgs, receipt: TransactionReceipt) {
-    const pool = await getByAddress(receiver);
-    const events = parseLogs(pool.contract.options.jsonInterface, receipt.logs);
-
-    assertEvent('ERC20ProxyTransferFrom', events);
-
-    await Deposit.findByIdAndUpdate(depositId, { state: DepositState.Completed });
-}
-
 async function getAllBySub(sub: string, archived = false) {
     if (archived) return AssetPool.find({ sub });
     return AssetPool.find({ sub, archived });
@@ -116,10 +87,6 @@ async function getAllBySub(sub: string, archived = false) {
 
 function getAll() {
     return AssetPool.find({});
-}
-
-function remove(pool: AssetPoolDocument) {
-    return AssetPool.deleteOne({ _id: String(pool._id) });
 }
 
 function findByAddress(address: string) {
@@ -164,11 +131,8 @@ export default {
     getByAddress,
     deploy,
     deployCallback,
-    topup,
-    topupCallback,
     getAllBySub,
     getAll,
-    remove,
     findByAddress,
     countByNetwork,
     contractVersionVariant,

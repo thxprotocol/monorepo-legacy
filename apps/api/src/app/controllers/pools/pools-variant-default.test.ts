@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId, WithdrawalState } from '@thxnetwork/api/types/enums';
+import { ChainId } from '@thxnetwork/api/types/enums';
 import { Account } from 'web3-core';
 import { toWei, isAddress } from 'web3-utils';
 import { createWallet } from '@thxnetwork/api/util/jest/network';
@@ -10,13 +10,11 @@ import {
     tokenName,
     tokenSymbol,
     tokenTotalSupply,
-    MaxUint256,
-    adminAccessToken,
     dashboardAccessToken,
     walletAccessToken,
 } from '@thxnetwork/api/util/jest/constants';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { getByteCodeForContractName, getContract, getContractFromName } from '@thxnetwork/api/config/contracts';
+import { getByteCodeForContractName, getContract } from '@thxnetwork/api/config/contracts';
 import { currentVersion } from '@thxnetwork/contracts/exports';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
 import { ClaimDocument } from '@thxnetwork/api/types/TClaim';
@@ -169,9 +167,6 @@ describe('Default Pool', () => {
             await user
                 .post(`/v1/claims/${claim.uuid}/collect`)
                 .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
-                .expect(({ body }: request.Response) => {
-                    console.log(body);
-                })
                 .expect(200);
         });
     });

@@ -1,6 +1,7 @@
 import { Response, Request, NextFunction } from 'express';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { SubjectUnauthorizedError, AudienceForbiddenError } from '@thxnetwork/api/util/errors';
+import { Client } from '../models/Client';
 
 export async function assertAssetPoolOwnership(
     req: Request & { user: { sub: string; aud: string } },
@@ -17,7 +18,7 @@ export async function assertAssetPoolOwnership(
     // If there is no sub check if client aud is equal to requested asset pool clientId
     // client_credentials grants make use of this flow since no subject is available.
     if (req.auth.aud) {
-        const isPoolClient = await PoolService.isPoolClient(req.auth.aud, poolId);
+        const isPoolClient = await Client.exists({ poolId, clientId: req.auth.aud });
         if (!isPoolClient) throw new AudienceForbiddenError();
         return next();
     }

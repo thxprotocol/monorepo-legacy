@@ -1,10 +1,5 @@
 import express from 'express';
-import {
-    assertAssetPoolOwnership,
-    assertRequestInput,
-    requireAssetPoolHeader,
-    guard,
-} from '@thxnetwork/api/middlewares';
+import { assertAssetPoolOwnership, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
 import CreateERC721Perk from './post.controller';
 import ReadERC721Perk from './get.controller';
 import UpdateERC721Perk from './patch.controller';
@@ -14,19 +9,12 @@ import { upload } from '@thxnetwork/api/util/multer';
 
 const router = express.Router();
 
-router.get(
-    '/',
-    guard.check(['erc721_rewards:read']),
-    assertAssetPoolOwnership,
-    requireAssetPoolHeader,
-    ListERC721Perk.controller,
-);
+router.get('/', guard.check(['erc721_rewards:read']), assertAssetPoolOwnership, ListERC721Perk.controller);
 router.get(
     '/:id',
     guard.check(['erc721_rewards:read']),
     assertAssetPoolOwnership,
     assertRequestInput(ReadERC721Perk.validation),
-    requireAssetPoolHeader,
     ReadERC721Perk.controller,
 );
 router.post(

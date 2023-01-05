@@ -3,6 +3,8 @@ import { Request, Response } from 'express';
 import { createERC721Perk } from '@thxnetwork/api/util/rewards';
 import ImageService from '@thxnetwork/api/services/ImageService';
 import { TERC721Perk } from '@thxnetwork/types/interfaces/ERC721Perk';
+import PoolService from '@thxnetwork/api/services/PoolService';
+import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 
 const validation = [
     body('title').exists().isString(),
@@ -31,11 +33,19 @@ const controller = async (req: Request, res: Response) => {
         const response = await ImageService.upload(req.file);
         image = ImageService.getPublicUrl(response.key);
     }
+    const pool = await PoolService.getById(req.header('X-PoolId'));
+    const erc721 = await ERC721Service.findById(req.body.erc721Id);
+
+    // Check if erc721 already is mintable by pool
+    const isMinter = await ERC721Service.isMinter(erc721, pool.address);
+    if (!isMinter) {
+        await ERC721Service.addMinter(erc721, pool.address);
+    }
 
     const perks = await Promise.all(
         JSON.parse(req.body.erc721metadataIds).map(async (erc721metadataId: string) => {
             const config = {
-                poolId: String(req.assetPool._id),
+                poolId: String(pool._id),
                 erc721metadataId,
                 image,
                 title: req.body.title,
@@ -46,7 +56,7 @@ const controller = async (req: Request, res: Response) => {
                 pointPrice: req.body.pointPrice,
                 isPromoted: req.body.isPromoted,
             } as TERC721Perk;
-            const { reward, claims } = await createERC721Perk(req.assetPool, config);
+            const { reward, claims } = await createERC721Perk(pool, config);
 
             return { ...reward.toJSON(), claims };
         }),

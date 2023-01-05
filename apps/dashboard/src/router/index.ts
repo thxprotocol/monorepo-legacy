@@ -65,10 +65,6 @@ const routes: Array<RouteConfig> = [
                 path: 'settings',
                 component: () => import('../views/pool/Settings.vue'),
             },
-            {
-                path: 'metadata',
-                component: () => import('../views/pool/Metadata.vue'),
-            },
             // {
             //     path: 'promotions',
             //     component: () => import('../views/pool/Promotions.vue'),
@@ -96,10 +92,17 @@ const routes: Array<RouteConfig> = [
         path: '/nft',
         component: () => import('../views/NFT.vue'),
         beforeEnter: assertAuthorization,
+    },
+    {
+        name: 'metadata',
+        path: '/nft/:erc721Id',
+        redirect: '/nft/:erc721Id/metadata',
+        component: () => import('../views/nft/NFT.vue'),
+        beforeEnter: assertAuthorization,
         children: [
             {
                 path: 'metadata',
-                component: () => import('../views/pool/Metadata.vue'),
+                component: () => import('../views/nft/Metadata.vue'),
             },
         ],
     },

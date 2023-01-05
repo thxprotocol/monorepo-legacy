@@ -27,16 +27,6 @@ describe('ERC721 Perks', () => {
     afterAll(afterAllCallback);
 
     describe('an NFT reward with withdrawLimit = 1 is claimed by wallet user A and then should not be claimed again throught he same claim URL by wallet user B', () => {
-        let erc721Address: string;
-
-        const name = 'Planets of the Galaxy',
-            symbol = 'GLXY',
-            description = 'description',
-            schema = [
-                { name: 'color', propType: 'string', description: 'lorem ipsum' },
-                { name: 'size', propType: 'string', description: 'lorem ipsum dolor sit' },
-            ];
-
         describe('POST /erc721', () => {
             it('should create an ERC721 and return contract details', (done) => {
                 user.post('/v1/erc721')
@@ -64,12 +54,9 @@ describe('ERC721 Perks', () => {
                     .set('Authorization', dashboardAccessToken)
                     .send({
                         chainId: ChainId.Hardhat,
-                        erc20tokens: [],
-                        erc721tokens: [erc721Address],
                     })
                     .expect(({ body }: request.Response) => {
                         expect(isAddress(body.address)).toBe(true);
-                        expect(body.erc721Id).toBe(erc721ID);
                         poolId = body._id;
                     })
                     .expect(201, done);
@@ -83,7 +70,6 @@ describe('ERC721 Perks', () => {
 
                 user.post('/v1/erc721/' + erc721ID + '/metadata')
                     .set('Authorization', dashboardAccessToken)
-                    .set('X-PoolId', poolId)
                     .send({
                         attributes: [
                             { key: schema[0].name, value: value1 },
@@ -144,6 +130,7 @@ describe('ERC721 Perks', () => {
                     title: 'Expiration date is next 30 min',
                     description: 'Lorem ipsum dolor sit amet',
                     platform: 0,
+                    erc721Id: erc721ID,
                     expiryDate: expiryDate.toString(),
                     rewardLimit: 1,
                     claimAmount: 1,

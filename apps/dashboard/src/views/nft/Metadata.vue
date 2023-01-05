@@ -21,21 +21,15 @@
                     Import/Export
                 </b-dropdown-item>
             </b-dropdown>
-            <base-modal-erc721-metadata-create
-                @update="listMetadata"
-                id="modalERC721MetadataCreate"
-                :erc721="erc721"
-                :pool="pool"
-            />
-            <BaseModalErc721MetadataBulkCreate :pool="pool" :erc721="erc721" />
-            <BaseModalErc721MetadataUploadCSV :pool="pool" :erc721="erc721" />
+            <base-modal-erc721-metadata-create @update="listMetadata" id="modalERC721MetadataCreate" :erc721="erc721" />
+            <BaseModalErc721MetadataBulkCreate :erc721="erc721" />
+            <BaseModalErc721MetadataUploadCSV :erc721="erc721" />
         </b-row>
 
         <BCard variant="white" body-class="p-0 shadow-sm">
             <BaseCardTableHeader
                 :page="page"
                 :limit="limit"
-                :pool="pool"
                 :total-rows="totals[erc721._id]"
                 :selectedItems="selectedItems"
                 :actions="[
@@ -56,8 +50,8 @@
             </b-alert>
             <BaseModalRewardERC721Create
                 id="modalRewardERC721Create"
-                :pool="pool"
                 :erc721SelectedMetadataIds="selectedItems"
+                :erc721="erc721"
             />
             <BTable hover :busy="isLoading" :items="metadataByPage" responsive="lg" show-empty>
                 <!-- Head formatting -->
@@ -125,7 +119,6 @@
                             :id="`modalERC721MetadataCreate${item.id}`"
                             :erc721="erc721"
                             :metadata="erc721.metadata[item.id]"
-                            :pool="pool"
                         />
                     </b-dropdown>
                 </template>
@@ -137,7 +130,7 @@
 <script lang="ts">
 import { format } from 'date-fns';
 import { IPool, IPools } from '@thxnetwork/dashboard/store/modules/pools';
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import type { IERC721s, TERC721, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
 import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
@@ -182,13 +175,7 @@ export default class MetadataView extends Vue {
     pools!: IPools;
     erc721s!: IERC721s;
 
-    get pool(): IPool {
-        return this.pools[this.$route.params.id];
-    }
-
-    get erc721(): TERC721 {
-        return this.erc721s[this.pool.erc721Id];
-    }
+    @Prop() erc721!: TERC721;
 
     get metadataByPage() {
         if (!this.erc721) return [];
@@ -216,7 +203,6 @@ export default class MetadataView extends Vue {
 
     async onClickDelete(metadata: TERC721Metadata) {
         await this.$store.dispatch('erc721/deleteMetadata', {
-            pool: this.pool,
             erc721: this.erc721,
             metadata,
         });
@@ -236,7 +222,6 @@ export default class MetadataView extends Vue {
             case 0:
                 for (const id of Object.values(this.selectedItems)) {
                     this.$store.dispatch('erc721/deleteMetadata', {
-                        pool: this.pool,
                         erc721: this.erc721,
                         metadata: this.erc721.metadata[id],
                     });
@@ -250,7 +235,7 @@ export default class MetadataView extends Vue {
 
     async listMetadata() {
         this.isLoading = true;
-        await this.$store.dispatch('erc721/read', this.pool.erc721._id).then(async () => {
+        await this.$store.dispatch('erc721/read', this.$route.params.erc721Id).then(async () => {
             await this.$store.dispatch('erc721/listMetadata', {
                 erc721: this.erc721,
                 page: this.page,

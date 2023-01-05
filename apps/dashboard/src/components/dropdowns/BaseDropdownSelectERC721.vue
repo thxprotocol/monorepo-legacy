@@ -47,6 +47,7 @@ export default class BaseDropdownSelectERC721 extends Vue {
 
     erc721s!: IERC721s;
 
+    @Prop({ required: false }) erc721!: TERC721;
     @Prop() chainId!: ChainId;
 
     get hasERC721s() {
@@ -54,6 +55,9 @@ export default class BaseDropdownSelectERC721 extends Vue {
     }
 
     async mounted() {
+        if (this.erc721) {
+            this.token = this.erc721;
+        }
         this.$store.dispatch('erc721/list').then(() => {
             for (const id in this.erc721s) {
                 this.$store.dispatch('erc721/read', id).then(() => {

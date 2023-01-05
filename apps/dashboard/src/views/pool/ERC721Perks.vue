@@ -49,8 +49,13 @@
                 <template #cell(checkbox)="{ item }">
                     <b-form-checkbox :value="item.checkbox" v-model="selectedItems" />
                 </template>
-                <template #cell(erc721metadataId)="{ index, item }">
-                    <BaseBadgeMetadataPreview :index="index" :erc721="erc721" :metadataId="item.erc721metadataId" />
+                <template #cell(metadata)="{ index, item }">
+                    <BaseBadgeMetadataPreview
+                        v-if="item.metadata.erc721"
+                        :index="index"
+                        :erc721="item.metadata.erc721"
+                        :metadataId="item.metadata.metadataId"
+                    />
                 </template>
                 <template #cell(progress)="{ item }">
                     <b-progress style="border-radius: 0.3rem">
@@ -145,7 +150,7 @@ export default class ERC721PerksView extends Vue {
     pools!: IPools;
     erc721s!: IERC721s;
     totals!: { [poolId: string]: number };
-    erc721Perks!: { [poolId: string]: { [id: string]: TERC721Perk } };
+    erc721Perks!: { [poolId: string]: { [id: string]: TERC721Perk & { erc721: TERC721 } } };
 
     get pool() {
         return this.pools[this.$route.params.id];
@@ -160,9 +165,12 @@ export default class ERC721PerksView extends Vue {
         return Object.values(this.erc721Perks[this.$route.params.id])
             .filter((reward: TERC721Perk) => reward.page === this.page)
             .sort((a, b) => (a.createdAt && b.createdAt && a.createdAt < b.createdAt ? 1 : -1))
-            .map((r: TERC721Perk) => ({
+            .map((r: TERC721Perk & { erc721: TERC721 }) => ({
                 checkbox: r._id,
-                erc721metadataId: r.erc721metadataId,
+                metadata: {
+                    erc721: r.erc721,
+                    metadataId: r.erc721metadataId,
+                },
                 title: r.title,
                 rewardCondition: {
                     platform: platformList.find((p) => r.platform === p.type),

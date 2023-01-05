@@ -11,10 +11,19 @@
                         <b-form-group label="Description">
                             <b-textarea v-model="description" />
                         </b-form-group>
-                        <b-form-group label="Metadata" v-if="!erc721SelectedMetadataIds">
+                        <b-form-group label="NFT">
+                            {{ pool }}
+                            {{ erc721 }}
+                            <!-- <BaseDropdownSelectERC721
+                                :chainId="(pool && pool.chainId) || (erc721 && erc721.chainId)"
+                                :erc721="erc721"
+                                @selected="erc721 = $event"
+                            /> -->
+                        </b-form-group>
+                        <b-form-group v-if="erc721 && !erc721SelectedMetadataIds" label="Metadata">
                             <BaseDropdownERC721Metadata
+                                :erc721="erc721"
                                 :erc721metadataId="erc721metadataId"
-                                :pool="pool"
                                 @selected="onSelectMetadata"
                             />
                         </b-form-group>
@@ -68,7 +77,7 @@
 </template>
 
 <script lang="ts">
-import { type IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import { IPools, type IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { platformList, platformInteractionList } from '@thxnetwork/dashboard/types/rewards';
 import { RewardConditionInteraction, RewardConditionPlatform, type TERC721Perk } from '@thxnetwork/types/index';
@@ -78,6 +87,8 @@ import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardRewardQRCodes from '../cards/BaseCardRewardQRCodes.vue';
 import BaseDropdownERC721Metadata from '../dropdowns/BaseDropdownERC721Metadata.vue';
 import type { IERC721s, TERC721, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
+import { mapGetters } from 'vuex';
+import BaseDropdownSelectERC721 from '../dropdowns/BaseDropdownSelectERC721.vue';
 
 @Component({
     components: {
@@ -86,11 +97,18 @@ import type { IERC721s, TERC721, TERC721Metadata } from '@thxnetwork/dashboard/t
         BaseCardRewardExpiry,
         BaseCardRewardQRCodes,
         BaseDropdownERC721Metadata,
+        BaseDropdownSelectERC721,
     },
+    computed: mapGetters({
+        pools: 'pools/all',
+    }),
 })
 export default class ModalRewardERC721Create extends Vue {
     isSubmitDisabled = false;
     isLoading = false;
+    erc721: TERC721 | null = null;
+    erc721Id = '';
+    pools!: IPools;
     error = '';
     title = '';
     erc721metadataId = '';
@@ -114,18 +132,15 @@ export default class ModalRewardERC721Create extends Vue {
     @Prop({ required: false }) reward!: TERC721Perk;
     @Prop({ required: false }) erc721SelectedMetadataIds!: string[];
 
-    get erc721(): TERC721 | null {
-        if (!this.pool.erc721) return null;
-        return this.erc721s[this.pool.erc721._id];
-    }
-
     onShow() {
+        debugger;
         if (this.reward) {
             this.erc721metadataId = this.reward.erc721metadataId;
             this.title = this.reward.title;
             this.description = this.reward.description;
             this.rewardLimit = this.reward.rewardLimit;
             this.pointPrice = this.reward.pointPrice;
+            this.erc721 = this.erc721s[this.reward.erc721Id];
             this.rewardCondition = {
                 platform: this.reward.platform as RewardConditionPlatform,
                 interaction: this.reward.interaction as RewardConditionInteraction,
@@ -147,10 +162,11 @@ export default class ModalRewardERC721Create extends Vue {
         this.isLoading = true;
         this.$store
             .dispatch(`erc721Perks/${this.reward ? 'update' : 'create'}`, {
-                pool: this.pool,
+                pool: this.pool || Object.values(this.pools)[0],
                 reward: this.reward,
                 payload: {
                     page: 1,
+                    erc721Id: this.erc721 && this.erc721._id,
                     title: this.title,
                     description: this.description,
                     erc721metadataIds: JSON.stringify(

@@ -22,7 +22,6 @@ const controller = async (req: Request, res: Response) => {
         properties.push('MetadataID');
 
         const readeableStream = Readable.from(req.file.buffer.toString());
-
         const promises: Promise<any>[] = [];
 
         readeableStream
@@ -61,6 +60,8 @@ const controller = async (req: Request, res: Response) => {
                         if (metadata) {
                             metadata.attributes = attributes;
                             metadata.save();
+                        } else {
+                            metadata = await ERC721Service.createMetadata(erc721, attributes);
                         }
                     } catch (err) {
                         logger.error(err);

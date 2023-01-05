@@ -160,6 +160,10 @@ export async function parseAttributes(entry: ERC721MetadataDocument) {
     return attrs;
 }
 
+async function isMinter(erc721: ERC721Document, address: string) {
+    return await erc721.contract.methods.hasRole(keccak256(toUtf8Bytes('MINTER_ROLE')), address).call();
+}
+
 async function addMinter(erc721: ERC721Document, address: string) {
     const receipt = await TransactionService.send(
         erc721.address,
@@ -250,6 +254,7 @@ export default {
     findByPool,
     findByQuery,
     addMinter,
+    isMinter,
     parseAttributes,
     update,
     initialize,

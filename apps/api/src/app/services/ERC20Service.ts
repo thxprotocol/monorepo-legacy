@@ -9,12 +9,10 @@ import { getByteCodeForContractName, getContractFromName } from '@thxnetwork/api
 import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
 import { ERC20Token } from '@thxnetwork/api/models/ERC20Token';
 import { getProvider } from '@thxnetwork/api/util/network';
-import MembershipService from './MembershipService';
 import { TransactionReceipt } from 'web3-core';
 import { TERC20DeployCallbackArgs, TERC20TransferFromCallBackArgs } from '@thxnetwork/api/types/TTransaction';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
 import ERC20Transfer from '../models/ERC20Transfer';
-import { TERC20 } from '../types/TERC20';
 
 function getDeployArgs(erc20: ERC20Document, totalSupply?: string) {
     const { defaultAccount } = getProvider(erc20.chainId);
@@ -205,10 +203,6 @@ export const findByPool = async (pool: AssetPoolDocument): Promise<ERC20Document
     return await getById(pool.erc20Id);
 };
 
-export const removeById = (id: string) => {
-    return ERC20.deleteOne({ _id: id });
-};
-
 export const update = (erc20: ERC20Document, updates: IERC20Updates) => {
     return ERC20.findByIdAndUpdate(erc20._id, updates, { new: true });
 };
@@ -239,14 +233,18 @@ export const transferFromCallBack = async (args: TERC20TransferFromCallBackArgs,
     assertEvent('ERC20ProxyTransferFrom', events);
 };
 
+async function isMinter(erc20: ERC20Document, address: string) {
+    return await erc20.contract.methods.hasRole(keccak256(toUtf8Bytes('MINTER_ROLE')), address).call();
+}
+
 export default {
     deploy,
     getAll,
     findBy,
     findByPool,
     getById,
-    removeById,
     addMinter,
+    isMinter,
     findOrImport,
     importERC20Token,
     getTokensForSub,

@@ -37,10 +37,10 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 export default class BaseBadgeMetadataPreview extends Vue {
     @Prop() index!: number;
     @Prop() erc721!: TERC721;
-    @Prop() metadataId!: string;
+    @Prop({ required: true }) metadataId!: string;
 
     get attributes() {
-        if (!this.erc721 || !this.erc721.metadata[this.metadataId]) return {};
+        if (!this.erc721.metadata || !this.erc721.metadata[this.metadataId]) return {};
 
         const attributes: { [key: string]: string } = {};
         for (const attr of this.erc721.metadata[this.metadataId].attributes) {
@@ -51,7 +51,7 @@ export default class BaseBadgeMetadataPreview extends Vue {
     }
 
     async mounted() {
-        if (this.erc721 && !this.erc721.metadata[this.metadataId]) {
+        if (!this.erc721.metadata || !this.erc721.metadata[this.metadataId]) {
             await this.$store.dispatch('erc721/readMetadata', {
                 erc721: this.erc721,
                 metadataId: this.metadataId,

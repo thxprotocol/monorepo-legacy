@@ -139,11 +139,18 @@ class ERC721Module extends VuexModule {
 
     @Action({ rawError: true })
     async readMetadata({ erc721, metadataId }: { erc721: TERC721; metadataId: string }) {
+        if (!this._all[erc721._id]) {
+            erc721.metadata = {};
+            this.context.commit('set', erc721);
+        }
+
         const { data }: TMetadataResponse = await axios({
             method: 'GET',
             url: `/erc721/${erc721._id}/metadata/${metadataId}`,
         });
+
         const metadata = this._all[erc721._id].metadata[metadataId];
+
         this.context.commit('setMetadata', {
             erc721,
             metadata: { ...metadata, ...data },
@@ -151,11 +158,10 @@ class ERC721Module extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async deleteMetadata({ pool, erc721, metadata }: { pool: IPool; erc721: TERC721; metadata: TERC721Metadata }) {
+    async deleteMetadata({ erc721, metadata }: { pool: IPool; erc721: TERC721; metadata: TERC721Metadata }) {
         await axios({
             method: 'DELETE',
             url: `/erc721/${erc721._id}/metadata/${metadata._id}`,
-            headers: { 'X-PoolId': pool._id },
         });
         this.context.commit('unsetMetadata', { erc721, metadata });
     }
@@ -218,7 +224,6 @@ class ERC721Module extends VuexModule {
         const { data } = await axios({
             method: 'POST',
             url: `/erc721/${erc721._id}/metadata`,
-            headers: { 'X-PoolId': erc721.poolId },
             data: {
                 title: metadata.title,
                 description: metadata.description,
@@ -236,7 +241,6 @@ class ERC721Module extends VuexModule {
         const { data } = await axios({
             method: 'PATCH',
             url: `/erc721/${erc721._id}/metadata/${metadata._id}`,
-            headers: { 'X-PoolId': erc721.poolId },
             data: {
                 title: metadata.title,
                 description: metadata.description,
@@ -281,7 +285,6 @@ class ERC721Module extends VuexModule {
             url: `/erc721/${payload.erc721._id}/metadata/zip`,
             headers: {
                 'Content-Type': 'application/zip',
-                'X-PoolId': payload.pool._id,
             },
             data: formData,
         });
@@ -298,7 +301,6 @@ class ERC721Module extends VuexModule {
             url: `/erc721/${payload.erc721._id}/metadata/csv`,
             headers: {
                 'Content-Type': 'text/csv',
-                'X-PoolId': payload.pool._id,
             },
             responseType: 'blob',
         });
@@ -323,7 +325,6 @@ class ERC721Module extends VuexModule {
             url: `/erc721/${payload.erc721._id}/metadata/csv`,
             headers: {
                 'Content-Type': 'application/zip',
-                'X-PoolId': payload.pool._id,
             },
             data: formData,
         });

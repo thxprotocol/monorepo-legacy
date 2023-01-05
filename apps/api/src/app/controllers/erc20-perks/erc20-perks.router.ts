@@ -1,12 +1,5 @@
 import express from 'express';
-import {
-    assertAssetPoolOwnership,
-    assertRequestInput,
-    requireAssetPoolHeader,
-    guard,
-    assertPlan,
-} from '@thxnetwork/api/middlewares';
-import { AccountPlanType } from '@thxnetwork/api/types/enums';
+import { assertAssetPoolOwnership, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
 import CreateERC20Perk from './post.controller';
 import ReadERC20Perk from './get.controller';
 import UpdateERC20Perk from './patch.controller';

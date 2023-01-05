@@ -11,11 +11,12 @@ import {
 import { fromWei, isAddress, toWei } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { addMinutes } from '@thxnetwork/api/util/rewards';
+import { ERC20Document } from '@thxnetwork/api/models/ERC20';
 
 const user = request.agent(app);
 
 describe('ERC20 Perk Payment', () => {
-    let tokenAddress: string, poolId: string, rewardUuid: string, perkUuid: string;
+    let erc20: ERC20Document, poolId: string, rewardUuid: string, perkUuid: string;
     const totalSupply = toWei('100000');
 
     beforeAll(async () => {
@@ -52,7 +53,7 @@ describe('ERC20 Perk Payment', () => {
             })
             .expect(({ body }: request.Response) => {
                 expect(isAddress(body.address)).toBe(true);
-                tokenAddress = body.address;
+                erc20 = body;
             })
             .expect(201, done);
     });
@@ -62,7 +63,6 @@ describe('ERC20 Perk Payment', () => {
             .set('Authorization', dashboardAccessToken)
             .send({
                 chainId: ChainId.Hardhat,
-                erc20tokens: [tokenAddress],
             })
             .expect((res: request.Response) => {
                 expect(res.body.archived).toBe(false);
@@ -75,7 +75,7 @@ describe('ERC20 Perk Payment', () => {
         const amount = fromWei(totalSupply, 'ether'); // 100 eth
         user.post(`/v1/pools/${poolId}/topup`)
             .set({ 'Authorization': dashboardAccessToken, 'X-PoolId': poolId })
-            .send({ amount })
+            .send({ erc20Id: erc20._id, amount })
             .expect(200, done);
     });
 
@@ -102,6 +102,7 @@ describe('ERC20 Perk Payment', () => {
         user.post('/v1/erc20-perks/')
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .send({
+                erc20Id: erc20._id,
                 title: 'Receive 500 TST tokens',
                 description: 'Lorem ipsum dolor sit amet.',
                 image,

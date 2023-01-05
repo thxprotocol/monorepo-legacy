@@ -43,7 +43,6 @@
 </template>
 
 <script lang="ts">
-import type { IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import type { IERC721s, TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
@@ -66,11 +65,11 @@ export default class BaseDropdownERC721Metadata extends Vue {
 
     totals!: { [erc721Id: string]: number };
 
-    get erc721(): TERC721 {
-        return this.erc721s[this.pool.erc721._id];
-    }
+    @Prop({ required: true }) erc721!: TERC721;
+    @Prop({ required: false }) erc721metadataId!: string;
 
     get total() {
+        if (!this.erc721) return;
         return this.totals[this.erc721._id];
     }
 
@@ -92,9 +91,6 @@ export default class BaseDropdownERC721Metadata extends Vue {
         );
     }
 
-    @Prop() pool!: IPool;
-    @Prop({ required: false }) erc721metadataId!: string;
-
     mounted() {
         if (this.erc721metadataId) {
             this.selectedMetadata = this.erc721.metadata[this.erc721metadataId];
@@ -104,7 +100,7 @@ export default class BaseDropdownERC721Metadata extends Vue {
 
     async searchMetadata() {
         await this.$store.dispatch('erc721/searchMetadata', {
-            erc721: this.pool.erc721,
+            erc721: this.erc721,
             page: this.page,
             limit: this.limit,
             query: this.query,

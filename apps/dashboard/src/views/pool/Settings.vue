@@ -85,42 +85,6 @@
                     </div>
                 </div>
             </b-form-group>
-            <b-form-group v-if="pool.erc20" label="ERC20 Contract">
-                <div class="input-group">
-                    <b-form-input readonly id="address" v-model="pool.erc20.address" />
-                    <div class="input-group-append">
-                        <b-button
-                            class="btn btn-primary"
-                            type="button"
-                            variant="primary"
-                            target="_blank"
-                            v-b-tooltip
-                            title="View your token transactions on the Polygon block explorer"
-                            :href="`${chainInfo[pool.chainId].blockExplorer}/token/${pool.erc20.address}`"
-                        >
-                            <i class="fas fa-external-link-alt m-0" style="font-size: 1.2rem"></i>
-                        </b-button>
-                    </div>
-                </div>
-            </b-form-group>
-            <b-form-group v-if="pool.erc721" label="ERC721 Contract">
-                <div class="input-group">
-                    <b-form-input readonly id="address" v-model="pool.erc721.address" />
-                    <div class="input-group-append">
-                        <b-button
-                            class="btn btn-primary"
-                            type="button"
-                            variant="primary"
-                            target="_blank"
-                            v-b-tooltip
-                            title="View your token transactions on the Polygon block explorer"
-                            :href="`${chainInfo[pool.chainId].blockExplorer}/token/${pool.erc721.address}`"
-                        >
-                            <i class="fas fa-external-link-alt m-0" style="font-size: 1.2rem"></i>
-                        </b-button>
-                    </div>
-                </div>
-            </b-form-group>
         </b-card>
     </div>
 </template>
