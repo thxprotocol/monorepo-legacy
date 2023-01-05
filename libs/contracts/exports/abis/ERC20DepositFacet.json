@@ -51,7 +51,7 @@
       },
       {
         "internalType": "address",
-        "name": "tokneAddress",
+        "name": "tokenAddress",
         "type": "address"
       }
     ],

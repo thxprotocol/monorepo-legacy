@@ -96,7 +96,7 @@
       },
       {
         "internalType": "address",
-        "name": "tokneAddress",
+        "name": "tokenAddress",
         "type": "address"
       }
     ],
@@ -285,7 +285,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_tokenBddress",
+        "name": "_tokenBAddress",
         "type": "address"
       }
     ],
@@ -304,7 +304,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_tokenBddress",
+        "name": "_tokenBAddress",
         "type": "address"
       },
       {
@@ -332,12 +332,12 @@
       },
       {
         "internalType": "address",
-        "name": "_tokenBddress",
+        "name": "_tokenBAddress",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_tokenAddress",
+        "name": "_tokenAAddress",
         "type": "address"
       }
     ],
@@ -377,31 +377,30 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "old",
+        "name": "from",
         "type": "address"
       },
       {
         "indexed": false,
         "internalType": "address",
-        "name": "current",
+        "name": "to",
         "type": "address"
-      }
-    ],
-    "name": "ERC721Updated",
-    "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "getERC721",
-    "outputs": [
+      },
       {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
         "internalType": "address",
-        "name": "",
+        "name": "tokenAddress",
         "type": "address"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
+    "name": "ERC721Transferred",
+    "type": "event"
   },
   {
     "inputs": [
@@ -430,11 +429,21 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_token",
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_tokenAddress",
         "type": "address"
       }
     ],
-    "name": "setERC721",
+    "name": "transferFromERC721",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
