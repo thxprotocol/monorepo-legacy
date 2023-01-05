@@ -207,13 +207,11 @@ export default class BaseNavbar extends Vue {
                 path: `/pool/${this.selectedPool._id}/erc20-perks`,
                 label: 'Coin',
                 iconClasses: 'fas fa-coins',
-                isSoon: !this.selectedPool.erc20,
             },
             {
                 path: `/pool/${this.selectedPool._id}/erc721-perks`,
                 label: 'NFT',
                 iconClasses: 'fas fa-award',
-                isSoon: !this.selectedPool.erc721,
             },
         ];
     }

@@ -110,6 +110,7 @@ export default class ModalAssetPoolCreate extends Vue {
 
     onTokenListItemClick(erc20: TERC20 | null) {
         this.erc20Token = erc20;
+        debugger;
         this.$emit('selected', this.erc20Token);
     }
 }

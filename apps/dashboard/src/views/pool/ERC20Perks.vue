@@ -49,7 +49,7 @@
                     <b-form-checkbox :value="item.checkbox" v-model="selectedItems" />
                 </template>
                 <template #cell(amount)="{ item }">
-                    <b-badge variant="dark" class="p-2"> {{ item.amount }} {{ pool.erc20.symbol }} </b-badge>
+                    <b-badge variant="dark" class="p-2"> {{ item.amount.amount }} {{ item.amount.symbol }} </b-badge>
                 </template>
                 <template #cell(progress)="{ item }">
                     <b-progress style="border-radius: 0.3rem">
@@ -114,6 +114,7 @@ import BaseModalRewardERC20Create from '@thxnetwork/dashboard/components/modals/
 import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/badges/BaseBadgeRewardConditionPreview.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseModalRewardClaimsDownload from '@thxnetwork/dashboard/components/modals/BaseModalRewardClaimsDownload.vue';
+import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 
 @Component({
     components: {
@@ -154,9 +155,12 @@ export default class ERC20PerksView extends Vue {
         return Object.values(this.erc20Perks[this.$route.params.id])
             .filter((reward: TERC20Perk) => reward.page === this.page)
             .sort((a, b) => (a.createdAt && b.createdAt && a.createdAt < b.createdAt ? 1 : -1))
-            .map((r: TERC20Perk) => ({
+            .map((r: TERC20Perk & { erc20: TERC20 }) => ({
                 checkbox: r._id,
-                amount: r.amount,
+                amount: {
+                    amount: r.amount,
+                    symbol: r.erc20.symbol,
+                },
                 title: r.title,
                 rewardCondition: {
                     platform: platformList.find((p) => r.platform === p.type),

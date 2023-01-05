@@ -14,17 +14,14 @@
             <form v-on:submit.prevent="onSubmit" id="formRewardPointsCreate">
                 <b-row>
                     <b-col md="6">
+                        <b-form-group label="Coin">
+                            <BaseDropdownSelectERC20 @selected="erc20Id = $event._id" :chainId="pool.chainId" />
+                        </b-form-group>
                         <b-form-group label="Title">
                             <b-form-input v-model="title" />
                         </b-form-group>
                         <b-form-group label="Description">
                             <b-textarea v-model="description" />
-                        </b-form-group>
-                        <b-form-group label="Amount">
-                            <b-form-input v-model="amount" />
-                        </b-form-group>
-                        <b-form-group label="Point Price">
-                            <b-form-input type="number" v-model="pointPrice" />
                         </b-form-group>
                         <b-form-group label="Image">
                             <b-input-group>
@@ -35,6 +32,12 @@
                                 </template>
                                 <b-form-file v-model="imageFile" accept="image/*" @change="onImgChange" />
                             </b-input-group>
+                        </b-form-group>
+                        <b-form-group label="Amount">
+                            <b-form-input v-model="amount" />
+                        </b-form-group>
+                        <b-form-group label="Point Price">
+                            <b-form-input type="number" v-model="pointPrice" />
                         </b-form-group>
                     </b-col>
                     <b-col md="6">
@@ -80,6 +83,7 @@ import BaseModal from './BaseModal.vue';
 import BaseCardRewardCondition from '../cards/BaseCardRewardCondition.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardRewardQRCodes from '../cards/BaseCardRewardQRCodes.vue';
+import BaseDropdownSelectERC20 from '../dropdowns/BaseDropdownSelectERC20.vue';
 
 @Component({
     components: {
@@ -87,12 +91,14 @@ import BaseCardRewardQRCodes from '../cards/BaseCardRewardQRCodes.vue';
         BaseCardRewardCondition,
         BaseCardRewardExpiry,
         BaseCardRewardQRCodes,
+        BaseDropdownSelectERC20,
     },
 })
 export default class ModalRewardERC20Create extends Vue {
     isSubmitDisabled = false;
     isLoading = false;
     error = '';
+    erc20Id = '';
     title = '';
     amount = '0';
     description = '';
@@ -115,6 +121,7 @@ export default class ModalRewardERC20Create extends Vue {
 
     onShow() {
         if (this.reward) {
+            this.erc20Id = this.reward.erc20Id;
             this.title = this.reward.title;
             this.amount = String(this.reward.amount);
             this.description = this.reward.description;
@@ -140,6 +147,7 @@ export default class ModalRewardERC20Create extends Vue {
                 payload: {
                     page: 1,
                     poolId: String(this.pool._id),
+                    erc20Id: this.erc20Id,
                     title: this.title,
                     description: this.description,
                     amount: this.amount,

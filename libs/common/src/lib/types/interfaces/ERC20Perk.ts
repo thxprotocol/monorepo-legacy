@@ -4,6 +4,6 @@ export type TERC20Perk = TBaseReward & {
     erc20Id: string;
     amount: string;
     pointPrice: number;
-    image?: string;
     isPromoted: boolean;
+    image?: string;
 };
