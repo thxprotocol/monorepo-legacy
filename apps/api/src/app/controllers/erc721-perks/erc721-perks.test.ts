@@ -107,15 +107,15 @@ describe('ERC721 Perks', () => {
             user.post('/v1/erc721-perks/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .field({
-                    'title': 'Expiration date is next 30 min',
-                    'description': 'Lorem ipsum dolor sit amet',
-                    'platform': 0,
-                    'expiryDate': expiryDate.toString(),
-                    'rewardLimit': 1,
-                    'claimAmount': 1,
+                    title: 'Expiration date is next 30 min',
+                    description: 'Lorem ipsum dolor sit amet',
+                    platform: 0,
+                    expiryDate: expiryDate.toString(),
+                    rewardLimit: 1,
+                    claimAmount: 1,
                     pointPrice,
-                    'erc721metadataIds[0]': erc721metadataId,
-                    'isPromoted': true,
+                    erc721metadataIds: JSON.stringify([erc721metadataId]),
+                    isPromoted: true,
                 })
                 .attach('file', image, {
                     filename: 'test.jpg',
@@ -144,7 +144,7 @@ describe('ERC721 Perks', () => {
                     .send({
                         title,
                         description: 'Lorem ipsum dolor sit amet',
-                        erc721metadataId,
+                        erc721metadataIds: JSON.stringify([erc721metadataId]),
                         platform: 0,
                         expiryDate,
                         rewardLimit: 0,

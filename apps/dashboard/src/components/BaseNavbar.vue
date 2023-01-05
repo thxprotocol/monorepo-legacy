@@ -11,62 +11,64 @@
     >
         <b-navbar toggleable="lg" class="sidebar">
             <div class="flex-grow-1 w-100 h-25 overflow-auto">
+                <div class="d-flex px-3 justify-content-between pt-4 pb-4 text-center">
+                    <router-link to="/" custom v-slot="{ navigate }" class="cursor-pointer">
+                        <img
+                            :src="require('../../public/assets/logo.png')"
+                            width="40"
+                            alt="THX logo"
+                            @click="navigate"
+                            @keypress.enter="navigate"
+                            role="link"
+                        />
+                    </router-link>
+                    <b-dropdown variant="light" class="" size="sm" no-caret right>
+                        <template #button-content>
+                            <div class="text-left d-flex align-items-center justify-content-between">
+                                <div class="align-items-center d-flex">
+                                    <img
+                                        v-if="selectedPool"
+                                        width="20"
+                                        :src="`https://avatars.dicebear.com/api/identicon/${selectedPool._id}.svg`"
+                                    />
+                                    <b-spinner v-else variant="primary" small />
+                                </div>
+                            </div>
+                        </template>
+                        <b-dropdown-text class="text-muted small"> Loyalty Pools </b-dropdown-text>
+                        <b-dropdown-divider />
+                        <b-dropdown-item-btn
+                            class="small"
+                            :key="key"
+                            v-for="(p, key) of pools"
+                            @click="onPoolSelect(p)"
+                        >
+                            <div class="text-left d-flex align-items-center justify-content-between">
+                                <div class="align-items-center d-flex">
+                                    <img
+                                        width="20"
+                                        class="mr-2"
+                                        :src="`https://avatars.dicebear.com/api/identicon/${p._id}.svg`"
+                                    />
+                                    {{ p._id.substring(0, 18) }}...
+                                </div>
+                                <i class="fas fa-caret-right ml-2"></i>
+                            </div>
+                        </b-dropdown-item-btn>
+                    </b-dropdown>
+                </div>
                 <template v-if="selectedPool">
-                    <div class="d-flex px-3 justify-content-between pt-4 pb-4 text-center">
-                        <router-link to="/" custom v-slot="{ navigate }" class="cursor-pointer">
-                            <img
-                                :src="require('../../public/assets/logo.png')"
-                                width="40"
-                                alt="THX logo"
-                                @click="navigate"
-                                @keypress.enter="navigate"
-                                role="link"
-                            />
-                        </router-link>
-                        <b-dropdown variant="light" class="" size="sm" no-caret right>
-                            <template #button-content>
-                                <div class="text-left d-flex align-items-center justify-content-between">
-                                    <div class="align-items-center d-flex">
-                                        <img
-                                            width="20"
-                                            :src="`https://avatars.dicebear.com/api/identicon/${selectedPool._id}.svg`"
-                                        />
-                                    </div>
-                                </div>
-                            </template>
-                            <b-dropdown-text class="text-muted small"> Loyalty Pools </b-dropdown-text>
-                            <b-dropdown-divider />
-                            <b-dropdown-item-btn
-                                class="small"
-                                :key="key"
-                                v-for="(p, key) of pools"
-                                @click="onPoolSelect(p)"
-                            >
-                                <div class="text-left d-flex align-items-center justify-content-between">
-                                    <div class="align-items-center d-flex">
-                                        <img
-                                            width="20"
-                                            class="mr-2"
-                                            :src="`https://avatars.dicebear.com/api/identicon/${p._id}.svg`"
-                                        />
-                                        {{ p._id.substring(0, 18) }}...
-                                    </div>
-                                    <i class="fas fa-caret-right ml-2"></i>
-                                </div>
-                            </b-dropdown-item-btn>
-                        </b-dropdown>
-                    </div>
-                    <base-navbar-nav :selectedPool="selectedPool" :routes="configRoutes" />
+                    <base-navbar-nav :routes="configRoutes" />
                     <hr />
                     <label class="px-3 text-muted">Rewards</label>
-                    <base-navbar-nav :selectedPool="selectedPool" :routes="rewardRoutes" />
+                    <base-navbar-nav :routes="rewardRoutes" />
                     <hr />
                     <label class="px-3 text-muted">Perks</label>
-                    <base-navbar-nav :selectedPool="selectedPool" :routes="perkRoutes" />
+                    <base-navbar-nav :routes="perkRoutes" />
+                    <hr />
                 </template>
-                <hr />
-                <label class="px-3 text-muted">Tokens</label>
-                <base-navbar-nav :selectedPool="selectedPool" :routes="tokenRoutes" />
+                <label class="px-3 text-muted">Contracts</label>
+                <base-navbar-nav :routes="tokenRoutes" />
             </div>
             <div class="d-flex justify-content-end flex-column flex-grow-0 w-100">
                 <b-navbar-nav>
@@ -136,7 +138,7 @@ import { ERC20Type } from '@thxnetwork/dashboard/types/erc20';
 import { plans } from '@thxnetwork/dashboard/utils/plans';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { AccountPlanType, IAccount } from '../types/account';
+import { IAccount } from '../types/account';
 import BaseNavbarNav from './BaseNavbarNav.vue';
 
 @Component({
@@ -157,7 +159,6 @@ export default class BaseNavbar extends Vue {
     account!: IAccount;
 
     get tokenRoutes() {
-        if (!this.selectedPool) return;
         return [
             {
                 path: '/coins',
