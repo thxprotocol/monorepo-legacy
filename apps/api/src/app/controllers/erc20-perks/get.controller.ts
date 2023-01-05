@@ -4,6 +4,7 @@ import { param } from 'express-validator';
 import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
 import ERC20PerkService from '@thxnetwork/api/services/ERC20PerkService';
+import PoolService from '@thxnetwork/api/services/PoolService';
 
 const validation = [param('id').exists()];
 
@@ -13,12 +14,13 @@ const controller = async (req: Request, res: Response) => {
     if (!reward) throw new NotFoundError();
 
     const claims = await ClaimService.findByReward(reward);
+    const pool = await PoolService.getById(req.header('X-PoolId'));
     const withdrawals = await WithdrawalService.findByQuery({
-        poolId: String(req.assetPool._id),
+        poolId: pool._id,
         rewardId: reward._id,
     });
 
-    res.json({ ...reward.toJSON(), claims, poolAddress: req.assetPool.address, progress: withdrawals.length });
+    res.json({ ...reward.toJSON(), claims, poolAddress: pool.address, progress: withdrawals.length });
 };
 
 export default { controller, validation };

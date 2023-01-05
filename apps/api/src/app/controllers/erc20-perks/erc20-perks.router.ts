@@ -1,6 +1,6 @@
 import express from 'express';
 import {
-    assertAssetPoolAccess,
+    assertAssetPoolOwnership,
     assertRequestInput,
     requireAssetPoolHeader,
     guard,
@@ -16,31 +16,20 @@ import { upload } from '@thxnetwork/api/util/multer';
 
 const router = express.Router();
 
-router.get(
-    '/',
-    guard.check(['erc20_rewards:read']),
-    assertAssetPoolAccess,
-    requireAssetPoolHeader,
-    assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
-    ListERC20Perk.controller,
-);
+router.get('/', guard.check(['erc20_rewards:read']), assertAssetPoolOwnership, ListERC20Perk.controller);
 router.get(
     '/:id',
     guard.check(['erc20_rewards:read']),
-    //assertAssetPoolAccess,
+    assertAssetPoolOwnership,
     assertRequestInput(ReadERC20Perk.validation),
-    requireAssetPoolHeader,
-    assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
     ReadERC20Perk.controller,
 );
 router.post(
     '/',
     upload.single('file'),
     guard.check(['erc20_rewards:write', 'erc20_rewards:read']),
-    assertAssetPoolAccess,
+    assertAssetPoolOwnership,
     assertRequestInput(CreateERC20Perk.validation),
-    requireAssetPoolHeader,
-    assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
     CreateERC20Perk.controller,
 );
 
@@ -48,18 +37,15 @@ router.patch(
     '/:id',
     upload.single('file'),
     guard.check(['erc20_rewards:write', 'erc20_rewards:read']),
-    assertAssetPoolAccess,
+    assertAssetPoolOwnership,
     assertRequestInput(UpdateERC20Perk.validation),
-    requireAssetPoolHeader,
-    assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
     UpdateERC20Perk.controller,
 );
 
 router.delete(
     '/:id',
     guard.check(['erc20_rewards:write', 'erc20_rewards:read']),
-    assertAssetPoolAccess,
-    requireAssetPoolHeader,
+    assertAssetPoolOwnership,
     assertRequestInput(DeleteERC20Perk.validation),
     DeleteERC20Perk.controller,
 );

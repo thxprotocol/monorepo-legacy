@@ -34,7 +34,7 @@ const controller = async (req: Request, res: Response) => {
         image = ImageService.getPublicUrl(response.key);
     }
     reward = await ERC721PerkService.update(reward, {
-        poolId: String(req.assetPool._id),
+        poolId: req.header('X-PoolId'),
         erc721metadataId: JSON.parse(req.body.erc721metadataIds)[0],
         image,
         title: req.body.title,

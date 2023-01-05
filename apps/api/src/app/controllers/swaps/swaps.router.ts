@@ -2,7 +2,13 @@ import express from 'express';
 import CreateERC20Swap from './post.controller';
 import ReadERC20Swap from './get.controller';
 import ListERC20Swaps from './list.controller';
-import { assertRequestInput, assertAssetPoolAccess, requireAssetPoolHeader, assertPlan, guard } from '@thxnetwork/api/middlewares';
+import {
+    assertRequestInput,
+    assertAssetPoolOwnership,
+    requireAssetPoolHeader,
+    assertPlan,
+    guard,
+} from '@thxnetwork/api/middlewares';
 import { AccountPlanType } from '@thxnetwork/api/types/enums';
 
 const router = express.Router();
@@ -10,7 +16,7 @@ const router = express.Router();
 router.get(
     '/',
     guard.check(['swap:read']),
-    assertAssetPoolAccess,
+    assertAssetPoolOwnership,
     requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
     ListERC20Swaps.controller,
@@ -18,7 +24,7 @@ router.get(
 router.get(
     '/:id',
     guard.check(['swap:read']),
-    assertAssetPoolAccess,
+    assertAssetPoolOwnership,
     assertRequestInput(ReadERC20Swap.validation),
     requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
@@ -27,7 +33,7 @@ router.get(
 router.post(
     '/',
     guard.check(['swap:write', 'swap:read']),
-    assertAssetPoolAccess,
+    assertAssetPoolOwnership,
     assertRequestInput(CreateERC20Swap.validation),
     requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),

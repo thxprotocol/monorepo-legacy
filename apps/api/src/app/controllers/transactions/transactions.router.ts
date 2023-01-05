@@ -1,5 +1,10 @@
 import express from 'express';
-import { assertRequestInput, assertAssetPoolAccess, requireAssetPoolHeader, guard } from '@thxnetwork/api/middlewares';
+import {
+    assertRequestInput,
+    assertAssetPoolOwnership,
+    requireAssetPoolHeader,
+    guard,
+} from '@thxnetwork/api/middlewares';
 import ListTransactions from './list.controller';
 import ReadTransaction from './get.controller';
 
@@ -9,7 +14,7 @@ router.get(
     '/',
     guard.check(['transactions:read']),
     requireAssetPoolHeader,
-    assertAssetPoolAccess,
+    assertAssetPoolOwnership,
     assertRequestInput(ListTransactions.validation),
     ListTransactions.controller,
 );

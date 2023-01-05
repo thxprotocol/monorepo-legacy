@@ -3,7 +3,7 @@ import {
     assertRequestInput,
     assertPlan,
     assertPoolOwner,
-    assertAssetPoolAccess,
+    assertAssetPoolOwnership,
     requireAssetPoolHeader,
     guard,
 } from '@thxnetwork/api/middlewares';
@@ -43,7 +43,7 @@ router.delete(
 router.post(
     '/:id/topup',
     guard.check(['deposits:read', 'deposits:write']),
-    assertAssetPoolAccess,
+    assertAssetPoolOwnership,
     assertRequestInput(CreatePoolTopup.validation),
     requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),

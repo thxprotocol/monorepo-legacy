@@ -1,4 +1,4 @@
-export * from './assertAssetPoolAccess';
+export * from './assertAssetPoolOwnership';
 export * from './requireAssetPoolHeader';
 export * from './assertRequestInput';
 export * from './errorOutput';

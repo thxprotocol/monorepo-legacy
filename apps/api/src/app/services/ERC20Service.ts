@@ -14,6 +14,7 @@ import { TransactionReceipt } from 'web3-core';
 import { TERC20DeployCallbackArgs, TERC20TransferFromCallBackArgs } from '@thxnetwork/api/types/TTransaction';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
 import ERC20Transfer from '../models/ERC20Transfer';
+import { TERC20 } from '../types/TERC20';
 
 function getDeployArgs(erc20: ERC20Document, totalSupply?: string) {
     const { defaultAccount } = getProvider(erc20.chainId);
@@ -82,12 +83,10 @@ export async function queryDeployTransaction(erc20: ERC20Document): Promise<ERC2
     return erc20;
 }
 
-const initialize = async (pool: AssetPoolDocument, address: string) => {
-    const erc20 = await findBy({ chainId: pool.chainId, address, sub: pool.sub });
+const initialize = async (pool: AssetPoolDocument, erc20: ERC20Document) => {
     if (erc20 && erc20.type === ERC20Type.Unlimited) {
         await addMinter(erc20, pool.address);
     }
-    await MembershipService.addERC20Membership(pool.sub, pool);
 };
 
 const addMinter = async (erc20: ERC20Document, address: string) => {
@@ -140,6 +139,8 @@ export const findOrImport = async (pool: AssetPoolDocument, address: string) => 
         sub: pool.sub,
         archived: false,
     });
+
+    await pool.updateOne({ erc20Id: erc20._id });
 
     // Create an ERC20Token object for the sub if it does not exist
     if (
@@ -200,9 +201,8 @@ export const getOnChainERC20Token = async (chainId: number, address: string) => 
     return { name, symbol, totalSupply };
 };
 
-export const findByPool = async (assetPool: AssetPoolDocument): Promise<ERC20Document> => {
-    const address = await assetPool.contract.methods.getERC20().call();
-    return findOrImport(assetPool, address);
+export const findByPool = async (pool: AssetPoolDocument): Promise<ERC20Document> => {
+    return await getById(pool.erc20Id);
 };
 
 export const removeById = (id: string) => {

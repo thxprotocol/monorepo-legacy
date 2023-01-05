@@ -12,7 +12,6 @@ import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
-import MembershipService from '@thxnetwork/api/services/MembershipService';
 import db from '@thxnetwork/api/util/database';
 
 const validation = [param('id').exists().isString(), query('forceSync').optional().isBoolean()];
@@ -35,17 +34,6 @@ const controller = async (req: Request, res: Response) => {
     // Validate the claim
     const { result, error } = await canClaim(reward, account);
     if (!result || error) throw new ForbiddenError(error);
-
-    // Memberships could be removed but tokens should be created
-    const hasMembership = await MembershipService.hasMembership(pool, account.sub);
-    if (!hasMembership) {
-        if (claim.erc20Id) {
-            await MembershipService.addERC20Membership(account.sub, pool);
-        }
-        if (claim.erc721Id) {
-            await MembershipService.addERC721Membership(account.sub, pool);
-        }
-    }
 
     // Force sync by default but allow the requester to do async calls.
     const forceSync = req.query.forceSync !== undefined ? req.query.forceSync === 'true' : true;

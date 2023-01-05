@@ -61,8 +61,8 @@ export default class MembershipService {
         });
 
         if (!membership) {
-            const address = await assetPool.contract.methods.getERC721().call();
-            let erc721 = await ERC721Service.findByQuery({ chainId: assetPool.chainId, address });
+            let erc721 = await ERC721Service.findByPool(assetPool);
+            const address = erc721.address;
 
             if (!erc721) {
                 const contract = getContractFromName(assetPool.chainId, 'NonFungibleToken', address);

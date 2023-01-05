@@ -37,8 +37,7 @@ async function create(
     },
 ) {
     const token = createRandomToken();
-    const address = await pool.contract.methods.getERC20().call();
-    const erc20 = await ERC20Service.findOrImport(pool, address);
+    const erc20 = await ERC20Service.findByPool(pool);
 
     return Payment.create({
         poolId: pool._id,

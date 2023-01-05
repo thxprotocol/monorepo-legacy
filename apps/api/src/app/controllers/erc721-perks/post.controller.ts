@@ -5,8 +5,9 @@ import ImageService from '@thxnetwork/api/services/ImageService';
 import { TERC721Perk } from '@thxnetwork/types/interfaces/ERC721Perk';
 
 const validation = [
-    body('title').isString(),
-    body('description').isString(),
+    body('title').exists().isString(),
+    body('description').exists().isString(),
+    body('erc721Id').exists().isMongoId(),
     body('erc721metadataIds').exists().isString(),
     body('expiryDate').optional().isString(),
     body('claimAmount').optional().isInt({ gt: 0 }),
@@ -38,6 +39,7 @@ const controller = async (req: Request, res: Response) => {
                 erc721metadataId,
                 image,
                 title: req.body.title,
+                erc721Id: req.body.erc721Id,
                 description: req.body.description,
                 expiryDate: req.body.expiryDate,
                 claimAmount: req.body.claimAmount,

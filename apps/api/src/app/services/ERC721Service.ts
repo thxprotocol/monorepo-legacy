@@ -73,7 +73,7 @@ export async function queryDeployTransaction(erc721: ERC721Document): Promise<ER
 const initialize = async (pool: AssetPoolDocument, address: string) => {
     const erc721 = await findByQuery({ address, chainId: pool.chainId });
     await addMinter(erc721, pool.address);
-    await MembershipService.addERC721Membership(pool.sub, pool);
+    // await MembershipService.addERC721Membership(pool.sub, pool);
 };
 
 export async function findById(id: string): Promise<ERC721Document> {
@@ -219,11 +219,7 @@ async function findMetadataByNFT(erc721: string, page = 1, limit = 10, q?: strin
 }
 
 async function findByPool(assetPool: TAssetPool) {
-    return ERC721.findOne({
-        poolAddress: assetPool.address,
-        address: await assetPool.contract.methods.getERC721().call(),
-        chainId: assetPool.chainId,
-    });
+    return ERC721.findById(assetPool.erc721Id);
 }
 
 async function findByQuery(query: { poolAddress?: string; address?: string; chainId?: ChainId }) {

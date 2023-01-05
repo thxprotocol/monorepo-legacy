@@ -2,37 +2,12 @@ import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import type { IMember } from '@thxnetwork/dashboard/types/account';
-import type { TERC20 } from '@thxnetwork/dashboard/types/erc20';
-import type { TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
-
-export interface PoolToken {
-    _id: string;
-    name: string;
-    address: string;
-    symbol: string;
-    decimals: number;
-    chainId: number;
-    logoURI: string;
-    poolBalance: number;
-}
-
-export enum PoolTokenType {
-    Existing = 0,
-    New = 1,
-}
 
 export interface IPool {
     _id: string;
     variant: string;
     address: string;
-    clientId: string;
-    clientSecret: string;
-    erc20: TERC20 & PoolToken;
-    erc721: TERC721 & PoolToken;
-    erc20Id: string;
-    erc721Id: string;
-    bypassPolls: boolean;
     chainId: ChainId;
     rewardPollDuration: number;
     proposeWithdrawPollDuration: number;
