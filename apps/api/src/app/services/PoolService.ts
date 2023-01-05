@@ -63,7 +63,7 @@ async function deploy(
     });
     const txId = await TransactionService.sendAsync(
         factory.options.address,
-        factory.methods.deploy(getDiamondCutForContractFacets(poolFacetContracts, []), erc20Address, erc721Address),
+        factory.methods.deploy(getDiamondCutForContractFacets(poolFacetContracts, [])),
         pool.chainId,
         true,
         {

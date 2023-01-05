@@ -22,7 +22,6 @@ export const contractNames = [
     'RegistryFacet',
     'RegistryProxyFacet',
     'AccessControlFacet',
-    'ERC20ProxyFacet',
     'ERC20DepositFacet',
     'ERC20WithdrawFacet',
     'ERC20SwapFacet',
@@ -30,6 +29,7 @@ export const contractNames = [
     'SharedWalletFacet',
 
     // Deprecated facets
+    'ERC20ProxyFacet',
     'TokenFactory',
     'PoolRegistry',
     'PoolFactory',
@@ -67,7 +67,6 @@ export type DiamondVariant = 'defaultDiamond' | 'registry' | 'factory' | 'shared
 const diamondVariantsConfig: { [key in DiamondVariant]: ContractName[] } = {
     defaultDiamond: [
         'RegistryProxyFacet',
-        'ERC20ProxyFacet',
         'ERC20DepositFacet',
         'ERC20WithdrawFacet',
         'ERC20SwapFacet',

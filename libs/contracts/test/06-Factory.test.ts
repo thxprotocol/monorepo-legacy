@@ -19,26 +19,16 @@ describe('FactoryFacet', function () {
             totalSupply = parseEther('1000');
         let erc20: Contract;
 
-        before(async function () {
+        it('deploy', async function () {
             erc20 = await deployToken('LimitedSupplyToken', [name, symbol, await owner.getAddress(), totalSupply]);
-        });
-
-        it('deployERC20()', async function () {
-            const diamondCuts = await getDiamondCuts(['RegistryProxyFacet', 'ERC20ProxyFacet']);
-            await expect(factory.deploy(diamondCuts, erc20.address, ADDRESS_ZERO)).to.emit(factory, 'DiamondDeployed');
         });
     });
 
     describe('ERC20 Unlimited', async function () {
         let erc20: Contract;
 
-        before(async function () {
+        it('deploy', async function () {
             erc20 = await deployToken('UnlimitedSupplyToken', ['Test Token', 'TEST', await owner.getAddress()]);
-        });
-
-        it('deployERC20()', async function () {
-            const diamondCuts = await getDiamondCuts(['RegistryProxyFacet', 'ERC20ProxyFacet']);
-            await expect(factory.deploy(diamondCuts, erc20.address, ADDRESS_ZERO)).to.emit(factory, 'DiamondDeployed');
         });
 
         it('recipient should fail if no minter and no balance', async () => {
@@ -91,9 +81,9 @@ describe('FactoryFacet', function () {
             erc721 = await deployToken('NonFungibleToken', [name, symbol, baseURI, await owner.getAddress()]);
         });
 
-        it('deployERC20()', async function () {
+        it('deploy', async function () {
             const diamondCuts = await getDiamondCuts(['RegistryProxyFacet', 'ERC721ProxyFacet']);
-            await expect(factory.deploy(diamondCuts, ADDRESS_ZERO, erc721.address)).to.emit(factory, 'DiamondDeployed');
+            await expect(factory.deploy(diamondCuts)).to.emit(factory, 'DiamondDeployed');
         });
 
         it('Initial state', async () => {

@@ -35,11 +35,7 @@ describe('RegistryFacet', function () {
                 await owner.getAddress(),
                 parseEther('1000000'),
             ]);
-            diamond = await deploy(
-                factory,
-                await getDiamondCuts(['RegistryProxyFacet', 'ERC20ProxyFacet']),
-                erc20.address,
-            );
+            diamond = await deploy(factory, await getDiamondCuts(['RegistryProxyFacet']));
         });
 
         it('getRegistry()', async function () {

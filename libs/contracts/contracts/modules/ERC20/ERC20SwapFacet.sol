@@ -14,31 +14,31 @@ contract ERC20SwapFacet is Access, IERC20SwapFacet {
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
 
-    function setSwapRule(address _tokenBddress, uint256 multiplier) external override onlyOwner {
-        LibERC20Storage.s().multipliers[_tokenBddress] = multiplier;
-        emit ERC20SwapRuleUpdated(_tokenBddress, multiplier);
+    function setSwapRule(address _tokenBAddress, uint256 multiplier) external override onlyOwner {
+        LibERC20Storage.s().multipliers[_tokenBAddress] = multiplier;
+        emit ERC20SwapRuleUpdated(_tokenBAddress, multiplier);
     }
 
-    function getSwapRule(address _tokenBddress) external view override returns (uint256) {
-        return LibERC20Storage.s().multipliers[_tokenBddress];
+    function getSwapRule(address _tokenBAddress) external view override returns (uint256) {
+        return LibERC20Storage.s().multipliers[_tokenBAddress];
     }
 
     function swapFor(
         address _sender,
         uint256 _amountIn,
-        address _tokenBddress,
-        address _tokenAddress
+        address _tokenBAddress,
+        address _tokenAAddress
     ) external override onlyOwner {
         LibRegistryProxyStorage.RegistryProxyStorage storage rs = LibRegistryProxyStorage.s();
         LibERC20Storage.ERC20Storage storage s = LibERC20Storage.s();
 
-        IERC20 tokenB = IERC20(_tokenBddress);
-        IERC20 tokenA = IERC20(_tokenAddress);
+        IERC20 tokenB = IERC20(_tokenBAddress);
+        IERC20 tokenA = IERC20(_tokenAAddress);
 
         require(tokenB.balanceOf(_sender) >= _amountIn, 'INSUFFICIENT_TOKEN_B_BALANCE');
-        require(s.multipliers[_tokenBddress] > 0, 'SWAP_NOT_ALLOWED');
+        require(s.multipliers[_tokenBAddress] > 0, 'SWAP_NOT_ALLOWED');
 
-        uint256 amountOut = _amountIn.mul(s.multipliers[_tokenBddress]);
+        uint256 amountOut = _amountIn.mul(s.multipliers[_tokenBAddress]);
         require(tokenA.balanceOf(address(this)) >= amountOut, 'INSUFFICIENT_TOKEN_A_BALANCE');
 
         IRegistryFacet registry = IRegistryFacet(rs.registry);
@@ -53,6 +53,6 @@ contract ERC20SwapFacet is Access, IERC20SwapFacet {
         tokenB.safeTransferFrom(_sender, address(this), amount);
         tokenA.safeTransfer(_sender, amountOut);
 
-        emit ERC20SwapFor(_sender, _amountIn, amountOut, address(this), _tokenBddress);
+        emit ERC20SwapFor(_sender, _amountIn, amountOut, address(this), _tokenBAddress);
     }
 }

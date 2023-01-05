@@ -20,15 +20,11 @@ describe('ERC20DepositFacet', function () {
             await owner.getAddress(),
             parseEther('1000000'),
         ]);
-        diamond = await deploy(
-            factory,
-            await getDiamondCuts(['RegistryProxyFacet', 'ERC20ProxyFacet', 'ERC20DepositFacet']),
-            erc20.address,
-        );
+        diamond = await deploy(factory, await getDiamondCuts(['RegistryProxyFacet', 'ERC20DepositFacet']));
     });
 
     it('Test deposit', async function () {
-        expect(await diamond.balanceOf(await collector.getAddress())).to.eq(0);
+        expect(await erc20.balanceOf(await collector.getAddress())).to.eq(0);
 
         await erc20.approve(diamond.address, constants.MaxUint256);
         const tx = diamond.depositFrom(await owner.getAddress(), parseEther('100'), erc20.address);
@@ -36,7 +32,7 @@ describe('ERC20DepositFacet', function () {
         await expect(tx).to.emit(diamond, 'ERC20DepositFeeCollected');
         await expect(tx).to.emit(diamond, 'ERC20DepositFrom');
 
-        expect(await diamond.balanceOf(diamond.address)).to.eq(parseEther('99'));
-        expect(await diamond.balanceOf(await collector.getAddress())).to.eq(parseEther('1'));
+        expect(await erc20.balanceOf(diamond.address)).to.eq(parseEther('99'));
+        expect(await erc20.balanceOf(await collector.getAddress())).to.eq(parseEther('1'));
     });
 });

@@ -23,27 +23,15 @@ contract FactoryFacet is IFactoryFacet {
 
     /**
      * @param _facets string Array of FacetCuts that should be deployed
-     * @param _erc20 address ERC20 address.
-     * @param _erc721 address ERC721 address.
      */
-    function deploy(
-        IDiamondCut.FacetCut[] memory _facets,
-        address _erc20,
-        address _erc721
-    ) external override {
+    function deploy(IDiamondCut.FacetCut[] memory _facets) external override {
         LibDiamond.enforceIsContractOwner();
         LibFactoryStorage.FactoryStorage storage s = LibFactoryStorage.s();
         IDefaultDiamond d = _deploy(_facets, s.defaultRegistry);
 
-        if (_erc20 != address(0)) {
-            d.setERC20(_erc20);
-        }
-        if (_erc721 != address(0)) {
-            d.setERC721(_erc721);
-        }
         d.transferOwnership(s.defaultOwner);
 
-        emit DiamondDeployed(address(d), _erc721);
+        emit DiamondDeployed(address(d));
     }
 
     function _deploy(IDiamondCut.FacetCut[] memory _facets, address _registry) internal returns (IDefaultDiamond) {

@@ -18,33 +18,38 @@ contract ERC721ProxyFacet is Access, IERC721ProxyFacet {
     using SafeMath for uint256;
 
     /**
-     * @param _token Address of the ERC721 contract to connect to this pool.
-     * @dev Can only be set once.
-     */
-    function setERC721(address _token) external override onlyOwner {
-        require(LibERC721Storage.s().token == INonFungibleToken(0), 'INIT');
-        require(_token != address(0), 'ZERO');
-
-        LibERC721Storage.s().token = INonFungibleToken(_token);
-
-        emit ERC721Updated(address(0), _token);
-    }
-
-    /// @return address of the ERC721 contract used in the asset pool.
-    function getERC721() external view override returns (address) {
-        return address(LibERC721Storage.s().token);
-    }
-
-    /**
      * @param _recipient Address of recipient for this token
      * @param _tokenUri URI of the token
+     * @param _tokenAddress Address of the token
      */
-    function mintFor(address _recipient, string memory _tokenUri, address _tokenAddress) external override onlyOwner {
+    function mintFor(
+        address _recipient,
+        string memory _tokenUri,
+        address _tokenAddress
+    ) external override onlyOwner {
         require(_tokenAddress != address(0), 'NO_TOKEN');
 
         INonFungibleToken nft = INonFungibleToken(_tokenAddress);
         uint256 tokenId = nft.mint(_recipient, _tokenUri);
 
         emit ERC721Minted(_recipient, tokenId, _tokenAddress);
+    }
+
+    /**
+     * @param _to Address of the receiver
+     * @param _tokenId ID of the token
+     * @param _tokenAddress Address of the token contract
+     */
+    function transferFromERC721(
+        address _to,
+        uint256 _tokenId,
+        address _tokenAddress
+    ) external override onlyOwner {
+        require(_tokenAddress != address(0), 'NO_TOKEN');
+
+        INonFungibleToken nft = INonFungibleToken(_tokenAddress);
+        nft.safeTransferFrom(address(this), _to, _tokenId);
+
+        emit ERC721Transferred(address(this), _to, _tokenId, _tokenAddress);
     }
 }
