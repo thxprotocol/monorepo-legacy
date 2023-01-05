@@ -58,7 +58,6 @@
             <b-row v-else>
                 <b-col md="6" lg="4" :key="erc20._id" v-for="erc20 of erc20s">
                     <base-card-erc20 :erc20="erc20" />
-                    <base-modal-pool-create :erc20="erc20" :tokenId="erc20._id" @created="loadList()" />
                 </b-col>
             </b-row>
         </div>

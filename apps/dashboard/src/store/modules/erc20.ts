@@ -19,6 +19,11 @@ class ERC20Module extends VuexModule {
     }
 
     @Mutation
+    setBalance({ id, balance }: { id: string; balance: string }) {
+        Vue.set(this._all[id], 'poolBalance', balance);
+    }
+
+    @Mutation
     unset(erc20: TERC20) {
         Vue.delete(this._all, erc20._id);
     }
@@ -61,6 +66,16 @@ class ERC20Module extends VuexModule {
         this.context.commit('set', erc20);
 
         return erc20;
+    }
+
+    @Action({ rawError: true })
+    async getBalance({ id, address }: { id: string; address: string }) {
+        const { data } = await axios({
+            method: 'GET',
+            url: '/erc20/' + id + '/balance/' + address,
+        });
+
+        this.context.commit('setBalance', { id, balance: data });
     }
 
     @Action({ rawError: true })

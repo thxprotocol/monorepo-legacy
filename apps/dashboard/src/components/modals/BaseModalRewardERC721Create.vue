@@ -12,13 +12,11 @@
                             <b-textarea v-model="description" />
                         </b-form-group>
                         <b-form-group label="NFT">
-                            {{ pool }}
-                            {{ erc721 }}
-                            <!-- <BaseDropdownSelectERC721
+                            <BaseDropdownSelectERC721
                                 :chainId="(pool && pool.chainId) || (erc721 && erc721.chainId)"
                                 :erc721="erc721"
                                 @selected="erc721 = $event"
-                            /> -->
+                            />
                         </b-form-group>
                         <b-form-group v-if="erc721 && !erc721SelectedMetadataIds" label="Metadata">
                             <BaseDropdownERC721Metadata
@@ -133,7 +131,6 @@ export default class ModalRewardERC721Create extends Vue {
     @Prop({ required: false }) erc721SelectedMetadataIds!: string[];
 
     onShow() {
-        debugger;
         if (this.reward) {
             this.erc721metadataId = this.reward.erc721metadataId;
             this.title = this.reward.title;
