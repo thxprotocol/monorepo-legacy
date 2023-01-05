@@ -147,11 +147,6 @@ export default class ERC721PerksView extends Vue {
     totals!: { [poolId: string]: number };
     erc721Perks!: { [poolId: string]: { [id: string]: TERC721Perk } };
 
-    get erc721(): TERC721 | null {
-        if (!this.pool.erc721) return null;
-        return this.erc721s[this.pool.erc721._id];
-    }
-
     get pool() {
         return this.pools[this.$route.params.id];
     }
@@ -186,13 +181,6 @@ export default class ERC721PerksView extends Vue {
 
     async mounted() {
         await this.listRewards();
-        this.$store.dispatch('erc721/read', this.pool.erc721._id).then(async () => {
-            await this.$store.dispatch('erc721/listMetadata', {
-                erc721: this.pool.erc721,
-                page: this.page,
-                limit: this.limit,
-            });
-        });
     }
 
     async listRewards() {
