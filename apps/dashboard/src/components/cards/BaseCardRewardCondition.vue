@@ -50,9 +50,11 @@ import BaseDropdownYoutubeUploads from '../dropdowns/BaseDropdownYoutubeUploads.
 import BaseDropdownYoutubeVideo from '../dropdowns/BaseDropdownYoutubeVideo.vue';
 import BaseDropdownTwitterTweets from '../dropdowns/BaseDropdownTwitterTweets.vue';
 import BaseDropdownTwitterUsers from '../dropdowns/BaseDropdownTwitterUsers.vue';
+import BaseDropdownDiscordGuilds from '../dropdowns/BaseDropdownDiscordGuilds.vue'
 
 @Component({
     components: {
+        BaseDropdownDiscordGuilds,
         BaseDropdownChannelTypes,
         BaseDropdownChannelActions,
         BaseDropdownYoutubeChannels,
@@ -65,6 +67,7 @@ import BaseDropdownTwitterUsers from '../dropdowns/BaseDropdownTwitterUsers.vue'
         profile: 'account/profile',
         youtube: 'account/youtube',
         twitter: 'account/twitter',
+        discord: 'account/discord',
     }),
 })
 export default class BaseCardRewardCondition extends Vue {
@@ -84,6 +87,7 @@ export default class BaseCardRewardCondition extends Vue {
     profile!: UserProfile;
     youtube!: any;
     twitter!: any;
+    discord!: any;
 
     @Prop({ required: false }) rewardCondition!: {
         platform: RewardConditionPlatform;
@@ -132,6 +136,14 @@ export default class BaseCardRewardCondition extends Vue {
                 this.isAuthorized = !!this.twitter;
                 break;
             }
+            case RewardConditionPlatform.Discord: {
+                await this.$store.dispatch('account/getDiscord');
+                console.log(platformInteractionList[6], this.discord)
+                this.onSelectInteraction(platformInteractionList[6]);
+                this.isAuthorized = !!this.discord;
+                break;
+
+            }
             default:
         }
 
@@ -164,6 +176,12 @@ export default class BaseCardRewardCondition extends Vue {
                 if (!this.twitter) return;
                 this.interaction.items = this.twitter.users;
                 break;
+            }
+            case RewardConditionInteraction.DiscordGuildJoined: {
+                if (!this.discord) return;
+                this.interaction.items = this.discord.guilds;
+                break;
+
             }
             default:
                 return;
@@ -203,6 +221,8 @@ export default class BaseCardRewardCondition extends Vue {
                 return 'BaseDropdownTwitterTweets';
             case RewardConditionInteraction.TwitterFollow:
                 return 'BaseDropdownTwitterUsers';
+            case RewardConditionInteraction.DiscordGuildJoined:
+                return 'BaseDropdownDiscordGuilds';
             default:
                 return '';
         }

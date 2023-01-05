@@ -23,6 +23,12 @@ export const platformList: IChannel[] = [
             RewardConditionInteraction.TwitterFollow,
         ],
     },
+    {
+        type: RewardConditionPlatform.Discord,
+        name: RewardConditionPlatform[5],
+        logoURI: require('@thxnetwork/dashboard/../public/assets/logo-discord.png'),
+        actions: [RewardConditionInteraction.DiscordGuildJoined],
+    },
 ];
 export const platformInteractionList = [
     {
@@ -53,6 +59,11 @@ export const platformInteractionList = [
     {
         type: RewardConditionInteraction.TwitterFollow,
         name: 'Follow',
+        items: [],
+    },
+    {
+        type: RewardConditionInteraction.DiscordGuildJoined,
+        name: 'Guild Joined',
         items: [],
     },
 ];

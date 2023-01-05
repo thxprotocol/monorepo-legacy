@@ -16,6 +16,7 @@ import { getYoutubeSubscribe } from './google/youtube/subscribe/get.controller';
 import { createLoginValidation, postLogin } from './login/post.controller';
 import { getDiscord } from './discord/get.action';
 import { getTwitch } from './twitch/get.action';
+import { getDiscordGuildJoined } from './discord/getGuild.action';
 
 const router = express.Router();
 
@@ -27,6 +28,8 @@ router.get('/:sub/twitter', guard.check(['accounts:read']), getTwitter);
 router.get('/:sub/twitter/like/:item', guard.check(['accounts:read']), getTwitterLike);
 router.get('/:sub/twitter/retweet/:item', guard.check(['accounts:read']), getTwitterRetweet);
 router.get('/:sub/twitter/follow/:item', guard.check(['accounts:read']), getTwitterFollow);
+
+router.get(':sub/discord/guild/:item', guard.check(['accounts:read']), getDiscordGuildJoined)
 
 router.get('/:sub/google/youtube', guard.check(['accounts:read']), getYoutube);
 router.get('/:sub/google/youtube/like/:item', guard.check(['accounts:read']), getYoutubeLike);

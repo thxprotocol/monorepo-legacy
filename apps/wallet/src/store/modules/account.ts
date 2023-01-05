@@ -17,6 +17,7 @@ export interface UserProfile {
     variant: AccountVariant;
     googleAccess: boolean;
     twitterAccess: boolean;
+    discordAccess: boolean;
 }
 
 @Module({ namespaced: true })
