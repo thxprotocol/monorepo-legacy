@@ -45,7 +45,6 @@ export default class BaseNavbar extends Vue {
     AccountPlanType = AccountPlanType;
     account!: IAccount;
 
-    @Prop() selectedPool!: IPool;
     @Prop() routes!: RouteDefinition[];
 }
 </script>
