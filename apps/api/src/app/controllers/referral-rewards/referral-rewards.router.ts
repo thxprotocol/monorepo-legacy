@@ -11,6 +11,9 @@ import CreateReferralReward from './post.controller';
 import ReadReferralReward from './get.controller';
 import UpdateReferralReward from './patch.controller';
 import ListReferralReward from './list.controller';
+import ListReferralRewardClaims from './claims/list.controller';
+import CreateReferralRewardClaim from './claims/post.controller';
+import UpdateReferralRewardClaim from './claims/patch.controller';
 import DeleteReferralReward from './delete.controller';
 
 const router = express.Router();
@@ -33,6 +36,15 @@ router.get(
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
     ReadReferralReward.controller,
 );
+router.get(
+    '/:uuid/claims',
+    guard.check(['referral_rewards:read']),
+    assertAssetPoolAccess,
+    assertRequestInput(ListReferralRewardClaims.validation),
+    requireAssetPoolHeader,
+    assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
+    ListReferralRewardClaims.controller,
+);
 router.post(
     '/',
     guard.check(['referral_rewards:write', 'referral_rewards:read']),
@@ -42,6 +54,15 @@ router.post(
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
     CreateReferralReward.controller,
 );
+router.post(
+    '/:uuid/claims',
+    guard.check(['referral_rewards:read', 'referral_rewards:write']),
+    assertAssetPoolAccess,
+    assertRequestInput(CreateReferralRewardClaim.validation),
+    requireAssetPoolHeader,
+    assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
+    CreateReferralRewardClaim.controller,
+);
 router.patch(
     '/:id',
     guard.check(['referral_rewards:write', 'referral_rewards:read']),
@@ -50,6 +71,15 @@ router.patch(
     requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
     UpdateReferralReward.controller,
+);
+router.patch(
+    '/:uuid/claims/:id',
+    guard.check(['referral_rewards:read', 'referral_rewards:write']),
+    assertAssetPoolAccess,
+    assertRequestInput(UpdateReferralRewardClaim.validation),
+    requireAssetPoolHeader,
+    assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
+    UpdateReferralRewardClaim.controller,
 );
 router.delete(
     '/:id',

@@ -31,7 +31,9 @@
                 </template>
                 <template #head(title)> Title </template>
                 <template #head(amount)> Amount </template>
+                <template #head(claims)> Claims </template>
                 <template #head(successUrl)> Success URL </template>
+
                 <template #head(id)> &nbsp; </template>
 
                 <!-- Cell formatting -->
@@ -43,6 +45,13 @@
                 </template>
                 <template #cell(amount)="{ item }">
                     <b-badge variant="dark" class="p-2"> {{ item.amount }} Points </b-badge>
+                </template>
+                <template #cell(claims)="{ item }"
+                    ><div>
+                        <b-button v-if="item.claims" v-b-modal="'modalReferralRewardClaims' + item.id" variant="none">
+                            {{ item.claims }} <i class="fas fa-eye" aria-hidden="true"></i>
+                        </b-button>
+                    </div>
                 </template>
                 <template #cell(successUrl)="{ item }">
                     {{ item.successUrl }}
@@ -78,6 +87,11 @@
                         :pool="pool"
                         :reward="referralRewards[pool._id][item.id]"
                     />
+                    <BaseModalReferralRewardClaims
+                        :id="'modalReferralRewardClaims' + item.id"
+                        :pool="pool"
+                        :reward="referralRewards[pool._id][item.id]"
+                    />
                 </template>
             </BTable>
         </BCard>
@@ -89,6 +103,7 @@ import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseModalReferralRewardCreate from '@thxnetwork/dashboard/components/modals/BaseModalReferralRewardCreate.vue';
+import BaseModalReferralRewardClaims from '@thxnetwork/dashboard/components/modals/BaseModelReferralRewardClaims.vue';
 import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
 import { TRewardState } from '@thxnetwork/dashboard/store/modules/referralRewards';
 import { TReferralReward } from '@thxnetwork/types/index';
@@ -99,6 +114,7 @@ import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCard
     components: {
         BaseNothingHere,
         BaseModalReferralRewardCreate,
+        BaseModalReferralRewardClaims,
         BaseBadgeRewardConditionPreview,
         BaseCardTableHeader,
     },
@@ -131,7 +147,7 @@ export default class ReferralRewardsView extends Vue {
         return Object.values(this.referralRewards[this.$route.params.id])
             .filter((reward: TReferralReward) => reward.page === this.page)
             .sort((a, b) => (a.createdAt && b.createdAt && a.createdAt < b.createdAt ? 1 : -1))
-            .map((r: TReferralReward) => ({
+            .map((r: any) => ({
                 checkbox: r._id,
                 title: r.title,
                 amount: r.amount,
@@ -140,6 +156,7 @@ export default class ReferralRewardsView extends Vue {
                     limit: r.rewardLimit,
                     progress: r.progress,
                 },
+                claims: r.claims.length,
                 id: r._id,
             }))
             .slice(0, this.limit);

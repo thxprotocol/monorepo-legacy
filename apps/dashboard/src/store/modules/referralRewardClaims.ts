@@ -1,0 +1,96 @@
+import { Vue } from 'vue-property-decorator';
+import axios from 'axios';
+import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
+import { IPool } from './pools';
+import { TReferralReward, type TReferralRewardClaim } from '@thxnetwork/types/index';
+
+export type RewardByPage = {
+    [page: number]: TReferralRewardClaim[];
+};
+
+export type TRewardClaimState = {
+    [poolId: string]: {
+        [id: string]: TReferralRewardClaim;
+    };
+};
+
+export type RewardListProps = {
+    pool: IPool;
+    page: number;
+    limit: number;
+};
+
+@Module({ namespaced: true })
+class ReferralRewardModule extends VuexModule {
+    _all: TRewardClaimState = {};
+    _totals: { [poolId: string]: number } = {};
+
+    get all() {
+        return this._all;
+    }
+
+    get totals() {
+        return this._totals;
+    }
+
+    @Mutation
+    set({ pool, claim }: { pool: IPool; claim: TReferralRewardClaim & { _id: string; email: string } }) {
+        if (!this._all[pool._id]) Vue.set(this._all, pool._id, {});
+        Vue.set(this._all[pool._id], claim._id, claim);
+    }
+
+    @Mutation
+    unset(claim: TReferralRewardClaim & { _id: string }, pool: IPool) {
+        Vue.delete(this._all[pool._id], claim._id as string);
+    }
+
+    @Mutation
+    setTotal({ pool, total }: { pool: IPool; total: number }) {
+        Vue.set(this._totals, pool._id, total);
+    }
+
+    @Action({ rawError: true })
+    async list(payload: { pool: IPool; reward: TReferralReward; page: number; limit: number }) {
+        const { data } = await axios({
+            method: 'GET',
+            url: `/referral-rewards/${payload.reward.uuid}/claims`,
+            headers: { 'X-PoolId': payload.pool._id },
+            params: {
+                page: String(payload.page),
+                limit: String(payload.limit),
+            },
+        });
+        this.context.commit('setTotal', { pool: payload.pool, total: data.total });
+
+        data.results.forEach((claim: TReferralRewardClaim & { page: number; email: string }) => {
+            claim.page = payload.page;
+            this.context.commit('set', { pool: payload.pool, claim });
+        });
+    }
+
+    @Action({ rawError: true })
+    async update({
+        pool,
+        reward,
+        claim,
+        payload,
+    }: {
+        pool: IPool;
+        reward: TReferralReward;
+        claim: TReferralRewardClaim;
+        payload: TReferralRewardClaim;
+    }) {
+        const { data } = await axios({
+            method: 'PATCH',
+            url: `/referral-rewards/${reward.uuid}/claims/${claim.uuid}`,
+            headers: { 'X-PoolId': pool._id },
+            data: payload,
+        });
+        this.context.commit('set', {
+            pool,
+            claim: { ...claim, ...data },
+        });
+    }
+}
+
+export default ReferralRewardModule;
