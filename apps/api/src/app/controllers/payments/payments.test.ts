@@ -246,7 +246,7 @@ describe('Payment Request', () => {
                 .send({
                     title: 'Expiration date is next 30 min',
                     description: 'Lorem ipsum dolor sit amet',
-                    erc721metadataIds: [metadataId],
+                    erc721metadataIds: JSON.stringify([metadataId]),
                     platform: 0,
                     expiryDate,
                     rewardLimit: 1,
