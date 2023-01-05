@@ -9,6 +9,7 @@ async function controller(req: Request, res: Response) {
         return res.render('signup', {
             uid: req.params.uid,
             params: {
+                ...req.params,
                 return_url: req.body.returnUrl,
                 signup_email: req.body.email,
             },
