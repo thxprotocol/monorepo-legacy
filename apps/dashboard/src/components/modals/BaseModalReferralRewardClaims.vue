@@ -170,30 +170,28 @@ export default class ReferralRewardClaimsModal extends Vue {
     async onClickAction(action: { variant: number; label: string }) {
         switch (action.variant) {
             case 0:
+                const claims = [];
                 for (const id of Object.values(this.selectedItems)) {
-                    await this.approve(this.referralRewardClaims[this.pool._id][id]);
+                    claims.push(this.referralRewardClaims[this.pool._id][id]);
                 }
+                await this.approve(claims);
                 this.listRewardClaims();
                 break;
         }
     }
 
-    async onApproveClick(claim: TReferralRewardClaimAccount) {
-        await this.approve(claim);
+    async onApproveClick(claim: any) {
+        await this.approve([this.referralRewardClaims[this.pool._id][claim.id]]);
         this.listRewardClaims();
     }
 
-    async approve(claim: TReferralRewardClaimAccount) {
-        if (claim.isApproved) {
-            return;
-        }
+    async approve(claims: TReferralRewardClaimAccount[]) {
         const data = {
             pool: this.pool,
             reward: this.reward,
-            claim,
-            payload: { isApproved: true },
+            claims,
         };
-        await this.$store.dispatch('referralRewardClaims/update', data);
+        await this.$store.dispatch('referralRewardClaims/approveMany', data);
     }
 }
 </script>

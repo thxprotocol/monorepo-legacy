@@ -14,6 +14,7 @@ import ListReferralReward from './list.controller';
 import ListReferralRewardClaims from './claims/list.controller';
 import CreateReferralRewardClaim from './claims/post.controller';
 import UpdateReferralRewardClaim from './claims/patch.controller';
+import ApproveReferralRewardClaims from './claims/approve/patch.controller';
 import DeleteReferralReward from './delete.controller';
 
 const router = express.Router();
@@ -81,6 +82,16 @@ router.patch(
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
     UpdateReferralRewardClaim.controller,
 );
+router.patch(
+    '/:uuid/claims/',
+    guard.check(['referral_rewards:read', 'referral_rewards:write']),
+    assertAssetPoolAccess,
+    assertRequestInput(ApproveReferralRewardClaims.validation),
+    requireAssetPoolHeader,
+    assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
+    ApproveReferralRewardClaims.controller,
+);
+
 router.delete(
     '/:id',
     guard.check(['referral_rewards:write', 'referral_rewards:read']),

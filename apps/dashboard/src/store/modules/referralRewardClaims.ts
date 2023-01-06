@@ -77,6 +77,29 @@ class ReferralRewardModule extends VuexModule {
     }
 
     @Action({ rawError: true })
+    async approveMany({
+        pool,
+        reward,
+        claims,
+    }: {
+        pool: IPool;
+        reward: TReferralReward;
+        claims: TReferralRewardClaimAccount[];
+        page: number;
+    }) {
+        const { data } = await axios({
+            method: 'PATCH',
+            url: `/referral-rewards/${reward.uuid}/claims`,
+            headers: { 'X-PoolId': pool._id },
+            data: { claimUuids: claims.map((x) => x.uuid) },
+        });
+
+        data.forEach((claim: TReferralRewardClaimAccount) => {
+            this.context.commit('set', { pool: pool, claim });
+        });
+    }
+
+    @Action({ rawError: true })
     async update({
         pool,
         reward,

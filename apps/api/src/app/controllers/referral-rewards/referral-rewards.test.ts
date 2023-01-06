@@ -146,16 +146,32 @@ describe('Referral Rewards', () => {
     });
 
     it('PATCH /referral-rewards/:uuid/claims', (done) => {
+        user.patch(`/v1/referral-rewards/${referralReward.uuid}/claims`)
+            .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
+            .send({
+                claimUuids: [referralRewardClaim.uuid],
+            })
+            .expect((res: request.Response) => {
+                expect(res.body[0].referralRewardId).toBe(referralRewardId);
+                expect(res.body[0].uuid).toBeDefined();
+                expect(res.body[0].sub).toBe(sub2);
+                expect(res.body[0].isApproved).toBe(true);
+                referralRewardClaim = res.body[0];
+            })
+            .expect(200, done);
+    });
+
+    it('PATCH /referral-rewards/:uuid/claims/:id', (done) => {
         user.patch(`/v1/referral-rewards/${referralReward.uuid}/claims/${referralRewardClaim.uuid}`)
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .send({
-                isApproved: true,
+                isApproved: false,
             })
             .expect((res: request.Response) => {
                 expect(res.body.referralRewardId).toBe(referralRewardId);
                 expect(res.body.uuid).toBeDefined();
                 expect(res.body.sub).toBe(sub2);
-                expect(res.body.isApproved).toBe(true);
+                expect(res.body.isApproved).toBe(false);
                 referralRewardClaim = res.body;
             })
             .expect(200, done);
