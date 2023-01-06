@@ -25,7 +25,7 @@
                                     />
                                 </router-link>
                                 <div class="mt-5">Gamification</div>
-                                <h3 class="h3 text-dark  mt-2 font-size-l font-weight-normal">
+                                <h3 class="h3 text-dark mt-2 font-size-l font-weight-normal">
                                     <router-link
                                         :to="'/use-cases/onboard-new-players-with-referrals'"
                                         :title="TITLES.HOME_USECASE_ROCKET"
@@ -45,17 +45,47 @@
                         <slide>
                             <b-card class="border-0">
                                 <router-link
+                                    to="/use-cases/next-generation-growth-hack-for-web3-companies"
+                                    :title="TITLES.HOME_USECASE_ERC"
+                                >
+                                    <img
+                                        class="img-fluid rounded"
+                                        v-lazy="require('../../public/assets/img/thx_usecase_award.webp')"
+                                        :alt="ALT_TEXT.USECASES_USECASE_BRAIN"
+                                    />
+                                </router-link>
+                                <div class="mt-5">Web3</div>
+                                <h3 class="h3 text-dark mt-2 font-size-l font-weight-normal">
+                                    <router-link
+                                        to="/use-cases/next-generation-growth-hack-for-web3-companies"
+                                        :title="TITLES.HOME_USECASE_ERC"
+                                    >
+                                        The next generation growth hack for web3 companies
+                                    </router-link>
+                                </h3>
+                                <b-button
+                                    variant="link-primary text-primary pl-0"
+                                    to="/use-cases/next-generation-growth-hack-for-web3-companies"
+                                >
+                                    Discover more
+                                    <i class="fas fa-chevron-right"></i>
+                                </b-button>
+                            </b-card>
+                        </slide>
+                        <slide>
+                            <b-card class="border-0">
+                                <router-link
                                     :to="'/use-cases/reward-your-loyal-customers'"
                                     :title="TITLES.HOME_USECASE_REWARD"
                                 >
                                     <img
                                         class="img-fluid rounded"
-                                        v-lazy="require('../../public/assets/img/thx_usecase_award.webp')"
+                                        v-lazy="require('../../public/assets/img/thx_usecase_brain.webp')"
                                         :alt="ALT_TEXT.USECASES_USECASE_AWARD"
                                     />
                                 </router-link>
                                 <div class="mt-5">Engagement</div>
-                                <h3 class="h3 text-dark  mt-2 font-size-l font-weight-normal">
+                                <h3 class="h3 text-dark mt-2 font-size-l font-weight-normal">
                                     <router-link
                                         :to="'/use-cases/reward-your-loyal-customers'"
                                         :title="TITLES.HOME_USECASE_REWARD"
@@ -75,36 +105,6 @@
                         <slide>
                             <b-card class="border-0">
                                 <router-link
-                                    :to="'/use-cases/erc-20-token-pools-for-blockchain-projects'"
-                                    :title="TITLES.HOME_USECASE_ERC"
-                                >
-                                    <img
-                                        class="img-fluid rounded"
-                                        v-lazy="require('../../public/assets/img/thx_usecase_brain.webp')"
-                                        :alt="ALT_TEXT.USECASES_USECASE_BRAIN"
-                                    />
-                                </router-link>
-                                <div class="mt-5">Development</div>
-                                <h3 class="h3 text-dark  mt-2 font-size-l font-weight-normal">
-                                    <router-link
-                                        :to="'/use-cases/erc-20-token-pools-for-blockchain-projects'"
-                                        :title="TITLES.HOME_USECASE_ERC"
-                                    >
-                                        ERC-20 token pools for blockchain projects
-                                    </router-link>
-                                </h3>
-                                <b-button
-                                    variant="link-primary text-primary pl-0"
-                                    to="/use-cases/erc-20-token-pools-for-blockchain-projects"
-                                >
-                                    Discover more
-                                    <i class="fas fa-chevron-right"></i>
-                                </b-button>
-                            </b-card>
-                        </slide>
-                        <slide>
-                            <b-card class="border-0">
-                                <router-link
                                     :to="'/use-cases/money-management-for-groups-of-people'"
                                     :title="TITLES.HOME_USECASE_MONEY"
                                 >
@@ -115,7 +115,7 @@
                                     />
                                 </router-link>
                                 <div class="mt-5">Financial</div>
-                                <h3 class="h3 text-dark  mt-2 font-size-l font-weight-normal">
+                                <h3 class="h3 text-dark mt-2 font-size-l font-weight-normal">
                                     <router-link
                                         :to="'/use-cases/money-management-for-groups-of-people'"
                                         :title="TITLES.HOME_USECASE_MONEY"
