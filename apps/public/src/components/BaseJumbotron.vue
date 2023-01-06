@@ -105,9 +105,11 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { ALT_TEXT, TITLES } from '@thxnetwork/public/utils/constants';
 import { DASHBOARD_URL } from '../config/secrets';
+import BaseCardSignup from './BaseCardSignup.vue';
 
 @Component({
     components: {
+        BaseCardSignup,
         'b-jumbotron': BJumbotron,
         'b-button': BButton,
         'b-form-input': BFormInput,
