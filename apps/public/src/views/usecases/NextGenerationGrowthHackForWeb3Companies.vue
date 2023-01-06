@@ -8,20 +8,12 @@
                 <div class="row py-md-5">
                     <div class="brand-intro text-white col-md-5 col-lg-4 order-1 order-md-0">
                         <div>
-                            <h1 class="brand-text mb-3">The next generation growth hack for web3 companies</h1>
+                            <h1 class="brand-text mb-3" style="font-size: 3rem !important">
+                                The next generation growth hack for web3 companies
+                            </h1>
                             <p class="lead mb-4">Onboard new users and retain existing ones using tokenized loyalty.</p>
-                            <BaseCardSubscribe border="dark" variant="darker" button="secondary"></BaseCardSubscribe>
-                            <p class="text-muted mt-1">
-                                Don't want to leave your e-mail?
-                                <b-link
-                                    class="text-secondary"
-                                    href="https://discord.com/invite/TzbbSmkE7Y"
-                                    target="_blank"
-                                >
-                                    Leave a message in our Discord <strong>#beta channel</strong> </b-link
-                                >.
-                            </p>
-                            <ul class="list-unstyled">
+                            <BaseCardSignup />
+                            <ul class="list-unstyled mt-3">
                                 <li class="pb-2">
                                     <span class="fa fa-check text-success mr-2" aria-hidden="true"></span> Bring your
                                     own ERC-20
@@ -120,40 +112,6 @@
                 </div>
             </div>
         </div>
-        <section class="bg-light py-5">
-            <div class="container py-5">
-                <div class="row">
-                    <div class="col-lg-6 offset-lg-4 pb-3">
-                        <div class="pt-5 pt-lg-5 pt-xl-4">
-                            <h2 class="h5">Try for free</h2>
-                            <p class="lead mb-2">Sign up for the private beta</p>
-                        </div>
-                        <p class="lead">Participate in the feature development beta to test the product early.</p>
-                        <ul class="list-unstyled">
-                            <li class="pb-2 lead">
-                                <span class="fa fa-check text-success mr-2" aria-hidden="true"></span> Free 3 month
-                                premium upgrade!
-                            </li>
-                            <li class="pb-2 lead">
-                                <span class="fa fa-check text-success mr-2" aria-hidden="true"></span> Private Discord
-                                channel to share what you need
-                            </li>
-                            <li class="pb-2 lead">
-                                <span class="fa fa-check text-success mr-2" aria-hidden="true"></span> Earn $THX for
-                                valuable feedback
-                            </li>
-                        </ul>
-                        <BaseCardSubscribe border="gray" variant="light" button="primary"></BaseCardSubscribe>
-                        <p class="text-muted mt-1">
-                            Don't want to leave your e-mail?
-                            <b-link href="https://discord.com/invite/TzbbSmkE7Y" target="_blank">
-                                Leave a message in our Discord <strong>#beta channel</strong></b-link
-                            >.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
         <base-metrics />
         <div class="container">
             <div class="row pt-5 pt-lg-10 pb-5">
@@ -307,24 +265,34 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import hljs from 'highlight.js/lib/core';
+import JavaScript from 'highlight.js/lib/languages/javascript';
+import Xml from 'highlight.js/lib/languages/xml';
+import 'highlight.js/styles/atom-one-dark.css';
+import { DASHBOARD_URL } from '@thxnetwork/public/config/secrets';
+
 import BaseUseCases from '@thxnetwork/public/components/BaseUseCases.vue';
 import BaseFeatures from '@thxnetwork/public/components/BaseFeatures.vue';
 import BaseTestimonials from '@thxnetwork/public/components/BaseTestimonials.vue';
 import BaseContact from '@thxnetwork/public/components/BaseContact.vue';
 import BaseUseCaseContact from '@thxnetwork/public/components/BaseUseCaseContact.vue';
 import BaseMetrics from '@thxnetwork/public/components/BaseMetrics.vue';
-import BaseCardSubscribe from '@thxnetwork/public/components/BaseCardSubscribe.vue';
+import BaseCardSignup from '@thxnetwork/public/components/BaseCardSignup.vue';
 import { USE_CASES_BOOST_TAGS, TWITTER_TAGS, LINKS } from '@thxnetwork/public/utils/constants';
-
-import hljs from 'highlight.js/lib/core';
-import JavaScript from 'highlight.js/lib/languages/javascript';
-import Xml from 'highlight.js/lib/languages/xml';
-import 'highlight.js/styles/atom-one-dark.css';
 
 hljs.registerLanguage('javascript', JavaScript);
 hljs.registerLanguage('xml', Xml);
 
 @Component({
+    components: {
+        BaseCardSignup,
+        BaseMetrics,
+        BaseFeatures,
+        BaseUseCaseContact,
+        BaseTestimonials,
+        BaseUseCases,
+        BaseContact,
+    },
     metaInfo: {
         title: USE_CASES_BOOST_TAGS.TITLE,
         meta: [
@@ -345,15 +313,6 @@ hljs.registerLanguage('xml', Xml);
         ],
         link: [{ rel: 'canonical', href: LINKS.USE_CASES_BOOST }],
     },
-    components: {
-        BaseCardSubscribe,
-        BaseMetrics,
-        BaseFeatures,
-        BaseUseCaseContact,
-        BaseTestimonials,
-        BaseUseCases,
-        BaseContact,
-    },
 })
 export default class BoostEngagementInYourCommunity extends Vue {
     codeExample = hljs.highlight(
@@ -370,5 +329,9 @@ new THXWidget({ poolId: "507f191e810c19729de860ea" });`,
             language: 'xml',
         },
     ).value;
+
+    getValidationState({ dirty, validated, valid = null }: any) {
+        return dirty || validated ? valid : null;
+    }
 }
 </script>

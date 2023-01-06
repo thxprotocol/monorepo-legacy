@@ -41,6 +41,10 @@
     }
 }
 
+div:not(.bg-white) > .navbar-text-white.navbar-light .fa-bars {
+    color: $white;
+}
+
 div:not(.bg-white) > .navbar-text-white.navbar-light .navbar-nav .nav-link {
     color: $light;
 
@@ -135,24 +139,54 @@ div:not(.bg-white) > .navbar-text-white.navbar-light .navbar-nav .nav-link {
 }
 
 @media (max-width: map-get($grid-breakpoints, 'lg')) {
+    
     #nav-collapse {
+        margin: 1rem -1rem;
         background: $white;
         color: $dark;
-        padding: 1rem;
+        padding: 1rem  0;
+        overflow: auto;
+        
+        .nav-link {
+            color: $black;
+            font-weight: bold;
+            padding: 1rem;
+            padding-left: 2rem;
+
+            &:hover,
+            &.router-link-active {
+                background-color: $primary;
+                height: 100%;
+                z-index: 0;
+                border-radius: 25px;
+                color: $white;
+            }
+
+            &:hover:after,
+            &.router-link-active:after {
+                display: none;
+            }
+        }
 
         > .navbar-nav {
             flex: 0 auto;
         }
 
+
         .navbar-nav-right {
             flex: 0;
             border-top: 1px solid $light;
-            padding-top: 1rem;
+            padding: 1rem 2rem;
             flex-wrap: wrap;
 
             a {
                 flex: 0 100%;
                 margin: 0.5rem !important;
+                
+                &.btn-outline-light {
+                    color: $black;
+                    border-color: $black;
+                }
             }
 
             .navbar-nav {
@@ -230,13 +264,10 @@ div:not(.bg-white) > .navbar-text-white.navbar-light .navbar-nav .nav-link {
         }
     }
 }
-.bg-white.shadow .page-token,
-.bg-white.shadow .page-demo {
+
+.fixed-top.bg-white.shadow .navbar-text-white {
     .navbar-nav .nav-link {
         color: $dark;
         font-weight: 700;
-        &:hover {
-            color: $dark;
-        }
     }
 }
