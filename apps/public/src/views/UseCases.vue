@@ -43,7 +43,37 @@
                             <i class="fas fa-chevron-right"></i>
                         </b-button>
                     </b-card>
-
+                    <b-card bg-variant="darker" text-variant="white" class="border-0">
+                        <router-link
+                            to="/use-cases/next-generation-growth-hack-for-web3-companies"
+                            :title="TITLES.HOME_USECASE_ERC"
+                        >
+                            <img
+                                class="img-fluid rounded"
+                                v-lazy="require('../../public/assets/img/thx_usecase_award.webp')"
+                                :alt="ALT_TEXT.USECASES_USECASE_BRAIN"
+                            />
+                        </router-link>
+                        <div class="mt-5">Web3</div>
+                        <h3 class="h3 mt-2 font-size-l font-weight-normal">
+                            <router-link
+                                class="text-white"
+                                to="/use-cases/next-generation-growth-hack-for-web3-companies"
+                                :title="TITLES.HOME_USECASE_ERC"
+                            >
+                                The next generation growth hack for web3 companies
+                            </router-link>
+                        </h3>
+                        <b-button
+                            variant="link-primary text-secondary pl-0"
+                            to="/use-cases/next-generation-growth-hack-for-web3-companies"
+                        >
+                            Discover more
+                            <i class="fas fa-chevron-right"></i>
+                        </b-button>
+                    </b-card>
+                </div>
+                <div class="col-lg-5 pt-lg-5 mt-lg-5">
                     <b-card bg-variant="darker" text-variant="white" class="border-0">
                         <router-link
                             :to="'/use-cases/reward-your-loyal-customers'"
@@ -51,7 +81,7 @@
                         >
                             <img
                                 class="img-fluid rounded"
-                                :src="require('../../public/assets/img/thx_usecase_award.webp')"
+                                :src="require('../../public/assets/img/thx_usecase_brain.webp')"
                                 :alt="ALT_TEXT.USECASES_USECASE_AWARD"
                             />
                         </router-link>
@@ -73,39 +103,6 @@
                             <i class="fas fa-chevron-right"></i>
                         </b-button>
                     </b-card>
-                </div>
-                <div class="col-lg-5 pt-lg-5 mt-lg-5">
-                    <b-card bg-variant="darker" text-variant="white" class="border-0">
-                        <router-link
-                            :to="'/use-cases/erc-20-token-pools-for-blockchain-projects'"
-                            :title="TITLES.USECASES_USECASE_ERC"
-                        >
-                            <img
-                                class="img-fluid rounded"
-                                v-lazy="require('../../public/assets/img/thx_usecase_brain.webp')"
-                                :alt="ALT_TEXT.USECASES_USECASE_BRAIN"
-                            />
-                        </router-link>
-                        <div class="mt-5">Development</div>
-                        <h3 class="h3 mt-2 font-size-l font-weight-normal">
-                            <router-link
-                                class="text-white"
-                                :to="'/use-cases/erc-20-token-pools-for-blockchain-projects'"
-                                :title="TITLES.USECASES_USECASE_ERC"
-                            >
-                                ERC-20 token pools for blockchain projects
-                            </router-link>
-                        </h3>
-                        <b-button
-                            variant="link"
-                            class="text-secondary pl-0"
-                            :to="'/use-cases/erc-20-token-pools-for-blockchain-projects'"
-                        >
-                            Discover more
-                            <i class="fas fa-chevron-right"></i>
-                        </b-button>
-                    </b-card>
-
                     <b-card bg-variant="darker" text-variant="white" class="border-0">
                         <router-link
                             :to="'/use-cases/money-management-for-groups-of-people'"
@@ -145,7 +142,7 @@
                 <div class="col-lg-6 offset-lg-3">
                     <div class="text-center pt-5 pt-lg-5 pt-xl-4">
                         <h2 class="h5">Integrations</h2>
-                        <p class="lead mb-4  font-weight-normal font-italic text-white">
+                        <p class="lead mb-4 font-weight-normal font-italic text-white">
                             Dive in deep and check out our integrations
                         </p>
                         <b-button variant="link" class="text-secondary" :title="TITLES.USECASES_OUR_INTEGRATIONS">

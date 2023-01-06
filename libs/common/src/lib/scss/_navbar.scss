@@ -41,7 +41,7 @@
     }
 }
 
-div:not(.bg-white) > .page-use-cases.navbar-light .navbar-nav .nav-link {
+div:not(.bg-white) > .navbar-text-white.navbar-light .navbar-nav .nav-link {
     color: $light;
 
     &:focus {
@@ -221,8 +221,7 @@ div:not(.bg-white) > .page-use-cases.navbar-light .navbar-nav .nav-link {
     }
 }
 
-.page-token,
-.page-demo {
+.navbar-text-white {
     .navbar-nav .nav-link {
         color: #fff;
         font-weight: 400;
