@@ -10,7 +10,7 @@ export type RewardByPage = {
 
 export type TRewardClaimState = {
     [poolId: string]: {
-        [id: string]: TReferralRewardClaim;
+        [id: string]: TReferralRewardClaimAccount;
     };
 };
 
@@ -18,6 +18,14 @@ export type RewardListProps = {
     pool: IPool;
     page: number;
     limit: number;
+};
+
+export type TReferralRewardClaimAccount = TReferralRewardClaim & {
+    _id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    page: number;
 };
 
 @Module({ namespaced: true })
@@ -34,13 +42,13 @@ class ReferralRewardModule extends VuexModule {
     }
 
     @Mutation
-    set({ pool, claim }: { pool: IPool; claim: TReferralRewardClaim & { _id: string; email: string } }) {
+    set({ pool, claim }: { pool: IPool; claim: TReferralRewardClaimAccount }) {
         if (!this._all[pool._id]) Vue.set(this._all, pool._id, {});
         Vue.set(this._all[pool._id], claim._id, claim);
     }
 
     @Mutation
-    unset(claim: TReferralRewardClaim & { _id: string }, pool: IPool) {
+    unset(claim: TReferralRewardClaimAccount, pool: IPool) {
         Vue.delete(this._all[pool._id], claim._id as string);
     }
 
@@ -62,7 +70,7 @@ class ReferralRewardModule extends VuexModule {
         });
         this.context.commit('setTotal', { pool: payload.pool, total: data.total });
 
-        data.results.forEach((claim: TReferralRewardClaim & { page: number; email: string }) => {
+        data.results.forEach((claim: TReferralRewardClaimAccount) => {
             claim.page = payload.page;
             this.context.commit('set', { pool: payload.pool, claim });
         });
@@ -77,7 +85,7 @@ class ReferralRewardModule extends VuexModule {
     }: {
         pool: IPool;
         reward: TReferralReward;
-        claim: TReferralRewardClaim;
+        claim: TReferralRewardClaimAccount;
         payload: TReferralRewardClaim;
     }) {
         const { data } = await axios({

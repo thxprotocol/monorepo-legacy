@@ -21,8 +21,10 @@ const controller = async (req: Request, res: Response) => {
     const promises = data.results.map(async (claim) => {
         const account = await AccountProxy.getById(claim.sub);
         return {
-            email: account.email,
             ...claim.toJSON(),
+            email: account.email,
+            firstName: account.firstName,
+            lastName: account.lastName,
             createdAt: claim.createdAt,
         };
     });

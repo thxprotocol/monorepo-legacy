@@ -103,7 +103,7 @@ import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseModalReferralRewardCreate from '@thxnetwork/dashboard/components/modals/BaseModalReferralRewardCreate.vue';
-import BaseModalReferralRewardClaims from '@thxnetwork/dashboard/components/modals/BaseModelReferralRewardClaims.vue';
+import BaseModalReferralRewardClaims from '@thxnetwork/dashboard/components/modals/BaseModalReferralRewardClaims.vue';
 import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
 import { TRewardState } from '@thxnetwork/dashboard/store/modules/referralRewards';
 import { TReferralReward } from '@thxnetwork/types/index';

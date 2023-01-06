@@ -28,6 +28,8 @@
                     </template>
 
                     <template #head(email)> Email </template>
+                    <template #head(firstName)> First Name </template>
+                    <template #head(lastName)> Last Name </template>
                     <template #head(isApproved)> Approved </template>
                     <template #head(id)> &nbsp; </template>
 
@@ -37,6 +39,12 @@
                     </template>
                     <template #cell(email)="{ item }">
                         {{ item.email }}
+                    </template>
+                    <template #cell(firstName)="{ item }">
+                        {{ item.firstName }}
+                    </template>
+                    <template #cell(lastName)="{ item }">
+                        {{ item.lastName }}
                     </template>
                     <template #cell(isApproved)="{ item }">
                         <i v-if="item.isApproved" class="fas fa-check-circle" aria-hidden="true"></i>
@@ -69,8 +77,11 @@ import BaseModalReferralRewardCreate from '@thxnetwork/dashboard/components/moda
 import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
 import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/badges/BaseBadgeRewardConditionPreview.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
-import { TRewardClaimState } from '@thxnetwork/dashboard/store/modules/referralRewardClaims';
-import { TReferralRewardClaim } from '@thxnetwork/types/interfaces/ReferralRewardClaim';
+import {
+    TReferralRewardClaimAccount,
+    TRewardClaimState,
+} from '@thxnetwork/dashboard/store/modules/referralRewardClaims';
+
 import BaseModal from './BaseModal.vue';
 import { type TReferralReward } from '@thxnetwork/types/interfaces/ReferralReward';
 
@@ -109,10 +120,14 @@ export default class ReferralRewardClaimsModal extends Vue {
             return [];
         }
         return Object.values(this.referralRewardClaims[this.pool._id])
-            .filter((claim: any) => claim.page === this.page)
-            .sort((a: any, b: any) => (a.createdAt < b.createdAt ? 1 : -1))
-            .map((c: any) => ({
+            .filter((claim: TReferralRewardClaimAccount) => claim.page === this.page)
+            .sort((a: TReferralRewardClaimAccount, b: TReferralRewardClaimAccount) =>
+                a.createdAt < b.createdAt ? 1 : -1,
+            )
+            .map((c: TReferralRewardClaimAccount) => ({
                 checkbox: c._id,
+                firstName: c.firstName,
+                lastName: c.lastName,
                 email: c.email,
                 isApproved: c.isApproved === undefined ? false : c.isApproved,
                 id: c._id,
@@ -163,12 +178,12 @@ export default class ReferralRewardClaimsModal extends Vue {
         }
     }
 
-    async onApproveClick(claim: TReferralRewardClaim) {
+    async onApproveClick(claim: TReferralRewardClaimAccount) {
         await this.approve(claim);
         this.listRewardClaims();
     }
 
-    async approve(claim: TReferralRewardClaim) {
+    async approve(claim: TReferralRewardClaimAccount) {
         if (claim.isApproved) {
             return;
         }
