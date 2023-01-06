@@ -35,13 +35,30 @@
                                 :alt="ALT_TEXT.HOME_FEATURE_FAST_AND_FREE"
                             />
                         </span>
-                        <h3 class="m-0 mt-lg-4 mb-lg-3">
-                            Fast &amp; Free Transactions
-                        </h3>
+                        <h3 class="m-0 mt-lg-4 mb-lg-3">Free Transactions</h3>
                     </div>
+                    <p class="line-height-2">
+                        The Polygon side-chain provides fast and free transactions for your end-users.
+                    </p>
                     <p class="text-gray line-height-2">
-                        Our side-chain provides fast and free transactions for your end-users. We sponsor the gas costs
-                        so you don’t have to worry about additional UX barriers for your customers.
+                        We sponsor the gas costs so you don’t have to worry about additional UX barriers for your
+                        customers.
+                    </p>
+                </div>
+                <div class="col-md-6 col-lg-4 pb-5">
+                    <div class="d-flex d-lg-block mb-2 align-items-center">
+                        <span class="icon rounded text-secondary mr-3">
+                            <i class="fas fa-money-check-alt"></i>
+                        </span>
+                        <h3 class="m-0 mt-lg-4 mb-lg-3">Lower Acquisition Costs</h3>
+                    </div>
+                    <p class="line-height-2">
+                        Referrals by loyal members and customers leads to new users that are more engaged and eager to
+                        join your community.
+                    </p>
+                    <p class="text-gray line-height-2">
+                        This is much more cost effective than advertising driving down your customer acquisition costs
+                        (CAC).
                     </p>
                 </div>
                 <div class="col-md-6 col-lg-4 pb-5">
@@ -53,32 +70,15 @@
                                 :alt="ALT_TEXT.HOME_FEATURE_TIME"
                             />
                         </span>
-                        <h3 class="m-0 mt-lg-4 mb-lg-3">
-                            Saves you tons of time
-                        </h3>
+                        <h3 class="m-0 mt-lg-4 mb-lg-3">Higher Lifetime Value</h3>
                     </div>
-                    <p class="text-gray line-height-2">
-                        Great documentation, and all the endpoints for your application to interact with. Saves you
-                        hundreds of hours compared to building this from scratch.
+                    <p class="line-height-2">
+                        Loyalty points, perks and partnerships all work together to give your users a more exciting
+                        journey in your community.
                     </p>
-                </div>
-                <div class="col-md-6 col-lg-4 pb-5">
-                    <div class="d-flex d-lg-block mb-2 align-items-center">
-                        <span class="icon rounded text-secondary mr-3">
-                            <img
-                                width="35"
-                                v-lazy="require('../../public/assets/img/thx_feature_governance.png')"
-                                :alt="ALT_TEXT.HOME_FEATURE_GOVERNANCE"
-                            />
-                        </span>
-                        <h3 class="m-0 mt-lg-4 mb-lg-3">
-                            Community governance
-                        </h3>
-                    </div>
                     <p class="text-gray line-height-2">
-                        Participate in the protocol and become a THX token holder. Token holders will be able to decide
-                        on important parameters in the protocol through governance and potentially activate protocol
-                        fees.
+                        People spend more time within your organization and very naturally tend to spend more money too
+                        leading to higher customer lifetime value (LTV).
                     </p>
                 </div>
             </div>
@@ -86,58 +86,48 @@
                 <div class="col-md-6 col-lg-4 pb-5">
                     <div class="d-flex d-lg-block mb-2 align-items-center">
                         <span class="icon rounded text-secondary mr-3">
-                            <img
-                                width="35"
-                                v-lazy="require('../../public/assets/img/thx_feature_securekeys.png')"
-                                :alt="ALT_TEXT.HOME_FEATURE_SECURE_KEYS"
-                            />
+                            <i class="fas fa-trophy" style="font-size: 2rem"></i>
                         </span>
-                        <h3 class="m-0 mt-lg-4 mb-lg-3">
-                            Secure keys
-                        </h3>
+                        <h3 class="m-0 mt-lg-4 mb-lg-3">Loyalty Points</h3>
                     </div>
+                    <p class="line-height-2">
+                        Reward engagement with loyalty points which are instantly claimable in the widget or brandable
+                        wallet.
+                    </p>
                     <p class="text-gray line-height-2">
-                        We provide best-in-class key management and key backup solutions for your users. You don’t need
-                        to worry about your users losing access to their account. It also saves your support desk tons
-                        of time.
+                        Your users exchange points for valuable perks. Watch returning visits and conversions go through
+                        the roof!
                     </p>
                 </div>
                 <div class="col-md-6 col-lg-4 pb-5">
                     <div class="d-flex d-lg-block mb-2 align-items-center">
                         <span class="icon rounded text-secondary mr-3">
-                            <img
-                                width="35"
-                                v-lazy="require('../../public/assets/img/thx_feature_modular.png')"
-                                :alt="ALT_TEXT.HOME_FEATURE_MODULAR"
-                            />
+                            <i class="fas fa-award" style="font-size: 2rem"></i>
                         </span>
-                        <h3 class="m-0 mt-lg-4 mb-lg-3">
-                            Modular
-                        </h3>
+                        <h3 class="m-0 mt-lg-4 mb-lg-3">Loyalty Perks</h3>
                     </div>
+                    <p class="line-height-2">
+                        Signed-up users, players or customers become true community members when receiving, exchanging
+                        or buying tokenized perks.
+                    </p>
                     <p class="text-gray line-height-2">
-                        Your application is flexible thanks to our modular architecture. From gamified payments to your
-                        own ERC-20 tokens or stablecoins. We got it all … you only need to add a few lines of code to
-                        your application.
+                        Make ERC-20 tokens your community currency while NFTs prove community memberships and certain
+                        achievements.
                     </p>
                 </div>
                 <div class="col-md-6 col-lg-4 pb-5">
                     <div class="d-flex d-lg-block mb-2 align-items-center">
                         <span class="icon rounded text-secondary mr-3">
-                            <img
-                                width="35"
-                                v-lazy="require('../../public/assets/img/thx_feature_diamond.png')"
-                                :alt="ALT_TEXT.HOME_FEATURE_DIAMOND"
-                            />
+                            <i class="fas fa-handshake" style="font-size: 2rem"></i>
                         </span>
-                        <h3 class="m-0 mt-lg-4 mb-lg-3">
-                            Upgradeable
-                        </h3>
+                        <h3 class="m-0 mt-lg-4 mb-lg-3">Loyalty Partnerships</h3>
                     </div>
+                    <p class="line-height-2">
+                        Share your Perks across organizations in a marketplace to reach new members and customers.
+                    </p>
                     <p class="text-gray line-height-2">
-                        Your application remains secure and functional during updates thanks to the so-called ‘diamond’
-                        structure of our smart contracts. We roll out periodic updates that strengthen your
-                        infrastructure.
+                        You just organized your loyalty offering into a wider reaching Loyalty Network! Cross channel
+                        and cross brand loyalty is what drives long term results.
                     </p>
                 </div>
             </div>
