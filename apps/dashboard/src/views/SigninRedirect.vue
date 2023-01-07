@@ -22,7 +22,7 @@ export default class Redirect extends Vue {
 
         // List pools to see if we need to deploy a first
         await this.$store.dispatch('pools/list');
-        if (!this.pools.length) this.$store.dispatch('pools/create', { chainId: ChainId.Hardhat });
+        if (!Object.values(this.pools).length) this.$store.dispatch('pools/create', { chainId: ChainId.Hardhat });
 
         this.$router.push('/');
     }

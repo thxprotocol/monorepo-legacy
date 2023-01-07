@@ -40,8 +40,8 @@
                                 </div>
                             </div>
                         </div>
-                        <b-button v-b-modal="`modalDepositCreate-${erc20._id}`" variant="link">
-                            <i class="fas fa-download m-0" style="font-size: 1.2rem"></i>
+                        <b-button v-b-modal="`modalDepositCreate-${erc20._id}`" variant="light">
+                            <i class="fas fa-download m-0" style="font-size: 1.1rem"></i>
                         </b-button>
                         <BaseModalDepositCreate @submit="onTopup(erc20)" :erc20="erc20" :pool="pool" />
                     </b-list-group-item>
