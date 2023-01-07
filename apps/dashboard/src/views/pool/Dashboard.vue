@@ -61,8 +61,8 @@
                 </b-list-group>
             </b-col>
         </b-row>
-        <modal-erc20-create :chainId="pool.chainId" />
-        <modal-erc20-import :chainId="pool.chainId" />
+        <BaseModalErc20Create :chainId="pool.chainId" />
+        <BaseModalErc20Import :chainId="pool.chainId" />
     </div>
 </template>
 
@@ -74,13 +74,13 @@ import { ITransactions } from '@thxnetwork/dashboard/types/ITransactions';
 import { IERC20s, TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import BarChart from '@thxnetwork/dashboard/components/charts/BarChart.vue';
 import BaseIdenticon from '@thxnetwork/dashboard/components/BaseIdenticon.vue';
-import ModalErc20Import from '@thxnetwork/dashboard/components/modals/BaseModalERC20Import.vue';
-import ModalErc20Create from '@thxnetwork/dashboard/components/modals/BaseModalERC20Create.vue';
+import BaseModalErc20Import from '@thxnetwork/dashboard/components/modals/BaseModalERC20Import.vue';
+import BaseModalErc20Create from '@thxnetwork/dashboard/components/modals/BaseModalERC20Create.vue';
 import BaseModalDepositCreate from '@thxnetwork/dashboard/components/modals/BaseModalDepositCreate.vue';
 import { fromWei } from 'web3-utils';
 
 @Component({
-    components: { BaseIdenticon, BaseModalDepositCreate, ModalErc20Create, ModalErc20Import, BarChart },
+    components: { BaseIdenticon, BaseModalDepositCreate, BaseModalErc20Create, BaseModalErc20Import, BarChart },
     computed: mapGetters({
         pools: 'pools/all',
         erc20s: 'erc20/all',

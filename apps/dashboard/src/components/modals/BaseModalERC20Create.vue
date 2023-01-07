@@ -97,16 +97,14 @@ export default class ModalERC20Create extends Vue {
     async submit() {
         this.loading = true;
 
-        const data = {
+        await this.$store.dispatch('erc20/create', {
             chainId: this.chainId,
             name: this.name,
             symbol: this.symbol,
             type: this.tokenType,
             totalSupply: this.tokenType === ERC20Type.Limited ? this.totalSupply : 0,
             file: this.logoImg,
-        };
-
-        await this.$store.dispatch('erc20/create', data);
+        });
 
         this.$bvModal.hide(`modalERC20Create`);
         this.loading = false;

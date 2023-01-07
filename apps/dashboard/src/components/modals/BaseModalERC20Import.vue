@@ -131,4 +131,3 @@ export default class ModalERC20Import extends Vue {
     }
 }
 </script>
-<style lang="scss"></style>

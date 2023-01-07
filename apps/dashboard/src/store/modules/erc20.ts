@@ -88,7 +88,7 @@ class ERC20Module extends VuexModule {
             data: formData,
         });
 
-        this.context.commit('set', { _id: data._id, loading: true });
+        await this.context.dispatch('read', data._id);
     }
 
     @Action({ rawError: true })
@@ -99,7 +99,7 @@ class ERC20Module extends VuexModule {
             data: payload,
         });
 
-        this.context.commit('set', { _id: data._id, loading: true });
+        await this.context.dispatch('read', data._id);
     }
 
     @Action({ rawError: true })
