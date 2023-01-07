@@ -78,7 +78,7 @@ export class GithubService {
             method: 'POST',
             data: {
                 code,
-                redirect_uri: GITHUB_REDIRECT_URI,
+                redirect_uri: AUTH_URL + '/oidc/callback/github',
                 client_secret: GITHUB_CLIENT_SECRET,
                 client_id: GITHUB_CLIENT_ID,
             },
