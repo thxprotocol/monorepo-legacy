@@ -5,12 +5,6 @@
             <form v-on:submit.prevent="onSubmit()" id="formRewardPointsCreate">
                 <b-row>
                     <b-col md="6">
-                        <b-form-group label="Title">
-                            <b-form-input v-model="title" />
-                        </b-form-group>
-                        <b-form-group label="Description">
-                            <b-textarea v-model="description" />
-                        </b-form-group>
                         <b-form-group label="NFT">
                             <BaseDropdownSelectERC721
                                 :chainId="(pool && pool.chainId) || (erc721 && erc721.chainId)"
@@ -24,6 +18,12 @@
                                 :erc721metadataId="erc721metadataId"
                                 @selected="onSelectMetadata"
                             />
+                        </b-form-group>
+                        <b-form-group label="Title">
+                            <b-form-input v-model="title" />
+                        </b-form-group>
+                        <b-form-group label="Description">
+                            <b-textarea v-model="description" />
                         </b-form-group>
                         <b-form-group label="Point Price">
                             <b-form-input type="number" v-model="pointPrice" />

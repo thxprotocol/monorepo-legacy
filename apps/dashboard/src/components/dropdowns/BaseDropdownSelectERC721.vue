@@ -22,7 +22,12 @@
             </div>
         </b-dropdown-item-button>
     </b-dropdown>
-    <div v-else class="small">No NFT contracts available</div>
+    <div v-else>
+        <b-button to="/nft" variant="light" block>
+            Create NFT collection
+            <i class="fas fa-chevron-right ml-2"></i>
+        </b-button>
+    </div>
 </template>
 
 <script lang="ts">

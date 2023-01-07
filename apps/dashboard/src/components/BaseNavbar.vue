@@ -231,12 +231,6 @@ export default class BaseNavbar extends Vue {
                 isNew: true,
             },
             {
-                path: `/pool/${this.selectedPool._id}/metadata`,
-                label: 'Metadata',
-                iconClasses: 'fas fa-palette',
-                isSoon: !this.selectedPool.erc721,
-            },
-            {
                 path: `/pool/${this.selectedPool._id}/clients`,
                 label: 'Clients',
                 iconClasses: 'fas fa-key',
