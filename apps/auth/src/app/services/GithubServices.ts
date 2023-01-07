@@ -1,7 +1,7 @@
 import { URLSearchParams } from 'url';
 
 import CommonOauthLoginOptions from '../types/CommonOauthLoginOptions';
-import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, GITHUB_REDIRECT_URI } from '@thxnetwork/auth/config/secrets';
+import { AUTH_URL, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from '@thxnetwork/auth/config/secrets';
 import { githubClient } from '../util/axios';
 import { AccountDocument } from '../models/Account';
 import { AccessTokenKind } from '../types/enums/AccessTokenKind';
@@ -60,7 +60,7 @@ export class GithubService {
 
     static getLoginURL(
         state: string,
-        { scope = GITHUB_API_SCOPE, redirectUrl = GITHUB_REDIRECT_URI }: CommonOauthLoginOptions,
+        { scope = GITHUB_API_SCOPE, redirectUrl = AUTH_URL + '/oidc/callback/github' }: CommonOauthLoginOptions,
     ) {
         const body = new URLSearchParams();
         if (state) body.append('state', state);

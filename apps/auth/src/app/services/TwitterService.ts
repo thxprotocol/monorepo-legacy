@@ -1,7 +1,7 @@
 import CommonOauthLoginOptions from '@thxnetwork/auth/types/CommonOauthLoginOptions';
 import { URLSearchParams } from 'url';
 import { twitterClient } from '../util/axios';
-import { TWITTER_CLIENT_ID, TWITTER_CLIENT_SECRET, TWITTER_REDIRECT_URI } from '../config/secrets';
+import { AUTH_URL, TWITTER_CLIENT_ID, TWITTER_CLIENT_SECRET } from '../config/secrets';
 import { AccountDocument } from '../models/Account';
 import { AccessTokenKind } from '../types/enums/AccessTokenKind';
 
@@ -145,7 +145,7 @@ export class TwitterService {
         body.append('code', code);
         body.append('grant_type', 'authorization_code');
         body.append('client_id', TWITTER_CLIENT_ID);
-        body.append('redirect_uri', TWITTER_REDIRECT_URI);
+        body.append('redirect_uri', AUTH_URL + '/oidc/callback/twitter');
         body.append('code_verifier', 'challenge');
 
         const { data } = await twitterClient({
@@ -168,7 +168,7 @@ export class TwitterService {
 
     static getLoginURL(
         uid: string,
-        { scope = this.getScopes(), redirectUrl = TWITTER_REDIRECT_URI }: CommonOauthLoginOptions,
+        { scope = this.getScopes(), redirectUrl = AUTH_URL + '/oidc/callback/twitter' }: CommonOauthLoginOptions,
     ) {
         return `https://twitter.com/i/oauth2/authorize?response_type=code&client_id=${TWITTER_CLIENT_ID}&redirect_uri=${redirectUrl}&scope=${scope.join(
             '%20',

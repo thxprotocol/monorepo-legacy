@@ -1,4 +1,4 @@
-import { DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, DISCORD_REDIRECT_URI } from '../config/secrets';
+import { AUTH_URL, DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET } from '../config/secrets';
 import { AccountDocument } from '../models/Account';
 import CommonOauthLoginOptions from '../types/CommonOauthLoginOptions';
 import { AccessTokenKind } from '../types/enums/AccessTokenKind';
@@ -33,7 +33,7 @@ class DiscordService {
 
     static getLoginURL(
         state: string,
-        { scope = DISCORD_API_SCOPE, redirectUrl = DISCORD_REDIRECT_URI }: CommonOauthLoginOptions,
+        { scope = DISCORD_API_SCOPE, redirectUrl = AUTH_URL + '/oidc/callback/discord' }: CommonOauthLoginOptions,
     ) {
         const body = new URLSearchParams();
 
@@ -51,7 +51,7 @@ class DiscordService {
 
         body.append('code', code);
         body.append('grant_type', 'authorization_code');
-        body.append('redirect_uri', DISCORD_REDIRECT_URI);
+        body.append('redirect_uri', AUTH_URL + '/oidc/callback/discord');
         body.append('client_secret', DISCORD_CLIENT_SECRET);
         body.append('client_id', DISCORD_CLIENT_ID);
 
