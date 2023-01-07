@@ -14,9 +14,6 @@
             <form v-on:submit.prevent="onSubmit" id="formRewardPointsCreate">
                 <b-row>
                     <b-col md="6">
-                        <b-form-group label="Coin">
-                            <BaseDropdownSelectERC20 @selected="erc20Id = $event._id" :chainId="pool.chainId" />
-                        </b-form-group>
                         <b-form-group label="Title">
                             <b-form-input v-model="title" />
                         </b-form-group>
@@ -33,12 +30,21 @@
                                 <b-form-file v-model="imageFile" accept="image/*" @change="onImgChange" />
                             </b-input-group>
                         </b-form-group>
-                        <b-form-group label="Amount">
-                            <b-form-input v-model="amount" />
+                        <b-form-group label="Coin">
+                            <BaseDropdownSelectERC20 @selected="erc20Id = $event._id" :chainId="pool.chainId" />
                         </b-form-group>
-                        <b-form-group label="Point Price">
-                            <b-form-input type="number" v-model="pointPrice" />
-                        </b-form-group>
+                        <b-row>
+                            <b-col md="6">
+                                <b-form-group label="Amount">
+                                    <b-form-input v-model="amount" />
+                                </b-form-group>
+                            </b-col>
+                            <b-col md="6">
+                                <b-form-group label="Point Price">
+                                    <b-form-input type="number" v-model="pointPrice" />
+                                </b-form-group>
+                            </b-col>
+                        </b-row>
                     </b-col>
                     <b-col md="6">
                         <BaseCardRewardCondition
@@ -52,6 +58,7 @@
                             :expiry="rewardExpiry"
                             @change="rewardExpiry = $event"
                         />
+                        <hr />
                         <b-form-group>
                             <b-form-checkbox v-model="isPromoted">Promoted</b-form-checkbox>
                         </b-form-group>

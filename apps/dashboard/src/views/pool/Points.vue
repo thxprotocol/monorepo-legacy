@@ -38,8 +38,8 @@
                 <template #cell(checkbox)="{ item }">
                     <b-form-checkbox :value="item.checkbox" v-model="selectedItems" />
                 </template>
-                <template #cell(amount)="{ item }">
-                    <b-badge variant="dark" class="p-2"> {{ item.amount }} Points </b-badge>
+                <template #cell(points)="{ item }">
+                    <strong>{{ item.points }} </strong>
                 </template>
                 <template #cell(rewardCondition)="{ item }">
                     <BaseBadgeRewardConditionPreview
@@ -121,8 +121,8 @@ export default class AssetPoolView extends Vue {
             .filter((reward: TPointReward) => reward.page === this.page)
             .map((r: TPointReward) => ({
                 checkbox: r._id,
-                amount: r.amount,
                 title: r.title,
+                points: r.amount,
                 rewardCondition: {
                     platform: platformList.find((p) => r.platform === p.type),
                     interaction: platformInteractionList.find((i) => r.interaction === i.type),

@@ -37,11 +37,6 @@ class ERC721Module extends VuexModule {
     }
 
     @Mutation
-    clear() {
-        Vue.set(this, '_all', {});
-    }
-
-    @Mutation
     setMetadata({ erc721, metadata }: { erc721: TERC721; metadata: TERC721Metadata }) {
         if (!this._all[erc721._id].metadata) Vue.set(this._all[erc721._id], 'metadata', {});
         Vue.set(this._all[erc721._id]['metadata'], metadata._id, metadata);
@@ -53,19 +48,12 @@ class ERC721Module extends VuexModule {
     }
 
     @Mutation
-    clearMetadata(payload: { erc721: TERC721 }) {
-        Vue.set(this._all[payload.erc721._id], 'metadata', []);
-    }
-
-    @Mutation
     setTotal({ erc721, total }: { erc721: TERC721; total: number }) {
         Vue.set(this._totalsMetadata, erc721._id, total);
     }
 
     @Action({ rawError: true })
     async list(params: { archived?: boolean } = { archived: false }) {
-        this.context.commit('clear');
-
         const { data } = await axios({
             method: 'GET',
             url: '/erc721',
@@ -85,7 +73,7 @@ class ERC721Module extends VuexModule {
             data,
         });
 
-        this.context.commit('set', { ...erc721, ...data });
+        this.context.commit('set', { ...erc721, ...data, metadata: {} });
 
         if (data.archived) {
             this.context.commit('unset', erc721);
@@ -94,8 +82,6 @@ class ERC721Module extends VuexModule {
 
     @Action({ rawError: true })
     async listMetadata({ page = 1, limit, erc721 }: MetadataListProps) {
-        if (!erc721) return;
-
         const params = new URLSearchParams();
         params.set('page', String(page));
         params.set('limit', String(limit));
@@ -116,8 +102,6 @@ class ERC721Module extends VuexModule {
 
     @Action({ rawError: true })
     async searchMetadata({ page = 1, limit, erc721, query }: MetadataListProps) {
-        if (!erc721) return;
-
         const params = new URLSearchParams();
         params.set('page', String(page));
         params.set('limit', String(limit));
@@ -139,16 +123,10 @@ class ERC721Module extends VuexModule {
 
     @Action({ rawError: true })
     async readMetadata({ erc721, metadataId }: { erc721: TERC721; metadataId: string }) {
-        if (!this._all[erc721._id]) {
-            erc721.metadata = {};
-            this.context.commit('set', erc721);
-        }
-
         const { data }: TMetadataResponse = await axios({
             method: 'GET',
             url: `/erc721/${erc721._id}/metadata/${metadataId}`,
         });
-
         const metadata = this._all[erc721._id].metadata[metadataId];
 
         this.context.commit('setMetadata', {
@@ -178,16 +156,12 @@ class ERC721Module extends VuexModule {
             return prop;
         });
 
-        const erc721 = {
+        this.context.commit('set', {
             ...data,
             metadata: {},
             loading: false,
             logoURI: data.logoImgUrl || `https://avatars.dicebear.com/api/identicon/${data.address}.svg`,
-        };
-
-        this.context.commit('set', erc721);
-
-        return erc721;
+        });
     }
 
     @Action({ rawError: true })

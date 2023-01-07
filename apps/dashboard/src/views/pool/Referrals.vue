@@ -41,13 +41,13 @@
                 <template #cell(title)="{ item }">
                     {{ item.title }}
                 </template>
-                <template #cell(amount)="{ item }">
-                    <b-badge variant="dark" class="p-2"> {{ item.amount }} Points </b-badge>
+                <template #cell(points)="{ item }">
+                    <strong class="text-primary"> {{ item.points }} </strong>
                 </template>
                 <template #cell(successUrl)="{ item }">
-                    {{ item.successUrl }}
+                    <span class="text-muted">{{ item.successUrl }}</span>
                 </template>
-                <template #cell(progress)="{ item }">
+                <!-- <template #cell(progress)="{ item }">
                     <b-progress style="border-radius: 0.3rem">
                         <b-progress-bar
                             :label="
@@ -60,9 +60,9 @@
                             :max="item.progress.limit || item.progress.progress"
                         />
                     </b-progress>
-                </template>
+                </template> -->
                 <template #cell(id)="{ item }">
-                    <b-dropdown variant="link" size="sm" no-caret>
+                    <b-dropdown variant="link" size="sm" right no-caret>
                         <template #button-content>
                             <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
                         </template>
@@ -134,12 +134,12 @@ export default class ReferralRewardsView extends Vue {
             .map((r: TReferralReward) => ({
                 checkbox: r._id,
                 title: r.title,
-                amount: r.amount,
+                points: r.amount,
                 successUrl: r.successUrl,
-                progress: {
-                    limit: r.rewardLimit,
-                    progress: r.progress,
-                },
+                // progress: {
+                //     limit: r.rewardLimit,
+                //     progress: r.progress,
+                // },
                 id: r._id,
             }))
             .slice(0, this.limit);

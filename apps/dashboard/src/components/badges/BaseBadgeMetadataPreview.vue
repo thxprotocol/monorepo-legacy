@@ -30,17 +30,28 @@
 </template>
 
 <script lang="ts">
-import { type TERC721 } from '@thxnetwork/dashboard/types/erc721';
+import { IERC721s } from '@thxnetwork/dashboard/types/erc721';
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import { mapGetters } from 'vuex';
 
-@Component({})
+@Component({
+    computed: mapGetters({
+        erc721s: 'erc721/all',
+    }),
+})
 export default class BaseBadgeMetadataPreview extends Vue {
+    erc721s!: IERC721s;
+
     @Prop() index!: number;
-    @Prop() erc721!: TERC721;
+    @Prop({ required: true }) erc721Id!: string;
     @Prop({ required: true }) metadataId!: string;
 
+    get erc721() {
+        return this.erc721s[this.erc721Id];
+    }
+
     get attributes() {
-        if (!this.erc721.metadata || !this.erc721.metadata[this.metadataId]) return {};
+        if (!this.erc721 || !this.erc721.metadata[this.metadataId]) return {};
 
         const attributes: { [key: string]: string } = {};
         for (const attr of this.erc721.metadata[this.metadataId].attributes) {
@@ -51,7 +62,10 @@ export default class BaseBadgeMetadataPreview extends Vue {
     }
 
     async mounted() {
-        if (!this.erc721.metadata || !this.erc721.metadata[this.metadataId]) {
+        if (!this.erc721) {
+            await this.$store.dispatch('erc721/read', this.erc721Id);
+        }
+        if (this.erc721 && !this.erc721s[this.erc721._id].metadata[this.metadataId]) {
             await this.$store.dispatch('erc721/readMetadata', {
                 erc721: this.erc721,
                 metadataId: this.metadataId,

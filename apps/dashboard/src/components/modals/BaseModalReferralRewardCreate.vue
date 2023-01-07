@@ -1,5 +1,5 @@
 <template>
-    <base-modal size="xl" title="Create Referral Reward" :id="id" :error="error" :loading="isLoading">
+    <base-modal @show="onShow" size="xl" title="Create Referral Reward" :id="id" :error="error" :loading="isLoading">
         <template #modal-body v-if="!isLoading">
             <p class="text-gray">
                 Referral rewards incentive your existing users to attract new users and will drive down your customer
@@ -25,7 +25,7 @@
                                 variant="light"
                                 v-b-toggle.collapse-card-expiry
                             >
-                                <strong>Referral Completion</strong>
+                                <strong>Qualification</strong>
                                 <i :class="`fa-chevron-${isVisible ? 'up' : 'down'}`" class="fas m-0"></i>
                             </b-button>
                             <b-collapse id="collapse-card-expiry" v-model="isVisible">
@@ -98,12 +98,17 @@ export default class ModalReferralRewardCreate extends Vue {
     @Prop() pool!: IPool;
     @Prop({ required: false }) reward!: TReferralReward;
 
-    mounted() {
+    onShow() {
         if (this.reward) {
             this.title = this.reward.title;
             this.amount = String(this.reward.amount);
             this.description = this.reward.description;
             this.successUrl = this.reward.successUrl;
+        } else {
+            this.title = '';
+            this.description = '';
+            this.amount = '0';
+            this.successUrl = '';
         }
     }
 
@@ -123,7 +128,7 @@ export default class ModalReferralRewardCreate extends Vue {
                 },
             })
             .then(() => {
-                this.$emit('submit')
+                this.$emit('submit');
                 this.$bvModal.hide(this.id);
                 this.isLoading = false;
             });

@@ -99,6 +99,7 @@ import BaseDropdownSelectERC721 from '../dropdowns/BaseDropdownSelectERC721.vue'
     },
     computed: mapGetters({
         pools: 'pools/all',
+        erc721s: 'erc721/all',
     }),
 })
 export default class ModalRewardERC721Create extends Vue {

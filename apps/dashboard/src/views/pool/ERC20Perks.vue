@@ -21,8 +21,7 @@
                 :selectedItems="selectedItems"
                 :actions="[
                     { variant: 0, label: `Delete perks` },
-                    { variant: 1, label: 'Download QR codes' },
-                    { variant: 2, label: 'Download CSV' },
+                    { variant: 1, label: 'Export Claim URL\'s' },
                 ]"
                 @click-action="onClickAction"
                 @change-page="onChangePage"
@@ -49,7 +48,7 @@
                     <b-form-checkbox :value="item.checkbox" v-model="selectedItems" />
                 </template>
                 <template #cell(amount)="{ item }">
-                    <b-badge variant="dark" class="p-2"> {{ item.amount.amount }} {{ item.amount.symbol }} </b-badge>
+                    <strong class="text-primary">{{ item.amount.amount }} {{ item.amount.symbol }}</strong>
                 </template>
                 <template #cell(progress)="{ item }">
                     <b-progress style="border-radius: 0.3rem">
@@ -157,20 +156,21 @@ export default class ERC20PerksView extends Vue {
             .sort((a, b) => (a.createdAt && b.createdAt && a.createdAt < b.createdAt ? 1 : -1))
             .map((r: TERC20Perk & { erc20: TERC20 }) => ({
                 checkbox: r._id,
+                title: r.title,
                 amount: {
                     amount: r.amount,
                     symbol: r.erc20.symbol,
                 },
-                title: r.title,
                 rewardCondition: {
                     platform: platformList.find((p) => r.platform === p.type),
                     interaction: platformInteractionList.find((i) => r.interaction === i.type),
                     content: r.content,
                 },
-                progress: {
-                    limit: r.rewardLimit,
-                    progress: r.progress,
-                },
+                // TODO needs seperated claim entities
+                // progress: {
+                //     limit: r.rewardLimit,
+                //     progress: r.progress,
+                // },
                 claims: r.claims,
                 id: r._id,
             }))

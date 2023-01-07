@@ -51,13 +51,12 @@
                 </template>
                 <template #cell(metadata)="{ index, item }">
                     <BaseBadgeMetadataPreview
-                        v-if="item.metadata.erc721"
                         :index="index"
-                        :erc721="item.metadata.erc721"
+                        :erc721Id="item.metadata.erc721Id"
                         :metadataId="item.metadata.metadataId"
                     />
                 </template>
-                <template #cell(progress)="{ item }">
+                <!-- <template #cell(progress)="{ item }">
                     <b-progress style="border-radius: 0.3rem">
                         <b-progress-bar
                             :label="
@@ -73,7 +72,7 @@
                     <div class="text-center text-muted small">
                         {{ !item.progress.limit ? 'unlimited' : `${item.progress.limit}x limit` }}
                     </div>
-                </template>
+                </template> -->
                 <template #cell(claims)="{ item }">
                     <b-link v-b-modal="`modalRewardClaimsDownload${item.id}`"> Download </b-link>
                     <BaseModalRewardClaimsDownload
@@ -90,7 +89,7 @@
                     />
                 </template>
                 <template #cell(id)="{ item }">
-                    <b-dropdown variant="link" size="sm" no-caret>
+                    <b-dropdown variant="link" size="sm" right no-caret>
                         <template #button-content>
                             <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
                         </template>
@@ -168,7 +167,7 @@ export default class ERC721PerksView extends Vue {
             .map((r: TERC721Perk & { erc721: TERC721 }) => ({
                 checkbox: r._id,
                 metadata: {
-                    erc721: r.erc721,
+                    erc721Id: r.erc721Id,
                     metadataId: r.erc721metadataId,
                 },
                 title: r.title,
@@ -177,10 +176,10 @@ export default class ERC721PerksView extends Vue {
                     interaction: platformInteractionList.find((i) => r.interaction === i.type),
                     content: r.content,
                 },
-                progress: {
-                    limit: r.rewardLimit,
-                    progress: r.progress,
-                },
+                // progress: {
+                //     limit: r.rewardLimit,
+                //     progress: r.progress,
+                // },
                 claims: r.claims,
                 id: r._id,
             }))
