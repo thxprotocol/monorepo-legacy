@@ -5,6 +5,7 @@ import { RewardConditionPlatform } from '@thxnetwork/types/index';
 import { config } from '@thxnetwork/dashboard/utils/oidc';
 import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 import type { IAccount, IAccountUpdates, ITwitter, IYoutube } from '@thxnetwork/dashboard/types/account';
+import { ext } from 'vee-validate/dist/rules';
 
 @Module({ namespaced: true })
 class AccountModule extends VuexModule {
@@ -144,6 +145,10 @@ class AccountModule extends VuexModule {
         const extraQueryParams: any = {
             return_url: BASE_URL,
         };
+
+        if (payload.signupEmail) {
+            extraQueryParams['signupEmail'] = payload.signupEmail;
+        }
 
         if (payload.signupToken) {
             extraQueryParams['prompt'] = 'confirm';

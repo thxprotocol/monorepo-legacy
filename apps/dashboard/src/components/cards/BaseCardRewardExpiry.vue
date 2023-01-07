@@ -78,7 +78,7 @@ export default class BaseCardRewardCondition extends Vue {
     onChangeTime() {
         if (!this.expirationDate) return;
 
-        this.$emit('change-date', new Date(this.expirationDate).setTime(this.expirationTime));
+        this.$emit('change-date', new Date(this.expirationDate).setTime(Number(this.expirationTime)));
     }
 }
 </script>

@@ -22,7 +22,7 @@
                             <p>
                                 <i
                                     ><a href="https://docs.thx.network/pricing" target="_blank" class="text-muted mt-2">
-                                        2,5% token fee
+                                        2,5% transaction fee
                                     </a></i
                                 >
                             </p>
@@ -36,30 +36,35 @@
                                 Sign Up
                                 <i class="fas fa-chevron-right"></i>
                             </b-button>
-                            <p class="small">
-                                <i class="text-muted mt-2">* we accept crypto and EUR or USD payments</i>
-                            </p>
                         </div>
-                        <h3 class="text-dark font-small">Features</h3>
+                        <h3 class="text-dark font-small mt-5">Features</h3>
                         <div class="mb-1">
                             <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
                             Loyalty Widget
                         </div>
                         <div class="mb-1">
                             <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Currencies
+                            Point Rewards
                         </div>
                         <div class="mb-1">
                             <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            NFT
+                            Create Coins &amp; NFTs
+                        </div>
+                        <div class="mb-1">
+                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
+                            Import Coins
                         </div>
                         <div class="mb-1">
                             <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
                             Free transactions
                         </div>
                         <div class="mb-1">
+                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
+                            Webhooks
+                        </div>
+                        <div class="mb-1">
                             <i class="fas fa-minus icon-circle icon-circle-opaque d-inline-flex"> </i>
-                            API Access
+                            REST API Access
                         </div>
                     </b-card>
                 </div>
@@ -74,7 +79,7 @@
                             <p>
                                 <i
                                     ><a href="https://docs.thx.network/pricing" target="_blank" class="text-muted mt-2">
-                                        2,5% token fee
+                                        2,5% transaction fee
                                     </a></i
                                 >
                             </p>
@@ -93,30 +98,33 @@
                             </p>
                         </div>
                         <h3 class="text-light font-small">Features</h3>
-                        <div
-                            v-b-tooltip.hover
-                            target="topright"
-                            class="mb-1"
-                            title="Use our pre-configured widgets to embed tokens and collectibles in your platform."
-                        >
+                        <div class="mb-1">
                             <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
                             Loyalty Widget
                         </div>
-                        <div target="topright" class="mb-1">
+                        <div class="mb-1">
                             <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Currencies
+                            Point Rewards
                         </div>
-                        <div target="topright" class="mb-1">
+                        <div class="mb-1">
                             <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            NFT
+                            Create Coins &amp; NFTs
                         </div>
-                        <div target="topright" class="mb-1">
+                        <div class="mb-1">
+                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
+                            Import Coins
+                        </div>
+                        <div class="mb-1">
                             <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
                             Free transactions
                         </div>
+                        <div class="mb-1">
+                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
+                            Webhooks
+                        </div>
                         <div target="topright" class="mb-1">
                             <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            API Access
+                            REST API Access
                         </div>
                     </b-card>
                 </div>

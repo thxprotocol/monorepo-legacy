@@ -33,6 +33,14 @@ const routes: Array<RouteConfig> = [
             ),
     },
     {
+        path: '/use-cases/next-generation-growth-hack-for-web3-companies',
+        name: 'Next Generation Growth Hack for Web3 companies',
+        component: () =>
+            import(
+                /* webpackChunkName: "usecases-nextgenerationgrowthhackforweb3companies" */ '../views/usecases/NextGenerationGrowthHackForWeb3Companies.vue'
+            ),
+    },
+    {
         path: '/use-cases/reward-your-loyal-customers',
         name: 'Reward your loyal customers',
         component: () =>
