@@ -7,7 +7,7 @@
             <b-col class="d-flex justify-content-end">
                 <b-button v-b-modal="'modalRewardPointsCreate'" class="rounded-pill" variant="primary">
                     <i class="fas fa-plus mr-2"></i>
-                    <span class="d-none d-md-inline">Point Reward</span>
+                    <span class="d-none d-md-inline">Conditional Reward</span>
                 </b-button>
                 <BaseModalRewardPointsCreate @submit="listRewards" :id="'modalRewardPointsCreate'" :pool="pool" />
             </b-col>
@@ -19,7 +19,7 @@
                 :pool="pool"
                 :total-rows="totals[pool._id]"
                 :selectedItems="selectedItems"
-                :actions="[{ variant: 0, label: `Delete point rewards` }]"
+                :actions="[{ variant: 0, label: `Delete rewards` }]"
                 @click-action="onClickAction"
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"

@@ -8,15 +8,16 @@
         <b-card class="shadow-sm mb-5">
             <b-form-row>
                 <b-col md="6">
-                    <label> Logo URL </label>
-                    <p class="text-muted small">
-                        This logo image is shown above the login panel users see when claiming your crypto or NFT's.
-                    </p>
-                    <b-form-file @change="onUpload($event, 'logoImgUrl')" accept="image/*" />
+                    <b-form-group
+                        label="Logo URL"
+                        description="This logo image is shown above the login panel users see when claiming your crypto or NFT's."
+                    >
+                        <b-form-file @change="onUpload($event, 'logoImgUrl')" accept="image/*" />
+                    </b-form-group>
                 </b-col>
                 <b-col>
                     <label>Preview</label>
-                    <b-card body-class="py-3 text-center" class="mb-3" bg-variant="light">
+                    <b-card body-class="py-5 text-center" class="mb-3" bg-variant="light">
                         <img
                             height="65"
                             width="65"
@@ -25,22 +26,23 @@
                             :src="logoImgUrl"
                             v-if="logoImgUrl"
                         />
-                        <span v-else class="text-gray">Please provide and image URL.</span>
+                        <span v-else class="text-gray">Preview logo URL</span>
                     </b-card>
                 </b-col>
             </b-form-row>
             <hr />
             <b-form-row>
                 <b-col md="6">
-                    <label> Background URL </label>
-                    <p class="text-muted small">
-                        This background image is shown on the login page users see when claiming your crypto or NFT's.
-                    </p>
-                    <b-form-file @change="onUpload($event, 'backgroundImgUrl')" accept="image/*" />
+                    <b-form-group
+                        label="Background URL"
+                        description="This background image is shown on the login page users see when claiming your crypto or NFT's."
+                    >
+                        <b-form-file @change="onUpload($event, 'backgroundImgUrl')" accept="image/*" />
+                    </b-form-group>
                 </b-col>
                 <b-col>
                     <label>Preview</label>
-                    <b-card body-class="py-3 text-center" class="mb-3" bg-variant="light">
+                    <b-card body-class="py-5 text-center" class="mb-3" bg-variant="light">
                         <img
                             width="100%"
                             class="m-0"
@@ -48,16 +50,15 @@
                             :src="backgroundImgUrl"
                             v-if="backgroundImgUrl"
                         />
-                        <span v-else class="text-gray">Please provide and image URL.</span>
+                        <span v-else class="text-gray">Preview background URL.</span>
                     </b-card>
                 </b-col>
             </b-form-row>
             <hr />
             <div class="d-flex justify-content-end">
                 <b-button variant="primary" :disabled="!isBrandUpdateInvalid" @click="update()" class="rounded-pill">
-                    Update
-                    <i v-if="!loading" class="fas fa-save ml-2" style="font-size: 1.2rem"></i>
-                    <b-spinner v-else class="ml-2" small variant="white" />
+                    <b-spinner v-if="loading" class="mr-2" small variant="white" />
+                    <span>Update</span>
                 </b-button>
             </div>
         </b-card>

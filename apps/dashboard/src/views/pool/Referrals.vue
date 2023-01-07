@@ -19,7 +19,7 @@
                 :pool="pool"
                 :total-rows="totals[pool._id]"
                 :selectedItems="selectedItems"
-                :actions="[{ variant: 0, label: `Delete referral rewards` }]"
+                :actions="[{ variant: 0, label: `Delete rewards` }]"
                 @click-action="onClickAction"
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
