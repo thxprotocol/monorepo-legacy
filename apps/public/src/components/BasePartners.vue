@@ -7,15 +7,8 @@
                 </div>
             </div>
             <div class="row pb-5">
-                <div class="col-6 col-md-2 ">
-                    <a
-                        v-b-tooltip.hover
-                        href="https://polygon.technology/"
-                        target="topright"
-                        title=" Polygon uses side-chain and rollup solutions to scale the Ethereum blockchain. Polygon is supporting
-                    THX as part of their 'Developer Support Program'."
-                        class="card-logo card-logo-lg m-auto"
-                    >
+                <div class="col-6 col-md-2 offset-md-1">
+                    <a href="https://polygon.technology/" target="_blank" class="card-logo card-logo-lg m-auto">
                         <img
                             height="40"
                             width="auto"
@@ -27,54 +20,21 @@
                         <strong>Bringing massive scale to Ethereum</strong>
                     </p>
                 </div>
-                <div class="col-6 col-md-2 ">
-                    <a
-                        v-b-tooltip.hover
-                        href="https://newstateventures.co"
-                        target="topright"
-                        title="SBRecords is part of New State Ventures, an independent label with cross-functional venture channels."
-                        class="card-logo card-logo-lg m-auto"
-                    >
+                <div class="col-6 col-md-2">
+                    <a href="https://techstars.com" target="_blank" class="card-logo card-logo-lg m-auto">
                         <img
-                            height="50"
-                            width="auto"
-                            v-lazy="require('../../public/assets/img/thx_partner_sbrecords.png')"
-                            :alt="ALT_TEXT.HOME_NEW_STATE_VENTURES"
+                            width="120"
+                            height="auto"
+                            v-lazy="require('../../public/assets/images/techstars.png')"
+                            :alt="ALT_TEXT.HOME_NEW_TECHSTARS"
                         />
                     </a>
                     <p class="text-center font-weight-light mt-3">
-                        <strong>The intellectual capital company for creators</strong>
+                        <strong>The largest pre-seed investor in the world</strong>
                     </p>
                 </div>
-                <div class="col-6 col-md-2 ">
-                    <a
-                        v-b-tooltip.hover
-                        href="https://www.plugandplaytechcenter.com/"
-                        target="topright"
-                        title="Connects the best technology startups and the world’s largest corporations. THX is part of PnP’s
-                    informal ‘Booster’ acceleration program in Amsterdam."
-                        class="card-logo card-logo-lg m-auto"
-                    >
-                        <img
-                            height="20"
-                            width="auto"
-                            v-lazy="require('../../public/assets/img/thx_partner_plugandplay.png')"
-                            :alt="ALT_TEXT.HOME_PLUG_AND_PLAY_TECH_CENTER"
-                        />
-                    </a>
-                    <p class="text-center font-weight-light mt-3">
-                        <strong>The world’s leading innovation platform</strong>
-                    </p>
-                </div>
-                <div class="col-6 col-md-2 ">
-                    <a
-                        v-b-tooltip.hover
-                        href="https://www.getopensocial.com/"
-                        target="topright"
-                        title="Open Social’s community software serves 1000+ organizations globally. THX allows Open Social's
-                    gamification extension to issue ERC-20 tokens as rewards."
-                        class="card-logo card-logo-lg m-auto"
-                    >
+                <div class="col-6 col-md-2">
+                    <a href="https://www.getopensocial.com/" target="_blank" class="card-logo card-logo-lg m-auto">
                         <img
                             height="80"
                             width="auto"
@@ -87,14 +47,7 @@
                     </p>
                 </div>
                 <div class="col-6 col-md-2">
-                    <a
-                        v-b-tooltip.hover
-                        href="https://blockis.eu/"
-                        target="topright"
-                        title="Block.IS is an EU Horizon 2020 acceleration program to build an open and cross-border,
-                    cross-sectoral ecosystem for the use of blockchain technology."
-                        class="card-logo card-logo-lg m-auto"
-                    >
+                    <a href="https://blockis.eu/" target="_blank" class="card-logo card-logo-lg m-auto">
                         <img
                             height="25"
                             width="auto"
@@ -107,14 +60,7 @@
                     </p>
                 </div>
                 <div class="col-6 col-md-2">
-                    <a
-                        v-b-tooltip.hover
-                        href="https://blockpool.eu/"
-                        target="topright"
-                        title="Blockpool is an EU Horizon 2020 accelerator to increase the cross-border uptake of Blockchain and
-                    other distributed ledger tech to European SMEs."
-                        class="card-logo card-logo-lg m-auto"
-                    >
+                    <a href="https://blockpool.eu/" target="_blank" class="card-logo card-logo-lg m-auto">
                         <img
                             height="60"
                             width="auto"

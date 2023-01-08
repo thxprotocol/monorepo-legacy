@@ -1,7 +1,7 @@
 import { createApp } from 'https://unpkg.com/petite-vue?module';
 
 createApp({
-    email: null,
+    email: document.querySelector('input[type="email"]').dataset.email,
     password: null,
     passwordRepeat: null,
     acceptTermsPrivacy: false,
