@@ -31,7 +31,6 @@
         <b-dropdown-divider></b-dropdown-divider>
         <b-dropdown-form>
             <b-pagination
-                class="mt-3"
                 @change="onChangePage"
                 v-model="page"
                 :per-page="limit"
@@ -43,7 +42,7 @@
 </template>
 
 <script lang="ts">
-import type { IERC721s, TERC721 } from '@thxnetwork/dashboard/types/erc721';
+import type { IERC721Metadatas, IERC721s, TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { format } from 'date-fns';
@@ -52,13 +51,14 @@ import type { TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
 @Component({
     computed: mapGetters({
         erc721s: 'erc721/all',
+        metadata: 'erc721/metadata',
         totals: 'erc721/totalsMetadata',
     }),
 })
 export default class BaseDropdownERC721Metadata extends Vue {
     format = format;
     erc721s!: IERC721s;
-    selectedMetadata: TERC721Metadata | null = null;
+    metadata!: IERC721Metadatas;
     limit = 5;
     page = 1;
     query = '';
@@ -69,32 +69,26 @@ export default class BaseDropdownERC721Metadata extends Vue {
     @Prop({ required: false }) erc721metadataId!: string;
 
     get total() {
-        if (!this.erc721) return;
         return this.totals[this.erc721._id];
     }
 
     get selectedTitle() {
-        if (!this.selectedMetadata) return 'Select metadata';
-
-        const attr = this.selectedMetadata.attributes.find((attr) => attr.key === 'name');
-        if (!attr) return '...';
-
-        return attr.value;
+        if (!this.erc721metadataId) return 'None';
+        const metadata = this.metadata[this.erc721._id][this.erc721metadataId];
+        if (!metadata) return;
+        return metadata.attributes.find((attr) => attr.key === 'name')?.value;
     }
 
     get erc721metadataByPage() {
         return (
             this.erc721 &&
-            Object.values(this.erc721.metadata)
+            Object.values(this.metadata[this.erc721._id])
                 .filter((m) => m.page === this.page)
                 .slice(0, this.limit)
         );
     }
 
     mounted() {
-        if (this.erc721metadataId) {
-            this.selectedMetadata = this.erc721.metadata[this.erc721metadataId];
-        }
         this.searchMetadata();
     }
 
@@ -118,7 +112,6 @@ export default class BaseDropdownERC721Metadata extends Vue {
     }
 
     onClick(metadata: TERC721Metadata) {
-        this.selectedMetadata = metadata;
         this.$emit('selected', metadata);
     }
 }

@@ -10,16 +10,22 @@ import type {
     TERC721DefaultProp,
     MetadataListProps,
     TMetadataResponse,
+    IERC721Metadatas,
 } from '@thxnetwork/dashboard/types/erc721';
 import JSZip from 'jszip';
 
 @Module({ namespaced: true })
 class ERC721Module extends VuexModule {
     _all: IERC721s = {};
+    _metadata: IERC721Metadatas = {};
     _totalsMetadata: { [erc721Id: string]: number } = {};
 
     get all() {
         return this._all;
+    }
+
+    get metadata() {
+        return this._metadata;
     }
 
     get totalsMetadata() {
@@ -38,13 +44,13 @@ class ERC721Module extends VuexModule {
 
     @Mutation
     setMetadata({ erc721, metadata }: { erc721: TERC721; metadata: TERC721Metadata }) {
-        if (!this._all[erc721._id].metadata) Vue.set(this._all[erc721._id], 'metadata', {});
-        Vue.set(this._all[erc721._id]['metadata'], metadata._id, metadata);
+        if (!this._metadata[erc721._id]) Vue.set(this._metadata, erc721._id, {});
+        Vue.set(this._metadata[erc721._id], metadata._id, metadata);
     }
 
     @Mutation
     unsetMetadata({ erc721, metadata }: { erc721: TERC721; metadata: TERC721Metadata }) {
-        Vue.delete(this._all[erc721._id]['metadata'], metadata._id);
+        Vue.delete(this._metadata[erc721._id], metadata._id);
     }
 
     @Mutation
@@ -61,7 +67,7 @@ class ERC721Module extends VuexModule {
         });
 
         for (const _id of data) {
-            this.context.commit('set', { _id, metadata: {}, loading: true });
+            this.context.commit('set', { _id, loading: true });
         }
     }
 
@@ -73,7 +79,7 @@ class ERC721Module extends VuexModule {
             data,
         });
 
-        this.context.commit('set', { ...erc721, ...data, metadata: {} });
+        this.context.commit('set', { ...erc721, ...data });
 
         if (data.archived) {
             this.context.commit('unset', erc721);
@@ -127,11 +133,10 @@ class ERC721Module extends VuexModule {
             method: 'GET',
             url: `/erc721/${erc721._id}/metadata/${metadataId}`,
         });
-        const metadata = this._all[erc721._id].metadata[metadataId];
-
+        const metadata = this._metadata[erc721._id] ? { ...this._metadata[erc721._id][metadataId], ...data } : data;
         this.context.commit('setMetadata', {
             erc721,
-            metadata: { ...metadata, ...data },
+            metadata,
         });
     }
 
@@ -151,10 +156,10 @@ class ERC721Module extends VuexModule {
             url: '/erc721/' + id,
         });
 
-        data.properties.map((prop: TERC721DefaultProp) => {
-            prop.value = '';
-            return prop;
-        });
+        // data.properties.map((prop: TERC721DefaultProp) => {
+        //     prop.value = '';
+        //     return prop;
+        // });
 
         this.context.commit('set', {
             ...data,

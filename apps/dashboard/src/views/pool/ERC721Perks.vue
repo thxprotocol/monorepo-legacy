@@ -7,7 +7,7 @@
             <b-col md="3" class="d-flex justify-content-end">
                 <b-button v-b-modal="'modalRewardERC721Create'" class="rounded-pill" variant="primary">
                     <i class="fas fa-plus mr-2"></i>
-                    <span class="d-none d-md-inline">ERC721 Perk</span>
+                    <span class="d-none d-md-inline">NFT Perk</span>
                 </b-button>
                 <BaseModalRewardERC721Create @submit="listRewards" :id="'modalRewardERC721Create'" :pool="pool" />
             </b-col>
@@ -21,8 +21,7 @@
                 :selectedItems="selectedItems"
                 :actions="[
                     { variant: 0, label: `Delete perks` },
-                    { variant: 1, label: 'Download QR codes' },
-                    { variant: 2, label: 'Download CSV' },
+                    { variant: 1, label: 'Download Claim URL\'s' },
                 ]"
                 @click-action="onClickAction"
                 @change-page="onChangePage"
@@ -42,12 +41,16 @@
                 <template #head(title)> Title </template>
                 <template #head(erc721metadataId)> Metadata </template>
                 <template #head(rewardCondition)> Condition </template>
-                <template #head(progress)> Progress </template>
+                <template #head(claims)> Claim URL's </template>
                 <template #head(id)> &nbsp; </template>
 
                 <!-- Cell formatting -->
                 <template #cell(checkbox)="{ item }">
                     <b-form-checkbox :value="item.checkbox" v-model="selectedItems" />
+                </template>
+                <template #cell(erc721)="{ item }">
+                    {{ item.erc721.name }}
+                    {{ item.erc721.symbol }}
                 </template>
                 <template #cell(metadata)="{ index, item }">
                     <BaseBadgeMetadataPreview
@@ -56,23 +59,6 @@
                         :metadataId="item.metadata.metadataId"
                     />
                 </template>
-                <!-- <template #cell(progress)="{ item }">
-                    <b-progress style="border-radius: 0.3rem">
-                        <b-progress-bar
-                            :label="
-                                item.progress.limit
-                                    ? `${item.progress.progress}/${item.progress.limit}`
-                                    : String(item.progress.progress)
-                            "
-                            :value="item.progress.progress"
-                            :min="0"
-                            :max="item.progress.limit || item.progress.progress"
-                        />
-                    </b-progress>
-                    <div class="text-center text-muted small">
-                        {{ !item.progress.limit ? 'unlimited' : `${item.progress.limit}x limit` }}
-                    </div>
-                </template> -->
                 <template #cell(claims)="{ item }">
                     <b-link v-b-modal="`modalRewardClaimsDownload${item.id}`"> Download </b-link>
                     <BaseModalRewardClaimsDownload
@@ -166,11 +152,15 @@ export default class ERC721PerksView extends Vue {
             .sort((a, b) => (a.createdAt && b.createdAt && a.createdAt < b.createdAt ? 1 : -1))
             .map((r: TERC721Perk & { erc721: TERC721 }) => ({
                 checkbox: r._id,
+                title: r.title,
+                erc721: {
+                    name: r.erc721.name,
+                    symbol: r.erc721.symbol,
+                },
                 metadata: {
                     erc721Id: r.erc721Id,
                     metadataId: r.erc721metadataId,
                 },
-                title: r.title,
                 rewardCondition: {
                     platform: platformList.find((p) => r.platform === p.type),
                     interaction: platformInteractionList.find((i) => r.interaction === i.type),
@@ -186,8 +176,8 @@ export default class ERC721PerksView extends Vue {
             .slice(0, this.limit);
     }
 
-    async mounted() {
-        await this.listRewards();
+    mounted() {
+        this.listRewards();
     }
 
     async listRewards() {

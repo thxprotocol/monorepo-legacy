@@ -5,6 +5,12 @@
             <form v-on:submit.prevent="onSubmit()" id="formRewardPointsCreate">
                 <b-row>
                     <b-col md="6">
+                        <b-form-group label="Title">
+                            <b-form-input v-model="title" />
+                        </b-form-group>
+                        <b-form-group label="Description">
+                            <b-textarea v-model="description" />
+                        </b-form-group>
                         <b-form-group label="NFT">
                             <BaseDropdownSelectERC721
                                 :chainId="(pool && pool.chainId) || (erc721 && erc721.chainId)"
@@ -12,18 +18,12 @@
                                 @selected="erc721 = $event"
                             />
                         </b-form-group>
-                        <b-form-group v-if="erc721 && !erc721SelectedMetadataIds" label="Metadata">
+                        <b-form-group label="Metadata" v-if="erc721 && !erc721SelectedMetadataIds">
                             <BaseDropdownERC721Metadata
                                 :erc721="erc721"
                                 :erc721metadataId="erc721metadataId"
                                 @selected="onSelectMetadata"
                             />
-                        </b-form-group>
-                        <b-form-group label="Title">
-                            <b-form-input v-model="title" />
-                        </b-form-group>
-                        <b-form-group label="Description">
-                            <b-textarea v-model="description" />
                         </b-form-group>
                         <b-form-group label="Point Price">
                             <b-form-input type="number" v-model="pointPrice" />
@@ -132,23 +132,26 @@ export default class ModalRewardERC721Create extends Vue {
     @Prop({ required: false }) erc721SelectedMetadataIds!: string[];
 
     onShow() {
-        if (this.reward) {
-            this.erc721metadataId = this.reward.erc721metadataId;
-            this.title = this.reward.title;
-            this.description = this.reward.description;
-            this.rewardLimit = this.reward.rewardLimit;
-            this.pointPrice = this.reward.pointPrice;
-            this.erc721 = this.erc721s[this.reward.erc721Id];
-            this.rewardCondition = {
-                platform: this.reward.platform as RewardConditionPlatform,
-                interaction: this.reward.interaction as RewardConditionInteraction,
-                content: this.reward.content as string,
-            };
-            if (this.reward.image) {
-                this.image = this.reward.image;
-            }
-            this.isPromoted = this.reward.isPromoted;
-        }
+        this.title = this.reward ? this.reward.title : '';
+        this.description = this.reward ? this.reward.description : '';
+        this.rewardLimit = this.reward ? this.reward.rewardLimit : 0;
+        this.pointPrice = this.reward ? this.reward.pointPrice : 0;
+        this.rewardCondition = this.reward
+            ? {
+                  platform: this.reward.platform as RewardConditionPlatform,
+                  interaction: this.reward.interaction as RewardConditionInteraction,
+                  content: this.reward.content as string,
+              }
+            : {
+                  platform: RewardConditionPlatform.None,
+                  interaction: RewardConditionInteraction.None,
+                  content: '',
+              };
+        this.image = this.reward ? this.reward.image : '';
+        this.isPromoted = this.reward ? this.reward.isPromoted : false;
+
+        this.erc721 = this.reward ? this.erc721s[this.reward.erc721Id] : null;
+        this.erc721metadataId = this.reward ? this.reward.erc721metadataId : '';
     }
 
     onSelectMetadata(metadata: TERC721Metadata) {
@@ -181,19 +184,7 @@ export default class ModalRewardERC721Create extends Vue {
                 },
             })
             .then(() => {
-                this.title = '';
-                this.erc721metadataId = '';
-                this.description = '';
-                this.claimAmount = 1;
-                this.rewardLimit = 0;
-                this.rewardCondition = {
-                    platform: platformList[0].type,
-                    interaction: platformInteractionList[0].type,
-                    content: '',
-                };
-                this.image = '';
                 this.isSubmitDisabled = false;
-                this.isPromoted = false;
                 this.isLoading = false;
                 this.$bvModal.hide(this.id);
             });
