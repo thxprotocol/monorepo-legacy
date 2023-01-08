@@ -39,7 +39,7 @@
                     <b-form-checkbox :value="item.checkbox" v-model="selectedItems" />
                 </template>
                 <template #cell(points)="{ item }">
-                    <strong>{{ item.points }} </strong>
+                    <strong class="text-primary">{{ item.points }} </strong>
                 </template>
                 <template #cell(rewardCondition)="{ item }">
                     <BaseBadgeRewardConditionPreview

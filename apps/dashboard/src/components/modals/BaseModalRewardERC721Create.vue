@@ -11,14 +11,10 @@
                         <b-form-group label="Description">
                             <b-textarea v-model="description" />
                         </b-form-group>
-                        <b-form-group label="NFT">
-                            <BaseDropdownSelectERC721
-                                :chainId="(pool && pool.chainId) || (erc721 && erc721.chainId)"
-                                :erc721="erc721"
-                                @selected="erc721 = $event"
-                            />
+                        <b-form-group label="NFT" v-if="!erc721SelectedMetadataIds.length">
+                            <BaseDropdownSelectERC721 :chainId="chainId" :erc721="erc721" @selected="erc721 = $event" />
                         </b-form-group>
-                        <b-form-group label="Metadata" v-if="erc721 && !erc721SelectedMetadataIds">
+                        <b-form-group label="Metadata" v-if="erc721 && !erc721SelectedMetadataIds.length">
                             <BaseDropdownERC721Metadata
                                 :erc721="erc721"
                                 :erc721metadataId="erc721metadataId"
@@ -87,6 +83,7 @@ import BaseDropdownERC721Metadata from '../dropdowns/BaseDropdownERC721Metadata.
 import type { IERC721s, TERC721, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
 import { mapGetters } from 'vuex';
 import BaseDropdownSelectERC721 from '../dropdowns/BaseDropdownSelectERC721.vue';
+import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 
 @Component({
     components: {
@@ -129,7 +126,11 @@ export default class ModalRewardERC721Create extends Vue {
     @Prop() id!: string;
     @Prop() pool!: IPool;
     @Prop({ required: false }) reward!: TERC721Perk;
-    @Prop({ required: false }) erc721SelectedMetadataIds!: string[];
+    @Prop({ required: false, default: () => [] }) erc721SelectedMetadataIds!: string[];
+
+    get chainId() {
+        return (this.pool && this.pool.chainId) || (this.erc721 && this.erc721.chainId) || ChainId.Hardhat;
+    }
 
     onShow() {
         this.title = this.reward ? this.reward.title : '';
@@ -167,7 +168,6 @@ export default class ModalRewardERC721Create extends Vue {
                 reward: this.reward,
                 payload: {
                     page: 1,
-                    erc721Id: this.erc721 && this.erc721._id,
                     title: this.title,
                     description: this.description,
                     erc721metadataIds: JSON.stringify(

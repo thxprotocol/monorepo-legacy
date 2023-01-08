@@ -5,11 +5,12 @@ import ImageService from '@thxnetwork/api/services/ImageService';
 import { TERC721Perk } from '@thxnetwork/types/interfaces/ERC721Perk';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
+import { NotFound } from '@aws-sdk/client-s3';
+import { NotFoundError } from '@thxnetwork/api/util/errors';
 
 const validation = [
     body('title').exists().isString(),
     body('description').exists().isString(),
-    body('erc721Id').exists().isMongoId(),
     body('erc721metadataIds').exists().isString(),
     body('expiryDate').optional().isString(),
     body('claimAmount').optional().isInt({ gt: 0 }),
@@ -33,8 +34,17 @@ const controller = async (req: Request, res: Response) => {
         const response = await ImageService.upload(req.file);
         image = ImageService.getPublicUrl(response.key);
     }
+
+    const metadataIdList = JSON.parse(req.body.erc721metadataIds);
     const pool = await PoolService.getById(req.header('X-PoolId'));
-    const erc721 = await ERC721Service.findById(req.body.erc721Id);
+    if (!pool) throw new NotFoundError('Could not find pool');
+
+    // Get one metadata so we can obtain erc721Id from it
+    const metadata = await ERC721Service.findMetadataById(metadataIdList[0]);
+    if (!metadata) throw new NotFoundError('Could not find first metadata from list');
+
+    const erc721 = await ERC721Service.findById(metadata.erc721);
+    if (!erc721) throw new NotFoundError('Could not find erc721');
 
     // Check if erc721 already is mintable by pool
     const isMinter = await ERC721Service.isMinter(erc721, pool.address);
@@ -43,13 +53,13 @@ const controller = async (req: Request, res: Response) => {
     }
 
     const perks = await Promise.all(
-        JSON.parse(req.body.erc721metadataIds).map(async (erc721metadataId: string) => {
+        metadataIdList.map(async (erc721metadataId: string) => {
             const config = {
                 poolId: String(pool._id),
                 erc721metadataId,
                 image,
+                erc721Id: erc721._id,
                 title: req.body.title,
-                erc721Id: req.body.erc721Id,
                 description: req.body.description,
                 expiryDate: req.body.expiryDate,
                 claimAmount: req.body.claimAmount,
@@ -58,7 +68,7 @@ const controller = async (req: Request, res: Response) => {
             } as TERC721Perk;
             const { reward, claims } = await createERC721Perk(pool, config);
 
-            return { ...reward.toJSON(), claims };
+            return { ...reward.toJSON(), claims, erc721 };
         }),
     );
 

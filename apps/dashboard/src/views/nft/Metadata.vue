@@ -21,7 +21,7 @@
                     Import/Export
                 </b-dropdown-item>
             </b-dropdown>
-            <base-modal-erc721-metadata-create @update="listMetadata" id="modalERC721MetadataCreate" :erc721="erc721" />
+            <BaseModalErc721MetadataCreate @update="listMetadata" id="modalERC721MetadataCreate" :erc721="erc721" />
             <BaseModalErc721MetadataBulkCreate :erc721="erc721" />
             <BaseModalErc721MetadataUploadCSV :erc721="erc721" />
         </b-row>
@@ -49,9 +49,10 @@
                 Downloading your QR codes
             </b-alert>
             <BaseModalRewardERC721Create
+                v-if="erc721"
                 id="modalRewardERC721Create"
-                :erc721SelectedMetadataIds="selectedItems"
                 :erc721="erc721"
+                :erc721SelectedMetadataIds="selectedItems"
             />
             <BTable hover :busy="isLoading" :items="metadataByPage" responsive="lg" show-empty>
                 <!-- Head formatting -->

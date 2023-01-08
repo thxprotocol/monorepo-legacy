@@ -82,6 +82,7 @@ export default class BaseDropdownERC721Metadata extends Vue {
     get erc721metadataByPage() {
         return (
             this.erc721 &&
+            this.metadata[this.erc721._id] &&
             Object.values(this.metadata[this.erc721._id])
                 .filter((m) => m.page === this.page)
                 .slice(0, this.limit)
