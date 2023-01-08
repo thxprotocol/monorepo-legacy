@@ -4,8 +4,7 @@ import { User, UserManager } from 'oidc-client-ts';
 import { RewardConditionPlatform } from '@thxnetwork/types/index';
 import { config } from '@thxnetwork/dashboard/utils/oidc';
 import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
-import type { IAccount, IAccountUpdates, ITwitter, IYoutube } from '@thxnetwork/dashboard/types/account';
-import { ext } from 'vee-validate/dist/rules';
+import type { IAccount, IAccountUpdates, IDiscord, ITwitter, IYoutube } from '@thxnetwork/dashboard/types/account';
 
 @Module({ namespaced: true })
 class AccountModule extends VuexModule {
@@ -17,6 +16,7 @@ class AccountModule extends VuexModule {
     _profile: IAccount | null = null;
     _youtube: IYoutube | null = null;
     _twitter: ITwitter | null = null;
+    _discord: IDiscord | null = null;
 
     get networkHealth() {
         return this._networkHealth;
@@ -38,6 +38,10 @@ class AccountModule extends VuexModule {
         return this._twitter;
     }
 
+    get discord() {
+        return this._discord;
+    }
+
     @Mutation
     setUser(user: User) {
         this._user = user;
@@ -56,6 +60,11 @@ class AccountModule extends VuexModule {
     @Mutation
     setTwitter(data: ITwitter) {
         this._twitter = data;
+    }
+
+    @Mutation
+    setDiscord(data: IDiscord) {
+        this._discord = data;
     }
 
     @Mutation
@@ -110,6 +119,19 @@ class AccountModule extends VuexModule {
         this.context.commit('setTwitter', r.data.isAuthorized ? r.data : null);
 
         if (r.data.isAuthorized) return { twitter: r.data, isAuthorized: true };
+        return { isAuthorized: false };
+    }
+
+    @Action({ rawError: true })
+    async getDiscord() {
+        const r = await axios({
+            method: 'GET',
+            url: '/account/discord',
+        });
+
+        this.context.commit('setDiscord', r.data.isAuthorized ? r.data : null);
+
+        if (r.data.isAuthorized) return { discord: r.data, isAuthorized: true };
         return { isAuthorized: false };
     }
 
