@@ -168,6 +168,10 @@ class AccountModule extends VuexModule {
             return_url: BASE_URL,
         };
 
+        if (payload.signupEmail) {
+            extraQueryParams['signupEmail'] = payload.signupEmail;
+        }
+
         if (payload.signupToken) {
             extraQueryParams['prompt'] = 'confirm';
             extraQueryParams['signup_token'] = payload.signupToken;

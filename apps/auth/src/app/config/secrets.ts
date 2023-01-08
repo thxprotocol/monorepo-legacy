@@ -39,7 +39,7 @@ export const TWITTER_API_ENDPOINT = 'https://api.twitter.com/2';
 export const GOOGLE_API_ENDPOINT = 'https://www.googleapis.com';
 export const SPOTIFY_API_ENDPOINT = 'https://api.spotify.com/v1';
 export const DISCORD_API_ENDPOINT = 'https://discord.com/api/v10';
-export const TWITCH_API_ENDPOINT = 'https://api.twitch.tv/helix'
+export const TWITCH_API_ENDPOINT = 'https://api.twitch.tv/helix';
 
 export const CWD = process.env.CWD || path.resolve(__dirname, '../../../apps/auth/src');
 
@@ -59,21 +59,15 @@ export const GTM = process.env.GTM;
 export const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
 export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 export const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-export const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI;
 export const INITIAL_ACCESS_TOKEN = process.env.INITIAL_ACCESS_TOKEN;
 export const TWITTER_CLIENT_ID = process.env.TWITTER_CLIENT_ID;
-export const TWITTER_REDIRECT_URI = process.env.TWITTER_REDIRECT_URI;
 export const TWITTER_CLIENT_SECRET = process.env.TWITTER_CLIENT_SECRET;
 export const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 export const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
-export const GITHUB_REDIRECT_URI = process.env.GITHUB_REDIRECT_URI;
 export const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
 export const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
-export const DISCORD_REDIRECT_URI = process.env.DISCORD_REDIRECT_URI;
 export const TWITCH_CLIENT_ID = process.env.TWITCH_CLIENT_ID;
 export const TWITCH_CLIENT_SECRET = process.env.TWITCH_CLIENT_SECRET;
-export const TWITCH_REDIRECT_URI = process.env.TWITCH_REDIRECT_URI;
-
 export const AUTH_CLIENT_SECRET = process.env.AUTH_CLIENT_SECRET;
 export const AUTH_CLIENT_ID = process.env.AUTH_CLIENT_ID;
 export const JWKS_JSON = process.env.JWKS_JSON;
