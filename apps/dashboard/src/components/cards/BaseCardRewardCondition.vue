@@ -1,7 +1,10 @@
 <template>
     <b-card body-class="bg-light p-0">
-        <b-button class="d-flex align-items-center justify-content-between w-100" variant="light"
-            v-b-toggle.collapse-card-condition>
+        <b-button
+            class="d-flex align-items-center justify-content-between w-100"
+            variant="light"
+            v-b-toggle.collapse-card-condition
+        >
             <strong>Reward condition</strong>
             <i :class="`fa-chevron-${isVisible ? 'up' : 'down'}`" class="fas m-0"></i>
         </b-button>
@@ -16,11 +19,19 @@
                 <template v-if="platform && platform.type !== RewardConditionPlatform.None && !isLoadingPlatform">
                     <template v-if="isAuthorized">
                         <b-form-group label="Interaction">
-                            <BaseDropdownChannelActions @selected="onSelectInteraction" :actions="actions"
-                                :action="interaction" />
+                            <BaseDropdownChannelActions
+                                @selected="onSelectInteraction"
+                                :actions="actions"
+                                :action="interaction"
+                            />
                         </b-form-group>
-                        <component v-if="interaction" :is="interactionComponent" @selected="onSelectContent"
-                            :items="interaction.items" :item="content" />
+                        <component
+                            v-if="interaction"
+                            :is="interactionComponent"
+                            @selected="onSelectContent"
+                            :items="interaction.items"
+                            :item="content"
+                        />
                     </template>
                     <b-alert v-else variant="info" show>
                         <p>
@@ -50,7 +61,7 @@ import BaseDropdownYoutubeUploads from '../dropdowns/BaseDropdownYoutubeUploads.
 import BaseDropdownYoutubeVideo from '../dropdowns/BaseDropdownYoutubeVideo.vue';
 import BaseDropdownTwitterTweets from '../dropdowns/BaseDropdownTwitterTweets.vue';
 import BaseDropdownTwitterUsers from '../dropdowns/BaseDropdownTwitterUsers.vue';
-import BaseDropdownDiscordGuilds from '../dropdowns/BaseDropdownDiscordGuilds.vue'
+import BaseDropdownDiscordGuilds from '../dropdowns/BaseDropdownDiscordGuilds.vue';
 
 @Component({
     components: {
@@ -138,11 +149,9 @@ export default class BaseCardRewardCondition extends Vue {
             }
             case RewardConditionPlatform.Discord: {
                 await this.$store.dispatch('account/getDiscord');
-                console.log(platformInteractionList[6], this.discord)
                 this.onSelectInteraction(platformInteractionList[6]);
                 this.isAuthorized = !!this.discord;
                 break;
-
             }
             default:
         }
@@ -181,7 +190,6 @@ export default class BaseCardRewardCondition extends Vue {
                 if (!this.discord) return;
                 this.interaction.items = this.discord.guilds;
                 break;
-
             }
             default:
                 return;
@@ -193,9 +201,9 @@ export default class BaseCardRewardCondition extends Vue {
     onSelectContent(content: any) {
         this.content =
             content &&
-                content.referenced_tweets &&
-                content.referenced_tweets[0] &&
-                content.referenced_tweets[0].type === 'retweeted'
+            content.referenced_tweets &&
+            content.referenced_tweets[0] &&
+            content.referenced_tweets[0].type === 'retweeted'
                 ? content.referenced_tweets[0].id
                 : content.id;
         this.change();
