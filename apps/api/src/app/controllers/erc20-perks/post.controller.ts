@@ -46,7 +46,7 @@ const controller = async (req: Request, res: Response) => {
     }
 
     const { reward, claims } = await createERC20Perk(pool, { ...req.body, image });
-    res.status(201).json({ ...reward.toJSON(), claims });
+    res.status(201).json({ ...reward.toJSON(), claims, erc20 });
 };
 
 export default { controller, validation };
