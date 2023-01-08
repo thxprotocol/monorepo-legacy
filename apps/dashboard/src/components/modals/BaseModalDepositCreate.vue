@@ -10,15 +10,30 @@
         <template #modal-body v-if="!loading && erc20">
             <b-alert v-if="erc20.type === ERC20Type.Unlimited" variant="info" show>
                 <i class="fas fa-info-circle mr-2"></i>
-                <strong>No need to top up your pool!</strong> Tokens will be minted when they are needed.
+                <strong>Info:</strong> No need to top up your pool, coins will be minted when transfered to a
+                beneficiary.
             </b-alert>
-            <b-alert variant="warning" show v-if="erc20.type === ERC20Type.Unknown">
-                <i class="fas fa-info-circle mr-2"></i>
-                <strong>It seems we have not deployed this contract.</strong>
-                Transfer {{ erc20.symbol }} to <strong>{{ pool.address }}</strong>
-                <a v-clipboard:copy="pool.address"><i class="fas fa-clipboard"></i></a>
-                to top up your pool.
-            </b-alert>
+
+            <template v-if="erc20.type === ERC20Type.Unknown">
+                <b-alert variant="warning" show>
+                    <i class="fas fa-info-circle mr-2"></i> <strong>Warning: </strong>We are not able to make deposits
+                    for this coin on your behalf.
+                </b-alert>
+                <p>
+                    Transfer your <strong>{{ erc20.symbol }}</strong> on
+                    <strong>{{ chainInfo[erc20.chainId].name }}</strong> to
+                    <b-link
+                        class="mr-2 bg-light p-1"
+                        v-clipboard:copy="pool.address"
+                        v-clipboard:success="() => (isCopied = true)"
+                    >
+                        <strong>{{ pool.address }}</strong>
+                        <i class="fas ml-2" :class="isCopied ? 'fa-clipboard-check' : 'fa-clipboard'"></i>
+                    </b-link>
+                    to top up your pool.
+                </p>
+            </template>
+
             <form
                 v-if="erc20.type === ERC20Type.Limited && erc20.adminBalance > 0"
                 v-on:submit.prevent="submit"
@@ -57,6 +72,7 @@ import { ERC20Type, TERC20, type IERC20s } from '@thxnetwork/dashboard/types/erc
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseModal from './BaseModal.vue';
+import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 
 @Component({
     components: {
@@ -69,6 +85,8 @@ import BaseModal from './BaseModal.vue';
 })
 export default class BaseModalDepositCreate extends Vue {
     loading = false;
+    isCopied = false;
+    chainInfo = chainInfo;
     error = '';
     amount = 0;
     erc20s!: IERC20s;

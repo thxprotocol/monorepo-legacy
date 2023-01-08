@@ -2,7 +2,7 @@
     <base-modal
         @show="onShow"
         size="xl"
-        :title="reward ? 'Update ERC20 Reward' : 'Create ERC20 Reward'"
+        :title="reward ? 'Update Coin Perk' : 'Create Coin Perk'"
         :id="id"
         :error="error"
         :loading="isLoading"

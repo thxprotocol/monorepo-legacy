@@ -1,7 +1,7 @@
 <template>
-    <base-modal @show="onShow" size="xl" title="Create ERC721 Perk" :id="id" :error="error" :loading="isLoading">
+    <base-modal @show="onShow" size="xl" title="Create NFT Perk" :id="id" :error="error" :loading="isLoading">
         <template #modal-body v-if="!isLoading">
-            <p class="text-gray">ERC721 rewards let your customers claim NFTs for the metadata in your collection.</p>
+            <p class="text-gray">NFT perks let your customers claim NFTs from your collection.</p>
             <form v-on:submit.prevent="onSubmit()" id="formRewardPointsCreate">
                 <b-row>
                     <b-col md="6">

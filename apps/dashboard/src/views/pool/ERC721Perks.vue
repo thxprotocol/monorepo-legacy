@@ -39,6 +39,7 @@
                     <b-form-checkbox @change="onSelectAll" />
                 </template>
                 <template #head(title)> Title </template>
+                <template #head(erc721)> NFT </template>
                 <template #head(erc721metadataId)> Metadata </template>
                 <template #head(rewardCondition)> Condition </template>
                 <template #head(claims)> Claim URL's </template>
@@ -49,8 +50,7 @@
                     <b-form-checkbox :value="item.checkbox" v-model="selectedItems" />
                 </template>
                 <template #cell(erc721)="{ item }">
-                    {{ item.erc721.name }}
-                    {{ item.erc721.symbol }}
+                    <strong class="text-primary">{{ item.erc721.name }}</strong>
                 </template>
                 <template #cell(metadata)="{ index, item }">
                     <BaseBadgeMetadataPreview
