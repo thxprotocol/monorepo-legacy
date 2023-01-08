@@ -58,26 +58,23 @@
                 <template #head(checkbox)>
                     <b-form-checkbox @change="onSelectAll" />
                 </template>
-                <template #head(created)> Created </template>
                 <template #head(attributes)> Attributes </template>
                 <template #head(tokens)> Tokens </template>
+                <template #head(created)> Created </template>
                 <template #head(id)> &nbsp; </template>
 
                 <!-- Cell formatting -->
                 <template #cell(checkbox)="{ item }">
                     <b-form-checkbox :value="item.checkbox" v-model="selectedItems" />
                 </template>
-                <template #cell(created)="{ item }">
-                    {{ format(new Date(item.created), 'dd-MM-yyyy HH:mm') }}
-                </template>
                 <template #cell(attributes)="{ item }">
                     <b-badge
                         :key="key"
                         v-for="(atribute, key) in item.attributes"
-                        variant="dark"
+                        variant="gray"
                         v-b-tooltip
                         :title="atribute.value"
-                        class="mr-2"
+                        class="mr-2 text-white"
                     >
                         {{ atribute.key }}
                     </b-badge>
@@ -94,8 +91,11 @@
                         #{{ token.tokenId }}
                     </b-badge>
                 </template>
+                <template #cell(created)="{ item }">
+                    {{ format(new Date(item.created), 'dd-MM-yyyy HH:mm') }}
+                </template>
                 <template #cell(id)="{ item }">
-                    <b-dropdown no-caret size="sm" variant="link">
+                    <b-dropdown no-caret size="sm" right variant="link">
                         <template #button-content>
                             <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
                         </template>
@@ -110,7 +110,7 @@
                         </b-dropdown-item>
                         <b-dropdown-item
                             :disabled="!!item.tokens.length"
-                            @click="onClickDelete(erc721.metadata[item.id])"
+                            @click="onClickDelete(metadata[erc721._id][item.id])"
                         >
                             Delete
                         </b-dropdown-item>
@@ -118,7 +118,7 @@
                             @update="listMetadata"
                             :id="`modalERC721MetadataCreate${item.id}`"
                             :erc721="erc721"
-                            :metadata="erc721.metadata[item.id]"
+                            :metadata="metadata[erc721._id][item.id]"
                         />
                     </b-dropdown>
                 </template>
@@ -129,10 +129,9 @@
 
 <script lang="ts">
 import { format } from 'date-fns';
-import { IPool, IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import type { IERC721s, TERC721, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
+import type { IERC721Metadatas, IERC721s, TERC721, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
 import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
 import BaseCardErc721Metadata from '@thxnetwork/dashboard/components/cards/BaseCardERC721Metadata.vue';
 import BaseModalErc721MetadataCreate from '@thxnetwork/dashboard/components/modals/BaseModalERC721MetadataCreate.vue';
@@ -154,8 +153,8 @@ import BaseModalRewardERC721Create from '@thxnetwork/dashboard/components/modals
         BaseModalRewardERC721Create,
     },
     computed: mapGetters({
-        pools: 'pools/all',
         erc721s: 'erc721/all',
+        metadata: 'erc721/metadata',
         totals: 'erc721/totalsMetadata',
     }),
 })
@@ -172,21 +171,22 @@ export default class MetadataView extends Vue {
     isDownloading = false;
     isDownloadScheduled = false;
     selectedItems: any[] = [];
-    pools!: IPools;
+
     erc721s!: IERC721s;
+    metadata!: IERC721Metadatas;
 
     @Prop() erc721!: TERC721;
 
     get metadataByPage() {
-        if (!this.erc721) return [];
-        return Object.values(this.erc721s[this.erc721._id].metadata)
+        if (!this.metadata[this.erc721._id]) return [];
+        return Object.values(this.metadata[this.erc721._id])
             .filter((metadata: TERC721Metadata) => metadata.page === this.page)
             .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
             .map((r: TERC721Metadata) => ({
                 checkbox: r._id,
-                created: r.createdAt,
                 attributes: r.attributes,
                 tokens: r.tokens,
+                created: r.createdAt,
                 id: r._id,
             }))
             .slice(0, this.limit);
@@ -223,7 +223,7 @@ export default class MetadataView extends Vue {
                 for (const id of Object.values(this.selectedItems)) {
                     this.$store.dispatch('erc721/deleteMetadata', {
                         erc721: this.erc721,
-                        metadata: this.erc721.metadata[id],
+                        metadata: this.metadata[this.erc721._id][id],
                     });
                 }
                 break;
@@ -235,12 +235,11 @@ export default class MetadataView extends Vue {
 
     async listMetadata() {
         this.isLoading = true;
-        await this.$store.dispatch('erc721/read', this.$route.params.erc721Id).then(async () => {
-            await this.$store.dispatch('erc721/listMetadata', {
-                erc721: this.erc721,
-                page: this.page,
-                limit: this.limit,
-            });
+        await this.$store.dispatch('erc721/read', this.$route.params.erc721Id);
+        await this.$store.dispatch('erc721/listMetadata', {
+            erc721: this.erc721,
+            page: this.page,
+            limit: this.limit,
         });
         this.isLoading = false;
     }
