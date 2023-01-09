@@ -9,6 +9,7 @@ const schema = new mongoose.Schema(
         sub: String,
         uuid: String,
         amount: String,
+        isApproved: Boolean,
     },
     { timestamps: true },
 );

@@ -10,6 +10,8 @@ export interface IAccount {
     twitter?: any;
     plan: AccountPlanType;
     email: string;
+    firstName: string;
+    lastName: string;
 }
 export interface ERC20Token {
     chainId: ChainId;

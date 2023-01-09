@@ -4,7 +4,6 @@ import { PointBalance as PointBalanceDocument } from '@thxnetwork/api/models/Poi
 async function add(pool: AssetPoolDocument, sub: string, amount: string) {
     const currentBalance = await PointBalance.findOne({ poolid: pool._id, sub });
     const balance = currentBalance ? Number(currentBalance.balance) + Number(amount) : Number(amount);
-
     await PointBalance.updateOne({ poolId: pool._id, sub }, { poolId: pool._id, sub, balance }, { upsert: true });
 }
 

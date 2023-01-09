@@ -5,7 +5,7 @@ import RewardReferralService from '@thxnetwork/api/services/ReferralRewardServic
 import ReferralRewardClaimService from '@thxnetwork/api/services/ReferralRewardClaimService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 
-const validation = [param('id').exists(), body('successUrl').optional().isURL()];
+const validation = [param('id').exists(), body('successUrl').optional().isURL({ require_tld: false })];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards Referral']
