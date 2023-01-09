@@ -47,11 +47,12 @@
                     <strong class="text-primary"> {{ item.points }} </strong>
                 </template>
                 <template #cell(claims)="{ item }"
-                    ><div>
-                        <b-button v-if="item.claims" v-b-modal="'modalReferralRewardClaims' + item.id" variant="none">
+                    ><div v-if="item.claims">
+                        <b-button v-b-modal="'modalReferralRewardClaims' + item.id" variant="none">
                             {{ item.claims }} <i class="fas fa-eye" aria-hidden="true"></i>
                         </b-button>
                     </div>
+                    <div v-else>0</div>
                 </template>
                 <template #cell(successUrl)="{ item }">
                     <span class="text-muted">{{ item.successUrl }}</span>
@@ -156,7 +157,7 @@ export default class ReferralRewardsView extends Vue {
                 //     limit: r.rewardLimit,
                 //     progress: r.progress,
                 // },
-                claims: r.claims.length,
+                claims: r.claims ? r.claims.length : 0,
                 id: r._id,
             }))
             .slice(0, this.limit);
