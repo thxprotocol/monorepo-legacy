@@ -14,9 +14,9 @@ import { getYoutube } from './google/get.controller';
 import { getYoutubeLike } from './google/youtube/like/get.controller';
 import { getYoutubeSubscribe } from './google/youtube/subscribe/get.controller';
 import { createLoginValidation, postLogin } from './login/post.controller';
-import { getDiscord } from './discord/get.action';
 import { getTwitch } from './twitch/get.action';
-import { getDiscordGuildJoined } from './discord/getGuild.action';
+import { getDiscord } from './discord/get.action';
+import { getDiscordGuildJoined } from './discord/guild/get.action';
 
 const router = express.Router();
 

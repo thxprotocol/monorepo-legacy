@@ -1,9 +1,9 @@
+import { Request, Response } from 'express';
 import { DiscordService } from '@thxnetwork/auth/services/DiscordService';
 import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
 import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
 import { NotFoundError } from '@thxnetwork/auth/util/errors';
-import { Request, Response } from 'express';
-import { AccountService } from '../../../services/AccountService';
+import { AccountService } from '@thxnetwork/auth/services/AccountService';
 
 export const getDiscordGuildJoined = async (req: Request, res: Response) => {
     const account = await AccountService.get(req.params.sub);
