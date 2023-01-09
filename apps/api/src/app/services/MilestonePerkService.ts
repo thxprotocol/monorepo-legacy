@@ -37,6 +37,12 @@ export default {
         return reward;
     },
 
+    async delete(uuid: string) {
+        const reward = await MilestonePerk.findById(uuid);
+        if (!reward) throw new NotFoundError('Cannot find Milestone Perk with this UUID')
+        
+    },
+
     async findByPool(assetPool: AssetPoolDocument, page: number, limit: number) {
         const result = await paginatedResults(MilestonePerk, page, limit, {
             poolId: assetPool._id,

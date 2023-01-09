@@ -1,4 +1,3 @@
-import db from '@thxnetwork/api/util/database';
 import MilestonePerkService from '@thxnetwork/api/services/MilestonePerkService';
 import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
