@@ -1,4 +1,4 @@
-import { ObjectId } from 'mongodb';
+const { ObjectId } = require('mongodb');
 
 module.exports = {
     async up(db) {
