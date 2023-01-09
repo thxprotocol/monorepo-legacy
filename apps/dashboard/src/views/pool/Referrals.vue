@@ -50,6 +50,7 @@
                     ><div>
                         <b-button
                             v-b-modal="'modalReferralRewardClaims' + item.id"
+                            size="sm"
                             variant="none"
                             :disabled="!item.claims"
                         >

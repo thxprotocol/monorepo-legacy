@@ -1,7 +1,14 @@
 <template>
-    <base-modal size="xl" :title="`Claims for ${reward.title}`" :id="id" :loading="isLoading" @show="onShow">
+    <base-modal
+        hide-footer
+        size="xl"
+        :title="`Claims for ${reward.title}`"
+        :id="id"
+        :loading="isLoading"
+        @show="onShow"
+    >
         <template #modal-body v-if="!isLoading">
-            <BCard variant="white" body-class="p-0 shadow-sm">
+            <BCard variant="white" body-class="p-0 shadow-sm" class="mb-3">
                 <BaseCardTableHeader
                     :page="page"
                     :limit="limit"
@@ -27,15 +34,14 @@
                         <b-form-checkbox @change="onChecked" />
                     </template>
 
-                    <template #head(email)> Email </template>
-                    <template #head(firstName)> First Name </template>
-                    <template #head(lastName)> Last Name </template>
-                    <template #head(isApproved)> Approved </template>
-                    <template #head(id)> &nbsp; </template>
+                    <template #head(email)> E-mail </template>
+                    <template #head(firstName)> First name </template>
+                    <template #head(lastName)> Last name </template>
+                    <template #head(isApproved)> &nbsp; </template>
 
                     <!-- Cell formatting -->
                     <template #cell(checkbox)="{ item }">
-                        <b-form-checkbox :value="item.checkbox" v-model="selectedItems" v-if="!item.isApproved" />
+                        <b-form-checkbox :value="item.checkbox" v-model="selectedItems" :disabled="item.isApproved" />
                     </template>
                     <template #cell(email)="{ item }">
                         {{ item.email }}
@@ -47,20 +53,15 @@
                         {{ item.lastName }}
                     </template>
                     <template #cell(isApproved)="{ item }">
-                        <i v-if="item.isApproved" class="fas fa-check-circle" aria-hidden="true"></i>
-                        <i v-else>--</i>
-                    </template>
-
-                    <template #cell(id)="{ item }">
                         <b-button
-                            v-if="!item.isApproved"
-                            class="rounded-pill btn-sm"
-                            type="submit"
-                            form="formRewardPointsCreate"
+                            :disabled="item.isApproved"
+                            class="rounded-pill"
                             variant="primary"
+                            size="sm"
                             @click="onApproveClick(item)"
                         >
-                            Approve
+                            <i :class="item.isApproved ? 'fas' : 'far'" class="fa-check-circle mr-1 ml-0"></i>
+                            {{ item.isApproved ? 'Reward transferred' : 'Approve reward' }}
                         </b-button>
                     </template>
                 </BTable>
@@ -129,8 +130,7 @@ export default class ReferralRewardClaimsModal extends Vue {
                 firstName: c.firstName,
                 lastName: c.lastName,
                 email: c.email,
-                isApproved: c.isApproved === undefined ? false : c.isApproved,
-                id: c._id,
+                isApproved: c.isApproved,
             }))
             .slice(0, this.limit);
     }
@@ -159,7 +159,9 @@ export default class ReferralRewardClaimsModal extends Vue {
     }
 
     onChecked(checked: boolean) {
-        this.selectedItems = checked ? (this.rewardClaimsByPage.map((c) => c.id) as string[]) : [];
+        this.selectedItems = checked
+            ? (this.rewardClaimsByPage.filter((c) => !c.isApproved).map((c) => c.checkbox) as string[])
+            : [];
     }
 
     onChangePage(page: number) {

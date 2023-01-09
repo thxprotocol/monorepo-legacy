@@ -1,6 +1,5 @@
 import express from 'express';
-import { assertAssetPoolOwnership, assertRequestInput, guard, assertPlan } from '@thxnetwork/api/middlewares';
-import { AccountPlanType } from '@thxnetwork/api/types/enums';
+import { assertAssetPoolOwnership, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
 import CreateReferralReward from './post.controller';
 import ReadReferralReward from './get.controller';
 import UpdateReferralReward from './patch.controller';
@@ -31,7 +30,6 @@ router.get(
     '/:uuid/claims',
     guard.check(['referral_rewards:read']),
     assertRequestInput(ListReferralRewardClaims.validation),
-    assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
     ListReferralRewardClaims.controller,
 );
 router.post(
@@ -45,7 +43,6 @@ router.post(
     '/:uuid/claims',
     guard.check(['referral_rewards:read', 'referral_rewards:write']),
     assertRequestInput(CreateReferralRewardClaim.validation),
-    assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
     CreateReferralRewardClaim.controller,
 );
 router.patch(
@@ -59,17 +56,14 @@ router.patch(
     '/:uuid/claims/:id',
     guard.check(['referral_rewards:read', 'referral_rewards:write']),
     assertRequestInput(UpdateReferralRewardClaim.validation),
-    assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
     UpdateReferralRewardClaim.controller,
 );
-router.patch(
-    '/:uuid/claims/',
+router.post(
+    '/:uuid/claims/approve',
     guard.check(['referral_rewards:read', 'referral_rewards:write']),
     assertRequestInput(ApproveReferralRewardClaims.validation),
-    assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
     ApproveReferralRewardClaims.controller,
 );
-
 router.delete(
     '/:id',
     guard.check(['referral_rewards:write', 'referral_rewards:read']),

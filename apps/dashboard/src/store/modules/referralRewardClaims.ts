@@ -88,8 +88,8 @@ class ReferralRewardModule extends VuexModule {
         page: number;
     }) {
         const { data } = await axios({
-            method: 'PATCH',
-            url: `/referral-rewards/${reward.uuid}/claims`,
+            method: 'POST',
+            url: `/referral-rewards/${reward.uuid}/claims/approve`,
             headers: { 'X-PoolId': pool._id },
             data: { claimUuids: claims.map((x) => x.uuid) },
         });
