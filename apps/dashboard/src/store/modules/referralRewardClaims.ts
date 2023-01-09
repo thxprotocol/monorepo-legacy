@@ -81,6 +81,7 @@ class ReferralRewardModule extends VuexModule {
         pool,
         reward,
         claims,
+        page = 1,
     }: {
         pool: IPool;
         reward: TReferralReward;
@@ -95,6 +96,7 @@ class ReferralRewardModule extends VuexModule {
         });
 
         data.forEach((claim: TReferralRewardClaimAccount) => {
+            claim.page = page;
             this.context.commit('set', { pool: pool, claim });
         });
     }

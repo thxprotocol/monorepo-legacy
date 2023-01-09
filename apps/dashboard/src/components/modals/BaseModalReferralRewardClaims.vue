@@ -1,12 +1,5 @@
 <template>
-    <base-modal
-        hide-footer
-        size="xl"
-        :title="`Claims for ${reward.title}`"
-        :id="id"
-        :loading="isLoading"
-        @show="onShow"
-    >
+    <base-modal hide-footer size="xl" :title="`Claims for ${reward.title}`" :id="id" @show="onShow">
         <template #modal-body v-if="!isLoading">
             <BCard variant="white" body-class="p-0 shadow-sm" class="mb-3">
                 <BaseCardTableHeader
@@ -30,18 +23,19 @@
                     :sort-desc="false"
                 >
                     <!-- Head formatting -->
-                    <template #head(checkbox)>
+                    <template #head(id)>
                         <b-form-checkbox @change="onChecked" />
                     </template>
 
                     <template #head(email)> E-mail </template>
                     <template #head(firstName)> First name </template>
                     <template #head(lastName)> Last name </template>
+                    <template #head(createdAt)> Created </template>
                     <template #head(isApproved)> &nbsp; </template>
 
                     <!-- Cell formatting -->
-                    <template #cell(checkbox)="{ item }">
-                        <b-form-checkbox :value="item.checkbox" v-model="selectedItems" :disabled="item.isApproved" />
+                    <template #cell(id)="{ item }">
+                        <b-form-checkbox :value="item.id" v-model="selectedItems" :disabled="item.isApproved" />
                     </template>
                     <template #cell(email)="{ item }">
                         {{ item.email }}
@@ -52,13 +46,16 @@
                     <template #cell(lastName)="{ item }">
                         {{ item.lastName }}
                     </template>
+                    <template #cell(createdAt)="{ item }">
+                        <small class="text-muted">{{ format(new Date(item.createdAt), 'dd-MM-yyyy HH:mm') }}</small>
+                    </template>
                     <template #cell(isApproved)="{ item }">
                         <b-button
                             :disabled="item.isApproved"
                             class="rounded-pill"
                             variant="primary"
                             size="sm"
-                            @click="onApproveClick(item)"
+                            @click="onClickApprove([referralRewardClaims[pool._id][item.id]])"
                         >
                             <i :class="item.isApproved ? 'fas' : 'far'" class="fa-check-circle mr-1 ml-0"></i>
                             {{ item.isApproved ? 'Reward transferred' : 'Approve reward' }}
@@ -85,6 +82,7 @@ import {
 
 import BaseModal from './BaseModal.vue';
 import { type TReferralReward } from '@thxnetwork/types/interfaces/ReferralReward';
+import { format } from 'date-fns';
 
 @Component({
     components: {
@@ -100,6 +98,7 @@ import { type TReferralReward } from '@thxnetwork/types/interfaces/ReferralRewar
     }),
 })
 export default class ReferralRewardClaimsModal extends Vue {
+    format = format;
     isLoading = true;
     limit = 5;
     page = 1;
@@ -117,19 +116,18 @@ export default class ReferralRewardClaimsModal extends Vue {
     }
 
     get rewardClaimsByPage() {
-        if (!this.referralRewardClaims[this.pool._id]) {
-            return [];
-        }
+        if (!this.referralRewardClaims[this.pool._id]) return [];
         return Object.values(this.referralRewardClaims[this.pool._id])
             .filter((claim: TReferralRewardClaimAccount) => claim.page === this.page)
             .sort((a: TReferralRewardClaimAccount, b: TReferralRewardClaimAccount) =>
                 a.createdAt < b.createdAt ? 1 : -1,
             )
             .map((c: TReferralRewardClaimAccount) => ({
-                checkbox: c._id,
+                id: c._id,
                 firstName: c.firstName,
                 lastName: c.lastName,
                 email: c.email,
+                createdAt: c.createdAt,
                 isApproved: c.isApproved,
             }))
             .slice(0, this.limit);
@@ -160,7 +158,7 @@ export default class ReferralRewardClaimsModal extends Vue {
 
     onChecked(checked: boolean) {
         this.selectedItems = checked
-            ? (this.rewardClaimsByPage.filter((c) => !c.isApproved).map((c) => c.checkbox) as string[])
+            ? (this.rewardClaimsByPage.filter((c) => !c.isApproved).map((c) => c.id) as string[])
             : [];
     }
 
@@ -172,28 +170,24 @@ export default class ReferralRewardClaimsModal extends Vue {
     async onClickAction(action: { variant: number; label: string }) {
         switch (action.variant) {
             case 0:
-                const claims = [];
-                for (const id of Object.values(this.selectedItems)) {
-                    claims.push(this.referralRewardClaims[this.pool._id][id]);
-                }
-                await this.approve(claims);
-                this.listRewardClaims();
+                const claims = this.selectedItems.map((id) => {
+                    return this.referralRewardClaims[this.pool._id][id];
+                });
+                this.onClickApprove(claims);
                 break;
         }
     }
 
-    async onApproveClick(claim: any) {
-        await this.approve([this.referralRewardClaims[this.pool._id][claim.id]]);
-        this.listRewardClaims();
-    }
-
-    async approve(claims: TReferralRewardClaimAccount[]) {
-        const data = {
+    onClickApprove(claims: TReferralRewardClaimAccount[]) {
+        this.$store.dispatch('referralRewardClaims/approveMany', {
             pool: this.pool,
             reward: this.reward,
             claims,
-        };
-        await this.$store.dispatch('referralRewardClaims/approveMany', data);
+            page: this.page,
+        });
+        this.selectedItems = this.selectedItems.filter((id) => {
+            return !claims.map((c) => c._id).includes(id);
+        });
     }
 }
 </script>

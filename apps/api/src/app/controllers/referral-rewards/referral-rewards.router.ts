@@ -7,7 +7,7 @@ import ListReferralReward from './list.controller';
 import ListReferralRewardClaims from './claims/list.controller';
 import CreateReferralRewardClaim from './claims/post.controller';
 import UpdateReferralRewardClaim from './claims/patch.controller';
-import ApproveReferralRewardClaims from './claims/approve/patch.controller';
+import ApproveReferralRewardClaims from './claims/approve/post.controller';
 import DeleteReferralReward from './delete.controller';
 
 const router = express.Router();
