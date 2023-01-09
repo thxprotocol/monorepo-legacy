@@ -7,7 +7,7 @@
             <b-col class="d-flex justify-content-end">
                 <b-button v-b-modal="'modalRewardPointsCreate'" class="rounded-pill" variant="primary">
                     <i class="fas fa-plus mr-2"></i>
-                    <span class="d-none d-md-inline">Point Reward</span>
+                    <span class="d-none d-md-inline">Conditional Reward</span>
                 </b-button>
                 <BaseModalRewardPointsCreate @submit="listRewards" :id="'modalRewardPointsCreate'" :pool="pool" />
             </b-col>
@@ -19,7 +19,7 @@
                 :pool="pool"
                 :total-rows="totals[pool._id]"
                 :selectedItems="selectedItems"
-                :actions="[{ variant: 0, label: `Delete point rewards` }]"
+                :actions="[{ variant: 0, label: `Delete rewards` }]"
                 @click-action="onClickAction"
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
@@ -38,8 +38,8 @@
                 <template #cell(checkbox)="{ item }">
                     <b-form-checkbox :value="item.checkbox" v-model="selectedItems" />
                 </template>
-                <template #cell(amount)="{ item }">
-                    <b-badge variant="dark" class="p-2"> {{ item.amount }} Points </b-badge>
+                <template #cell(points)="{ item }">
+                    <strong class="text-primary">{{ item.points }} </strong>
                 </template>
                 <template #cell(rewardCondition)="{ item }">
                     <BaseBadgeRewardConditionPreview
@@ -121,8 +121,8 @@ export default class AssetPoolView extends Vue {
             .filter((reward: TPointReward) => reward.page === this.page)
             .map((r: TPointReward) => ({
                 checkbox: r._id,
-                amount: r.amount,
                 title: r.title,
+                points: r.amount,
                 rewardCondition: {
                     platform: platformList.find((p) => r.platform === p.type),
                     interaction: platformInteractionList.find((i) => r.interaction === i.type),

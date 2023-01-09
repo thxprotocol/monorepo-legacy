@@ -9,28 +9,29 @@
                     </a>
                 </template>
                 <template v-if="parsePropType(prop.propType) === 'image'">
-                    <div class="row">
-                        <div class="col-md-2" v-if="prop.value && prop.value.length">
+                    <b-row>
+                        <b-col md="2" v-if="prop.value && prop.value.length">
                             <b-spinner v-if="imgLoading == key.toString()" variant="primary"></b-spinner>
                             <img v-else :src="prop.value" width="100%" />
-                        </div>
-                        <div class="col-md-2" v-else>
+                        </b-col>
+                        <b-col md="2" v-else>
                             <b-spinner v-if="imgLoading == key.toString()" variant="primary"></b-spinner>
-                        </div>
-                        <b-form-file
-                            @change="onFileChange"
-                            class="col-md-10"
-                            :data-key="key"
-                            accept="image/*"
-                            width="50%"
-                            :placeholder="
-                                !metadata || !prop.value
-                                    ? 'Browse to upload the image'
-                                    : 'Browse to change the image...'
-                            "
-                            :disabled="imgLoading == key.toString()"
-                        />
-                    </div>
+                        </b-col>
+                        <b-col md="10">
+                            <b-form-file
+                                @change="onFileChange"
+                                :data-key="key"
+                                accept="image/*"
+                                width="50%"
+                                :placeholder="
+                                    !metadata || !prop.value
+                                        ? 'Browse to upload the image'
+                                        : 'Browse to change the image...'
+                                "
+                                :disabled="imgLoading == key.toString()"
+                            />
+                        </b-col>
+                    </b-row>
                 </template>
                 <b-form-input
                     v-else
@@ -43,7 +44,7 @@
         </template>
         <template #btn-primary>
             <b-button :disabled="isSubmitDisabled" class="rounded-pill" @click="submit()" variant="primary" block>
-                {{ metadata ? 'Update metadata' : 'Create metadata' }}
+                {{ metadata ? 'Update Metadata' : 'Create metadata' }}
             </b-button>
         </template>
     </base-modal>
@@ -95,26 +96,19 @@ export default class ModalRewardCreate extends Vue {
     }
 
     onShow() {
-        this.reset();
         if (this.metadata) {
-            this.title = this.metadata.title;
-            this.description = this.metadata.description;
             this.erc721.properties.forEach((prop, index) => {
                 this.metadata.attributes.forEach((attr) => {
                     if (prop.name === attr.key) {
-                        this.erc721.properties[index].value = attr.value;
+                        Vue.set(this.erc721.properties[index], 'value', attr.value);
                     }
                 });
             });
+        } else {
+            this.erc721.properties.forEach((prop) => {
+                prop.value = '';
+            });
         }
-    }
-
-    reset() {
-        this.title = '';
-        this.description = '';
-        this.erc721.properties.forEach((prop) => {
-            prop.value = '';
-        });
     }
 
     submit() {

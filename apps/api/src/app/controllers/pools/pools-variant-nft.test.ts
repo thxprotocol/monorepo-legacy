@@ -55,8 +55,6 @@ describe('NFT Pool', () => {
                 .set('Authorization', dashboardAccessToken)
                 .send({
                     chainId: ChainId.Hardhat,
-                    erc20tokens: [],
-                    erc721tokens: [tokenAddress],
                 })
                 .expect(({ body }: request.Response) => {
                     expect(isAddress(body.address)).toBe(true);
@@ -253,7 +251,6 @@ describe('NFT Pool', () => {
 
             user.post('/v1/erc721/' + erc721ID + '/metadata/csv')
                 .set('Authorization', dashboardAccessToken)
-                .set('X-PoolId', poolId)
                 .attach('file', buffer, {
                     filename: 'updatedCSV.csv',
                     contentType: 'text/csv; charset=utf-8',
@@ -264,7 +261,6 @@ describe('NFT Pool', () => {
         it('should return the new created Metadata from the CSV', (done) => {
             user.get('/v1/erc721/' + erc721ID + '/metadata')
                 .set('Authorization', dashboardAccessToken)
-                .set('X-PoolId', poolId)
                 .expect(({ body }: request.Response) => {
                     expect(body.results[0].attributes[0].key).toBe(schema[0].name);
                     expect(body.results[0].attributes[0].value).toBe('pink');
@@ -272,45 +268,6 @@ describe('NFT Pool', () => {
                     expect(body.results[0].attributes[1].value).toBe('medium');
                     expect(body.results[0].attributes[2].key).toBe(schema[2].name);
                     expect(body.results[0].attributes[2].value).toBe('http://imageURL3');
-                })
-                .expect(200, done);
-        });
-
-        it('should upload and parse the metadata csv and create the rewards', (done) => {
-            const buffer = Buffer.from(csvFile, 'utf-8');
-            const rewardFields = {
-                title: 'Lorem ipsum',
-                description: 'Lorem ipsum dolor sit amet',
-                platform: 0,
-                expiryDate: addMinutes(new Date(), 30),
-                rewardLimit: 1,
-                claimAmount: 1,
-                erc20metadataId: metadataId,
-            };
-
-            user.post('/v1/erc721/' + erc721ID + '/metadata/csv')
-                .set('Authorization', dashboardAccessToken)
-                .set('X-PoolId', poolId)
-                .attach('file', buffer, {
-                    filename: 'updatedCSV.csv',
-                    contentType: 'text/csv; charset=utf-8',
-                })
-                .field({
-                    createReward: true,
-                    title: rewardFields.title,
-                    limit: rewardFields.rewardLimit,
-                    amount: rewardFields.claimAmount,
-                })
-                .expect(201, done);
-        });
-
-        it('should return created reward', (done) => {
-            user.get('/v1/erc721-perks')
-                .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .expect(async (res: request.Response) => {
-                    expect(res.body.total).toBe(5);
-                    expect(res.body.results[3].erc721metadataId).toBeDefined();
-                    expect(res.body.results[3].claims).toBeDefined();
                 })
                 .expect(200, done);
         });

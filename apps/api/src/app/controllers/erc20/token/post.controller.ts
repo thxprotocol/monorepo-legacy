@@ -15,7 +15,7 @@ export const controller = async (req: Request, res: Response) => {
         description: "Add an ERC20 token for this user.",
         schema: { $ref: '#/definitions/ERC20Token' } } 
     */
-    const erc20 = await ERC20Service.importERC20Token(
+    const erc20 = await ERC20Service.importToken(
         Number(req.body.chainId),
         req.body.address,
         req.auth.sub,

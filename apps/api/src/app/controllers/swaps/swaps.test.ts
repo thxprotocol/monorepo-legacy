@@ -23,12 +23,14 @@ import TransactionService from '@thxnetwork/api/services/TransactionService';
 import { SwapState } from '@thxnetwork/api/types/enums/SwapState';
 import { InsufficientBalanceError } from '@thxnetwork/api/util/errors';
 import { PRIVATE_KEY } from '@thxnetwork/api/config/secrets';
+import { ERC20Document } from '@thxnetwork/api/models/ERC20';
 
 const http = request.agent(app);
 
 describe('Swaps', () => {
     let userWallet: Account,
         admin: Account,
+        erc20: ERC20Document,
         swaprule: any,
         swap: any,
         testTokenA: Contract,
@@ -67,6 +69,7 @@ describe('Swaps', () => {
             })
             .expect(async ({ body }: request.Response) => {
                 expect(isAddress(body.address)).toBe(true);
+                erc20 = body;
                 tokenAddress = body.address;
                 testTokenA = getContractFromName(ChainId.Hardhat, 'LimitedSupplyToken', tokenAddress);
                 const adminBalance = await testTokenA.methods.balanceOf(admin.address).call();
@@ -88,12 +91,21 @@ describe('Swaps', () => {
         tokenInAddress = testTokenB.options.address;
     });
 
+    // it('import token', (done) => {
+    //     http.post('/v1/erc20/token')
+    //         .set('Authorization', dashboardAccessToken)
+    //         .send({
+    //             address: testTokenB.options.address,
+    //             chainId: ChainId.Hardhat,
+    //         })
+    //         .expect(201, done);
+    // });
+
     it('Create pool for TOKEN A', (done) => {
         http.post('/v1/pools')
             .set('Authorization', dashboardAccessToken)
             .send({
                 chainId: ChainId.Hardhat,
-                erc20tokens: [tokenAddress],
             })
             .expect(async (res: request.Response) => {
                 expect(isAddress(res.body.address)).toBe(true);
@@ -105,15 +117,6 @@ describe('Swaps', () => {
                 expect(fromWei(String(adminBalance), 'ether')).toBe(totalSupplyTokenA);
             })
             .expect(201, done);
-    });
-
-    it('Add member', (done) => {
-        http.post('/v1/members')
-            .set({ 'Authorization': adminAccessToken, 'X-PoolId': poolId })
-            .send({
-                address: userWallet.address,
-            })
-            .expect(200, done);
     });
 
     it('Approve for infinite amount: ALLOW TRANSFER TOKEN A FROM ADMIN TO POOL', async () => {
@@ -128,7 +131,7 @@ describe('Swaps', () => {
         const amount = fromWei('500000000000000000000', 'ether'); // 500 eth
         http.post(`/v1/pools/${poolId}/topup`)
             .set({ 'Authorization': dashboardAccessToken, 'X-PoolId': poolId })
-            .send({ amount })
+            .send({ erc20Id: erc20._id, amount })
             .expect(async () => {
                 const adminBalance = await testTokenA.methods.balanceOf(admin.address).call();
                 const poolBalance = await testTokenA.methods.balanceOf(poolAddress).call();
@@ -168,7 +171,7 @@ describe('Swaps', () => {
         await http
             .post('/v1/swaps')
             .set({ 'Authorization': walletAccessToken, 'X-PoolId': poolId })
-            .send({ amountIn, swapRuleId: swaprule._id })
+            .send({ amountIn, erc20Id: erc20._id, swapRuleId: swaprule._id })
             .expect(({ body }: Response) => {
                 expect(body._id).toBeDefined();
                 expect(body.amountIn).toEqual(String(amountIn));
@@ -185,7 +188,7 @@ describe('Swaps', () => {
         await http
             .post('/v1/swaps')
             .set({ 'Authorization': walletAccessToken, 'X-PoolId': poolId })
-            .send({ amountIn: wrongAmountIn, swapRuleId: swaprule._id })
+            .send({ amountIn: wrongAmountIn, erc20Id: erc20._id, swapRuleId: swaprule._id })
             .expect(({ body }: Response) => {
                 expect(body.error.message).toEqual(new InsufficientBalanceError().message);
             })

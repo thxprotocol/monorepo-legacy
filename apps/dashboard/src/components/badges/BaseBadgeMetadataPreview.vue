@@ -9,16 +9,16 @@
             <b-link :href="attributes.external_url" target="_blank">External URL</b-link>
         </b-tooltip>
         <div class="d-flex align-items-center">
-            <div class="d-flex mr-2 rounded bg-dark text-white p-2" :id="`tooltip-target-${metadataId}-${index}`">
+            <div class="d-flex mr-2 rounded bg-gray text-white p-2" :id="`tooltip-target-${metadataId}-${index}`">
                 <i class="fas fa-photo-video"></i>
             </div>
-            <p style="line-height: 1" class="text-muted m-0">
+            <p style="line-height: 1" class="text-gray m-0">
                 <strong>{{ attributes.name }}</strong>
                 <b-link
                     v-if="attributes.external_url"
                     :href="attributes.external_url"
                     target="_blank"
-                    class="ml-2 text-muted"
+                    class="ml-2 text-gray"
                 >
                     <i class="fas fa-external-link-alt" style="font-size: 0.8rem"></i>
                 </b-link>
@@ -30,20 +30,33 @@
 </template>
 
 <script lang="ts">
-import { type TERC721 } from '@thxnetwork/dashboard/types/erc721';
+import { IERC721Metadatas, IERC721s } from '@thxnetwork/dashboard/types/erc721';
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import { mapGetters } from 'vuex';
 
-@Component({})
+@Component({
+    computed: mapGetters({
+        erc721s: 'erc721/all',
+        metadata: 'erc721/metadata',
+    }),
+})
 export default class BaseBadgeMetadataPreview extends Vue {
+    erc721s!: IERC721s;
+    metadata!: IERC721Metadatas;
+
     @Prop() index!: number;
-    @Prop() erc721!: TERC721;
-    @Prop() metadataId!: string;
+    @Prop({ required: true }) erc721Id!: string;
+    @Prop({ required: true }) metadataId!: string;
+
+    get erc721() {
+        return this.erc721s[this.erc721Id];
+    }
 
     get attributes() {
-        if (!this.erc721 || !this.erc721.metadata[this.metadataId]) return {};
+        if (!this.metadata[this.erc721Id] || !this.metadata[this.erc721Id][this.metadataId]) return {};
 
         const attributes: { [key: string]: string } = {};
-        for (const attr of this.erc721.metadata[this.metadataId].attributes) {
+        for (const attr of this.metadata[this.erc721Id][this.metadataId].attributes) {
             attributes[attr.key] = attr.value;
         }
 
@@ -51,7 +64,13 @@ export default class BaseBadgeMetadataPreview extends Vue {
     }
 
     async mounted() {
-        if (this.erc721 && !this.erc721.metadata[this.metadataId]) {
+        if (!this.erc721) {
+            await this.$store.dispatch('erc721/read', this.erc721Id);
+        }
+        if (
+            (this.erc721 && !this.metadata[this.erc721Id]) ||
+            (this.erc721 && !this.metadata[this.erc721Id][this.metadataId])
+        ) {
             await this.$store.dispatch('erc721/readMetadata', {
                 erc721: this.erc721,
                 metadataId: this.metadataId,

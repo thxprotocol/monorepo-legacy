@@ -50,8 +50,6 @@ type ERC721DeployCallback = {
 export type TAssetPoolDeployCallbackArgs = {
     assetPoolId: string;
     chainId: number;
-    erc20Address: string;
-    erc721Address: string;
 };
 
 type AssetPoolDeployCallback = {

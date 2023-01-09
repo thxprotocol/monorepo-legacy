@@ -1,7 +1,7 @@
 <template>
-    <base-modal @show="onShow" size="xl" title="Create ERC721 Perk" :id="id" :error="error" :loading="isLoading">
+    <base-modal @show="onShow" size="xl" title="Create NFT Perk" :id="id" :error="error" :loading="isLoading">
         <template #modal-body v-if="!isLoading">
-            <p class="text-gray">ERC721 rewards let your customers claim NFTs for the metadata in your collection.</p>
+            <p class="text-gray">NFT perks let your customers claim NFTs from your collection.</p>
             <form v-on:submit.prevent="onSubmit()" id="formRewardPointsCreate">
                 <b-row>
                     <b-col md="6">
@@ -11,10 +11,13 @@
                         <b-form-group label="Description">
                             <b-textarea v-model="description" />
                         </b-form-group>
-                        <b-form-group label="Metadata" v-if="!erc721SelectedMetadataIds">
+                        <b-form-group label="NFT" v-if="!erc721SelectedMetadataIds.length">
+                            <BaseDropdownSelectERC721 :chainId="chainId" :erc721="erc721" @selected="erc721 = $event" />
+                        </b-form-group>
+                        <b-form-group label="Metadata" v-if="erc721 && !erc721SelectedMetadataIds.length">
                             <BaseDropdownERC721Metadata
+                                :erc721="erc721"
                                 :erc721metadataId="erc721metadataId"
-                                :pool="pool"
                                 @selected="onSelectMetadata"
                             />
                         </b-form-group>
@@ -68,7 +71,7 @@
 </template>
 
 <script lang="ts">
-import { type IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import { IPools, type IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { platformList, platformInteractionList } from '@thxnetwork/dashboard/types/rewards';
 import { RewardConditionInteraction, RewardConditionPlatform, type TERC721Perk } from '@thxnetwork/types/index';
@@ -78,6 +81,9 @@ import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardRewardQRCodes from '../cards/BaseCardRewardQRCodes.vue';
 import BaseDropdownERC721Metadata from '../dropdowns/BaseDropdownERC721Metadata.vue';
 import type { IERC721s, TERC721, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
+import { mapGetters } from 'vuex';
+import BaseDropdownSelectERC721 from '../dropdowns/BaseDropdownSelectERC721.vue';
+import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 
 @Component({
     components: {
@@ -86,11 +92,19 @@ import type { IERC721s, TERC721, TERC721Metadata } from '@thxnetwork/dashboard/t
         BaseCardRewardExpiry,
         BaseCardRewardQRCodes,
         BaseDropdownERC721Metadata,
+        BaseDropdownSelectERC721,
     },
+    computed: mapGetters({
+        pools: 'pools/all',
+        erc721s: 'erc721/all',
+    }),
 })
 export default class ModalRewardERC721Create extends Vue {
     isSubmitDisabled = false;
     isLoading = false;
+    erc721: TERC721 | null = null;
+    erc721Id = '';
+    pools!: IPools;
     error = '';
     title = '';
     erc721metadataId = '';
@@ -112,30 +126,33 @@ export default class ModalRewardERC721Create extends Vue {
     @Prop() id!: string;
     @Prop() pool!: IPool;
     @Prop({ required: false }) reward!: TERC721Perk;
-    @Prop({ required: false }) erc721SelectedMetadataIds!: string[];
+    @Prop({ required: false, default: () => [] }) erc721SelectedMetadataIds!: string[];
 
-    get erc721(): TERC721 | null {
-        if (!this.pool.erc721) return null;
-        return this.erc721s[this.pool.erc721._id];
+    get chainId() {
+        return (this.pool && this.pool.chainId) || (this.erc721 && this.erc721.chainId) || ChainId.Hardhat;
     }
 
     onShow() {
-        if (this.reward) {
-            this.erc721metadataId = this.reward.erc721metadataId;
-            this.title = this.reward.title;
-            this.description = this.reward.description;
-            this.rewardLimit = this.reward.rewardLimit;
-            this.pointPrice = this.reward.pointPrice;
-            this.rewardCondition = {
-                platform: this.reward.platform as RewardConditionPlatform,
-                interaction: this.reward.interaction as RewardConditionInteraction,
-                content: this.reward.content as string,
-            };
-            if (this.reward.image) {
-                this.image = this.reward.image;
-            }
-            this.isPromoted = this.reward.isPromoted;
-        }
+        this.title = this.reward ? this.reward.title : '';
+        this.description = this.reward ? this.reward.description : '';
+        this.rewardLimit = this.reward ? this.reward.rewardLimit : 0;
+        this.pointPrice = this.reward ? this.reward.pointPrice : 0;
+        this.rewardCondition = this.reward
+            ? {
+                  platform: this.reward.platform as RewardConditionPlatform,
+                  interaction: this.reward.interaction as RewardConditionInteraction,
+                  content: this.reward.content as string,
+              }
+            : {
+                  platform: RewardConditionPlatform.None,
+                  interaction: RewardConditionInteraction.None,
+                  content: '',
+              };
+        this.image = this.reward ? this.reward.image : '';
+        this.isPromoted = this.reward ? this.reward.isPromoted : false;
+
+        this.erc721 = this.reward ? this.erc721s[this.reward.erc721Id] : null;
+        this.erc721metadataId = this.reward ? this.reward.erc721metadataId : '';
     }
 
     onSelectMetadata(metadata: TERC721Metadata) {
@@ -147,7 +164,7 @@ export default class ModalRewardERC721Create extends Vue {
         this.isLoading = true;
         this.$store
             .dispatch(`erc721Perks/${this.reward ? 'update' : 'create'}`, {
-                pool: this.pool,
+                pool: this.pool || Object.values(this.pools)[0],
                 reward: this.reward,
                 payload: {
                     page: 1,
@@ -167,19 +184,7 @@ export default class ModalRewardERC721Create extends Vue {
                 },
             })
             .then(() => {
-                this.title = '';
-                this.erc721metadataId = '';
-                this.description = '';
-                this.claimAmount = 1;
-                this.rewardLimit = 0;
-                this.rewardCondition = {
-                    platform: platformList[0].type,
-                    interaction: platformInteractionList[0].type,
-                    content: '',
-                };
-                this.image = '';
                 this.isSubmitDisabled = false;
-                this.isPromoted = false;
                 this.isLoading = false;
                 this.$bvModal.hide(this.id);
             });

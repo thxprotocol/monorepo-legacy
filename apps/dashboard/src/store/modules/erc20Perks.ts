@@ -4,6 +4,7 @@ import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { IPool } from './pools';
 import { RewardConditionPlatform, type TERC20Perk } from '@thxnetwork/types/index';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
+import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 
 export type RewardByPage = {
     [page: number]: TERC20Perk[];
@@ -11,7 +12,7 @@ export type RewardByPage = {
 
 export type TERC20PerkState = {
     [poolId: string]: {
-        [id: string]: TERC20Perk;
+        [id: string]: TERC20Perk & { erc20: TERC20 };
     };
 };
 

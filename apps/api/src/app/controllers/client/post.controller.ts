@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { BadRequestError } from '@thxnetwork/api/util/errors';
 import { GrantType } from '@thxnetwork/api/types/enums/GrantType';
 import ClientProxy from '@thxnetwork/api/proxies/ClientProxy';
 
@@ -12,8 +11,6 @@ export default {
             schema: { $ref: '#/definitions/Client' } 
         }
         */
-        const poolId = req.headers['x-poolid'] as string;
-        if (!poolId) throw new BadRequestError('Cannot found Pool ID in this request');
 
         const { grantType, redirectUri, requestUri, name } = req.body;
         let payload;
@@ -41,7 +38,7 @@ export default {
                 break;
         }
 
-        const client = await ClientProxy.create(req.auth.sub, poolId, payload, name);
+        const client = await ClientProxy.create(req.auth.sub, req.headers['x-poolid'] as string, payload, name);
 
         res.json(client);
     },

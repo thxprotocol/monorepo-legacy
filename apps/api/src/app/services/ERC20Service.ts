@@ -9,7 +9,6 @@ import { getByteCodeForContractName, getContractFromName } from '@thxnetwork/api
 import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
 import { ERC20Token } from '@thxnetwork/api/models/ERC20Token';
 import { getProvider } from '@thxnetwork/api/util/network';
-import MembershipService from './MembershipService';
 import { TransactionReceipt } from 'web3-core';
 import { TERC20DeployCallbackArgs, TERC20TransferFromCallBackArgs } from '@thxnetwork/api/types/TTransaction';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
@@ -82,12 +81,10 @@ export async function queryDeployTransaction(erc20: ERC20Document): Promise<ERC2
     return erc20;
 }
 
-const initialize = async (pool: AssetPoolDocument, address: string) => {
-    const erc20 = await findBy({ chainId: pool.chainId, address, sub: pool.sub });
+const initialize = async (pool: AssetPoolDocument, erc20: ERC20Document) => {
     if (erc20 && erc20.type === ERC20Type.Unlimited) {
         await addMinter(erc20, pool.address);
     }
-    await MembershipService.addERC20Membership(pool.sub, pool);
 };
 
 const addMinter = async (erc20: ERC20Document, address: string) => {
@@ -141,27 +138,29 @@ export const findOrImport = async (pool: AssetPoolDocument, address: string) => 
         archived: false,
     });
 
-    // Create an ERC20Token object for the sub if it does not exist
-    if (
-        !(await ERC20Token.exists({
-            sub: erc20.sub,
-            erc20Id: String(erc20._id),
-        }))
-    ) {
-        await ERC20Token.create({
-            sub: erc20.sub,
-            erc20Id: String(erc20._id),
-        });
-    }
+    await pool.updateOne({ erc20Id: erc20._id });
+    await addTokenForSub(erc20, pool.sub);
 
     return erc20;
 };
 
-export const importERC20Token = async (chainId: number, address: string, sub: string, logoImgUrl: string) => {
+export const addTokenForSub = async (erc20: ERC20Document, sub: string) => {
+    const hasToken = await ERC20Token.exists({
+        sub,
+        erc20Id: String(erc20._id),
+    });
+
+    if (!hasToken) {
+        await ERC20Token.create({
+            sub,
+            erc20Id: String(erc20._id),
+        });
+    }
+};
+
+export const importToken = async (chainId: number, address: string, sub: string, logoImgUrl: string) => {
     const contract = getContractFromName(chainId, 'LimitedSupplyToken', address);
-
     const [name, symbol] = await Promise.all([contract.methods.name().call(), contract.methods.symbol().call()]);
-
     const erc20 = await ERC20.create({
         name,
         symbol,
@@ -170,20 +169,10 @@ export const importERC20Token = async (chainId: number, address: string, sub: st
         type: ERC20Type.Unknown,
         sub,
         logoImgUrl,
+        archived: false,
     });
 
-    // Create an ERC20Token object for the sub if it does not exist
-    if (
-        !(await ERC20Token.exists({
-            sub: erc20.sub,
-            erc20Id: String(erc20._id),
-        }))
-    ) {
-        await ERC20Token.create({
-            sub: erc20.sub,
-            erc20Id: String(erc20._id),
-        });
-    }
+    await addTokenForSub(erc20, sub);
 
     return erc20;
 };
@@ -200,13 +189,8 @@ export const getOnChainERC20Token = async (chainId: number, address: string) => 
     return { name, symbol, totalSupply };
 };
 
-export const findByPool = async (assetPool: AssetPoolDocument): Promise<ERC20Document> => {
-    const address = await assetPool.contract.methods.getERC20().call();
-    return findOrImport(assetPool, address);
-};
-
-export const removeById = (id: string) => {
-    return ERC20.deleteOne({ _id: id });
+export const findByPool = async (pool: AssetPoolDocument): Promise<ERC20Document> => {
+    return await getById(pool.erc20Id);
 };
 
 export const update = (erc20: ERC20Document, updates: IERC20Updates) => {
@@ -239,16 +223,20 @@ export const transferFromCallBack = async (args: TERC20TransferFromCallBackArgs,
     assertEvent('ERC20ProxyTransferFrom', events);
 };
 
+async function isMinter(erc20: ERC20Document, address: string) {
+    return await erc20.contract.methods.hasRole(keccak256(toUtf8Bytes('MINTER_ROLE')), address).call();
+}
+
 export default {
     deploy,
     getAll,
     findBy,
     findByPool,
     getById,
-    removeById,
     addMinter,
+    isMinter,
     findOrImport,
-    importERC20Token,
+    importToken,
     getTokensForSub,
     getTokenById,
     update,

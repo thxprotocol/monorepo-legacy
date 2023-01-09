@@ -15,11 +15,12 @@ import { WithdrawalState } from '@thxnetwork/api/types/enums';
 import { ClaimDocument } from '@thxnetwork/api/types/TClaim';
 import { addMinutes, subMinutes } from '@thxnetwork/api/util/rewards';
 import { createImage } from '@thxnetwork/api/util/jest/images';
+import { ERC20Document } from '@thxnetwork/api/models/ERC20';
 
 const user = request.agent(app);
 
 describe('ERC20 Perks', () => {
-    let poolId: string, tokenAddress: string;
+    let poolId: string, erc20: ERC20Document;
 
     beforeAll(async () => {
         await beforeAllCallback();
@@ -38,8 +39,8 @@ describe('ERC20 Perks', () => {
                 totalSupply: 0,
             })
             .expect(({ body }: request.Response) => {
+                erc20 = body;
                 expect(isAddress(body.address)).toBe(true);
-                tokenAddress = body.address;
             })
             .expect(201, done);
     });
@@ -49,7 +50,6 @@ describe('ERC20 Perks', () => {
             .set('Authorization', dashboardAccessToken)
             .send({
                 chainId: ChainId.Hardhat,
-                erc20tokens: [tokenAddress],
             })
             .expect((res: request.Response) => {
                 expect(isAddress(res.body.address)).toBe(true);
@@ -75,6 +75,7 @@ describe('ERC20 Perks', () => {
                     description: 'Lorem ipsum dolor sit amet',
                     amount: 1,
                     platform: 0,
+                    erc20Id: String(erc20._id),
                     expiryDate: expiryDate.toString(),
                     rewardLimit: 0,
                     claimAmount: 1,
@@ -129,6 +130,7 @@ describe('ERC20 Perks', () => {
             user.post('/v1/erc20-perks/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .field({
+                    erc20Id: erc20._id,
                     title: 'Expiration date is next 30 min',
                     description: 'Lorem ipsum dolor sit amet',
                     amount: 1,
@@ -194,6 +196,7 @@ describe('ERC20 Perks', () => {
             user.post('/v1/erc20-perks/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .field({
+                    erc20Id: erc20._id,
                     title: 'Expiration date is next 30 min',
                     description: 'Lorem ipsum dolor sit amet',
                     amount: 1,

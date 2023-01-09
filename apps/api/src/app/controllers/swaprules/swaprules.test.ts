@@ -27,11 +27,20 @@ describe('Swap Rules', () => {
             .set('Authorization', dashboardAccessToken)
             .send({
                 chainId: ChainId.Hardhat,
-                erc20tokens: [testToken.options.address],
             })
             .expect((res: request.Response) => {
                 expect(isAddress(res.body.address)).toBe(true);
                 poolId = res.body._id;
+            })
+            .expect(201, done);
+    });
+
+    it('import token', (done) => {
+        http.post('/v1/erc20/token')
+            .set('Authorization', dashboardAccessToken)
+            .send({
+                address: testToken.options.address,
+                chainId: ChainId.Hardhat,
             })
             .expect(201, done);
     });

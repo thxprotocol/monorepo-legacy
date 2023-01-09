@@ -22,21 +22,17 @@
                 and reputation metrics."
                     >
                         <i class="fas fa-plus mr-2"></i>
-                        <span>Create Coins</span>
+                        <span>Create Coin</span>
                     </b-button>
                     <b-button
                         v-b-modal="'modalERC20Import'"
-                        class="rounded-pill mr-2"
-                        variant="secondary"
+                        variant="link"
+                        class="text-light"
                         v-b-tooltip
                         title="Import an existing ERC20 token contract, top up your pool and manage the distribution."
                     >
                         <i class="fas fa-arrow-down mr-2"></i>
                         <span>Import Coin</span>
-                    </b-button>
-                    <b-button to="/pools" variant="link" class="text-light">
-                        <i class="fas fa-chart-pie mr-2"></i>
-                        <span>Deploy a coin pool</span>
                     </b-button>
                 </div>
             </b-jumbotron>
@@ -58,7 +54,6 @@
             <b-row v-else>
                 <b-col md="6" lg="4" :key="erc20._id" v-for="erc20 of erc20s">
                     <base-card-erc20 :erc20="erc20" />
-                    <base-modal-pool-create :erc20="erc20" :tokenId="erc20._id" @created="loadList()" />
                 </b-col>
             </b-row>
         </div>

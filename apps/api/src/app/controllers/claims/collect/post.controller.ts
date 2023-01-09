@@ -12,7 +12,6 @@ import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
-import MembershipService from '@thxnetwork/api/services/MembershipService';
 import db from '@thxnetwork/api/util/database';
 
 const validation = [param('id').exists().isString(), query('forceSync').optional().isBoolean()];
@@ -36,17 +35,6 @@ const controller = async (req: Request, res: Response) => {
     const { result, error } = await canClaim(reward, account);
     if (!result || error) throw new ForbiddenError(error);
 
-    // Memberships could be removed but tokens should be created
-    const hasMembership = await MembershipService.hasMembership(pool, account.sub);
-    if (!hasMembership) {
-        if (claim.erc20Id) {
-            await MembershipService.addERC20Membership(account.sub, pool);
-        }
-        if (claim.erc721Id) {
-            await MembershipService.addERC721Membership(account.sub, pool);
-        }
-    }
-
     // Force sync by default but allow the requester to do async calls.
     const forceSync = req.query.forceSync !== undefined ? req.query.forceSync === 'true' : true;
 
@@ -61,7 +49,7 @@ const controller = async (req: Request, res: Response) => {
             String(reward._id),
         );
         const erc20 = await ERC20Service.getById(claim.erc20Id);
-        withdrawal = await WithdrawalService.withdrawFor(pool, withdrawal, account, forceSync);
+        withdrawal = await WithdrawalService.withdrawFor(pool, withdrawal, account, erc20, forceSync);
 
         // When more than one claim is created for this reward we update the existing ones,
         // since the check on rewardLimit will take into account the claims with existing sub

@@ -1,5 +1,4 @@
 import ERC20 from '@thxnetwork/api/models/ERC20';
-import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import { Request, Response } from 'express';
 import { query } from 'express-validator';
 
@@ -18,12 +17,8 @@ export const controller = async (req: Request, res: Response) => {
         }
     }
     */
-    let erc20s;
-    if (req.query.archived == 'true') {
-        erc20s = await ERC20Service.getAll(req.auth.sub);
-    } else {
-        erc20s = await ERC20.find({ sub: req.auth.sub, archived: false });
-    }
+    const archived = req.query.archived ? JSON.parse(String(req.query.archived)) : false;
+    const erc20s = await ERC20.find({ sub: req.auth.sub, archived });
 
     return res.send(erc20s.map(({ _id }) => _id));
 };

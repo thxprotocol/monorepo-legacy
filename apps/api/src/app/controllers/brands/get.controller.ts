@@ -3,7 +3,7 @@ import BrandService from '@thxnetwork/api/services/BrandService';
 
 export default {
     controller: async (req: Request, res: Response) => {
-        const brand = await BrandService.get(req.assetPool._id);
+        const brand = await BrandService.get(req.header('X-PoolId'));
         res.json(brand);
     },
 };

@@ -7,11 +7,12 @@ import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/c
 import { WithdrawalState } from '@thxnetwork/api/types/enums';
 import { ClaimDocument } from '@thxnetwork/api/types/TClaim';
 import { addMinutes } from '@thxnetwork/api/util/rewards';
+import { ERC20Document } from '@thxnetwork/api/models/ERC20';
 
 const user = request.agent(app);
 
 describe('Claims', () => {
-    let poolId: string, poolAddress: string, claim: ClaimDocument, tokenAddress: string;
+    let poolId: string, poolAddress: string, claim: ClaimDocument, erc20: ERC20Document;
 
     beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
@@ -28,7 +29,7 @@ describe('Claims', () => {
             })
             .expect(({ body }: request.Response) => {
                 expect(isAddress(body.address)).toBe(true);
-                tokenAddress = body.address;
+                erc20 = body;
             })
             .expect(201, done);
     });
@@ -38,7 +39,6 @@ describe('Claims', () => {
             .set('Authorization', dashboardAccessToken)
             .send({
                 chainId: ChainId.Hardhat,
-                erc20tokens: [tokenAddress],
             })
             .expect((res: request.Response) => {
                 expect(isAddress(res.body.address)).toBe(true);
@@ -55,6 +55,7 @@ describe('Claims', () => {
             .send({
                 title: 'Expiration date is next 30 min',
                 description: 'Lorem ipsum dolor sit amet',
+                erc20Id: erc20._id,
                 amount: 1,
                 platform: 0,
                 expiryDate,

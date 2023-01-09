@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { assertRequestInput, requireAssetPoolHeader, guard } from '@thxnetwork/api/middlewares';
+import { assertRequestInput, guard } from '@thxnetwork/api/middlewares';
 import CreateAccount from './post.controller';
 import ReadAccount from './get.controller';
 import UpdateAccount from './patch.controller';
@@ -19,7 +19,6 @@ router.post(
     '/',
     guard.check(['account:write']),
     assertRequestInput(CreateAccount.validation),
-    requireAssetPoolHeader,
     CreateAccount.controller,
 );
 

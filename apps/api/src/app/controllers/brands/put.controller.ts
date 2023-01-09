@@ -14,7 +14,7 @@ export default {
         }),
     ],
     controller: async (req: Request, res: Response) => {
-        const brand = await BrandService.update({ poolId: req.assetPool._id }, req.body);
+        const brand = await BrandService.update({ poolId: req.header('X-PoolId') }, req.body);
         res.json(brand);
     },
 };

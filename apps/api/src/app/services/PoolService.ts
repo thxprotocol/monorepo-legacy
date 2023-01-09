@@ -45,12 +45,7 @@ function getByAddress(address: string) {
     return AssetPool.findOne({ address });
 }
 
-async function deploy(
-    sub: string,
-    chainId: ChainId,
-    erc20Address: string,
-    erc721Address: string,
-): Promise<AssetPoolDocument> {
+async function deploy(sub: string, chainId: ChainId): Promise<AssetPoolDocument> {
     const factory = getContract(chainId, 'Factory', currentVersion);
     const variant = 'defaultDiamond';
     const poolFacetContracts = diamondContracts(chainId, variant);
@@ -63,12 +58,12 @@ async function deploy(
     });
     const txId = await TransactionService.sendAsync(
         factory.options.address,
-        factory.methods.deploy(getDiamondCutForContractFacets(poolFacetContracts, []), erc20Address, erc721Address),
+        factory.methods.deploy(getDiamondCutForContractFacets(poolFacetContracts, [])),
         pool.chainId,
         true,
         {
             type: 'assetPoolDeployCallback',
-            args: { erc721Address, erc20Address, chainId, assetPoolId: String(pool._id) },
+            args: { chainId, assetPoolId: String(pool._id) },
         },
     );
 
@@ -76,58 +71,13 @@ async function deploy(
 }
 
 async function deployCallback(args: TAssetPoolDeployCallbackArgs, receipt: TransactionReceipt) {
-    const { assetPoolId, chainId, erc20Address, erc721Address } = args;
+    const { assetPoolId, chainId } = args;
     const contract = getContract(chainId, 'Factory');
     const pool = await getById(assetPoolId);
     const events = parseLogs(contract.options.jsonInterface, receipt.logs);
     const event = assertEvent('DiamondDeployed', events);
     pool.address = event.args.diamond;
-
-    if (isAddress(erc20Address) && erc20Address !== ADDRESS_ZERO) {
-        const erc20 = await ERC20Service.findOrImport(pool, erc20Address);
-        await ERC20Service.initialize(pool, erc20Address); // TODO Should move to ERC20Service
-        pool.erc20Id = String(erc20._id);
-    }
-
-    if (isAddress(erc721Address) && erc721Address !== ADDRESS_ZERO) {
-        const erc721 = await ERC721Service.findByQuery({
-            address: erc721Address,
-            chainId: pool.chainId,
-        });
-        await ERC721Service.initialize(pool, erc721Address); // TODO Should move to ERC721Service
-        pool.erc721Id = String(erc721._id);
-    }
-
     await pool.save();
-}
-
-async function topup(assetPool: TAssetPool, amount: string) {
-    const { defaultAccount } = getProvider(assetPool.chainId);
-    const deposit = await Deposit.create({
-        amount,
-        sender: defaultAccount,
-        receiver: assetPool.address,
-        state: DepositState.Pending,
-    });
-
-    const txId = await TransactionService.sendAsync(
-        assetPool.contract.options.address,
-        assetPool.contract.methods.transferFrom(defaultAccount, assetPool.address, amount),
-        assetPool.chainId,
-        true,
-        { type: 'topupCallback', args: { receiver: assetPool.address, depositId: String(deposit._id) } },
-    );
-
-    return Deposit.findByIdAndUpdate(deposit._id, { transactions: [txId] }, { new: true });
-}
-
-async function topupCallback({ receiver, depositId }: TTopupCallbackArgs, receipt: TransactionReceipt) {
-    const pool = await getByAddress(receiver);
-    const events = parseLogs(pool.contract.options.jsonInterface, receipt.logs);
-
-    assertEvent('ERC20ProxyTransferFrom', events);
-
-    await Deposit.findByIdAndUpdate(depositId, { state: DepositState.Completed });
 }
 
 async function getAllBySub(sub: string, archived = false) {
@@ -137,10 +87,6 @@ async function getAllBySub(sub: string, archived = false) {
 
 function getAll() {
     return AssetPool.find({});
-}
-
-function remove(pool: AssetPoolDocument) {
-    return AssetPool.deleteOne({ _id: String(pool._id) });
 }
 
 function findByAddress(address: string) {
@@ -185,11 +131,8 @@ export default {
     getByAddress,
     deploy,
     deployCallback,
-    topup,
-    topupCallback,
     getAllBySub,
     getAll,
-    remove,
     findByAddress,
     countByNetwork,
     contractVersionVariant,
