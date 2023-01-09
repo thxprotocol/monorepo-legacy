@@ -47,12 +47,15 @@
                     <strong class="text-primary"> {{ item.points }} </strong>
                 </template>
                 <template #cell(claims)="{ item }"
-                    ><div v-if="item.claims">
-                        <b-button v-b-modal="'modalReferralRewardClaims' + item.id" variant="none">
+                    ><div>
+                        <b-button
+                            v-b-modal="'modalReferralRewardClaims' + item.id"
+                            variant="none"
+                            :disabled="!item.claims"
+                        >
                             {{ item.claims }} <i class="fas fa-eye" aria-hidden="true"></i>
                         </b-button>
                     </div>
-                    <div v-else>0</div>
                 </template>
                 <template #cell(successUrl)="{ item }">
                     <span class="text-muted">{{ item.successUrl }}</span>

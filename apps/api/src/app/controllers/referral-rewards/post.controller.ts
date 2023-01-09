@@ -5,7 +5,7 @@ import PoolService from '@thxnetwork/api/services/PoolService';
 
 const validation = [
     body('title').exists().isString(),
-    body('successUrl').exists().isURL({ require_tld: false }),
+    body('successUrl').optional().isURL({ require_tld: false }),
     body('amount').exists().isInt({ gt: 0 }),
 ];
 

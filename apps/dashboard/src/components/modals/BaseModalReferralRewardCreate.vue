@@ -161,7 +161,7 @@ export default class ModalReferralRewardCreate extends Vue {
                     description: this.description,
                     amount: this.amount,
                     claimAmount: this.claimAmount,
-                    successUrl: this.successUrl,
+                    successUrl: this.successUrl.length ? this.successUrl : undefined,
                 },
             })
             .then(() => {
