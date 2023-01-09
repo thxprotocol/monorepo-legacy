@@ -29,12 +29,13 @@ router.get('/:sub/twitter/like/:item', guard.check(['accounts:read']), getTwitte
 router.get('/:sub/twitter/retweet/:item', guard.check(['accounts:read']), getTwitterRetweet);
 router.get('/:sub/twitter/follow/:item', guard.check(['accounts:read']), getTwitterFollow);
 
-router.get(':sub/discord/guild/:item', guard.check(['accounts:read']), getDiscordGuildJoined)
-
 router.get('/:sub/google/youtube', guard.check(['accounts:read']), getYoutube);
 router.get('/:sub/google/youtube/like/:item', guard.check(['accounts:read']), getYoutubeLike);
 router.get('/:sub/google/youtube/subscribe/:item', guard.check(['accounts:read']), getYoutubeSubscribe);
+
 router.get('/:sub/discord', guard.check(['accounts:read']), getDiscord);
+router.get('/:sub/discord/guild/:item', guard.check(['accounts:read']), getDiscordGuildJoined);
+
 router.get('/:sub/twitch', guard.check(['accounts:read']), getTwitch);
 
 router.get('/address/:address', guard.check(['accounts:read']), validate([]), getAccountByAddress);
