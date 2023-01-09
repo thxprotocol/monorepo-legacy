@@ -33,7 +33,9 @@ async function controller(req: Request, res: Response) {
             break;
         }
         case RewardConditionPlatform.Github: {
-            redirect = GithubService.isAuthorized(account) ? params.redirect_uri : GithubService.getLoginURL(uid, {});
+            redirect = (await GithubService.isAuthorized(account))
+                ? params.redirect_uri
+                : GithubService.getLoginURL(uid, {});
             break;
         }
         case RewardConditionPlatform.Twitch: {
