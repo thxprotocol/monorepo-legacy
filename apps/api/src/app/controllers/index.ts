@@ -22,6 +22,7 @@ import walletsRouter from './wallets/wallets.router';
 import widgetRouter from './widget/widget.router';
 import rewardsRouter from './rewards/rewards.router';
 import perksRouter from './perks/perks.router';
+import webhooksRouter from './webhooks/webhooks.router';
 import widgetsRouter from './widgets/widgets.router';
 import { checkJwt, corsHandler } from '@thxnetwork/api/middlewares';
 
@@ -35,6 +36,7 @@ router.use('/metadata', erc721MetadataRouter);
 router.use('/widget', widgetRouter);
 router.use('/rewards', rewardsRouter);
 router.use('/perks', perksRouter);
+router.use('/webhook', webhooksRouter);
 
 router.use(checkJwt);
 router.use(corsHandler);
