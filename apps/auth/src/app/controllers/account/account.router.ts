@@ -14,8 +14,9 @@ import { getYoutube } from './google/get.controller';
 import { getYoutubeLike } from './google/youtube/like/get.controller';
 import { getYoutubeSubscribe } from './google/youtube/subscribe/get.controller';
 import { createLoginValidation, postLogin } from './login/post.controller';
-import { getDiscord } from './discord/get.action';
 import { getTwitch } from './twitch/get.action';
+import { getDiscord } from './discord/get.action';
+import { getDiscordGuildJoined } from './discord/guild/get.action';
 
 const router = express.Router();
 
@@ -31,7 +32,10 @@ router.get('/:sub/twitter/follow/:item', guard.check(['accounts:read']), getTwit
 router.get('/:sub/google/youtube', guard.check(['accounts:read']), getYoutube);
 router.get('/:sub/google/youtube/like/:item', guard.check(['accounts:read']), getYoutubeLike);
 router.get('/:sub/google/youtube/subscribe/:item', guard.check(['accounts:read']), getYoutubeSubscribe);
+
 router.get('/:sub/discord', guard.check(['accounts:read']), getDiscord);
+router.get('/:sub/discord/guild/:item', guard.check(['accounts:read']), getDiscordGuildJoined);
+
 router.get('/:sub/twitch', guard.check(['accounts:read']), getTwitch);
 
 router.get('/address/:address', guard.check(['accounts:read']), validate([]), getAccountByAddress);

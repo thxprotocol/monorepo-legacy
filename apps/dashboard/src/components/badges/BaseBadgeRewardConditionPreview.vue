@@ -48,6 +48,8 @@ export default class BaseBadgeRewardConditionPreview extends Vue {
                 return `https://www.twitter.com/twitter/status/${content}`;
             case RewardConditionInteraction.TwitterFollow:
                 return `https://www.twitter.com/i/user/${content}`;
+            case RewardConditionInteraction.DiscordGuildJoined:
+                return `https://discord.gg/${content}`;
             default:
                 return '';
         }

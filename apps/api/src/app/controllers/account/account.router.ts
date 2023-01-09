@@ -7,6 +7,7 @@ import UpdateAccount from './patch.controller';
 import DeleteAccount from './delete.controller';
 import ReadAccountYoutube from './youtube/get.controller';
 import ReadAccountTwitter from './twitter/get.controller';
+import ReadAccountDiscord from './discord/get.controller';
 import CreateAccountLogin from './login/post.controller';
 
 const router = express.Router();
@@ -24,6 +25,7 @@ router.post(
 
 router.get('/twitter', guard.check(['account:read']), ReadAccountTwitter.controller);
 router.get('/youtube', guard.check(['account:read']), ReadAccountYoutube.controller);
+router.get('/discord', guard.check(['account:read']), ReadAccountDiscord.controller);
 
 router.post(
     '/login',

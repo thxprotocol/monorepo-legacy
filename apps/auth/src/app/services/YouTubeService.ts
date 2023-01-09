@@ -1,11 +1,11 @@
 import axios from 'axios';
 import { google, youtube_v3 } from 'googleapis';
 import { AccountDocument } from '../models/Account';
-import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI } from '../config/secrets';
+import { AUTH_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../config/secrets';
 import { AccessTokenKind } from '../types/enums/AccessTokenKind';
 import { IAccessToken } from '../types/TAccount';
 
-const client = new google.auth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI);
+const client = new google.auth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, AUTH_URL + '/oidc/callback/google');
 
 google.options({ auth: client });
 
