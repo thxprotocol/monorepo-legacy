@@ -1,4 +1,4 @@
-import { TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET, TWITCH_REDIRECT_URI } from '@thxnetwork/auth/config/secrets';
+import { AUTH_URL, TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET } from '@thxnetwork/auth/config/secrets';
 import { AccountDocument } from '../models/Account';
 import CommonOauthLoginOptions from '../types/CommonOauthLoginOptions';
 import { AccessTokenKind } from '../types/enums/AccessTokenKind';
@@ -21,7 +21,7 @@ class TwitchService {
 
     static getLoginURL(
         state: string,
-        { scope = TWITCH_API_SCOPE, redirectUrl = TWITCH_REDIRECT_URI }: CommonOauthLoginOptions,
+        { scope = TWITCH_API_SCOPE, redirectUrl = AUTH_URL + '/oidc/callback/twitch' }: CommonOauthLoginOptions,
     ) {
         const body = new URLSearchParams();
 
@@ -40,7 +40,7 @@ class TwitchService {
 
         body.append('code', code);
         body.append('grant_type', 'authorization_code');
-        body.append('redirect_uri', TWITCH_REDIRECT_URI);
+        body.append('redirect_uri', AUTH_URL + '/oidc/callback/twitch');
         body.append('client_secret', TWITCH_CLIENT_SECRET);
         body.append('client_id', TWITCH_CLIENT_ID);
 

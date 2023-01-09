@@ -170,6 +170,8 @@ export default class Collect extends Vue {
             case RewardConditionPlatform.Twitter:
                 this.hasValidAccessToken = this.profile.twitterAccess;
                 break;
+            case RewardConditionPlatform.Discord:
+                this.hasValidAccessToken = this.profile.discordAccess;
         }
 
         // Claim directly if condition applies and access token is valid

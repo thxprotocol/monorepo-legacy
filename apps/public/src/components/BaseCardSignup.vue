@@ -1,15 +1,11 @@
 <template>
     <div>
-        <b-alert v-if="isSuccess" variant="success" show class="mb-2">
-            <i class="fas fa-check mr-1"></i>
-            You have successfully joined the private beta!
-        </b-alert>
         <validation-observer ref="observer" v-slot="{ handleSubmit }">
             <b-form @submit.stop.prevent="handleSubmit(submit)" id="cardBetaSignupForm">
                 <validation-provider name="email" :rules="{ required: true, email: true }" v-slot="validationContext">
                     <b-input-group>
                         <b-form-input
-                            :class="`bg-${variant} border-${border}`"
+                            :class="`bg-darker border-dark`"
                             v-model="email"
                             type="email"
                             label="email"
@@ -18,16 +14,12 @@
                         />
                         <b-input-group-append>
                             <b-button
-                                :variant="button"
                                 type="submit"
                                 form="cardBetaSignupForm"
                                 style="border-top-right-radius: 25px; border-bottom-right-radius: 25px"
                             >
-                                <b-spinner v-if="loading" variant="dark"></b-spinner>
-                                <template v-else>
-                                    <strong>Join free beta</strong>
-                                    <i class="fas fa-chevron-right"></i>
-                                </template>
+                                <span>Sign up for free</span>
+                                <i class="fas fa-chevron-right"></i>
                             </b-button>
                         </b-input-group-append>
                     </b-input-group>
@@ -38,47 +30,29 @@
     </div>
 </template>
 <script lang="ts">
-import axios from 'axios';
-import { Component, Vue, Prop } from 'vue-property-decorator';
-import { CMS_URL } from '../config/secrets';
+import { Component, Vue } from 'vue-property-decorator';
+import { DASHBOARD_URL } from '../config/secrets';
 
 @Component({
-    name: 'BaseCardSubscribe',
+    name: 'BaseCardSignup',
     components: {},
 })
-export default class BaseCardSubscribe extends Vue {
+export default class BaseCardSignup extends Vue {
     loading = false;
     isSuccess = false;
     error = '';
     email = '';
-
-    @Prop() variant!: string;
-    @Prop() border!: string;
-    @Prop() button!: string;
 
     getValidationState({ dirty, validated, valid = null }: any) {
         return dirty || validated ? valid : null;
     }
 
     async submit() {
-        this.loading = true;
-
-        try {
-            await axios({
-                url: CMS_URL + '/form-contacts',
-                method: 'POST',
-                data: {
-                    email: this.email,
-                    message: `Beta signup! (${this.variant})`,
-                },
-            });
-            this.isSuccess = true;
-        } catch (e) {
-            this.error = String(e);
-        } finally {
-            this.loading = false;
+        let url = `${DASHBOARD_URL}/signup`;
+        if (this.email) {
+            url += `?signup_email=${this.email}`;
         }
-        return;
+        window.location.href = url;
     }
 }
 </script>

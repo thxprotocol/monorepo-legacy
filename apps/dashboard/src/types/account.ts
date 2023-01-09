@@ -28,6 +28,11 @@ export interface ITwitter {
     tweets: any;
     users: any;
 }
+
+export interface IDiscord {
+    guilds: any[];
+}
+
 export interface IMember {
     poolAddress: string;
     memberId: number;

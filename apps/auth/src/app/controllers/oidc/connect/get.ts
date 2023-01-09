@@ -43,7 +43,7 @@ async function controller(req: Request, res: Response) {
         case RewardConditionPlatform.Discord: {
             redirect = (await DiscordService.isAuthorized(account))
                 ? params.redirect_uri
-                : GithubService.getLoginURL(uid, {});
+                : DiscordService.getLoginURL(uid, {});
             break;
         }
     }

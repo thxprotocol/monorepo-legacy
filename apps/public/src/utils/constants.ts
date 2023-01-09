@@ -9,7 +9,7 @@ export const ALT_TEXT = Object.freeze({
     HOME_LOGO_UNDP_TECH_IPF: 'Tokenization API - Built with Ipfs - THX Network',
     HOME_LOGO_UNDP_TECH_AMA: 'Tokenization API - Built with AWS - THX Network',
     HOME_POLYGON_TECHNOLOGY: 'THX Network Web3 Partners - Polygon Technology',
-    HOME_NEW_STATE_VENTURES: 'THX Network Web3 Partners - New State Ventures',
+    HOME_NEW_TECHSTARS: 'THX Network Partners - Techstars',
     HOME_PLUG_AND_PLAY_TECH_CENTER: 'THX Network Web3 Partners - Plug and Play Tech Center',
     HOME_GET_OPEN_SOCIAL: 'THX Network Web3 Partners - Get Open Social',
     HOME_BLOCKIS: 'THX Network Web3 Partners - Blockis',
