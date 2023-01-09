@@ -32,7 +32,7 @@ async function controller(req: Request, res: Response) {
             otpSecret: account.otpSecret,
             googleAccess: await YouTubeService.isAuthorized(account),
             twitterAccess: await TwitterService.isAuthorized(account),
-            githubAccess: GithubService.isAuthorized(account),
+            githubAccess: await GithubService.isAuthorized(account),
             discordAccess: await DiscordService.isAuthorized(account),
             twitchAccess: TwitchService.isAuthorized(account),
         },
