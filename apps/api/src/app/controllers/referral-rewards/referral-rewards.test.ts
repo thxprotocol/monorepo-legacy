@@ -152,8 +152,8 @@ describe('Referral Rewards', () => {
             .expect(200, done);
     });
 
-    it('PATCH /referral-rewards/:uuid/claims', (done) => {
-        user.patch(`/v1/referral-rewards/${referralReward.uuid}/claims`)
+    it('POST /referral-rewards/:uuid/claims/approve', (done) => {
+        user.post(`/v1/referral-rewards/${referralReward.uuid}/claims/approve`)
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .send({
                 claimUuids: [referralRewardClaim.uuid],
