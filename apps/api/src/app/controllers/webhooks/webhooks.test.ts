@@ -1,7 +1,7 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId, ERC20Type } from '../../types/enums';
-import { dashboardAccessToken, tokenName, tokenSymbol } from '@thxnetwork/api/util/jest/constants';
+import { dashboardAccessToken, sub2, tokenName, tokenSymbol } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { addMinutes } from '@thxnetwork/api/util/rewards';
@@ -9,7 +9,7 @@ import { addMinutes } from '@thxnetwork/api/util/rewards';
 const user = request.agent(app);
 
 describe('Referral Rewards', () => {
-    let poolId: string, tokenAddress: string, referralRewardId: string, referralReward: any;
+    let poolId: string, tokenAddress: string, referralRewardId: string, token: string;
 
     beforeAll(async () => {
         await beforeAllCallback();
@@ -70,55 +70,21 @@ describe('Referral Rewards', () => {
                 expect(res.body.amount).toBe(100);
                 expect(new Date(res.body.expiryDate).getTime()).toBe(expiryDate.getTime());
                 referralRewardId = res.body._id;
-                referralReward = res.body;
+                token = res.body.token;
             })
             .expect(201, done);
     });
 
-    it('GET /referral-rewards/:id', (done) => {
-        user.get(`/v1/referral-rewards/${referralRewardId}`)
-            .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-            .expect((res: request.Response) => {
-                expect(res.body.title).toEqual(referralReward.title);
-                expect(res.body.description).toEqual(referralReward.description);
-                expect(res.body.successUrl).toEqual(referralReward.successUrl);
-            })
-            .expect(200, done);
-    });
-
-    it('GET /referral-rewards', (done) => {
-        user.get(`/v1/referral-rewards`)
-            .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-            .expect((res: request.Response) => {
-                expect(res.body.results.length).toBe(1);
-                expect(res.body.limit).toBe(10);
-                expect(res.body.total).toBe(1);
-            })
-            .expect(200, done);
-    });
-
-    it('PATCH /referral-rewards/:id', (done) => {
-        const title = 'Expiration date is next 60 min';
-        const description = 'new description';
-        const successUrl = 'http://thx.network';
-        user.patch(`/v1/referral-rewards/${referralRewardId}`)
-            .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
+    it('POST /referral/:token/qualify', (done) => {
+        user.post(`/v1/webhook/referral/${token}/qualify`)
             .send({
-                title,
-                description,
-                successUrl,
+                code: sub2,
             })
             .expect((res: request.Response) => {
-                expect(res.body.title).toEqual(title);
-                expect(res.body.description).toEqual(description);
-                expect(res.body.successUrl).toEqual(successUrl);
+                expect(res.body.referralRewardId).toBe(referralRewardId);
+                expect(res.body.uuid).toBeDefined();
+                expect(res.body.sub).toBe(sub2);
             })
-            .expect(200, done);
-    });
-
-    it('DELETE /referral-rewards/:id', (done) => {
-        user.delete(`/v1/referral-rewards/${referralRewardId}`)
-            .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-            .expect(204, done);
+            .expect(201, done);
     });
 });

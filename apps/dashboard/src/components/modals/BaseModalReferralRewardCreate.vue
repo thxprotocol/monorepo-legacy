@@ -1,10 +1,25 @@
 <template>
     <base-modal @show="onShow" size="xl" title="Create Referral Reward" :id="id" :error="error" :loading="isLoading">
         <template #modal-body v-if="!isLoading">
-            <p class="text-gray">
-                Referral rewards incentive your existing users to attract new users and will drive down your customer
-                acquisition costs.
-            </p>
+            <template v-if="reward && reward.token">
+                <p class="text-gray">
+                    Referral rewards incentive your existing users to attract new users and will drive down your
+                    customer acquisition costs.
+                </p>
+                <strong>Code</strong>
+                <p class="text-muted">
+                    Make a post call to this url to generate a webhook that will qualify the reward
+                </p>
+                <pre class="rounded text-white p-3 d-flex align-items-center bg-dark" style="white-space: nowrap">
+                <b-button 
+                    variant="light" 
+                    v-clipboard:copy="code"
+                    v-clipboard:success="() => isCopied = true" size="sm" class="mr-3">
+                    <i class="fas  ml-0" :class="isCopied ? 'fa-clipboard-check' : 'fa-clipboard'"></i>
+                </b-button>
+                <code class="language-html" v-html="codeExample"></code>
+            </pre>
+            </template>
             <form v-on:submit.prevent="onSubmit" id="formRewardPointsCreate">
                 <b-row>
                     <b-col md="6">
@@ -71,17 +86,27 @@
 </template>
 
 <script lang="ts">
+import hljs from 'highlight.js/lib/core';
+import XML from 'highlight.js/lib/languages/xml';
+import { mapGetters } from 'vuex';
+import { UserProfile } from 'oidc-client-ts';
 import { type IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { type TReferralReward } from '@thxnetwork/types/index';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
+import { API_URL } from '../../../../wallet/src/utils/secrets';
+
+hljs.registerLanguage('xml', XML);
 
 @Component({
     components: {
         BaseModal,
         BaseCardRewardExpiry,
     },
+    computed: mapGetters({
+        profile: 'account/profile',
+    }),
 })
 export default class ModalReferralRewardCreate extends Vue {
     isSubmitDisabled = false;
@@ -93,10 +118,22 @@ export default class ModalReferralRewardCreate extends Vue {
     successUrl = '';
     description = '';
     claimAmount = 1;
+    isCopied = false;
+    profile!: UserProfile;
 
     @Prop() id!: string;
     @Prop() pool!: IPool;
     @Prop({ required: false }) reward!: TReferralReward;
+
+    get code() {
+        if (!this.reward) return '';
+        return `curl "${API_URL}/v1/webhook/referral/${this.reward.token}/qualify" -X POST -d "code=${this.profile.sub}"`;
+    }
+
+    get codeExample() {
+        if (!this.reward) return '';
+        return hljs.highlight(this.code, { language: 'xml' }).value;
+    }
 
     onShow() {
         if (this.reward) {
