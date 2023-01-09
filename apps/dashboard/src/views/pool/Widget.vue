@@ -4,8 +4,8 @@
         <BCard variant="white" body-class="shadow-sm">
             <strong>Embed code</strong>
             <p class="text-muted">
-                Place this code before the closing body tag of your HTML page. The launcher will appear and showcase
-                your loyalty program to your web audience.
+                Place this code before the closing body tag of your HTML page. The launcher will show for your web page
+                visitors.
             </p>
             <pre class="rounded text-white p-3 d-flex align-items-center bg-dark" style="white-space: nowrap">
                 <b-button 
@@ -26,6 +26,7 @@
                     <i class="fas fa-chevron-right ml-2"></i>
                 </b-link>
             </b-alert>
+            <hr />
             <strong>Color scheme</strong>
             <p class="text-muted">Choose a color scheme for the widget launcher.</p>
             <b-row>
@@ -55,6 +56,7 @@
                     </BCard>
                 </b-col>
             </b-row>
+            <hr />
             <strong>Default theme</strong>
             <p class="text-muted">Choose the default theme for widget frame when opened.</p>
             <b-row>
