@@ -151,7 +151,7 @@ export default class ReferralRewardsView extends Vue {
         return Object.values(this.referralRewards[this.$route.params.id])
             .filter((reward: TReferralReward) => reward.page === this.page)
             .sort((a, b) => (a.createdAt && b.createdAt && a.createdAt < b.createdAt ? 1 : -1))
-            .map((r: any) => ({
+            .map((r: TReferralReward) => ({
                 checkbox: r._id,
                 title: r.title,
                 points: r.amount,
