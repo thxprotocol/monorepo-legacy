@@ -1,7 +1,13 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId, ERC20Type } from '../../types/enums';
-import { dashboardAccessToken, sub2, tokenName, tokenSymbol } from '@thxnetwork/api/util/jest/constants';
+import {
+    dashboardAccessToken,
+    sub2,
+    tokenName,
+    tokenSymbol,
+    walletAccessToken3,
+} from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { addMinutes } from '@thxnetwork/api/util/rewards';
@@ -157,6 +163,15 @@ describe('Referral Rewards', () => {
                 expect(res.body[0].sub).toBe(sub2);
                 expect(res.body[0].isApproved).toBe(true);
                 referralRewardClaim = res.body[0];
+            })
+            .expect(200, done);
+    });
+
+    it('GET /point-balances', (done) => {
+        user.get(`/v1/point-balances`)
+            .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken3 })
+            .expect((res: request.Response) => {
+                expect(res.body.balance).toBe(referralReward.amount.toString());
             })
             .expect(200, done);
     });

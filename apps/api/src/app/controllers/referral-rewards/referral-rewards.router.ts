@@ -30,9 +30,7 @@ router.get(
 router.get(
     '/:uuid/claims',
     guard.check(['referral_rewards:read']),
-    assertAssetPoolAccess,
     assertRequestInput(ListReferralRewardClaims.validation),
-    requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
     ListReferralRewardClaims.controller,
 );
@@ -46,9 +44,7 @@ router.post(
 router.post(
     '/:uuid/claims',
     guard.check(['referral_rewards:read', 'referral_rewards:write']),
-    assertAssetPoolAccess,
     assertRequestInput(CreateReferralRewardClaim.validation),
-    requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
     CreateReferralRewardClaim.controller,
 );
@@ -62,18 +58,14 @@ router.patch(
 router.patch(
     '/:uuid/claims/:id',
     guard.check(['referral_rewards:read', 'referral_rewards:write']),
-    assertAssetPoolAccess,
     assertRequestInput(UpdateReferralRewardClaim.validation),
-    requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
     UpdateReferralRewardClaim.controller,
 );
 router.patch(
     '/:uuid/claims/',
     guard.check(['referral_rewards:read', 'referral_rewards:write']),
-    assertAssetPoolAccess,
     assertRequestInput(ApproveReferralRewardClaims.validation),
-    requireAssetPoolHeader,
     assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
     ApproveReferralRewardClaims.controller,
 );
