@@ -11,14 +11,14 @@ module.exports = {
         await Promise.all(
             erc20Perks.map(async (p) => {
                 const pool = await poolsColl.find({ _id: ObjectId(p.poolId) });
-                await erc20PerksColl.updateOne({ _id: p._id }, { erc20Id: pool.erc20Id });
+                await erc20PerksColl.updateOne({ _id: p._id }, { $set: { erc20Id: pool.erc20Id } });
             }),
         );
 
         await Promise.all(
             erc721Perks.map(async (p) => {
                 const pool = await poolsColl.find({ _id: ObjectId(p.poolId) });
-                await erc721PerksColl.updateOne({ _id: p._id }, { erc721Id: pool.erc721Id });
+                await erc721PerksColl.updateOne({ _id: p._id }, { $set: { erc721Id: pool.erc721Id } });
             }),
         );
     },
