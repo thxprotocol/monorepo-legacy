@@ -84,6 +84,7 @@ class ERC721PerkModule extends VuexModule {
             headers: { 'X-PoolId': pool._id },
             data: formData,
         });
+
         r.data.forEach((data: any) => {
             this.context.commit('set', { pool, reward: { ...payload, ...data } });
         });
@@ -102,27 +103,6 @@ class ERC721PerkModule extends VuexModule {
             pool,
             reward: { ...reward, ...data, page: reward.page },
         });
-    }
-
-    @Action({ rawError: true })
-    async getQRCodes({ reward }: { reward: TERC721Perk }) {
-        const { status, data } = await axios({
-            method: 'GET',
-            url: `/erc721-perks/${reward._id}/claims/qrcode`,
-            headers: { 'X-PoolId': reward.poolId },
-            responseType: 'blob',
-        });
-        // Check if job has been queued, meaning file is not available yet
-        if (status === 201) return true;
-        // Check if response is zip file, meaning job has completed
-        if (status === 200 && data.type == 'application/zip') {
-            // Fake an anchor click to trigger a download in the browser
-            const anchor = document.createElement('a');
-            anchor.href = window.URL.createObjectURL(new Blob([data]));
-            anchor.setAttribute('download', `${reward._id}_qrcodes.zip`);
-            document.body.appendChild(anchor);
-            anchor.click();
-        }
     }
 
     @Action({ rawError: true })

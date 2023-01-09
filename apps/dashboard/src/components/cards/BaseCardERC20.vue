@@ -31,17 +31,6 @@
                     {{ erc20.adminBalance }}
                 </strong>
             </p>
-            <template v-if="!erc20.poolId">
-                <hr />
-                <b-button block variant="primary" v-b-modal="`modalPoolCreate-${erc20._id}`" class="rounded-pill">
-                    Create Pool
-                </b-button>
-            </template>
-            <base-modal-pool-create
-                @created="$store.dispatch('erc20/read', erc20._id)"
-                :erc20="erc20"
-                :id="`modalPoolCreate-${erc20._id}`"
-            />
         </template>
     </base-card>
 </template>

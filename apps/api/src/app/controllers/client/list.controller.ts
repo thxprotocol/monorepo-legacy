@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { BadRequestError } from '@thxnetwork/api/util/errors';
 import ClientProxy from '@thxnetwork/api/proxies/ClientProxy';
 
 export default {
@@ -16,10 +15,12 @@ export default {
             }
         }
         */
-        const poolId = req.header('X-PoolId');
-        if (!poolId) throw new BadRequestError('X-PoolId header is not set');
 
-        const clients = await ClientProxy.findByQuery({ poolId }, Number(req.query.page), Number(req.query.limit));
+        const clients = await ClientProxy.findByQuery(
+            { poolId: req.header('X-PoolId') },
+            Number(req.query.page),
+            Number(req.query.limit),
+        );
         res.status(200).json(clients);
     },
 };

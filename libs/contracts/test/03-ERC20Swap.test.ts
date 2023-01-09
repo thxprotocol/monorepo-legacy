@@ -33,11 +33,7 @@ describe('ERC20SwapFacet', function () {
             await bob.getAddress(),
             parseEther('1000000'),
         ]);
-        diamond = await deploy(
-            factory,
-            await getDiamondCuts(['RegistryProxyFacet', 'ERC20ProxyFacet', 'ERC20SwapFacet']),
-            erc20A.address,
-        );
+        diamond = await deploy(factory, await getDiamondCuts(['RegistryProxyFacet', 'ERC20SwapFacet']));
 
         await erc20A.transfer(diamond.address, parseEther('1000000'));
     });
@@ -56,14 +52,14 @@ describe('ERC20SwapFacet', function () {
         // Bob swaps 10 token in Alice her pool
         expect(await erc20B.balanceOf(await bob.getAddress())).to.eq(parseEther('1000000'));
         expect(await erc20B.balanceOf(await registry.feeCollector())).to.eq(parseEther('0'));
-        await expect(diamond.swapFor(await bob.getAddress(), parseEther('10'), erc20B.address)).to.emit(
+        await expect(diamond.swapFor(await bob.getAddress(), parseEther('10'), erc20B.address, erc20A.address)).to.emit(
             diamond,
             'ERC20SwapFor',
         );
         expect(await erc20B.balanceOf(await bob.getAddress())).to.eq(parseEther('999990'));
 
         // Bob receives 100 token from the pools
-        expect(await diamond.balanceOf(bob.getAddress())).to.eq(parseEther('100'));
+        expect(await erc20A.balanceOf(bob.getAddress())).to.eq(parseEther('100'));
 
         // The pool receives 9.9 ABC from Bob
         expect(await erc20B.balanceOf(diamond.address)).to.eq(parseEther('9.9'));

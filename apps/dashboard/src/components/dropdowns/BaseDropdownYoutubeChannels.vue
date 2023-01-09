@@ -51,6 +51,7 @@ export default class BaseDropdownYoutubeChannels extends Vue {
 
     mounted() {
         this.item = this.items[0];
+        this.onItemClick(this.item);
     }
 
     onItemClick(item: any) {

@@ -5,6 +5,7 @@ import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import MailService from '@thxnetwork/api/services/MailService';
+import PoolService from '@thxnetwork/api/services/PoolService';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
@@ -19,14 +20,15 @@ const controller = async (req: Request, res: Response) => {
     });
     if (isClaimCreatedInLast24h) throw new ForbiddenError('A referral has been completed within 24h');
 
+    const pool = await PoolService.getById(req.header('X-PoolId'));
     const claim = await ReferralRewardClaim.create({
         referralRewardId: String(reward._id),
-        poolId: req.assetPool._id,
+        poolId: pool._id,
         sub: req.body.sub,
         amount: reward.amount,
     });
 
-    await PointBalanceService.add(req.assetPool, req.body.sub, reward.amount);
+    await PointBalanceService.add(pool, req.body.sub, reward.amount);
 
     await MailService.send(
         account.email,

@@ -34,7 +34,7 @@ import { chainInfo } from '@thxnetwork/wallet/utils/chains';
 export default class Redirect extends Vue {
     error = '';
     info = '';
-    redirectPath = '/memberships';
+    redirectPath = '/coins';
 
     address!: string;
     profile!: UserProfile;
@@ -84,11 +84,6 @@ export default class Redirect extends Vue {
     async redirectCallback() {
         this.info = 'Authenticating your account...';
         await this.$store.dispatch('account/signinRedirectCallback');
-    }
-
-    async getMemberships() {
-        this.info = 'Fetching memberships for your account...';
-        await this.$store.dispatch('memberships/getAll');
     }
 
     async getPrivateKey() {

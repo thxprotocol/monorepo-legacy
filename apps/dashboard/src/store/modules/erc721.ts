@@ -10,16 +10,22 @@ import type {
     TERC721DefaultProp,
     MetadataListProps,
     TMetadataResponse,
+    IERC721Metadatas,
 } from '@thxnetwork/dashboard/types/erc721';
 import JSZip from 'jszip';
 
 @Module({ namespaced: true })
 class ERC721Module extends VuexModule {
     _all: IERC721s = {};
+    _metadata: IERC721Metadatas = {};
     _totalsMetadata: { [erc721Id: string]: number } = {};
 
     get all() {
         return this._all;
+    }
+
+    get metadata() {
+        return this._metadata;
     }
 
     get totalsMetadata() {
@@ -37,24 +43,14 @@ class ERC721Module extends VuexModule {
     }
 
     @Mutation
-    clear() {
-        Vue.set(this, '_all', {});
-    }
-
-    @Mutation
     setMetadata({ erc721, metadata }: { erc721: TERC721; metadata: TERC721Metadata }) {
-        if (!this._all[erc721._id].metadata) Vue.set(this._all[erc721._id], 'metadata', {});
-        Vue.set(this._all[erc721._id]['metadata'], metadata._id, metadata);
+        if (!this._metadata[erc721._id]) Vue.set(this._metadata, erc721._id, {});
+        Vue.set(this._metadata[erc721._id], metadata._id, metadata);
     }
 
     @Mutation
     unsetMetadata({ erc721, metadata }: { erc721: TERC721; metadata: TERC721Metadata }) {
-        Vue.delete(this._all[erc721._id]['metadata'], metadata._id);
-    }
-
-    @Mutation
-    clearMetadata(payload: { erc721: TERC721 }) {
-        Vue.set(this._all[payload.erc721._id], 'metadata', []);
+        Vue.delete(this._metadata[erc721._id], metadata._id);
     }
 
     @Mutation
@@ -64,8 +60,6 @@ class ERC721Module extends VuexModule {
 
     @Action({ rawError: true })
     async list(params: { archived?: boolean } = { archived: false }) {
-        this.context.commit('clear');
-
         const { data } = await axios({
             method: 'GET',
             url: '/erc721',
@@ -73,7 +67,7 @@ class ERC721Module extends VuexModule {
         });
 
         for (const _id of data) {
-            this.context.commit('set', { _id, metadata: {}, loading: true });
+            this.context.commit('set', { _id, loading: true });
         }
     }
 
@@ -94,8 +88,6 @@ class ERC721Module extends VuexModule {
 
     @Action({ rawError: true })
     async listMetadata({ page = 1, limit, erc721 }: MetadataListProps) {
-        if (!erc721) return;
-
         const params = new URLSearchParams();
         params.set('page', String(page));
         params.set('limit', String(limit));
@@ -116,8 +108,6 @@ class ERC721Module extends VuexModule {
 
     @Action({ rawError: true })
     async searchMetadata({ page = 1, limit, erc721, query }: MetadataListProps) {
-        if (!erc721) return;
-
         const params = new URLSearchParams();
         params.set('page', String(page));
         params.set('limit', String(limit));
@@ -143,19 +133,18 @@ class ERC721Module extends VuexModule {
             method: 'GET',
             url: `/erc721/${erc721._id}/metadata/${metadataId}`,
         });
-        const metadata = this._all[erc721._id].metadata[metadataId];
+        const metadata = this._metadata[erc721._id] ? { ...this._metadata[erc721._id][metadataId], ...data } : data;
         this.context.commit('setMetadata', {
             erc721,
-            metadata: { ...metadata, ...data },
+            metadata,
         });
     }
 
     @Action({ rawError: true })
-    async deleteMetadata({ pool, erc721, metadata }: { pool: IPool; erc721: TERC721; metadata: TERC721Metadata }) {
+    async deleteMetadata({ erc721, metadata }: { pool: IPool; erc721: TERC721; metadata: TERC721Metadata }) {
         await axios({
             method: 'DELETE',
             url: `/erc721/${erc721._id}/metadata/${metadata._id}`,
-            headers: { 'X-PoolId': pool._id },
         });
         this.context.commit('unsetMetadata', { erc721, metadata });
     }
@@ -167,21 +156,17 @@ class ERC721Module extends VuexModule {
             url: '/erc721/' + id,
         });
 
-        data.properties.map((prop: TERC721DefaultProp) => {
-            prop.value = '';
-            return prop;
-        });
+        // data.properties.map((prop: TERC721DefaultProp) => {
+        //     prop.value = '';
+        //     return prop;
+        // });
 
-        const erc721 = {
+        this.context.commit('set', {
             ...data,
             metadata: {},
             loading: false,
             logoURI: data.logoImgUrl || `https://avatars.dicebear.com/api/identicon/${data.address}.svg`,
-        };
-
-        this.context.commit('set', erc721);
-
-        return erc721;
+        });
     }
 
     @Action({ rawError: true })
@@ -218,7 +203,6 @@ class ERC721Module extends VuexModule {
         const { data } = await axios({
             method: 'POST',
             url: `/erc721/${erc721._id}/metadata`,
-            headers: { 'X-PoolId': erc721.poolId },
             data: {
                 title: metadata.title,
                 description: metadata.description,
@@ -236,7 +220,6 @@ class ERC721Module extends VuexModule {
         const { data } = await axios({
             method: 'PATCH',
             url: `/erc721/${erc721._id}/metadata/${metadata._id}`,
-            headers: { 'X-PoolId': erc721.poolId },
             data: {
                 title: metadata.title,
                 description: metadata.description,
@@ -281,7 +264,6 @@ class ERC721Module extends VuexModule {
             url: `/erc721/${payload.erc721._id}/metadata/zip`,
             headers: {
                 'Content-Type': 'application/zip',
-                'X-PoolId': payload.pool._id,
             },
             data: formData,
         });
@@ -298,7 +280,6 @@ class ERC721Module extends VuexModule {
             url: `/erc721/${payload.erc721._id}/metadata/csv`,
             headers: {
                 'Content-Type': 'text/csv',
-                'X-PoolId': payload.pool._id,
             },
             responseType: 'blob',
         });
@@ -323,7 +304,6 @@ class ERC721Module extends VuexModule {
             url: `/erc721/${payload.erc721._id}/metadata/csv`,
             headers: {
                 'Content-Type': 'application/zip',
-                'X-PoolId': payload.pool._id,
             },
             data: formData,
         });

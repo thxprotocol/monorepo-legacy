@@ -24,8 +24,9 @@ export const controller = async (req: Request, res: Response) => {
     const result = await Promise.all(
         tokens.map(async (token: ERC20TokenDocument) => {
             const erc20 = await ERC20Service.getById(token.erc20Id);
-
             const wallet = await WalletService.findOneByQuery({ sub: req.auth.sub, chainId: erc20.chainId });
+            if (!wallet && erc20.chainId !== Number(req.query.chainId))
+                return { ...(token.toJSON() as TERC20Token), erc20 };
             const walletBalanceInWei = await erc20.contract.methods.balanceOf(wallet.address).call();
             const walletBalance = Number(fromWei(walletBalanceInWei, 'ether'));
 

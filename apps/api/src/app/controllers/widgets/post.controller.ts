@@ -8,7 +8,7 @@ const validation = [body('color').isHexColor(), body('bgColor').isHexColor(), bo
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Widgets']
     const widget = await Widget.create({
-        poolId: req.assetPool._id,
+        poolId: req.header('X-PoolId'),
         uuid: db.createUUID(),
         color: req.body.color,
         bgColor: req.body.bgColor,

@@ -57,8 +57,8 @@ export const deployToken = async (contractName: TokenContractName, args: any[]) 
     return await ethers.getContractAt(contractName, erc20.address);
 };
 
-export const deploy = async (factory: Contract, diamondCuts: FacetCut[], erc20: string, erc721 = ADDRESS_ZERO) => {
-    const tx = await factory.deploy(diamondCuts, erc20, erc721);
+export const deploy = async (factory: Contract, diamondCuts: FacetCut[]) => {
+    const tx = await factory.deploy(diamondCuts);
     const event = await findEvent(tx, 'DiamondDeployed');
     return await ethers.getContractAt('IDefaultDiamond', event?.args?.diamond);
 };

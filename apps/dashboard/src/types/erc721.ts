@@ -15,7 +15,9 @@ export type TERC721DefaultProp = {
     value?: string;
     disabled?: boolean;
 };
-
+export interface IERC721Metadatas {
+    [id: string]: { [id: string]: TERC721Metadata };
+}
 export interface TERC721Metadata {
     _id: string;
     beneficiary: string;
@@ -40,7 +42,7 @@ export type TERC721 = {
     totalSupply: string;
     logoURI: string;
     properties: TERC721DefaultProp[];
-    metadata: { [id: string]: TERC721Metadata };
+    // metadata: { [id: string]: TERC721Metadata };
     archived: boolean;
     poolId?: string;
 };

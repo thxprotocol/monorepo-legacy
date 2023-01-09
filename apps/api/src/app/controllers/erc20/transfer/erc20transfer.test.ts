@@ -42,7 +42,15 @@ describe('ERC20Transfer', () => {
                 .set({ Authorization: dashboardAccessToken })
                 .send({
                     chainId: ChainId.Hardhat,
-                    erc20tokens: [testToken.options.address],
+                })
+                .expect(201, done);
+        });
+        it('import token', (done) => {
+            user.post('/v1/erc20/token')
+                .set('Authorization', dashboardAccessToken)
+                .send({
+                    address: testToken.options.address,
+                    chainId: ChainId.Hardhat,
                 })
                 .expect(201, done);
         });
@@ -51,24 +59,20 @@ describe('ERC20Transfer', () => {
     describe('POST /erc20/transfer', () => {
         it('Increase user balance', async () => {
             const amount = toWei(String(100000));
-
             const receipt = await TransactionService.send(
                 testToken.options.address,
                 testToken.methods.transfer(userWallet.address, amount),
                 ChainId.Hardhat,
             );
-
             const event = findEvent('Transfer', parseLogs(testToken.options.jsonInterface, receipt.logs));
             expect(event).toBeDefined();
         });
 
         it('Approve relayed transfer by pool', async () => {
             const web3 = new Web3(HARDHAT_RPC);
-
             const { methods } = new web3.eth.Contract(testToken.options.jsonInterface, testToken.options.address, {
                 from: userWallet.address,
             });
-
             const receipt = await methods.approve(admin.address, MaxUint256).send({ from: userWallet.address });
             expect(receipt.events['Approval']).toBeDefined();
         });

@@ -1,13 +1,5 @@
 import express from 'express';
-import {
-    assertRequestInput,
-    assertPlan,
-    assertPoolOwner,
-    assertAssetPoolAccess,
-    requireAssetPoolHeader,
-    guard,
-} from '@thxnetwork/api/middlewares';
-import { AccountPlanType } from '@thxnetwork/api/types/enums';
+import { assertRequestInput, assertAssetPoolOwnership, guard } from '@thxnetwork/api/middlewares';
 import CreatePool from './post.controller';
 import ReadPool from './get.controller';
 import DeletePool from './delete.controller';
@@ -24,29 +16,13 @@ router.post(
     CreatePool.controller,
 );
 router.get('/', guard.check(['pools:read']), assertRequestInput(ListPools.validation), ListPools.controller);
-router.get(
-    '/:id',
-    guard.check(['pools:read']),
-    assertRequestInput(ReadPool.validation),
-    assertPoolOwner,
-    assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
-    ReadPool.controller,
-);
-router.delete(
-    '/:id',
-    guard.check(['pools:write']),
-    assertRequestInput(DeletePool.validation),
-    assertPoolOwner,
-    assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
-    DeletePool.controller,
-);
+router.get('/:id', guard.check(['pools:read']), assertRequestInput(ReadPool.validation), ReadPool.controller);
+router.delete('/:id', guard.check(['pools:write']), assertRequestInput(DeletePool.validation), DeletePool.controller);
 router.post(
     '/:id/topup',
     guard.check(['deposits:read', 'deposits:write']),
-    assertAssetPoolAccess,
+    assertAssetPoolOwnership,
     assertRequestInput(CreatePoolTopup.validation),
-    requireAssetPoolHeader,
-    assertPlan([AccountPlanType.Basic, AccountPlanType.Premium]),
     CreatePoolTopup.controller,
 );
 router.patch(

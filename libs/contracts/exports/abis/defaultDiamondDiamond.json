@@ -54,193 +54,6 @@
         "type": "uint256"
       }
     ],
-    "name": "ERC20ProxyFeeCollected",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "sender",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "recipient",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "ERC20ProxyTransferFrom",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "old",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "current",
-        "type": "address"
-      }
-    ],
-    "name": "ERC20ProxyUpdated",
-    "type": "event"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_account",
-        "type": "address"
-      }
-    ],
-    "name": "balanceOf",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getERC20",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "name",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_erc20",
-        "type": "address"
-      }
-    ],
-    "name": "setERC20",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "symbol",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "totalSupply",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_sender",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_recipient",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "transferFrom",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address[]",
-        "name": "_senders",
-        "type": "address[]"
-      },
-      {
-        "internalType": "address[]",
-        "name": "_recipients",
-        "type": "address[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "_amounts",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "transferFromMany",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "fee",
-        "type": "uint256"
-      }
-    ],
     "name": "ERC20DepositFeeCollected",
     "type": "event"
   },
@@ -258,6 +71,12 @@
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "tokneAddress",
+        "type": "address"
       }
     ],
     "name": "ERC20DepositFrom",
@@ -274,6 +93,11 @@
         "internalType": "uint256",
         "name": "_amount",
         "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "tokenAddress",
+        "type": "address"
       }
     ],
     "name": "depositFrom",
@@ -292,6 +116,11 @@
         "internalType": "uint256[]",
         "name": "_amounts",
         "type": "uint256[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "tokenAddresses",
+        "type": "address[]"
       }
     ],
     "name": "depositFromMany",
@@ -326,6 +155,12 @@
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_tokenAddress",
+        "type": "address"
       }
     ],
     "name": "ERC20WithdrawFor",
@@ -342,6 +177,11 @@
         "internalType": "uint256",
         "name": "_amount",
         "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_tokenAddress",
+        "type": "address"
       }
     ],
     "name": "withdrawFor",
@@ -360,6 +200,11 @@
         "internalType": "uint256[]",
         "name": "_amounts",
         "type": "uint256[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "_tokenAddresses",
+        "type": "address[]"
       }
     ],
     "name": "withdrawForMany",
@@ -440,7 +285,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_tokenAddress",
+        "name": "_tokenBAddress",
         "type": "address"
       }
     ],
@@ -459,7 +304,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_tokenAddress",
+        "name": "_tokenBAddress",
         "type": "address"
       },
       {
@@ -487,7 +332,12 @@
       },
       {
         "internalType": "address",
-        "name": "_tokenAddress",
+        "name": "_tokenBAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_tokenAAddress",
         "type": "address"
       }
     ],
@@ -510,6 +360,12 @@
         "internalType": "uint256",
         "name": "tokenId",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_tokenAddress",
+        "type": "address"
       }
     ],
     "name": "ERC721Minted",
@@ -521,31 +377,30 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "old",
+        "name": "from",
         "type": "address"
       },
       {
         "indexed": false,
         "internalType": "address",
-        "name": "current",
+        "name": "to",
         "type": "address"
-      }
-    ],
-    "name": "ERC721Updated",
-    "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "getERC721",
-    "outputs": [
+      },
       {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
         "internalType": "address",
-        "name": "",
+        "name": "tokenAddress",
         "type": "address"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
+    "name": "ERC721Transferred",
+    "type": "event"
   },
   {
     "inputs": [
@@ -558,6 +413,11 @@
         "internalType": "string",
         "name": "_tokenUri",
         "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "_tokenAddress",
+        "type": "address"
       }
     ],
     "name": "mintFor",
@@ -569,11 +429,21 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_token",
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_tokenAddress",
         "type": "address"
       }
     ],
-    "name": "setERC721",
+    "name": "transferFromERC721",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

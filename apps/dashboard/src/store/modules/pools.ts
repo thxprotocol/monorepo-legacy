@@ -2,37 +2,14 @@ import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import type { IMember } from '@thxnetwork/dashboard/types/account';
-import type { TERC20 } from '@thxnetwork/dashboard/types/erc20';
-import type { TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
-
-export interface PoolToken {
-    _id: string;
-    name: string;
-    address: string;
-    symbol: string;
-    decimals: number;
-    chainId: number;
-    logoURI: string;
-    poolBalance: number;
-}
-
-export enum PoolTokenType {
-    Existing = 0,
-    New = 1,
-}
+import { ERC20Manager } from 'libs/sdk/src';
+import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 
 export interface IPool {
     _id: string;
     variant: string;
     address: string;
-    clientId: string;
-    clientSecret: string;
-    erc20: TERC20 & PoolToken;
-    erc721: TERC721 & PoolToken;
-    erc20Id: string;
-    erc721Id: string;
-    bypassPolls: boolean;
     chainId: ChainId;
     rewardPollDuration: number;
     proposeWithdrawPollDuration: number;
@@ -42,28 +19,6 @@ export interface IPool {
     version: string;
     archived: boolean;
 }
-
-export interface GetMembersProps {
-    pool: IPool;
-    page: number;
-    limit: number;
-}
-
-const MEMBERS_RESPONSE_ARR: IMember[] = [{ poolAddress: '0x000', memberId: 1, address: '0x11' }];
-const MEMBERS_RESPONSE: GetMembersResponse = {
-    results: MEMBERS_RESPONSE_ARR,
-    limit: 10,
-    total: 1,
-};
-
-export interface GetMembersResponse {
-    results: IMember[];
-    next?: { page: number };
-    previous?: { page: number };
-    limit: number;
-    total: number;
-}
-
 export interface IPools {
     [id: string]: IPool;
 }
@@ -142,18 +97,6 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async addMember(payload: { pool: IPool; address: string }) {
-        const { data } = await axios({
-            method: 'POST',
-            url: '/members',
-            headers: { 'X-PoolId': payload.pool._id },
-            data: { address: payload.address },
-        });
-
-        return data;
-    }
-
-    @Action({ rawError: true })
     async update({ pool, data }: { pool: IPool; data: { archived: boolean } }) {
         await axios({
             method: 'PATCH',
@@ -180,30 +123,12 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async getMembers({ pool, page, limit }: GetMembersProps): Promise<GetMembersResponse | undefined> {
-        const params = new URLSearchParams();
-        params.set('page', String(page));
-        params.set('limit', String(limit));
-
-        const r = await axios({
-            method: 'GET',
-            url: '/members',
-            headers: {
-                'X-PoolId': pool._id,
-            },
-            params,
-        });
-
-        return r.data.results.length ? r.data : MEMBERS_RESPONSE;
-    }
-
-    @Action({ rawError: true })
-    async topup({ amount, poolId }: { amount: number; poolId: string }) {
+    async topup({ erc20, amount, poolId }: { erc20: TERC20; amount: number; poolId: string }) {
         await axios({
             method: 'POST',
             url: '/pools/' + poolId + '/topup',
+            data: { erc20Id: erc20._id, amount },
             headers: { 'X-PoolId': poolId },
-            data: { amount },
         });
     }
 }

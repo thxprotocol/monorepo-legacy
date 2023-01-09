@@ -2,11 +2,13 @@ import { Request, Response } from 'express';
 import { ERC20Perk } from '@thxnetwork/api/models/ERC20Perk';
 import { ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
+import PoolService from '@thxnetwork/api/services/PoolService';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
-    const erc20Perks = await ERC20Perk.find({ poolId: req.assetPool._id });
-    const erc721Perks = await ERC721Perk.find({ poolId: req.assetPool._id });
+    const pool = await PoolService.getById(req.header('X-PoolId'));
+    const erc20Perks = await ERC20Perk.find({ poolId: pool._id });
+    const erc721Perks = await ERC721Perk.find({ poolId: pool._id });
 
     res.json({
         erc20Perks: erc20Perks.map((r) => {

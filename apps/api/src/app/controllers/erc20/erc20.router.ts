@@ -12,6 +12,7 @@ import PreviewERC20 from './import_preview/post.controller';
 import CreateTransferERC20 from './transfer/post.controller';
 import ReadTransferERC20 from './transfer/get.controller';
 import ListTransferERC20 from './transfer/list.controller';
+import ReadERC20Balance from './balance/get.controller';
 import { upload } from '@thxnetwork/api/util/multer';
 
 const router = express.Router();
@@ -27,6 +28,12 @@ router.get(
 router.get('/transfer/:id', guard.check(['erc20:read']), ReadTransferERC20.controller);
 router.get('/', guard.check(['erc20:read']), assertRequestInput(ListERC20.validation), ListERC20.controller);
 router.get('/:id', guard.check(['erc20:read']), assertRequestInput(ReadERC20.validation), ReadERC20.controller);
+router.get(
+    '/:id/balance/:address',
+    guard.check(['erc20:read']),
+    assertRequestInput(ReadERC20Balance.validation),
+    ReadERC20Balance.controller,
+);
 router.post(
     '/',
     upload.single('file'),

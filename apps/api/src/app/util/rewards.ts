@@ -72,7 +72,7 @@ export const createERC20Perk = async (pool: AssetPoolDocument, payload: TERC20Pe
         Array.from({ length: Number(payload.claimAmount) }).map(() =>
             ClaimService.create({
                 poolId: pool._id,
-                erc20Id: pool.erc20Id,
+                erc20Id: payload.erc20Id,
                 rewardUuid: reward.uuid,
             }),
         ),

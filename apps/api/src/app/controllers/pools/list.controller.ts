@@ -7,7 +7,7 @@ export const validation = [query('archived').optional().isBoolean()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
-    const archived = JSON.parse(req.query.archived as string);
+    const archived = req.query.archived ? JSON.parse(String(req.query.archived)) : false;
     const pools = await PoolService.getAllBySub(req.auth.sub, archived);
     const list = pools.map((pool: AssetPoolDocument) => pool._id);
 

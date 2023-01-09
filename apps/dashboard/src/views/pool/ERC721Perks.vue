@@ -7,7 +7,7 @@
             <b-col md="3" class="d-flex justify-content-end">
                 <b-button v-b-modal="'modalRewardERC721Create'" class="rounded-pill" variant="primary">
                     <i class="fas fa-plus mr-2"></i>
-                    <span class="d-none d-md-inline">ERC721 Perk</span>
+                    <span class="d-none d-md-inline">NFT Perk</span>
                 </b-button>
                 <BaseModalRewardERC721Create @submit="listRewards" :id="'modalRewardERC721Create'" :pool="pool" />
             </b-col>
@@ -21,8 +21,7 @@
                 :selectedItems="selectedItems"
                 :actions="[
                     { variant: 0, label: `Delete perks` },
-                    { variant: 1, label: 'Download QR codes' },
-                    { variant: 2, label: 'Download CSV' },
+                    { variant: 1, label: 'Download Claim URL\'s' },
                 ]"
                 @click-action="onClickAction"
                 @change-page="onChangePage"
@@ -40,34 +39,25 @@
                     <b-form-checkbox @change="onSelectAll" />
                 </template>
                 <template #head(title)> Title </template>
+                <template #head(erc721)> NFT </template>
                 <template #head(erc721metadataId)> Metadata </template>
                 <template #head(rewardCondition)> Condition </template>
-                <template #head(progress)> Progress </template>
+                <template #head(claims)> Claim URL's </template>
                 <template #head(id)> &nbsp; </template>
 
                 <!-- Cell formatting -->
                 <template #cell(checkbox)="{ item }">
                     <b-form-checkbox :value="item.checkbox" v-model="selectedItems" />
                 </template>
-                <template #cell(erc721metadataId)="{ index, item }">
-                    <BaseBadgeMetadataPreview :index="index" :erc721="erc721" :metadataId="item.erc721metadataId" />
+                <template #cell(erc721)="{ item }">
+                    <strong class="text-primary">{{ item.erc721.name }}</strong>
                 </template>
-                <template #cell(progress)="{ item }">
-                    <b-progress style="border-radius: 0.3rem">
-                        <b-progress-bar
-                            :label="
-                                item.progress.limit
-                                    ? `${item.progress.progress}/${item.progress.limit}`
-                                    : String(item.progress.progress)
-                            "
-                            :value="item.progress.progress"
-                            :min="0"
-                            :max="item.progress.limit || item.progress.progress"
-                        />
-                    </b-progress>
-                    <div class="text-center text-muted small">
-                        {{ !item.progress.limit ? 'unlimited' : `${item.progress.limit}x limit` }}
-                    </div>
+                <template #cell(metadata)="{ index, item }">
+                    <BaseBadgeMetadataPreview
+                        :index="index"
+                        :erc721Id="item.metadata.erc721Id"
+                        :metadataId="item.metadata.metadataId"
+                    />
                 </template>
                 <template #cell(claims)="{ item }">
                     <b-link v-b-modal="`modalRewardClaimsDownload${item.id}`"> Download </b-link>
@@ -85,7 +75,7 @@
                     />
                 </template>
                 <template #cell(id)="{ item }">
-                    <b-dropdown variant="link" size="sm" no-caret>
+                    <b-dropdown variant="link" size="sm" right no-caret>
                         <template #button-content>
                             <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
                         </template>
@@ -145,12 +135,7 @@ export default class ERC721PerksView extends Vue {
     pools!: IPools;
     erc721s!: IERC721s;
     totals!: { [poolId: string]: number };
-    erc721Perks!: { [poolId: string]: { [id: string]: TERC721Perk } };
-
-    get erc721(): TERC721 | null {
-        if (!this.pool.erc721) return null;
-        return this.erc721s[this.pool.erc721._id];
-    }
+    erc721Perks!: { [poolId: string]: { [id: string]: TERC721Perk & { erc721: TERC721 } } };
 
     get pool() {
         return this.pools[this.$route.params.id];
@@ -165,34 +150,34 @@ export default class ERC721PerksView extends Vue {
         return Object.values(this.erc721Perks[this.$route.params.id])
             .filter((reward: TERC721Perk) => reward.page === this.page)
             .sort((a, b) => (a.createdAt && b.createdAt && a.createdAt < b.createdAt ? 1 : -1))
-            .map((r: TERC721Perk) => ({
+            .map((r: TERC721Perk & { erc721: TERC721 }) => ({
                 checkbox: r._id,
-                erc721metadataId: r.erc721metadataId,
                 title: r.title,
+                erc721: {
+                    name: r.erc721.name,
+                    symbol: r.erc721.symbol,
+                },
+                metadata: {
+                    erc721Id: r.erc721Id,
+                    metadataId: r.erc721metadataId,
+                },
                 rewardCondition: {
                     platform: platformList.find((p) => r.platform === p.type),
                     interaction: platformInteractionList.find((i) => r.interaction === i.type),
                     content: r.content,
                 },
-                progress: {
-                    limit: r.rewardLimit,
-                    progress: r.progress,
-                },
+                // progress: {
+                //     limit: r.rewardLimit,
+                //     progress: r.progress,
+                // },
                 claims: r.claims,
                 id: r._id,
             }))
             .slice(0, this.limit);
     }
 
-    async mounted() {
-        await this.listRewards();
-        this.$store.dispatch('erc721/read', this.pool.erc721._id).then(async () => {
-            await this.$store.dispatch('erc721/listMetadata', {
-                erc721: this.pool.erc721,
-                page: this.page,
-                limit: this.limit,
-            });
-        });
+    mounted() {
+        this.listRewards();
     }
 
     async listRewards() {

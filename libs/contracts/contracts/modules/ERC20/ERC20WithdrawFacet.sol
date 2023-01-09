@@ -14,31 +14,30 @@ contract ERC20WithdrawFacet is Access, IERC20WithdrawFacet {
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
 
-    function withdrawFor(address _receiver, uint256 _amount) external override onlyOwner {
+    function withdrawFor(address _receiver, uint256 _amount, address _tokenAddress) external override onlyOwner {
         require(_amount > 0, 'ZERO_AMOUNT');
-        _withdrawFor(_receiver, _amount);
+        _withdrawFor(_receiver, _amount, _tokenAddress);
     }
 
-    function withdrawForMany(address[] memory _receivers, uint256[] memory _amounts) external override onlyOwner {
+    function withdrawForMany(address[] memory _receivers, uint256[] memory _amounts,  address[] calldata _tokenAddresses) external override onlyOwner {
         require(_amounts.length == _receivers.length, 'INVALID_INPUT');
 
         for (uint256 i = 0; i < _receivers.length; i++) {
-            _withdrawFor(_receivers[i], _amounts[i]);
+            _withdrawFor(_receivers[i], _amounts[i], _tokenAddresses[i]);
         }
     }
 
-    function _withdrawFor(address _receiver, uint256 _amount) internal {
+    function _withdrawFor(address _receiver, uint256 _amount, address _tokenAddress) internal {
         LibRegistryProxyStorage.RegistryProxyStorage storage rs = LibRegistryProxyStorage.s();
-        LibERC20Storage.ERC20Storage storage s = LibERC20Storage.s();
         IRegistryFacet registry = IRegistryFacet(rs.registry);
         uint256 fee = _amount.mul(registry.feePercentage()).div(10**18);
-
+        IERC20 token = IERC20(_tokenAddress);
         if (fee > 0) {
-            s.token.safeTransfer(registry.feeCollector(), fee);
+            token.safeTransfer(registry.feeCollector(), fee);
             emit ERC20WithdrawFeeCollected(fee);
         }
 
-        s.token.safeTransfer(_receiver, _amount);
-        emit ERC20WithdrawFor(_receiver, _amount);
+        token.safeTransfer(_receiver, _amount);
+        emit ERC20WithdrawFor(_receiver, _amount, _tokenAddress);
     }
 }

@@ -11,6 +11,7 @@ import { TransactionReceipt } from 'web3-core';
 import PoolService from './PoolService';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
+import { ERC20Document } from '../models/ERC20';
 
 export default class WithdrawalService {
     static getById(id: string) {
@@ -74,13 +75,14 @@ export default class WithdrawalService {
         pool: AssetPoolDocument,
         withdrawal: WithdrawalDocument,
         account: IAccount,
+        erc20: ERC20Document,
         forceSync = true,
     ) {
         const amountInWei = toWei(String(withdrawal.amount));
 
         const txId = await TransactionService.sendAsync(
             pool.contract.options.address,
-            pool.contract.methods.withdrawFor(account.address, amountInWei),
+            pool.contract.methods.withdrawFor(account.address, amountInWei, erc20.address),
             pool.chainId,
             forceSync,
             {
