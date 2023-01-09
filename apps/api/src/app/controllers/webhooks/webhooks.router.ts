@@ -6,4 +6,6 @@ const router = express.Router();
 
 router.post('/referral/:token/qualify', assertRequestInput(QualifyReward.validation), QualifyReward.controller);
 
+router.post('/milestones/:token/claim')
+
 export default router;
