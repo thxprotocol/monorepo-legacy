@@ -11,6 +11,7 @@ const validation = [
     body('amount').exists().isInt({ gt: 0 }),
     body('expiryDate').optional().isString(),
     body('rewardLimit').isNumeric(),
+    body('erc20Id').isMongoId(),
     body('claimAmount').optional().isInt({ gt: 0 }),
     body('platform').optional().isNumeric(),
     body('interaction').optional().isNumeric(),

@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import { ERC721, ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { query } from 'express-validator';
 
@@ -10,12 +9,8 @@ const controller = async (req: Request, res: Response) => {
        #swagger.responses[200] = { schema: { $ref: '#/definitions/ERC721' } } 
     */
 
-    let result: ERC721Document[];
-    if (req.query.archived == 'true') {
-        result = await ERC721Service.findBySub(req.auth.sub);
-    } else {
-        result = await ERC721.find({ sub: req.auth.sub, archived: false });
-    }
+    const archived = req.query.archived ? JSON.parse(String(req.query.archived)) : false;
+    const result = await ERC721.find({ sub: req.auth.sub, archived });
 
     res.json(result.map((erc721: ERC721Document) => erc721._id));
 };

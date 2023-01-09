@@ -14,6 +14,7 @@ import { createERC721Perk } from '@thxnetwork/api/util/rewards';
 import { RewardConditionPlatform, TERC721Perk } from '@thxnetwork/types/index';
 import short from 'short-uuid';
 import db from '@thxnetwork/api/util/database';
+import PoolService from '@thxnetwork/api/services/PoolService';
 
 const validation = [
     param('id').isMongoId(),
@@ -34,7 +35,7 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721']
     const erc721 = await ERC721Service.findById(req.params.id);
     if (!erc721) throw new NotFoundError('Could not find this NFT in the database');
-
+    const pool = await PoolService.getById(req.header('X-PoolId'));
     // UNZIP THE FILE
     const zip = createArchiver().jsZip;
 
@@ -112,10 +113,10 @@ const controller = async (req: Request, res: Response) => {
                         },
                     ]);
 
-                    await createERC721Perk(req.assetPool, {
+                    await createERC721Perk(pool, {
                         uuid: db.createUUID(),
                         erc721metadataId: String(metadata._id),
-                        poolId: String(req.assetPool._id),
+                        poolId: String(pool._id),
                         title: '',
                         description: '',
                         expiryDate: null,

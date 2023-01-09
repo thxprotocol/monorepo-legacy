@@ -73,7 +73,7 @@ describe('ERC20', () => {
         });
 
         it('Able to return list of created token', (done) => {
-            http.get('/v1/erc20')
+            http.get('/v1/erc20?archived=false')
                 .set('Authorization', ACCESS_TOKEN)
                 .expect(({ body }: request.Response) => {
                     expect(body.length).toEqual(2);

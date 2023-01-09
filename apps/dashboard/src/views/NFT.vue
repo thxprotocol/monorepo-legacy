@@ -24,10 +24,6 @@
                         <i class="fas fa-plus mr-2"></i>
                         <span class="mr-2">Create NFT</span>
                     </b-button>
-                    <b-button to="/pools" variant="link" class="text-light">
-                        <i class="fas fa-chart-pie mr-2"></i>
-                        <span>Deploy NFT pool</span>
-                    </b-button>
                 </div>
             </b-jumbotron>
         </div>

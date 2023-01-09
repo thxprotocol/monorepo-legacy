@@ -27,6 +27,7 @@ async function create(
     account: IAccount,
     swapRule: ERC20SwapRuleDocument,
     erc20TokenIn: ERC20Document,
+    erc20TokenOut: ERC20Document,
     amountInInWei: string,
 ) {
     const swap = await ERC20Swap.create({
@@ -36,7 +37,7 @@ async function create(
 
     const txId = await TransactionService.sendAsync(
         assetPool.contract.options.address,
-        assetPool.contract.methods.swapFor(account.address, amountInInWei, erc20TokenIn.address),
+        assetPool.contract.methods.swapFor(account.address, amountInInWei, erc20TokenIn.address, erc20TokenOut.address),
         assetPool.chainId,
         true,
         { type: 'swapCreateCallback', args: { assetPoolId: String(assetPool._id), swapId: String(swap._id) } },

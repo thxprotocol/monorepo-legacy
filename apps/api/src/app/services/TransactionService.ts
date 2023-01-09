@@ -220,9 +220,6 @@ async function executeCallback(tx: TransactionDocument, receipt: TransactionRece
         case 'assetPoolDeployCallback':
             await PoolService.deployCallback(tx.callback.args, receipt);
             break;
-        case 'topupCallback':
-            await PoolService.topupCallback(tx.callback.args, receipt);
-            break;
         case 'depositCallback':
             await DepositService.depositCallback(tx.callback.args, receipt);
             break;

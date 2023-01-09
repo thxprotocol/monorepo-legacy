@@ -4,15 +4,25 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import { ChainId } from '../types/enums/ChainId';
+import { mapGetters } from 'vuex';
+import { IPools } from '../store/modules/pools';
 
-@Component({})
+@Component({
+    computed: mapGetters({
+        pools: 'pools/all',
+    }),
+})
 export default class Redirect extends Vue {
+    pools!: IPools;
+
     async mounted() {
         await this.$store.dispatch('account/signinRedirectCallback');
         await this.$store.dispatch('account/getProfile');
 
-        // TODO Get list of pools for account
-        // if 0 deploy a pool
+        // List pools to see if we need to deploy a first
+        await this.$store.dispatch('pools/list');
+        if (!Object.values(this.pools).length) this.$store.dispatch('pools/create', { chainId: ChainId.Hardhat });
 
         this.$router.push('/');
     }

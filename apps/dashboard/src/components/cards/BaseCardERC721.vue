@@ -38,17 +38,6 @@
                     {{ prop.name }}
                 </b-badge>
             </p>
-            <template v-if="!erc721.poolId">
-                <hr />
-                <b-button block variant="primary" v-b-modal="`modalAssetPoolCreate-${erc721._id}`" class="rounded-pill">
-                    Create Pool
-                </b-button>
-            </template>
-            <base-modal-pool-create
-                @created="$store.dispatch('erc721/read', erc721._id)"
-                :erc721="erc721"
-                :id="`modalAssetPoolCreate-${erc721._id}`"
-            />
         </template>
     </base-card>
 </template>
@@ -110,7 +99,7 @@ export default class BaseCardERC721 extends Vue {
     }
 
     onClick() {
-        if (this.erc721.poolId) this.$router.push({ path: `/pool/${this.erc721.poolId}/metadata` });
+        this.$router.push({ path: `/nft/${this.erc721._id}/metadata` });
     }
 
     openTokenUrl() {

@@ -73,7 +73,7 @@ export async function queryDeployTransaction(erc721: ERC721Document): Promise<ER
 const initialize = async (pool: AssetPoolDocument, address: string) => {
     const erc721 = await findByQuery({ address, chainId: pool.chainId });
     await addMinter(erc721, pool.address);
-    await MembershipService.addERC721Membership(pool.sub, pool);
+    // await MembershipService.addERC721Membership(pool.sub, pool);
 };
 
 export async function findById(id: string): Promise<ERC721Document> {
@@ -112,7 +112,7 @@ export async function mint(
 
     const txId = await TransactionService.sendAsync(
         assetPool.contract.options.address,
-        assetPool.contract.methods.mintFor(account.address, String(metadata._id)),
+        assetPool.contract.methods.mintFor(account.address, String(metadata._id), erc721.address),
         assetPool.chainId,
         forceSync,
         {
@@ -158,6 +158,10 @@ export async function parseAttributes(entry: ERC721MetadataDocument) {
     }
 
     return attrs;
+}
+
+async function isMinter(erc721: ERC721Document, address: string) {
+    return await erc721.contract.methods.hasRole(keccak256(toUtf8Bytes('MINTER_ROLE')), address).call();
 }
 
 async function addMinter(erc721: ERC721Document, address: string) {
@@ -219,11 +223,7 @@ async function findMetadataByNFT(erc721: string, page = 1, limit = 10, q?: strin
 }
 
 async function findByPool(assetPool: TAssetPool) {
-    return ERC721.findOne({
-        poolAddress: assetPool.address,
-        address: await assetPool.contract.methods.getERC721().call(),
-        chainId: assetPool.chainId,
-    });
+    return ERC721.findById(assetPool.erc721Id);
 }
 
 async function findByQuery(query: { poolAddress?: string; address?: string; chainId?: ChainId }) {
@@ -254,6 +254,7 @@ export default {
     findByPool,
     findByQuery,
     addMinter,
+    isMinter,
     parseAttributes,
     update,
     initialize,

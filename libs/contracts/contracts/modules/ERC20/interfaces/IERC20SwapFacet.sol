@@ -13,6 +13,7 @@ interface IERC20SwapFacet {
     function swapFor(
         address _sender,
         uint256 _amountIn,
+        address _tokenBddress,
         address _tokenAddress
     ) external;
 }

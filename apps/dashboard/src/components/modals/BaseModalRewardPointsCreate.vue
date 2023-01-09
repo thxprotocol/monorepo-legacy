@@ -87,20 +87,31 @@ export default class ModalRewardPointsCreate extends Vue {
     @Prop({ required: false }) reward!: TPointReward;
 
     onShow() {
-        this.setValues(this.reward);
+        if (this.reward) {
+            this.title = this.reward.title;
+            this.description = this.reward.description;
+            this.amount = this.reward.amount;
+            this.rewardLimit = this.reward.rewardLimit;
+            this.rewardCondition = {
+                platform: this.reward.platform as RewardConditionPlatform,
+                interaction: this.reward.interaction as RewardConditionInteraction,
+                content: this.reward.content as string,
+            };
+        } else {
+            this.title = '';
+            this.description = '';
+            this.amount = '0';
+            this.rewardLimit = 0;
+            this.rewardCondition = {
+                platform: RewardConditionPlatform.None,
+                interaction: RewardConditionInteraction.None,
+                content: '',
+            };
+        }
     }
 
     setValues(reward?: TPointReward) {
         if (!reward) return;
-        this.title = this.reward.title;
-        this.amount = this.reward.amount;
-        this.description = this.reward.description;
-        this.rewardLimit = this.reward.rewardLimit;
-        this.rewardCondition = {
-            platform: this.reward.platform as RewardConditionPlatform,
-            interaction: this.reward.interaction as RewardConditionInteraction,
-            content: this.reward.content as string,
-        };
     }
 
     onSubmit() {
@@ -121,17 +132,7 @@ export default class ModalRewardPointsCreate extends Vue {
             })
             .then(() => {
                 this.$bvModal.hide(this.id);
-                this.$emit('submit')
-                this.title = '';
-                this.amount = '0';
-                this.description = '';
-                this.rewardExpiry = {};
-                this.rewardLimit = 0;
-                this.rewardCondition = {
-                    platform: platformList[0].type,
-                    interaction: platformInteractionList[0].type,
-                    content: '',
-                };
+                this.$emit('submit');
                 this.isLoading = false;
             });
     }

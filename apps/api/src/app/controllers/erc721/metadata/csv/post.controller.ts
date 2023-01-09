@@ -5,9 +5,6 @@ import { check, param } from 'express-validator';
 import { Readable } from 'stream';
 import { logger } from '@thxnetwork/api/util/logger';
 import CsvReadableStream from 'csv-reader';
-import { createERC721Perk } from '@thxnetwork/api/util/rewards';
-import { RewardConditionPlatform } from '@thxnetwork/types/index';
-import db from '@thxnetwork/api/util/database';
 
 const validation = [
     param('id').isMongoId(),
@@ -25,7 +22,6 @@ const controller = async (req: Request, res: Response) => {
         properties.push('MetadataID');
 
         const readeableStream = Readable.from(req.file.buffer.toString());
-
         const promises: Promise<any>[] = [];
 
         readeableStream
@@ -65,24 +61,7 @@ const controller = async (req: Request, res: Response) => {
                             metadata.attributes = attributes;
                             metadata.save();
                         } else {
-                            // CREATE NEW METADATA
                             metadata = await ERC721Service.createMetadata(erc721, attributes);
-
-                            // GENERATE A NEW REWARD and CLAIMS FOR THE NEW METADATA
-                            const config = {
-                                uuid: db.createUUID(),
-                                erc721metadataId: metadata._id,
-                                poolId: String(req.assetPool._id),
-                                title: '',
-                                description: '',
-                                expiryDate: null,
-                                claimAmount: 1,
-                                rewardLimit: 1,
-                                pointPrice: 0,
-                                platform: RewardConditionPlatform.None,
-                                isPromoted: false,
-                            };
-                            await createERC721Perk(req.assetPool, config);
                         }
                     } catch (err) {
                         logger.error(err);

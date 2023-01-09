@@ -19,6 +19,11 @@ class ERC20Module extends VuexModule {
     }
 
     @Mutation
+    setBalance({ id, balance }: { id: string; balance: string }) {
+        Vue.set(this._all[id], 'poolBalance', balance);
+    }
+
+    @Mutation
     unset(erc20: TERC20) {
         Vue.delete(this._all, erc20._id);
     }
@@ -64,6 +69,16 @@ class ERC20Module extends VuexModule {
     }
 
     @Action({ rawError: true })
+    async getBalance({ id, address }: { id: string; address: string }) {
+        const { data } = await axios({
+            method: 'GET',
+            url: '/erc20/' + id + '/balance/' + address,
+        });
+
+        this.context.commit('setBalance', { id, balance: data });
+    }
+
+    @Action({ rawError: true })
     async create(payload: any) {
         const formData = prepareFormDataForUpload(payload);
 
@@ -73,7 +88,7 @@ class ERC20Module extends VuexModule {
             data: formData,
         });
 
-        this.context.commit('set', { _id: data._id, loading: true });
+        await this.context.dispatch('read', data._id);
     }
 
     @Action({ rawError: true })
@@ -84,7 +99,7 @@ class ERC20Module extends VuexModule {
             data: payload,
         });
 
-        this.context.commit('set', { _id: data._id, loading: true });
+        await this.context.dispatch('read', data._id);
     }
 
     @Action({ rawError: true })

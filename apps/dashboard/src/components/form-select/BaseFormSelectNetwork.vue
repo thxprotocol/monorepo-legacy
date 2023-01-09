@@ -20,11 +20,6 @@
                 </b-dropdown-item-button>
             </b-dropdown>
         </b-form-group>
-        <b-alert :show="profile.plan === AccountPlanType.Free && currentChainId == ChainId.Polygon" variant="warning">
-            <i class="fas fa-rocket mr-2"></i>
-            Choosing <strong>Polygon</strong> will move you from a Free to
-            <b-link :href="publicUrl + '/pricing'">Basic</b-link> plan and start invoicing.
-        </b-alert>
     </div>
 </template>
 
@@ -45,17 +40,13 @@ import { mapGetters } from 'vuex';
 export default class BaseFormSelectNetwork extends Vue {
     @Prop() chainId!: ChainId;
     ChainId = ChainId;
-    AccountPlanType = AccountPlanType;
     publicUrl = PUBLIC_URL;
     chainInfo = chainInfo;
     profile!: IAccount;
-    currentChainId = ChainId.PolygonMumbai;
+    currentChainId = ChainId.Polygon;
 
     created() {
-        if (!this.chainId && this.profile.plan !== AccountPlanType.Free) this.currentChainId = ChainId.Polygon;
-        else if (this.chainId) {
-            this.currentChainId = this.chainId;
-        }
+        if (this.chainId) this.currentChainId = this.chainId;
         this.$emit('selected', this.currentChainId);
     }
 

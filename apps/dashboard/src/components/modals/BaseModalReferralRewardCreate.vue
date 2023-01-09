@@ -1,5 +1,5 @@
 <template>
-    <base-modal size="xl" title="Create Referral Reward" :id="id" :error="error" :loading="isLoading">
+    <base-modal @show="onShow" size="xl" title="Create Referral Reward" :id="id" :error="error" :loading="isLoading">
         <template #modal-body v-if="!isLoading">
             <template v-if="reward && reward.token">
                 <p class="text-gray">
@@ -40,7 +40,7 @@
                                 variant="light"
                                 v-b-toggle.collapse-card-expiry
                             >
-                                <strong>URL Qualification</strong>
+                                <strong>Qualification</strong>
                                 <i :class="`fa-chevron-${isVisible ? 'up' : 'down'}`" class="fas m-0"></i>
                             </b-button>
                             <b-collapse id="collapse-card-expiry" v-model="isVisible">
@@ -126,25 +126,26 @@ export default class ModalReferralRewardCreate extends Vue {
     @Prop({ required: false }) reward!: TReferralReward;
 
     get code() {
-        if (!this.reward) {
-            return '';
-        }
+        if (!this.reward) return '';
         return `curl "${API_URL}/v1/webhook/referral/${this.reward.token}/qualify" -X POST -d "code=${this.profile.sub}"`;
     }
 
     get codeExample() {
-        if (!this.reward) {
-            return '';
-        }
+        if (!this.reward) return '';
         return hljs.highlight(this.code, { language: 'xml' }).value;
     }
 
-    mounted() {
+    onShow() {
         if (this.reward) {
             this.title = this.reward.title;
             this.amount = String(this.reward.amount);
             this.description = this.reward.description;
             this.successUrl = this.reward.successUrl;
+        } else {
+            this.title = '';
+            this.description = '';
+            this.amount = '0';
+            this.successUrl = '';
         }
     }
 
