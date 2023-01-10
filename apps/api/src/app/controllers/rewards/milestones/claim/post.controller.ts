@@ -1,30 +1,34 @@
 import { Request, Response } from 'express';
-import { canClaim } from '@thxnetwork/api/util/condition';
-import { PointReward } from '@thxnetwork/api/models/PointReward';
-import { Claim } from '@thxnetwork/api/models/Claim';
-import MilestoneBalanceService from '@thxnetwork/api/services/MilestoneBalanceService';
-import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import db from '@thxnetwork/api/util/database';
+import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
+import PoolService from '@thxnetwork/api/services/PoolService';
+import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
+import { MilestoneRewardClaim } from '@thxnetwork/api/models/MilestoneRewardClaims';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
-    const reward = await PointReward.findOne({ uuid: req.params.uuid });
-    const account = await AccountProxy.getById(req.auth.sub);
+    const reward = await MilestoneReward.findOne({ uuid: req.params.uuid });
+    const pool = await PoolService.getById(reward.poolId);
 
-    const { result, error } = await canClaim(reward, account);
-    if (!result || error) return res.json({ error });
-
-    const claim = await Claim.create({
-        rewardUuid: reward.uuid,
-        poolId: req.assetPool._id,
+    const claims = await MilestoneRewardClaim.find({
+        poolId: pool.id,
         sub: req.auth.sub,
-        amount: reward.amount,
-        uuid: db.createUUID(),
+        isClaimed: false,
+        milestoneRewardId: reward._id,
     });
 
-    await MilestoneBalanceService.add(req.assetPool, req.auth.sub, reward.amount);
+    if (!claims.length) {
+        return res.status(403).json({ message: 'You have no claims' });
+    }
 
-    res.status(201).json(claim);
+    const promises = claims.map(async (claim) => {
+        await PointBalanceService.add(pool, claim.sub, `${claim.amount}`);
+        claim.isClaimed = true;
+        await claim.save();
+    });
+
+    await Promise.all(promises);
+
+    res.status(201).json(claims);
 };
 
 export default { controller };

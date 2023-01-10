@@ -1,4 +1,4 @@
-import MilestonePerkService from '@thxnetwork/api/services/MilestonePerkService';
+import MilestoneRewardService from '@thxnetwork/api/services/MilestoneRewardService';
 import { Request, Response } from 'express';
 import { body } from 'express-validator';
 
@@ -8,7 +8,7 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['RewardsToken']
     const { title, description, amount } = req.body;
 
-    const milestoneReward = await MilestonePerkService.create(req.assetPool, {
+    const milestoneReward = await MilestoneRewardService.create(req.assetPool, {
         title,
         description,
         amount,

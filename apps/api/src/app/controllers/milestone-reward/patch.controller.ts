@@ -1,4 +1,4 @@
-import MilestonePerkService from '@thxnetwork/api/services/MilestonePerkService';
+import MilestoneRewardService from '@thxnetwork/api/services/MilestoneRewardService';
 import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
 
@@ -14,7 +14,7 @@ const controller = async (req: Request, res: Response) => {
     const { title, description, amount } = req.body;
     const { token } = req.params;
 
-    const milestoneReward = await MilestonePerkService.edit(token, {
+    const milestoneReward = await MilestoneRewardService.edit(token, {
         title,
         description,
         amount,

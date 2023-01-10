@@ -1,5 +1,5 @@
 import { TBaseReward } from './BaseReward';
 
-export type MilestonePerk = TBaseReward & {
+export type MilestoneReward = TBaseReward & {
     amount: number;
 };
