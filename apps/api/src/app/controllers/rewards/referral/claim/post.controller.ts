@@ -2,10 +2,10 @@ import { Request, Response } from 'express';
 import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
 import { ReferralRewardClaim } from '@thxnetwork/api/models/ReferralRewardClaim';
 import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
-import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import MailService from '@thxnetwork/api/services/MailService';
 import PoolService from '@thxnetwork/api/services/PoolService';
+import { v4 } from 'uuid';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
@@ -26,14 +26,13 @@ const controller = async (req: Request, res: Response) => {
         poolId: pool._id,
         sub: req.body.sub,
         amount: reward.amount,
+        uuid: v4(),
     });
-
-    await PointBalanceService.add(pool, req.body.sub, reward.amount);
 
     await MailService.send(
         account.email,
-        'Update on your referral link.',
-        `Congratulations! Your referral link has been used and ${reward.amount} points have been transferred to your wallet.`,
+        'Update on your referral',
+        `Congratulations! Your referral link has been used and approval for a transfer of ${reward.amount} points has been requested.`,
     );
 
     res.status(201).json(claim);

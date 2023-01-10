@@ -6,6 +6,7 @@ import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
+import MailService from '@thxnetwork/api/services/MailService';
 
 const validation = [body('claimUuids').exists().isArray()];
 
@@ -26,6 +27,12 @@ const controller = async (req: Request, res: Response) => {
 
                 // Transfer ReferralReward.amount points to the ReferralRewardClaim.sub
                 await PointBalanceService.add(pool, claim.sub, reward.amount);
+
+                await MailService.send(
+                    account.email,
+                    'Update on your referral',
+                    `Congratulations! Your referral has been approved and your balance has been increased with ${reward.amount} points.`,
+                );
             }
 
             return {
