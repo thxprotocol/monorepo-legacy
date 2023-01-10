@@ -127,6 +127,11 @@ export default class BaseCardRewardCondition extends Vue {
                     this.isAuthorized = !!this.twitter;
                     break;
                 }
+                case RewardConditionPlatform.Discord: {
+                    await this.$store.dispatch('account/getDiscord');
+                    this.isAuthorized = !!this.discord;
+                    break;
+                }
                 default:
             }
             this.interaction = platformInteractionList.find((i) => i.type === interaction) as IChannelAction;
