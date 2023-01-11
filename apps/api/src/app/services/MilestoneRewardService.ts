@@ -1,6 +1,6 @@
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import db from '@thxnetwork/api/util/database';
-import { MilestoneReward as TMilestoneReward } from '@thxnetwork/types/';
+import { TMilestoneReward } from '@thxnetwork/types';
 import { AssetPoolDocument } from '../models/AssetPool';
 import { MilestoneReward, MilestoneRewardDocument } from '../models/MilestoneReward';
 import { TAssetPool } from '../types/TAssetPool';
