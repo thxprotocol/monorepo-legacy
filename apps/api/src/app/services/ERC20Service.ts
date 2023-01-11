@@ -97,6 +97,13 @@ const addMinter = async (erc20: ERC20Document, address: string) => {
     assertEvent('RoleGranted', parseLogs(erc20.contract.options.jsonInterface, receipt.logs));
 };
 
+const addToken = async (sub: string, erc20: ERC20Document) => {
+    const query = { sub, erc20Id: erc20._id };
+    if (!(await ERC20Token.exists(query))) {
+        await ERC20Token.create(query);
+    }
+};
+
 export const getAll = (sub: string) => {
     return ERC20.find({ sub });
 };
@@ -233,6 +240,7 @@ export default {
     findBy,
     findByPool,
     getById,
+    addToken,
     addMinter,
     isMinter,
     findOrImport,

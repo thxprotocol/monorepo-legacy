@@ -24,6 +24,10 @@
                     <p class="lead font-weight-light">
                         Using our widget or SDK you save months of work compared to starting from scratch.
                     </p>
+                    <b-button @click="onClickLaunchWidget" variant="primary" class="rounded-pill">
+                        <i class="fas fa-gift ml-0 mr-2" style="font-size: 1.1rem"></i>
+                        Launch Loyalty Widget!
+                    </b-button>
                 </div>
             </div>
             <div class="row pt-5 pb-5">
@@ -142,6 +146,11 @@ new THXWidget({ poolId: "507f191e810c19729de860ea" });`,
             language: 'xml',
         },
     ).value;
+
+    onClickLaunchWidget() {
+        const element = document.getElementById('thx-launcher');
+        element?.click();
+    }
 }
 </script>
 <style>

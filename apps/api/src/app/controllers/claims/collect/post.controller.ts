@@ -34,9 +34,6 @@ const controller = async (req: Request, res: Response) => {
     const { result, error } = await canClaim(reward, account);
     if (!result || error) throw new ForbiddenError(error);
 
-    // Force sync by default but allow the requester to do async calls.
-    const forceSync = req.query.forceSync !== undefined ? req.query.forceSync === 'true' : true;
-
     if (isTERC20Perk(reward) && claim.erc20Id) {
         // Validate the claim
         const { result, error } = await validateCondition(account, reward);
@@ -65,8 +62,10 @@ const controller = async (req: Request, res: Response) => {
             null,
             String(reward._id),
         );
-        const erc20 = await ERC20Service.getById(reward.erc20Id);
-        withdrawal = await WithdrawalService.withdrawFor(pool, withdrawal, account, erc20, forceSync);
+
+        const erc20 = await ERC20Service.getById(claim.erc20Id);
+        let withdrawal: WithdrawalDocument = await WithdrawalService.create(erc20, req.auth.sub, Number(reward.amount));
+        withdrawal = await WithdrawalService.withdrawFor(pool, withdrawal, account, erc20, false);
 
         const payment = await ERC20PerkPayment.create({
             sub: req.auth.sub,
@@ -96,9 +95,9 @@ const controller = async (req: Request, res: Response) => {
         }
 
         const metadata = await ERC721Service.findMetadataById(reward.erc721metadataId);
-        if (!metadata) throw new NotFoundError('No metatdata found for reward');
+        if (!metadata) throw new NotFoundError('No metadata found for reward');
         const erc721 = await ERC721Service.findById(metadata.erc721);
-        const token = await ERC721Service.mint(pool, erc721, metadata, account, forceSync);
+        const token = await ERC721Service.mint(pool, erc721, metadata, account, false);
 
         const payment = await ERC721PerkPayment.create({
             sub: req.auth.sub,

@@ -6,7 +6,7 @@
                 No tokens are visible for your account.
             </strong>
             <b-list-group v-else class="w-100 align-self-start">
-                <base-list-group-item-token :erc20="erc20" :key="erc20._id" v-for="erc20 in contracts" />
+                <base-list-group-item-token :token="token" :key="token._id" v-for="token in contracts" />
             </b-list-group>
         </template>
     </div>
