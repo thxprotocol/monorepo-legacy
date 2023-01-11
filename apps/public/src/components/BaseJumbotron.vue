@@ -46,18 +46,14 @@
                             </b-form>
                         </div>
                     </div>
-                    <div class="offset-lg-1 col-lg-6 pb-5 py-md-5 order-0 order-md-1">
-                        <img
-                            v-lazy="require('../../public/assets/img/thx_jumbotron_apps.png')"
-                            :alt="ALT_TEXT.HOME_MAN_WATCHING_PHONE"
-                            class="img-fluid"
-                        />
-                        <!-- <img
-                            v-lazy="require('../../public/assets/img/thx_jumbotron_phone.webp')"
-                            height="800"
-                            class="brand-image float-right"
-                            alt="THX Wallet screenshot"
-                        /> -->
+                    <div class="offset-lg-1 col-lg-6 pb-5 py-md-5 order-0 order-md-1 text-center">
+                        <div>
+                            <img
+                                v-lazy="require('../../public/assets/img/thx_jumbotron_apps.png')"
+                                :alt="ALT_TEXT.HOME_MAN_WATCHING_PHONE"
+                                class="img-fluid"
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
