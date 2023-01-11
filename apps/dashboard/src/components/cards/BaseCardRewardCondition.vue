@@ -111,34 +111,35 @@ export default class BaseCardRewardCondition extends Vue {
     }
 
     async mounted() {
-        if (this.rewardCondition) {
-            const { platform, interaction, content } = this.rewardCondition;
-            // await this.onSelectPlatform(this.platform);
-            this.platform = platformList.find((c) => c.type === platform) as IChannel;
-            this.isLoadingPlatform = true;
-            switch (this.platform.type) {
-                case RewardConditionPlatform.Google: {
-                    await this.$store.dispatch('account/getYoutube');
-                    this.isAuthorized = !!this.youtube;
-                    break;
-                }
-                case RewardConditionPlatform.Twitter: {
-                    await this.$store.dispatch('account/getTwitter');
-                    this.isAuthorized = !!this.twitter;
-                    break;
-                }
-                case RewardConditionPlatform.Discord: {
-                    await this.$store.dispatch('account/getDiscord');
-                    this.isAuthorized = !!this.discord;
-                    break;
-                }
-                default:
+        this.isLoadingPlatform = true;
+        this.platform = this.rewardCondition
+            ? (platformList.find((c) => c.type === this.rewardCondition.platform) as IChannel)
+            : platformList[0];
+
+        switch (this.platform.type) {
+            case RewardConditionPlatform.Google: {
+                await this.$store.dispatch('account/getYoutube');
+                this.isAuthorized = !!this.youtube;
+                break;
             }
-            this.interaction = platformInteractionList.find((i) => i.type === interaction) as IChannelAction;
-            this.content = content;
-            this.isVisible = !!this.platform.type;
-            this.isLoadingPlatform = false;
+            case RewardConditionPlatform.Twitter: {
+                await this.$store.dispatch('account/getTwitter');
+                this.isAuthorized = !!this.twitter;
+                break;
+            }
+            case RewardConditionPlatform.Discord: {
+                await this.$store.dispatch('account/getDiscord');
+                this.isAuthorized = !!this.discord;
+                break;
+            }
+            default:
         }
+        this.interaction = this.rewardCondition
+            ? this.getInteraction(this.rewardCondition.interaction)
+            : this.getInteraction(0);
+        this.content = this.rewardCondition ? this.rewardCondition.content : '';
+        this.isVisible = !!this.platform.type;
+        this.isLoadingPlatform = false;
     }
 
     onClickConnect() {
