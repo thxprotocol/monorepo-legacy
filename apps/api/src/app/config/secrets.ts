@@ -94,3 +94,4 @@ export const LOCAL_CERT_KEY = process.env.LOCAL_CERT_KEY;
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 export const RELAYER_SPEED = 'fastest';
+export const MIXPANEL_TOKEN = process.env.MIXPANEL_TOKEN;
