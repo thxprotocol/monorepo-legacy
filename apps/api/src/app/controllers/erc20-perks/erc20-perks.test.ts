@@ -7,6 +7,7 @@ import {
     tokenSymbol,
     walletAccessToken,
     walletAccessToken2,
+    walletAccessToken3,
 } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
@@ -124,6 +125,7 @@ describe('ERC20 Perks', () => {
     });
 
     describe('Reward Limit === 1', () => {
+        let claim;
         it('POST /erc20-perks', (done) => {
             user.post('/v1/erc20-perks/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
@@ -141,50 +143,51 @@ describe('ERC20 Perks', () => {
                     expect(res.body._id).toBeDefined();
                     expect(res.body.claims.length).toBe(1);
                     expect(res.body.claims[0].uuid).toBeDefined();
+                    claim = res.body.claims[0];
                 })
                 .expect(201, done);
         });
 
-        //describe('POST /v1/claims/:uuid/collect', () => {
-        // it('should return a 200', (done) => {
-        //     user.post(`/v1/claims/${claim.uuid}/collect`)
-        //         .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
-        //         .expect(200, done);
-        // });
+        describe('POST /v1/claims/:uuid/collect', () => {
+            it('should return a 200', (done) => {
+                user.post(`/v1/claims/${claim.uuid}/collect`)
+                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
+                    .expect(200, done);
+            });
 
-        // it('should return a 403 for the second claim on the same account', (done) => {
-        //     user.post(`/v1/claims/${claim.uuid}/collect`)
-        //         .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
-        //         .expect((res: request.Response) => {
-        //             expect(res.body.error.message).toBe('You can only claim this reward once.');
-        //         })
-        //         .expect(200, done);
-        // });
+            it('should return a 403 for the second claim on the same account', (done) => {
+                user.post(`/v1/claims/${claim.uuid}/collect`)
+                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
+                    .expect((res: request.Response) => {
+                        expect(res.body.error.message).toBe('You can only claim this reward once.');
+                    })
+                    .expect(200, done);
+            });
 
-        // it('should return a 200 for the second claim on another account', (done) => {
-        //     user.post(`/v1/claims/${claim.uuid}/collect`)
-        //         .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken2 })
-        //         .expect(200, done);
-        // });
+            it('should return a 200 for the second claim on another account', (done) => {
+                user.post(`/v1/claims/${claim.uuid}/collect`)
+                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken2 })
+                    .expect(200, done);
+            });
 
-        // it('should return a 403 for the second claim on the same account', (done) => {
-        //     user.post(`/v1/claims/${claim.uuid}/collect`)
-        //         .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken2 })
-        //         .expect((res: request.Response) => {
-        //             expect(res.body.error.message).toBe("This reward has reached it's limit");
-        //         })
-        //         .expect(403, done);
-        // });
+            it('should return a 403 for the second claim on the same account', (done) => {
+                user.post(`/v1/claims/${claim.uuid}/collect`)
+                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken2 })
+                    .expect((res: request.Response) => {
+                        expect(res.body.error.message).toBe("This reward has reached it's limit");
+                    })
+                    .expect(403, done);
+            });
 
-        // it('should return a 403 for the third claim on another account', (done) => {
-        //     user.post(`/v1/claims/${claim.uuid}/collect`)
-        //         .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken3 })
-        //         .expect((res: request.Response) => {
-        //             expect(res.body.error.message).toBe("This reward has reached it's limit");
-        //         })
-        //         .expect(403, done);
-        // });
-        //});
+            it('should return a 403 for the third claim on another account', (done) => {
+                user.post(`/v1/claims/${claim.uuid}/collect`)
+                    .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken3 })
+                    .expect((res: request.Response) => {
+                        expect(res.body.error.message).toBe("This reward has reached it's limit");
+                    })
+                    .expect(403, done);
+            });
+        });
     });
 
     describe('Expiration Date < Date.now', () => {
