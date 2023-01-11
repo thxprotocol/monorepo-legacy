@@ -31,7 +31,7 @@ export async function controller(req: Request, res: Response) {
     const { uid, session } = req.interaction;
     const account = await AccountService.get(session.accountId);
     const file = (req.files as any)?.profile?.[0] as Express.Multer.File;
-    const body = { ...req.body };
+    const body = req.body;
 
     if (!account) throw new Error(ERROR_NO_ACCOUNT);
 
@@ -55,7 +55,6 @@ export async function controller(req: Request, res: Response) {
         } as IAccessToken);
         await account.save();
 
-        // SEND VERIFICATION REQUEST FOR THE NEW EMAIL
         await MailService.sendVerificationEmail(account, req.body.return_url);
     }
 

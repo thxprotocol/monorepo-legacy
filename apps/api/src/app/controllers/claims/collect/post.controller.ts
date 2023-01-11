@@ -35,21 +35,10 @@ const controller = async (req: Request, res: Response) => {
     const { result, error } = await canClaim(reward, account);
     if (!result || error) throw new ForbiddenError(error);
 
-    // Force sync by default but allow the requester to do async calls.
-    const forceSync = req.query.forceSync !== undefined ? req.query.forceSync === 'true' : true;
-
     if (isTERC20Perk(reward) && claim.erc20Id) {
-        let withdrawal: WithdrawalDocument = await WithdrawalService.create(
-            pool,
-            WithdrawalType.ClaimReward,
-            req.auth.sub,
-            Number(reward.amount),
-            WithdrawalState.Pending,
-            null,
-            String(reward._id),
-        );
         const erc20 = await ERC20Service.getById(claim.erc20Id);
-        withdrawal = await WithdrawalService.withdrawFor(pool, withdrawal, account, erc20, forceSync);
+        let withdrawal: WithdrawalDocument = await WithdrawalService.create(erc20, req.auth.sub, Number(reward.amount));
+        withdrawal = await WithdrawalService.withdrawFor(pool, withdrawal, account, erc20, false);
 
         // When more than one claim is created for this reward we update the existing ones,
         // since the check on rewardLimit will take into account the claims with existing sub
@@ -70,11 +59,9 @@ const controller = async (req: Request, res: Response) => {
 
     if (isTERC721Perk(reward) && claim.erc721Id) {
         const metadata = await ERC721Service.findMetadataById(reward.erc721metadataId);
-        if (!metadata) throw new NotFoundError('No metatdata found for reward');
+        if (!metadata) throw new NotFoundError('No metadata found for reward');
         const erc721 = await ERC721Service.findById(metadata.erc721);
-        const token = await ERC721Service.mint(pool, erc721, metadata, account, forceSync);
-
-        // TODO make abstract method for this. Take note of difference in claim creation.
+        const token = await ERC721Service.mint(pool, erc721, metadata, account, false);
 
         // When more than one claim is created for this reward we update the existing ones,
         // since the check on rewardLimit will take into account the claims with existing sub

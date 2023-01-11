@@ -1,5 +1,5 @@
 import sgMail from '@sendgrid/mail';
-import { API_URL, SENDGRID_API_KEY } from '@thxnetwork/api/config/secrets';
+import { API_URL, NODE_ENV, SENDGRID_API_KEY } from '@thxnetwork/api/config/secrets';
 import { logger } from '../util/logger';
 import path from 'path';
 import { assetsPath } from '../util/path';
@@ -20,7 +20,7 @@ const send = async (to: string, subject: string, htmlContent: string, link = '')
         { async: true },
     );
 
-    if (SENDGRID_API_KEY) {
+    if (SENDGRID_API_KEY && NODE_ENV !== 'test') {
         const options = {
             to,
             from: {
