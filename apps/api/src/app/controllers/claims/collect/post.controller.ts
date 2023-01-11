@@ -42,6 +42,16 @@ const controller = async (req: Request, res: Response) => {
         const { result, error } = await validateCondition(account, reward);
         if (!result || error) return res.json({ error });
 
+        // Can only claim this reward once and a withdrawal already exists
+        if (reward.rewardLimit > 0) {
+            const amountOfClaims = await ERC20PerkPayment.countDocuments({
+                perkId: reward._id,
+            });
+            if (amountOfClaims >= reward.rewardLimit) {
+                throw new ForbiddenError("This reward has reached it's limit");
+            }
+        }
+
         if (await ERC20PerkPayment.exists({ perkId: reward._id, sub: req.auth.sub })) {
             throw new ForbiddenError('You can only claim this reward once.');
         }
@@ -70,6 +80,16 @@ const controller = async (req: Request, res: Response) => {
         // Validate the claim
         const { result, error } = await validateCondition(account, reward);
         if (!result || error) return res.json({ error });
+
+        // Can only claim this reward once and a withdrawal already exists
+        if (reward.rewardLimit > 0) {
+            const amountOfClaims = await ERC721PerkPayment.countDocuments({
+                perkId: reward._id,
+            });
+            if (amountOfClaims >= reward.rewardLimit) {
+                throw new ForbiddenError("This reward has reached it's limit");
+            }
+        }
 
         if (await ERC721PerkPayment.exists({ perkId: reward._id, sub: req.auth.sub })) {
             throw new ForbiddenError('You can only claim this reward once.');
