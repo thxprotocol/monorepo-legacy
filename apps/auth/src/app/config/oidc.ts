@@ -67,6 +67,7 @@ const config: Configuration = {
         'prompt',
         'channel',
         'verifyEmailToken',
+        'access_token_kind',
     ],
     scopes: [
         'openid',

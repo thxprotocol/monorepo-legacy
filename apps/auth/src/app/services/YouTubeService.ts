@@ -2,7 +2,7 @@ import axios from 'axios';
 import { google, youtube_v3 } from 'googleapis';
 import { AccountDocument } from '../models/Account';
 import { AUTH_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../config/secrets';
-import { AccessTokenKind } from '../types/enums/AccessTokenKind';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IAccessToken } from '../types/TAccount';
 
 const client = new google.auth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, AUTH_URL + '/oidc/callback/google');
@@ -12,18 +12,19 @@ google.options({ auth: client });
 const ERROR_NO_DATA = 'Could not find an youtube data for this accesstoken';
 
 export class YouTubeService {
-    static async isAuthorized(account: AccountDocument) {
-        const token = account.getToken(AccessTokenKind.Google);
+    static async isAuthorized(account: AccountDocument, accessTokenKind: AccessTokenKind) {
+        const token = account.getToken(accessTokenKind);
         if (!token || !token.accessToken) return false;
         const isExpired = Date.now() > token.expiry;
         if (isExpired) return false;
-        const hasYoutubeScopes = await this.hasYoutubeScopes(token.accessToken);
+        const hasYoutubeScopes = await this.hasYoutubeScopes(token.accessToken, accessTokenKind);
         if (!hasYoutubeScopes) return false;
         return true;
     }
 
     static async getYoutubeClient(account: AccountDocument) {
-        const googleToken: IAccessToken = account.getToken(AccessTokenKind.Google);
+        const googleToken: IAccessToken = account.getToken(AccessTokenKind.YoutubeView);
+
         client.setCredentials({
             refresh_token: googleToken.refreshToken,
             access_token: googleToken.accessToken,
@@ -33,7 +34,7 @@ export class YouTubeService {
         const { expiry_date } = await client.getTokenInfo(token);
 
         account.setToken({
-            kind: AccessTokenKind.Google,
+            kind: AccessTokenKind.YoutubeView,
             accessToken: token,
             expiry: expiry_date,
             refreshToken: googleToken.refreshToken,
@@ -167,10 +168,20 @@ export class YouTubeService {
         }
     }
 
-    static async hasYoutubeScopes(token: string): Promise<boolean> {
-        const youtubeScopes = this.getYoutubeScopes();
+    static async hasYoutubeScopes(token: string, accessTokenKind: AccessTokenKind): Promise<boolean> {
+        const youtubeScopes = this.getYoutubeScopes(accessTokenKind);
         const scopes = await YouTubeService.getScopesOfAccessToken(token);
-        return scopes.length === youtubeScopes.length;
+        if (scopes.length !== youtubeScopes.length) {
+            return false;
+        }
+        return youtubeScopes
+            .map((x) => x.toLowerCase())
+            .every((element) => {
+                if (scopes.map((x) => x.toLowerCase()).includes(element)) {
+                    return true;
+                }
+                return false;
+            });
     }
 
     static async revokeAccess(account: AccountDocument) {
@@ -200,6 +211,19 @@ export class YouTubeService {
         return res.tokens;
     }
 
+    static getYoutubeScopes(accessTokenKind: AccessTokenKind) {
+        switch (accessTokenKind) {
+            case AccessTokenKind.Google:
+                return this.getBasicScopes();
+
+            case AccessTokenKind.YoutubeView:
+                return this.getYoutubeViewScopes();
+
+            case AccessTokenKind.YoutubeManage:
+                return this.getYoutubeManageScopes();
+        }
+    }
+
     static getBasicScopes() {
         return ['https://www.googleapis.com/auth/userinfo.email', 'openid'];
     }
@@ -210,5 +234,23 @@ export class YouTubeService {
 
     static getYoutubeManageScopes() {
         return ['https://www.googleapis.com/auth/youtube', 'openid'];
+    }
+
+    static getAccessTokenKindFromScope(scope: string) {
+        const joinChar = ' ';
+        const openid = 'openid';
+        scope = scope.replace('openid', '').trim();
+
+        if (scope === this.getBasicScopes().join(joinChar).replace(openid, '').trim()) {
+            return AccessTokenKind.Google;
+        }
+        if (scope === this.getYoutubeViewScopes().join(joinChar).replace(openid, '').trim()) {
+            return AccessTokenKind.YoutubeView;
+        }
+        if (scope === this.getYoutubeManageScopes().join(joinChar).replace(openid, '').trim()) {
+            return AccessTokenKind.YoutubeManage;
+        }
+
+        return undefined;
     }
 }

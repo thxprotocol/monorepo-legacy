@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { DiscordService } from '@thxnetwork/auth/services/DiscordService';
-import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
 import { NotFoundError } from '@thxnetwork/auth/util/errors';
 import { AccountService } from '@thxnetwork/auth/services/AccountService';

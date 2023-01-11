@@ -6,6 +6,7 @@ import { YouTubeService } from '@thxnetwork/auth/services/YouTubeService';
 import { TwitterService } from '@thxnetwork/auth/services/TwitterService';
 import { DiscordService } from '@thxnetwork/auth/services/DiscordService';
 import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 
 async function formatAccountRes(account) {
     return {
@@ -16,7 +17,7 @@ async function formatAccountRes(account) {
         company: account.company,
         plan: account.plan,
         email: account.email,
-        googleAccess: await YouTubeService.isAuthorized(account),
+        googleAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.Google),
         twitterAccess: await TwitterService.isAuthorized(account),
         githubAccess: await GithubService.isAuthorized(account),
         discordAccess: await DiscordService.isAuthorized(account),

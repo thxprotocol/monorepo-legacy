@@ -7,7 +7,7 @@ import { AccountService } from '../../../services/AccountService';
 import { GOOGLE_API_ENDPOINT, TWITTER_API_ENDPOINT, INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
 import { accountAddress, accountEmail, accountSecret } from '../../../util/jest';
 import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
-import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 
 const http = request.agent(app);
 

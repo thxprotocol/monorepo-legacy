@@ -7,14 +7,14 @@ import { getAccountByEmail, saveInteraction } from '../../../../util/oidc';
 import { YouTubeService } from '../../../../services/YouTubeService';
 import { AccountVariant } from '../../../../types/enums/AccountVariant';
 import { createWallet } from '@thxnetwork/auth/util/wallet';
-import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
+import { BadRequestError } from '@thxnetwork/auth/util/errors';
 
-async function updateTokens(account: AccountDocument, tokens: any) {
+async function updateTokens(account: AccountDocument, tokens: any, accessTokenKind: AccessTokenKind) {
     const expiry = tokens.expiry_date ? Date.now() + Number(tokens.expiry_date) * 1000 : undefined;
-
     account.setToken({
-        kind: AccessTokenKind.Google,
+        kind: accessTokenKind,
         accessToken: tokens.access_token,
         refreshToken: tokens.refresh_token,
         expiry,
@@ -59,8 +59,11 @@ export async function controller(req: Request, res: Response) {
     });
 
     const returnTo = await saveInteraction(interaction, account._id.toString());
-
-    await updateTokens(account, tokens);
+    const accessTokenKind = YouTubeService.getAccessTokenKindFromScope(tokens.scope);
+    if (!accessTokenKind) {
+        throw new BadRequestError('Bad scope');
+    }
+    await updateTokens(account, tokens, accessTokenKind);
 
     return res.redirect(returnTo);
 }

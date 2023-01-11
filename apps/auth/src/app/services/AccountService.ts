@@ -21,7 +21,7 @@ import {
 import { YouTubeService } from './YouTubeService';
 import { AccountPlanType } from '../types/enums/AccountPlanType';
 import { AccountVariant } from '../types/enums/AccountVariant';
-import { AccessTokenKind } from '../types/enums/AccessTokenKind';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { get24HoursExpiryTimestamp } from '../util/time';
 
 export class AccountService {
@@ -100,6 +100,8 @@ export class AccountService {
         if (updates.googleAccess === false) {
             YouTubeService.revokeAccess(account);
             account.unsetToken(AccessTokenKind.Google);
+            account.unsetToken(AccessTokenKind.YoutubeView);
+            account.unsetToken(AccessTokenKind.YoutubeManage);
         }
 
         if (updates.twitterAccess === false) {
