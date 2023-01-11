@@ -123,8 +123,9 @@ type TClaim = {
     },
 })
 export default class Collect extends Vue {
-    format = format;
+    $confetti!: { start: (options: unknown) => void; stop: () => void };
     imgUrl = require('@thxnetwork/wallet/../public/assets/img/thx_treasure.png');
+    format = format;
     error = '';
     isLoading = true;
     isClaimFailed = false;
@@ -229,7 +230,7 @@ export default class Collect extends Vue {
     }
 
     startConfetti() {
-        (this as any).$confetti.start({
+        this.$confetti.start({
             defaultDropRate: 7,
             particlesPerFrame: 1,
             windSpeedMax: 3,
@@ -238,7 +239,7 @@ export default class Collect extends Vue {
     }
 
     goToWallet() {
-        (this as any).$confetti.stop();
+        this.$confetti.stop();
         const path = this.claim?.erc721 ? 'nft' : 'coins';
         this.$router.push({ path });
     }

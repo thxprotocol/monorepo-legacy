@@ -56,7 +56,7 @@ class ERC20Module extends VuexModule {
         data.forEach((token: TERC20Token) => {
             const web3 = this.context.rootState.network.web3;
             const from = this.context.rootGetters['account/profile'].address;
-            token.erc20.contract = new web3.eth.Contract(ERC20Abi as any, token.erc20.address, { from });
+            token.erc20.contract = new web3.eth.Contract(ERC20Abi as unknown, token.erc20.address, { from });
             token.erc20.blockExplorerUrl = `${chainInfo[token.erc20.chainId].blockExplorer}/address/${
                 token.erc20.address
             }`;
@@ -71,7 +71,7 @@ class ERC20Module extends VuexModule {
             const token = await thxClient.erc20.get(id);
             const web3 = this.context.rootState.network.web3;
             const from = this.context.rootGetters['account/profile'].address;
-            token.erc20.contract = new web3.eth.Contract(ERC20Abi as any, token.erc20.address, { from });
+            token.erc20.contract = new web3.eth.Contract(ERC20Abi as unknown, token.erc20.address, { from });
             token.erc20.blockExplorerUrl = `${chainInfo[token.erc20.chainId].blockExplorer}/address/${
                 token.erc20.address
             }`;
@@ -89,7 +89,7 @@ class ERC20Module extends VuexModule {
         const web3 = this.context.rootState.network.web3;
         const from = this.context.rootGetters['account/profile'].address;
 
-        data.contract = new web3.eth.Contract(ERC20Abi as any, data.address, {
+        data.contract = new web3.eth.Contract(ERC20Abi as unknown, data.address, {
             from,
         });
         data.blockExplorerUrl = `${chainInfo[data.chainId].blockExplorer}/address/${data.address}`;

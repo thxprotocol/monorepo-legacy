@@ -88,7 +88,7 @@ export default class BaseCardNFT extends Vue {
             if (!this.metadata[this.token._id]) return;
             if (p.propType === 'image') {
                 const attrs = this.metadata[this.token._id].attributes;
-                const attr: any = Object.values(attrs).find((a: any) => a.key === p.name);
+                const attr = Object.values(attrs).find((a) => a.key === p.name);
                 if (attr) {
                     url = attr.value;
                 }
