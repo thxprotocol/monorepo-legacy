@@ -23,15 +23,22 @@ const controller = async (req: Request, res: Response) => {
     if (!erc20) throw new NotFoundError('ERC20 not found');
 
     const account = await AccountProxy.getById(req.auth.sub);
+    const pendingWithdrawals = await WithdrawalService.getPendingWithdrawals(erc20, account);
     const balanceInWei = await erc20.contract.methods.balanceOf(account.address).call();
     const balance = Number(fromWei(balanceInWei, 'ether'));
-    const pendingWithdrawals = await WithdrawalService.getPendingWithdrawals(erc20, account);
+    const balancePending = pendingWithdrawals
+        .map((item: any) => item.amount)
+        .reduce((prev: any, curr: any) => prev + curr, 0);
 
-    res.status(200).json({
-        ...erc20.toJSON(),
+    erc20.logoImgUrl = erc20.logoImgUrl || `https://avatars.dicebear.com/api/identicon/${erc20.address}.svg`;
+
+    res.json({
         ...token.toJSON(),
+        balanceInWei,
         balance,
+        balancePending,
         pendingWithdrawals,
+        erc20,
     });
 };
 

@@ -28,22 +28,28 @@ export const controller = async (req: Request, res: Response) => {
             const wallet = await WalletService.findOneByQuery({ sub: req.auth.sub, chainId: erc20.chainId });
             if (!wallet && erc20.chainId !== Number(req.query.chainId))
                 return { ...(token.toJSON() as TERC20Token), erc20 };
+
             const walletBalanceInWei = await erc20.contract.methods.balanceOf(wallet.address).call();
             const walletBalance = Number(fromWei(walletBalanceInWei, 'ether'));
 
+            const pendingWithdrawals = await WithdrawalService.getPendingWithdrawals(erc20, account);
+
             const balanceInWei = await erc20.contract.methods.balanceOf(account.address).call();
             const balance = Number(fromWei(balanceInWei, 'ether'));
-            const pendingWithdrawals = await WithdrawalService.getPendingWithdrawals(erc20, account);
-            const logoImg = erc20.logoImgUrl || `https://avatars.dicebear.com/api/identicon/${erc20.address}.svg`;
+            const balancePending = pendingWithdrawals
+                .map((item: any) => item.amount)
+                .reduce((prev: any, curr: any) => prev + curr, 0);
+
+            erc20.logoImgUrl = erc20.logoImgUrl || `https://avatars.dicebear.com/api/identicon/${erc20.address}.svg`;
 
             return {
                 ...(token.toJSON() as TERC20Token),
                 balanceInWei,
                 balance,
+                balancePending,
                 walletBalance,
-                erc20,
-                logoImg,
                 pendingWithdrawals,
+                erc20,
             };
         }),
     );

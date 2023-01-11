@@ -93,12 +93,11 @@
 
 <script lang="ts">
 import { ERC721, TERC721Metadata, TERC721Token } from '@thxnetwork/wallet/store/modules/erc721';
-import { Withdrawal, WithdrawalState } from '@thxnetwork/wallet/store/modules/withdrawals';
+import { Withdrawal } from '@thxnetwork/wallet/store/modules/withdrawals';
 import { format } from 'date-fns';
 import { User } from 'oidc-client-ts';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters, mapState } from 'vuex';
-import poll from 'promise-poller';
 import { UserProfile } from '../store/modules/account';
 import { RewardConditionInteraction, RewardConditionPlatform, TERC20Perk, TERC721Perk } from '@thxnetwork/types/index';
 import { TERC20 } from '../store/modules/erc20';
@@ -128,7 +127,6 @@ export default class Collect extends Vue {
     imgUrl = require('@thxnetwork/wallet/../public/assets/img/thx_treasure.png');
     error = '';
     isLoading = true;
-    claimStarted = false;
     isClaimFailed = false;
     isClaimInvalid = false;
     claim: TClaim | null = null;
@@ -146,7 +144,6 @@ export default class Collect extends Vue {
     hasValidAccessToken = false;
     RewardConditionPlatform = RewardConditionPlatform;
     RewardConditionInteraction = RewardConditionInteraction;
-    currentChannel: RewardConditionPlatform | null = null;
 
     get erc721() {
         if (!this.claim) return null;
