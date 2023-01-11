@@ -5,6 +5,7 @@ import { fromWei } from 'web3-utils';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import WalletService from '@thxnetwork/api/services/WalletService';
+import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
 
 export const controller = async (req: Request, res: Response) => {
     /*
@@ -32,10 +33,18 @@ export const controller = async (req: Request, res: Response) => {
 
             const balanceInWei = await erc20.contract.methods.balanceOf(account.address).call();
             const balance = Number(fromWei(balanceInWei, 'ether'));
-
+            const pendingWithdrawals = await WithdrawalService.getPendingWithdrawals(erc20, account);
             const logoImg = erc20.logoImgUrl || `https://avatars.dicebear.com/api/identicon/${erc20.address}.svg`;
 
-            return { ...(token.toJSON() as TERC20Token), balanceInWei, balance, walletBalance, erc20, logoImg };
+            return {
+                ...(token.toJSON() as TERC20Token),
+                balanceInWei,
+                balance,
+                walletBalance,
+                erc20,
+                logoImg,
+                pendingWithdrawals,
+            };
         }),
     );
 

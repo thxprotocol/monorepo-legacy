@@ -4,6 +4,7 @@ import { param } from 'express-validator';
 import { fromWei } from 'web3-utils';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
+import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
 
 const validation = [param('id').exists().isMongoId()];
 
@@ -24,11 +25,13 @@ const controller = async (req: Request, res: Response) => {
     const account = await AccountProxy.getById(req.auth.sub);
     const balanceInWei = await erc20.contract.methods.balanceOf(account.address).call();
     const balance = Number(fromWei(balanceInWei, 'ether'));
+    const pendingWithdrawals = await WithdrawalService.getPendingWithdrawals(erc20, account);
 
     res.status(200).json({
         ...erc20.toJSON(),
         ...token.toJSON(),
         balance,
+        pendingWithdrawals,
     });
 };
 

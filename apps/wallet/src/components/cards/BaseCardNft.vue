@@ -3,8 +3,6 @@
         <strong class="mr-2">{{ token.erc721.name }} #{{ token.tokenId }}</strong>
         <hr />
         <div v-if="mdata">
-            <b-form-group label="Title" label-class="text-muted">{{ mdata.title }}</b-form-group>
-            <b-form-group label="Description" label-class="text-muted">{{ mdata.description }}</b-form-group>
             <b-form-group label="Attributes" label-class="text-muted">
                 <b-badge
                     variant="darker"
@@ -43,6 +41,7 @@ import BaseModalTransferTokens from '@thxnetwork/wallet/components/modals/ModalT
 import BaseCardErc721Token from '@thxnetwork/wallet/components/cards/BaseCardERC721Token.vue';
 import BaseIdenticon from '@thxnetwork/wallet/components/BaseIdenticon.vue';
 import { mapState } from 'vuex';
+import poll from 'promise-poller';
 
 @Component({
     components: {
@@ -81,6 +80,19 @@ export default class BaseCardNFT extends Vue {
             }
         });
         return url;
+    }
+
+    async waitForMinted(token: TERC721Token) {
+        const taskFn = async () => {
+            const t = await this.$store.dispatch('erc721/getToken', token._id);
+            if (t && t.state !== 0) {
+                return Promise.resolve(t);
+            } else {
+                return Promise.reject(t);
+            }
+        };
+
+        return poll({ taskFn, interval: 3000, retries: 10 });
     }
 }
 </script>

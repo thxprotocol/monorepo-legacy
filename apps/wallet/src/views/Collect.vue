@@ -168,7 +168,7 @@ export default class Collect extends Vue {
 
         // If no condition applies claim directly
         if (!this.claim.reward.platform) {
-            return await this.claimReward();
+            return this.claimReward();
         }
 
         // Check validity of current access token
@@ -197,12 +197,6 @@ export default class Collect extends Vue {
             this.claimedReward = await this.$store.dispatch('assetpools/claimReward', this.state.claimUuid);
             if (!this.claimedReward) return;
 
-            if (this.claimedReward?.erc20) {
-                await this.waitForWithdrawn(this.claimedReward.withdrawal);
-            } else {
-                await this.waitForMinted(this.claimedReward.token);
-            }
-
             this.startConfetti();
 
             if (this.claim && this.claim.erc721) {
@@ -224,36 +218,6 @@ export default class Collect extends Vue {
         } finally {
             this.isLoading = false;
         }
-    }
-
-    async waitForWithdrawn(withdrawal: Withdrawal) {
-        const taskFn = async () => {
-            if (!this.reward) return;
-            const w = await this.$store.dispatch('withdrawals/get', {
-                id: withdrawal._id,
-                poolId: this.reward.poolId,
-            });
-            if (w && w.state === WithdrawalState.Withdrawn) {
-                return Promise.resolve(w);
-            } else {
-                return Promise.reject(w);
-            }
-        };
-
-        return poll({ taskFn, interval: 3000, retries: 10 });
-    }
-
-    async waitForMinted(token: TERC721Token) {
-        const taskFn = async () => {
-            const t = await this.$store.dispatch('erc721/getToken', token._id);
-            if (t && t.state !== 0) {
-                return Promise.resolve(t);
-            } else {
-                return Promise.reject(t);
-            }
-        };
-
-        return poll({ taskFn, interval: 3000, retries: 10 });
     }
 
     firstImageURL(metadata: TERC721Metadata) {

@@ -44,13 +44,7 @@ const controller = async (req: Request, res: Response) => {
 
     const wallet = await WalletService.findOneByQuery({ sub: req.auth.sub, chainId: pool.chainId });
 
-    let withdrawal = await WithdrawalService.create(
-        pool,
-        WithdrawalType.ClaimReward,
-        req.auth.sub,
-        Number(erc20Perk.amount),
-        WithdrawalState.Pending,
-    );
+    let withdrawal = await WithdrawalService.create(erc20, req.auth.sub, Number(erc20Perk.amount));
 
     withdrawal = await WithdrawalService.withdrawFor(
         pool,

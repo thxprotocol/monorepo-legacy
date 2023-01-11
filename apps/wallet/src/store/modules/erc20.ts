@@ -19,12 +19,16 @@ export type TERC20 = {
     logoURI: string;
     chainId: ChainId;
     balance: string;
+    balancePending: number;
+    pendingWithdrawals: any[];
+    token: TERC20Token;
 };
 export interface TERC20Token {
     _id: string;
     erc20: TERC20;
     erc20Id: string;
     balance: string;
+    pendingWithdrawals: { amount: number }[];
 }
 
 export interface IERC20s {
@@ -58,6 +62,11 @@ class ERC20Module extends VuexModule {
                 token.erc20.address
             }`;
             token.erc20.logoURI = `https://avatars.dicebear.com/api/identicon/${token.erc20.address}.svg`;
+            token.erc20.pendingWithdrawals = token.pendingWithdrawals;
+            token.erc20.balancePending = token.pendingWithdrawals
+                .map((item) => item.amount)
+                .reduce((prev, curr) => prev + curr, 0);
+            token.erc20.token = token;
 
             this.context.commit('set', token.erc20);
         });
@@ -67,7 +76,6 @@ class ERC20Module extends VuexModule {
     async get(id: string) {
         try {
             const data = await thxClient.erc20.get(id);
-
             const web3 = this.context.rootState.network.web3;
             const from = this.context.rootGetters['account/profile'].address;
             data.erc20.contract = new web3.eth.Contract(ERC20Abi as any, data.erc20.address, { from });
@@ -75,11 +83,22 @@ class ERC20Module extends VuexModule {
                 data.erc20.address
             }`;
             data.erc20.logoURI = `https://avatars.dicebear.com/api/identicon/${data.erc20.address}.svg`;
+            data.erc20.pendingWithdrawals = data.pendingWithdrawals;
+            data.erc20.balancePending = data.erc20.pendingWithdrawals
+                .map((item: any) => item.amount)
+                .reduce((prev: any, curr: any) => prev + curr, 0);
+            data.erc20.token = data;
 
             this.context.commit('set', data.erc20);
         } catch (error) {
             return { error };
         }
+    }
+    @Action({ rawError: true })
+    async getPendingWithdrawals(erc20: TERC20) {
+        const data = await thxClient.erc20.get(erc20._id);
+        debugger;
+        return data.pendingWithdrawals;
     }
 
     @Action({ rawError: true })
@@ -99,7 +118,7 @@ class ERC20Module extends VuexModule {
     }
 
     @Action({ rawError: true })
-     async balanceOf(erc20: TERC20) {
+    async balanceOf(erc20: TERC20) {
         const address = this.context.rootGetters['account/profile'].address;
         const balanceInWei = await erc20.contract.methods.balanceOf(address).call();
         const balance = fromWei(balanceInWei);
