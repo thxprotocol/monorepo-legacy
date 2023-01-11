@@ -204,7 +204,11 @@ export class YouTubeService {
         return ['https://www.googleapis.com/auth/userinfo.email', 'openid'];
     }
 
-    static getYoutubeScopes() {
-        return ['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/youtube', 'openid'];
+    static getYoutubeViewScopes() {
+        return ['https://www.googleapis.com/auth/youtube.readonly', 'openid'];
+    }
+
+    static getYoutubeManageScopes() {
+        return ['https://www.googleapis.com/auth/youtube', 'openid'];
     }
 }
