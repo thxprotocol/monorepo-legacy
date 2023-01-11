@@ -26,7 +26,7 @@ class RequestManager extends BaseManager {
 
     private getUrl(path: string) {
         const env = this.client.credential.cached.env;
-        return URL_CONFIG[env as string]['API_URL'] + path;
+        return URL_CONFIG[env]['API_URL'] + path;
     }
 
     private getHeaders() {
@@ -42,24 +42,14 @@ class RequestManager extends BaseManager {
         return headers;
     }
 
-    async get(path: string, config?: Config) {
-        if (config?.waitForAuth) await this.waitForAuth();
-
-        const headers = this.getHeaders();
-        const url = this.getUrl(path);
-        const response = await fetch(url, {
-            ...config,
-            mode: 'cors',
-            method: 'GET',
-            credentials: 'omit',
-            headers: new Headers({ ...config?.headers, ...headers }),
-        });
-
-        if (response.status === 401) {
+    private async handleStatus(r: Response) {
+        if (r.status === 401) {
             await this.silentSignin();
         }
 
-        return await response.json();
+        if (r.status >= 400 && r.status < 600) {
+            throw await r.json();
+        }
     }
 
     async silentSignin() {
@@ -75,12 +65,30 @@ class RequestManager extends BaseManager {
         }
     }
 
+    async get(path: string, config?: Config) {
+        if (config?.waitForAuth) await this.waitForAuth();
+
+        const headers = this.getHeaders();
+        const url = this.getUrl(path);
+        const r = await fetch(url, {
+            ...config,
+            mode: 'cors',
+            method: 'GET',
+            credentials: 'omit',
+            headers: new Headers({ ...config?.headers, ...headers }),
+        });
+
+        await this.handleStatus(r);
+
+        return await r.json();
+    }
+
     async post(path: string, config?: Config) {
         if (config?.waitForAuth) await this.waitForAuth();
 
         const headers = this.getHeaders();
         const env = this.client.credential.cached.env;
-        const response = await fetch(URL_CONFIG[env]['API_URL'] + path, {
+        const r = await fetch(URL_CONFIG[env]['API_URL'] + path, {
             ...config,
             mode: 'cors',
             method: 'POST',
@@ -93,11 +101,9 @@ class RequestManager extends BaseManager {
             }),
         });
 
-        if (response.status === 401) {
-            await this.silentSignin();
-        }
+        await this.handleStatus(r);
 
-        return await response.json();
+        return await r.json();
     }
 
     async patch(path: string, config?: Config) {
@@ -105,7 +111,7 @@ class RequestManager extends BaseManager {
 
         const headers = this.getHeaders();
         const url = this.getUrl(path);
-        const response = await fetch(url, {
+        const r = await fetch(url, {
             ...config,
             mode: 'cors',
             method: 'PATCH',
@@ -118,11 +124,9 @@ class RequestManager extends BaseManager {
             }),
         });
 
-        if (response.status === 401) {
-            await this.silentSignin();
-        }
+        await this.handleStatus(r);
 
-        return await response.json();
+        return await r.json();
     }
 
     async put(path: string, config?: Config) {
@@ -130,7 +134,7 @@ class RequestManager extends BaseManager {
 
         const headers = this.getHeaders();
         const url = this.getUrl(path);
-        const response = await fetch(url, {
+        const r = await fetch(url, {
             ...config,
             mode: 'cors',
             method: 'PUT',
@@ -143,11 +147,9 @@ class RequestManager extends BaseManager {
             }),
         });
 
-        if (response.status === 401) {
-            await this.silentSignin();
-        }
+        await this.handleStatus(r);
 
-        return await response.json();
+        return await r.json();
     }
 
     async delete(path: string, config?: Config) {
@@ -155,7 +157,7 @@ class RequestManager extends BaseManager {
 
         const headers = this.getHeaders();
         const url = this.getUrl(path);
-        const response = await fetch(url, {
+        const r = await fetch(url, {
             ...config,
             mode: 'cors',
             method: 'DELETE',
@@ -163,11 +165,9 @@ class RequestManager extends BaseManager {
             headers: new Headers({ ...config?.headers, ...headers }),
         });
 
-        if (response.status === 401) {
-            await this.silentSignin();
-        }
+        await this.handleStatus(r);
 
-        return await response.json();
+        return await r.json();
     }
 }
 

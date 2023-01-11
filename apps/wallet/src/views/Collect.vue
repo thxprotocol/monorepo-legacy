@@ -123,7 +123,7 @@ export default class Collect extends Vue {
     isClaimFailed = false;
     isClaimInvalid = false;
     claim: TClaim | null = null;
-    claimedReward: (TClaim & { withdrawal: Withdrawal; token: TERC721Token }) | null = null;
+    claimedReward: (TClaim & { withdrawal: Withdrawal; token: TERC721Token; error?: string }) | null = null;
     state!: { claimUuid: string; rewardHash: string };
 
     erc721s!: { [id: string]: ERC721 };
@@ -205,11 +205,12 @@ export default class Collect extends Vue {
                 await this.$store.dispatch('network/connect', this.claim.erc20.chainId);
             }
         } catch (e) {
-            const res = (e as AxiosError).response;
-            this.isClaimFailed = res?.status === 500;
-            this.isClaimInvalid = res?.status === 403;
-            if (res?.status === 403) {
-                this.error = res?.data.error.message;
+            const { error } = e as { error: { message: string } };
+            if (error && error.message) {
+                this.isClaimInvalid = true;
+                this.error = error.message;
+            } else {
+                this.isClaimFailed = true;
             }
         } finally {
             this.isLoading = false;

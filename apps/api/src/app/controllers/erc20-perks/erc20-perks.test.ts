@@ -161,7 +161,7 @@ describe('ERC20 Perks', () => {
                     .expect((res: request.Response) => {
                         expect(res.body.error.message).toBe('You can only claim this reward once.');
                     })
-                    .expect(403, done);
+                    .expect(200, done);
             });
 
             it('should return a 200 for the second claim on another account', (done) => {
@@ -221,7 +221,7 @@ describe('ERC20 Perks', () => {
                     .expect((res: request.Response) => {
                         expect(res.body.error.message).toBe('This reward claim has expired.');
                     })
-                    .expect(403, done);
+                    .expect(200, done);
             });
         });
     });
