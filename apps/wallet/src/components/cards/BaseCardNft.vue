@@ -3,8 +3,6 @@
         <strong class="mr-2">{{ token.erc721.name }} #{{ token.tokenId }}</strong>
         <hr />
         <div v-if="mdata">
-            <b-form-group label="Title" label-class="text-muted">{{ mdata.title }}</b-form-group>
-            <b-form-group label="Description" label-class="text-muted">{{ mdata.description }}</b-form-group>
             <b-form-group label="Attributes" label-class="text-muted">
                 <b-badge
                     variant="darker"
