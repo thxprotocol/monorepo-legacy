@@ -6,7 +6,7 @@ import PostClaimCollect from './collect/post.controller';
 const router = express.Router();
 
 router.post(
-    '/:id/collect',
+    '/:uuid/collect',
     guard.check(['claims:read']),
     assertRequestInput(PostClaimCollect.validation),
     PostClaimCollect.controller,

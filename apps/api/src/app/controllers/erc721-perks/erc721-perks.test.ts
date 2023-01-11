@@ -179,7 +179,7 @@ describe('ERC721 Perks', () => {
             });
         });
 
-        describe('POST /claims/:id/collect', () => {
+        describe('POST /claims/:uuid/collect', () => {
             it('should return a 200 and NFT minted', (done) => {
                 user.post(`/v1/claims/${claim.uuid}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
@@ -202,6 +202,8 @@ describe('ERC721 Perks', () => {
                 .expect((res: request.Response) => {
                     expect(res.body.results.length).toBe(1);
                     expect(res.body.results[0].claims).toBeDefined();
+                    expect(res.body.results[0].payments).toBeDefined();
+                    expect(res.body.results[0].payments.length).toBe(1);
                     expect(res.body.limit).toBe(10);
                     expect(res.body.total).toBe(1);
                 })
