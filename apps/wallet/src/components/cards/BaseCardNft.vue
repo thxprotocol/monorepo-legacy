@@ -1,6 +1,12 @@
 <template>
     <b-card class="mb-3" :img-src="imgUrl" img-alt="Image" img-top>
-        <strong class="mr-2">{{ token.erc721.name }} #{{ token.tokenId }}</strong>
+        <div class="d-flex align-items-center justify-content-between">
+            <strong class="mr-2">{{ token.erc721.name }} </strong>
+            <div>
+                <b-spinner v-if="!token.tokenId" small variant="gray" v-b-tooltip title="NFT minting in progress..." />
+                <b-badge variant="light" class="p-2" v-else>#{{ token.tokenId }}</b-badge>
+            </div>
+        </div>
         <hr />
         <div v-if="mdata">
             <b-form-group label="Attributes" label-class="text-muted">
@@ -21,13 +27,21 @@
             block
             class="rounded-pill"
             variant="primary"
+            :disabled="!token.tokenId"
             :href="token.erc721.blockExplorerUrl + `?a=${token.tokenId}#inventory`"
             target="_blank"
         >
             Visit Block Explorer
             <i class="fas fa-external-link-alt ml-2"></i>
         </b-button>
-        <b-button block class="rounded-pill" variant="link" :href="token.tokenUri" target="_blank">
+        <b-button
+            :disabled="!token.tokenUri"
+            block
+            class="rounded-pill"
+            variant="link"
+            :href="token.tokenUri"
+            target="_blank"
+        >
             View metadata
             <i class="fas fa-photo-video ml-2"></i>
         </b-button>
@@ -63,8 +77,9 @@ export default class BaseCardNFT extends Vue {
 
     @Prop() token!: TERC721Token;
 
-    mounted() {
-        this.$store.dispatch('erc721/getMetadata', this.token);
+    async mounted() {
+        await this.$store.dispatch('erc721/getMetadata', this.token);
+        this.waitForMinted();
     }
 
     get imgUrl() {
@@ -82,13 +97,13 @@ export default class BaseCardNFT extends Vue {
         return url;
     }
 
-    async waitForMinted(token: TERC721Token) {
+    async waitForMinted() {
         const taskFn = async () => {
-            const t = await this.$store.dispatch('erc721/getToken', token._id);
-            if (t && t.state !== 0) {
-                return Promise.resolve(t);
+            await this.$store.dispatch('erc721/getToken', this.token._id);
+            if (this.token.tokenId) {
+                return Promise.resolve();
             } else {
-                return Promise.reject(t);
+                return Promise.reject('Could not find tokenID');
             }
         };
 

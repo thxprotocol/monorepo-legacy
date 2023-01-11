@@ -89,12 +89,10 @@ class ERC721Module extends VuexModule {
                 try {
                     const web3 = this.context.rootState.network.web3;
                     const from = this.context.rootGetters['account/profile'].address;
-
+                    token.erc721.contract = new web3.eth.Contract(ERC721Abi as any, token.erc721.address, { from });
                     token.erc721.blockExplorerUrl = `${chainInfo[token.erc721.chainId].blockExplorer}/token/${
                         token.erc721.address
                     }`;
-                    token.erc721.logoURI = `https://avatars.dicebear.com/api/identicon/${token.erc721._id}.svg`;
-                    token.erc721.contract = new web3.eth.Contract(ERC721Abi as any, token.erc721.address, { from });
 
                     this.context.commit('setToken', token);
                 } catch (error) {
@@ -107,19 +105,15 @@ class ERC721Module extends VuexModule {
     @Action({ rawError: true })
     async getToken(id: string) {
         try {
-            const data = await thxClient.erc721.get(id);
-
-            const token = data;
+            const token = await thxClient.erc721.get(id);
             const web3 = this.context.rootState.network.web3;
             const from = this.context.rootGetters['account/profile'].address;
-
+            token.erc721.contract = new web3.eth.Contract(ERC721Abi as any, token.erc721.address, { from });
             token.erc721.blockExplorerUrl = `${chainInfo[token.erc721.chainId].blockExplorer}/token/${
                 token.erc721.address
             }`;
-            token.erc721.logoURI = `https://avatars.dicebear.com/api/identicon/${token.erc721._id}.svg`;
-            token.erc721.contract = new web3.eth.Contract(ERC721Abi as any, token.erc721.address, { from });
 
-            return token;
+            this.context.commit('setToken', token);
         } catch (error) {
             return { error };
         }
