@@ -3,7 +3,7 @@ import app from '@thxnetwork/api/';
 import { ChainId } from '@thxnetwork/api/types/enums';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { account2, dashboardAccessToken, rewardWithdrawAmount } from '@thxnetwork/api/util/jest/constants';
+import { dashboardAccessToken, rewardWithdrawAmount } from '@thxnetwork/api/util/jest/constants';
 import { createImage } from '@thxnetwork/api/util/jest/images';
 import { createArchiver } from '@thxnetwork/api/util/zip';
 import { addMinutes } from '@thxnetwork/api/util/rewards';
