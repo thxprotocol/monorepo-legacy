@@ -11,7 +11,7 @@
                         <i class="fas fa-info-circle mr-2"></i>
                         {{ error }}
                     </b-alert>
-                    <b-button block variant="primary" class="rounded-pill" to="/tokens"> Continue </b-button>
+                    <b-button block variant="primary" class="rounded-pill" @click="goToWallet"> Continue </b-button>
                 </template>
                 <template v-if="isClaimFailed">
                     <b-alert show variant="danger">
@@ -52,7 +52,11 @@
             class="mb-3"
             v-if="
                 reward &&
-                [RewardConditionPlatform.Google, RewardConditionPlatform.Twitter].includes(reward.platform) &&
+                [
+                    RewardConditionPlatform.Google,
+                    RewardConditionPlatform.Twitter,
+                    RewardConditionPlatform.Discord,
+                ].includes(reward.platform) &&
                 !hasValidAccessToken
             "
         >
@@ -66,6 +70,12 @@
                 <div class="mb-3 d-flex align-items-center">
                     <img height="30" class="mr-3" :src="require('../../public/assets/img/thx_youtube.png')" alt="" />
                     <strong> Youtube </strong>
+                </div>
+            </div>
+            <div v-if="reward.platform === RewardConditionPlatform.Discord">
+                <div class="mb-3 d-flex align-items-center">
+                    <img height="30" class="mr-3" :src="require('../../public/assets/img/thx_discord.png')" alt="" />
+                    <strong> Discord </strong>
                 </div>
             </div>
             <hr />
@@ -84,7 +94,6 @@
 <script lang="ts">
 import { ERC721, TERC721Metadata, TERC721Token } from '@thxnetwork/wallet/store/modules/erc721';
 import { Withdrawal, WithdrawalState } from '@thxnetwork/wallet/store/modules/withdrawals';
-import { AxiosError } from 'axios';
 import { format } from 'date-fns';
 import { User } from 'oidc-client-ts';
 import { Component, Vue } from 'vue-property-decorator';
@@ -146,7 +155,7 @@ export default class Collect extends Vue {
 
     async mounted() {
         if (!this.user || !this.user.state) {
-            this.$router.push({ path: 'memberships' });
+            this.$router.push({ path: 'coins' });
         }
 
         // Store state locally to solve type issues
@@ -269,7 +278,7 @@ export default class Collect extends Vue {
 
     goToWallet() {
         (this as any).$confetti.stop();
-        const path = this.claim?.erc721 ? 'collectibles' : 'tokens';
+        const path = this.claim?.erc721 ? 'nft' : 'coins';
         this.$router.push({ path });
     }
 
