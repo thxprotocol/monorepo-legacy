@@ -18,6 +18,7 @@ const assetPoolSchema = new mongoose.Schema(
         version: String,
         variant: String,
         archived: Boolean,
+        title: String,
     },
     { timestamps: true },
 );

@@ -1,9 +1,7 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import type { IMember } from '@thxnetwork/dashboard/types/account';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
-import { ERC20Manager } from 'libs/sdk/src';
 import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 
 export interface IPool {
@@ -18,6 +16,7 @@ export interface IPool {
     isDefaultPool: boolean;
     version: string;
     archived: boolean;
+    title: string;
 }
 export interface IPools {
     [id: string]: IPool;
@@ -80,6 +79,7 @@ class PoolModule extends VuexModule {
         erc20tokens: string[];
         erc721tokens: string[];
         variant: string;
+        title: string;
     }) {
         const { data } = await axios({
             method: 'POST',
@@ -97,7 +97,7 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async update({ pool, data }: { pool: IPool; data: { archived: boolean } }) {
+    async update({ pool, data }: { pool: IPool; data: { archived: boolean; title: string } }) {
         await axios({
             method: 'PATCH',
             url: '/pools/' + pool._id,

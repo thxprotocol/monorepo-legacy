@@ -13,13 +13,18 @@
                     Please contact us in
                     <b-link href="https://discord.com/invite/TzbbSmkE7Y" target="_blank"> Discord </b-link>
                 </b-alert>
+
                 <base-badge-network :chainId="pool.chainId" class="mr-1" />
+            </div>
+            <div>
+                {{ pool.title }}
             </div>
             <base-dropdown-menu-pool
                 class="ml-auto"
                 :pool="pool"
                 @archive="archive"
                 @remove="$bvModal.show(`modalDelete-${pool._id}`)"
+                @edit="$bvModal.show(`modalAssetPoolEdit-${pool._id}`)"
             />
         </template>
         <template #card-body>
@@ -45,6 +50,7 @@
                 :error="error"
                 :subject="pool._id"
             />
+            <base-modal-pool-create :id="`modalAssetPoolEdit-${pool._id}`" :pool="pool" />
         </template>
     </base-card>
 </template>
@@ -59,10 +65,12 @@ import BaseBadgeNetwork from '@thxnetwork/dashboard/components/badges/BaseBadgeN
 import BaseCard from '@thxnetwork/dashboard/components/cards/BaseCard.vue';
 import promisePoller from 'promise-poller';
 import BaseDropdownMenuPool from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownMenuPool.vue';
+import BaseModalPoolCreate from '@thxnetwork/dashboard/components/modals/BaseModalPoolCreate.vue';
 import { fromWei } from 'web3-utils';
 
 @Component({
     components: {
+        BaseModalPoolCreate,
         BaseDropdownMenuPool,
         BaseModalDelete,
         BaseBadgeNetwork,

@@ -45,7 +45,7 @@ function getByAddress(address: string) {
     return AssetPool.findOne({ address });
 }
 
-async function deploy(sub: string, chainId: ChainId): Promise<AssetPoolDocument> {
+async function deploy(sub: string, chainId: ChainId, title: string): Promise<AssetPoolDocument> {
     const factory = getContract(chainId, 'Factory', currentVersion);
     const variant = 'defaultDiamond';
     const poolFacetContracts = diamondContracts(chainId, variant);
@@ -55,6 +55,7 @@ async function deploy(sub: string, chainId: ChainId): Promise<AssetPoolDocument>
         variant,
         version: currentVersion,
         archived: false,
+        title,
     });
     const txId = await TransactionService.sendAsync(
         factory.options.address,
