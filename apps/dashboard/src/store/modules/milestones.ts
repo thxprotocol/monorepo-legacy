@@ -1,4 +1,4 @@
-import { RewardConditionPlatform, TMilestoneReward } from '@thxnetwork/types';
+import { RewardConditionPlatform, TMilestoneReward } from '@thxnetwork/types/index';
 import axios from 'axios';
 import { Vue } from 'vue-property-decorator';
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';

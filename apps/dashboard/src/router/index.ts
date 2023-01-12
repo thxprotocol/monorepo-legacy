@@ -46,6 +46,10 @@ const routes: Array<RouteConfig> = [
                 component: () => import('../views/pool/Points.vue'),
             },
             {
+                path: 'milestones'
+                component: () => import('../views/pool/Milestones.vue')
+            }
+            {
                 path: 'referrals',
                 component: () => import('../views/pool/Referrals.vue'),
             },
