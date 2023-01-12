@@ -3,7 +3,6 @@ import { MIXPANEL_TOKEN } from './secrets';
 import { UserProfile } from '../store/modules/account';
 
 const mixpanelClient = () => {
-    console.log(MIXPANEL_TOKEN);
     mixpanel.init(MIXPANEL_TOKEN);
     return mixpanel;
 };
