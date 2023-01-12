@@ -6,14 +6,12 @@ module.exports = {
         const withdrawalsColl = db.collection('withdrawals');
         const withdrawals = await (await withdrawalsColl.find({})).toArray();
 
-        await Promise.all(
-            withdrawals.map(async (w) => {
-                const pool = await poolsColl.findOne({ _id: ObjectId(w.poolId) });
-                if (!pool || !pool.erc20Id) return;
+        for (const w of withdrawals) {
+            const pool = await poolsColl.findOne({ _id: ObjectId(w.poolId) });
+            if (!pool || !pool.erc20Id) return;
 
-                await withdrawalsColl.updateOne({ _id: w._id }, { $set: { erc20Id: pool.erc20Id } });
-            }),
-        );
+            await withdrawalsColl.updateOne({ _id: w._id }, { $set: { erc20Id: pool.erc20Id } });
+        }
     },
     async down() {
         //
