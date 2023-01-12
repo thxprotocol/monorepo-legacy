@@ -12,15 +12,16 @@
     >
         <b-alert show variant="warning">
             <i class="fas fa-exclamation-circle mr-2"></i>
-            Your e-mail address is not been set yet.
+            Your e-mail address is not been set yet!
         </b-alert>
-        <p>
-            In order for us to deliver the best product experience we require your e-mail address so we can send you
-            notifications when certain lengthy tasks are completed.
-        </p>
+        <p class="text-muted">In order for us to deliver the best product experience we require your e-mail address.</p>
         <p><strong>Please visit your account page, provide and confirm your email address.</strong></p>
-        <b-button block class="rounded-pill mt-3" variant="primary" @click="$emit('clicked')" :href="'/account'">
+        <b-button block class="rounded-pill mt-3" variant="primary" :to="'/account'">
             Visit my account
+            <i class="fas fa-chevron-right ml-2"></i>
+        </b-button>
+        <b-button block class="rounded-pill mt-3" variant="link" :to="'/signout'">
+            Signout
             <i class="fas fa-chevron-right ml-2"></i>
         </b-button>
     </b-modal>

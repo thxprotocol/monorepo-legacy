@@ -1,5 +1,5 @@
 import { toWei } from 'web3-utils';
-import { ChainId, TransactionState, WithdrawalState, WithdrawalType } from '@thxnetwork/api/types/enums';
+import { ChainId, TransactionState, WithdrawalState } from '@thxnetwork/api/types/enums';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { Withdrawal, WithdrawalDocument } from '@thxnetwork/api/models/Withdrawal';
 import type { IAccount } from '@thxnetwork/api/models/Account';
@@ -12,6 +12,7 @@ import PoolService from './PoolService';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
 import { ERC20Document } from '../models/ERC20';
+import ERC20Service from './ERC20Service';
 
 export default class WithdrawalService {
     static getById(id: string) {
@@ -42,33 +43,22 @@ export default class WithdrawalService {
         });
     }
 
-    static create(
-        assetPool: AssetPoolDocument,
-        type: WithdrawalType,
-        sub: string,
-        amount: number,
-        state = WithdrawalState.Pending,
-        unlockDate?: Date,
-        rewardId?: string,
-    ) {
+    static create(erc20: ERC20Document, sub: string, amount: number, state = WithdrawalState.Pending) {
         return Withdrawal.create({
-            type,
             sub,
-            poolId: String(assetPool._id),
+            erc20Id: String(erc20._id),
             amount,
             state,
-            rewardId,
-            unlockDate,
         });
     }
 
-    static async getPendingBalance(account: IAccount, poolId: string) {
+    static async getPendingWithdrawals(erc20: ERC20Document, account: IAccount) {
         const withdrawals = await Withdrawal.find({
-            poolId,
+            erc20Id: erc20._id,
             sub: account.sub,
             state: WithdrawalState.Pending,
         });
-        return withdrawals.map((item) => item.amount).reduce((prev, curr) => prev + curr, 0);
+        return withdrawals.filter((w) => w.state === WithdrawalState.Pending);
     }
 
     static async withdrawFor(
@@ -79,7 +69,6 @@ export default class WithdrawalService {
         forceSync = true,
     ) {
         const amountInWei = toWei(String(withdrawal.amount));
-
         const txId = await TransactionService.sendAsync(
             pool.contract.options.address,
             pool.contract.methods.withdrawFor(account.address, amountInWei, erc20.address),
@@ -90,6 +79,8 @@ export default class WithdrawalService {
                 args: { assetPoolId: String(pool._id), withdrawalId: String(withdrawal._id) },
             },
         );
+
+        await ERC20Service.addToken(withdrawal.sub, erc20);
 
         return Withdrawal.findByIdAndUpdate(withdrawal._id, { transactions: [txId] }, { new: true });
     }

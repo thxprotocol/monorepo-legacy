@@ -93,12 +93,11 @@
 
 <script lang="ts">
 import { ERC721, TERC721Metadata, TERC721Token } from '@thxnetwork/wallet/store/modules/erc721';
-import { Withdrawal, WithdrawalState } from '@thxnetwork/wallet/store/modules/withdrawals';
+import { Withdrawal } from '@thxnetwork/wallet/store/modules/withdrawals';
 import { format } from 'date-fns';
 import { User } from 'oidc-client-ts';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters, mapState } from 'vuex';
-import poll from 'promise-poller';
 import { UserProfile } from '../store/modules/account';
 import { RewardConditionInteraction, RewardConditionPlatform, TERC20Perk, TERC721Perk } from '@thxnetwork/types/index';
 import { TERC20 } from '../store/modules/erc20';
@@ -124,11 +123,11 @@ type TClaim = {
     },
 })
 export default class Collect extends Vue {
-    format = format;
+    $confetti!: { start: (options: unknown) => void; stop: () => void };
     imgUrl = require('@thxnetwork/wallet/../public/assets/img/thx_treasure.png');
+    format = format;
     error = '';
     isLoading = true;
-    claimStarted = false;
     isClaimFailed = false;
     isClaimInvalid = false;
     claim: TClaim | null = null;
@@ -146,7 +145,6 @@ export default class Collect extends Vue {
     hasValidAccessToken = false;
     RewardConditionPlatform = RewardConditionPlatform;
     RewardConditionInteraction = RewardConditionInteraction;
-    currentChannel: RewardConditionPlatform | null = null;
 
     get erc721() {
         if (!this.claim) return null;
@@ -168,7 +166,7 @@ export default class Collect extends Vue {
 
         // If no condition applies claim directly
         if (!this.claim.reward.platform) {
-            return await this.claimReward();
+            return this.claimReward();
         }
 
         // Check validity of current access token
@@ -197,12 +195,6 @@ export default class Collect extends Vue {
             this.claimedReward = await this.$store.dispatch('assetpools/claimReward', this.state.claimUuid);
             if (!this.claimedReward) return;
 
-            if (this.claimedReward?.erc20) {
-                await this.waitForWithdrawn(this.claimedReward.withdrawal);
-            } else {
-                await this.waitForMinted(this.claimedReward.token);
-            }
-
             this.startConfetti();
 
             if (this.claim && this.claim.erc721) {
@@ -226,36 +218,6 @@ export default class Collect extends Vue {
         }
     }
 
-    async waitForWithdrawn(withdrawal: Withdrawal) {
-        const taskFn = async () => {
-            if (!this.reward) return;
-            const w = await this.$store.dispatch('withdrawals/get', {
-                id: withdrawal._id,
-                poolId: this.reward.poolId,
-            });
-            if (w && w.state === WithdrawalState.Withdrawn) {
-                return Promise.resolve(w);
-            } else {
-                return Promise.reject(w);
-            }
-        };
-
-        return poll({ taskFn, interval: 3000, retries: 10 });
-    }
-
-    async waitForMinted(token: TERC721Token) {
-        const taskFn = async () => {
-            const t = await this.$store.dispatch('erc721/getToken', token._id);
-            if (t && t.state !== 0) {
-                return Promise.resolve(t);
-            } else {
-                return Promise.reject(t);
-            }
-        };
-
-        return poll({ taskFn, interval: 3000, retries: 10 });
-    }
-
     firstImageURL(metadata: TERC721Metadata) {
         let url = '';
         this.claim?.erc721.properties.forEach((p) => {
@@ -268,7 +230,7 @@ export default class Collect extends Vue {
     }
 
     startConfetti() {
-        (this as any).$confetti.start({
+        this.$confetti.start({
             defaultDropRate: 7,
             particlesPerFrame: 1,
             windSpeedMax: 3,
@@ -277,7 +239,7 @@ export default class Collect extends Vue {
     }
 
     goToWallet() {
-        (this as any).$confetti.stop();
+        this.$confetti.stop();
         const path = this.claim?.erc721 ? 'nft' : 'coins';
         this.$router.push({ path });
     }
