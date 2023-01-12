@@ -12,6 +12,7 @@ import {
 } from '@thxnetwork/dashboard/utils/guards';
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
+import { track } from '../utils/mixpanel';
 
 Vue.use(VueRouter);
 
@@ -176,6 +177,7 @@ router.beforeEach(async (to, from, next) => {
                 signupToken: to.query.signup_token || null,
             });
         } else {
+            track.UserViewed(user.sub, to.path);
             return next();
         }
     } catch (err) {
