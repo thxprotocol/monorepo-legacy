@@ -84,6 +84,7 @@ import type { IERC721s, TERC721, TERC721Metadata } from '@thxnetwork/dashboard/t
 import { mapGetters } from 'vuex';
 import BaseDropdownSelectERC721 from '../dropdowns/BaseDropdownSelectERC721.vue';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
+import { IAccount } from '@thxnetwork/dashboard/types/account';
 
 @Component({
     components: {
@@ -97,6 +98,7 @@ import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
     computed: mapGetters({
         pools: 'pools/all',
         erc721s: 'erc721/all',
+        profile: 'account/profile',
     }),
 })
 export default class ModalRewardERC721Create extends Vue {
@@ -122,6 +124,7 @@ export default class ModalRewardERC721Create extends Vue {
     imageFile: File | null = null;
     image = '';
     isPromoted = false;
+    profile!: IAccount;
 
     @Prop() id!: string;
     @Prop() pool!: IPool;

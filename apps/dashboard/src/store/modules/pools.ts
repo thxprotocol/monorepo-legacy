@@ -5,6 +5,7 @@ import type { IMember } from '@thxnetwork/dashboard/types/account';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import { ERC20Manager } from 'libs/sdk/src';
 import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
+import { track } from '@thxnetwork/dashboard/utils/mixpanel';
 
 export interface IPool {
     _id: string;
@@ -92,6 +93,9 @@ class PoolModule extends VuexModule {
             url: '/pools/' + data._id,
             headers: { 'X-PoolId': data._id },
         });
+
+        const profile = this.context.rootGetters['account/profile'];
+        track.UserCreates(profile.sub, 'pool');
 
         this.context.commit('set', r.data);
     }

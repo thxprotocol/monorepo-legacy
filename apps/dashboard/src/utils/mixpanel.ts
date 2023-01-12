@@ -8,21 +8,21 @@ const client = () => {
 };
 
 export const track = {
-    UserSignedIn: (account: IAccount) => {
+    UserSignsIn: (account: IAccount) => {
         const mixpanel = client();
         mixpanel.identify(account.sub);
         mixpanel.people.set('$name', `${account.firstName} ${account.lastName}`);
         mixpanel.people.set('$email', account.email);
         mixpanel.people.set('plan', account.plan);
-        mixpanel.track('user sign in', { distinct_id: account.sub });
+        mixpanel.track('user signs in', { distinct_id: account.sub });
     },
-    UserViewed: (sub: string, variant: string) => {
-        client().track('user visits rewards', { distinct_id: sub, variant });
+    UserVisits: (sub: string, path: string, query: string[]) => {
+        client().track(`user visits ${path}`, { distinct_id: sub, query });
     },
-    UserOpened: (sub: string, variant: string) => {
-        client().track('user opens reward modal', { distinct_id: sub, variant });
+    UserOpens: (sub: string, modal: string) => {
+        client().track(`user opens ${modal}`, { distinct_id: sub });
     },
-    UserCreated: (sub: string, variant: string) => {
-        client().track('user created', { distinct_id: sub, variant });
+    UserCreates: (sub: string, item: string) => {
+        client().track(`user creates ${item}`, { distinct_id: sub });
     },
 };

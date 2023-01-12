@@ -4,6 +4,7 @@ import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { IChannel, IChannelAction } from '@thxnetwork/dashboard/types/rewards';
 import { RewardConditionPlatform, type TPointReward } from '@thxnetwork/types/index';
 import { IPool } from './pools';
+import { track } from '@thxnetwork/dashboard/utils/mixpanel';
 
 export type TPointRewardState = {
     [poolId: string]: {
@@ -58,6 +59,9 @@ class PointRewardModule extends VuexModule {
             headers: { 'X-PoolId': payload.poolId },
             data: payload,
         });
+
+        const profile = this.context.rootGetters['account/profile'];
+        track.UserCreates(profile.sub, 'conditional reward');
 
         this.context.commit('set', { ...payload, ...r.data });
     }

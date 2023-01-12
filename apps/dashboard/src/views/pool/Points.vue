@@ -81,7 +81,6 @@ import { platformInteractionList, platformList } from '@thxnetwork/dashboard/typ
 import BaseModalRewardPointsCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardPointsCreate.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/badges/BaseBadgeRewardConditionPreview.vue';
-import { track } from '@thxnetwork/dashboard/utils/mixpanel';
 
 @Component({
     components: {
@@ -141,8 +140,6 @@ export default class AssetPoolView extends Vue {
     }
 
     mounted() {
-        track.UserVisits(this.profile.sub, 'Rewards');
-
         this.listRewards();
     }
 

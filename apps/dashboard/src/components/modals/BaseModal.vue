@@ -1,7 +1,7 @@
 <template>
     <b-modal
         :size="size || 'lg'"
-        @show="$emit('show')"
+        @show="onShow"
         @hidden="$emit('hidden')"
         :title="title"
         :id="id"
@@ -65,8 +65,9 @@ export default class BaseModal extends Vue {
             this.info = messages[index++];
         }, 3000);
     }
+
     onShow() {
-        track.UserOpened(this.profile.sub, this.id);
+        track.UserOpened(this.profile.sub, this.id || 'unknown');
         this.$emit('show');
     }
 
