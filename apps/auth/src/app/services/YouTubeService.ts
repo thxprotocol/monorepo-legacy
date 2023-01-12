@@ -184,8 +184,8 @@ export class YouTubeService {
             });
     }
 
-    static async revokeAccess(account: AccountDocument) {
-        const token: IAccessToken | undefined = account.getToken(AccessTokenKind.Google);
+    static async revokeAccess(account: AccountDocument, accessTokenKind: AccessTokenKind) {
+        const token: IAccessToken | undefined = account.getToken(accessTokenKind);
         if (!token) throw new Error('Could not find the token');
 
         const r = await axios({

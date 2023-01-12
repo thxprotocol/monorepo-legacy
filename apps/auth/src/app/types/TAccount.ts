@@ -41,6 +41,8 @@ export interface IAccountUpdates {
     address?: string;
     privateKey?: string;
     googleAccess?: boolean;
+    youtubeViewAccess?: boolean;
+    youtubeManageAccess?: boolean;
     twitterAccess?: boolean;
     githubAccess?: boolean;
     twitchAccess?: boolean;

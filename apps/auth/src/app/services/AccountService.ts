@@ -98,9 +98,17 @@ export class AccountService {
             updates.address || account.address ? toChecksumAddress(updates.address || account.address) : undefined;
 
         if (updates.googleAccess === false) {
-            YouTubeService.revokeAccess(account);
+            YouTubeService.revokeAccess(account, AccessTokenKind.Google);
             account.unsetToken(AccessTokenKind.Google);
+        }
+
+        if (updates.youtubeViewAccess === false) {
+            YouTubeService.revokeAccess(account, AccessTokenKind.YoutubeView);
             account.unsetToken(AccessTokenKind.YoutubeView);
+        }
+
+        if (updates.youtubeManageAccess === false) {
+            YouTubeService.revokeAccess(account, AccessTokenKind.YoutubeManage);
             account.unsetToken(AccessTokenKind.YoutubeManage);
         }
 

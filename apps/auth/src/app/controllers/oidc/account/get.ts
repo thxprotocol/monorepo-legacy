@@ -32,6 +32,8 @@ async function controller(req: Request, res: Response) {
             plan: account.plan,
             otpSecret: account.otpSecret,
             googleAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.Google),
+            youtubeViewAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.YoutubeView),
+            youtubeManageAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.YoutubeManage),
             twitterAccess: await TwitterService.isAuthorized(account),
             githubAccess: await GithubService.isAuthorized(account),
             discordAccess: await DiscordService.isAuthorized(account),
