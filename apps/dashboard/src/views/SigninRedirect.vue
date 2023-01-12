@@ -7,17 +7,18 @@ import { Component, Vue } from 'vue-property-decorator';
 import { ChainId } from '../types/enums/ChainId';
 import { mapGetters } from 'vuex';
 import { IPools } from '../store/modules/pools';
-import { mixpanel } from '../utils/mixpanel';
-import { UserProfile } from 'oidc-client-ts';
+import { track } from '../utils/mixpanel';
+import { IAccount } from '../types/account';
 
 @Component({
     computed: mapGetters({
         pools: 'pools/all',
+        profile: 'account/profile',
     }),
 })
 export default class Redirect extends Vue {
     pools!: IPools;
-    profile!: UserProfile;
+    profile!: IAccount;
 
     async mounted() {
         await this.$store.dispatch('account/signinRedirectCallback');
@@ -27,7 +28,7 @@ export default class Redirect extends Vue {
         await this.$store.dispatch('pools/list');
         if (!Object.values(this.pools).length) this.$store.dispatch('pools/create', { chainId: ChainId.Hardhat });
 
-        mixpanel.UserSignin(this.profile);
+        track.UserSignin(this.profile);
 
         this.$router.push('/');
     }

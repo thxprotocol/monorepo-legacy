@@ -28,18 +28,27 @@
 </template>
 
 <script lang="ts">
+import { IAccount } from '@thxnetwork/dashboard/types/account';
+import { track } from '@thxnetwork/dashboard/utils/mixpanel';
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import { mapGetters } from 'vuex';
 
-@Component({})
+@Component({
+    computed: mapGetters({
+        profile: 'account/profile',
+    }),
+})
 export default class BaseModal extends Vue {
+    interval: any = null;
+    info = '';
+    profile!: IAccount;
+
     @Prop() id!: string;
     @Prop() size!: string;
     @Prop() title!: string;
     @Prop() loading!: boolean;
     @Prop() error!: string;
     @Prop() hideFooter!: boolean;
-    interval: any = null;
-    info = '';
 
     mounted() {
         const messages = [
@@ -55,6 +64,10 @@ export default class BaseModal extends Vue {
             if (index >= messages.length) index = 0;
             this.info = messages[index++];
         }, 3000);
+    }
+    onShow() {
+        track.UserOpened(this.profile.sub, this.id);
+        this.$emit('show');
     }
 
     beforeDestroy() {
