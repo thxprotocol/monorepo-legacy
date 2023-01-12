@@ -28,7 +28,7 @@ export default class Redirect extends Vue {
         await this.$store.dispatch('pools/list');
         if (!Object.values(this.pools).length) this.$store.dispatch('pools/create', { chainId: ChainId.Hardhat });
 
-        track.UserSignedIn(this.profile);
+        track.UserSignsIn(this.profile);
 
         this.$router.push('/');
     }

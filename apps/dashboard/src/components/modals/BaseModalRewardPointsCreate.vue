@@ -55,7 +55,6 @@ import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardRewardQRCodes from '../cards/BaseCardRewardQRCodes.vue';
 import { mapGetters } from 'vuex';
 import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
-import { IAccount } from '@thxnetwork/dashboard/types/account';
 
 @Component({
     components: {
@@ -66,7 +65,6 @@ import { IAccount } from '@thxnetwork/dashboard/types/account';
     },
     computed: mapGetters({
         totals: 'pointRewards/totals',
-        profile: 'account/profile',
     }),
 })
 export default class ModalRewardPointsCreate extends Vue {
@@ -83,7 +81,6 @@ export default class ModalRewardPointsCreate extends Vue {
         interaction: platformInteractionList[0].type,
         content: '',
     };
-    profile!: IAccount;
 
     @Prop() id!: string;
     @Prop() pool!: IPool;

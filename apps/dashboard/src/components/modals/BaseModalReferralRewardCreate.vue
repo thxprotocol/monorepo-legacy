@@ -133,7 +133,6 @@ import { type TReferralReward } from '@thxnetwork/types/index';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import { API_URL } from '../../../../wallet/src/utils/secrets';
-import { track } from '@thxnetwork/dashboard/utils/mixpanel';
 
 hljs.registerLanguage('shell', Shell);
 

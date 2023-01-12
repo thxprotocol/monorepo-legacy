@@ -91,8 +91,6 @@ import BaseCardRewardCondition from '../cards/BaseCardRewardCondition.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardRewardQRCodes from '../cards/BaseCardRewardQRCodes.vue';
 import BaseDropdownSelectERC20 from '../dropdowns/BaseDropdownSelectERC20.vue';
-import { IAccount } from '@thxnetwork/dashboard/types/account';
-import { mapGetters } from 'vuex';
 
 @Component({
     components: {
@@ -102,9 +100,6 @@ import { mapGetters } from 'vuex';
         BaseCardRewardQRCodes,
         BaseDropdownSelectERC20,
     },
-    computed: mapGetters({
-        account: 'account/profile',
-    }),
 })
 export default class ModalRewardERC20Create extends Vue {
     isSubmitDisabled = false;
@@ -126,7 +121,6 @@ export default class ModalRewardERC20Create extends Vue {
         content: '',
     };
     isPromoted = false;
-    profile!: IAccount;
 
     @Prop() id!: string;
     @Prop() pool!: IPool;
