@@ -173,6 +173,7 @@ describe('ERC721 Perks', () => {
                     })
                     .expect((res: request.Response) => {
                         expect(res.body.title).toEqual(title);
+                        expect(res.body.platform).toEqual(0);
                         expect(new Date(res.body.expiryDate).getTime()).toBe(expiryDate.getTime());
                     })
                     .expect(200, done);
