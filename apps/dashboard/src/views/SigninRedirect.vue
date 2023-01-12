@@ -7,6 +7,8 @@ import { Component, Vue } from 'vue-property-decorator';
 import { ChainId } from '../types/enums/ChainId';
 import { mapGetters } from 'vuex';
 import { IPools } from '../store/modules/pools';
+import { mixpanel } from '../utils/mixpanel';
+import { UserProfile } from 'oidc-client-ts';
 
 @Component({
     computed: mapGetters({
@@ -15,6 +17,7 @@ import { IPools } from '../store/modules/pools';
 })
 export default class Redirect extends Vue {
     pools!: IPools;
+    profile!: UserProfile;
 
     async mounted() {
         await this.$store.dispatch('account/signinRedirectCallback');
@@ -23,6 +26,8 @@ export default class Redirect extends Vue {
         // List pools to see if we need to deploy a first
         await this.$store.dispatch('pools/list');
         if (!Object.values(this.pools).length) this.$store.dispatch('pools/create', { chainId: ChainId.Hardhat });
+
+        mixpanel.UserSignin(this.profile);
 
         this.$router.push('/');
     }
