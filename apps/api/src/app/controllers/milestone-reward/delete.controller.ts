@@ -3,12 +3,12 @@ import MilestoneRewardService from '@thxnetwork/api/services/MilestoneRewardServ
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
 
-const validation = [param('token').isString()];
+const validation = [param('id').isString()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['RewardsToken']
-    const { token } = req.params;
-    await MilestoneRewardService.delete(token);
+    const { id } = req.params;
+    await MilestoneRewardService.delete(id);
     res.status(204).end();
 };
 
