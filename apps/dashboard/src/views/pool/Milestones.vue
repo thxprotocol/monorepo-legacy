@@ -62,7 +62,6 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { TMilestoneRewardState } from '@thxnetwork/dashboard/store/modules/milestones';
 import { RewardConditionPlatform, RewardConditionInteraction, TMilestoneReward } from '@thxnetwork/types/index';
-import { platformInteractionList, platformList } from '@thxnetwork/dashboard/types/rewards';
 import BaseModalRewardMilestonesCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardMilestonesCreate.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/badges/BaseBadgeRewardConditionPreview.vue';

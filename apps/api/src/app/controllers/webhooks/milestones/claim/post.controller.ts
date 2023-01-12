@@ -1,8 +1,6 @@
 import { AccountService } from '@thxnetwork/auth/services/AccountService';
 import MilestoneRewardClaimService from '@thxnetwork/api/services/MilestoneRewardClaimService';
 import MilestoneRewardService from '@thxnetwork/api/services/MilestoneRewardService';
-import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
-import PoolService from '@thxnetwork/api/services/PoolService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { Request, Response } from 'express';
 import { body, param } from 'express-validator';

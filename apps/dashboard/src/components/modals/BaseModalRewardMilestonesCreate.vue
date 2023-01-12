@@ -1,13 +1,10 @@
 <template>
-    <base-modal size="xl" title="Create Milestone Reward" :id="id" :error="error" :loading="isLoading" @show="onShow">
+    <base-modal size="xl" title="Create Milestone Reward" :id="id" :error="error" :loading="isLoading">
         <template #modal-body v-if="!isLoading">
-            <p class="text-gray">
-                Milestone rewards are distributed to your customers that have completed reward conditions in external
-                platforms.
-            </p>
-            <form v-on:submit.prevent="onSubmit()" id="formRewardMilestoneCreate">
+            <BaseWebhookUrl v-if="reward" :code="code" />
+            <form v-on:submit.prevent="onSubmit" id="formRewardPointsCreate">
                 <b-row>
-                    <b-col md="6">
+                    <b-col md="12">
                         <b-form-group label="Title">
                             <b-form-input v-model="title" />
                         </b-form-group>
@@ -18,26 +15,12 @@
                             <b-form-input v-model="amount" />
                         </b-form-group>
                     </b-col>
-                    <b-col md="6">
-                        <BaseCardRewardCondition
-                            class="mb-3"
-                            :rewardCondition="rewardCondition"
-                            @change="rewardCondition = $event"
-                        />
-                        <BaseCardRewardExpiry class="mb-3" :expiry="rewardExpiry" @change="rewardExpiry = $event" />
-                    </b-col>
                 </b-row>
             </form>
         </template>
         <template #btn-primary>
-            <b-button
-                :disabled="isSubmitDisabled"
-                class="rounded-pill"
-                type="submit"
-                form="formRewardMilestoneCreate"
-                variant="primary"
-                block
-            >
+            <b-button :disabled="isSubmitDisabled" class="rounded-pill" type="submit" form="formRewardPointsCreate"
+                variant="primary" block>
                 {{ reward ? 'Update Reward' : 'Create Reward' }}
             </b-button>
         </template>
@@ -45,93 +28,77 @@
 </template>
 
 <script lang="ts">
-import { type IPool } from '@thxnetwork/dashboard/store/modules/pools';
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { type TPointReward } from '@thxnetwork/types/interfaces/PointReward';
-import { platformInteractionList, platformList } from '@thxnetwork/dashboard/types/rewards';
-import BaseModal from './BaseModal.vue';
-import BaseCardRewardCondition from '../cards/BaseCardRewardCondition.vue';
-import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
-import BaseCardRewardQRCodes from '../cards/BaseCardRewardQRCodes.vue';
 import { mapGetters } from 'vuex';
-import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
+import { UserProfile } from 'oidc-client-ts';
+import { type IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { type TMilestoneReward } from '@thxnetwork/types/index';
+import BaseModal from './BaseModal.vue';
+import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
+import BaseWebhookUrl from '../BaseWebhookUrl.vue';
+import { API_URL } from '../../../../wallet/src/utils/secrets';
+
 
 @Component({
     components: {
         BaseModal,
-        BaseCardRewardCondition,
         BaseCardRewardExpiry,
-        BaseCardRewardQRCodes,
+        BaseWebhookUrl,
     },
     computed: mapGetters({
-        totals: 'milestones/totals',
+        profile: 'account/profile',
     }),
 })
-export default class ModalRewardMilestoneCreate extends Vue {
+export default class ModalMilestoneRewardCreate extends Vue {
     isSubmitDisabled = false;
     isLoading = false;
+    isVisible = true;
     error = '';
     title = '';
     amount = '0';
+    successUrl = '';
     description = '';
-    rewardExpiry = {};
-    rewardLimit = 0;
-    rewardCondition: { platform: RewardConditionPlatform; interaction: RewardConditionInteraction; content: string } = {
-        platform: platformList[0].type,
-        interaction: platformInteractionList[0].type,
-        content: '',
-    };
+    claimAmount = 1;
+    isCopied = false;
+    profile!: UserProfile;
 
     @Prop() id!: string;
     @Prop() pool!: IPool;
-    @Prop({ required: false }) reward!: TPointReward;
+    @Prop({ required: false }) reward!: TMilestoneReward;
 
-    onShow() {
-        this.setValues(this.reward);
+    get code() {
+        if (!this.reward) {
+            return '';
+        }
+        return `curl "${API_URL}/v1/webhook/milestone/${this.reward.uuid}/claim" -X POST -d "{"address": "${this.profile.address}"}"`;
     }
 
-    setValues(reward?: TPointReward) {
-        if (!reward) return;
-        this.title = this.reward.title;
-        this.amount = this.reward.amount;
-        this.description = this.reward.description;
-        this.rewardLimit = this.reward.rewardLimit;
-        this.rewardCondition = {
-            platform: this.reward.platform as RewardConditionPlatform,
-            interaction: this.reward.interaction as RewardConditionInteraction,
-            content: this.reward.content as string,
-        };
+    mounted() {
+        if (this.reward) {
+            this.title = this.reward.title;
+            this.amount = String(this.reward.amount);
+            this.description = this.reward.description;
+        }
     }
 
     onSubmit() {
         this.isLoading = true;
         this.$store
-            .dispatch(`milestones/${this.reward ? 'update' : 'create'}`, {
-                ...this.reward,
-                _id: this.reward ? this.reward._id : undefined,
-                poolId: this.pool._id,
-                title: this.title,
-                description: this.description,
-                amount: this.amount,
-                rewardLimit: this.rewardLimit,
-                platform: this.rewardCondition.platform,
-                interaction: this.rewardCondition.interaction,
-                content: this.rewardCondition.content,
-                page: this.reward ? this.reward.page : 1,
+            .dispatch(`milestoneRewards/${this.reward ? 'update' : 'create'}`, {
+                pool: this.pool,
+                reward: this.reward,
+                payload: {
+                    poolId: String(this.pool._id),
+                    title: this.title,
+                    description: this.description,
+                    amount: this.amount,
+                    claimAmount: this.claimAmount,
+                    successUrl: this.successUrl,
+                },
             })
             .then(() => {
+                this.$emit('submit');
                 this.$bvModal.hide(this.id);
-                this.$emit('submit')
-                this.title = '';
-                this.amount = '0';
-                this.description = '';
-                this.rewardExpiry = {};
-                this.rewardLimit = 0;
-                this.rewardCondition = {
-                    platform: platformList[0].type,
-                    interaction: platformInteractionList[0].type,
-                    content: '',
-                };
                 this.isLoading = false;
             });
     }
