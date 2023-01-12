@@ -67,7 +67,7 @@ export default class BaseModal extends Vue {
     }
 
     onShow() {
-        track.UserOpened(this.profile.sub, this.id || 'unknown');
+        track.UserOpens(this.profile.sub, this.id || 'unknown');
         this.$emit('show');
     }
 
