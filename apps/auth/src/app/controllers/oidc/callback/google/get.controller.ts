@@ -59,9 +59,9 @@ export async function controller(req: Request, res: Response) {
     });
 
     const returnTo = await saveInteraction(interaction, account._id.toString());
-    const accessTokenKind = YouTubeService.getAccessTokenKindFromScope(tokens.scope);
+    let accessTokenKind = YouTubeService.getAccessTokenKindFromScope(tokens.scope);
     if (!accessTokenKind) {
-        throw new BadRequestError('Bad scope');
+        accessTokenKind = AccessTokenKind.Google;
     }
     await updateTokens(account, tokens, accessTokenKind);
 

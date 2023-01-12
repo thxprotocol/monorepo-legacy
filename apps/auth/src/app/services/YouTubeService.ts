@@ -237,17 +237,21 @@ export class YouTubeService {
     }
 
     static getAccessTokenKindFromScope(scope: string) {
+        if (!scope || !scope.length) {
+            return undefined;
+        }
         const joinChar = ' ';
         const openid = 'openid';
-        scope = scope.replace('openid', '').trim();
+        const empty = '';
+        scope = scope.replace(openid, empty).trim();
 
-        if (scope === this.getBasicScopes().join(joinChar).replace(openid, '').trim()) {
+        if (scope === this.getBasicScopes().join(joinChar).replace(openid, empty).trim()) {
             return AccessTokenKind.Google;
         }
-        if (scope === this.getYoutubeViewScopes().join(joinChar).replace(openid, '').trim()) {
+        if (scope === this.getYoutubeViewScopes().join(joinChar).replace(openid, empty).trim()) {
             return AccessTokenKind.YoutubeView;
         }
-        if (scope === this.getYoutubeManageScopes().join(joinChar).replace(openid, '').trim()) {
+        if (scope === this.getYoutubeManageScopes().join(joinChar).replace(openid, empty).trim()) {
             return AccessTokenKind.YoutubeManage;
         }
 
