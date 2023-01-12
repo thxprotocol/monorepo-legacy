@@ -44,6 +44,9 @@ const controller = async (req: Request, res: Response) => {
         claimAmount: req.body.claimAmount,
         pointPrice: req.body.pointPrice,
         isPromoted: req.body.isPromoted,
+        platform: req.body.platform,
+        interaction: req.body.interaction,
+        content: req.body.content,
     } as TERC721Perk);
     return res.json(reward);
 };
