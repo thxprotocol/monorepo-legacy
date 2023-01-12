@@ -198,8 +198,6 @@ export default class ModalReferralRewardCreate extends Vue {
                 },
             })
             .then(() => {
-                track.UserCreated(this.profile.sub, 'referral reward');
-
                 this.$bvModal.hide(this.id);
                 this.isLoading = false;
             });
