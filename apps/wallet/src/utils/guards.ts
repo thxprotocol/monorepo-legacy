@@ -1,6 +1,5 @@
 import store from '@thxnetwork/wallet/store';
 import { NavigationGuardNext, Route } from 'vue-router';
-import { thxClient } from './oidc';
 
 export function redirectPasswordResetLink(to: Route) {
     return store.dispatch('account/signinRedirect', {
@@ -8,16 +7,8 @@ export function redirectPasswordResetLink(to: Route) {
     });
 }
 
-export function redirectLoginLink(to: Route) {
-    return store.dispatch('account/signinRedirect', {
-        token: to.query.authentication_token || null,
-        key: to.query.secure_key || null,
-    });
-}
-
 export function redirectRewardLink(to: Route) {
     return store.dispatch('account/signinRedirect', {
-        rewardHash: to.query.hash || null,
         claimUuid: to.params.id || null,
     });
 }
@@ -50,8 +41,8 @@ export async function redirectSigninSilent() {
 
 export async function assertAuthorization(to: any, from: any, next: any) {
     try {
-        const user = await store.dispatch('account/getUser')
-        if (!user) throw new Error('Authorization check failed, redirecting..')
+        const user = await store.dispatch('account/getUser');
+        if (!user) throw new Error('Authorization check failed, redirecting..');
         next();
     } catch {
         return redirectSignin();

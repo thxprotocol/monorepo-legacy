@@ -7,7 +7,6 @@ import {
     POLYGON_MUMBAI_RPC,
     POLYGON_RPC,
     TORUS_VERIFIER,
-    TEST_KEY,
 } from '@thxnetwork/wallet/utils/secrets';
 import { fromWei, toWei } from 'web3-utils';
 import { ChainId } from '@thxnetwork/wallet/types/enums/ChainId';
@@ -104,7 +103,7 @@ class NetworkModule extends VuexModule {
         if (user.profile.variant === AccountVariant.Metamask) return;
 
         // Fetch key from mockdata in localstorage
-        if (TEST_KEY) {
+        if (NODE_ENV === 'development') {
             this.context.commit('setPrivateKey', mockPrivateKeyForSubject(user.profile.sub));
             return;
         }

@@ -13,7 +13,6 @@ import {
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
 import { track } from '../utils/mixpanel';
-import { Dictionary } from 'vue-router/types/router';
 
 Vue.use(VueRouter);
 
@@ -164,8 +163,6 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-    const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
-
     if (to.query.passwordResetToken) {
         await store.dispatch('account/signinRedirect', {
             passwordResetToken: to.query.passwordResetToken,
@@ -174,15 +171,8 @@ router.beforeEach(async (to, from, next) => {
 
     try {
         const user = await store.dispatch('account/getUser');
-
-        if (requiresAuth && !user) {
-            await store.dispatch('account/signinRedirect', {
-                signupToken: to.query.signup_token || null,
-            });
-        } else {
-            if (user) track.UserVisits(user.sub, to.name || 'unknown', to.params as unknown as string[]);
-            return next();
-        }
+        if (user) track.UserVisits(user.sub, to.name || 'unknown', to.params as unknown as string[]);
+        return next();
     } catch (err) {
         console.error(err);
     }
