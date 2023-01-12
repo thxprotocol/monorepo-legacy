@@ -81,7 +81,6 @@ export default class Redirect extends Vue {
 
     async getPrivateKey() {
         this.info = 'Fetching private key from Web3Auth...';
-        debugger;
         await this.$store.dispatch('network/getPrivateKey', this.user);
     }
 
