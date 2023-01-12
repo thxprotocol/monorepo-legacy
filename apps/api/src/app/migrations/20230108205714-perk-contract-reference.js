@@ -9,17 +9,25 @@ module.exports = {
         const erc721Perks = await (await erc721PerksColl.find({})).toArray();
 
         for (const p of erc20Perks) {
-            const pool = await poolsColl.findOne({ _id: ObjectId(p.poolId) });
-            if (!pool || !pool.erc20Id) return;
+            try {
+                const pool = await poolsColl.findOne({ _id: ObjectId(p.poolId) });
+                if (!pool || !pool.erc20Id) return;
 
-            await erc20PerksColl.updateOne({ _id: p._id }, { $set: { erc20Id: pool.erc20Id } });
+                await erc20PerksColl.updateOne({ _id: p._id }, { $set: { erc20Id: pool.erc20Id } });
+            } catch (error) {
+                console.log(`Perk ${p._id} failed`, error);
+            }
         }
 
         for (const p of erc721Perks) {
-            const pool = await poolsColl.findOne({ _id: ObjectId(p.poolId) });
-            if (!pool || !pool.erc721Id) return;
+            try {
+                const pool = await poolsColl.findOne({ _id: ObjectId(p.poolId) });
+                if (!pool || !pool.erc721Id) return;
 
-            await erc721PerksColl.updateOne({ _id: p._id }, { $set: { erc721Id: pool.erc721Id } });
+                await erc721PerksColl.updateOne({ _id: p._id }, { $set: { erc721Id: pool.erc721Id } });
+            } catch (error) {
+                console.log(`Perk ${p._id} failed`, error);
+            }
         }
     },
     async down() {
