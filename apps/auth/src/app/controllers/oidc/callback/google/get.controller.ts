@@ -9,7 +9,6 @@ import { AccountVariant } from '../../../../types/enums/AccountVariant';
 import { createWallet } from '@thxnetwork/auth/util/wallet';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
-import { BadRequestError } from '@thxnetwork/auth/util/errors';
 
 async function updateTokens(account: AccountDocument, tokens: any, accessTokenKind: AccessTokenKind) {
     const expiry = tokens.expiry_date ? Date.now() + Number(tokens.expiry_date) * 1000 : undefined;

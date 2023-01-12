@@ -22,8 +22,8 @@ export class YouTubeService {
         return true;
     }
 
-    static async getYoutubeClient(account: AccountDocument) {
-        const googleToken: IAccessToken = account.getToken(AccessTokenKind.YoutubeView);
+    static async getYoutubeClient(account: AccountDocument, accessTokenKind: AccessTokenKind) {
+        const googleToken: IAccessToken = account.getToken(accessTokenKind);
 
         client.setCredentials({
             refresh_token: googleToken.refreshToken,
@@ -45,21 +45,17 @@ export class YouTubeService {
     }
 
     static async validateLike(account: AccountDocument, channelItem: string) {
-        const youtube = await this.getYoutubeClient(account);
-
+        const youtube = await this.getYoutubeClient(account, AccessTokenKind.YoutubeManage);
         const r = await youtube.videos.getRating({
             id: [channelItem],
         });
-
         if (!r.data) {
             throw new Error(ERROR_NO_DATA);
         }
-
         return r.data.items.length ? r.data.items[0].rating == 'like' : false;
     }
-
     static async validateSubscribe(account: AccountDocument, channelItem: string) {
-        const youtube = await this.getYoutubeClient(account);
+        const youtube = await this.getYoutubeClient(account, AccessTokenKind.YoutubeManage);
         const r = await youtube.subscriptions.list({
             forChannelId: channelItem,
             part: ['snippet'],
@@ -74,7 +70,7 @@ export class YouTubeService {
     }
 
     static async getChannelList(account: AccountDocument) {
-        const youtube = await this.getYoutubeClient(account);
+        const youtube = await this.getYoutubeClient(account, AccessTokenKind.YoutubeView);
         const r = await youtube.channels.list({
             part: ['snippet'],
             mine: true,
@@ -135,7 +131,7 @@ export class YouTubeService {
             return r.data.items;
         }
 
-        const youtube = await this.getYoutubeClient(account);
+        const youtube = await this.getYoutubeClient(account, AccessTokenKind.YoutubeView);
         const channel = await getChannels(youtube);
 
         if (!channel.items?.length) {
