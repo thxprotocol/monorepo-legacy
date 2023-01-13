@@ -129,7 +129,6 @@ export default class ReferralRewardClaimsModal extends Vue {
                 email: c.email,
                 createdAt: c.createdAt,
                 isApproved: c.isApproved,
-                isApproving: false,
             }))
             .slice(0, this.limit);
     }
