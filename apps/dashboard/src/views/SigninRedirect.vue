@@ -8,6 +8,8 @@ import { mapGetters } from 'vuex';
 import { IPools } from '../store/modules/pools';
 import { track } from '../utils/mixpanel';
 import { IAccount } from '../types/account';
+import { NODE_ENV } from '@thxnetwork/dashboard/utils/secrets';
+import { ChainId } from '@thxnetwork/sdk/types/enums/ChainId';
 
 @Component({
     computed: mapGetters({
@@ -24,6 +26,11 @@ export default class Redirect extends Vue {
         await this.$store.dispatch('account/getProfile');
 
         track.UserSignsIn(this.profile);
+
+        // List pools to see if we need to deploy a first
+        await this.$store.dispatch('pools/list');
+        const chainId = NODE_ENV === 'production' ? ChainId.Polygon : ChainId.Hardhat;
+        if (!Object.values(this.pools).length) this.$store.dispatch('pools/create', { chainId });
 
         this.$router.push('/');
     }

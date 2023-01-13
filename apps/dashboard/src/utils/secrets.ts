@@ -9,3 +9,4 @@ export const GTM = process.env.VUE_APP_GTM || '';
 export const WIDGET_ID = process.env.VUE_APP_WIDGET_ID || '';
 export const PKG_ENV = process.env.VUE_APP_PKG_ENV as 'local' | 'dev' | 'prod';
 export const MIXPANEL_TOKEN = process.env.VUE_APP_MIXPANEL_TOKEN || '';
+export const NODE_ENV = process.env.NODE_ENV;
