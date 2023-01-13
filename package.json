@@ -76,7 +76,7 @@
         "migrate-mongo": "^9.0.0",
         "mixpanel-browser": "^2.45.0",
         "moment": "^2.29.4",
-        "mongodb": "4.3.1",
+        "mongodb": "^4.9.1",
         "mongoose": "^6.4.6",
         "mongoose-to-swagger": "^1.4.0",
         "morgan": "^1.10.0",
