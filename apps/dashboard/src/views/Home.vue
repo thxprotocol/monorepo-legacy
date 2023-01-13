@@ -115,6 +115,7 @@ import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseModalRequestAccountEmailUpdate from '@thxnetwork/dashboard/components/modals/BaseModalRequestAccountEmailUpdate.vue';
+import { ChainId } from '../types/enums/ChainId';
 
 @Component({
     computed: mapGetters({
@@ -128,7 +129,7 @@ import BaseModalRequestAccountEmailUpdate from '@thxnetwork/dashboard/components
 export default class Home extends Vue {
     window = window;
     profile!: IAccount;
-    assetPools!: IPools;
+    pools!: IPools;
     docsUrl = process.env.VUE_APP_DOCS_URL;
     AccountPlanType = AccountPlanType;
 
@@ -141,6 +142,9 @@ export default class Home extends Vue {
         if (!this.profile.email) {
             this.$bvModal.show('modalRequestAccountEmailUpdate');
         }
+        // List pools to see if we need to deploy a first
+        await this.$store.dispatch('pools/list');
+        if (!Object.values(this.pools).length) this.$store.dispatch('pools/create', { chainId: ChainId.Hardhat });
     }
 }
 </script>

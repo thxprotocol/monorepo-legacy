@@ -57,8 +57,8 @@
                             size="sm"
                             @click="onClickApprove([referralRewardClaims[pool._id][item.id]])"
                         >
-                            <i :class="item.isApproved ? 'fas' : 'far'" class="fa-check-circle mr-1 ml-0"></i>
-                            {{ item.isApproved ? 'Reward transferred' : 'Approve reward' }}
+                            <i :class="item.isApproved ? 'fas' : 'far'" class="fa-check-circle ml-0"></i>
+                            <span class="ml-1">{{ item.isApproved ? 'Reward transferred' : 'Approve reward' }}</span>
                         </b-button>
                     </template>
                 </BTable>
@@ -129,6 +129,7 @@ export default class ReferralRewardClaimsModal extends Vue {
                 email: c.email,
                 createdAt: c.createdAt,
                 isApproved: c.isApproved,
+                isApproving: false,
             }))
             .slice(0, this.limit);
     }
