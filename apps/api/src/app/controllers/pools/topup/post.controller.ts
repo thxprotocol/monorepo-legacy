@@ -31,7 +31,6 @@ const controller = async (req: Request, res: Response) => {
     // Check allowance for admin to ensure throughput
     const allowance = await erc20.contract.methods.allowance(defaultAccount, pool.address).call();
     if (Number(allowance) < Number(amount)) {
-        console.log('insufficient allowance');
         await TransactionService.send(
             erc20.contract.options.address,
             erc20.contract.methods.approve(defaultAccount, ethers.constants.MaxUint256),
