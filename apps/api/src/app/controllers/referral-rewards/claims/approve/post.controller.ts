@@ -30,8 +30,8 @@ const controller = async (req: Request, res: Response) => {
 
                 await MailService.send(
                     account.email,
-                    'Update on your referral',
-                    `Congratulations! Your referral has been approved and your balance has been increased with ${reward.amount} points.`,
+                    'Status: Referral Approved',
+                    `Congratulations! Your referral has been approved and your balance has been increased with <strong>${reward.amount} points</strong>.`,
                 );
             }
 

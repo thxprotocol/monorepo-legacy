@@ -1,5 +1,5 @@
 import sgMail from '@sendgrid/mail';
-import { API_URL, NODE_ENV, SENDGRID_API_KEY } from '@thxnetwork/api/config/secrets';
+import { AUTH_URL, NODE_ENV, SENDGRID_API_KEY } from '@thxnetwork/api/config/secrets';
 import { logger } from '../util/logger';
 import path from 'path';
 import { assetsPath } from '../util/path';
@@ -16,7 +16,7 @@ const send = async (to: string, subject: string, htmlContent: string, link = '')
 
     const html = await ejs.renderFile(
         path.join(mailTemplatePath, 'base-template.ejs'),
-        { subject, htmlContent, baseUrl: API_URL },
+        { subject, htmlContent, baseUrl: AUTH_URL },
         { async: true },
     );
 
