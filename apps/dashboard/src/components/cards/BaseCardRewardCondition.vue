@@ -19,19 +19,11 @@
                 <template v-if="platform && platform.type !== RewardConditionPlatform.None && !isLoadingPlatform">
                     <template v-if="isAuthorized">
                         <b-form-group label="Interaction">
-                            <BaseDropdownChannelActions
-                                @selected="onSelectInteraction"
-                                :actions="actions"
-                                :action="interaction"
-                            />
+                            <BaseDropdownChannelActions @selected="onSelectInteraction" @changed="onDiscordUrlChange"
+                                :actions="actions" :action="interaction" />
                         </b-form-group>
-                        <component
-                            v-if="interaction"
-                            :is="interactionComponent"
-                            @selected="onSelectContent"
-                            :items="interaction.items"
-                            :item="content"
-                        />
+                        <component v-if="interaction" :is="interactionComponent" @selected="onSelectContent"
+                            :items="interaction.items" :item="content" />
                     </template>
                     <b-alert v-else variant="info" show>
                         <p>
@@ -94,6 +86,7 @@ export default class BaseCardRewardCondition extends Vue {
     content = '';
     isAuthorized = false;
     isVisible = false;
+    url = '';
 
     profile!: UserProfile;
     youtube!: any;
@@ -222,9 +215,9 @@ export default class BaseCardRewardCondition extends Vue {
     onSelectContent(content: any) {
         this.content =
             content &&
-            content.referenced_tweets &&
-            content.referenced_tweets[0] &&
-            content.referenced_tweets[0].type === 'retweeted'
+                content.referenced_tweets &&
+                content.referenced_tweets[0] &&
+                content.referenced_tweets[0].type === 'retweeted'
                 ? content.referenced_tweets[0].id
                 : content.id;
         this.change();
@@ -232,11 +225,31 @@ export default class BaseCardRewardCondition extends Vue {
 
     change() {
         if (!this.platform.type) return;
-        this.$emit('change', {
-            platform: this.platform.type,
-            interaction: this.interaction.type,
-            content: this.content,
-        });
+
+        switch (this.interaction.type) {
+            case RewardConditionInteraction.DiscordGuildJoined:
+                this.$emit('change', {
+                    platform: this.platform.type,
+                    interaction: this.interaction.type,
+                    content: {
+                        id: this.content,
+                        url: this.url
+                    },
+                });
+                break;
+            default:
+                this.$emit('change', {
+                    platform: this.platform.type,
+                    interaction: this.interaction.type,
+                    content: this.content,
+                });
+        }
+
+
+    }
+
+    onDiscordUrlChange(url: string) {
+        this.url = url;
     }
 
     getInteractionComponent() {

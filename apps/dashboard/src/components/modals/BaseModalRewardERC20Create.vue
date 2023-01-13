@@ -1,12 +1,6 @@
 <template>
-    <base-modal
-        @show="onShow"
-        size="xl"
-        :title="reward ? 'Update Coin Perk' : 'Create Coin Perk'"
-        :id="id"
-        :error="error"
-        :loading="isLoading"
-    >
+    <base-modal @show="onShow" size="xl" :title="reward ? 'Update Coin Perk' : 'Create Coin Perk'" :id="id"
+        :error="error" :loading="isLoading">
         <template #modal-body v-if="!isLoading">
             <p class="text-gray">
                 Points rewards are distributed to your customers achieving milestones in your customer journey.
@@ -176,7 +170,7 @@ export default class ModalRewardERC20Create extends Vue {
                     rewardLimit: this.rewardLimit,
                     platform: this.rewardCondition.platform,
                     interaction: this.rewardCondition.interaction,
-                    content: this.rewardCondition.content,
+                    content: this.rewardCondition.content === 'string' ? this.rewardCondition.content : JSON.stringify(this.rewardCondition.content),
                     file: this.imageFile,
                     isPromoted: this.isPromoted,
                 },

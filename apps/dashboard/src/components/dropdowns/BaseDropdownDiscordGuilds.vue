@@ -1,21 +1,22 @@
 <template>
-    <b-form-group label="Your Guilds">
-        <b-dropdown variant="link" class="dropdown-select bg-white mb-3">
-            <template #button-content>
-                <div v-if="selected" class="text-overflow-ellipsis">
-                    {{ selected.name }}
-                </div>
-            </template>
-            <b-dropdown-item-button
-                button-class="border-bottom small"
-                :key="item.id"
-                v-for="item of items"
-                @click="onItemClick(item)"
-            >
-                {{ item.name }}
-            </b-dropdown-item-button>
-        </b-dropdown>
-    </b-form-group>
+    <div>
+        <b-form-group label="Your Guilds">
+            <b-dropdown variant="link" class="dropdown-select bg-white mb-3">
+                <template #button-content>
+                    <div v-if="selected" class="text-overflow-ellipsis">
+                        {{ selected.name }}
+                    </div>
+                </template>
+                <b-dropdown-item-button button-class="border-bottom small" :key="item.id" v-for="item of items"
+                    @click="onItemClick(item)">
+                    {{ item.name }}
+                </b-dropdown-item-button>
+            </b-dropdown>
+        </b-form-group>
+        <b-form-group label="Invite Link">
+            <b-form-input type="text" @change="onChange" />
+        </b-form-group>
+    </div>
 </template>
 
 <script lang="ts">
@@ -43,6 +44,11 @@ export default class BaseDropdownDiscordGuilds extends Vue {
     onItemClick(item: any) {
         this.selected = item;
         this.$emit('selected', item);
+    }
+
+    onChange(text: string) {
+        this.$emit('changed', text);
+
     }
 }
 </script>

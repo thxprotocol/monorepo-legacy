@@ -36,8 +36,10 @@ export const validateCondition = async (account: IAccount, reward: TBaseReward):
                 break;
             }
             case RewardConditionInteraction.DiscordGuildJoined: {
-                const result = await DiscordDataProxy.validateGuildJoined(account, reward.content);
-                if (!result) return 'Discord: Server is not joined.';
+                const { id, url } = JSON.parse(reward.content);
+                const result = await DiscordDataProxy.validateGuildJoined(account, id);
+                if (!result && url) return `Discord: Account not yet joined guild. Please join though following URL: ${url}`;
+                else if (!result && !url) return `Discord: Account not yet joined guild. Please contact Perk Creator for Invitation link`;
                 break;
             }
         }

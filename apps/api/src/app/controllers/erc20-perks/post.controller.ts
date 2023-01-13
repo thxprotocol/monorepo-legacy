@@ -15,7 +15,7 @@ const validation = [
     body('expiryDate').optional().isString(),
     body('platform').exists().isNumeric(),
     body('interaction').optional().isNumeric(),
-    body('content').optional().isString(),
+    body('content').optional(),
     body('pointPrice').optional().isNumeric(),
     check('file')
         .optional()
