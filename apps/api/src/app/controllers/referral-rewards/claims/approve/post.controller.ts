@@ -1,12 +1,12 @@
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { Request, Response } from 'express';
 import { body } from 'express-validator';
-import ReferralRewardClaimService from '@thxnetwork/api/services/ReferralRewardClaimService';
 import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import MailService from '@thxnetwork/api/services/MailService';
+import { ReferralRewardClaim } from '@thxnetwork/api/models/ReferralRewardClaim';
 
 const validation = [body('claimUuids').exists().isArray()];
 
@@ -14,14 +14,13 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards Referral Claims']
     const claims = await Promise.all(
         req.body.claimUuids.map(async (uuid: string) => {
-            let claim = await ReferralRewardClaimService.findByUUID(uuid);
-            if (!claim) throw new NotFoundError('Could not find the reward claim for this id');
+            let claim = await ReferralRewardClaim.findOne({ uuid });
+            if (!claim) throw new NotFoundError('Could not find the reward claim for this uuid');
 
             const account = await AccountProxy.getById(claim.sub);
 
             if (!claim.isApproved) {
-                claim.isApproved = true;
-                claim = await ReferralRewardClaimService.update(claim, claim);
+                claim = await ReferralRewardClaim.findByIdAndUpdate(claim._id, { isApproved: true }, { new: true });
                 const reward = await ReferralRewardService.get(claim.referralRewardId);
                 const pool = await PoolService.getById(reward.poolId);
 
@@ -30,8 +29,8 @@ const controller = async (req: Request, res: Response) => {
 
                 await MailService.send(
                     account.email,
-                    'Update on your referral',
-                    `Congratulations! Your referral has been approved and your balance has been increased with ${reward.amount} points.`,
+                    'Status: Referral Approved',
+                    `Congratulations! Your referral has been approved and your balance has been increased with <strong>${reward.amount} points</strong>.`,
                 );
             }
 

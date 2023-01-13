@@ -1,21 +1,14 @@
 import { assertEvent, parseLogs } from '@thxnetwork/api/util/events';
-import { ChainId, DepositState } from '@thxnetwork/api/types/enums';
+import { ChainId } from '@thxnetwork/api/types/enums';
 import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { getProvider } from '@thxnetwork/api/util/network';
 import { Membership } from '@thxnetwork/api/models/Membership';
 import TransactionService from './TransactionService';
 import { diamondContracts, getContract, poolFacetAdressesPermutations } from '@thxnetwork/api/config/contracts';
 import { pick } from '@thxnetwork/api/util';
 import { diamondSelectors, getDiamondCutForContractFacets, updateDiamondContract } from '@thxnetwork/api/util/upgrades';
 import { currentVersion } from '@thxnetwork/contracts/exports';
-import ERC20Service from './ERC20Service';
-import ERC721Service from './ERC721Service';
-import { Deposit } from '@thxnetwork/api/models/Deposit';
-import { TAssetPool } from '@thxnetwork/api/types/TAssetPool';
-import { ADDRESS_ZERO } from '@thxnetwork/api/config/secrets';
-import { isAddress } from 'ethers/lib/utils';
 import { TransactionReceipt } from 'web3-core';
-import { TAssetPoolDeployCallbackArgs, TTopupCallbackArgs } from '@thxnetwork/api/types/TTransaction';
+import { TAssetPoolDeployCallbackArgs } from '@thxnetwork/api/types/TTransaction';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 

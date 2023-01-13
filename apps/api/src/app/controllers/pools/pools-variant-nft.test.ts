@@ -10,7 +10,7 @@ import { addMinutes } from '@thxnetwork/api/util/rewards';
 const user = request.agent(app);
 
 describe('NFT Pool', () => {
-    let poolId: string, tokenAddress: string, erc721ID: string, metadataId: string, csvFile: string;
+    let poolId: string, erc721ID: string, metadataId: string, csvFile: string;
 
     const chainId = ChainId.Hardhat,
         name = 'Planets of the Galaxy',
@@ -42,7 +42,6 @@ describe('NFT Pool', () => {
                 .expect(({ body }: request.Response) => {
                     expect(body._id).toBeDefined();
                     expect(body.address).toBeDefined();
-                    tokenAddress = body.address;
                     erc721ID = body._id;
                 })
                 .expect(201, done);

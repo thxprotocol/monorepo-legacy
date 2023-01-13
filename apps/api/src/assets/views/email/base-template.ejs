@@ -356,7 +356,7 @@
 </head>
 
 <body>
-  <span class="preheader">This is preheader text. Some clients will show this text as a preview.</span>
+  <span class="preheader"><%- htmlContent %></span>
   <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
     <tr>
       <td>&nbsp;</td>
@@ -370,7 +370,7 @@
                 <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                   <tr>
                     <td>
-                        <%= htmlContent %>
+                      <%- htmlContent %>
                     </td>
                   </tr>
                 </table>
@@ -384,7 +384,6 @@
           <!-- START FOOTER -->
           <div class="footer">
             <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-
               <tr>
                 <td class="content-block powered-by">
                   <img src="<%= baseUrl %>/img/logo.png" width="60" alt="THX Logo">

@@ -1,14 +1,12 @@
 import { Request, Response } from 'express';
 import newrelic from 'newrelic';
 import { fromWei } from 'web3-utils';
-
 import { diamondFacetAddresses, getContractConfig, getContractFromName } from '@thxnetwork/api/config/contracts';
 import { NODE_ENV } from '@thxnetwork/api/config/secrets';
 import { ChainId } from '@thxnetwork/api/types/enums';
 import { logger } from '@thxnetwork/api/util/logger';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { currentVersion, diamondVariants } from '@thxnetwork/contracts/exports';
-
 import { license, name, version } from '../../../../package.json';
 import { assetsPath } from '@thxnetwork/api/util/path';
 
@@ -30,14 +28,11 @@ function facetAdresses(chainId: ChainId) {
 
 async function getNetworkDetails(chainId: ChainId) {
     try {
-        const { defaultAccount, relayer, web3 } = getProvider(chainId);
-        const [balance, feeCollector, feePercentage, pending, failed, mined] = await Promise.all([
+        const { defaultAccount, web3 } = getProvider(chainId);
+        const [balance, feeCollector, feePercentage] = await Promise.all([
             await web3.eth.getBalance(defaultAccount),
             await poolRegistry(chainId).methods.feeCollector().call(),
             await poolRegistry(chainId).methods.feePercentage().call(),
-            relayer ? await relayer.list({ status: 'pending' }) : [],
-            relayer ? await relayer.list({ status: 'failed' }) : [],
-            relayer ? await relayer.list({ status: 'mined' }) : [],
         ]);
 
         return {
@@ -45,13 +40,6 @@ async function getNetworkDetails(chainId: ChainId) {
                 address: defaultAccount,
                 balance: fromWei(balance, 'ether'),
             },
-            queue: relayer
-                ? {
-                      pending: pending.length,
-                      failed: failed.length,
-                      mined: mined.length,
-                  }
-                : undefined,
             facets: facetAdresses(chainId),
             factory: getContractConfig(chainId, 'Factory').address,
             registry: getContractConfig(chainId, 'Registry').address,

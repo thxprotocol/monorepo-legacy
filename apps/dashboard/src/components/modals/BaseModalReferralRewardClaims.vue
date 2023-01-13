@@ -1,6 +1,6 @@
 <template>
-    <base-modal hide-footer size="xl" :title="`Claims for ${reward.title}`" :id="id" @show="onShow">
-        <template #modal-body v-if="!isLoading">
+    <base-modal hide-footer size="xl" :title="`Referral reward claims`" :id="id" @show="onShow">
+        <template #modal-body>
             <BCard variant="white" body-class="p-0 shadow-sm" class="mb-3">
                 <BaseCardTableHeader
                     :page="page"
@@ -57,8 +57,8 @@
                             size="sm"
                             @click="onClickApprove([referralRewardClaims[pool._id][item.id]])"
                         >
-                            <i :class="item.isApproved ? 'fas' : 'far'" class="fa-check-circle mr-1 ml-0"></i>
-                            {{ item.isApproved ? 'Reward transferred' : 'Approve reward' }}
+                            <i :class="item.isApproved ? 'fas' : 'far'" class="fa-check-circle ml-0"></i>
+                            <span class="ml-1">{{ item.isApproved ? 'Reward transferred' : 'Approve reward' }}</span>
                         </b-button>
                     </template>
                 </BTable>

@@ -5,6 +5,7 @@ export enum AccountPlanType {
 }
 
 export interface IAccount {
+    sub: string;
     privateKey: string;
     address: string;
     youtube: any;

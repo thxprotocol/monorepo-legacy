@@ -10,6 +10,11 @@ const AUTH_REQUEST_TYPED_MESSAGE =
     "Welcome! Please make sure you have selected your preferred account and sign this message to verify it's ownership.";
 
 export interface UserProfile {
+    sub: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    plan: number;
     address: string;
     privateKey: string;
     authRequestMessage: string;
@@ -39,7 +44,7 @@ class AccountModule extends VuexModule {
     }
 
     @Mutation
-    setUserProfile(profile: UserProfile) {
+    setProfile(profile: UserProfile) {
         this._profile = profile;
     }
 
@@ -61,7 +66,7 @@ class AccountModule extends VuexModule {
             url: '/account',
         });
 
-        this.context.commit('setUserProfile', r.data);
+        this.context.commit('setProfile', r.data);
     }
 
     @Action({ rawError: true })

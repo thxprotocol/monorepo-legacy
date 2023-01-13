@@ -26,11 +26,12 @@ router.get(
     assertRequestInput(ReadReferralReward.validation),
     ReadReferralReward.controller,
 );
-router.get(
-    '/:uuid/claims',
-    guard.check(['referral_rewards:read']),
-    assertRequestInput(ListReferralRewardClaims.validation),
-    ListReferralRewardClaims.controller,
+router.patch(
+    '/:id',
+    guard.check(['referral_rewards:write', 'referral_rewards:read']),
+    assertAssetPoolOwnership,
+    assertRequestInput(UpdateReferralReward.validation),
+    UpdateReferralReward.controller,
 );
 router.post(
     '/',
@@ -39,18 +40,25 @@ router.post(
     assertRequestInput(CreateReferralReward.validation),
     CreateReferralReward.controller,
 );
+router.delete(
+    '/:id',
+    guard.check(['referral_rewards:write', 'referral_rewards:read']),
+    assertAssetPoolOwnership,
+    assertRequestInput(DeleteReferralReward.validation),
+    DeleteReferralReward.controller,
+);
+
+router.get(
+    '/:uuid/claims',
+    guard.check(['referral_rewards:read']),
+    assertRequestInput(ListReferralRewardClaims.validation),
+    ListReferralRewardClaims.controller,
+);
 router.post(
     '/:uuid/claims',
     guard.check(['referral_rewards:read', 'referral_rewards:write']),
     assertRequestInput(CreateReferralRewardClaim.validation),
     CreateReferralRewardClaim.controller,
-);
-router.patch(
-    '/:id',
-    guard.check(['referral_rewards:write', 'referral_rewards:read']),
-    assertAssetPoolOwnership,
-    assertRequestInput(UpdateReferralReward.validation),
-    UpdateReferralReward.controller,
 );
 router.patch(
     '/:uuid/claims/:id',
@@ -63,12 +71,5 @@ router.post(
     guard.check(['referral_rewards:read', 'referral_rewards:write']),
     assertRequestInput(ApproveReferralRewardClaims.validation),
     ApproveReferralRewardClaims.controller,
-);
-router.delete(
-    '/:id',
-    guard.check(['referral_rewards:write', 'referral_rewards:read']),
-    assertAssetPoolOwnership,
-    assertRequestInput(DeleteReferralReward.validation),
-    DeleteReferralReward.controller,
 );
 export default router;
