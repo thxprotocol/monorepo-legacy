@@ -1,12 +1,11 @@
-import { DISCORD_API_ENDPOINT, TWITCH_API_ENDPOINT } from '../../../config/secrets';
 import nock from 'nock';
 import request from 'supertest';
 import app from '../../../app';
 import db from '../../../util/database';
+import { TWITCH_API_ENDPOINT } from '../../../config/secrets';
 import { AccountService } from '../../../services/AccountService';
-import { GOOGLE_API_ENDPOINT, TWITTER_API_ENDPOINT, INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
-import { accountAddress, accountEmail, accountSecret } from '../../../util/jest';
-import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
+import { INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
+import { accountEmail, accountSecret } from '../../../util/jest';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 
 const http = request.agent(app);

@@ -4,6 +4,7 @@ import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { IPool } from './pools';
 import { RewardConditionPlatform, type TERC721Perk } from '@thxnetwork/types/index';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
+import { track } from '@thxnetwork/dashboard/utils/mixpanel';
 
 export type RewardByPage = {
     [page: number]: TERC721Perk[];
@@ -84,6 +85,9 @@ class ERC721PerkModule extends VuexModule {
             headers: { 'X-PoolId': pool._id },
             data: formData,
         });
+
+        const profile = this.context.rootGetters['account/profile'];
+        track.UserCreates(profile.sub, 'nft perk');
 
         r.data.forEach((data: any) => {
             this.context.commit('set', { pool, reward: { ...payload, ...data } });

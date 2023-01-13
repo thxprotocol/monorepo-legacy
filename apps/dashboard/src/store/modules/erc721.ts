@@ -7,12 +7,12 @@ import type {
     TERC721,
     IERC721s,
     TERC721Metadata,
-    TERC721DefaultProp,
     MetadataListProps,
     TMetadataResponse,
     IERC721Metadatas,
 } from '@thxnetwork/dashboard/types/erc721';
 import JSZip from 'jszip';
+import { track } from '@thxnetwork/dashboard/utils/mixpanel';
 
 @Module({ namespaced: true })
 class ERC721Module extends VuexModule {
@@ -194,6 +194,9 @@ class ERC721Module extends VuexModule {
             url: '/erc721',
             data: formData,
         });
+
+        const profile = this.context.rootGetters['account/profile'];
+        track.UserCreates(profile.sub, 'nft');
 
         this.context.commit('set', data);
     }

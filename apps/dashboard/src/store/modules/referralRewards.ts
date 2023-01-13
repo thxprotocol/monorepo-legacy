@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { IPool } from './pools';
 import { RewardConditionPlatform, type TReferralReward } from '@thxnetwork/types/index';
+import { track } from '@thxnetwork/dashboard/utils/mixpanel';
 
 export type RewardByPage = {
     [page: number]: TReferralReward[];
@@ -78,6 +79,9 @@ class ReferralRewardModule extends VuexModule {
             headers: { 'X-PoolId': pool._id },
             data: payload,
         });
+
+        const profile = this.context.rootGetters['account/profile'];
+        track.UserCreates(profile.sub, 'referral reward');
 
         data.page = 1;
         this.context.commit('set', { pool, reward: data });

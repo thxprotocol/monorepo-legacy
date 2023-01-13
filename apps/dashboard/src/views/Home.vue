@@ -128,7 +128,7 @@ import BaseModalRequestAccountEmailUpdate from '@thxnetwork/dashboard/components
 export default class Home extends Vue {
     window = window;
     profile!: IAccount;
-    assetPools!: IPools;
+    pools!: IPools;
     docsUrl = process.env.VUE_APP_DOCS_URL;
     AccountPlanType = AccountPlanType;
 

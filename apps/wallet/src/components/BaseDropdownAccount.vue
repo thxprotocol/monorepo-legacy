@@ -20,7 +20,7 @@
         <b-dropdown-item size="sm" variant="dark" v-b-modal="'modalAccessControl'">
             <span class="text-muted"> <i class="fas fa-clipboard mr-3"></i> Access control </span>
         </b-dropdown-item>
-        <b-dropdown-item :href="dashboardUrl">
+        <b-dropdown-item :href="dashboardUrl" target="_blank">
             <span class="text-muted"><i class="fas fa-chart-line mr-3"></i>Go to Dashboard</span>
         </b-dropdown-item>
         <b-dropdown-divider />

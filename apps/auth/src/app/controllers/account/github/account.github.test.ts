@@ -8,7 +8,7 @@ import { accountEmail, accountSecret } from '../../../util/jest';
 const http = request.agent(app);
 
 describe('Account Controller', () => {
-    let authHeader: string, basicAuthHeader: string, sub: string;
+    let authHeader: string, basicAuthHeader: string;
 
     beforeEach(() => {
         nock('https://api.airtable.com').post(/.*?/).reply(200, {}); // mock email response for account create method
@@ -67,7 +67,6 @@ describe('Account Controller', () => {
                     password: accountSecret,
                 });
             expect(res.status).toBe(201);
-            sub = res.body.sub;
         });
     });
 

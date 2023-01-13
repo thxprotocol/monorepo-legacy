@@ -44,7 +44,6 @@
 
 <script lang="ts">
 import { type IPool } from '@thxnetwork/dashboard/store/modules/pools';
-import { type TBaseReward } from '@thxnetwork/types/index';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import BaseModalRewardClaimsDownload from '../modals/BaseModalRewardClaimsDownload.vue';
 

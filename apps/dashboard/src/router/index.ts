@@ -12,16 +12,19 @@ import {
 } from '@thxnetwork/dashboard/utils/guards';
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
+import { track } from '../utils/mixpanel';
 
 Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
     {
+        name: 'home',
         path: '/',
         component: () => import('../views/Home.vue'),
         beforeEnter: assertAuthorization,
     },
     {
+        name: 'pools',
         path: '/pools',
         component: () => import('../views/Pools.vue'),
         beforeEnter: assertAuthorization,
@@ -34,61 +37,55 @@ const routes: Array<RouteConfig> = [
         beforeEnter: assertAuthorization,
         children: [
             {
+                name: 'dashboard',
                 path: 'dashboard',
                 component: () => import('../views/pool/Dashboard.vue'),
             },
             {
+                name: 'widget',
                 path: 'widget',
                 component: () => import('../views/pool/Widget.vue'),
             },
             {
+                name: 'points',
                 path: 'points',
                 component: () => import('../views/pool/Points.vue'),
             },
             {
+                name: 'referrals',
                 path: 'referrals',
                 component: () => import('../views/pool/Referrals.vue'),
             },
             {
+                name: 'coin perks',
                 path: 'erc20-perks',
                 component: () => import('../views/pool/ERC20Perks.vue'),
             },
             {
+                name: 'nft perks',
                 path: 'erc721-perks',
                 component: () => import('../views/pool/ERC721Perks.vue'),
             },
             {
+                name: 'clients',
                 path: 'clients',
                 component: () => import('../views/pool/Clients.vue'),
             },
             {
+                name: 'settings',
                 path: 'settings',
                 component: () => import('../views/pool/Settings.vue'),
             },
-            // {
-            //     path: 'promotions',
-            //     component: () => import('../views/pool/Promotions.vue'),
-            // },
-            // {
-            //     path: 'members',
-            //     component: () => import('../views/pool/Members.vue'),
-            // },
-            // {
-            //     path: 'payments',
-            //     component: () => import('../views/pool/Payments.vue'),
-            // },
-            // {
-            //     path: 'erc20swaps',
-            //     component: () => import('../views/pool/ERC20Swaps.vue'),
-            // },
         ],
     },
     {
+        name: 'coins',
         path: '/coins',
         component: () => import('../views/Coins.vue'),
         beforeEnter: assertAuthorization,
     },
     {
+        name: 'nft',
         path: '/nft',
         component: () => import('../views/NFT.vue'),
         beforeEnter: assertAuthorization,
@@ -107,35 +104,43 @@ const routes: Array<RouteConfig> = [
         ],
     },
     {
+        name: 'sign in',
         path: '/signin-oidc',
         component: () => import('../views/SigninRedirect.vue'),
     },
     {
+        name: 'verify email',
         path: '/verify_email',
         beforeEnter: redirectVerifyEmail,
     },
     {
+        name: 'reset password',
         path: '/reset',
         beforeEnter: redirectPasswordResetLink,
     },
     {
+        name: 'account',
         path: '/account',
         beforeEnter: redirectAccount,
     },
     {
+        name: 'signup',
         path: '/signup',
         beforeEnter: redirectSignup,
     },
 
     {
+        name: 'sign out',
         path: '/signout',
         beforeEnter: redirectSignout,
     },
     {
+        name: 'verify email',
         path: '/verify',
         beforeEnter: redirectConfirmationLink,
     },
     {
+        name: 'sign in',
         path: '/signin',
         beforeEnter: redirectSignin,
     },
@@ -150,8 +155,6 @@ const router = new VueRouter({
     scrollBehavior: function (to) {
         if (to.hash) {
             return { selector: to.hash };
-            //Or for Vue 3:
-            //return {el: to.hash}
         } else {
             return { x: 0, y: 0 };
         }
@@ -160,8 +163,6 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-    const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
-
     if (to.query.passwordResetToken) {
         await store.dispatch('account/signinRedirect', {
             passwordResetToken: to.query.passwordResetToken,
@@ -170,14 +171,8 @@ router.beforeEach(async (to, from, next) => {
 
     try {
         const user = await store.dispatch('account/getUser');
-
-        if (requiresAuth && !user) {
-            await store.dispatch('account/signinRedirect', {
-                signupToken: to.query.signup_token || null,
-            });
-        } else {
-            return next();
-        }
+        if (user) track.UserVisits(user.sub, to.name || 'unknown', to.params as unknown as string[]);
+        return next();
     } catch (err) {
         console.error(err);
     }

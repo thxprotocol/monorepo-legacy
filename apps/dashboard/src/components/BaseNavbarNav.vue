@@ -23,7 +23,6 @@
 
 <script lang="ts">
 import { AccountPlanType, type IAccount } from '@thxnetwork/dashboard/types/account';
-import { IPool } from '../store/modules/pools';
 import { Prop, Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 

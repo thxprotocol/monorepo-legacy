@@ -292,11 +292,7 @@ export class AccountService {
         return account;
     }
 
-    static async getSubForPasswordResetToken(password: string, passwordConfirm: string, passwordResetToken: string) {
-        // const account: AccountDocument = await Account.findOne({ passwordResetToken })
-        //     .where('passwordResetExpires')
-        //     .gt(Date.now())
-        //     .exec();
+    static async getSubForPasswordResetToken(password: string, passwordConfirm: string) {
         const account = await Account.findOne({
             'tokens.kind': AccessTokenKind.PasswordReset,
             'tokens.expiry': { $gt: Date.now() },

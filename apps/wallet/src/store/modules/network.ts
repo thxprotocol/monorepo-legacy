@@ -7,7 +7,6 @@ import {
     POLYGON_MUMBAI_RPC,
     POLYGON_RPC,
     TORUS_VERIFIER,
-    TEST_KEY,
 } from '@thxnetwork/wallet/utils/secrets';
 import { fromWei, toWei } from 'web3-utils';
 import { ChainId } from '@thxnetwork/wallet/types/enums/ChainId';
@@ -104,7 +103,7 @@ class NetworkModule extends VuexModule {
         if (user.profile.variant === AccountVariant.Metamask) return;
 
         // Fetch key from mockdata in localstorage
-        if (TEST_KEY) {
+        if (NODE_ENV === 'development') {
             this.context.commit('setPrivateKey', mockPrivateKeyForSubject(user.profile.sub));
             return;
         }
@@ -198,7 +197,7 @@ class NetworkModule extends VuexModule {
     async sign(msg: string) {
         if (this.privateKey) {
             const hash = '';
-            return this.web3.eth.accounts.sign(hash as any, this.privateKey).signature;
+            return this.web3.eth.accounts.sign(hash as string, this.privateKey).signature;
         } else {
             const nonce = await this.web3.eth.getTransactionCount(this.address);
             const message = createTypedMessage(msg, 'THX Web Wallet', String(nonce), this.chainId);
