@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { param, query } from 'express-validator';
 import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
-import { WithdrawalState, WithdrawalType } from '@thxnetwork/api/types/enums';
 import { WithdrawalDocument } from '@thxnetwork/api/models/Withdrawal';
 import { Claim } from '@thxnetwork/api/models/Claim';
 import { findRewardByUuid, isTERC20Perk, isTERC721Perk } from '@thxnetwork/api/util/rewards';

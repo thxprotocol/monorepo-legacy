@@ -197,7 +197,7 @@ class NetworkModule extends VuexModule {
     async sign(msg: string) {
         if (this.privateKey) {
             const hash = '';
-            return this.web3.eth.accounts.sign(hash as any, this.privateKey).signature;
+            return this.web3.eth.accounts.sign(hash as string, this.privateKey).signature;
         } else {
             const nonce = await this.web3.eth.getTransactionCount(this.address);
             const message = createTypedMessage(msg, 'THX Web Wallet', String(nonce), this.chainId);

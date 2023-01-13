@@ -6,8 +6,12 @@
                     {{ selected.name }}
                 </div>
             </template>
-            <b-dropdown-item-button button-class="border-bottom small" :key="item.id" v-for="item of items"
-                @click="onItemClick(item)">
+            <b-dropdown-item-button
+                button-class="border-bottom small"
+                :key="item.id"
+                v-for="item of items"
+                @click="onItemClick(item)"
+            >
                 {{ item.name }}
             </b-dropdown-item-button>
         </b-dropdown>
@@ -15,10 +19,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { format } from 'date-fns';
-import { watch } from 'fs';
 
 @Component({
     computed: mapGetters({}),
@@ -36,7 +39,6 @@ export default class BaseDropdownDiscordGuilds extends Vue {
             this.onItemClick(this.items[0]);
         }
     }
-
 
     onItemClick(item: any) {
         this.selected = item;

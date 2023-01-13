@@ -7,7 +7,6 @@ import type {
     TERC721,
     IERC721s,
     TERC721Metadata,
-    TERC721DefaultProp,
     MetadataListProps,
     TMetadataResponse,
     IERC721Metadatas,

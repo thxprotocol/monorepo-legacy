@@ -6,9 +6,14 @@
                     {{ selected.text }}
                 </div>
             </template>
-            <b-dropdown-item-button button-class="border-bottom small" :key="item.id" v-for="item of items"
-                @click="onItemClick(item)">
-                <span class="text-muted"> {{ format(new Date(item.created_at), 'HH:mm MMMM dd, yyyy') }}</span><br />
+            <b-dropdown-item-button
+                button-class="border-bottom small"
+                :key="item.id"
+                v-for="item of items"
+                @click="onItemClick(item)"
+            >
+                <span class="text-muted"> {{ format(new Date(item.created_at), 'HH:mm MMMM dd, yyyy') }}</span
+                ><br />
                 {{ item.text }}
             </b-dropdown-item-button>
         </b-dropdown>
@@ -16,10 +21,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { format } from 'date-fns';
-import { watch } from 'fs';
 
 @Component({
     computed: mapGetters({}),
@@ -27,8 +31,8 @@ import { watch } from 'fs';
 export default class BaseDropdownTwitterTweets extends Vue {
     format = format;
 
-    @Prop() items!: any;
-    @Prop({ required: false }) item: any;
+    @Prop() items!: any[];
+    @Prop({ required: false }) item!: string;
 
     selected: any = null;
 
@@ -45,7 +49,6 @@ export default class BaseDropdownTwitterTweets extends Vue {
             }
         }
     }
-
 
     onItemClick(item: any) {
         this.selected = item;

@@ -6,7 +6,7 @@ import { InsufficientBalanceError, NotFoundError } from '@thxnetwork/api/util/er
 import { getContractFromName } from '@thxnetwork/api/config/contracts';
 import { BigNumber } from 'ethers';
 import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
-import { ERC20Type, WithdrawalState, WithdrawalType } from '@thxnetwork/api/types/enums';
+import { ERC20Type } from '@thxnetwork/api/types/enums';
 import { IAccount } from '@thxnetwork/api/models/Account';
 import PointBalanceService, { PointBalance } from '@thxnetwork/api/services/PointBalanceService';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';

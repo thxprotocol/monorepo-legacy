@@ -1,5 +1,4 @@
 import Vue from 'vue';
-import axios from 'axios';
 import { default as ERC20Abi } from '@thxnetwork/contracts/exports/abis/LimitedSupplyToken.json';
 import { Contract } from 'web3-eth-contract';
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';

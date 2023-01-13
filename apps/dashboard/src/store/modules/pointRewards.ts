@@ -1,7 +1,6 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { IChannel, IChannelAction } from '@thxnetwork/dashboard/types/rewards';
 import { RewardConditionPlatform, type TPointReward } from '@thxnetwork/types/index';
 import { IPool } from './pools';
 import { track } from '@thxnetwork/dashboard/utils/mixpanel';

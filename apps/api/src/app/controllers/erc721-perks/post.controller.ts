@@ -5,7 +5,6 @@ import ImageService from '@thxnetwork/api/services/ImageService';
 import { TERC721Perk } from '@thxnetwork/types/interfaces/ERC721Perk';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
-import { NotFound } from '@aws-sdk/client-s3';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 
 const validation = [

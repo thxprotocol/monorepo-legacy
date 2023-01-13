@@ -17,7 +17,6 @@ import { getProvider } from '@thxnetwork/api/util/network';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
 
 import PoolService from './PoolService';
-import MembershipService from './MembershipService';
 import TransactionService from './TransactionService';
 
 import type { TERC721, TERC721Metadata, TERC721Token } from '@thxnetwork/api/types/TERC721';
