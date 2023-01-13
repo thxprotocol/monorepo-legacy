@@ -1,7 +1,7 @@
-import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
+import { Vue } from 'vue-property-decorator';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { IPool } from './pools';
+import { type IPool } from './pools';
 import { TReferralReward, type TReferralRewardClaim } from '@thxnetwork/types/index';
 import { track } from '@thxnetwork/dashboard/utils/mixpanel';
 
