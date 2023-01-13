@@ -1,10 +1,11 @@
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { User, UserManager } from 'oidc-client-ts';
-import { AccessTokenKind, RewardConditionPlatform } from '@thxnetwork/types/index';
 import { config } from '@thxnetwork/dashboard/utils/oidc';
 import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 import type { IAccount, IAccountUpdates, IDiscord, ITwitter, IYoutube } from '@thxnetwork/dashboard/types/account';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
+import { RewardConditionPlatform } from '@thxnetwork/types/enums/RewardConditionPlatform';
 
 @Module({ namespaced: true })
 class AccountModule extends VuexModule {
