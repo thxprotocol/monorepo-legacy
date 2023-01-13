@@ -29,19 +29,27 @@
         </template>
         <template #card-body>
             <p class="mb-0">
-                <span class="text-muted">Balance:</span><br />
-                <span class="font-weight-bold text-primary h3">
-                    <template v-if="pool.erc20">
-                        {{ fromWei(pool.erc20.poolBalance) }} {{ pool.erc20.symbol }}
+                <span class="text-primary">
+                    <template v-if="pool.metrics.pointRewards">
+                        {{ pool.metrics.pointRewards.totalClaimPoints }} Points
                     </template>
-                    <template v-else> - </template>
+                    <template v-else> 0 Points </template>
                 </span>
             </p>
             <p class="mt-3 mb-0">
-                <span class="text-muted">Minted NFTs:</span><br />
-                <span class="font-weight-bold text-primary h3">
-                    <template v-if="pool.erc721"> {{ pool.erc721.totalSupply }} {{ pool.erc721.symbol }} </template>
-                    <template v-else> - </template>
+                <span class="text-primary">
+                    <template v-if="pool.metrics.erc20Perks">
+                        {{ pool.metrics.erc20Perks.totalAmount }} Coin Perks
+                    </template>
+                    <template v-else> 0 Coin Perks </template>
+                </span>
+            </p>
+            <p class="mt-3 mb-0">
+                <span class="text-primary">
+                    <template v-if="pool.metrics.erc721Perks">
+                        {{ pool.metrics.erc721Perks.totalAmount }} Nft Perks
+                    </template>
+                    <template v-else> 0 Nft Perks</template>
                 </span>
             </p>
             <base-modal-delete
