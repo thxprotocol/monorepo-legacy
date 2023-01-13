@@ -20,7 +20,7 @@ export function redirectConfirmationLink(to: Route) {
 }
 
 export function redirectSignup() {
-    return store.dispatch('account/signupRedirect');
+    return store.dispatch('account/signinRedirect');
 }
 
 export function redirectSignin() {
