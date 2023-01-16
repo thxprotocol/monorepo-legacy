@@ -12,7 +12,7 @@ const controller = async (req: Request, res: Response) => {
     const account = await AccountProxy.getByAddress(req.body.address);
     if (!account) throw new NotFoundError('Could not find account for this address');
 
-    const reward = await MilestoneReward.findOne({ token: req.params.token });
+    const reward = await MilestoneReward.findOne({ uuid: req.params.token });
     if (!reward) throw new NotFoundError('Could not find milestone reward for this token');
 
     const claim = await MilestoneRewardClaimService.create({

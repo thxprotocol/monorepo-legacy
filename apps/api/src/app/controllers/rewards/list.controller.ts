@@ -26,7 +26,7 @@ const controller = async (req: Request, res: Response) => {
     res.json({
         milestoneRewards: await Promise.all(
             milestoneRewards.map(async (r) => {
-                const claims = sub ? await MilestoneRewardClaim.find({ sub, milestoneRewardId: r._id }) : false;
+                const claims = sub ? await MilestoneRewardClaim.find({ sub, milestoneRewardId: String(r._id) }) : [];
                 return {
                     uuid: r.uuid,
                     title: r.title,
@@ -47,7 +47,7 @@ const controller = async (req: Request, res: Response) => {
         }),
         pointRewards: await Promise.all(
             pointRewards.map(async (r) => {
-                const isClaimed = sub ? await PointRewardClaim.exists({ sub, pointRewardId: r._id }) : false;
+                const isClaimed = sub ? await PointRewardClaim.exists({ sub, pointRewardId: String(r._id) }) : false;
                 return {
                     uuid: r.uuid,
                     title: r.title,

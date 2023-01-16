@@ -16,9 +16,9 @@ const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(reward.poolId);
 
     await PointBalanceService.add(pool, claim.sub, `${claim.amount}`);
-    await claim.updateOne({
-        isClaimed: true,
-    });
+
+    claim.isClaimed = true;
+    await claim.save();
 
     res.status(201).json(claim);
 };
