@@ -10,7 +10,13 @@
                 </div>
 
                 <div class="d-flex align-items-center" v-else>
-                    <img :src="chainInfo[pool.chainId].logo" width="20" height="20" class="mr-3" />
+                    <img
+                        :src="chainInfo[pool.chainId].logo"
+                        :alt="`Logo ${chainInfo[pool.chainId].name} chain`"
+                        width="20"
+                        height="20"
+                        class="mr-3"
+                    />
                     {{ chainInfo[pool.chainId].name }}
                 </div>
             </b-form-group>
