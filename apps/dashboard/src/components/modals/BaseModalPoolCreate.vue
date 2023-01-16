@@ -1,5 +1,5 @@
 <template>
-    <base-modal :loading="loading" :error="error" :title="!pool ? 'Create Pool' : 'Edit Pool'" :id="id">
+    <base-modal @show="onShow" :loading="loading" :error="error" :title="!pool ? 'Create Pool' : 'Edit Pool'" :id="id">
         <template #modal-body>
             <b-form-group label="Title">
                 <b-form-input v-model="title" placeholder="My Loyalty Pool" class="mr-3" />
@@ -70,9 +70,9 @@ export default class ModalAssetPoolCreate extends Vue {
     @Prop() erc721?: TERC721;
     @Prop({ required: false }) pool!: IPool;
 
-    title = this.pool ? this.pool.title : '';
-    isEditMode = this.pool !== undefined;
-    archived = this.pool ? this.pool.archived : false;
+    title = '';
+    isEditMode = false;
+    archived = false;
 
     get disabled() {
         return this.loading;
@@ -80,6 +80,12 @@ export default class ModalAssetPoolCreate extends Vue {
 
     onSelectChain(chainId: ChainId) {
         this.chainId = chainId;
+    }
+
+    onShow() {
+        this.title = this.pool ? this.pool.title : '';
+        this.isEditMode = this.pool !== undefined;
+        this.archived = this.pool ? this.pool.archived : false;
     }
 
     async submit() {
