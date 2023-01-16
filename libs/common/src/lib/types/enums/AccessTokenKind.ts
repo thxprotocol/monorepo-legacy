@@ -8,4 +8,6 @@ export enum AccessTokenKind {
     Discord = 'discord',
     Twitch = 'twitch',
     VerifyEmail = 'verify-email',
+    YoutubeView = 'youtube-view',
+    YoutubeManage = 'youtube-manage',
 }

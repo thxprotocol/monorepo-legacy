@@ -5,7 +5,7 @@ import { BASE_URL } from '@thxnetwork/wallet/utils/secrets';
 import { thxClient } from '../../utils/oidc';
 import { User } from 'oidc-client-ts';
 import { AccountVariant } from '../../types/Accounts';
-import { RewardConditionPlatform } from '@thxnetwork/types/index';
+import { AccessTokenKind, RewardConditionPlatform } from '@thxnetwork/types/index';
 const AUTH_REQUEST_TYPED_MESSAGE =
     "Welcome! Please make sure you have selected your preferred account and sign this message to verify it's ownership.";
 
@@ -21,6 +21,8 @@ export interface UserProfile {
     authRequestSignature: string;
     variant: AccountVariant;
     googleAccess: boolean;
+    youtubeViewAccess: boolean;
+    youtubeManageAccess: boolean;
     twitterAccess: boolean;
     discordAccess: boolean;
 }
@@ -191,11 +193,27 @@ class AccountModule extends VuexModule {
 
     @Action({ rawError: true })
     async connectRedirect({ platform, path }: { platform: RewardConditionPlatform; path: string }) {
+        let access_token_kind = '';
+        switch (platform) {
+            case RewardConditionPlatform.Google: {
+                access_token_kind = AccessTokenKind.YoutubeManage;
+                break;
+            }
+            case RewardConditionPlatform.Twitter: {
+                access_token_kind = AccessTokenKind.Twitter;
+                break;
+            }
+            case RewardConditionPlatform.Discord: {
+                access_token_kind = AccessTokenKind.Discord;
+                break;
+            }
+        }
         await thxClient.userManager.cached.signinRedirect({
             extraQueryParams: {
                 channel: platform,
                 prompt: 'connect',
                 return_url: BASE_URL + path,
+                access_token_kind,
             },
         });
     }

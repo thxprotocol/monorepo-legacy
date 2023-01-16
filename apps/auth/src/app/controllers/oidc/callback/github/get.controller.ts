@@ -5,7 +5,7 @@ import { AccountService } from '../../../../services/AccountService';
 import { ERROR_NO_ACCOUNT } from '../../../../util/messages';
 import { getAccountByEmail, getInteraction, saveInteraction } from '../../../../util/oidc';
 import { AccountVariant } from '../../../../types/enums/AccountVariant';
-import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
 
 async function updateTokens(account: AccountDocument, tokens: any): Promise<AccountDocument> {

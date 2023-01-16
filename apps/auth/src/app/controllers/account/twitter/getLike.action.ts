@@ -1,4 +1,4 @@
-import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
 import { NotFoundError } from '@thxnetwork/auth/util/errors';
 import { Request, Response } from 'express';

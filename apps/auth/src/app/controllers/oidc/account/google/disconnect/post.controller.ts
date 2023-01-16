@@ -7,7 +7,7 @@ const controller = async (req: Request, res: Response) => {
     const account = await AccountService.get(session.accountId);
     if (!account) throw new Error(ERROR_NO_ACCOUNT);
 
-    await AccountService.update(account, { googleAccess: false });
+    await AccountService.update(account, { googleAccess: false, youtubeManageAccess: false, youtubeViewAccess: false });
 
     res.redirect(`/oidc/${uid}/account`);
 };

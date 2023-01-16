@@ -6,7 +6,7 @@ import UploadProxy from '../../../proxies/UploadProxy';
 import { AccountService } from '../../../services/AccountService';
 import { ERROR_NO_ACCOUNT } from '../../../util/messages';
 import { createRandomToken } from '../../../util/tokens';
-import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
 import { get24HoursExpiryTimestamp } from '@thxnetwork/auth/util/time';
 

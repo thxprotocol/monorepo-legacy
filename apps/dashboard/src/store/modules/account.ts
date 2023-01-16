@@ -1,10 +1,11 @@
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { User, UserManager } from 'oidc-client-ts';
-import { RewardConditionPlatform } from '@thxnetwork/types/index';
 import { config } from '@thxnetwork/dashboard/utils/oidc';
 import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 import type { IAccount, IAccountUpdates, IDiscord, ITwitter, IYoutube } from '@thxnetwork/dashboard/types/account';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
+import { RewardConditionPlatform } from '@thxnetwork/types/enums/RewardConditionPlatform';
 
 @Module({ namespaced: true })
 class AccountModule extends VuexModule {
@@ -148,11 +149,27 @@ class AccountModule extends VuexModule {
 
     @Action({ rawError: true })
     async connectRedirect(payload: { platform: RewardConditionPlatform; returnUrl: string }) {
+        let access_token_kind = '';
+        switch (payload.platform) {
+            case RewardConditionPlatform.Google: {
+                access_token_kind = AccessTokenKind.YoutubeView;
+                break;
+            }
+            case RewardConditionPlatform.Twitter: {
+                access_token_kind = AccessTokenKind.Twitter;
+                break;
+            }
+            case RewardConditionPlatform.Discord: {
+                access_token_kind = AccessTokenKind.Discord;
+                break;
+            }
+        }
         await this.userManager.signinRedirect({
             extraQueryParams: {
                 prompt: 'connect',
                 channel: payload.platform,
                 return_url: payload.returnUrl,
+                access_token_kind,
             },
         });
     }
