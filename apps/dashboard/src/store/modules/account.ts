@@ -12,16 +12,11 @@ class AccountModule extends VuexModule {
     userManager: UserManager = new UserManager(config);
     artifacts = '';
     version = '';
-    _networkHealth: any | null = null;
     _user!: User;
     _profile: IAccount | null = null;
     _youtube: IYoutube | null = null;
     _twitter: ITwitter | null = null;
     _discord: IDiscord | null = null;
-
-    get networkHealth() {
-        return this._networkHealth;
-    }
 
     get user() {
         return this._user;
@@ -72,7 +67,6 @@ class AccountModule extends VuexModule {
     setHealth(data: { version: string; artifacts: string }) {
         this.version = data.version;
         this.artifacts = data.artifacts;
-        this._networkHealth = data;
     }
 
     @Action({ rawError: true })
@@ -267,16 +261,6 @@ class AccountModule extends VuexModule {
     @Action({ rawError: true })
     async signinSilent() {
         return await this.userManager.signinSilent();
-    }
-
-    @Action({ rawError: true })
-    async getHealth() {
-        const r = await axios({
-            method: 'GET',
-            url: '/health',
-        });
-
-        this.context.commit('setHealth', r.data);
     }
 }
 

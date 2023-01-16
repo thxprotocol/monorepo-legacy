@@ -32,16 +32,13 @@
             <b-container class="mb-0 text-center text-gray">
                 <b-row class="pb-2">
                     <b-col>
-                        <strong class="text-primary">
-                            {{ pool.metrics.pointRewards ? pool.metrics.pointRewards.totalClaimPoints : 0 }}
+                        <strong class="text-primary" style="font-size: 1.3rem">
+                            {{
+                                (pool.metrics.referralRewards ? pool.metrics.referralRewards.totalClaimPoints : 0) +
+                                (pool.metrics.pointRewards ? pool.metrics.pointRewards.totalClaimPoints : 0)
+                            }}
                         </strong>
-                        <div class="small">Conditional Rewards Claimed</div>
-                    </b-col>
-                    <b-col>
-                        <strong class="text-primary">
-                            {{ pool.metrics.referralRewards ? pool.metrics.referralRewards.totalClaimPoints : 0 }}
-                        </strong>
-                        <div class="small">Referral Rewards Claimed</div>
+                        <div class="small">Points Claimed</div>
                     </b-col>
                 </b-row>
                 <b-row>

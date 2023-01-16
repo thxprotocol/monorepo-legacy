@@ -37,7 +37,6 @@ class ReferralRewardModule extends VuexModule {
     @Mutation
     set({ pool, reward }: { reward: TReferralReward & { _id: string }; pool: IPool }) {
         if (!this._all[pool._id]) Vue.set(this._all, pool._id, {});
-        if (typeof reward.platform === 'undefined') reward.platform = RewardConditionPlatform.None; // Temp fix for corrupt data
         Vue.set(this._all[pool._id], reward._id, reward);
     }
 

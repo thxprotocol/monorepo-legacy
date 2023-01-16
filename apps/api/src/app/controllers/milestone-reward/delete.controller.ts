@@ -1,14 +1,12 @@
-import { NotFoundError } from '@thxnetwork/api/util/errors';
-import MilestoneRewardService from '@thxnetwork/api/services/MilestoneRewardService';
+import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
 
-const validation = [param('id').isString()];
+const validation = [param('id').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['RewardsToken']
-    const { id } = req.params;
-    await MilestoneRewardService.delete(id);
+    // #swagger.tags = ['Milestone Rewards']
+    await MilestoneReward.findOneAndDelete({ _id: req.params.id });
     res.status(204).end();
 };
 

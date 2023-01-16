@@ -6,15 +6,13 @@ const validation = [
     body('title').isString(),
     body('description').isString(),
     body('amount').isInt({ gt: 0 }),
-    param('id').isString(),
+    param('id').isMongoId(),
 ];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['RewardsToken']
+    // #swagger.tags = ['Milestone Rewards']
     const { title, description, amount } = req.body;
-    const { id } = req.params;
-
-    const milestoneReward = await MilestoneRewardService.edit(id, {
+    const milestoneReward = await MilestoneRewardService.edit(req.params.id, {
         title,
         description,
         amount,

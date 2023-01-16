@@ -38,7 +38,7 @@
                 variant="primary"
                 block
             >
-                {{ reward ? 'Update Reward' : 'Create Reward' }}
+                {{ reward ? 'Update Conditional Reward' : 'Create Conditional Reward' }}
             </b-button>
         </template>
     </base-modal>

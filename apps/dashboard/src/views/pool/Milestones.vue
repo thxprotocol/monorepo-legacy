@@ -9,14 +9,25 @@
                     <i class="fas fa-plus mr-2"></i>
                     <span class="d-none d-md-inline">Milestone Reward</span>
                 </b-button>
-                <BaseModalRewardMilestonesCreate @submit="listRewards" :id="'modalRewardMilestonesCreate'"
-                    :pool="pool" />
+                <BaseModalRewardMilestonesCreate
+                    @submit="listRewards"
+                    :id="'modalRewardMilestonesCreate'"
+                    :pool="pool"
+                />
             </b-col>
         </b-row>
         <BCard variant="white" body-class="p-0 shadow-sm">
-            <BaseCardTableHeader :page="page" :limit="limit" :pool="pool" :total-rows="totals[pool._id]"
-                :selectedItems="selectedItems" :actions="[{ variant: 0, label: `Delete milestone rewards` }]"
-                @click-action="onClickAction" @change-page="onChangePage" @change-limit="onChangeLimit" />
+            <BaseCardTableHeader
+                :page="page"
+                :limit="limit"
+                :pool="pool"
+                :total-rows="totals[pool._id]"
+                :selectedItems="selectedItems"
+                :actions="[{ variant: 0, label: `Delete milestone rewards` }]"
+                @click-action="onClickAction"
+                @change-page="onChangePage"
+                @change-limit="onChangeLimit"
+            />
             <BTable hover :busy="isLoading" :items="rewardsByPage" responsive="lg" show-empty>
                 <!-- Head formatting -->
                 <template #head(checkbox)>
@@ -38,18 +49,23 @@
                     {{ item.description }}
                 </template>
                 <template #cell(id)="{ item }">
-                    <b-dropdown variant="link" size="sm" no-caret>
+                    <b-dropdown variant="link" size="sm" right no-caret>
                         <template #button-content>
                             <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
                         </template>
                         <b-dropdown-item v-b-modal="'modalRewardMilestonesCreate' + item.id">Edit</b-dropdown-item>
                         <b-dropdown-item
-                            @click="$store.dispatch('milestones/delete', milestoneRewards[pool._id][item.id])">
+                            @click="$store.dispatch('milestoneRewards/delete', milestoneRewards[pool._id][item.id])"
+                        >
                             Delete
                         </b-dropdown-item>
                     </b-dropdown>
-                    <BaseModalRewardMilestonesCreate @submit="listRewards" :id="'modalRewardMilestonesCreate' + item.id"
-                        :pool="pool" :reward="milestoneRewards[pool._id][item.id]" />
+                    <BaseModalRewardMilestonesCreate
+                        @submit="listRewards"
+                        :id="'modalRewardMilestonesCreate' + item.id"
+                        :pool="pool"
+                        :reward="milestoneRewards[pool._id][item.id]"
+                    />
                 </template>
             </BTable>
         </BCard>
@@ -60,7 +76,7 @@
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { TMilestoneRewardState } from '@thxnetwork/dashboard/store/modules/milestones';
+import { TMilestoneRewardState } from '@thxnetwork/dashboard/store/modules/milestoneRewards.js';
 import { RewardConditionPlatform, RewardConditionInteraction, TMilestoneReward } from '@thxnetwork/types/index';
 import BaseModalRewardMilestonesCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardMilestonesCreate.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
@@ -74,11 +90,11 @@ import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/ba
     },
     computed: mapGetters({
         pools: 'pools/all',
-        totals: 'milestones/totals',
-        milestoneRewards: 'milestones/all',
+        totals: 'milestoneRewards/totals',
+        milestoneRewards: 'milestoneRewards/all',
     }),
 })
-export default class AssetPoolView extends Vue {
+export default class MilestonesView extends Vue {
     RewardConditionPlatform = RewardConditionPlatform;
     RewardConditionInteraction = RewardConditionInteraction;
     isLoading = true;
@@ -115,7 +131,7 @@ export default class AssetPoolView extends Vue {
 
     async listRewards() {
         this.isLoading = true;
-        await this.$store.dispatch('milestones/list', { page: this.page, pool: this.pool });
+        await this.$store.dispatch('milestoneRewards/list', { page: this.page, pool: this.pool });
         this.isLoading = false;
     }
 
@@ -137,17 +153,11 @@ export default class AssetPoolView extends Vue {
         this.listRewards();
     }
 
-    onDelete(items: string[]) {
-        for (const id of Object.values(items)) {
-            this.$store.dispatch('milestones/delete', this.milestoneRewards[this.pool._id][id]);
-        }
-    }
-
     onClickAction(action: { variant: number; label: string }) {
         switch (action.variant) {
             case 0:
                 for (const id of Object.values(this.selectedItems)) {
-                    this.$store.dispatch('milestones/delete', this.milestoneRewards[this.pool._id][id]);
+                    this.$store.dispatch('milestoneRewards/delete', this.milestoneRewards[this.pool._id][id]);
                 }
                 break;
         }

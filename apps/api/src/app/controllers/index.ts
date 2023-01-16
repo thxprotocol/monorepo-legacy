@@ -22,7 +22,7 @@ import walletsRouter from './wallets/wallets.router';
 import widgetRouter from './widget/widget.router';
 import rewardsRouter from './rewards/rewards.router';
 import perksRouter from './perks/perks.router';
-import milestonesRewardRouter from './milestone-reward/milestone-rewards.router'
+import milestonesRewardRouter from './milestone-reward/milestone-rewards.router';
 import webhooksRouter from './webhooks/webhooks.router';
 import widgetsRouter from './widgets/widgets.router';
 import { checkJwt, corsHandler } from '@thxnetwork/api/middlewares';
@@ -42,7 +42,7 @@ router.use('/webhook', webhooksRouter);
 router.use(checkJwt);
 router.use(corsHandler);
 router.use('/point-rewards', pointRewardsRouter);
-router.use('/milestone-rewards', milestonesRewardRouter)
+router.use('/milestone-rewards', milestonesRewardRouter);
 router.use('/point-balances', pointBalancesRouter);
 router.use('/account', accountRouter);
 router.use('/widgets', widgetsRouter);

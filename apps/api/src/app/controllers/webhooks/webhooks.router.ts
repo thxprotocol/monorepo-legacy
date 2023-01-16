@@ -6,7 +6,6 @@ import MilestoneReward from './milestones/claim/post.controller';
 const router = express.Router();
 
 router.post('/referral/:token/qualify', assertRequestInput(QualifyReward.validation), QualifyReward.controller);
-
-router.post('/milestones/:token/claim', assertRequestInput(MilestoneReward.validation), MilestoneReward.controller);
+router.post('/milestone/:token/claim', assertRequestInput(MilestoneReward.validation), MilestoneReward.controller);
 
 export default router;

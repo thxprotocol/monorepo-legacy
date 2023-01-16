@@ -15,7 +15,7 @@ import SwapRuleStore from './modules/swaprules';
 import ClientStore from './modules/clients';
 import BrandStore from './modules/brands';
 import ImageStore from './modules/images';
-import MilestoneRewardStore from './modules/milestones'
+import MilestoneRewardStore from './modules/milestoneRewards';
 
 Vue.use(Vuex);
 
@@ -37,7 +37,7 @@ const modules = {
     clients: ClientStore,
     brands: BrandStore,
     images: ImageStore,
-    milestones: MilestoneRewardStore,
+    milestoneRewards: MilestoneRewardStore,
 };
 
 export default new Vuex.Store({

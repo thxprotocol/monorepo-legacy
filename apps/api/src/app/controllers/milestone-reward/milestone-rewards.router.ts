@@ -1,4 +1,4 @@
-import { assertAssetPoolAccess, assertRequestInput, requireAssetPoolHeader } from '@thxnetwork/api/middlewares';
+import { assertRequestInput, assertAssetPoolOwnership } from '@thxnetwork/api/middlewares';
 import express from 'express';
 import ListMilestoneRewards from './list.controller';
 import ReadMilestoneRewards from './get.controller';
@@ -8,33 +8,29 @@ import UpdateMilestoneRewards from './patch.controller';
 
 const router = express.Router();
 
-router.get('/', assertAssetPoolAccess, requireAssetPoolHeader, ListMilestoneRewards.controller);
+router.get('/', assertAssetPoolOwnership, ListMilestoneRewards.controller);
 router.get(
     '/:id',
     assertRequestInput(ReadMilestoneRewards.validation),
-    assertAssetPoolAccess,
-    requireAssetPoolHeader,
+    assertAssetPoolOwnership,
     ReadMilestoneRewards.controller,
 );
 router.post(
     '/',
     assertRequestInput(CreateMilestoneRewards.validation),
-    assertAssetPoolAccess,
-    requireAssetPoolHeader,
+    assertAssetPoolOwnership,
     CreateMilestoneRewards.controller,
 );
 router.patch(
     '/:id',
     assertRequestInput(UpdateMilestoneRewards.validation),
-    assertAssetPoolAccess,
-    requireAssetPoolHeader,
+    assertAssetPoolOwnership,
     UpdateMilestoneRewards.controller,
 );
 router.delete(
     '/:id',
     assertRequestInput(DeleteMilestoneRewards.validation),
-    assertAssetPoolAccess,
-    requireAssetPoolHeader,
+    assertAssetPoolOwnership,
     DeleteMilestoneRewards.controller,
 );
 

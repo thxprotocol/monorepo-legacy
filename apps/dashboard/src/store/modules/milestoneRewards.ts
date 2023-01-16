@@ -1,5 +1,5 @@
-import { RewardConditionPlatform, TMilestoneReward } from '@thxnetwork/types/index';
 import axios from 'axios';
+import { type TMilestoneReward } from '@thxnetwork/types/index';
 import { Vue } from 'vue-property-decorator';
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
 import { IPool } from './pools';
@@ -31,7 +31,6 @@ class MilestoneRewardModule extends VuexModule {
     @Mutation
     set(reward: TMilestoneReward) {
         if (!this._all[reward.poolId]) Vue.set(this._all, reward.poolId, {});
-        if (typeof reward.platform === 'undefined') reward.platform = RewardConditionPlatform.None; // Temp fix for corrupt data
         Vue.set(this._all[reward.poolId], String(reward._id), reward);
     }
 
@@ -50,15 +49,15 @@ class MilestoneRewardModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async create(payload: TMilestoneReward) {
-        const r = await axios({
+    async create(reward: TMilestoneReward) {
+        const { data } = await axios({
             method: 'POST',
             url: '/milestone-rewards',
-            headers: { 'X-PoolId': payload.poolId },
-            data: payload,
+            headers: { 'X-PoolId': reward.poolId },
+            data: reward,
         });
 
-        this.context.commit('set', { ...payload, ...r.data });
+        this.context.commit('set', { ...reward, ...data });
     }
 
     @Action({ rawError: true })
