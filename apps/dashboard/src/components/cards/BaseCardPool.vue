@@ -35,13 +35,13 @@
                         <strong class="text-primary">
                             {{ pool.metrics.pointRewards ? pool.metrics.pointRewards.totalClaimPoints : 0 }}
                         </strong>
-                        <div class="small">Points</div>
+                        <div class="small">Conditional Points</div>
                     </b-col>
                     <b-col>
                         <strong class="text-primary">
                             {{ pool.metrics.referralRewards ? pool.metrics.referralRewards.totalClaimPoints : 0 }}
                         </strong>
-                        <div class="small">Points</div>
+                        <div class="small">Referral Points</div>
                     </b-col>
                 </b-row>
                 <b-row>

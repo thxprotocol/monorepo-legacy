@@ -59,8 +59,8 @@ class PoolModule extends VuexModule {
             params,
         });
 
-        r.data.forEach((_id: string) => {
-            this.context.commit('set', { _id });
+        r.data.forEach((pool: IPool) => {
+            this.context.commit('set', pool);
         });
     }
 
