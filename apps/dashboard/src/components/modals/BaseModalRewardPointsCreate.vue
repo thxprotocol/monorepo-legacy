@@ -46,7 +46,7 @@
 
 <script lang="ts">
 import { type IPool } from '@thxnetwork/dashboard/store/modules/pools';
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { type TPointReward } from '@thxnetwork/types/interfaces/PointReward';
 import { platformInteractionList, platformList } from '@thxnetwork/dashboard/types/rewards';
 import BaseModal from './BaseModal.vue';

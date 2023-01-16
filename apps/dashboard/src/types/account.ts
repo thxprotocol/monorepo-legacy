@@ -5,9 +5,9 @@ export enum AccountPlanType {
 }
 
 export interface IAccount {
+    sub: string;
     privateKey: string;
     address: string;
-    youtube: any;
     firstName: string;
     lastName: string;
     company: string;
@@ -17,20 +17,22 @@ export interface IAccount {
 export interface IAccountUpdates {
     address: string;
     googleAccessToken: string;
+    youtubeViewAccessToken: string;
+    youtubeManageAccessToken: string;
 }
 
 export interface IYoutube {
-    channels: any;
-    videos: any;
+    channels: unknown;
+    videos: unknown;
 }
 
 export interface ITwitter {
-    tweets: any;
-    users: any;
+    tweets: unknown;
+    users: unknown;
 }
 
 export interface IDiscord {
-    guilds: any[];
+    guilds: unknown[];
 }
 
 export interface IMember {

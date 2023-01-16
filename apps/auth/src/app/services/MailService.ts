@@ -7,7 +7,7 @@ import { AUTH_URL, SECURE_KEY, WALLET_URL, SENDGRID_API_KEY } from '../config/se
 import { encryptString } from '../util/encrypt';
 import { logger } from '../util/logger';
 import { assetsPath } from '../util/path';
-import { AccessTokenKind } from '../types/enums/AccessTokenKind';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IAccessToken } from '../types/TAccount';
 import { get24HoursExpiryTimestamp } from '../util/time';
 

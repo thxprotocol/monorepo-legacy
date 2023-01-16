@@ -6,7 +6,7 @@ import { getAccountByEmail, getInteraction, saveInteraction } from '../../../../
 import { AccountVariant } from '../../../../types/enums/AccountVariant';
 import { DiscordService } from '@thxnetwork/auth/services/DiscordService';
 import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
-import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 
 async function updateTokens(account: AccountDocument, tokens: any): Promise<AccountDocument> {
     const expiry = tokens.expires_in ? Date.now() + Number(tokens.expires_in) * 1000 : undefined;

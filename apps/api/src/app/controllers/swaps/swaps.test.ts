@@ -11,7 +11,6 @@ import {
     getContractFromName,
 } from '@thxnetwork/api/config/contracts';
 import {
-    adminAccessToken,
     dashboardAccessToken,
     MaxUint256,
     userWalletPrivateKey2,

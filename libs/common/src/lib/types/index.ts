@@ -2,6 +2,7 @@ export * from './enums/PlatformVariant';
 export * from './enums/RewardVariant';
 export * from './enums/RewardConditionPlatform';
 export * from './enums/RewardConditionInteraction';
+export * from './enums/AccessTokenKind';
 
 export * from './interfaces/ERC20Perk';
 export * from './interfaces/MilestoneReward'

@@ -3,14 +3,14 @@ import app from '@thxnetwork/api/';
 import { ChainId } from '@thxnetwork/api/types/enums';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { account2, dashboardAccessToken, rewardWithdrawAmount } from '@thxnetwork/api/util/jest/constants';
+import { dashboardAccessToken, rewardWithdrawAmount } from '@thxnetwork/api/util/jest/constants';
 import { createImage } from '@thxnetwork/api/util/jest/images';
 import { createArchiver } from '@thxnetwork/api/util/zip';
 import { addMinutes } from '@thxnetwork/api/util/rewards';
 const user = request.agent(app);
 
 describe('NFT Pool', () => {
-    let poolId: string, tokenAddress: string, erc721ID: string, metadataId: string, csvFile: string;
+    let poolId: string, erc721ID: string, metadataId: string, csvFile: string;
 
     const chainId = ChainId.Hardhat,
         name = 'Planets of the Galaxy',
@@ -42,7 +42,6 @@ describe('NFT Pool', () => {
                 .expect(({ body }: request.Response) => {
                     expect(body._id).toBeDefined();
                     expect(body.address).toBeDefined();
-                    tokenAddress = body.address;
                     erc721ID = body._id;
                 })
                 .expect(201, done);
@@ -55,8 +54,10 @@ describe('NFT Pool', () => {
                 .set('Authorization', dashboardAccessToken)
                 .send({
                     chainId: ChainId.Hardhat,
+                    title: 'My Pool',
                 })
                 .expect(({ body }: request.Response) => {
+                    expect(body.title).toBe('My Pool');
                     expect(isAddress(body.address)).toBe(true);
                     poolId = body._id;
                 })

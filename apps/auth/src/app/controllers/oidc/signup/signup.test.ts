@@ -4,7 +4,7 @@ import app from '../../../app';
 import { AccountService } from '../../../services/AccountService';
 import db from '../../../util/database';
 import { API_URL, INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
-import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 
 const http = request.agent(app);
 

@@ -2,7 +2,7 @@
     <div>
         <b-form-group>
             <label>Blockchain Network</label>
-            <b-dropdown variant="link" class="dropdown-select">
+            <b-dropdown variant="link" class="dropdown-select" :toggle-class="{ disabled: disabled }">
                 <template #button-content>
                     <div class="d-flex align-items-center">
                         <img :src="chainInfo[currentChainId].logo" width="20" height="20" class="mr-3" />
@@ -26,7 +26,6 @@
 <script lang="ts">
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import type { IAccount } from '@thxnetwork/dashboard/types/account';
-import { AccountPlanType } from '@thxnetwork/dashboard/types/account';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { PUBLIC_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { Component, Prop, Vue } from 'vue-property-decorator';
@@ -39,6 +38,8 @@ import { mapGetters } from 'vuex';
 })
 export default class BaseFormSelectNetwork extends Vue {
     @Prop() chainId!: ChainId;
+    @Prop() disabled!: boolean;
+
     ChainId = ChainId;
     publicUrl = PUBLIC_URL;
     chainInfo = chainInfo;

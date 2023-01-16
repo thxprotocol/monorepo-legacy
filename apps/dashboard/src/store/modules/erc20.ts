@@ -4,6 +4,7 @@ import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import type { IERC20s, TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import { ChainId } from '../enums/chainId';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
+import { track } from '@thxnetwork/dashboard/utils/mixpanel';
 
 @Module({ namespaced: true })
 class ERC20Module extends VuexModule {
@@ -87,6 +88,9 @@ class ERC20Module extends VuexModule {
             url: '/erc20/',
             data: formData,
         });
+
+        const profile = this.context.rootGetters['account/profile'];
+        track.UserCreates(profile.sub, 'coin');
 
         await this.context.dispatch('read', data._id);
     }

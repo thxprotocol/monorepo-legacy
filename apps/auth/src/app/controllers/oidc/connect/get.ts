@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { oidc } from '../../../util/oidc';
-import { RewardConditionPlatform } from '@thxnetwork/types/index';
+import { AccessTokenKind } from '@thxnetwork/types/index';
 import { TwitterService } from '../../../services/TwitterService';
 import { YouTubeService } from '../../../services/YouTubeService';
 import { GithubService } from '@thxnetwork/auth/services/GithubServices';
@@ -19,30 +19,42 @@ async function controller(req: Request, res: Response) {
     const account = await AccountService.get(session.accountId);
 
     let redirect = '';
-    switch (Number(params.channel)) {
-        case RewardConditionPlatform.Google: {
-            redirect = (await YouTubeService.isAuthorized(account))
+    switch (params.access_token_kind) {
+        case AccessTokenKind.Google: {
+            redirect = (await YouTubeService.isAuthorized(account, params.access_token_kind))
                 ? params.redirect_uri
-                : YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getYoutubeScopes());
+                : YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getBasicScopes());
             break;
         }
-        case RewardConditionPlatform.Twitter: {
+        case AccessTokenKind.YoutubeView: {
+            redirect = (await YouTubeService.isAuthorized(account, params.access_token_kind))
+                ? params.redirect_uri
+                : YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getYoutubeViewScopes());
+            break;
+        }
+        case AccessTokenKind.YoutubeManage: {
+            redirect = (await YouTubeService.isAuthorized(account, params.access_token_kind))
+                ? params.redirect_uri
+                : YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getYoutubeManageScopes());
+            break;
+        }
+        case AccessTokenKind.Twitter: {
             redirect = (await TwitterService.isAuthorized(account))
                 ? params.redirect_uri
                 : TwitterService.getLoginURL(uid, {});
             break;
         }
-        case RewardConditionPlatform.Github: {
+        case AccessTokenKind.Github: {
             redirect = (await GithubService.isAuthorized(account))
                 ? params.redirect_uri
                 : GithubService.getLoginURL(uid, {});
             break;
         }
-        case RewardConditionPlatform.Twitch: {
+        case AccessTokenKind.Twitch: {
             redirect = TwitchService.isAuthorized(account) ? params.redirect_uri : GithubService.getLoginURL(uid, {});
             break;
         }
-        case RewardConditionPlatform.Discord: {
+        case AccessTokenKind.Discord: {
             redirect = (await DiscordService.isAuthorized(account))
                 ? params.redirect_uri
                 : DiscordService.getLoginURL(uid, {});

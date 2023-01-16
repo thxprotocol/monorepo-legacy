@@ -5,8 +5,6 @@ import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/c
 import { isAddress } from 'ethers/lib/utils';
 import { dashboardAccessToken } from '@thxnetwork/api/util/jest/constants';
 import { createImage } from '@thxnetwork/api/util/jest/images';
-import fs from 'fs';
-import { CWD } from '@thxnetwork/api/config/secrets';
 
 const http = request.agent(app);
 

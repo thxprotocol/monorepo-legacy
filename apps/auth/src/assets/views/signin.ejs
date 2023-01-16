@@ -75,6 +75,7 @@
         </button>
       </form>
       <% } else { %>
+      <p class="text-muted">Sign in/up providers</p>
       <!-- This part is used for regular login flow and only visibile if links are available -->
       <div class="d-flex align-items-center justify-content-start flex-wrap">
         <% if (params.authRequestMessage) { %>
@@ -151,7 +152,7 @@
       </a>
       <span class="text-muted">|</span>
       <a class="btn btn-link p-1" href="/oidc/<%= uid %>/signup?returnUrl=<%= params.return_url%>">
-        Sign up for an account
+        Sign up with your e-mail
       </a>
     </div>
     <% } %>

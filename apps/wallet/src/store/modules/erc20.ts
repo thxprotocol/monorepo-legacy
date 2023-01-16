@@ -1,5 +1,4 @@
 import Vue from 'vue';
-import axios from 'axios';
 import { default as ERC20Abi } from '@thxnetwork/contracts/exports/abis/LimitedSupplyToken.json';
 import { Contract } from 'web3-eth-contract';
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
@@ -109,56 +108,6 @@ class ERC20Module extends VuexModule {
     @Action({ rawError: true })
     async allowance({ contract, owner, spender }: { contract: Contract; owner: string; spender: string }) {
         return await contract.methods.allowance(owner, spender).call({ from: owner });
-    }
-
-    @Action({ rawError: true })
-    async approve({
-        contract,
-        to,
-        amount,
-        poolId,
-    }: {
-        contract: Contract;
-        to: string;
-        amount: string;
-        poolId: string;
-    }) {
-        const { web3, address } = this.context.rootState.network;
-        const user = this.context.rootGetters['account/user'];
-        const allowance = await this.context.dispatch('allowance', {
-            contract,
-            owner: address,
-            spender: to,
-        });
-
-        // Early return if allowance is already sufficient
-        if (Number(allowance) >= Number(amount)) return;
-
-        if (user && poolId) {
-            const balance = Number(fromWei(await web3.eth.getBalance(address)));
-            if (balance === 0) {
-                await axios({
-                    method: 'POST',
-                    url: `/deposits/approve`,
-                    headers: {
-                        'X-PoolId': poolId,
-                    },
-                    data: {
-                        amount,
-                    },
-                });
-                // TODO Await the balance increase here
-            }
-        }
-
-        await this.context.dispatch(
-            'network/send',
-            {
-                to: contract.options.address,
-                fn: contract.methods.approve(to, amount),
-            },
-            { root: true },
-        );
     }
 
     @Action({ rawError: true })

@@ -2,7 +2,6 @@ import newrelic from 'newrelic';
 import { HealthCheck } from '@godaddy/terminus';
 import { config, status } from 'migrate-mongo';
 import { connection } from 'mongoose';
-import { Db } from 'mongodb';
 
 import migrateMongoConfig from '../config/migrate-mongo';
 
@@ -24,7 +23,7 @@ const dbConnected = async () => {
 const migrationsApplied = async () => {
     config.set(migrateMongoConfig);
 
-    const pendingMigrations = (await status(connection.db as Db)).filter(
+    const pendingMigrations = (await status(connection.db as any)).filter(
         (migration) => migration.appliedAt === 'PENDING',
     );
     if (pendingMigrations.length > 0) {

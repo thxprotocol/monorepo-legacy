@@ -5,7 +5,6 @@
             <b-spinner variant="secondary" size="lg"></b-spinner>
             <span class="text-muted mt-2">{{ info }}</span>
         </div>
-        <modal-decode-private-key @init="redirect()" />
     </div>
 </template>
 
@@ -14,14 +13,11 @@ import { UserProfile } from '@thxnetwork/wallet/store/modules/account';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters, mapState } from 'vuex';
 import { User } from 'oidc-client-ts';
-import ModalDecodePrivateKey from '@thxnetwork/wallet/components/modals/ModalDecodePrivateKey.vue';
 import { ChainId } from '@thxnetwork/wallet/types/enums/ChainId';
 import { chainInfo } from '@thxnetwork/wallet/utils/chains';
+import { track } from '../utils/mixpanel';
 
 @Component({
-    components: {
-        ModalDecodePrivateKey,
-    },
     computed: {
         ...mapState('network', ['address']),
         ...mapGetters({
@@ -47,10 +43,7 @@ export default class Redirect extends Vue {
 
         await this.getProfile();
 
-        // Check for non custodial account and return
-        if (this.profile && this.profile.privateKey) {
-            return this.$bvModal.show('modalDecodePrivateKey');
-        }
+        track.UserSignsIn(this.profile);
 
         // Get private key from Torus network if applicable
         await this.getPrivateKey();
@@ -65,7 +58,7 @@ export default class Redirect extends Vue {
     }
 
     redirect() {
-        const state: any = this.user.state;
+        const state = this.user.state as { toPath: string; claimUuid: string };
         let path = state.toPath || this.redirectPath;
 
         // If a reward hash or claim Id is found, redirect to the claim page instead

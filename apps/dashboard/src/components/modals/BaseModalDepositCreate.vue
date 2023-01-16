@@ -68,7 +68,7 @@
 
 <script lang="ts">
 import type { IPool } from '@thxnetwork/dashboard/store/modules/pools';
-import { ERC20Type, TERC20, type IERC20s } from '@thxnetwork/dashboard/types/erc20';
+import { ERC20Type, type TERC20, type IERC20s } from '@thxnetwork/dashboard/types/erc20';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseModal from './BaseModal.vue';
