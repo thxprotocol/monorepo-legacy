@@ -52,16 +52,6 @@ const controller = async (req: Request, res: Response) => {
             throw new ForbiddenError('You can only claim this reward once.');
         }
 
-        let withdrawal: WithdrawalDocument = await WithdrawalService.create(
-            pool,
-            WithdrawalType.ClaimReward,
-            req.auth.sub,
-            Number(reward.amount),
-            WithdrawalState.Pending,
-            null,
-            String(reward._id),
-        );
-
         const erc20 = await ERC20Service.getById(claim.erc20Id);
         let withdrawal: WithdrawalDocument = await WithdrawalService.create(erc20, req.auth.sub, Number(reward.amount));
         withdrawal = await WithdrawalService.withdrawFor(pool, withdrawal, account, erc20, false);
