@@ -13,6 +13,7 @@
                     Please contact us in
                     <b-link href="https://discord.com/invite/TzbbSmkE7Y" target="_blank"> Discord </b-link>
                 </b-alert>
+
                 <base-badge-network :chainId="pool.chainId" class="mr-1" />
             </div>
             <base-dropdown-menu-pool
@@ -20,31 +21,51 @@
                 :pool="pool"
                 @archive="archive"
                 @remove="$bvModal.show(`modalDelete-${pool._id}`)"
+                @edit="$bvModal.show(`modalAssetPoolEdit-${pool._id}`)"
             />
         </template>
         <template #card-body>
-            <p class="mb-0">
-                <span class="text-muted">Balance:</span><br />
-                <span class="font-weight-bold text-primary h3">
-                    <template v-if="pool.erc20">
-                        {{ fromWei(pool.erc20.poolBalance) }} {{ pool.erc20.symbol }}
-                    </template>
-                    <template v-else> - </template>
-                </span>
+            <p class="text-muted">
+                {{ pool.title }}
             </p>
-            <p class="mt-3 mb-0">
-                <span class="text-muted">Minted NFTs:</span><br />
-                <span class="font-weight-bold text-primary h3">
-                    <template v-if="pool.erc721"> {{ pool.erc721.totalSupply }} {{ pool.erc721.symbol }} </template>
-                    <template v-else> - </template>
-                </span>
-            </p>
+            <hr />
+            <b-container class="mb-0 text-center text-muted">
+                <b-row class="pb-2">
+                    <b-col>
+                        <strong class="text-primary">
+                            {{ pool.metrics.pointRewards ? pool.metrics.pointRewards.totalClaimPoints : 0 }}
+                        </strong>
+                        <div class="small">Conditional Points</div>
+                    </b-col>
+                    <b-col>
+                        <strong class="text-primary">
+                            {{ pool.metrics.referralRewards ? pool.metrics.referralRewards.totalClaimPoints : 0 }}
+                        </strong>
+                        <div class="small">Referral Points</div>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <strong class="text-primary">{{
+                            pool.metrics.erc20Perks ? pool.metrics.erc20Perks.totalAmount : 0
+                        }}</strong>
+                        <div class="small">Coin Perks</div>
+                    </b-col>
+                    <b-col>
+                        <strong class="text-primary">{{
+                            pool.metrics.erc721Perks ? pool.metrics.erc721Perks.totalAmount : 0
+                        }}</strong>
+                        <div class="small">NFT Perks</div>
+                    </b-col>
+                </b-row>
+            </b-container>
             <base-modal-delete
                 :id="`modalDelete-${pool._id}`"
                 @submit="remove(pool._id)"
                 :error="error"
                 :subject="pool._id"
             />
+            <base-modal-pool-create :id="`modalAssetPoolEdit-${pool._id}`" :pool="pool" />
         </template>
     </base-card>
 </template>
@@ -59,10 +80,12 @@ import BaseBadgeNetwork from '@thxnetwork/dashboard/components/badges/BaseBadgeN
 import BaseCard from '@thxnetwork/dashboard/components/cards/BaseCard.vue';
 import promisePoller from 'promise-poller';
 import BaseDropdownMenuPool from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownMenuPool.vue';
+import BaseModalPoolCreate from '@thxnetwork/dashboard/components/modals/BaseModalPoolCreate.vue';
 import { fromWei } from 'web3-utils';
 
 @Component({
     components: {
+        BaseModalPoolCreate,
         BaseDropdownMenuPool,
         BaseModalDelete,
         BaseBadgeNetwork,

@@ -73,9 +73,11 @@ describe('Default Pool', () => {
                 .set('Authorization', dashboardAccessToken)
                 .send({
                     chainId: ChainId.Hardhat,
+                    title: 'My Pool',
                 })
                 .expect((res: request.Response) => {
                     poolId = res.body._id;
+                    expect(res.body.title).toBe('My Pool');
                     expect(res.body.archived).toBe(false);
                 })
                 .expect(201, done);
@@ -185,8 +187,10 @@ describe('Default Pool', () => {
                 .set({ Authorization: dashboardAccessToken })
                 .send({
                     archived: true,
+                    title: 'My Pool 2',
                 })
                 .expect(({ body }: request.Response) => {
+                    expect(body.title).toBe('My Pool 2');
                     expect(body.archived).toBe(true);
                 })
                 .expect(200, done);

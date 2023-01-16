@@ -38,6 +38,7 @@
                     {{ prop.name }}
                 </b-badge>
             </p>
+            <b-button block variant="light" class="rounded-pill">Manage Metadata</b-button>
         </template>
     </base-card>
 </template>

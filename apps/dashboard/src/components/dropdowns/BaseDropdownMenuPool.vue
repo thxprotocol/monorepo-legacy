@@ -3,6 +3,9 @@
         <template #button-content>
             <i class="fas fa-ellipsis-v m-0 p-1 px-2 text-muted" aria-hidden="true" style="font-size: 1rem"></i>
         </template>
+        <b-dropdown-item @click.stop="$emit('edit')">
+            <span class="text-muted"><i class="fas fa-pen mr-3"></i>Edit </span>
+        </b-dropdown-item>
         <b-dropdown-item size="sm" variant="dark" @click.stop="$emit('archive')">
             <span class="text-muted"
                 ><i class="fas fa-archive mr-2"></i>

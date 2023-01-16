@@ -50,7 +50,7 @@
                                         class="mr-2"
                                         :src="`https://avatars.dicebear.com/api/identicon/${p._id}.svg`"
                                     />
-                                    {{ p._id.substring(0, 18) }}...
+                                    {{ p.title }}
                                 </div>
                                 <i class="fas fa-caret-right ml-2"></i>
                             </div>

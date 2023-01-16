@@ -17,9 +17,9 @@ const controller = async (req: Request, res: Response) => {
 
     const erc721Perk = await ERC721Perk.findOne({ uuid: req.params.uuid });
     if (!erc721Perk) throw new NotFoundError('Could not find this perk');
-
-    const erc721 = await ERC721Service.findByPool(pool);
-    if (!erc721) throw new NotFoundError('Could not find this perk');
+    console.log(erc721Perk.erc721Id);
+    const erc721 = await ERC721Service.findById(erc721Perk.erc721Id);
+    if (!erc721) throw new NotFoundError('Could not find this erc721');
 
     const metadata = await ERC721Service.findMetadataById(erc721Perk.erc721metadataId);
     if (!metadata) throw new NotFoundError('Could not find the erc721 metadata for this perk');

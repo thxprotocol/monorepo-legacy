@@ -12,11 +12,15 @@ export interface IPool {
     chainId: ChainId;
     rewardPollDuration: number;
     proposeWithdrawPollDuration: number;
-    metrics: { claims: number; mints: number; referrals: number; withdrawals: number };
-    isNFTPool: boolean;
-    isDefaultPool: boolean;
+    metrics: {
+        pointRewards: { totalClaimPoints: number };
+        referralRewards: { totalClaimPoints: number };
+        erc20Perks: { totalAmount: number };
+        erc721Perks: { totalAmount: number };
+    };
     version: string;
     archived: boolean;
+    title: string;
 }
 export interface IPools {
     [id: string]: IPool;
@@ -55,8 +59,8 @@ class PoolModule extends VuexModule {
             params,
         });
 
-        r.data.forEach((_id: string) => {
-            this.context.commit('set', { _id });
+        r.data.forEach((pool: IPool) => {
+            this.context.commit('set', pool);
         });
     }
 
@@ -79,6 +83,7 @@ class PoolModule extends VuexModule {
         erc20tokens: string[];
         erc721tokens: string[];
         variant: string;
+        title: string;
     }) {
         const { data } = await axios({
             method: 'POST',
@@ -99,7 +104,7 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async update({ pool, data }: { pool: IPool; data: { archived: boolean } }) {
+    async update({ pool, data }: { pool: IPool; data: { archived: boolean; title: string } }) {
         await axios({
             method: 'PATCH',
             url: '/pools/' + pool._id,

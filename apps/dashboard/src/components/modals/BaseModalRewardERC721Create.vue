@@ -85,6 +85,12 @@ import { mapGetters } from 'vuex';
 import BaseDropdownSelectERC721 from '../dropdowns/BaseDropdownSelectERC721.vue';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 
+type TRewardCondition = {
+    platform: RewardConditionPlatform;
+    interaction?: RewardConditionInteraction;
+    content?: string;
+};
+
 @Component({
     components: {
         BaseModal,
@@ -113,7 +119,7 @@ export default class ModalRewardERC721Create extends Vue {
     claimAmount = 1;
     rewardLimit = 0;
     pointPrice = 0;
-    rewardCondition: { platform: RewardConditionPlatform; interaction: RewardConditionInteraction; content: string } = {
+    rewardCondition: TRewardCondition = {
         platform: platformList[0].type,
         interaction: platformInteractionList[0].type,
         content: '',
@@ -162,6 +168,13 @@ export default class ModalRewardERC721Create extends Vue {
 
     onSubmit() {
         this.isLoading = true;
+
+        const rewardCondition: TRewardCondition = { platform: this.rewardCondition.platform };
+        if (this.rewardCondition.platform !== RewardConditionPlatform.None) {
+            rewardCondition.interaction = this.rewardCondition.interaction;
+            rewardCondition.content = this.rewardCondition.content;
+        }
+
         this.$store
             .dispatch(`erc721Perks/${this.reward ? 'update' : 'create'}`, {
                 pool: this.pool || Object.values(this.pools)[0],
@@ -176,11 +189,9 @@ export default class ModalRewardERC721Create extends Vue {
                     claimAmount: this.claimAmount,
                     rewardLimit: this.rewardLimit,
                     pointPrice: this.pointPrice,
-                    platform: this.rewardCondition.platform,
-                    interaction: this.rewardCondition.interaction,
-                    content: this.rewardCondition.content,
                     file: this.imageFile,
                     isPromoted: this.isPromoted,
+                    ...rewardCondition,
                 },
             })
             .then(() => {

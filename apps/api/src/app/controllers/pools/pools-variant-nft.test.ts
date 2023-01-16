@@ -54,8 +54,10 @@ describe('NFT Pool', () => {
                 .set('Authorization', dashboardAccessToken)
                 .send({
                     chainId: ChainId.Hardhat,
+                    title: 'My Pool',
                 })
                 .expect(({ body }: request.Response) => {
+                    expect(body.title).toBe('My Pool');
                     expect(isAddress(body.address)).toBe(true);
                     poolId = body._id;
                 })
