@@ -1,11 +1,5 @@
 <template>
-    <base-card
-        :is-loading="isLoading"
-        :is-deploying="isDeploying"
-        :body-bg-variant="erc20.archived ? 'light' : null"
-        classes="cursor-pointer"
-        @click="onClick"
-    >
+    <base-card :is-loading="isLoading" :is-deploying="isDeploying" :body-bg-variant="erc20.archived ? 'light' : null">
         <template #card-header>
             <base-badge-network v-if="!isLoading" :chainId="erc20.chainId" />
             <base-dropdown-token-menu :erc20="erc20" @archive="archive" class="ml-auto" />
@@ -99,10 +93,6 @@ export default class BaseCardERC20 extends Vue {
             data: { archived: !this.erc20.archived },
         });
         this.isLoading = false;
-    }
-
-    onClick() {
-        if (this.erc20.poolId) this.$router.push({ path: `/pool/${this.erc20.poolId}/erc20-perks` });
     }
 }
 </script>
