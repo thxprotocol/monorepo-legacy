@@ -122,7 +122,6 @@ describe('Rewards', () => {
         user.get(`/v1/rewards`)
             .set({ 'X-PoolId': poolId })
             .expect((res: request.Response) => {
-                console.log(res.body);
                 expect(res.body.referralRewards.length).toBe(1);
                 expect(res.body.referralRewards[0].uuid).toBe(referralReward.uuid);
                 expect(res.body.pointRewards.length).toBe(1);
