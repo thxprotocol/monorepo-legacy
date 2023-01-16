@@ -195,7 +195,6 @@ export default class BaseNavbar extends Vue {
                 path: `/pool/${this.selectedPool._id}/milestones`,
                 label: 'Milestones',
                 iconClasses: 'fas fa-flag',
-                isSoon: true,
             },
         ];
     }

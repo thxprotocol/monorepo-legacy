@@ -52,6 +52,11 @@ const routes: Array<RouteConfig> = [
                 component: () => import('../views/pool/Points.vue'),
             },
             {
+                name: 'milestones',
+                path: 'milestones',
+                component: () => import('../views/pool/Milestones.vue'),
+            },
+            {
                 name: 'referrals',
                 path: 'referrals',
                 component: () => import('../views/pool/Referrals.vue'),
@@ -135,7 +140,7 @@ const routes: Array<RouteConfig> = [
         beforeEnter: redirectSignout,
     },
     {
-        name: 'verify email',
+        name: 'confirm email',
         path: '/verify',
         beforeEnter: redirectConfirmationLink,
     },

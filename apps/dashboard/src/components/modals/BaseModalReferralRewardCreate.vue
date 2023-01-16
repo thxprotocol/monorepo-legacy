@@ -19,90 +19,35 @@
                         </b-form-group>
                     </b-col>
                     <b-col md="6">
-                        <b-card body-class="bg-light p-0" class="mb-3">
-                            <b-button
-                                class="d-flex align-items-center justify-content-between w-100"
-                                variant="light"
-                                v-b-toggle.collapse-card-url-qualify
-                            >
-                                <strong>URL Qualification</strong>
-                                <i :class="`fa-chevron-${isVisibleCardURLQualify ? 'up' : 'down'}`" class="fas m-0"></i>
-                            </b-button>
-                            <b-collapse id="collapse-card-url-qualify" v-model="isVisibleCardURLQualify">
-                                <hr class="mt-0" />
-                                <div class="px-3">
-                                    <p class="text-muted">
-                                        Make sure the loyalty widget is running on your success page in order to use URL
-                                        qualification.
-                                    </p>
-                                    <b-form-group label="Success URL">
-                                        <b-form-input v-model="successUrl" />
-                                        <p class="small text-muted mt-2 mb-0">
-                                            When the user receiving the referral URL comes across this URL the referral
-                                            will be marked as successful.
-                                            <strong>E.g. https://example.com/thanks-for-your-signup</strong>
-                                        </p>
-                                    </b-form-group>
-                                </div>
-                            </b-collapse>
-                        </b-card>
-
-                        <b-card body-class="bg-light p-0">
-                            <b-button
-                                class="d-flex align-items-center justify-content-between w-100"
-                                variant="light"
-                                v-b-toggle.collapse-card-webhook-qualify
-                            >
-                                <strong>Webhook Qualification</strong>
-                                <i
-                                    :class="`fa-chevron-${isVisibleCardWebhookQualify ? 'up' : 'down'}`"
-                                    class="fas m-0"
-                                ></i>
-                            </b-button>
-                            <b-collapse id="collapse-card-webhook-qualify" v-model="isVisibleCardWebhookQualify">
-                                <hr class="mt-0" />
-                                <div class="px-3">
-                                    <p class="text-muted">
-                                        You can also choose to run this webhook to qualify the referral and trigger a
-                                        point transfer.
-                                    </p>
-                                    <pre
-                                        class="rounded text-white p-3 d-flex align-items-center bg-dark"
-                                        style="white-space: pre"
-                                    >
-                                            <b-button 
-                                                variant="light" 
-                                                v-clipboard:copy="code"
-                                                v-clipboard:success="() => isCopied = true" 
-                                                style="white-space: normal"
-                                                size="sm" 
-                                                class="mr-3">
-                                                <i class="fas  ml-0" :class="isCopied ? 'fa-clipboard-check' : 'fa-clipboard'"></i>
-                                            </b-button>
-                                            <code class="language-html" v-html="codeExample"></code>
-                                        </pre>
-                                    <b-alert show variant="info">
-                                        <i class="fas fa-question-circle mr-2"></i> Take note of these development
-                                        guidelines:
-                                        <ul class="px-3 mb-0 mt-1 small">
-                                            <li v-if="!reward">
-                                                <strong>REFERRAL_TOKEN</strong> will be populated after creating this
-                                                referral reward.
-                                            </li>
-                                            <li>
-                                                <strong>REFERRAL_CODE</strong> should be derived from the
-                                                <code>$_GET['ref']</code>
-                                                value in the referral URL used on your site.
-                                            </li>
-                                        </ul>
-                                    </b-alert>
-                                    <b-alert show variant="warning">
-                                        <i class="fas fa-exclamation-circle mr-2"></i> Do not make this webhook visible
-                                        to the public and implement it only in trusted backends.
-                                    </b-alert>
-                                </div>
-                            </b-collapse>
-                        </b-card>
+                        <BaseCardURLQualify
+                            :visible="isVisibleCardURLQualify"
+                            :url="successUrl"
+                            @input="successUrl = $event"
+                        />
+                        <BaseCardURLWebhook
+                            :visible="isVisibleCardWebhookQualify"
+                            :code="code"
+                            title="Webhook Qualification"
+                            description="You can also choose to run this webhook to qualify the referral and trigger a point transfer."
+                        >
+                            <template #alerts>
+                                <b-alert show variant="info">
+                                    <i class="fas fa-question-circle mr-2"></i> Take note of these development
+                                    guidelines:
+                                    <ul class="px-3 mb-0 mt-1 small">
+                                        <li v-if="!reward">
+                                            <strong>REFERRAL_TOKEN</strong> will be populated after creating this
+                                            referral reward.
+                                        </li>
+                                        <li>
+                                            <strong>REFERRAL_CODE</strong> should be derived from the
+                                            <code>$_GET['ref']</code>
+                                            value in the referral URL used on your site.
+                                        </li>
+                                    </ul>
+                                </b-alert>
+                            </template>
+                        </BaseCardURLWebhook>
                     </b-col>
                 </b-row>
             </form>
@@ -116,7 +61,7 @@
                 variant="primary"
                 block
             >
-                {{ reward ? 'Update Reward' : 'Create Reward' }}
+                {{ reward ? 'Update Referral Reward' : 'Create Referral Reward' }}
             </b-button>
         </template>
     </base-modal>
@@ -133,6 +78,8 @@ import { type TReferralReward } from '@thxnetwork/types/index';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import { API_URL } from '../../../../wallet/src/utils/secrets';
+import BaseCardURLQualify from '@thxnetwork/dashboard/components/BaseCardURLQualify.vue';
+import BaseCardURLWebhook from '@thxnetwork/dashboard/components/BaseCardURLWebhook.vue';
 
 hljs.registerLanguage('shell', Shell);
 
@@ -140,6 +87,8 @@ hljs.registerLanguage('shell', Shell);
     components: {
         BaseModal,
         BaseCardRewardExpiry,
+        BaseCardURLQualify,
+        BaseCardURLWebhook,
     },
     computed: mapGetters({
         profile: 'account/profile',
