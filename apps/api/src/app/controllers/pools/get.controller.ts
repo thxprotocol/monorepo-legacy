@@ -8,6 +8,7 @@ import { PointReward, PointRewardDocument } from '@thxnetwork/api/models/PointRe
 import { ERC20Perk, ERC20PerkDocument } from '@thxnetwork/api/models/ERC20Perk';
 import { ERC721Perk, ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
 import mongoose from 'mongoose';
+import { ReferralReward, ReferralRewardDocument } from '@thxnetwork/api/models/ReferralReward';
 
 export const validation = [param('id').isMongoId()];
 
@@ -32,6 +33,13 @@ export const controller = async (req: Request, res: Response) => {
         poolId: String(pool._id),
         amountField: 'pointPrice',
     });
+    const referralRewardsQueryResult = await runAggregateQuery<ReferralRewardDocument>({
+        joinTable: 'referralrewardclaims',
+        key: 'referralRewardId',
+        model: ReferralReward,
+        poolId: String(pool._id),
+        amountField: 'amount',
+    });
     const pointRewardsQueryResult = await runAggregateQuery<PointRewardDocument>({
         joinTable: 'pointrewardclaims',
         key: 'pointRewardId',
@@ -45,7 +53,6 @@ export const controller = async (req: Request, res: Response) => {
         metrics: {
             claims: await Claim.count({ poolId: pool._id }),
             referrals: await ReferralRewardClaim.count({ poolId: pool._id }),
-
             erc20Perks: {
                 total: erc20PerksQueryResult.recordsCount,
                 payments: erc20PerksQueryResult.childrenCount,
@@ -55,6 +62,11 @@ export const controller = async (req: Request, res: Response) => {
                 total: erc721PerksQueryResult.recordsCount,
                 payments: erc721PerksQueryResult.childrenCount,
                 totalAmount: erc721PerksQueryResult.totalAmount,
+            },
+            referralRewards: {
+                total: referralRewardsQueryResult.recordsCount,
+                claims: referralRewardsQueryResult.childrenCount,
+                totalClaimPoints: referralRewardsQueryResult.totalAmount,
             },
             pointRewards: {
                 total: pointRewardsQueryResult.recordsCount,

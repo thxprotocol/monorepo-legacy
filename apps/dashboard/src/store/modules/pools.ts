@@ -12,9 +12,12 @@ export interface IPool {
     chainId: ChainId;
     rewardPollDuration: number;
     proposeWithdrawPollDuration: number;
-    metrics: { claims: number; mints: number; referrals: number; withdrawals: number };
-    isNFTPool: boolean;
-    isDefaultPool: boolean;
+    metrics: {
+        pointRewards: { totalClaimPoints: number };
+        referralRewards: { totalClaimPoints: number };
+        erc20Perks: { totalAmount: number };
+        erc721Perks: { totalAmount: number };
+    };
     version: string;
     archived: boolean;
     title: string;

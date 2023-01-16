@@ -4,24 +4,10 @@
             <b-form-group label="Title">
                 <b-form-input v-model="title" placeholder="My Loyalty Pool" class="mr-3" />
             </b-form-group>
-            <b-form-group label="Network">
-                <div v-if="!isEditMode">
-                    <base-form-select-network v-if="!loading" :chainId="chainId" @selected="onSelectChain" />
-                </div>
-
-                <div class="d-flex align-items-center" v-else>
-                    <img
-                        :src="chainInfo[pool.chainId].logo"
-                        :alt="`Logo ${chainInfo[pool.chainId].name} chain`"
-                        width="20"
-                        height="20"
-                        class="mr-3"
-                    />
-                    {{ chainInfo[pool.chainId].name }}
-                </div>
-            </b-form-group>
-            <b-form-group label="Archived" v-if="isEditMode">
-                <b-form-checkbox v-model="archived" class="mr-3" />
+            <base-form-select-network v-if="!loading" :chainId="chainId" :disabled="!!pool" @selected="onSelectChain" />
+            <hr />
+            <b-form-group>
+                <b-form-checkbox v-model="archived" class="mr-3">Archived</b-form-checkbox>
             </b-form-group>
         </template>
         <template #btn-primary>
@@ -42,7 +28,7 @@ import type { IAccount } from '@thxnetwork/dashboard/types/account';
 import type { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import type { TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import BaseIdenticon from '../BaseIdenticon.vue';
-import { IPool } from '../../store/modules/pools';
+import { type IPool } from '../../store/modules/pools';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 
 @Component({

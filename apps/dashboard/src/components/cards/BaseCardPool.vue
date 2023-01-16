@@ -16,9 +16,6 @@
 
                 <base-badge-network :chainId="pool.chainId" class="mr-1" />
             </div>
-            <div>
-                {{ pool.title }}
-            </div>
             <base-dropdown-menu-pool
                 class="ml-auto"
                 :pool="pool"
@@ -28,30 +25,40 @@
             />
         </template>
         <template #card-body>
-            <p class="mb-0">
-                <span class="text-primary">
-                    <template v-if="pool.metrics.pointRewards">
-                        {{ pool.metrics.pointRewards.totalClaimPoints }} Points
-                    </template>
-                    <template v-else> 0 Points </template>
-                </span>
+            <p class="text-muted">
+                {{ pool.title }}
             </p>
-            <p class="mt-3 mb-0">
-                <span class="text-primary">
-                    <template v-if="pool.metrics.erc20Perks">
-                        {{ pool.metrics.erc20Perks.totalAmount }} Coin Perks
-                    </template>
-                    <template v-else> 0 Coin Perks </template>
-                </span>
-            </p>
-            <p class="mt-3 mb-0">
-                <span class="text-primary">
-                    <template v-if="pool.metrics.erc721Perks">
-                        {{ pool.metrics.erc721Perks.totalAmount }} Nft Perks
-                    </template>
-                    <template v-else> 0 Nft Perks</template>
-                </span>
-            </p>
+            <hr />
+            <b-container class="mb-0 text-center text-muted">
+                <b-row class="pb-2">
+                    <b-col>
+                        <strong class="text-primary">
+                            {{ pool.metrics.pointRewards ? pool.metrics.pointRewards.totalClaimPoints : 0 }}
+                        </strong>
+                        <div class="small">Points</div>
+                    </b-col>
+                    <b-col>
+                        <strong class="text-primary">
+                            {{ pool.metrics.referralRewards ? pool.metrics.referralRewards.totalClaimPoints : 0 }}
+                        </strong>
+                        <div class="small">Points</div>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <strong class="text-primary">{{
+                            pool.metrics.erc20Perks ? pool.metrics.erc20Perks.totalAmount : 0
+                        }}</strong>
+                        <div class="small">Coin Perks</div>
+                    </b-col>
+                    <b-col>
+                        <strong class="text-primary">{{
+                            pool.metrics.erc721Perks ? pool.metrics.erc721Perks.totalAmount : 0
+                        }}</strong>
+                        <div class="small">NFT Perks</div>
+                    </b-col>
+                </b-row>
+            </b-container>
             <base-modal-delete
                 :id="`modalDelete-${pool._id}`"
                 @submit="remove(pool._id)"

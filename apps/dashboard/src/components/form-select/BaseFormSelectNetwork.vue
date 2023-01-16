@@ -2,7 +2,7 @@
     <div>
         <b-form-group>
             <label>Blockchain Network</label>
-            <b-dropdown variant="link" class="dropdown-select">
+            <b-dropdown variant="link" class="dropdown-select" :toggle-class="{ disabled: disabled }">
                 <template #button-content>
                     <div class="d-flex align-items-center">
                         <img :src="chainInfo[currentChainId].logo" width="20" height="20" class="mr-3" />
@@ -38,6 +38,8 @@ import { mapGetters } from 'vuex';
 })
 export default class BaseFormSelectNetwork extends Vue {
     @Prop() chainId!: ChainId;
+    @Prop() disabled!: boolean;
+
     ChainId = ChainId;
     publicUrl = PUBLIC_URL;
     chainInfo = chainInfo;

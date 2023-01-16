@@ -8,7 +8,6 @@ export interface IAccount {
     sub: string;
     privateKey: string;
     address: string;
-    youtube: any;
     firstName: string;
     lastName: string;
     company: string;
@@ -23,17 +22,17 @@ export interface IAccountUpdates {
 }
 
 export interface IYoutube {
-    channels: any;
-    videos: any;
+    channels: unknown;
+    videos: unknown;
 }
 
 export interface ITwitter {
-    tweets: any;
-    users: any;
+    tweets: unknown;
+    users: unknown;
 }
 
 export interface IDiscord {
-    guilds: any[];
+    guilds: unknown[];
 }
 
 export interface IMember {
