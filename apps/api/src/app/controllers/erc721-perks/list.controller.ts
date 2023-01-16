@@ -4,6 +4,7 @@ import ClaimService from '@thxnetwork/api/services/ClaimService';
 import ERC721PerkService from '@thxnetwork/api/services/ERC721PerkService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
+import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
 
 export const validation = [query('limit').optional().isInt({ gt: 0 }), query('page').optional().isInt({ gt: 0 })];
 
@@ -18,9 +19,10 @@ const controller = async (req: Request, res: Response) => {
         rewards.results.map(async (reward) => {
             const claims = await ClaimService.findByReward(reward);
             const erc721 = await ERC721Service.findById(reward.erc721Id);
-
+            const payments = await ERC721PerkPayment.find({ perkId: reward._id });
             return {
                 claims,
+                payments,
                 erc721,
                 ...reward,
             };
