@@ -9,7 +9,7 @@ import { addMinutes } from '@thxnetwork/api/util/rewards';
 const user = request.agent(app);
 
 describe('Rewards', () => {
-    let poolId: string, tokenAddress: string, referralReward: any, pointReward: any;
+    let poolId: string, tokenAddress: string, referralReward: any, pointReward: any, milestoneReward: any;
 
     beforeAll(async () => {
         await beforeAllCallback();
@@ -98,14 +98,36 @@ describe('Rewards', () => {
             .expect(201, done);
     });
 
+    it('POST /milestone-rewards', (done) => {
+        const title = 'title';
+        const description = 'description';
+        const amount = '250';
+        user.post('/v1/milestone-rewards/')
+            .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
+            .send({
+                title,
+                description,
+                amount,
+            })
+            .expect((res: request.Response) => {
+                expect(res.body.title).toBe(title);
+                expect(res.body.description).toBe(description);
+                expect(res.body.amount).toBe(amount);
+                milestoneReward = res.body;
+            })
+            .expect(201, done);
+    });
+
     it('GET /rewards', (done) => {
         user.get(`/v1/rewards`)
             .set({ 'X-PoolId': poolId })
             .expect((res: request.Response) => {
                 expect(res.body.referralRewards.length).toBe(1);
-                expect(res.body.pointRewards.length).toBe(1);
                 expect(res.body.referralRewards[0].uuid).toBe(referralReward.uuid);
-                expect(res.body.pointRewards[0]._id).toBe(pointReward._id);
+                expect(res.body.pointRewards.length).toBe(1);
+                expect(res.body.pointRewards[0].uuid).toBe(pointReward.uuid);
+                expect(res.body.milestoneReward.length).toBe(1);
+                expect(res.body.milestoneRewards[0].uuid).toBe(milestoneReward.uuid);
             })
             .expect(200, done);
     });
