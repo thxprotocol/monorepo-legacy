@@ -1,7 +1,7 @@
 import { AUTH_URL, TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET } from '@thxnetwork/auth/config/secrets';
 import { AccountDocument } from '../models/Account';
 import CommonOauthLoginOptions from '../types/CommonOauthLoginOptions';
-import { AccessTokenKind } from '../types/enums/AccessTokenKind';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { twitchClient } from '../util/axios';
 
 export const TWITCH_API_SCOPE = ['user:read:follows', 'user:read:email', 'user:read:broadcast'];

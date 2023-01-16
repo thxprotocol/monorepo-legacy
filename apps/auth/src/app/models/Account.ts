@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt-nodejs';
 import mongoose from 'mongoose';
-import { AccessTokenKind } from '../types/enums/AccessTokenKind';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IAccessToken, TAccount } from '../types/TAccount';
 import { encryptString } from '../util/encrypt';
 

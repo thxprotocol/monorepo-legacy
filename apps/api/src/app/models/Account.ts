@@ -5,6 +5,8 @@ export interface IAccount {
     walletAddress: string;
     privateKey: string;
     googleAccess: boolean;
+    youtubeViewAccess: boolean;
+    youtubeManageAccess: boolean;
     twitterAccess: boolean;
     youtube?: any;
     twitter?: any;
@@ -26,6 +28,8 @@ export interface IAccountUpdates {
     authenticationToken?: string;
     authenticationTokenExpires?: number;
     googleAccess?: boolean;
+    youtubeViewAccess?: boolean;
+    youtubeManageAccess?: boolean;
     twitterAccess?: boolean;
     githubAccess?: boolean;
     twitchAccess?: boolean;

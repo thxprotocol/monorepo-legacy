@@ -1,5 +1,5 @@
 import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
-import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
 import { ERROR_NO_ACCOUNT } from '@thxnetwork/auth/util/messages';
 import { Request, Response } from 'express';

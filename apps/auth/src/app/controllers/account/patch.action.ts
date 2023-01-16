@@ -9,6 +9,8 @@ export const patchAccount = async (req: Request, res: Response) => {
     await AccountService.update(account, {
         address: req.body.address,
         googleAccess: req.body.googleAccess,
+        youtubeViewAccess: req.body.youtubeViewAccess,
+        youtubeManageAccess: req.body.youtubeManageAccess,
         twitterAccess: req.body.twitterAccess,
         githubAccess: req.body.githubAccess,
         twitchAccess: req.body.twitchAccess,

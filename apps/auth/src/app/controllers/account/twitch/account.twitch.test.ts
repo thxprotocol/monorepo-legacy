@@ -6,7 +6,7 @@ import { TWITCH_API_ENDPOINT } from '../../../config/secrets';
 import { AccountService } from '../../../services/AccountService';
 import { INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
 import { accountEmail, accountSecret } from '../../../util/jest';
-import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 
 const http = request.agent(app);
 

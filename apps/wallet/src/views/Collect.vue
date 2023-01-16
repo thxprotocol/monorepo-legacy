@@ -172,7 +172,7 @@ export default class Collect extends Vue {
         // Check validity of current access token
         switch (this.claim.reward.platform) {
             case RewardConditionPlatform.Google:
-                this.hasValidAccessToken = this.profile.googleAccess;
+                this.hasValidAccessToken = this.profile.youtubeManageAccess;
                 break;
             case RewardConditionPlatform.Twitter:
                 this.hasValidAccessToken = this.profile.twitterAccess;

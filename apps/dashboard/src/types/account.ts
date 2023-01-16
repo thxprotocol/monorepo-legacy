@@ -18,6 +18,8 @@ export interface IAccount {
 export interface IAccountUpdates {
     address: string;
     googleAccessToken: string;
+    youtubeViewAccessToken: string;
+    youtubeManageAccessToken: string;
 }
 
 export interface IYoutube {
