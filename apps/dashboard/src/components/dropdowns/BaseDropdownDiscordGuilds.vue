@@ -14,7 +14,7 @@
             </b-dropdown>
         </b-form-group>
         <b-form-group label="Invite Link">
-            <b-form-input type="text" @change="onChange" />
+            <b-form-input type="text" v-model="url" />
         </b-form-group>
     </div>
 </template>
@@ -30,10 +30,17 @@ import { format } from 'date-fns';
 export default class BaseDropdownDiscordGuilds extends Vue {
     format = format;
 
+    url = ''
+
     @Prop() items!: any;
     @Prop({ required: false }) item: any;
 
     selected: any = null;
+
+    @Watch('url')
+    onChange() {
+        this.$emit('changed', this.url);
+    }
 
     mounted() {
         if (!this.item && this.items[0]) {
@@ -46,9 +53,6 @@ export default class BaseDropdownDiscordGuilds extends Vue {
         this.$emit('selected', item);
     }
 
-    onChange(text: string) {
-        this.$emit('changed', text);
 
-    }
 }
 </script>

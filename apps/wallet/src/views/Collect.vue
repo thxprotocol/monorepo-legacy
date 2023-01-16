@@ -9,7 +9,7 @@
                 <template v-if="isClaimInvalid">
                     <b-alert show variant="info">
                         <i class="fas fa-info-circle mr-2"></i>
-                        {{ error }}
+                        <span v-html="error"></span>
                     </b-alert>
                     <b-button block variant="primary" class="rounded-pill" @click="goToWallet"> Continue </b-button>
                 </template>

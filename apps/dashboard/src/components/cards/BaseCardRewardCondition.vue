@@ -19,11 +19,11 @@
                 <template v-if="platform && platform.type !== RewardConditionPlatform.None && !isLoadingPlatform">
                     <template v-if="isAuthorized">
                         <b-form-group label="Interaction">
-                            <BaseDropdownChannelActions @selected="onSelectInteraction" @changed="onDiscordUrlChange"
-                                :actions="actions" :action="interaction" />
+                            <BaseDropdownChannelActions @selected="onSelectInteraction" :actions="actions"
+                                :action="interaction" />
                         </b-form-group>
-                        <component v-if="interaction" :is="interactionComponent" @selected="onSelectContent"
-                            :items="interaction.items" :item="content" />
+                        <component v-if="interaction" :is="interactionComponent" @changed="onDiscordUrlChange"
+                            @selected="onSelectContent" :items="interaction.items" :item="content" />
                     </template>
                     <b-alert v-else variant="info" show>
                         <p>
