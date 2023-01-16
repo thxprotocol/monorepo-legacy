@@ -34,7 +34,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseIdenticon from '../BaseIdenticon.vue';
-import { IERC721s, TERC721 } from '@thxnetwork/dashboard/types/erc721';
+import type { IERC721s, TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 
 @Component({

@@ -21,7 +21,7 @@ import {
 import { YouTubeService } from './YouTubeService';
 import { AccountPlanType } from '../types/enums/AccountPlanType';
 import { AccountVariant } from '../types/enums/AccountVariant';
-import { AccessTokenKind } from '../types/enums/AccessTokenKind';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { get24HoursExpiryTimestamp } from '../util/time';
 
 export class AccountService {
@@ -98,8 +98,18 @@ export class AccountService {
             updates.address || account.address ? toChecksumAddress(updates.address || account.address) : undefined;
 
         if (updates.googleAccess === false) {
-            YouTubeService.revokeAccess(account);
+            YouTubeService.revokeAccess(account, AccessTokenKind.Google);
             account.unsetToken(AccessTokenKind.Google);
+        }
+
+        if (updates.youtubeViewAccess === false) {
+            YouTubeService.revokeAccess(account, AccessTokenKind.YoutubeView);
+            account.unsetToken(AccessTokenKind.YoutubeView);
+        }
+
+        if (updates.youtubeManageAccess === false) {
+            YouTubeService.revokeAccess(account, AccessTokenKind.YoutubeManage);
+            account.unsetToken(AccessTokenKind.YoutubeManage);
         }
 
         if (updates.twitterAccess === false) {
@@ -282,11 +292,7 @@ export class AccountService {
         return account;
     }
 
-    static async getSubForPasswordResetToken(password: string, passwordConfirm: string, passwordResetToken: string) {
-        // const account: AccountDocument = await Account.findOne({ passwordResetToken })
-        //     .where('passwordResetExpires')
-        //     .gt(Date.now())
-        //     .exec();
+    static async getSubForPasswordResetToken(password: string, passwordConfirm: string) {
         const account = await Account.findOne({
             'tokens.kind': AccessTokenKind.PasswordReset,
             'tokens.expiry': { $gt: Date.now() },

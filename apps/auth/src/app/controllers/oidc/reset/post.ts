@@ -15,11 +15,7 @@ async function controller(req: Request, res: Response) {
     };
 
     try {
-        await AccountService.getSubForPasswordResetToken(
-            req.body.password,
-            req.body.passwordConfirm,
-            req.body.passwordResetToken,
-        );
+        await AccountService.getSubForPasswordResetToken(req.body.password, req.body.passwordConfirm);
     } catch (error) {
         result.alert.variant = 'danger';
         result.alert.message = error.toString();

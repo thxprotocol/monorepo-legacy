@@ -11,7 +11,7 @@ import { createImage } from '@thxnetwork/api/util/jest/images';
 const user = request.agent(app);
 
 describe('ERC721 Perks', () => {
-    let poolId: string, erc721metadataId: string, erc721ID: string, erc721Address: string, claims: any;
+    let poolId: string, erc721metadataId: string, erc721ID: string;
     const name = 'Planets of the Galaxy',
         symbol = 'GLXY',
         description = 'description',
@@ -42,7 +42,6 @@ describe('ERC721 Perks', () => {
                         expect(body._id).toBeDefined();
                         expect(body.address).toBeDefined();
                         erc721ID = body._id;
-                        erc721Address = body.address;
                     })
                     .expect(201, done);
             });
@@ -112,7 +111,6 @@ describe('ERC721 Perks', () => {
                         expect(body.attributes[1].key).toBe(schema[1].name);
                         expect(body.attributes[0].value).toBe(value1);
                         expect(body.attributes[1].value).toBe(value2);
-                        claims = body.claims;
                         erc721metadataId = body._id;
                     })
                     .expect(201, done);
@@ -173,6 +171,7 @@ describe('ERC721 Perks', () => {
                     })
                     .expect((res: request.Response) => {
                         expect(res.body.title).toEqual(title);
+                        expect(res.body.platform).toEqual(0);
                         expect(new Date(res.body.expiryDate).getTime()).toBe(expiryDate.getTime());
                     })
                     .expect(200, done);

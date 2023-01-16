@@ -5,6 +5,7 @@ export enum AccountPlanType {
 }
 
 export interface IAccount {
+    sub: string;
     privateKey: string;
     address: string;
     youtube: any;
@@ -17,6 +18,8 @@ export interface IAccount {
 export interface IAccountUpdates {
     address: string;
     googleAccessToken: string;
+    youtubeViewAccessToken: string;
+    youtubeManageAccessToken: string;
 }
 
 export interface IYoutube {

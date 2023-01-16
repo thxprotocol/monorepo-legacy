@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
+// import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
 import ERC20PerkService from '@thxnetwork/api/services/ERC20PerkService';
 import { query } from 'express-validator';
@@ -17,10 +17,6 @@ const controller = async (req: Request, res: Response) => {
     const rewards = await ERC20PerkService.findByPool(pool, page, limit);
     rewards.results = await Promise.all(
         rewards.results.map(async (r) => {
-            const withdrawals = await WithdrawalService.findByQuery({
-                poolId: pool._id,
-                rewardId: r._id,
-            });
             const claims = await ClaimService.findByReward(r);
             const erc20 = await ERC20Service.getById(r.erc20Id);
             const payments = await ERC20PerkPayment.find({ perkId: r._id });
@@ -30,7 +26,6 @@ const controller = async (req: Request, res: Response) => {
                 erc20,
                 claims,
                 payments,
-                progress: withdrawals.length,
             };
         }),
     );

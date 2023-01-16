@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { TwitterService } from '../../../services/TwitterService';
 import { AccountService } from '../../../services/AccountService';
-import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 
 export const getTwitter = async (req: Request, res: Response) => {
     const account = await AccountService.get(req.params.sub);

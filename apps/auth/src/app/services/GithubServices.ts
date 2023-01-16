@@ -4,7 +4,7 @@ import CommonOauthLoginOptions from '../types/CommonOauthLoginOptions';
 import { AUTH_URL, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from '@thxnetwork/auth/config/secrets';
 import { githubClient } from '../util/axios';
 import { AccountDocument } from '../models/Account';
-import { AccessTokenKind } from '../types/enums/AccessTokenKind';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 
 export const GITHUB_API_SCOPE = ['public_repo']; // https://docs.github.com/en/developers/apps/building-oauth-apps/scopes-for-oauth-apps
 

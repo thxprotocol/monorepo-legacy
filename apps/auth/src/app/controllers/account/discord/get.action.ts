@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { AccountDocument } from '@thxnetwork/auth/models/Account';
 import { AccountService } from '@thxnetwork/auth/services/AccountService';
 import { DiscordService } from '@thxnetwork/auth/services/DiscordService';
-import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 
 export const getDiscord = async (req: Request, res: Response) => {
     const account: AccountDocument = await AccountService.get(req.params.sub);

@@ -26,7 +26,6 @@
 <script lang="ts">
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import type { IAccount } from '@thxnetwork/dashboard/types/account';
-import { AccountPlanType } from '@thxnetwork/dashboard/types/account';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { PUBLIC_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { Component, Prop, Vue } from 'vue-property-decorator';

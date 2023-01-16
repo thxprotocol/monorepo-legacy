@@ -22,7 +22,7 @@ export function redirectSignout() {
 }
 
 export function redirectSignup(to: Route) {
-    return store.dispatch('account/signupRedirect', { signupEmail: to.query.signup_email });
+    return store.dispatch('account/signinRedirect', { signupEmail: to.query.signup_email });
 }
 
 export function redirectAccount(to: Route, from: Route) {

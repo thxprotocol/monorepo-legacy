@@ -12,14 +12,18 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards Referral']
     const reward = await ReferralReward.findOne({ token: req.params.token });
     if (!reward) throw new NotFoundError('Could not find the reward');
-    const claim = await ReferralRewardClaimService.create({ referralRewardId: String(reward._id), sub: req.body.code });
+    const claim = await ReferralRewardClaimService.create({
+        referralRewardId: String(reward._id),
+        sub: req.body.code,
+        isApproved: true,
+    });
     const account = await AccountProxy.getById(req.body.code);
 
     // TODO Mark as approved and transfer points right away?
     await MailService.send(
         account.email,
-        'Update on your referral',
-        `Congratulations! Your referral has been approved and your balance has been increased with ${reward.amount} points.`,
+        'Status: Referral Approved',
+        `Congratulations! Your referral has been approved and your balance has been increased with <strong>${reward.amount} points</strong>.`,
     );
 
     res.status(201).json(claim);
