@@ -85,12 +85,12 @@ describe('Claims', () => {
         });
     });
 
-    describe('POST /claims/:id/collect', () => {
+    describe('POST /claims/:uuid/collect', () => {
         it('should return a 200 and withdrawal id', (done) => {
             user.post(`/v1/claims/${claim.uuid}/collect`)
                 .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
                 .expect((res: request.Response) => {
-                    expect(res.body.claim.sub).toBeDefined();
+                    expect(res.body.withdrawal).toBeDefined();
                     expect(res.body.withdrawal.state).toEqual(WithdrawalState.Withdrawn);
                 })
                 .expect(200, done);

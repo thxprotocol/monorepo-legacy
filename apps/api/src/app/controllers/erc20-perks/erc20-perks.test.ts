@@ -125,7 +125,7 @@ describe('ERC20 Perks', () => {
     });
 
     describe('Reward Limit === 1', () => {
-        let claim: ClaimDocument;
+        let claim;
         it('POST /erc20-perks', (done) => {
             user.post('/v1/erc20-perks/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
@@ -148,7 +148,7 @@ describe('ERC20 Perks', () => {
                 .expect(201, done);
         });
 
-        describe('POST /v1/claims/:id/collect', () => {
+        describe('POST /v1/claims/:uuid/collect', () => {
             it('should return a 200', (done) => {
                 user.post(`/v1/claims/${claim.uuid}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
@@ -214,7 +214,7 @@ describe('ERC20 Perks', () => {
                 .expect(201, done);
         });
 
-        describe('POST /v1/claims/:id/collect', () => {
+        describe('POST /v1/claims/:uuid/collect', () => {
             it('should return a 403', (done) => {
                 user.post(`/v1/claims/${claim.uuid}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
@@ -226,13 +226,15 @@ describe('ERC20 Perks', () => {
         });
     });
 
-    describe('GET /erc721-perks', () => {
+    describe('GET /erc20-perks', () => {
         it('Should return a list of rewards', (done) => {
             user.get('/v1/erc20-perks')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect((res: request.Response) => {
                     expect(res.body.results.length).toBe(3);
-                    expect(res.body.results[0].claims).toBeDefined();
+                    expect(res.body.results[2].claims).toBeDefined();
+                    expect(res.body.results[2].payments).toBeDefined();
+                    expect(res.body.results[2].payments.length).toBe(2);
                     expect(res.body.limit).toBe(10);
                     expect(res.body.total).toBe(3);
                 })
