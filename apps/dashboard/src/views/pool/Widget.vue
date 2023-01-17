@@ -83,6 +83,7 @@
             </b-row>
             <hr />
             <div class="d-flex justify-content-end">
+                <b-button variant="link" @click="onClickPreview"> Preview </b-button>
                 <BButton
                     :disabled="!widget || isSubmitting"
                     variant="primary"
@@ -106,6 +107,7 @@ import { mapGetters } from 'vuex';
 import { API_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { IWidgets } from '@thxnetwork/dashboard/store/modules/widgets';
 import BaseModalWidgetCreate from '@thxnetwork/dashboard/components/modals/BaseModalWidgetCreate.vue';
+import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 
 hljs.registerLanguage('xml', XML);
 
@@ -161,6 +163,10 @@ export default class WidgetsView extends Vue {
                 this.theme = this.widget.theme;
             }
         });
+    }
+
+    onClickPreview() {
+        window.open(`${BASE_URL}/preview/${this.pool._id}`, '_blank');
     }
 
     async onClickUpdate() {
