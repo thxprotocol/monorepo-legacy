@@ -6,27 +6,15 @@ import DiscordDataProxy from '@thxnetwork/api/proxies/DiscordDataProxy';
 import { RewardConditionPlatform, RewardConditionInteraction, TBaseReward } from '@thxnetwork/types/index';
 import { Claim } from '@thxnetwork/api/models/Claim';
 
-export async function canClaim(reward: TBaseReward, account: IAccount): Promise<{ result?: boolean; error?: string }> {
-    if (reward.expiryDate) {
-        const expiryTimestamp = new Date(reward.expiryDate).getTime();
-        if (Date.now() > expiryTimestamp) {
-            return { error: 'This reward claim has expired.' };
-        }
-    }
-
+export const validateCondition = async (
+    account: IAccount,
+    reward: TBaseReward,
+): Promise<{ result?: boolean; error?: string }> => {
     // If not platform skip condition validation
     if (reward.platform === RewardConditionPlatform.None) {
         return { result: true };
     }
 
-    // Validate reward condition
-    return await validateCondition(account, reward);
-}
-
-export const validateCondition = async (
-    account: IAccount,
-    reward: TBaseReward,
-): Promise<{ result?: boolean; error?: string }> => {
     switch (reward.interaction) {
         case RewardConditionInteraction.YouTubeLike: {
             const result = await YouTubeDataProxy.validateLike(account, reward.content);
