@@ -86,7 +86,7 @@ export default class BaseCardRewardCondition extends Vue {
     content = '';
     isAuthorized = false;
     isVisible = false;
-    url = this.getRewardUrl();
+    url = '';
 
     profile!: UserProfile;
     youtube!: any;
@@ -138,7 +138,7 @@ export default class BaseCardRewardCondition extends Vue {
     getRewardUrl() {
         switch (this.rewardCondition.interaction) {
             case RewardConditionInteraction.DiscordGuildJoined:
-                if (!this.rewardCondition.content) return ''
+                if (!this.rewardCondition?.content) return ''
                 const { url } = JSON.parse(this.rewardCondition.content)
                 return url
             default:
@@ -150,7 +150,8 @@ export default class BaseCardRewardCondition extends Vue {
         switch (this.rewardCondition.interaction) {
             case RewardConditionInteraction.DiscordGuildJoined:
                 if (!this.rewardCondition.content) return ''
-                const { id } = JSON.parse(this.rewardCondition.content)
+                const { id, url } = JSON.parse(this.rewardCondition.content)
+                this.url = url
                 return id
             default:
                 return this.rewardCondition ? this.rewardCondition.content : '';
@@ -265,6 +266,7 @@ export default class BaseCardRewardCondition extends Vue {
                     interaction: this.interaction.type,
                     content: this.content,
                 });
+                break;
         }
 
 
@@ -272,6 +274,7 @@ export default class BaseCardRewardCondition extends Vue {
 
     onDiscordUrlChange(url: string) {
         this.url = url;
+        this.change()
     }
 
     getInteractionComponent() {

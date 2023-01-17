@@ -45,6 +45,9 @@ export default class BaseDropdownDiscordGuilds extends Vue {
     mounted() {
         if (!this.item && this.items[0]) {
             this.onItemClick(this.items[0]);
+        } else {
+            const selected = this.items.find((item: any) => item.id === this.item)
+            if (selected) this.selected = selected
         }
     }
 
