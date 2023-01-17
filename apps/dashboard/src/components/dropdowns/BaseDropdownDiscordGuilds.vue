@@ -14,7 +14,7 @@
             </b-dropdown>
         </b-form-group>
         <b-form-group label="Invite Link">
-            <b-form-input type="text" v-model="url" />
+            <b-form-input type="text" v-model="innerUrl" />
         </b-form-group>
     </div>
 </template>
@@ -28,18 +28,18 @@ import { format } from 'date-fns';
     computed: mapGetters({}),
 })
 export default class BaseDropdownDiscordGuilds extends Vue {
-    format = format;
-
-    url = ''
 
     @Prop() items!: any;
     @Prop({ required: false }) item: any;
+    @Prop() url!: string
 
     selected: any = null;
+    format = format;
+    innerUrl = this.url || ''
 
-    @Watch('url')
+    @Watch('innerUrl')
     onChange() {
-        this.$emit('changed', this.url);
+        this.$emit('changed', this.innerUrl);
     }
 
     mounted() {

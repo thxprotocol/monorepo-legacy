@@ -23,7 +23,7 @@
                                 :action="interaction" />
                         </b-form-group>
                         <component v-if="interaction" :is="interactionComponent" @changed="onDiscordUrlChange"
-                            @selected="onSelectContent" :items="interaction.items" :item="content" />
+                            @selected="onSelectContent" :items="interaction.items" :item="content" :url="url" />
                     </template>
                     <b-alert v-else variant="info" show>
                         <p>
@@ -86,7 +86,7 @@ export default class BaseCardRewardCondition extends Vue {
     content = '';
     isAuthorized = false;
     isVisible = false;
-    url = '';
+    url = this.getRewardUrl();
 
     profile!: UserProfile;
     youtube!: any;
@@ -130,9 +130,31 @@ export default class BaseCardRewardCondition extends Vue {
         this.interaction = this.rewardCondition
             ? this.getInteraction(this.rewardCondition.interaction)
             : this.getInteraction(0);
-        this.content = this.rewardCondition ? this.rewardCondition.content : '';
+        this.content = this.getRewardContent();
         this.isVisible = !!this.platform.type;
         this.isLoadingPlatform = false;
+    }
+
+    getRewardUrl() {
+        switch (this.rewardCondition.interaction) {
+            case RewardConditionInteraction.DiscordGuildJoined:
+                if (!this.rewardCondition.content) return ''
+                const { url } = JSON.parse(this.rewardCondition.content)
+                return url
+            default:
+                return '';
+        }
+    }
+
+    getRewardContent() {
+        switch (this.rewardCondition.interaction) {
+            case RewardConditionInteraction.DiscordGuildJoined:
+                if (!this.rewardCondition.content) return ''
+                const { id } = JSON.parse(this.rewardCondition.content)
+                return id
+            default:
+                return this.rewardCondition ? this.rewardCondition.content : '';
+        }
     }
 
     onClickConnect() {
