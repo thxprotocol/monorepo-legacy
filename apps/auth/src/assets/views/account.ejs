@@ -34,7 +34,7 @@
                         Email:
                     </div>
                     <div class="col-8">
-                        <% if (params.email == '') { %>
+                        <% if (!params.email) { %>
                         <input class="form-control" name="email" required value="<%= params.email %>" placeholder="" />
                         <% } else { %>
                         <input class="form-control" name="email" required disabled value="<%= params.email %>"
