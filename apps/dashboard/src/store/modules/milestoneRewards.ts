@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { type TMilestoneReward } from '@thxnetwork/types';
+import { type TMilestoneReward } from '@thxnetwork/types/index';
 import { Vue } from 'vue-property-decorator';
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
 import { IPool } from './pools';
