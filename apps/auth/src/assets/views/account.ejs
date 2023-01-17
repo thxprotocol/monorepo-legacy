@@ -188,6 +188,24 @@
                             </button>
                         </form>
                         <% } %>
+                        <% if (params.githubLoginUrl && !params.githubAccess) { %>
+                            <a class="btn btn-sign-in btn-github btn-block my-1" href="<%= params.githubLoginUrl %>">
+                                <div class="logo">
+                                    <img src="/img/github-logo.png" alt="github logo" />
+                                </div>
+                                <div class="label">Connect Github</div>
+                            </a>
+                            <% } %>
+                            <% if (params.githubAccess) { %>
+                            <form method="post" action="/oidc/<%= uid %>/account/github/disconnect">
+                                <button class="btn btn-sign-in bg-gray btn-github btn-block my-1" type="submit">
+                                    <div class="logo">
+                                        <img src="/img/github-logo.png" alt="github logo" />
+                                    </div>
+                                    <div class="label">Disconnect Github</div>
+                                </button>
+                            </form>
+                            <% } %>
                         <% if (params.twitterLoginUrl && !params.twitterAccess) { %>
                         <a class="btn btn-sign-in btn-twitter btn-block my-1" href="<%= params.twitterLoginUrl %>">
                             <div class="logo">

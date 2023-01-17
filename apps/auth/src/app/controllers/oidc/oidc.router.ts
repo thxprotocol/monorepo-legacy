@@ -26,6 +26,7 @@ import ReadAccountTOTP from './account/totp/get';
 import PostGoogleDisconnect from './account/google/disconnect/post.controller';
 import PostTwitterDisconnect from './account/twitter/disconnect/post.controller';
 import PostTwitchDisconnect from './account/twitch/disconnect/post.controller';
+import PostGithubDisconnect from './account/github/disconnect/post.controller';
 import PostDiscordDisconnect from './account/discord/disconnect/post.controller';
 import ReadAccountEmailVerify from './account/email/get';
 import { assertInput, assertAuthorization, assertInteraction } from '../../middlewares';
@@ -65,6 +66,7 @@ const upload = multer();
 router.get('/:uid/connect', assertInteraction, assertAuthorization, ReadConnect.controller);
 router.get('/:uid/account', assertInteraction, assertAuthorization, ReadAccount.controller);
 
+router.post('/:uid/account/github/disconnect', assertInteraction, assertAuthorization, PostGithubDisconnect.controller)
 router.post('/:uid/account/google/disconnect', assertInteraction, assertAuthorization, PostGoogleDisconnect.controller);
 router.post(
     '/:uid/account/twitter/disconnect',
