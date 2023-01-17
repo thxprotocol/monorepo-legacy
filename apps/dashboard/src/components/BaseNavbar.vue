@@ -233,7 +233,6 @@ export default class BaseNavbar extends Vue {
                 path: `/pool/${this.selectedPool._id}/clients`,
                 label: 'Clients',
                 iconClasses: 'fas fa-key',
-                isPremium: true,
             },
             {
                 path: `/pool/${this.selectedPool._id}/settings`,
