@@ -73,14 +73,14 @@ describe('ERC20 Perks', () => {
                 .field({
                     title: 'Expiration date is next 30 min',
                     description: 'Lorem ipsum dolor sit amet',
-                    amount: 1,
-                    platform: 0,
+                    image,
                     erc20Id: String(erc20._id),
+                    amount: 1,
+                    pointPrice,
+                    platform: 0,
                     expiryDate: expiryDate.toString(),
                     rewardLimit: 0,
                     claimAmount: 1,
-                    pointPrice,
-                    image,
                     isPromoted: true,
                 })
                 .expect((res: request.Response) => {
@@ -111,7 +111,7 @@ describe('ERC20 Perks', () => {
                 user.post(`/v1/claims/${claim.uuid}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
                     .expect((res: request.Response) => {
-                        expect(res.body.error.message).toBe('You can only claim this reward once.');
+                        expect(res.body.error.message).toBe('You can only claim this perk once.');
                     })
                     .expect(403, done);
             });
@@ -159,7 +159,7 @@ describe('ERC20 Perks', () => {
                 user.post(`/v1/claims/${claim.uuid}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
                     .expect((res: request.Response) => {
-                        expect(res.body.error.message).toBe('You can only claim this reward once.');
+                        expect(res.body.error.message).toBe('You can only claim this perk once.');
                     })
                     .expect(403, done);
             });
@@ -174,7 +174,7 @@ describe('ERC20 Perks', () => {
                 user.post(`/v1/claims/${claim.uuid}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken2 })
                     .expect((res: request.Response) => {
-                        expect(res.body.error.message).toBe("This reward has reached it's limit");
+                        expect(res.body.error.message).toBe("This perk has reached it's limit");
                     })
                     .expect(403, done);
             });
@@ -183,7 +183,7 @@ describe('ERC20 Perks', () => {
                 user.post(`/v1/claims/${claim.uuid}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken3 })
                     .expect((res: request.Response) => {
-                        expect(res.body.error.message).toBe("This reward has reached it's limit");
+                        expect(res.body.error.message).toBe("This perk has reached it's limit");
                     })
                     .expect(403, done);
             });
@@ -219,7 +219,8 @@ describe('ERC20 Perks', () => {
                 user.post(`/v1/claims/${claim.uuid}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
                     .expect((res: request.Response) => {
-                        expect(res.body.error.message).toBe('This reward claim has expired.');
+                        console.log(res.body);
+                        expect(res.body.error.message).toBe('This perk claim has expired.');
                     })
                     .expect(403, done);
             });

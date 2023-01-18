@@ -183,6 +183,7 @@ describe('ERC721 Perks', () => {
                 user.post(`/v1/claims/${claim.uuid}/collect`)
                     .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
                     .expect((res: request.Response) => {
+                        console.log(res.body);
                         expect(res.body.claim).toBeDefined();
                         expect(res.body.metadata).toBeDefined();
                         expect(res.body.erc721).toBeDefined();
