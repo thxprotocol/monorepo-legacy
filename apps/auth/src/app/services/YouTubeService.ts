@@ -18,11 +18,16 @@ export class YouTubeService {
         const isExpired = Date.now() > token.expiry;
         if (isExpired) {
             try {
+                client.setCredentials({
+                    refresh_token: token.refreshToken,
+                    access_token: token.accessToken,
+                });
+
                 const res = await client.getAccessToken();
                 const { expiry_date } = await client.getTokenInfo(res.token);
 
                 account.setToken({
-                    kind: token.kind,
+                    kind: accessTokenKind,
                     accessToken: res.token,
                     expiry: expiry_date,
                     refreshToken: token.refreshToken,
