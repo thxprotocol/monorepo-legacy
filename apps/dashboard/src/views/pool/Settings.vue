@@ -56,7 +56,6 @@
             </b-form-row>
             <hr />
             <div class="d-flex justify-content-end">
-                <b-button variant="link" @click="onClickPreview"> Preview </b-button>
                 <b-button variant="primary" :disabled="!isBrandUpdateInvalid" @click="update()" class="rounded-pill">
                     <b-spinner v-if="loading" class="mr-2" small variant="white" />
                     <span>Update</span>
@@ -74,7 +73,6 @@ import { mapGetters } from 'vuex';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import { TBrand } from '@thxnetwork/dashboard/store/modules/brands';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
-import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 
 @Component({
     computed: mapGetters({
@@ -125,10 +123,6 @@ export default class SettingsView extends Vue {
             this.backgroundImgUrl = this.brand.backgroundImgUrl;
             this.logoImgUrl = this.brand.logoImgUrl;
         }
-    }
-
-    onClickPreview() {
-        window.open(`${BASE_URL}/preview/${this.pool._id}`, '_blank');
     }
 
     async onUpload(event: any, key: string) {
