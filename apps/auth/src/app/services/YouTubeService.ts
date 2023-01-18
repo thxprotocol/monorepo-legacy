@@ -17,18 +17,22 @@ export class YouTubeService {
         if (!token || !token.accessToken) return false;
         const isExpired = Date.now() > token.expiry;
         if (isExpired) {
-            const res = await client.getAccessToken();
-            const { expiry_date } = await client.getTokenInfo(res.token);
+            try {
+                const res = await client.getAccessToken();
+                const { expiry_date } = await client.getTokenInfo(res.token);
 
-            account.setToken({
-                kind: token.kind,
-                accessToken: res.token,
-                expiry: expiry_date,
-                refreshToken: token.refreshToken,
-            });
-            await account.save();
+                account.setToken({
+                    kind: token.kind,
+                    accessToken: res.token,
+                    expiry: expiry_date,
+                    refreshToken: token.refreshToken,
+                });
+                await account.save();
+            } catch {
+                return false;
+            }
         }
-        
+
         const hasYoutubeScopes = await this.hasYoutubeScopes(token.accessToken, accessTokenKind);
         if (!hasYoutubeScopes) return false;
         return true;
