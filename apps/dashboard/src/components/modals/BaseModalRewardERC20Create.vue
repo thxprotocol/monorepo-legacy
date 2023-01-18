@@ -172,7 +172,7 @@ export default class ModalRewardERC20Create extends Vue {
                     description: this.description,
                     amount: this.amount,
                     pointPrice: this.pointPrice,
-                    claimAmount: this.claimAmount,
+                    claimAmount: Number(this.claimAmount),
                     rewardLimit: this.rewardLimit,
                     platform: this.rewardCondition.platform,
                     interaction: this.rewardCondition.interaction,
