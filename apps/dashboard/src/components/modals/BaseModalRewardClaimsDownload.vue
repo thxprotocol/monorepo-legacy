@@ -91,16 +91,32 @@
                         <template #head(checkbox)>
                             <b-form-checkbox @change="onSelectAll" />
                         </template>
-                        <template #head(uuid)> UUID </template>
+                        <template #head(url)> URL </template>
                         <template #head(sub)> Sub </template>
+                        <template #head(claimedAt)> User </template>
+                        <template #head(createdAt)> Created </template>
                         <template #head(id)> &nbsp; </template>
 
                         <!-- Cell formatting -->
                         <template #cell(checkbox)="{ item }">
                             <b-form-checkbox :value="item.checkbox" v-model="selectedClaims" />
                         </template>
-                        <template #cell(uuid)="{ item }">
-                            <strong class="text-primary">{{ item.uuid }}</strong>
+                        <template #cell(url)="{ item }">
+                            <b-link
+                                size="sm"
+                                variant="light"
+                                class="mr-2"
+                                v-clipboard:copy="item.url"
+                                v-clipboard:success="() => $set(isCopied, item.id, true)"
+                            >
+                                <code class="text-muted">
+                                    {{ item.id }}
+                                </code>
+                                <i
+                                    class="fas ml-0 text-gray"
+                                    :class="isCopied[item.id] ? 'fa-clipboard-check' : 'fa-clipboard'"
+                                ></i>
+                            </b-link>
                         </template>
                         <template #cell(metadata)="{ index, item }">
                             <BaseBadgeMetadataPreview
@@ -109,8 +125,18 @@
                                 :metadataId="item.metadata.metadataId"
                             />
                         </template>
-                        <template #cell(sub)="{ item }">
-                            {{ item.sub }}
+                        <template #cell(claimedAt)="{ item }">
+                            <div v-if="item.claimedAt.sub" style="line-height: 1">
+                                <div class="text-primary">{{ item.claimedAt.sub }}</div>
+                                <small class="text-muted">
+                                    Claimed at: {{ format(new Date(item.claimedAt.date), 'dd-MM-yyyy HH:mm') }}
+                                </small>
+                            </div>
+                        </template>
+                        <template #cell(createdAt)="{ item }">
+                            <small class="text-muted">
+                                {{ format(new Date(item.createdAt), 'dd-MM-yyyy HH:mm') }}
+                            </small>
                         </template>
                         <template #cell(id)="{ item }">
                             <b-dropdown variant="link" size="sm" right no-caret>
@@ -141,6 +167,7 @@ import { WALLET_URL, BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { TClaim } from '@thxnetwork/dashboard/store/modules/claims';
 import { saveAs } from 'file-saver';
 import { loadImage } from '@thxnetwork/dashboard/utils/loadImage';
+import { format } from 'date-fns';
 
 const unitList = [
     { label: 'Pixels', value: 'px' },
@@ -174,6 +201,7 @@ function hex2Rgb(hex: string) {
 export default class BaseModalRewardClaimsDownload extends Vue {
     isSubmitDisabled = false;
     isLoading = false;
+    format = format;
     color = '000000';
     size = 256;
     file: File | null = null;
@@ -183,6 +211,7 @@ export default class BaseModalRewardClaimsDownload extends Vue {
     limit = 100;
     page = 1;
     claims: TClaim[] = [];
+    isCopied: { [id: string]: boolean } = {};
 
     @Prop() id!: string;
     @Prop() rewards!: { [id: string]: TBaseReward & { claims: TClaim[]; _id: string } };
@@ -211,16 +240,18 @@ export default class BaseModalRewardClaimsDownload extends Vue {
         if (!this.claims) return [];
 
         return this.claims
-            .filter((c) => c.page === this.page)
+            .filter((c: TClaim) => c.page === this.page)
+            .sort((a, b) => (a.createdAt && b.createdAt && a.createdAt < b.createdAt ? 1 : -1))
             .map((c) => {
                 return {
                     checkbox: c.uuid,
-                    uuid: c.uuid,
-                    sub: c.sub,
+                    url: `${WALLET_URL}/claim/${c.uuid}`,
+                    claimedAt: { sub: c.sub, date: c.claimedAt },
                     createdAt: c.createdAt,
                     id: c.uuid,
                 };
-            });
+            })
+            .slice(0, this.limit);
     }
 
     onSelectAll(isSelectAll: boolean) {
@@ -233,6 +264,7 @@ export default class BaseModalRewardClaimsDownload extends Vue {
 
     onChangePage(page: number) {
         this.page = page;
+        debugger;
     }
 
     onClickAction(action: { variant: number; label: string }) {
