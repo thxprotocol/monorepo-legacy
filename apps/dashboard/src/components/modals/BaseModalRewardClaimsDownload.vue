@@ -118,13 +118,6 @@
                                 ></i>
                             </b-link>
                         </template>
-                        <template #cell(metadata)="{ index, item }">
-                            <BaseBadgeMetadataPreview
-                                :index="index"
-                                :erc721Id="item.metadata.erc721Id"
-                                :metadataId="item.metadata.metadataId"
-                            />
-                        </template>
                         <template #cell(claimedAt)="{ item }">
                             <div v-if="item.claimedAt.sub" style="line-height: 1">
                                 <div class="text-primary">{{ item.claimedAt.sub }}</div>
@@ -162,7 +155,7 @@ import xml2js from 'xml2js';
 import { jsPDF } from 'jspdf';
 import { type IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { TBaseReward } from '@thxnetwork/types/index';
+import { TBaseReward, TERC20Perk, TERC721Perk } from '@thxnetwork/types/index';
 import { WALLET_URL, BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { TClaim } from '@thxnetwork/dashboard/store/modules/claims';
 import { saveAs } from 'file-saver';
@@ -208,7 +201,7 @@ export default class BaseModalRewardClaimsDownload extends Vue {
     selectedFormat = 'png';
     selectedUnit = unitList[0];
     selectedClaims: string[] = [];
-    limit = 100;
+    limit = 500;
     page = 1;
     claims: TClaim[] = [];
     isCopied: { [id: string]: boolean } = {};
@@ -223,8 +216,7 @@ export default class BaseModalRewardClaimsDownload extends Vue {
         const rewards = Object.values(this.rewards).filter((r) => this.selectedItems.includes(r._id));
         let claims: TClaim[] = [];
         for (const r of rewards) {
-            if (!r.claims) continue;
-            const pagedClaims = Object.values(r.claims).map((c: TClaim) => ({ ...c, page: this.page }));
+            const pagedClaims = Object.values(r.claims).map((c: TClaim) => ({ ...c, perk: r, page: this.page }));
             claims = claims.concat(pagedClaims);
         }
         this.claims = claims;
@@ -240,7 +232,7 @@ export default class BaseModalRewardClaimsDownload extends Vue {
         if (!this.claims) return [];
 
         return this.claims
-            .filter((c: TClaim) => c.page === this.page)
+            .filter((c) => c.page === this.page)
             .sort((a, b) => (a.createdAt && b.createdAt && a.createdAt < b.createdAt ? 1 : -1))
             .map((c) => {
                 return {

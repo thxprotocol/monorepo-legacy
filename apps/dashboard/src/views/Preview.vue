@@ -44,7 +44,7 @@ export default class PoolView extends Vue {
         const app = document.getElementById('app');
         if (app) {
             app.style.opacity = '1';
-            app.style.backgroundImage = this.brand.backgroundImgUrl ? `url('${this.brand.backgroundImgUrl}')` : '';
+            app.style.backgroundImage = this.brand ? `url('${this.brand.backgroundImgUrl}')` : '';
         }
     }
 

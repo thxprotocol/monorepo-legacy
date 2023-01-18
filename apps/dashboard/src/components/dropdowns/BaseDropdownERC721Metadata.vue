@@ -124,12 +124,3 @@ export default class BaseDropdownERC721Metadata extends Vue {
     }
 }
 </script>
-<style lang="scss">
-.dropdown-menu {
-    background-color: #f8f9fa;
-}
-#formRewardPointsCreate .dropdown-select .dropdown-menu {
-    overflow-y: hidden;
-    max-height: none !important;
-}
-</style>

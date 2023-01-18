@@ -25,7 +25,7 @@
                 style="max-width: 75px"
                 size="sm"
                 :value="limit"
-                :options="[5, 10, 25, 50, 100]"
+                :options="[5, 10, 25, 50, 100, 500]"
                 class="mr-5"
             />
 
