@@ -103,6 +103,7 @@ class ClientModule extends VuexModule {
         data.results.forEach((client: TClient) => {
             client.page = page;
             this.context.commit('set', { pool, client });
+            this.context.dispatch('get', { pool, client })
         });
     }
 

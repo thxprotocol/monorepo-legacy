@@ -17,11 +17,11 @@ class DiscordService {
         const isExpired = Date.now() > token.expiry;
         if (isExpired) {
             try {
-                const accessToken = await this.refreshTokens(token.refreshToken);
+                const res = await this.refreshTokens(token.refreshToken);
                 account.setToken({
                     kind: AccessTokenKind.Discord,
-                    accessToken,
-                    expiry: Date.now() + Number(3600) * 1000,
+                    accessToken: res.access_token,
+                    expiry: Date.now() + Number(res.expires_in) * 1000,
                 });
                 await account.save();
             } catch {
@@ -47,6 +47,13 @@ class DiscordService {
     }
 
     static async requestTokens(code: string) {
+        // {
+        //     "access_token": "6qrZcUqja7812RVdnEKjpzOL4CvHBFG",
+        //     "token_type": "Bearer",
+        //     "expires_in": 604800,
+        //     "refresh_token": "D43f5y0ahjqew82jZ4NViEr2YafMKhue",
+        //     "scope": "identify"
+        // }
         const body = new URLSearchParams();
 
         body.append('code', code);
@@ -72,6 +79,13 @@ class DiscordService {
     }
 
     static async refreshTokens(refreshToken: string) {
+        // {
+        //     "access_token": "6qrZcUqja7812RVdnEKjpzOL4CvHBFG",
+        //     "token_type": "Bearer",
+        //     "expires_in": 604800,
+        //     "refresh_token": "D43f5y0ahjqew82jZ4NViEr2YafMKhue",
+        //     "scope": "identify"
+        // }
         const body = new URLSearchParams();
 
         body.append('grant_type', 'refresh_token');
@@ -90,7 +104,7 @@ class DiscordService {
 
         if (r.status !== 200) throw new Error(ERROR_TOKEN_REQUEST_FAILED);
 
-        return r.data.access_token;
+        return r.data;
     }
 
     static async getUser(accessToken: string) {
