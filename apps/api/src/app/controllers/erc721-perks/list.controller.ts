@@ -14,22 +14,22 @@ const controller = async (req: Request, res: Response) => {
     const limit = req.query.limit ? Number(req.query.limit) : 10;
     const page = req.query.page ? Number(req.query.page) : 1;
     const pool = await PoolService.getById(req.header('X-PoolId'));
-    const rewards = await ERC721PerkService.findByPool(pool, page, limit);
-    rewards.results = await Promise.all(
-        rewards.results.map(async (reward) => {
-            const claims = await ClaimService.findByReward(reward);
-            const erc721 = await ERC721Service.findById(reward.erc721Id);
-            const payments = await ERC721PerkPayment.find({ perkId: reward._id });
+    const perks = await ERC721PerkService.findByPool(pool, page, limit);
+    perks.results = await Promise.all(
+        perks.results.map(async (perk) => {
+            const claims = await ClaimService.findByReward(perk);
+            const erc721 = await ERC721Service.findById(perk.erc721Id);
+            const payments = await ERC721PerkPayment.find({ perkId: perk._id });
             return {
                 claims,
                 payments,
                 erc721,
-                ...reward,
+                ...perk,
             };
         }),
     );
 
-    res.json(rewards);
+    res.json(perks);
 };
 
 export default { controller, validation };

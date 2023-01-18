@@ -12,6 +12,8 @@ export type TClaim = {
     erc20Id?: string;
     erc721Id?: string;
     rewardUuid: string;
+    createdAt: string;
+    page: number;
 };
 
 export type TClaimURLData = TClaim & {
