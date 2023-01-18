@@ -7,5 +7,6 @@ export type TClaim = {
     rewardUuid: string;
     erc20Id?: string;
     erc721Id?: string;
+    claimedAt?: Date;
 };
 export type ClaimDocument = mongoose.Document & TClaim;
