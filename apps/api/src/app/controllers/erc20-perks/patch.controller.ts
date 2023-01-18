@@ -5,7 +5,7 @@ import ERC20PerkService from '@thxnetwork/api/services/ERC20PerkService';
 import ImageService from '@thxnetwork/api/services/ImageService';
 
 const validation = [
-    param('id').exists(),
+    param('id').isMongoId(),
     body('title').isString(),
     body('description').isString(),
     body('amount').exists().isInt({ gt: 0 }),

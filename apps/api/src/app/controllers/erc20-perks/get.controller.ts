@@ -7,7 +7,7 @@ import ERC20PerkService from '@thxnetwork/api/services/ERC20PerkService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
 
-const validation = [param('id').exists()];
+const validation = [param('id').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['RewardsToken']

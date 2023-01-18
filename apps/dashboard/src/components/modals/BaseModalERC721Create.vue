@@ -60,17 +60,18 @@ export default class ModalERC721Create extends Vue {
     description = '';
     schema: TERC721DefaultProp[] = [
         {
+            name: 'name',
+            propType: 'string',
+            description: 'The name of this item.',
+            disabled: true,
+        },
+        {
             name: 'description',
             propType: 'string',
             description: 'A brief description of your item.',
             disabled: true,
         },
-        {
-            name: 'external_url',
-            propType: 'link',
-            description: 'A link referencing to a page with more information on the item.',
-            disabled: true,
-        },
+
         {
             name: 'image',
             propType: 'image',
@@ -78,9 +79,9 @@ export default class ModalERC721Create extends Vue {
             disabled: true,
         },
         {
-            name: 'name',
-            propType: 'string',
-            description: 'The name of this item.',
+            name: 'external_url',
+            propType: 'link',
+            description: 'A link referencing to a page with more information on the item.',
             disabled: true,
         },
     ];

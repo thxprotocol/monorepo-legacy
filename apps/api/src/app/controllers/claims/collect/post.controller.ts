@@ -57,6 +57,12 @@ const controller = async (req: Request, res: Response) => {
     if (!perk) throw new BadRequestError('The perk for this id does not exist.');
 
     const model = getPaymentModel(perk);
+    if (!model) throw new BadRequestError('Could not determine payment model for this claim.');
+
+    // Can be claimed only if point price is 0
+    if ((isTERC20Perk(perk) || isTERC721Perk(perk)) && perk.pointPrice > 0) {
+        throw new ForbiddenError('This perk should be redeemed with points.');
+    }
 
     // Can be claimed only before the expiry date
     if (perk.expiryDate && new Date(perk.expiryDate).getTime() < Date.now()) {
@@ -68,7 +74,7 @@ const controller = async (req: Request, res: Response) => {
         const message =
             claim.sub === req.auth.sub
                 ? 'You have already claimed this perk.'
-                : 'This perk has been claimed by someone else';
+                : 'This perk has been claimed by someone else.';
         throw new ForbiddenError(message);
     }
 
@@ -76,11 +82,11 @@ const controller = async (req: Request, res: Response) => {
     if (perk.rewardLimit > 0) {
         const amountOfPayments = await model.countDocuments({ perkId: perk._id });
         if (amountOfPayments >= perk.rewardLimit) {
-            throw new ForbiddenError("This perk has reached it's limit");
+            throw new ForbiddenError("This perk has reached it's limit.");
         }
     }
 
-    // Can only claim this reward once per account.
+    // Can always only claim this reward once per account.
     const amountOfClaimsForAccount = await model.exists({ perkId: perk._id, sub: req.auth.sub });
     if (amountOfClaimsForAccount) {
         throw new ForbiddenError('You can only claim this perk once.');
@@ -88,7 +94,9 @@ const controller = async (req: Request, res: Response) => {
 
     // Can only claim if potential platform conditions pass.
     const failReason = await validateCondition(account, perk);
-    if (failReason) throw new ForbiddenError(failReason);
+    if (failReason) {
+        throw new ForbiddenError(failReason);
+    }
 
     // Create a pool withdrawal if the erc20 for the claim exists.
     if (isTERC20Perk(perk)) {
@@ -102,6 +110,7 @@ const controller = async (req: Request, res: Response) => {
         payment = await ERC20PerkPayment.create({
             sub: req.auth.sub,
             perkId: perk._id,
+            amount: perk.pointPrice,
         });
     }
 
@@ -119,10 +128,13 @@ const controller = async (req: Request, res: Response) => {
         payment = await ERC721PerkPayment.create({
             sub: req.auth.sub,
             perkId: perk._id,
+            amount: perk.pointPrice,
         });
     }
 
-    // Mark claim is claimed by setting sub when the claimAmount is fixed ( > 1)
+    // Mark claim as claimed by setting sub when the claimAmount is fixed ( > 1)
+    // Perks with claimAmount == 1 will create a claim with no sub that is reused for multilpe claims
+    // PerkPayments are used to limit claims per account.
     if (perk.claimAmount > 1) {
         claim.sub = req.auth.sub;
         await claim.save();
