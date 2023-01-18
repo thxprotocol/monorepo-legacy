@@ -19,7 +19,7 @@
                 <%= alert.message %>
             </div>
             <% } else { %>
-            <!-- <div class="d-flex w-full align-items-center justify-content-start flex-wrap">
+            <div class="d-flex w-full align-items-center justify-content-start flex-wrap">
                 <% if (params.authRequestMessage) { %>
                 <a style="width: 40px; height: 40px;" class="mr-2 mb-2 btn d-flex center-center  btn-light"
                    @click="signin()" data-toggle="tooltip" title="Sign up with Metamask">
@@ -56,8 +56,8 @@
                     <img width="20" src="/img/twitch-logo.png" alt="twitch logo" />
                 </a>
                 <% } %>
-            </div> -->
-            <!-- <p class="mt-2 text-muted">Or sign up using your e-mail</p> -->
+            </div>
+            <p class="mt-2 text-muted">Or sign up using your e-mail</p>
             <form autocomplete="off" action="/oidc/<%= uid %>/signup" method="post">
                 <div class="form-group">
                     <input placeholder="E-mail" class="form-control" type="email" name="email" v-model="email"

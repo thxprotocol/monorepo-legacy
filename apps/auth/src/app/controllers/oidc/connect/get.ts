@@ -51,7 +51,7 @@ async function controller(req: Request, res: Response) {
             break;
         }
         case AccessTokenKind.Twitch: {
-            redirect = TwitchService.isAuthorized(account) ? params.redirect_uri : GithubService.getLoginURL(uid, {});
+            redirect = TwitchService.isAuthorized(account) ? params.redirect_uri : TwitchService.getLoginURL(uid, {});
             break;
         }
         case AccessTokenKind.Discord: {
