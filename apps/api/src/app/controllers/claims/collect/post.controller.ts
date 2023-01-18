@@ -44,7 +44,7 @@ const controller = async (req: Request, res: Response) => {
         payment: PerkPaymentDocument;
 
     // #swagger.tags = ['Claims']
-    const claim = await ClaimService.findByUuid(req.params.uuid);
+    let claim = await ClaimService.findByUuid(req.params.uuid);
     if (!claim) throw new BadRequestError('This claim URL is invalid.');
 
     const pool = await PoolService.getById(claim.poolId);
@@ -137,7 +137,8 @@ const controller = async (req: Request, res: Response) => {
     // PerkPayments are used to limit claims per account.
     if (perk.claimAmount > 1) {
         claim.sub = req.auth.sub;
-        await claim.save();
+        claim.claimedAt = new Date();
+        claim = await claim.save();
     }
 
     return res.json({

@@ -1,44 +1,49 @@
 <template>
-    <b-dropdown no-flip variant="link" class="dropdown-select">
-        <template #button-content>
-            {{ selectedTitle }}
-        </template>
-        <b-dropdown-group style="max-height: 320px; overflow-y: auto">
-            <b-dropdown-item-button
-                v-for="metadata of erc721metadataByPage"
-                :key="metadata._id"
-                @click="onClick(metadata)"
-            >
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <b-badge
-                            :key="key"
-                            v-for="(value, key) in metadata.attributes"
-                            variant="dark"
-                            v-b-tooltip
-                            :title="value.value"
-                            class="mr-2"
-                        >
-                            {{ value.key }}
-                        </b-badge>
+    <div>
+        <b-button v-if="!erc721metadataByPage.length" variant="light" :to="`/nft/${erc721._id}/metadata`" block>
+            Create Metadata
+        </b-button>
+        <b-dropdown v-else no-flip variant="link" class="dropdown-select">
+            <template #button-content>
+                {{ selectedTitle }}
+            </template>
+            <b-dropdown-group style="max-height: 320px; overflow-y: auto">
+                <b-dropdown-item-button
+                    v-for="metadata of erc721metadataByPage"
+                    :key="metadata._id"
+                    @click="onClick(metadata)"
+                >
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <b-badge
+                                :key="key"
+                                v-for="(value, key) in metadata.attributes"
+                                variant="dark"
+                                v-b-tooltip
+                                :title="value.value"
+                                class="mr-2"
+                            >
+                                {{ value.key }}
+                            </b-badge>
+                        </div>
+                        <small class="text-muted">
+                            {{ format(new Date(metadata.createdAt), 'dd-MM-yyyy HH:mm') }}
+                        </small>
                     </div>
-                    <small class="text-muted">
-                        {{ format(new Date(metadata.createdAt), 'dd-MM-yyyy HH:mm') }}
-                    </small>
-                </div>
-            </b-dropdown-item-button>
-        </b-dropdown-group>
-        <b-dropdown-divider></b-dropdown-divider>
-        <b-dropdown-form>
-            <b-pagination
-                @change="onChangePage"
-                v-model="page"
-                :per-page="limit"
-                :total-rows="total"
-                align="center"
-            ></b-pagination>
-        </b-dropdown-form>
-    </b-dropdown>
+                </b-dropdown-item-button>
+            </b-dropdown-group>
+            <b-dropdown-divider></b-dropdown-divider>
+            <b-dropdown-form>
+                <b-pagination
+                    @change="onChangePage"
+                    v-model="page"
+                    :per-page="limit"
+                    :total-rows="total"
+                    align="center"
+                ></b-pagination>
+            </b-dropdown-form>
+        </b-dropdown>
+    </div>
 </template>
 
 <script lang="ts">
@@ -80,6 +85,8 @@ export default class BaseDropdownERC721Metadata extends Vue {
     }
 
     get erc721metadataByPage() {
+        if (this.erc721 && !this.metadata[this.erc721._id]) return [];
+
         return (
             this.erc721 &&
             this.metadata[this.erc721._id] &&
@@ -117,12 +124,3 @@ export default class BaseDropdownERC721Metadata extends Vue {
     }
 }
 </script>
-<style lang="scss">
-.dropdown-menu {
-    background-color: #f8f9fa;
-}
-#formRewardPointsCreate .dropdown-select .dropdown-menu {
-    overflow-y: hidden;
-    max-height: none !important;
-}
-</style>

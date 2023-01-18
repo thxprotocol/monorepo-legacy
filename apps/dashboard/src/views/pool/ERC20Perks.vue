@@ -71,7 +71,9 @@
                     />
                 </template>
                 <template #cell(claims)="{ item }">
-                    <b-link v-b-modal="`modalRewardClaimsDownload${item.id}`"> Download </b-link>
+                    <b-link v-b-modal="`modalRewardClaimsDownload${item.id}`" v-if="item.claims.length">
+                        {{ item.claims.length }} {{ item.claims.length > 1 ? 'claims' : 'claim' }}
+                    </b-link>
                     <BaseModalRewardClaimsDownload
                         :id="`modalRewardClaimsDownload${item.id}`"
                         :pool="pool"

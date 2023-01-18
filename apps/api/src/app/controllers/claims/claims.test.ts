@@ -7,10 +7,11 @@ import {
     tokenSymbol,
     walletAccessToken,
     walletAccessToken2,
+    account,
+    account2,
 } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { WithdrawalState } from '@thxnetwork/api/types/enums';
 import { ClaimDocument } from '@thxnetwork/api/types/TClaim';
 import { addMinutes, subMinutes } from '@thxnetwork/api/util/rewards';
 import { ERC20Document } from '@thxnetwork/api/models/ERC20';
@@ -219,6 +220,10 @@ describe('Claims', () => {
         it('should return a 200 for claim 0', (done) => {
             user.post(`/v1/claims/${claim0.uuid}/collect`)
                 .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
+                .expect(({ body }: request.Response) => {
+                    expect(body.claim.sub).toBe(account2.sub);
+                    expect(body.claim.claimedAt).toBeDefined();
+                })
                 .expect(200, done);
         });
         it('should return a 403 for second attempt on claim 0', (done) => {
@@ -240,6 +245,10 @@ describe('Claims', () => {
         it('should return a 200 for claim 1', (done) => {
             user.post(`/v1/claims/${claim1.uuid}/collect`)
                 .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken2 })
+                .expect(({ body }: request.Response) => {
+                    expect(body.claim.sub).toBe(account.sub);
+                    expect(body.claim.claimedAt).toBeDefined();
+                })
                 .expect(200, done);
         });
         it('should return a 403 for second attempt on claim 1', (done) => {

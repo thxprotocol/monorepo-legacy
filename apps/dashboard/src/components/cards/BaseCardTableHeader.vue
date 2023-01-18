@@ -14,9 +14,14 @@
         </div>
         <div class="d-flex align-items-center">
             <span class="text-muted mr-2">Limit</span>
-            <b-form-select @change="$emit('change-limit', $event)" style="max-width: 75px" size="sm" :value="limit"
-                :options="[5, 10, 25, 50, 100]" class="mr-5" />
-
+            <b-form-select
+                @change="$emit('change-limit', $event)"
+                style="max-width: 75px"
+                size="sm"
+                :value="limit"
+                :options="[5, 10, 25, 50, 100, 500]"
+                class="mr-5"
+            />
             <b-pagination size="sm" class="my-0" @change="$emit('change-page', $event)" v-model="page" :per-page="limit"
                 :total-rows="totalRows" align="center"></b-pagination>
         </div>

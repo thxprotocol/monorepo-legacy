@@ -22,7 +22,7 @@
                             />
                         </b-form-group>
                         <b-form-group label="Point Price">
-                            <b-form-input type="number" v-model="pointPrice" />
+                            <b-form-input type="number" :value="pointPrice" @input="onChangePointPrice" />
                         </b-form-group>
                         <b-form-group label="Image">
                             <b-input-group>
@@ -44,9 +44,14 @@
                         <BaseCardRewardExpiry
                             class="mb-3"
                             :expiryDate="expiryDate"
-                            :rewardLimit="rewardLimit"
                             @change-date="expiryDate = $event"
-                            @change-limit="rewardLimit = $event"
+                        />
+                        <BaseCardRewardLimits
+                            class="mb-3"
+                            :rewardLimit="rewardLimit"
+                            :claimAmount="claimAmount"
+                            @change-reward-limit="rewardLimit = $event"
+                            @change-claim-amount="onChangeClaimAmount"
                         />
                         <b-form-group>
                             <b-form-checkbox v-model="isPromoted">Promoted</b-form-checkbox>
@@ -64,7 +69,7 @@
                 variant="primary"
                 block
             >
-                {{ reward ? 'Update Perk' : 'Create Perk' }}
+                {{ reward ? 'Update NFT Perk' : 'Create NFT Perk' }}
             </b-button>
         </template>
     </base-modal>
@@ -78,6 +83,7 @@ import { RewardConditionInteraction, RewardConditionPlatform, type TERC721Perk }
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardCondition from '../cards/BaseCardRewardCondition.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
+import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
 import BaseCardRewardQRCodes from '../cards/BaseCardRewardQRCodes.vue';
 import BaseDropdownERC721Metadata from '../dropdowns/BaseDropdownERC721Metadata.vue';
 import type { IERC721s, TERC721, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
@@ -96,6 +102,7 @@ type TRewardCondition = {
         BaseModal,
         BaseCardRewardCondition,
         BaseCardRewardExpiry,
+        BaseCardRewardLimits,
         BaseCardRewardQRCodes,
         BaseDropdownERC721Metadata,
         BaseDropdownSelectERC721,
@@ -116,7 +123,7 @@ export default class ModalRewardERC721Create extends Vue {
     erc721metadataId = '';
     description = '';
     expiryDate: Date | null = null;
-    claimAmount = 1;
+    claimAmount = 0;
     rewardLimit = 0;
     pointPrice = 0;
     rewardCondition: TRewardCondition = {
@@ -143,6 +150,9 @@ export default class ModalRewardERC721Create extends Vue {
         this.description = this.reward ? this.reward.description : '';
         this.rewardLimit = this.reward ? this.reward.rewardLimit : 0;
         this.pointPrice = this.reward ? this.reward.pointPrice : 0;
+        this.expiryDate = this.reward ? this.reward.expiryDate : null;
+        this.rewardLimit = this.reward ? this.reward.rewardLimit : 0;
+        this.claimAmount = this.reward ? this.reward.claimAmount : 0;
         this.rewardCondition = this.reward
             ? {
                   platform: this.reward.platform as RewardConditionPlatform,
@@ -161,6 +171,16 @@ export default class ModalRewardERC721Create extends Vue {
         this.erc721metadataId = this.reward ? this.reward.erc721metadataId : '';
     }
 
+    onChangePointPrice(price: number) {
+        this.pointPrice = price;
+        if (price > 0) this.claimAmount = 0;
+    }
+
+    onChangeClaimAmount(amount: number) {
+        this.claimAmount = amount;
+        if (amount > 0) this.pointPrice = 0;
+    }
+
     onSelectMetadata(metadata: TERC721Metadata) {
         if (!metadata) return;
         this.erc721metadataId = metadata._id;
@@ -169,30 +189,33 @@ export default class ModalRewardERC721Create extends Vue {
     onSubmit() {
         this.isLoading = true;
 
-        const rewardCondition: TRewardCondition = { platform: this.rewardCondition.platform };
-        if (this.rewardCondition.platform !== RewardConditionPlatform.None) {
-            rewardCondition.interaction = this.rewardCondition.interaction;
-            rewardCondition.content = this.rewardCondition.content;
-        }
+        const payload = {
+            page: 1,
+            title: this.title,
+            description: this.description,
+            erc721metadataIds: JSON.stringify(
+                this.erc721metadataId ? [this.erc721metadataId] : this.erc721SelectedMetadataIds,
+            ),
+            claimAmount: this.claimAmount,
+            rewardLimit: this.rewardLimit,
+            pointPrice: this.pointPrice,
+            file: this.imageFile,
+            isPromoted: this.isPromoted,
+            platform: this.rewardCondition.platform,
+            interaction:
+                this.rewardCondition.platform !== RewardConditionPlatform.None
+                    ? this.rewardCondition.interaction
+                    : RewardConditionInteraction.None,
+            content: this.rewardCondition.platform !== RewardConditionPlatform.None ? this.rewardCondition.content : '',
+        };
+
+        if (this.expiryDate) Object.assign(payload, { expiryDate: this.expiryDate });
 
         this.$store
             .dispatch(`erc721Perks/${this.reward ? 'update' : 'create'}`, {
                 pool: this.pool || Object.values(this.pools)[0],
                 reward: this.reward,
-                payload: {
-                    page: 1,
-                    title: this.title,
-                    description: this.description,
-                    erc721metadataIds: JSON.stringify(
-                        this.erc721metadataId ? [this.erc721metadataId] : this.erc721SelectedMetadataIds,
-                    ),
-                    claimAmount: this.claimAmount,
-                    rewardLimit: this.rewardLimit,
-                    pointPrice: this.pointPrice,
-                    file: this.imageFile,
-                    isPromoted: this.isPromoted,
-                    ...rewardCondition,
-                },
+                payload,
             })
             .then(() => {
                 this.isSubmitDisabled = false;
