@@ -8,7 +8,7 @@ import { addMinutes } from '@thxnetwork/api/util/rewards';
 import { createImage } from '@thxnetwork/api/util/jest/images';
 import { ERC20Document } from '@thxnetwork/api/models/ERC20';
 import { ERC20PerkDocument } from '@thxnetwork/api/models/ERC20Perk';
-import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types';
+import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
 
 const user = request.agent(app);
 
