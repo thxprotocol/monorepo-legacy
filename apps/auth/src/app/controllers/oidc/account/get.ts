@@ -40,7 +40,7 @@ async function controller(req: Request, res: Response) {
             twitterAccess: await TwitterService.isAuthorized(account),
             githubAccess: await GithubService.isAuthorized(account),
             discordAccess: await DiscordService.isAuthorized(account),
-            twitchAccess: TwitchService.isAuthorized(account),
+            twitchAccess: await TwitchService.isAuthorized(account),
         },
     });
 }
