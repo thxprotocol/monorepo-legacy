@@ -6,7 +6,7 @@ import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 import type { IAccount, IAccountUpdates, IDiscord, ITwitter, IYoutube } from '@thxnetwork/dashboard/types/account';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { RewardConditionPlatform } from '@thxnetwork/types/enums/RewardConditionPlatform';
-import { mixpanelClient } from '@thxnetwork/dashboard/utils/mixpanel';
+import { mixpanelClient, track } from '@thxnetwork/dashboard/utils/mixpanel';
 
 @Module({ namespaced: true })
 class AccountModule extends VuexModule {
@@ -89,6 +89,9 @@ class AccountModule extends VuexModule {
             method: 'GET',
             url: '/account',
         });
+
+        track.UserIdentify(r.data);
+
         this.context.commit('setAccount', r.data);
     }
 

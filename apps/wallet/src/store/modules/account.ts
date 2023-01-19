@@ -6,6 +6,7 @@ import { thxClient } from '../../utils/oidc';
 import { User } from 'oidc-client-ts';
 import { AccountVariant } from '../../types/Accounts';
 import { AccessTokenKind, RewardConditionPlatform } from '@thxnetwork/types/index';
+import { track } from '@thxnetwork/wallet/utils/mixpanel';
 const AUTH_REQUEST_TYPED_MESSAGE =
     "Welcome! Please make sure you have selected your preferred account and sign this message to verify it's ownership.";
 
@@ -67,6 +68,8 @@ class AccountModule extends VuexModule {
             method: 'GET',
             url: '/account',
         });
+
+        track.UserIdentify(r.data);
 
         this.context.commit('setProfile', r.data);
     }
