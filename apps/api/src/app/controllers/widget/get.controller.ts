@@ -11,9 +11,20 @@ const validation = [param('id').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Widget']
-    const referralReward = await ReferralReward.findOne({
+    const referralRewards = await ReferralReward.find({
         poolId: req.params.id,
     });
+    const refs = JSON.stringify(
+        referralRewards
+            .filter((r) => r.successUrl)
+            .map((r) => {
+                return {
+                    uuid: r.uuid,
+                    successUrl: r.successUrl,
+                };
+            }),
+    );
+
     const pool = await PoolService.getById(req.params.id);
     if (!pool) throw new NotFoundError('Pool not found.');
 
@@ -51,27 +62,38 @@ const controller = async (req: Request, res: Response) => {
             this.notifications = this.createNotifications(0);
             this.launcher = this.createLauncher(this.notifications);
             this.container = this.createContainer(this.iframe, this.launcher);
-    
+            this.referrals = JSON.parse(this.settings.refs).filter((r) => r.successUrl);
+
+            this.parseURL();
+
             window.matchMedia('(max-width: 990px)').addListener(this.onMatchMedia.bind(this));
             window.onmessage = this.onMessage.bind(this);
-          
-            if (this.settings.referral.uuid && this.settings.referral.successUrl) {
-                this.timer = window.setInterval(this.onMatchSuccessUrl.bind(this), 500);
-            }
         }
 
-        storeReferrer() {
+        parseURL() {
             const url = new URL(window.location.href)
-            const sub = url.searchParams.get('ref');
-            if (!sub || sub.length !== 24) return;
-            this.iframe.contentWindow.postMessage({ message: 'thx.config.ref', sub }, this.settings.widgetUrl);
+            const param = url.searchParams.get('ref');
+            if (!param) return;
+
+            this.ref = param;
+            
+            const { uuid } = JSON.parse(atob(this.ref));
+            const referral = this.referrals.find((r) => r.uuid === uuid);
+            if (!referral) return;
+            
+            this.successUrl = referral.successUrl;
+        }
+
+        storeReferrer() {    
+            this.timer = window.setInterval(this.onMatchSuccessUrl.bind(this), 500);
+            this.iframe.contentWindow.postMessage({ message: 'thx.config.ref', ref: this.ref }, this.settings.widgetUrl);
         }
     
         createIframe(widgetUrl, poolId, chainId, origin, theme) {
             const iframe = document.createElement('iframe');
             const styles = window.innerWidth < this.MD_BREAKPOINT ? this.defaultStyles['sm'] : this.defaultStyles['md'];
-    
             const url = new URL(widgetUrl);
+
             url.searchParams.append('id', poolId);
             url.searchParams.append('origin', origin);
             url.searchParams.append('chainId', chainId);
@@ -192,10 +214,19 @@ const controller = async (req: Request, res: Response) => {
             }
         }
     
-        onMatchSuccessUrl(successUrl) {
-            if (window.location.href !== this.settings.referral.successUrl) return;
-            this.iframe.contentWindow.postMessage({ message: 'thx.referral.claim.create', uuid: this.settings.referral.uuid }, this.settings.widgetUrl);
-            window.clearInterval(this.timer);
+        onMatchSuccessUrl() {
+            for (const ref of this.referrals) {
+                if (window.location.href !== ref.successUrl) continue;
+
+                this.iframe.contentWindow.postMessage({ message: 'thx.referral.claim.create', uuid: ref.uuid, }, this.settings.widgetUrl);
+
+                const index = this.referrals.findIndex((r) => ref.uuid);
+                this.referrals.splice(index, 1);
+            }
+            
+            if (!this.referrals.length) {
+                window.clearInterval(this.timer);
+            }
         }
     
         onMatchMedia(x) {
@@ -218,14 +249,11 @@ const controller = async (req: Request, res: Response) => {
         bgColor: '${widget.bgColor}',
         theme: '${widget.theme}',
         origin: '${new URL(req.header('Referrer')).origin}',
-        referral: {
-            uuid: '${referralReward && referralReward.uuid}',
-            successUrl: '${referralReward && referralReward.successUrl}',
-        }
+        refs: ${JSON.stringify(refs)},
     });
 `;
     const result = await minify(data, {
-        mangle: { toplevel: true },
+        mangle: { toplevel: false },
         sourceMap: NODE_ENV !== 'production',
     });
 

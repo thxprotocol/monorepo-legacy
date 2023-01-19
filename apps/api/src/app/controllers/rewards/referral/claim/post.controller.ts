@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
 import { ReferralRewardClaim } from '@thxnetwork/api/models/ReferralRewardClaim';
-import { NotFoundError } from '@thxnetwork/api/util/errors';
+import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import MailService from '@thxnetwork/api/services/MailService';
 import PoolService from '@thxnetwork/api/services/PoolService';
@@ -11,6 +11,7 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
     const reward = await ReferralReward.findOne({ uuid: req.params.uuid });
     if (!reward) throw new NotFoundError('No reward for that uuid could be found.');
+    if (!reward.successUrl) throw new ForbiddenError('No claims through URL qualification allowed.');
 
     const account = await AccountProxy.getById(req.body.sub);
     if (!account) throw new NotFoundError('No account for that sub could be found.');
