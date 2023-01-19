@@ -58,6 +58,30 @@
             <b-row>
                 <b-col md="6">
                     <b-card
+                        @click="$router.push('/pools')"
+                        class="mt-3 mb-3 shadow-sm cursor-pointer"
+                        :img-src="require('../../public/assets/thx_pools.webp')"
+                        img-alt="Image"
+                        img-top
+                    >
+                        <strong>Pools</strong>
+                        <p class="text-muted m-0">Loyalty Pools contain point rewards and perk shops.</p>
+                    </b-card>
+                </b-col>
+                <b-col md="6">
+                    <b-card
+                        @click="window.open(docsUrl, '_blank')"
+                        class="mt-3 mb-3 shadow-sm cursor-pointer"
+                        :img-src="require('../../public/assets/thx_docs.webp')"
+                        img-alt="Image"
+                        img-top
+                    >
+                        <strong>User Guides</strong>
+                        <p class="text-muted m-0">Learn how to configure your Loyalty Pool.</p>
+                    </b-card>
+                </b-col>
+                <b-col md="6">
+                    <b-card
                         @click="$router.push('/coins')"
                         class="mt-3 mb-3 shadow-sm cursor-pointer"
                         :img-src="require('../../public/assets/thx_tokens.webp')"
@@ -77,31 +101,7 @@
                         img-top
                     >
                         <strong>NFT</strong>
-                        <p class="text-muted m-0">Create ERC-721 (NFT) token variations.</p>
-                    </b-card>
-                </b-col>
-                <b-col md="6">
-                    <b-card
-                        @click="$router.push('/pools')"
-                        class="mt-3 mb-3 shadow-sm cursor-pointer"
-                        :img-src="require('../../public/assets/thx_pools.webp')"
-                        img-alt="Image"
-                        img-top
-                    >
-                        <strong>Pools</strong>
-                        <p class="text-muted m-0">Distribute your token supply in user-friendly ways.</p>
-                    </b-card>
-                </b-col>
-                <b-col md="6">
-                    <b-card
-                        @click="window.open(docsUrl, '_blank')"
-                        class="mt-3 mb-3 shadow-sm cursor-pointer"
-                        :img-src="require('../../public/assets/thx_docs.webp')"
-                        img-alt="Image"
-                        img-top
-                    >
-                        <strong>Documentation</strong>
-                        <p class="text-muted m-0">View SDK, OAuth2 and API details and tutorials.</p>
+                        <p class="text-muted m-0">Create ERC-721 token variations.</p>
                     </b-card>
                 </b-col>
             </b-row>
