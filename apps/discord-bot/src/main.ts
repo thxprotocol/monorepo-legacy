@@ -1,10 +1,10 @@
-import { Client, Events, GatewayIntentBits } from 'discord.js';
+import { Client, GatewayIntentBits } from 'discord.js';
 import { TOKEN } from './app/configs/secrets';
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+import eventRouter from './app/events';
+import eventRegister from './app/utils/eventRegister';
 
-client.once(Events.ClientReady, (c) => {
-    console.log(`Ready! Logged in as ${c.user.tag}`);
-});
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+eventRegister(client, eventRouter);
 
 client.login(TOKEN);
