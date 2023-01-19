@@ -6,6 +6,7 @@ import { AccountService } from '../../../services/AccountService';
 import { GithubService } from '../../../services/GithubServices';
 import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
+import { track } from '@thxnetwork/auth/util/mixpanel';
 
 async function controller(req: Request, res: Response) {
     const { uid, params, alert, session } = req.interaction;
@@ -16,6 +17,8 @@ async function controller(req: Request, res: Response) {
     params.twitterLoginUrl = TwitterService.getLoginURL(uid, {});
     params.discordLoginUrl = DiscordService.getLoginURL(uid, {});
     params.twitchLoginUrl = TwitchService.getLoginURL(uid, {});
+
+    track.UserVisits(params.distinct_id, `oidc account`, [uid, params.return_url]);
 
     return res.render('account', {
         uid,

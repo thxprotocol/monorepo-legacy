@@ -68,6 +68,7 @@ const config: Configuration = {
         'channel',
         'verifyEmailToken',
         'access_token_kind',
+        'distinct_id',
     ],
     scopes: [
         'openid',

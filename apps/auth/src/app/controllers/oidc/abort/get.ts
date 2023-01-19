@@ -6,6 +6,7 @@ async function controller(req: Request, res: Response) {
         error: 'access_denied',
         error_description: 'End-User aborted interaction',
     };
+
     await oidc.interactionFinished(req, res, result, { mergeWithLastSubmission: false });
 }
 

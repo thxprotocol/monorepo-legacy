@@ -11,15 +11,15 @@ export const validation = [
 
 export const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Account']
-    const r = await authClient.post(
-        '/account/login',
-        { email: req.body.email, password: req.body.password },
-        {
-            headers: {
-                Authorization: await getAuthAccessToken(),
-            },
+    const r = await authClient({
+        method: 'POST',
+        url: '/account/login',
+        data: { email: req.body.email, password: req.body.password },
+        headers: {
+            Authorization: await getAuthAccessToken(),
         },
-    );
+    });
+
     res.status(r.status).json(r.data);
 };
 
