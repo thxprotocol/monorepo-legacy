@@ -9,11 +9,12 @@ import path from 'path';
 import db from './util/database';
 import morganBody from 'morgan-body';
 import { xssProtection } from 'lusca';
-import { DASHBOARD_URL, GTM, MONGODB_URI, PORT, PUBLIC_URL, WALLET_URL } from './config/secrets';
+import { DASHBOARD_URL, GTM, MONGODB_URI, NODE_ENV, PORT, PUBLIC_URL, WALLET_URL } from './config/secrets';
 import { mainRouter } from './controllers';
 import { corsHandler, errorLogger, errorNormalizer, errorOutput, notFoundHandler } from './middlewares';
 import { helmetInstance } from './util/helmet';
 import { assetsPath } from './util/path';
+import { requestLogger } from './util/logger';
 
 axiosBetterStacktrace(axios);
 
@@ -30,7 +31,11 @@ app.use(compression());
 app.use(helmetInstance);
 app.use(corsHandler);
 
-morganBody(app);
+if (NODE_ENV !== 'production') {
+    app.use(requestLogger);
+} else {
+    morganBody(app);
+}
 
 app.use(expressEJSLayouts);
 app.use(xssProtection(true));
