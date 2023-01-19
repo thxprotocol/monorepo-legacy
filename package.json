@@ -96,6 +96,7 @@
         "qrcode": "^1.5.0",
         "qrcode-svg": "^1.1.0",
         "qrcode.vue": "^1.x.x",
+        "queue": "^6.0.2",
         "register-service-worker": "^1.7.1",
         "semver": "^7.3.7",
         "short-uuid": "^4.2.0",
