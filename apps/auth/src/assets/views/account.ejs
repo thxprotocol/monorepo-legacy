@@ -18,12 +18,12 @@
 
                 <% if (params.profileImg) { %>
                 <div class="row d-flex align-items-center justify-content-center pb-5">
-                    <img width="150" src="<%= params.profileImg %>" alt="profle-picture" />
+                    <img width="150" src="<%= params.profileImg %>" alt="profle-picture" class="rounded-circle" />
                 </div>
                 <% } %>
                 <div class="row pb-3">
                     <div class="d-flex col-4 align-items-center font-weight-bold">
-                        Profile:
+                        Picture:
                     </div>
                     <div class="col-8">
                         <input class="form-control" name="profile" type="file" accept="image/*">
@@ -40,16 +40,6 @@
                         <input class="form-control" name="email" required disabled value="<%= params.email %>"
                                placeholder="" />
                         <% } %>
-                    </div>
-                </div>
-
-                <div class="row pb-3">
-                    <div class="d-flex col-4 align-items-center font-weight-bold">
-                        Address:
-                    </div>
-
-                    <div class="col-8">
-                        <input class="form-control" disabled required value="<%= params.address %>" />
                     </div>
                 </div>
 
@@ -89,49 +79,14 @@
                 <input form="account_update" type="hidden" name="twitterAccess" value="false" />
                 <% } %>
 
-                <div class="row pb-3">
-                    <div class="d-flex col-4 align-items-center font-weight-bold">
-                        Plan
-                    </div>
-                    <div class="col-8">
-                        <select name="plan" class="form-control" disabled>
-                            <option <%=params.plan==0 ? 'selected' : '' %> value="0">Free</option>
-                            <option <%=params.plan==1 ? 'selected' : '' %> value="1">Basic</option>
-                            <option <%=params.plan==2 ? 'selected' : '' %> value="2">Premium</option>
-                        </select>
-                    </div>
-                </div>
-
                 <input type="hidden" name="return_url" value="<%= params.return_url %>" />
             </form>
-            <hr>
-            <div class="row pb-3">
-                <div class="d-flex col-4 align-items-start justify-content-start flex-column font-weight-bold">
-                    MFA
-                    <small class="text-muted">Multi-factor Authentication using time-based one-time passwords
-                        (TOTP).</small>
-                </div>
-                <div class="col-8">
-                    <% if (params.otpSecret) { %>
-                    <form autocomplete="off" action="/oidc/<%= uid %>/account/totp" method="POST">
-                        <button class="btn btn-light text-danger btn-block">Deactivate</button>
-                        <input type="hidden" name="disable" value="true" />
-                    </form>
-                    <% } %>
-                    <% if (!params.otpSecret) { %>
-                    <form autocomplete="off" action="/oidc/<%= uid %>/account/totp" method="POST">
-                        <button type="submit" class="btn btn-light text-primary btn-block">Activate</button>
-                    </form>
-                    <% } %>
-                </div>
-            </div>
             <hr>
             <div class="row">
                 <div class="d-flex col-4 align-items-start flex-column font-weight-bold">
                     Connect
                     <small class="text-muted">Link your other accounts using single sign-on.</small>
                 </div>
-
                 <div class="d-flex col-8">
                     <div class="w-100 d-flex flex-column">
                         <% if (params.twitchLoginUrl && !params.twitchAccess) { %>
@@ -189,23 +144,23 @@
                         </form>
                         <% } %>
                         <% if (params.githubLoginUrl && !params.githubAccess) { %>
-                            <a class="btn btn-sign-in btn-github btn-block my-1" href="<%= params.githubLoginUrl %>">
+                        <a class="btn btn-sign-in btn-github btn-block my-1" href="<%= params.githubLoginUrl %>">
+                            <div class="logo">
+                                <img src="/img/github-logo.png" alt="github logo" />
+                            </div>
+                            <div class="label">Connect Github</div>
+                        </a>
+                        <% } %>
+                        <% if (params.githubAccess) { %>
+                        <form method="post" action="/oidc/<%= uid %>/account/github/disconnect">
+                            <button class="btn btn-sign-in bg-gray btn-github btn-block my-1" type="submit">
                                 <div class="logo">
                                     <img src="/img/github-logo.png" alt="github logo" />
                                 </div>
-                                <div class="label">Connect Github</div>
-                            </a>
-                            <% } %>
-                            <% if (params.githubAccess) { %>
-                            <form method="post" action="/oidc/<%= uid %>/account/github/disconnect">
-                                <button class="btn btn-sign-in bg-gray btn-github btn-block my-1" type="submit">
-                                    <div class="logo">
-                                        <img src="/img/github-logo.png" alt="github logo" />
-                                    </div>
-                                    <div class="label">Disconnect Github</div>
-                                </button>
-                            </form>
-                            <% } %>
+                                <div class="label">Disconnect Github</div>
+                            </button>
+                        </form>
+                        <% } %>
                         <% if (params.twitterLoginUrl && !params.twitterAccess) { %>
                         <a class="btn btn-sign-in btn-twitter btn-block my-1" href="<%= params.twitterLoginUrl %>">
                             <div class="logo">
@@ -227,8 +182,28 @@
                     </div>
                 </div>
             </div>
-
             <hr>
+            <div class="row pb-3">
+                <div class="d-flex col-4 align-items-start justify-content-start flex-column font-weight-bold">
+                    MFA
+                    <small class="text-muted">Multi-factor Authentication using time-based one-time passwords
+                        (TOTP).</small>
+                </div>
+                <div class="col-8">
+                    <% if (params.otpSecret) { %>
+                    <form autocomplete="off" action="/oidc/<%= uid %>/account/totp" method="POST">
+                        <button class="btn btn-light text-danger btn-block">Deactivate</button>
+                        <input type="hidden" name="disable" value="true" />
+                    </form>
+                    <% } %>
+                    <% if (!params.otpSecret) { %>
+                    <form autocomplete="off" action="/oidc/<%= uid %>/account/totp" method="POST">
+                        <button type="submit" class="btn btn-light text-primary btn-block">Activate</button>
+                    </form>
+                    <% } %>
+                </div>
+            </div>
+
             <button class="mt-5 btn btn-primary btn-block rounded-pill" type="submit" form="account_update">
                 Update Infomation
             </button>

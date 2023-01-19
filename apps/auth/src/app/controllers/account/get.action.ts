@@ -17,6 +17,7 @@ async function formatAccountRes(account) {
         company: account.company,
         plan: account.plan,
         email: account.email,
+        profileImg: account.profileImg,
         googleAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.Google),
         youtubeViewAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.YoutubeView),
         youtubeManageAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.YoutubeManage),

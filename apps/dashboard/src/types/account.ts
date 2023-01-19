@@ -12,6 +12,7 @@ export interface IAccount {
     lastName: string;
     company: string;
     plan: AccountPlanType;
+    profileImg?: string;
     email?: string;
 }
 export interface IAccountUpdates {
