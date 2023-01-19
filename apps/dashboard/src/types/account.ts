@@ -1,7 +1,6 @@
 export enum AccountPlanType {
-    Free = 0,
-    Basic = 1,
-    Premium = 2,
+    Basic = 0,
+    Premium = 1,
 }
 
 export interface IAccount {

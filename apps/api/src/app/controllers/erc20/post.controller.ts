@@ -1,9 +1,6 @@
 import { Request, Response } from 'express';
 import { body, check, query } from 'express-validator';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
-import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import { checkAndUpgradeToBasicPlan } from '@thxnetwork/api/util/plans';
-
 import ImageService from '@thxnetwork/api/services/ImageService';
 
 export const validation = [
@@ -28,10 +25,6 @@ export const controller = async (req: Request, res: Response) => {
             schema: { $ref: '#/definitions/ERC20' } 
     }
     */
-    const account = await AccountProxy.getById(req.auth.sub);
-
-    await checkAndUpgradeToBasicPlan(account, req.body.chainId);
-
     let logoImgUrl;
     if (req.file) {
         const response = await ImageService.upload(req.file);
