@@ -23,5 +23,6 @@
         "build": {
             "dependsOn": ["^build"]
         }
-    }
+    },
+    "defaultProject": "discord-bot"
 }

@@ -7,6 +7,7 @@
         "common": "libs/common",
         "contracts": "libs/contracts",
         "dashboard": "apps/dashboard",
+        "discord-bot": "apps/discord-bot",
         "public": "apps/public",
         "sdk": "libs/sdk",
         "wallet": "apps/wallet"
