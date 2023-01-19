@@ -1,9 +1,11 @@
 import mixpanel from 'mixpanel-browser';
-import { MIXPANEL_TOKEN } from './secrets';
+import { API_URL, MIXPANEL_TOKEN } from './secrets';
 import { UserProfile } from '../store/modules/account';
 
-const mixpanelClient = () => {
-    mixpanel.init(MIXPANEL_TOKEN);
+const MIXPANEL_PROXY = API_URL + '/v1/data';
+
+export const mixpanelClient = () => {
+    mixpanel.init(MIXPANEL_TOKEN, { api_host: MIXPANEL_PROXY });
     return mixpanel;
 };
 

@@ -25,6 +25,7 @@ import perksRouter from './perks/perks.router';
 import milestonesRewardRouter from './milestone-reward/milestone-rewards.router';
 import webhooksRouter from './webhooks/webhooks.router';
 import widgetsRouter from './widgets/widgets.router';
+import dataRouter from './data/data.router';
 import { checkJwt, corsHandler } from '@thxnetwork/api/middlewares';
 
 const router = express.Router();
@@ -38,6 +39,7 @@ router.use('/widget', widgetRouter);
 router.use('/rewards', rewardsRouter);
 router.use('/perks', perksRouter);
 router.use('/webhook', webhooksRouter);
+router.use('/data', dataRouter);
 
 router.use(checkJwt);
 router.use(corsHandler);

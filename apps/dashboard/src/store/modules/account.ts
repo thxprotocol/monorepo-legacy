@@ -6,6 +6,7 @@ import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 import type { IAccount, IAccountUpdates, IDiscord, ITwitter, IYoutube } from '@thxnetwork/dashboard/types/account';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { RewardConditionPlatform } from '@thxnetwork/types/enums/RewardConditionPlatform';
+import { mixpanelClient } from '@thxnetwork/dashboard/utils/mixpanel';
 
 @Module({ namespaced: true })
 class AccountModule extends VuexModule {
@@ -164,6 +165,7 @@ class AccountModule extends VuexModule {
                 channel: payload.platform,
                 return_url: payload.returnUrl,
                 access_token_kind,
+                distinct_id: mixpanelClient().get_distinct_id(),
             },
         });
     }
@@ -177,6 +179,7 @@ class AccountModule extends VuexModule {
     }) {
         const extraQueryParams: any = {
             return_url: BASE_URL,
+            distinct_id: mixpanelClient().get_distinct_id(),
         };
 
         if (payload.signupEmail) {
@@ -211,6 +214,7 @@ class AccountModule extends VuexModule {
             extraQueryParams: {
                 prompt: 'account-settings',
                 return_url: BASE_URL + returnPath,
+                distinct_id: mixpanelClient().get_distinct_id(),
             },
         });
     }
@@ -224,6 +228,7 @@ class AccountModule extends VuexModule {
         const extraQueryParams: any = {
             prompt: 'create',
             return_url: BASE_URL,
+            distinct_id: mixpanelClient().get_distinct_id(),
         };
 
         if (signupEmail) {

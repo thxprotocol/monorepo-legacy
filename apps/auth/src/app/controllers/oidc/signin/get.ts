@@ -4,9 +4,10 @@ import { AUTH_URL, DASHBOARD_URL } from '../../../config/secrets';
 import { TwitterService } from '../../../services/TwitterService';
 import { YouTubeService } from '../../../services/YouTubeService';
 import { AUTH_REQUEST_TYPED_MESSAGE, createTypedMessage } from '../../../util/typedMessage';
-import ClaimProxy from '@thxnetwork/auth/proxies/ClaimProxy';
 import { DiscordService } from '@thxnetwork/auth/services/DiscordService';
 import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
+import { track } from '@thxnetwork/auth/util/mixpanel';
+import ClaimProxy from '@thxnetwork/auth/proxies/ClaimProxy';
 import BrandProxy from '@thxnetwork/auth/proxies/BrandProxy';
 
 async function controller(req: Request, res: Response) {
@@ -40,6 +41,8 @@ async function controller(req: Request, res: Response) {
         params.twitterLoginUrl = TwitterService.getLoginURL(uid, {});
         params.authRequestMessage = createTypedMessage(AUTH_REQUEST_TYPED_MESSAGE, AUTH_URL, uid);
     }
+
+    track.UserVisits(params.distinct_id, `oidc sign in`, [uid, params.return_url]);
 
     res.render('signin', {
         uid,
