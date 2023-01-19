@@ -30,7 +30,11 @@ app.use(compression());
 app.use(helmetInstance);
 app.use(corsHandler);
 
-morganBody(app, { logResponseBody: NODE_ENV !== 'production' });
+morganBody(app, {
+    logRequestBody: NODE_ENV === 'development',
+    logResponseBody: NODE_ENV === 'development',
+    skip: () => NODE_ENV === 'test',
+});
 
 app.use(expressEJSLayouts);
 app.use(xssProtection(true));

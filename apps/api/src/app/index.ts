@@ -26,7 +26,11 @@ app.use(lusca.xssProtection(true));
 app.use(express.static(assetsPath, { maxAge: 31557600000 }));
 app.use(express.json());
 
-morganBody(app, { logResponseBody: NODE_ENV !== 'production' });
+morganBody(app, {
+    logRequestBody: NODE_ENV === 'development',
+    logResponseBody: NODE_ENV === 'development',
+    skip: () => NODE_ENV === 'test',
+});
 
 app.use(express.urlencoded({ extended: true }));
 app.use(corsHandler);
