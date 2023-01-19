@@ -1,55 +1,31 @@
 <template>
-    <b-sidebar
-        class="d-none d-md-flex"
-        bg-variant="white"
-        id="sidebar-left"
-        no-header
-        no-header-close
-        no-close-on-route-change
-        no-slide
-        :visible="true"
-    >
+    <b-sidebar class="d-none d-md-flex" bg-variant="white" id="sidebar-left" no-header no-header-close
+        no-close-on-route-change no-slide :visible="true">
         <b-navbar toggleable="lg" class="sidebar">
             <div class="flex-grow-1 w-100 h-25 overflow-auto">
                 <div class="d-flex px-3 justify-content-between pt-4 pb-4 text-center">
                     <router-link to="/" custom v-slot="{ navigate }" class="cursor-pointer">
-                        <img
-                            :src="require('../../public/assets/logo.png')"
-                            width="40"
-                            alt="THX logo"
-                            @click="navigate"
-                            @keypress.enter="navigate"
-                            role="link"
-                        />
+                        <img :src="require('../../public/assets/logo.png')" width="40" alt="THX logo" @click="navigate"
+                            @keypress.enter="navigate" role="link" />
                     </router-link>
                     <b-dropdown variant="light" class="" size="sm" no-caret right>
                         <template #button-content>
                             <div class="text-left d-flex align-items-center justify-content-between">
                                 <div class="align-items-center d-flex">
-                                    <img
-                                        v-if="selectedPool"
-                                        width="20"
-                                        :src="`https://avatars.dicebear.com/api/identicon/${selectedPool._id}.svg`"
-                                    />
+                                    <img v-if="selectedPool" width="20"
+                                        :src="`https://avatars.dicebear.com/api/identicon/${selectedPool._id}.svg`" />
                                     <b-spinner v-else variant="primary" small />
                                 </div>
                             </div>
                         </template>
                         <b-dropdown-text class="text-muted small"> Loyalty Pools </b-dropdown-text>
                         <b-dropdown-divider />
-                        <b-dropdown-item-btn
-                            class="small"
-                            :key="key"
-                            v-for="(p, key) of pools"
-                            @click="onPoolSelect(p)"
-                        >
+                        <b-dropdown-item-btn class="small" :key="key" v-for="(p, key) of pools"
+                            @click="onPoolSelect(p)">
                             <div class="text-left d-flex align-items-center justify-content-between">
                                 <div class="align-items-center d-flex">
-                                    <img
-                                        width="20"
-                                        class="mr-2"
-                                        :src="`https://avatars.dicebear.com/api/identicon/${p._id}.svg`"
-                                    />
+                                    <img width="20" class="mr-2"
+                                        :src="`https://avatars.dicebear.com/api/identicon/${p._id}.svg`" />
                                     {{ p.title }}
                                 </div>
                                 <i class="fas fa-caret-right ml-2"></i>
@@ -233,6 +209,7 @@ export default class BaseNavbar extends Vue {
                 path: `/pool/${this.selectedPool._id}/clients`,
                 label: 'Clients',
                 iconClasses: 'fas fa-key',
+                isPremium: true,
             },
             {
                 path: `/pool/${this.selectedPool._id}/settings`,
