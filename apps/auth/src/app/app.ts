@@ -14,7 +14,6 @@ import { mainRouter } from './controllers';
 import { corsHandler, errorLogger, errorNormalizer, errorOutput, notFoundHandler } from './middlewares';
 import { helmetInstance } from './util/helmet';
 import { assetsPath } from './util/path';
-import { requestLogger } from './util/logger';
 
 axiosBetterStacktrace(axios);
 
@@ -31,11 +30,7 @@ app.use(compression());
 app.use(helmetInstance);
 app.use(corsHandler);
 
-if (NODE_ENV !== 'production') {
-    app.use(requestLogger);
-} else {
-    morganBody(app);
-}
+morganBody(app, { logResponseBody: NODE_ENV !== 'production' });
 
 app.use(expressEJSLayouts);
 app.use(xssProtection(true));
