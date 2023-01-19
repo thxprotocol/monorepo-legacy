@@ -9,14 +9,16 @@ import { AccountVariant } from '../../../../types/enums/AccountVariant';
 import { createWallet } from '@thxnetwork/auth/util/wallet';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
+import airtable from '@thxnetwork/auth/util/airtable';
 
-async function updateTokens(account: AccountDocument, tokens: any, accessTokenKind: AccessTokenKind) {
+async function updateTokens(account: AccountDocument, tokens: any, accessTokenKind: AccessTokenKind, userId: string) {
     const expiry = tokens.expiry_date ? Date.now() + Number(tokens.expiry_date) * 1000 : undefined;
     account.setToken({
         kind: accessTokenKind,
         accessToken: tokens.access_token,
         refreshToken: tokens.refresh_token,
         expiry,
+        userId,
     } as IAccessToken);
 
     await account.save();
@@ -49,6 +51,12 @@ export async function controller(req: Request, res: Response) {
             : // If not, get account for email claim
               await getAccountByEmail(claims.email, AccountVariant.SSOGoogle);
 
+    await airtable.pipelineSignup({
+        Email: account.email,
+        Date: account.createdAt,
+        AcceptUpdates: account.acceptUpdates,
+    });
+
     //Check if a SharedWallet must be created for a specific chainId
     createWallet(String(account._id));
 
@@ -62,7 +70,8 @@ export async function controller(req: Request, res: Response) {
     if (!accessTokenKind) {
         accessTokenKind = AccessTokenKind.Google;
     }
-    await updateTokens(account, tokens, accessTokenKind);
+
+    await updateTokens(account, tokens, accessTokenKind, claims.sub);
 
     return res.redirect(returnTo);
 }

@@ -6,8 +6,9 @@ import { AccountService } from '../../../../services/AccountService';
 import { TwitterService } from '../../../../services/TwitterService';
 import { getAccountByTwitterId, getInteraction, saveInteraction } from '../../../../util/oidc';
 import { createWallet } from '../../../../util/wallet';
+import airtable from '@thxnetwork/auth/util/airtable';
 
-async function updateTokens(account: AccountDocument, tokens): Promise<AccountDocument> {
+async function updateTokens(account: AccountDocument, tokens, userId): Promise<AccountDocument> {
     const expiry = tokens.expires_in ? Date.now() + Number(tokens.expires_in) * 1000 : undefined;
 
     account.setToken({
@@ -15,6 +16,7 @@ async function updateTokens(account: AccountDocument, tokens): Promise<AccountDo
         accessToken: tokens.access_token,
         refreshToken: tokens.refresh_token,
         expiry,
+        userId,
     } as IAccessToken);
 
     return await account.save();
@@ -42,13 +44,19 @@ export async function controller(req: Request, res: Response) {
             : // If not, get account for email claim
               await getAccountByTwitterId(user.id);
 
+    await airtable.pipelineSignup({
+        Email: account.email,
+        Date: account.createdAt,
+        AcceptUpdates: account.acceptUpdates,
+    });
+
     //Check if a SharedWallet must be created for a specific chainId
     createWallet(String(account._id));
 
     // Set successful login state
     const returnTo = await saveInteraction(interaction, account._id.toString());
 
-    await updateTokens(account, tokens);
+    await updateTokens(account, tokens, user.id);
     await account.updateOne({ lastLoginAt: Date.now() });
 
     return res.redirect(returnTo);

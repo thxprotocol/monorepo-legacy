@@ -34,6 +34,7 @@ export interface IAccessToken {
     accessToken?: string;
     refreshToken?: string;
     expiry?: number;
+    userId?: string;
 }
 export interface IAccountUpdates {
     acceptTermsPrivacy?: boolean;

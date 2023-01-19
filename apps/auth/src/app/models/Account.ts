@@ -28,7 +28,7 @@ const accountSchema = new mongoose.Schema(
         acceptTermsPrivacy: Boolean,
         acceptUpdates: Boolean,
         lastLoginAt: Date,
-        tokens: [{ kind: String, accessToken: String, refreshToken: String, expiry: Number }],
+        tokens: [{ kind: String, accessToken: String, refreshToken: String, expiry: Number, userId: String }],
     },
     { timestamps: true },
 );
