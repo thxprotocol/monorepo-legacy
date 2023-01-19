@@ -76,6 +76,10 @@ export class AccountService {
             account.profileImg = updates.profileImg;
         }
 
+        if (updates.discordId) {
+            account.discordId = updates.discordId;
+        }
+
         if (updates.plan) {
             account.plan = updates.plan;
         }
@@ -127,6 +131,7 @@ export class AccountService {
 
         if (updates.discordAccess === false) {
             account.unsetToken(AccessTokenKind.Discord);
+            account.discordId = null
         }
 
         await account.save();
