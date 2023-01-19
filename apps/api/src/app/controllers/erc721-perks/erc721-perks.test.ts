@@ -6,7 +6,7 @@ import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { addMinutes } from '@thxnetwork/api/util/rewards';
 import { createImage } from '@thxnetwork/api/util/jest/images';
-import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types';
+import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
 import { ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
 import { ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
