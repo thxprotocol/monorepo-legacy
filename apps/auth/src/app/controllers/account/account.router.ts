@@ -17,6 +17,7 @@ import { createLoginValidation, postLogin } from './login/post.controller';
 import { getTwitch } from './twitch/get.action';
 import { getDiscord } from './discord/get.action';
 import { getDiscordGuildJoined } from './discord/guild/get.action';
+import getByDiscordIdAction from './discord/getByDiscordId.action';
 
 const router = express.Router();
 
@@ -38,6 +39,12 @@ router.get('/:sub/discord/guild/:item', guard.check(['accounts:read']), getDisco
 
 router.get('/:sub/twitch', guard.check(['accounts:read']), getTwitch);
 
+router.get(
+    '/discord/:discordId',
+    guard.check(['accounts:read']),
+    validate(getByDiscordIdAction.validation),
+    getByDiscordIdAction.controller,
+);
 router.get('/address/:address', guard.check(['accounts:read']), validate([]), getAccountByAddress);
 router.get('/email/:email', guard.check(['accounts:read']), validate([]), getAccountByEmail);
 router.patch('/:sub', guard.check(['accounts:read', 'accounts:write']), patchAccount);

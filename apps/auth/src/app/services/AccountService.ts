@@ -29,6 +29,10 @@ export class AccountService {
         return Account.findById(sub);
     }
 
+    static getByDiscordId(discordId: string) {
+        return Account.findOne({ discordId });
+    }
+
     static getByEmail(email: string) {
         return Account.findOne({ email });
     }
@@ -131,7 +135,7 @@ export class AccountService {
 
         if (updates.discordAccess === false) {
             account.unsetToken(AccessTokenKind.Discord);
-            account.discordId = null
+            account.discordId = null;
         }
 
         await account.save();
