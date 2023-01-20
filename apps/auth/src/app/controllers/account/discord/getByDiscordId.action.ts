@@ -4,7 +4,7 @@ import { param } from 'express-validator';
 
 const validation = [param('discordId')];
 
-const getDiscord = async (req: Request, res: Response) => {
+const getAccount = async (req: Request, res: Response) => {
     const { discordId } = req.params;
     const account = await AccountService.getByDiscordId(discordId);
 
@@ -13,5 +13,5 @@ const getDiscord = async (req: Request, res: Response) => {
 
 export default {
     validation,
-    controller: getDiscord,
+    controller: getAccount,
 };
