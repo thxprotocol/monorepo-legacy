@@ -2,8 +2,7 @@
     <div v-if="profile" class="d-flex align-items-center justify-content-center">
         <b-spinner variant="primary" class="m-auto" v-if="loading" />
         <template v-else>
-            <strong v-if="!wallet" class="text-gray text-center"> No wallets are visible for your account. </strong>
-            <b-list-group v-else class="w-100 align-self-start">
+            <b-list-group class="w-100 align-self-start">
                 <b-alert variant="info" show>
                     <i class="fas fa-info-circle mr-2"></i> This list shows the addresses for your account.
                 </b-alert>
@@ -23,7 +22,7 @@
                         class="mr-2"
                         height="18"
                         :src="require('../../public/assets/img/logo.png')"
-                        :alt="`THX logo`"
+                        :alt="`Metamask logo`"
                     />
                     <div class="text-overflow-75">
                         {{ profile.address }}
