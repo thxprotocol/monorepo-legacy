@@ -25,20 +25,25 @@
                         Carbon Offset
                     </b-nav-item>
                     <b-nav-item to="/contact" :title="TITLES.CONTACT">Contact</b-nav-item>
-                    <b-nav-item :href="walletUrl" title="">
-                        <i class="fas fa-wallet"></i>
-                        Wallet
-                    </b-nav-item>
                 </b-navbar-nav>
                 <div class="navbar-nav-right">
                     <b-button
-                        :variant="isDarkJumbotron && !toggle ? 'outline-light' : 'outline-dark'"
-                        class="rounded-pill ml-3"
+                        class="rounded-pill"
+                        :variant="isDarkJumbotron && !toggle ? 'link-light' : 'link-dark'"
                         :href="dashboardUrl"
                         :title="TITLES.HOME_SIGN_IN"
                     >
-                        Sign in
-                        <i class="fas fa-chevron-right"></i>
+                        <i class="fas fa-user mr-2" style="font-size: 1.1rem"></i>
+                        Dashboard
+                    </b-button>
+                    <b-button
+                        class="rounded-pill"
+                        :variant="isDarkJumbotron && !toggle ? 'link-light' : 'link-dark'"
+                        :href="walletUrl"
+                        :title="TITLES.HOME_SIGN_IN"
+                    >
+                        <i class="fas fa-wallet mr-2" style="font-size: 1.1rem"></i>
+                        Wallet
                     </b-button>
                     <b-button class="rounded-pill ml-3" variant="primary" href="/demo" :title="TITLES.HOME_LIVE_DEMO">
                         <span>Live Demo</span>
@@ -54,6 +59,7 @@
 import { BButton, BCollapse, BNavbar, BNavbarNav, BNavbarToggle, BNavItem } from 'bootstrap-vue';
 import { Component, Vue } from 'vue-property-decorator';
 import { ALT_TEXT, TITLES } from '@thxnetwork/public/utils/constants';
+import { DASHBOARD_URL, WALLET_URL, DOCS_URL } from '../config/secrets';
 
 @Component({
     components: {
@@ -66,9 +72,9 @@ import { ALT_TEXT, TITLES } from '@thxnetwork/public/utils/constants';
     },
 })
 export default class BaseNavbar extends Vue {
-    dashboardUrl = process.env.VUE_APP_DASHBOARD_URL;
-    walletUrl = process.env.VUE_APP_WALLET_URL;
-    docsUrl = process.env.VUE_APP_DOCS_URL;
+    dashboardUrl = DASHBOARD_URL;
+    walletUrl = WALLET_URL;
+    docsUrl = DOCS_URL;
     toggle = false;
     ALT_TEXT = ALT_TEXT;
     TITLES = TITLES;

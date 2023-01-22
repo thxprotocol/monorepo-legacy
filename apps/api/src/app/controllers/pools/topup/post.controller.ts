@@ -9,13 +9,18 @@ import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 
-export const validation = [param('id').isMongoId(), body('amount').isInt({ gt: 0 })];
+export const validation = [
+    param('id').isMongoId(),
+    body('erc20Id').exists().isMongoId(),
+    body('amount').isInt({ gt: 0 }),
+];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
-    const { defaultAccount } = getProvider(req.assetPool.chainId);
+    const pool = await PoolService.getById(req.header('X-PoolId'));
+    const { defaultAccount } = getProvider(pool.chainId);
     const amount = toWei(String(req.body.amount));
-    const erc20 = await ERC20Service.findByPool(req.assetPool);
+    const erc20 = await ERC20Service.getById(req.body.erc20Id);
 
     if (erc20.type !== ERC20Type.Limited) throw new BadRequestError('Token type is not Limited type');
 
@@ -24,18 +29,22 @@ const controller = async (req: Request, res: Response) => {
     if (Number(balance) < Number(amount)) throw new InsufficientBalanceError();
 
     // Check allowance for admin to ensure throughput
-    const allowance = await erc20.contract.methods.allowance(defaultAccount, req.assetPool.address).call();
+    const allowance = await erc20.contract.methods.allowance(defaultAccount, pool.address).call();
     if (Number(allowance) < Number(amount)) {
         await TransactionService.send(
             erc20.contract.options.address,
-            erc20.contract.methods.approve(req.assetPool.address, ethers.constants.MaxUint256),
-            req.assetPool.chainId,
+            erc20.contract.methods.approve(defaultAccount, ethers.constants.MaxUint256),
+            pool.chainId,
         );
     }
 
-    const topup = await PoolService.topup(req.assetPool, amount);
+    await TransactionService.send(
+        erc20.contract.options.address,
+        erc20.contract.methods.transfer(pool.address, amount),
+        erc20.chainId,
+    );
 
-    res.json(topup);
+    res.status(200).end();
 };
 
 export default { validation, controller };

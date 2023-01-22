@@ -1,13 +1,11 @@
 <template>
     <div>
-        <b-row class="mb-3">
-            <h2 class="mb-0 mr-2">Loyalty Widget</h2>
-        </b-row>
+        <h2 class="mb-3">Loyalty Widget</h2>
         <BCard variant="white" body-class="shadow-sm">
             <strong>Embed code</strong>
             <p class="text-muted">
-                Place this code before the closing body tag of your HTML page. The launcher will appear and showcase
-                your loyalty program to your web audience.
+                Place this code before the closing body tag of your HTML page. The launcher will show for your web page
+                visitors.
             </p>
             <pre class="rounded text-white p-3 d-flex align-items-center bg-dark" style="white-space: nowrap">
                 <b-button 
@@ -18,6 +16,17 @@
                 </b-button>
                 <code class="language-html" v-html="codeExample"></code>
             </pre>
+            <b-alert show variant="info" class="d-flex justify-content-between">
+                <div>
+                    <i class="fas fa-info-circle mr-2"></i>
+                    Get our SDK on NPM and construct the THXWidget class in your SPA.
+                </div>
+                <b-link target="_blank" href="https://www.npmjs.com/package/@thxnetwork/sdk">
+                    Read more
+                    <i class="fas fa-chevron-right ml-2"></i>
+                </b-link>
+            </b-alert>
+            <hr />
             <strong>Color scheme</strong>
             <p class="text-muted">Choose a color scheme for the widget launcher.</p>
             <b-row>
@@ -47,6 +56,7 @@
                     </BCard>
                 </b-col>
             </b-row>
+            <hr />
             <strong>Default theme</strong>
             <p class="text-muted">Choose the default theme for widget frame when opened.</p>
             <b-row>
@@ -73,6 +83,7 @@
             </b-row>
             <hr />
             <div class="d-flex justify-content-end">
+                <b-button variant="link" @click="onClickPreview"> Preview </b-button>
                 <BButton
                     :disabled="!widget || isSubmitting"
                     variant="primary"
@@ -96,6 +107,7 @@ import { mapGetters } from 'vuex';
 import { API_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { IWidgets } from '@thxnetwork/dashboard/store/modules/widgets';
 import BaseModalWidgetCreate from '@thxnetwork/dashboard/components/modals/BaseModalWidgetCreate.vue';
+import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 
 hljs.registerLanguage('xml', XML);
 
@@ -151,6 +163,10 @@ export default class WidgetsView extends Vue {
                 this.theme = this.widget.theme;
             }
         });
+    }
+
+    onClickPreview() {
+        window.open(`${BASE_URL}/preview/${this.pool._id}`, '_blank');
     }
 
     async onClickUpdate() {

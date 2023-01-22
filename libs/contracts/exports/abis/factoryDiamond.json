@@ -7,12 +7,6 @@
         "internalType": "address",
         "name": "diamond",
         "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "token",
-        "type": "address"
       }
     ],
     "name": "DiamondDeployed",
@@ -41,16 +35,6 @@
         "internalType": "struct IDiamondCut.FacetCut[]",
         "name": "_facets",
         "type": "tuple[]"
-      },
-      {
-        "internalType": "address",
-        "name": "_erc20",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_erc721",
-        "type": "address"
       }
     ],
     "name": "deploy",

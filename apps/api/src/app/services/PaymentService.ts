@@ -37,8 +37,7 @@ async function create(
     },
 ) {
     const token = createRandomToken();
-    const address = await pool.contract.methods.getERC20().call();
-    const erc20 = await ERC20Service.findOrImport(pool, address);
+    const erc20 = await ERC20Service.findByPool(pool);
 
     return Payment.create({
         poolId: pool._id,
@@ -100,7 +99,8 @@ async function payCallback(args: TPayCallbackArgs, receipt: TransactionReceipt) 
             const erc721 = await ERC721Service.findById(metadata.erc721);
             const assetPool = await PoolService.getById(payment.poolId);
             const account = await AccountProxy.getByAddress(payment.sender);
-            await ERC721Service.mint(assetPool, erc721, metadata, account);
+
+            await ERC721Service.mint(assetPool, erc721, metadata, account.sub, account.address);
         } catch (err) {
             logger.error(err);
             throw new Error('ERROR ON MINT AFTER PAYMENT');

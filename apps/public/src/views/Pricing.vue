@@ -11,118 +11,18 @@
             </div>
             <div class="row mt-3 mt-sm-5 justify-content-center">
                 <div class="col-md-4 col-lg-3 mb-5 mb-lg-0">
-                    <b-card class="h-100" body-class="p-sm-4">
-                        <div class="text-center">
-                            <h2 class="h3 text-uppercase font-weight-bold text-dark">
-                                Free
-                            </h2>
-                            <p class="font-weight-light">
-                                For experimenting with rewards in your community or app.
-                            </p>
-                            <p class="pricing-costs mt-4">
-                                <strong>€ 0</strong>
-                                / month
-                            </p>
-                            <p><i class="text-muted mt-2">No token fee</i></p>
-                            <b-button
-                                block
-                                to="/signup"
-                                variant="dark"
-                                class="rounded-pill mt-3 mb-3"
-                                :title="TITLES.PRICING_SIGN_UP_ITS_FREE"
-                            >
-                                Sign Up, It's Free
-                                <i class="fas fa-chevron-right"></i>
-                            </b-button>
-                            <p class="small">
-                                <i class="text-muted mt-2">Testing is free forever</i>
-                            </p>
-                        </div>
-                        <h3 class="text-dark font-small">
-                            Features
-                        </h3>
-                        <div
-                            v-b-tooltip.hover
-                            target="topright"
-                            class="mb-1"
-                            title="Create your own tokens for gamified rewards, loyalty points or social tokens."
-                        >
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Mint your own token (ERC-20)
-                        </div>
-                        <div
-                            v-b-tooltip.hover
-                            target="topright"
-                            class="mb-1"
-                            title="Add existing ERC-20 tokens on mainnet for monetary rewards or general asset management."
-                        >
-                            <i class="fas fa-minus icon-circle icon-circle-opaque d-inline-flex"> </i>
-                            Add any existing token (ERC-20)
-                        </div>
-                        <div
-                            v-b-tooltip.hover
-                            target="topright"
-                            class="mb-1"
-                            title="Use our pre-configured widgets to embed tokens and collectibles in your platform."
-                        >
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Widgets
-                        </div>
-                        <div
-                            v-b-tooltip.hover
-                            target="topright"
-                            class="mb-1"
-                            title="Let your community members vote for reward rules, size and payouts."
-                        >
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Voting
-                        </div>
-                        <div
-                            v-b-tooltip.hover
-                            target="topright"
-                            class="mb-1"
-                            title="You can access Polygon mainnet access and bridge funds to Ethereum."
-                        >
-                            <i class="fas fa-minus icon-circle icon-circle-opaque d-inline-flex"> </i>
-                            Mainnet Access
-                        </div>
-                        <div
-                            v-b-tooltip.hover
-                            target="topright"
-                            class="mb-1"
-                            title="You can withdraw your tokens to the THX wallet and transfer them to any ERC-20 compatible system."
-                        >
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Wallet
-                        </div>
-                        <div
-                            v-b-tooltip.hover
-                            target="topright"
-                            class="mb-1"
-                            title="Collectible pools allow you to sell and exchange NFTs in your app or community."
-                        >
-                            <i class="fas fa-minus icon-circle icon-circle-opaque d-inline-flex"> </i>
-                            NFT collectibles (ERC-721)
-                        </div>
-                    </b-card>
-                </div>
-                <div class="col-md-4 col-lg-3 mb-5 mb-lg-0">
                     <b-card class="h-100" bg-variant="secondary" body-class="p-sm-4">
                         <div class="text-center">
-                            <h2 class="h3 text-uppercase font-weight-bold text-dark">
-                                Basic
-                            </h2>
-                            <p class="font-weight-light">
-                                For increasing engagement for creators and communities
-                            </p>
+                            <h2 class="h3 text-uppercase font-weight-bold text-dark">Basic</h2>
+                            <p class="font-weight-light">No-code customer loyalty and crypto perks</p>
                             <p class="pricing-costs mt-4">
-                                <strong>&euro; 89</strong>
+                                <strong>&euro; 0</strong>
                                 / month
                             </p>
                             <p>
                                 <i
                                     ><a href="https://docs.thx.network/pricing" target="_blank" class="text-muted mt-2">
-                                        2,5% token fee
+                                        2,5% transaction fee
                                     </a></i
                                 >
                             </p>
@@ -136,94 +36,50 @@
                                 Sign Up
                                 <i class="fas fa-chevron-right"></i>
                             </b-button>
-                            <p class="small">
-                                <i class="text-muted mt-2">* we accept crypto and EUR or USD payments</i>
-                            </p>
                         </div>
-                        <h3 class="text-dark font-small">
-                            Features
-                        </h3>
-                        <div
-                            v-b-tooltip.hover
-                            target="topright"
-                            class="mb-1"
-                            title="Create your own tokens for gamified rewards, loyalty points or social tokens."
-                        >
+                        <h3 class="text-dark font-small mt-5">Features</h3>
+                        <div class="mb-1">
                             <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Mint your own token (ERC-20)
+                            Loyalty Widget
                         </div>
-                        <div
-                            v-b-tooltip.hover
-                            target="topright"
-                            class="mb-1"
-                            title="Add existing ERC-20 tokens on mainnet for monetary rewards or general asset management."
-                        >
+                        <div class="mb-1">
                             <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Add any existing token (ERC-20)
+                            Point Rewards
                         </div>
-                        <div
-                            v-b-tooltip.hover
-                            target="topright"
-                            class="mb-1"
-                            title="Use our pre-configured widgets to embed tokens and collectibles in your platform"
-                        >
+                        <div class="mb-1">
                             <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Widgets
+                            Create Coins &amp; NFTs
                         </div>
-                        <div
-                            v-b-tooltip.hover
-                            target="topright"
-                            class="mb-1"
-                            title="Let your community members vote for reward rules, size and payouts."
-                        >
+                        <div class="mb-1">
                             <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Voting
+                            Import Coins
                         </div>
-                        <div
-                            v-b-tooltip.hover
-                            target="topright"
-                            class="mb-1"
-                            title="You can access Polygon mainnet access and bridge funds to Ethereum."
-                        >
+                        <div class="mb-1">
                             <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Mainnet Access
+                            Free transactions
                         </div>
-                        <div
-                            v-b-tooltip.hover
-                            target="topright"
-                            class="mb-1"
-                            title="You can withdraw your tokens to the THX wallet and transfer them to any ERC-20 compatible system."
-                        >
+                        <div class="mb-1">
                             <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Wallet
+                            Webhooks
                         </div>
-                        <div
-                            v-b-tooltip.hover
-                            target="topright"
-                            class="mb-1"
-                            title="Collectible pools allow you to sell and exchange NFTs in your app or community."
-                        >
+                        <div class="mb-1">
                             <i class="fas fa-minus icon-circle icon-circle-opaque d-inline-flex"> </i>
-                            NFT collectibles (ERC-721)
+                            REST API Access
                         </div>
                     </b-card>
                 </div>
                 <div class="col-md-4 col-lg-3 mb-5 mb-lg-0">
                     <b-card class="h-100" bg-variant="dark" body-class="text-light p-sm-4">
                         <div class="text-center">
-                            <h2 class="h3 text-uppercase font-weight-bold ">
-                                Premium
-                            </h2>
-                            <p class="font-weight-light">
-                                For advanced community engagement and NFT strategies
-                            </p>
+                            <h2 class="h3 text-uppercase font-weight-bold">Premium</h2>
+                            <p class="font-weight-light">Integrated loyalty solutions for high traffic platforms</p>
                             <p class="pricing-costs mt-4">
                                 <strong>Custom</strong>
                             </p>
                             <p>
                                 <i
                                     ><a href="https://docs.thx.network/pricing" target="_blank" class="text-muted mt-2">
-                                        2,5% token fee
+                                        2,5% transaction fee
                                     </a></i
                                 >
                             </p>
@@ -241,71 +97,34 @@
                                 <i class="text-muted mt-2">* we accept crypto and EUR or USD payments</i>
                             </p>
                         </div>
-                        <h3 class="text-light font-small">
-                            Features
-                        </h3>
-                        <div
-                            v-b-tooltip.hover
-                            target="topright"
-                            class="mb-1"
-                            title="Create your own tokens for gamified rewards, loyalty points or social tokens."
-                        >
+                        <h3 class="text-light font-small">Features</h3>
+                        <div class="mb-1">
                             <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Mint your own token (ERC-20)
+                            Loyalty Widget
                         </div>
-                        <div
-                            v-b-tooltip.hover
-                            target="topright"
-                            class="mb-1"
-                            title="Add existing ERC-20 tokens on mainnet for monetary rewards or general asset management."
-                        >
+                        <div class="mb-1">
                             <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Add any existing token (ERC-20)
+                            Point Rewards
                         </div>
-                        <div
-                            v-b-tooltip.hover
-                            target="topright"
-                            class="mb-1"
-                            title="Use our pre-configured widgets to embed tokens and collectibles in your platform."
-                        >
+                        <div class="mb-1">
                             <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Widgets
+                            Create Coins &amp; NFTs
                         </div>
-                        <div
-                            v-b-tooltip.hover
-                            target="topright"
-                            class="mb-1"
-                            title="Let your community members vote for reward rules, size and payouts."
-                        >
+                        <div class="mb-1">
                             <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Voting
+                            Import Coins
                         </div>
-                        <div
-                            v-b-tooltip.hover
-                            target="topright"
-                            class="mb-1"
-                            title="You can access Polygon mainnet access and bridge funds to Ethereum."
-                        >
+                        <div class="mb-1">
                             <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Mainnet Access
+                            Free transactions
                         </div>
-                        <div
-                            v-b-tooltip.hover
-                            target="topright"
-                            class="mb-1"
-                            title="You can withdraw your tokens to the THX wallet and transfer them to any ERC-20 compatible system."
-                        >
+                        <div class="mb-1">
                             <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Wallet
+                            Webhooks
                         </div>
-                        <div
-                            v-b-tooltip.hover
-                            target="topright"
-                            class="mb-1"
-                            title="Collectible pools allow you to sell and exchange NFTs in your app or community."
-                        >
+                        <div target="topright" class="mb-1">
                             <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            NFT collectibles (ERC-721)
+                            REST API Access
                         </div>
                     </b-card>
                 </div>

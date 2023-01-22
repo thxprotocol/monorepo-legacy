@@ -2,7 +2,7 @@
     <b-modal
         size="lg"
         title="Edit Widget"
-        :id="`modalWidgetEdit-${widget.clientId}`"
+        :id="`modalReferralRewardCreate${id}`"
         no-close-on-backdrop
         no-close-on-esc
         centered

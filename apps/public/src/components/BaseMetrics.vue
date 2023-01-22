@@ -5,11 +5,13 @@
                 <div class="col-md-5 offset-md-1 text-white align-items-center d-flex py-5">
                     <div>
                         <h2 class="h5 text-dark">No Code</h2>
-                        <p class="lead h1 text-uppercase">Launch token smart contracts</p>
+                        <p class="lead h1 text-uppercase">Launch NFTs & ERC-20 Tokens</p>
                         <p class="lead">
-                            Just point and click to launch a smart contract. Your users claim your tokens and NFTs using
-                            a social login or their Metamask account. Our brandable wallet handles transaction fees on
-                            behalf of your users. 100% frictionless onboarding!
+                            To power your loyalty rewards, just point and click to launch a token smart contract.
+                        </p>
+                        <p class="lead font-weight-light">
+                            Your users claim your tokenized perks using the embeddable widget or brandable wallet. 100%
+                            no code required on your end!
                         </p>
                         <b-button
                             class="mt-3 rounded-pill"
@@ -17,7 +19,7 @@
                             :href="dashboardUrl"
                             :title="TITLES.HOME_VISIT_YOUR_DASHBOARD"
                         >
-                            Create tokens in THX Dashboard
+                            Create tokens in your Dashboard
                             <i class="fas fa-chevron-right"></i>
                         </b-button>
                     </div>
@@ -40,6 +42,7 @@ import { BButton, BJumbotron } from 'bootstrap-vue';
 import { Component, Vue } from 'vue-property-decorator';
 import { Hooper, Slide } from 'hooper';
 import { TITLES } from '@thxnetwork/public/utils/constants';
+import { DASHBOARD_URL } from '../config/secrets';
 
 @Component({
     components: {
@@ -51,6 +54,6 @@ import { TITLES } from '@thxnetwork/public/utils/constants';
 })
 export default class BaseMetrics extends Vue {
     TITLES = TITLES;
-    dashboardUrl = process.env.VUE_APP_DASHBOARD_URL;
+    dashboardUrl = DASHBOARD_URL;
 }
 </script>

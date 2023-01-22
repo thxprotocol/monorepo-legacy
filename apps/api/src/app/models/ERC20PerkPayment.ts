@@ -7,6 +7,7 @@ const erc20PerkPaymentSchema = new mongoose.Schema(
     {
         perkId: String,
         sub: String,
+        amount: Number,
     },
     { timestamps: true },
 );

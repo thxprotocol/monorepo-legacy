@@ -1,5 +1,5 @@
 import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
-import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
 import { ERROR_NO_ACCOUNT } from '@thxnetwork/auth/util/messages';
 import { Request, Response } from 'express';
@@ -7,8 +7,9 @@ import { AccountDocument } from '../../../../models/Account';
 import { AccountService } from '../../../../services/AccountService';
 import { AccountVariant } from '../../../../types/enums/AccountVariant';
 import { getAccountByEmail, getInteraction, saveInteraction } from '../../../../util/oidc';
+import airtable from '@thxnetwork/auth/util/airtable';
 
-async function updateTokens(account: AccountDocument, tokens: any): Promise<AccountDocument> {
+async function updateTokens(account: AccountDocument, tokens: any, userId: string): Promise<AccountDocument> {
     const expiry = tokens.expires_in ? Date.now() + Number(tokens.expires_in) * 1000 : undefined;
 
     account.setToken({
@@ -16,6 +17,7 @@ async function updateTokens(account: AccountDocument, tokens: any): Promise<Acco
         accessToken: tokens.access_token,
         refreshToken: tokens.refresh_token,
         expiry,
+        userId,
     } as IAccessToken);
 
     return await account.save();
@@ -48,6 +50,12 @@ async function controller(req: Request, res: Response) {
             : // If not, get account for email claim
               await getAccountByEmail(email, AccountVariant.SSOTwitch);
 
+    await airtable.pipelineSignup({
+        Email: account.email,
+        Date: account.createdAt,
+        AcceptUpdates: account.acceptUpdates,
+    });
+
     // Actions after successfully login
     await AccountService.update(account, {
         lastLoginAt: Date.now(),
@@ -56,7 +64,7 @@ async function controller(req: Request, res: Response) {
 
     const returnTo = await saveInteraction(interaction, account._id.toString());
 
-    await updateTokens(account, tokens);
+    await updateTokens(account, tokens, user.data[0].id);
 
     return res.redirect(returnTo);
 }

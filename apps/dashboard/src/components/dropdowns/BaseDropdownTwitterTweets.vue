@@ -31,18 +31,18 @@ import { format } from 'date-fns';
 export default class BaseDropdownTwitterTweets extends Vue {
     format = format;
 
-    @Prop() items!: any;
-    @Prop({ required: false }) item: any;
+    @Prop() items!: any[];
+    @Prop({ required: false }) item!: string;
 
     selected: any = null;
 
     mounted() {
-        if (!this.item) {
+        if (!this.item && this.items[0]) {
             this.onItemClick(this.items[0]);
         } else {
             for (const key in this.items) {
-                const tweet = this.items[key].referenced_tweets[0];
-                if (tweet.id === this.item) {
+                const id = this.items[key]?.referenced_tweets?.[0]?.id || this.items[key].id;
+                if (id === this.item) {
                     this.onItemClick(this.items[key]);
                     break;
                 }

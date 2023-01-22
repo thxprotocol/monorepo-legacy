@@ -11,7 +11,10 @@ export type TClaim = {
     poolId: string;
     erc20Id?: string;
     erc721Id?: string;
+    claimedAt?: string;
     rewardUuid: string;
+    createdAt: string;
+    page: number;
 };
 
 export type TClaimURLData = TClaim & {

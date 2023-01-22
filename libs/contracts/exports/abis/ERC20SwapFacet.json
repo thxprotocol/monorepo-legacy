@@ -72,7 +72,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_tokenAddress",
+        "name": "_tokenBAddress",
         "type": "address"
       }
     ],
@@ -91,7 +91,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_tokenAddress",
+        "name": "_tokenBAddress",
         "type": "address"
       },
       {
@@ -119,7 +119,12 @@
       },
       {
         "internalType": "address",
-        "name": "_tokenAddress",
+        "name": "_tokenBAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_tokenAAddress",
         "type": "address"
       }
     ],

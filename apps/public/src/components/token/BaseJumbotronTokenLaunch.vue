@@ -1,6 +1,9 @@
 <template>
     <div>
-        <b-jumbotron class="large" v-lazy:background-image="require('../../../public/assets/img/thx_jumbotron_token_bg.webp')">
+        <b-jumbotron
+            class="large"
+            v-lazy:background-image="require('../../../public/assets/img/thx_jumbotron_token_bg.webp')"
+        >
             <div class="container">
                 <div class="row">
                     <div class="col-lg-4 offset-lg-1 d-flex flex-column justify-content-center align-items-start">
@@ -80,6 +83,7 @@ import { IMetrics } from '@thxnetwork/public/store/modules/metrics';
 import { BButton, BJumbotron, BFormInput } from 'bootstrap-vue';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
+import { DASHBOARD_URL } from '../../config/secrets';
 
 @Component({
     components: {
@@ -92,7 +96,7 @@ import { mapGetters } from 'vuex';
     }),
 })
 export default class BaseJumbotronTokenLaunch extends Vue {
-    dashboardUrl = process.env.VUE_APP_DASHBOARD_URL;
+    dashboardUrl = DASHBOARD_URL;
     metrics!: IMetrics;
     signupEmail = '';
 

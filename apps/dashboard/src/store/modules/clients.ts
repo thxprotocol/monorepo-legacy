@@ -2,6 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import { Vue } from 'vue-property-decorator';
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
 import { IPool } from './pools';
+import { track } from '@thxnetwork/dashboard/utils/mixpanel';
 
 export type TClient = {
     _id: string;
@@ -102,6 +103,7 @@ class ClientModule extends VuexModule {
         data.results.forEach((client: TClient) => {
             client.page = page;
             this.context.commit('set', { pool, client });
+            this.context.dispatch('get', { pool, client })
         });
     }
 
@@ -113,6 +115,10 @@ class ClientModule extends VuexModule {
             headers: { 'X-PoolId': pool._id },
             data: { name, grantType, redirectUri, requestUri },
         });
+
+        const profile = this.context.rootGetters['account/profile'];
+        track.UserCreates(profile.sub, 'client');
+
         data.page = page;
         this.context.commit('set', { pool, client: data });
     }

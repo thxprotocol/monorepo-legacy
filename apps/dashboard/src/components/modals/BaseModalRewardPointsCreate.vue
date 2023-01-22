@@ -2,7 +2,8 @@
     <base-modal size="xl" title="Create Points Reward" :id="id" :error="error" :loading="isLoading" @show="onShow">
         <template #modal-body v-if="!isLoading">
             <p class="text-gray">
-                Points rewards are distributed to your customers achieving milestones in your customer journey.
+                Points rewards are distributed to your customers that have completed reward conditions in external
+                platforms.
             </p>
             <form v-on:submit.prevent="onSubmit()" id="formRewardPointsCreate">
                 <b-row>
@@ -37,7 +38,7 @@
                 variant="primary"
                 block
             >
-                {{ reward ? 'Update Reward' : 'Create Reward' }}
+                {{ reward ? 'Update Conditional Reward' : 'Create Conditional Reward' }}
             </b-button>
         </template>
     </base-modal>
@@ -45,7 +46,7 @@
 
 <script lang="ts">
 import { type IPool } from '@thxnetwork/dashboard/store/modules/pools';
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { type TPointReward } from '@thxnetwork/types/interfaces/PointReward';
 import { platformInteractionList, platformList } from '@thxnetwork/dashboard/types/rewards';
 import BaseModal from './BaseModal.vue';
@@ -86,20 +87,31 @@ export default class ModalRewardPointsCreate extends Vue {
     @Prop({ required: false }) reward!: TPointReward;
 
     onShow() {
-        this.setValues(this.reward);
+        if (this.reward) {
+            this.title = this.reward.title;
+            this.description = this.reward.description;
+            this.amount = this.reward.amount;
+            this.rewardLimit = this.reward.rewardLimit;
+            this.rewardCondition = {
+                platform: this.reward.platform as RewardConditionPlatform,
+                interaction: this.reward.interaction as RewardConditionInteraction,
+                content: this.reward.content as string,
+            };
+        } else {
+            this.title = '';
+            this.description = '';
+            this.amount = '0';
+            this.rewardLimit = 0;
+            this.rewardCondition = {
+                platform: RewardConditionPlatform.None,
+                interaction: RewardConditionInteraction.None,
+                content: '',
+            };
+        }
     }
 
     setValues(reward?: TPointReward) {
         if (!reward) return;
-        this.title = this.reward.title;
-        this.amount = this.reward.amount;
-        this.description = this.reward.description;
-        this.rewardLimit = this.reward.rewardLimit;
-        this.rewardCondition = {
-            platform: this.reward.platform as RewardConditionPlatform,
-            interaction: this.reward.interaction as RewardConditionInteraction,
-            content: this.reward.content as string,
-        };
     }
 
     onSubmit() {
@@ -120,16 +132,7 @@ export default class ModalRewardPointsCreate extends Vue {
             })
             .then(() => {
                 this.$bvModal.hide(this.id);
-                this.title = '';
-                this.amount = '0';
-                this.description = '';
-                this.rewardExpiry = {};
-                this.rewardLimit = 0;
-                this.rewardCondition = {
-                    platform: platformList[0].type,
-                    interaction: platformInteractionList[0].type,
-                    content: '',
-                };
+                this.$emit('submit');
                 this.isLoading = false;
             });
     }

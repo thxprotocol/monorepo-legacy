@@ -5,10 +5,11 @@ import { AccountService } from '../../../../services/AccountService';
 import { ERROR_NO_ACCOUNT } from '../../../../util/messages';
 import { getAccountByEmail, getInteraction, saveInteraction } from '../../../../util/oidc';
 import { AccountVariant } from '../../../../types/enums/AccountVariant';
-import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
+import airtable from '@thxnetwork/auth/util/airtable';
 
-async function updateTokens(account: AccountDocument, tokens: any): Promise<AccountDocument> {
+async function updateTokens(account: AccountDocument, tokens: any, userId: string): Promise<AccountDocument> {
     const expiry = tokens.expires_in ? Date.now() + Number(tokens.expires_in) * 1000 : undefined;
 
     account.setToken({
@@ -16,6 +17,7 @@ async function updateTokens(account: AccountDocument, tokens: any): Promise<Acco
         accessToken: tokens.access_token,
         refreshToken: tokens.refresh_token,
         expiry,
+        userId,
     } as IAccessToken);
 
     return await account.save();
@@ -37,7 +39,6 @@ async function controller(req: Request, res: Response) {
     const tokens = await GithubService.requestTokens(code);
 
     const user = await GithubService.getUser(tokens.access_token);
-    const email = user.email;
 
     // Get the interaction based on the state
     const interaction = await getInteraction(uid);
@@ -48,7 +49,13 @@ async function controller(req: Request, res: Response) {
             ? // If so, get account for sub
               await getAccountBySub(interaction.session.accountId)
             : // If not, get account for email claim
-              await getAccountByEmail(email, AccountVariant.SSOGithub);
+              await getAccountByEmail(user.email, AccountVariant.SSOGithub);
+
+    await airtable.pipelineSignup({
+        Email: account.email,
+        Date: account.createdAt,
+        AcceptUpdates: account.acceptUpdates,
+    });
 
     // Actions after successfully login
     await AccountService.update(account, {
@@ -57,7 +64,7 @@ async function controller(req: Request, res: Response) {
 
     const returnTo = await saveInteraction(interaction, account._id.toString());
 
-    await updateTokens(account, tokens);
+    await updateTokens(account, tokens, user.id);
 
     return res.redirect(returnTo);
 }

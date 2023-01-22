@@ -8,7 +8,6 @@ import { checkPasswordStrength } from '../util/passwordcheck';
 import { toChecksumAddress } from 'web3-utils';
 import {
     ERROR_NO_ACCOUNT,
-    DURATION_TWENTYFOUR_HOURS,
     ERROR_SIGNUP_TOKEN_INVALID,
     ERROR_SIGNUP_TOKEN_EXPIRED,
     SUCCESS_SIGNUP_COMPLETED,
@@ -22,7 +21,8 @@ import {
 import { YouTubeService } from './YouTubeService';
 import { AccountPlanType } from '../types/enums/AccountPlanType';
 import { AccountVariant } from '../types/enums/AccountVariant';
-import { AccessTokenKind } from '../types/enums/AccessTokenKind';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
+import { get24HoursExpiryTimestamp } from '../util/time';
 
 export class AccountService {
     static get(sub: string) {
@@ -103,8 +103,18 @@ export class AccountService {
                 : undefined;
 
         if (updates.googleAccess === false) {
-            YouTubeService.revokeAccess(account);
+            YouTubeService.revokeAccess(account, AccessTokenKind.Google);
             account.unsetToken(AccessTokenKind.Google);
+        }
+
+        if (updates.youtubeViewAccess === false) {
+            YouTubeService.revokeAccess(account, AccessTokenKind.YoutubeView);
+            account.unsetToken(AccessTokenKind.YoutubeView);
+        }
+
+        if (updates.youtubeManageAccess === false) {
+            YouTubeService.revokeAccess(account, AccessTokenKind.YoutubeManage);
+            account.unsetToken(AccessTokenKind.YoutubeManage);
         }
 
         if (updates.twitterAccess === false) {
@@ -135,7 +145,7 @@ export class AccountService {
             variant: AccountVariant.Metamask,
             acceptTermsPrivacy: true,
             acceptUpdates: false,
-            plan: AccountPlanType.Free,
+            plan: AccountPlanType.Basic,
             active: true,
         });
     }
@@ -166,14 +176,14 @@ export class AccountService {
         account.password = data.password;
         account.acceptTermsPrivacy = data.acceptTermsPrivacy || false;
         account.acceptUpdates = data.acceptUpdates || false;
-        account.plan = AccountPlanType.Free;
+        account.plan = AccountPlanType.Basic;
         account.twitterId = data.twitterId;
 
         if (!data.active) {
             const token = {
                 kind: AccessTokenKind.Signup,
                 accessToken: createRandomToken(),
-                expiry: DURATION_TWENTYFOUR_HOURS,
+                expiry: get24HoursExpiryTimestamp(),
             } as IAccessToken;
             account.setToken(token);
         }
@@ -190,7 +200,7 @@ export class AccountService {
             privateKey: address ? privateKey : wallet.privateKey,
             email,
             password,
-            plan: AccountPlanType.Free,
+            plan: AccountPlanType.Basic,
         });
 
         return await account.save();
@@ -211,7 +221,7 @@ export class AccountService {
             return { error: ERROR_SIGNUP_TOKEN_EXPIRED };
         }
 
-        account.setToken({ kind: AccessTokenKind.Signup, expiry: null, accessToken: '' } as IAccessToken);
+        account.unsetToken(AccessTokenKind.Signup);
         account.active = true;
         account.isEmailVerified = true;
 
@@ -229,12 +239,13 @@ export class AccountService {
         if (!account) {
             return { error: ERROR_VERIFY_EMAIL_TOKEN_INVALID };
         }
+
         const token: IAccessToken = account.getToken(AccessTokenKind.VerifyEmail);
         if (token.expiry < Date.now()) {
             return { error: ERROR_VERIFY_EMAIL_EXPIRED };
         }
 
-        account.setToken({ kind: AccessTokenKind.VerifyEmail, expiry: null, accessToken: '' } as IAccessToken);
+        account.unsetToken(AccessTokenKind.VerifyEmail);
         account.isEmailVerified = true;
 
         await account.save();
@@ -286,11 +297,7 @@ export class AccountService {
         return account;
     }
 
-    static async getSubForPasswordResetToken(password: string, passwordConfirm: string, passwordResetToken: string) {
-        // const account: AccountDocument = await Account.findOne({ passwordResetToken })
-        //     .where('passwordResetExpires')
-        //     .gt(Date.now())
-        //     .exec();
+    static async getSubForPasswordResetToken(password: string, passwordConfirm: string) {
         const account = await Account.findOne({
             'tokens.kind': AccessTokenKind.PasswordReset,
             'tokens.expiry': { $gt: Date.now() },
@@ -315,30 +322,6 @@ export class AccountService {
 
     static remove(id: string) {
         Account.remove({ _id: id });
-    }
-
-    static async post(
-        firstName: string,
-        lastName: string,
-        email: string,
-        password: string,
-        signupToken: string,
-        signupTokenExpires: number,
-    ) {
-        try {
-            const account = new Account({
-                firstName,
-                lastName,
-                email,
-                password,
-                signupToken,
-                signupTokenExpires,
-            });
-
-            await account.save();
-        } catch (error) {
-            return { error };
-        }
     }
 
     static async count() {

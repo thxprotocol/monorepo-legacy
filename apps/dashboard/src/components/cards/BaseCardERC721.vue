@@ -1,13 +1,17 @@
 <template>
-    <base-card :loading="isLoading" :is-deploying="isDeploying" classes="cursor-pointer" @click="onClick">
+    <base-card
+        :is-loading="isLoading"
+        :is-deploying="isDeploying"
+        :body-bg-variant="erc721.archived ? 'light' : null"
+        classes="cursor-pointer"
+        @click="onClick"
+    >
         <template #card-header>
-            NFT
-            <i class="ml-1 fas fa-archive text-white small" v-if="erc721.archived"></i>
+            <base-badge-network v-if="!isLoading" :chainId="erc721.chainId" />
+            <base-dropdown-menu-nft :erc721="erc721" @archive="archive" class="ml-auto" />
         </template>
-        <template #card-body v-if="!isLoading && erc721.address">
-            <base-badge-network class="mr-2" :chainId="erc721.chainId" />
-            <base-dropdown-menu-nft :erc721="erc721" @archive="archive" class="float-right" />
-            <div class="my-3 d-flex align-items-center">
+        <template #card-body>
+            <div class="mb-3 d-flex align-items-center">
                 <base-identicon class="mr-2" size="40" :rounded="true" variant="darker" :uri="erc721.logoURI" />
                 <div>
                     <strong class="m-0">{{ erc721.symbol }}</strong>
@@ -34,17 +38,7 @@
                     {{ prop.name }}
                 </b-badge>
             </p>
-            <template v-if="!erc721.poolId">
-                <hr />
-                <b-button block variant="primary" v-b-modal="`modalAssetPoolCreate-${erc721._id}`" class="rounded-pill">
-                    Create Pool
-                </b-button>
-            </template>
-            <base-modal-pool-create
-                @created="$store.dispatch('erc721/read', erc721._id)"
-                :erc721="erc721"
-                :id="`modalAssetPoolCreate-${erc721._id}`"
-            />
+            <b-button block variant="light" class="rounded-pill">Manage Metadata</b-button>
         </template>
     </base-card>
 </template>
@@ -106,7 +100,7 @@ export default class BaseCardERC721 extends Vue {
     }
 
     onClick() {
-        if (this.erc721.poolId) this.$router.push({ path: `/pool/${this.erc721.poolId}/metadata` });
+        this.$router.push({ path: `/nft/${this.erc721._id}/metadata` });
     }
 
     openTokenUrl() {

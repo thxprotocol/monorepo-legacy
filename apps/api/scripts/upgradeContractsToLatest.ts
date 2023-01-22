@@ -1,18 +1,17 @@
+import db from '../src/app/util/database';
 import { ContractName, currentVersion, DiamondVariant } from '../../../libs/contracts/exports';
 import { getContract } from '../src/app/config/contracts';
 import { MONGODB_URI } from '../src/app/config/secrets';
 import { AssetPool, AssetPoolDocument } from '../src/app/models/AssetPool';
-import AccountProxy from '../src/app/proxies/AccountProxy';
-import PoolService from '../src/app/services/PoolService';
-import { AccountPlanType, ChainId } from '../src/app/types/enums';
-import db from '../src/app/util/database';
+import { ChainId } from '../src/app/types/enums';
 import { updateDiamondContract } from '../src/app/util/upgrades';
+import PoolService from '../src/app/services/PoolService';
 
 db.connect(MONGODB_URI);
 
 async function main() {
     let counter = 0;
-    let pools: AssetPoolDocument[] = await AssetPool.find({ version: { $ne: currentVersion } });
+    const pools: AssetPoolDocument[] = await AssetPool.find({ version: { $ne: currentVersion } });
     const startTime = Date.now();
     const diamonds: Partial<Record<ContractName, DiamondVariant>> = {
         Registry: 'registry',
@@ -30,22 +29,6 @@ async function main() {
             }
         }
     }
-
-    pools = await Promise.all(
-        pools.filter(async (pool) => {
-            try {
-                const account = await AccountProxy.getById(pool.sub);
-                if (!account) return;
-
-                const isPaidAccount = [AccountPlanType.Basic, AccountPlanType.Premium].includes(account.plan);
-                const isFreeMumbai = account.plan === AccountPlanType.Free && pool.chainId === ChainId.PolygonMumbai;
-
-                return !isPaidAccount && !isFreeMumbai;
-            } catch (error) {
-                return false;
-            }
-        }),
-    );
 
     for (const pool of pools) {
         try {

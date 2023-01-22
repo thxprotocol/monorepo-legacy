@@ -1,25 +1,23 @@
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { User, UserManager } from 'oidc-client-ts';
-import { RewardConditionPlatform } from '@thxnetwork/types/index';
 import { config } from '@thxnetwork/dashboard/utils/oidc';
 import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
-import type { IAccount, IAccountUpdates, ITwitter, IYoutube } from '@thxnetwork/dashboard/types/account';
+import type { IAccount, IAccountUpdates, IDiscord, ITwitter, IYoutube } from '@thxnetwork/dashboard/types/account';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
+import { RewardConditionPlatform } from '@thxnetwork/types/enums/RewardConditionPlatform';
+import { mixpanelClient, track } from '@thxnetwork/dashboard/utils/mixpanel';
 
 @Module({ namespaced: true })
 class AccountModule extends VuexModule {
     userManager: UserManager = new UserManager(config);
     artifacts = '';
     version = '';
-    _networkHealth: any | null = null;
     _user!: User;
     _profile: IAccount | null = null;
     _youtube: IYoutube | null = null;
     _twitter: ITwitter | null = null;
-
-    get networkHealth() {
-        return this._networkHealth;
-    }
+    _discord: IDiscord | null = null;
 
     get user() {
         return this._user;
@@ -35,6 +33,10 @@ class AccountModule extends VuexModule {
 
     get twitter() {
         return this._twitter;
+    }
+
+    get discord() {
+        return this._discord;
     }
 
     @Mutation
@@ -58,10 +60,14 @@ class AccountModule extends VuexModule {
     }
 
     @Mutation
+    setDiscord(data: IDiscord) {
+        this._discord = data;
+    }
+
+    @Mutation
     setHealth(data: { version: string; artifacts: string }) {
         this.version = data.version;
         this.artifacts = data.artifacts;
-        this._networkHealth = data;
     }
 
     @Action({ rawError: true })
@@ -83,6 +89,9 @@ class AccountModule extends VuexModule {
             method: 'GET',
             url: '/account',
         });
+
+        track.UserIdentify(r.data);
+
         this.context.commit('setAccount', r.data);
     }
 
@@ -113,6 +122,19 @@ class AccountModule extends VuexModule {
     }
 
     @Action({ rawError: true })
+    async getDiscord() {
+        const r = await axios({
+            method: 'GET',
+            url: '/account/discord',
+        });
+
+        this.context.commit('setDiscord', r.data.isAuthorized ? r.data : null);
+
+        if (r.data.isAuthorized) return { discord: r.data, isAuthorized: true };
+        return { isAuthorized: false };
+    }
+
+    @Action({ rawError: true })
     async update(data: IAccountUpdates) {
         const r = await axios({
             method: 'PATCH',
@@ -125,11 +147,28 @@ class AccountModule extends VuexModule {
 
     @Action({ rawError: true })
     async connectRedirect(payload: { platform: RewardConditionPlatform; returnUrl: string }) {
+        let access_token_kind = '';
+        switch (payload.platform) {
+            case RewardConditionPlatform.Google: {
+                access_token_kind = AccessTokenKind.YoutubeView;
+                break;
+            }
+            case RewardConditionPlatform.Twitter: {
+                access_token_kind = AccessTokenKind.Twitter;
+                break;
+            }
+            case RewardConditionPlatform.Discord: {
+                access_token_kind = AccessTokenKind.Discord;
+                break;
+            }
+        }
         await this.userManager.signinRedirect({
             extraQueryParams: {
                 prompt: 'connect',
                 channel: payload.platform,
                 return_url: payload.returnUrl,
+                access_token_kind,
+                distinct_id: mixpanelClient().get_distinct_id(),
             },
         });
     }
@@ -143,7 +182,12 @@ class AccountModule extends VuexModule {
     }) {
         const extraQueryParams: any = {
             return_url: BASE_URL,
+            distinct_id: mixpanelClient().get_distinct_id(),
         };
+
+        if (payload.signupEmail) {
+            extraQueryParams['signupEmail'] = payload.signupEmail;
+        }
 
         if (payload.signupToken) {
             extraQueryParams['prompt'] = 'confirm';
@@ -173,6 +217,7 @@ class AccountModule extends VuexModule {
             extraQueryParams: {
                 prompt: 'account-settings',
                 return_url: BASE_URL + returnPath,
+                distinct_id: mixpanelClient().get_distinct_id(),
             },
         });
     }
@@ -186,6 +231,7 @@ class AccountModule extends VuexModule {
         const extraQueryParams: any = {
             prompt: 'create',
             return_url: BASE_URL,
+            distinct_id: mixpanelClient().get_distinct_id(),
         };
 
         if (signupEmail) {
@@ -201,13 +247,11 @@ class AccountModule extends VuexModule {
     async signinRedirectCallback() {
         const user = await this.userManager.signinRedirectCallback();
         this.context.commit('setUser', user);
-        return user;
     }
 
     @Action({ rawError: true })
     async signoutRedirect() {
         await this.userManager.signoutRedirect({});
-
         this.context.commit('setUser', null);
     }
 
@@ -225,16 +269,6 @@ class AccountModule extends VuexModule {
     @Action({ rawError: true })
     async signinSilent() {
         return await this.userManager.signinSilent();
-    }
-
-    @Action({ rawError: true })
-    async getHealth() {
-        const r = await axios({
-            method: 'GET',
-            url: '/health',
-        });
-
-        this.context.commit('setHealth', r.data);
     }
 }
 

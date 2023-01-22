@@ -10,17 +10,17 @@
                     <div class="row p-lg-5">
                         <div class="col-lg-5 offset-lg-1 text-lg-right pr-5">
                             <h2 class="h5 text-dark">About us</h2>
-                            <p class="lead h1">UX &amp; Blockchain enthusiasts</p>
+                            <p class="lead h1">Open Source &amp; Blockchain enthusiasts</p>
                             <p class="lead font-weight-light">
-                                THX is brought to you by open source, UX and blockchain enthusiasts
+                                THX Network is brought to you by open source, UX and blockchain enthusiasts
                             </p>
                         </div>
                         <div class="col-lg-5 pl-lg-5">
                             <p class="font-weight-light line-height-2">
-                                THX is a spin-off from Open Social <sup>&reg;</sup>, an award winning community software
-                                solution from The Netherlands. We love designing, building and leading open source
-                                projects. We believe programmable money and peer-to-peer reward systems like THX will be
-                                nothing short of transformative for our economies.
+                                THX Network is a EU funded and Techstars backed loyalty software solution from
+                                Amsterdam, The Netherlands. We love designing, building and leading open source
+                                projects. We believe peer-to-peer reward systems will be nothing short of transformative
+                                for our economies.
                             </p>
                             <hr class="bg-gray d-none d-lg-block mt-5 mb-5" />
 

@@ -2,7 +2,7 @@
     <div>
         <b-form-group>
             <label>Blockchain Network</label>
-            <b-dropdown variant="link" class="dropdown-select">
+            <b-dropdown variant="link" class="dropdown-select" :toggle-class="{ disabled: disabled }">
                 <template #button-content>
                     <div class="d-flex align-items-center">
                         <img :src="chainInfo[currentChainId].logo" width="20" height="20" class="mr-3" />
@@ -20,18 +20,12 @@
                 </b-dropdown-item-button>
             </b-dropdown>
         </b-form-group>
-        <b-alert :show="profile.plan === AccountPlanType.Free && currentChainId == ChainId.Polygon" variant="warning">
-            <i class="fas fa-rocket mr-2"></i>
-            Choosing <strong>Polygon</strong> will move you from a Free to
-            <b-link :href="publicUrl + '/pricing'">Basic</b-link> plan and start invoicing.
-        </b-alert>
     </div>
 </template>
 
 <script lang="ts">
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import type { IAccount } from '@thxnetwork/dashboard/types/account';
-import { AccountPlanType } from '@thxnetwork/dashboard/types/account';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { PUBLIC_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { Component, Prop, Vue } from 'vue-property-decorator';
@@ -44,18 +38,16 @@ import { mapGetters } from 'vuex';
 })
 export default class BaseFormSelectNetwork extends Vue {
     @Prop() chainId!: ChainId;
+    @Prop() disabled!: boolean;
+
     ChainId = ChainId;
-    AccountPlanType = AccountPlanType;
     publicUrl = PUBLIC_URL;
     chainInfo = chainInfo;
     profile!: IAccount;
-    currentChainId = ChainId.PolygonMumbai;
+    currentChainId = ChainId.Polygon;
 
     created() {
-        if (!this.chainId && this.profile.plan !== AccountPlanType.Free) this.currentChainId = ChainId.Polygon;
-        else if (this.chainId) {
-            this.currentChainId = this.chainId;
-        }
+        if (this.chainId) this.currentChainId = this.chainId;
         this.$emit('selected', this.currentChainId);
     }
 

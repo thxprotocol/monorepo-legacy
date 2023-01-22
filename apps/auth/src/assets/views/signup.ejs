@@ -19,10 +19,49 @@
                 <%= alert.message %>
             </div>
             <% } else { %>
+            <div class="d-flex w-full align-items-center justify-content-start flex-wrap">
+                <% if (params.authRequestMessage) { %>
+                <a style="width: 40px; height: 40px;" class="mr-2 mb-2 btn d-flex center-center  btn-light"
+                   @click="signin()" data-toggle="tooltip" title="Sign up with Metamask">
+                    <img width="25" src="/img/mm-logo.svg" alt="Metamask logo" />
+                </a>
+                <% } %>
+                <% if (params.googleLoginUrl) { %>
+                <a style="width: 40px; height: 40px;" class="mr-2 mb-2 btn d-flex center-center btn-light"
+                   href="<%= params.googleLoginUrl %>" data-toggle="tooltip" title="Sign up with Google">
+                    <img width="20" src="/img/g-logo.png" alt="Google logo" />
+                </a>
+                <% } %>
+                <% if (params.twitterLoginUrl) { %>
+                <a style="width: 40px; height: 40px;" class="mr-2 mb-2  btn d-flex center-center  btn-light"
+                   href="<%= params.twitterLoginUrl %>" data-toggle="tooltip" title="Sign up with Twitter">
+                    <img width="20" src="/img/t-logo.png" alt="Twitter logo" />
+                </a>
+                <% } %>
+                <% if (params.discordLoginUrl) { %>
+                <a style="width: 40px; height: 40px;" class="mr-2 mb-2  btn d-flex center-center  btn-light"
+                   href="<%= params.discordLoginUrl %>" data-toggle="tooltip" title="Sign up with Discord">
+                    <img width="20" src="/img/discord-logo.png" alt="Discord logo" />
+                </a>
+                <% } %>
+                <% if (params.githubLoginUrl) { %>
+                <a style="width: 40px; height: 40px;" class="mr-2 mb-2  btn d-flex center-center btn-light"
+                   href="<%= params.githubLoginUrl %>" data-toggle="tooltip" title="Sign up with Github">
+                    <img width="20" src="/img/github-logo.png" alt="github logo" />
+                </a>
+                <% } %>
+                <% if (params.twitchLoginUrl) { %>
+                <a style="width: 40px; height: 40px;" class="mr-2 mb-2 btn d-flex center-center  btn-light"
+                   href="<%= params.twitchLoginUrl %>" data-toggle="tooltip" title="Sign up with Twitch">
+                    <img width="20" src="/img/twitch-logo.png" alt="twitch logo" />
+                </a>
+                <% } %>
+            </div>
+            <p class="mt-2 text-muted">Or sign up using your e-mail</p>
             <form autocomplete="off" action="/oidc/<%= uid %>/signup" method="post">
                 <div class="form-group">
-                    <input placeholder="E-mail" class="form-control" type="email" name="email" v-model="email" required
-                           :class="{
+                    <input placeholder="E-mail" class="form-control" type="email" name="email" v-model="email"
+                           data-email="<%= params.signup_email %>" required :class="{
                         'is-valid': email && validEmail, 'is-invalid': email && !validEmail
                     }" />
                 </div>
@@ -87,36 +126,36 @@
         </div>
     </div>
 </div>
-<div class="col-lg-5 d-flex align-items-center">
-    <ul class="list-group text-white pl-lg-5" style="list-style: none;">
+<div class="col-lg-5 d-flex align-items-center mt-lg-5">
+    <ul class="list-group text-white pl-lg-5 mt-5" style="list-style: none;">
         <li class="list-group-item bg-darker mb-1 py-4">
             <div class="d-flex">
                 <div class="pr-2"><i class="fas fa-check-circle text-primary" aria-hidden="true"></i></div>
                 <div class="text-light">
                     <strong>Fast &amp; free transactions</strong><br>
-                    Our side-chain provides fast and free transactions for your end-users.
+                    The Polygon blockchain provides fast and free transactions for your end-users.
                 </div>
             </div>
         </li>
         <li class="list-group-item bg-darker mb-1 py-4">
             <div class="d-flex">
                 <div class="pr-2"><i class="fas fa-check-circle text-primary" aria-hidden="true"></i></div>
-                <div><strong>Seamless Integration</strong><br> Great documentation, the right tooling and
-                    all the endpoints for your application interact with. </div>
+                <div><strong>Only pay for success</strong><br> Transactional fees mean you only pay when your users are
+                    getting value.</div>
             </div>
         </li>
         <li class="list-group-item bg-darker mb-1 py-4">
             <div class="d-flex">
                 <div class="pr-2"><i class="fas fa-check-circle text-primary" aria-hidden="true"></i></div>
-                <div><strong>Secure</strong><br> We provide best-in-class key management and key backup
-                    solutions for your users. </div>
+                <div><strong>Easy integration</strong><br>Embedding a widget is as easy as copy/pasting a piece of code.
+                </div>
             </div>
         </li>
         <li class="list-group-item bg-darker mb-1 py-4">
             <div class="d-flex">
                 <div class="pr-2"><i class="fas fa-check-circle text-primary" aria-hidden="true"></i></div>
-                <div><strong>Modular</strong><br> Your application is flexible thanks to our modular
-                    architecture. </div>
+                <div><strong>Secure</strong><br> We provide best-in-class key management and key backup solutions for
+                    your users. </div>
             </div>
         </li>
     </ul>

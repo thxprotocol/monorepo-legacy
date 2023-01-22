@@ -1,33 +1,38 @@
 <template>
-    <div class="center-center h-100">
-        <b-spinner variant="primary"></b-spinner>
-    </div>
+    <b-spinner variant="primary"></b-spinner>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { BSpinner } from 'bootstrap-vue';
+import { IPools } from '../store/modules/pools';
+import { track } from '../utils/mixpanel';
+import { IAccount } from '../types/account';
+import { NODE_ENV } from '@thxnetwork/dashboard/utils/secrets';
+import { ChainId } from '@thxnetwork/sdk/types/enums/ChainId';
 
 @Component({
-    components: { 'b-spinner': BSpinner },
     computed: mapGetters({
+        pools: 'pools/all',
         profile: 'account/profile',
     }),
 })
 export default class Redirect extends Vue {
-    busy = false;
-    error = '';
+    pools!: IPools;
+    profile!: IAccount;
 
     async mounted() {
-        try {
-            await this.$store.dispatch('account/signinRedirectCallback');
-            await this.$store.dispatch('account/getProfile');
+        await this.$store.dispatch('account/signinRedirectCallback');
+        await this.$store.dispatch('account/getProfile');
 
-            this.$router.push('/');
-        } catch (error) {
-            this.error = (error as Error).toString();
-        }
+        track.UserSignsIn(this.profile);
+
+        // List pools to see if we need to deploy a first
+        await this.$store.dispatch('pools/list');
+        const chainId = NODE_ENV === 'production' ? ChainId.Polygon : ChainId.Hardhat;
+        if (!Object.values(this.pools).length) this.$store.dispatch('pools/create', { chainId });
+
+        this.$router.push('/');
     }
 }
 </script>

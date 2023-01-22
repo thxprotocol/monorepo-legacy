@@ -3,9 +3,7 @@
         <div class="p-lg-5">
             <div class="text-center pt-5 pt-lg-5 pt-xl-4">
                 <h2 class="h5">Contact us</h2>
-                <p class="h2 lead mb-4 font-size-l">
-                    Let's explore your use case
-                </p>
+                <p class="h2 lead mb-4 font-size-l">Let's explore your use case</p>
                 <p>
                     We offer a number of integrations with community software but the possibilities are endless. Don't
                     hesitate to reach out and explore your use case.
@@ -114,6 +112,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import VueRecaptcha from 'vue-recaptcha';
+import { CMS_URL, GOOGLE_SITE_KEY } from '../config/secrets';
 
 @Component({
     components: {
@@ -121,7 +120,7 @@ import VueRecaptcha from 'vue-recaptcha';
     },
 })
 export default class Contact extends Vue {
-    googleSiteKey = process.env.VUE_APP_GOOGLE_SITE_KEY;
+    googleSiteKey = GOOGLE_SITE_KEY;
     isSubmitDisabled = true;
     loading = false;
     error = '';
@@ -142,7 +141,7 @@ export default class Contact extends Vue {
 
         try {
             const r = await axios({
-                url: process.env.VUE_APP_CMS_URL + '/form-contacts',
+                url: CMS_URL + '/form-contacts',
                 method: 'POST',
                 data: {
                     email: this.email,

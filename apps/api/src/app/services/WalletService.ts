@@ -14,7 +14,7 @@ import AccountProxy from '../proxies/AccountProxy';
 async function create(chainId: ChainId, account: IAccount, forceSync = true) {
     const sub = String(account.sub);
     const wallet = await Wallet.create({ sub, chainId });
-    return this.deploy(wallet, chainId, sub, forceSync);
+    return deploy(wallet, chainId, sub, forceSync);
 }
 
 function findOneByAddress(address: string) {

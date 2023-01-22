@@ -2,14 +2,14 @@
     <div>
         <b-row class="mb-3">
             <b-col class="d-flex align-items-center">
-                <h2 class="mb-0">Currency Perks</h2>
+                <h2 class="mb-0">Coin Perks</h2>
             </b-col>
             <b-col class="d-flex justify-content-end">
                 <b-button v-b-modal="'modalRewardERC20Create'" class="rounded-pill" variant="primary">
                     <i class="fas fa-plus mr-2"></i>
-                    <span class="d-none d-md-inline">ERC20 Reward</span>
+                    <span class="d-none d-md-inline">Coin Perk</span>
                 </b-button>
-                <BaseModalRewardERC20Create :id="'modalRewardERC20Create'" :pool="pool" />
+                <BaseModalRewardERC20Create @submit="listRewards" :id="'modalRewardERC20Create'" :pool="pool" />
             </b-col>
         </b-row>
         <BCard variant="white" body-class="p-0 shadow-sm">
@@ -21,8 +21,7 @@
                 :selectedItems="selectedItems"
                 :actions="[
                     { variant: 0, label: `Delete perks` },
-                    { variant: 1, label: 'Download QR codes' },
-                    { variant: 2, label: 'Download CSV' },
+                    { variant: 1, label: 'Export Claim URL\'s' },
                 ]"
                 @click-action="onClickAction"
                 @change-page="onChangePage"
@@ -42,6 +41,8 @@
                 <template #head(title)> Title </template>
                 <template #head(progress)> Progress </template>
                 <template #head(rewardCondition)> Condition </template>
+                <template #head(claims)> Claim URL's </template>
+                <template #head(rewardLimit)> Reward Limit </template>
                 <template #head(id)> &nbsp; </template>
 
                 <!-- Cell formatting -->
@@ -49,7 +50,7 @@
                     <b-form-checkbox :value="item.checkbox" v-model="selectedItems" />
                 </template>
                 <template #cell(amount)="{ item }">
-                    <b-badge variant="dark" class="p-2"> {{ item.amount }} {{ pool.erc20.symbol }} </b-badge>
+                    <strong class="text-primary">{{ item.amount.amount }} {{ item.amount.symbol }}</strong>
                 </template>
                 <template #cell(progress)="{ item }">
                     <b-progress style="border-radius: 0.3rem">
@@ -72,7 +73,13 @@
                     />
                 </template>
                 <template #cell(claims)="{ item }">
-                    <b-link v-b-modal="`modalRewardClaimsDownload${item.id}`"> Download </b-link>
+                    <b-link v-b-modal="`modalRewardClaimsDownload${item.id}`" v-if="item.claims.length">
+                        <b-progress
+                            :value="item.claims.filter((c) => c.sub).length"
+                            :max="item.claims.length"
+                            show-value
+                        />
+                    </b-link>
                     <BaseModalRewardClaimsDownload
                         :id="`modalRewardClaimsDownload${item.id}`"
                         :pool="pool"
@@ -91,6 +98,7 @@
                         </b-dropdown-item>
                     </b-dropdown>
                     <BaseModalRewardERC20Create
+                        @submit="listRewards"
                         :id="'modalRewardERC20Create' + item.id"
                         :pool="pool"
                         :reward="erc20Perks[pool._id][item.id]"
@@ -113,6 +121,7 @@ import BaseModalRewardERC20Create from '@thxnetwork/dashboard/components/modals/
 import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/badges/BaseBadgeRewardConditionPreview.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseModalRewardClaimsDownload from '@thxnetwork/dashboard/components/modals/BaseModalRewardClaimsDownload.vue';
+import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 
 @Component({
     components: {
@@ -153,20 +162,20 @@ export default class ERC20PerksView extends Vue {
         return Object.values(this.erc20Perks[this.$route.params.id])
             .filter((reward: TERC20Perk) => reward.page === this.page)
             .sort((a, b) => (a.createdAt && b.createdAt && a.createdAt < b.createdAt ? 1 : -1))
-            .map((r: TERC20Perk) => ({
+            .map((r: TERC20Perk & { erc20: TERC20 }) => ({
                 checkbox: r._id,
-                amount: r.amount,
                 title: r.title,
+                amount: {
+                    amount: r.amount,
+                    symbol: r.erc20.symbol,
+                },
                 rewardCondition: {
                     platform: platformList.find((p) => r.platform === p.type),
                     interaction: platformInteractionList.find((i) => r.interaction === i.type),
                     content: r.content,
                 },
-                progress: {
-                    limit: r.rewardLimit,
-                    progress: r.progress,
-                },
                 claims: r.claims,
+                rewardLimit: r.rewardLimit,
                 id: r._id,
             }))
             .slice(0, this.limit);

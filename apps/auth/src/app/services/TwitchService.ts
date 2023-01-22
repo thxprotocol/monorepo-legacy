@@ -1,7 +1,7 @@
-import { TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET, TWITCH_REDIRECT_URI } from '@thxnetwork/auth/config/secrets';
+import { AUTH_URL, TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET } from '@thxnetwork/auth/config/secrets';
 import { AccountDocument } from '../models/Account';
 import CommonOauthLoginOptions from '../types/CommonOauthLoginOptions';
-import { AccessTokenKind } from '../types/enums/AccessTokenKind';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { twitchClient } from '../util/axios';
 
 export const TWITCH_API_SCOPE = ['user:read:follows', 'user:read:email', 'user:read:broadcast'];
@@ -11,17 +11,29 @@ const ERROR_NOT_AUTHORIZED = 'Not authorized for Twitch API';
 const ERROR_TOKEN_REQUEST_FAILED = 'Failed to request access token';
 
 class TwitchService {
-    static isAuthorized(account: AccountDocument) {
+    static async isAuthorized(account: AccountDocument) {
         const token = account.getToken(AccessTokenKind.Twitch);
         if (!token || !token.accessToken) return false;
         const isExpired = Date.now() > token.expiry;
-        if (isExpired) return false;
+        if (isExpired) {
+            try {
+                const accessToken = await this.refreshTokens(token.refreshToken);
+                account.setToken({
+                    kind: AccessTokenKind.Twitch,
+                    accessToken,
+                    expiry: Date.now() + Number(3600) * 1000,
+                });
+                await account.save();
+            } catch {
+                return false;
+            }
+        }
         return true;
     }
 
     static getLoginURL(
         state: string,
-        { scope = TWITCH_API_SCOPE, redirectUrl = TWITCH_REDIRECT_URI }: CommonOauthLoginOptions,
+        { scope = TWITCH_API_SCOPE, redirectUrl = AUTH_URL + '/oidc/callback/twitch' }: CommonOauthLoginOptions,
     ) {
         const body = new URLSearchParams();
 
@@ -40,7 +52,7 @@ class TwitchService {
 
         body.append('code', code);
         body.append('grant_type', 'authorization_code');
-        body.append('redirect_uri', TWITCH_REDIRECT_URI);
+        body.append('redirect_uri', AUTH_URL + '/oidc/callback/twitch');
         body.append('client_secret', TWITCH_CLIENT_SECRET);
         body.append('client_id', TWITCH_CLIENT_ID);
 

@@ -84,16 +84,14 @@ async function controller(req: Request, res: Response) {
         lastLoginAt: Date.now(),
     });
 
-    const accountId = String(account._id);
-
     //Check if a SharedWallet must be created for a specific chainId
-    createWallet(accountId);
+    createWallet(account);
 
     // Make to finish the interaction and login with sub
     return await oidc.interactionFinished(
         req,
         res,
-        { login: { accountId: accountId } },
+        { login: { accountId: String(account._id) } },
         { mergeWithLastSubmission: false },
     );
 }

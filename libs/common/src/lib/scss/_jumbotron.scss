@@ -5,7 +5,7 @@
 
     &.large {
         min-height: 85vh;
-        align-items: center;
+        align-items: center;    
     }
 
     &:not(.jumbotron-header) .container {
@@ -28,7 +28,7 @@
         font-size: 3rem !important;
 
         @media (min-width: map-get($grid-breakpoints, 'lg')) {
-            font-size: 3.9rem !important;
+            font-size: 3.5rem !important;
         }
     }
 
@@ -62,7 +62,7 @@
 }
 
 .jumbotron-header {
-    min-height: 320px;
+    min-height: 250px;
     max-height: none;
     display: flex;
     align-items: center;

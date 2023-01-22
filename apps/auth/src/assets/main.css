@@ -9002,7 +9002,7 @@ textarea.form-control-underlined {
   background: white;
   border-radius: 3px;
   margin: 1px;
-  padding: 5px;
+  padding: 10px;
   flex: 0 38px;
   display: flex;
   align-items: center;
@@ -9014,7 +9014,6 @@ textarea.form-control-underlined {
   width: 22px;
 }
 .btn-sign-in .label {
-  font-family: Roboto, sans-serif;
   font-size: 16px;
   color: white;
   flex: 1;

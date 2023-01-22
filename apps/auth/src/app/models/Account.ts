@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt-nodejs';
 import mongoose from 'mongoose';
-import { AccessTokenKind } from '../types/enums/AccessTokenKind';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IAccessToken, TAccount } from '../types/TAccount';
 import { encryptString } from '../util/encrypt';
 
@@ -28,7 +28,7 @@ const accountSchema = new mongoose.Schema(
         acceptTermsPrivacy: Boolean,
         acceptUpdates: Boolean,
         lastLoginAt: Date,
-        tokens: [{ kind: String, accessToken: String, refreshToken: String, expiry: Number }],
+        tokens: [{ kind: String, accessToken: String, refreshToken: String, expiry: Number, userId: String }],
     },
     { timestamps: true },
 );

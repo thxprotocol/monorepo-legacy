@@ -5,11 +5,16 @@ export interface IAccount {
     walletAddress: string;
     privateKey: string;
     googleAccess: boolean;
+    youtubeViewAccess: boolean;
+    youtubeManageAccess: boolean;
     twitterAccess: boolean;
     youtube?: any;
     twitter?: any;
     plan: AccountPlanType;
     email: string;
+    firstName: string;
+    lastName: string;
+    getAddress: (chainId: ChainId) => Promise<string>;
 }
 export interface ERC20Token {
     chainId: ChainId;
@@ -24,6 +29,8 @@ export interface IAccountUpdates {
     authenticationToken?: string;
     authenticationTokenExpires?: number;
     googleAccess?: boolean;
+    youtubeViewAccess?: boolean;
+    youtubeManageAccess?: boolean;
     twitterAccess?: boolean;
     githubAccess?: boolean;
     twitchAccess?: boolean;

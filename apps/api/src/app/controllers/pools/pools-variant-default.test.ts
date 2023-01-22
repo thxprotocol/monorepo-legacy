@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId, WithdrawalState } from '@thxnetwork/api/types/enums';
+import { ChainId } from '@thxnetwork/api/types/enums';
 import { Account } from 'web3-core';
 import { toWei, isAddress } from 'web3-utils';
 import { createWallet } from '@thxnetwork/api/util/jest/network';
@@ -10,18 +10,17 @@ import {
     tokenName,
     tokenSymbol,
     tokenTotalSupply,
-    MaxUint256,
-    adminAccessToken,
     dashboardAccessToken,
     walletAccessToken,
 } from '@thxnetwork/api/util/jest/constants';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { getByteCodeForContractName, getContract, getContractFromName } from '@thxnetwork/api/config/contracts';
+import { getByteCodeForContractName, getContract } from '@thxnetwork/api/config/contracts';
 import { currentVersion } from '@thxnetwork/contracts/exports';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
 import { ClaimDocument } from '@thxnetwork/api/types/TClaim';
 import { ERC20PerkDocument } from '@thxnetwork/api/models/ERC20Perk';
 import { addMinutes } from '@thxnetwork/api/util/rewards';
+import { Contract } from 'web3-eth-contract';
 
 const user = request.agent(app);
 
@@ -29,9 +28,10 @@ describe('Default Pool', () => {
     const title = 'Welcome Package';
 
     let poolAddress: string,
-        tokenAddress: string,
+        erc20Id: string,
         userWallet: Account,
         poolId: string,
+        tokenContract: Contract,
         reward: ERC20PerkDocument,
         claim: ClaimDocument;
 
@@ -46,13 +46,24 @@ describe('Default Pool', () => {
     describe('Existing ERC20 contract', () => {
         it('TokenDeployed event', async () => {
             const { options } = getContract(ChainId.Hardhat, 'LimitedSupplyToken', currentVersion);
-            const token = await TransactionService.deploy(
+            tokenContract = await TransactionService.deploy(
                 options.jsonInterface,
                 getByteCodeForContractName('LimitedSupplyToken'),
                 [tokenName, tokenSymbol, userWallet.address, tokenTotalSupply],
                 ChainId.Hardhat,
             );
-            tokenAddress = token.options.address;
+        });
+        it('import token', (done) => {
+            user.post('/v1/erc20/token')
+                .set('Authorization', dashboardAccessToken)
+                .send({
+                    address: tokenContract.options.address,
+                    chainId: ChainId.Hardhat,
+                })
+                .expect(({ body }: request.Response) => {
+                    erc20Id = body._id;
+                })
+                .expect(201, done);
         });
     });
 
@@ -62,10 +73,11 @@ describe('Default Pool', () => {
                 .set('Authorization', dashboardAccessToken)
                 .send({
                     chainId: ChainId.Hardhat,
-                    erc20tokens: [tokenAddress],
+                    title: 'My Pool',
                 })
                 .expect((res: request.Response) => {
                     poolId = res.body._id;
+                    expect(res.body.title).toBe('My Pool');
                     expect(res.body.archived).toBe(false);
                 })
                 .expect(201, done);
@@ -82,47 +94,21 @@ describe('Default Pool', () => {
         });
     });
 
-    describe('POST /members/:address', () => {
-        it('HTTP 200 when member is added', (done) => {
-            user.post('/v1/members/')
-                .send({ address: userWallet.address })
-                .set({ 'X-PoolId': poolId, 'Authorization': adminAccessToken })
-                .expect(200, done);
-        });
-    });
-
     describe('Make deposit into pool', () => {
-        it('Approve for infinite amount', async () => {
-            const testToken = getContractFromName(ChainId.Hardhat, 'LimitedSupplyToken', tokenAddress);
-            const tx = await testToken.methods.approve(poolAddress, MaxUint256).send({ from: userWallet.address });
-            const event: any = Object.values(tx.events).filter((e: any) => e.event === 'Approval')[0];
-            expect(event.returnValues.owner).toEqual(userWallet.address);
-            expect(event.returnValues.spender).toEqual(poolAddress);
-            expect(event.returnValues.value).toEqual(MaxUint256);
+        it('Transfer erc20 to pool address', async () => {
+            const tx = await tokenContract.methods
+                .transfer(poolAddress, tokenTotalSupply)
+                .send({ from: userWallet.address });
+
+            const event: any = Object.values(tx.events).filter((e: any) => e.event === 'Transfer')[0];
+            expect(event.returnValues.from).toEqual(userWallet.address);
+            expect(event.returnValues.to).toEqual(poolAddress);
+            expect(event.returnValues.value).toEqual(tokenTotalSupply);
         });
 
-        it('POST /deposits 201', async () => {
-            await user
-                .post('/v1/deposits')
-                .set({ 'Authorization': walletAccessToken, 'X-PoolId': poolId })
-                .send({ amount: tokenTotalSupply })
-                .expect(200);
-        });
-    });
-
-    describe('GET /pools/:address', () => {
-        it('HTTP 200 and expose pool information', (done) => {
-            user.get('/v1/pools/' + poolId)
-                .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .expect(async ({ body }: request.Response) => {
-                    expect(body.address).toEqual(poolAddress);
-                    expect(isAddress(body.erc20.address)).toEqual(true);
-                    expect(body.erc20.totalSupply).toBe(tokenTotalSupply);
-                    expect(Number(body.erc20.poolBalance)).toBe(
-                        Number(tokenTotalSupply) - Number(tokenTotalSupply) * 0.025, // Total supply - 2.5% protocol fee on deposit
-                    );
-                })
-                .expect(200, done);
+        it('Check pool balance', async () => {
+            const balanceInWei = await tokenContract.methods.balanceOf(poolAddress).call();
+            expect(tokenTotalSupply).toEqual(balanceInWei);
         });
     });
 
@@ -136,6 +122,7 @@ describe('Default Pool', () => {
                     description: 'Lorem ipsum dolor sit amet',
                     amount: rewardWithdrawAmount,
                     platform: 0,
+                    erc20Id,
                     expiryDate,
                     rewardLimit: 1,
                     claimAmount: 1,
@@ -177,113 +164,20 @@ describe('Default Pool', () => {
         });
     });
 
-    describe('POST /erc20-perks/:id/claim', () => {
+    describe('POST /erc20-perks/:id/collect', () => {
         it('HTTP 302 when tx is handled', async () => {
             await user
                 .post(`/v1/claims/${claim.uuid}/collect`)
                 .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
                 .expect(200);
         });
-
-        it('HTTP 200 after return state Pending', (done) => {
-            user.get('/v1/withdrawals?member=' + userWallet.address + '&page=1&limit=2')
-                .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
-                .expect((res: request.Response) => {
-                    const index = res.body.results.length - 1;
-                    const withdrawal = res.body.results[index];
-                    expect(withdrawal.state).toEqual(WithdrawalState.Withdrawn);
-                    expect(String(withdrawal.amount)).toEqual(rewardWithdrawAmount);
-                })
-                .expect(200, done);
-        });
     });
 
     describe('GET /pools/:address (after withdraw)', () => {
-        it('HTTP 200 and have decreased balance', (done) => {
-            user.get(`/v1/pools/${poolId}`)
-                .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .expect(async (res: request.Response) => {
-                    // Total supply - 2.5% = 250000 deposit fee  - 2.5% = 25 withdraw fee
-                    expect(res.body.erc20.poolBalance).toBe(toWei('97498975'));
-                })
-                .expect(200, done);
-        });
-    });
-
-    describe('GET /withdrawals (before proposed withdrawal)', () => {
-        it('HTTP 200 and returns 1 item', (done) => {
-            user.get(`/v1/withdrawals?member=${userWallet.address}&page=1&limit=2`)
-                .set({ 'X-PoolId': poolId, 'Authorization': adminAccessToken })
-                .expect(async (res: request.Response) => {
-                    expect(res.body.results.length).toBe(1);
-                })
-                .expect(200, done);
-        });
-    });
-
-    describe('GET /withdrawals for withdrawn state', () => {
-        it('HTTP 200 and returns 2 items for state = 1', (done) => {
-            user.get('/v1/withdrawals?state=1&page=1&limit=2')
-                .set({ 'X-PoolId': poolId, 'Authorization': adminAccessToken })
-                .expect(async (res: request.Response) => {
-                    expect(res.body.results.length).toBe(1);
-                })
-                .expect(200, done);
-        });
-
-        it('HTTP 200 and returns 0 item for state = 0', (done) => {
-            user.get('/v1/withdrawals?state=0&page=1&limit=2')
-                .set({ 'X-PoolId': poolId, 'Authorization': adminAccessToken })
-                .expect(async (res: request.Response) => {
-                    expect(res.body.results.length).toBe(0);
-                })
-                .expect(200, done);
-        });
-
-        it('HTTP 200 and returns 0 items for state = 0 and rewardId = reward.id since rewardId 2 does not exist.', (done) => {
-            user.get('/v1/withdrawals?state=0&rewardId=idontexist&page=1&limit=2')
-                .set({ 'X-PoolId': poolId, 'Authorization': adminAccessToken })
-                .expect(async (res: request.Response) => {
-                    expect(res.body.results.length).toBe(0);
-                })
-                .expect(200, done);
-        });
-
-        it('HTTP 200 and returns 1 item for state = 1 and rewardId = reward.id', (done) => {
-            user.get(`/v1/withdrawals?state=1&rewardId=${reward._id}&page=1&limit=2`)
-                .set({ 'X-PoolId': poolId, 'Authorization': adminAccessToken })
-                .expect(async (res: request.Response) => {
-                    expect(res.body.results.length).toBe(1);
-                })
-                .expect(200, done);
-        });
-
-        it('HTTP 200 and returns 1 item state = 1 and rewardId = reward.id and member address', (done) => {
-            user.get(`/v1/withdrawals?member=${userWallet.address}&state=1&rewardId=${reward._id}&page=1&limit=2`)
-                .set({ 'X-PoolId': poolId, 'Authorization': adminAccessToken })
-                .expect(async (res: request.Response) => {
-                    expect(res.body.results.length).toBe(1);
-                })
-                .expect(200, done);
-        });
-
-        it('HTTP 200 and returns 0 items for unknown rewardId', (done) => {
-            user.get('/v1/withdrawals?state=1&rewardId=idontexist&page=1&limit=2')
-                .set({ 'X-PoolId': poolId, 'Authorization': adminAccessToken })
-                .expect(async (res: request.Response) => {
-                    expect(res.body.results.length).toBe(0);
-                })
-                .expect(200, done);
-        });
-
-        it('HTTP 200 and returns 2 items for page=1 and limit=2', (done) => {
-            user.get('/v1/withdrawals?page=1&limit=2')
-                .set({ 'X-PoolId': poolId, 'Authorization': adminAccessToken })
-                .expect(async (res: request.Response) => {
-                    expect(res.body.results.length).toBe(1);
-                    expect(res.body.previous).toBeUndefined();
-                })
-                .expect(200, done);
+        it('Check pool balance', async () => {
+            const balanceInWei = await tokenContract.methods.balanceOf(poolAddress).call();
+            // Total supply - 1000 withdrawal - 2.5% = 25 withdraw fee
+            expect(balanceInWei).toEqual(toWei('99998975'));
         });
     });
 
@@ -293,8 +187,10 @@ describe('Default Pool', () => {
                 .set({ Authorization: dashboardAccessToken })
                 .send({
                     archived: true,
+                    title: 'My Pool 2',
                 })
                 .expect(({ body }: request.Response) => {
+                    expect(body.title).toBe('My Pool 2');
                     expect(body.archived).toBe(true);
                 })
                 .expect(200, done);

@@ -23,23 +23,24 @@ async function getAll(assetPool: TAssetPool): Promise<ERC20SwapDocument[]> {
 }
 
 async function create(
-    assetPool: AssetPoolDocument,
+    pool: AssetPoolDocument,
     account: IAccount,
     swapRule: ERC20SwapRuleDocument,
     erc20TokenIn: ERC20Document,
+    erc20TokenOut: ERC20Document,
     amountInInWei: string,
 ) {
     const swap = await ERC20Swap.create({
         swapRuleId: swapRule._id,
         amountIn: amountInInWei,
     });
-
+    const address = await account.getAddress(pool.chainId);
     const txId = await TransactionService.sendAsync(
-        assetPool.contract.options.address,
-        assetPool.contract.methods.swapFor(account.walletAddress, amountInInWei, erc20TokenIn.address),
-        assetPool.chainId,
+        pool.contract.options.address,
+        pool.contract.methods.swapFor(address, amountInInWei, erc20TokenIn.address, erc20TokenOut.address),
+        pool.chainId,
         true,
-        { type: 'swapCreateCallback', args: { assetPoolId: String(assetPool._id), swapId: String(swap._id) } },
+        { type: 'swapCreateCallback', args: { assetPoolId: String(pool._id), swapId: String(swap._id) } },
     );
 
     return ERC20Swap.findByIdAndUpdate(swap._id, { transactions: [txId] }, { new: true });

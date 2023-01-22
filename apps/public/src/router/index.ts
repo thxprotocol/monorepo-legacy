@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
+import { track } from '../utils/mixpanel';
 
 Vue.use(VueRouter);
 
@@ -30,6 +31,14 @@ const routes: Array<RouteConfig> = [
         component: () =>
             import(
                 /* webpackChunkName: "usecases-boostengagementinyourcommunity" */ '../views/usecases/OnboardNewPlayersWithReferrals.vue'
+            ),
+    },
+    {
+        path: '/use-cases/next-generation-growth-hack-for-web3-companies',
+        name: 'Next Generation Growth Hack for Web3 companies',
+        component: () =>
+            import(
+                /* webpackChunkName: "usecases-nextgenerationgrowthhackforweb3companies" */ '../views/usecases/NextGenerationGrowthHackForWeb3Companies.vue'
             ),
     },
     {
@@ -89,6 +98,15 @@ const router = new VueRouter({
     scrollBehavior() {
         return { x: 0, y: 0 };
     },
+});
+
+router.beforeEach(async (to, from, next) => {
+    try {
+        if (to.name) track.UserVisits('', to.name, to.params as unknown as string[]);
+        return next();
+    } catch (err) {
+        console.error(err);
+    }
 });
 
 export default router;

@@ -5,12 +5,13 @@ import db from '../../../util/database';
 import { AccountService } from '../../../services/AccountService';
 import { GOOGLE_API_ENDPOINT, INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
 import { accountEmail, accountSecret } from '../../../util/jest';
-import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 
 const http = request.agent(app);
 
 describe('Account Controller', () => {
     let authHeader: string, basicAuthHeader: string, sub: string;
+    const youtubeViewScopes = 'https://www.googleapis.com/auth/youtube.readonly openid';
 
     beforeEach(() => {
         nock('https://api.airtable.com').post(/.*?/).reply(200, {}); // mock email response for account create method
@@ -77,10 +78,10 @@ describe('Account Controller', () => {
         let account;
         beforeAll(async () => {
             nock(GOOGLE_API_ENDPOINT).persist().get(/.*?/).reply(200, {
-                scope: 'https://www.googleapis.com/auth/userinfo.email openid',
+                scope: youtubeViewScopes,
             });
             nock('https://oauth2.googleapis.com/tokeninfo').persist().post(/.*?/).reply(200, {
-                scope: 'https://www.googleapis.com/auth/userinfo.email openid',
+                scope: youtubeViewScopes,
             });
             nock('https://youtube.googleapis.com/').persist().get(/.*?/).reply(200, { data: {} });
             account = await AccountService.get(sub);
@@ -98,7 +99,7 @@ describe('Account Controller', () => {
 
         it('Return isAuthorized = false when Youtube access is expired', async () => {
             account.setToken({
-                kind: AccessTokenKind.Google,
+                kind: AccessTokenKind.YoutubeView,
                 accessToken: 'TOKEN',
                 refreshToken: 'REFRESH',
                 expiry: Date.now() - 3600,
@@ -115,8 +116,9 @@ describe('Account Controller', () => {
         });
 
         it('Return isAuthorized = false when Youtube scopes are missing', async () => {
+            nock.cleanAll();
             account.setToken({
-                kind: AccessTokenKind.Google,
+                kind: AccessTokenKind.YoutubeView,
                 accessToken: 'TOKEN',
                 refreshToken: 'REFRESH',
                 expiry: Date.now() + 3600,
@@ -137,13 +139,13 @@ describe('Account Controller', () => {
             nock.cleanAll();
 
             nock(GOOGLE_API_ENDPOINT).persist(true).get(/.*?/).reply(200, {
-                scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/youtube openid',
+                scope: youtubeViewScopes,
             });
             nock('https://oauth2.googleapis.com/tokeninfo')
                 .persist(true)
                 .post(/.*?/)
                 .reply(200, {
-                    scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/youtube openid',
+                    scope: youtubeViewScopes,
                     expiry_date: Date.now() + 3600,
                 });
             nock('https://youtube.googleapis.com/').persist().get(/.*?/).reply(200, { data: {} });

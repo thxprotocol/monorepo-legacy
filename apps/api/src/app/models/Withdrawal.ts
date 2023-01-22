@@ -7,16 +7,11 @@ const withdrawalSchema = new mongoose.Schema(
     {
         state: Number,
         type: Number,
-        poolId: String,
+        erc20Id: String,
         sub: String,
-        beneficiary: String,
         amount: Number,
-        unlockDate: Date,
-        rewardId: String,
-        withdrawalId: Number,
-        tokenId: Number,
+        beneficiary: String,
         transactions: [String],
-        failReason: String,
     },
     { timestamps: true },
 );

@@ -7,6 +7,7 @@ export type ERC721PerkDocument = mongoose.Document & TERC721Perk;
 const erc721PerkSchema = new mongoose.Schema(
     {
         ...rewardBaseSchema,
+        erc721Id: String,
         erc721metadataId: String,
         pointPrice: Number,
         image: String,

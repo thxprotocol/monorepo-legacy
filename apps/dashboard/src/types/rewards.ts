@@ -3,25 +3,31 @@ import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork
 export const platformList: IChannel[] = [
     {
         type: RewardConditionPlatform.None,
-        name: RewardConditionPlatform[0],
+        name: 'None',
         logoURI: '',
         actions: [],
     },
     {
         type: RewardConditionPlatform.Google,
-        name: RewardConditionPlatform[1],
+        name: 'YouTube',
         logoURI: require('@thxnetwork/dashboard/../public/assets/logo-youtube.png'),
         actions: [RewardConditionInteraction.YouTubeLike, RewardConditionInteraction.YouTubeSubscribe],
     },
     {
         type: RewardConditionPlatform.Twitter,
-        name: RewardConditionPlatform[2],
+        name: 'Twitter',
         logoURI: require('@thxnetwork/dashboard/../public/assets/logo-twitter.png'),
         actions: [
             RewardConditionInteraction.TwitterLike,
             RewardConditionInteraction.TwitterRetweet,
             RewardConditionInteraction.TwitterFollow,
         ],
+    },
+    {
+        type: RewardConditionPlatform.Discord,
+        name: 'Discord',
+        logoURI: require('@thxnetwork/dashboard/../public/assets/logo-discord.png'),
+        actions: [RewardConditionInteraction.DiscordGuildJoined],
     },
 ];
 export const platformInteractionList = [
@@ -53,6 +59,11 @@ export const platformInteractionList = [
     {
         type: RewardConditionInteraction.TwitterFollow,
         name: 'Follow',
+        items: [],
+    },
+    {
+        type: RewardConditionInteraction.DiscordGuildJoined,
+        name: 'Guild Joined',
         items: [],
     },
 ];

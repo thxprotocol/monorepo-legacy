@@ -48,6 +48,7 @@ export const API_URL = process.env.API_URL;
 export const WALLET_URL = process.env.WALLET_URL;
 export const DASHBOARD_URL = process.env.DASHBOARD_URL;
 export const WIDGET_URL = process.env.WIDGET_URL;
+export const PUBLIC_URL = process.env.PUBLIC_URL;
 export const HARDHAT_RPC = process.env.HARDHAT_RPC;
 export const HARDHAT_NAME = process.env.HARDHAT_NAME;
 export const POLYGON_MUMBAI_RPC = process.env.POLYGON_MUMBAI_RPC;
@@ -94,3 +95,5 @@ export const LOCAL_CERT_KEY = process.env.LOCAL_CERT_KEY;
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 export const RELAYER_SPEED = 'fastest';
+export const MIXPANEL_TOKEN = process.env.MIXPANEL_TOKEN;
+export const MIXPANEL_API_URL = 'https://api.mixpanel.com';

@@ -7,9 +7,9 @@ import { AUTH_URL, SECURE_KEY, WALLET_URL, SENDGRID_API_KEY } from '../config/se
 import { encryptString } from '../util/encrypt';
 import { logger } from '../util/logger';
 import { assetsPath } from '../util/path';
-import { AccessTokenKind } from '../types/enums/AccessTokenKind';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IAccessToken } from '../types/TAccount';
-import { DURATION_TWENTYFOUR_HOURS } from '../util/messages';
+import { get24HoursExpiryTimestamp } from '../util/time';
 
 const mailTemplatePath = path.join(assetsPath, 'views', 'mail');
 
@@ -23,12 +23,14 @@ export class MailService {
             throw new Error('Account email not set.');
         }
 
-        const token = {
-            kind: AccessTokenKind.Signup,
-            accessToken: createRandomToken(),
-            expiry: DURATION_TWENTYFOUR_HOURS,
-        } as IAccessToken;
-        account.setToken(token);
+        let token = account.getToken(AccessTokenKind.Signup);
+        if (!token) {
+            token = account.setToken({
+                kind: AccessTokenKind.Signup,
+                accessToken: createRandomToken(),
+                expiry: get24HoursExpiryTimestamp(),
+            });
+        }
 
         const verifyUrl = `${returnUrl}/verify?signup_token=${token.accessToken}&return_url=${returnUrl}`;
         const html = await ejs.renderFile(
@@ -53,7 +55,7 @@ export class MailService {
         const token = {
             kind: AccessTokenKind.VerifyEmail,
             accessToken: createRandomToken(),
-            expiry: DURATION_TWENTYFOUR_HOURS,
+            expiry: get24HoursExpiryTimestamp(),
         } as IAccessToken;
         account.setToken(token);
 

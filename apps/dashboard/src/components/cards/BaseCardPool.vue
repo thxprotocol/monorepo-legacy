@@ -1,42 +1,68 @@
 <template>
-    <base-card :loading="isLoading" :is-deploying="isDeploying">
+    <base-card
+        :is-loading="isLoading"
+        :body-bg-variant="pool.archived ? 'light' : null"
+        :is-deploying="isDeploying"
+        @click="openPoolUrl()"
+        class="cursor-pointer"
+    >
         <template #card-header>
-            <span v-if="pool.erc20 && pool.erc721">Token &amp; NFT Pool</span>
-            <span v-if="pool.erc20 && !pool.erc721">Token Pool</span>
-            <span v-if="!pool.erc20 && pool.erc721">Collectible Pool</span>
-            <i class="ml-1 fas fa-archive text-white small" v-if="pool.archived"></i>
-        </template>
-        <template #card-body>
-            <b-alert show variant="warning" v-if="outOfDate && artifacts">
-                <i class="fas fa-exclamation-circle mr-2"></i>
-                Please contact us in
-                <b-link href="https://discord.com/invite/TzbbSmkE7Y" target="_blank"> Discord </b-link>
-            </b-alert>
-            <base-badge-network :chainId="pool.chainId" class="mr-1" />
+            <div v-if="!isLoading">
+                <b-alert show variant="warning" v-if="outOfDate && artifacts">
+                    <i class="fas fa-exclamation-circle mr-2"></i>
+                    Please contact us in
+                    <b-link href="https://discord.com/invite/TzbbSmkE7Y" target="_blank"> Discord </b-link>
+                </b-alert>
+
+                <base-badge-network :chainId="pool.chainId" class="mr-1" />
+            </div>
             <base-dropdown-menu-pool
-                class="float-right"
+                class="ml-auto"
                 :pool="pool"
                 @archive="archive"
-                @remove="$bvModal.show(`modalDelete-${pool.address}`)"
+                @remove="$bvModal.show(`modalDelete-${pool._id}`)"
+                @edit="$bvModal.show(`modalAssetPoolEdit-${pool._id}`)"
             />
-            <p class="mt-3 mb-0" v-if="pool.erc20">
-                <span class="text-muted">Balance:</span><br />
-                <span class="font-weight-bold text-primary h3">
-                    {{ fromWei(pool.erc20.poolBalance) }} {{ pool.erc20.symbol }}
-                </span>
+        </template>
+        <template #card-body>
+            <p class="text-muted">
+                {{ pool.title }}
             </p>
-            <p class="mt-3 mb-0" v-if="pool.erc721">
-                <span class="text-muted">Minted NFTs:</span><br />
-                <span class="font-weight-bold text-primary h3">
-                    {{ pool.erc721.totalSupply }} {{ pool.erc721.symbol }}
-                </span>
-            </p>
-            <base-modal-delete :id="`modalDelete-${pool.address}`" :call="() => remove()" :subject="pool.address" />
             <hr />
-            <b-button class="rounded-pill" variant="primary" @click="openPoolUrl()" block>
-                <i class="fas fa-cogs mr-2"></i>
-                Configuration
-            </b-button>
+            <b-container class="mb-0 text-center text-gray">
+                <b-row class="pb-2">
+                    <b-col>
+                        <strong class="text-primary" style="font-size: 1.3rem">
+                            {{
+                                (pool.metrics.referralRewards ? pool.metrics.referralRewards.totalClaimPoints : 0) +
+                                (pool.metrics.pointRewards ? pool.metrics.pointRewards.totalClaimPoints : 0)
+                            }}
+                        </strong>
+                        <div class="small">Points Claimed</div>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <strong class="text-primary">{{
+                            pool.metrics.erc20Perks ? pool.metrics.erc20Perks.payments : 0
+                        }}</strong>
+                        <div class="small">Coin Perks Redeemed</div>
+                    </b-col>
+                    <b-col>
+                        <strong class="text-primary">{{
+                            pool.metrics.erc721Perks ? pool.metrics.erc721Perks.payments : 0
+                        }}</strong>
+                        <div class="small">NFT Perks Redeemed</div>
+                    </b-col>
+                </b-row>
+            </b-container>
+            <base-modal-delete
+                :id="`modalDelete-${pool._id}`"
+                @submit="remove(pool._id)"
+                :error="error"
+                :subject="pool._id"
+            />
+            <base-modal-pool-create :id="`modalAssetPoolEdit-${pool._id}`" :pool="pool" />
         </template>
     </base-card>
 </template>
@@ -51,10 +77,12 @@ import BaseBadgeNetwork from '@thxnetwork/dashboard/components/badges/BaseBadgeN
 import BaseCard from '@thxnetwork/dashboard/components/cards/BaseCard.vue';
 import promisePoller from 'promise-poller';
 import BaseDropdownMenuPool from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownMenuPool.vue';
+import BaseModalPoolCreate from '@thxnetwork/dashboard/components/modals/BaseModalPoolCreate.vue';
 import { fromWei } from 'web3-utils';
 
 @Component({
     components: {
+        BaseModalPoolCreate,
         BaseDropdownMenuPool,
         BaseModalDelete,
         BaseBadgeNetwork,
@@ -69,6 +97,7 @@ import { fromWei } from 'web3-utils';
 })
 export default class BaseCardPool extends Vue {
     warning = '';
+    error = '';
     isLoading = true;
     isDeploying = false;
     fromWei = fromWei;
@@ -127,14 +156,19 @@ export default class BaseCardPool extends Vue {
 
     openPoolUrl() {
         this.$router.push({
-            path: `pool/${this.pool._id}/point-rewards`,
+            path: `pool/${this.pool._id}`,
         });
     }
 
-    async remove() {
-        this.isLoading = true;
-        await this.$store.dispatch('pools/remove', this.pool);
-        this.isLoading = false;
+    async remove(_id: string) {
+        try {
+            this.isLoading = true;
+            await this.$store.dispatch('pools/remove', { _id });
+        } catch (error) {
+            this.error = error as string;
+        } finally {
+            this.isLoading = false;
+        }
     }
 
     async archive() {

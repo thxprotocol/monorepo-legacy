@@ -5,7 +5,7 @@
             variant="light"
             v-b-toggle.collapse-card-condition
         >
-            <strong>Reward condition</strong>
+            <strong>Conditions</strong>
             <i :class="`fa-chevron-${isVisible ? 'up' : 'down'}`" class="fas m-0"></i>
         </b-button>
         <b-collapse id="collapse-card-condition" v-model="isVisible">
@@ -61,9 +61,11 @@ import BaseDropdownYoutubeUploads from '../dropdowns/BaseDropdownYoutubeUploads.
 import BaseDropdownYoutubeVideo from '../dropdowns/BaseDropdownYoutubeVideo.vue';
 import BaseDropdownTwitterTweets from '../dropdowns/BaseDropdownTwitterTweets.vue';
 import BaseDropdownTwitterUsers from '../dropdowns/BaseDropdownTwitterUsers.vue';
+import BaseDropdownDiscordGuilds from '../dropdowns/BaseDropdownDiscordGuilds.vue';
 
 @Component({
     components: {
+        BaseDropdownDiscordGuilds,
         BaseDropdownChannelTypes,
         BaseDropdownChannelActions,
         BaseDropdownYoutubeChannels,
@@ -76,6 +78,7 @@ import BaseDropdownTwitterUsers from '../dropdowns/BaseDropdownTwitterUsers.vue'
         profile: 'account/profile',
         youtube: 'account/youtube',
         twitter: 'account/twitter',
+        discord: 'account/discord',
     }),
 })
 export default class BaseCardRewardCondition extends Vue {
@@ -95,6 +98,7 @@ export default class BaseCardRewardCondition extends Vue {
     profile!: UserProfile;
     youtube!: any;
     twitter!: any;
+    discord!: any;
 
     @Prop({ required: false }) rewardCondition!: {
         platform: RewardConditionPlatform;
@@ -107,14 +111,35 @@ export default class BaseCardRewardCondition extends Vue {
     }
 
     async mounted() {
-        if (this.rewardCondition) {
-            const { platform, interaction, content } = this.rewardCondition;
-            this.platform = platformList.find((c) => c.type === platform) as IChannel;
-            this.interaction = platformInteractionList.find((i) => i.type === interaction) as IChannelAction;
-            this.content = content;
-            await this.onSelectPlatform(this.platform);
-            this.isVisible = !!this.platform.type;
+        this.isLoadingPlatform = true;
+        this.platform = this.rewardCondition
+            ? (platformList.find((c) => c.type === this.rewardCondition.platform) as IChannel)
+            : platformList[0];
+
+        switch (this.platform.type) {
+            case RewardConditionPlatform.Google: {
+                await this.$store.dispatch('account/getYoutube');
+                this.isAuthorized = !!this.youtube;
+                break;
+            }
+            case RewardConditionPlatform.Twitter: {
+                await this.$store.dispatch('account/getTwitter');
+                this.isAuthorized = !!this.twitter;
+                break;
+            }
+            case RewardConditionPlatform.Discord: {
+                await this.$store.dispatch('account/getDiscord');
+                this.isAuthorized = !!this.discord;
+                break;
+            }
+            default:
         }
+        this.interaction = this.rewardCondition
+            ? this.getInteraction(this.rewardCondition.interaction)
+            : this.getInteraction(0);
+        this.content = this.rewardCondition ? this.rewardCondition.content : '';
+        this.isVisible = !!this.platform.type;
+        this.isLoadingPlatform = false;
     }
 
     onClickConnect() {
@@ -132,18 +157,26 @@ export default class BaseCardRewardCondition extends Vue {
 
         switch (platform.type) {
             case RewardConditionPlatform.Google: {
+                this.onSelectInteraction(platformInteractionList[1]);
                 await this.$store.dispatch('account/getYoutube');
                 this.isAuthorized = !!this.youtube;
                 break;
             }
             case RewardConditionPlatform.Twitter: {
                 await this.$store.dispatch('account/getTwitter');
+                this.onSelectInteraction(platformInteractionList[3]);
                 this.isAuthorized = !!this.twitter;
+                break;
+            }
+            case RewardConditionPlatform.Discord: {
+                await this.$store.dispatch('account/getDiscord');
+                this.onSelectInteraction(platformInteractionList[6]);
+                this.isAuthorized = !!this.discord;
                 break;
             }
             default:
         }
-        this.onSelectInteraction(this.interaction);
+
         this.isLoadingPlatform = false;
     }
 
@@ -172,6 +205,11 @@ export default class BaseCardRewardCondition extends Vue {
             case RewardConditionInteraction.TwitterFollow: {
                 if (!this.twitter) return;
                 this.interaction.items = this.twitter.users;
+                break;
+            }
+            case RewardConditionInteraction.DiscordGuildJoined: {
+                if (!this.discord) return;
+                this.interaction.items = this.discord.guilds;
                 break;
             }
             default:
@@ -212,6 +250,8 @@ export default class BaseCardRewardCondition extends Vue {
                 return 'BaseDropdownTwitterTweets';
             case RewardConditionInteraction.TwitterFollow:
                 return 'BaseDropdownTwitterUsers';
+            case RewardConditionInteraction.DiscordGuildJoined:
+                return 'BaseDropdownDiscordGuilds';
             default:
                 return '';
         }

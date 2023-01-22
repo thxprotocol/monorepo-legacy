@@ -1,87 +1,145 @@
 <template>
     <base-modal
+        @show="onShow"
         size="xl"
-        :title="`Download for ${selectedItems.length} rewards`"
+        :title="`Download Claims for ${selectedItems.length} perks`"
         :id="id"
         :loading="isLoading"
         hide-footer
     >
         <template #modal-body v-if="!isLoading">
-            <b-row>
-                <b-col>
-                    <b-form-group label="File format">
-                        <b-form-radio v-model="selectedFormat" name="fileFormat" value="png">
-                            <p>
-                                <strong>PNG</strong><br />
-                                You are planning to use your QR codes digitally.
-                            </p>
-                        </b-form-radio>
-                        <b-form-radio v-model="selectedFormat" name="fileFormat" value="pdf">
-                            <p>
-                                <strong>PDF</strong><br />
-                                You are planning to print your QR codes.
-                            </p>
-                        </b-form-radio>
-                    </b-form-group>
+            <b-tabs>
+                <b-tab active :title="`Claim URLs (${claims.length})`">
+                    <BaseCardTableHeader
+                        :page="page"
+                        :limit="limit"
+                        :pool="pool"
+                        :total-rows="claims.length"
+                        :selectedItems="selectedItems"
+                        :actions="[
+                            { variant: 0, label: `Delete claims` },
+                            { variant: 1, label: 'Download QR Codes' },
+                            { variant: 2, label: 'Download URL\'s' },
+                        ]"
+                        @click-action="onClickAction"
+                        @change-page="onChangePage"
+                        @change-limit="onChangeLimit"
+                    />
+                    <BTable hover :busy="isLoading" :items="claimsByPage" responsive="lg" show-empty>
+                        <!-- Head formatting -->
+                        <template #head(checkbox)>
+                            <b-form-checkbox @change="onSelectAll" />
+                        </template>
+                        <template #head(url)> URL </template>
+                        <template #head(sub)> Sub </template>
+                        <template #head(claimedAt)> User </template>
+                        <template #head(createdAt)> Created </template>
+                        <template #head(id)> &nbsp; </template>
 
-                    <b-form-group label="Size" description="Dimensions of the image.">
-                        <b-input-group>
-                            <b-form-input v-model="size" type="number" />
-                            <template #append>
-                                <b-dropdown :text="selectedUnit.label" variant="light">
-                                    <b-dropdown-item
-                                        @click="selectedUnit = unit"
-                                        :key="key"
-                                        v-for="(unit, key) of units"
-                                    >
-                                        {{ unit.label }}
-                                    </b-dropdown-item>
-                                </b-dropdown>
-                            </template>
-                        </b-input-group>
-                    </b-form-group>
+                        <!-- Cell formatting -->
+                        <template #cell(checkbox)="{ item }">
+                            <b-form-checkbox :value="item.checkbox" v-model="selectedClaims" />
+                        </template>
+                        <template #cell(url)="{ item }">
+                            <b-link
+                                size="sm"
+                                variant="light"
+                                class="mr-2"
+                                v-clipboard:copy="item.url"
+                                v-clipboard:success="() => $set(isCopied, item.id, true)"
+                            >
+                                <code class="text-muted">
+                                    {{ item.id }}
+                                </code>
+                                <i
+                                    class="fas ml-0 text-gray"
+                                    :class="isCopied[item.id] ? 'fa-clipboard-check' : 'fa-clipboard'"
+                                ></i>
+                            </b-link>
+                        </template>
+                        <template #cell(claimedAt)="{ item }">
+                            <div v-if="item.claimedAt.sub" style="line-height: 1">
+                                <div class="text-primary">{{ item.claimedAt.sub }}</div>
+                                <small class="text-muted">
+                                    Claimed at: {{ format(new Date(item.claimedAt.date), 'dd-MM-yyyy HH:mm') }}
+                                </small>
+                            </div>
+                        </template>
+                        <template #cell(createdAt)="{ item }">
+                            <small class="text-muted">
+                                {{ format(new Date(item.createdAt), 'dd-MM-yyyy HH:mm') }}
+                            </small>
+                        </template>
+                        <template #cell(id)="{ item }">
+                            <b-dropdown variant="link" size="sm" right no-caret>
+                                <template #button-content>
+                                    <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
+                                </template>
+                                <b-dropdown-item @click="item" disabled> Delete </b-dropdown-item>
+                            </b-dropdown>
+                        </template>
+                    </BTable>
+                </b-tab>
+                <b-tab title="QR Code Configuration">
+                    <b-row class="mt-3">
+                        <b-col>
+                            <b-form-group label="File format">
+                                <b-form-radio v-model="selectedFormat" name="fileFormat" value="png">
+                                    <p>
+                                        <strong>PNG</strong><br />
+                                        You are planning to use your QR codes digitally.
+                                    </p>
+                                </b-form-radio>
+                                <b-form-radio v-model="selectedFormat" name="fileFormat" value="pdf">
+                                    <p>
+                                        <strong>PDF</strong><br />
+                                        You are planning to print your QR codes.
+                                    </p>
+                                </b-form-radio>
+                            </b-form-group>
+                        </b-col>
+                        <b-col>
+                            <b-form-group label="Size" description="Dimensions of the image.">
+                                <b-input-group>
+                                    <b-form-input v-model="size" type="number" />
+                                    <template #append>
+                                        <b-dropdown :text="selectedUnit.label" variant="dark">
+                                            <b-dropdown-item
+                                                @click="selectedUnit = unit"
+                                                :key="key"
+                                                v-for="(unit, key) of units"
+                                            >
+                                                {{ unit.label }}
+                                            </b-dropdown-item>
+                                        </b-dropdown>
+                                    </template>
+                                </b-input-group>
+                            </b-form-group>
 
-                    <b-form-group
-                        label="Image"
-                        :description="`Visible in the center of your QR code. Only accepts .jpg, .jpeg, .gif, .png.`"
-                    >
-                        <b-form-file
-                            v-model="file"
-                            accept=".jpg, .jpeg, .gif, .png"
-                            placeholder="Choose or drop here..."
-                            drop-placeholder="Drop file here..."
-                        ></b-form-file>
-                    </b-form-group>
+                            <b-form-group
+                                label="Image"
+                                :description="`Visible in the center of your QR code. Only accepts .jpg, .jpeg, .gif, .png.`"
+                            >
+                                <b-form-file
+                                    v-model="file"
+                                    accept=".jpg, .jpeg, .gif, .png"
+                                    placeholder="Choose or drop here..."
+                                    drop-placeholder="Drop file here..."
+                                ></b-form-file>
+                            </b-form-group>
 
-                    <b-form-group label="Color" description="Foreground color against white background.">
-                        <b-input-group prepend="#">
-                            <b-form-input v-model="color" />
-                            <b-input-group-append>
-                                <b-button :style="`background-color: #${color}`"></b-button>
-                            </b-input-group-append>
-                        </b-input-group>
-                    </b-form-group>
-                </b-col>
-                <b-col>
-                    <BCard bg-variant="light" :header="`Download ${claims.length} QR Codes`" class="mb-3">
-                        <p class="text-gray">
-                            You will receive a ZIP file containing QR code PDF's that you can share with your customers.
-                        </p>
-                        <b-button @click="onClickCreateZip" variant="primary" class="rounded-pill">
-                            <i class="fas fa-qrcode mr-2"></i>
-                            Download QR Codes in ZIP file
-                        </b-button>
-                        <hr />
-                        <p class="text-gray">
-                            You will receive a ZIP file containing QR code PDF's that you can share with your customers.
-                        </p>
-                        <b-button @click="onClickCreateCSV" variant="primary" class="rounded-pill">
-                            <i class="fas fa-file-csv mr-2"></i>
-                            Download Claim URLs in CSV file
-                        </b-button>
-                    </BCard>
-                </b-col>
-            </b-row>
+                            <b-form-group label="Color" description="Foreground color against white background.">
+                                <b-input-group prepend="#">
+                                    <b-form-input v-model="color" />
+                                    <b-input-group-append>
+                                        <b-button :style="`background-color: #${color}; width: 50px;`"></b-button>
+                                    </b-input-group-append>
+                                </b-input-group>
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+                </b-tab>
+            </b-tabs>
         </template>
     </base-modal>
 </template>
@@ -95,11 +153,12 @@ import xml2js from 'xml2js';
 import { jsPDF } from 'jspdf';
 import { type IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { TBaseReward } from '@thxnetwork/types/index';
+import { TBaseReward, TERC20Perk, TERC721Perk } from '@thxnetwork/types/index';
 import { WALLET_URL, BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { TClaim } from '@thxnetwork/dashboard/store/modules/claims';
 import { saveAs } from 'file-saver';
 import { loadImage } from '@thxnetwork/dashboard/utils/loadImage';
+import { format } from 'date-fns';
 
 const unitList = [
     { label: 'Pixels', value: 'px' },
@@ -124,23 +183,42 @@ function hex2Rgb(hex: string) {
 }
 
 @Component({
+    name: 'BaseModalRewardClaimsDownload',
     components: {
+        BaseCardTableHeader: () => import('@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue'),
         BaseModal,
     },
 })
 export default class BaseModalRewardClaimsDownload extends Vue {
     isSubmitDisabled = false;
     isLoading = false;
+    format = format;
     color = '000000';
     size = 256;
     file: File | null = null;
     selectedFormat = 'png';
     selectedUnit = unitList[0];
+    selectedClaims: string[] = [];
+    limit = 500;
+    page = 1;
+    claims: TClaim[] = [];
+    isCopied: { [id: string]: boolean } = {};
 
     @Prop() id!: string;
     @Prop() rewards!: { [id: string]: TBaseReward & { claims: TClaim[]; _id: string } };
     @Prop() selectedItems!: string[];
     @Prop() pool!: IPool;
+
+    onShow() {
+        if (!this.rewards) return [];
+        const rewards = Object.values(this.rewards).filter((r) => this.selectedItems.includes(r._id));
+        let claims: TClaim[] = [];
+        for (const r of rewards) {
+            const pagedClaims = Object.values(r.claims).map((c: TClaim) => ({ ...c, perk: r, page: this.page }));
+            claims = claims.concat(pagedClaims);
+        }
+        this.claims = claims;
+    }
 
     get units() {
         return unitList.filter((u) => {
@@ -148,18 +226,51 @@ export default class BaseModalRewardClaimsDownload extends Vue {
         });
     }
 
-    get claims() {
-        if (!this.rewards) return [];
-        const selectedRewards = Object.values(this.rewards).filter((r) => this.selectedItems.includes(r._id));
-        let claims: TClaim[] = [];
-        for (const r of selectedRewards) {
-            if (!r.claims) continue;
-            const pendingClaims = r.claims.filter((c) => {
-                return !c.sub;
-            });
-            claims = claims.concat(pendingClaims);
+    get claimsByPage() {
+        if (!this.claims) return [];
+
+        return this.claims
+            .filter((c) => c.page === this.page)
+            .sort((a, b) => (a.createdAt && b.createdAt && a.createdAt < b.createdAt ? 1 : -1))
+            .map((c) => {
+                return {
+                    checkbox: c.uuid,
+                    url: `${WALLET_URL}/claim/${c.uuid}`,
+                    claimedAt: { sub: c.sub, date: c.claimedAt },
+                    createdAt: c.createdAt,
+                    id: c.uuid,
+                };
+            })
+            .slice(0, this.limit);
+    }
+
+    onSelectAll(isSelectAll: boolean) {
+        this.selectedClaims = isSelectAll ? (this.claimsByPage.map((r) => r.id) as string[]) : [];
+    }
+
+    onChangeLimit(limit: number) {
+        this.limit = limit;
+    }
+
+    onChangePage(page: number) {
+        this.page = page;
+        debugger;
+    }
+
+    onClickAction(action: { variant: number; label: string }) {
+        switch (action.variant) {
+            case 0:
+                for (const id of Object.values(this.selectedClaims)) {
+                    console.log('Delete claim', id);
+                }
+                break;
+            case 1:
+                this.onClickCreateZip();
+                break;
+            case 2:
+                this.onClickCreateCSV();
+                break;
         }
-        return claims;
     }
 
     async createQRCode(url: string) {
@@ -230,7 +341,10 @@ export default class BaseModalRewardClaimsDownload extends Vue {
         const zip = new JSZip();
         const archive = zip.folder(filename) as JSZip;
 
-        for (const claim of this.claims) {
+        for (const uuid of this.selectedClaims) {
+            const claim = this.claims.find((c) => c.uuid === uuid);
+            if (!claim) continue;
+
             let data: string | ArrayBuffer;
             const url = `${WALLET_URL}/claim/${claim.uuid}`;
 
@@ -253,7 +367,12 @@ export default class BaseModalRewardClaimsDownload extends Vue {
 
     onClickCreateCSV() {
         const filename = `${new Date().getTime()}_${this.pool._id}_claim_urls`;
-        const data = this.claims.map((c) => [`${WALLET_URL}/claim/${c.uuid}`]);
+        const data = [];
+        for (const uuid of this.selectedClaims) {
+            const claim = this.claims.find((c) => c.uuid === uuid);
+            if (!claim) continue;
+            data.push([`${WALLET_URL}/claim/${claim.uuid}`]);
+        }
         const csvContent = 'data:text/csv;charset=utf-8,' + data.map((e) => e.join(',')).join('\n');
 
         saveAs(encodeURI(csvContent), `${filename}.csv`);

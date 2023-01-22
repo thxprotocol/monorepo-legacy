@@ -4,7 +4,7 @@ import app from '../../../app';
 import db from '../../../util/database';
 import { AccountService } from '../../../services/AccountService';
 import { TWITTER_API_ENDPOINT, INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
-import { AccessTokenKind } from '@thxnetwork/auth/types/enums/AccessTokenKind';
+import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { accountEmail, accountSecret } from '@thxnetwork/auth/util/jest';
 
 const http = request.agent(app);

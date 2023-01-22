@@ -1,31 +1,18 @@
 <template>
-    <base-modal @show="onShow" :loading="loading" :error="error" title="Create Token Pool" :id="id">
+    <base-modal @show="onShow" :loading="loading" :error="error" :title="!pool ? 'Create Pool' : 'Edit Pool'" :id="id">
         <template #modal-body v-if="!loading">
-            <base-form-select-network :chainId="chainId" @selected="onSelectChain" />
-            <b-form-group>
-                <label> Token Contract </label>
-                <div v-if="erc20">
-                    <div class="d-flex align-items-center">
-                        <base-identicon class="mr-3" size="20" variant="darker" :uri="erc20.logoURI" />
-                        <strong class="mr-1">{{ erc20.symbol }}</strong> {{ erc20.name }}
-                    </div>
-                </div>
-                <base-dropdown-select-erc20 v-else :chainId="chainId" @selected="onSelectERC20Token" />
+            <b-form-group label="Title">
+                <b-form-input v-model="title" placeholder="My Loyalty Pool" class="mr-3" />
             </b-form-group>
+            <base-form-select-network v-if="!loading" :chainId="chainId" :disabled="!!pool" @selected="onSelectChain" />
+            <hr />
             <b-form-group>
-                <label> NFT Contract </label>
-                <div v-if="erc721">
-                    <div class="d-flex align-items-center">
-                        <base-identicon class="mr-3" size="20" variant="darker" :uri="erc721.logoURI" />
-                        <strong class="mr-1">{{ erc721.symbol }}</strong> {{ erc721.name }}
-                    </div>
-                </div>
-                <base-dropdown-select-erc-721 v-else :chainId="chainId" @selected="onSelectERC721Token" />
+                <b-form-checkbox v-model="archived" class="mr-3">Archived</b-form-checkbox>
             </b-form-group>
         </template>
         <template #btn-primary>
             <b-button :disabled="disabled" class="rounded-pill" @click="submit()" variant="primary" block>
-                Create Pool
+                {{ !pool ? 'Create Pool' : 'Update Pool' }}
             </b-button>
         </template>
     </base-modal>
@@ -36,23 +23,20 @@ import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseFormSelectNetwork from '@thxnetwork/dashboard/components/form-select/BaseFormSelectNetwork.vue';
-import BaseDropdownSelectErc20 from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownSelectERC20.vue';
-import BaseDropdownSelectMultipleErc20 from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownSelectMultipleERC20.vue';
-import BaseDropdownSelectErc721 from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownSelectERC721.vue';
 import BaseModal from './BaseModal.vue';
 import type { IAccount } from '@thxnetwork/dashboard/types/account';
 import type { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import type { TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import BaseIdenticon from '../BaseIdenticon.vue';
+import { type IPool } from '../../store/modules/pools';
+import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 
 @Component({
     components: {
         BaseModal,
         BaseFormSelectNetwork,
-        BaseDropdownSelectErc20,
-        BaseDropdownSelectMultipleErc20,
-        BaseDropdownSelectErc721,
         BaseIdenticon,
+        chainInfo,
     },
     computed: mapGetters({
         profile: 'account/profile',
@@ -62,57 +46,48 @@ import BaseIdenticon from '../BaseIdenticon.vue';
 export default class ModalAssetPoolCreate extends Vue {
     loading = false;
     error = '';
-    chainId: ChainId = ChainId.PolygonMumbai;
+    chainId: ChainId = ChainId.Polygon;
     poolVariant = 'defaultPool';
-    erc20Selectedtokens: TERC20[] = [];
-    erc721Selectedtokens: TERC721[] = [];
     profile!: IAccount;
+    chainInfo = chainInfo;
 
     @Prop() id!: string;
     @Prop() erc20?: TERC20;
     @Prop() erc721?: TERC721;
+    @Prop({ required: false }) pool!: IPool;
+
+    title = '';
+    isEditMode = false;
+    archived = false;
 
     get disabled() {
-        return (
-            this.loading ||
-            (!this.erc20 && !this.erc721 && !this.erc20Selectedtokens.length && !this.erc721Selectedtokens.length)
-        );
-    }
-
-    onShow() {
-        if (this.erc20) this.chainId = this.erc20.chainId;
-        if (this.erc721) this.chainId = this.erc721.chainId;
+        return this.loading;
     }
 
     onSelectChain(chainId: ChainId) {
         this.chainId = chainId;
-        this.erc20Selectedtokens = [];
     }
 
-    onSelectERC20Token(token: TERC20) {
-        this.erc20Selectedtokens = token ? [token] : [];
-    }
-
-    onSelectERC721Token(token: TERC721) {
-        this.erc721Selectedtokens = token ? [token] : [];
+    onShow() {
+        this.title = this.pool ? this.pool.title : '';
+        this.isEditMode = this.pool !== undefined;
+        this.archived = this.pool ? this.pool.archived : false;
     }
 
     async submit() {
         this.loading = true;
 
-        if (!this.erc20Selectedtokens.length && this.erc20) {
-            this.erc20Selectedtokens = [this.erc20];
+        if (!this.isEditMode) {
+            await this.$store.dispatch('pools/create', { chainId: this.chainId, title: this.title });
+        } else {
+            await this.$store.dispatch('pools/update', {
+                pool: this.pool,
+                data: {
+                    title: this.title,
+                    archived: this.archived,
+                },
+            });
         }
-        if (!this.erc721Selectedtokens.length && this.erc721) {
-            this.erc721Selectedtokens = [this.erc721];
-        }
-
-        await this.$store.dispatch('pools/create', {
-            chainId: this.chainId,
-            erc20tokens: this.erc20Selectedtokens.map((t) => t.address), // TODO make this t._id and have API support it
-            erc721tokens: this.erc721Selectedtokens.map((t) => t.address), // TODO make this t._id and have API support it
-            variant: this.poolVariant,
-        });
 
         this.$bvModal.hide(this.id);
         this.loading = false;

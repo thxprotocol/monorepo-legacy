@@ -1,20 +1,39 @@
-import { ReferralRewardClaim } from '@thxnetwork/api/models/ReferralRewardClaim';
+import { ReferralRewardClaim as ReferralRewardClaimModel } from '@thxnetwork/api/models/ReferralRewardClaim';
 import db from '@thxnetwork/api/util/database';
-import { ReferralRewardDocument } from '../models/ReferralReward';
+import { TReferralRewardClaim } from '@thxnetwork/types/interfaces/ReferralRewardClaim';
 
-export const ReferralRewardClaimDocument = ReferralRewardClaim;
+import { ReferralRewardDocument } from '../models/ReferralReward';
+import { paginatedResults } from '../util/pagination';
+import { ReferralRewardClaimDocument } from '../models/ReferralRewardClaim';
+
+async function create(data: { referralRewardId: string; sub: string; isApproved: boolean }) {
+    return await ReferralRewardClaimModel.create({ uuid: db.createUUID(), ...data });
+}
+
+async function update(claim: ReferralRewardClaimDocument, updates: TReferralRewardClaim) {
+    return await ReferralRewardClaimModel.findByIdAndUpdate(claim._id, updates, { new: true });
+}
+async function findByUUID(uuid: string) {
+    return await ReferralRewardClaimModel.findOne({ uuid });
+}
+async function findByReferralReward(referralReward: ReferralRewardDocument) {
+    return await ReferralRewardClaimModel.find({ referralRewardId: referralReward._id });
+}
+async function findByReferralRewardPaginated(referralReward: ReferralRewardDocument, page: number, limit: number) {
+    const result = await paginatedResults(ReferralRewardClaimModel, page, limit, {
+        referralRewardId: referralReward._id,
+    });
+    return result;
+}
+async function findBySub(referralReward: ReferralRewardDocument, sub: string) {
+    return await ReferralRewardClaimModel.find({ referralRewardId: referralReward._id, sub });
+}
 
 export default {
-    create: (data: { referralRewardId: string; sub: string }) => {
-        return ReferralRewardClaim.create({ uuid: db.createUUID(), ...data });
-    },
-    findByUUID: (uuid: string) => {
-        return ReferralRewardClaim.findOne({ uuid });
-    },
-    findByReferralReward: async (referralReward: ReferralRewardDocument) => {
-        return await ReferralRewardClaim.find({ referralRewardId: referralReward._id });
-    },
-    findBySub: (referralReward: ReferralRewardDocument, sub: string) => {
-        return ReferralRewardClaim.find({ referralRewardId: referralReward._id, sub });
-    },
+    create,
+    update,
+    findByUUID,
+    findByReferralReward,
+    findByReferralRewardPaginated,
+    findBySub,
 };

@@ -1,24 +1,15 @@
 {
-    "root": true,
-    "ignorePatterns": ["**/*"],
-    "plugins": ["@nrwl/nx"],
+    "extends": ["../../.eslintrc.json", "plugin:vue/essential", "@vue/typescript/recommended", "prettier"],
+    "rules": { "no-debugger": "off" },
+    "ignorePatterns": ["!**/*"],
+    "env": {
+        "node": true
+    },
     "overrides": [
         {
-            "files": ["*.ts", "*.tsx"],
-            "extends": ["plugin:@nrwl/nx/typescript"],
-            "rules": {}
-        },
-        {
-            "files": ["*.js", "*.jsx"],
-            "extends": ["plugin:@nrwl/nx/javascript"],
-            "rules": {}
-        },
-        {
-            "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-            "rules": {
-                "@typescript-eslint/no-explicit-any": ["off"],
-                "@nrwl/nx/enforce-module-boundaries": "off",
-                "no-debugger": "off"
+            "files": ["**/*.spec.{j,t}s?(x)"],
+            "env": {
+                "jest": true
             }
         }
     ]

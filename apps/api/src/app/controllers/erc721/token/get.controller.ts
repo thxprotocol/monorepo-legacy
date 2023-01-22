@@ -20,11 +20,15 @@ const controller = async (req: Request, res: Response) => {
     const balanceInWei = await erc721.contract.methods.balanceOf(token.recipient).call();
     const balance = Number(fromWei(balanceInWei, 'ether'));
 
+    const tokenUri = token.tokenId ? await erc721.contract.methods.tokenURI(token.tokenId).call() : '';
+    erc721.logoImgUrl = erc721.logoImgUrl || `https://avatars.dicebear.com/api/identicon/${erc721.address}.svg`;
+
     res.status(200).json({
         ...token.toJSON(),
+        tokenUri,
+        balance,
         erc721: erc721.toJSON(),
         metadata: metadata.toJSON(),
-        balance,
     });
 };
 

@@ -1,7 +1,7 @@
 <template>
     <div>
         <b-dropdown variant="link" class="dropdown-select mb-2">
-            <template #button-content> Select the currencies you want to support </template>
+            <template #button-content> Select the coins you want to support </template>
             <b-dropdown-item-button
                 :disabled="chainId !== erc20.chainId"
                 :key="erc20._id"

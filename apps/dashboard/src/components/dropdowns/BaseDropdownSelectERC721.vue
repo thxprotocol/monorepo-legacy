@@ -22,14 +22,19 @@
             </div>
         </b-dropdown-item-button>
     </b-dropdown>
-    <div v-else class="small">No NFT contracts available</div>
+    <div v-else>
+        <b-button to="/nft" variant="light" block>
+            Create NFT collection
+            <i class="fas fa-chevron-right ml-2"></i>
+        </b-button>
+    </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseIdenticon from '../BaseIdenticon.vue';
-import { IERC721s, TERC721 } from '@thxnetwork/dashboard/types/erc721';
+import type { IERC721s, TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 
 @Component({
@@ -47,6 +52,7 @@ export default class BaseDropdownSelectERC721 extends Vue {
 
     erc721s!: IERC721s;
 
+    @Prop({ required: false }) erc721!: TERC721;
     @Prop() chainId!: ChainId;
 
     get hasERC721s() {
@@ -54,6 +60,9 @@ export default class BaseDropdownSelectERC721 extends Vue {
     }
 
     async mounted() {
+        if (this.erc721) {
+            this.token = this.erc721;
+        }
         this.$store.dispatch('erc721/list').then(() => {
             for (const id in this.erc721s) {
                 this.$store.dispatch('erc721/read', id).then(() => {

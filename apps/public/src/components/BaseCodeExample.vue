@@ -2,18 +2,32 @@
     <section class="py-5">
         <div class="container py-5">
             <div class="row pb-lg-5">
-                <div class="col-lg-6 order-1 order-lg-0 align-items-center d-flex">
-                    <pre class="rounded p-5 w-100 text-white" style="background-color: #282c34">
-<code class="language-common" v-html="codeExample"></code>
+                <div class="col-lg-6 order-1 order-lg-0 align-items-center">
+                    <div class="text-muted font-weight-bold mb-2">Embed a personalized script tag</div>
+                    <pre
+                        class="rounded p-3 mb-2 w-100 text-white"
+                        style="background-color: #282c34; white-space: pre-line"
+                    >
+                        <code class="language-common" v-html="codeExample2"></code>
+                    </pre>
+                    <div class="text-muted font-weight-bold mb-2">Or use our JavaScript SDK</div>
+                    <pre class="rounded p-3 w-100 text-white" style="background-color: #282c34; white-space: pre-line">
+                        <code class="language-common" v-html="codeExample"></code>
                     </pre>
                 </div>
                 <div class="col-lg-4 offset-lg-1 pb-3">
-                    <h2 class="h5">Engagement Widgets</h2>
-                    <p class="lead">Tokenizing your creative work or community as easy as embedding an iframe.</p>
-                    <p class="lead font-weight-light">
-                        You save weeks of work by implementing blockchain technology through our widgets and API
-                        compared to starting from scratch.
+                    <h2 class="h5">Embedded Loyalty</h2>
+                    <p class="lead">Engage your audience as easy as 1-2-3</p>
+                    <p class="lead">
+                        Embed a small piece of code and immediately launch your loyalty points and perks such as NFTs.
                     </p>
+                    <p class="lead font-weight-light">
+                        Using our widget or SDK you save months of work compared to starting from scratch.
+                    </p>
+                    <b-button @click="onClickLaunchWidget" variant="primary" class="rounded-pill">
+                        <i class="fas fa-gift ml-0 mr-2" style="font-size: 1.1rem"></i>
+                        Launch Loyalty Widget!
+                    </b-button>
                 </div>
             </div>
             <div class="row pt-5 pb-5">
@@ -106,10 +120,12 @@
 import { Component, Vue } from 'vue-property-decorator';
 import hljs from 'highlight.js/lib/core';
 import JavaScript from 'highlight.js/lib/languages/javascript';
+import Xml from 'highlight.js/lib/languages/xml';
 import 'highlight.js/styles/atom-one-dark.css';
 import { ALT_TEXT, TITLES } from '@thxnetwork/public/utils/constants';
 
 hljs.registerLanguage('javascript', JavaScript);
+hljs.registerLanguage('xml', Xml);
 @Component({
     components: {},
 })
@@ -117,21 +133,24 @@ export default class BaseCodeExample extends Vue {
     ALT_TEXT = ALT_TEXT;
     TITLES = TITLES;
     codeExample = hljs.highlight(
-        `// Construct THXCLient with credentials
-// you obtain in THX Dashboard
-const thx = new THXClient({
-    clientId: "<YOUR_CLIENT_ID>",
-    clientSecret: "<YOUR_CLIENT_SECRET>"
-    url: "http://www.yourwebsite.com"
-})
-// Shows popup with OAuth2 login methods, you can
-// also connect your own authorization provider.
-await thx.signin();
-// Returns array of NFT's owned by the authenticated user,
-// user address and private key are determined by the identity
-await thx.erc721.list();`,
+        `// app.js
+import THXWidget from '@thxnetwork/sdk';
+
+new THXWidget({ poolId: "507f191e810c19729de860ea" });`,
         { language: 'javascript' },
     ).value;
+    codeExample2 = hljs.highlight(
+        `<!-- index.html -->
+<script src="https://api.thx.network/v1/widget/507f191e810c19729de860ea.js"><\/script>`,
+        {
+            language: 'xml',
+        },
+    ).value;
+
+    onClickLaunchWidget() {
+        const element = document.getElementById('thx-launcher');
+        element?.click();
+    }
 }
 </script>
 <style>

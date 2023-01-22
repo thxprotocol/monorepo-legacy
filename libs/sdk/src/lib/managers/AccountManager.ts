@@ -8,7 +8,7 @@ export default class AccountManager extends BaseManager {
     }
 
     async get() {
-        return await this.client.request.get('/v1/account');
+        return await this.client.request.get('/v1/account', { waitForAuth: true });
     }
 
     async patch(body: any) {

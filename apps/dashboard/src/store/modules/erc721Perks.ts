@@ -3,6 +3,8 @@ import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { IPool } from './pools';
 import { RewardConditionPlatform, type TERC721Perk } from '@thxnetwork/types/index';
+import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
+import { track } from '@thxnetwork/dashboard/utils/mixpanel';
 
 export type RewardByPage = {
     [page: number]: TERC721Perk[];
@@ -18,6 +20,10 @@ export type RewardListProps = {
     pool: IPool;
     page: number;
     limit: number;
+};
+
+type TERC721PerkInputData = TERC721Perk & {
+    file?: any;
 };
 
 @Module({ namespaced: true })
@@ -71,50 +77,36 @@ class ERC721PerkModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async create({ pool, payload }: { pool: IPool; payload: TERC721Perk }) {
+    async create({ pool, payload }: { pool: IPool; payload: TERC721PerkInputData }) {
+        const formData = prepareFormDataForUpload(payload);
         const r = await axios({
             method: 'POST',
             url: '/erc721-perks',
             headers: { 'X-PoolId': pool._id },
-            data: payload,
+            data: formData,
         });
 
-        this.context.commit('set', { pool, reward: { ...payload, ...r.data } });
+        const profile = this.context.rootGetters['account/profile'];
+        track.UserCreates(profile.sub, 'nft perk');
+
+        r.data.forEach((data: any) => {
+            this.context.commit('set', { pool, reward: { ...payload, ...data } });
+        });
     }
 
     @Action({ rawError: true })
-    async update({ pool, reward, payload }: { pool: IPool; reward: TERC721Perk; payload: TERC721Perk }) {
+    async update({ pool, reward, payload }: { pool: IPool; reward: TERC721Perk; payload: TERC721PerkInputData }) {
+        const formData = prepareFormDataForUpload(payload);
         const { data } = await axios({
             method: 'PATCH',
             url: `/erc721-perks/${reward._id}`,
             headers: { 'X-PoolId': pool._id },
-            data: payload,
+            data: formData,
         });
         this.context.commit('set', {
             pool,
             reward: { ...reward, ...data, page: reward.page },
         });
-    }
-
-    @Action({ rawError: true })
-    async getQRCodes({ reward }: { reward: TERC721Perk }) {
-        const { status, data } = await axios({
-            method: 'GET',
-            url: `/erc721-perks/${reward._id}/claims/qrcode`,
-            headers: { 'X-PoolId': reward.poolId },
-            responseType: 'blob',
-        });
-        // Check if job has been queued, meaning file is not available yet
-        if (status === 201) return true;
-        // Check if response is zip file, meaning job has completed
-        if (status === 200 && data.type == 'application/zip') {
-            // Fake an anchor click to trigger a download in the browser
-            const anchor = document.createElement('a');
-            anchor.href = window.URL.createObjectURL(new Blob([data]));
-            anchor.setAttribute('download', `${reward._id}_qrcodes.zip`);
-            document.body.appendChild(anchor);
-            anchor.click();
-        }
     }
 
     @Action({ rawError: true })

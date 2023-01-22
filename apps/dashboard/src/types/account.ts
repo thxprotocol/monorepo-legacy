@@ -1,34 +1,41 @@
 export enum AccountPlanType {
-    Free = 0,
-    Basic = 1,
-    Premium = 2,
+    Basic = 0,
+    Premium = 1,
 }
 
 export interface IAccount {
+    sub: string;
     privateKey: string;
     address: string;
-    youtube: any;
     firstName: string;
     lastName: string;
     company: string;
     plan: AccountPlanType;
+    profileImg?: string;
     email?: string;
     walletAddress: string;
 }
 export interface IAccountUpdates {
     address: string;
     googleAccessToken: string;
+    youtubeViewAccessToken: string;
+    youtubeManageAccessToken: string;
 }
 
 export interface IYoutube {
-    channels: any;
-    videos: any;
+    channels: unknown;
+    videos: unknown;
 }
 
 export interface ITwitter {
-    tweets: any;
-    users: any;
+    tweets: unknown;
+    users: unknown;
 }
+
+export interface IDiscord {
+    guilds: unknown[];
+}
+
 export interface IMember {
     poolAddress: string;
     memberId: number;
