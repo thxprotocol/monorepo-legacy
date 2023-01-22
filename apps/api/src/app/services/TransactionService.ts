@@ -11,11 +11,11 @@ import { deployCallback as erc20DeployCallback } from './ERC20Service';
 import PoolService from './PoolService';
 import ERC20SwapService from './ERC20SwapService';
 import ERC721Service from './ERC721Service';
-import PaymentService from './PaymentService';
 import WithdrawalService from './WithdrawalService';
 import { RelayerTransactionPayload } from 'defender-relay-client';
 import WalletService from './WalletService';
 import WalletManagerService from './WalletManagerService';
+import { Contract } from 'web3-eth-contract';
 
 function getById(id: string) {
     return Transaction.findById(id);
@@ -145,7 +145,7 @@ async function sendAsync(
 
 async function deploy(abi: any, bytecode: any, arg: any[], chainId: ChainId) {
     const { web3, defaultAccount } = getProvider(chainId);
-    const contract = new web3.eth.Contract(abi);
+    const contract = new web3.eth.Contract(abi) as unknown as Contract;
     const gas = await contract
         .deploy({
             data: bytecode,

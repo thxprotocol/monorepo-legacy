@@ -27,7 +27,7 @@ export const getContractConfig = (
 
 export const getContractFromAbi = (chainId: ChainId, abi: AbiItem[], address?: string): Contract => {
     const { web3 } = getProvider(chainId);
-    return new web3.eth.Contract(abi, address);
+    return new web3.eth.Contract(abi, address) as unknown as Contract;
 };
 
 export const getAbiForContractName = (contractName: ContractName | TokenContractName): AbiItem[] => {
