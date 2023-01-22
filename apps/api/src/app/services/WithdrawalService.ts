@@ -44,12 +44,11 @@ export default class WithdrawalService {
     }
 
     static async getPendingWithdrawals(erc20: ERC20Document, account: IAccount) {
-        const withdrawals = await Withdrawal.find({
+        return Withdrawal.find({
             erc20Id: erc20._id,
             sub: account.sub,
             state: WithdrawalState.Pending,
         });
-        return withdrawals.filter((w) => w.state === WithdrawalState.Pending);
     }
 
     static async withdrawFor(

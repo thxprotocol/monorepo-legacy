@@ -2,7 +2,7 @@
     <div id="app" class="d-flex flex-column h-100" :class="{ 'dark-mode': isDarkMode }">
         <div class="flex-grow-1 overflow-auto d-flex flex-column">
             <header
-                v-if="['coins', 'nft'].includes($router.currentRoute.name || '')"
+                v-if="['Coins', 'NFT', 'Wallets'].includes($router.currentRoute.name || '')"
                 class="d-flex align-items-center w-100 p-md-3"
             >
                 <base-main-menu
@@ -28,13 +28,16 @@
                 class="container container-md d-flex flex-column flex-grow-1 flex-md-grow-0 mt-0 my-md-auto"
                 style="max-width: 1024px; min-height: 450px"
             >
-                <h1 v-if="['coins', 'nft'].includes($router.currentRoute.name || '')" class="display-5 text-secondary">
-                    {{ $router.currentRoute.name === 'coins' ? 'Coins' : 'NFT' }}
+                <h1
+                    v-if="['Coins', 'NFT', 'Wallets'].includes($router.currentRoute.name || '')"
+                    class="display-5 text-secondary"
+                >
+                    {{ $router.currentRoute.name }}
                 </h1>
                 <router-view class="main-container flex-grow-1 overflow-auto shadow-lg py-3 p-3 mb-2" />
             </div>
             <footer
-                v-if="['coins', 'nft'].includes($router.currentRoute.name || '')"
+                v-if="['Coins', 'NFT', 'Wallets'].includes($router.currentRoute.name || '')"
                 class="d-flex align-items-center container flex-shrink-0"
                 style="height: 85px"
             >

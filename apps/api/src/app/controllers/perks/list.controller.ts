@@ -35,6 +35,7 @@ const controller = async (req: Request, res: Response) => {
                         uuid: r.uuid,
                         title: r.title,
                         description: r.description,
+                        erc721: await ERC721Service.findById(r.erc721Id),
                         erc721metadataId: r.erc721metadataId,
                         metadata: await ERC721Service.findMetadataById(r.erc721metadataId),
                         pointPrice: r.pointPrice,
