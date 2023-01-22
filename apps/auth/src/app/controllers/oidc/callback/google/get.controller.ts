@@ -57,8 +57,8 @@ export async function controller(req: Request, res: Response) {
         AcceptUpdates: account.acceptUpdates,
     });
 
-    //Check if a SharedWallet must be created for a specific chainId
-    createWallet(String(account._id));
+    // Check if a SharedWallet must be created
+    createWallet(account);
 
     // Actions after successfully login
     await AccountService.update(account, {

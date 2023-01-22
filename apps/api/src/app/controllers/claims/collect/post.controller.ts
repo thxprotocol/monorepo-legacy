@@ -51,7 +51,6 @@ const controller = async (req: Request, res: Response) => {
     if (!pool) throw new BadRequestError('The pool for this perk has been removed.');
 
     const account = await AccountProxy.getById(req.auth.sub);
-    if (!account.address) throw new BadRequestError('This account has no wallet address yet.');
 
     const perk = await findRewardByUuid(claim.rewardUuid);
     if (!perk) throw new BadRequestError('The perk for this id does not exist.');
@@ -70,7 +69,7 @@ const controller = async (req: Request, res: Response) => {
     }
 
     // Can be claimed only once per claim per sub
-    if (perk.claimAmount > 1 && claim.sub) {
+    if (perk.claimAmount > 0 && claim.sub) {
         const message =
             claim.sub === req.auth.sub
                 ? 'You have already claimed this perk.'
@@ -78,18 +77,12 @@ const controller = async (req: Request, res: Response) => {
         throw new ForbiddenError(message);
     }
 
-    // Can only be claimed for the amount of times specified in the rewardLimit
+    // Can only be claimed for the amount of times per perk specified in the rewardLimit
     if (perk.rewardLimit > 0) {
         const amountOfPayments = await model.countDocuments({ perkId: perk._id });
         if (amountOfPayments >= perk.rewardLimit) {
             throw new ForbiddenError("This perk has reached it's limit.");
         }
-    }
-
-    // Can always only claim this reward once per account.
-    const amountOfClaimsForAccount = await model.exists({ perkId: perk._id, sub: req.auth.sub });
-    if (amountOfClaimsForAccount) {
-        throw new ForbiddenError('You can only claim this perk once.');
     }
 
     // Can only claim if potential platform conditions pass.
@@ -103,8 +96,14 @@ const controller = async (req: Request, res: Response) => {
         erc20 = await ERC20Service.getById(claim.erc20Id);
         if (!erc20) throw new NotFoundError('No erc20 found for this perk');
 
-        withdrawal = await WithdrawalService.create(erc20, req.auth.sub, Number(perk.amount));
-        withdrawal = await WithdrawalService.withdrawFor(pool, withdrawal, account, erc20, false);
+        withdrawal = await WithdrawalService.withdrawFor(
+            pool,
+            erc20,
+            req.auth.sub,
+            account.address,
+            perk.amount,
+            false,
+        );
 
         // Create a payment to register a completed claim.
         payment = await ERC20PerkPayment.create({
@@ -122,7 +121,7 @@ const controller = async (req: Request, res: Response) => {
         erc721 = await ERC721Service.findById(metadata.erc721);
         if (!metadata) throw new NotFoundError('No erc721 found for this perk');
 
-        token = await ERC721Service.mint(pool, erc721, metadata, account, false);
+        token = await ERC721Service.mint(pool, erc721, metadata, account.sub, account.address, false);
 
         // Create a payment to register a completed claim.
         payment = await ERC721PerkPayment.create({

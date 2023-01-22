@@ -97,6 +97,11 @@ export class AccountService {
         account.address =
             updates.address || account.address ? toChecksumAddress(updates.address || account.address) : undefined;
 
+        account.walletAddress =
+            updates.walletAddress || account.walletAddress
+                ? toChecksumAddress(updates.walletAddress || account.walletAddress)
+                : undefined;
+
         if (updates.googleAccess === false) {
             YouTubeService.revokeAccess(account, AccessTokenKind.Google);
             account.unsetToken(AccessTokenKind.Google);

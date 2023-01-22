@@ -2,6 +2,7 @@
     <b-button-group>
         <b-button to="/coins" :variant="path === '/coins' ? 'secondary' : 'darker'"> Coins </b-button>
         <b-button to="/nft" :variant="path === '/nft' ? 'secondary' : 'darker'"> NFT </b-button>
+        <b-button to="/wallets" :variant="path === '/wallets' ? 'secondary' : 'darker'"> Wallets </b-button>
     </b-button-group>
 </template>
 <script lang="ts">

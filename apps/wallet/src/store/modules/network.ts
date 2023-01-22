@@ -53,8 +53,8 @@ class NetworkModule extends VuexModule {
     _chainId: ChainId = ChainId.Polygon;
 
     get chainId() {
-        const chainId = Number(localStorage.getItem(`thx:wallet:chain-id`));
-        if (Object.values(ChainId).includes(chainId)) return chainId;
+        // const chainId = Number(localStorage.getItem(`thx:wallet:chain-id`));
+        // if (Object.values(ChainId).includes(chainId)) return chainId;
         return this._chainId;
     }
 
@@ -115,9 +115,6 @@ class NetworkModule extends VuexModule {
             { verifier_id: user.profile.sub },
             user.access_token,
         );
-
-        if (!torusKey) throw new Error('Could not fetch private key from Torus network');
-
         this.context.commit('setPrivateKey', `0x${torusKey.privateKey}`);
     }
 

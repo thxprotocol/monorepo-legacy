@@ -9,10 +9,12 @@ import TransactionService from './TransactionService';
 import { TransactionReceipt } from 'web3-core';
 import { FacetCutAction } from '../util/upgrades';
 import WalletManagerService from './WalletManagerService';
+import AccountProxy from '../proxies/AccountProxy';
 
 async function create(chainId: ChainId, account: IAccount, forceSync = true) {
-    const wallet = await Wallet.create({ sub: String(account.sub), chainId });
-    return this.deploy(wallet, chainId, forceSync);
+    const sub = String(account.sub);
+    const wallet = await Wallet.create({ sub, chainId });
+    return deploy(wallet, chainId, sub, forceSync);
 }
 
 function findOneByAddress(address: string) {
@@ -24,10 +26,11 @@ async function findOneByQuery(query: { sub?: string; chainId?: number }) {
 }
 
 async function findByQuery(query: { sub?: string; chainId?: number }) {
-    return await Wallet.find(query);
+    const result = await Wallet.find(query);
+    return result;
 }
 
-async function deploy(wallet: WalletDocument, chainId: ChainId, forceSync = true) {
+async function deploy(wallet: WalletDocument, chainId: ChainId, sub: string, forceSync = true) {
     const variant: DiamondVariant = 'sharedWallet';
     const { networkName, defaultAccount } = getProvider(chainId);
 
@@ -55,7 +58,7 @@ async function deploy(wallet: WalletDocument, chainId: ChainId, forceSync = true
 
     const txId = await TransactionService.sendAsync(null, fn, chainId, forceSync, {
         type: 'walletDeployCallback',
-        args: { walletId: String(wallet._id), owner: defaultAccount },
+        args: { walletId: String(wallet._id), owner: defaultAccount, sub },
     });
 
     return await Wallet.findByIdAndUpdate(wallet._id, { transactions: [txId] }, { new: true });
@@ -63,6 +66,7 @@ async function deploy(wallet: WalletDocument, chainId: ChainId, forceSync = true
 
 async function deployCallback(args: TWalletDeployCallbackArgs, receipt: TransactionReceipt) {
     const wallet = await Wallet.findByIdAndUpdate(args.walletId, { address: receipt.contractAddress }, { new: true });
+    await AccountProxy.update(args.sub, { walletAddress: receipt.contractAddress });
     await WalletManagerService.setupManagerRoleAdmin(wallet, args.owner);
 }
 

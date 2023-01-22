@@ -14,6 +14,7 @@ export interface IAccount {
     email: string;
     firstName: string;
     lastName: string;
+    getAddress: (chainId: ChainId) => Promise<string>;
 }
 export interface ERC20Token {
     chainId: ChainId;

@@ -40,6 +40,7 @@ type WalletDeployCallback = {
 export type TWalletDeployCallbackArgs = {
     walletId: string;
     owner: string;
+    sub: string;
 };
 
 type ERC721DeployCallback = {

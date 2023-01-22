@@ -51,7 +51,7 @@ export async function controller(req: Request, res: Response) {
     });
 
     //Check if a SharedWallet must be created for a specific chainId
-    createWallet(String(account._id));
+    createWallet(account);
 
     // Set successful login state
     const returnTo = await saveInteraction(interaction, account._id.toString());

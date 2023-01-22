@@ -1,28 +1,33 @@
 <template>
     <div>
         <h2>Dashboard</h2>
-        <div class="py-5" v-if="loading">
-            <b-spinner variant="primary" />
-        </div>
-        <bar-chart v-else :chartData="chartData" :chart-options="chartOptions" />
+        <b-alert variant="info" show class="mt-5">
+            <i class="fas fa-info-circle mr-2"></i>
+            Charts displaying points claimed per day per reward will be available soon!
+        </b-alert>
+        <!-- <bar-chart v-else :chartData="chartData" :chart-options="chartOptions" /> -->
         <b-row v-if="pool.metrics" class="mt-5">
             <b-col md="3">
                 <b-card bg-variant="primary" class="shadow-sm text-white">
-                    <span>Claims</span><br />
-                    <div class="h2">{{ pool.metrics.claims }}</div>
+                    <span>Points claimed</span><br />
+                    <div class="h2">
+                        {{ pool.metrics.pointRewards.totalClaimPoints + pool.metrics.referralRewards.totalClaimPoints }}
+                    </div>
                 </b-card>
             </b-col>
             <b-col md="3">
                 <b-card bg-variant="primary" class="shadow-sm text-white">
-                    <span>Referrals</span><br />
-                    <div class="h2">{{ pool.metrics.referrals }}</div>
+                    <span>Perks claimed</span><br />
+                    <div class="h2">
+                        {{ pool.metrics.erc20Perks.payments + pool.metrics.erc721Perks.payments }}
+                    </div>
                 </b-card>
             </b-col>
             <b-col md="6">
                 <b-list-group>
                     <b-list-group-item
                         :key="erc20._id"
-                        v-for="erc20 of erc20s"
+                        v-for="erc20 of Object.values(erc20s).filter((e) => e.chainId === pool.chainId)"
                         class="d-flex justify-content-between align-items-center"
                     >
                         <div class="d-flex center-center">
@@ -45,7 +50,7 @@
                         </b-button>
                         <BaseModalDepositCreate @submit="onTopup(erc20)" :erc20="erc20" :pool="pool" />
                     </b-list-group-item>
-                    <b-list-group-item v-if="!Object.values(erc20s).length">
+                    <b-list-group-item v-if="!Object.values(erc20s).filter((e) => e.chainId === pool.chainId).length">
                         <span class="text-muted">No coins found for your account.</span>
                     </b-list-group-item>
                     <b-list-group-item>

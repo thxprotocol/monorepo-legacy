@@ -13,6 +13,7 @@ import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import WalletService from '@thxnetwork/api/services/WalletService';
 import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
 import PoolService from '@thxnetwork/api/services/PoolService';
+import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 
 const validation = [param('uuid').exists()];
 
@@ -42,19 +43,11 @@ const controller = async (req: Request, res: Response) => {
         throw new InsufficientBalanceError('Not enough points on this account for this pool.');
     }
 
-    const wallet = await WalletService.findOneByQuery({ sub: req.auth.sub, chainId: pool.chainId });
+    const account = await AccountProxy.getById(req.auth.sub);
+    const address = await account.getAddress(pool.chainId);
 
-    let withdrawal = await WithdrawalService.create(erc20, req.auth.sub, Number(erc20Perk.amount));
-
-    withdrawal = await WithdrawalService.withdrawFor(
-        pool,
-        withdrawal,
-        {
-            address: wallet.address,
-        } as IAccount,
-        erc20,
-    );
-
+    // let withdrawal = await WithdrawalService.create(erc20, req.auth.sub, Number(erc20Perk.amount));
+    const withdrawal = await WithdrawalService.withdrawFor(pool, erc20, req.auth.sub, address, erc20Perk.amount, false);
     const erc20PerkPayment = await ERC20PerkPayment.create({ perkId: erc20Perk.id, sub: req.auth.sub });
 
     await PointBalanceService.subtract(pool, req.auth.sub, erc20Perk.pointPrice);

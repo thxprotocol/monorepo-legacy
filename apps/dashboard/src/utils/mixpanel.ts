@@ -16,6 +16,7 @@ function identify(account: IAccount) {
     mixpanel.people.set('$email', account.email);
     mixpanel.people.set('plan', account.plan);
     mixpanel.people.set('address', account.address || '');
+    mixpanel.people.set('walletAddress', account.walletAddress || '');
 }
 
 export const track = {

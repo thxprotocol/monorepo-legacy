@@ -8,69 +8,8 @@
         hide-footer
     >
         <template #modal-body v-if="!isLoading">
-            <BCard bg-variant="light" :header="`QR Code Configuration`" class="mb-3">
-                <b-row>
-                    <b-col>
-                        <b-form-group label="File format">
-                            <b-form-radio v-model="selectedFormat" name="fileFormat" value="png">
-                                <p>
-                                    <strong>PNG</strong><br />
-                                    You are planning to use your QR codes digitally.
-                                </p>
-                            </b-form-radio>
-                            <b-form-radio v-model="selectedFormat" name="fileFormat" value="pdf">
-                                <p>
-                                    <strong>PDF</strong><br />
-                                    You are planning to print your QR codes.
-                                </p>
-                            </b-form-radio>
-                        </b-form-group>
-                    </b-col>
-                    <b-col>
-                        <b-form-group label="Size" description="Dimensions of the image.">
-                            <b-input-group size="sm">
-                                <b-form-input size="sm" v-model="size" type="number" />
-                                <template #append>
-                                    <b-dropdown size="sm" :text="selectedUnit.label" variant="dark">
-                                        <b-dropdown-item
-                                            @click="selectedUnit = unit"
-                                            :key="key"
-                                            v-for="(unit, key) of units"
-                                        >
-                                            {{ unit.label }}
-                                        </b-dropdown-item>
-                                    </b-dropdown>
-                                </template>
-                            </b-input-group>
-                        </b-form-group>
-
-                        <b-form-group
-                            label="Image"
-                            :description="`Visible in the center of your QR code. Only accepts .jpg, .jpeg, .gif, .png.`"
-                        >
-                            <b-form-file
-                                v-model="file"
-                                size="sm"
-                                accept=".jpg, .jpeg, .gif, .png"
-                                placeholder="Choose or drop here..."
-                                drop-placeholder="Drop file here..."
-                            ></b-form-file>
-                        </b-form-group>
-
-                        <b-form-group label="Color" description="Foreground color against white background.">
-                            <b-input-group size="sm" prepend="#">
-                                <b-form-input v-model="color" size="sm" />
-                                <b-input-group-append>
-                                    <b-button :style="`background-color: #${color}; width: 50px;`"></b-button>
-                                </b-input-group-append>
-                            </b-input-group>
-                        </b-form-group>
-                    </b-col>
-                </b-row>
-            </BCard>
-            <hr />
-            <b-row>
-                <b-col>
+            <b-tabs>
+                <b-tab active :title="`Claim URLs (${claims.length})`">
                     <BaseCardTableHeader
                         :page="page"
                         :limit="limit"
@@ -140,8 +79,67 @@
                             </b-dropdown>
                         </template>
                     </BTable>
-                </b-col>
-            </b-row>
+                </b-tab>
+                <b-tab title="QR Code Configuration">
+                    <b-row class="mt-3">
+                        <b-col>
+                            <b-form-group label="File format">
+                                <b-form-radio v-model="selectedFormat" name="fileFormat" value="png">
+                                    <p>
+                                        <strong>PNG</strong><br />
+                                        You are planning to use your QR codes digitally.
+                                    </p>
+                                </b-form-radio>
+                                <b-form-radio v-model="selectedFormat" name="fileFormat" value="pdf">
+                                    <p>
+                                        <strong>PDF</strong><br />
+                                        You are planning to print your QR codes.
+                                    </p>
+                                </b-form-radio>
+                            </b-form-group>
+                        </b-col>
+                        <b-col>
+                            <b-form-group label="Size" description="Dimensions of the image.">
+                                <b-input-group>
+                                    <b-form-input v-model="size" type="number" />
+                                    <template #append>
+                                        <b-dropdown :text="selectedUnit.label" variant="dark">
+                                            <b-dropdown-item
+                                                @click="selectedUnit = unit"
+                                                :key="key"
+                                                v-for="(unit, key) of units"
+                                            >
+                                                {{ unit.label }}
+                                            </b-dropdown-item>
+                                        </b-dropdown>
+                                    </template>
+                                </b-input-group>
+                            </b-form-group>
+
+                            <b-form-group
+                                label="Image"
+                                :description="`Visible in the center of your QR code. Only accepts .jpg, .jpeg, .gif, .png.`"
+                            >
+                                <b-form-file
+                                    v-model="file"
+                                    accept=".jpg, .jpeg, .gif, .png"
+                                    placeholder="Choose or drop here..."
+                                    drop-placeholder="Drop file here..."
+                                ></b-form-file>
+                            </b-form-group>
+
+                            <b-form-group label="Color" description="Foreground color against white background.">
+                                <b-input-group prepend="#">
+                                    <b-form-input v-model="color" />
+                                    <b-input-group-append>
+                                        <b-button :style="`background-color: #${color}; width: 50px;`"></b-button>
+                                    </b-input-group-append>
+                                </b-input-group>
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+                </b-tab>
+            </b-tabs>
         </template>
     </base-modal>
 </template>

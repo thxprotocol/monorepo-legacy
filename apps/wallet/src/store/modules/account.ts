@@ -85,18 +85,14 @@ class AccountModule extends VuexModule {
                 const signature = await web3.eth.sign(AUTH_REQUEST_TYPED_MESSAGE, account.address);
                 payload.authRequestMessage = AUTH_REQUEST_TYPED_MESSAGE;
                 payload.authRequestSignature = signature;
-            } else {
-                // Do metamask signature
             }
         }
-
-        const r = await axios({
+        const { data } = await axios({
             method: 'PATCH',
             url: '/account',
             data: payload,
         });
-
-        this.context.commit('setUserProfile', r.data);
+        this.context.commit('setUserProfile', data);
     }
 
     @Action({ rawError: true })

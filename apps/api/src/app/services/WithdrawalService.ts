@@ -43,35 +43,32 @@ export default class WithdrawalService {
         });
     }
 
-    static create(erc20: ERC20Document, sub: string, amount: number, state = WithdrawalState.Pending) {
-        return Withdrawal.create({
-            sub,
-            erc20Id: String(erc20._id),
-            amount,
-            state,
-        });
-    }
-
     static async getPendingWithdrawals(erc20: ERC20Document, account: IAccount) {
-        const withdrawals = await Withdrawal.find({
+        return Withdrawal.find({
             erc20Id: erc20._id,
             sub: account.sub,
             state: WithdrawalState.Pending,
         });
-        return withdrawals.filter((w) => w.state === WithdrawalState.Pending);
     }
 
     static async withdrawFor(
         pool: AssetPoolDocument,
-        withdrawal: WithdrawalDocument,
-        account: IAccount,
         erc20: ERC20Document,
+        sub: string,
+        to: string,
+        amount: string,
         forceSync = true,
     ) {
+        const withdrawal = await Withdrawal.create({
+            sub,
+            erc20Id: String(erc20._id),
+            amount,
+            state: WithdrawalState.Pending,
+        });
         const amountInWei = toWei(String(withdrawal.amount));
         const txId = await TransactionService.sendAsync(
             pool.contract.options.address,
-            pool.contract.methods.withdrawFor(account.address, amountInWei, erc20.address),
+            pool.contract.methods.withdrawFor(to, amountInWei, erc20.address),
             pool.chainId,
             forceSync,
             {

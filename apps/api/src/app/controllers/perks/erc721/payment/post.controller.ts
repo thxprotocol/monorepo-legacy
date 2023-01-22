@@ -3,11 +3,10 @@ import { param } from 'express-validator';
 import { ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
 import { InsufficientBalanceError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
-import { IAccount } from '@thxnetwork/api/models/Account';
 import PointBalanceService, { PointBalance } from '@thxnetwork/api/services/PointBalanceService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
-import WalletService from '@thxnetwork/api/services/WalletService';
 import PoolService from '@thxnetwork/api/services/PoolService';
+import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 
 const validation = [param('uuid').exists()];
 
@@ -29,11 +28,11 @@ const controller = async (req: Request, res: Response) => {
         throw new InsufficientBalanceError('Not enough points on this account for this perk.');
 
     // Get the account wallet
-    const wallet = await WalletService.findOneByQuery({ sub: req.auth.sub, chainId: pool.chainId });
-    if (!wallet) throw new NotFoundError('Could not find walle tfor this account.');
+    const account = await AccountProxy.getById(req.auth.sub);
+    const to = await account.getAddress(erc721.chainId);
+    console.log(account, to);
 
-    const account = { sub: req.auth.sub, address: wallet.address } as IAccount;
-    const erc721Token = await ERC721Service.mint(pool, erc721, metadata, account);
+    const erc721Token = await ERC721Service.mint(pool, erc721, metadata, req.auth.sub, to);
     const erc721PerkPayment = await ERC20PerkPayment.create({ perkId: erc721Perk._id, sub: req.auth.sub });
 
     await PointBalanceService.subtract(pool, req.auth.sub, erc721Perk.pointPrice);

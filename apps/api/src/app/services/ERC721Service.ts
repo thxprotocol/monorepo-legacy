@@ -9,7 +9,6 @@ import { ERC721Metadata, ERC721MetadataDocument } from '@thxnetwork/api/models/E
 import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
 import { ChainId, TransactionState } from '@thxnetwork/api/types/enums';
-import { TAssetPool } from '@thxnetwork/api/types/TAssetPool';
 import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
 import { TERC721DeployCallbackArgs, TERC721TokenMintCallbackArgs } from '@thxnetwork/api/types/TTransaction';
 import { assertEvent, ExpectedEventNotFound, findEvent, parseLogs } from '@thxnetwork/api/util/events';
@@ -94,28 +93,29 @@ export async function deleteMetadata(id: string) {
 }
 
 export async function mint(
-    assetPool: AssetPoolDocument,
+    pool: AssetPoolDocument,
     erc721: ERC721Document,
     metadata: ERC721MetadataDocument,
-    account: IAccount,
+    sub: string,
+    address: string,
     forceSync = true,
 ): Promise<ERC721TokenDocument> {
+    // const address = await account.getAddress(pool.chainId);
     const erc721token = await ERC721Token.create({
-        sub: account.sub,
-        recipient: account.address,
+        sub,
+        recipient: address,
         state: ERC721TokenState.Pending,
         erc721Id: String(erc721._id),
         metadataId: String(metadata._id),
     });
-
     const txId = await TransactionService.sendAsync(
-        assetPool.contract.options.address,
-        assetPool.contract.methods.mintFor(account.address, String(metadata._id), erc721.address),
-        assetPool.chainId,
+        pool.contract.options.address,
+        pool.contract.methods.mintFor(address, String(metadata._id), erc721.address),
+        pool.chainId,
         forceSync,
         {
             type: 'erc721TokenMintCallback',
-            args: { erc721tokenId: String(erc721token._id), assetPoolId: String(assetPool._id) },
+            args: { erc721tokenId: String(erc721token._id), assetPoolId: String(pool._id) },
         },
     );
 
@@ -126,7 +126,6 @@ export async function mintCallback(args: TERC721TokenMintCallbackArgs, receipt: 
     const { assetPoolId, erc721tokenId } = args;
     const { contract } = await PoolService.getById(assetPoolId);
     const events = parseLogs(contract.options.jsonInterface, receipt.logs);
-
     const event = assertEvent('ERC721Minted', events);
 
     await ERC721Token.findByIdAndUpdate(erc721tokenId, {

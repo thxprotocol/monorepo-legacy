@@ -15,17 +15,15 @@ export const validation = [
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Wallets']
     const account = await AccountProxy.getById(req.body.sub);
-    if (!account) throw new UnauthorizedError('Invalid account');
+    if (!account) throw new UnauthorizedError('No account found for this sub.');
+
     let wallet = await Wallet.findOne({ sub: String(req.body.sub), chainId: Number(req.body.chainId) as ChainId });
     if (wallet) {
-        if (!wallet.address) {
-            throw new Error('Wallet address not set');
-        }
+        if (!wallet.address) throw new Error('No address found for this wallet.');
         return res.status(201).json(wallet);
     }
-    // Force sync by default but allow the requester to do async calls.
-    const forceSync = req.query.forceSync !== undefined ? req.query.forceSync === 'true' : true;
-    wallet = await WalletService.create(req.body.chainId, account, forceSync);
+
+    wallet = await WalletService.create(req.body.chainId, account, true);
 
     res.status(201).json(wallet);
 };

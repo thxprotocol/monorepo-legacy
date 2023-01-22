@@ -61,7 +61,11 @@
                 </template>
                 <template #cell(claims)="{ item }">
                     <b-link v-b-modal="`modalRewardClaimsDownload${item.id}`" v-if="item.claims.length">
-                        {{ item.claims.length }} {{ item.claims.length > 1 ? 'claims' : 'claim' }}
+                        <b-progress
+                            :value="item.claims.filter((c) => c.sub).length"
+                            :max="item.claims.length"
+                            show-value
+                        />
                     </b-link>
                     <BaseModalRewardClaimsDownload
                         :id="`modalRewardClaimsDownload${item.id}`"
@@ -169,6 +173,7 @@ export default class ERC721PerksView extends Vue {
                     content: r.content,
                 },
                 claims: r.claims,
+                rewardLimit: r.rewardLimit,
                 id: r._id,
             }))
             .slice(0, this.limit);
