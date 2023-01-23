@@ -4,12 +4,12 @@
         <div class="py-5" v-if="loading">
             <b-spinner variant="primary" />
         </div>
-        <b-row class="mt-5" v-if="analytics">
+        <b-row v-if="analytics">
             <b-col md="6">
                 <b-row class="mt-5">
-                    <line-chart :chartData="referralChartData" :chart-options="chartOptions" />
+                    <line-chart :chartData="lineChartData" :chart-options="chartOptions" />
                 </b-row>
-                <b-row>
+                <b-row class="mt-5">
                     <b-col md="4">
                         <b-card bg-variant="primary" class="shadow-sm text-white">
                             <span>Referrals</span><br />
@@ -18,7 +18,7 @@
                     </b-col>
                     <b-col md="4">
                         <b-card bg-variant="primary" class="shadow-sm text-white">
-                            <span>Conditions</span><br />
+                            <span>Conditionals</span><br />
                             <div class="h2">{{ totals.pointRewards }}</div>
                         </b-card>
                     </b-col>
@@ -70,10 +70,10 @@
             <b-col md="6">
                 <b-row class="mt-5">
                     <b-col>
-                        <bar-chart :chartData="perkChartData" :chart-options="chartOptions" />
+                        <bar-chart :chartData="barChartData" :chart-options="chartOptions" />
                     </b-col>
                 </b-row>
-                <b-row>
+                <b-row class="mt-5">
                     <b-col md="4">
                         <b-card bg-variant="primary" class="shadow-sm text-white">
                             <span>Coin Perks</span><br />
@@ -172,17 +172,6 @@ export default class TransactionsView extends Vue {
     analytics!: IPoolAnalytics;
     daysRange = 14;
 
-    perkChartData: any = {
-        labels: [],
-        datasets: [
-            {
-                label: 'Perks',
-                backgroundColor: '#5942c1',
-                data: [],
-            },
-        ],
-    };
-
     chartOptions = {
         scales: {
             x: { grid: { display: false } },
@@ -247,13 +236,15 @@ export default class TransactionsView extends Vue {
         return dates;
     }
 
-    get referralChartData() {
-        let chartPoints: number[] = [];
+    get lineChartData() {
+        let referralChartPoints: number[] = [];
+        let conditionalChartPoints: number[] = [];
         const analytics = this.analytics[this.$route.params.id];
 
         if (analytics) {
+            // REFERRALS
             // assigns for each day of the chart, the related total amount, or 0 if there are no data for that day
-            const points = this.dates.map((data) => {
+            let points = this.dates.map((data) => {
                 const dayData = analytics.referralRewards.find((x) => x.day == data);
                 return dayData ? dayData.totalClaimPoints : 0;
             });
@@ -261,20 +252,84 @@ export default class TransactionsView extends Vue {
             // creates and exponential value array, summing each element of the array with the value of the previous element
             points.forEach((x, index) => {
                 if (index === 0) {
-                    chartPoints.push(x);
+                    referralChartPoints.push(x);
                     return;
                 }
-                chartPoints.push(x + chartPoints[index - 1]);
+                referralChartPoints.push(x + referralChartPoints[index - 1]);
+            });
+
+            // CONDITIONALS
+            points = this.dates.map((data) => {
+                const dayData = analytics.pointRewards.find((x) => x.day == data);
+                return dayData ? dayData.totalClaimPoints : 0;
+            });
+
+            points.forEach((x, index) => {
+                if (index === 0) {
+                    conditionalChartPoints.push(x);
+                    return;
+                }
+                conditionalChartPoints.push(x + conditionalChartPoints[index - 1]);
             });
         }
 
         const result = {
-            labels: this.dates,
+            labels: this.dates.map((x) => format(new Date(x), 'MM-dd')),
             datasets: [
                 {
                     label: 'Referrals',
+                    backgroundColor: 'rgb(75, 192, 192)',
+                    data: referralChartPoints,
+                    borderColor: 'rgb(75, 192, 192)',
+                    pointRadius: 0,
+                },
+                {
+                    label: 'Conditionals',
                     backgroundColor: '#5942c1',
-                    data: chartPoints,
+                    data: conditionalChartPoints,
+                    borderColor: '#5943c1',
+                    pointRadius: 0,
+                },
+            ],
+        };
+        return result;
+    }
+
+    get barChartData() {
+        const analytics = this.analytics[this.$route.params.id];
+        let erc20Payments: number[] = [];
+        let erc721Payments: number[] = [];
+        if (analytics) {
+            // COIN PERKS
+            // assigns for each day of the chart, the related total amount, or 0 if there are no data for that day
+            erc20Payments = this.dates.map((data) => {
+                const dayData = analytics.erc20Perks.find((x) => x.day == data);
+                return dayData ? dayData.totalAmount : 0;
+            });
+
+            // NFT PERKS
+            erc721Payments = this.dates.map((data) => {
+                const dayData = analytics.erc721Perks.find((x) => x.day == data);
+                return dayData ? dayData.totalAmount : 0;
+            });
+        }
+
+        const result = {
+            labels: this.dates.map((x) => format(new Date(x), 'MM-dd')),
+            datasets: [
+                {
+                    label: 'Coin Perks',
+                    backgroundColor: '#32236e',
+                    data: erc20Payments,
+                    borderColor: '#32236e',
+                    pointRadius: 0,
+                },
+                {
+                    label: 'NFT Perks',
+                    backgroundColor: '#5942c1',
+                    data: erc721Payments,
+                    borderColor: '#5943c1',
+                    pointRadius: 0,
                 },
             ],
         };

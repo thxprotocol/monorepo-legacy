@@ -105,9 +105,6 @@ async function runAggregateQuery<T>(args: {
     startDate: Date;
     endDate: Date;
 }) {
-    console.log('START DATE---------------------------', args.startDate.toISOString());
-    console.log('END DATE DATE---------------------------', args.endDate.toISOString());
-
     const queryResult = await args.model.aggregate([
         {
             $match: {
