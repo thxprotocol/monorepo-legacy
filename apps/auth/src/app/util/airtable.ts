@@ -8,7 +8,7 @@ interface PipelineSignUpParams {
     [key: string]: any;
 }
 
-const formatDate = (datestring: string | Date) => {
+const formatDate = (datestring: string | Date | number) => {
     const date = new Date(datestring);
     return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
 };
@@ -20,7 +20,7 @@ export default {
         const base = new Airtable().base(AIRTABLE_BASE_ID);
         await base('Pipeline: Signups').create({
             ...(params as any),
-            Date: params.Date ? formatDate(params.Date) : formatDate(Date.now().toLocaleString()),
+            Date: params.Date ? formatDate(params.Date) : formatDate(Date.now()),
         });
     },
 };
