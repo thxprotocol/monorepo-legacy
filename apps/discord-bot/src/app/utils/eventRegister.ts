@@ -1,4 +1,4 @@
-import { Client } from 'discord.js';
+import { Client, Events } from 'discord.js';
 
 const eventRegister = (client: Client<true>, router: { [key: string]: any }) => {
     Object.keys(router).forEach((key) => {
