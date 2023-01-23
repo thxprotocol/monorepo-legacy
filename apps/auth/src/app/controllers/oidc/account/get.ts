@@ -31,7 +31,6 @@ async function controller(req: Request, res: Response) {
             profileImg: account.profileImg,
             organisation: account.organisation,
             address: account.address,
-            walletAddress: account.walletAddress,
             plan: account.plan,
             otpSecret: account.otpSecret,
             variant: account.variant,

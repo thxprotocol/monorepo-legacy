@@ -32,17 +32,6 @@ describe('Wallets', () => {
         });
     });
 
-    describe('GET /account', () => {
-        it('should have the Account walletAdress field filled', (done) => {
-            user.get(`/v1/account`)
-                .set({ Authorization: walletAccessToken2 })
-                .expect((res: request.Response) => {
-                    expect(res.body.walletAddress).toBeDefined();
-                })
-                .expect(200, done);
-        });
-    });
-
     describe('GET /wallets', () => {
         it('HTTP 200 if OK', (done) => {
             user.get(`/v1/wallets?chainId=${ChainId.Hardhat}&sub=${sub2}`)

@@ -2,7 +2,6 @@ import { AccountPlanType, ChainId } from '@thxnetwork/api/types/enums';
 export interface IAccount {
     sub?: string;
     address: string;
-    walletAddress: string;
     privateKey: string;
     googleAccess: boolean;
     youtubeViewAccess: boolean;
@@ -25,7 +24,6 @@ export interface IAccountUpdates {
     acceptTermsPrivacy?: boolean;
     acceptUpdates?: boolean;
     address?: string;
-    walletAddress?: string;
     authenticationToken?: string;
     authenticationTokenExpires?: number;
     googleAccess?: boolean;

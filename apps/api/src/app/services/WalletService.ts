@@ -66,7 +66,6 @@ async function deploy(wallet: WalletDocument, chainId: ChainId, sub: string, for
 
 async function deployCallback(args: TWalletDeployCallbackArgs, receipt: TransactionReceipt) {
     const wallet = await Wallet.findByIdAndUpdate(args.walletId, { address: receipt.contractAddress }, { new: true });
-    await AccountProxy.update(args.sub, { walletAddress: receipt.contractAddress });
     await WalletManagerService.setupManagerRoleAdmin(wallet, args.owner);
 }
 

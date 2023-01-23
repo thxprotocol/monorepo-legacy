@@ -1,6 +1,6 @@
 import Web3 from 'web3';
 import CustomAuth, { CustomAuthArgs } from '@toruslabs/customauth';
-import { TORUS_NETWORK, ROPSTEN_RPC } from './secrets';
+import { TORUS_NETWORK } from './secrets';
 
 export function mockPrivateKeyForSubject(subject: string) {
     const pkey = localStorage.getItem(`mock:privateKey:${subject}`);
@@ -17,7 +17,7 @@ const options: CustomAuthArgs = {
     enableLogging: TORUS_NETWORK !== 'mainnet',
     network: TORUS_NETWORK as any,
 };
-if (TORUS_NETWORK === 'testnet' && ROPSTEN_RPC) {
-    options.networkUrl = ROPSTEN_RPC;
-}
+// if (TORUS_NETWORK === 'testnet' && ROPSTEN_RPC) {
+//     options.networkUrl = ROPSTEN_RPC;
+// }
 export const torusClient = new CustomAuth(options);

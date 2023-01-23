@@ -12,7 +12,6 @@ async function formatAccountRes(account) {
     return {
         sub: String(account._id),
         address: account.address,
-        walletAddress: account.walletAddress,
         firstName: account.firstName,
         lastName: account.lastName,
         company: account.company,

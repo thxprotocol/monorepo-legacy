@@ -94,13 +94,9 @@ export class AccountService {
             });
         }
 
-        account.address =
-            updates.address || account.address ? toChecksumAddress(updates.address || account.address) : undefined;
-
-        account.walletAddress =
-            updates.walletAddress || account.walletAddress
-                ? toChecksumAddress(updates.walletAddress || account.walletAddress)
-                : undefined;
+        if (updates.address) {
+            account.address = toChecksumAddress(updates.address);
+        }
 
         if (updates.googleAccess === false) {
             YouTubeService.revokeAccess(account, AccessTokenKind.Google);
@@ -132,6 +128,7 @@ export class AccountService {
         if (updates.discordAccess === false) {
             account.unsetToken(AccessTokenKind.Discord);
         }
+
         await account.save();
     }
 

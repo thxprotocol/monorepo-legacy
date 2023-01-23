@@ -33,7 +33,7 @@ describe('WalletManagers', () => {
         });
     });
 
-    describe('POST /:id/managers/', () => {
+    describe('POST /wallets/:id/managers/', () => {
         it('HTTP 204', (done) => {
             user.post(`/v1/wallets/${walletId}/managers`)
                 .set({ Authorization: walletAccessToken })
@@ -48,7 +48,7 @@ describe('WalletManagers', () => {
         });
     });
 
-    describe('GET /:id/managers/', () => {
+    describe('GET /wallets/:id/managers/', () => {
         it('HTTP 200 if OK', (done) => {
             user.get(`/v1/wallets/${walletId}/managers`)
                 .set({ Authorization: walletAccessToken })
@@ -62,7 +62,7 @@ describe('WalletManagers', () => {
         });
     });
 
-    describe('DELETE /managers/:id', () => {
+    describe('DELETE /wallets/managers/:id', () => {
         it('HTTP 204 if OK', (done) => {
             user.delete(`/v1/wallets/managers/${walletManagerId}`)
                 .set({ Authorization: walletAccessToken })
@@ -70,7 +70,7 @@ describe('WalletManagers', () => {
         });
     });
 
-    describe('GET /:id/managers/', () => {
+    describe('GET /wallets/:id/managers/', () => {
         it('HTTP 200 if OK', (done) => {
             user.get(`/v1/wallets/${walletId}/managers`)
                 .set({ Authorization: walletAccessToken })

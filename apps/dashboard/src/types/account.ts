@@ -13,7 +13,6 @@ export interface IAccount {
     plan: AccountPlanType;
     profileImg?: string;
     email?: string;
-    walletAddress: string;
 }
 export interface IAccountUpdates {
     address: string;
