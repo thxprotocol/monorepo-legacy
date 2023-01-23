@@ -20,7 +20,7 @@ export default {
         const base = new Airtable().base(AIRTABLE_BASE_ID);
         await base('Pipeline: Signups').create({
             ...(params as any),
-            Date: formatDate(params.Date),
+            Date: params.Date ? formatDate(params.Date) : formatDate(Date.now().toLocaleString()),
         });
     },
 };
