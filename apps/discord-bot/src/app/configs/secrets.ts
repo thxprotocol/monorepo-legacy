@@ -1,4 +1,4 @@
-const required = ['TOKEN', 'CLIENT_ID', 'CLIENT_SECRET', 'AUTH_URL'];
+const required = ['TOKEN', 'DISCORD_CLIENT_ID', 'OIDC_CLIENT_ID', 'OIDC_CLIENT_SECRET', 'AUTH_URL'];
 
 required.forEach((value: string) => {
     if (!process.env[value]) {
@@ -8,6 +8,8 @@ required.forEach((value: string) => {
 });
 
 export const TOKEN = process.env['TOKEN'];
-export const CLIENT_ID = process.env['CLIENT_ID'];
-export const CLIENT_SECRET = process.env['CLIENT_SECRET'];
+export const DISCORD_CLIENT_ID = process.env['DISCORD_CLIENT_ID'];
+export const OIDC_CLIENT_ID = process.env['OIDC_CLIENT_ID'];
+export const OIDC_CLIENT_SECRET = process.env['OIDC_CLIENT_SECRET'];
 export const AUTH_URL = process.env['AUTH_URL'];
+export const PKG_ENV = process.env['PKG_ENV'] || 'local';
