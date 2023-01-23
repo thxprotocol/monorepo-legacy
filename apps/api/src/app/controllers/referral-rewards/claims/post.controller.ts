@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { body } from 'express-validator';
+import { body, header } from 'express-validator';
 import ReferralRewardClaimService from '@thxnetwork/api/services/ReferralRewardClaimService';
 
-const validation = [body('sub').exists().isMongoId()];
+const validation = [body('sub').exists().isMongoId(), header('X-PoolId').exists().isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards Referral Claims']
@@ -10,6 +10,7 @@ const controller = async (req: Request, res: Response) => {
         sub: req.body.sub,
         referralRewardId: req.params.uuid,
         isApproved: false,
+        poolId: req.header('X-PoolId'),
     });
     return res.status(201).json(claim);
 };

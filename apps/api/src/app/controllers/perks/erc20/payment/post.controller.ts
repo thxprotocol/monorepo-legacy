@@ -55,7 +55,11 @@ const controller = async (req: Request, res: Response) => {
         erc20,
     );
 
-    const erc20PerkPayment = await ERC20PerkPayment.create({ perkId: erc20Perk.id, sub: req.auth.sub });
+    const erc20PerkPayment = await ERC20PerkPayment.create({
+        perkId: erc20Perk.id,
+        sub: req.auth.sub,
+        poolId: erc20Perk.poolId,
+    });
 
     await PointBalanceService.subtract(pool, req.auth.sub, erc20Perk.pointPrice);
 

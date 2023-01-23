@@ -34,7 +34,11 @@ const controller = async (req: Request, res: Response) => {
 
     const account = { sub: req.auth.sub, address: wallet.address } as IAccount;
     const erc721Token = await ERC721Service.mint(pool, erc721, metadata, account);
-    const erc721PerkPayment = await ERC20PerkPayment.create({ perkId: erc721Perk._id, sub: req.auth.sub });
+    const erc721PerkPayment = await ERC20PerkPayment.create({
+        perkId: erc721Perk._id,
+        sub: req.auth.sub,
+        poolId: erc721Perk.poolId,
+    });
 
     await PointBalanceService.subtract(pool, req.auth.sub, erc721Perk.pointPrice);
 

@@ -59,6 +59,7 @@ const controller = async (req: Request, res: Response) => {
         const payment = await ERC20PerkPayment.create({
             sub: req.auth.sub,
             perkId: reward._id,
+            poolId: reward.poolId,
         });
 
         return res.json({ withdrawal, erc20, reward: reward, claim, payment });
@@ -91,6 +92,7 @@ const controller = async (req: Request, res: Response) => {
         const payment = await ERC721PerkPayment.create({
             sub: req.auth.sub,
             perkId: reward._id,
+            poolId: reward.poolId,
         });
 
         return res.json({ token, erc721, metadata, reward: reward, claim, payment });

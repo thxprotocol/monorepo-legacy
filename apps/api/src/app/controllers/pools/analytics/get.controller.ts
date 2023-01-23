@@ -188,4 +188,104 @@ async function runAggregateQuery<T>(args: {
     return queryResult;
 }
 
+/**
+ *
+ * @returns the rewards per poolId, with the claims for each reward,
+ * filtered by a time range,
+ * grouped by day of claim creation
+ * with the total claims per reward
+ * and the sum of the reward amount * total claims per reward per day
+ */
+async function leaderBoardQuery<T>(args: {
+    model: mongoose.Model<T>;
+    poolId: string;
+    joinTable: string;
+    key: string;
+    amountField: string;
+    startDate: Date;
+    endDate: Date;
+}) {
+    const queryResult = await args.model.aggregate([
+        {
+            $match: {
+                poolId: args.poolId,
+            },
+        },
+        {
+            $lookup: {
+                from: args.joinTable,
+                let: {
+                    id: {
+                        $convert: {
+                            input: '$_id',
+                            to: 'string',
+                        },
+                    },
+                },
+                pipeline: [
+                    {
+                        $match: {
+                            $and: [
+                                {
+                                    $expr: {
+                                        $eq: ['$$id', `$${args.key}`],
+                                    },
+                                },
+                                {
+                                    createdAt: {
+                                        $gte: args.startDate,
+                                        $lte: args.endDate,
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+                as: 'children',
+            },
+        },
+        {
+            $unwind: '$children',
+        },
+        {
+            $group: {
+                _id: {
+                    $dateToString: {
+                        format: '%Y-%m-%d',
+                        date: { $toDate: '$children.createdAt' },
+                    },
+                },
+                children: {
+                    $push: '$children',
+                },
+                childAmount: {
+                    $first: `$${args.amountField}`,
+                },
+            },
+        },
+        {
+            $project: {
+                paymentsCount: {
+                    $size: { $ifNull: ['$children', []] },
+                },
+                total_amount: {
+                    $multiply: [
+                        {
+                            $size: { $ifNull: ['$children', []] },
+                        },
+                        {
+                            $convert: {
+                                input: '$childAmount',
+                                to: 'int',
+                            },
+                        },
+                    ],
+                },
+            },
+        },
+    ]);
+
+    return queryResult;
+}
+
 export default { controller, validation };

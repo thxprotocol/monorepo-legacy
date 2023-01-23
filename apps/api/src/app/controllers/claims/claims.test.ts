@@ -92,6 +92,8 @@ describe('Claims', () => {
                 .expect((res: request.Response) => {
                     expect(res.body.withdrawal).toBeDefined();
                     expect(res.body.withdrawal.state).toEqual(WithdrawalState.Withdrawn);
+                    expect(res.body.payment).toBeDefined();
+                    expect(res.body.payment.poolId).toBe(poolId);
                 })
                 .expect(200, done);
         });

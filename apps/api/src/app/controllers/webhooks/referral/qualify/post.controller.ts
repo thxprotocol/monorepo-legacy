@@ -1,4 +1,4 @@
-import { body } from 'express-validator';
+import { body, header } from 'express-validator';
 import { Request, Response } from 'express';
 import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
@@ -6,7 +6,7 @@ import ReferralRewardClaimService from '@thxnetwork/api/services/ReferralRewardC
 import MailService from '@thxnetwork/api/services/MailService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 
-const validation = [body('code').exists().isMongoId()];
+const validation = [body('code').exists().isMongoId(), header('X-PoolId').exists().isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards Referral']
@@ -16,6 +16,7 @@ const controller = async (req: Request, res: Response) => {
         referralRewardId: String(reward._id),
         sub: req.body.code,
         isApproved: true,
+        poolId: req.header('X-PoolId'),
     });
     const account = await AccountProxy.getById(req.body.code);
 

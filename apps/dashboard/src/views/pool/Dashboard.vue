@@ -172,15 +172,6 @@ export default class TransactionsView extends Vue {
     analytics!: IPoolAnalytics;
     daysRange = 14;
 
-    chartOptions = {
-        scales: {
-            x: { grid: { display: false } },
-            y: { display: true, grid: { display: false } },
-        },
-        responsive: true,
-        maintainAspectRatio: false,
-    };
-
     get pool() {
         return this.pools[this.$route.params.id];
     }
@@ -319,22 +310,31 @@ export default class TransactionsView extends Vue {
             datasets: [
                 {
                     label: 'Coin Perks',
-                    backgroundColor: '#32236e',
                     data: erc20Payments,
-                    borderColor: '#32236e',
+                    backgroundColor: '#5942c1',
+                    borderColor: '#5943c1',
                     pointRadius: 0,
                 },
                 {
                     label: 'NFT Perks',
-                    backgroundColor: '#5942c1',
                     data: erc721Payments,
-                    borderColor: '#5943c1',
+                    backgroundColor: '#32236e',
+                    borderColor: '#32236e',
                     pointRadius: 0,
                 },
             ],
         };
         return result;
     }
+
+    chartOptions = {
+        scales: {
+            x: { grid: { display: false } },
+            y: { display: true, grid: { display: false } },
+        },
+        responsive: true,
+        maintainAspectRatio: false,
+    };
 
     formatDateLabel(date: Date): string {
         const month = date.getUTCMonth() + 1;
