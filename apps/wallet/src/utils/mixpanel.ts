@@ -10,6 +10,7 @@ export const mixpanelClient = () => {
 };
 
 function identify(account: UserProfile) {
+    if (!MIXPANEL_TOKEN) return;
     const mixpanel = mixpanelClient();
     mixpanel.identify(account.sub);
     mixpanel.people.set('$name', `${account.firstName} ${account.lastName}`);
