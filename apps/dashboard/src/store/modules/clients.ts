@@ -103,7 +103,7 @@ class ClientModule extends VuexModule {
         data.results.forEach((client: TClient) => {
             client.page = page;
             this.context.commit('set', { pool, client });
-            this.context.dispatch('get', { pool, client })
+            this.context.dispatch('get', { pool, client });
         });
     }
 
@@ -117,7 +117,7 @@ class ClientModule extends VuexModule {
         });
 
         const profile = this.context.rootGetters['account/profile'];
-        track.UserCreates(profile.sub, 'client');
+        track('UserCreates', [profile.sub, 'client']);
 
         data.page = page;
         this.context.commit('set', { pool, client: data });

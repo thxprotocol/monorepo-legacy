@@ -11,7 +11,7 @@ export const mixpanelClient = () => {
 
 function identify(account: IAccount) {
     if (!MIXPANEL_TOKEN) return;
-    const mixpanel = mixpanelClient();
+    mixpanelClient();
     mixpanel.identify(account.sub);
     mixpanel.people.set('$name', `${account.firstName} ${account.lastName}`);
     mixpanel.people.set('$email', account.email);
@@ -19,24 +19,28 @@ function identify(account: IAccount) {
     mixpanel.people.set('address', account.address || '');
 }
 
-export const track = {
-    UserIdentify: identify,
+const trackers: { [event: string]: (param1?: any, param2?: any, param3?: any) => void } = {
+    UserIdentify: (account: IAccount) => {
+        identify(account);
+    },
     UserSignsIn: (account: IAccount) => {
-        if (!MIXPANEL_TOKEN) return;
         identify(account);
         mixpanel.track('user signs in', { distinct_id: account.sub });
     },
     UserVisits: (sub: string, path: string, params: string[]) => {
-        if (!MIXPANEL_TOKEN) return;
         mixpanelClient().track(`user visits ${path}`, { distinct_id: sub, params });
     },
     UserOpens: (sub: string, modal: string) => {
-        if (!MIXPANEL_TOKEN) return;
         mixpanelClient().track(`user opens ${modal}`, { distinct_id: sub });
     },
     UserCreates: (sub: string, item: string) => {
-        if (!MIXPANEL_TOKEN) return;
         mixpanelClient().track(`user creates ${item}`, { distinct_id: sub });
     },
 };
+
+export const track = (event: string, params: any[]) => {
+    if (!MIXPANEL_TOKEN) return;
+    trackers[event](...params);
+};
+
 export default { mixpanelClient, track };

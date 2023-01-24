@@ -98,7 +98,7 @@ class PoolModule extends VuexModule {
         });
 
         const profile = this.context.rootGetters['account/profile'];
-        track.UserCreates(profile.sub, 'pool');
+        track('UserCreates', [profile.sub, 'pool']);
 
         this.context.commit('set', r.data);
     }

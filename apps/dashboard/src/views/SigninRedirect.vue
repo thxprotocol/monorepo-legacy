@@ -25,7 +25,7 @@ export default class Redirect extends Vue {
         await this.$store.dispatch('account/signinRedirectCallback');
         await this.$store.dispatch('account/getProfile');
 
-        track.UserSignsIn(this.profile);
+        track('UserSignsIn', [this.profile]);
 
         // List pools to see if we need to deploy a first
         await this.$store.dispatch('pools/list');
