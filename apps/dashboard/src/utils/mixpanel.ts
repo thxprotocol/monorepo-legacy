@@ -10,6 +10,7 @@ export const mixpanelClient = () => {
 };
 
 function identify(account: IAccount) {
+    if (!MIXPANEL_TOKEN) return;
     const mixpanel = mixpanelClient();
     mixpanel.identify(account.sub);
     mixpanel.people.set('$name', `${account.firstName} ${account.lastName}`);
@@ -21,6 +22,7 @@ function identify(account: IAccount) {
 export const track = {
     UserIdentify: identify,
     UserSignsIn: (account: IAccount) => {
+        if (!MIXPANEL_TOKEN) return;
         identify(account);
         mixpanel.track('user signs in', { distinct_id: account.sub });
     },
