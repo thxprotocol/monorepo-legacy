@@ -73,20 +73,21 @@ const routes: Array<RouteConfig> = [
     },
     {
         path: '/coins',
-        name: 'coins',
+        name: 'Coins',
         component: () => import(/* webpackChunkName: "crypto" */ '../views/Coins.vue'),
         beforeEnter: assertAuthorization,
     },
     {
         path: '/nft',
-        name: 'nft',
+        name: 'NFT',
         component: () => import(/* webpackChunkName: "nft" */ '../views/NFT.vue'),
         beforeEnter: assertAuthorization,
     },
     {
-        name: 'payment url',
-        path: '/payment/:id',
-        component: () => import(/* webpackChunkName: "payment" */ '../views/Payment.vue'),
+        path: '/wallets',
+        name: 'Wallets',
+        component: () => import(/* webpackChunkName: "nft" */ '../views/Wallets.vue'),
+        beforeEnter: assertAuthorization,
     },
 ];
 

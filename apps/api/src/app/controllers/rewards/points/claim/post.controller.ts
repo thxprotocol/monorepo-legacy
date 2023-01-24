@@ -11,11 +11,11 @@ const controller = async (req: Request, res: Response) => {
     const reward = await PointReward.findOne({ uuid: req.params.uuid });
     const account = await AccountProxy.getById(req.auth.sub);
     const pool = await PoolService.getById(req.header('X-PoolId'));
-    const { result, error } = await validateCondition(account, reward);
-    if (!result || error) return res.json({ error });
+    const failReason = await validateCondition(account, reward);
+    if (failReason) return res.json({ error: failReason });
 
     if (await PointRewardClaim.exists({ pointRewardId: reward._id, poolId: pool._id, sub: req.auth.sub })) {
-        return res.json({ error });
+        return res.json({ error: 'You have claimed this reward already.' });
     }
 
     const claim = await PointRewardClaim.create({

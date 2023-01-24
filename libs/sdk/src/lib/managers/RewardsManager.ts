@@ -16,6 +16,12 @@ class RewardsManager extends BaseManager {
         },
     };
 
+    milestones = {
+        claim: async (uuid: string) => {
+            return await this.client.request.post(`/v1/rewards/milestones/claims/${uuid}/collect`);
+        },
+    };
+
     referral = {
         claim: async ({ uuid, sub }: { uuid: string; sub: string }) => {
             return await this.client.request.post(`/v1/rewards/referral/${uuid}/claim`, {

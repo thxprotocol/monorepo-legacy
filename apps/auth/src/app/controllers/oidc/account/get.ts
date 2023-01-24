@@ -6,6 +6,7 @@ import { AccountService } from '../../../services/AccountService';
 import { GithubService } from '../../../services/GithubServices';
 import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
+import { track } from '@thxnetwork/auth/util/mixpanel';
 
 async function controller(req: Request, res: Response) {
     const { uid, params, alert, session } = req.interaction;
@@ -16,6 +17,8 @@ async function controller(req: Request, res: Response) {
     params.twitterLoginUrl = TwitterService.getLoginURL(uid, {});
     params.discordLoginUrl = DiscordService.getLoginURL(uid, {});
     params.twitchLoginUrl = TwitchService.getLoginURL(uid, {});
+
+    track.UserVisits(params.distinct_id, `oidc account`, [uid, params.return_url]);
 
     return res.render('account', {
         uid,
@@ -28,16 +31,16 @@ async function controller(req: Request, res: Response) {
             profileImg: account.profileImg,
             organisation: account.organisation,
             address: account.address,
-            walletAddress: account.walletAddress,
             plan: account.plan,
             otpSecret: account.otpSecret,
+            variant: account.variant,
             googleAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.Google),
             youtubeViewAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.YoutubeView),
             youtubeManageAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.YoutubeManage),
             twitterAccess: await TwitterService.isAuthorized(account),
             githubAccess: await GithubService.isAuthorized(account),
             discordAccess: await DiscordService.isAuthorized(account),
-            twitchAccess: TwitchService.isAuthorized(account),
+            twitchAccess: await TwitchService.isAuthorized(account),
         },
     });
 }

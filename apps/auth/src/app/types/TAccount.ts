@@ -12,7 +12,6 @@ export interface TAccount {
     email: string;
     password: string;
     address: string;
-    walletAddress: string;
     variant: AccountVariant;
     privateKey: string;
     otpSecret: string;
@@ -34,6 +33,7 @@ export interface IAccessToken {
     accessToken?: string;
     refreshToken?: string;
     expiry?: number;
+    userId?: string;
 }
 export interface IAccountUpdates {
     acceptTermsPrivacy?: boolean;

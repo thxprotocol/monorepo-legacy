@@ -1,7 +1,6 @@
 export enum AccountPlanType {
-    Free = 0,
-    Basic = 1,
-    Premium = 2,
+    Basic = 0,
+    Premium = 1,
 }
 
 export interface IAccount {
@@ -12,6 +11,7 @@ export interface IAccount {
     lastName: string;
     company: string;
     plan: AccountPlanType;
+    profileImg?: string;
     email?: string;
 }
 export interface IAccountUpdates {

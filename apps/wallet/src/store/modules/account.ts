@@ -6,6 +6,7 @@ import { thxClient } from '../../utils/oidc';
 import { User } from 'oidc-client-ts';
 import { AccountVariant } from '../../types/Accounts';
 import { AccessTokenKind, RewardConditionPlatform } from '@thxnetwork/types/index';
+import { track } from '@thxnetwork/wallet/utils/mixpanel';
 const AUTH_REQUEST_TYPED_MESSAGE =
     "Welcome! Please make sure you have selected your preferred account and sign this message to verify it's ownership.";
 
@@ -68,6 +69,8 @@ class AccountModule extends VuexModule {
             url: '/account',
         });
 
+        track.UserIdentify(r.data);
+
         this.context.commit('setProfile', r.data);
     }
 
@@ -82,18 +85,14 @@ class AccountModule extends VuexModule {
                 const signature = await web3.eth.sign(AUTH_REQUEST_TYPED_MESSAGE, account.address);
                 payload.authRequestMessage = AUTH_REQUEST_TYPED_MESSAGE;
                 payload.authRequestSignature = signature;
-            } else {
-                // Do metamask signature
             }
         }
-
-        const r = await axios({
+        const { data } = await axios({
             method: 'PATCH',
             url: '/account',
             data: payload,
         });
-
-        this.context.commit('setUserProfile', r.data);
+        this.context.commit('setUserProfile', data);
     }
 
     @Action({ rawError: true })

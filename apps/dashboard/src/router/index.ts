@@ -52,6 +52,11 @@ const routes: Array<RouteConfig> = [
                 component: () => import('../views/pool/Points.vue'),
             },
             {
+                name: 'milestones',
+                path: 'milestones',
+                component: () => import('../views/pool/Milestones.vue'),
+            },
+            {
                 name: 'referrals',
                 path: 'referrals',
                 component: () => import('../views/pool/Referrals.vue'),
@@ -79,6 +84,11 @@ const routes: Array<RouteConfig> = [
         ],
     },
     {
+        path: '/preview/:poolId',
+        component: () => import('../views/Preview.vue'),
+        beforeEnter: assertAuthorization,
+    },
+    {
         name: 'coins',
         path: '/coins',
         component: () => import('../views/Coins.vue'),
@@ -104,7 +114,7 @@ const routes: Array<RouteConfig> = [
         ],
     },
     {
-        name: 'sign in',
+        name: 'sign in redirect',
         path: '/signin-oidc',
         component: () => import('../views/SigninRedirect.vue'),
     },
@@ -124,7 +134,7 @@ const routes: Array<RouteConfig> = [
         beforeEnter: redirectAccount,
     },
     {
-        name: 'signup',
+        name: 'sign up',
         path: '/signup',
         beforeEnter: redirectSignup,
     },
@@ -135,7 +145,7 @@ const routes: Array<RouteConfig> = [
         beforeEnter: redirectSignout,
     },
     {
-        name: 'verify email',
+        name: 'confirm email',
         path: '/verify',
         beforeEnter: redirectConfirmationLink,
     },
@@ -171,7 +181,7 @@ router.beforeEach(async (to, from, next) => {
 
     try {
         const user = await store.dispatch('account/getUser');
-        if (user) track.UserVisits(user.sub, to.name || 'unknown', to.params as unknown as string[]);
+        if (user && to.name) track.UserVisits(user.sub, to.name, to.params as unknown as string[]);
         return next();
     } catch (err) {
         console.error(err);

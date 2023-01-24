@@ -138,8 +138,8 @@ export class MailService {
             const options = {
                 to,
                 from: {
-                    email: 'peter@thx.network',
-                    name: 'Peter Polman',
+                    email: 'info@thx.network',
+                    name: 'THX Network',
                 },
                 subject,
                 html,

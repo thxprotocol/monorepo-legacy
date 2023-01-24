@@ -24,6 +24,11 @@ const controller = async (req: Request, res: Response) => {
 
     const account = await AccountProxy.getById(req.auth.sub);
     const pendingWithdrawals = await WithdrawalService.getPendingWithdrawals(erc20, account);
+
+    const walletAddress = await account.getAddress(erc20.chainId);
+    const walletBalanceInWei = await erc20.contract.methods.balanceOf(walletAddress).call();
+    const walletBalance = Number(fromWei(walletBalanceInWei, 'ether'));
+
     const balanceInWei = await erc20.contract.methods.balanceOf(account.address).call();
     const balance = Number(fromWei(balanceInWei, 'ether'));
     const balancePending = pendingWithdrawals
@@ -37,6 +42,8 @@ const controller = async (req: Request, res: Response) => {
         balanceInWei,
         balance,
         balancePending,
+        walletBalanceInWei,
+        walletBalance,
         pendingWithdrawals,
         erc20,
     });

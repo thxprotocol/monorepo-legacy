@@ -29,33 +29,30 @@
                 {{ pool.title }}
             </p>
             <hr />
-            <b-container class="mb-0 text-center text-muted">
+            <b-container class="mb-0 text-center text-gray">
                 <b-row class="pb-2">
                     <b-col>
-                        <strong class="text-primary">
-                            {{ pool.metrics.pointRewards ? pool.metrics.pointRewards.totalClaimPoints : 0 }}
+                        <strong class="text-primary" style="font-size: 1.3rem">
+                            {{
+                                (pool.metrics.referralRewards ? pool.metrics.referralRewards.totalClaimPoints : 0) +
+                                (pool.metrics.pointRewards ? pool.metrics.pointRewards.totalClaimPoints : 0)
+                            }}
                         </strong>
-                        <div class="small">Conditional Points</div>
-                    </b-col>
-                    <b-col>
-                        <strong class="text-primary">
-                            {{ pool.metrics.referralRewards ? pool.metrics.referralRewards.totalClaimPoints : 0 }}
-                        </strong>
-                        <div class="small">Referral Points</div>
+                        <div class="small">Points Claimed</div>
                     </b-col>
                 </b-row>
                 <b-row>
                     <b-col>
                         <strong class="text-primary">{{
-                            pool.metrics.erc20Perks ? pool.metrics.erc20Perks.totalAmount : 0
+                            pool.metrics.erc20Perks ? pool.metrics.erc20Perks.payments : 0
                         }}</strong>
-                        <div class="small">Coin Perks</div>
+                        <div class="small">Coin Perks Redeemed</div>
                     </b-col>
                     <b-col>
                         <strong class="text-primary">{{
-                            pool.metrics.erc721Perks ? pool.metrics.erc721Perks.totalAmount : 0
+                            pool.metrics.erc721Perks ? pool.metrics.erc721Perks.payments : 0
                         }}</strong>
-                        <div class="small">NFT Perks</div>
+                        <div class="small">NFT Perks Redeemed</div>
                     </b-col>
                 </b-row>
             </b-container>

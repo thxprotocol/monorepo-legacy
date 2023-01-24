@@ -41,6 +41,8 @@
                 <template #head(title)> Title </template>
                 <template #head(progress)> Progress </template>
                 <template #head(rewardCondition)> Condition </template>
+                <template #head(claims)> Claim URL's </template>
+                <template #head(rewardLimit)> Reward Limit </template>
                 <template #head(id)> &nbsp; </template>
 
                 <!-- Cell formatting -->
@@ -71,7 +73,13 @@
                     />
                 </template>
                 <template #cell(claims)="{ item }">
-                    <b-link v-b-modal="`modalRewardClaimsDownload${item.id}`"> Download </b-link>
+                    <b-link v-b-modal="`modalRewardClaimsDownload${item.id}`" v-if="item.claims.length">
+                        <b-progress
+                            :value="item.claims.filter((c) => c.sub).length"
+                            :max="item.claims.length"
+                            show-value
+                        />
+                    </b-link>
                     <BaseModalRewardClaimsDownload
                         :id="`modalRewardClaimsDownload${item.id}`"
                         :pool="pool"
@@ -166,12 +174,8 @@ export default class ERC20PerksView extends Vue {
                     interaction: platformInteractionList.find((i) => r.interaction === i.type),
                     content: r.content,
                 },
-                // TODO needs seperated claim entities
-                // progress: {
-                //     limit: r.rewardLimit,
-                //     progress: r.progress,
-                // },
                 claims: r.claims,
+                rewardLimit: r.rewardLimit,
                 id: r._id,
             }))
             .slice(0, this.limit);

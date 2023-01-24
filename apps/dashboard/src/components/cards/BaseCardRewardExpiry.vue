@@ -5,39 +5,22 @@
             variant="light"
             v-b-toggle.collapse-card-expiry
         >
-            <strong>Expiry &amp; limit</strong>
+            <strong>Expiration</strong>
             <i :class="`fa-chevron-${isVisible ? 'up' : 'down'}`" class="fas m-0"></i>
         </b-button>
         <b-collapse id="collapse-card-expiry" v-model="isVisible">
             <hr class="mt-0" />
             <div class="px-3">
-                <p class="text-gray">
-                    Configure until what date and time your customers are allowed for this claim. You can also provide a
-                    limit to determine the max amount of claims to be made.
-                </p>
+                <p class="text-gray">Configure until what date and time your customers are allowed for this claim.</p>
                 <b-form-group>
                     <b-row>
                         <b-col md="6">
-                            <b-datepicker
-                                disabled
-                                value-as-date
-                                :min="minDate"
-                                :value="expirationDate"
-                                @change="onChangeDate"
-                            />
+                            <b-datepicker value-as-date :min="minDate" :value="expirationDate" @input="onChangeDate" />
                         </b-col>
                         <b-col md="6">
-                            <b-timepicker disabled :value="expirationTime" @change="onChangeTime" />
-                            <!-- <b-timepicker
-                                :disabled="!expirationDate"
-                                :value="expirationTime"
-                                @change="onChangeTime"
-                            /> -->
+                            <b-timepicker :disabled="!expirationDate" :value="expirationTime" @input="onChangeTime" />
                         </b-col>
                     </b-row>
-                </b-form-group>
-                <b-form-group label="Claim Limit">
-                    <b-form-input @change="$emit('change-limit', $event)" type="number" :value="selectedRewardLimit" />
                 </b-form-group>
             </div>
         </b-collapse>
@@ -48,14 +31,12 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component({})
-export default class BaseCardRewardCondition extends Vue {
+export default class BaseCardRewardExpiry extends Vue {
     isVisible = false;
     expirationDate: Date | null = null;
     expirationTime = '00:00:00';
-    selectedRewardLimit = 0;
 
     @Prop() expiryDate!: Date;
-    @Prop() rewardLimit!: number;
 
     mounted() {
         if (this.expiryDate) {
@@ -71,14 +52,25 @@ export default class BaseCardRewardCondition extends Vue {
         return date;
     }
 
-    onChangeDate() {
-        this.$emit('change-date', this.expirationDate);
+    onChangeDate(date: Date) {
+        this.expirationDate = date;
+        this.change();
     }
 
-    onChangeTime() {
+    onChangeTime(time: string) {
         if (!this.expirationDate) return;
+        this.expirationTime = time;
+        this.change();
+    }
 
-        this.$emit('change-date', new Date(this.expirationDate).setTime(Number(this.expirationTime)));
+    change() {
+        if (!this.expirationDate) return;
+        const expiryDate = new Date(this.expirationDate);
+        const parts = this.expirationTime.split(':');
+        expiryDate.setHours(Number(parts[0]));
+        expiryDate.setMinutes(Number(parts[1]));
+        expiryDate.setSeconds(Number(parts[2]));
+        this.$emit('change-date', expiryDate);
     }
 }
 </script>

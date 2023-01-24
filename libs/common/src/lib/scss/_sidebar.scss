@@ -91,13 +91,14 @@ body {
         }
         
         .nav-link-wrapper {
-            padding: 0.5rem 1rem;
+            padding: 0.5rem .25rem;
             display: flex;
         }
     
         .nav-link-icon {
-            width: 30px;
-            flex: 0 0 30px;
+            width: 40px;
+            flex: 0 0 40px;
+            text-align: center;
     
             ~ div {
                 flex-grow: 1;

@@ -20,7 +20,6 @@ const accountSchema = new mongoose.Schema(
         password: String,
         // address.sparse allows the value to be null and unique if defined
         address: { type: String, unique: true, sparse: true },
-        walletAddress: { type: String, unique: true, sparse: true },
         variant: Number,
         privateKey: String,
         otpSecret: String,
@@ -28,7 +27,7 @@ const accountSchema = new mongoose.Schema(
         acceptTermsPrivacy: Boolean,
         acceptUpdates: Boolean,
         lastLoginAt: Date,
-        tokens: [{ kind: String, accessToken: String, refreshToken: String, expiry: Number }],
+        tokens: [{ kind: String, accessToken: String, refreshToken: String, expiry: Number, userId: String }],
     },
     { timestamps: true },
 );

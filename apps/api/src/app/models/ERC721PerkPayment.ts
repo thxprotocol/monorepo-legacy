@@ -8,6 +8,7 @@ const ERC721PerkPaymentSchema = new mongoose.Schema(
         perkId: String,
         sub: String,
         poolId: String,
+        amount: Number,
     },
     { timestamps: true },
 );

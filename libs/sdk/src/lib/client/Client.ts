@@ -42,7 +42,6 @@ export default class THXClient {
     deposit: DepositManager;
     claims: ClaimsManager;
 
-
     constructor({ scopes = 'openid', ...rest }: Props) {
         const env = rest.env || 'prod';
         const settings: UserManagerSettings = {
@@ -87,7 +86,6 @@ export default class THXClient {
         this.claims = new ClaimsManager(this);
         this.memberships = new MembershipManager(this);
         this.payments = new PaymentManager(this);
-        
     }
 
     public async init() {

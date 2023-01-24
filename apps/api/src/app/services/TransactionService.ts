@@ -9,14 +9,13 @@ import { toChecksumAddress } from 'web3-utils';
 import { poll } from '@thxnetwork/api/util/polling';
 import { deployCallback as erc20DeployCallback } from './ERC20Service';
 import PoolService from './PoolService';
-import DepositService from './DepositService';
 import ERC20SwapService from './ERC20SwapService';
 import ERC721Service from './ERC721Service';
-import PaymentService from './PaymentService';
 import WithdrawalService from './WithdrawalService';
 import { RelayerTransactionPayload } from 'defender-relay-client';
 import WalletService from './WalletService';
 import WalletManagerService from './WalletManagerService';
+import { Contract } from 'web3-eth-contract';
 
 function getById(id: string) {
     return Transaction.findById(id);
@@ -146,7 +145,7 @@ async function sendAsync(
 
 async function deploy(abi: any, bytecode: any, arg: any[], chainId: ChainId) {
     const { web3, defaultAccount } = getProvider(chainId);
-    const contract = new web3.eth.Contract(abi);
+    const contract = new web3.eth.Contract(abi) as unknown as Contract;
     const gas = await contract
         .deploy({
             data: bytecode,
@@ -220,17 +219,11 @@ async function executeCallback(tx: TransactionDocument, receipt: TransactionRece
         case 'assetPoolDeployCallback':
             await PoolService.deployCallback(tx.callback.args, receipt);
             break;
-        case 'depositCallback':
-            await DepositService.depositCallback(tx.callback.args, receipt);
-            break;
         case 'swapCreateCallback':
             await ERC20SwapService.createCallback(tx.callback.args, receipt);
             break;
         case 'erc721TokenMintCallback':
             await ERC721Service.mintCallback(tx.callback.args, receipt);
-            break;
-        case 'paymentCallback':
-            await PaymentService.payCallback(tx.callback.args, receipt);
             break;
         case 'withdrawForCallback':
             await WithdrawalService.withdrawForCallback(tx.callback.args, receipt);

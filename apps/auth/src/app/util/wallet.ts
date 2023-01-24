@@ -1,19 +1,21 @@
 import WalletProxy from '@thxnetwork/auth/proxies/WalletProxy';
 import { ChainId } from '@thxnetwork/auth/types/enums/chainId';
-import { NODE_ENV } from '@thxnetwork/auth/config/secrets';
+import { AccountDocument } from '../models/Account';
+import { AccountVariant } from '../types/enums/AccountVariant';
+import { NODE_ENV } from '../config/secrets';
 
-export async function createWallet(sub: string, chainIds: ChainId[] = []) {
-    if (NODE_ENV !== 'production') {
-        chainIds.push(ChainId.Hardhat);
-    } else {
-        chainIds = chainIds.concat([ChainId.PolygonMumbai, ChainId.Polygon]);
+export async function createWallet(account: AccountDocument) {
+    if (account.variant === AccountVariant.Metamask) return;
+
+    const sub = String(account._id);
+    const chains = [ChainId.Polygon];
+
+    if (NODE_ENV === 'development') {
+        chains.push(ChainId.Hardhat);
     }
-    await Promise.all(
-        chainIds.filter(async (chainId: ChainId) => {
-            const walletsCount = (await WalletProxy.get(sub, chainId)).length;
-            if (!walletsCount) {
-                return WalletProxy.create(sub, chainId, false);
-            }
-        }),
-    );
+
+    for (const chainId of chains) {
+        const walletsCount = (await WalletProxy.get(sub, chainId)).length;
+        if (!walletsCount) return WalletProxy.create(sub, chainId, false);
+    }
 }

@@ -1,54 +1,48 @@
 import type { IAccount, IAccountUpdates } from '@thxnetwork/api/models/Account';
 import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
 import { THXError } from '@thxnetwork/api/util/errors';
+import { Wallet } from '../models/Wallet';
+import { ChainId } from '../types/enums';
 
 class NoAccountError extends THXError {
     message = 'Could not find an account for this address';
 }
-class CreateAccountError extends THXError {
-    message = 'Could not signup for an account';
-}
+
 class AccountApiError extends THXError {}
+
+async function authAccountRequest(url: string) {
+    const { data } = await authClient({
+        method: 'GET',
+        url,
+        headers: {
+            Authorization: await getAuthAccessToken(),
+        },
+    });
+
+    if (!data) throw new NoAccountError();
+
+    data.getAddress = async (chainId: ChainId) => {
+        if (data.variant === 4) return data.address;
+        const wallet = await Wallet.findOne({ sub: data.sub, chainId });
+        if (!wallet) return;
+
+        return wallet.address;
+    };
+
+    return data;
+}
 
 export default class AccountProxy {
     static async getById(sub: string): Promise<IAccount> {
-        const r = await authClient({
-            method: 'GET',
-            url: `/account/${sub}`,
-            headers: {
-                Authorization: await getAuthAccessToken(),
-            },
-        });
-
-        if (!r.data) {
-            throw new NoAccountError();
-        }
-
-        return r.data;
+        return await authAccountRequest(`/account/${sub}`);
     }
 
     static async getByEmail(email: string) {
-        const { data } = await authClient({
-            method: 'GET',
-            url: `/account/email/${email}`,
-            headers: {
-                Authorization: await getAuthAccessToken(),
-            },
-        });
-        if (!data) throw new NoAccountError();
-        return data;
+        return await authAccountRequest(`/account/email/${email}`);
     }
 
     static async getByAddress(address: string): Promise<IAccount> {
-        const { data } = await authClient({
-            method: 'GET',
-            url: `/account/address/${address}`,
-            headers: {
-                Authorization: await getAuthAccessToken(),
-            },
-        });
-        if (!data) throw new NoAccountError();
-        return data;
+        return await authAccountRequest(`/account/address/${address}`);
     }
 
     static async isEmailDuplicate(email: string) {
@@ -96,26 +90,5 @@ export default class AccountProxy {
         if (!r.data) {
             throw new AccountApiError('Could not delete');
         }
-    }
-
-    static async signupFor(email: string, password: string, address?: string) {
-        const r = await authClient({
-            method: 'POST',
-            url: '/account',
-            data: {
-                email,
-                password,
-                address,
-            },
-            headers: {
-                Authorization: await getAuthAccessToken(),
-            },
-        });
-
-        if (!r.data) {
-            throw new CreateAccountError();
-        }
-
-        return r.data;
     }
 }

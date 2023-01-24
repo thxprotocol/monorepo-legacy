@@ -6,22 +6,18 @@ import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 import type { IAccount, IAccountUpdates, IDiscord, ITwitter, IYoutube } from '@thxnetwork/dashboard/types/account';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { RewardConditionPlatform } from '@thxnetwork/types/enums/RewardConditionPlatform';
+import { mixpanelClient, track } from '@thxnetwork/dashboard/utils/mixpanel';
 
 @Module({ namespaced: true })
 class AccountModule extends VuexModule {
     userManager: UserManager = new UserManager(config);
     artifacts = '';
     version = '';
-    _networkHealth: any | null = null;
     _user!: User;
     _profile: IAccount | null = null;
     _youtube: IYoutube | null = null;
     _twitter: ITwitter | null = null;
     _discord: IDiscord | null = null;
-
-    get networkHealth() {
-        return this._networkHealth;
-    }
 
     get user() {
         return this._user;
@@ -72,7 +68,6 @@ class AccountModule extends VuexModule {
     setHealth(data: { version: string; artifacts: string }) {
         this.version = data.version;
         this.artifacts = data.artifacts;
-        this._networkHealth = data;
     }
 
     @Action({ rawError: true })
@@ -94,6 +89,9 @@ class AccountModule extends VuexModule {
             method: 'GET',
             url: '/account',
         });
+
+        track.UserIdentify(r.data);
+
         this.context.commit('setAccount', r.data);
     }
 
@@ -170,6 +168,7 @@ class AccountModule extends VuexModule {
                 channel: payload.platform,
                 return_url: payload.returnUrl,
                 access_token_kind,
+                distinct_id: mixpanelClient().get_distinct_id(),
             },
         });
     }
@@ -183,6 +182,7 @@ class AccountModule extends VuexModule {
     }) {
         const extraQueryParams: any = {
             return_url: BASE_URL,
+            distinct_id: mixpanelClient().get_distinct_id(),
         };
 
         if (payload.signupEmail) {
@@ -217,6 +217,7 @@ class AccountModule extends VuexModule {
             extraQueryParams: {
                 prompt: 'account-settings',
                 return_url: BASE_URL + returnPath,
+                distinct_id: mixpanelClient().get_distinct_id(),
             },
         });
     }
@@ -230,6 +231,7 @@ class AccountModule extends VuexModule {
         const extraQueryParams: any = {
             prompt: 'create',
             return_url: BASE_URL,
+            distinct_id: mixpanelClient().get_distinct_id(),
         };
 
         if (signupEmail) {
@@ -267,16 +269,6 @@ class AccountModule extends VuexModule {
     @Action({ rawError: true })
     async signinSilent() {
         return await this.userManager.signinSilent();
-    }
-
-    @Action({ rawError: true })
-    async getHealth() {
-        const r = await axios({
-            method: 'GET',
-            url: '/health',
-        });
-
-        this.context.commit('setHealth', r.data);
     }
 }
 

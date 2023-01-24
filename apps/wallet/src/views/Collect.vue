@@ -3,7 +3,7 @@
         <div class="flex-row text-white">
             <div v-if="isLoading && !error" class="text-center">
                 <b-spinner variant="secondary" large /><br />
-                <span class="text-muted mt-2">Claiming your reward...</span>
+                <span class="text-muted mt-2">{{ statusText }}</span>
             </div>
             <template v-else>
                 <template v-if="isClaimInvalid">
@@ -101,6 +101,9 @@ import { mapGetters, mapState } from 'vuex';
 import { UserProfile } from '../store/modules/account';
 import { RewardConditionInteraction, RewardConditionPlatform, TERC20Perk, TERC721Perk } from '@thxnetwork/types/index';
 import { TERC20 } from '../store/modules/erc20';
+import { TWallet } from '../types/Wallet';
+import poll from 'promise-poller';
+import { AccountVariant } from '../types/Accounts';
 
 type TClaim = {
     metadata: TERC721Metadata;
@@ -119,6 +122,7 @@ type TClaim = {
             profile: 'account/profile',
             user: 'account/user',
             networks: 'network/all',
+            wallet: 'walletManagers/wallet',
         }),
     },
 })
@@ -133,9 +137,11 @@ export default class Collect extends Vue {
     claim: TClaim | null = null;
     claimedReward: (TClaim & { withdrawal: Withdrawal; token: TERC721Token; error?: string }) | null = null;
     state!: { claimUuid: string; rewardHash: string };
+    statusText = 'Requesting information about your claim URL...';
 
     erc721s!: { [id: string]: ERC721 };
     user!: User;
+    wallet!: TWallet;
 
     reward:
         | null
@@ -164,6 +170,11 @@ export default class Collect extends Vue {
         if (!this.claim) return;
         this.reward = this.claim.reward;
 
+        // Wait for wallet to be deployed if not metamask account
+        if (this.profile.variant !== AccountVariant.Metamask) {
+            await this.waitForWalletDeployed(this.claim);
+        }
+
         // If no condition applies claim directly
         if (!this.claim.reward.platform) {
             return this.claimReward();
@@ -189,9 +200,26 @@ export default class Collect extends Vue {
         }
     }
 
+    async waitForWalletDeployed(claim: TClaim) {
+        const chainId = claim.erc20 ? claim.erc20.chainId : claim.erc721.chainId;
+        this.statusText = 'Waiting for your wallet to be deployed...';
+
+        const taskFn = async () => {
+            await this.$store.dispatch('walletManagers/getWallet', { sub: this.profile.sub, chainId });
+            if (this.wallet.address) {
+                return Promise.resolve();
+            } else {
+                return Promise.reject(`${this.wallet._id} waiting for address`);
+            }
+        };
+        return poll({ taskFn, interval: 3000, retries: 10 });
+    }
+
     async claimReward() {
         try {
             this.isLoading = true;
+            this.statusText = 'Processing your claim URL...';
+
             this.claimedReward = await this.$store.dispatch('assetpools/claimReward', this.state.claimUuid);
             if (!this.claimedReward) return;
 
@@ -223,7 +251,7 @@ export default class Collect extends Vue {
         this.claim?.erc721.properties.forEach((p) => {
             if (p.propType === 'image') {
                 const prop = metadata.attributes.find((a: { value: string; key: string }) => a.key === p.name);
-                url = prop?.value;
+                url = prop?.value as string;
             }
         });
         return url;

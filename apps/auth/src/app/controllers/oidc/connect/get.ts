@@ -7,6 +7,7 @@ import { GithubService } from '@thxnetwork/auth/services/GithubServices';
 import { AccountService } from '@thxnetwork/auth/services/AccountService';
 import { DiscordService } from '@thxnetwork/auth/services/DiscordService';
 import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
+import { track } from '@thxnetwork/auth/util/mixpanel';
 
 /* 
 This controller is used for connecting OAuth2 supporting platforms to a user account
@@ -17,6 +18,8 @@ them to the redirect_uri for the requesting client application.
 async function controller(req: Request, res: Response) {
     const { uid, params, session } = req.interaction;
     const account = await AccountService.get(session.accountId);
+
+    track.UserVisits(params.distinct_id, `oidc connect`, [uid, params.return_url]);
 
     let redirect = '';
     switch (params.access_token_kind) {
@@ -51,7 +54,7 @@ async function controller(req: Request, res: Response) {
             break;
         }
         case AccessTokenKind.Twitch: {
-            redirect = TwitchService.isAuthorized(account) ? params.redirect_uri : GithubService.getLoginURL(uid, {});
+            redirect = TwitchService.isAuthorized(account) ? params.redirect_uri : TwitchService.getLoginURL(uid, {});
             break;
         }
         case AccessTokenKind.Discord: {

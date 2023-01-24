@@ -20,20 +20,20 @@ const send = async (to: string, subject: string, htmlContent: string, link = '')
         { async: true },
     );
 
-    if (SENDGRID_API_KEY && NODE_ENV !== 'test') {
-        const options = {
-            to,
-            from: {
-                email: 'noreply@thx.network',
-                name: 'THX Network',
-            },
-            subject,
-            html,
-        };
-        return sgMail.send(options);
-    } else {
+    if (!SENDGRID_API_KEY || NODE_ENV === 'test') {
         logger.info({ message: 'not sending email', link });
+        return;
     }
+
+    return sgMail.send({
+        to,
+        from: {
+            email: 'noreply@thx.network',
+            name: 'THX Network',
+        },
+        subject,
+        html,
+    });
 };
 
 export default { send };

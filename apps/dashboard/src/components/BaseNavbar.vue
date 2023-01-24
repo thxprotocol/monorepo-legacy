@@ -72,17 +72,19 @@
             </div>
             <div class="d-flex justify-content-end flex-column flex-grow-0 w-100">
                 <b-navbar-nav>
-                    <b-nav-item class="nav-link-plain" v-if="account">
+                    <b-nav-item to="/account" class="nav-link-plain">
                         <div class="nav-link-wrapper">
-                            <div class="flex-grow-1">
-                                <b-badge variant="dark">{{ plans[account.plan].name }}</b-badge>
-                                <br />
-                                <small class="text-muted" v-html="plans[account.plan].text" />
+                            <div class="nav-link-icon">
+                                <b-avatar
+                                    v-if="account.profileImg"
+                                    size="sm"
+                                    variant="light"
+                                    :src="account.profileImg"
+                                ></b-avatar>
+                                <b-avatar v-else size="sm" variant="light"></b-avatar>
                             </div>
-                            <div class="d-flex align-items-center">
-                                <b-button size="sm" variant="darker" disabled href="https://docs.thx.network/pricing">
-                                    Upgrade
-                                </b-button>
+                            <div class="flex-grow-1 align-items-center d-flex">
+                                <span>Account</span>
                             </div>
                         </div>
                     </b-nav-item>
@@ -92,17 +94,7 @@
                                 <i class="far fa-file-alt"></i>
                             </div>
                             <div class="flex-grow-1">
-                                <span>Documentation</span>
-                            </div>
-                        </div>
-                    </b-nav-item>
-                    <b-nav-item to="/account" class="nav-link-plain">
-                        <div class="nav-link-wrapper">
-                            <div class="nav-link-icon">
-                                <i class="fa fa-gear"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <span>Account</span>
+                                <span>User Guides</span>
                             </div>
                         </div>
                     </b-nav-item>
@@ -195,7 +187,6 @@ export default class BaseNavbar extends Vue {
                 path: `/pool/${this.selectedPool._id}/milestones`,
                 label: 'Milestones',
                 iconClasses: 'fas fa-flag',
-                isSoon: true,
             },
         ];
     }

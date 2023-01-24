@@ -41,7 +41,7 @@
                             </b-col>
                             <b-col md="6">
                                 <b-form-group label="Point Price">
-                                    <b-form-input type="number" v-model="pointPrice" />
+                                    <b-form-input type="number" :value="pointPrice" @input="onChangePointPrice" />
                                 </b-form-group>
                             </b-col>
                         </b-row>
@@ -54,11 +54,16 @@
                         />
                         <BaseCardRewardExpiry
                             class="mb-3"
-                            :rewardLimit="rewardLimit"
-                            :expiry="rewardExpiry"
-                            @change="rewardExpiry = $event"
+                            :expiryDate="expiryDate"
+                            @change-date="expiryDate = $event"
                         />
-                        <hr />
+                        <BaseCardRewardLimits
+                            class="mb-3"
+                            :rewardLimit="rewardLimit"
+                            :claimAmount="claimAmount"
+                            @change-reward-limit="rewardLimit = $event"
+                            @change-claim-amount="onChangeClaimAmount"
+                        />
                         <b-form-group>
                             <b-form-checkbox v-model="isPromoted">Promoted</b-form-checkbox>
                         </b-form-group>
@@ -75,7 +80,7 @@
                 variant="primary"
                 block
             >
-                {{ reward ? 'Update Reward' : 'Create Reward' }}
+                {{ reward ? 'Update Coin Perk' : 'Create Coin Perk' }}
             </b-button>
         </template>
     </base-modal>
@@ -91,12 +96,14 @@ import BaseCardRewardCondition from '../cards/BaseCardRewardCondition.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardRewardQRCodes from '../cards/BaseCardRewardQRCodes.vue';
 import BaseDropdownSelectERC20 from '../dropdowns/BaseDropdownSelectERC20.vue';
+import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
 
 @Component({
     components: {
         BaseModal,
         BaseCardRewardCondition,
         BaseCardRewardExpiry,
+        BaseCardRewardLimits,
         BaseCardRewardQRCodes,
         BaseDropdownSelectERC20,
     },
@@ -109,8 +116,8 @@ export default class ModalRewardERC20Create extends Vue {
     title = '';
     amount = '0';
     description = '';
-    rewardExpiry = {};
-    claimAmount = 1;
+    expiryDate: Date | null = null;
+    claimAmount = 0;
     rewardLimit = 0;
     pointPrice = 0;
     imageFile: File | null = null;
@@ -127,22 +134,28 @@ export default class ModalRewardERC20Create extends Vue {
     @Prop({ required: false }) reward!: TERC20Perk;
 
     onShow() {
-        if (this.reward) {
-            this.erc20Id = this.reward.erc20Id;
-            this.title = this.reward.title;
-            this.amount = String(this.reward.amount);
-            this.description = this.reward.description;
-            this.pointPrice = this.reward.pointPrice;
-            this.rewardCondition = {
-                platform: this.reward.platform as RewardConditionPlatform,
-                interaction: this.reward.interaction as RewardConditionInteraction,
-                content: this.reward.content as string,
-            };
-            if (this.reward.image) {
-                this.image = this.reward.image;
-            }
-            this.isPromoted = this.reward.isPromoted;
-        }
+        this.erc20Id = this.reward ? this.reward.erc20Id : '';
+        this.title = this.reward ? this.reward.title : '';
+        this.description = this.reward ? this.reward.description : '';
+        this.amount = this.reward ? String(this.reward.amount) : '0';
+        this.pointPrice = this.reward ? this.reward.pointPrice : 0;
+        this.expiryDate = this.reward ? this.reward.expiryDate : null;
+        this.rewardLimit = this.reward ? this.reward.rewardLimit : 0;
+        this.claimAmount = this.reward ? this.reward.claimAmount : 0;
+        this.rewardCondition = this.reward
+            ? {
+                  platform: this.reward.platform as RewardConditionPlatform,
+                  interaction: this.reward.interaction as RewardConditionInteraction,
+                  content: this.reward.content as string,
+              }
+            : {
+                  platform: platformList[0].type,
+                  interaction: platformInteractionList[0].type,
+                  content: '',
+              };
+
+        this.image = this.reward && this.reward.image ? this.reward.image : '';
+        this.isPromoted = this.reward ? this.reward.isPromoted : false;
     }
 
     onSubmit() {
@@ -159,7 +172,7 @@ export default class ModalRewardERC20Create extends Vue {
                     description: this.description,
                     amount: this.amount,
                     pointPrice: this.pointPrice,
-                    claimAmount: this.claimAmount,
+                    claimAmount: Number(this.claimAmount),
                     rewardLimit: this.rewardLimit,
                     platform: this.rewardCondition.platform,
                     interaction: this.rewardCondition.interaction,
@@ -169,23 +182,19 @@ export default class ModalRewardERC20Create extends Vue {
                 },
             })
             .then(() => {
-                this.$emit('submit');
                 this.$bvModal.hide(this.id);
-                this.title = '';
-                this.amount = '0';
-                this.description = '';
-                this.rewardExpiry = {};
-                this.claimAmount = 1;
-                this.rewardLimit = 0;
-                this.rewardCondition = {
-                    platform: platformList[0].type,
-                    interaction: platformInteractionList[0].type,
-                    content: '',
-                };
-                this.image = '';
-                this.isPromoted = false;
                 this.isLoading = false;
             });
+    }
+
+    onChangePointPrice(price: number) {
+        this.pointPrice = price;
+        if (price > 0) this.claimAmount = 0;
+    }
+
+    onChangeClaimAmount(amount: number) {
+        this.claimAmount = amount;
+        if (amount > 0) this.pointPrice = 0;
     }
 
     onImgChange() {

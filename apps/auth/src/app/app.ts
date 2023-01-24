@@ -5,15 +5,14 @@ import axiosBetterStacktrace from 'axios-better-stacktrace';
 import compression from 'compression';
 import express from 'express';
 import expressEJSLayouts from 'express-ejs-layouts';
-import { xssProtection } from 'lusca';
 import path from 'path';
-
-import { DASHBOARD_URL, GTM, MONGODB_URI, PORT, PUBLIC_URL, WALLET_URL } from './config/secrets';
+import db from './util/database';
+import morganBody from 'morgan-body';
+import { xssProtection } from 'lusca';
+import { DASHBOARD_URL, GTM, MONGODB_URI, NODE_ENV, PORT, PUBLIC_URL, WALLET_URL } from './config/secrets';
 import { mainRouter } from './controllers';
 import { corsHandler, errorLogger, errorNormalizer, errorOutput, notFoundHandler } from './middlewares';
-import db from './util/database';
 import { helmetInstance } from './util/helmet';
-import { requestLogger } from './util/logger';
 import { assetsPath } from './util/path';
 
 axiosBetterStacktrace(axios);
@@ -30,7 +29,13 @@ app.set('views', path.join(assetsPath, 'views'));
 app.use(compression());
 app.use(helmetInstance);
 app.use(corsHandler);
-app.use(requestLogger);
+
+morganBody(app, {
+    logRequestBody: NODE_ENV === 'development',
+    logResponseBody: NODE_ENV === 'development',
+    skip: () => NODE_ENV === 'test',
+});
+
 app.use(expressEJSLayouts);
 app.use(xssProtection(true));
 app.use(express.static(assetsPath, { maxAge: 31557600000 }));

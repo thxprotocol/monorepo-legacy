@@ -17,13 +17,15 @@ async function formatAccountRes(account) {
         company: account.company,
         plan: account.plan,
         email: account.email,
+        profileImg: account.profileImg,
+        variant: account.variant,
         googleAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.Google),
         youtubeViewAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.YoutubeView),
         youtubeManageAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.YoutubeManage),
         twitterAccess: await TwitterService.isAuthorized(account),
         githubAccess: await GithubService.isAuthorized(account),
         discordAccess: await DiscordService.isAuthorized(account),
-        twitchAccess: TwitchService.isAuthorized(account),
+        twitchAccess: await TwitchService.isAuthorized(account),
     };
 }
 

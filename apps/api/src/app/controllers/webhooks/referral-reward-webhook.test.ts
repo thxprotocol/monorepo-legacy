@@ -1,7 +1,7 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId, ERC20Type } from '../../types/enums';
-import { dashboardAccessToken, sub2, tokenName, tokenSymbol } from '@thxnetwork/api/util/jest/constants';
+import { ChainId } from '../../types/enums';
+import { dashboardAccessToken, sub2 } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { addMinutes } from '@thxnetwork/api/util/rewards';
@@ -9,7 +9,7 @@ import { addMinutes } from '@thxnetwork/api/util/rewards';
 const user = request.agent(app);
 
 describe('Referral Rewards', () => {
-    let poolId: string, tokenAddress: string, referralRewardId: string, token: string;
+    let poolId: string, referralRewardId: string, token: string;
 
     beforeAll(async () => {
         await beforeAllCallback();
@@ -17,29 +17,11 @@ describe('Referral Rewards', () => {
 
     afterAll(afterAllCallback);
 
-    it('POST /erc20', (done) => {
-        user.post('/v1/erc20')
-            .set('Authorization', dashboardAccessToken)
-            .send({
-                chainId: ChainId.Hardhat,
-                name: tokenName,
-                symbol: tokenSymbol,
-                type: ERC20Type.Unlimited,
-                totalSupply: 0,
-            })
-            .expect(({ body }: request.Response) => {
-                expect(isAddress(body.address)).toBe(true);
-                tokenAddress = body.address;
-            })
-            .expect(201, done);
-    });
-
     it('POST /pools', (done) => {
         user.post('/v1/pools')
             .set('Authorization', dashboardAccessToken)
             .send({
                 chainId: ChainId.Hardhat,
-                erc20tokens: [tokenAddress],
             })
             .expect((res: request.Response) => {
                 expect(isAddress(res.body.address)).toBe(true);

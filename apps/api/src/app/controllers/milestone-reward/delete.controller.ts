@@ -1,14 +1,13 @@
+import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
 import { Request, Response } from 'express';
-import ERC20SwapService from '@thxnetwork/api/services/ERC20SwapService';
 import { param } from 'express-validator';
 
 const validation = [param('id').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['ERC20Swaps']
-    const members = await ERC20SwapService.get(req.params.id);
-
-    res.json(members);
+    // #swagger.tags = ['Milestone Rewards']
+    await MilestoneReward.findOneAndDelete({ _id: req.params.id });
+    res.status(204).end();
 };
 
 export default { controller, validation };

@@ -60,7 +60,13 @@
                     />
                 </template>
                 <template #cell(claims)="{ item }">
-                    <b-link v-b-modal="`modalRewardClaimsDownload${item.id}`"> Download </b-link>
+                    <b-link v-b-modal="`modalRewardClaimsDownload${item.id}`" v-if="item.claims.length">
+                        <b-progress
+                            :value="item.claims.filter((c) => c.sub).length"
+                            :max="item.claims.length"
+                            show-value
+                        />
+                    </b-link>
                     <BaseModalRewardClaimsDownload
                         :id="`modalRewardClaimsDownload${item.id}`"
                         :pool="pool"
@@ -166,11 +172,8 @@ export default class ERC721PerksView extends Vue {
                     interaction: platformInteractionList.find((i) => r.interaction === i.type),
                     content: r.content,
                 },
-                // progress: {
-                //     limit: r.rewardLimit,
-                //     progress: r.progress,
-                // },
                 claims: r.claims,
+                rewardLimit: r.rewardLimit,
                 id: r._id,
             }))
             .slice(0, this.limit);

@@ -52,7 +52,6 @@ export const controller = async (req: Request, res: Response) => {
         ...pool.toJSON(),
         metrics: {
             claims: await Claim.count({ poolId: pool._id }),
-            referrals: await ReferralRewardClaim.count({ poolId: pool._id }),
             erc20Perks: {
                 total: erc20PerksQueryResult.recordsCount,
                 payments: erc20PerksQueryResult.childrenCount,

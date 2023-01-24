@@ -68,6 +68,7 @@ const config: Configuration = {
         'channel',
         'verifyEmailToken',
         'access_token_kind',
+        'distinct_id',
     ],
     scopes: [
         'openid',
@@ -131,13 +132,13 @@ const config: Configuration = {
         openid: ['sub', 'email', 'variant', 'address'],
     },
     ttl: {
-        Interaction: 1 * 60 * 60, // 1 hour in seconds,
-        Session: 24 * 60 * 60, // 24 hours in seconds,
-        Grant: 1 * 60 * 60, // 1 hour in seconds
-        IdToken: 1 * 60 * 60, // 1 hour in seconds
-        AccessToken: 1 * 60 * 60, // 1 hour in seconds
+        Interaction: 24 * 60 * 60, // 24 hours in seconds
+        Session: 24 * 60 * 60, // 24 hours in seconds
+        Grant: 24 * 60 * 60, // 24 hours in seconds
+        IdToken: 24 * 60 * 60, // 24 hours in seconds
+        AccessToken: 24 * 60 * 60, // 24 hours in seconds,
         AuthorizationCode: 10 * 60, // 10 minutes in seconds
-        ClientCredentials: 10 * 60, // 10 minutes in seconds
+        ClientCredentials: 1 * 60 * 60, // 10 minutes in seconds
     },
     interactions: {
         policy: basePolicy,

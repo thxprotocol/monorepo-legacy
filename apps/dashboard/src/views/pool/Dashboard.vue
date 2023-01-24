@@ -85,39 +85,48 @@
                 </b-row>
                 <b-row class="mt-5">
                     <b-col>
-                        <div class="card-header block">Balance</div>
-                        <div>
-                            <b-list-group>
-                                <b-list-group-item
-                                    :key="erc20._id"
-                                    v-for="erc20 of erc20s"
-                                    class="d-flex justify-content-between align-items-center"
-                                >
-                                    <div class="d-flex center-center">
-                                        <base-identicon
-                                            class="mr-2"
-                                            size="40"
-                                            :rounded="true"
-                                            variant="darker"
-                                            :uri="erc20.logoImgUrl"
-                                        />
-                                        <div style="line-height: 1.2">
-                                            <strong>{{ erc20.name }}</strong>
-                                            <div class="text-muted" v-if="erc20.poolBalance">
-                                                {{ fromWei(String(erc20.poolBalance), 'ether') }} {{ erc20.symbol }}
-                                            </div>
+                        <b-list-group>
+                            <b-list-group-item
+                                :key="erc20._id"
+                                v-for="erc20 of Object.values(erc20s).filter((e) => e.chainId === pool.chainId)"
+                                class="d-flex justify-content-between align-items-center"
+                            >
+                                <div class="d-flex center-center">
+                                    <base-identicon
+                                        class="mr-2"
+                                        size="40"
+                                        :rounded="true"
+                                        variant="darker"
+                                        :uri="erc20.logoImgUrl"
+                                    />
+                                    <div style="line-height: 1.2">
+                                        <strong>{{ erc20.name }}</strong>
+                                        <div class="text-muted" v-if="erc20.poolBalance">
+                                            {{ fromWei(String(erc20.poolBalance), 'ether') }} {{ erc20.symbol }}
                                         </div>
                                     </div>
-                                    <b-button v-b-modal="`modalDepositCreate-${erc20._id}`" variant="light">
-                                        <i class="fas fa-download m-0" style="font-size: 1.1rem"></i>
-                                    </b-button>
-                                    <BaseModalDepositCreate @submit="onTopup(erc20)" :erc20="erc20" :pool="pool" />
-                                </b-list-group-item>
-                                <b-list-group-item v-if="!Object.values(erc20s).length">
-                                    <span class="text-muted">No coins found for your account.</span>
-                                </b-list-group-item>
-                            </b-list-group>
-                        </div>
+                                </div>
+                                <b-button v-b-modal="`modalDepositCreate-${erc20._id}`" variant="light">
+                                    <i class="fas fa-download m-0" style="font-size: 1.1rem"></i>
+                                </b-button>
+                                <BaseModalDepositCreate @submit="onTopup(erc20)" :erc20="erc20" :pool="pool" />
+                            </b-list-group-item>
+                            <b-list-group-item
+                                v-if="!Object.values(erc20s).filter((e) => e.chainId === pool.chainId).length"
+                            >
+                                <span class="text-muted">No coins found for your account.</span>
+                            </b-list-group-item>
+                            <b-list-group-item>
+                                <b-button v-b-modal="'modalERC20Import'" block variant="primary" class="rounded-pill">
+                                    Import coin
+                                    <i class="fas fa-chevron-right"></i>
+                                </b-button>
+                                <b-button v-b-modal="'modalERC20Create'" block variant="link" class="rounded-pill">
+                                    Create coin
+                                    <i class="fas fa-chevron-right"></i>
+                                </b-button>
+                            </b-list-group-item>
+                        </b-list-group>
                     </b-col>
                 </b-row>
             </b-col>

@@ -124,6 +124,7 @@ export default class SettingsView extends Vue {
             this.logoImgUrl = this.brand.logoImgUrl;
         }
     }
+
     async onUpload(event: any, key: string) {
         const publicUrl = await this.upload(event.target.files[0]);
         Vue.set(this, key, publicUrl);

@@ -15,8 +15,8 @@ export interface IPool {
     metrics: {
         pointRewards: { totalClaimPoints: number };
         referralRewards: { totalClaimPoints: number };
-        erc20Perks: { totalAmount: number };
-        erc721Perks: { totalAmount: number };
+        erc20Perks: { payments: number };
+        erc721Perks: { payments: number };
     };
     version: string;
     archived: boolean;

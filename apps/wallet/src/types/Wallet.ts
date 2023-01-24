@@ -5,4 +5,5 @@ export type TWallet = {
     address: string;
     sub: string;
     chainId: ChainId;
+    createdAt: Date;
 };

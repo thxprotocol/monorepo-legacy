@@ -20,13 +20,12 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import type { IAccount } from './types/account';
 import { initGTM } from '@thxnetwork/dashboard/utils/ga';
-import { initWidget } from '@thxnetwork/dashboard/utils/widget';
+import { GTM } from '@thxnetwork/dashboard/utils/secrets';
+import type { IAccount } from './types/account';
 import BaseDropdownAccount from './components/dropdowns/BaseDropdownAccount.vue';
 import BaseNavbar from './components/BaseNavbar.vue';
 import BaseDropdownMenu from './components/dropdowns/BaseDropdownMenu.vue';
-import { WIDGET_ID, GTM } from '@thxnetwork/dashboard/utils/secrets';
 
 @Component({
     components: {
@@ -43,7 +42,6 @@ export default class App extends Vue {
 
     created() {
         if (GTM) initGTM();
-        if (WIDGET_ID) initWidget();
     }
 }
 </script>

@@ -28,9 +28,5 @@ import { Component, Vue } from 'vue-property-decorator';
 export default class BaseDropdownMenu extends Vue {
     walletUrl = process.env.VUE_APP_WALLET_URL;
     docsUrl = process.env.VUE_APP_DOCS_URL;
-
-    mounted() {
-        this.$store.dispatch('account/getHealth');
-    }
 }
 </script>

@@ -80,16 +80,16 @@ export default class Redirect extends Vue {
     }
 
     async getPrivateKey() {
-        this.info = 'Fetching private key from Web3Auth...';
+        this.info = 'Fetching private key...';
         await this.$store.dispatch('network/getPrivateKey', this.user);
     }
 
     async updateAccount() {
-        this.info = 'Updating your account details with a new address...';
-
-        // If there is no address then sign a message and patch the account
-        // so the API can recoverAddress and update the account in db
         if (!this.profile.address) {
+            this.info = 'Updating your account address...';
+
+            // If there is no address then sign a message and patch the account
+            // so the API can recoverAddress and update the account in db
             await this.$store.dispatch('account/update', { address: this.address });
         }
     }

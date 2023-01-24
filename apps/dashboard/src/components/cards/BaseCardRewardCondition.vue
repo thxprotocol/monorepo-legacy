@@ -5,7 +5,7 @@
             variant="light"
             v-b-toggle.collapse-card-condition
         >
-            <strong>Reward condition</strong>
+            <strong>Conditions</strong>
             <i :class="`fa-chevron-${isVisible ? 'up' : 'down'}`" class="fas m-0"></i>
         </b-button>
         <b-collapse id="collapse-card-condition" v-model="isVisible">

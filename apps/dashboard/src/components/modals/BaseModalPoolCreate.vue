@@ -1,6 +1,6 @@
 <template>
     <base-modal @show="onShow" :loading="loading" :error="error" :title="!pool ? 'Create Pool' : 'Edit Pool'" :id="id">
-        <template #modal-body>
+        <template #modal-body v-if="!loading">
             <b-form-group label="Title">
                 <b-form-input v-model="title" placeholder="My Loyalty Pool" class="mr-3" />
             </b-form-group>
@@ -12,7 +12,7 @@
         </template>
         <template #btn-primary>
             <b-button :disabled="disabled" class="rounded-pill" @click="submit()" variant="primary" block>
-                {{ !pool ? 'Create Pool' : 'Edit Pool' }}
+                {{ !pool ? 'Create Pool' : 'Update Pool' }}
             </b-button>
         </template>
     </base-modal>
@@ -76,6 +76,7 @@ export default class ModalAssetPoolCreate extends Vue {
 
     async submit() {
         this.loading = true;
+
         if (!this.isEditMode) {
             await this.$store.dispatch('pools/create', { chainId: this.chainId, title: this.title });
         } else {

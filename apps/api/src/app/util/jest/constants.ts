@@ -35,6 +35,7 @@ export const account2 = {
     address: userWalletAddress2,
     plan: AccountPlanType.Basic,
     email: 'account2@test.thx.network',
+    walletAddress: userWalletAddress2,
 };
 
 export const rewardId = 1;

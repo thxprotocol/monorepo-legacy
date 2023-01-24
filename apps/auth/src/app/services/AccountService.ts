@@ -94,8 +94,9 @@ export class AccountService {
             });
         }
 
-        account.address =
-            updates.address || account.address ? toChecksumAddress(updates.address || account.address) : undefined;
+        if (updates.address) {
+            account.address = toChecksumAddress(updates.address);
+        }
 
         if (updates.googleAccess === false) {
             YouTubeService.revokeAccess(account, AccessTokenKind.Google);
@@ -127,6 +128,7 @@ export class AccountService {
         if (updates.discordAccess === false) {
             account.unsetToken(AccessTokenKind.Discord);
         }
+
         await account.save();
     }
 
@@ -140,7 +142,7 @@ export class AccountService {
             variant: AccountVariant.Metamask,
             acceptTermsPrivacy: true,
             acceptUpdates: false,
-            plan: AccountPlanType.Free,
+            plan: AccountPlanType.Basic,
             active: true,
         });
     }
@@ -171,7 +173,7 @@ export class AccountService {
         account.password = data.password;
         account.acceptTermsPrivacy = data.acceptTermsPrivacy || false;
         account.acceptUpdates = data.acceptUpdates || false;
-        account.plan = AccountPlanType.Free;
+        account.plan = AccountPlanType.Basic;
         account.twitterId = data.twitterId;
 
         if (!data.active) {
@@ -195,7 +197,7 @@ export class AccountService {
             privateKey: address ? privateKey : wallet.privateKey,
             email,
             password,
-            plan: AccountPlanType.Free,
+            plan: AccountPlanType.Basic,
         });
 
         return await account.save();
