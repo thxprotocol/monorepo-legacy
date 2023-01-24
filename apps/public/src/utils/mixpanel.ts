@@ -4,7 +4,7 @@ import { API_URL, MIXPANEL_TOKEN } from '../config/secrets';
 const MIXPANEL_PROXY = API_URL + '/v1/data';
 
 export const mixpanelClient = () => {
-    console.log(MIXPANEL_TOKEN, MIXPANEL_PROXY);
+    // console.log(MIXPANEL_TOKEN, MIXPANEL_PROXY);
     mixpanel.init(MIXPANEL_TOKEN, { api_host: MIXPANEL_PROXY });
     return mixpanel;
 };

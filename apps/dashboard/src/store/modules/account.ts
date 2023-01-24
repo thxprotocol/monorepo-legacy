@@ -162,13 +162,19 @@ class AccountModule extends VuexModule {
                 break;
             }
         }
+        let distinctId;
+        try {
+            distinctId = mixpanelClient().get_distinct_id();
+        } catch (err) {
+            //
+        }
         await this.userManager.signinRedirect({
             extraQueryParams: {
                 prompt: 'connect',
                 channel: payload.platform,
                 return_url: payload.returnUrl,
                 access_token_kind,
-                distinct_id: mixpanelClient().get_distinct_id(),
+                distinct_id: distinctId,
             },
         });
     }
@@ -213,11 +219,17 @@ class AccountModule extends VuexModule {
 
     @Action({ rawError: true })
     async accountRedirect(returnPath: string) {
+        let distinctId;
+        try {
+            distinctId = mixpanelClient().get_distinct_id();
+        } catch (err) {
+            //
+        }
         await this.userManager.signinRedirect({
             extraQueryParams: {
                 prompt: 'account-settings',
                 return_url: BASE_URL + returnPath,
-                distinct_id: mixpanelClient().get_distinct_id(),
+                distinct_id: distinctId,
             },
         });
     }

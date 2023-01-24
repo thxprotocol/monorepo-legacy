@@ -30,7 +30,6 @@ const controller = async (req: Request, res: Response) => {
     // Get the account wallet
     const account = await AccountProxy.getById(req.auth.sub);
     const to = await account.getAddress(erc721.chainId);
-    console.log(account, to);
 
     const erc721Token = await ERC721Service.mint(pool, erc721, metadata, req.auth.sub, to);
     const erc721PerkPayment = await ERC20PerkPayment.create({ perkId: erc721Perk._id, sub: req.auth.sub });
