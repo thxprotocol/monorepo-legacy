@@ -7,6 +7,7 @@ import { ERC20Perk, ERC20PerkDocument } from '@thxnetwork/api/models/ERC20Perk';
 import { ERC721Perk, ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
 import mongoose from 'mongoose';
 import { ReferralReward, ReferralRewardDocument } from '@thxnetwork/api/models/ReferralReward';
+import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 
 export const validation = [param('id').isMongoId(), query('startDate').exists(), query('endDate').exists()];
 
@@ -17,6 +18,7 @@ export const controller = async (req: Request, res: Response) => {
     if (pool.sub !== req.auth.sub) throw new ForbiddenError('Only the pool owner can access this pool info');
     if (!pool.address) return res.json(pool.toJSON());
 
+    // CHART QUERY
     const startDate = new Date(String(req.query.startDate));
     const endDate = new Date(String(req.query.endDate));
 
@@ -57,6 +59,64 @@ export const controller = async (req: Request, res: Response) => {
         endDate,
     });
 
+    // LEADERBOARD
+    const topErc20PerksBySub = await runLeaderBoardQuery({
+        joinTable: 'erc20perkpayments',
+        model: ERC20Perk,
+        key: 'perkId',
+        poolId: String(pool._id),
+        amountField: 'pointPrice',
+    });
+    const topErc721PerksBySub = await runLeaderBoardQuery({
+        joinTable: 'erc721perkpayments',
+        model: ERC721Perk,
+        key: 'perkId',
+        poolId: String(pool._id),
+        amountField: 'pointPrice',
+    });
+    const topReferralClaimsBySub = await runLeaderBoardQuery({
+        joinTable: 'referralrewardclaims',
+        key: 'referralRewardId',
+        model: ReferralReward,
+        poolId: String(pool._id),
+        amountField: 'amount',
+    });
+    const topPointClaimsBySub = await runLeaderBoardQuery({
+        joinTable: 'pointrewardclaims',
+        model: PointReward,
+        key: 'pointRewardId',
+        poolId: String(pool._id),
+        amountField: 'amount',
+    });
+    type leaderBoardQueryResult = { _id: string; total_amount: number };
+
+    const leaderBoardQueryResultMerged: leaderBoardQueryResult[] = [
+        ...topErc20PerksBySub,
+        ...topErc721PerksBySub,
+        ...topReferralClaimsBySub,
+        ...topPointClaimsBySub,
+    ];
+
+    const leaderBoard: { sub: string; score: number; name: string; email: string }[] = [];
+    // Group by sub and sort by highest score
+    for (let i = 0; i < leaderBoardQueryResultMerged.length; i++) {
+        const data = leaderBoardQueryResultMerged[i];
+        const sub = data._id;
+        if (i === 0) {
+            const account = await AccountProxy.getById(sub);
+            leaderBoard.push({ sub, score: data.total_amount, name: account.firstName, email: account.email });
+        } else {
+            const index = leaderBoard.map((x) => x.sub).indexOf(data._id);
+            if (index >= 0) {
+                leaderBoard[index].score += data.total_amount;
+            } else {
+                const account = await AccountProxy.getById(sub);
+                leaderBoard.push({ sub, score: data.total_amount, name: account.firstName, email: account.email });
+            }
+        }
+    }
+    leaderBoard.sort((a, b) => b.score - a.score);
+
     const result: any = {
         _id: pool._id,
         erc20Perks: erc20PerksQueryResult.map((x) => {
@@ -83,8 +143,8 @@ export const controller = async (req: Request, res: Response) => {
                 totalClaimPoints: x.total_amount,
             };
         }),
+        leaderBoard,
     };
-
     res.json(result);
 };
 
@@ -190,20 +250,18 @@ async function runAggregateQuery<T>(args: {
 
 /**
  *
- * @returns the rewards per poolId, with the claims for each reward,
- * filtered by a time range,
- * grouped by day of claim creation
- * with the total claims per reward
- * and the sum of the reward amount * total claims per reward per day
+ * @returns the claims per poolId,
+ * filtered by a poolId,
+ * grouped by sub
+ * with the total claims per sub
+ * and the sum of the reward amount * total claims per reward per sub
  */
-async function leaderBoardQuery<T>(args: {
+async function runLeaderBoardQuery<T>(args: {
     model: mongoose.Model<T>;
     poolId: string;
     joinTable: string;
     key: string;
     amountField: string;
-    startDate: Date;
-    endDate: Date;
 }) {
     const queryResult = await args.model.aggregate([
         {
@@ -225,57 +283,37 @@ async function leaderBoardQuery<T>(args: {
                 pipeline: [
                     {
                         $match: {
-                            $and: [
-                                {
-                                    $expr: {
-                                        $eq: ['$$id', `$${args.key}`],
-                                    },
-                                },
-                                {
-                                    createdAt: {
-                                        $gte: args.startDate,
-                                        $lte: args.endDate,
-                                    },
-                                },
-                            ],
+                            $expr: {
+                                $eq: ['$$id', `$${args.key}`],
+                            },
                         },
                     },
                 ],
-                as: 'children',
+                as: 'claims',
             },
         },
         {
-            $unwind: '$children',
+            $unwind: '$claims',
         },
         {
             $group: {
-                _id: {
-                    $dateToString: {
-                        format: '%Y-%m-%d',
-                        date: { $toDate: '$children.createdAt' },
-                    },
+                _id: '$claims.sub',
+                count: {
+                    $count: {},
                 },
-                children: {
-                    $push: '$children',
-                },
-                childAmount: {
+                claimAmount: {
                     $first: `$${args.amountField}`,
                 },
             },
         },
         {
             $project: {
-                paymentsCount: {
-                    $size: { $ifNull: ['$children', []] },
-                },
                 total_amount: {
                     $multiply: [
-                        {
-                            $size: { $ifNull: ['$children', []] },
-                        },
+                        '$count',
                         {
                             $convert: {
-                                input: '$childAmount',
+                                input: '$claimAmount',
                                 to: 'int',
                             },
                         },
@@ -283,9 +321,19 @@ async function leaderBoardQuery<T>(args: {
                 },
             },
         },
+        {
+            $limit: 5,
+        },
     ]);
 
     return queryResult;
+}
+
+function groupBy(xs: any[], key: string) {
+    return xs.reduce(function (rv, x) {
+        (rv[x[key]] = rv[x[key]] || []).push(x);
+        return rv;
+    }, {});
 }
 
 export default { controller, validation };

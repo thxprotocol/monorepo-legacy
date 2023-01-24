@@ -8,7 +8,6 @@ export function mockPrivateKeyForSubject(subject: string) {
 
     const account = new Web3().eth.accounts.create();
     localStorage.setItem(`mock:privateKey:${subject}`, account.privateKey);
-    console.log(account.privateKey);
     return account.privateKey;
 }
 

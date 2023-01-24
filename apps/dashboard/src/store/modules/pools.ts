@@ -49,6 +49,7 @@ export interface IPoolAnalytic {
             totalClaimPoints: number;
         },
     ];
+    leaderBoard: { sub: string; score: number; name: string; email: string }[];
 }
 export interface IPools {
     [id: string]: IPool;

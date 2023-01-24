@@ -4,7 +4,7 @@
         <div class="py-5" v-if="loading">
             <b-spinner variant="primary" />
         </div>
-        <b-row v-if="analytics">
+        <b-row v-if="poolAnalytics">
             <b-col md="6">
                 <b-row class="mt-5">
                     <line-chart :chartData="lineChartData" :chart-options="chartOptions" />
@@ -35,32 +35,28 @@
                         <div>
                             <b-list-group>
                                 <b-list-group-item
-                                    :key="erc20._id"
-                                    v-for="erc20 of erc20s"
+                                    v-for="(row, index) in leaderBoard"
+                                    :key="row.sub"
                                     class="d-flex justify-content-between align-items-center"
                                 >
                                     <div class="d-flex center-center">
-                                        <base-identicon
-                                            class="mr-2"
-                                            size="40"
-                                            :rounded="true"
-                                            variant="darker"
-                                            :uri="erc20.logoImgUrl"
-                                        />
                                         <div style="line-height: 1.2">
-                                            <strong>{{ erc20.name }}</strong>
-                                            <div class="text-muted" v-if="erc20.poolBalance">
-                                                {{ fromWei(String(erc20.poolBalance), 'ether') }} {{ erc20.symbol }}
-                                            </div>
+                                            <strong>{{ row.email }}</strong>
                                         </div>
                                     </div>
-                                    <b-button v-b-modal="`modalDepositCreate-${erc20._id}`" variant="light">
-                                        <i class="fas fa-download m-0" style="font-size: 1.1rem"></i>
-                                    </b-button>
-                                    <BaseModalDepositCreate @submit="onTopup(erc20)" :erc20="erc20" :pool="pool" />
-                                </b-list-group-item>
-                                <b-list-group-item v-if="!Object.values(erc20s).length">
-                                    <span class="text-muted">No coins found for your account.</span>
+                                    <div>
+                                        <i
+                                            v-if="index === 0"
+                                            class="fas fa-trophy m-1"
+                                            style="font-size: 1.1rem; color: gold"
+                                        ></i>
+                                        <i
+                                            v-if="index === 1 || index === 2"
+                                            class="fas fa-trophy m-1"
+                                            style="font-size: 1.1rem; color: silver"
+                                        ></i>
+                                        <strong class="text-primary"> {{ row.score }} </strong>
+                                    </div>
                                 </b-list-group-item>
                             </b-list-group>
                         </div>
@@ -177,32 +173,31 @@ export default class TransactionsView extends Vue {
     }
 
     get totals() {
-        const analytics = this.analytics[this.$route.params.id];
         return {
-            erc20Perks: !analytics
+            erc20Perks: !this.poolAnalytics
                 ? 0
-                : analytics.erc20Perks
+                : this.poolAnalytics.erc20Perks
                       .map((x) => x.totalAmount)
                       .reduce((a, b) => {
                           return a + b;
                       }, 0),
-            erc721Perks: !analytics
+            erc721Perks: !this.poolAnalytics
                 ? 0
-                : analytics.erc721Perks
+                : this.poolAnalytics.erc721Perks
                       .map((x) => x.totalAmount)
                       .reduce((a, b) => {
                           return a + b;
                       }, 0),
-            referralRewards: !analytics
+            referralRewards: !this.poolAnalytics
                 ? 0
-                : analytics.referralRewards
+                : this.poolAnalytics.referralRewards
                       .map((x) => x.totalClaimPoints)
                       .reduce((a, b) => {
                           return a + b;
                       }, 0),
-            pointRewards: !analytics
+            pointRewards: !this.poolAnalytics
                 ? 0
-                : analytics.pointRewards
+                : this.poolAnalytics.pointRewards
                       .map((x) => x.totalClaimPoints)
                       .reduce((a, b) => {
                           return a + b;
@@ -210,8 +205,12 @@ export default class TransactionsView extends Vue {
         };
     }
 
-    get dates() {
-        // creates a list of dates for the Y axes of the charts
+    get poolAnalytics() {
+        return this.analytics[this.$route.params.id];
+    }
+
+    get chartDates() {
+        // creates a list of dates for the charts
         const oneDay = 86400000; // one day in milliseconds
         let endDate = new Date();
 
@@ -230,13 +229,12 @@ export default class TransactionsView extends Vue {
     get lineChartData() {
         let referralChartPoints: number[] = [];
         let conditionalChartPoints: number[] = [];
-        const analytics = this.analytics[this.$route.params.id];
 
-        if (analytics) {
+        if (this.poolAnalytics) {
             // REFERRALS
             // assigns for each day of the chart, the related total amount, or 0 if there are no data for that day
-            let points = this.dates.map((data) => {
-                const dayData = analytics.referralRewards.find((x) => x.day == data);
+            let points = this.chartDates.map((data) => {
+                const dayData = this.poolAnalytics.referralRewards.find((x) => x.day == data);
                 return dayData ? dayData.totalClaimPoints : 0;
             });
 
@@ -250,8 +248,8 @@ export default class TransactionsView extends Vue {
             });
 
             // CONDITIONALS
-            points = this.dates.map((data) => {
-                const dayData = analytics.pointRewards.find((x) => x.day == data);
+            points = this.chartDates.map((data) => {
+                const dayData = this.poolAnalytics.pointRewards.find((x) => x.day == data);
                 return dayData ? dayData.totalClaimPoints : 0;
             });
 
@@ -265,7 +263,7 @@ export default class TransactionsView extends Vue {
         }
 
         const result = {
-            labels: this.dates.map((x) => format(new Date(x), 'MM-dd')),
+            labels: this.chartDates.map((x) => format(new Date(x), 'MM-dd')),
             datasets: [
                 {
                     label: 'Referrals',
@@ -287,26 +285,25 @@ export default class TransactionsView extends Vue {
     }
 
     get barChartData() {
-        const analytics = this.analytics[this.$route.params.id];
         let erc20Payments: number[] = [];
         let erc721Payments: number[] = [];
-        if (analytics) {
+        if (this.poolAnalytics) {
             // COIN PERKS
             // assigns for each day of the chart, the related total amount, or 0 if there are no data for that day
-            erc20Payments = this.dates.map((data) => {
-                const dayData = analytics.erc20Perks.find((x) => x.day == data);
+            erc20Payments = this.chartDates.map((data) => {
+                const dayData = this.poolAnalytics.erc20Perks.find((x) => x.day == data);
                 return dayData ? dayData.totalAmount : 0;
             });
 
             // NFT PERKS
-            erc721Payments = this.dates.map((data) => {
-                const dayData = analytics.erc721Perks.find((x) => x.day == data);
+            erc721Payments = this.chartDates.map((data) => {
+                const dayData = this.poolAnalytics.erc721Perks.find((x) => x.day == data);
                 return dayData ? dayData.totalAmount : 0;
             });
         }
 
         const result = {
-            labels: this.dates.map((x) => format(new Date(x), 'MM-dd')),
+            labels: this.chartDates.map((x) => format(new Date(x), 'MM-dd')),
             datasets: [
                 {
                     label: 'Coin Perks',
@@ -336,6 +333,13 @@ export default class TransactionsView extends Vue {
         maintainAspectRatio: false,
     };
 
+    get leaderBoard() {
+        if (!this.poolAnalytics) {
+            return null;
+        }
+        return this.poolAnalytics.leaderBoard;
+    }
+
     formatDateLabel(date: Date): string {
         const month = date.getUTCMonth() + 1;
         const day = date.getDate();
@@ -358,11 +362,7 @@ export default class TransactionsView extends Vue {
         const startDate = new Date(new Date(endDate).getTime() - oneDay * this.daysRange);
         endDate.setHours(23, 59, 59, 0);
 
-        await this.$store
-            .dispatch('pools/readAnalytics', { poolId: this.pool._id, startDate, endDate })
-            .then(async (data) => {
-                this.analytics = data;
-            });
+        await this.$store.dispatch('pools/readAnalytics', { poolId: this.pool._id, startDate, endDate });
 
         this.$store.dispatch('erc20/list').then(async () => {
             await Promise.all(
