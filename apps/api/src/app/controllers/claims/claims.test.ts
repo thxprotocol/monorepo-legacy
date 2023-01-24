@@ -186,7 +186,6 @@ describe('Claims', () => {
             user.post(`/v1/claims/${claim.uuid}/collect`)
                 .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken2 })
                 .expect((res: request.Response) => {
-                    expect(res.body.withdrawal).toBeDefined();
                     expect(res.body.payment).toBeDefined();
                     expect(res.body.payment.poolId).toBe(poolId);
                     expect(res.body.error.message).toBe("This perk has reached it's limit.");

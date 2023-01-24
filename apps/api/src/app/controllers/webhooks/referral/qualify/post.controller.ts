@@ -6,17 +6,18 @@ import ReferralRewardClaimService from '@thxnetwork/api/services/ReferralRewardC
 import MailService from '@thxnetwork/api/services/MailService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 
-const validation = [body('code').exists().isMongoId(), header('X-PoolId').exists().isMongoId()];
+const validation = [body('code').exists().isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards Referral']
     const reward = await ReferralReward.findOne({ token: req.params.token });
     if (!reward) throw new NotFoundError('Could not find the reward');
+
     const claim = await ReferralRewardClaimService.create({
         referralRewardId: String(reward._id),
         sub: req.body.code,
         isApproved: true,
-        poolId: req.header('X-PoolId'),
+        poolId: reward.poolId,
     });
     const account = await AccountProxy.getById(req.body.code);
 
