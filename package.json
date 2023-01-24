@@ -200,7 +200,7 @@
         "chai": "4.3.6",
         "chai-eventemitter2": "^0.2.1",
         "concurrently": "^7.0.0",
-        "cypress": "^10.2.0",
+        "cypress": "^12.3.0",
         "diamond-2": "^1.4.0",
         "dotenv": "^8.2.0",
         "eslint": "^7.1.0",
