@@ -181,7 +181,7 @@ router.beforeEach(async (to, from, next) => {
 
     try {
         const user = await store.dispatch('account/getUser');
-        if (user && to.name) track.UserVisits(user.sub, to.name, to.params as unknown as string[]);
+        if (user && to.name) track('UserVisits', [user.sub, to.name, to.params as unknown as string[]]);
         return next();
     } catch (err) {
         console.error(err);

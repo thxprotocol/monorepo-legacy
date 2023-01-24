@@ -88,7 +88,7 @@ class ERC20PerkModule extends VuexModule {
         });
 
         const profile = this.context.rootGetters['account/profile'];
-        track.UserCreates(profile.sub, 'coin perk');
+        track('UserCreates', [profile.sub, 'coin perk']);
 
         this.context.commit('set', { pool, reward: { ...payload, ...data } });
     }

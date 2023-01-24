@@ -90,7 +90,7 @@ class ERC20Module extends VuexModule {
         });
 
         const profile = this.context.rootGetters['account/profile'];
-        track.UserCreates(profile.sub, 'coin');
+        track('UserCreates', [profile.sub, 'coin']);
 
         await this.context.dispatch('read', data._id);
     }

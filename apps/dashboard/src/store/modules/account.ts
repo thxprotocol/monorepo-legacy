@@ -90,7 +90,7 @@ class AccountModule extends VuexModule {
             url: '/account',
         });
 
-        track.UserIdentify(r.data);
+        track('UserIdentify', [r.data]);
 
         this.context.commit('setAccount', r.data);
     }

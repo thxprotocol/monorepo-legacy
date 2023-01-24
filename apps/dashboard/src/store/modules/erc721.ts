@@ -196,7 +196,7 @@ class ERC721Module extends VuexModule {
         });
 
         const profile = this.context.rootGetters['account/profile'];
-        track.UserCreates(profile.sub, 'nft');
+        track('UserCreates', [profile.sub, 'nft']);
 
         this.context.commit('set', data);
     }

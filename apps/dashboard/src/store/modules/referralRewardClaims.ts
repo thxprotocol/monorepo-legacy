@@ -97,7 +97,7 @@ class ReferralRewardModule extends VuexModule {
         });
 
         const profile = this.context.rootGetters['account/profile'];
-        track.UserCreates(profile.sub, 'approved claims');
+        track('UserCreates', [profile.sub, 'approved claims']);
 
         data.forEach((claim: TReferralRewardClaimAccount) => {
             claim.page = page;
