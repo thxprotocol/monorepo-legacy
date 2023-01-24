@@ -8,6 +8,7 @@ import { ERC721Perk, ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Per
 import mongoose from 'mongoose';
 import { ReferralReward, ReferralRewardDocument } from '@thxnetwork/api/models/ReferralReward';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
+import { MilestoneReward, MilestoneRewardDocument } from '@thxnetwork/api/models/MilestoneReward';
 
 export const validation = [param('id').isMongoId(), query('startDate').exists(), query('endDate').exists()];
 
@@ -37,6 +38,15 @@ export const controller = async (req: Request, res: Response) => {
         model: ERC721Perk,
         poolId: String(pool._id),
         amountField: 'pointPrice',
+        startDate,
+        endDate,
+    });
+    const milestoneRewardsQueryResult = await runAggregateQuery<MilestoneRewardDocument>({
+        joinTable: 'milestonerewardclaims',
+        key: 'milestoneRewardId',
+        model: MilestoneReward,
+        poolId: String(pool._id),
+        amountField: 'amount',
         startDate,
         endDate,
     });
@@ -129,6 +139,12 @@ export const controller = async (req: Request, res: Response) => {
             return {
                 day: x._id,
                 totalAmount: x.total_amount,
+            };
+        }),
+        milestoneRewards: milestoneRewardsQueryResult.map((x) => {
+            return {
+                day: x._id,
+                totalClaimPoints: x.total_amount,
             };
         }),
         referralRewards: referralRewardsQueryResult.map((x) => {

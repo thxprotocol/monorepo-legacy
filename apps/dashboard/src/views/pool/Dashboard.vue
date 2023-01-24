@@ -1,13 +1,18 @@
 <template>
     <div>
         <h2>Dashboard</h2>
-        <div class="py-5" v-if="loading">
+        <div class="py-5 w-100 center-center" v-if="loading">
             <b-spinner variant="primary" />
         </div>
-        <b-row v-if="poolAnalytics">
-            <b-col md="6">
+        <b-row v-if="poolAnalytics && pool.metrics && !loading">
+            <b-col md="8">
                 <b-row class="mt-5">
-                    <line-chart :chartData="lineChartData" :chart-options="chartOptions" />
+                    <line-chart
+                        :chartData="lineChartData"
+                        :chart-options="chartOptions"
+                        :height="250"
+                        style="position: relative; width: 100%"
+                    />
                 </b-row>
                 <b-row class="mt-5">
                     <b-col md="4">
@@ -25,7 +30,7 @@
                     <b-col md="4">
                         <b-card bg-variant="primary" class="shadow-sm text-white">
                             <span>Milestones</span><br />
-                            <div class="h2">0</div>
+                            <div class="h2">{{ pool.metrics.milestoneRewards.totalClaimPoints }}</div>
                         </b-card>
                     </b-col>
                 </b-row>
@@ -54,21 +59,26 @@
                     </b-col>
                 </b-row>
             </b-col>
-            <b-col md="6">
+            <b-col md="4">
                 <b-row class="mt-5">
                     <b-col>
-                        <bar-chart :chartData="barChartData" :chart-options="chartOptions" />
+                        <bar-chart
+                            :chartData="barChartData"
+                            :chart-options="chartOptions"
+                            :height="250"
+                            style="position: relative; width: 100%"
+                        />
                     </b-col>
                 </b-row>
                 <b-row class="mt-5">
-                    <b-col md="4">
-                        <b-card bg-variant="primary" class="shadow-sm text-white">
+                    <b-col md="6">
+                        <b-card bg-variant="dark" class="shadow-sm text-white">
                             <span>Coin Perks</span><br />
                             <div class="h2">{{ pool.metrics.erc20Perks.payments }}</div>
                         </b-card>
                     </b-col>
-                    <b-col md="4">
-                        <b-card bg-variant="primary" class="shadow-sm text-white">
+                    <b-col md="6">
+                        <b-card bg-variant="dark" class="shadow-sm text-white">
                             <span>NFT Perks</span><br />
                             <div class="h2">{{ pool.metrics.erc721Perks.payments }}</div>
                         </b-card>
@@ -196,6 +206,7 @@ export default class TransactionsView extends Vue {
     get lineChartData() {
         let referralChartPoints: number[] = [];
         let conditionalChartPoints: number[] = [];
+        let milestoneChartPoints: number[] = [];
 
         if (this.poolAnalytics) {
             // REFERRALS
@@ -227,23 +238,44 @@ export default class TransactionsView extends Vue {
                 }
                 conditionalChartPoints.push(x + conditionalChartPoints[index - 1]);
             });
+
+            // Milestones
+            points = this.chartDates.map((data) => {
+                const dayData = this.poolAnalytics.milestoneRewards.find((x) => x.day == data);
+                return dayData ? dayData.totalClaimPoints : 0;
+            });
+
+            points.forEach((x, index) => {
+                if (index === 0) {
+                    milestoneChartPoints.push(x);
+                    return;
+                }
+                milestoneChartPoints.push(x + milestoneChartPoints[index - 1]);
+            });
         }
 
         const result = {
             labels: this.chartDates.map((x) => format(new Date(x), 'MM-dd')),
             datasets: [
                 {
-                    label: 'Referrals',
-                    backgroundColor: 'rgb(75, 192, 192)',
+                    label: 'Referral',
+                    backgroundColor: 'rgb(152, 216, 13)',
                     data: referralChartPoints,
-                    borderColor: 'rgb(75, 192, 192)',
+                    borderColor: 'rgb(152, 216, 13)',
                     pointRadius: 0,
                 },
                 {
-                    label: 'Conditionals',
-                    backgroundColor: '#5942c1',
+                    label: 'Conditional',
+                    backgroundColor: '#FFBC38',
                     data: conditionalChartPoints,
-                    borderColor: '#5943c1',
+                    borderColor: '#FFBC38',
+                    pointRadius: 0,
+                },
+                {
+                    label: 'Milestone',
+                    backgroundColor: '#0d6efd',
+                    data: milestoneChartPoints,
+                    borderColor: '#0d6efd',
                     pointRadius: 0,
                 },
             ],
@@ -275,15 +307,15 @@ export default class TransactionsView extends Vue {
                 {
                     label: 'Coin Perks',
                     data: erc20Payments,
-                    backgroundColor: '#5942c1',
-                    borderColor: '#5943c1',
+                    backgroundColor: '#0CC6F9',
+                    borderColor: '#0CC6F9',
                     pointRadius: 0,
                 },
                 {
                     label: 'NFT Perks',
                     data: erc721Payments,
-                    backgroundColor: '#32236e',
-                    borderColor: '#32236e',
+                    backgroundColor: '#023B77',
+                    borderColor: '#023B77',
                     pointRadius: 0,
                 },
             ],
@@ -340,7 +372,6 @@ export default class TransactionsView extends Vue {
             );
         });
         this.loading = false;
-        console.log('THIS.POOL', this.pool);
     }
 }
 </script>

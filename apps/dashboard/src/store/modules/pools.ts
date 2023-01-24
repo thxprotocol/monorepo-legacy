@@ -15,6 +15,7 @@ export interface IPool {
     metrics: {
         pointRewards: { totalClaimPoints: number };
         referralRewards: { totalClaimPoints: number };
+        milestoneRewards: { totalClaimPoints: number };
         erc20Perks: { payments: number };
         erc721Perks: { payments: number };
     };
@@ -44,6 +45,12 @@ export interface IPoolAnalytic {
         },
     ];
     pointRewards: [
+        {
+            day: string;
+            totalClaimPoints: number;
+        },
+    ];
+    milestoneRewards: [
         {
             day: string;
             totalClaimPoints: number;
