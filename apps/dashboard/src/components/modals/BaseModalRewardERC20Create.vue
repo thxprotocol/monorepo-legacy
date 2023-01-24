@@ -35,7 +35,7 @@
                         </b-form-group>
                         <b-row>
                             <b-col md="6">
-                                <b-form-group label="Amount">
+                                <b-form-group label="Coin Amount">
                                     <b-form-input v-model="amount" />
                                 </b-form-group>
                             </b-col>

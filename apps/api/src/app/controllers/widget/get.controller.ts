@@ -37,6 +37,7 @@ const controller = async (req: Request, res: Response) => {
             sm: {
                 width: '100%',
                 height: '100%',
+                maxHeight: 'none',
                 top: 0,
                 left: 0,
                 right: 0,
