@@ -48,9 +48,10 @@ const controller = async (req: Request, res: Response) => {
                 left: 'auto',
                 bottom: '100px',
                 right: '15px',
-                height: '680px',
+                maxHeight: '680px',
                 width: '400px',
                 borderRadius: '10px',
+                height: 'calc(100% - 115px)',
             },
         };
     
