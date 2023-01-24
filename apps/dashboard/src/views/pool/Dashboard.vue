@@ -35,7 +35,7 @@
                         <div>
                             <b-list-group>
                                 <b-list-group-item
-                                    v-for="(row, index) in leaderBoard"
+                                    v-for="row in leaderBoard"
                                     :key="row.sub"
                                     class="d-flex justify-content-between align-items-center"
                                 >
@@ -45,16 +45,7 @@
                                         </div>
                                     </div>
                                     <div>
-                                        <i
-                                            v-if="index === 0"
-                                            class="fas fa-trophy m-1"
-                                            style="font-size: 1.1rem; color: gold"
-                                        ></i>
-                                        <i
-                                            v-if="index === 1 || index === 2"
-                                            class="fas fa-trophy m-1"
-                                            style="font-size: 1.1rem; color: silver"
-                                        ></i>
+                                        <i class="fas fa-trophy m-1" style="font-size: 1.1rem; color: silver"></i>
                                         <strong class="text-primary"> {{ row.score }} </strong>
                                     </div>
                                 </b-list-group-item>
