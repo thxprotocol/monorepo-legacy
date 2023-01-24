@@ -13,13 +13,13 @@
                     <b-col md="4">
                         <b-card bg-variant="primary" class="shadow-sm text-white">
                             <span>Referrals</span><br />
-                            <div class="h2">{{ totals.referralRewards }}</div>
+                            <div class="h2">{{ pool.metrics.referralRewards.totalClaimPoints }}</div>
                         </b-card>
                     </b-col>
                     <b-col md="4">
                         <b-card bg-variant="primary" class="shadow-sm text-white">
                             <span>Conditionals</span><br />
-                            <div class="h2">{{ totals.pointRewards }}</div>
+                            <div class="h2">{{ pool.metrics.pointRewards.totalClaimPoints }}</div>
                         </b-card>
                     </b-col>
                     <b-col md="4">
@@ -73,13 +73,13 @@
                     <b-col md="4">
                         <b-card bg-variant="primary" class="shadow-sm text-white">
                             <span>Coin Perks</span><br />
-                            <div class="h2">{{ totals.erc20Perks }}</div>
+                            <div class="h2">{{ pool.metrics.erc20Perks.payments }}</div>
                         </b-card>
                     </b-col>
                     <b-col md="4">
                         <b-card bg-variant="primary" class="shadow-sm text-white">
                             <span>NFT Perks</span><br />
-                            <div class="h2">{{ totals.erc721Perks }}</div>
+                            <div class="h2">{{ pool.metrics.erc721Perks.payments }}</div>
                         </b-card>
                     </b-col>
                 </b-row>
@@ -179,39 +179,6 @@ export default class TransactionsView extends Vue {
 
     get pool() {
         return this.pools[this.$route.params.id];
-    }
-
-    get totals() {
-        return {
-            erc20Perks: !this.poolAnalytics
-                ? 0
-                : this.poolAnalytics.erc20Perks
-                      .map((x) => x.totalAmount)
-                      .reduce((a, b) => {
-                          return a + b;
-                      }, 0),
-            erc721Perks: !this.poolAnalytics
-                ? 0
-                : this.poolAnalytics.erc721Perks
-                      .map((x) => x.totalAmount)
-                      .reduce((a, b) => {
-                          return a + b;
-                      }, 0),
-            referralRewards: !this.poolAnalytics
-                ? 0
-                : this.poolAnalytics.referralRewards
-                      .map((x) => x.totalClaimPoints)
-                      .reduce((a, b) => {
-                          return a + b;
-                      }, 0),
-            pointRewards: !this.poolAnalytics
-                ? 0
-                : this.poolAnalytics.pointRewards
-                      .map((x) => x.totalClaimPoints)
-                      .reduce((a, b) => {
-                          return a + b;
-                      }, 0),
-        };
     }
 
     get poolAnalytics() {
@@ -382,6 +349,7 @@ export default class TransactionsView extends Vue {
             );
         });
         this.loading = false;
+        console.log('THIS.POOL', this.pool);
     }
 }
 </script>
