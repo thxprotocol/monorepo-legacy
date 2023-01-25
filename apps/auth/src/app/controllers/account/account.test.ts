@@ -1,9 +1,11 @@
-import { INITIAL_ACCESS_TOKEN } from '@thxnetwork/auth/config/secrets';
 import nock from 'nock';
 import request from 'supertest';
 import app from '../../app';
 import db from '../../util/database';
-import { accountAddress, accountEmail, accountSecret } from '../../util/jest';
+import { accountAddress, accountEmail } from '../../util/jest';
+import { INITIAL_ACCESS_TOKEN } from '@thxnetwork/auth/config/secrets';
+import { AccountService } from '@thxnetwork/auth/services/AccountService';
+import { AccountVariant } from '@thxnetwork/auth/types/enums/AccountVariant';
 
 const http = request.agent(app);
 
@@ -49,26 +51,17 @@ describe('Account Controller', () => {
 
         basicAuthHeader = await registerClient();
         authHeader = await requestToken();
+
+        const account = await AccountService.signup({
+            email: accountEmail,
+            variant: AccountVariant.EmailPassword,
+            active: true,
+        });
+        sub = String(account._id);
     });
 
     afterAll(async () => {
         await db.disconnect();
-    });
-
-    describe('POST /account', () => {
-        it('HTTP 200', async () => {
-            const res = await http
-                .post('/account')
-                .set({
-                    Authorization: authHeader,
-                })
-                .send({
-                    email: accountEmail,
-                    password: accountSecret,
-                });
-            expect(res.status).toBe(201);
-            sub = res.body.sub;
-        });
     });
 
     describe('GET /account/:id', () => {
@@ -80,7 +73,8 @@ describe('Account Controller', () => {
                 })
                 .send();
             expect(res.status).toBe(200);
-            expect(res.body.address).toBeDefined();
+            expect(res.body.email).toBe(accountEmail);
+            expect(res.body.variant).toBe(AccountVariant.EmailPassword);
         });
     });
 
@@ -106,23 +100,6 @@ describe('Account Controller', () => {
                 .send();
             expect(res.status).toBe(200);
             expect(res.body.address).toBe(accountAddress);
-        });
-    });
-
-    describe('POST /account (generate address)', () => {
-        it('HTTP 200', async () => {
-            const res = await http
-                .post('/account')
-                .set({
-                    Authorization: authHeader,
-                })
-                .send({
-                    email: accountEmail,
-                    password: accountSecret,
-                });
-            expect(res.status).toBe(201);
-            expect(res.body.sub).toBe(sub);
-            expect(res.body.address).toBeDefined();
         });
     });
 });
