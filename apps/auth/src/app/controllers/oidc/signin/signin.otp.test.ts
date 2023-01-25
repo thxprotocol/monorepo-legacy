@@ -3,19 +3,15 @@ import app from '../../../app';
 import { AccountService } from '../../../services/AccountService';
 import db from '../../../util/database';
 import { API_URL, INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
-import { getPath, accountEmail, accountSecret } from '../../../util/jest';
+import { accountEmail } from '../../../util/jest';
 import { AccountVariant } from '../../../types/enums/AccountVariant';
-import { ChainId } from '../../../types/enums/chainId';
-import { mockWalletProxy } from '../../../util/jest/mock';
 
-const REDIRECT_URL = 'https://localhost:8082/signin-oidc';
 const http = request.agent(app);
 
 describe('Sign In', () => {
+    const redirectUri = 'https://localhost:8082/signin-oidc';
     let uid = '',
-        Cookies = '';
-    let CLIENT_ID = '';
-    let CLIENT_SECRET = '';
+        clientId;
 
     beforeAll(async () => {
         await db.truncate();
@@ -26,13 +22,12 @@ describe('Sign In', () => {
                 application_type: 'web',
                 client_name: 'THX Dashboard',
                 grant_types: ['authorization_code'],
-                redirect_uris: [REDIRECT_URL],
+                redirect_uris: [redirectUri],
                 response_types: ['code'],
                 scope: 'openid pools:read pools:write withdrawals:read rewards:write deposits:read deposits:write wallets:read wallets:write',
             });
 
-        CLIENT_ID = res.body.client_id;
-        CLIENT_SECRET = res.body.client_secret;
+        clientId = res.body.client_id;
 
         await AccountService.signup({
             email: accountEmail,
@@ -48,8 +43,8 @@ describe('Sign In', () => {
     describe('Signin OTP', () => {
         it('GET /oidc/:uid/signin', async () => {
             const params = new URLSearchParams({
-                client_id: CLIENT_ID,
-                redirect_uri: REDIRECT_URL,
+                client_id: clientId,
+                redirect_uri: redirectUri,
                 resource: API_URL,
                 scope: 'openid pools:read pools:write withdrawals:read rewards:write deposits:read deposits:write wallets:read wallets:write',
                 response_type: 'code',

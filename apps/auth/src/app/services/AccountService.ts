@@ -11,8 +11,6 @@ import { AccountPlanType } from '../types/enums/AccountPlanType';
 import { AccountVariant } from '../types/enums/AccountVariant';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import bcrypt from 'bcrypt-nodejs';
-import { encryptString } from '../util/encrypt';
-import { SECURE_KEY } from '../config/secrets';
 
 export class AccountService {
     static get(sub: string) {

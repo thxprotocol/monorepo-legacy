@@ -5,7 +5,7 @@ import db from '../../../util/database';
 import { DISCORD_API_ENDPOINT } from '../../../config/secrets';
 import { AccountService } from '../../../services/AccountService';
 import { INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
-import { accountEmail, accountSecret } from '../../../util/jest';
+import { accountEmail } from '../../../util/jest';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { AccountVariant } from '@thxnetwork/auth/types/enums/AccountVariant';
 

@@ -4,7 +4,7 @@ import app from '../../../app';
 import db from '../../../util/database';
 import { AccountService } from '../../../services/AccountService';
 import { GOOGLE_API_ENDPOINT, INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
-import { accountEmail, accountSecret } from '../../../util/jest';
+import { accountEmail } from '../../../util/jest';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { AccountVariant } from '@thxnetwork/auth/types/enums/AccountVariant';
 
