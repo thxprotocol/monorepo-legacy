@@ -34,19 +34,11 @@ describe('Sign In', () => {
         CLIENT_ID = res.body.client_id;
         CLIENT_SECRET = res.body.client_secret;
 
-        const signupData = {
+        await AccountService.signup({
             email: accountEmail,
-            password: accountSecret,
             variant: AccountVariant.EmailPassword,
-            acceptTermsPrivacy: true,
-            acceptUpdates: true,
             active: true,
-        };
-
-        const account = await AccountService.signup(signupData);
-        account.privateKey = undefined;
-
-        await account.save();
+        });
     });
 
     afterAll(async () => {
@@ -74,11 +66,10 @@ describe('Sign In', () => {
         });
 
         it('Failed to login with wrong credential', async () => {
-            const res = await http
-                .post(`/oidc/${uid}/signin`)
-                .send(`email=fake.user@thx.network&password=thisgoingtofail&chainId=${ChainId.Hardhat}`);
+            const res = await http.post(`/oidc/${uid}/signin`).send(`email=fake.user@thx.network`);
 
             expect(res.status).toEqual(200);
+            console.log(res.text);
             expect(res.text).toMatch(new RegExp('.*Could not find an account for this address*'));
         });
 

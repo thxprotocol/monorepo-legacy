@@ -8,7 +8,7 @@ import { AccountVariant } from '@thxnetwork/auth/types/enums/AccountVariant';
 import { AccountDocument } from '@thxnetwork/auth/models/Account';
 import { UnauthorizedError } from '@thxnetwork/auth/util/errors';
 
-const validation = [body('chainId').optional().isNumeric()];
+const validation = [body('email').exists().isEmail()];
 
 async function controller(req: Request, res: Response) {
     function renderSigninPage(variant: string, errorMessage: string) {

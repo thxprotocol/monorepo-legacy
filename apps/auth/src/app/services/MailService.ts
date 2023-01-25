@@ -4,7 +4,7 @@ import sgMail from '@sendgrid/mail';
 import bcrypt from 'bcrypt-nodejs';
 import { AccountDocument } from '../models/Account';
 import { createRandomToken } from '../util/tokens';
-import { AUTH_URL, WALLET_URL, SENDGRID_API_KEY } from '../config/secrets';
+import { AUTH_URL, WALLET_URL, SENDGRID_API_KEY, NODE_ENV } from '../config/secrets';
 import { logger } from '../util/logger';
 import { assetsPath } from '../util/path';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
@@ -19,7 +19,7 @@ if (SENDGRID_API_KEY) {
 
 export class MailService {
     static sendMail = (to: string, subject: string, html: string, link = '') => {
-        if (SENDGRID_API_KEY) {
+        if (SENDGRID_API_KEY && NODE_ENV !== 'test') {
             const options = {
                 to,
                 from: {

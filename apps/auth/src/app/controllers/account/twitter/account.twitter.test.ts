@@ -6,6 +6,7 @@ import { AccountService } from '../../../services/AccountService';
 import { TWITTER_API_ENDPOINT, INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { accountEmail, accountSecret } from '@thxnetwork/auth/util/jest';
+import { AccountVariant } from '@thxnetwork/auth/types/enums/AccountVariant';
 
 const http = request.agent(app);
 
@@ -51,26 +52,17 @@ describe('Account Controller', () => {
 
         basicAuthHeader = await registerClient();
         authHeader = await requestToken();
+
+        const account = await AccountService.signup({
+            email: accountEmail,
+            variant: AccountVariant.SSOTwitter,
+            active: true,
+        });
+        sub = String(account._id);
     });
 
     afterAll(async () => {
         await db.disconnect();
-    });
-
-    describe('POST /account', () => {
-        it('HTTP 200', async () => {
-            const res = await http
-                .post('/account')
-                .set({
-                    Authorization: authHeader,
-                })
-                .send({
-                    email: accountEmail,
-                    password: accountSecret,
-                });
-            expect(res.status).toBe(201);
-            sub = res.body.sub;
-        });
     });
 
     describe('GET /account/:sub/twitter', () => {

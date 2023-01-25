@@ -4,17 +4,22 @@ import db from '../../../util/database';
 import { AccountService } from '../../../services/AccountService';
 import { INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
 import { accountEmail, accountSecret } from '../../../util/jest';
+import { AccountVariant } from '@thxnetwork/auth/types/enums/AccountVariant';
 
 const http = request.agent(app);
 
 describe('OAuth2 Grants', () => {
-    let authHeader: string, accessToken: string, accountId: string;
+    let authHeader: string, accessToken: string, sub: string;
 
     beforeAll(async () => {
         await db.truncate();
 
-        const account = await AccountService.invite(accountEmail, accountSecret);
-        accountId = account._id;
+        const account = await AccountService.signup({
+            email: accountEmail,
+            variant: AccountVariant.EmailPassword,
+            active: true,
+        });
+        sub = account._id;
     });
 
     afterAll(async () => {
@@ -131,7 +136,7 @@ describe('OAuth2 Grants', () => {
     describe('GET /account/:id', () => {
         it('HTTP 403', async () => {
             const res = await http
-                .get(`/account/${accountId}`)
+                .get(`/account/${sub}`)
                 .set({ Authorization: `Bearer ${accessToken}` })
                 .send();
             expect(res.status).toBe(200);
