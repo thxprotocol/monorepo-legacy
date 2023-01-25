@@ -180,9 +180,15 @@ class AccountModule extends VuexModule {
         passwordResetToken: string;
         verifyEmailToken: string;
     }) {
+        let distinctId;
+        try {
+            distinctId = mixpanelClient().get_distinct_id();
+        } catch (err) {
+            console.log('err', err);
+        }
         const extraQueryParams: any = {
             return_url: BASE_URL,
-            distinct_id: mixpanelClient().get_distinct_id(),
+            distinct_id: distinctId,
         };
 
         if (payload.signupEmail) {
