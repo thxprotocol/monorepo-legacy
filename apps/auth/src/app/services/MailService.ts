@@ -2,6 +2,7 @@ import ejs from 'ejs';
 import path from 'path';
 import sgMail from '@sendgrid/mail';
 import bcrypt from 'bcrypt-nodejs';
+import crypto from 'crypto';
 import { AccountDocument } from '../models/Account';
 import { createRandomToken } from '../util/tokens';
 import { AUTH_URL, WALLET_URL, SENDGRID_API_KEY, NODE_ENV } from '../config/secrets';
@@ -68,15 +69,16 @@ export class MailService {
     }
 
     static async sendOTPMail(account: AccountDocument) {
-        const otp = `${Math.floor(10000 + Math.random() * 90000)}`;
+        // const otp = `${Math.floor(10000 + Math.random() * 90000)}`;
+        const otp = Array.from({ length: 5 })
+            .map(() => {
+                return crypto.randomInt(0, 10);
+            })
+            .join('');
         const hashedOtp = bcrypt.hashSync(otp);
         const html = await ejs.renderFile(
             path.join(mailTemplatePath, 'loginLink.ejs'),
-            {
-                otp,
-                returnUrl: WALLET_URL,
-                baseUrl: AUTH_URL,
-            },
+            { otp, returnUrl: WALLET_URL, baseUrl: AUTH_URL },
             { async: true },
         );
 
