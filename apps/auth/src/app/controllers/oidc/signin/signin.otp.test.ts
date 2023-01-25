@@ -5,7 +5,7 @@ import db from '../../../util/database';
 import { API_URL, INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
 import { getPath, accountEmail, accountSecret } from '../../../util/jest';
 import { AccountVariant } from '../../../types/enums/AccountVariant';
-import { ChainId } from '../../..//types/enums/chainId';
+import { ChainId } from '../../../types/enums/chainId';
 import { mockWalletProxy } from '../../../util/jest/mock';
 
 const REDIRECT_URL = 'https://localhost:8082/signin-oidc';
@@ -45,8 +45,8 @@ describe('Sign In', () => {
         await db.disconnect();
     });
 
-    describe('GET /auth', () => {
-        it('Successfully get uid', async () => {
+    describe('Signin OTP', () => {
+        it('GET /oidc/:uid/signin', async () => {
             const params = new URLSearchParams({
                 client_id: CLIENT_ID,
                 redirect_uri: REDIRECT_URL,
@@ -65,63 +65,16 @@ describe('Sign In', () => {
             uid = (res.header.location as string).split('/')[2];
         });
 
-        it('Failed to login with wrong credential', async () => {
+        it('GET /oidc/:uid/signin/otp', async () => {
             const res = await http.post(`/oidc/${uid}/signin`).send(`email=fake.user@thx.network`);
-
-            expect(res.status).toEqual(200);
-            console.log(res.text);
-            expect(res.text).toMatch(new RegExp('.*Could not find an account for this address*'));
+            expect(res.status).toEqual(302);
+            expect(res.header.location).toBe(`/oidc/${uid}/signin/otp`);
         });
 
-        it('Failed to login with wrong password', async () => {
-            const res = await http
-                .post(`/oidc/${uid}/signin`)
-                .send(`email=${accountEmail}&password=thisgoingtofail&chainId=${ChainId.Hardhat}`);
+        it('POST /oidc/:uid/signin/otp', async () => {
+            const res = await http.post(`/oidc/${uid}/signin/otp`).send('otp=00000');
             expect(res.status).toEqual(200);
-            expect(res.text).toMatch(new RegExp('.*Your provided passwords do not match*'));
-        });
-    });
-
-    describe('POST /oidc/<uid>/signin', () => {
-        describe('Login flow check', () => {
-            let redirectUrl = '';
-            let code = '';
-
-            it('Successful login with correct information', async () => {
-                mockWalletProxy();
-
-                const res = await http
-                    .post(`/oidc/${uid}/signin`)
-                    .send(`email=${accountEmail}&password=${accountSecret}&chainId=${ChainId.Hardhat}`);
-
-                expect(res.status).toEqual(303);
-
-                redirectUrl = getPath(res.header.location);
-            });
-
-            it('Redirect to interaction', async () => {
-                const res = await http.get(redirectUrl).set('Cookie', Cookies).send();
-                expect(res.status).toEqual(303);
-                redirectUrl = res.header.location;
-                Cookies += res.headers['set-cookie']?.join('; ');
-                code = redirectUrl.split('code=')[1].split('&')[0];
-            });
-
-            it('Request access token', async () => {
-                const res = await http
-                    .post('/token')
-                    .set({
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'Authorization': 'Basic ' + Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64'),
-                    })
-                    .send({
-                        grant_type: 'authorization_code',
-                        redirect_uri: REDIRECT_URL,
-                        code,
-                    });
-
-                expect(res.status).toEqual(200);
-            });
+            expect(res.text).toMatch(new RegExp('.*Your one-time password is incorrect.*'));
         });
     });
 });

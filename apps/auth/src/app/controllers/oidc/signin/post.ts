@@ -58,7 +58,7 @@ async function controller(req: Request, res: Response) {
             req.interaction.params.sub = String(account._id);
             await req.interaction.save(Date.now() + 10 * 60 * 1000); // ttl 10min
 
-            return res.redirect(`/oidc/${req.params.uid}/otp`);
+            return res.redirect(`/oidc/${req.params.uid}/signin/otp`);
         } catch (error) {
             return renderSigninPage('danger', error.message);
         }

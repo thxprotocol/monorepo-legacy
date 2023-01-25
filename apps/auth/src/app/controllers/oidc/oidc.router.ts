@@ -35,9 +35,9 @@ router.get('/callback/twitch', ReadCallbackTwitch.controller);
 // Routes require no auth
 router.get('/:uid', assertInteraction, ReadOIDC.controller);
 router.get('/:uid/signin', assertInteraction, ReadSignin.controller);
-router.get('/:uid/otp', assertInteraction, ReadOtp.controller);
+router.get('/:uid/signin/otp', assertInteraction, ReadOtp.controller);
 router.post(
-    '/:uid/otp',
+    '/:uid/signin/otp',
     urlencoded({ extended: false }),
     assertInteraction,
     assertInput(CreateOtp.validation),
