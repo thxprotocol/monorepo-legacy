@@ -58,7 +58,7 @@ async function controller(req: Request, res: Response) {
 
     // Actions after successfully login
     await AccountService.update(account, {
-        discordId: user.user.id,
+        discordId: user.id,
         lastLoginAt: Date.now(),
     });
 

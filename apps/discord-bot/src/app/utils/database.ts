@@ -1,16 +1,17 @@
 import mongoose from 'mongoose';
 import bluebird from 'bluebird';
 import { v4 as uuidv4 } from 'uuid';
+import { logger } from './logger';
 
 (mongoose as any).Promise = bluebird;
 
 const connect = async (url: string) => {
     mongoose.connection.on('error', (err) => {
-        console.log(`MongoDB connection error. Please make sure MongoDB is running. ${err}`);
+        logger.info(`MongoDB connection error. Please make sure MongoDB is running. ${err}`);
     });
 
     mongoose.connection.on('reconnectFailed', () => {
-        console.log('Unable to reconnect to MongoDB');
+        logger.warn('Unable to reconnect to MongoDB');
         process.exit();
     });
 

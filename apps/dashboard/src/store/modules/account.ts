@@ -182,7 +182,7 @@ class AccountModule extends VuexModule {
     }) {
         const extraQueryParams: any = {
             return_url: BASE_URL,
-            distinct_id: mixpanelClient().get_distinct_id(),
+            // distinct_id: mixpanelClient().get_distinct_id(),
         };
 
         if (payload.signupEmail) {
@@ -217,7 +217,7 @@ class AccountModule extends VuexModule {
             extraQueryParams: {
                 prompt: 'account-settings',
                 return_url: BASE_URL + returnPath,
-                distinct_id: mixpanelClient().get_distinct_id(),
+                // distinct_id: mixpanelClient().get_distinct_id(),
             },
         });
     }

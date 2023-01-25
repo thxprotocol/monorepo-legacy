@@ -31,6 +31,7 @@ required.forEach((value: string) => {
     }
 });
 
+
 // This allows you to use a single .env file with both regular and test configuration. This allows for an
 // easy to use setup locally without having hardcoded credentials during test runs.
 if (process.env.NODE_ENV === 'test') {

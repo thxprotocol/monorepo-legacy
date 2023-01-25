@@ -10,7 +10,7 @@ export const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(req.params.id);
     const account = await AccountProxy.getByDiscordId(req.params.discordId);
 
-    if (pool.sub === account.sub) res.json(pool);
+    if (pool.sub === (account as any)._id) return res.json(pool);
     res.status(400).send();
 };
 

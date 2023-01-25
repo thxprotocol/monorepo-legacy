@@ -21,6 +21,6 @@ export const corsHandler = cors(async (req: any, callback: any) => {
             origin: '*',
         });
     } else {
-        callback(new Error('Not allowed by CORS'));
+        callback(null);
     }
 });

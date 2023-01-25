@@ -1,9 +1,10 @@
 import { Client } from 'discord.js';
 import commands from '../commands';
 import commandRegister from '../utils/commandRegister';
+import { logger } from '../utils/logger';
 
 const onClientReady = async (client: Client<true>) => {
-    console.log(`Ready! Logged in as ${client.user.tag}`);
+    logger.info(`Ready! Logged in as ${client.user.tag}`);
     await commandRegister(Object.values(commands) as any);
 };
 

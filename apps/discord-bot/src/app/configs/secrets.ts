@@ -1,8 +1,10 @@
+import { logger } from '../utils/logger';
+
 const required = ['TOKEN', 'DISCORD_CLIENT_ID', 'OIDC_CLIENT_ID', 'OIDC_CLIENT_SECRET', 'AUTH_URL'];
 
 required.forEach((value: string) => {
     if (!process.env[value]) {
-        console.log(`Set ${value} environment variable.`);
+        logger.error(`Set ${value} environment variable.`);
         process.exit(1);
     }
 });
