@@ -36,7 +36,7 @@
                         <b-col md="4" class="text-muted text-right small">
                             <div v-if="profile.variant !== 4">
                                 <b-button v-b-modal="'modalShowPrivateKey'" size="sm" variant="none">
-                                    <i class="fas fa-ellipsis-h" style="font-size: 0.8rem"></i>
+                                    <i class="fas fa-key" style="font-size: 0.8rem"></i>
                                 </b-button>
                             </div>
                         </b-col>
