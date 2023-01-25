@@ -13,3 +13,4 @@ export const OIDC_CLIENT_ID = process.env['OIDC_CLIENT_ID'];
 export const OIDC_CLIENT_SECRET = process.env['OIDC_CLIENT_SECRET'];
 export const AUTH_URL = process.env['AUTH_URL'];
 export const PKG_ENV = process.env['PKG_ENV'] || 'local';
+export const MONGODB_URI = process.env['MONGODB_URI'] || '';

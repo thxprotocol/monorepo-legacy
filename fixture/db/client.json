@@ -141,7 +141,7 @@
         "_id": "9qqC-D11si12rCKz8bmNV",
         "payload": {
             "application_type": "web",
-            "grant_types": ["authorization_code"],
+            "grant_types": ["client_credentials"],
             "id_token_signed_response_alg": "RS256",
             "post_logout_redirect_uris": ["https://localhost:8080/signout-popup.html"],
             "require_auth_time": false,

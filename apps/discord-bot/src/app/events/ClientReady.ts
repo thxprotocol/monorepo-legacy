@@ -4,7 +4,7 @@ import commandRegister from '../utils/commandRegister';
 
 const onClientReady = async (client: Client<true>) => {
     console.log(`Ready! Logged in as ${client.user.tag}`);
-    await commandRegister(Object.values(commands));
+    await commandRegister(Object.values(commands) as any);
 };
 
 export default onClientReady;

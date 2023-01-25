@@ -1,12 +1,19 @@
 import { Client, GatewayIntentBits } from 'discord.js';
-import { TOKEN } from './app/configs/secrets';
+import { MONGODB_URI, TOKEN } from './app/configs/secrets';
 
 import eventRouter from './app/events';
 import eventRegister from './app/utils/eventRegister';
+import { COMMAND_QUEUE } from './app/queues/commands';
+import database from './app/utils/database';
+import { thxClient } from './app/configs/oidc';
 
-export default () => {
+export default async () => {
     const client = new Client({ intents: [GatewayIntentBits.Guilds] });
     eventRegister(client, eventRouter);
+    await database.connect(MONGODB_URI);
+    await thxClient.init();
+
+    COMMAND_QUEUE.start();
 
     client.login(TOKEN);
 };

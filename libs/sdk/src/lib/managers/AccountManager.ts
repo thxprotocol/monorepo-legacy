@@ -12,7 +12,7 @@ export default class AccountManager extends BaseManager {
     }
 
     async getByDiscordId(discordId: string) {
-        return await this.client.request.get(`/v1/account/discord/${discordId}`, { waitForAuth: true });
+        return await this.client.request.get(`/v1/account/discord/${discordId}`);
     }
 
     async patch(body: any) {

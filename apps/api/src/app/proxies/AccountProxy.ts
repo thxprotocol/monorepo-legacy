@@ -37,6 +37,22 @@ export default class AccountProxy {
         return await authAccountRequest(`/account/${sub}`);
     }
 
+    static async getByDiscordId(discordId: string): Promise<IAccount> {
+        const r = await authClient({
+            method: 'GET',
+            url: `/account/discord/${discordId}`,
+            headers: {
+                Authorization: await getAuthAccessToken(),
+            },
+        });
+
+        if (!r.data) {
+            throw new NoAccountError();
+        }
+
+        return r.data;
+    }
+
     static async getByEmail(email: string) {
         return await authAccountRequest(`/account/email/${email}`);
     }

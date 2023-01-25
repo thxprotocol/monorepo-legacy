@@ -32,8 +32,10 @@ class RequestManager extends BaseManager {
     private getHeaders() {
         const headers: any = {};
 
-        if (this.client.session.user?.access_token) {
-            headers['Authorization'] = `Bearer ${this.client.session.user?.access_token}`;
+        const token = this.client.session._cached.accessToken || this.client.session.user?.access_token;
+
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
         }
         if (this.client.session.poolId) {
             headers['X-PoolId'] = this.client.session.poolId;

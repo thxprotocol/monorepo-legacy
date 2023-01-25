@@ -1,8 +1,13 @@
 import { RepliableInteraction, SlashCommandBuilder } from 'discord.js';
+import { COMMAND_QUEUE } from '../queues/commands';
 
 export default {
-    data: new SlashCommandBuilder().setName('ping').setDescription('Reply with a `Pong`.'),
+    data: new SlashCommandBuilder()
+        .setName('ping')
+        .setDescription('Reply with a Pong.'),
     executor: (interaction: RepliableInteraction) => {
-        interaction.reply({ content: '`Pong!`', ephemeral: true });
+        COMMAND_QUEUE.push(() => {
+            interaction.reply({ content: '`Pong!`', ephemeral: true });
+        });
     },
 };

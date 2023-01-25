@@ -5,6 +5,7 @@ import ReadPool from './get.controller';
 import DeletePool from './delete.controller';
 import ListPools from './list.controller';
 import CreatePoolTopup from './topup/post.controller';
+import VerifyPoolAccess from './get.verify.controller';
 import UpdatePool from './patch.controller';
 
 const router = express.Router();
@@ -17,6 +18,13 @@ router.post(
 );
 router.get('/', guard.check(['pools:read']), assertRequestInput(ListPools.validation), ListPools.controller);
 router.get('/:id', guard.check(['pools:read']), assertRequestInput(ReadPool.validation), ReadPool.controller);
+router.get(
+    '/:id/discord/:discordId/verify',
+    guard.check(['pools:read']),
+    assertRequestInput(VerifyPoolAccess.validation),
+    VerifyPoolAccess.controller,
+);
+
 router.delete('/:id', guard.check(['pools:write']), assertRequestInput(DeletePool.validation), DeletePool.controller);
 router.post(
     '/:id/topup',
