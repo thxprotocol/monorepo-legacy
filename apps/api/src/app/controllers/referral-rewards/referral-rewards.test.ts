@@ -133,6 +133,7 @@ describe('Referral Rewards', () => {
                 expect(res.body.uuid).toBeDefined();
                 expect(res.body.sub).toBe(sub2);
                 expect(res.body.isApproved).toBe(false);
+                expect(res.body.poolId).toBe(poolId);
                 referralRewardClaim = res.body;
             })
             .expect(201, done);

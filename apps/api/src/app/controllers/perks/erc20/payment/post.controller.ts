@@ -44,7 +44,11 @@ const controller = async (req: Request, res: Response) => {
     const account = await AccountProxy.getById(req.auth.sub);
     const address = await account.getAddress(pool.chainId);
     const withdrawal = await WithdrawalService.withdrawFor(pool, erc20, req.auth.sub, address, erc20Perk.amount, false);
-    const erc20PerkPayment = await ERC20PerkPayment.create({ perkId: erc20Perk.id, sub: req.auth.sub });
+    const erc20PerkPayment = await ERC20PerkPayment.create({
+        perkId: erc20Perk.id,
+        sub: req.auth.sub,
+        poolId: erc20Perk.poolId,
+    });
 
     await PointBalanceService.subtract(pool, req.auth.sub, erc20Perk.pointPrice);
 

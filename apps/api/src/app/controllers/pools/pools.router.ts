@@ -2,6 +2,7 @@ import express from 'express';
 import { assertRequestInput, assertAssetPoolOwnership, guard } from '@thxnetwork/api/middlewares';
 import CreatePool from './post.controller';
 import ReadPool from './get.controller';
+import PoolsAnalytics from './analytics/get.controller';
 import DeletePool from './delete.controller';
 import ListPools from './list.controller';
 import CreatePoolTopup from './topup/post.controller';
@@ -15,8 +16,15 @@ router.post(
     assertRequestInput(CreatePool.validation),
     CreatePool.controller,
 );
+
 router.get('/', guard.check(['pools:read']), assertRequestInput(ListPools.validation), ListPools.controller);
 router.get('/:id', guard.check(['pools:read']), assertRequestInput(ReadPool.validation), ReadPool.controller);
+router.get(
+    '/:id/analytics',
+    guard.check(['pools:read']),
+    assertRequestInput(PoolsAnalytics.validation),
+    PoolsAnalytics.controller,
+);
 router.delete('/:id', guard.check(['pools:write']), assertRequestInput(DeletePool.validation), DeletePool.controller);
 router.post(
     '/:id/topup',
