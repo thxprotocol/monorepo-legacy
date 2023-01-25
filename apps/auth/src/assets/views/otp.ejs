@@ -24,17 +24,19 @@
                 <%- alert.message %>
             </div>
             <% } %>
-            <p class="mt-2 text-muted">One-time password </p>
 
             <form id="form-otp" action="/oidc/<%= uid %>/signin/otp" method="post" class="mt-3">
                 <div v-if="isLoading" class="text-center py-3">
-                    <div class="spinner-border" role="status">
+                    <div class="spinner-border text-primary" role="status">
                         <span class="sr-only">Loading...</span>
                     </div>
                 </div>
-                <div v-else class="form-group d-flex justify-content-between">
-                    <input v-for="key of [0,1,2,3,4]" :value="otpValues[key]" @input="onInput(key, $event)"
-                           class="form-control mx-2" required min="0" max="9" type="number" :autofocus="key == 0">
+                <div v-else class="form-group">
+                    <p class="mt-2 text-muted">One-time password </p>
+                    <div class="d-flex justify-content-between">
+                        <input v-for="key of [0,1,2,3,4]" :value="otpValues[key]" @input="onInput(key, $event)"
+                               class="form-control mx-2" required min="0" max="9" type="number" :autofocus="key == 0">
+                    </div>
                 </div>
                 <input type="hidden" name="otp" :value="otp" />
                 <input type="hidden" name="returnUrl" value="<%= params.return_url %>" />

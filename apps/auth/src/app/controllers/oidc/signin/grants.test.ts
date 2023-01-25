@@ -3,7 +3,7 @@ import app from '../../../app';
 import db from '../../../util/database';
 import { AccountService } from '../../../services/AccountService';
 import { INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
-import { accountEmail, accountSecret } from '../../../util/jest';
+import { accountEmail } from '../../../util/jest';
 import { AccountVariant } from '@thxnetwork/auth/types/enums/AccountVariant';
 
 const http = request.agent(app);
@@ -134,7 +134,7 @@ describe('OAuth2 Grants', () => {
     });
 
     describe('GET /account/:id', () => {
-        it('HTTP 403', async () => {
+        it('HTTP 200', async () => {
             const res = await http
                 .get(`/account/${sub}`)
                 .set({ Authorization: `Bearer ${accessToken}` })

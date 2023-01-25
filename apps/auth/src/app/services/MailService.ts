@@ -31,7 +31,7 @@ export class MailService {
             };
             return sgMail.send(options);
         } else {
-            logger.info({ message: 'not sending email', link });
+            logger.info({ message: 'not sending email', html, link });
         }
     };
 
