@@ -18,6 +18,7 @@
                         Oops, we did not manage to claim your token reward at this time, please visit your claim URL or
                         scan your QR code again.
                     </b-alert>
+                    <b-button block variant="primary" class="rounded-pill" @click="claimReward"> Try again </b-button>
                 </template>
             </template>
 
@@ -233,6 +234,8 @@ export default class Collect extends Vue {
             } else if (this.claim && this.claim.erc20) {
                 await this.$store.dispatch('network/connect', this.claim.erc20.chainId);
             }
+            this.isClaimFailed = false;
+            this.isClaimInvalid = false;
         } catch (e) {
             const { error } = e as { error: { message: string } };
             if (error && error.message) {

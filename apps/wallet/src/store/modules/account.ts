@@ -144,6 +144,7 @@ class AccountModule extends VuexModule {
 
         if (payload.claimUuid) {
             extraQueryParams['claim_id'] = payload.claimUuid;
+            localStorage.setItem(`thx:wallet:claimUuid`, payload.claimUuid);
         }
 
         await thxClient.userManager.cached.clearStaleState();
