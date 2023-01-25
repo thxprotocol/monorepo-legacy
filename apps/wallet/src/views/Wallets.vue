@@ -7,29 +7,42 @@
                     <i class="fas fa-info-circle mr-2"></i> This list shows the addresses for your account.
                 </b-alert>
                 <b-list-group-item
-                    :href="chainInfo[chainId].blockExplorer + '/address/' + profile.address"
-                    class="d-flex align-items-center"
-                >
-                    <img
-                        v-if="profile.variant === 4"
-                        class="mr-2"
-                        height="18"
-                        :src="require('../../public/assets/img/mm-logo.svg')"
-                        :alt="`Metamask logo`"
-                    />
-                    <img
-                        v-else
-                        class="mr-2"
-                        height="18"
-                        :src="require('../../public/assets/img/logo.png')"
-                        :alt="`Metamask logo`"
-                    />
-                    <div class="text-overflow-75">
-                        {{ profile.address }}
-                    </div>
-                    <i class="fas fa-external-link-alt" style="font-size: 0.8rem"></i>
+                    ><b-row>
+                        <b-col md="8" class="d-flex align-items-center">
+                            <img
+                                v-if="profile.variant === 4"
+                                class="mr-2"
+                                height="18"
+                                :src="require('../../public/assets/img/mm-logo.svg')"
+                                :alt="`Metamask logo`"
+                            />
+                            <img
+                                v-else
+                                class="mr-2"
+                                height="18"
+                                :src="require('../../public/assets/img/logo.png')"
+                                :alt="`Thx logo`"
+                            />
+                            <div class="text-overflow-75">
+                                {{ profile.address }}
+                            </div>
+                            <b-link
+                                :href="chainInfo[chainId].blockExplorer + '/address/' + profile.address"
+                                target="_blank"
+                            >
+                                <i class="fas fa-external-link-alt" style="font-size: 0.8rem"></i
+                            ></b-link>
+                        </b-col>
+                        <b-col md="4" class="text-muted text-right small">
+                            <div v-if="profile.variant !== 4">
+                                <b-button v-b-modal="'modalShowPrivateKey'" size="sm" variant="none">
+                                    <i class="fas fa-ellipsis-h" style="font-size: 0.8rem"></i>
+                                </b-button>
+                            </div>
+                        </b-col>
+                    </b-row>
                 </b-list-group-item>
-                <b-list-group-item :href="chainInfo[wallet.chainId].blockExplorer + '/address/' + wallet.address">
+                <b-list-group-item>
                     <b-row>
                         <b-col md="8" class="d-flex align-items-center">
                             <img
@@ -42,7 +55,12 @@
                             <div class="text-overflow-75">
                                 {{ wallet.address }}
                             </div>
-                            <i class="fas fa-external-link-alt" style="font-size: 0.8rem"></i>
+                            <b-link
+                                :href="chainInfo[wallet.chainId].blockExplorer + '/address/' + wallet.address"
+                                target="_blank"
+                            >
+                                <i class="fas fa-external-link-alt" style="font-size: 0.8rem"></i
+                            ></b-link>
                         </b-col>
                         <b-col md="4" class="text-muted text-right small">
                             {{ format(new Date(wallet.createdAt), 'dd-MM-yyyy HH:mm') }}
@@ -50,6 +68,7 @@
                     </b-row>
                 </b-list-group-item>
             </b-list-group>
+            <base-modal-show-private-key />
         </template>
     </div>
 </template>
@@ -64,10 +83,12 @@ import { ChainId } from '../types/enums/ChainId';
 import { TWallet } from '../types/Wallet';
 import { format } from 'date-fns';
 import { chainInfo } from '../utils/chains';
+import BaseModalShowPrivateKey from '../components/modals/ModalShowPrivateKey.vue';
 
 @Component({
     components: {
         BaseListGroupItemToken,
+        BaseModalShowPrivateKey,
     },
     computed: {
         ...mapState('erc20', ['contracts']),
