@@ -10,6 +10,7 @@ const schema = new mongoose.Schema(
         uuid: String,
         amount: String,
         isApproved: Boolean,
+        poolId: String,
     },
     { timestamps: true },
 );

@@ -33,7 +33,11 @@ const controller = async (req: Request, res: Response) => {
     console.log(account, to);
 
     const erc721Token = await ERC721Service.mint(pool, erc721, metadata, req.auth.sub, to);
-    const erc721PerkPayment = await ERC20PerkPayment.create({ perkId: erc721Perk._id, sub: req.auth.sub });
+    const erc721PerkPayment = await ERC20PerkPayment.create({
+        perkId: erc721Perk._id,
+        sub: req.auth.sub,
+        poolId: pool._id,
+    });
 
     await PointBalanceService.subtract(pool, req.auth.sub, erc721Perk.pointPrice);
 
