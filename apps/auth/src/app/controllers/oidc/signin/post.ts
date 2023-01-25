@@ -1,99 +1,68 @@
+import { oidc } from '../../../util/oidc';
 import { AccountService } from '../../../services/AccountService';
 import { MailService } from '../../../services/MailService';
 import { Request, Response } from 'express';
-import { ERROR_ACCOUNT_NOT_ACTIVE, ERROR_AUTH_LINK, ERROR_OTP_CODE_INVALID } from '../../../util/messages';
-import { oidc } from '../../../util/oidc';
-import { authenticator } from '@otplib/preset-default';
 import { recoverTypedSignature, SignTypedDataVersion } from '@metamask/eth-sig-util';
 import { body } from 'express-validator';
-import { createWallet } from '@thxnetwork/auth/util/wallet';
+import { AccountVariant } from '@thxnetwork/auth/types/enums/AccountVariant';
+import { AccountDocument } from '@thxnetwork/auth/models/Account';
+import { UnauthorizedError } from '@thxnetwork/auth/util/errors';
 
 const validation = [body('chainId').optional().isNumeric()];
 
 async function controller(req: Request, res: Response) {
-    function renderLogin(errorMessage: string) {
+    function renderSigninPage(variant: string, errorMessage: string) {
         return res.render('signin', {
             uid: req.params.uid,
             params: { return_url: req.body.returnUrl },
             alert: {
-                variant: 'danger',
+                variant,
                 message: errorMessage,
             },
         });
     }
 
-    let account;
     // If signed auth request is available recover the address from the signature and lookup user
     if (req.body.authRequestMessage && req.body.authRequestSignature) {
-        const recoveredAddress = recoverTypedSignature({
+        const address = recoverTypedSignature({
             data: JSON.parse(req.body.authRequestMessage),
             signature: req.body.authRequestSignature,
             version: 'V3' as SignTypedDataVersion,
         });
-        account = await AccountService.signinWithAddress(recoveredAddress);
-    }
-    // if email and password are available lookup user by these credentials
-    else if (req.body.email && req.body.password) {
+        if (!address) throw new UnauthorizedError('Could not recover address from signed message.');
+
+        const account = await AccountService.signinWithAddress(address);
+        if (!account) throw new UnauthorizedError('Could not find an account for this address.');
+
+        return await oidc.interactionFinished(
+            req,
+            res,
+            { login: { accountId: String(account._id) } },
+            { mergeWithLastSubmission: false },
+        );
+    } else if (req.body.email) {
         try {
-            account = await AccountService.signinWithEmailPassword(req.body.email, req.body.password);
+            let account: AccountDocument = await AccountService.getByEmail(req.body.email);
+
+            if (!account) {
+                account = await AccountService.signup({
+                    email: req.body.email,
+                    variant: AccountVariant.EmailPassword,
+                    active: false,
+                });
+            }
+
+            await MailService.sendOTPMail(account);
+
+            // Store the sub in the interaction so we can lookup the hashed OTP later
+            req.interaction.params.sub = String(account._id);
+            await req.interaction.save(Date.now() + 10 * 60 * 1000); // ttl 10min
+
+            return res.redirect(`/oidc/${req.params.uid}/otp`);
         } catch (error) {
-            return renderLogin(String(error));
+            return renderSigninPage('danger', error.message);
         }
     }
-    // For all other instances throw an error
-    else {
-        throw new Error('Could not find signature or credential information in the request body.');
-    }
-
-    // Make sure to send a new confirmation email for inactive accounts
-    if (!account.active && account.email) {
-        await MailService.sendConfirmationEmail(account, req.body.returnUrl);
-        return renderLogin(ERROR_ACCOUNT_NOT_ACTIVE);
-    }
-
-    // Serve MFA views
-    if (account.otpSecret) {
-        // Show signin with code field for this account
-        if (!req.body.code) {
-            return res.render('signin', {
-                uid: req.params.uid,
-                params: { return_url: req.body.returnUrl, ...req.body, mfaEnabled: true },
-            });
-        }
-        // Show signin with code field for this account
-        const isValid = authenticator.check(req.body.code, account.otpSecret);
-        if (!isValid) {
-            return res.render('signin', {
-                uid: req.params.uid,
-                params: { ...req.body, return_url: req.body.returnUrl, mfaEnabled: true },
-                alert: {
-                    variant: 'danger',
-                    message: ERROR_OTP_CODE_INVALID,
-                },
-            });
-        }
-    }
-
-    // Make sure to ask for a login link from the authority if custodial key is found
-    if (account.privateKey) {
-        return renderLogin(ERROR_AUTH_LINK);
-    }
-
-    // Actions after successfully login
-    await AccountService.update(account, {
-        lastLoginAt: Date.now(),
-    });
-
-    //Check if a SharedWallet must be created for a specific chainId
-    createWallet(account);
-
-    // Make to finish the interaction and login with sub
-    return await oidc.interactionFinished(
-        req,
-        res,
-        { login: { accountId: String(account._id) } },
-        { mergeWithLastSubmission: false },
-    );
 }
 
 export default { controller, validation };
