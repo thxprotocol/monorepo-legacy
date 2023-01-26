@@ -78,7 +78,7 @@ describe('Sign In', () => {
 
         it('POST /oidc/:uid/signin/otp (correct OTP)', async () => {
             // Override the hashed OTP in db to continue with a deterministic value
-            const hashedOtp = bcrypt.hashSync(otp);
+            const hashedOtp = await bcrypt.hash(otp, 10);
             const account = await AccountService.getByEmail(email);
 
             account.setToken({ kind: AccessTokenKind.Auth, accessToken: hashedOtp });
@@ -88,37 +88,4 @@ describe('Sign In', () => {
             expect(res.status).toEqual(303);
         });
     });
-
-    // describe('Signin OTP', () => {
-    //     it('GET /oidc/:uid/signin', async () => {
-    //         const params = new URLSearchParams({
-    //             client_id: clientId,
-    //             redirect_uri: redirectUri,
-    //             resource: API_URL,
-    //             scope: 'openid pools:read pools:write withdrawals:read rewards:write deposits:read deposits:write wallets:read wallets:write',
-    //             response_type: 'code',
-    //             response_mode: 'query',
-    //             nonce: 'xun4kvy4mh',
-    //         });
-
-    //         const res = await http.get(`/auth?${params.toString()}`).send();
-
-    //         expect(res.status).toEqual(303);
-    //         expect(res.header.location).toMatch(new RegExp('/oidc/.*'));
-
-    //         uid = (res.header.location as string).split('/')[2];
-    //     });
-
-    //     it('GET /oidc/:uid/signin/otp', async () => {
-    //         const res = await http.post(`/oidc/${uid}/signin`).send(`email=fake.user@thx.network`);
-    //         expect(res.status).toEqual(302);
-    //         expect(res.header.location).toBe(`/oidc/${uid}/signin/otp`);
-    //     });
-
-    //     it('POST /oidc/:uid/signin/otp', async () => {
-    //         const res = await http.post(`/oidc/${uid}/signin/otp`).send('otp=00000');
-    //         expect(res.status).toEqual(200);
-    //         expect(res.text).toMatch(new RegExp('.*Your one-time password is incorrect.*'));
-    //     });
-    // });
 });

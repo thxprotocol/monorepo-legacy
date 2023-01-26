@@ -21,16 +21,12 @@ if (SENDGRID_API_KEY) {
 export class MailService {
     static sendMail = (to: string, subject: string, html: string, link = '') => {
         if (SENDGRID_API_KEY && NODE_ENV !== 'test') {
-            const options = {
+            return sgMail.send({
                 to,
-                from: {
-                    email: 'noreply@thx.network',
-                    name: 'THX Network',
-                },
+                from: { email: 'noreply@thx.network', name: 'THX Network' },
                 subject,
                 html,
-            };
-            return sgMail.send(options);
+            });
         } else {
             logger.info({ message: 'not sending email', html, link });
         }
@@ -49,7 +45,7 @@ export class MailService {
 
         const verifyUrl = `${returnUrl}verify_email?verifyEmailToken=${token.accessToken}&return_url=${returnUrl}`;
         const html = await ejs.renderFile(
-            path.join(mailTemplatePath, 'emailConfirm.ejs'),
+            path.join(mailTemplatePath, 'email-verify.ejs'),
             {
                 verifyUrl,
                 returnUrl,
@@ -74,7 +70,7 @@ export class MailService {
             .join('');
         const hashedOtp = await bcrypt.hash(otp, 10);
         const html = await ejs.renderFile(
-            path.join(mailTemplatePath, 'loginLink.ejs'),
+            path.join(mailTemplatePath, 'email-otp.ejs'),
             { otp, returnUrl: WALLET_URL, baseUrl: AUTH_URL },
             { async: true },
         );
@@ -86,31 +82,6 @@ export class MailService {
             accessToken: hashedOtp,
             expiry: Date.now() + 60 * 60 * 1000, // 60 minutes
         });
-
-        await account.save();
-    }
-
-    static async sendResetPasswordEmail(account: AccountDocument, returnUrl: string) {
-        const accessToken = createRandomToken();
-
-        account.setToken({
-            kind: AccessTokenKind.PasswordReset,
-            accessToken,
-            expiry: Date.now() + 60 * 60 * 1000, // 60 minutes,
-        });
-
-        const resetUrl = `${returnUrl}/reset?passwordResetToken=${accessToken}`;
-        const html = await ejs.renderFile(
-            path.join(mailTemplatePath, 'resetPassword.ejs'),
-            {
-                resetUrl,
-                returnUrl,
-                baseUrl: AUTH_URL,
-            },
-            { async: true },
-        );
-
-        await this.sendMail(account.email, 'Reset your THX Password', html, resetUrl);
 
         await account.save();
     }
