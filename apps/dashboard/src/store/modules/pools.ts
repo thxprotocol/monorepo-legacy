@@ -15,6 +15,7 @@ export interface IPool {
     metrics: {
         pointRewards: { totalClaimPoints: number };
         referralRewards: { totalClaimPoints: number };
+        milestoneRewards: { totalClaimPoints: number };
         erc20Perks: { payments: number };
         erc721Perks: { payments: number };
     };
@@ -22,21 +23,70 @@ export interface IPool {
     archived: boolean;
     title: string;
 }
+
+export interface IPoolAnalytic {
+    _id: string;
+    erc20Perks: [
+        {
+            day: string;
+            totalAmount: number;
+        },
+    ];
+    erc721Perks: [
+        {
+            day: string;
+            totalAmount: number;
+        },
+    ];
+    referralRewards: [
+        {
+            day: string;
+            totalClaimPoints: number;
+        },
+    ];
+    pointRewards: [
+        {
+            day: string;
+            totalClaimPoints: number;
+        },
+    ];
+    milestoneRewards: [
+        {
+            day: string;
+            totalClaimPoints: number;
+        },
+    ];
+    leaderBoard: { sub: string; score: number; name: string; email: string }[];
+}
 export interface IPools {
     [id: string]: IPool;
+}
+
+export interface IPoolAnalytics {
+    [id: string]: IPoolAnalytic;
 }
 
 @Module({ namespaced: true })
 class PoolModule extends VuexModule {
     _all: IPools = {};
+    _analytics: IPoolAnalytics = {};
 
     get all() {
         return this._all;
     }
 
+    get analytics() {
+        return this._analytics;
+    }
+
     @Mutation
     set(pool: IPool) {
         Vue.set(this._all, pool._id, pool);
+    }
+
+    @Mutation
+    setAnalytics(pool: IPoolAnalytic) {
+        Vue.set(this._analytics, pool._id, pool);
     }
 
     @Mutation
@@ -73,6 +123,18 @@ class PoolModule extends VuexModule {
 
         this.context.commit('set', r.data);
 
+        return r.data;
+    }
+
+    @Action({ rawError: true })
+    async readAnalytics(payload: { poolId: string; startDate: Date; endDate: Date }) {
+        const r = await axios({
+            method: 'get',
+            url: `/pools/${payload.poolId}/analytics`,
+            params: { startDate: payload.startDate, endDate: payload.endDate },
+        });
+
+        this.context.commit('setAnalytics', r.data);
         return r.data;
     }
 

@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import { ForbiddenError } from '@thxnetwork/api/util/errors';
-import { ReferralRewardClaim } from '@thxnetwork/api/models/ReferralRewardClaim';
 import { Claim } from '@thxnetwork/api/models/Claim';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { PointReward, PointRewardDocument } from '@thxnetwork/api/models/PointReward';
@@ -9,6 +8,7 @@ import { ERC20Perk, ERC20PerkDocument } from '@thxnetwork/api/models/ERC20Perk';
 import { ERC721Perk, ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
 import mongoose from 'mongoose';
 import { ReferralReward, ReferralRewardDocument } from '@thxnetwork/api/models/ReferralReward';
+import { MilestoneReward, MilestoneRewardDocument } from '@thxnetwork/api/models/MilestoneReward';
 
 export const validation = [param('id').isMongoId()];
 
@@ -37,6 +37,13 @@ export const controller = async (req: Request, res: Response) => {
         joinTable: 'referralrewardclaims',
         key: 'referralRewardId',
         model: ReferralReward,
+        poolId: String(pool._id),
+        amountField: 'amount',
+    });
+    const milestoneRewardsQueryResult = await runAggregateQuery<MilestoneRewardDocument>({
+        joinTable: 'milestonerewardclaims',
+        key: 'milestoneRewardId',
+        model: MilestoneReward,
         poolId: String(pool._id),
         amountField: 'amount',
     });
@@ -71,6 +78,11 @@ export const controller = async (req: Request, res: Response) => {
                 total: pointRewardsQueryResult.recordsCount,
                 claims: pointRewardsQueryResult.childrenCount,
                 totalClaimPoints: pointRewardsQueryResult.totalAmount,
+            },
+            milestoneRewards: {
+                total: milestoneRewardsQueryResult.recordsCount,
+                claims: milestoneRewardsQueryResult.childrenCount,
+                totalClaimPoints: milestoneRewardsQueryResult.totalAmount,
             },
         },
     };
