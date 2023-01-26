@@ -29,7 +29,7 @@ export default {
         if (!isAdmin)
             return interaction.reply({
                 content: 'You much be Guild Administrator tobe able to do this',
-                ephemeral: true,
+                ephemeral: false,
             });
 
         let userConnected;
@@ -43,7 +43,7 @@ export default {
         if (!userConnected)
             return interaction.reply({
                 content: 'Please connect your THX Account with Discord first.',
-                ephemeral: true,
+                ephemeral: false,
             });
         const options = interaction.options as CommandInteractionOptionResolver;
         const subcommand = options.getSubcommand();
@@ -54,7 +54,7 @@ export default {
                 if (!guild)
                     return interaction.reply({
                         content: `There not yet any infomation about this guild`,
-                        ephemeral: true,
+                        ephemeral: false,
                     });
                 const pool = await thxClient.pools.verifyAccessByDiscordId(interaction.user.id, guild.poolId);
 
@@ -68,7 +68,7 @@ export default {
                         { name: 'Address', value: pool.address },
                     )
                     .setTimestamp();
-                interaction.reply({ embeds: [embed], ephemeral: true });
+                interaction.reply({ embeds: [embed], ephemeral: false });
                 break;
             }
             case 'connect': {
@@ -77,11 +77,11 @@ export default {
                 if (!isVerified)
                     return interaction.reply({
                         content: 'Cannot connect current guild into this PoolId',
-                        ephemeral: true,
+                        ephemeral: false,
                     });
 
                 await GuildService.connect(interaction.guildId, poolId);
-                interaction.reply({ content: `Connected Pool with ID ${poolId} into current Guild`, ephemeral: true });
+                interaction.reply({ content: `Connected Pool with ID ${poolId} into current Guild`, ephemeral: false });
                 break;
             }
         }

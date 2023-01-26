@@ -145,7 +145,7 @@
             "id_token_signed_response_alg": "RS256",
             "post_logout_redirect_uris": ["https://localhost:8080/signout-popup.html"],
             "require_auth_time": false,
-            "response_types": ["code"],
+            "response_types": [],
             "subject_type": "public",
             "token_endpoint_auth_method": "client_secret_basic",
             "introspection_endpoint_auth_method": "client_secret_basic",
