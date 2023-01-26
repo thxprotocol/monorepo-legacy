@@ -5,4 +5,5 @@ export type TReferralRewardClaim = {
     amount: string;
     isApproved: boolean;
     createdAt: Date;
+    poolId: string;
 };

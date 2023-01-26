@@ -128,6 +128,7 @@ const controller = async (req: Request, res: Response) => {
             sub: req.auth.sub,
             perkId: perk._id,
             amount: perk.pointPrice,
+            poolId: pool._id,
         });
     }
 

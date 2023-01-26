@@ -8,6 +8,7 @@ const pointRewardClaimSchema = new mongoose.Schema(
         pointRewardId: String,
         sub: String,
         amount: String,
+        poolId: String,
     },
     { timestamps: true },
 );
