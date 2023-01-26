@@ -10,7 +10,8 @@ import ReadAccountDiscord from './discord/get.controller';
 import CreateAccountLogin from './login/post.controller';
 import GetAccountByDiscordId from './discord/get.by-discord-id.controller';
 import GetPointBalance from './discord/get.point-balance.controller';
-import GetListERC20Tokens from './discord/get.list-erc20.controller'
+import GetListERC20Tokens from './discord/get.list-erc20.controller';
+import GetListERC721Tokens from './discord/get.list-erc721.controller';
 
 const router = express.Router();
 
@@ -31,7 +32,7 @@ router.get(
 
 router.get('/:sub/discord/point_balance', guard.check(['account:read']), GetPointBalance.controller);
 router.get('/:sub/discord/erc20/token', guard.check(['account:read']), GetListERC20Tokens.controller);
-router.get('/:sub/discord/erc721/token', guard.check(['account:read']), GetListERC20Tokens.controller);
+router.get('/:sub/discord/erc721/token', guard.check(['account:read']), GetListERC721Tokens.controller);
 
 router.post(
     '/login',
