@@ -18,7 +18,6 @@ class AssetPoolModule extends VuexModule {
         const claim = await this.context.dispatch('getClaim', claimUuid);
         const profile = this.context.rootGetters['account/profile'];
         const claimed = await thxClient.claims.collect({ poolId: claim.claim.poolId, claimUuid });
-        localStorage.removeItem(`thx:wallet:claimUuid`);
         track.UserCreates(profile.sub, 'perk claim');
         return claimed;
     }
