@@ -5,8 +5,9 @@ import db from '../../../util/database';
 import { DISCORD_API_ENDPOINT } from '../../../config/secrets';
 import { AccountService } from '../../../services/AccountService';
 import { INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
-import { accountEmail, accountSecret } from '../../../util/jest';
+import { accountEmail } from '../../../util/jest';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
+import { AccountVariant } from '@thxnetwork/auth/types/enums/AccountVariant';
 
 const http = request.agent(app);
 
@@ -52,26 +53,17 @@ describe('Account Controller', () => {
 
         basicAuthHeader = await registerClient();
         authHeader = await requestToken();
+
+        const account = await AccountService.signup({
+            email: accountEmail,
+            variant: AccountVariant.SSODiscord,
+            active: true,
+        });
+        sub = String(account._id);
     });
 
     afterAll(async () => {
         await db.disconnect();
-    });
-
-    describe('POST /account', () => {
-        it('HTTP 200', async () => {
-            const res = await http
-                .post('/account')
-                .set({
-                    Authorization: authHeader,
-                })
-                .send({
-                    email: accountEmail,
-                    password: accountSecret,
-                });
-            expect(res.status).toBe(201);
-            sub = res.body.sub;
-        });
     });
 
     describe('GET /account/:sub/discord', () => {

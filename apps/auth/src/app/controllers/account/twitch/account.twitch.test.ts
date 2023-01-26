@@ -5,13 +5,15 @@ import db from '../../../util/database';
 import { TWITCH_API_ENDPOINT } from '../../../config/secrets';
 import { AccountService } from '../../../services/AccountService';
 import { INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
-import { accountEmail, accountSecret } from '../../../util/jest';
+import { accountEmail } from '../../../util/jest';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
+import { AccountVariant } from '@thxnetwork/auth/types/enums/AccountVariant';
+import { AccountDocument } from '@thxnetwork/auth/models/Account';
 
 const http = request.agent(app);
 
 describe('Account Controller', () => {
-    let authHeader: string, basicAuthHeader: string, sub: string;
+    let account: AccountDocument, authHeader: string, basicAuthHeader: string, sub: string;
 
     beforeEach(() => {
         nock('https://api.airtable.com').post(/.*?/).reply(200, {}); // mock email response for account create method
@@ -52,30 +54,21 @@ describe('Account Controller', () => {
 
         basicAuthHeader = await registerClient();
         authHeader = await requestToken();
+
+        account = await AccountService.signup({
+            email: accountEmail,
+            variant: AccountVariant.SSOTwitch,
+            active: true,
+        });
+
+        sub = String(account._id);
     });
 
     afterAll(async () => {
         await db.disconnect();
     });
 
-    describe('POST /account', () => {
-        it('HTTP 200', async () => {
-            const res = await http
-                .post('/account')
-                .set({
-                    Authorization: authHeader,
-                })
-                .send({
-                    email: accountEmail,
-                    password: accountSecret,
-                });
-            expect(res.status).toBe(201);
-            sub = res.body.sub;
-        });
-    });
-
     describe('GET /account/:sub/twitch', () => {
-        let account;
         beforeAll(async () => {
             nock(TWITCH_API_ENDPOINT)
                 .persist()
