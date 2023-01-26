@@ -11,7 +11,12 @@ import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
 import airtable from '@thxnetwork/auth/util/airtable';
 
-async function updateTokens(account: AccountDocument, tokens: any, accessTokenKind: AccessTokenKind, userId: string) {
+async function updateTokens(account: AccountDocument, tokens: any, userId: string) {
+    let accessTokenKind = YouTubeService.getAccessTokenKindFromScope(tokens.scope);
+    if (!accessTokenKind) {
+        accessTokenKind = AccessTokenKind.Google;
+    }
+
     const expiry = tokens.expiry_date ? Date.now() + Number(tokens.expiry_date) * 1000 : undefined;
     account.setToken({
         kind: accessTokenKind,
@@ -51,7 +56,7 @@ export async function controller(req: Request, res: Response) {
             : // If not, get account for email claim
               await getAccountByEmail(claims.email, AccountVariant.SSOGoogle);
 
-    await airtable.pipelineSignup({
+    airtable.pipelineSignup({
         Email: account.email,
         Date: account.createdAt,
         AcceptUpdates: account.acceptUpdates,
@@ -60,18 +65,9 @@ export async function controller(req: Request, res: Response) {
     // Check if a SharedWallet must be created
     createWallet(account);
 
-    // Actions after successfully login
-    await AccountService.update(account, {
-        lastLoginAt: Date.now(),
-    });
-
     const returnTo = await saveInteraction(interaction, account._id.toString());
-    let accessTokenKind = YouTubeService.getAccessTokenKindFromScope(tokens.scope);
-    if (!accessTokenKind) {
-        accessTokenKind = AccessTokenKind.Google;
-    }
 
-    await updateTokens(account, tokens, accessTokenKind, claims.sub);
+    await updateTokens(account, tokens, claims.sub);
 
     return res.redirect(returnTo);
 }

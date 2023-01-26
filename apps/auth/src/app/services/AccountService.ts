@@ -10,7 +10,7 @@ import { YouTubeService } from './YouTubeService';
 import { AccountPlanType } from '../types/enums/AccountPlanType';
 import { AccountVariant } from '../types/enums/AccountVariant';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
-import bcrypt from 'bcrypt-nodejs';
+import bcrypt from 'bcrypt';
 
 export class AccountService {
     static get(sub: string) {
@@ -170,7 +170,7 @@ export class AccountService {
         const token = account.getToken(AccessTokenKind.Auth);
         if (!token) return;
 
-        return bcrypt.compareSync(otp, token.accessToken);
+        return await bcrypt.compare(otp, token.accessToken);
     }
 
     static async verifyEmailToken(verifyEmailToken: string) {
