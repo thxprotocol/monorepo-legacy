@@ -76,7 +76,7 @@ async function deployCallback(args: TAssetPoolDeployCallbackArgs, receipt: Trans
 
     // if is the first pool for the account, create dummy contents for the pool
     const poolsCount = await AssetPool.find({ sub: pool.sub }).count();
-    if (poolsCount > 0) {
+    if (poolsCount > 1) {
         return;
     }
     await createDummyContents(pool);
