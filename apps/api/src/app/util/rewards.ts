@@ -9,6 +9,10 @@ import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import ERC20PerkService from '../services/ERC20PerkService';
 import ERC721PerkService from '@thxnetwork/api/services/ERC721PerkService';
 import { PointReward } from '../models/PointReward';
+import PointRewardService from '../services/PointRewardService';
+import db from '@thxnetwork/api/util/database';
+import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardService';
+import MilestoneRewardService from '../services/MilestoneRewardService';
 
 export async function findRewardByUuid(uuid: string) {
     const erc20Perk = await ERC20Perk.findOne({ uuid });
@@ -78,3 +82,24 @@ export const createERC20Perk = async (pool: AssetPoolDocument, payload: TERC20Pe
 
     return { reward, claims };
 };
+
+export async function createDummyContents(pool: AssetPoolDocument) {
+    await ReferralRewardService.create(pool, {
+        title: 'My first Referral Reward',
+        description: 'a reward that can be claimed when a new user signs up',
+        successUrl: '',
+        amount: '1',
+    });
+
+    await PointRewardService.create(pool, {
+        title: 'My First Conditional Reward',
+        description: 'a reward that can be claimed on certain conditions',
+        amount: '1',
+    });
+
+    await MilestoneRewardService.create(pool, {
+        title: 'My first Milestone Reward',
+        description: 'a reward that can be claimed after all the milestones are completed',
+        amount: 1,
+    });
+}

@@ -24,7 +24,7 @@ async function removeAllForPool(pool: AssetPoolDocument) {
     }
 }
 
-async function create(pool: AssetPoolDocument, payload: TReferralReward) {
+async function create(pool: AssetPoolDocument, payload: Partial<TReferralReward>) {
     return await ReferralReward.create({
         poolId: String(pool._id),
         uuid: db.createUUID(),
