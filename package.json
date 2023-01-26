@@ -123,6 +123,7 @@
         "vuex": "^3.4.0",
         "vuex-module-decorators": "^1.0.1",
         "web3": "^1.7.3",
+        "web3-utils": "^1.8.1",
         "webpack": "^5.74.0",
         "winston": "^3.2.1",
         "xml2js": "^0.4.23",
