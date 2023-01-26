@@ -9,13 +9,17 @@
         @hide="onHide"
     >
         <template>
+            <b-alert variant="warning" show>
+                <i class="fas fa-info-circle mr-2"></i>
+                Be careful when sharing your private key with others.
+            </b-alert>
             <b-input-group>
                 <b-form-input readonly :value="formPrivateKey" :type="hidden ? 'password' : 'text'" />
                 <b-input-group-append>
-                    <b-button v-if="!hidden" variant="light" v-clipboard:copy="formPrivateKey">
+                    <b-button v-if="!hidden" variant="primary" v-clipboard:copy="formPrivateKey">
                         <i class="fas fa-clipboard m-0"></i>
                     </b-button>
-                    <b-button v-else variant="light" @click="showKey">
+                    <b-button v-else variant="primary" @click="showKey">
                         <i class="fas fa-eye m-0"></i>
                     </b-button>
                 </b-input-group-append>

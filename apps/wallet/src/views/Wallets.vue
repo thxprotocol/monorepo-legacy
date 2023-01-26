@@ -3,9 +3,6 @@
         <b-spinner variant="primary" class="m-auto" v-if="loading" />
         <template v-else>
             <b-list-group class="w-100 align-self-start">
-                <b-alert variant="info" show>
-                    <i class="fas fa-info-circle mr-2"></i> This list shows the addresses for your account.
-                </b-alert>
                 <b-list-group-item
                     ><b-row>
                         <b-col md="8" class="d-flex align-items-center">
