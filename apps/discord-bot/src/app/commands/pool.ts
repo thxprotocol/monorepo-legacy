@@ -26,7 +26,11 @@ export default {
         ),
     executor: async (interaction: CommandInteraction) => {
         const isAdmin = (interaction.member.permissions as any).has(PermissionFlagsBits.Administrator);
-        if (!isAdmin) return interaction.reply('You much be Guild Administrator tobe able to do this');
+        if (!isAdmin)
+            return interaction.reply({
+                content: 'You much be Guild Administrator tobe able to do this',
+                ephemeral: true,
+            });
 
         let userConnected;
 
@@ -36,14 +40,22 @@ export default {
             userConnected = null;
         }
 
-        if (!userConnected) return interaction.reply('Please connect your THX Account with Discord first.');
+        if (!userConnected)
+            return interaction.reply({
+                content: 'Please connect your THX Account with Discord first.',
+                ephemeral: true,
+            });
         const options = interaction.options as CommandInteractionOptionResolver;
         const subcommand = options.getSubcommand();
 
         switch (subcommand) {
             case 'info': {
                 const guild = await GuildService.get(interaction.guildId);
-                if (!guild) return interaction.reply(`There not yet any infomation about this guild`);
+                if (!guild)
+                    return interaction.reply({
+                        content: `There not yet any infomation about this guild`,
+                        ephemeral: true,
+                    });
                 const pool = await thxClient.pools.verifyAccessByDiscordId(interaction.user.id, guild.poolId);
 
                 const embed = new EmbedBuilder()
@@ -56,16 +68,20 @@ export default {
                         { name: 'Address', value: pool.address },
                     )
                     .setTimestamp();
-                interaction.reply({ embeds: [embed] });
+                interaction.reply({ embeds: [embed], ephemeral: true });
                 break;
             }
             case 'connect': {
                 const poolId = options.getString('pool_id', true);
                 const isVerified = await thxClient.pools.verifyAccessByDiscordId(interaction.user.id, poolId);
-                if (!isVerified) return interaction.reply('Cannot connect current guild into this PoolId');
+                if (!isVerified)
+                    return interaction.reply({
+                        content: 'Cannot connect current guild into this PoolId',
+                        ephemeral: true,
+                    });
 
                 await GuildService.connect(interaction.guildId, poolId);
-                interaction.reply(`Connected Pool with ID ${poolId} into current Guild`);
+                interaction.reply({ content: `Connected Pool with ID ${poolId} into current Guild`, ephemeral: true });
                 break;
             }
         }
