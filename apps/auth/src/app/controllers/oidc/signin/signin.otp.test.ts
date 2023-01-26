@@ -1,7 +1,7 @@
 import request from 'supertest';
 import app from '../../../app';
 import db from '../../../util/database';
-import bcrypt from 'bcrypt-nodejs';
+import bcrypt from 'bcrypt';
 import { API_URL, INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
 import { AccountService } from '../../../services/AccountService';
 import { AccessTokenKind } from '@thxnetwork/types/index';
