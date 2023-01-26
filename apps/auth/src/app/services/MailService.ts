@@ -69,11 +69,8 @@ export class MailService {
     }
 
     static async sendOTPMail(account: AccountDocument) {
-        // const otp = `${Math.floor(10000 + Math.random() * 90000)}`;
         const otp = Array.from({ length: 5 })
-            .map(() => {
-                return crypto.randomInt(0, 10);
-            })
+            .map(() => crypto.randomInt(0, 10))
             .join('');
         const hashedOtp = bcrypt.hashSync(otp);
         const html = await ejs.renderFile(
@@ -87,22 +84,22 @@ export class MailService {
         account.setToken({
             kind: AccessTokenKind.Auth,
             accessToken: hashedOtp,
-            expiry: Date.now() + 10 * 60 * 1000, // 10 minutes
-        } as IAccessToken);
+            expiry: Date.now() + 60 * 60 * 1000, // 60 minutes
+        });
 
         await account.save();
     }
 
     static async sendResetPasswordEmail(account: AccountDocument, returnUrl: string) {
-        const token = {
+        const accessToken = createRandomToken();
+
+        account.setToken({
             kind: AccessTokenKind.PasswordReset,
-            accessToken: createRandomToken(),
-            expiry: Date.now() + 1000 * 60 * 20, // 20 minutes,
-        } as IAccessToken;
+            accessToken,
+            expiry: Date.now() + 60 * 60 * 1000, // 60 minutes,
+        });
 
-        account.setToken(token);
-
-        const resetUrl = `${returnUrl}/reset?passwordResetToken=${token.accessToken}`;
+        const resetUrl = `${returnUrl}/reset?passwordResetToken=${accessToken}`;
         const html = await ejs.renderFile(
             path.join(mailTemplatePath, 'resetPassword.ejs'),
             {
