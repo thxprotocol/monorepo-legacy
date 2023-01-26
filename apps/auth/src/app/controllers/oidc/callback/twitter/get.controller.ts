@@ -44,13 +44,13 @@ export async function controller(req: Request, res: Response) {
             : // If not, get account for email claim
               await getAccountByTwitterId(user.id);
 
-    await airtable.pipelineSignup({
+    airtable.pipelineSignup({
         Email: account.email,
         Date: account.createdAt,
         AcceptUpdates: account.acceptUpdates,
     });
 
-    //Check if a SharedWallet must be created for a specific chainId
+    // Check if a SharedWallet must be created
     createWallet(account);
 
     // Set successful login state

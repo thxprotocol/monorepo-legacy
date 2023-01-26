@@ -6,23 +6,18 @@ import { NotFoundError } from '@thxnetwork/auth/util/errors';
 
 async function controller(req: Request, res: Response) {
     const { params } = req.interaction;
-    function renderSigninPage(variant: string, errorMessage: string) {
+
+    function renderSigninPage(variant: string, message: string) {
         return res.render('signin', {
             uid: req.params.uid,
             params: { return_url: params.return_url },
-            alert: {
-                variant,
-                message: errorMessage,
-            },
+            alert: { variant, message },
         });
     }
 
     try {
         const account: AccountDocument = await AccountService.get(params.sub);
-
-        if (!account) {
-            throw new NotFoundError();
-        }
+        if (!account) throw new NotFoundError();
 
         await MailService.sendOTPMail(account);
 

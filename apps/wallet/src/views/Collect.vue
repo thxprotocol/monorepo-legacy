@@ -112,8 +112,6 @@ import { UserProfile } from '../store/modules/account';
 import { RewardConditionInteraction, RewardConditionPlatform, TERC20Perk, TERC721Perk } from '@thxnetwork/types/index';
 import { TERC20 } from '../store/modules/erc20';
 import { TWallet } from '../types/Wallet';
-import poll from 'promise-poller';
-import { AccountVariant } from '../types/Accounts';
 
 type TClaim = {
     metadata: TERC721Metadata;
@@ -181,11 +179,6 @@ export default class Collect extends Vue {
         if (!this.claim) return;
         this.reward = this.claim.reward;
 
-        // Wait for wallet to be deployed if not metamask account
-        if (this.profile.variant !== AccountVariant.Metamask) {
-            await this.waitForWalletDeployed(this.claim);
-        }
-
         // If no condition applies claim directly
         if (!this.claim.reward.platform) {
             return this.claimReward();
@@ -209,21 +202,6 @@ export default class Collect extends Vue {
         } else {
             this.claimReward();
         }
-    }
-
-    async waitForWalletDeployed(claim: TClaim) {
-        const chainId = claim.erc20 ? claim.erc20.chainId : claim.erc721.chainId;
-        this.statusText = 'Waiting for your wallet to be deployed...';
-
-        const taskFn = async () => {
-            await this.$store.dispatch('walletManagers/getWallet', { sub: this.profile.sub, chainId });
-            if (this.wallet.address) {
-                return Promise.resolve();
-            } else {
-                return Promise.reject(`${this.wallet._id} waiting for address`);
-            }
-        };
-        return poll({ taskFn, interval: 3000, retries: 10 });
     }
 
     async claimReward() {
