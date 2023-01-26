@@ -31,20 +31,28 @@
                         <span class="sr-only">Loading...</span>
                     </div>
                 </div>
-                <div v-else class="form-group">
-                    <p class="mt-2 text-muted">One-time password </p>
-                    <div class="d-flex justify-content-between">
-                        <input v-for="key of [0,1,2,3,4]" :value="otpValues[key]" @input="onInput(key, $event)"
-                               class="form-control mx-2" required min="0" max="9" type="number" :autofocus="key == 0">
+                <div v-else>
+                    <div class="form-group">
+                        <p class="mt-2 text-muted">One-time password </p>
+                        <div class="d-flex justify-content-between">
+                            <input v-for="key of [0,1,2,3,4]" :value="otpValues[key] || ''"
+                                   @input="onInput(key, $event)" class="form-control mx-2" required min="0" max="9"
+                                   type="text" inputmode="numeric" :autofocus="key == 0">
+                        </div>
                     </div>
+                    <button form="otp-resend" type="submit" class="btn btn-light btn-block btn-sm rounded-pill">
+                        Resend one-time password
+                    </button>
                 </div>
                 <input type="hidden" name="otp" :value="otp" />
                 <input type="hidden" name="returnUrl" value="<%= params.return_url %>" />
                 <button ref="submit" form="form-otp" type="submit" class="d-none"> Sign in </button>
             </form>
+            <form id="otp-resend" action="/oidc/<%= uid %>/signin/resend-otp" method="post"></form>
         </div>
-        <div class="card-footer mt-0 text-center">
+        <div class="card-footer mt-0 justify-content-center d-flex align-items-center">
             <a class="btn btn-link p-1" href="/oidc/<%= uid %>/signin"> Back to sign in </a>
+            <span class="text-muted mx-3">|</span>
             <a class="btn btn-link p-1" href="https://discord.com/invite/TzbbSmkE7Y"> Need help? </a>
         </div>
     </div>
