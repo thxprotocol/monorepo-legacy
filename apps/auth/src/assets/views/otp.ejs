@@ -44,6 +44,9 @@
             </form>
         </div>
         <div class="card-footer mt-0 text-center">
+            <form action="/oidc/<%= uid %>/signin/resend-otp" method="post" class="mt-3">
+                <input type="submit" class="btn btn-link p-1" value="Resend one-time password" />
+            </form>
             <a class="btn btn-link p-1" href="/oidc/<%= uid %>/signin"> Back to sign in </a>
             <a class="btn btn-link p-1" href="https://discord.com/invite/TzbbSmkE7Y"> Need help? </a>
         </div>
