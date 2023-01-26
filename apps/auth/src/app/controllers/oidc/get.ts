@@ -7,12 +7,6 @@ async function controller(req: Request, res: Response) {
 
     // Prompt params are used for unauthenticated routes
     switch (params.prompt) {
-        case 'totp': {
-            return res.redirect(`/oidc/${uid}/signin/totp`);
-        }
-        case 'confirm_email': {
-            return res.redirect(`/oidc/${uid}/confirm/email`);
-        }
         case 'verify_email': {
             return res.redirect(`/oidc/${uid}/account/email/verify`);
         }
