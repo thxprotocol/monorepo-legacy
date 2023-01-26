@@ -8,7 +8,8 @@ import ReadAccountYoutube from './youtube/get.controller';
 import ReadAccountTwitter from './twitter/get.controller';
 import ReadAccountDiscord from './discord/get.controller';
 import CreateAccountLogin from './login/post.controller';
-import GetAccountByDiscordId from './discord/getById.controller';
+import GetAccountByDiscordId from './discord/get.by-discord-id';
+import GetPointBalance from './discord/get.point-balance.controller';
 
 const router = express.Router();
 
@@ -26,6 +27,8 @@ router.get(
     assertRequestInput(GetAccountByDiscordId.validations),
     GetAccountByDiscordId.controller,
 );
+
+router.get('/:sub/discord/point_balance', guard.check(['account:read']), GetPointBalance.controller);
 
 router.post(
     '/login',
