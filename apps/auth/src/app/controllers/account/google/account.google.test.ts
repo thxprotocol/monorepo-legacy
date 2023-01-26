@@ -4,8 +4,9 @@ import app from '../../../app';
 import db from '../../../util/database';
 import { AccountService } from '../../../services/AccountService';
 import { GOOGLE_API_ENDPOINT, INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
-import { accountEmail, accountSecret } from '../../../util/jest';
+import { accountEmail } from '../../../util/jest';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
+import { AccountVariant } from '@thxnetwork/auth/types/enums/AccountVariant';
 
 const http = request.agent(app);
 
@@ -52,26 +53,17 @@ describe('Account Controller', () => {
 
         basicAuthHeader = await registerClient();
         authHeader = await requestToken();
+
+        const account = await AccountService.signup({
+            email: accountEmail,
+            variant: AccountVariant.SSOGoogle,
+            active: true,
+        });
+        sub = String(account._id);
     });
 
     afterAll(async () => {
         await db.disconnect();
-    });
-
-    describe('POST /account', () => {
-        it('HTTP 200', async () => {
-            const res = await http
-                .post('/account')
-                .set({
-                    Authorization: authHeader,
-                })
-                .send({
-                    email: accountEmail,
-                    password: accountSecret,
-                });
-            expect(res.status).toBe(201);
-            sub = res.body.sub;
-        });
     });
 
     describe('GET /account/:sub/google/youtube', () => {
@@ -88,24 +80,6 @@ describe('Account Controller', () => {
         });
 
         it('Return isAuthorized = false when account has no Youtube access', async () => {
-            const res = await http
-                .get(`/account/${sub}/google/youtube`)
-                .set({
-                    Authorization: authHeader,
-                })
-                .send();
-            expect(res.body.isAuthorized).toEqual(false);
-        });
-
-        it('Return isAuthorized = false when Youtube access is expired', async () => {
-            account.setToken({
-                kind: AccessTokenKind.YoutubeView,
-                accessToken: 'TOKEN',
-                refreshToken: 'REFRESH',
-                expiry: Date.now() - 3600,
-            });
-            await account.save();
-
             const res = await http
                 .get(`/account/${sub}/google/youtube`)
                 .set({

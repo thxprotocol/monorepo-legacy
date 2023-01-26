@@ -123,10 +123,6 @@
           <input placeholder="E-mail" class="form-control" class="form-control" required type="email"
                  value="<%= params.email %>" name="email">
         </div>
-        <div class="form-group">
-          <input placeholder="Password" class=" form-control" required autocomplete type="password"
-                 value="<%= params.password %>" name="password">
-        </div>
 
         <% if (params.mfaEnabled) { %>
         <label>MFA code:</label>
@@ -141,19 +137,13 @@
 
         <input type="hidden" name="returnUrl" value="<%= params.return_url %>" />
         <button type="submit" class="btn rounded-pill btn-primary btn-block" :disabled="isDisabled">
-          Sign in
+          Send one-time password
           <i class="fas fa-chevron-right" aria-hidden="true"></i>
         </button>
       </form>
     </div>
     <div class="card-footer mt-0 text-center">
-      <a class="btn btn-link p-1" href="/oidc/<%= uid %>/forgot">
-        Can't sign in?
-      </a>
-      <span class="text-muted">|</span>
-      <a class="btn btn-link p-1" href="/oidc/<%= uid %>/signup?returnUrl=<%= params.return_url%>">
-        Sign up with your e-mail
-      </a>
+      <a class="btn btn-link p-1" href="https://discord.com/invite/TzbbSmkE7Y"> Need help? </a>
     </div>
     <% } %>
   </div>
