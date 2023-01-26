@@ -1,26 +1,10 @@
-import { CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
+import { CommandInteraction, EmbedBuilder, SlashCommandBuilder } from 'discord.js';
 import { thxClient } from '../configs/oidc';
 import guildService from '../services/guild.service';
 
 export default {
-    data: new SlashCommandBuilder()
-        .setName('wallet')
-        .setDescription('Show current user wallet infomation.')
-        .addStringOption((option) =>
-            option
-                .setName('network')
-                .setDescription('Network that your wallet rely on')
-                .setRequired(true)
-                .addChoices(
-                    { name: 'Hardhat', value: '31337' },
-                    { name: 'PolygonMumbai', value: '80001' },
-                    { name: 'Polygon', value: '137' },
-                ),
-        ),
+    data: new SlashCommandBuilder().setName('wallet').setDescription('Show current user wallet infomation.'),
     executor: async (interaction: CommandInteraction) => {
-        const options = interaction.options as CommandInteractionOptionResolver;
-        const network = options.getString('network', true);
-
         const account = await thxClient.account.getByDiscordId(interaction.user.id);
         const { poolId } = await guildService.get(interaction.guildId);
 
