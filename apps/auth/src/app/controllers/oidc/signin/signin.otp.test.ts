@@ -1,20 +1,21 @@
 import request from 'supertest';
 import app from '../../../app';
-import { AccountService } from '../../../services/AccountService';
 import db from '../../../util/database';
+import bcrypt from 'bcrypt-nodejs';
 import { API_URL, INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
-import { accountEmail } from '../../../util/jest';
-import { AccountVariant } from '../../../types/enums/AccountVariant';
+import { AccountService } from '../../../services/AccountService';
+import { AccessTokenKind } from '@thxnetwork/types/index';
 
 const http = request.agent(app);
 
 describe('Sign In', () => {
     const redirectUri = 'https://localhost:8082/signin-oidc';
     let uid = '',
-        clientId;
+        clientId = '';
 
     beforeAll(async () => {
         await db.truncate();
+
         const res = await http
             .post('/reg')
             .set({ Authorization: `Bearer ${INITIAL_ACCESS_TOKEN}` })
@@ -28,20 +29,17 @@ describe('Sign In', () => {
             });
 
         clientId = res.body.client_id;
-
-        await AccountService.signup({
-            email: accountEmail,
-            variant: AccountVariant.EmailPassword,
-            active: true,
-        });
     });
 
     afterAll(async () => {
         await db.disconnect();
     });
 
-    describe('Signin OTP', () => {
-        it('GET /oidc/:uid/signin', async () => {
+    describe('Signup OTP', () => {
+        const otp = '00000',
+            email = 'fake.user@thx.network';
+
+        it('GET /auth', async () => {
             const params = new URLSearchParams({
                 client_id: clientId,
                 redirect_uri: redirectUri,
@@ -60,16 +58,67 @@ describe('Sign In', () => {
             uid = (res.header.location as string).split('/')[2];
         });
 
+        it('GET /oidc/:uid/signin', async () => {
+            const res = await http.get(`/oidc/${uid}/signin`).send();
+            expect(res.status).toEqual(200);
+            expect(res.text).toMatch(new RegExp('.*Send one-time password*'));
+        });
+
         it('GET /oidc/:uid/signin/otp', async () => {
-            const res = await http.post(`/oidc/${uid}/signin`).send(`email=fake.user@thx.network`);
+            const res = await http.post(`/oidc/${uid}/signin`).send(`email=${email}`);
             expect(res.status).toEqual(302);
             expect(res.header.location).toBe(`/oidc/${uid}/signin/otp`);
         });
 
-        it('POST /oidc/:uid/signin/otp', async () => {
-            const res = await http.post(`/oidc/${uid}/signin/otp`).send('otp=00000');
+        it('POST /oidc/:uid/signin/otp (incorrect OTP)', async () => {
+            const res = await http.post(`/oidc/${uid}/signin/otp`).send(`otp=12345`);
             expect(res.status).toEqual(200);
             expect(res.text).toMatch(new RegExp('.*Your one-time password is incorrect.*'));
         });
+
+        it('POST /oidc/:uid/signin/otp (correct OTP)', async () => {
+            // Override the hashed OTP in db to continue with a deterministic value
+            const hashedOtp = bcrypt.hashSync(otp);
+            const account = await AccountService.getByEmail(email);
+
+            account.setToken({ kind: AccessTokenKind.Auth, accessToken: hashedOtp });
+            await account.save();
+
+            const res = await http.post(`/oidc/${uid}/signin/otp`).send(`otp=${otp}`);
+            expect(res.status).toEqual(303);
+        });
     });
+
+    // describe('Signin OTP', () => {
+    //     it('GET /oidc/:uid/signin', async () => {
+    //         const params = new URLSearchParams({
+    //             client_id: clientId,
+    //             redirect_uri: redirectUri,
+    //             resource: API_URL,
+    //             scope: 'openid pools:read pools:write withdrawals:read rewards:write deposits:read deposits:write wallets:read wallets:write',
+    //             response_type: 'code',
+    //             response_mode: 'query',
+    //             nonce: 'xun4kvy4mh',
+    //         });
+
+    //         const res = await http.get(`/auth?${params.toString()}`).send();
+
+    //         expect(res.status).toEqual(303);
+    //         expect(res.header.location).toMatch(new RegExp('/oidc/.*'));
+
+    //         uid = (res.header.location as string).split('/')[2];
+    //     });
+
+    //     it('GET /oidc/:uid/signin/otp', async () => {
+    //         const res = await http.post(`/oidc/${uid}/signin`).send(`email=fake.user@thx.network`);
+    //         expect(res.status).toEqual(302);
+    //         expect(res.header.location).toBe(`/oidc/${uid}/signin/otp`);
+    //     });
+
+    //     it('POST /oidc/:uid/signin/otp', async () => {
+    //         const res = await http.post(`/oidc/${uid}/signin/otp`).send('otp=00000');
+    //         expect(res.status).toEqual(200);
+    //         expect(res.text).toMatch(new RegExp('.*Your one-time password is incorrect.*'));
+    //     });
+    // });
 });

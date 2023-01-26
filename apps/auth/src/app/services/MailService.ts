@@ -6,11 +6,11 @@ import crypto from 'crypto';
 import { AccountDocument } from '../models/Account';
 import { createRandomToken } from '../util/tokens';
 import { AUTH_URL, WALLET_URL, SENDGRID_API_KEY, NODE_ENV } from '../config/secrets';
-import { logger } from '../util/logger';
 import { assetsPath } from '../util/path';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IAccessToken } from '../types/TAccount';
 import { get24HoursExpiryTimestamp } from '../util/time';
+import { logger } from '../util/logger';
 
 const mailTemplatePath = path.join(assetsPath, 'views', 'mail');
 
