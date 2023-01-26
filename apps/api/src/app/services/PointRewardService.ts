@@ -9,7 +9,7 @@ export function findByPool(pool: AssetPoolDocument, page = 1, limit = 5) {
 }
 
 export async function create(pool: AssetPoolDocument, payload: Partial<TPointReward>) {
-    await PointReward.create({
+    return await PointReward.create({
         uuid: db.createUUID(),
         poolId: pool._id,
         ...payload,

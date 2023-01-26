@@ -10,7 +10,6 @@ import ERC20PerkService from '../services/ERC20PerkService';
 import ERC721PerkService from '@thxnetwork/api/services/ERC721PerkService';
 import { PointReward } from '../models/PointReward';
 import PointRewardService from '../services/PointRewardService';
-import db from '@thxnetwork/api/util/database';
 import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardService';
 import MilestoneRewardService from '../services/MilestoneRewardService';
 
