@@ -14,13 +14,11 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v3
 
+            - name: Install
+              run: yarn
+
             - name: Chrome
-              uses: cypress-io/github-action@v4.2.2
-              with:
-                  install: true
-                  start: npx cypress run
-                  browser: chrome
-                  record: true
+              run: npx cypress run
               env:
                   CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
