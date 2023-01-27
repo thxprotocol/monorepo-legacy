@@ -9,7 +9,7 @@ import { diamondSelectors, getDiamondCutForContractFacets, updateDiamondContract
 import { currentVersion } from '@thxnetwork/contracts/exports';
 import { TransactionReceipt } from 'web3-core';
 import { TAssetPoolDeployCallbackArgs } from '@thxnetwork/api/types/TTransaction';
-import { createDummyContents } from '../util/rewards';
+import { claimConfiguredMilestoneRewards, createDummyContents } from '../util/rewards';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -80,6 +80,7 @@ async function deployCallback(args: TAssetPoolDeployCallbackArgs, receipt: Trans
         return;
     }
     await createDummyContents(pool);
+    await claimConfiguredMilestoneRewards(pool);
 }
 
 async function getAllBySub(sub: string, archived = false) {

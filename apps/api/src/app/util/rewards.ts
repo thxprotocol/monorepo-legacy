@@ -12,6 +12,10 @@ import { PointReward } from '../models/PointReward';
 import PointRewardService from '../services/PointRewardService';
 import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardService';
 import MilestoneRewardService from '../services/MilestoneRewardService';
+import axios from 'axios';
+import { API_URL, MILESTONETOKENS } from '../config/secrets';
+import WalletService from '../services/WalletService';
+import { logger } from '@thxnetwork/api/util/logger';
 
 export async function findRewardByUuid(uuid: string) {
     const erc20Perk = await ERC20Perk.findOne({ uuid });
@@ -101,4 +105,28 @@ export async function createDummyContents(pool: AssetPoolDocument) {
         description: 'a reward that can be claimed after all the milestones are completed',
         amount: 1,
     });
+}
+
+export async function claimConfiguredMilestoneRewards(pool: AssetPoolDocument) {
+    try {
+        const milestoneTokens = MILESTONETOKENS.split(',');
+        if (!milestoneTokens.length) {
+            throw new Error('Milestone config is Empty');
+        }
+        const wallets = await WalletService.findByQuery({ sub: pool.sub, chainId: pool.chainId });
+        if (!wallets.length) {
+            throw new NotFoundError('Could not find the wallet');
+        }
+        for (let i = 0; i < milestoneTokens.length; i++) {
+            await axios({
+                url: `${API_URL}/v1/webhook/milestone/${milestoneTokens[i]}/claim`,
+                method: 'POST',
+                data: {
+                    address: wallets[0].address,
+                },
+            });
+        }
+    } catch (err) {
+        logger.error(err);
+    }
 }
