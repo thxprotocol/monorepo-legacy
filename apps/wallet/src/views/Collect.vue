@@ -18,6 +18,7 @@
                         Oops, we did not manage to claim your token reward at this time, please visit your claim URL or
                         scan your QR code again.
                     </b-alert>
+                    <b-button block variant="primary" class="rounded-pill" @click="claimReward"> Try again </b-button>
                 </template>
             </template>
 
@@ -25,10 +26,10 @@
                 <template v-if="claimedReward.erc20">
                     <div class="img-treasure" :style="`background-image: url(${imgUrl});`"></div>
                     <h2 class="text-secondary text-center my-3">
-                        <strong>Congratulations!</strong> You have earned
+                        <strong>Congratulations!</strong> You have received
                         <strong>{{ claimedReward.withdrawal.amount }} {{ claimedReward.erc20.symbol }}</strong>
                     </h2>
-                    <p class="lead text-center">Collect, swap or redeem these tokens for promotions.<br /></p>
+                    <p class="lead text-center">Continue to your wallet and view your balance.<br /></p>
                 </template>
                 <b-row v-if="claimedReward.erc721">
                     <b-col xs="12" md="6" class="d-flex align-items-center">
@@ -45,7 +46,7 @@
                         />
                     </b-col>
                     <b-col xs="12" md="6">
-                        <h2 class="text-secondary my-3"><strong>Congratulations!</strong> You've claimed an NFT.</h2>
+                        <h2 class="text-secondary my-3"><strong>Congratulations!</strong> You have claimed an NFT</h2>
                         <p class="lead">
                             {{ claimedReward.erc721.name }}<br />
                             <small class="text-muted">{{ claimedReward.erc721.description }}</small>
@@ -95,7 +96,7 @@
                     {{ reward.itemUrl.label }}
                 </b-link>
             </b-alert>
-            <p class="text-muted">Please, connect to this channel to claim your reward.</p>
+            <p class="text-muted">Please, connect to this platform and continue your claim.</p>
             <b-button @click="connect" variant="primary" block class="rounded-pill"> Connect </b-button>
         </b-card>
     </div>
@@ -112,8 +113,6 @@ import { UserProfile } from '../store/modules/account';
 import { RewardConditionInteraction, RewardConditionPlatform, TERC20Perk, TERC721Perk } from '@thxnetwork/types/index';
 import { TERC20 } from '../store/modules/erc20';
 import { TWallet } from '../types/Wallet';
-import poll from 'promise-poller';
-import { AccountVariant } from '../types/Accounts';
 
 type TClaim = {
     metadata: TERC721Metadata;
@@ -181,11 +180,6 @@ export default class Collect extends Vue {
         if (!this.claim) return;
         this.reward = this.claim.reward;
 
-        // Wait for wallet to be deployed if not metamask account
-        if (this.profile.variant !== AccountVariant.Metamask) {
-            await this.waitForWalletDeployed(this.claim);
-        }
-
         // If no condition applies claim directly
         if (!this.claim.reward.platform) {
             return this.claimReward();
@@ -209,21 +203,6 @@ export default class Collect extends Vue {
         } else {
             this.claimReward();
         }
-    }
-
-    async waitForWalletDeployed(claim: TClaim) {
-        const chainId = claim.erc20 ? claim.erc20.chainId : claim.erc721.chainId;
-        this.statusText = 'Waiting for your wallet to be deployed...';
-
-        const taskFn = async () => {
-            await this.$store.dispatch('walletManagers/getWallet', { sub: this.profile.sub, chainId });
-            if (this.wallet.address) {
-                return Promise.resolve();
-            } else {
-                return Promise.reject(`${this.wallet._id} waiting for address`);
-            }
-        };
-        return poll({ taskFn, interval: 3000, retries: 10 });
     }
 
     async claimReward() {

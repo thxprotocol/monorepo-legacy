@@ -8,6 +8,7 @@ import { DiscordService } from '@thxnetwork/auth/services/DiscordService';
 import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import airtable from '@thxnetwork/auth/util/airtable';
+import { createWallet } from '@thxnetwork/auth/util/wallet';
 
 async function updateTokens(account: AccountDocument, tokens: any, userId?: string): Promise<AccountDocument> {
     const expiry = tokens.expires_in ? Date.now() + Number(tokens.expires_in) * 1000 : undefined;
@@ -50,16 +51,14 @@ async function controller(req: Request, res: Response) {
             : // If not, get account for email claim
               await getAccountByEmail(user.email, AccountVariant.SSODiscord);
 
-    await airtable.pipelineSignup({
+    airtable.pipelineSignup({
         Email: account.email,
         Date: account.createdAt,
         AcceptUpdates: account.acceptUpdates,
     });
 
-    // Actions after successfully login
-    await AccountService.update(account, {
-        lastLoginAt: Date.now(),
-    });
+    // Check if a SharedWallet must be created
+    createWallet(account);
 
     const returnTo = await saveInteraction(interaction, account._id.toString());
 
