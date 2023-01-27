@@ -17,13 +17,13 @@ jobs:
             - name: Run test
               run: docker compose -f docker-compose.yml -f docker-compose.auth.yml run -T auth sh -c "npx nx lint auth && npx nx test auth"
 
-            # - name: SonarCloud Scan
-            #   uses: SonarSource/sonarcloud-github-action@master
-            #   env:
-            #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            #       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-            #   with:
-            #       projectBaseDir: apps/auth
+            - name: SonarCloud Scan
+              uses: SonarSource/sonarcloud-github-action@master
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+              with:
+                  projectBaseDir: apps/auth
 
     bumpVersion:
         name: 'Bump Version on develop'
