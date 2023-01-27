@@ -13,11 +13,13 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v2
 
-            - name: Chrome latest
+            - name: Chrome install latest
               uses: browser-actions/setup-chrome@latest
+
+            - name: Chrome set path
               run: echo "BROWSER_PATH=$(which chrome)" >> $GITHUB_ENV
 
-            - name: Chrome E2E Test 🚀
+            - name: Chrome e2e test 🚀
               uses: cypress-io/github-action@v4
               with:
                   install: true
