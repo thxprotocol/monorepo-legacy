@@ -25,7 +25,7 @@ jobs:
                   install: true
                   record: true
                   browser: '${{ env.BROWSER_PATH }}'
-                  start: yarn test:e2e
+                  start: yarn cypress run --record
               env:
                   CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
