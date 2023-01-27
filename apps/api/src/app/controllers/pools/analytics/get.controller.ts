@@ -49,6 +49,7 @@ export const controller = async (req: Request, res: Response) => {
         amountField: 'amount',
         startDate,
         endDate,
+        extraFilter: { isClaimed: true },
     });
     const referralRewardsQueryResult = await runAggregateQuery<ReferralRewardDocument>({
         joinTable: 'referralrewardclaims',
@@ -58,6 +59,7 @@ export const controller = async (req: Request, res: Response) => {
         amountField: 'amount',
         startDate,
         endDate,
+        extraFilter: { isApproved: true },
     });
     const pointRewardsQueryResult = await runAggregateQuery<PointRewardDocument>({
         joinTable: 'pointrewardclaims',
@@ -90,6 +92,7 @@ export const controller = async (req: Request, res: Response) => {
         model: ReferralReward,
         poolId: String(pool._id),
         amountField: 'amount',
+        extraFilter: { isApproved: true },
     });
     const topPointClaimsBySub = await runLeaderBoardQuery({
         joinTable: 'pointrewardclaims',
@@ -98,6 +101,14 @@ export const controller = async (req: Request, res: Response) => {
         poolId: String(pool._id),
         amountField: 'amount',
     });
+    const topMilestonesClaimsBySub = await runLeaderBoardQuery({
+        joinTable: 'milestonerewardclaims',
+        model: MilestoneReward,
+        key: 'milestoneRewardId',
+        poolId: String(pool._id),
+        amountField: 'amount',
+        extraFilter: { isClaimed: true },
+    });
     type leaderBoardQueryResult = { _id: string; total_amount: number };
 
     const leaderBoardQueryResultMerged: leaderBoardQueryResult[] = [
@@ -105,6 +116,7 @@ export const controller = async (req: Request, res: Response) => {
         ...topErc721PerksBySub,
         ...topReferralClaimsBySub,
         ...topPointClaimsBySub,
+        ...topMilestonesClaimsBySub,
     ];
 
     const leaderBoard: { sub: string; score: number; name: string; email: string }[] = [];
@@ -180,7 +192,9 @@ async function runAggregateQuery<T>(args: {
     amountField: string;
     startDate: Date;
     endDate: Date;
+    extraFilter?: object;
 }) {
+    const extraFilter = args.extraFilter ? { ...args.extraFilter } : {};
     const queryResult = await args.model.aggregate([
         {
             $match: {
@@ -213,49 +227,35 @@ async function runAggregateQuery<T>(args: {
                                         $lte: args.endDate,
                                     },
                                 },
+                                extraFilter,
                             ],
                         },
                     },
                 ],
-                as: 'children',
+                as: 'claims',
             },
         },
         {
-            $unwind: '$children',
+            $unwind: '$claims',
         },
         {
             $group: {
                 _id: {
                     $dateToString: {
                         format: '%Y-%m-%d',
-                        date: { $toDate: '$children.createdAt' },
+                        date: { $toDate: '$claims.createdAt' },
                     },
                 },
-                children: {
-                    $push: '$children',
-                },
-                childAmount: {
-                    $first: `$${args.amountField}`,
-                },
-            },
-        },
-        {
-            $project: {
                 paymentsCount: {
-                    $size: { $ifNull: ['$children', []] },
+                    $count: {},
                 },
                 total_amount: {
-                    $multiply: [
-                        {
-                            $size: { $ifNull: ['$children', []] },
+                    $sum: {
+                        $convert: {
+                            input: `$${args.amountField}`,
+                            to: 'int',
                         },
-                        {
-                            $convert: {
-                                input: '$childAmount',
-                                to: 'int',
-                            },
-                        },
-                    ],
+                    },
                 },
             },
         },
@@ -278,7 +278,9 @@ async function runLeaderBoardQuery<T>(args: {
     joinTable: string;
     key: string;
     amountField: string;
+    extraFilter?: object;
 }) {
+    const extraFilter = args.extraFilter ? { ...args.extraFilter } : {};
     const queryResult = await args.model.aggregate([
         {
             $match: {
@@ -299,9 +301,14 @@ async function runLeaderBoardQuery<T>(args: {
                 pipeline: [
                     {
                         $match: {
-                            $expr: {
-                                $eq: ['$$id', `$${args.key}`],
-                            },
+                            $and: [
+                                {
+                                    $expr: {
+                                        $eq: ['$$id', `$${args.key}`],
+                                    },
+                                },
+                                extraFilter,
+                            ],
                         },
                     },
                 ],
@@ -314,27 +321,19 @@ async function runLeaderBoardQuery<T>(args: {
         {
             $group: {
                 _id: '$claims.sub',
-                count: {
-                    $count: {},
-                },
-                claimAmount: {
-                    $first: `$${args.amountField}`,
+                total_amount: {
+                    $sum: {
+                        $convert: {
+                            input: `$${args.amountField}`,
+                            to: 'int',
+                        },
+                    },
                 },
             },
         },
         {
-            $project: {
-                total_amount: {
-                    $multiply: [
-                        '$count',
-                        {
-                            $convert: {
-                                input: '$claimAmount',
-                                to: 'int',
-                            },
-                        },
-                    ],
-                },
+            $sort: {
+                total_amount: -1,
             },
         },
         {
@@ -343,13 +342,6 @@ async function runLeaderBoardQuery<T>(args: {
     ]);
 
     return queryResult;
-}
-
-function groupBy(xs: any[], key: string) {
-    return xs.reduce(function (rv, x) {
-        (rv[x[key]] = rv[x[key]] || []).push(x);
-        return rv;
-    }, {});
 }
 
 export default { controller, validation };

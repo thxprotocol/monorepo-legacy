@@ -39,6 +39,7 @@ export const controller = async (req: Request, res: Response) => {
         model: ReferralReward,
         poolId: String(pool._id),
         amountField: 'amount',
+        extraFilter: { isApproved: true },
     });
     const milestoneRewardsQueryResult = await runAggregateQuery<MilestoneRewardDocument>({
         joinTable: 'milestonerewardclaims',
@@ -46,6 +47,7 @@ export const controller = async (req: Request, res: Response) => {
         model: MilestoneReward,
         poolId: String(pool._id),
         amountField: 'amount',
+        extraFilter: { isClaimed: true },
     });
     const pointRewardsQueryResult = await runAggregateQuery<PointRewardDocument>({
         joinTable: 'pointrewardclaims',
@@ -61,27 +63,27 @@ export const controller = async (req: Request, res: Response) => {
             claims: await Claim.count({ poolId: pool._id }),
             erc20Perks: {
                 total: erc20PerksQueryResult.recordsCount,
-                payments: erc20PerksQueryResult.childrenCount,
+                payments: erc20PerksQueryResult.claimsCount,
                 totalAmount: erc20PerksQueryResult.totalAmount,
             },
             erc721Perks: {
                 total: erc721PerksQueryResult.recordsCount,
-                payments: erc721PerksQueryResult.childrenCount,
+                payments: erc721PerksQueryResult.claimsCount,
                 totalAmount: erc721PerksQueryResult.totalAmount,
             },
             referralRewards: {
                 total: referralRewardsQueryResult.recordsCount,
-                claims: referralRewardsQueryResult.childrenCount,
+                claims: referralRewardsQueryResult.claimsCount,
                 totalClaimPoints: referralRewardsQueryResult.totalAmount,
             },
             pointRewards: {
                 total: pointRewardsQueryResult.recordsCount,
-                claims: pointRewardsQueryResult.childrenCount,
+                claims: pointRewardsQueryResult.claimsCount,
                 totalClaimPoints: pointRewardsQueryResult.totalAmount,
             },
             milestoneRewards: {
                 total: milestoneRewardsQueryResult.recordsCount,
-                claims: milestoneRewardsQueryResult.childrenCount,
+                claims: milestoneRewardsQueryResult.claimsCount,
                 totalClaimPoints: milestoneRewardsQueryResult.totalAmount,
             },
         },
@@ -96,7 +98,9 @@ async function runAggregateQuery<T>(args: {
     joinTable: string;
     key: string;
     amountField: string;
+    extraFilter?: object;
 }) {
+    const extraFilter = args.extraFilter ? { ...args.extraFilter } : {};
     const queryResult = await args.model.aggregate([
         {
             $match: {
@@ -110,21 +114,26 @@ async function runAggregateQuery<T>(args: {
                 pipeline: [
                     {
                         $match: {
-                            $expr: {
-                                $eq: ['$$id', `$${args.key}`],
-                            },
+                            $and: [
+                                {
+                                    $expr: {
+                                        $eq: ['$$id', `$${args.key}`],
+                                    },
+                                },
+                                extraFilter,
+                            ],
                         },
                     },
                 ],
-                as: 'children',
+                as: 'claims',
             },
         },
         {
             $project: {
-                children_count: { $size: '$children' },
+                claims_count: { $size: '$claims' },
                 total_amount: {
                     $multiply: [
-                        { $size: '$children' },
+                        { $size: '$claims' },
                         {
                             $convert: {
                                 input: `$${args.amountField}`,
@@ -137,21 +146,21 @@ async function runAggregateQuery<T>(args: {
         },
     ]);
     const recordsCount = queryResult.length;
-    const childrenCount = recordsCount
+    const claimsCount = recordsCount
         ? queryResult
-              .map((x) => x.children_count)
+              .map((x) => x.claims_count)
               .reduce((a, b) => {
                   return a + b;
               })
         : 0;
-    const totalAmount = childrenCount
+    const totalAmount = claimsCount
         ? queryResult
               .map((x) => x.total_amount)
               .reduce((a, b) => {
                   return a + b;
               })
         : 0;
-    return { recordsCount, childrenCount, totalAmount };
+    return { recordsCount, claimsCount, totalAmount };
 }
 
 export default { controller, validation };
