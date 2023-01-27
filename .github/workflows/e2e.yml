@@ -1,0 +1,27 @@
+name: E2E Tests
+
+# on:
+#     schedule:
+#         - cron: '0 10 * * *'
+on: [push]
+
+jobs:
+    runs-on: ubuntu-latest
+    container: cypress/browsers:node12.18.3-chrome87-ff82
+    steps:
+        - name: Checkout
+          uses: actions/checkout@v3
+
+        - name: 'E2E - Chrome'
+          uses: cypress-io/github-action@v5.2.0 # use the explicit version number
+          with:
+              install: true
+              start: yarn test:e2e
+              browser: chrome
+              record: true
+              parallel: true
+              group: 'E2E - Chrome'
+              spec: cypress/tests/ui/*
+          env:
+              CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

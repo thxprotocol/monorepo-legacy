@@ -11,6 +11,7 @@
         "serve:auth": "NODE_TLS_REJECT_UNAUTHORIZED='0' nx serve auth",
         "build": "nx build",
         "test": "NODE_OPTIONS='--max-old-space-size=8192' nx test",
+        "test:e2e": "yarn cypress run",
         "postinstall": "node node_modules/@nx-plus/vue/patch-nx-dep-graph.js"
     },
     "private": true,
