@@ -127,7 +127,7 @@ describe('Rewards', () => {
                 expect(res.body.pointRewards.length).toBe(2);
                 expect(res.body.pointRewards[1].uuid).toBe(pointReward.uuid);
                 expect(res.body.milestoneRewards.length).toBe(2);
-                expect(res.body.milestoneRewards[0].uuid).toBe(milestoneReward.uuid);
+                expect(res.body.milestoneRewards[1].uuid).toBe(milestoneReward.uuid);
             })
             .expect(200, done);
     });
