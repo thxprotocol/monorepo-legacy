@@ -9,12 +9,12 @@ jobs:
     e2e:
         name: 'E2E'
         runs-on: ubuntu-latest
-        container: cypress/browsers:node12.18.3-chrome87-ff82
+        container: cypress/browsers:node16.16.0-chrome107-ff107
         steps:
             - name: Checkout
               uses: actions/checkout@v3
 
-            - name: 'Chrome'
+            - name: Chrome
               uses: cypress-io/github-action@v5
               with:
                   install: true
