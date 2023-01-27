@@ -1,12 +1,13 @@
 describe('Dashboard', () => {
-    beforeEach(() => {
-        cy.visit('https://dev-wallet.thx.network');
+    it('Redirect to signin', () => {
+        cy.visit('https://dev-dashboard.thx.network');
+        cy.url().should('include', 'https://dev.auth.thx.network');
+        cy.url().should('include', 'signin');
     });
 
-    it('Sign in (e-mail verified)', () => {
-        cy.url().should('include', 'signin');
-        cy.get('input[placeholder="E-mail"]').type('cypress@thx.network');
-        cy.get('input[placeholder="Password"]').type('LoremIpsum123!');
+    it('Redirect to signin/otp after submit', () => {
+        cy.get('input[name="email"]').type('cypress@thx.network');
         cy.get('button[type="submit"]').click();
+        cy.url().should('include', 'https://dev.auth.thx.network').should('include', 'signin/otp');
     });
 });
