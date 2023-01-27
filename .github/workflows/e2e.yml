@@ -14,11 +14,6 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v3
 
-            - name: Cypress debug logs 📝
-              uses: ./
-              env:
-                  DEBUG: '@cypress/github-action'
-
             - name: Chrome
               uses: cypress-io/github-action@v4.2.2
               with:
