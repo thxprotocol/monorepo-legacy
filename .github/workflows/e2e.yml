@@ -26,7 +26,7 @@ jobs:
                   record: true
                   parallel: true
                   group: 'E2E - Chrome'
-                  spec: cypress/tests/ui/*
+                  spec: cypress/e2e/*
               env:
                   CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
