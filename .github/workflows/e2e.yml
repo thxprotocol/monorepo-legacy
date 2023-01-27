@@ -9,24 +9,23 @@ jobs:
     e2e:
         name: 'E2E'
         runs-on: ubuntu-latest
-        container: cypress/browsers:node16.16.0-chrome107-ff107
+        container: cypress/browsers:node16.14.2-slim-chrome103-ff102
         steps:
             - name: Checkout
               uses: actions/checkout@v3
 
-            - name: Install Ubuntu deps
-              run: apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
+            - name: Cypress debug logs 📝
+              uses: ./
+              env:
+                  DEBUG: '@cypress/github-action'
 
             - name: Chrome
-              uses: cypress-io/github-action@v5
+              uses: cypress-io/github-action@v4.2.2
               with:
                   install: true
-                  start: yarn test:e2e
+                  start: npx cypress run
                   browser: chrome
                   record: true
-                  parallel: true
-                  group: 'E2E - Chrome'
-                  spec: cypress/e2e/*
               env:
                   CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
