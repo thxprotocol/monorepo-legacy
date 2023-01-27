@@ -13,13 +13,17 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v2
 
-            - name: Chrome
-              uses: cypress-io/github-action@v3
+            - name: Chrome latest
+              uses: browser-actions/setup-chrome@latest
+              run: echo "BROWSER_PATH=$(which chrome)" >> $GITHUB_ENV
+
+            - name: Chrome E2E Test 🚀
+              uses: cypress-io/github-action@v4
               with:
-                  project: ./site
-                  browser: chrome
-                  start: yarn test:e2e
+                  install: true
                   record: true
+                  browser: '${{ env.BROWSER_PATH }}'
+                  start: yarn test:e2e
               env:
                   CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
