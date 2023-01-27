@@ -1,6 +1,7 @@
 import multer from 'multer';
 import express, { urlencoded } from 'express';
 import ReadOIDC from './get';
+import CeateResendOtp from './signin/resend-otp/post';
 import ReadOtp from './signin/otp/get';
 import CreateOtp from './signin/otp/post';
 import ReadAbort from './abort/get';
@@ -50,6 +51,7 @@ router.post(
     assertInput(CreateSignin.validation),
     CreateSignin.controller,
 );
+router.post('/:uid/signin/resend-otp', urlencoded({ extended: false }), assertInteraction, CeateResendOtp.controller);
 router.get('/:uid/abort', assertInteraction, ReadAbort.controller);
 
 const upload = multer();

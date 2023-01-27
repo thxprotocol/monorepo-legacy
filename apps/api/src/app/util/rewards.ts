@@ -1,14 +1,12 @@
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
-import { TERC721Perk, TERC20Perk, TPointReward } from '@thxnetwork/types/';
-import { ERC20Perk } from '../models/ERC20Perk';
-import { ERC721Perk } from '../models/ERC721Perk';
-import { ReferralReward } from '../models/ReferralReward';
+import { TERC721Perk, TERC20Perk } from '@thxnetwork/types/';
+import { ERC20Perk, ERC20PerkDocument } from '../models/ERC20Perk';
+import { ERC721Perk, ERC721PerkDocument } from '../models/ERC721Perk';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import ERC20PerkService from '../services/ERC20PerkService';
 import ERC721PerkService from '@thxnetwork/api/services/ERC721PerkService';
-import { PointReward } from '../models/PointReward';
 import PointRewardService from '../services/PointRewardService';
 import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardService';
 import MilestoneRewardService from '../services/MilestoneRewardService';
@@ -20,18 +18,16 @@ import { logger } from '@thxnetwork/api/util/logger';
 export async function findRewardByUuid(uuid: string) {
     const erc20Perk = await ERC20Perk.findOne({ uuid });
     const erc721Perk = await ERC721Perk.findOne({ uuid });
-    const referralReward = await ReferralReward.findOne({ uuid });
-    const pointReward = await PointReward.findOne({ uuid });
 
-    return erc20Perk || erc721Perk || referralReward || pointReward;
+    return erc20Perk || erc721Perk;
 }
 
-export function isTERC20Perk(reward: TERC20Perk | TERC721Perk | TPointReward): reward is TERC20Perk {
-    return (reward as TERC20Perk).amount !== undefined;
+export function isTERC20Perk(perk: ERC20PerkDocument | ERC721PerkDocument): perk is ERC20PerkDocument {
+    return (perk as ERC20PerkDocument).amount !== undefined;
 }
 
-export function isTERC721Perk(reward: TERC20Perk | TERC721Perk | TPointReward): reward is TERC721Perk {
-    return (reward as TERC721Perk).erc721metadataId !== undefined;
+export function isTERC721Perk(perk: ERC20PerkDocument | ERC721PerkDocument): perk is ERC721PerkDocument {
+    return (perk as ERC721PerkDocument).erc721metadataId !== undefined;
 }
 
 export function addMinutes(date: Date, minutes: number) {
