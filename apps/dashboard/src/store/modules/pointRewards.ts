@@ -60,7 +60,7 @@ class PointRewardModule extends VuexModule {
         });
 
         const profile = this.context.rootGetters['account/profile'];
-        track.UserCreates(profile.sub, 'conditional reward');
+        track('UserCreates', [profile.sub, 'conditional reward']);
 
         this.context.commit('set', { ...payload, ...r.data });
     }

@@ -37,6 +37,7 @@ const controller = async (req: Request, res: Response) => {
             sm: {
                 width: '100%',
                 height: '100%',
+                maxHeight: 'none',
                 top: 0,
                 left: 0,
                 right: 0,
@@ -48,9 +49,10 @@ const controller = async (req: Request, res: Response) => {
                 left: 'auto',
                 bottom: '100px',
                 right: '15px',
-                height: '680px',
+                maxHeight: '680px',
                 width: '400px',
                 borderRadius: '10px',
+                height: 'calc(100% - 115px)',
             },
         };
     
@@ -164,6 +166,8 @@ const controller = async (req: Request, res: Response) => {
                 const iframe = document.getElementById('thx-iframe');
                 iframe.style.opacity = iframe.style.opacity === '0' ? '1' : '0';
                 iframe.style.transform = iframe.style.transform === 'scale(0)' ? 'scale(1)' : 'scale(0)';
+
+                this.iframe.contentWindow.postMessage({ message: 'thx.iframe.show', isShown: !!Number(iframe.style.opacity) }, this.settings.widgetUrl);
             });
             launcher.addEventListener('mouseenter', () => {
                 const gift = document.getElementById('thx-svg-gift');
@@ -209,6 +213,7 @@ const controller = async (req: Request, res: Response) => {
                 case 'thx.widget.close': {
                     this.iframe.style.opacity = this.iframe.style.opacity === '0' ? '1' : '0';
                     this.iframe.style.transform = this.iframe.style.transform === 'scale(0)' ? 'scale(1)' : 'scale(0)';
+                    this.iframe.contentWindow.postMessage({ message: 'thx.iframe.show', isShown: false }, this.settings.widgetUrl);
                     break;
                 }
             }

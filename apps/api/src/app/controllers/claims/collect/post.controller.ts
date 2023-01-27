@@ -19,9 +19,8 @@ import { ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
 import { ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
 import { ERC721PerkPayment, ERC721PerkPaymentDocument } from '@thxnetwork/api/models/ERC721PerkPayment';
 import { WithdrawalDocument } from '@thxnetwork/api/models/Withdrawal';
-import { PointRewardDocument } from '@thxnetwork/api/models/PointReward';
 
-type PerkDocument = ERC20PerkDocument | ERC721PerkDocument | PointRewardDocument;
+type PerkDocument = ERC20PerkDocument | ERC721PerkDocument;
 type PerkPaymentDocument = ERC20PerkPaymentDocument | ERC721PerkPaymentDocument;
 
 const validation = [param('uuid').exists().isString(), query('forceSync').optional().isBoolean()];
@@ -93,17 +92,11 @@ const controller = async (req: Request, res: Response) => {
 
     // Create a pool withdrawal if the erc20 for the claim exists.
     if (isTERC20Perk(perk)) {
+        const { amount } = perk as ERC20PerkDocument;
+
         erc20 = await ERC20Service.getById(claim.erc20Id);
         if (!erc20) throw new NotFoundError('No erc20 found for this perk');
-
-        withdrawal = await WithdrawalService.withdrawFor(
-            pool,
-            erc20,
-            req.auth.sub,
-            account.address,
-            perk.amount,
-            false,
-        );
+        withdrawal = await WithdrawalService.withdrawFor(pool, erc20, req.auth.sub, account.address, amount, false);
 
         // Create a payment to register a completed claim.
         payment = await ERC20PerkPayment.create({
@@ -115,7 +108,9 @@ const controller = async (req: Request, res: Response) => {
 
     // Mint an NFT token if the erc721 and metadata for the claim exists.
     if (isTERC721Perk(perk)) {
-        metadata = await ERC721Service.findMetadataById(perk.erc721metadataId);
+        const { erc721metadataId } = perk as ERC721PerkDocument;
+
+        metadata = await ERC721Service.findMetadataById(erc721metadataId);
         if (!metadata) throw new NotFoundError('No metadata found for this perk');
 
         erc721 = await ERC721Service.findById(metadata.erc721);
@@ -128,6 +123,7 @@ const controller = async (req: Request, res: Response) => {
             sub: req.auth.sub,
             perkId: perk._id,
             amount: perk.pointPrice,
+            poolId: pool._id,
         });
     }
 

@@ -2,9 +2,7 @@ import express from 'express';
 import { getAccount, getAccountByAddress, getAccountByEmail } from './get.action';
 import { patchAccount } from './patch.action';
 import { deleteAccount } from './delete.action';
-import { postAccount } from './post.action';
 import { validate } from '../../util/validate';
-import { validations } from './_.validation';
 import { guard, validateJwt } from '../../middlewares';
 import { getTwitter } from './twitter/get.action';
 import { getTwitterLike } from './twitter/getLike.action';
@@ -13,15 +11,14 @@ import { getTwitterFollow } from './twitter/getFollow.action';
 import { getYoutube } from './google/get.controller';
 import { getYoutubeLike } from './google/youtube/like/get.controller';
 import { getYoutubeSubscribe } from './google/youtube/subscribe/get.controller';
-import { createLoginValidation, postLogin } from './login/post.controller';
-import { getTwitch } from './twitch/get.action';
 import { getDiscord } from './discord/get.action';
 import { getDiscordGuildJoined } from './discord/guild/get.action';
+import { getTwitch } from './twitch/get.action';
+import { getGithub } from './github/get.controller';
 
 const router = express.Router();
 
 router.use(validateJwt);
-router.post('/', guard.check(['accounts:read', 'accounts:write']), validate(validations.postAccount), postAccount);
 router.get('/:sub', guard.check(['accounts:read']), getAccount);
 
 router.get('/:sub/twitter', guard.check(['accounts:read']), getTwitter);
@@ -37,12 +34,11 @@ router.get('/:sub/discord', guard.check(['accounts:read']), getDiscord);
 router.get('/:sub/discord/guild/:item', guard.check(['accounts:read']), getDiscordGuildJoined);
 
 router.get('/:sub/twitch', guard.check(['accounts:read']), getTwitch);
+router.get('/:sub/github', guard.check(['accounts:read']), getGithub);
 
 router.get('/address/:address', guard.check(['accounts:read']), validate([]), getAccountByAddress);
 router.get('/email/:email', guard.check(['accounts:read']), validate([]), getAccountByEmail);
 router.patch('/:sub', guard.check(['accounts:read', 'accounts:write']), patchAccount);
 router.delete('/:sub', guard.check(['accounts:write']), deleteAccount);
-
-router.post('/login', validate(createLoginValidation), guard.check(['accounts:write']), postLogin);
 
 export default router;

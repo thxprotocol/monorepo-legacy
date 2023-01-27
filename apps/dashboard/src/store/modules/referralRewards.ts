@@ -80,7 +80,7 @@ class ReferralRewardModule extends VuexModule {
         });
 
         const profile = this.context.rootGetters['account/profile'];
-        track.UserCreates(profile.sub, 'referral reward');
+        track('UserCreates', [profile.sub, 'referral reward']);
 
         data.page = 1;
         this.context.commit('set', { pool, reward: data });

@@ -87,7 +87,7 @@ class ERC721PerkModule extends VuexModule {
         });
 
         const profile = this.context.rootGetters['account/profile'];
-        track.UserCreates(profile.sub, 'nft perk');
+        track('UserCreates', [profile.sub, 'nft perk']);
 
         r.data.forEach((data: any) => {
             this.context.commit('set', { pool, reward: { ...payload, ...data } });

@@ -1,19 +1,13 @@
 import multer from 'multer';
 import express, { urlencoded } from 'express';
 import ReadOIDC from './get';
+import CeateResendOtp from './signin/resend-otp/post';
+import ReadOtp from './signin/otp/get';
+import CreateOtp from './signin/otp/post';
 import ReadAbort from './abort/get';
-import ReadForgot from './forgot/get';
 import ReadSignin from './signin/get';
 import CreateSignin from './signin/post';
-import CreateSignup from './signup/post';
-import ReadSignup from './signup/get';
-import ReadReset from './reset/get';
-import ReadConfirm from './confirm/get';
-import ReadConfirmEmail from './account/email/get';
 import ReadConnect from './connect/get';
-import CreatePassword from './password/post';
-import CreateForgot from './forgot/post';
-import CreateReset from './reset/post';
 import ReadCallbackGoogle from './callback/google/get.controller';
 import ReadCallbackTwitter from './callback/twitter/get.controller';
 import ReadCallbackDiscord from './callback/discord/get.controller';
@@ -42,10 +36,14 @@ router.get('/callback/twitch', ReadCallbackTwitch.controller);
 // Routes require no auth
 router.get('/:uid', assertInteraction, ReadOIDC.controller);
 router.get('/:uid/signin', assertInteraction, ReadSignin.controller);
-router.get('/:uid/signup', assertInteraction, ReadSignup.controller);
-router.get('/:uid/confirm', assertInteraction, ReadConfirm.controller);
-router.get('/:uid/confirm/email', assertInteraction, ReadConfirmEmail.controller);
-router.get('/:uid/reset', assertInteraction, ReadReset.controller);
+router.get('/:uid/signin/otp', assertInteraction, ReadOtp.controller);
+router.post(
+    '/:uid/signin/otp',
+    urlencoded({ extended: false }),
+    assertInteraction,
+    assertInput(CreateOtp.validation),
+    CreateOtp.controller,
+);
 router.post(
     '/:uid/signin',
     urlencoded({ extended: false }),
@@ -53,12 +51,8 @@ router.post(
     assertInput(CreateSignin.validation),
     CreateSignin.controller,
 );
-router.post('/:uid/signup', urlencoded({ extended: false }), assertInteraction, CreateSignup.controller);
-router.post('/:uid/password', urlencoded({ extended: false }), assertInteraction, CreatePassword.controller);
+router.post('/:uid/signin/resend-otp', urlencoded({ extended: false }), assertInteraction, CeateResendOtp.controller);
 router.get('/:uid/abort', assertInteraction, ReadAbort.controller);
-router.get('/:uid/forgot', assertInteraction, ReadForgot.controller);
-router.post('/:uid/forgot', urlencoded({ extended: false }), assertInteraction, CreateForgot.controller);
-router.post('/:uid/reset', urlencoded({ extended: false }), assertInteraction, CreateReset.controller);
 
 const upload = multer();
 
@@ -66,7 +60,7 @@ const upload = multer();
 router.get('/:uid/connect', assertInteraction, assertAuthorization, ReadConnect.controller);
 router.get('/:uid/account', assertInteraction, assertAuthorization, ReadAccount.controller);
 
-router.post('/:uid/account/github/disconnect', assertInteraction, assertAuthorization, PostGithubDisconnect.controller)
+router.post('/:uid/account/github/disconnect', assertInteraction, assertAuthorization, PostGithubDisconnect.controller);
 router.post('/:uid/account/google/disconnect', assertInteraction, assertAuthorization, PostGoogleDisconnect.controller);
 router.post(
     '/:uid/account/twitter/disconnect',
