@@ -30,6 +30,11 @@ async function controller(req: Request, res: Response) {
         const token = account.getToken(AccessTokenKind.Auth);
         if (token.expiry < Date.now()) throw new Error('One-time password expired');
 
+        await account.updateOne({
+            isEmailVerified: true,
+            active: true,
+        });
+
         return await oidc.interactionFinished(req, res, { login: { accountId: String(account._id) } });
     } catch (error) {
         const alert = { variant: 'danger', icon: 'exclamation-circle', message: error.message };
