@@ -93,7 +93,7 @@ class AccountModule extends VuexModule {
             url: '/account',
             data: payload,
         });
-        this.context.commit('setUserProfile', data);
+        this.context.commit('setProfile', data);
     }
 
     @Action({ rawError: true })
