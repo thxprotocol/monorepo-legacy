@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { RewardConditionPlatform, type TPointReward } from '@thxnetwork/types/index';
 import { IPool } from './pools';
-import { track } from '@thxnetwork/dashboard/utils/mixpanel';
+import { track } from '@thxnetwork/mixpanel';
 
 export type TPointRewardState = {
     [poolId: string]: {

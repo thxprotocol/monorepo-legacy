@@ -5,7 +5,7 @@ import { IPool } from './pools';
 import { RewardConditionPlatform, type TERC20Perk } from '@thxnetwork/types/index';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
-import { track } from '@thxnetwork/dashboard/utils/mixpanel';
+import { track } from '@thxnetwork/mixpanel';
 
 export type RewardByPage = {
     [page: number]: TERC20Perk[];

@@ -9,6 +9,10 @@ import VueClipboard from 'vue-clipboard2';
 import * as rules from 'vee-validate/dist/rules';
 import * as en from 'vee-validate/dist/locale/en.json';
 import { ValidationObserver, ValidationProvider, extend, localize } from 'vee-validate';
+import { API_URL, MIXPANEL_TOKEN } from '@thxnetwork/dashboard/utils/secrets';
+import Mixpanel from '@thxnetwork/mixpanel';
+
+Mixpanel.init(MIXPANEL_TOKEN, API_URL);
 
 // Install VeeValidate rules and localization
 Object.keys(rules).forEach((rule) => {

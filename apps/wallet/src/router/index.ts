@@ -10,7 +10,7 @@ import {
     redirectSignout,
     redirectSignup,
 } from '@thxnetwork/wallet/utils/guards';
-import { track } from '../utils/mixpanel';
+import { track } from '@thxnetwork/mixpanel';
 import { thxClient } from '../utils/oidc';
 
 Vue.use(VueRouter);
@@ -99,7 +99,12 @@ const router = new VueRouter({
 router.beforeEach(async (to, from, next) => {
     try {
         const user = thxClient.session.user;
-        if (user) track.UserVisits(user.profile.sub, to.name || 'unknown', to.params as unknown as string[]);
+        if (user)
+            track('UserVisits', [
+                user.profile.sub,
+                to.name,
+                { redirect: to.redirectedFrom, params: to.params, query: to.query },
+            ]);
         return next();
     } catch (err) {
         console.error(err);

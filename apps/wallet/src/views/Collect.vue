@@ -32,17 +32,14 @@
                     <p class="lead text-center">Continue to your wallet and view your balance.<br /></p>
                 </template>
                 <b-row v-if="claimedReward.erc721">
-                    <b-col xs="12" md="6" class="d-flex align-items-center">
-                        <b-img-lazy
+                    <b-col xs="12" md="6" class="d-flex align-items-center justify-content-center">
+                        <div>
+                            <b-spinner v-if="isNftImageLoading" variant="light" />
+                        </div>
+                        <img
+                            :class="`w-100 ${isNftImageLoading ? 'd-none' : 'd-block'}`"
                             :src="imgUrl"
-                            :class="`d-block w-100${isNftImageLoading ? ' d-none' : ''}`"
-                            id="nftImg"
-                        />
-                        <b-spinner
-                            v-if="isNftImageLoading"
-                            size="lg"
-                            style="width: 3rem; height: 3rem"
-                            variant="primary"
+                            @load="isNftImageLoading = false"
                         />
                     </b-col>
                     <b-col xs="12" md="6">
@@ -137,7 +134,7 @@ type TClaim = {
 })
 export default class Collect extends Vue {
     $confetti!: { start: (options: unknown) => void; stop: () => void };
-    imgUrl = require('@thxnetwork/wallet/../public/assets/img/thx_treasure.png');
+    imgUrl = '';
     format = format;
     error = '';
     isLoading = true;
@@ -217,12 +214,11 @@ export default class Collect extends Vue {
 
             if (this.claim && this.claim.erc721) {
                 await this.$store.dispatch('network/connect', this.claim.erc721.chainId);
+
                 this.$store.commit('erc721/set', this.claim.erc721);
+
                 const imgUrl = this.firstImageURL(this.claim.metadata);
-                if (imgUrl) {
-                    this.imgUrl = imgUrl;
-                    this.setNftImageEventListener();
-                }
+                this.imgUrl = imgUrl ? imgUrl : require('@thxnetwork/wallet/../public/assets/img/thx_treasure.png');
             } else if (this.claim && this.claim.erc20) {
                 await this.$store.dispatch('network/connect', this.claim.erc20.chainId);
             }
@@ -273,19 +269,6 @@ export default class Collect extends Vue {
             platform: this.reward?.platform,
             path: `/claim/${this.state.claimUuid}`,
         });
-    }
-
-    setNftImageEventListener() {
-        var img = document.getElementById('nftImg') as HTMLImageElement;
-        if (img) {
-            if (img.complete) {
-                this.isNftImageLoading = false;
-            } else {
-                img.addEventListener('load', () => {
-                    this.isNftImageLoading = false;
-                });
-            }
-        }
     }
 }
 </script>

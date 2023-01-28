@@ -9,6 +9,10 @@ import VueClipboard from 'vue-clipboard2';
 import VueConfetti from 'vue-confetti';
 import { fromWei } from 'web3-utils';
 import { thxClient } from './utils/oidc';
+import Mixpanel from '@thxnetwork/mixpanel';
+import { API_URL, MIXPANEL_TOKEN } from './utils/secrets';
+
+Mixpanel.init(MIXPANEL_TOKEN, API_URL);
 
 // Set Axios default config
 axios.defaults.withCredentials = true;

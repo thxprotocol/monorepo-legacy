@@ -12,7 +12,7 @@ import {
 } from '@thxnetwork/dashboard/utils/guards';
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
-import { track } from '../utils/mixpanel';
+import { track } from '../../../../libs/common/src/lib/mixpanel';
 
 Vue.use(VueRouter);
 
