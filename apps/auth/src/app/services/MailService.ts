@@ -28,7 +28,7 @@ function createOTP(account: AccountDocument) {
 
 export class MailService {
     static sendMail = (to: string, subject: string, html: string, link = '') => {
-        if (SENDGRID_API_KEY && NODE_ENV !== 'test') {
+        if (SENDGRID_API_KEY && NODE_ENV !== 'test' && CYPRESS_EMAIL !== to) {
             return sgMail.send({
                 to,
                 from: { email: 'noreply@thx.network', name: 'THX Network' },

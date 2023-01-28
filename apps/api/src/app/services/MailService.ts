@@ -1,5 +1,5 @@
 import sgMail from '@sendgrid/mail';
-import { AUTH_URL, NODE_ENV, SENDGRID_API_KEY } from '@thxnetwork/api/config/secrets';
+import { AUTH_URL, NODE_ENV, SENDGRID_API_KEY, CYPRESS_EMAIL } from '@thxnetwork/api/config/secrets';
 import { logger } from '../util/logger';
 import path from 'path';
 import { assetsPath } from '../util/path';
@@ -20,17 +20,14 @@ const send = async (to: string, subject: string, htmlContent: string, link = '')
         { async: true },
     );
 
-    if (!SENDGRID_API_KEY || NODE_ENV === 'test') {
+    if (!SENDGRID_API_KEY || NODE_ENV === 'test' || CYPRESS_EMAIL === to) {
         logger.info({ message: 'not sending email', link });
         return;
     }
 
     return sgMail.send({
         to,
-        from: {
-            email: 'noreply@thx.network',
-            name: 'THX Network',
-        },
+        from: { email: 'noreply@thx.network', name: 'THX Network' },
         subject,
         html,
     });

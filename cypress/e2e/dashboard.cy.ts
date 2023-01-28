@@ -22,6 +22,14 @@ describe('Wallet', () => {
         cy.get('#digit3').type('0');
         cy.get('#digit4').type('0');
 
-        cy.url().should('include', 'https://dev-wallet.thx.network').should('include', 'signin/otp');
+        cy.url().should('include', 'https://dev-wallet.thx.network').should('include', 'signin-oidc');
+
+        cy.contains('Authenticating your account...');
+        cy.contains('Fetching your account details...');
+        cy.contains('Fetching private key...');
+        cy.contains('Connecting Polygon');
+
+        cy.get('header').contains('Wallet');
+        cy.get('header').contains('Wallet').click();
     });
 });
