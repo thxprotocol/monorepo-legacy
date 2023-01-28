@@ -2,8 +2,8 @@ import { createApp } from 'https://unpkg.com/petite-vue?module';
 
 createApp({
     otpValues: {},
-    isLoading: false,
     otp: '',
+    isLoading: false,
     onInput(key, value) {
         this.otpValues[key] = value.data[0];
         this.otp = Object.values(this.otpValues).join('');

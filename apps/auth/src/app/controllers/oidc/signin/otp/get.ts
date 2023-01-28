@@ -17,10 +17,10 @@ async function controller(req: Request, res: Response) {
     const alert = {
         variant: 'info',
         icon: 'question-circle',
-        message: 'We have sent you a one-time password.',
+        message: `We sent a password to <strong>${params.email}</strong>`,
     };
 
-    res.render('otp', { uid, alert, params: { ...params, ...brand, claim } });
+    res.render('otp', { uid, alert, email: req.interaction.email, params: { ...params, ...brand, claim } });
 }
 
 export default { controller };
