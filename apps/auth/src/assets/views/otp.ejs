@@ -36,8 +36,8 @@
                         <p class="mt-2 text-muted">One-time password </p>
                         <div class="d-flex justify-content-between">
                             <input v-for="key of [0,1,2,3,4]" :value="otpValues[key] || ''"
-                                   @input="onInput(key, $event)" class="form-control mx-2" required min="0" max="9"
-                                   type="text" inputmode="numeric" :autofocus="key == 0">
+                                   @input="onInput(key, $event)" :id="`digit${key}`" class="form-control mx-2" required
+                                   min="0" max="9" type="text" inputmode="numeric" :autofocus="key == 0">
                         </div>
                     </div>
                     <button form="otp-resend" type="submit" class="btn btn-light btn-block btn-sm rounded-pill">

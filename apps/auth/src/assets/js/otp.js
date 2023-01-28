@@ -8,7 +8,9 @@ createApp({
         this.otpValues[key] = value.data[0];
         this.otp = Object.values(this.otpValues).join('');
 
-        document.getElementById('form-otp').reportValidity();
+        if (key !== 4) {
+            document.getElementById(`digit${++key}`).focus();
+        }
 
         if (this.otp.length === 5) {
             this.isLoading = true;
