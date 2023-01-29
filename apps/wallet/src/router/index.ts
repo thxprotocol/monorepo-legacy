@@ -78,8 +78,8 @@ const routes: Array<RouteConfig> = [
         beforeEnter: assertAuthorization,
     },
     {
-        path: '/nft',
         name: 'NFT',
+        path: '/nft',
         component: () => import(/* webpackChunkName: "nft" */ '../views/NFT.vue'),
         beforeEnter: assertAuthorization,
     },
