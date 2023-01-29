@@ -232,27 +232,6 @@ class AccountModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async signupRedirect() {
-        await this.userManager.clearStaleState();
-        const url = new URL(window.location.href);
-        const signupEmail = url.searchParams.get('signup_email');
-        const client = Mixpanel.client();
-        const extraQueryParams: any = {
-            prompt: 'create',
-            return_url: BASE_URL,
-            distinct_id: client && client.get_distinct_id(),
-        };
-
-        if (signupEmail) {
-            extraQueryParams['signup_email'] = signupEmail;
-        }
-
-        return await this.userManager.signinRedirect({
-            extraQueryParams,
-        });
-    }
-
-    @Action({ rawError: true })
     async signinRedirectCallback() {
         const user = await this.userManager.signinRedirectCallback();
         this.context.commit('setUser', user);

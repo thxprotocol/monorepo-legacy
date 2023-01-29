@@ -23,8 +23,8 @@ const controller = async (req: Request, res: Response) => {
     const metadata = await ERC721Service.findMetadataById(erc721Perk.erc721metadataId);
     if (!metadata) throw new NotFoundError('Could not find the erc721 metadata for this perk');
 
-    const { balance } = await PointBalance.findOne({ sub: req.auth.sub, poolId: pool._id });
-    if (Number(balance) < Number(erc721Perk.pointPrice))
+    const pointBalance = await PointBalance.findOne({ sub: req.auth.sub, poolId: pool._id });
+    if (!pointBalance || Number(pointBalance.balance) < Number(erc721Perk.pointPrice))
         throw new InsufficientBalanceError('Not enough points on this account for this perk.');
 
     // Get the account wallet

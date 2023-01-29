@@ -34,7 +34,15 @@ axios.interceptors.response.use(
     (res: AxiosResponse) => res,
     async (error: AxiosError) => {
         if (error.response?.status === 401) {
-            await store.dispatch('account/signinRedirect');
+            const user = await store.dispatch('account/getUser');
+            if (user) {
+                // Token expired or invalid, signout id_token_hint
+                await store.dispatch('account/signoutRedirect');
+            } else {
+                // id_token_hint not available, force signout and request signin
+                await store.dispatch('account/signout');
+                await store.dispatch('account/signinRedirect');
+            }
         }
         throw error;
     },

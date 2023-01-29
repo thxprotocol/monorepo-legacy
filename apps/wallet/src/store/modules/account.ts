@@ -1,7 +1,7 @@
 import axios from 'axios';
 import Web3 from 'web3';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { BASE_URL } from '@thxnetwork/wallet/utils/secrets';
+import { AUTH_URL, BASE_URL } from '@thxnetwork/wallet/utils/secrets';
 import { thxClient } from '../../utils/oidc';
 import { User } from 'oidc-client-ts';
 import { AccountVariant } from '../../types/Accounts';
@@ -184,10 +184,20 @@ class AccountModule extends VuexModule {
             },
         });
     }
-
     @Action({ rawError: true })
     async signoutRedirect(toPath: string) {
         await thxClient.userManager.cached.signoutRedirect({ state: { toPath } });
+    }
+
+    @Action({ rawError: true })
+    async signout() {
+        await thxClient.userManager.cached.removeUser();
+        await thxClient.userManager.cached.clearStaleState();
+
+        await axios({
+            method: 'GET',
+            url: AUTH_URL + '/session/end',
+        });
     }
 
     @Action({ rawError: true })
