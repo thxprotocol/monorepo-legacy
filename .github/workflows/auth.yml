@@ -170,3 +170,10 @@ jobs:
 
             - name: Deploy-script
               run: thx-deploy AuthDev sha-$(echo ${{github.sha}} | cut -c1-7)
+
+            - name: Update Discord
+              env:
+                  DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+              uses: Ilshidur/action-discord@master
+              with:
+                  args: 'Released Auth 🔐 `${{needs.bumpVersion.outputs.newTag}}`'
