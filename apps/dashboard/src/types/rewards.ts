@@ -63,7 +63,7 @@ export const platformInteractionList = [
     },
     {
         type: RewardConditionInteraction.DiscordGuildJoined,
-        name: 'Guild Joined',
+        name: 'Server Joined',
         items: [],
     },
 ];
