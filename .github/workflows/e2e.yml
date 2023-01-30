@@ -1,6 +1,5 @@
 name: E2E Tests
 
-# on: [push]
 on:
     push:
         branches:
@@ -38,4 +37,4 @@ jobs:
                   DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
               uses: Ilshidur/action-discord@master
               with:
-                  args: 'E2E tests for `dev` passed.'
+                  args: "Daily E2E Test ${{ steps.test.outcome == 'success' && '✅' || '⛔' }} `${{ steps.test.outcome }}` "
