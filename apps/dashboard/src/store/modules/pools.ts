@@ -57,6 +57,7 @@ export interface IPoolAnalyticLeaderBoard {
     score: number;
     name: string;
     email: string;
+    address: string;
 }
 
 export interface IPoolAnalyticMetrics {

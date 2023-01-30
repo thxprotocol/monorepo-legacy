@@ -5,64 +5,75 @@
             <b-col md="8">
                 <b-row class="mt-5">
                     <b-col>
-                        <div v-if="!poolAnalytics" class="center-center">
-                            <p class="mr-2">Loading chart...</p>
-                            <b-spinner variant="primary" />
-                        </div>
-                        <line-chart
-                            v-else
-                            :chartData="lineChartData"
-                            :chart-options="chartOptions"
-                            :height="250"
-                            style="position: relative; width: 100%"
-                        />
-                    </b-col>
-                </b-row>
-                <b-row class="mt-5" v-if="!metrics">
-                    <b-col md="4">
-                        <div class="py-5 w-100 center-center">
-                            <p class="mr-2">Loading data...</p>
-                            <b-spinner variant="primary" />
-                        </div>
-                    </b-col>
-                </b-row>
-                <b-row class="mt-5" v-else>
-                    <b-col md="4">
-                        <b-card bg-variant="primary" class="shadow-sm text-white">
-                            <span>Referrals</span><br />
-                            <div class="h2">{{ metrics.referralRewards.totalClaimPoints }}</div>
-                        </b-card>
-                    </b-col>
-                    <b-col md="4">
-                        <b-card bg-variant="primary" class="shadow-sm text-white">
-                            <span>Conditionals</span><br />
-                            <div class="h2">{{ metrics.pointRewards.totalClaimPoints }}</div>
-                        </b-card>
-                    </b-col>
-                    <b-col md="4">
-                        <b-card bg-variant="primary" class="shadow-sm text-white">
-                            <span>Milestones</span><br />
-                            <div class="h2">{{ metrics.milestoneRewards.totalClaimPoints }}</div>
-                        </b-card>
+                        <b-skeleton-wrapper :loading="!poolAnalytics">
+                            <template #loading>
+                                <b-skeleton-img no-aspect height="250px"></b-skeleton-img>
+                            </template>
+                            <line-chart
+                                :chartData="lineChartData"
+                                :chart-options="chartOptions"
+                                :height="250"
+                                style="position: relative; width: 100%"
+                            />
+                        </b-skeleton-wrapper>
                     </b-col>
                 </b-row>
                 <b-row class="mt-5">
+                    <b-col md="4">
+                        <b-skeleton-wrapper :loading="!metrics">
+                            <template #loading>
+                                <b-skeleton-img no-aspect height="110px"></b-skeleton-img>
+                            </template>
+                            <b-card v-if="metrics" bg-variant="dark" class="shadow-sm text-white">
+                                <span>Referrals</span><br />
+                                <div class="h2">{{ metrics.referralRewards.totalClaimPoints }}</div>
+                            </b-card>
+                        </b-skeleton-wrapper>
+                    </b-col>
+                    <b-col md="4">
+                        <b-skeleton-wrapper :loading="!metrics">
+                            <template #loading>
+                                <b-skeleton-img no-aspect height="110px"></b-skeleton-img>
+                            </template>
+                            <b-card v-if="metrics" bg-variant="dark" class="shadow-sm text-white">
+                                <span>Conditionals</span><br />
+                                <div class="h2">{{ metrics.pointRewards.totalClaimPoints }}</div>
+                            </b-card>
+                        </b-skeleton-wrapper>
+                    </b-col>
+                    <b-col md="4">
+                        <b-skeleton-wrapper :loading="!metrics">
+                            <template #loading>
+                                <b-skeleton-img no-aspect height="110px"></b-skeleton-img>
+                            </template>
+                            <b-card v-if="metrics" bg-variant="dark" class="shadow-sm text-white">
+                                <span>Milestones</span><br />
+                                <div class="h2">{{ metrics.milestoneRewards.totalClaimPoints }}</div>
+                            </b-card>
+                        </b-skeleton-wrapper>
+                    </b-col>
+                </b-row>
+
+                <b-row class="mt-5">
                     <b-col>
                         <div class="card-header block">Leaderboard</div>
-                        <div v-if="!leaderBoard" class="center-center mt-5">
-                            <p class="mr-2">Loading leaderboard...</p>
-                            <b-spinner variant="primary" />
-                        </div>
-                        <div v-else>
-                            <b-list-group>
+                        <b-skeleton-wrapper :loading="!leaderBoard">
+                            <template #loading>
+                                <b-skeleton-table
+                                    :rows="2"
+                                    :columns="1"
+                                    :table-props="{ bordered: false, striped: false }"
+                                ></b-skeleton-table>
+                            </template>
+                            <b-list-group v-if="leaderBoard">
                                 <b-list-group-item
-                                    v-for="row in leaderBoard"
-                                    :key="row.sub"
+                                    v-for="(row, key) of leaderBoard"
+                                    :key="key"
                                     class="d-flex justify-content-between align-items-center"
                                 >
                                     <div class="d-flex center-center">
                                         <div style="line-height: 1.2">
-                                            <strong>{{ row.email }}</strong>
+                                            <strong>{{ row.email || row.address }}</strong>
                                         </div>
                                     </div>
                                     <div>
@@ -71,46 +82,48 @@
                                     </div>
                                 </b-list-group-item>
                             </b-list-group>
-                        </div>
+                        </b-skeleton-wrapper>
                     </b-col>
                 </b-row>
             </b-col>
             <b-col md="4">
                 <b-row class="mt-5">
                     <b-col>
-                        <div v-if="!poolAnalytics" class="center-center mt-5">
-                            <p class="mr-2">Loading chart...</p>
-                            <b-spinner variant="primary" />
-                        </div>
-                        <bar-chart
-                            v-else
-                            :chartData="barChartData"
-                            :chart-options="chartOptions"
-                            :height="250"
-                            style="position: relative; width: 100%"
-                        />
+                        <b-skeleton-wrapper :loading="!poolAnalytics">
+                            <template #loading>
+                                <b-skeleton-img no-aspect height="250px"></b-skeleton-img>
+                            </template>
+                            <bar-chart
+                                :chartData="barChartData"
+                                :chart-options="chartOptions"
+                                :height="250"
+                                style="position: relative; width: 100%"
+                            />
+                        </b-skeleton-wrapper>
                     </b-col>
                 </b-row>
-                <b-row class="mt-5" v-if="!metrics">
-                    <b-col md="4">
-                        <div class="py-5 w-100 center-center">
-                            <p class="mr-2">Loading data...</p>
-                            <b-spinner variant="primary" />
-                        </div>
-                    </b-col>
-                </b-row>
-                <b-row class="mt-5" v-else>
+                <b-row class="mt-5">
                     <b-col md="6">
-                        <b-card bg-variant="dark" class="shadow-sm text-white">
-                            <span>Coin Perks</span><br />
-                            <div class="h2">{{ metrics.erc20Perks.payments }}</div>
-                        </b-card>
+                        <b-skeleton-wrapper :loading="!metrics">
+                            <template #loading>
+                                <b-skeleton-img no-aspect height="110px"></b-skeleton-img>
+                            </template>
+                            <b-card v-if="metrics" bg-variant="dark" class="shadow-sm text-white">
+                                <span>Coin Perks</span><br />
+                                <div class="h2">{{ metrics.erc20Perks.payments }}</div>
+                            </b-card>
+                        </b-skeleton-wrapper>
                     </b-col>
                     <b-col md="6">
-                        <b-card bg-variant="dark" class="shadow-sm text-white">
-                            <span>NFT Perks</span><br />
-                            <div class="h2">{{ metrics.erc721Perks.payments }}</div>
-                        </b-card>
+                        <b-skeleton-wrapper :loading="!metrics">
+                            <template #loading>
+                                <b-skeleton-img no-aspect height="110px"></b-skeleton-img>
+                            </template>
+                            <b-card v-if="metrics" bg-variant="dark" class="shadow-sm text-white">
+                                <span>NFT Perks</span><br />
+                                <div class="h2">{{ metrics.erc721Perks.payments }}</div>
+                            </b-card>
+                        </b-skeleton-wrapper>
                     </b-col>
                 </b-row>
                 <b-row class="mt-5" v-if="!erc20s">
@@ -226,11 +239,13 @@ export default class TransactionsView extends Vue {
         return this.analytics[this.$route.params.id];
     }
 
-    get poolAnalyticsLeaderboard() {
+    get leaderBoard() {
+        if (!this.analyticsLeaderboard[this.$route.params.id]) return null;
         return this.analyticsLeaderboard[this.$route.params.id];
     }
 
-    get poolAnalyticsMetrics() {
+    get metrics() {
+        if (!this.analyticsMetrics[this.$route.params.id]) return null;
         return this.analyticsMetrics[this.$route.params.id];
     }
 
@@ -380,20 +395,6 @@ export default class TransactionsView extends Vue {
         maintainAspectRatio: false,
     };
 
-    get leaderBoard() {
-        if (!this.poolAnalyticsLeaderboard) {
-            return null;
-        }
-        return this.poolAnalyticsLeaderboard;
-    }
-
-    get metrics() {
-        if (!this.poolAnalyticsMetrics) {
-            return null;
-        }
-        return this.poolAnalyticsMetrics;
-    }
-
     formatDateLabel(date: Date): string {
         const month = date.getUTCMonth() + 1;
         const day = date.getDate();
@@ -416,6 +417,7 @@ export default class TransactionsView extends Vue {
         const startDate = new Date(new Date(endDate).getTime() - oneDay * this.daysRange);
         endDate.setHours(23, 59, 59, 0);
 
+        await this.$store.dispatch('pools/read', this.$route.params.id);
         await this.$store.dispatch('pools/readAnalyticsMetrics', { poolId: this.pool._id });
         await this.$store.dispatch('pools/readAnalytics', { poolId: this.pool._id, startDate, endDate });
         await this.$store.dispatch('pools/readAnalyticsLeaderBoard', { poolId: this.pool._id });
