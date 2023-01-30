@@ -356,9 +356,18 @@ describe('Default Pool', () => {
                         expect(body.milestoneRewards[0].totalClaimPoints).toBe(1000);
                         expect(body.erc20Perks.length).toBe(1);
                         expect(body.erc20Perks[0].totalAmount).toBe(5);
-                        expect(body.leaderBoard.length).toBe(2);
-                        expect(body.leaderBoard[0].score).toBe(sub1TotalAmount);
-                        expect(body.leaderBoard[1].score).toBe(sub2TotalAmount);
+                    })
+
+                    .expect(200, done);
+            });
+
+            it('GET /pools/:id/analytics/leaderboard', (done) => {
+                user.get(`/v1/pools/${poolId}/analytics/leaderboard`)
+                    .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
+                    .expect(({ body }: request.Response) => {
+                        expect(body.length).toBe(2);
+                        expect(body[0].score).toBe(sub1TotalAmount);
+                        expect(body[1].score).toBe(sub2TotalAmount);
                     })
 
                     .expect(200, done);

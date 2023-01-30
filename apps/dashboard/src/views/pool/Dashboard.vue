@@ -37,7 +37,8 @@
                 <b-row class="mt-5">
                     <b-col>
                         <div class="card-header block">Leaderboard</div>
-                        <div>
+                        <b-spinner v-if="!leaderBoard" variant="primary" small />
+                        <div v-else>
                             <b-list-group>
                                 <b-list-group-item
                                     v-for="row in leaderBoard"
@@ -151,7 +152,7 @@ import BaseModalErc20Create from '@thxnetwork/dashboard/components/modals/BaseMo
 import BaseModalDepositCreate from '@thxnetwork/dashboard/components/modals/BaseModalDepositCreate.vue';
 import { fromWei } from 'web3-utils';
 import { format } from 'date-fns';
-import { IPoolAnalytics, IPools } from '../../store/modules/pools';
+import { IPoolAnalytics, IPoolAnalyticsLeaderboard, IPools } from '../../store/modules/pools';
 
 @Component({
     components: {
@@ -165,6 +166,7 @@ import { IPoolAnalytics, IPools } from '../../store/modules/pools';
     computed: mapGetters({
         pools: 'pools/all',
         analytics: 'pools/analytics',
+        analyticsLeaderboard: 'pools/analyticsLeaderboard',
         erc20s: 'erc20/all',
     }),
 })
@@ -176,6 +178,7 @@ export default class TransactionsView extends Vue {
     loading = false;
     format = format;
     analytics!: IPoolAnalytics;
+    analyticsLeaderboard!: IPoolAnalyticsLeaderboard;
     daysRange = 14;
 
     get pool() {
@@ -184,6 +187,10 @@ export default class TransactionsView extends Vue {
 
     get poolAnalytics() {
         return this.analytics[this.$route.params.id];
+    }
+
+    get poolAnalyticsLeaderboard() {
+        return this.analyticsLeaderboard[this.$route.params.id];
     }
 
     get chartDates() {
@@ -333,10 +340,10 @@ export default class TransactionsView extends Vue {
     };
 
     get leaderBoard() {
-        if (!this.poolAnalytics) {
+        if (!this.poolAnalyticsLeaderboard) {
             return null;
         }
-        return this.poolAnalytics.leaderBoard;
+        return this.poolAnalyticsLeaderboard;
     }
 
     formatDateLabel(date: Date): string {
@@ -362,6 +369,7 @@ export default class TransactionsView extends Vue {
         endDate.setHours(23, 59, 59, 0);
 
         await this.$store.dispatch('pools/readAnalytics', { poolId: this.pool._id, startDate, endDate });
+        await this.$store.dispatch('pools/readAnalyticsLeaderboard', { poolId: this.pool._id });
 
         this.$store.dispatch('erc20/list').then(async () => {
             await Promise.all(

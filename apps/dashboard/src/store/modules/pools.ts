@@ -58,6 +58,11 @@ export interface IPoolAnalytic {
     ];
     leaderBoard: { sub: string; score: number; name: string; email: string }[];
 }
+
+export interface IPoolAnalyticLeaderboard {
+    _id: string;
+    leaderBoard: { sub: string; score: number; name: string; email: string }[];
+}
 export interface IPools {
     [id: string]: IPool;
 }
@@ -66,10 +71,15 @@ export interface IPoolAnalytics {
     [id: string]: IPoolAnalytic;
 }
 
+export interface IPoolAnalyticsLeaderboard {
+    [id: string]: IPoolAnalyticLeaderboard;
+}
+
 @Module({ namespaced: true })
 class PoolModule extends VuexModule {
     _all: IPools = {};
     _analytics: IPoolAnalytics = {};
+    _analyticsLeaderboard: IPoolAnalyticsLeaderboard = {};
 
     get all() {
         return this._all;
@@ -77,6 +87,10 @@ class PoolModule extends VuexModule {
 
     get analytics() {
         return this._analytics;
+    }
+
+    get analyticsLeaderboard() {
+        return this._analyticsLeaderboard;
     }
 
     @Mutation
@@ -87,6 +101,11 @@ class PoolModule extends VuexModule {
     @Mutation
     setAnalytics(pool: IPoolAnalytic) {
         Vue.set(this._analytics, pool._id, pool);
+    }
+
+    @Mutation
+    setAnalyticsLeaderboard(pool: IPoolAnalyticLeaderboard) {
+        Vue.set(this._analyticsLeaderboard, pool._id, pool);
     }
 
     @Mutation
@@ -135,6 +154,17 @@ class PoolModule extends VuexModule {
         });
 
         this.context.commit('setAnalytics', r.data);
+        return r.data;
+    }
+
+    @Action({ rawError: true })
+    async readAnalyticsLeaderBoard(payload: { poolId: string }) {
+        const r = await axios({
+            method: 'get',
+            url: `/pools/${payload.poolId}/analytics/leaderboard`,
+        });
+
+        this.context.commit('setLeaderboard', { _id: payload.poolId, leaderboard: r.data });
         return r.data;
     }
 
