@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { body, param } from 'express-validator';
 import { BadRequestError, InsufficientBalanceError } from '@thxnetwork/api/util/errors';
 import { toWei } from 'web3-utils';
 import { getProvider } from '@thxnetwork/api/util/network';
@@ -8,12 +7,9 @@ import { ERC20Type } from '@thxnetwork/api/types/enums';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
 import PoolService from '@thxnetwork/api/services/PoolService';
+import { body, param } from 'express-validator';
 
-export const validation = [
-    param('id').isMongoId(),
-    body('erc20Id').exists().isMongoId(),
-    body('amount').isInt({ gt: 0 }),
-];
+export const validation = [param('id').isMongoId(), body('erc20Id').exists().isMongoId(), body('amount').exists()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
@@ -21,7 +17,6 @@ const controller = async (req: Request, res: Response) => {
     const { defaultAccount } = getProvider(pool.chainId);
     const amount = toWei(String(req.body.amount));
     const erc20 = await ERC20Service.getById(req.body.erc20Id);
-
     if (erc20.type !== ERC20Type.Limited) throw new BadRequestError('Token type is not Limited type');
 
     // Check balance to ensure throughput

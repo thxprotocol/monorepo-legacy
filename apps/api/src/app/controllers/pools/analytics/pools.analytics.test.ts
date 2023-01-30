@@ -1,24 +1,22 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId } from '@thxnetwork/api/types/enums';
+import { ChainId, ERC20Type } from '@thxnetwork/api/types/enums';
 import { Account } from 'web3-core';
 import { createWallet } from '@thxnetwork/api/util/jest/network';
 import {
     userWalletPrivateKey2,
     tokenName,
     tokenSymbol,
-    tokenTotalSupply,
     dashboardAccessToken,
     sub2,
     widgetAccessToken,
     userWalletAddress2,
+    sub,
 } from '@thxnetwork/api/util/jest/constants';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { getByteCodeForContractName, getContract } from '@thxnetwork/api/config/contracts';
-import { currentVersion } from '@thxnetwork/contracts/exports';
-import TransactionService from '@thxnetwork/api/services/TransactionService';
 import { addMinutes } from '@thxnetwork/api/util/rewards';
 import { Contract } from 'web3-eth-contract';
+import { fromWei, isAddress, toWei } from 'web3-utils';
 
 const user = request.agent(app);
 
@@ -38,6 +36,7 @@ describe('Default Pool', () => {
 
     let sub1TotalAmount = 0;
     let sub2TotalAmount = 0;
+    const totalSupply = toWei('100000');
 
     beforeAll(async () => {
         await beforeAllCallback();
@@ -47,24 +46,19 @@ describe('Default Pool', () => {
 
     afterAll(afterAllCallback);
 
-    describe('Existing ERC20 contract', () => {
-        it('TokenDeployed event', async () => {
-            const { options } = getContract(ChainId.Hardhat, 'LimitedSupplyToken', currentVersion);
-            tokenContract = await TransactionService.deploy(
-                options.jsonInterface,
-                getByteCodeForContractName('LimitedSupplyToken'),
-                [tokenName, tokenSymbol, userWallet.address, tokenTotalSupply],
-                ChainId.Hardhat,
-            );
-        });
-        it('import token', (done) => {
-            user.post('/v1/erc20/token')
+    describe('CREATE ERC20 Token', () => {
+        it('POST /erc20', (done) => {
+            user.post('/v1/erc20')
                 .set('Authorization', dashboardAccessToken)
                 .send({
-                    address: tokenContract.options.address,
                     chainId: ChainId.Hardhat,
+                    name: tokenName,
+                    symbol: tokenSymbol,
+                    type: ERC20Type.Limited,
+                    totalSupply,
                 })
                 .expect(({ body }: request.Response) => {
+                    expect(isAddress(body.address)).toBe(true);
                     erc20Id = body._id;
                 })
                 .expect(201, done);
@@ -287,6 +281,69 @@ describe('Default Pool', () => {
                     .expect(201, done);
             });
         });
+
+        describe('Create 1 ERC20Perk, and redeeem', () => {
+            it('POST /wallets', (done) => {
+                user.post('/v1/wallets')
+                    .set({ Authorization: widgetAccessToken })
+                    .send({
+                        chainId: ChainId.Hardhat,
+                        sub,
+                        forceSync: true,
+                    })
+                    .expect((res: request.Response) => {
+                        expect(res.body.sub).toEqual(sub);
+                        expect(res.body.chainId).toEqual(ChainId.Hardhat);
+                        expect(res.body.address).toBeDefined();
+                    })
+                    .expect(201, done);
+            });
+
+            it('POST /pools/:id/topup', (done) => {
+                const amount = fromWei(totalSupply, 'ether'); // 100 eth
+                user.post(`/v1/pools/${poolId}/topup`)
+                    .set({ 'Authorization': dashboardAccessToken, 'X-PoolId': poolId })
+                    .send({ erc20Id: erc20Id, amount })
+                    .expect(200, done);
+            });
+            it('POST /erc20-perks', (done) => {
+                const expiryDate = addMinutes(new Date(), 30);
+                const image = 'http://myimage.com/1';
+
+                user.post('/v1/erc20-perks/')
+                    .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
+                    .send({
+                        erc20Id: erc20Id,
+                        title: 'Receive 500 TST tokens',
+                        description: 'Lorem ipsum dolor sit amet.',
+                        image,
+                        amount: 1,
+                        rewardLimit: 0,
+                        claimAmount: 1,
+                        pointPrice: 5,
+                        platform: 0,
+                        expiryDate,
+                    })
+                    .expect((res: request.Response) => {
+                        expect(res.body.uuid).toBeDefined();
+                        perkUuid = res.body.uuid;
+                        perk = res.body;
+                    })
+                    .expect(201, done);
+            });
+
+            it('POST /perks/erc20/:uuid/payment', (done) => {
+                user.post(`/v1/perks/erc20/${perkUuid}/payment`)
+                    .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
+                    .expect((res: request.Response) => {
+                        expect(res.body.withdrawal).toBeDefined();
+                        expect(res.body.erc20PerkPayment).toBeDefined();
+                        expect(res.body.erc20PerkPayment.poolId).toBe(poolId);
+                        sub2TotalAmount += perk.pointPrice;
+                    })
+                    .expect(201, done);
+            });
+        });
         describe('Generate Analitycs', () => {
             it('GET /pools/:id/analytics', (done) => {
                 const oneDay = 86400000; // one day in milliseconds
@@ -305,6 +362,8 @@ describe('Default Pool', () => {
                         expect(body.pointRewards[0].totalClaimPoints).toBe(30);
                         expect(body.milestoneRewards.length).toBe(1);
                         expect(body.milestoneRewards[0].totalClaimPoints).toBe(1000);
+                        expect(body.erc20Perks.length).toBe(1);
+                        expect(body.erc20Perks[0].totalAmount).toBe(5);
                         expect(body.leaderBoard.length).toBe(2);
                         expect(body.leaderBoard[0].score).toBe(sub1TotalAmount);
                         expect(body.leaderBoard[1].score).toBe(sub2TotalAmount);
