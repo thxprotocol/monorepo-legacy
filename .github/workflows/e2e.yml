@@ -1,11 +1,12 @@
 name: E2E Tests
 
 on:
-    push:
-        branches:
-            - main
-    schedule:
-        - cron: '0 4 * * *'
+    [push]
+    # push:
+    #     branches:
+    #         - main
+    # schedule:
+    #     - cron: '0 4 * * *'
 
 jobs:
     e2e:
@@ -21,7 +22,8 @@ jobs:
             - name: Chrome set path
               run: echo "BROWSER_PATH=$(which chrome)" >> $GITHUB_ENV
 
-            - name: Chrome e2e test 🚀
+            - name: Chrome E2E test 🚀
+              id: 'test'
               uses: cypress-io/github-action@v4
               with:
                   install: true
@@ -30,3 +32,10 @@ jobs:
               env:
                   CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Update Discord
+              env:
+                  DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+              uses: Ilshidur/action-discord@master
+              with:
+                  args: 'E2E tests for `dev` passed.'

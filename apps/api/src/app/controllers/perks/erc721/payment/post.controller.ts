@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import { ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
-import { InsufficientBalanceError, NotFoundError } from '@thxnetwork/api/util/errors';
+import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
 import PointBalanceService, { PointBalance } from '@thxnetwork/api/services/PointBalanceService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
@@ -25,7 +25,7 @@ const controller = async (req: Request, res: Response) => {
 
     const pointBalance = await PointBalance.findOne({ sub: req.auth.sub, poolId: pool._id });
     if (!pointBalance || Number(pointBalance.balance) < Number(erc721Perk.pointPrice))
-        throw new InsufficientBalanceError('Not enough points on this account for this perk.');
+        throw new BadRequestError('Not enough points on this account for this perk.');
 
     // Get the account wallet
     const account = await AccountProxy.getById(req.auth.sub);
