@@ -1,4 +1,4 @@
-import { track } from '@thxnetwork/wallet/utils/mixpanel';
+import { track } from '@thxnetwork/mixpanel';
 import { thxClient } from '@thxnetwork/wallet/utils/oidc';
 import { Module, VuexModule, Action } from 'vuex-module-decorators';
 
@@ -18,7 +18,9 @@ class AssetPoolModule extends VuexModule {
         const claim = await this.context.dispatch('getClaim', claimUuid);
         const profile = this.context.rootGetters['account/profile'];
         const claimed = await thxClient.claims.collect({ poolId: claim.claim.poolId, claimUuid });
-        track.UserCreates(profile.sub, 'perk claim');
+
+        track('UserCreates', [profile.sub, 'perk claim']);
+
         return claimed;
     }
 }

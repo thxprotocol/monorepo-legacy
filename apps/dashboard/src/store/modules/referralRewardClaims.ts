@@ -3,7 +3,7 @@ import { Vue } from 'vue-property-decorator';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { type IPool } from './pools';
 import { TReferralReward, type TReferralRewardClaim } from '@thxnetwork/types/index';
-import { track } from '@thxnetwork/dashboard/utils/mixpanel';
+import { track } from '@thxnetwork/mixpanel';
 
 export type RewardByPage = {
     [page: number]: TReferralRewardClaim[];

@@ -12,7 +12,7 @@ import type {
     IERC721Metadatas,
 } from '@thxnetwork/dashboard/types/erc721';
 import JSZip from 'jszip';
-import { track } from '@thxnetwork/dashboard/utils/mixpanel';
+import { track } from '@thxnetwork/mixpanel';
 
 @Module({ namespaced: true })
 class ERC721Module extends VuexModule {

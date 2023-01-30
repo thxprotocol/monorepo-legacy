@@ -29,7 +29,7 @@
 
 <script lang="ts">
 import { IAccount } from '@thxnetwork/dashboard/types/account';
-import { track } from '@thxnetwork/dashboard/utils/mixpanel';
+import { track } from '@thxnetwork/mixpanel';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 

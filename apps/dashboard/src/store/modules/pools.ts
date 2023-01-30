@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
-import { track } from '@thxnetwork/dashboard/utils/mixpanel';
+import { track } from '@thxnetwork/mixpanel';
 
 export interface IPool {
     _id: string;

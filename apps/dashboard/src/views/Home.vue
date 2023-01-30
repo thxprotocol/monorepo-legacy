@@ -10,10 +10,11 @@
             :hide-footer="true"
             id="modalWaitDeployPool"
             @hide="onWaitModalHide"
+            show
             :v-model="!poolsCount"
         >
-            <b-alert show variant="warning" class="center-center"
-                >Welcome! We are deploying your first loyalty pool.
+            <b-alert show variant="warning" class="center-center">
+                Welcome! We are deploying your first loyalty pool.
             </b-alert>
             <div class="center-center"><b-spinner variant="primary" /></div>
         </b-modal>
@@ -149,13 +150,13 @@ import { mapGetters } from 'vuex';
 import BaseModalRequestAccountEmailUpdate from '@thxnetwork/dashboard/components/modals/BaseModalRequestAccountEmailUpdate.vue';
 
 @Component({
+    components: {
+        BaseModalRequestAccountEmailUpdate,
+    },
     computed: mapGetters({
         profile: 'account/profile',
         pools: 'pools/all',
     }),
-    components: {
-        BaseModalRequestAccountEmailUpdate,
-    },
 })
 export default class Home extends Vue {
     window = window;
@@ -169,7 +170,7 @@ export default class Home extends Vue {
     }
 
     get poolsCount() {
-        return !this.pools ? 0 : Object.values(this.pools).length;
+        return !this.pools ? 0 : Object.values(this.pools).filter((p) => !p.address).length;
     }
 
     async mounted() {

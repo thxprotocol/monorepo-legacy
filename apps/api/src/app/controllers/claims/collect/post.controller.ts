@@ -46,10 +46,10 @@ const controller = async (req: Request, res: Response) => {
     let claim = await ClaimService.findByUuid(req.params.uuid);
     if (!claim) throw new BadRequestError('This claim URL is invalid.');
 
+    const account = await AccountProxy.getById(req.auth.sub);
+
     const pool = await PoolService.getById(claim.poolId);
     if (!pool) throw new BadRequestError('The pool for this perk has been removed.');
-
-    const account = await AccountProxy.getById(req.auth.sub);
 
     const perk = await findRewardByUuid(claim.rewardUuid);
     if (!perk) throw new BadRequestError('The perk for this id does not exist.');
@@ -67,13 +67,10 @@ const controller = async (req: Request, res: Response) => {
         throw new ForbiddenError('This perk claim has expired.');
     }
 
-    // Can be claimed only once per claim per sub
-    if (perk.claimAmount > 0 && claim.sub) {
-        const message =
-            claim.sub === req.auth.sub
-                ? 'You have already claimed this perk.'
-                : 'This perk has been claimed by someone else.';
-        throw new ForbiddenError(message);
+    // Can only be claimed once per sub
+    const isClaimedBySub = await model.exists({ perkId: perk._id, sub: req.auth.sub });
+    if (isClaimedBySub) {
+        throw new ForbiddenError('You have already claimed this perk.');
     }
 
     // Can only be claimed for the amount of times per perk specified in the rewardLimit
@@ -82,6 +79,11 @@ const controller = async (req: Request, res: Response) => {
         if (amountOfPayments >= perk.rewardLimit) {
             throw new ForbiddenError("This perk has reached it's limit.");
         }
+    }
+
+    // Can not be claimed when sub is set for this claim URL and claim amount is greater than 1
+    if (perk.claimAmount > 1 && claim.sub) {
+        throw new ForbiddenError('This perk has been claimed by someone else.');
     }
 
     // Can only claim if potential platform conditions pass.

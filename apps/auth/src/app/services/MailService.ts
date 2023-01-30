@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import { AccountDocument } from '../models/Account';
 import { createRandomToken } from '../util/tokens';
-import { AUTH_URL, WALLET_URL, SENDGRID_API_KEY, NODE_ENV } from '../config/secrets';
+import { AUTH_URL, WALLET_URL, SENDGRID_API_KEY, NODE_ENV, CYPRESS_EMAIL } from '../config/secrets';
 import { assetsPath } from '../util/path';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IAccessToken } from '../types/TAccount';
@@ -18,9 +18,17 @@ if (SENDGRID_API_KEY) {
     sgMail.setApiKey(SENDGRID_API_KEY);
 }
 
+function createOTP(account: AccountDocument) {
+    return account.email === CYPRESS_EMAIL
+        ? '00000'
+        : Array.from({ length: 5 })
+              .map(() => crypto.randomInt(0, 10))
+              .join('');
+}
+
 export class MailService {
     static sendMail = (to: string, subject: string, html: string, link = '') => {
-        if (SENDGRID_API_KEY && NODE_ENV !== 'test') {
+        if (SENDGRID_API_KEY && NODE_ENV !== 'test' && CYPRESS_EMAIL !== to) {
             return sgMail.send({
                 to,
                 from: { email: 'noreply@thx.network', name: 'THX Network' },
@@ -65,9 +73,7 @@ export class MailService {
     }
 
     static async sendOTPMail(account: AccountDocument) {
-        const otp = Array.from({ length: 5 })
-            .map(() => crypto.randomInt(0, 10))
-            .join('');
+        const otp = createOTP(account);
         const hashedOtp = await bcrypt.hash(otp, 10);
         const html = await ejs.renderFile(
             path.join(mailTemplatePath, 'email-otp.ejs'),

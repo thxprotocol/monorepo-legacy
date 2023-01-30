@@ -2,7 +2,7 @@ import { ERC20Perk } from '@thxnetwork/api/models/ERC20Perk';
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import { toWei } from 'web3-utils';
-import { InsufficientBalanceError, NotFoundError } from '@thxnetwork/api/util/errors';
+import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { getContractFromName } from '@thxnetwork/api/config/contracts';
 import { BigNumber } from 'ethers';
 import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
@@ -25,20 +25,19 @@ const controller = async (req: Request, res: Response) => {
     const erc20 = await ERC20Service.getById(erc20Perk.erc20Id);
     if (!erc20) throw new NotFoundError('Could not find the erc20 for this perk');
 
+    const pointBalance = await PointBalance.findOne({ sub: req.auth.sub, poolId: pool._id });
+    if (!pointBalance || Number(pointBalance.balance) < Number(erc20Perk.pointPrice)) {
+        throw new BadRequestError('Not enough points on this account for this payment');
+    }
+
     const contract = getContractFromName(pool.chainId, 'LimitedSupplyToken', erc20.address);
     const amount = toWei(erc20Perk.amount).toString();
-
     const balanceOfPool = await contract.methods.balanceOf(pool.address).call();
     if (
         [ERC20Type.Unknown, ERC20Type.Limited].includes(erc20.type) &&
         BigNumber.from(balanceOfPool).lt(BigNumber.from(amount))
     ) {
-        throw new InsufficientBalanceError();
-    }
-
-    const { balance } = await PointBalance.findOne({ sub: req.auth.sub, poolId: pool._id });
-    if (Number(balance) < Number(erc20Perk.pointPrice)) {
-        throw new InsufficientBalanceError('Not enough points on this account for this pool.');
+        throw new BadRequestError('Not enough coins available in the pool for this transfer');
     }
 
     const account = await AccountProxy.getById(req.auth.sub);

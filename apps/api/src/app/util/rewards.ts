@@ -84,22 +84,22 @@ export const createERC20Perk = async (pool: AssetPoolDocument, payload: TERC20Pe
 
 export async function createDummyContents(pool: AssetPoolDocument) {
     await ReferralRewardService.create(pool, {
-        title: 'My first Referral Reward',
-        description: 'a reward that can be claimed when a new user signs up',
+        title: '❤️ Spread the word!',
+        description: 'Let your customers earn points by referring people to your site.',
         successUrl: '',
-        amount: '1',
+        amount: '250',
     });
 
     await PointRewardService.create(pool, {
-        title: 'My First Conditional Reward',
-        description: 'a reward that can be claimed on certain conditions',
-        amount: '1',
+        title: '💬 Engage on our channel',
+        description: 'Set social conditions for people to meet when claiming points.',
+        amount: '50',
     });
 
     await MilestoneRewardService.create(pool, {
-        title: 'My first Milestone Reward',
-        description: 'a reward that can be claimed after all the milestones are completed',
-        amount: 1,
+        title: '🏁 Reach a milestone',
+        description: 'Claim points when progressing in the customer journey of external software.',
+        amount: 15,
     });
 }
 

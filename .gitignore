@@ -73,3 +73,6 @@ amplifytools.xcconfig
 libs/contracts/deployments/localhost
 .openzeppelin
 *.tsbuildinfo
+
+cypress/screenshots/*
+cypress/videos/*

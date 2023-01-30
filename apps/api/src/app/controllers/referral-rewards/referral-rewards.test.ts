@@ -43,10 +43,7 @@ describe('Referral Rewards', () => {
     it('POST /pools', (done) => {
         user.post('/v1/pools')
             .set('Authorization', dashboardAccessToken)
-            .send({
-                chainId: ChainId.Hardhat,
-                erc20tokens: [tokenAddress],
-            })
+            .send({ chainId: ChainId.Hardhat })
             .expect((res: request.Response) => {
                 expect(isAddress(res.body.address)).toBe(true);
                 poolId = res.body._id;
@@ -139,7 +136,7 @@ describe('Referral Rewards', () => {
             .expect(201, done);
     });
 
-    it('GET /referral-rewards:uuid/claims', (done) => {
+    it('GET /referral-rewards/:uuid/claims', (done) => {
         user.get(`/v1/referral-rewards/${referralReward.uuid}/claims`)
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .expect((res: request.Response) => {

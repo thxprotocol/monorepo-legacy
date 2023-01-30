@@ -38,7 +38,7 @@ morganBody(app, {
 
 app.use(expressEJSLayouts);
 app.use(xssProtection(true));
-app.use(express.static(assetsPath, { maxAge: 31557600000 }));
+app.use(express.static(assetsPath));
 app.use('/', mainRouter);
 app.use(notFoundHandler);
 app.use(errorLogger);
