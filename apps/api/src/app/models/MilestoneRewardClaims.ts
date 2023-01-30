@@ -6,12 +6,13 @@ export type MilestoneRewardClaimDocument = mongoose.Document & TMilestoneRewardC
 const schema = new mongoose.Schema(
     {
         milestoneRewardId: String,
-        sub: String,
+        sub: { type: String, index: 'hashed' },
         uuid: String,
         amount: String,
         isClaimed: Boolean,
     },
     { timestamps: true },
 );
+schema.index({ createdAt: 1 });
 
 export const MilestoneRewardClaim = mongoose.model<MilestoneRewardClaimDocument>('MilestoneRewardClaims', schema);

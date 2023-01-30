@@ -12,13 +12,6 @@ export interface IPool {
     chainId: ChainId;
     rewardPollDuration: number;
     proposeWithdrawPollDuration: number;
-    metrics: {
-        pointRewards: { totalClaimPoints: number };
-        referralRewards: { totalClaimPoints: number };
-        milestoneRewards: { totalClaimPoints: number };
-        erc20Perks: { payments: number };
-        erc721Perks: { payments: number };
-    };
     version: string;
     archived: boolean;
     title: string;
@@ -56,7 +49,24 @@ export interface IPoolAnalytic {
             totalClaimPoints: number;
         },
     ];
-    leaderBoard: { sub: string; score: number; name: string; email: string }[];
+}
+
+export interface IPoolAnalyticLeaderBoard {
+    _id: string;
+    sub: string;
+    score: number;
+    name: string;
+    email: string;
+    address: string;
+}
+
+export interface IPoolAnalyticMetrics {
+    _id: string;
+    pointRewards: { totalClaimPoints: number };
+    referralRewards: { totalClaimPoints: number };
+    milestoneRewards: { totalClaimPoints: number };
+    erc20Perks: { payments: number };
+    erc721Perks: { payments: number };
 }
 export interface IPools {
     [id: string]: IPool;
@@ -66,10 +76,20 @@ export interface IPoolAnalytics {
     [id: string]: IPoolAnalytic;
 }
 
+export interface IPoolAnalyticsLeaderBoard {
+    [id: string]: IPoolAnalyticLeaderBoard[];
+}
+
+export interface IPoolAnalyticsMetrics {
+    [id: string]: IPoolAnalyticMetrics;
+}
+
 @Module({ namespaced: true })
 class PoolModule extends VuexModule {
     _all: IPools = {};
     _analytics: IPoolAnalytics = {};
+    _analyticsLeaderBoard: IPoolAnalyticsLeaderBoard = {};
+    _analyticsMetrics: IPoolAnalyticsLeaderBoard = {};
 
     get all() {
         return this._all;
@@ -79,14 +99,32 @@ class PoolModule extends VuexModule {
         return this._analytics;
     }
 
+    get analyticsLeaderBoard() {
+        return this._analyticsLeaderBoard;
+    }
+
+    get analyticsMetrics() {
+        return this._analyticsMetrics;
+    }
+
     @Mutation
     set(pool: IPool) {
         Vue.set(this._all, pool._id, pool);
     }
 
     @Mutation
-    setAnalytics(pool: IPoolAnalytic) {
-        Vue.set(this._analytics, pool._id, pool);
+    setAnalytics(data: IPoolAnalytic) {
+        Vue.set(this._analytics, data._id, data);
+    }
+
+    @Mutation
+    setAnalyticsLeaderBoard(data: IPoolAnalyticLeaderBoard) {
+        Vue.set(this._analyticsLeaderBoard, data._id, data);
+    }
+
+    @Mutation
+    setAnalyticsMetrics(data: IPoolAnalyticMetrics) {
+        Vue.set(this._analyticsMetrics, data._id, data);
     }
 
     @Mutation
@@ -135,6 +173,27 @@ class PoolModule extends VuexModule {
         });
 
         this.context.commit('setAnalytics', r.data);
+        return r.data;
+    }
+
+    @Action({ rawError: true })
+    async readAnalyticsLeaderBoard(payload: { poolId: string }) {
+        const r = await axios({
+            method: 'get',
+            url: `/pools/${payload.poolId}/analytics/leaderboard`,
+        });
+
+        this.context.commit('setAnalyticsLeaderBoard', { _id: payload.poolId, ...r.data });
+        return r.data;
+    }
+
+    @Action({ rawError: true })
+    async readAnalyticsMetrics(payload: { poolId: string }) {
+        const r = await axios({
+            method: 'get',
+            url: `/pools/${payload.poolId}/analytics/metrics`,
+        });
+        this.context.commit('setAnalyticsMetrics', { _id: payload.poolId, ...r.data });
         return r.data;
     }
 

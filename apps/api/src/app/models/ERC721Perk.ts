@@ -4,7 +4,7 @@ import { rewardBaseSchema } from '@thxnetwork/api/models/ERC20Perk';
 
 export type ERC721PerkDocument = mongoose.Document & TERC721Perk;
 
-const erc721PerkSchema = new mongoose.Schema(
+const schema = new mongoose.Schema(
     {
         ...rewardBaseSchema,
         erc721Id: String,
@@ -14,5 +14,6 @@ const erc721PerkSchema = new mongoose.Schema(
     },
     { timestamps: true },
 );
+schema.index({ createdAt: 1 });
 
-export const ERC721Perk = mongoose.model<ERC721PerkDocument>('erc721perks', erc721PerkSchema);
+export const ERC721Perk = mongoose.model<ERC721PerkDocument>('erc721perks', schema);

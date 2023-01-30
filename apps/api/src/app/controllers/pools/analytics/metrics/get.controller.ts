@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
-import { param, query } from 'express-validator';
+import { param } from 'express-validator';
 import { ForbiddenError } from '@thxnetwork/api/util/errors';
+import { Claim } from '@thxnetwork/api/models/Claim';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { PointReward, PointRewardDocument } from '@thxnetwork/api/models/PointReward';
 import { ERC20Perk, ERC20PerkDocument } from '@thxnetwork/api/models/ERC20Perk';
@@ -9,7 +10,7 @@ import mongoose from 'mongoose';
 import { ReferralReward, ReferralRewardDocument } from '@thxnetwork/api/models/ReferralReward';
 import { MilestoneReward, MilestoneRewardDocument } from '@thxnetwork/api/models/MilestoneReward';
 
-export const validation = [param('id').isMongoId(), query('startDate').exists(), query('endDate').exists()];
+export const validation = [param('id').isMongoId()];
 
 export const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
@@ -18,18 +19,12 @@ export const controller = async (req: Request, res: Response) => {
     if (pool.sub !== req.auth.sub) throw new ForbiddenError('Only the pool owner can access this pool info');
     if (!pool.address) return res.json(pool.toJSON());
 
-    // CHART QUERY
-    const startDate = new Date(String(req.query.startDate));
-    const endDate = new Date(String(req.query.endDate));
-
     const erc20PerksQueryResult = await runAggregateQuery<ERC20PerkDocument>({
         joinTable: 'erc20perkpayments',
         key: 'perkId',
         model: ERC20Perk,
         poolId: String(pool._id),
         amountField: 'pointPrice',
-        startDate,
-        endDate,
     });
     const erc721PerksQueryResult = await runAggregateQuery<ERC721PerkDocument>({
         joinTable: 'erc721perkpayments',
@@ -37,18 +32,6 @@ export const controller = async (req: Request, res: Response) => {
         model: ERC721Perk,
         poolId: String(pool._id),
         amountField: 'pointPrice',
-        startDate,
-        endDate,
-    });
-    const milestoneRewardsQueryResult = await runAggregateQuery<MilestoneRewardDocument>({
-        joinTable: 'milestonerewardclaims',
-        key: 'milestoneRewardId',
-        model: MilestoneReward,
-        poolId: String(pool._id),
-        amountField: 'amount',
-        startDate,
-        endDate,
-        extraFilter: { isClaimed: true },
     });
     const referralRewardsQueryResult = await runAggregateQuery<ReferralRewardDocument>({
         joinTable: 'referralrewardclaims',
@@ -56,9 +39,15 @@ export const controller = async (req: Request, res: Response) => {
         model: ReferralReward,
         poolId: String(pool._id),
         amountField: 'amount',
-        startDate,
-        endDate,
         extraFilter: { isApproved: true },
+    });
+    const milestoneRewardsQueryResult = await runAggregateQuery<MilestoneRewardDocument>({
+        joinTable: 'milestonerewardclaims',
+        key: 'milestoneRewardId',
+        model: MilestoneReward,
+        poolId: String(pool._id),
+        amountField: 'amount',
+        extraFilter: { isClaimed: true },
     });
     const pointRewardsQueryResult = await runAggregateQuery<PointRewardDocument>({
         joinTable: 'pointrewardclaims',
@@ -66,62 +55,46 @@ export const controller = async (req: Request, res: Response) => {
         model: PointReward,
         poolId: String(pool._id),
         amountField: 'amount',
-        startDate,
-        endDate,
     });
 
-    const result: any = {
-        _id: pool._id,
-        erc20Perks: erc20PerksQueryResult.map((x) => {
-            return {
-                day: x._id,
-                totalAmount: x.total_amount,
-            };
-        }),
-        erc721Perks: erc721PerksQueryResult.map((x) => {
-            return {
-                day: x._id,
-                totalAmount: x.total_amount,
-            };
-        }),
-        milestoneRewards: milestoneRewardsQueryResult.map((x) => {
-            return {
-                day: x._id,
-                totalClaimPoints: x.total_amount,
-            };
-        }),
-        referralRewards: referralRewardsQueryResult.map((x) => {
-            return {
-                day: x._id,
-                totalClaimPoints: x.total_amount,
-            };
-        }),
-        pointRewards: pointRewardsQueryResult.map((x) => {
-            return {
-                day: x._id,
-                totalClaimPoints: x.total_amount,
-            };
-        }),
+    const metrics = {
+        claims: await Claim.count({ poolId: pool._id }),
+        erc20Perks: {
+            total: erc20PerksQueryResult.recordsCount,
+            payments: erc20PerksQueryResult.claimsCount,
+            totalAmount: erc20PerksQueryResult.totalAmount,
+        },
+        erc721Perks: {
+            total: erc721PerksQueryResult.recordsCount,
+            payments: erc721PerksQueryResult.claimsCount,
+            totalAmount: erc721PerksQueryResult.totalAmount,
+        },
+        referralRewards: {
+            total: referralRewardsQueryResult.recordsCount,
+            claims: referralRewardsQueryResult.claimsCount,
+            totalClaimPoints: referralRewardsQueryResult.totalAmount,
+        },
+        pointRewards: {
+            total: pointRewardsQueryResult.recordsCount,
+            claims: pointRewardsQueryResult.claimsCount,
+            totalClaimPoints: pointRewardsQueryResult.totalAmount,
+        },
+        milestoneRewards: {
+            total: milestoneRewardsQueryResult.recordsCount,
+            claims: milestoneRewardsQueryResult.claimsCount,
+            totalClaimPoints: milestoneRewardsQueryResult.totalAmount,
+        },
     };
-    res.json(result);
+
+    res.json(metrics);
 };
 
-/**
- *
- * @returns the rewards per poolId, with the claims for each reward,
- * filtered by a time range,
- * grouped by day of claim creation
- * with the total claims per reward
- * and the sum of the reward amount * total claims per reward per day
- */
 async function runAggregateQuery<T>(args: {
     model: mongoose.Model<T>;
     poolId: string;
     joinTable: string;
     key: string;
     amountField: string;
-    startDate: Date;
-    endDate: Date;
     extraFilter?: object;
 }) {
     const extraFilter = args.extraFilter ? { ...args.extraFilter } : {};
@@ -134,14 +107,7 @@ async function runAggregateQuery<T>(args: {
         {
             $lookup: {
                 from: args.joinTable,
-                let: {
-                    id: {
-                        $convert: {
-                            input: '$_id',
-                            to: 'string',
-                        },
-                    },
-                },
+                let: { id: { $convert: { input: '$_id', to: 'string' } } },
                 pipeline: [
                     {
                         $match: {
@@ -149,12 +115,6 @@ async function runAggregateQuery<T>(args: {
                                 {
                                     $expr: {
                                         $eq: ['$$id', `$${args.key}`],
-                                    },
-                                },
-                                {
-                                    createdAt: {
-                                        $gte: args.startDate,
-                                        $lte: args.endDate,
                                     },
                                 },
                                 extraFilter,
@@ -166,32 +126,38 @@ async function runAggregateQuery<T>(args: {
             },
         },
         {
-            $unwind: '$claims',
-        },
-        {
-            $group: {
-                _id: {
-                    $dateToString: {
-                        format: '%Y-%m-%d',
-                        date: { $toDate: '$claims.createdAt' },
-                    },
-                },
-                paymentsCount: {
-                    $count: {},
-                },
+            $project: {
+                claims_count: { $size: '$claims' },
                 total_amount: {
-                    $sum: {
-                        $convert: {
-                            input: `$${args.amountField}`,
-                            to: 'int',
+                    $multiply: [
+                        { $size: '$claims' },
+                        {
+                            $convert: {
+                                input: `$${args.amountField}`,
+                                to: 'int',
+                            },
                         },
-                    },
+                    ],
                 },
             },
         },
     ]);
-
-    return queryResult;
+    const recordsCount = queryResult.length;
+    const claimsCount = recordsCount
+        ? queryResult
+              .map((x) => x.claims_count)
+              .reduce((a, b) => {
+                  return a + b;
+              })
+        : 0;
+    const totalAmount = claimsCount
+        ? queryResult
+              .map((x) => x.total_amount)
+              .reduce((a, b) => {
+                  return a + b;
+              })
+        : 0;
+    return { recordsCount, claimsCount, totalAmount };
 }
 
 export default { controller, validation };

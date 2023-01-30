@@ -3,18 +3,19 @@ import mongoose from 'mongoose';
 
 export type PointRewardClaimDocument = mongoose.Document & TPointRewardClaim;
 
-const pointRewardClaimSchema = new mongoose.Schema(
+const schema = new mongoose.Schema(
     {
         pointRewardId: String,
-        sub: String,
+        sub: { type: String, index: 'hashed' },
         amount: String,
         poolId: String,
     },
     { timestamps: true },
 );
+schema.index({ createdAt: 1 });
 
 export const PointRewardClaim = mongoose.model<PointRewardClaimDocument>(
     'PointRewardClaim',
-    pointRewardClaimSchema,
+    schema,
     'pointrewardclaims',
 );
