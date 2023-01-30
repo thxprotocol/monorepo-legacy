@@ -372,6 +372,20 @@ describe('Default Pool', () => {
 
                     .expect(200, done);
             });
+
+            it('GET /pools/:id/analytics/metrics', (done) => {
+                user.get(`/v1/pools/${poolId}/analytics/metrics`)
+                    .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
+                    .expect(({ body }: request.Response) => {
+                        expect(body.claims).toBe(1);
+                        expect(body.erc20Perks).toEqual({ total: 1, payments: 1, totalAmount: 5 });
+                        expect(body.referralRewards).toEqual({ total: 3, claims: 2, totalClaimPoints: 150 });
+                        expect(body.pointRewards).toEqual({ total: 3, claims: 2, totalClaimPoints: 30 });
+                        expect(body.milestoneRewards).toEqual({ total: 2, claims: 1, totalClaimPoints: 1000 });
+                    })
+
+                    .expect(200, done);
+            });
         });
     });
 });

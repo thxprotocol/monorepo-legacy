@@ -18,7 +18,7 @@
                         />
                     </b-col>
                 </b-row>
-                <b-row class="mt-5" v-if="!pool.metrics">
+                <b-row class="mt-5" v-if="!metrics">
                     <b-col md="4">
                         <div class="py-5 w-100 center-center">
                             <p class="mr-2">Loading data...</p>
@@ -30,19 +30,19 @@
                     <b-col md="4">
                         <b-card bg-variant="primary" class="shadow-sm text-white">
                             <span>Referrals</span><br />
-                            <div class="h2">{{ pool.metrics.referralRewards.totalClaimPoints }}</div>
+                            <div class="h2">{{ metrics.referralRewards.totalClaimPoints }}</div>
                         </b-card>
                     </b-col>
                     <b-col md="4">
                         <b-card bg-variant="primary" class="shadow-sm text-white">
                             <span>Conditionals</span><br />
-                            <div class="h2">{{ pool.metrics.pointRewards.totalClaimPoints }}</div>
+                            <div class="h2">{{ metrics.pointRewards.totalClaimPoints }}</div>
                         </b-card>
                     </b-col>
                     <b-col md="4">
                         <b-card bg-variant="primary" class="shadow-sm text-white">
                             <span>Milestones</span><br />
-                            <div class="h2">{{ pool.metrics.milestoneRewards.totalClaimPoints }}</div>
+                            <div class="h2">{{ metrics.milestoneRewards.totalClaimPoints }}</div>
                         </b-card>
                     </b-col>
                 </b-row>
@@ -91,7 +91,7 @@
                         />
                     </b-col>
                 </b-row>
-                <b-row class="mt-5" v-if="!pool.metrics">
+                <b-row class="mt-5" v-if="!metrics">
                     <b-col md="4">
                         <div class="py-5 w-100 center-center">
                             <p class="mr-2">Loading data...</p>
@@ -103,13 +103,13 @@
                     <b-col md="6">
                         <b-card bg-variant="dark" class="shadow-sm text-white">
                             <span>Coin Perks</span><br />
-                            <div class="h2">{{ pool.metrics.erc20Perks.payments }}</div>
+                            <div class="h2">{{ metrics.erc20Perks.payments }}</div>
                         </b-card>
                     </b-col>
                     <b-col md="6">
                         <b-card bg-variant="dark" class="shadow-sm text-white">
                             <span>NFT Perks</span><br />
-                            <div class="h2">{{ pool.metrics.erc721Perks.payments }}</div>
+                            <div class="h2">{{ metrics.erc721Perks.payments }}</div>
                         </b-card>
                     </b-col>
                 </b-row>
@@ -187,7 +187,7 @@ import BaseModalErc20Create from '@thxnetwork/dashboard/components/modals/BaseMo
 import BaseModalDepositCreate from '@thxnetwork/dashboard/components/modals/BaseModalDepositCreate.vue';
 import { fromWei } from 'web3-utils';
 import { format } from 'date-fns';
-import { IPoolAnalytics, IPoolAnalyticsLeaderboard, IPools } from '../../store/modules/pools';
+import { IPoolAnalytics, IPoolAnalyticsLeaderBoard, IPoolAnalyticsMetrics, IPools } from '../../store/modules/pools';
 
 @Component({
     components: {
@@ -201,7 +201,8 @@ import { IPoolAnalytics, IPoolAnalyticsLeaderboard, IPools } from '../../store/m
     computed: mapGetters({
         pools: 'pools/all',
         analytics: 'pools/analytics',
-        analyticsLeaderboard: 'pools/analyticsLeaderboard',
+        analyticsLeaderboard: 'pools/analyticsLeaderBoard',
+        analyticsMetrics: 'pools/analyticsMetrics',
         erc20s: 'erc20/all',
     }),
 })
@@ -213,7 +214,8 @@ export default class TransactionsView extends Vue {
     loading = false;
     format = format;
     analytics!: IPoolAnalytics;
-    analyticsLeaderboard!: IPoolAnalyticsLeaderboard;
+    analyticsLeaderboard!: IPoolAnalyticsLeaderBoard;
+    analyticsMetrics!: IPoolAnalyticsMetrics;
     daysRange = 14;
 
     get pool() {
@@ -226,6 +228,10 @@ export default class TransactionsView extends Vue {
 
     get poolAnalyticsLeaderboard() {
         return this.analyticsLeaderboard[this.$route.params.id];
+    }
+
+    get poolAnalyticsMetrics() {
+        return this.analyticsMetrics[this.$route.params.id];
     }
 
     get chartDates() {
@@ -378,7 +384,14 @@ export default class TransactionsView extends Vue {
         if (!this.poolAnalyticsLeaderboard) {
             return null;
         }
-        return this.poolAnalyticsLeaderboard.leaderBoard;
+        return this.poolAnalyticsLeaderboard;
+    }
+
+    get metrics() {
+        if (!this.poolAnalyticsMetrics) {
+            return null;
+        }
+        return this.poolAnalyticsMetrics;
     }
 
     formatDateLabel(date: Date): string {
@@ -403,8 +416,9 @@ export default class TransactionsView extends Vue {
         const startDate = new Date(new Date(endDate).getTime() - oneDay * this.daysRange);
         endDate.setHours(23, 59, 59, 0);
 
+        await this.$store.dispatch('pools/readAnalyticsMetrics', { poolId: this.pool._id });
         await this.$store.dispatch('pools/readAnalytics', { poolId: this.pool._id, startDate, endDate });
-        await this.$store.dispatch('pools/readAnalyticsLeaderboard', { poolId: this.pool._id });
+        await this.$store.dispatch('pools/readAnalyticsLeaderBoard', { poolId: this.pool._id });
 
         this.$store.dispatch('erc20/list').then(async () => {
             await Promise.all(
