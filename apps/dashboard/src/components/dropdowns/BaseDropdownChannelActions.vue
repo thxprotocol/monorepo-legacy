@@ -1,6 +1,6 @@
 <template>
     <b-form-select
-        v-model="action"
+        :value="action"
         class="dropdown-select bg-white"
         @change="$emit('selected', $event)"
         :disabled="disabled"

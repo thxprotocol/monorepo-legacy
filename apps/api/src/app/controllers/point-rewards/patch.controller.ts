@@ -18,7 +18,7 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['RewardsNft']
     let reward = await PointReward.findById(req.params.id);
     if (!reward) throw new NotFoundError('Could not find the reward');
-    reward = await reward.updateOne({
+    reward = await PointReward.findByIdAndUpdate(reward._id, {
         title: req.body.title,
         description: req.body.description,
         amount: req.body.amount,

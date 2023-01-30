@@ -184,6 +184,7 @@ export default class BaseCardRewardCondition extends Vue {
         if (!interaction) return;
 
         this.interaction = interaction;
+        this.content = '';
 
         switch (this.interaction.type) {
             case RewardConditionInteraction.YouTubeLike: {
