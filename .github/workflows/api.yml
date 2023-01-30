@@ -163,7 +163,7 @@ jobs:
         name: Auto deploy develop to dev.api.thx.network
         runs-on: ubuntu-latest
         if: github.ref == 'refs/heads/develop'
-        needs: buildAndPushImage
+        needs: [buildAndPushImage, bumpVersion]
         steps:
             - name: Install Node.js 16.x
               uses: actions/setup-node@v1
@@ -188,4 +188,4 @@ jobs:
                   DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
               uses: Ilshidur/action-discord@master
               with:
-                  args: 'Released API 🚀 `${{needs.bumpVersion.outputs.newTag}}`'
+                  args: 'Released API 🚀 `${{ needs.bumpVersion.outputs.newTag }}`'

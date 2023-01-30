@@ -151,7 +151,7 @@ jobs:
         name: Auto deploy develop to dev.auth.thx.network
         runs-on: ubuntu-latest
         if: github.ref == 'refs/heads/develop'
-        needs: buildAndPushImage
+        needs: [buildAndPushImage, bumpVersion]
         steps:
             - name: Install Node.js 16.x
               uses: actions/setup-node@v1
