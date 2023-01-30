@@ -4,7 +4,7 @@ import CommonOauthLoginOptions from '../types/CommonOauthLoginOptions';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { discordClient } from '../util/axios';
 
-export const DISCORD_API_SCOPE = ['identify', 'email', 'guilds', 'guilds.join', 'guilds.members.read'];
+export const scopes = ['identify', 'email', 'guilds', 'guilds.join', 'guilds.members.read'];
 
 const ERROR_NO_DATA = 'Could not find an Discord data for this accesstoken';
 const ERROR_NOT_AUTHORIZED = 'Not authorized for Discord API';
@@ -33,7 +33,7 @@ class DiscordService {
 
     static getLoginURL(
         state: string,
-        { scope = DISCORD_API_SCOPE, redirectUrl = AUTH_URL + '/oidc/callback/discord' }: CommonOauthLoginOptions,
+        { scope = scopes, redirectUrl = AUTH_URL + '/oidc/callback/discord' }: CommonOauthLoginOptions,
     ) {
         const body = new URLSearchParams();
 
@@ -47,13 +47,6 @@ class DiscordService {
     }
 
     static async requestTokens(code: string) {
-        // {
-        //     "access_token": "6qrZcUqja7812RVdnEKjpzOL4CvHBFG",
-        //     "token_type": "Bearer",
-        //     "expires_in": 604800,
-        //     "refresh_token": "D43f5y0ahjqew82jZ4NViEr2YafMKhue",
-        //     "scope": "identify"
-        // }
         const body = new URLSearchParams();
 
         body.append('code', code);
@@ -79,13 +72,6 @@ class DiscordService {
     }
 
     static async refreshTokens(refreshToken: string) {
-        // {
-        //     "access_token": "6qrZcUqja7812RVdnEKjpzOL4CvHBFG",
-        //     "token_type": "Bearer",
-        //     "expires_in": 604800,
-        //     "refresh_token": "D43f5y0ahjqew82jZ4NViEr2YafMKhue",
-        //     "scope": "identify"
-        // }
         const body = new URLSearchParams();
 
         body.append('grant_type', 'refresh_token');
@@ -125,7 +111,7 @@ class DiscordService {
     }
 
     static async getGuilds(accessToken: string) {
-        const res = await discordClient({
+        const r = await discordClient({
             method: 'GET',
             url: '/users/@me/guilds',
             headers: {
@@ -134,9 +120,10 @@ class DiscordService {
                 'Authorization': `Bearer ${accessToken}`,
             },
         });
-        if (res.status !== 200) throw new Error(ERROR_NOT_AUTHORIZED);
-        const guilds = res.data;
-        return guilds;
+
+        if (r.status !== 200) throw new Error(ERROR_NOT_AUTHORIZED);
+
+        return r.data;
     }
 
     static async validateUserJoined({ guildId, accessToken }: { guildId: string; accessToken: string }) {
