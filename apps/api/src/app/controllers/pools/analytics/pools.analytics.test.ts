@@ -1,10 +1,7 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId, ERC20Type } from '@thxnetwork/api/types/enums';
-import { Account } from 'web3-core';
-import { createWallet } from '@thxnetwork/api/util/jest/network';
 import {
-    userWalletPrivateKey2,
     tokenName,
     tokenSymbol,
     dashboardAccessToken,
@@ -15,7 +12,6 @@ import {
 } from '@thxnetwork/api/util/jest/constants';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { addMinutes } from '@thxnetwork/api/util/rewards';
-import { Contract } from 'web3-eth-contract';
 import { fromWei, isAddress, toWei } from 'web3-utils';
 
 const user = request.agent(app);
@@ -30,9 +26,7 @@ describe('Default Pool', () => {
         perk: any,
         perkUuid: string,
         erc20Id: string,
-        userWallet: Account,
-        poolId: string,
-        tokenContract: Contract;
+        poolId: string;
 
     let sub1TotalAmount = 0;
     let sub2TotalAmount = 0;
@@ -40,8 +34,6 @@ describe('Default Pool', () => {
 
     beforeAll(async () => {
         await beforeAllCallback();
-
-        userWallet = createWallet(userWalletPrivateKey2);
     });
 
     afterAll(afterAllCallback);
