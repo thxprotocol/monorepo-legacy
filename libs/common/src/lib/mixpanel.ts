@@ -13,8 +13,6 @@ interface TMixpanelIdentity {
 }
 
 function identify(account: TMixpanelIdentity) {
-    if (!accessToken || !proxyUrl) return;
-
     mixpanel.identify(account.sub);
     mixpanel.people.set('$name', `${account.firstName || ''} ${account.lastName || ''}`);
     mixpanel.people.set('$email', account.email);
@@ -53,6 +51,8 @@ export const init = (mixpanelToken: string, proxyBaseUrl: string) => {
 
 export const client = () => mixpanel;
 export const track = (event: string, params: any[]) => {
+    if (!accessToken || !proxyUrl) return;
+
     trackers[event](...params);
 };
 
