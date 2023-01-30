@@ -187,6 +187,12 @@ export default class ModalRewardERC721Create extends Vue {
     }
 
     onSubmit() {
+        // TODO Remove when proper UI validation is implemented
+        if (!this.erc721metadataId.length) {
+            this.error = 'Select the NFT metadata fort this perk';
+            return;
+        }
+
         this.isLoading = true;
 
         const payload = {

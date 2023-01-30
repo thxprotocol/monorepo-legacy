@@ -23,7 +23,7 @@ app.set('port', PORT);
 app.use(compression());
 app.use(lusca.xframe('SAMEORIGIN'));
 app.use(lusca.xssProtection(true));
-app.use(express.static(assetsPath, { maxAge: 31557600000 }));
+app.use(express.static(assetsPath));
 app.use(express.json());
 
 morganBody(app, {

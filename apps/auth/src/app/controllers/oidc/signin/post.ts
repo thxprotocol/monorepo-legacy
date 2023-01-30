@@ -56,6 +56,7 @@ async function controller(req: Request, res: Response) {
 
             // Store the sub in the interaction so we can lookup the hashed OTP later
             req.interaction.params.sub = String(account._id);
+            req.interaction.params.email = req.body.email;
             await req.interaction.save(Date.now() + 10 * 60 * 1000); // ttl 10min
 
             return res.redirect(`/oidc/${req.params.uid}/signin/otp`);

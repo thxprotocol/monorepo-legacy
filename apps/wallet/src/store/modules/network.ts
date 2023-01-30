@@ -53,8 +53,8 @@ class NetworkModule extends VuexModule {
     _chainId: ChainId = ChainId.Polygon;
 
     get chainId() {
-        // const chainId = Number(localStorage.getItem(`thx:wallet:chain-id`));
-        // if (Object.values(ChainId).includes(chainId)) return chainId;
+        const chainId = Number(localStorage.getItem(`thx:wallet:chain-id`));
+        if (Object.values(ChainId).includes(chainId)) return chainId;
         return this._chainId;
     }
 

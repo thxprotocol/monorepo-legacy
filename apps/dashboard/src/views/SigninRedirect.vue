@@ -3,10 +3,10 @@
 </template>
 
 <script lang="ts">
+import { track } from '@thxnetwork/mixpanel';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { IPools } from '../store/modules/pools';
-import { track } from '../utils/mixpanel';
 import { IAccount } from '../types/account';
 import { NODE_ENV } from '@thxnetwork/dashboard/utils/secrets';
 import { ChainId } from '@thxnetwork/sdk/types/enums/ChainId';
