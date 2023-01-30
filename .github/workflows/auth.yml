@@ -15,10 +15,7 @@ jobs:
                   fetch-depth: 0
 
             - name: Run test
-              run: |
-                  docker compose -f docker-compose.yml -f docker-compose.auth.yml run \ 
-                  -T \
-                  auth sh -c "npx nx lint auth && yarn nx test auth"
+              run: docker compose -f docker-compose.yml -f docker-compose.auth.yml run -T auth sh -c "npx nx lint auth && npx nx test auth"
 
             - name: SonarCloud Scan
               uses: SonarSource/sonarcloud-github-action@master
