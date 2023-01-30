@@ -15,7 +15,7 @@ import { mapGetters, mapState } from 'vuex';
 import { User } from 'oidc-client-ts';
 import { ChainId } from '@thxnetwork/wallet/types/enums/ChainId';
 import { chainInfo } from '@thxnetwork/wallet/utils/chains';
-import { track } from '../utils/mixpanel';
+import { track } from '@thxnetwork/mixpanel';
 
 @Component({
     computed: {
@@ -43,7 +43,7 @@ export default class Redirect extends Vue {
 
         await this.getProfile();
 
-        track.UserSignsIn(this.profile);
+        track('UserSignsIn', [this.profile]);
 
         // Get private key from Torus network if applicable
         await this.getPrivateKey();

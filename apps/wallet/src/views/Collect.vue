@@ -18,6 +18,7 @@
                         Oops, we did not manage to claim your token reward at this time, please visit your claim URL or
                         scan your QR code again.
                     </b-alert>
+                    <b-button block variant="primary" class="rounded-pill" @click="claimReward"> Try again </b-button>
                 </template>
             </template>
 
@@ -25,17 +26,24 @@
                 <template v-if="claimedReward.erc20">
                     <div class="img-treasure" :style="`background-image: url(${imgUrl});`"></div>
                     <h2 class="text-secondary text-center my-3">
-                        <strong>Congratulations!</strong> You have earned
+                        <strong>Congratulations!</strong> You have received
                         <strong>{{ claimedReward.withdrawal.amount }} {{ claimedReward.erc20.symbol }}</strong>
                     </h2>
-                    <p class="lead text-center">Collect, swap or redeem these tokens for promotions.<br /></p>
+                    <p class="lead text-center">Continue to your wallet and view your balance.<br /></p>
                 </template>
                 <b-row v-if="claimedReward.erc721">
-                    <b-col xs="12" md="6" class="d-flex align-items-center">
-                        <b-img-lazy :src="imgUrl" class="d-block w-100" />
+                    <b-col xs="12" md="6" class="d-flex align-items-center justify-content-center">
+                        <div>
+                            <b-spinner v-if="isNftImageLoading" variant="light" />
+                        </div>
+                        <img
+                            :class="`w-100 ${isNftImageLoading ? 'd-none' : 'd-block'}`"
+                            :src="imgUrl"
+                            @load="isNftImageLoading = false"
+                        />
                     </b-col>
                     <b-col xs="12" md="6">
-                        <h2 class="text-secondary my-3"><strong>Congratulations!</strong> You've claimed an NFT.</h2>
+                        <h2 class="text-secondary my-3"><strong>Congratulations!</strong> You have claimed an NFT</h2>
                         <p class="lead">
                             {{ claimedReward.erc721.name }}<br />
                             <small class="text-muted">{{ claimedReward.erc721.description }}</small>
@@ -85,7 +93,7 @@
                     {{ reward.itemUrl.label }}
                 </b-link>
             </b-alert>
-            <p class="text-muted">Please, connect to this channel to claim your reward.</p>
+            <p class="text-muted">Please, connect to this platform and continue your claim.</p>
             <b-button @click="connect" variant="primary" block class="rounded-pill"> Connect </b-button>
         </b-card>
     </div>
@@ -102,8 +110,6 @@ import { UserProfile } from '../store/modules/account';
 import { RewardConditionInteraction, RewardConditionPlatform, TERC20Perk, TERC721Perk } from '@thxnetwork/types/index';
 import { TERC20 } from '../store/modules/erc20';
 import { TWallet } from '../types/Wallet';
-import poll from 'promise-poller';
-import { AccountVariant } from '../types/Accounts';
 
 type TClaim = {
     metadata: TERC721Metadata;
@@ -128,10 +134,11 @@ type TClaim = {
 })
 export default class Collect extends Vue {
     $confetti!: { start: (options: unknown) => void; stop: () => void };
-    imgUrl = require('@thxnetwork/wallet/../public/assets/img/thx_treasure.png');
+    imgUrl = '';
     format = format;
     error = '';
     isLoading = true;
+    isNftImageLoading = true;
     isClaimFailed = false;
     isClaimInvalid = false;
     claim: TClaim | null = null;
@@ -170,11 +177,6 @@ export default class Collect extends Vue {
         if (!this.claim) return;
         this.reward = this.claim.reward;
 
-        // Wait for wallet to be deployed if not metamask account
-        if (this.profile.variant !== AccountVariant.Metamask) {
-            await this.waitForWalletDeployed(this.claim);
-        }
-
         // If no condition applies claim directly
         if (!this.claim.reward.platform) {
             return this.claimReward();
@@ -200,21 +202,6 @@ export default class Collect extends Vue {
         }
     }
 
-    async waitForWalletDeployed(claim: TClaim) {
-        const chainId = claim.erc20 ? claim.erc20.chainId : claim.erc721.chainId;
-        this.statusText = 'Waiting for your wallet to be deployed...';
-
-        const taskFn = async () => {
-            await this.$store.dispatch('walletManagers/getWallet', { sub: this.profile.sub, chainId });
-            if (this.wallet.address) {
-                return Promise.resolve();
-            } else {
-                return Promise.reject(`${this.wallet._id} waiting for address`);
-            }
-        };
-        return poll({ taskFn, interval: 3000, retries: 10 });
-    }
-
     async claimReward() {
         try {
             this.isLoading = true;
@@ -227,12 +214,16 @@ export default class Collect extends Vue {
 
             if (this.claim && this.claim.erc721) {
                 await this.$store.dispatch('network/connect', this.claim.erc721.chainId);
+
                 this.$store.commit('erc721/set', this.claim.erc721);
+
                 const imgUrl = this.firstImageURL(this.claim.metadata);
-                if (imgUrl) this.imgUrl = imgUrl;
+                this.imgUrl = imgUrl ? imgUrl : require('@thxnetwork/wallet/../public/assets/img/thx_treasure.png');
             } else if (this.claim && this.claim.erc20) {
                 await this.$store.dispatch('network/connect', this.claim.erc20.chainId);
             }
+            this.isClaimFailed = false;
+            this.isClaimInvalid = false;
         } catch (e) {
             const { error } = e as { error: { message: string } };
             if (error && error.message) {

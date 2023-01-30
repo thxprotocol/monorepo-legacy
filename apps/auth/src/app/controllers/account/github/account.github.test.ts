@@ -2,13 +2,17 @@ import nock from 'nock';
 import request from 'supertest';
 import app from '../../../app';
 import db from '../../../util/database';
-import { INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
-import { accountEmail, accountSecret } from '../../../util/jest';
+import { GITHUB_API_ENDPOINT, INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
+import { accountEmail } from '../../../util/jest';
+import { AccountVariant } from '@thxnetwork/auth/types/enums/AccountVariant';
+import { AccountService } from '@thxnetwork/auth/services/AccountService';
+import { AccountDocument } from '@thxnetwork/auth/models/Account';
+import { AccessTokenKind } from '@thxnetwork/types/index';
 
 const http = request.agent(app);
 
 describe('Account Controller', () => {
-    let authHeader: string, basicAuthHeader: string;
+    let account: AccountDocument, authHeader: string, basicAuthHeader: string, sub: string;
 
     beforeEach(() => {
         nock('https://api.airtable.com').post(/.*?/).reply(200, {}); // mock email response for account create method
@@ -49,26 +53,56 @@ describe('Account Controller', () => {
 
         basicAuthHeader = await registerClient();
         authHeader = await requestToken();
+
+        account = await AccountService.signup({
+            email: accountEmail,
+            variant: AccountVariant.SSOGithub,
+            active: true,
+        });
+        sub = String(account._id);
     });
 
     afterAll(async () => {
         await db.disconnect();
     });
 
-    describe('POST /account', () => {
-        it('HTTP 200', async () => {
+    describe('GET /account/:sub/github', () => {
+        beforeAll(async () => {
+            nock(GITHUB_API_ENDPOINT)
+                .persist()
+                .get(/.*?/)
+                .reply(200, { data: { data: {} } });
+            nock(GITHUB_API_ENDPOINT)
+                .persist()
+                .post(/.*?/)
+                .reply(200, { data: { data: {} } });
+        });
+
+        it('Return isAuthorized = false when account has no Twitch access', async () => {
             const res = await http
-                .post('/account')
+                .get(`/account/${sub}/github`)
                 .set({
                     Authorization: authHeader,
                 })
-                .send({
-                    email: accountEmail,
-                    password: accountSecret,
-                });
-            expect(res.status).toBe(201);
+                .send();
+            expect(res.body.isAuthorized).toEqual(false);
+        });
+
+        it('Return isAuthorized = true when account has Twitch access', async () => {
+            account.setToken({
+                kind: AccessTokenKind.Github,
+                accessToken: 'NEWTOKEN',
+                expiry: Date.now() + 3600,
+            });
+            await account.save();
+
+            const res = await http
+                .get(`/account/${sub}/github`)
+                .set({
+                    Authorization: authHeader,
+                })
+                .send();
+            expect(res.body.isAuthorized).toEqual(true);
         });
     });
-
-    // TODO Github Oauth tests missing
 });

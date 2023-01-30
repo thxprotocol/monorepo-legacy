@@ -34,7 +34,7 @@
                     <b-form-checkbox @change="onChecked" />
                 </template>
                 <template #head(title)> Title </template>
-                <template #head(progress)> Progress </template>
+                <template #head(amount)> Points </template>
                 <template #head(description)> Description </template>
                 <template #head(id)> &nbsp; </template>
 
@@ -42,11 +42,11 @@
                 <template #cell(checkbox)="{ item }">
                     <b-form-checkbox :value="item.checkbox" v-model="selectedItems" />
                 </template>
-                <template #cell(amount)="{ item }">
-                    <b-badge variant="dark" class="p-2"> {{ item.amount }} Points </b-badge>
+                <template #cell(title)="{ item }">
+                    {{ item.title }}
                 </template>
-                <template #cell(description)="{ item }">
-                    {{ item.description }}
+                <template #cell(amount)="{ item }">
+                    <strong class="text-primary">{{ item.amount }} </strong>
                 </template>
                 <template #cell(id)="{ item }">
                     <b-dropdown variant="link" size="sm" right no-caret>
@@ -121,9 +121,8 @@ export default class MilestonesView extends Vue {
             .filter((reward: TMilestoneReward) => reward.page === this.page)
             .map((r: TMilestoneReward) => ({
                 checkbox: r._id,
-                amount: r.amount,
                 title: r.title,
-                description: r.description,
+                amount: r.amount,
                 id: r._id,
             }))
             .slice(0, this.limit);

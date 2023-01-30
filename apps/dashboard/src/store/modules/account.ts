@@ -6,7 +6,7 @@ import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 import type { IAccount, IAccountUpdates, IDiscord, ITwitter, IYoutube } from '@thxnetwork/dashboard/types/account';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { RewardConditionPlatform } from '@thxnetwork/types/enums/RewardConditionPlatform';
-import { mixpanelClient, track } from '@thxnetwork/dashboard/utils/mixpanel';
+import Mixpanel, { track } from '@thxnetwork/mixpanel';
 
 @Module({ namespaced: true })
 class AccountModule extends VuexModule {
@@ -162,19 +162,14 @@ class AccountModule extends VuexModule {
                 break;
             }
         }
-        let distinctId;
-        try {
-            distinctId = mixpanelClient().get_distinct_id();
-        } catch (err) {
-            //
-        }
+        const client = Mixpanel.client();
         await this.userManager.signinRedirect({
             extraQueryParams: {
                 prompt: 'connect',
                 channel: payload.platform,
                 return_url: payload.returnUrl,
                 access_token_kind,
-                distinct_id: distinctId,
+                distinct_id: client && client.get_distinct_id(),
             },
         });
     }
@@ -186,9 +181,16 @@ class AccountModule extends VuexModule {
         passwordResetToken: string;
         verifyEmailToken: string;
     }) {
+        let distinctId;
+        try {
+            const client = Mixpanel.client();
+            distinctId = client.get_distinct_id();
+        } catch (err) {
+            console.log('err', err);
+        }
         const extraQueryParams: any = {
             return_url: BASE_URL,
-            distinct_id: mixpanelClient().get_distinct_id(),
+            distinct_id: distinctId,
         };
 
         if (payload.signupEmail) {
@@ -219,39 +221,13 @@ class AccountModule extends VuexModule {
 
     @Action({ rawError: true })
     async accountRedirect(returnPath: string) {
-        let distinctId;
-        try {
-            distinctId = mixpanelClient().get_distinct_id();
-        } catch (err) {
-            //
-        }
+        const client = Mixpanel.client();
         await this.userManager.signinRedirect({
             extraQueryParams: {
                 prompt: 'account-settings',
                 return_url: BASE_URL + returnPath,
-                distinct_id: distinctId,
+                distinct_id: client && client.get_distinct_id(),
             },
-        });
-    }
-
-    @Action({ rawError: true })
-    async signupRedirect() {
-        await this.userManager.clearStaleState();
-        const url = new URL(window.location.href);
-        const signupEmail = url.searchParams.get('signup_email');
-
-        const extraQueryParams: any = {
-            prompt: 'create',
-            return_url: BASE_URL,
-            distinct_id: mixpanelClient().get_distinct_id(),
-        };
-
-        if (signupEmail) {
-            extraQueryParams['signup_email'] = signupEmail;
-        }
-
-        return await this.userManager.signinRedirect({
-            extraQueryParams,
         });
     }
 

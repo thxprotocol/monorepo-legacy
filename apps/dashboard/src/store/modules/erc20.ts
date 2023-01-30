@@ -4,7 +4,7 @@ import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import type { IERC20s, TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import { ChainId } from '../enums/chainId';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
-import { track } from '@thxnetwork/dashboard/utils/mixpanel';
+import { track } from '@thxnetwork/mixpanel';
 
 @Module({ namespaced: true })
 class ERC20Module extends VuexModule {

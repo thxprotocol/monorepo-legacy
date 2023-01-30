@@ -1,12 +1,13 @@
 import axios from 'axios';
 import Web3 from 'web3';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { BASE_URL } from '@thxnetwork/wallet/utils/secrets';
+import { AUTH_URL, BASE_URL } from '@thxnetwork/wallet/utils/secrets';
 import { thxClient } from '../../utils/oidc';
 import { User } from 'oidc-client-ts';
 import { AccountVariant } from '../../types/Accounts';
 import { AccessTokenKind, RewardConditionPlatform } from '@thxnetwork/types/index';
-import { track } from '@thxnetwork/wallet/utils/mixpanel';
+import { track } from '@thxnetwork/mixpanel';
+
 const AUTH_REQUEST_TYPED_MESSAGE =
     "Welcome! Please make sure you have selected your preferred account and sign this message to verify it's ownership.";
 
@@ -69,7 +70,7 @@ class AccountModule extends VuexModule {
             url: '/account',
         });
 
-        track.UserIdentify(r.data);
+        track('UserIdentify', [r.data]);
 
         this.context.commit('setProfile', r.data);
     }
@@ -92,7 +93,7 @@ class AccountModule extends VuexModule {
             url: '/account',
             data: payload,
         });
-        this.context.commit('setUserProfile', data);
+        this.context.commit('setProfile', data);
     }
 
     @Action({ rawError: true })
@@ -183,10 +184,20 @@ class AccountModule extends VuexModule {
             },
         });
     }
-
     @Action({ rawError: true })
     async signoutRedirect(toPath: string) {
         await thxClient.userManager.cached.signoutRedirect({ state: { toPath } });
+    }
+
+    @Action({ rawError: true })
+    async signout() {
+        await thxClient.userManager.cached.removeUser();
+        await thxClient.userManager.cached.clearStaleState();
+
+        await axios({
+            method: 'GET',
+            url: AUTH_URL + '/session/end',
+        });
     }
 
     @Action({ rawError: true })

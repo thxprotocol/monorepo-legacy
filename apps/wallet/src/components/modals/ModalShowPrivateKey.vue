@@ -1,0 +1,61 @@
+<template>
+    <b-modal
+        :id="'modalShowPrivateKey'"
+        centered
+        hide-footer
+        scrollable
+        title="Export Private Key"
+        @show="onShow"
+        @hide="onHide"
+    >
+        <template>
+            <b-alert variant="warning" show>
+                <i class="fas fa-info-circle mr-2"></i>
+                Be careful when sharing your private key with others.
+            </b-alert>
+            <b-input-group>
+                <b-form-input readonly :value="formPrivateKey" :type="hidden ? 'password' : 'text'" />
+                <b-input-group-append>
+                    <b-button v-if="!hidden" variant="primary" v-clipboard:copy="formPrivateKey">
+                        <i class="fas fa-clipboard m-0"></i>
+                    </b-button>
+                    <b-button v-else variant="primary" @click="showKey">
+                        <i class="fas fa-eye m-0"></i>
+                    </b-button>
+                </b-input-group-append>
+            </b-input-group>
+        </template>
+    </b-modal>
+</template>
+
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator';
+import { mapState } from 'vuex';
+
+@Component({
+    components: {},
+    computed: {
+        ...mapState('network', ['web3', 'privateKey']),
+    },
+})
+export default class BaseModalShowPrivateKey extends Vue {
+    privateKey!: string;
+
+    hidden = true;
+    formPrivateKey = '.';
+
+    onShow() {
+        this.formPrivateKey = this.formPrivateKey.repeat(this.privateKey.length);
+    }
+
+    showKey() {
+        this.formPrivateKey = this.privateKey;
+        this.hidden = false;
+    }
+
+    onHide() {
+        this.hidden = true;
+        this.formPrivateKey = '.';
+    }
+}
+</script>

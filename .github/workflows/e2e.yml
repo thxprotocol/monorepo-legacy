@@ -1,0 +1,40 @@
+name: E2E Tests
+
+on:
+    push:
+        branches:
+            - main
+    schedule:
+        - cron: '0 4 * * *'
+
+jobs:
+    e2e:
+        name: 'E2E'
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+
+            - name: Chrome install latest
+              uses: browser-actions/setup-chrome@latest
+
+            - name: Chrome set path
+              run: echo "BROWSER_PATH=$(which chrome)" >> $GITHUB_ENV
+
+            - name: Chrome E2E test 🚀
+              id: 'test'
+              uses: cypress-io/github-action@v4
+              with:
+                  install: true
+                  record: true
+                  browser: '${{ env.BROWSER_PATH }}'
+              env:
+                  CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Update Discord
+              env:
+                  DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+              uses: Ilshidur/action-discord@master
+              with:
+                  args: "Daily E2E Test ${{ steps.test.outcome == 'success' && '✅' || '⛔' }} `${{ steps.test.outcome }}` "

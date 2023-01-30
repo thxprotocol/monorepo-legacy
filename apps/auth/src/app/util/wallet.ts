@@ -16,6 +16,6 @@ export async function createWallet(account: AccountDocument) {
 
     for (const chainId of chains) {
         const walletsCount = (await WalletProxy.get(sub, chainId)).length;
-        if (!walletsCount) return WalletProxy.create(sub, chainId, false);
+        if (!walletsCount) WalletProxy.create(sub, chainId, false);
     }
 }

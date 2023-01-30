@@ -22,28 +22,19 @@ async function getAccountByEmail(email: string, variant: AccountVariant) {
     const account = await AccountService.getByEmail(email);
 
     if (!account) {
-        const signupData = {
-            email,
-            password: '',
-            variant,
-            acceptTermsPrivacy: true,
-            acceptUpdates: true,
-            active: true,
-        };
-
         // Creates a new account for specified variant
-        return await AccountService.signup(signupData);
-    } else if (account && !account.active && validateEmail(email)) {
-        const signupData = {
+        return await AccountService.signup({
             email,
-            password: '',
-            variant: account.variant,
-            acceptTermsPrivacy: true,
-            acceptUpdates: true,
+            variant,
             active: true,
-        };
+        });
+    } else if (account && !account.active && validateEmail(email)) {
         // Creates a new signup token and proceeds
-        return await AccountService.signup(signupData);
+        return await AccountService.signup({
+            email,
+            variant: account.variant,
+            active: true,
+        });
     }
 
     return account;
@@ -54,16 +45,12 @@ async function getAccountByTwitterId(twitterId: string) {
     const account = await AccountService.getByTwitterId(twitterId);
 
     if (!account) {
-        const signupData = {
-            password: '',
-            variant: AccountVariant.SSOTwitter,
-            acceptTermsPrivacy: true,
-            acceptUpdates: true,
-            active: true,
-            twitterId,
-        };
         // Creates a new account for specified variant
-        return await AccountService.signup(signupData);
+        return await AccountService.signup({
+            twitterId,
+            variant: AccountVariant.SSOTwitter,
+            active: true,
+        });
     }
     return account;
 }
