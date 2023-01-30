@@ -154,7 +154,6 @@ export default class BaseCardRewardCondition extends Vue {
 
         this.isLoadingPlatform = true;
         this.platform = platform;
-
         switch (platform.type) {
             case RewardConditionPlatform.Google: {
                 this.onSelectInteraction(platformInteractionList[1]);
@@ -178,12 +177,14 @@ export default class BaseCardRewardCondition extends Vue {
         }
 
         this.isLoadingPlatform = false;
+        this.change();
     }
 
     onSelectInteraction(interaction: IChannelAction) {
         if (!interaction) return;
 
         this.interaction = interaction;
+        this.content = '';
 
         switch (this.interaction.type) {
             case RewardConditionInteraction.YouTubeLike: {
@@ -231,7 +232,7 @@ export default class BaseCardRewardCondition extends Vue {
     }
 
     change() {
-        if (!this.platform.type) return;
+        if (this.platform.type === undefined) return;
         this.$emit('change', {
             platform: this.platform.type,
             interaction: this.interaction.type,
