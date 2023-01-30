@@ -61,6 +61,7 @@
                             class="mb-3"
                             :rewardLimit="rewardLimit"
                             :claimAmount="claimAmount"
+                            :claimLimit="claimLimit"
                             @change-reward-limit="rewardLimit = $event"
                             @change-claim-amount="onChangeClaimAmount"
                         />
@@ -118,6 +119,7 @@ export default class ModalRewardERC20Create extends Vue {
     description = '';
     expiryDate: Date | null = null;
     claimAmount = 0;
+    claimLimit = 1;
     rewardLimit = 0;
     pointPrice = 0;
     imageFile: File | null = null;
@@ -141,6 +143,7 @@ export default class ModalRewardERC20Create extends Vue {
         this.pointPrice = this.reward ? this.reward.pointPrice : 0;
         this.expiryDate = this.reward ? this.reward.expiryDate : null;
         this.rewardLimit = this.reward ? this.reward.rewardLimit : 0;
+        this.claimLimit = this.reward ? this.reward.claimLimit : 1;
         this.claimAmount = this.reward ? this.reward.claimAmount : 0;
         this.rewardCondition = this.reward
             ? {
@@ -173,6 +176,7 @@ export default class ModalRewardERC20Create extends Vue {
                     amount: this.amount,
                     pointPrice: this.pointPrice,
                     claimAmount: Number(this.claimAmount),
+                    claimLimit: this.claimLimit,
                     rewardLimit: this.rewardLimit,
                     platform: this.rewardCondition.platform,
                     interaction: this.rewardCondition.interaction,

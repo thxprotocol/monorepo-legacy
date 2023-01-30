@@ -63,14 +63,15 @@ const controller = async (req: Request, res: Response) => {
     }
 
     // Can be claimed only before the expiry date
-    if (perk.expiryDate && new Date(perk.expiryDate).getTime() < Date.now()) {
+    const isExpired = new Date(perk.expiryDate).getTime() < Date.now();
+    if (perk.expiryDate && isExpired) {
         throw new ForbiddenError('This perk claim has expired.');
     }
 
-    // Can only be claimed once per sub
-    const isClaimedBySub = await model.exists({ perkId: perk._id, sub: req.auth.sub });
-    if (isClaimedBySub) {
-        throw new ForbiddenError('You have already claimed this perk.');
+    // Can only be claimed for the amount of times per sub specified in the claimLimit
+    const amountOfPaymentsPerSub = await model.countDocuments({ perkId: perk._id, sub: req.auth.sub });
+    if (perk.claimLimit > 0 && amountOfPaymentsPerSub >= perk.claimLimit) {
+        throw new ForbiddenError('You have claimed this perk for the maximum amount of times.');
     }
 
     // Can only be claimed for the amount of times per perk specified in the rewardLimit
@@ -86,7 +87,7 @@ const controller = async (req: Request, res: Response) => {
         throw new ForbiddenError('This perk has been claimed by someone else.');
     }
 
-    // Can only claim if potential platform conditions pass.
+    // Can only claim if potential platform conditions passes.
     const failReason = await validateCondition(account, perk);
     if (failReason) {
         throw new ForbiddenError(failReason);

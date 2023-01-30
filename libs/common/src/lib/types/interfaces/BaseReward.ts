@@ -8,6 +8,7 @@ export type TBaseReward = {
     description: string;
     expiryDate: Date;
     claimAmount: number;
+    claimLimit: number;
     rewardLimit: number;
     platform: RewardConditionPlatform;
     interaction?: RewardConditionInteraction;
