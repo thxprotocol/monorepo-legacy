@@ -1,20 +1,32 @@
 <template>
     <div>
         <h2>Dashboard</h2>
-        <div class="py-5 w-100 center-center" v-if="loading">
-            <b-spinner variant="primary" />
-        </div>
-        <b-row v-if="poolAnalytics && pool.metrics && !loading">
+        <b-row>
             <b-col md="8">
                 <b-row class="mt-5">
-                    <line-chart
-                        :chartData="lineChartData"
-                        :chart-options="chartOptions"
-                        :height="250"
-                        style="position: relative; width: 100%"
-                    />
+                    <b-col>
+                        <div v-if="!poolAnalytics" class="center-center">
+                            <p class="mr-2">Loading chart...</p>
+                            <b-spinner variant="primary" />
+                        </div>
+                        <line-chart
+                            v-else
+                            :chartData="lineChartData"
+                            :chart-options="chartOptions"
+                            :height="250"
+                            style="position: relative; width: 100%"
+                        />
+                    </b-col>
                 </b-row>
-                <b-row class="mt-5">
+                <b-row class="mt-5" v-if="!pool.metrics">
+                    <b-col md="4">
+                        <div class="py-5 w-100 center-center">
+                            <p class="mr-2">Loading data...</p>
+                            <b-spinner variant="primary" />
+                        </div>
+                    </b-col>
+                </b-row>
+                <b-row class="mt-5" v-else>
                     <b-col md="4">
                         <b-card bg-variant="primary" class="shadow-sm text-white">
                             <span>Referrals</span><br />
@@ -37,7 +49,10 @@
                 <b-row class="mt-5">
                     <b-col>
                         <div class="card-header block">Leaderboard</div>
-                        <b-spinner v-if="!leaderBoard" variant="primary" small />
+                        <div v-if="!leaderBoard" class="center-center mt-5">
+                            <p class="mr-2">Loading leaderboard...</p>
+                            <b-spinner variant="primary" />
+                        </div>
                         <div v-else>
                             <b-list-group>
                                 <b-list-group-item
@@ -63,7 +78,12 @@
             <b-col md="4">
                 <b-row class="mt-5">
                     <b-col>
+                        <div v-if="!poolAnalytics" class="center-center mt-5">
+                            <p class="mr-2">Loading chart...</p>
+                            <b-spinner variant="primary" />
+                        </div>
                         <bar-chart
+                            v-else
                             :chartData="barChartData"
                             :chart-options="chartOptions"
                             :height="250"
@@ -71,7 +91,15 @@
                         />
                     </b-col>
                 </b-row>
-                <b-row class="mt-5">
+                <b-row class="mt-5" v-if="!pool.metrics">
+                    <b-col md="4">
+                        <div class="py-5 w-100 center-center">
+                            <p class="mr-2">Loading data...</p>
+                            <b-spinner variant="primary" />
+                        </div>
+                    </b-col>
+                </b-row>
+                <b-row class="mt-5" v-else>
                     <b-col md="6">
                         <b-card bg-variant="dark" class="shadow-sm text-white">
                             <span>Coin Perks</span><br />
@@ -85,7 +113,14 @@
                         </b-card>
                     </b-col>
                 </b-row>
-                <b-row class="mt-5">
+                <b-row class="mt-5" v-if="!erc20s">
+                    <b-col>
+                        <div class="py-5 w-100 center-center">
+                            <b-spinner variant="primary" />
+                        </div>
+                    </b-col>
+                </b-row>
+                <b-row class="mt-5" v-else>
                     <b-col>
                         <b-list-group>
                             <b-list-group-item
@@ -343,7 +378,7 @@ export default class TransactionsView extends Vue {
         if (!this.poolAnalyticsLeaderboard) {
             return null;
         }
-        return this.poolAnalyticsLeaderboard;
+        return this.poolAnalyticsLeaderboard.leaderBoard;
     }
 
     formatDateLabel(date: Date): string {

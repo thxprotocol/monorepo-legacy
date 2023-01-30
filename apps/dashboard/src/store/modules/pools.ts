@@ -158,13 +158,13 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async readAnalyticsLeaderBoard(payload: { poolId: string }) {
+    async readAnalyticsLeaderboard(payload: { poolId: string }) {
         const r = await axios({
             method: 'get',
             url: `/pools/${payload.poolId}/analytics/leaderboard`,
         });
 
-        this.context.commit('setLeaderboard', { _id: payload.poolId, leaderboard: r.data });
+        this.context.commit('setAnalyticsLeaderboard', { _id: payload.poolId, leaderBoard: r.data });
         return r.data;
     }
 
