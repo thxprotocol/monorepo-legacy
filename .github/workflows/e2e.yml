@@ -1,12 +1,12 @@
 name: E2E Tests
 
+# on: [push]
 on:
-    [push]
-    # push:
-    #     branches:
-    #         - main
-    # schedule:
-    #     - cron: '0 4 * * *'
+    push:
+        branches:
+            - main
+    schedule:
+        - cron: '0 4 * * *'
 
 jobs:
     e2e:
