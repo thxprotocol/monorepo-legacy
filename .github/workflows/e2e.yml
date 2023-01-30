@@ -1,12 +1,12 @@
 name: E2E Tests
 
-# on: [push]
-on:
-    push:
-        branches:
-            - main
-    schedule:
-        - cron: '0 4 * * *'
+on: [push]
+# on:
+#     push:
+#         branches:
+#             - main
+#     schedule:
+#         - cron: '0 4 * * *'
 
 jobs:
     e2e:
@@ -38,4 +38,4 @@ jobs:
                   DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
               uses: Ilshidur/action-discord@master
               with:
-                  args: 'E2E tests for `dev` passed.'
+                  args: 'E2E test status: `{{ steps.test.outputs.status }}`'
