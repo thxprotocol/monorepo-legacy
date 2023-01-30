@@ -38,4 +38,4 @@ jobs:
                   DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
               uses: Ilshidur/action-discord@master
               with:
-                  args: 'E2E test status: `${{ steps.test.outcome }}` `${{ steps.test.outcome == "success" ? ✅ : ⛔ }}`'
+                  args: "E2E test status: `${{ steps.test.outcome }}` `${{ steps.test.outcome == 'success' ? ✅ : ⛔ }}`"
