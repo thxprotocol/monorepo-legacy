@@ -42,7 +42,7 @@ export async function redirectSigninSilent() {
 export async function assertAuthorization(to: Route, from: Route, next: NavigationGuardNext) {
     try {
         const user = await store.dispatch('account/getUser');
-        if (!user) throw new Error('Authorization check failed, redirecting..');
+        if (!user) return redirectSignin();
         next();
     } catch {
         return redirectSignin();

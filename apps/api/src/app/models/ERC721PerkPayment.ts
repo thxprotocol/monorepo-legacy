@@ -3,16 +3,15 @@ import { TERC721PerkPayment } from '@thxnetwork/types/';
 
 export type ERC721PerkPaymentDocument = mongoose.Document & TERC721PerkPayment;
 
-const ERC721PerkPaymentSchema = new mongoose.Schema(
+const schema = new mongoose.Schema(
     {
         perkId: String,
-        sub: String,
+        sub: { type: String, index: 'hashed' },
+        poolId: String,
         amount: Number,
     },
     { timestamps: true },
 );
+schema.index({ createdAt: 1 });
 
-export const ERC721PerkPayment = mongoose.model<ERC721PerkPaymentDocument>(
-    'ERC721PerkPayments',
-    ERC721PerkPaymentSchema,
-);
+export const ERC721PerkPayment = mongoose.model<ERC721PerkPaymentDocument>('ERC721PerkPayments', schema);

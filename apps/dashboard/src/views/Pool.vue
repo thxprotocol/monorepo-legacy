@@ -1,5 +1,5 @@
 <template>
-    <div class="container container-md pt-5" v-if="pool">
+    <div class="container-md pt-5" v-if="pool">
         <router-view></router-view>
     </div>
 </template>
@@ -20,7 +20,7 @@ import { IAccount } from '../types/account';
     }),
 })
 export default class PoolView extends Vue {
-    chainId: ChainId = ChainId.PolygonMumbai;
+    chainId: ChainId = ChainId.Polygon;
     account!: IAccount;
     pools!: IPools;
     ERC20Type = ERC20Type;

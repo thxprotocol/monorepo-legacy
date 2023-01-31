@@ -1,20 +1,8 @@
-import Web3 from 'web3';
 import { IAccessToken, IAccountUpdates } from '../types/TAccount';
 import { Account, AccountDocument } from '../models/Account';
-import { createRandomToken } from '../util/tokens';
-import { decryptString } from '../util/decrypt';
-import { SECURE_KEY } from '../config/secrets';
-import { checkPasswordStrength } from '../util/passwordcheck';
 import { toChecksumAddress } from 'web3-utils';
 import {
-    ERROR_NO_ACCOUNT,
-    ERROR_SIGNUP_TOKEN_INVALID,
-    ERROR_SIGNUP_TOKEN_EXPIRED,
     SUCCESS_SIGNUP_COMPLETED,
-    ERROR_AUTHENTICATION_TOKEN_INVALID_OR_EXPIRED,
-    ERROR_PASSWORD_NOT_MATCHING,
-    ERROR_PASSWORD_RESET_TOKEN_INVALID_OR_EXPIRED,
-    ERROR_PASSWORD_STRENGTH,
     ERROR_VERIFY_EMAIL_TOKEN_INVALID,
     ERROR_VERIFY_EMAIL_EXPIRED,
 } from '../util/messages';
@@ -22,8 +10,22 @@ import { YouTubeService } from './YouTubeService';
 import { AccountPlanType } from '../types/enums/AccountPlanType';
 import { AccountVariant } from '../types/enums/AccountVariant';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
-import { get24HoursExpiryTimestamp } from '../util/time';
+import bcrypt from 'bcrypt';
 
+function getKindFromVariant(variant: AccountVariant): AccessTokenKind {
+    switch (variant) {
+        case AccountVariant.SSOGoogle:
+            return AccessTokenKind.Google;
+        case AccountVariant.SSOTwitter:
+            return AccessTokenKind.Twitter;
+        case AccountVariant.SSOGithub:
+            return AccessTokenKind.Github;
+        case AccountVariant.SSODiscord:
+            return AccessTokenKind.Discord;
+        case AccountVariant.SSOTwitch:
+            return AccessTokenKind.Twitch;
+    }
+}
 export class AccountService {
     static get(sub: string) {
         return Account.findById(sub);
@@ -150,22 +152,56 @@ export class AccountService {
             address,
             variant: AccountVariant.Metamask,
             acceptTermsPrivacy: true,
-            acceptUpdates: false,
+            acceptUpdates: true,
             plan: AccountPlanType.Basic,
             active: true,
         });
     }
 
-    static async signup(data: {
-        email?: string;
-        password: string;
-        variant: AccountVariant;
-        acceptTermsPrivacy: boolean;
-        acceptUpdates: boolean;
-        active?: boolean;
-        twitterId?: string;
-    }) {
-        let account;
+    static async findOrCreate(
+        session: { accountId: string },
+        tokenInfo: IAccessToken,
+        variant: AccountVariant,
+        email?: string,
+    ) {
+        let account: AccountDocument;
+
+        // Find account for active session
+        if (session && session.accountId) {
+            account = await Account.findById(session.accountId);
+        }
+        // Find account for email
+        else if (email) {
+            account = await Account.findOne({ email });
+        }
+        // Find account for userId
+        else if (tokenInfo.userId) {
+            // Map AccountVariant to AccessTokenKind and search for userId in tokenInfo
+            const kind = getKindFromVariant(variant);
+            account = await Account.findOne({ 'tokens.userId': tokenInfo.userId, 'tokens.kind': kind });
+        }
+
+        // When no account is matched, create the account.
+        if (!account) {
+            account = await Account.create({
+                email,
+                variant,
+                acceptTermsPrivacy: true,
+                acceptUpdates: true,
+                plan: AccountPlanType.Basic,
+                active: true,
+            });
+        }
+
+        // Always udpate latest tokenInfo for account
+        account.setToken(tokenInfo);
+
+        return await account.save();
+    }
+
+    static async signup(data: { email?: string; variant: AccountVariant; active: boolean; twitterId?: string }) {
+        let account: AccountDocument;
+
         if (data.email) {
             account = await Account.findOne({ email: data.email, active: false });
         } else if (data.twitterId) {
@@ -173,67 +209,32 @@ export class AccountService {
         }
 
         if (!account) {
-            account = new Account();
+            account = new Account({
+                email: data.email,
+                active: data.active,
+                variant: data.variant,
+                acceptTermsPrivacy: true,
+                acceptUpdates: true,
+                plan: AccountPlanType.Basic,
+            });
         }
 
         account.active = data.active;
         account.email = data.email;
         account.variant = data.variant;
-        account.password = data.password;
-        account.acceptTermsPrivacy = data.acceptTermsPrivacy || false;
-        account.acceptUpdates = data.acceptUpdates || false;
+        account.acceptTermsPrivacy = true;
+        account.acceptUpdates = true;
         account.plan = AccountPlanType.Basic;
         account.twitterId = data.twitterId;
-
-        if (!data.active) {
-            const token = {
-                kind: AccessTokenKind.Signup,
-                accessToken: createRandomToken(),
-                expiry: get24HoursExpiryTimestamp(),
-            } as IAccessToken;
-            account.setToken(token);
-        }
-
-        return account;
-    }
-
-    static async invite(email: string, password: string, address?: string) {
-        const wallet = new Web3().eth.accounts.create();
-        const privateKey = address ? null : wallet.privateKey;
-        const account = new Account({
-            active: true,
-            address: address ? address : wallet.address,
-            privateKey: address ? privateKey : wallet.privateKey,
-            email,
-            password,
-            plan: AccountPlanType.Basic,
-        });
 
         return await account.save();
     }
 
-    static async verifySignupToken(signupToken: string) {
-        const account = await Account.findOne({
-            'tokens.kind': AccessTokenKind.Signup,
-            'tokens.accessToken': signupToken,
-        });
+    static async isOTPValid(account: AccountDocument, otp: string): Promise<boolean> {
+        const token = account.getToken(AccessTokenKind.Auth);
+        if (!token) return;
 
-        if (!account) {
-            return { error: ERROR_SIGNUP_TOKEN_INVALID };
-        }
-
-        const token: IAccessToken = account.getToken(AccessTokenKind.Signup);
-        if (token.expiry < Date.now()) {
-            return { error: ERROR_SIGNUP_TOKEN_EXPIRED };
-        }
-
-        account.unsetToken(AccessTokenKind.Signup);
-        account.active = true;
-        account.isEmailVerified = true;
-
-        await account.save();
-
-        return { result: SUCCESS_SIGNUP_COMPLETED, account };
+        return await bcrypt.compare(otp, token.accessToken);
     }
 
     static async verifyEmailToken(verifyEmailToken: string) {
@@ -257,73 +258,6 @@ export class AccountService {
         await account.save();
 
         return { result: SUCCESS_SIGNUP_COMPLETED, account };
-    }
-
-    static async getSubForAuthenticationToken(
-        password: string,
-        passwordConfirm: string,
-        authenticationToken: string,
-        secureKey: string,
-    ) {
-        // const account: AccountDocument = await Account.findOne({ authenticationToken })
-        //     .where('authenticationTokenExpires')
-        //     .gt(Date.now())
-        //     .exec();
-
-        const account = await Account.findOne({
-            'tokens.kind': AccessTokenKind.Auth,
-            'tokens.expiry': { $gt: Date.now() },
-        });
-
-        if (!account) {
-            throw new Error(ERROR_AUTHENTICATION_TOKEN_INVALID_OR_EXPIRED);
-        }
-
-        if (password !== passwordConfirm) {
-            throw new Error(ERROR_PASSWORD_NOT_MATCHING);
-        }
-
-        const oldPassword = decryptString(secureKey, SECURE_KEY.split(',')[0]);
-
-        account.privateKey = decryptString(account.privateKey, oldPassword);
-        account.password = password;
-
-        await account.save();
-
-        return account._id.toString();
-    }
-
-    static async signinWithEmailPassword(email: string, password: string) {
-        const account: AccountDocument = await Account.findOne({ email });
-        if (!account) throw new Error(ERROR_NO_ACCOUNT);
-        if (!account.comparePassword(password)) {
-            throw new Error(ERROR_PASSWORD_NOT_MATCHING);
-        }
-
-        return account;
-    }
-
-    static async getSubForPasswordResetToken(password: string, passwordConfirm: string) {
-        const account = await Account.findOne({
-            'tokens.kind': AccessTokenKind.PasswordReset,
-            'tokens.expiry': { $gt: Date.now() },
-        });
-
-        const passwordStrength = checkPasswordStrength(password);
-        if (!account) {
-            throw new Error(ERROR_PASSWORD_RESET_TOKEN_INVALID_OR_EXPIRED);
-        }
-        if (passwordStrength != 'strong') {
-            throw new Error(ERROR_PASSWORD_STRENGTH);
-        }
-        if (password !== passwordConfirm) {
-            throw new Error(ERROR_PASSWORD_NOT_MATCHING);
-        }
-        account.password = password;
-
-        await account.save();
-
-        return account._id.toString();
     }
 
     static remove(id: string) {

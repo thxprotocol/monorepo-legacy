@@ -34,7 +34,7 @@
                 >
                     {{ $router.currentRoute.name }}
                 </h1>
-                <router-view class="main-container flex-grow-1 overflow-auto shadow-lg py-3 p-3 mb-2" />
+                <router-view class="main-container flex-grow-1 overflow-auto shadow-lg py-3 p-3 my-2" />
             </div>
             <footer
                 v-if="['Coins', 'NFT', 'Wallets'].includes($router.currentRoute.name || '')"

@@ -10,6 +10,18 @@ createApp({
         variant: 'warning',
         message: '',
     },
+    email: '',
+    isLoading: false,
+    get isDisabled() {
+        return this.email
+            ? !this.email.match(
+                  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+              )
+            : true;
+    },
+    onClickSubmit() {
+        this.isLoading = true;
+    },
     onAccountsChanged(accounts) {
         if (!accounts.length) {
             this.alert.message = ERROR_CONNECT_METAMASK;

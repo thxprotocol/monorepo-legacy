@@ -124,6 +124,7 @@ export default class ModalRewardERC721Create extends Vue {
     description = '';
     expiryDate: Date | null = null;
     claimAmount = 0;
+    claimLimit = 1;
     rewardLimit = 0;
     pointPrice = 0;
     rewardCondition: TRewardCondition = {
@@ -153,6 +154,7 @@ export default class ModalRewardERC721Create extends Vue {
         this.expiryDate = this.reward ? this.reward.expiryDate : null;
         this.rewardLimit = this.reward ? this.reward.rewardLimit : 0;
         this.claimAmount = this.reward ? this.reward.claimAmount : 0;
+        this.claimLimit = this.reward ? this.reward.claimLimit : 1;
         this.rewardCondition = this.reward
             ? {
                   platform: this.reward.platform as RewardConditionPlatform,
@@ -187,6 +189,12 @@ export default class ModalRewardERC721Create extends Vue {
     }
 
     onSubmit() {
+        // TODO Remove when proper UI validation is implemented
+        if (!this.erc721metadataId.length) {
+            this.error = 'Select the NFT metadata fort this perk';
+            return;
+        }
+
         this.isLoading = true;
 
         const payload = {
@@ -197,6 +205,7 @@ export default class ModalRewardERC721Create extends Vue {
                 this.erc721metadataId ? [this.erc721metadataId] : this.erc721SelectedMetadataIds,
             ),
             claimAmount: this.claimAmount,
+            claimLimit: this.claimLimit,
             rewardLimit: this.rewardLimit,
             pointPrice: this.pointPrice,
             file: this.imageFile,

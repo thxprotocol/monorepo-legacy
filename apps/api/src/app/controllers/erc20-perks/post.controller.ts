@@ -11,6 +11,7 @@ const validation = [
     body('description').exists().isString(),
     body('amount').exists().isInt({ gt: 0 }),
     body('claimAmount').exists().isInt({ lt: 1000 }),
+    body('claimLimit').optional().isInt(),
     body('erc20Id').exists().isMongoId(),
     body('expiryDate').optional().isString(),
     body('platform').exists().isNumeric(),

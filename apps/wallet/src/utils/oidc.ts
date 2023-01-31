@@ -1,8 +1,8 @@
 import { OIDC_CLIENT_ID, OIDC_CLIENT_SECRET, BASE_URL, PKG_ENV } from './secrets';
 import { THXClient } from '@thxnetwork/sdk/client';
 
-const config = {
-    env: 'local',
+export const config = {
+    env: PKG_ENV,
     redirectUrl: `${BASE_URL}/signin-oidc`,
     clientId: OIDC_CLIENT_ID,
     clientSecret: OIDC_CLIENT_SECRET,

@@ -1,5 +1,38 @@
+import { oidc } from '@thxnetwork/auth/util/oidc';
+import { AccountDocument } from '@thxnetwork/auth/models/Account';
+import { UnauthorizedError } from '@thxnetwork/auth/util/errors';
+import { createWallet } from '@thxnetwork/auth/util/wallet';
 import { Request, Response } from 'express';
-import { oidc } from '../../util/oidc';
+
+export const callbackPreAuth = async (req: Request) => {
+    // Get code from url
+    const code = req.query.code as string;
+    // Throw error if not exists
+    if (!code) throw new UnauthorizedError('Could not find code in query');
+
+    // Get interaction for state first
+    const uid = req.query.state as string;
+    if (!uid) throw new UnauthorizedError('Could not find state in query');
+    // See if it still exists and throw error if not
+
+    const interaction = await oidc.Interaction.find(uid);
+    if (!interaction) throw new UnauthorizedError('Your session has expired.');
+
+    return { interaction, code };
+};
+
+export const callbackPostAuth = async (interaction, account: AccountDocument) => {
+    if (!account) throw new UnauthorizedError('Could not find or create an account');
+
+    // Update interaction with login state
+    interaction.result = { login: { accountId: String(account._id) } };
+    await interaction.save(Date.now() + 10000);
+
+    // Create a wallet if wallet can not be found for user
+    createWallet(account);
+
+    return interaction.prompt.name === 'connect' ? interaction.params.return_url : interaction.returnTo;
+};
 
 async function controller(req: Request, res: Response) {
     const interaction = await oidc.interactionDetails(req, res);
@@ -7,20 +40,8 @@ async function controller(req: Request, res: Response) {
 
     // Prompt params are used for unauthenticated routes
     switch (params.prompt) {
-        case 'create': {
-            return res.redirect(`/oidc/${uid}/signup?returnUrl=${params.return_url}`);
-        }
-        case 'confirm': {
-            return res.redirect(`/oidc/${uid}/confirm`);
-        }
-        case 'confirm_email': {
-            return res.redirect(`/oidc/${uid}/confirm/email`);
-        }
         case 'verify_email': {
             return res.redirect(`/oidc/${uid}/account/email/verify`);
-        }
-        case 'reset': {
-            return res.redirect(`/oidc/${uid}/reset`);
         }
         case 'account-settings': {
             return res.redirect(`/oidc/${uid}/account`);

@@ -9,6 +9,10 @@ import VueClipboard from 'vue-clipboard2';
 import VueConfetti from 'vue-confetti';
 import { fromWei } from 'web3-utils';
 import { thxClient } from './utils/oidc';
+import Mixpanel from '@thxnetwork/mixpanel';
+import { API_URL, MIXPANEL_TOKEN } from './utils/secrets';
+
+Mixpanel.init(MIXPANEL_TOKEN, API_URL);
 
 // Set Axios default config
 axios.defaults.withCredentials = true;
@@ -30,7 +34,15 @@ axios.interceptors.response.use(
     (res: AxiosResponse) => res,
     async (error: AxiosError) => {
         if (error.response?.status === 401) {
-            await store.dispatch('account/signinRedirect');
+            const user = await store.dispatch('account/getUser');
+            if (user) {
+                // Token expired or invalid, signout id_token_hint
+                await store.dispatch('account/signoutRedirect');
+            } else {
+                // id_token_hint not available, force signout and request signin
+                await store.dispatch('account/signout');
+                await store.dispatch('account/signinRedirect');
+            }
         }
         throw error;
     },

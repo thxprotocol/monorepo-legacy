@@ -4,12 +4,13 @@ import { rewardBaseSchema } from './ERC20Perk';
 
 export type PointRewardDocument = mongoose.Document & TPointReward;
 
-const pointRewardSchema = new mongoose.Schema(
+const schema = new mongoose.Schema(
     {
         ...rewardBaseSchema,
         amount: String,
     },
     { timestamps: true },
 );
+schema.index({ createdAt: 1 });
 
-export const PointReward = mongoose.model<PointRewardDocument>('PointReward', pointRewardSchema, 'pointrewards');
+export const PointReward = mongoose.model<PointRewardDocument>('PointReward', schema, 'pointrewards');

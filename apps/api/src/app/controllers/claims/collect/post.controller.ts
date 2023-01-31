@@ -19,9 +19,8 @@ import { ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
 import { ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
 import { ERC721PerkPayment, ERC721PerkPaymentDocument } from '@thxnetwork/api/models/ERC721PerkPayment';
 import { WithdrawalDocument } from '@thxnetwork/api/models/Withdrawal';
-import { PointRewardDocument } from '@thxnetwork/api/models/PointReward';
 
-type PerkDocument = ERC20PerkDocument | ERC721PerkDocument | PointRewardDocument;
+type PerkDocument = ERC20PerkDocument | ERC721PerkDocument;
 type PerkPaymentDocument = ERC20PerkPaymentDocument | ERC721PerkPaymentDocument;
 
 const validation = [param('uuid').exists().isString(), query('forceSync').optional().isBoolean()];
@@ -47,10 +46,10 @@ const controller = async (req: Request, res: Response) => {
     let claim = await ClaimService.findByUuid(req.params.uuid);
     if (!claim) throw new BadRequestError('This claim URL is invalid.');
 
+    const account = await AccountProxy.getById(req.auth.sub);
+
     const pool = await PoolService.getById(claim.poolId);
     if (!pool) throw new BadRequestError('The pool for this perk has been removed.');
-
-    const account = await AccountProxy.getById(req.auth.sub);
 
     const perk = await findRewardByUuid(claim.rewardUuid);
     if (!perk) throw new BadRequestError('The perk for this id does not exist.');
@@ -64,17 +63,15 @@ const controller = async (req: Request, res: Response) => {
     }
 
     // Can be claimed only before the expiry date
-    if (perk.expiryDate && new Date(perk.expiryDate).getTime() < Date.now()) {
+    const isExpired = new Date(perk.expiryDate).getTime() < Date.now();
+    if (perk.expiryDate && isExpired) {
         throw new ForbiddenError('This perk claim has expired.');
     }
 
-    // Can be claimed only once per claim per sub
-    if (perk.claimAmount > 0 && claim.sub) {
-        const message =
-            claim.sub === req.auth.sub
-                ? 'You have already claimed this perk.'
-                : 'This perk has been claimed by someone else.';
-        throw new ForbiddenError(message);
+    // Can only be claimed for the amount of times per sub specified in the claimLimit
+    const amountOfPaymentsPerSub = await model.countDocuments({ perkId: perk._id, sub: req.auth.sub });
+    if (perk.claimLimit > 0 && amountOfPaymentsPerSub >= perk.claimLimit) {
+        throw new ForbiddenError('You have claimed this perk for the maximum amount of times.');
     }
 
     // Can only be claimed for the amount of times per perk specified in the rewardLimit
@@ -85,7 +82,12 @@ const controller = async (req: Request, res: Response) => {
         }
     }
 
-    // Can only claim if potential platform conditions pass.
+    // Can not be claimed when sub is set for this claim URL and claim amount is greater than 1
+    if (perk.claimAmount > 1 && claim.sub) {
+        throw new ForbiddenError('This perk has been claimed by someone else.');
+    }
+
+    // Can only claim if potential platform conditions passes.
     const failReason = await validateCondition(account, perk);
     if (failReason) {
         throw new ForbiddenError(failReason);
@@ -93,17 +95,11 @@ const controller = async (req: Request, res: Response) => {
 
     // Create a pool withdrawal if the erc20 for the claim exists.
     if (isTERC20Perk(perk)) {
+        const { amount } = perk as ERC20PerkDocument;
+
         erc20 = await ERC20Service.getById(claim.erc20Id);
         if (!erc20) throw new NotFoundError('No erc20 found for this perk');
-
-        withdrawal = await WithdrawalService.withdrawFor(
-            pool,
-            erc20,
-            req.auth.sub,
-            account.address,
-            perk.amount,
-            false,
-        );
+        withdrawal = await WithdrawalService.withdrawFor(pool, erc20, req.auth.sub, account.address, amount, false);
 
         // Create a payment to register a completed claim.
         payment = await ERC20PerkPayment.create({
@@ -115,7 +111,9 @@ const controller = async (req: Request, res: Response) => {
 
     // Mint an NFT token if the erc721 and metadata for the claim exists.
     if (isTERC721Perk(perk)) {
-        metadata = await ERC721Service.findMetadataById(perk.erc721metadataId);
+        const { erc721metadataId } = perk as ERC721PerkDocument;
+
+        metadata = await ERC721Service.findMetadataById(erc721metadataId);
         if (!metadata) throw new NotFoundError('No metadata found for this perk');
 
         erc721 = await ERC721Service.findById(metadata.erc721);
@@ -128,6 +126,7 @@ const controller = async (req: Request, res: Response) => {
             sub: req.auth.sub,
             perkId: perk._id,
             amount: perk.pointPrice,
+            poolId: pool._id,
         });
     }
 

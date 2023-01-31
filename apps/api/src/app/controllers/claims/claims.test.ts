@@ -207,6 +207,7 @@ describe('Claims', () => {
                     platform: 0,
                     expiryDate,
                     rewardLimit: 0,
+                    claimLimit: 1,
                     claimAmount: 2,
                 })
                 .expect((res: request.Response) => {
@@ -230,7 +231,7 @@ describe('Claims', () => {
             user.post(`/v1/claims/${claim0.uuid}/collect`)
                 .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
                 .expect((res: request.Response) => {
-                    expect(res.body.error.message).toBe('You have already claimed this perk.');
+                    expect(res.body.error.message).toBe('You have claimed this perk for the maximum amount of times.');
                 })
                 .expect(403, done);
         });
@@ -255,7 +256,7 @@ describe('Claims', () => {
             user.post(`/v1/claims/${claim1.uuid}/collect`)
                 .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken2 })
                 .expect((res: request.Response) => {
-                    expect(res.body.error.message).toBe('You have already claimed this perk.');
+                    expect(res.body.error.message).toBe('You have claimed this perk for the maximum amount of times.');
                 })
                 .expect(403, done);
         });

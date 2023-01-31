@@ -21,6 +21,7 @@
             "@thxnetwork/auth*": ["apps/auth/src/app*"],
             "@thxnetwork/discord*": ["apps/discord-bot/src/app*"],
             "@thxnetwork/common": ["libs/common/src/index.ts"],
+            "@thxnetwork/mixpanel": ["libs/common/src/lib/mixpanel.ts"],
             "@thxnetwork/contracts*": ["libs/contracts*"],
             "@thxnetwork/dashboard*": ["apps/dashboard/src*"],
             "@thxnetwork/public*": ["apps/public/src*"],
