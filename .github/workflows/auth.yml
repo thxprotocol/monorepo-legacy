@@ -173,7 +173,7 @@ jobs:
 
             - name: Update Discord
               env:
-                  DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+                  DISCORD_WEBHOOK: ${{ secrets.DISCORD_AWS_WEBHOOK }}
               uses: Ilshidur/action-discord@master
               with:
-                  args: 'Released Auth 🔐 `${{needs.bumpVersion.outputs.newTag}}`'
+                  args: 'Released AuthDev 🔐 `${{needs.bumpVersion.outputs.newTag}}`'
