@@ -30,7 +30,7 @@ class RewardsManager extends BaseManager {
         },
     };
 
-    daily = {
+    dailys = {
         claim: async ({ uuid, sub }: { uuid: string; sub: string }) => {
             return await this.client.request.post(`/v1/rewards/daily/${uuid}/claim`, {
                 body: JSON.stringify({ sub }),
