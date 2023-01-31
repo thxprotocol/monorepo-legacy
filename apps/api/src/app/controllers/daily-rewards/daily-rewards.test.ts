@@ -127,7 +127,6 @@ describe('Daily Rewards', () => {
                 amount,
             })
             .expect(({ body }: request.Response) => {
-                console.log('BODY', body);
                 expect(body.amount).toBe(amount.toString());
                 dailyReward = body;
             })
@@ -137,9 +136,6 @@ describe('Daily Rewards', () => {
     it('POST /rewards/daily/:uuid/claim', (done) => {
         user.post(`/v1/rewards/daily/${dailyRewardUuid}/claim`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
-            .expect(({ body }: request.Response) => {
-                console.log('BODY 1', body);
-            })
             .expect(201, done);
     });
 
@@ -147,7 +143,6 @@ describe('Daily Rewards', () => {
         user.post(`/v1/rewards/daily/${dailyRewardUuid}/claim`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
             .expect(({ body }: request.Response) => {
-                console.log('BODY 2', body);
                 expect(body.error).toBe('This reward is not claimable yet');
             })
             .expect(200, done);
