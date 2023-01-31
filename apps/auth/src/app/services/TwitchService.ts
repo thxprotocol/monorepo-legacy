@@ -3,6 +3,7 @@ import { AccountDocument } from '../models/Account';
 import CommonOauthLoginOptions from '../types/CommonOauthLoginOptions';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { twitchClient } from '../util/axios';
+import { IAccessToken } from '../types/TAccount';
 
 export const TWITCH_API_SCOPE = ['user:read:follows', 'user:read:email', 'user:read:broadcast'];
 
@@ -47,7 +48,7 @@ class TwitchService {
         return `https://id.twitch.tv/oauth2/authorize?${body.toString()}`;
     }
 
-    static async requestTokens(code: string) {
+    static async getTokens(code: string): Promise<{ tokenInfo: IAccessToken; email: string }> {
         const body = new URLSearchParams();
 
         body.append('code', code);
@@ -56,7 +57,7 @@ class TwitchService {
         body.append('client_secret', TWITCH_CLIENT_SECRET);
         body.append('client_id', TWITCH_CLIENT_ID);
 
-        const r = await twitchClient({
+        const { data } = await twitchClient({
             url: 'https://id.twitch.tv/oauth2/token',
             method: 'POST',
             headers: {
@@ -65,11 +66,19 @@ class TwitchService {
             data: body,
         });
 
-        if (r.status !== 200) {
-            throw new Error(ERROR_TOKEN_REQUEST_FAILED);
-        }
+        const user = await this.getUser(data.access_token);
+        const expiry = data.expires_in ? Date.now() + Number(data.expires_in) * 1000 : undefined;
 
-        return r.data;
+        return {
+            email: user.data[0].email,
+            tokenInfo: {
+                kind: AccessTokenKind.Twitch,
+                accessToken: data.access_token,
+                refreshToken: data.refresh_token,
+                expiry,
+                userId: user.id,
+            },
+        };
     }
 
     static async refreshTokens(refreshToken: string) {

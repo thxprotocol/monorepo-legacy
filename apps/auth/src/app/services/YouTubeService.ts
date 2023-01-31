@@ -4,6 +4,7 @@ import { AccountDocument } from '../models/Account';
 import { AUTH_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../config/secrets';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IAccessToken } from '../types/TAccount';
+import { parseJwt } from '../util/jwt';
 
 const client = new google.auth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, AUTH_URL + '/oidc/callback/google');
 
@@ -18,8 +19,10 @@ export class YouTubeService {
         const isExpired = Date.now() > token.expiry;
         if (isExpired) {
             try {
+                const refreshToken = this.getRefreshToken(account);
+
                 client.setCredentials({
-                    refresh_token: token.refreshToken,
+                    refresh_token: refreshToken,
                     access_token: token.accessToken,
                 });
 
@@ -30,7 +33,7 @@ export class YouTubeService {
                     kind: accessTokenKind,
                     accessToken: res.token,
                     expiry: expiry_date,
-                    refreshToken: token.refreshToken,
+                    refreshToken: refreshToken,
                 });
                 await account.save();
             } catch {
@@ -43,11 +46,21 @@ export class YouTubeService {
         return true;
     }
 
+    // TODO We should actually rethinkg the storage of those tokens and group them by provider
+    // as we only get a refresh token once per provider. Currently this workaround should suffice.
+    static getRefreshToken(account: AccountDocument) {
+        const token = account.tokens.find(
+            (t) => ['google', 'youtube-view', 'youtube-manage'].includes(t.kind) && t.refreshToken,
+        );
+        return token && token.refreshToken;
+    }
+
     static async getYoutubeClient(account: AccountDocument, accessTokenKind: AccessTokenKind) {
         const googleToken: IAccessToken = account.getToken(accessTokenKind);
+        const refreshToken = this.getRefreshToken(account);
 
         client.setCredentials({
-            refresh_token: googleToken.refreshToken,
+            refresh_token: refreshToken,
             access_token: googleToken.accessToken,
         });
 
@@ -58,7 +71,7 @@ export class YouTubeService {
             kind: AccessTokenKind.YoutubeView,
             accessToken: token,
             expiry: expiry_date,
-            refreshToken: googleToken.refreshToken,
+            refreshToken: refreshToken,
         });
         await account.save();
 
@@ -223,9 +236,25 @@ export class YouTubeService {
         });
     }
 
-    static async getTokens(code: string) {
-        const res = await client.getToken(code);
-        return res.tokens;
+    static async getTokens(code: string): Promise<{ tokenInfo: IAccessToken; email: string }> {
+        const { tokens } = await client.getToken(code);
+        const expiry = tokens.expiry_date ? Date.now() + Number(tokens.expiry_date) * 1000 : undefined;
+
+        let kind = YouTubeService.getAccessTokenKindFromScope(tokens.scope);
+        if (!kind) kind = AccessTokenKind.Google;
+
+        const claims = await parseJwt(tokens.id_token);
+
+        return {
+            email: claims.email,
+            tokenInfo: {
+                kind,
+                expiry,
+                accessToken: tokens.access_token,
+                refreshToken: tokens.refresh_token,
+                userId: claims.sub,
+            },
+        };
     }
 
     static getYoutubeScopes(accessTokenKind: AccessTokenKind) {

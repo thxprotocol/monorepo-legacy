@@ -12,6 +12,20 @@ import { AccountVariant } from '../types/enums/AccountVariant';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import bcrypt from 'bcrypt';
 
+function getKindFromVariant(variant: AccountVariant): AccessTokenKind {
+    switch (variant) {
+        case AccountVariant.SSOGoogle:
+            return AccessTokenKind.Google;
+        case AccountVariant.SSOTwitter:
+            return AccessTokenKind.Twitter;
+        case AccountVariant.SSOGithub:
+            return AccessTokenKind.Github;
+        case AccountVariant.SSODiscord:
+            return AccessTokenKind.Discord;
+        case AccountVariant.SSOTwitch:
+            return AccessTokenKind.Twitch;
+    }
+}
 export class AccountService {
     static get(sub: string) {
         return Account.findById(sub);
@@ -133,6 +147,47 @@ export class AccountService {
             plan: AccountPlanType.Basic,
             active: true,
         });
+    }
+
+    static async findOrCreate(
+        session: { accountId: string },
+        tokenInfo: IAccessToken,
+        variant: AccountVariant,
+        email?: string,
+    ) {
+        let account: AccountDocument;
+
+        // Find account for active session
+        if (session && session.accountId) {
+            account = await Account.findById(session.accountId);
+        }
+        // Find account for email
+        else if (email) {
+            account = await Account.findOne({ email });
+        }
+        // Find account for userId
+        else if (tokenInfo.userId) {
+            // Map AccountVariant to AccessTokenKind and search for userId in tokenInfo
+            const kind = getKindFromVariant(variant);
+            account = await Account.findOne({ 'tokens.userId': tokenInfo.userId, 'tokens.kind': kind });
+        }
+
+        // When no account is matched, create the account.
+        if (!account) {
+            account = await Account.create({
+                email,
+                variant,
+                acceptTermsPrivacy: true,
+                acceptUpdates: true,
+                plan: AccountPlanType.Basic,
+                active: true,
+            });
+        }
+
+        // Always udpate latest tokenInfo for account
+        account.setToken(tokenInfo);
+
+        return await account.save();
     }
 
     static async signup(data: { email?: string; variant: AccountVariant; active: boolean; twitterId?: string }) {
