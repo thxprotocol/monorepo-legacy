@@ -1,12 +1,11 @@
 name: E2E Tests
 
-on: [push]
-# on:
-#     push:
-#         branches:
-#             - main
-#     schedule:
-#         - cron: '0 4 * * *'
+on:
+    push:
+        branches:
+            - main
+    schedule:
+        - cron: '0 4 * * *'
 
 jobs:
     e2e:
@@ -34,8 +33,9 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Update Discord
+              if: always()
               env:
                   DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
               uses: Ilshidur/action-discord@master
               with:
-                  args: 'E2E test status: `${{ steps.test.outcome }}` `${{ steps.test.outcome == "success" ? ✅ : ⛔ }}`'
+                  args: "E2E Tested Dev ${{ steps.test.outcome == 'success' && '✅' || '⛔' }} `${{ steps.test.outcome }}` "

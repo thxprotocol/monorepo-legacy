@@ -151,7 +151,7 @@ jobs:
         name: Auto deploy develop to dev.auth.thx.network
         runs-on: ubuntu-latest
         if: github.ref == 'refs/heads/develop'
-        needs: buildAndPushImage
+        needs: [buildAndPushImage, bumpVersion]
         steps:
             - name: Install Node.js 16.x
               uses: actions/setup-node@v1
@@ -170,3 +170,10 @@ jobs:
 
             - name: Deploy-script
               run: thx-deploy AuthDev sha-$(echo ${{github.sha}} | cut -c1-7)
+
+            - name: Update Discord
+              env:
+                  DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+              uses: Ilshidur/action-discord@master
+              with:
+                  args: 'Released Auth 🔐 `${{needs.bumpVersion.outputs.newTag}}`'

@@ -34,8 +34,8 @@
                     <b-col>
                         <strong class="text-primary" style="font-size: 1.3rem">
                             {{
-                                (pool.metrics.referralRewards ? pool.metrics.referralRewards.totalClaimPoints : 0) +
-                                (pool.metrics.pointRewards ? pool.metrics.pointRewards.totalClaimPoints : 0)
+                                (metrics.referralRewards ? metrics.referralRewards.totalClaimPoints : 0) +
+                                (metrics.pointRewards ? metrics.pointRewards.totalClaimPoints : 0)
                             }}
                         </strong>
                         <div class="small">Points Claimed</div>
@@ -43,14 +43,12 @@
                 </b-row>
                 <b-row>
                     <b-col>
-                        <strong class="text-primary">{{
-                            pool.metrics.erc20Perks ? pool.metrics.erc20Perks.payments : 0
-                        }}</strong>
+                        <strong class="text-primary">{{ metrics.erc20Perks ? metrics.erc20Perks.payments : 0 }}</strong>
                         <div class="small">Coin Perks Redeemed</div>
                     </b-col>
                     <b-col>
                         <strong class="text-primary">{{
-                            pool.metrics.erc721Perks ? pool.metrics.erc721Perks.payments : 0
+                            metrics.erc721Perks ? metrics.erc721Perks.payments : 0
                         }}</strong>
                         <div class="small">NFT Perks Redeemed</div>
                     </b-col>
@@ -79,6 +77,7 @@ import promisePoller from 'promise-poller';
 import BaseDropdownMenuPool from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownMenuPool.vue';
 import BaseModalPoolCreate from '@thxnetwork/dashboard/components/modals/BaseModalPoolCreate.vue';
 import { fromWei } from 'web3-utils';
+import { IPoolAnalyticsMetrics } from '../../store/modules/pools';
 
 @Component({
     components: {
@@ -92,6 +91,7 @@ import { fromWei } from 'web3-utils';
         ...mapState('account', ['version', 'artifacts']),
         ...mapGetters({
             profile: 'account/profile',
+            analyticsMetrics: 'pools/analyticsMetrics',
         }),
     },
 })
@@ -106,6 +106,7 @@ export default class BaseCardPool extends Vue {
 
     profile!: IAccount;
     artifacts!: string;
+    analyticsMetrics!: IPoolAnalyticsMetrics;
 
     get outOfDate() {
         return this.pool.version !== this.artifacts;
@@ -122,8 +123,16 @@ export default class BaseCardPool extends Vue {
         }
     }
 
+    get metrics() {
+        if (!this.analyticsMetrics[this.pool._id]) {
+            return null;
+        }
+        return this.analyticsMetrics[this.pool._id];
+    }
+
     async mounted() {
         await this.$store.dispatch('pools/read', this.pool._id);
+        await this.$store.dispatch('pools/readAnalyticsMetrics', { poolId: this.pool._id });
 
         if (!this.pool.address) {
             this.isDeploying = true;

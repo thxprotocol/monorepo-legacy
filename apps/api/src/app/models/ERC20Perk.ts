@@ -3,11 +3,12 @@ import { TERC20Perk } from '@thxnetwork/types/';
 
 export const rewardBaseSchema = {
     uuid: String,
-    poolId: String,
+    poolId: { type: String, index: 'hashed' },
     title: String,
     description: String,
     expiryDate: Date,
     claimAmount: Number,
+    claimLimit: Number,
     rewardLimit: Number,
     platform: Number,
     interaction: Number,
@@ -20,7 +21,7 @@ export const rewardBaseSchema = {
 
 export type ERC20PerkDocument = mongoose.Document & TERC20Perk;
 
-const erc20PerkSchema = new mongoose.Schema(
+const schema = new mongoose.Schema(
     {
         ...rewardBaseSchema,
         erc20Id: String,
@@ -30,5 +31,6 @@ const erc20PerkSchema = new mongoose.Schema(
     },
     { timestamps: true },
 );
+schema.index({ createdAt: 1 });
 
-export const ERC20Perk = mongoose.model<ERC20PerkDocument>('erc20perks', erc20PerkSchema);
+export const ERC20Perk = mongoose.model<ERC20PerkDocument>('erc20perks', schema);

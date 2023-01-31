@@ -115,26 +115,34 @@ export default class ModalRewardPointsCreate extends Vue {
     }
 
     onSubmit() {
+        const payload = {
+            ...this.reward,
+            _id: this.reward ? this.reward._id : undefined,
+            poolId: this.pool._id,
+            title: this.title,
+            description: this.description,
+            amount: this.amount,
+            rewardLimit: this.rewardLimit,
+            platform: this.rewardCondition.platform,
+            interaction:
+                this.rewardCondition.platform != RewardConditionPlatform.None
+                    ? this.rewardCondition.interaction
+                    : RewardConditionInteraction.None,
+            content: this.rewardCondition.platform != RewardConditionPlatform.None ? this.rewardCondition.content : '',
+            page: this.reward ? this.reward.page : 1,
+        };
+        console.log('payload', payload);
         this.isLoading = true;
-        this.$store
-            .dispatch(`pointRewards/${this.reward ? 'update' : 'create'}`, {
-                ...this.reward,
-                _id: this.reward ? this.reward._id : undefined,
-                poolId: this.pool._id,
-                title: this.title,
-                description: this.description,
-                amount: this.amount,
-                rewardLimit: this.rewardLimit,
-                platform: this.rewardCondition.platform,
-                interaction: this.rewardCondition.interaction,
-                content: this.rewardCondition.content,
-                page: this.reward ? this.reward.page : 1,
-            })
-            .then(() => {
-                this.$bvModal.hide(this.id);
-                this.$emit('submit');
-                this.isLoading = false;
-            });
+        this.$store.dispatch(`pointRewards/${this.reward ? 'update' : 'create'}`, payload).then(() => {
+            this.$bvModal.hide(this.id);
+            this.$emit('submit');
+            this.isLoading = false;
+        });
+    }
+
+    onRewardConditionChange(rewardCondition: any) {
+        this.rewardCondition = rewardCondition;
+        console.log('rewardCondition', rewardCondition);
     }
 }
 </script>
