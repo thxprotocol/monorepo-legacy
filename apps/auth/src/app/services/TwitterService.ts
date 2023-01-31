@@ -4,6 +4,7 @@ import { twitterClient } from '../util/axios';
 import { AUTH_URL, TWITTER_CLIENT_ID, TWITTER_CLIENT_SECRET } from '../config/secrets';
 import { AccountDocument } from '../models/Account';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
+import { IAccessToken } from '../types/TAccount';
 
 const ERROR_NO_DATA = 'Could not find an youtube data for this accesstoken';
 const ERROR_NOT_AUTHORIZED = 'Not authorized for Twitter API';
@@ -140,7 +141,7 @@ export class TwitterService {
         return r.data;
     }
 
-    static async requestTokens(code: string) {
+    static async getTokens(code: string): Promise<{ tokenInfo: IAccessToken; email: string }> {
         const body = new URLSearchParams();
         body.append('code', code);
         body.append('grant_type', 'authorization_code');
@@ -158,8 +159,19 @@ export class TwitterService {
             },
             data: body,
         });
+        const user = await this.getUser(data.access_token);
+        const expiry = data.expires_in ? Date.now() + Number(data.expires_in) * 1000 : undefined;
 
-        return data;
+        return {
+            email: user.email,
+            tokenInfo: {
+                kind: AccessTokenKind.Twitter,
+                accessToken: data.access_token,
+                refreshToken: data.refresh_token,
+                expiry,
+                userId: user.id,
+            },
+        };
     }
 
     static getScopes() {

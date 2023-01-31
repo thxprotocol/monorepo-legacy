@@ -12,6 +12,20 @@ import { AccountVariant } from '../types/enums/AccountVariant';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import bcrypt from 'bcrypt';
 
+function getKindFromVariant(variant: AccountVariant): AccessTokenKind {
+    switch (variant) {
+        case AccountVariant.SSOGoogle:
+            return AccessTokenKind.Google;
+        case AccountVariant.SSOTwitter:
+            return AccessTokenKind.Twitter;
+        case AccountVariant.SSOGithub:
+            return AccessTokenKind.Github;
+        case AccountVariant.SSODiscord:
+            return AccessTokenKind.Discord;
+        case AccountVariant.SSOTwitch:
+            return AccessTokenKind.Twitch;
+    }
+}
 export class AccountService {
     static get(sub: string) {
         return Account.findById(sub);
@@ -153,8 +167,9 @@ export class AccountService {
         }
         // Find account for userId
         else if (tokenInfo.userId) {
-            // Search for userId in tokenInfo
-            account = await Account.findOne({ 'tokens.userId': tokenInfo.userId });
+            // Map AccountVariant to AccessTokenKind and search for userId in tokenInfo
+            const kind = getKindFromVariant(variant);
+            account = await Account.findOne({ 'tokens.userId': tokenInfo.userId, 'tokens.kind': kind });
         }
 
         // When no account is matched, create the account.

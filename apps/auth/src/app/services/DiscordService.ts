@@ -3,6 +3,7 @@ import { AccountDocument } from '../models/Account';
 import CommonOauthLoginOptions from '../types/CommonOauthLoginOptions';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { discordClient } from '../util/axios';
+import { IAccessToken } from '../types/TAccount';
 
 export const scopes = ['identify', 'email', 'guilds', 'guilds.join', 'guilds.members.read'];
 
@@ -46,7 +47,7 @@ class DiscordService {
         return `https://discord.com/oauth2/authorize?${body.toString()}`;
     }
 
-    static async requestTokens(code: string) {
+    static async getTokens(code: string): Promise<{ tokenInfo: IAccessToken; email: string }> {
         const body = new URLSearchParams();
 
         body.append('code', code);
@@ -63,12 +64,19 @@ class DiscordService {
             },
             data: body,
         });
+        const { user } = await this.getUser(r.data.access_token);
+        console.log(r.data);
 
-        if (r.status !== 200) {
-            throw new Error(ERROR_TOKEN_REQUEST_FAILED);
-        }
-
-        return r.data;
+        return {
+            email: user.email,
+            tokenInfo: {
+                kind: AccessTokenKind.Discord,
+                expiry: r.data.expires_in,
+                accessToken: r.data.access_token,
+                refreshToken: r.data.refresh_token,
+                userId: user.id,
+            },
+        };
     }
 
     static async refreshTokens(refreshToken: string) {

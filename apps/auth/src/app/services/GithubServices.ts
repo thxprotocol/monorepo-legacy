@@ -5,6 +5,7 @@ import { AUTH_URL, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from '@thxnetwork/au
 import { githubClient } from '../util/axios';
 import { AccountDocument } from '../models/Account';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
+import { IAccessToken } from '../types/TAccount';
 
 export const GITHUB_API_SCOPE = ['public_repo']; // https://docs.github.com/en/developers/apps/building-oauth-apps/scopes-for-oauth-apps
 
@@ -72,7 +73,7 @@ export class GithubService {
         return `https://github.com/login/oauth/authorize?${body.toString()}`;
     }
 
-    static async requestTokens(code: string) {
+    static async getTokens(code: string): Promise<{ tokenInfo: IAccessToken; email: string }> {
         const r = await githubClient({
             url: 'https://github.com/login/oauth/access_token',
             method: 'POST',
@@ -84,10 +85,22 @@ export class GithubService {
             },
         });
 
-        if (r.status !== 200) {
-            throw new Error('Failed to request access token');
-        }
-        return JSON.parse('{"' + decodeURI(r.data.replace(/&/g, '","').replace(/=/g, '":"')) + '"}');
+        const search = new URLSearchParams(r.data);
+        const accessToken = search.get('access_token');
+        const user = await this.getUser(accessToken);
+        const expiresIn = search.get('expires_in');
+        const expiry = expiresIn && Date.now() + Number(expiresIn) * 1000;
+
+        return {
+            email: user.email,
+            tokenInfo: {
+                kind: AccessTokenKind.Github,
+                accessToken: search.get('access_token'),
+                refreshToken: search.get('refresh_token'),
+                userId: user.id,
+                expiry,
+            },
+        };
     }
 
     static async getUser(accessToken: string) {
@@ -98,10 +111,6 @@ export class GithubService {
                 Authorization: 'Bearer ' + accessToken,
             },
         });
-
-        if (r.status !== 200) {
-            throw new Error('Failed to fetch user information');
-        }
 
         return r.data;
     }

@@ -110,6 +110,7 @@ describe('SSO Sign In', () => {
                 .post(/.*?/)
                 .reply(200, {
                     accessToken: 'thisnotgonnawork',
+                    expires_in: 60000,
                 });
             nock(TWITTER_API_ENDPOINT + '/users/me')
                 .get(/.*?/)
