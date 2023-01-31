@@ -185,7 +185,7 @@ jobs:
 
             - name: Update Discord
               env:
-                  DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+                  DISCORD_WEBHOOK: ${{ secrets.DISCORD_AWS_WEBHOOK }}
               uses: Ilshidur/action-discord@master
               with:
-                  args: 'Released API 🚀 `${{ needs.bumpVersion.outputs.newTag }}`'
+                  args: 'Released APIDev 🚀 `${{ needs.bumpVersion.outputs.newTag }}`'

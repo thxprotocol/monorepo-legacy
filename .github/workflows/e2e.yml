@@ -35,7 +35,7 @@ jobs:
             - name: Update Discord
               if: always()
               env:
-                  DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+                  DISCORD_WEBHOOK: ${{ secrets.DISCORD_CYPRESS_WEBHOOK }}
               uses: Ilshidur/action-discord@master
               with:
                   args: "E2E Tested Dev ${{ steps.test.outcome == 'success' && '✅' || '⛔' }} `${{ steps.test.outcome }}` "
