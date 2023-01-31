@@ -65,7 +65,6 @@ class DiscordService {
             data: body,
         });
         const { user } = await this.getUser(r.data.access_token);
-        console.log(r.data);
 
         return {
             email: user.email,

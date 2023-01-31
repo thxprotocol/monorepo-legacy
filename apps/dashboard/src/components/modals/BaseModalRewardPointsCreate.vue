@@ -131,7 +131,6 @@ export default class ModalRewardPointsCreate extends Vue {
             content: this.rewardCondition.platform != RewardConditionPlatform.None ? this.rewardCondition.content : '',
             page: this.reward ? this.reward.page : 1,
         };
-        console.log('payload', payload);
         this.isLoading = true;
         this.$store.dispatch(`pointRewards/${this.reward ? 'update' : 'create'}`, payload).then(() => {
             this.$bvModal.hide(this.id);
@@ -142,7 +141,6 @@ export default class ModalRewardPointsCreate extends Vue {
 
     onRewardConditionChange(rewardCondition: any) {
         this.rewardCondition = rewardCondition;
-        console.log('rewardCondition', rewardCondition);
     }
 }
 </script>
