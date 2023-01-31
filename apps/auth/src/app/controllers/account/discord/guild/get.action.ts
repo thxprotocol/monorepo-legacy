@@ -8,9 +8,7 @@ import { AccountService } from '@thxnetwork/auth/services/AccountService';
 export const getDiscordGuildJoined = async (req: Request, res: Response) => {
     const account = await AccountService.get(req.params.sub);
     const token: IAccessToken | undefined = account.getToken(AccessTokenKind.Discord);
-    if (!token) {
-        throw new NotFoundError();
-    }
+    if (!token) throw new NotFoundError();
 
     const result = await DiscordService.validateUserJoined({
         guildId: req.params.item,

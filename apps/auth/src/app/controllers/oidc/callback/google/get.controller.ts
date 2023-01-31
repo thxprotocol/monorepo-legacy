@@ -1,8 +1,8 @@
 import { AccountService } from '../../../../services/AccountService';
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { oidc } from '../../../../util/oidc';
 import { parseJwt } from '../../../../util/jwt';
-import { AccountDocument } from '../../../../models/Account';
+import { Account, AccountDocument } from '../../../../models/Account';
 import { getAccountByEmail, saveInteraction } from '../../../../util/oidc';
 import { YouTubeService } from '../../../../services/YouTubeService';
 import { AccountVariant } from '../../../../types/enums/AccountVariant';
@@ -10,66 +10,52 @@ import { createWallet } from '@thxnetwork/auth/util/wallet';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
 import airtable from '@thxnetwork/auth/util/airtable';
+import { UnauthorizedError } from '@thxnetwork/auth/util/errors';
 
-async function updateTokens(account: AccountDocument, tokens: any, userId: string) {
-    let accessTokenKind = YouTubeService.getAccessTokenKindFromScope(tokens.scope);
-    if (!accessTokenKind) {
-        accessTokenKind = AccessTokenKind.Google;
-    }
+const callbackPreAuth = async (req: Request) => {
+    // Get code from url
+    const code = req.query.code as string;
+    // Throw error if not exists
+    if (!code) throw new UnauthorizedError('Could not find code in query');
 
-    const expiry = tokens.expiry_date ? Date.now() + Number(tokens.expiry_date) * 1000 : undefined;
-    account.setToken({
-        kind: accessTokenKind,
-        accessToken: tokens.access_token,
-        refreshToken: tokens.refresh_token,
-        expiry,
-        userId,
-    } as IAccessToken);
+    // Get interaction for state first
+    const uid = req.query.state as string;
+    if (!uid) throw new UnauthorizedError('Could not find state in query');
+    // See if it still exists and throw error if not
 
-    await account.save();
-}
+    const interaction = await oidc.Interaction.find(uid);
+    if (!interaction) throw new UnauthorizedError('Your session has expired.');
+
+    return { interaction, code };
+};
+
+const callbackPostAuth = async (interaction, account: AccountDocument) => {
+    // Update interaction with login state
+    interaction.result = { login: { accountId: String(account._id) } };
+    await interaction.save(Date.now() + 10000);
+
+    // Create a wallet if wallet can not be found for user
+    createWallet(account);
+    console.log(interaction);
+    return interaction.prompt.name === 'connect' ? interaction.params.return_url : interaction.returnTo;
+};
 
 export async function controller(req: Request, res: Response) {
-    const code = req.query.code as string;
-    const uid = req.query.state as string;
+    const { code, interaction } = await callbackPreAuth(req);
 
-    // Get the interaction based on the state
-    const interaction: any = await oidc.Interaction.find(uid);
-
-    if (!interaction)
-        return res.render('error', {
-            params: {},
-            rewardUrl: '',
-            alert: { variant: 'danger', message: 'Could not find your session.' },
-        });
-    if (!code) return res.redirect(interaction.params.return_url);
-
-    // Get all token information
-    const tokens = await YouTubeService.getTokens(code);
-    const claims = await parseJwt(tokens.id_token);
+    // Get Tokens
+    const { tokenInfo, email } = await YouTubeService.getTokens(code);
+    console.log(tokenInfo);
 
     // Check if there is an active session for this interaction
-    const account =
-        interaction.session && interaction.session.accountId
-            ? // If so, get account for sub
-              await AccountService.get(interaction.session.accountId)
-            : // If not, get account for email claim
-              await getAccountByEmail(claims.email, AccountVariant.SSOGoogle);
+    const account = await AccountService.findOrCreate(interaction.session, tokenInfo, AccountVariant.SSOGoogle, email);
+    if (!account) throw new UnauthorizedError('Could not find or create an account');
 
-    airtable.pipelineSignup({
-        Email: account.email,
-        Date: account.createdAt,
-        AcceptUpdates: account.acceptUpdates,
-    });
+    // Set tokens with correct kind and userId for account
+    const returnUrl = await callbackPostAuth(interaction, account);
+    console.log(returnUrl);
 
-    // Check if a SharedWallet must be created
-    createWallet(account);
-
-    const returnTo = await saveInteraction(interaction, account._id.toString());
-
-    await updateTokens(account, tokens, claims.sub);
-
-    return res.redirect(returnTo);
+    res.redirect(returnUrl);
 }
 
 export default { controller };
