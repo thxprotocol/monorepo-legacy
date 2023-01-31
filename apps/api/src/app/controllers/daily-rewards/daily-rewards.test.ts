@@ -134,15 +134,28 @@ describe('Daily Rewards', () => {
             .expect(200, done);
     });
 
+    it('POST /rewards/daily/:uuid/claim', (done) => {
+        user.post(`/v1/rewards/daily/${dailyRewardUuid}/claim`)
+            .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
+            .expect(({ body }: request.Response) => {
+                console.log('BODY 1', body);
+            })
+            .expect(201, done);
+    });
+
+    it('POST /rewards/daily/:uuid/claim shoul throw an error', (done) => {
+        user.post(`/v1/rewards/daily/${dailyRewardUuid}/claim`)
+            .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
+            .expect(({ body }: request.Response) => {
+                console.log('BODY 2', body);
+                expect(body.error).toBe('This reward is not claimable yet');
+            })
+            .expect(200, done);
+    });
+
     it('DELETE /daily-rewards/:id', (done) => {
         user.delete(`/v1/daily-rewards/${dailyReward._id}`)
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .expect(204, done);
     });
-
-    // it('POST /rewards/points/:uuid/claim', (done) => {
-    //     user.post(`/v1/rewards/points/${dailyRewardUuid}/claim`)
-    //         .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
-    //         .expect(201, done);
-    // });
 });
