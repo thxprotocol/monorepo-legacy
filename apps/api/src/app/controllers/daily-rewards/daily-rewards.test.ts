@@ -6,6 +6,7 @@ import {
     sub,
     tokenName,
     tokenSymbol,
+    walletAccessToken3,
     widgetAccessToken,
 } from '@thxnetwork/api/util/jest/constants';
 import { isAddress, toWei } from 'web3-utils';
@@ -136,12 +137,27 @@ describe('Daily Rewards', () => {
     it('POST /rewards/daily/:uuid/claim', (done) => {
         user.post(`/v1/rewards/daily/${dailyRewardUuid}/claim`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
+            .send({
+                sub,
+            })
             .expect(201, done);
+    });
+
+    it('GET /point-balances', (done) => {
+        user.get(`/v1/point-balances`)
+            .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
+            .expect(({ body }: request.Response) => {
+                expect(body.balance).toBe(dailyReward.amount.toString());
+            })
+            .expect(200, done);
     });
 
     it('POST /rewards/daily/:uuid/claim shoul throw an error', (done) => {
         user.post(`/v1/rewards/daily/${dailyRewardUuid}/claim`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
+            .send({
+                sub,
+            })
             .expect(({ body }: request.Response) => {
                 expect(body.error).toBe('This reward is not claimable yet');
             })
