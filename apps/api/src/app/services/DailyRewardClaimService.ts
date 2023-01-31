@@ -17,4 +17,12 @@ export default {
     findBySub: (dailyReward: DailyRewardDocument, sub: string) => {
         return DailyRewardClaim.find({ dailyRewardId: dailyReward._id, sub });
     },
+
+    isClaimed: async (poolId: string, sub: string) => {
+        const oneday = 86400000; // 24 hours in milliseconds
+        return (
+            (await DailyRewardClaim.exists({ poolId, sub: sub, createdAt: { $lt: new Date(Date.now() + oneday) } })) !=
+            null
+        );
+    },
 };
