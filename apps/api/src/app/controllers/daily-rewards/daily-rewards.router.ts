@@ -12,7 +12,7 @@ router.get('/', assertAssetPoolOwnership, ListDailyRewards.controller);
 router.get(
     '/:id',
     assertRequestInput(ReadDailyRewards.validation),
-    // assertAssetPoolOwnership,
+    assertAssetPoolOwnership,
     ReadDailyRewards.controller,
 );
 router.post(
