@@ -6,6 +6,9 @@ import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import MailService from '@thxnetwork/api/services/MailService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { v4 } from 'uuid';
+import { body, param } from 'express-validator';
+
+const validation = [param('uuid').exists().isString(), body('sub').exists().isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
@@ -34,4 +37,4 @@ const controller = async (req: Request, res: Response) => {
     res.status(201).json(claim);
 };
 
-export default { controller };
+export default { controller, validation };
