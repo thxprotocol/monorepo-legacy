@@ -16,6 +16,7 @@ import ClientStore from './modules/clients';
 import BrandStore from './modules/brands';
 import ImageStore from './modules/images';
 import MilestoneRewardStore from './modules/milestoneRewards';
+import DailyRewardStore from './modules/dailyRewards';
 
 Vue.use(Vuex);
 
@@ -38,6 +39,7 @@ const modules = {
     brands: BrandStore,
     images: ImageStore,
     milestoneRewards: MilestoneRewardStore,
+    dailyRewards: DailyRewardStore,
 };
 
 export default new Vuex.Store({

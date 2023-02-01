@@ -6,6 +6,7 @@ export * from './enums/AccessTokenKind';
 
 export * from './interfaces/ERC20Perk';
 export * from './interfaces/MilestoneReward';
+export * from './interfaces/DailyReward';
 export * from './interfaces/ERC20PerkPayment';
 export * from './interfaces/ERC721Perk';
 export * from './interfaces/ERC721PerkPayment';
@@ -16,3 +17,4 @@ export * from './interfaces/ReferralRewardClaim';
 export * from './interfaces/BaseReward';
 export * from './interfaces/PointRewardClaim';
 export * from './interfaces/MilestoneRewardClaim';
+export * from './interfaces/DailyRewardClaim';

@@ -57,6 +57,11 @@ const routes: Array<RouteConfig> = [
                 component: () => import('../views/pool/Milestones.vue'),
             },
             {
+                name: 'daily',
+                path: 'daily',
+                component: () => import('../views/pool/Daily.vue'),
+            },
+            {
                 name: 'referrals',
                 path: 'referrals',
                 component: () => import('../views/pool/Referrals.vue'),
