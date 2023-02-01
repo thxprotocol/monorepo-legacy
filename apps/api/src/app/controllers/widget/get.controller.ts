@@ -88,7 +88,7 @@ const controller = async (req: Request, res: Response) => {
 
         storeReferrer() {    
             this.timer = window.setInterval(this.onMatchSuccessUrl.bind(this), 500);
-            this.iframe.contentWindow.postMessage({ message: 'thx.config.ref', ref: this.ref }, this.settings.widgetUrl);
+            if (this.ref) this.iframe.contentWindow.postMessage({ message: 'thx.config.ref', ref: this.ref }, this.settings.widgetUrl);
         }
     
         createIframe(widgetUrl, poolId, chainId, origin, theme) {
