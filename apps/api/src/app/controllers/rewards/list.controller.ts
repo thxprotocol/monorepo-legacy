@@ -29,23 +29,19 @@ const controller = async (req: Request, res: Response) => {
     res.json({
         dailyRewards: await Promise.all(
             dailyRewards.map(async (r) => {
-                const isClaimed = sub ? await DailyRewardClaimService.isClaimed(r.poolId, sub) : true;
+                const isDisabled = sub ? await DailyRewardClaimService.isClaimed(r.poolId, sub) : true;
                 const claims = sub ? await DailyRewardClaimService.findBySub(r, sub) : [];
-                let result = {
+                return {
                     uuid: r.uuid,
                     title: r.title,
                     description: r.description,
                     amount: r.amount,
+                    isDisabled,
                     claims,
+                    claimAgainTime: claims.length
+                        ? new Date(claims[claims.length - 1].createdAt).getTime() + ONE_DAY_MS
+                        : null,
                 };
-
-                if (claims.length) {
-                    const lastClaim = claims[claims.length - 1];
-                    const claimAgainTime = new Date(lastClaim.createdAt).getTime() + ONE_DAY_MS;
-                    result = Object.assign(result, { isAllowed: !isClaimed, claimAgainTime });
-                }
-
-                return result;
             }),
         ),
         milestoneRewards: await Promise.all(

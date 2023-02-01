@@ -27,6 +27,7 @@ const controller = async (req: Request, res: Response) => {
         dailyRewardId: reward._id,
         poolId: reward.poolId,
     });
+
     return res.status(201).json(claim);
 };
 
