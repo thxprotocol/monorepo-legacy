@@ -39,14 +39,6 @@ export class AccountService {
         return Account.findOne({ address });
     }
 
-    static getByTwitterId(twitterId: string) {
-        return Account.findOne({ twitterId });
-    }
-
-    static async isActiveUserByEmail(email: string) {
-        return await Account.exists({ email, active: true });
-    }
-
     static async update(account: AccountDocument, updates: IAccountUpdates) {
         account.email = updates.email ? updates.email : account.email;
         account.profileImg = updates.profileImg ? updates.profileImg : account.profileImg;
@@ -114,8 +106,6 @@ export class AccountService {
         return await Account.create({
             address,
             variant: AccountVariant.Metamask,
-            acceptTermsPrivacy: true,
-            acceptUpdates: true,
             plan: AccountPlanType.Basic,
             active: true,
         });
@@ -149,8 +139,6 @@ export class AccountService {
             account = await Account.create({
                 email,
                 variant,
-                acceptTermsPrivacy: true,
-                acceptUpdates: true,
                 plan: AccountPlanType.Basic,
                 active: true,
             });
@@ -162,13 +150,11 @@ export class AccountService {
         return await account.save();
     }
 
-    static async signup(data: { email?: string; variant: AccountVariant; active: boolean; twitterId?: string }) {
+    static async signup(data: { email?: string; variant: AccountVariant; active: boolean }) {
         let account: AccountDocument;
 
         if (data.email) {
             account = await Account.findOne({ email: data.email, active: false });
-        } else if (data.twitterId) {
-            account = await Account.findOne({ twitterId: data.twitterId });
         }
 
         if (!account) {
@@ -185,10 +171,7 @@ export class AccountService {
         account.active = data.active;
         account.email = data.email;
         account.variant = data.variant;
-        account.acceptTermsPrivacy = true;
-        account.acceptUpdates = true;
         account.plan = AccountPlanType.Basic;
-        account.twitterId = data.twitterId;
 
         return await account.save();
     }
