@@ -16,36 +16,54 @@
             <form id="account_update" autocomplete="off" action="/oidc/<%= uid %>/account" enctype="multipart/form-data"
                   method="POST">
 
-                <% if (params.profileImg) { %>
-                <div class="row d-flex align-items-center justify-content-center pb-5">
-                    <img width="150" src="<%= params.profileImg %>" alt="profle-picture" class="rounded-circle" />
-                </div>
-                <% } %>
                 <div class="row pb-3">
-                    <div class="d-flex col-4 align-items-center font-weight-bold">
-                        Picture:
+                    <div class="d-flex col-4 align-items-center">
+                        Picture
                     </div>
                     <div class="col-8">
-                        <input class="form-control" name="profile" type="file" accept="image/*">
-                    </div>
-                </div>
-                <div class="row pb-3">
-                    <div class="d-flex col-4 align-items-center font-weight-bold">
-                        Email:
-                    </div>
-                    <div class="col-8">
-                        <% if (!params.email) { %>
-                        <input class="form-control" name="email" required value="<%= params.email %>" placeholder="" />
-                        <% } else { %>
-                        <input class="form-control" name="email" required disabled value="<%= params.email %>"
-                               placeholder="" />
-                        <% } %>
+                        <div class="input-group">
+                            <% if (params.profileImg) { %>
+                            <div class="input-group-prepend px-0">
+                                <div class="input-group-text">
+                                    <img width="25" src="<%= params.profileImg %>" alt="profle-picture"
+                                         class="rounded-circle" />
+                                </div>
+                            </div>
+                            <% } %>
+                            <input class="form-control" name="profile" type="file" accept="image/*">
+                        </div>
                     </div>
                 </div>
 
                 <div class="row pb-3">
-                    <div class="d-flex col-4 align-items-center font-weight-bold">
-                        First name:
+                    <div class="d-flex col-4 align-items-center">
+                        Email
+                    </div>
+                    <div class="col-8">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text px-3">
+                                    <% if (params.isEmailVerified) { %>
+                                    <i class="fas fa-check-circle text-success"></i>
+                                    <% } else { %>
+                                    <i class="fas fa-check-circle text-danger"></i>
+                                    <% }%>
+                                </span>
+                            </div>
+                            <% if (!params.email) { %>
+                            <input class="form-control" name="email" required value="" />
+                            <% } else if (!params.isEmailVerified) { %>
+                            <input class="form-control" name="email" required value="<%= params.email %>" />
+                            <% } else { %>
+                            <input class="form-control" name="email" required disabled value="<%= params.email %>" />
+                            <% }  %>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row pb-3">
+                    <div class="d-flex col-4 align-items-center">
+                        First name
                     </div>
                     <div class="col-8">
                         <input class="form-control" name="firstName" value="<%= params.firstName %>" placeholder="" />
@@ -53,8 +71,8 @@
                 </div>
 
                 <div class="row pb-3">
-                    <div class="d-flex col-4 align-items-center font-weight-bold">
-                        Last name:
+                    <div class="d-flex col-4 align-items-center">
+                        Last name
                     </div>
                     <div class="col-8">
                         <input class="form-control" name="lastName" value="<%= params.lastName %>" placeholder="" />
@@ -62,12 +80,21 @@
                 </div>
 
                 <div class="row pb-3">
-                    <div class="d-flex col-4 align-items-center font-weight-bold">
-                        Organisation:
+                    <div class="d-flex col-4 align-items-center ">
+                        Organisation
                     </div>
                     <div class="col-8">
                         <input class="form-control" name="organisation" value="<%= params.organisation %>"
                                placeholder="" />
+                    </div>
+                </div>
+
+                <div class="row pb-3">
+                    <div class="d-flex col-4 align-items-center">
+                        Website
+                    </div>
+                    <div class="col-8">
+                        <input class="form-control" name="website" value="<%= params.website %>" placeholder="" />
                     </div>
                 </div>
 
@@ -130,7 +157,7 @@
                             <div class="logo">
                                 <img src="/img/g-logo.png" alt="Google logo" />
                             </div>
-                            <div class="label">Connect Google (YouTube)</div>
+                            <div class="label">Connect Google</div>
                         </a>
                         <% } %>
                         <% if (params.googleAccess) { %>

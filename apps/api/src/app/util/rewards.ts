@@ -10,6 +10,7 @@ import ERC721PerkService from '@thxnetwork/api/services/ERC721PerkService';
 import PointRewardService from '../services/PointRewardService';
 import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardService';
 import MilestoneRewardService from '../services/MilestoneRewardService';
+import DailyRewardService from '../services/DailyRewardService';
 
 export async function findRewardByUuid(uuid: string) {
     const erc20Perk = await ERC20Perk.findOne({ uuid });
@@ -79,21 +80,27 @@ export const createERC20Perk = async (pool: AssetPoolDocument, payload: TERC20Pe
 };
 
 export async function createDummyContents(pool: AssetPoolDocument) {
+    await DailyRewardService.create(pool, {
+        title: 'Daily Reward 🗓️',
+        description: 'Return every 24h to claim your poin reward.',
+        amount: '15',
+    });
+
     await ReferralRewardService.create(pool, {
-        title: '❤️ Spread the word!',
+        title: 'Spread the word! ❤️',
         description: 'Let your customers earn points by referring people to your site.',
         successUrl: '',
         amount: '250',
     });
 
     await PointRewardService.create(pool, {
-        title: '💬 Engage on our channel',
+        title: 'Engage in our social 💬',
         description: 'Set social conditions for people to meet when claiming points.',
         amount: '50',
     });
 
     await MilestoneRewardService.create(pool, {
-        title: '🏁 Reach a milestone',
+        title: 'Reach a milestone 🏁',
         description: 'Claim points when progressing in the customer journey of external software.',
         amount: 15,
     });

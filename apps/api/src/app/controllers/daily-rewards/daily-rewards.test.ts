@@ -6,18 +6,15 @@ import {
     sub,
     tokenName,
     tokenSymbol,
-    walletAccessToken3,
     widgetAccessToken,
 } from '@thxnetwork/api/util/jest/constants';
 import { isAddress, toWei } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { addMinutes } from '@thxnetwork/api/util/rewards';
-import { ERC20Document } from '@thxnetwork/api/models/ERC20';
 
 const user = request.agent(app);
 
 describe('Daily Rewards', () => {
-    let erc20: ERC20Document, poolId: string, dailyReward: any, dailyRewardUuid: string;
+    let poolId: string, dailyReward: any, dailyRewardUuid: string;
     const totalSupply = toWei('100000');
 
     beforeAll(async () => {
@@ -54,7 +51,6 @@ describe('Daily Rewards', () => {
             })
             .expect(({ body }: request.Response) => {
                 expect(isAddress(body.address)).toBe(true);
-                erc20 = body;
             })
             .expect(201, done);
     });
@@ -110,12 +106,12 @@ describe('Daily Rewards', () => {
         user.get(`/v1/daily-rewards`)
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .expect(({ body }: request.Response) => {
-                expect(body.results.length).toBe(1);
+                expect(body.results.length).toBe(2);
                 expect(body.results[0].uuid).toBeDefined();
                 expect(body.results[0].title).toBe(dailyReward.title);
                 expect(body.results[0].description).toBe(dailyReward.description);
                 expect(body.results[0].amount).toBe(dailyReward.amount.toString());
-                expect(body.total).toBe(1);
+                expect(body.total).toBe(2);
             })
             .expect(200, done);
     });

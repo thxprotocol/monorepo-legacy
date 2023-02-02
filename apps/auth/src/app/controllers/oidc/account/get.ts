@@ -26,10 +26,12 @@ async function controller(req: Request, res: Response) {
         params: {
             ...params,
             email: account.email,
+            isEmailVerified: account.isEmailVerified,
             firstName: account.firstName,
             lastName: account.lastName,
             profileImg: account.profileImg,
             organisation: account.organisation,
+            website: account.website,
             address: account.address,
             plan: account.plan,
             otpSecret: account.otpSecret,
