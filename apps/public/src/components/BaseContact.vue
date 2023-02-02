@@ -75,7 +75,7 @@
                                         href="https://thx.network/general-terms-and-conditions.pdf"
                                     >
                                         Terms &amp; Conditions
-                                        <i class="small ml-2  fas fa-chevron-right"></i>
+                                        <i class="small ml-2 fas fa-chevron-right"></i>
                                     </a>
                                 </li>
                                 <li>
@@ -103,7 +103,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-7  order-0 order-lg-1 bg-darker" style="border-bottom-left-radius: 10px;">
+                <div class="col-lg-7 order-0 order-lg-1 bg-darker" style="border-bottom-left-radius: 10px">
                     <div class="row">
                         <div class="col-lg-7 offset-lg-2 p-3 pb-5 pt-5 p-lg-0 pt-lg-5">
                             <h3>Press releases &amp; News</h3>
@@ -142,7 +142,7 @@
                             <b-button
                                 variant="outline-secondary rounded-pill"
                                 class="mt-3 rounder-pill"
-                                href="https://calendly.com/mieszko/demo"
+                                href="https://meetings-eu1.hubspot.com/steffen-boode/call-invite"
                                 target="_blank"
                                 :title="TITLES.SCHEDULE_A_DEMO"
                             >
@@ -158,7 +158,7 @@
                     <h3 class="flex-grow-1 d-lg-flex align-items-center text-dark m-0 text-center text-lg-left">
                         Join our community online
                     </h3>
-                    <div class="align-items-center text-center pt-3 pt-lg-0 ">
+                    <div class="align-items-center text-center pt-3 pt-lg-0">
                         <b-button
                             variant="dark"
                             class="btn-icon rounded-circle text-secondary"

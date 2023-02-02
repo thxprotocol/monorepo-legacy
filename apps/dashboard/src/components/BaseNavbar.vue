@@ -184,7 +184,7 @@ export default class BaseNavbar extends Vue {
                 iconClasses: 'fas fa-comments',
             },
             {
-                path: `/pool/${this.selectedPool._id}/points`,
+                path: `/pool/${this.selectedPool._id}/conditional`,
                 label: 'Conditional',
                 iconClasses: 'fas fa-trophy',
             },

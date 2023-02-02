@@ -2,7 +2,7 @@
     <div>
         <b-row class="mb-3">
             <b-col class="d-flex align-items-center">
-                <h2 class="mb-0">Points</h2>
+                <h2 class="mb-0">Conditional</h2>
             </b-col>
             <b-col class="d-flex justify-content-end">
                 <b-button v-b-modal="'modalRewardPointsCreate'" class="rounded-pill" variant="primary">
@@ -94,7 +94,7 @@ import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/ba
         pointRewards: 'pointRewards/all',
     }),
 })
-export default class AssetPoolView extends Vue {
+export default class ConditionalView extends Vue {
     RewardConditionPlatform = RewardConditionPlatform;
     RewardConditionInteraction = RewardConditionInteraction;
     isLoading = true;
