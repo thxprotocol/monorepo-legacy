@@ -11,6 +11,7 @@ const accountSchema = new mongoose.Schema(
         firstName: String,
         lastName: String,
         profileImg: String,
+        website: String,
         organisation: String,
         plan: Number,
         // email.sparse allows the value to be null and unique if defined

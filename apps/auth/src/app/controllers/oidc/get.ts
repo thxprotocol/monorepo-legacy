@@ -3,6 +3,8 @@ import { AccountDocument } from '@thxnetwork/auth/models/Account';
 import { UnauthorizedError } from '@thxnetwork/auth/util/errors';
 import { createWallet } from '@thxnetwork/auth/util/wallet';
 import { Request, Response } from 'express';
+import { hubspot } from '@thxnetwork/auth/util/hubspot';
+import { DASHBOARD_URL } from '@thxnetwork/auth/config/secrets';
 
 export const callbackPreAuth = async (req: Request) => {
     // Get code from url
@@ -13,8 +15,8 @@ export const callbackPreAuth = async (req: Request) => {
     // Get interaction for state first
     const uid = req.query.state as string;
     if (!uid) throw new UnauthorizedError('Could not find state in query');
-    // See if it still exists and throw error if not
 
+    // See if interaction still exists and throw error if not
     const interaction = await oidc.Interaction.find(uid);
     if (!interaction) throw new UnauthorizedError('Your session has expired.');
 
@@ -31,7 +33,15 @@ export const callbackPostAuth = async (interaction, account: AccountDocument) =>
     // Create a wallet if wallet can not be found for user
     createWallet(account);
 
-    return interaction.prompt.name === 'connect' ? interaction.params.return_url : interaction.returnTo;
+    const returnUrl = interaction.prompt.name === 'connect' ? interaction.params.return_url : interaction.returnTo;
+
+    if (returnUrl.startsWith(DASHBOARD_URL)) {
+        hubspot.upsert({
+            email: account.email,
+        });
+    }
+
+    return returnUrl;
 };
 
 async function controller(req: Request, res: Response) {

@@ -6,6 +6,7 @@ export interface TAccount {
     lastName: string;
     profileImg: string;
     plan: AccountPlanType;
+    website: string;
     organisation: string;
     active: boolean;
     isEmailVerified: boolean;
@@ -36,6 +37,7 @@ export interface IAccessToken {
     userId?: string;
 }
 export interface IAccountUpdates {
+    website?: string;
     acceptTermsPrivacy?: boolean;
     acceptUpdates?: boolean;
     address?: string;
