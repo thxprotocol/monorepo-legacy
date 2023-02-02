@@ -7,6 +7,8 @@ const hubspotClient = new Hubspot.Client({ accessToken: HUBSPOT_ACCESS_TOKEN });
 export const hubspot = {
     // Process account information for upsert into Hubspot
     async upsert(props: { firstname?: string; lastname?: string; email: string; company?: string; website?: string }) {
+        if (!HUBSPOT_ACCESS_TOKEN) return;
+
         try {
             // Always return when no props or no email is provided
             if (!props || !props.email) return;
