@@ -23,33 +23,44 @@ export const controller = async (req: Request, res: Response) => {
     const tokens = await ERC20Service.getTokensForSub(req.auth.sub);
     const result = await Promise.all(
         tokens.map(async (token: ERC20TokenDocument) => {
-            const erc20 = await ERC20Service.getById(token.erc20Id);
-            if (erc20 && erc20.chainId !== Number(req.query.chainId))
-                return { ...(token.toJSON() as TERC20Token), erc20 };
+            try {
+                const erc20 = await ERC20Service.getById(token.erc20Id);
+                if (!erc20) return;
+                if (erc20.chainId !== Number(req.query.chainId)) return { ...(token.toJSON() as TERC20Token), erc20 };
 
-            const walletAddress = await account.getAddress(erc20.chainId);
-            const walletBalanceInWei = await erc20.contract.methods.balanceOf(walletAddress).call();
-            const walletBalance = Number(fromWei(walletBalanceInWei, 'ether'));
+                const pendingWithdrawals = await WithdrawalService.getPendingWithdrawals(erc20, account);
+                const walletAddress = await account.getAddress(erc20.chainId);
 
-            const pendingWithdrawals = await WithdrawalService.getPendingWithdrawals(erc20, account);
+                let walletBalanceInWei, walletBalance;
+                if (walletAddress) {
+                    walletBalanceInWei = await erc20.contract.methods.balanceOf(walletAddress).call();
+                    walletBalance = Number(fromWei(walletBalanceInWei, 'ether'));
+                }
 
-            const balanceInWei = await erc20.contract.methods.balanceOf(account.address).call();
-            const balance = Number(fromWei(balanceInWei, 'ether'));
-            const balancePending = pendingWithdrawals
-                .map((item: any) => item.amount)
-                .reduce((prev: any, curr: any) => prev + curr, 0);
+                let balanceInWei, balance, balancePending;
+                if (account.address) {
+                    balanceInWei = await erc20.contract.methods.balanceOf(account.address).call();
+                    balance = Number(fromWei(balanceInWei, 'ether'));
+                    balancePending = pendingWithdrawals
+                        .map((item: any) => item.amount)
+                        .reduce((prev: any, curr: any) => prev + curr, 0);
+                }
 
-            erc20.logoImgUrl = erc20.logoImgUrl || `https://avatars.dicebear.com/api/identicon/${erc20.address}.svg`;
+                erc20.logoImgUrl =
+                    erc20.logoImgUrl || `https://avatars.dicebear.com/api/identicon/${erc20.address}.svg`;
 
-            return {
-                ...(token.toJSON() as TERC20Token),
-                balanceInWei,
-                balance,
-                balancePending,
-                walletBalance,
-                pendingWithdrawals,
-                erc20,
-            };
+                return {
+                    ...(token.toJSON() as TERC20Token),
+                    balanceInWei,
+                    balance,
+                    balancePending,
+                    walletBalance,
+                    pendingWithdrawals,
+                    erc20,
+                };
+            } catch (error) {
+                console.log(error);
+            }
         }),
     );
 

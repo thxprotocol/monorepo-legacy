@@ -10,6 +10,7 @@ export const controller = async (req: Request, res: Response) => {
         tokens.map(async (token: ERC721TokenDocument) => {
             const erc721 = await ERC721Service.findById(token.erc721Id);
             if (!erc721) return;
+            if (erc721.chainId !== Number(req.query.chainId)) return { ...(token.toJSON() as TERC721Token), erc721 };
 
             const tokenUri = token.tokenId ? await erc721.contract.methods.tokenURI(token.tokenId).call() : '';
             erc721.logoImgUrl = erc721.logoImgUrl || `https://avatars.dicebear.com/api/identicon/${erc721.address}.svg`;
