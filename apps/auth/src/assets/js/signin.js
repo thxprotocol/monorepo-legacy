@@ -43,19 +43,10 @@ createApp({
         }
     },
     signin() {
-        // Check for mobile
         const isMobile = window.matchMedia('(pointer:coarse)').matches;
-        if (isMobile) {
-            try {
-                const url = new URL(document.getElementsByName('claimUrl')[0].value || window.location.href);
-                const link = url.href.replace(/.*?:\/\//g, '');
-                window.open('https://metamask.app.link/dapp/' + link, '_blank');
-            } catch (error) {
-                console.log(error);
-            }
-        }
+
         // If not mobile check for metamask to be installed
-        else if (typeof window.ethereum !== 'undefined') {
+        if (typeof window.ethereum !== 'undefined') {
             window.ethereum
                 .request({ method: 'eth_requestAccounts' })
                 .then(this.onAccountsChanged)
@@ -66,6 +57,16 @@ createApp({
                         console.error(err);
                     }
                 });
+        }
+        // Check for mobile
+        else if (isMobile) {
+            try {
+                const url = new URL(document.getElementsByName('claimUrl')[0].value || window.location.href);
+                const link = url.href.replace(/.*?:\/\//g, '');
+                window.open('https://metamask.app.link/dapp/' + link, '_blank');
+            } catch (error) {
+                console.log(error);
+            }
         }
         // If not installed show error
         else {
