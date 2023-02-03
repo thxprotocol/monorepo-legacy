@@ -24,7 +24,7 @@
 
             <template v-if="!isLoading && claimedReward">
                 <template v-if="claimedReward.erc20">
-                    <div class="img-treasure" :style="`background-image: url(${imgUrl});`"></div>
+                    <div class="img-treasure" :style="`background-image: url(${defaultImgUrl});`"></div>
                     <h2 class="text-secondary text-center my-3">
                         <strong>Congratulations!</strong> You have received
                         <strong>{{ claimedReward.withdrawal.amount }} {{ claimedReward.erc20.symbol }}</strong>
@@ -135,6 +135,7 @@ type TClaim = {
 export default class Collect extends Vue {
     $confetti!: { start: (options: unknown) => void; stop: () => void };
     imgUrl = '';
+    defaultImgUrl = require('@thxnetwork/wallet/../public/assets/img/thx_treasure.png');
     format = format;
     error = '';
     isLoading = true;
@@ -218,7 +219,7 @@ export default class Collect extends Vue {
                 this.$store.commit('erc721/set', this.claim.erc721);
 
                 const imgUrl = this.firstImageURL(this.claim.metadata);
-                this.imgUrl = imgUrl ? imgUrl : require('@thxnetwork/wallet/../public/assets/img/thx_treasure.png');
+                this.imgUrl = imgUrl ? imgUrl : this.defaultImgUrl;
             } else if (this.claim && this.claim.erc20) {
                 await this.$store.dispatch('network/connect', this.claim.erc20.chainId);
             }
