@@ -70,7 +70,7 @@ export default class Redirect extends Vue {
     }
 
     async getNetwork() {
-        this.info = `Connecting ${chainInfo[this.chainId].name}...`;
+        this.info = `Connecting ${chainInfo[this.chainId].name} for ${this.profile.address}...`;
         await this.$store.dispatch('network/connect', this.chainId);
     }
 

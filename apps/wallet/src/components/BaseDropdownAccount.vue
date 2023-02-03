@@ -8,8 +8,10 @@
                 class="p-1 mr-md-2"
             />
             <span class="d-none d-md-block text-muted text-overflow-75">
-                {{ address }}
+                {{ profile.address }}
             </span>
+            <i v-if="address !== profile.address" class="fas fa-exclamation-circle ml-2 text-danger"></i>
+            <i v-else class="fas fa-check-circle ml-2 text-success"></i>
         </template>
         <b-dropdown-item size="sm" variant="dark" v-clipboard:copy="profile.address">
             <span class="text-muted"> <i class="fas fa-clipboard mr-3"></i> Copy address</span>

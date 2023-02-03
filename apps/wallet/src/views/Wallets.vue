@@ -3,8 +3,8 @@
         <b-spinner variant="primary" class="m-auto" v-if="loading" />
         <template v-else>
             <b-list-group class="w-100 align-self-start">
-                <b-list-group-item
-                    ><b-row>
+                <b-list-group-item v-if="profile.address">
+                    <b-row>
                         <b-col md="8" class="d-flex align-items-center">
                             <img
                                 v-if="profile.variant === 4"
@@ -39,7 +39,7 @@
                         </b-col>
                     </b-row>
                 </b-list-group-item>
-                <b-list-group-item>
+                <b-list-group-item v-if="wallet">
                     <b-row>
                         <b-col md="8" class="d-flex align-items-center">
                             <img
