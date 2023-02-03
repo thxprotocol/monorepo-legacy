@@ -40,20 +40,19 @@ export class AccountService {
     }
 
     static async update(account: AccountDocument, updates: IAccountUpdates) {
-        account.email = updates.email ? updates.email : account.email;
-        account.profileImg = updates.profileImg ? updates.profileImg : account.profileImg;
-        account.firstName = updates.firstName ? updates.firstName : account.firstName;
-        account.lastName = updates.lastName ? updates.lastName : account.lastName;
-        account.plan = updates.plan ? updates.plan : account.plan;
-        account.organisation = updates.organisation ? updates.organisation : account.organisation;
+        account.email = updates.email || account.email;
+        account.profileImg = updates.profileImg || account.profileImg;
+        account.firstName = updates.firstName || account.firstName;
+        account.lastName = updates.lastName || account.lastName;
+        account.plan = updates.plan || account.plan;
+        account.organisation = updates.organisation || account.organisation;
+        account.address = updates.address ? toChecksumAddress(updates.address) : account.address;
 
         try {
             account.website = updates.website ? new URL(updates.website).hostname : account.website;
         } catch {
             // no-op
         }
-
-        account.address = updates.address ? toChecksumAddress(updates.address) : account.address;
 
         if (updates.googleAccess === false) {
             const token = account.getToken(AccessTokenKind.Google);
@@ -162,8 +161,6 @@ export class AccountService {
                 email: data.email,
                 active: data.active,
                 variant: data.variant,
-                acceptTermsPrivacy: true,
-                acceptUpdates: true,
                 plan: AccountPlanType.Basic,
             });
         }
