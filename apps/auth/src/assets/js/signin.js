@@ -1,4 +1,6 @@
-import { createApp } from './vendors/petite-vue.umd';
+import { createApp } from 'https://cdnjs.cloudflare.com/ajax/libs/petite-vue/0.4.1/petite-vue.es.js';
+
+const { ethereum } = window;
 
 /* eslint-disable no-undef */
 const AUTH_REQUEST_MESSAGE = document.getElementsByName('authRequestMessage')[0].value;
@@ -9,7 +11,6 @@ createApp({
     isMounted: false,
     alert: { variant: 'warning', message: '' },
     email: '',
-    provider: null,
     isLoading: false,
     isDisabledMetamask: false,
     get isDisabled() {
@@ -29,7 +30,7 @@ createApp({
         if (!accounts.length) {
             this.alert.message = ERROR_CONNECT_METAMASK;
         } else {
-            this.provider
+            ethereum
                 .request({
                     method: 'eth_signTypedData_v3',
                     params: [accounts[0], AUTH_REQUEST_MESSAGE],
@@ -46,7 +47,7 @@ createApp({
         }
     },
     requestAccounts() {
-        this.provider
+        ethereum
             .request({ method: 'eth_requestAccounts' })
             .then(this.onAccountsChanged)
             .catch((err) => {
@@ -62,23 +63,21 @@ createApp({
         const isMobile = window.matchMedia('(pointer:coarse)').matches;
 
         this.isDisabledMetamask = true;
-        this.provider = await detectEthereumProvider();
 
-        if (this.provider) {
+        if (ethereum) {
             this.requestAccounts();
-        } else if (isMobile) {
+        } else if (isMobile && !ethereum) {
             const claimUrlInput = document.getElementsByName('claimUrl');
             const claimUrl = claimUrlInput.length ? claimUrlInput[0].value : '';
             const returnUrlInput = document.getElementsByName('returnUrl');
             const returnUrl = returnUrlInput.length ? returnUrlInput[0].value : '';
             const url = new URL(claimUrl || returnUrl);
             const link = url.href.replace(/.*?:\/\//g, '');
-            // alert(link);
+
             window.open('https://metamask.app.link/dapp/' + link, '_blank');
         } else {
             this.alert.message = ERROR_INSTALL_METAMASK;
             console.log(ERROR_INSTALL_METAMASK);
-            // alert(ERROR_INSTALL_METAMASK);
         }
 
         this.isDisabledMetamask = false;
