@@ -1,4 +1,4 @@
-const { createApp } = window.PetiteVue;
+import { createApp } from './vendors/petite-vue.umd';
 
 /* eslint-disable no-undef */
 const AUTH_REQUEST_MESSAGE = document.getElementsByName('authRequestMessage')[0].value;
