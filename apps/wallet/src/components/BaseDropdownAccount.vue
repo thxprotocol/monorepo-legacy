@@ -4,7 +4,7 @@
             <base-identicon
                 :size="32"
                 :rounded="true"
-                :uri="`https://avatars.dicebear.com/api/identicon/${profile.id}.svg`"
+                :uri="`https://avatars.dicebear.com/api/identicon/${profile.address}.svg`"
                 class="p-1 mr-md-2"
             />
             <span class="d-none d-md-block text-muted text-overflow-75">
