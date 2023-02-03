@@ -1,7 +1,5 @@
 import { createApp } from 'https://cdnjs.cloudflare.com/ajax/libs/petite-vue/0.4.1/petite-vue.es.js';
 
-const { ethereum } = window;
-
 /* eslint-disable no-undef */
 const AUTH_REQUEST_MESSAGE = document.getElementsByName('authRequestMessage')[0].value;
 const ERROR_CONNECT_METAMASK = 'Please connect to MetaMask.';
@@ -27,6 +25,8 @@ createApp({
         this.isLoading = true;
     },
     onAccountsChanged(accounts) {
+        const { ethereum } = window;
+
         if (!accounts.length) {
             this.alert.message = ERROR_CONNECT_METAMASK;
         } else {
@@ -47,6 +47,8 @@ createApp({
         }
     },
     requestAccounts() {
+        const { ethereum } = window;
+
         ethereum
             .request({ method: 'eth_requestAccounts' })
             .then(this.onAccountsChanged)
@@ -60,6 +62,7 @@ createApp({
     },
     async onClickSigninMetamask() {
         if (this.isDisabledMetamask) return;
+        const { ethereum } = window;
         const isMobile = window.matchMedia('(pointer:coarse)').matches;
 
         this.isDisabledMetamask = true;
