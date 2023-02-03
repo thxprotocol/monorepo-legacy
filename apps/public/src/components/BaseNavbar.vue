@@ -45,7 +45,13 @@
                         <i class="fas fa-wallet mr-2" style="font-size: 1.1rem"></i>
                         Wallet
                     </b-button>
-                    <b-button class="rounded-pill ml-3" variant="primary" href="/demo" :title="TITLES.HOME_LIVE_DEMO">
+                    <b-button
+                        class="rounded-pill ml-3"
+                        variant="primary"
+                        href="https://meetings-eu1.hubspot.com/steffen-boode/call-invite"
+                        target="_blank"
+                        :title="TITLES.HOME_LIVE_DEMO"
+                    >
                         <span>Live Demo</span>
                         <i class="fas fa-chevron-right"></i>
                     </b-button>

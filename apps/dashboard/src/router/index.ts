@@ -47,14 +47,19 @@ const routes: Array<RouteConfig> = [
                 component: () => import('../views/pool/Widget.vue'),
             },
             {
-                name: 'points',
-                path: 'points',
-                component: () => import('../views/pool/Points.vue'),
+                name: 'conditional',
+                path: 'conditional',
+                component: () => import('../views/pool/Conditional.vue'),
             },
             {
                 name: 'milestones',
                 path: 'milestones',
                 component: () => import('../views/pool/Milestones.vue'),
+            },
+            {
+                name: 'daily',
+                path: 'daily',
+                component: () => import('../views/pool/Daily.vue'),
             },
             {
                 name: 'referrals',

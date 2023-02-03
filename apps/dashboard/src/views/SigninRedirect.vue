@@ -1,5 +1,7 @@
 <template>
-    <b-spinner variant="primary"></b-spinner>
+    <div class="d-flex center-center h-100" v-if="!profile">
+        <b-spinner variant="primary"></b-spinner>
+    </div>
 </template>
 
 <script lang="ts">

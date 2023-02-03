@@ -14,10 +14,6 @@ describe('Account Controller', () => {
     let authHeader: string, basicAuthHeader: string, sub: string;
     const youtubeViewScopes = 'https://www.googleapis.com/auth/youtube.readonly openid';
 
-    beforeEach(() => {
-        nock('https://api.airtable.com').post(/.*?/).reply(200, {}); // mock email response for account create method
-    });
-
     beforeAll(async () => {
         await db.truncate();
 

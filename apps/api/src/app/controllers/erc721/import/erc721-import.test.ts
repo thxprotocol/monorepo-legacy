@@ -2,7 +2,7 @@ import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId } from '@thxnetwork/api/types/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { dashboardAccessToken, sub, userWalletAddress, userWalletAddress3 } from '@thxnetwork/api/util/jest/constants';
+import { dashboardAccessToken, sub, userWalletAddress } from '@thxnetwork/api/util/jest/constants';
 import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
 import nock from 'nock';
 import { ALCHEMY_API_KEY } from '@thxnetwork/api/config/secrets';
@@ -80,7 +80,7 @@ describe('ERC721 import', () => {
                     expect(body.properties[2].name).toBe('image');
                     expect(body.properties[2].propType).toBe('image');
                     expect(body.totalSupply).toBe('4');
-                    expect(body.owner).toBe(userWalletAddress3);
+                    expect(body.owner).toBe(userWalletAddress);
                 })
                 .expect(200, done);
         });
@@ -94,7 +94,7 @@ describe('ERC721 import', () => {
                     expect(body[0].sub).toBe(sub);
                     expect(body[0].erc721Id).toBe(erc721ID);
                     expect(body[0].state).toBe(ERC721TokenState.Minted);
-                    expect(body[0].recipient).toBe(userWalletAddress3);
+                    expect(body[0].recipient).toBe(userWalletAddress);
                     expect(body[0].tokenUri).toBeDefined();
                     expect(body[0].tokenId).toBeDefined();
                     expect(body[0].metadataId).toBeDefined();

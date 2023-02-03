@@ -5,7 +5,7 @@ import { AccountVariant } from '../../../types/enums/AccountVariant';
 import app from '../../../app';
 import { AccountService } from '../../../services/AccountService';
 import db from '../../../util/database';
-import { accountEmail, accountSecret } from '../../../util/jest';
+import { accountEmail } from '../../../util/jest';
 import { mockWalletProxy } from '../../../util/jest/mock';
 import { API_URL, INITIAL_ACCESS_TOKEN, TWITTER_API_ENDPOINT } from '../../../config/secrets';
 
@@ -34,17 +34,11 @@ describe('SSO Sign In', () => {
 
         CLIENT_ID = res.body.client_id;
 
-        const signupData = {
+        const account = await AccountService.signup({
             email: accountEmail,
-            password: accountSecret,
             variant: AccountVariant.EmailPassword,
-            acceptTermsPrivacy: true,
-            acceptUpdates: true,
             active: true,
-        };
-        const account = await AccountService.signup(signupData);
-        account.privateKey = undefined;
-
+        });
         const params = new URLSearchParams({
             client_id: CLIENT_ID,
             redirect_uri: REDIRECT_URL,

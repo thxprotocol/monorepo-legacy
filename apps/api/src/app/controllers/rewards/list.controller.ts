@@ -6,6 +6,8 @@ import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
 import jwt_decode from 'jwt-decode';
 import { MilestoneRewardClaim } from '@thxnetwork/api/models/MilestoneRewardClaims';
 import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
+import { DailyReward } from '@thxnetwork/api/models/DailyReward';
+import DailyRewardClaimService, { ONE_DAY_MS } from '@thxnetwork/api/services/DailyRewardClaimService';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
@@ -13,6 +15,7 @@ const controller = async (req: Request, res: Response) => {
     const referralRewards = await ReferralReward.find({ poolId: pool._id });
     const pointRewards = await PointReward.find({ poolId: pool._id });
     const milestoneRewards = await MilestoneReward.find({ poolId: pool._id });
+    const dailyRewards = await DailyReward.find({ poolId: pool._id });
     const authHeader = req.header('authorization');
 
     let sub = '';
@@ -24,6 +27,23 @@ const controller = async (req: Request, res: Response) => {
     }
 
     res.json({
+        dailyRewards: await Promise.all(
+            dailyRewards.map(async (r) => {
+                const isDisabled = sub ? await DailyRewardClaimService.isClaimed(r.poolId, sub) : true;
+                const claims = sub ? await DailyRewardClaimService.findBySub(r, sub) : [];
+                return {
+                    uuid: r.uuid,
+                    title: r.title,
+                    description: r.description,
+                    amount: r.amount,
+                    isDisabled,
+                    claims,
+                    claimAgainTime: claims.length
+                        ? new Date(claims[claims.length - 1].createdAt).getTime() + ONE_DAY_MS
+                        : null,
+                };
+            }),
+        ),
         milestoneRewards: await Promise.all(
             milestoneRewards.map(async (r) => {
                 const claims = sub ? await MilestoneRewardClaim.find({ sub, milestoneRewardId: String(r._id) }) : [];

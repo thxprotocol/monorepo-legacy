@@ -27,8 +27,8 @@ function getKindFromVariant(variant: AccountVariant): AccessTokenKind {
     }
 }
 export class AccountService {
-    static get(sub: string) {
-        return Account.findById(sub);
+    static async get(sub: string) {
+        return await Account.findById(sub);
     }
 
     static getByEmail(email: string) {
@@ -39,80 +39,44 @@ export class AccountService {
         return Account.findOne({ address });
     }
 
-    static getByTwitterId(twitterId: string) {
-        return Account.findOne({ twitterId });
-    }
-
-    static async isActiveUserByEmail(email: string) {
-        return await Account.exists({ email, active: true });
-    }
-
     static async update(account: AccountDocument, updates: IAccountUpdates) {
-        if (updates.email) {
-            account.email = updates.email;
-        }
-        // No strict checking here since null == undefined
-        if (account.acceptTermsPrivacy == null) {
-            account.acceptTermsPrivacy = updates.acceptTermsPrivacy == null ? false : account.acceptTermsPrivacy;
-        } else {
-            account.acceptTermsPrivacy = updates.acceptTermsPrivacy || account.acceptTermsPrivacy;
+        account.email = updates.email ? updates.email : account.email;
+        account.profileImg = updates.profileImg ? updates.profileImg : account.profileImg;
+        account.firstName = updates.firstName ? updates.firstName : account.firstName;
+        account.lastName = updates.lastName ? updates.lastName : account.lastName;
+        account.plan = updates.plan ? updates.plan : account.plan;
+        account.organisation = updates.organisation ? updates.organisation : account.organisation;
+
+        try {
+            account.website = updates.website ? new URL(updates.website).hostname : account.website;
+        } catch {
+            // no-op
         }
 
-        if (updates.organisation) {
-            account.organisation = updates.organisation;
-        }
-
-        if (updates.firstName) {
-            account.firstName = updates.firstName;
-        }
-
-        if (updates.lastName) {
-            account.lastName = updates.lastName;
-        }
-
-        if (updates.lastLoginAt) {
-            account.lastLoginAt = updates.lastLoginAt;
-        }
-
-        if (updates.profileImg) {
-            account.profileImg = updates.profileImg;
-        }
-
-        if (updates.plan) {
-            account.plan = updates.plan;
-        }
-
-        if (account.acceptUpdates == null) {
-            account.acceptUpdates = updates.acceptUpdates == null ? false : account.acceptUpdates;
-        } else {
-            account.acceptUpdates = updates.acceptUpdates || account.acceptTermsPrivacy;
-        }
-
-        if (updates.authenticationToken || updates.authenticationTokenExpires) {
-            account.setToken({
-                kind: AccessTokenKind.Auth,
-                accessToken: updates.authenticationToken,
-                expiry: updates.authenticationTokenExpires,
-            });
-        }
-
-        if (updates.address) {
-            account.address = toChecksumAddress(updates.address);
-        }
+        account.address = updates.address ? toChecksumAddress(updates.address) : account.address;
 
         if (updates.googleAccess === false) {
-            YouTubeService.revokeAccess(account, AccessTokenKind.Google);
-            account.unsetToken(AccessTokenKind.Google);
+            const token = account.getToken(AccessTokenKind.Google);
+            if (token) {
+                await YouTubeService.revokeAccess(account, token);
+                account.unsetToken(AccessTokenKind.Google);
+            }
         }
 
         if (updates.youtubeViewAccess === false) {
-            YouTubeService.revokeAccess(account, AccessTokenKind.YoutubeView);
-            account.unsetToken(AccessTokenKind.YoutubeView);
+            const token = account.getToken(AccessTokenKind.YoutubeView);
+            if (token) {
+                await YouTubeService.revokeAccess(account, token);
+                account.unsetToken(AccessTokenKind.YoutubeView);
+            }
         }
 
         if (updates.youtubeManageAccess === false) {
-            YouTubeService.revokeAccess(account, AccessTokenKind.YoutubeManage);
-            account.unsetToken(AccessTokenKind.YoutubeManage);
+            const token = account.getToken(AccessTokenKind.YoutubeManage);
+            if (token) {
+                await YouTubeService.revokeAccess(account, token);
+                account.unsetToken(AccessTokenKind.YoutubeManage);
+            }
         }
 
         if (updates.twitterAccess === false) {
@@ -131,7 +95,7 @@ export class AccountService {
             account.unsetToken(AccessTokenKind.Discord);
         }
 
-        await account.save();
+        return await account.save();
     }
 
     static async signinWithAddress(addr: string) {
@@ -142,8 +106,6 @@ export class AccountService {
         return await Account.create({
             address,
             variant: AccountVariant.Metamask,
-            acceptTermsPrivacy: true,
-            acceptUpdates: true,
             plan: AccountPlanType.Basic,
             active: true,
         });
@@ -177,8 +139,6 @@ export class AccountService {
             account = await Account.create({
                 email,
                 variant,
-                acceptTermsPrivacy: true,
-                acceptUpdates: true,
                 plan: AccountPlanType.Basic,
                 active: true,
             });
@@ -190,13 +150,11 @@ export class AccountService {
         return await account.save();
     }
 
-    static async signup(data: { email?: string; variant: AccountVariant; active: boolean; twitterId?: string }) {
+    static async signup(data: { email?: string; variant: AccountVariant; active: boolean }) {
         let account: AccountDocument;
 
         if (data.email) {
             account = await Account.findOne({ email: data.email, active: false });
-        } else if (data.twitterId) {
-            account = await Account.findOne({ twitterId: data.twitterId });
         }
 
         if (!account) {
@@ -213,10 +171,7 @@ export class AccountService {
         account.active = data.active;
         account.email = data.email;
         account.variant = data.variant;
-        account.acceptTermsPrivacy = true;
-        account.acceptUpdates = true;
         account.plan = AccountPlanType.Basic;
-        account.twitterId = data.twitterId;
 
         return await account.save();
     }

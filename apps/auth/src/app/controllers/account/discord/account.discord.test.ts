@@ -14,10 +14,6 @@ const http = request.agent(app);
 describe('Account Controller', () => {
     let authHeader: string, basicAuthHeader: string, sub: string;
 
-    beforeEach(() => {
-        nock('https://api.airtable.com').post(/.*?/).reply(200, {}); // mock email response for account create method
-    });
-
     beforeAll(async () => {
         await db.truncate();
 

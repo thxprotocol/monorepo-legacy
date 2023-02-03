@@ -1,22 +1,24 @@
 import { GithubService } from './../../../services/GithubServices';
 import { Request, Response } from 'express';
-import { AUTH_URL, DASHBOARD_URL } from '../../../config/secrets';
+import { AUTH_URL, DASHBOARD_URL, WALLET_URL } from '../../../config/secrets';
 import { TwitterService } from '../../../services/TwitterService';
 import { YouTubeService } from '../../../services/YouTubeService';
 import { AUTH_REQUEST_TYPED_MESSAGE, createTypedMessage } from '../../../util/typedMessage';
 import { DiscordService } from '@thxnetwork/auth/services/DiscordService';
 import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
-import { track } from '@thxnetwork/auth/util/mixpanel';
 import ClaimProxy from '@thxnetwork/auth/proxies/ClaimProxy';
 import BrandProxy from '@thxnetwork/auth/proxies/BrandProxy';
 
 async function controller(req: Request, res: Response) {
     const { uid, params } = req.interaction;
     const alert = {};
-    let claim, brand;
+    let claim,
+        brand,
+        claimUrl = '';
 
     if (params.claim_id) {
         claim = await ClaimProxy.get(params.claim_id);
+        claimUrl = `${WALLET_URL}/claim/${params.claim_id}`;
         brand = await BrandProxy.get(claim.pool._id);
 
         alert['variant'] = 'success';
@@ -36,17 +38,12 @@ async function controller(req: Request, res: Response) {
     params.githubLoginUrl = GithubService.getLoginURL(uid, {});
     params.discordLoginUrl = DiscordService.getLoginURL(uid, {});
     params.twitchLoginUrl = TwitchService.getLoginURL(uid, {});
-
-    if (DASHBOARD_URL !== params.return_url) {
-        params.twitterLoginUrl = TwitterService.getLoginURL(uid, {});
-        params.authRequestMessage = createTypedMessage(AUTH_REQUEST_TYPED_MESSAGE, AUTH_URL, uid);
-    }
-
-    track.UserVisits(params.distinct_id, `oidc sign in`, [uid, params.return_url]);
+    params.twitterLoginUrl = TwitterService.getLoginURL(uid, {});
+    params.authRequestMessage = createTypedMessage(AUTH_REQUEST_TYPED_MESSAGE, AUTH_URL, uid);
 
     res.render('signin', {
         uid,
-        params: { ...params, ...brand, claim },
+        params: { ...params, ...brand, claim, claimUrl },
         alert,
     });
 }

@@ -174,12 +174,17 @@ export default class BaseNavbar extends Vue {
         if (!this.selectedPool) return;
         return [
             {
+                path: `/pool/${this.selectedPool._id}/daily`,
+                label: 'Daily',
+                iconClasses: 'fas fa-calendar',
+            },
+            {
                 path: `/pool/${this.selectedPool._id}/referrals`,
                 label: 'Referrals',
                 iconClasses: 'fas fa-comments',
             },
             {
-                path: `/pool/${this.selectedPool._id}/points`,
+                path: `/pool/${this.selectedPool._id}/conditional`,
                 label: 'Conditional',
                 iconClasses: 'fas fa-trophy',
             },

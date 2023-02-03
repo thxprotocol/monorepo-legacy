@@ -2,14 +2,14 @@
     <div>
         <b-row class="mb-3">
             <b-col class="d-flex align-items-center">
-                <h2 class="mb-0">Points</h2>
+                <h2 class="mb-0">Daily</h2>
             </b-col>
             <b-col class="d-flex justify-content-end">
-                <b-button v-b-modal="'modalRewardPointsCreate'" class="rounded-pill" variant="primary">
+                <b-button v-b-modal="'modalRewardDailyCreate'" class="rounded-pill" variant="primary">
                     <i class="fas fa-plus mr-2"></i>
-                    <span class="d-none d-md-inline">Conditional Reward</span>
+                    <span class="d-none d-md-inline">Daily Reward</span>
                 </b-button>
-                <BaseModalRewardPointsCreate @submit="listRewards" :id="'modalRewardPointsCreate'" :pool="pool" />
+                <BaseModalRewardDailyCreate @submit="listRewards" :id="'modalRewardDailyCreate'" :pool="pool" />
             </b-col>
         </b-row>
         <BCard variant="white" body-class="p-0 shadow-sm">
@@ -30,8 +30,6 @@
                     <b-form-checkbox @change="onChecked" />
                 </template>
                 <template #head(title)> Title </template>
-                <template #head(progress)> Progress </template>
-                <template #head(rewardCondition)> Condition </template>
                 <template #head(id)> &nbsp; </template>
 
                 <!-- Cell formatting -->
@@ -41,29 +39,23 @@
                 <template #cell(points)="{ item }">
                     <strong class="text-primary">{{ item.points }} </strong>
                 </template>
-                <template #cell(rewardCondition)="{ item }">
-                    <BaseBadgeRewardConditionPreview
-                        v-if="item.rewardCondition.platform.type !== RewardConditionPlatform.None"
-                        :rewardCondition="item.rewardCondition"
-                    />
-                </template>
                 <template #cell(id)="{ item }">
                     <b-dropdown variant="link" size="sm" right no-caret>
                         <template #button-content>
                             <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
                         </template>
-                        <b-dropdown-item v-b-modal="'modalRewardPointsCreate' + item.id">Edit</b-dropdown-item>
+                        <b-dropdown-item v-b-modal="'modalRewardDailyCreate' + item.id">Edit</b-dropdown-item>
                         <b-dropdown-item
-                            @click="$store.dispatch('pointRewards/delete', pointRewards[pool._id][item.id])"
+                            @click="$store.dispatch('dailyRewards/delete', dailyRewards[pool._id][item.id])"
                         >
                             Delete
                         </b-dropdown-item>
                     </b-dropdown>
-                    <BaseModalRewardPointsCreate
+                    <BaseModalRewardDailyCreate
                         @submit="listRewards"
-                        :id="'modalRewardPointsCreate' + item.id"
+                        :id="'modalRewardDailyCreate' + item.id"
                         :pool="pool"
-                        :reward="pointRewards[pool._id][item.id]"
+                        :reward="dailyRewards[pool._id][item.id]"
                     />
                 </template>
             </BTable>
@@ -75,28 +67,23 @@
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { TPointRewardState } from '@thxnetwork/dashboard/store/modules/pointRewards';
-import { RewardConditionPlatform, RewardConditionInteraction, TPointReward } from '@thxnetwork/types/index';
-import { platformInteractionList, platformList } from '@thxnetwork/dashboard/types/rewards';
-import BaseModalRewardPointsCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardPointsCreate.vue';
+import { TDailyRewardState } from '@thxnetwork/dashboard/store/modules/dailyRewards';
+import { TDailyReward } from '@thxnetwork/types/index';
+import BaseModalRewardDailyCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardDailyCreate.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
-import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/badges/BaseBadgeRewardConditionPreview.vue';
 
 @Component({
     components: {
-        BaseModalRewardPointsCreate,
+        BaseModalRewardDailyCreate,
         BaseCardTableHeader,
-        BaseBadgeRewardConditionPreview,
     },
     computed: mapGetters({
         pools: 'pools/all',
-        totals: 'pointRewards/totals',
-        pointRewards: 'pointRewards/all',
+        totals: 'dailyRewards/totals',
+        dailyRewards: 'dailyRewards/all',
     }),
 })
 export default class AssetPoolView extends Vue {
-    RewardConditionPlatform = RewardConditionPlatform;
-    RewardConditionInteraction = RewardConditionInteraction;
     isLoading = true;
     limit = 5;
     page = 1;
@@ -104,30 +91,25 @@ export default class AssetPoolView extends Vue {
 
     pools!: IPools;
     totals!: { [poolId: string]: number };
-    pointRewards!: TPointRewardState;
+    dailyRewards!: TDailyRewardState;
 
     get pool() {
         return this.pools[this.$route.params.id];
     }
 
     get rewardsByPage() {
-        if (!this.pointRewards[this.$route.params.id]) return [];
-        return Object.values(this.pointRewards[this.$route.params.id])
+        if (!this.dailyRewards[this.$route.params.id]) return [];
+        return Object.values(this.dailyRewards[this.$route.params.id])
             .sort((a, b) => {
                 const createdAtTime = new Date(a.createdAt as string).getTime();
                 const nextCreatedAtTime = new Date(b.createdAt as string).getTime();
                 return createdAtTime < nextCreatedAtTime ? 1 : -1;
             })
-            .filter((reward: TPointReward) => reward.page === this.page)
-            .map((r: TPointReward) => ({
+            .filter((reward: TDailyReward) => reward.page === this.page)
+            .map((r: TDailyReward) => ({
                 checkbox: r._id,
                 title: r.title,
                 points: r.amount,
-                rewardCondition: {
-                    platform: platformList.find((p) => r.platform === p.type),
-                    interaction: platformInteractionList.find((i) => r.interaction === i.type),
-                    content: r.content,
-                },
                 id: r._id,
             }))
             .slice(0, this.limit);
@@ -135,7 +117,7 @@ export default class AssetPoolView extends Vue {
 
     async listRewards() {
         this.isLoading = true;
-        await this.$store.dispatch('pointRewards/list', { page: this.page, pool: this.pool });
+        await this.$store.dispatch('dailyRewards/list', { page: this.page, pool: this.pool });
         this.isLoading = false;
     }
 
@@ -159,7 +141,7 @@ export default class AssetPoolView extends Vue {
 
     onDelete(items: string[]) {
         for (const id of Object.values(items)) {
-            this.$store.dispatch('pointRewards/delete', this.pointRewards[this.pool._id][id]);
+            this.$store.dispatch('dailyRewards/delete', this.dailyRewards[this.pool._id][id]);
         }
     }
 
@@ -167,7 +149,7 @@ export default class AssetPoolView extends Vue {
         switch (action.variant) {
             case 0:
                 for (const id of Object.values(this.selectedItems)) {
-                    this.$store.dispatch('pointRewards/delete', this.pointRewards[this.pool._id][id]);
+                    this.$store.dispatch('dailyRewards/delete', this.dailyRewards[this.pool._id][id]);
                 }
                 break;
         }
