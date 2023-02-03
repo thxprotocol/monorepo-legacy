@@ -66,6 +66,7 @@ createApp({
             });
     },
     async signin() {
+        if (this.isDisabledMetamask) return;
         this.isDisabledMetamask = true;
 
         const provider = await detectEthereumProvider();
