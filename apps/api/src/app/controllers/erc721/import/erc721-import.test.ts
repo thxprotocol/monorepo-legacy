@@ -7,7 +7,7 @@ import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
 import nock from 'nock';
 import { ALCHEMY_API_KEY } from '@thxnetwork/api/config/secrets';
 import { getNetwork, nockResponse } from '@thxnetwork/api/util/alchemy';
-
+import util from 'util';
 const user = request.agent(app);
 
 describe('ERC721 import', () => {
@@ -17,20 +17,12 @@ describe('ERC721 import', () => {
     const network = getNetwork(chainId);
 
     beforeAll(async () => {
-        nock(`https://${network}.g.alchemy.com`)
-            .get(`/nft/v2/${ALCHEMY_API_KEY}/getNFTs`)
-            .query({
-                'owner': userWalletAddress,
-                'pageKey': '1',
-                'contractAddresses[]': contractAddress,
-                'withMetadata': 'true',
-            })
-            .reply(200, nockResponse);
-
         await beforeAllCallback();
     });
 
-    afterAll(afterAllCallback);
+    afterAll(async () => {
+        await afterAllCallback();
+    });
 
     describe('POST /pools', () => {
         it('POST /pools', (done) => {
@@ -46,6 +38,18 @@ describe('ERC721 import', () => {
         });
     });
     describe('POST /erc721/import/:address', () => {
+        nock.cleanAll();
+        nock(`https://${network}.g.alchemy.com`)
+            .persist()
+            .get(`/nft/v2/${ALCHEMY_API_KEY}/getNFTs`)
+            .query({
+                'contractAddresses[]': '0x14ddb079C64f82501E98557D18defA12C5fC69Fa',
+                'pageKey': '1',
+                'owner': '0xE1ea36CC205923b3fC3b46bb747BE4Fd6bE23E6C',
+                'withMetadata': true,
+            })
+
+            .reply(200, nockResponse);
         it('POST /v1/erc721/import/:address`', async () => {
             await user
                 .post(`/v1/erc721/import/${contractAddress}`)
@@ -54,11 +58,11 @@ describe('ERC721 import', () => {
                 .send({
                     chainId,
                 })
-                .expect((res: request.Response) => {
-                    console.log('RESSS', res.body);
-                    expect(res.body.erc721).toBeDefined();
-                    expect(res.body.erc721._id).toBeDefined();
-                    erc721ID = res.body.erc721._id;
+                .expect(({ body }: request.Response) => {
+                    console.log('IMPORT RESULT', util.inspect(body, false, 10));
+                    expect(body.erc721).toBeDefined();
+                    expect(body.erc721._id).toBeDefined();
+                    erc721ID = body.erc721._id;
                 })
                 .expect(201);
         });
@@ -68,6 +72,7 @@ describe('ERC721 import', () => {
                 .set('Authorization', dashboardAccessToken)
                 .send()
                 .expect(({ body }: request.Response) => {
+                    console.log('ERC721 GET RESULT', util.inspect(body, false, 10));
                     expect(body.chainId).toBe(chainId);
                     expect(body.address.toLowerCase()).toBe(contractAddress.toLowerCase());
                     expect(body.sub).toBe(sub);
