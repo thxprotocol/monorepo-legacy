@@ -9,7 +9,6 @@ import TransactionService from './TransactionService';
 import { TransactionReceipt } from 'web3-core';
 import { FacetCutAction } from '../util/upgrades';
 import WalletManagerService from './WalletManagerService';
-import AccountProxy from '../proxies/AccountProxy';
 
 async function create(chainId: ChainId, account: IAccount, forceSync = true) {
     const sub = String(account.sub);

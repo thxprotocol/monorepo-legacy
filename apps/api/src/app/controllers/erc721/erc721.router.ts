@@ -1,5 +1,5 @@
 import express from 'express';
-import { assertRequestInput, guard } from '@thxnetwork/api/middlewares';
+import { assertAssetPoolOwnership, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
 import ReadERC721 from './get.controller';
 import ListERC721 from './list.controller';
 import ListERC721Metadata from './metadata/list.controller';
@@ -15,6 +15,7 @@ import UpdateERC721 from './patch.controller';
 import ReadERC721Metadata from './metadata/get.controller';
 import PatchERC721Metadata from './metadata/patch.controller';
 import DeleteERC721Metadata from './metadata/delete.controller';
+import ImportERC721Contract from './import/post.controller';
 
 const router = express.Router();
 
@@ -22,6 +23,7 @@ router.get('/token', guard.check(['erc721:read']), ListERC721Token.controller);
 router.get('/token/:id', guard.check(['erc721:read']), ReadERC721Token.controller);
 router.get('/', guard.check(['erc721:read']), assertRequestInput(ListERC721.validation), ListERC721.controller);
 router.get('/:id', guard.check(['erc721:read']), assertRequestInput(ReadERC721.validation), ReadERC721.controller);
+
 router.post(
     '/',
     upload.single('file'),
@@ -29,7 +31,12 @@ router.post(
     assertRequestInput(CreateERC721.validation),
     CreateERC721.controller,
 );
-
+router.post(
+    '/import/:address',
+    ImportERC721Contract.controller,
+    assertAssetPoolOwnership,
+    assertRequestInput(ImportERC721Contract.validation),
+);
 router.patch(
     '/:id/metadata/:metadataId',
     guard.check(['erc721:write']),
