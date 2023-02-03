@@ -43,9 +43,9 @@ describe('ERC721 import', () => {
             .persist()
             .get(`/nft/v2/${ALCHEMY_API_KEY}/getNFTs`)
             .query({
-                'contractAddresses[]': '0x14ddb079C64f82501E98557D18defA12C5fC69Fa',
+                'contractAddresses[]': contractAddress,
                 'pageKey': '1',
-                'owner': '0xE1ea36CC205923b3fC3b46bb747BE4Fd6bE23E6C',
+                'owner': userWalletAddress,
                 'withMetadata': true,
             })
 
