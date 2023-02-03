@@ -1,5 +1,5 @@
 import nock from 'nock';
-import { getToken, jwksResponse } from './jwtmock';
+import { getToken, jwksResponse } from './constants';
 import { API_URL, AUTH_URL } from '../../config/secrets';
 
 export function mockAuthPath(method: string, path: string, status: number, callback: any = {}) {
