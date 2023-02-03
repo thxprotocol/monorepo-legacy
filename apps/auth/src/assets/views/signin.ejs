@@ -71,7 +71,7 @@
       <p class="text-muted">Continue with a trusted provider</p>
       <div class="d-flex align-items-center justify-content-start flex-wrap">
         <% if (params.authRequestMessage) { %>
-        <a style="width: 40px; height: 40px;" class="mr-2 mb-2 d-block p-1 btn btn-light" @click="signin()"
+        <a style="width: 40px; height: 40px;" class="mr-2 mb-2 d-block p-1 btn btn-light" @click="onClickSigninMetamask"
            data-toggle="tooltip" title="Sign in with Metamask">
           <img v-if="!isDisabledMetamask" width="25" src="/img/mm-logo.svg" alt="Metamask logo" />
           <div v-else class="spinner-border spinner-primary spinner-border-sm" role="status">

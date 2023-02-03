@@ -10,7 +10,7 @@ export async function createWallet(account: AccountDocument) {
     const sub = String(account._id);
     const chains = [];
 
-    if (NODE_ENV !== 'development') {
+    if (NODE_ENV === 'production') {
         chains.push(ChainId.Polygon);
     } else {
         chains.push(ChainId.Hardhat);

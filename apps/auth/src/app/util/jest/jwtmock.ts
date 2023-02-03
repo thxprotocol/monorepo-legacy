@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { AUTH_URL } from '../../config/secrets';
-import { clientId, adminScopes, dashboardScopes, sub, sub2, walletScopes } from './constants';
+import { dashboardScopes, sub, sub2, walletScopes } from './constants';
 
 const privateKey = `-----BEGIN RSA PRIVATE KEY-----
 MIIEowIBAAKCAQEAwaZ3afW0/zYy3HfJwAAr83PDdZvADuSJ6jTZk1+jprdHdG6P
@@ -43,14 +43,12 @@ export const jwksResponse = {
     ],
 };
 
-export const getToken = (scope: string, outerSub?: string) => {
+export function getToken(scope: string, outerSub?: string) {
     const payload: any = {
         scope,
     };
 
-    if (scope === adminScopes) {
-        payload.aud = clientId;
-    } else if (scope === dashboardScopes) {
+    if (scope === dashboardScopes) {
         payload.sub = sub;
     } else if (scope === walletScopes) {
         payload.sub = sub2;
@@ -76,4 +74,6 @@ export const getToken = (scope: string, outerSub?: string) => {
     }
 
     return `Bearer ${token}`;
-};
+}
+
+export default { getToken };

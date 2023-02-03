@@ -1,4 +1,4 @@
-import { createApp } from 'https://unpkg.com/petite-vue?module';
+const { createApp } = window.PetiteVue;
 
 /* eslint-disable no-undef */
 const AUTH_REQUEST_MESSAGE = document.getElementsByName('authRequestMessage')[0].value;
@@ -9,17 +9,9 @@ createApp({
     isMounted: false,
     alert: { variant: 'warning', message: '' },
     email: '',
+    provider: null,
     isLoading: false,
     isDisabledMetamask: false,
-    waitForEthereumInit: new Promise((resolve, reject) => {
-        window.addEventListener('ethereum#initialized', resolve(), {
-            once: true,
-        });
-
-        // If the event is not dispatched by the end of the timeout,
-        // the user probably doesn't have MetaMask installed.
-        setTimeout(reject(ERROR_INSTALL_METAMASK), 3000); // 3 seconds
-    }),
     get isDisabled() {
         return this.email
             ? !this.email.match(
@@ -37,7 +29,7 @@ createApp({
         if (!accounts.length) {
             this.alert.message = ERROR_CONNECT_METAMASK;
         } else {
-            window.ethereum
+            this.provider
                 .request({
                     method: 'eth_signTypedData_v3',
                     params: [accounts[0], AUTH_REQUEST_MESSAGE],
@@ -54,7 +46,7 @@ createApp({
         }
     },
     requestAccounts() {
-        ethereum
+        this.provider
             .request({ method: 'eth_requestAccounts' })
             .then(this.onAccountsChanged)
             .catch((err) => {
@@ -65,14 +57,14 @@ createApp({
                 }
             });
     },
-    async signin() {
+    async onClickSigninMetamask() {
         if (this.isDisabledMetamask) return;
-        this.isDisabledMetamask = true;
-
-        const provider = await detectEthereumProvider();
         const isMobile = window.matchMedia('(pointer:coarse)').matches;
 
-        if (provider) {
+        this.isDisabledMetamask = true;
+        this.provider = await detectEthereumProvider();
+
+        if (this.provider) {
             this.requestAccounts();
         } else if (isMobile) {
             const claimUrlInput = document.getElementsByName('claimUrl');
@@ -81,11 +73,12 @@ createApp({
             const returnUrl = returnUrlInput.length ? returnUrlInput[0].value : '';
             const url = new URL(claimUrl || returnUrl);
             const link = url.href.replace(/.*?:\/\//g, '');
-            alert(link);
+            // alert(link);
             window.open('https://metamask.app.link/dapp/' + link, '_blank');
         } else {
             this.alert.message = ERROR_INSTALL_METAMASK;
-            alert(ERROR_INSTALL_METAMASK);
+            console.log(ERROR_INSTALL_METAMASK);
+            // alert(ERROR_INSTALL_METAMASK);
         }
 
         this.isDisabledMetamask = false;

@@ -4,6 +4,7 @@ import db from '../../../util/database';
 import bcrypt from 'bcrypt';
 import { API_URL, INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
 import { AccountService } from '../../../services/AccountService';
+import { mockWalletProxy } from '../../../util/jest/mock';
 import { AccessTokenKind } from '@thxnetwork/types/index';
 
 const http = request.agent(app);
@@ -29,6 +30,8 @@ describe('Sign In', () => {
             });
 
         clientId = res.body.client_id;
+
+        mockWalletProxy();
     });
 
     afterAll(async () => {
