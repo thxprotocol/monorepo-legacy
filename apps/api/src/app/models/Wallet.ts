@@ -11,6 +11,7 @@ export interface TWallet {
     chainId: ChainId;
     contract: Contract;
     version: string;
+    isUpgradeAvailable: boolean;
 }
 
 const walletSchema = new mongoose.Schema(

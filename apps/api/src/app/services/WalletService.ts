@@ -9,7 +9,6 @@ import TransactionService from './TransactionService';
 import { TransactionReceipt } from 'web3-core';
 import { FacetCutAction, updateDiamondContract } from '../util/upgrades';
 import WalletManagerService from './WalletManagerService';
-import AccountProxy from '../proxies/AccountProxy';
 
 async function create(chainId: ChainId, account: IAccount, forceSync = true) {
     const sub = String(account.sub);
@@ -72,8 +71,10 @@ async function deployCallback(args: TWalletDeployCallbackArgs, receipt: Transact
 async function upgrade(wallet: WalletDocument, version?: string) {
     const tx = await updateDiamondContract(wallet.chainId, wallet.contract, 'sharedWallet', version);
 
-    wallet.version = version;
-    await wallet.save();
+    if (tx) {
+        wallet.version = version;
+        await wallet.save();
+    }
 
     return tx;
 }
