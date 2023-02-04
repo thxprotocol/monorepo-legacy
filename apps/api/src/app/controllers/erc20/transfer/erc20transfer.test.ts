@@ -1,130 +1,136 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId } from '@thxnetwork/api/types/enums';
+import { ChainId, ERC20Type } from '@thxnetwork/api/types/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import {
+    authAccessToken,
     dashboardAccessToken,
-    MaxUint256,
+    sub,
     sub2,
     userWalletAddress2,
-    userWalletPrivateKey2,
     walletAccessToken,
+    widgetAccessToken,
 } from '@thxnetwork/api/util/jest/constants';
-import { getContract } from '@thxnetwork/api/config/contracts';
-import { Contract } from 'web3-eth-contract';
 import { toWei } from 'web3-utils';
-import { Account } from 'web3-core';
+import ERC20, { ERC20Document } from '@thxnetwork/api/models/ERC20';
+import { ERC20TransferDocument } from '@thxnetwork/api/models/ERC20Transfer';
+import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
-import { createWallet } from '@thxnetwork/api/util/jest/network';
-import { findEvent, parseLogs } from '@thxnetwork/api/util/events';
-import Web3 from 'web3';
-import { HARDHAT_RPC, PRIVATE_KEY } from '@thxnetwork/api/config/secrets';
-import { getProvider } from '@thxnetwork/api/util/network';
 
 const user = request.agent(app);
 
 describe('ERC20Transfer', () => {
-    let testToken: Contract, userWallet: Account, admin: Account, erc20TransferId: string;
+    let erc20: ERC20Document, wallet: WalletDocument, erc20Transfer: ERC20TransferDocument;
 
     beforeAll(async () => {
         await beforeAllCallback();
-        testToken = getContract(ChainId.Hardhat, 'LimitedSupplyToken');
-        userWallet = createWallet(userWalletPrivateKey2);
-        const { defaultAccount } = getProvider(ChainId.Hardhat);
-        admin = { address: defaultAccount, privateKey: PRIVATE_KEY } as Account;
     });
 
     afterAll(afterAllCallback);
 
-    describe('POST /pools', () => {
+    describe('POST /erc20', () => {
         it('HTTP 201', (done) => {
-            user.post('/v1/pools')
-                .set({ Authorization: dashboardAccessToken })
+            user.post('/v1/erc20')
+                .set('Authorization', dashboardAccessToken)
                 .send({
+                    name: 'Test Token',
+                    symbol: 'TTK',
+                    totalSupply: toWei('100', 'ether'),
+                    type: ERC20Type.Limited,
                     chainId: ChainId.Hardhat,
+                })
+                .expect(({ body }: request.Response) => {
+                    expect(body._id).toBeDefined();
+                    erc20 = body;
                 })
                 .expect(201, done);
         });
-        it('import token', (done) => {
-            user.post('/v1/erc20/token')
-                .set('Authorization', dashboardAccessToken)
+    });
+
+    describe('POST /wallet', () => {
+        it('HTTP 201', (done) => {
+            user.post(`/v1/wallets`)
+                .set({ Authorization: authAccessToken })
                 .send({
-                    address: testToken.options.address,
                     chainId: ChainId.Hardhat,
+                    sub,
+                    forceSync: true,
+                })
+                .expect(async ({ body }: request.Response) => {
+                    expect(body._id).toBeDefined();
+                    wallet = body;
+
+                    const { contract } = await ERC20.findById(erc20._id);
+                    await TransactionService.sendAsync(
+                        contract.options.address,
+                        contract.methods.transfer(wallet.address, toWei('1', 'ether')),
+                        ChainId.Hardhat,
+                    );
+                    const balanceInWei = await contract.methods.balanceOf(wallet.address).call();
+                    expect(balanceInWei).toBe(toWei('1', 'ether'));
                 })
                 .expect(201, done);
         });
     });
 
     describe('POST /erc20/transfer', () => {
-        it('Increase user balance', async () => {
-            const amount = toWei(String(100000));
-            const receipt = await TransactionService.send(
-                testToken.options.address,
-                testToken.methods.transfer(userWallet.address, amount),
-                ChainId.Hardhat,
-            );
-            const event = findEvent('Transfer', parseLogs(testToken.options.jsonInterface, receipt.logs));
-            expect(event).toBeDefined();
-        });
-
-        it('Approve relayed transfer by pool', async () => {
-            const web3 = new Web3(HARDHAT_RPC);
-            const { methods } = new web3.eth.Contract(testToken.options.jsonInterface, testToken.options.address, {
-                from: userWallet.address,
-            });
-            const receipt = await methods.approve(admin.address, MaxUint256).send({ from: userWallet.address });
-            expect(receipt.events['Approval']).toBeDefined();
-        });
-
         it('HTTP 201', (done) => {
             user.post('/v1/erc20/transfer')
-                .set({ Authorization: walletAccessToken })
+                .set({ Authorization: widgetAccessToken })
                 .send({
-                    erc20: testToken.options.address,
-                    from: userWallet.address,
+                    erc20Id: erc20._id,
                     to: userWalletAddress2,
-                    amount: '50',
+                    amount: toWei('1', 'ether'),
                     chainId: ChainId.Hardhat,
                 })
-                .expect((res: request.Response) => {
-                    expect(res.body.erc20).toEqual(testToken.options.address);
-                    expect(res.body.from).toEqual(userWallet.address);
-                    expect(res.body.to).toEqual(userWalletAddress2);
-                    expect(res.body.chainId).toEqual(ChainId.Hardhat);
-                    expect(res.body.transactionId).toBeDefined();
-                    expect(res.body.sub).toBeDefined();
-                    expect(res.body.sub).toEqual(sub2);
-                    erc20TransferId = res.body._id;
+                .expect(async ({ body }: request.Response) => {
+                    expect(body._id).toBeDefined();
+                    expect(body.erc20Id).toBeDefined();
+                    expect(body.from).toEqual(wallet.address);
+                    expect(body.to).toEqual(userWalletAddress2);
+                    expect(body.chainId).toEqual(ChainId.Hardhat);
+                    expect(body.transactionId).toBeDefined();
+                    expect(body.sub).toEqual(sub);
+
+                    erc20Transfer = body;
+
+                    const { contract } = await ERC20.findById(erc20._id);
+                    const balanceInWei = await contract.methods.balanceOf(userWalletAddress2).call();
+
+                    expect(balanceInWei).toEqual(toWei('1', 'ether'));
                 })
                 .expect(201, done);
         });
+    });
 
+    describe('GET /erc20/transfer/:id', () => {
         it('HTTP 200', (done) => {
-            user.get(`/v1/erc20/transfer/${erc20TransferId}`)
-                .set({ Authorization: walletAccessToken })
-                .expect((res: request.Response) => {
-                    expect(res.body.erc20).toEqual(testToken.options.address);
-                    expect(res.body.from).toEqual(userWallet.address);
-                    expect(res.body.to).toEqual(userWalletAddress2);
-                    expect(res.body.chainId).toEqual(ChainId.Hardhat);
-                    expect(res.body.transactionId).toBeDefined();
-                    expect(res.body.sub).toEqual(sub2);
+            user.get(`/v1/erc20/transfer/${erc20Transfer._id}`)
+                .set({ Authorization: widgetAccessToken })
+                .expect(({ body }: request.Response) => {
+                    expect(body.erc20Id).toBeDefined();
+                    expect(body.from).toEqual(wallet.address);
+                    expect(body.to).toEqual(userWalletAddress2);
+                    expect(body.chainId).toEqual(ChainId.Hardhat);
+                    expect(body.transactionId).toBeDefined();
+                    expect(body.sub).toEqual(sub);
                 })
                 .expect(200, done);
         });
+    });
 
+    describe('GET /erc20/transfer?erc20=:address&chainId=:chainId', () => {
         it('HTTP 200', (done) => {
-            user.get(`/v1/erc20/transfer?erc20=${testToken.options.address}&chainId=${ChainId.Hardhat}`)
-                .set({ Authorization: walletAccessToken })
-                .expect((res: request.Response) => {
-                    expect(res.body.length).toEqual(1);
-                    expect(res.body[0].erc20).toEqual(testToken.options.address);
-                    expect(res.body[0].from).toEqual(userWallet.address);
-                    expect(res.body[0].to).toEqual(userWalletAddress2);
-                    expect(res.body[0].chainId).toEqual(ChainId.Hardhat);
-                    expect(res.body[0].transactionId).toBeDefined();
-                    expect(res.body[0].sub).toEqual(sub2);
+            user.get(`/v1/erc20/transfer?erc20Id=${erc20._id}&chainId=${ChainId.Hardhat}`)
+                .set({ Authorization: widgetAccessToken })
+                .expect(({ body }: request.Response) => {
+                    expect(body.length).toEqual(1);
+                    expect(body[0].erc20Id).toBeDefined();
+                    expect(body[0].from).toEqual(wallet.address);
+                    expect(body[0].to).toEqual(userWalletAddress2);
+                    expect(body[0].chainId).toEqual(ChainId.Hardhat);
+                    expect(body[0].transactionId).toBeDefined();
+                    expect(body[0].sub).toEqual(sub);
                 })
                 .expect(200, done);
         });

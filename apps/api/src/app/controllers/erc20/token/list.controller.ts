@@ -67,7 +67,7 @@ export const controller = async (req: Request, res: Response) => {
     res.json(
         result.filter((token: TERC20Token & { erc20: TERC20 }) => {
             if (!req.query.chainId) return true;
-            return Number(req.query.chainId) === token.erc20.chainId;
+            return token.erc20 && Number(req.query.chainId) === token.erc20.chainId;
         }),
     );
 };
