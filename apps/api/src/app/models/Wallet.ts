@@ -10,6 +10,7 @@ export interface TWallet {
     sub: string;
     chainId: ChainId;
     contract: Contract;
+    version: string;
 }
 
 const walletSchema = new mongoose.Schema(
@@ -17,6 +18,7 @@ const walletSchema = new mongoose.Schema(
         address: String,
         sub: String,
         chainId: Number,
+        version: String,
     },
     { timestamps: true },
 );

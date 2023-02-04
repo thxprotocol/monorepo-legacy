@@ -7,7 +7,7 @@ import { TWalletDeployCallbackArgs } from '../types/TTransaction';
 import { getProvider, getSelectors } from '../util/network';
 import TransactionService from './TransactionService';
 import { TransactionReceipt } from 'web3-core';
-import { FacetCutAction } from '../util/upgrades';
+import { FacetCutAction, updateDiamondContract } from '../util/upgrades';
 import WalletManagerService from './WalletManagerService';
 import AccountProxy from '../proxies/AccountProxy';
 
@@ -69,4 +69,13 @@ async function deployCallback(args: TWalletDeployCallbackArgs, receipt: Transact
     await WalletManagerService.setupManagerRoleAdmin(wallet, args.owner);
 }
 
-export default { create, findOneByAddress, findByQuery, deploy, deployCallback, findOneByQuery };
+async function upgrade(wallet: WalletDocument, version?: string) {
+    const tx = await updateDiamondContract(wallet.chainId, wallet.contract, 'sharedWallet', version);
+
+    wallet.version = version;
+    await wallet.save();
+
+    return tx;
+}
+
+export default { upgrade, create, findOneByAddress, findByQuery, deploy, deployCallback, findOneByQuery };
