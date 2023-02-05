@@ -1,4 +1,4 @@
-import { ContractName, diamondFacetConfigs, DiamondVariant } from '@thxnetwork/contracts/exports';
+import { ContractName, currentVersion, diamondFacetConfigs, DiamondVariant } from '@thxnetwork/contracts/exports';
 import { getByteCodeForContractName, getContractFromName } from '../config/contracts';
 import { IAccount } from '../models/Account';
 import { Wallet, WalletDocument } from '../models/Wallet';
@@ -12,7 +12,7 @@ import WalletManagerService from './WalletManagerService';
 
 async function create(chainId: ChainId, account: IAccount, forceSync = true) {
     const sub = String(account.sub);
-    const wallet = await Wallet.create({ sub, chainId });
+    const wallet = await Wallet.create({ sub, chainId, version: currentVersion });
     return deploy(wallet, chainId, sub, forceSync);
 }
 

@@ -89,6 +89,7 @@ export const updateDiamondContract = async (
     const facets = await contract.methods.facets().call();
     const newContracts = diamondContracts(chainId, variant, version);
     const diamondCuts = getDiamondCutForContractFacets(newContracts, facets);
+    console.log(newContracts, diamondCuts, facets);
 
     if (diamondCuts.length > 0) {
         return TransactionService.send(

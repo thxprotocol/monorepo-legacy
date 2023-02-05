@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
-import { NotFoundError } from '@thxnetwork/api/util/errors';
+import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import WalletManagerService from '@thxnetwork/api/services/WalletManagerService';
 import { Wallet } from '@thxnetwork/api/models/Wallet';
 
@@ -9,6 +9,7 @@ export const validation = [param('id').exists().isMongoId(), body('address').exi
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Wallets']
     const wallet = await Wallet.findById(req.params.id);
+    if (req.auth.sub !== wallet.sub) throw new ForbiddenError('Wallet not owned by sub.');
 
     if (!wallet) {
         throw new NotFoundError('Could not find the wallet');
