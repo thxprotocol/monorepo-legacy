@@ -13,6 +13,7 @@ import { TransactionReceipt } from 'web3-core';
 import { TERC20DeployCallbackArgs, TERC20TransferFromCallBackArgs } from '@thxnetwork/api/types/TTransaction';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
 import ERC20Transfer from '../models/ERC20Transfer';
+import { WalletDocument } from '../models/Wallet';
 
 function getDeployArgs(erc20: ERC20Document, totalSupply?: string) {
     const { defaultAccount } = getProvider(erc20.chainId);
@@ -206,17 +207,23 @@ export const update = (erc20: ERC20Document, updates: IERC20Updates) => {
 
 export const transferFrom = async (
     erc20: ERC20Document,
-    from: string,
+    wallet: WalletDocument,
     to: string,
-    amount: string,
+    amountInWei: string,
     chainId: ChainId,
     sub: string,
 ) => {
-    const erc20Transfer = await ERC20Transfer.create({ erc20: erc20.address, from, to, chainId, sub });
-
+    const erc20Transfer = await ERC20Transfer.create({
+        erc20Id: erc20._id,
+        from: wallet.address,
+        to,
+        amount: amountInWei,
+        chainId,
+        sub,
+    });
     const txId = await TransactionService.sendAsync(
-        erc20.address,
-        erc20.contract.methods.transferFrom(from, to, amount),
+        wallet.address,
+        wallet.contract.methods.transferERC20(erc20.address, to, amountInWei),
         chainId,
         true,
         { type: 'transferFromCallBack', args: { erc20Id: String(erc20._id) } },

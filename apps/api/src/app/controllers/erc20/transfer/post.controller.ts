@@ -1,16 +1,13 @@
 import { Request, Response } from 'express';
 import { body } from 'express-validator';
+import { InsufficientBalanceError, NotFoundError } from '@thxnetwork/api/util/errors';
+import { Wallet } from '@thxnetwork/api/models/Wallet';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
-import { AmountExceedsAllowanceError, InsufficientBalanceError, NotFoundError } from '@thxnetwork/api/util/errors';
-import { toWei } from 'web3-utils';
-import { getProvider } from '@thxnetwork/api/util/network';
-import { getContractFromName } from '@thxnetwork/api/config/contracts';
-import { BigNumber } from 'ethers';
 import ERC20 from '@thxnetwork/api/models/ERC20';
+import { BN } from 'bn.js';
 
 export const validation = [
-    body('erc20').exists().isString(),
-    body('from').exists().isString(),
+    body('erc20Id').exists().isMongoId(),
     body('to').exists().isString(),
     body('amount').exists().isString(),
     body('chainId').exists().isNumeric(),
@@ -20,27 +17,25 @@ export const controller = async (req: Request, res: Response) => {
     /*
     #swagger.tags = ['ERC20Transaction']
     */
-    const erc20 = await ERC20.findOne({ address: req.body.erc20 });
+    const erc20 = await ERC20.findById(req.body.erc20Id);
     if (!erc20) throw new NotFoundError('Could not find the ERC20');
 
-    const contract = getContractFromName(req.body.chainId, 'LimitedSupplyToken', erc20.address);
-    const amount = toWei(req.body.amount).toString();
+    const wallet = await Wallet.findOne({ chainId: req.body.chainId, sub: req.auth.sub });
+    if (!wallet) throw new NotFoundError('Could not find wallet for account');
 
-    // Check balance to ensure throughput
-    const balance = await contract.methods.balanceOf(req.body.from).call();
-    if (Number(balance) < Number(amount)) throw new InsufficientBalanceError();
+    const walletBalanceInWei = await erc20.contract.methods.balanceOf(wallet.address).call();
+    const balanceInWei = new BN(walletBalanceInWei);
+    const amountInWei = new BN(req.body.amount);
 
-    // Check allowance to ensure throughput
-    const { defaultAccount } = getProvider(req.body.chainId);
-    const allowance = await contract.methods.allowance(req.body.from, defaultAccount).call();
-
-    if (BigNumber.from(allowance).lt(BigNumber.from(amount))) throw new AmountExceedsAllowanceError();
+    if (amountInWei.gt(balanceInWei)) {
+        throw new InsufficientBalanceError();
+    }
 
     const erc20Transfer = await ERC20Service.transferFrom(
         erc20,
-        req.body.from,
+        wallet,
         req.body.to,
-        amount,
+        String(amountInWei),
         req.body.chainId,
         req.auth.sub,
     );

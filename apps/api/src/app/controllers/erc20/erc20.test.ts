@@ -64,7 +64,7 @@ describe('ERC20', () => {
                     type: ERC20Type.Unlimited,
                 })
                 .expect(({ body }: request.Response) => {
-                    expect(isAddress(body._id)).toBeDefined();
+                    expect(body._id).toBeDefined();
                     expect(isAddress(body.address)).toBe(true);
                 })
                 .expect(201, done);

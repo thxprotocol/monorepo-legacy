@@ -3,11 +3,10 @@ import { BigNumber, Contract, Signer } from 'ethers';
 import { ethers } from 'hardhat';
 import { getDiamondCuts, MANAGER_ROLE } from './utils';
 
-describe('Smart Wallet', function () {
+describe.only('Smart Wallet', function () {
     let owner: any,
         user: Signer,
         user2: Signer,
-        user3: Signer,
         erc20: Contract,
         erc721: Contract,
         smartWallet: Contract,
@@ -17,7 +16,7 @@ describe('Smart Wallet', function () {
         tokenId: number;
 
     before(async function () {
-        [owner, user, user2, user3] = await ethers.getSigners();
+        [owner, user, user2] = await ethers.getSigners();
 
         contractOwnerAddress = await owner.getAddress();
         receiverAddress = await user.getAddress();
@@ -35,14 +34,11 @@ describe('Smart Wallet', function () {
 
         const MockERC721Contract = await ethers.getContractFactory('NonFungibleToken');
         erc721 = await MockERC721Contract.deploy('ExampleERC721', 'EX721', 'baseURI', contractOwnerAddress);
-        await erc721.deployed();
 
-        // mint a token
-        await erc721.mint(contractOwnerAddress, 'tokenURI');
-        expect(await erc721.ownerOf(tokenId)).to.equal(contractOwnerAddress);
+        await erc721.deployed();
     });
 
-    it('Deploy Smart Wallet', async function () {
+    it('Deploy', async function () {
         const DiamondFactory = await ethers.getContractFactory('Diamond');
         const { address } = await DiamondFactory.deploy(
             await getDiamondCuts(['AccessControlFacet', 'SharedWalletFacet']),
@@ -50,72 +46,100 @@ describe('Smart Wallet', function () {
         );
         smartWallet = await ethers.getContractAt('ISharedWallet', address);
         await smartWallet.setupRole(MANAGER_ROLE, await owner.getAddress());
-
-        // set the proxycontract as operator
-        await erc721.setApprovalForAll(smartWallet.address, true);
     });
 
-    it('Should approveERC20', async function () {
+    it('Deposit', async function () {
+        // Transfer erc20 into smart contract wallet
+        await erc20.connect(owner).transfer(smartWallet.address, ethers.utils.parseEther('10'));
+
+        // mint a token
+        await erc721.mint(smartWallet.address, 'tokenURI');
+        expect(await erc721.ownerOf(tokenId)).to.equal(smartWallet.address);
+    });
+
+    it('approveERC20', async function () {
         await smartWallet.approveERC20(erc20.address, receiverAddress, transferAmount);
         expect(await erc20.allowance(smartWallet.address, receiverAddress)).to.equal(transferAmount);
     });
 
-    it('Should transferERC20', async function () {
-        await erc20.approve(smartWallet.address, transferAmount);
+    it('approveERC20: NOT_MANAGER', async function () {
+        await expect(
+            smartWallet.connect(user).approveERC20(erc20.address, receiverAddress, transferAmount),
+        ).to.be.revertedWith('NOT_MANAGER');
+    });
+
+    it('transferERC20', async function () {
+        expect(await erc20.balanceOf(receiverAddress)).to.equal('0');
         await smartWallet.transferERC20(erc20.address, receiverAddress, transferAmount);
         expect(await erc20.balanceOf(receiverAddress)).to.equal(transferAmount);
     });
 
-    it('Should NOT transferERC20', async function () {
-        expect(
-            smartWallet.connect(user3).transferERC20(erc20.address, receiverAddress, transferAmount),
-        ).to.be.revertedWith('Caller is not a manager');
-
-        await smartWallet.connect(owner).grantRole(MANAGER_ROLE, await user2.getAddress());
-        expect(
-            smartWallet.connect(user2).transferERC20(erc20.address, receiverAddress, transferAmount),
-        ).to.be.revertedWith('INSUFFICIENT BALANCE');
+    it('transferERC20: NOT_MANAGER', async function () {
+        await expect(
+            smartWallet.connect(user).transferERC20(erc20.address, receiverAddress, transferAmount),
+        ).to.be.revertedWith('NOT_MANAGER');
     });
 
-    it('Should approveERC721', async function () {
+    it('approveERC721 ', async function () {
         await smartWallet.approveERC721(erc721.address, receiverAddress, tokenId);
         expect(await erc721.getApproved(tokenId)).to.equal(receiverAddress);
     });
 
-    it('Should NOT transferERC721', async function () {
-        await erc721.approve(smartWallet.address, tokenId);
-        expect(smartWallet.connect(user3).transferERC721(erc721.address, receiverAddress, tokenId)).to.be.revertedWith(
-            'Caller is not a manager',
-        );
+    it('approveERC721: NOT_MANAGER', async function () {
+        await expect(
+            smartWallet.connect(user).approveERC721(erc721.address, receiverAddress, tokenId),
+        ).to.be.revertedWith('NOT_MANAGER');
     });
 
-    it('Should transferERC721', async function () {
-        await erc721.approve(smartWallet.address, tokenId);
+    it('transferERC721 ', async function () {
         await smartWallet.transferERC721(erc721.address, receiverAddress, tokenId);
         expect(await erc721.ownerOf(tokenId)).to.equal(receiverAddress);
     });
 
-    it('Should grant a Manager Role', async function () {
-        await smartWallet.grantRole(MANAGER_ROLE, receiverAddress);
-        expect(await smartWallet.hasRole(MANAGER_ROLE, receiverAddress)).to.equal(true);
+    it('transferERC721 NOT_MANAGER', async function () {
+        await expect(
+            smartWallet.connect(user).transferERC721(erc721.address, receiverAddress, tokenId),
+        ).to.be.revertedWith('NOT_MANAGER');
     });
 
-    it('Should NOT grant a Manager Role', async function () {
-        await smartWallet.grantRole(MANAGER_ROLE, receiverAddress);
-        expect(smartWallet.connect(user).grantRole(MANAGER_ROLE, receiverAddress)).to.be.revertedWith(
-            'Ownable: caller is not the owner',
-        );
-    });
+    describe('Access Control', () => {
+        it('grantRole: sender must be admin to grant', async function () {
+            await expect(smartWallet.connect(user).grantRole(MANAGER_ROLE, receiverAddress)).to.be.revertedWith(
+                'AccessControl: sender must be an admin to grant',
+            );
+        });
 
-    it('Should revoke a Manager Role', async function () {
-        await smartWallet.revokeRole(MANAGER_ROLE, receiverAddress);
-        expect(await smartWallet.hasRole(MANAGER_ROLE, receiverAddress)).to.equal(false);
-    });
+        it('grantRole: MANAGER_ROLE', async function () {
+            await smartWallet.connect(owner).grantRole(MANAGER_ROLE, receiverAddress);
+            expect(await smartWallet.hasRole(MANAGER_ROLE, receiverAddress)).to.equal(true);
+        });
 
-    it('Should NOT revoke a Manager Role', async function () {
-        await smartWallet.grantRole(MANAGER_ROLE, receiverAddress);
-        expect(smartWallet.connect(user).revokeRole(MANAGER_ROLE, receiverAddress)).to.be.revertedWith(
-            'Ownable: caller is not the owner',
-        );
+        it('transferERC721: granted MANAGER_ROLE', async function () {
+            const tokenId = 2;
+
+            await erc721.mint(smartWallet.address, 'tokenURI');
+            expect(await erc721.ownerOf(tokenId)).to.equal(smartWallet.address);
+
+            await smartWallet.connect(user).transferERC721(erc721.address, receiverAddress, tokenId);
+            expect(await erc721.ownerOf(tokenId)).to.equal(receiverAddress);
+        });
+
+        it('revokeRole: MANAGER_ROLE', async function () {
+            await smartWallet.revokeRole(MANAGER_ROLE, receiverAddress);
+            expect(await smartWallet.hasRole(MANAGER_ROLE, receiverAddress)).to.equal(false);
+        });
+
+        it('transferERC721: revoked MANAGER_ROLE ', async function () {
+            const tokenId = 3;
+
+            await erc721.mint(smartWallet.address, 'tokenURI');
+            expect(await erc721.ownerOf(tokenId)).to.equal(smartWallet.address);
+
+            await expect(
+                smartWallet.connect(user).transferERC721(erc721.address, receiverAddress, tokenId),
+            ).to.be.revertedWith('NOT_MANAGER');
+
+            expect(await erc721.ownerOf(tokenId)).to.equal(smartWallet.address);
+        });
     });
 });

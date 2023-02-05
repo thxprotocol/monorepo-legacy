@@ -14,7 +14,7 @@ const controller = async (req: Request, res: Response) => {
 
     const wallet = await Wallet.findById(walletManager.walletId);
     if (!wallet) throw new NotFoundError('Could not found the Wallet');
-    if (wallet.sub !== req.auth.sub) throw new ForbiddenError('Operation not allowed for this user');
+    if (wallet.sub !== req.auth.sub) throw new ForbiddenError('Wallet now owned by sub');
 
     await WalletManagerService.remove(walletManager);
 

@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { walletAccessToken2, sub2 } from '@thxnetwork/api/util/jest/constants';
+import { widgetAccessToken, sub } from '@thxnetwork/api/util/jest/constants';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { ChainId } from '@thxnetwork/api/types/enums';
 const user = request.agent(app);
@@ -16,14 +16,14 @@ describe('Wallets', () => {
     describe('POST /wallets', () => {
         it('HTTP 201', (done) => {
             user.post('/v1/wallets')
-                .set({ Authorization: walletAccessToken2 })
+                .set({ Authorization: widgetAccessToken })
                 .send({
                     chainId: ChainId.Hardhat,
-                    sub: sub2,
+                    sub,
                     forceSync: true,
                 })
                 .expect((res: request.Response) => {
-                    expect(res.body.sub).toEqual(sub2);
+                    expect(res.body.sub).toEqual(sub);
                     expect(res.body.chainId).toEqual(ChainId.Hardhat);
                     expect(res.body.address).toBeDefined();
                     walletId = res.body._id;
@@ -34,11 +34,11 @@ describe('Wallets', () => {
 
     describe('GET /wallets', () => {
         it('HTTP 200 if OK', (done) => {
-            user.get(`/v1/wallets?chainId=${ChainId.Hardhat}&sub=${sub2}`)
-                .set({ Authorization: walletAccessToken2 })
+            user.get(`/v1/wallets?chainId=${ChainId.Hardhat}&sub=${sub}`)
+                .set({ Authorization: widgetAccessToken })
                 .expect((res: request.Response) => {
                     expect(res.body.length).toEqual(1);
-                    expect(res.body[0].sub).toEqual(sub2);
+                    expect(res.body[0].sub).toEqual(sub);
                     expect(res.body[0].chainId).toEqual(ChainId.Hardhat);
                     expect(res.body[0].address).toBeDefined();
                 })
@@ -49,9 +49,9 @@ describe('Wallets', () => {
     describe('GET /wallets/:id', () => {
         it('HTTP 200 if OK', (done) => {
             user.get(`/v1/wallets/${walletId}`)
-                .set({ Authorization: walletAccessToken2 })
+                .set({ Authorization: widgetAccessToken })
                 .expect((res: request.Response) => {
-                    expect(res.body.sub).toEqual(sub2);
+                    expect(res.body.sub).toEqual(sub);
                     expect(res.body.chainId).toEqual(ChainId.Hardhat);
                     expect(res.body.address).toBeDefined();
                 })
