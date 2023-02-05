@@ -12,7 +12,7 @@ const controller = async (req: Request, res: Response) => {
 
     res.json(
         wallets.map((wallet: WalletDocument) => {
-            return { ...wallet.toJSON(), isUpgradeAvailable: currentVersion !== wallet.version };
+            return { ...wallet.toJSON(), latestVersion: currentVersion };
         }),
     );
 };
