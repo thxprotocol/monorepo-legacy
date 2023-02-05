@@ -6,9 +6,7 @@ import {
     authAccessToken,
     dashboardAccessToken,
     sub,
-    sub2,
     userWalletAddress2,
-    walletAccessToken,
     widgetAccessToken,
 } from '@thxnetwork/api/util/jest/constants';
 import { toWei } from 'web3-utils';
@@ -22,10 +20,7 @@ const user = request.agent(app);
 describe('ERC20Transfer', () => {
     let erc20: ERC20Document, wallet: WalletDocument, erc20Transfer: ERC20TransferDocument;
 
-    beforeAll(async () => {
-        await beforeAllCallback();
-    });
-
+    beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
 
     describe('POST /erc20', () => {
@@ -52,24 +47,27 @@ describe('ERC20Transfer', () => {
             user.post(`/v1/wallets`)
                 .set({ Authorization: authAccessToken })
                 .send({
-                    chainId: ChainId.Hardhat,
                     sub,
+                    chainId: ChainId.Hardhat,
                     forceSync: true,
                 })
                 .expect(async ({ body }: request.Response) => {
                     expect(body._id).toBeDefined();
+                    expect(body.address).toBeDefined();
                     wallet = body;
-
-                    const { contract } = await ERC20.findById(erc20._id);
-                    await TransactionService.sendAsync(
-                        contract.options.address,
-                        contract.methods.transfer(wallet.address, toWei('1', 'ether')),
-                        ChainId.Hardhat,
-                    );
-                    const balanceInWei = await contract.methods.balanceOf(wallet.address).call();
-                    expect(balanceInWei).toBe(toWei('1', 'ether'));
                 })
                 .expect(201, done);
+        });
+
+        it('Transfer ERC20', async () => {
+            const { contract } = await ERC20.findById(erc20._id);
+            await TransactionService.sendAsync(
+                contract.options.address,
+                contract.methods.transfer(wallet.address, toWei('10', 'ether')),
+                ChainId.Hardhat,
+            );
+            const balanceInWei = await contract.methods.balanceOf(wallet.address).call();
+            expect(balanceInWei).toBe(toWei('10', 'ether'));
         });
     });
 

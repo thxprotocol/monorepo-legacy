@@ -26,8 +26,7 @@ export const controller = async (req: Request, res: Response) => {
     const walletBalanceInWei = await erc20.contract.methods.balanceOf(wallet.address).call();
     const balanceInWei = new BN(walletBalanceInWei);
     const amountInWei = new BN(req.body.amount);
-
-    if (amountInWei.gt(balanceInWei)) {
+    if (amountInWei.gte(balanceInWei)) {
         throw new InsufficientBalanceError();
     }
 
