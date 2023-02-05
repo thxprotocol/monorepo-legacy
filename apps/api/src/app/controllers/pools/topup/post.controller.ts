@@ -1,13 +1,12 @@
 import { Request, Response } from 'express';
 import { BadRequestError, InsufficientBalanceError } from '@thxnetwork/api/util/errors';
 import { toWei } from 'web3-utils';
-import { getProvider } from '@thxnetwork/api/util/network';
-import { ethers } from 'ethers';
+import { MaxUint256, getProvider } from '@thxnetwork/api/util/network';
 import { ERC20Type } from '@thxnetwork/api/types/enums';
+import { body, param } from 'express-validator';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
 import PoolService from '@thxnetwork/api/services/PoolService';
-import { body, param } from 'express-validator';
 
 export const validation = [param('id').isMongoId(), body('erc20Id').exists().isMongoId(), body('amount').exists()];
 
@@ -28,7 +27,7 @@ const controller = async (req: Request, res: Response) => {
     if (Number(allowance) < Number(amount)) {
         await TransactionService.send(
             erc20.contract.options.address,
-            erc20.contract.methods.approve(defaultAccount, ethers.constants.MaxUint256),
+            erc20.contract.methods.approve(defaultAccount, MaxUint256),
             pool.chainId,
         );
     }
