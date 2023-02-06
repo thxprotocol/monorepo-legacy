@@ -2,117 +2,123 @@ import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId } from '@thxnetwork/api/types/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { dashboardAccessToken, sub, userWalletAddress } from '@thxnetwork/api/util/jest/constants';
+import { dashboardAccessToken, sub } from '@thxnetwork/api/util/jest/constants';
 import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
-import nock from 'nock';
-import { ALCHEMY_API_KEY } from '@thxnetwork/api/config/secrets';
-import { getNetwork, nockResponse } from '@thxnetwork/api/util/alchemy';
-import util from 'util';
+import { ERC721Document } from '@thxnetwork/api/models/ERC721';
+import { alchemy } from '@thxnetwork/api/util/alchemy';
+import { deployNFT, mockGetNftsForOwner } from '@thxnetwork/api/util/jest/nft';
+import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
+import { Contract } from 'web3-eth-contract';
+import { getProvider } from '@thxnetwork/api/util/network';
+import TransactionService from '@thxnetwork/api/services/TransactionService';
+
 const user = request.agent(app);
 
 describe('ERC721 import', () => {
-    let erc721ID: string, poolId: string;
-    const chainId = ChainId.Hardhat;
-    const contractAddress = '0x14ddb079C64f82501E98557D18defA12C5fC69Fa';
-    const network = getNetwork(chainId);
+    let erc721: ERC721Document, pool: AssetPoolDocument, nftContract: Contract;
+    const chainId = ChainId.Hardhat,
+        nftName = 'Test Collection',
+        nftSymbol = 'TST';
 
-    beforeAll(async () => {
-        await beforeAllCallback();
-    });
-
-    afterAll(async () => {
-        await afterAllCallback();
-    });
+    beforeAll(beforeAllCallback);
+    afterAll(afterAllCallback);
 
     describe('POST /pools', () => {
-        it('POST /pools', (done) => {
+        it('HTTP 201', (done) => {
             user.post('/v1/pools')
                 .set('Authorization', dashboardAccessToken)
-                .send({
-                    chainId: ChainId.Hardhat,
-                })
+                .send({ chainId })
                 .expect((res: request.Response) => {
-                    poolId = res.body._id;
+                    pool = res.body;
                 })
                 .expect(201, done);
         });
     });
-    describe('POST /erc721/import/:address', () => {
-        nock.cleanAll();
-        nock(`https://${network}.g.alchemy.com`)
-            .persist()
-            .get(`/nft/v2/${ALCHEMY_API_KEY}/getNFTs`)
-            .query({
-                'contractAddresses[]': contractAddress,
-                'pageKey': '1',
-                'owner': userWalletAddress,
-                'withMetadata': true,
-            })
 
-            .reply(200, nockResponse);
-        it('POST /v1/erc721/import/:address`', async () => {
+    describe('POST /erc721/import', () => {
+        it('HTTP 201`', async () => {
+            // Create 1 NFT collection
+            nftContract = await deployNFT(nftName, nftSymbol);
+
+            // Mint 1 token in the collection
+            await TransactionService.sendAsync(
+                nftContract.options.address,
+                nftContract.methods.mint(pool.address, 'tokenuri.json'),
+                chainId,
+            );
+
+            // Mock Alchemy SDK return value for getNftsForOwner
+            jest.spyOn(alchemy.nft, 'getNftsForOwner').mockImplementation(() =>
+                Promise.resolve(mockGetNftsForOwner(nftContract.options.address, nftName, nftSymbol) as any),
+            );
+
+            // Run the import for the deployed contract address
             await user
-                .post(`/v1/erc721/import/${contractAddress}`)
-                .set({ 'X-PoolId': poolId })
-                .set('Authorization', dashboardAccessToken)
-                .send({
-                    chainId,
-                })
+                .post('/v1/erc721/import')
+                .set({ 'Authorization': dashboardAccessToken, 'X-PoolId': pool._id })
+                .send({ chainId, contractAddress: nftContract.options.address })
                 .expect(({ body }: request.Response) => {
-                    console.log('IMPORT RESULT', util.inspect(body, false, 10));
-                    expect(body.erc721).toBeDefined();
                     expect(body.erc721._id).toBeDefined();
-                    erc721ID = body.erc721._id;
+                    expect(body.erc721.address).toBe(nftContract.options.address);
+
+                    erc721 = body.erc721;
                 })
                 .expect(201);
         });
+    });
 
-        it('GET /erc721/:id', (done) => {
-            user.get(`/v1/erc721/${erc721ID}`)
+    describe('GET /erc721/:id', () => {
+        const { defaultAccount } = getProvider(chainId);
+
+        it('HTTP 200', (done) => {
+            user.get(`/v1/erc721/${erc721._id}`)
                 .set('Authorization', dashboardAccessToken)
                 .send()
                 .expect(({ body }: request.Response) => {
-                    console.log('ERC721 GET RESULT', util.inspect(body, false, 10));
                     expect(body.chainId).toBe(chainId);
-                    expect(body.address.toLowerCase()).toBe(contractAddress.toLowerCase());
                     expect(body.sub).toBe(sub);
-                    expect(body.name).toBe('TEST NFT COLLECTION');
-                    expect(body.symbol).toBe('NFTCTEST');
+                    expect(body.name).toBe(nftName);
+                    expect(body.symbol).toBe(nftSymbol);
+                    expect(body.address).toBe(nftContract.options.address);
                     expect(body.properties[0].name).toBe('name');
                     expect(body.properties[0].propType).toBe('string');
                     expect(body.properties[1].name).toBe('description');
                     expect(body.properties[1].propType).toBe('string');
                     expect(body.properties[2].name).toBe('image');
                     expect(body.properties[2].propType).toBe('image');
-                    expect(body.totalSupply).toBe('4');
-                    expect(body.owner).toBe(userWalletAddress);
+                    expect(body.totalSupply).toBe('1');
+                    expect(body.owner).toBe(defaultAccount);
                 })
                 .expect(200, done);
         });
+    });
 
-        it('GET /erc721/token', (done) => {
-            user.get('/v1/erc721/token')
+    describe('GET /erc721/token', () => {
+        it('HTTP 200', (done) => {
+            user.get(`/v1/erc721/token?chainId=${chainId}`)
                 .set('Authorization', dashboardAccessToken)
                 .send()
                 .expect(({ body }: request.Response) => {
-                    expect(body.length).toBe(4);
+                    expect(body.length).toBe(1);
                     expect(body[0].sub).toBe(sub);
-                    expect(body[0].erc721Id).toBe(erc721ID);
+                    expect(body[0].erc721Id).toBe(erc721._id);
                     expect(body[0].state).toBe(ERC721TokenState.Minted);
-                    expect(body[0].recipient).toBe(userWalletAddress);
+                    expect(body[0].recipient).toBe(pool.address);
                     expect(body[0].tokenUri).toBeDefined();
                     expect(body[0].tokenId).toBeDefined();
                     expect(body[0].metadataId).toBeDefined();
                 })
                 .expect(200, done);
         });
+    });
 
-        it('GET /erc721/:id/metadata', (done) => {
-            user.get(`/v1/erc721/${erc721ID}/metadata`)
+    describe('GET /erc721/:id/metadata', () => {
+        it('HTTP 200', (done) => {
+            user.get(`/v1/erc721/${erc721._id}/metadata`)
                 .set('Authorization', dashboardAccessToken)
                 .send()
                 .expect(({ body }: request.Response) => {
-                    expect(body.total).toBe(4);
+                    expect(body.total).toBe(1);
                     expect(body.results[0].attributes.length).toBe(3);
                     expect(body.results[0].attributes[0].key).toEqual('name');
                     expect(body.results[0].attributes[0].value).toBeDefined();

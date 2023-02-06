@@ -1,63 +1,47 @@
-import { body, param } from 'express-validator';
+import { body } from 'express-validator';
 import { Request, Response } from 'express';
 import { OwnedNft } from 'alchemy-sdk';
-import util from 'util';
 import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
 import { ERC721 } from '@thxnetwork/api/models/ERC721';
-import WalletService from '@thxnetwork/api/services/WalletService';
-import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
-import { ERC721TokenState, TERC721Metadata, TERC721MetadataProp, TERC721Token } from '@thxnetwork/api/types/TERC721';
+import { ERC721TokenState, TERC721MetadataProp } from '@thxnetwork/api/types/TERC721';
+import { alchemy } from '@thxnetwork/api/util/alchemy';
+import { ChainId } from '@thxnetwork/api/types/enums';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
-import { getAlchemy } from '@thxnetwork/api/util/alchemy';
 import PoolService from '@thxnetwork/api/services/PoolService';
-import { logger } from '@thxnetwork/api/util/logger';
 
-const validation = [param('address').exists(), body('chainId').exists().isNumeric()];
+const validation = [body('contractAddress').exists(), body('chainId').exists().isNumeric()];
 
 const controller = async (req: Request, res: Response) => {
-    const contractAddress = req.params.address;
-    const sub = req.auth.sub;
-    const chainId = Number(req.body.chainId);
+    const chainId = Number(req.body.chainId) as ChainId;
+    const nftExists = await ERC721.exists({ sub: req.auth.sub, chainId, address: req.params.contractAddress });
+    if (nftExists) throw new BadRequestError('This contract is already present, and can not be imported');
 
-    let ownerAddress: string;
-    const account = await AccountProxy.getById(sub);
-    ownerAddress = account.address;
+    const pool = await PoolService.getById(req.header('X-PoolId'));
+    const pageSize = 100;
 
-    if (!ownerAddress) {
-        const wallet = await WalletService.findOneByQuery({ sub, chainId });
-        if (!wallet) {
-            throw new NotFoundError('Could not find the account address');
-        }
-        ownerAddress = wallet.address;
-    }
+    let pageKey = 0,
+        pageCount = 1,
+        ownedNfts: OwnedNft[] = [];
 
-    // check if the contract is already imported
-    let erc721 = await ERC721.findOne({ sub, chainId, address: contractAddress });
-    if (erc721) {
-        throw new BadRequestError('This contract is already present, and can not be imported');
-    }
-
-    const alchemy = getAlchemy(chainId);
-
-    let pageKey: string | undefined = '1';
-    const ownedNfts: OwnedNft[] = [];
-
-    while (pageKey) {
+    while (pageKey < pageCount) {
         try {
-            const result = await alchemy.nft.getNftsForOwner(ownerAddress, {
-                contractAddresses: [contractAddress],
+            const key = String(++pageKey);
+            const result = await alchemy.nft.getNftsForOwner(pool.address, {
+                contractAddresses: [req.params.contractAddress],
                 omitMetadata: false,
-                pageKey: pageKey,
+                pageSize,
+                pageKey: key,
             });
-            console.log('RESULTS', util.inspect(result, false, 10));
-            ownedNfts.push(...result.ownedNfts);
+            const totalCount = Number(result.totalCount);
 
-            pageKey = result.pageKey;
-            console.log('pageKey', pageKey);
-        } catch (err) {
-            logger.error('error on getNftsForOwner:', err);
-            throw new Error('Could not retrieve NFT tokens for this contract address');
+            // If total is less than size there will only be 1 page, if not round up total / size
+            // to get the max amount of pages
+            pageCount = totalCount < pageSize ? 1 : Math.ceil(totalCount / pageSize);
+
+            ownedNfts = ownedNfts.concat(result.ownedNfts);
+        } catch (error) {
+            console.log(error);
         }
     }
 
@@ -65,54 +49,45 @@ const controller = async (req: Request, res: Response) => {
         throw new NotFoundError('Could not find NFT tokens for this contract address');
     }
 
-    const nftOwned = ownedNfts[0]; // for each token the info about the NFT contract are repeated
-
-    erc721 = await ERC721.create({
-        sub,
+    const { address, name, symbol } = ownedNfts[0].contract;
+    const erc721 = await ERC721.create({
+        sub: req.auth.sub,
         chainId,
-        address: nftOwned.contract.address,
-        name: nftOwned.contract.name,
-        symbol: nftOwned.contract.symbol,
+        address,
+        name,
+        symbol,
     });
+    const erc721Tokens = [];
+    const erc721Properties = [];
 
-    const pool = await PoolService.getById(req.header('X-PoolId'));
-    const recipient = pool.address; // will be the owner of the imported tokens
+    await Promise.all(
+        ownedNfts
+            .filter((nft) => nft.rawMetadata)
+            .map(async ({ rawMetadata, tokenId }) => {
+                try {
+                    console.log(rawMetadata, tokenId);
 
-    const erc721Tokens: (TERC721Token & { metadata: TERC721Metadata })[] = [];
+                    const { attributes, properties } = convertRawMetadataToAttributes(rawMetadata);
+                    const metadata = await ERC721Service.createMetadata(erc721, attributes);
+                    const erc721Token = await ERC721Token.create({
+                        sub: req.auth.sub,
+                        recipient: pool.address,
+                        state: ERC721TokenState.Minted,
+                        erc721Id: String(erc721._id),
+                        metadataId: String(metadata._id),
+                        tokenId,
+                    });
 
-    const erc721Properties = new Set<TERC721MetadataProp>();
-
-    const promises = ownedNfts
-        .filter((nft) => nft.rawMetadata != undefined)
-        .map(async (x) => {
-            const mappedMetadata = Object.keys(x.rawMetadata).map((k) => {
-                const metadataValue = x.rawMetadata[k];
-
-                // build the property set for the ERC721 object
-                const valueType = k === 'image' ? k : detectType(metadataValue);
-                const property = { name: k, propType: valueType, description: '' } as TERC721MetadataProp;
-                erc721Properties.add(property);
-
-                return {
-                    key: k,
-                    value: castToString(metadataValue, valueType),
-                };
-            });
-
-            const metadata = await ERC721Service.createMetadata(erc721, mappedMetadata);
-            const erc721Token = await ERC721Token.create({
-                sub,
-                recipient,
-                state: ERC721TokenState.Minted,
-                erc721Id: String(erc721._id),
-                tokenId: x.tokenId,
-                metadataId: String(metadata._id),
-            });
-            erc721Tokens.push({ ...erc721Token.toJSON(), metadata: metadata.toJSON() });
-        });
-    await Promise.all(promises);
+                    erc721Properties.push(...properties);
+                    erc721Tokens.push({ ...erc721Token.toJSON(), metadata: metadata.toJSON() });
+                } catch (error) {
+                    console.log(error);
+                }
+            }),
+    );
 
     erc721.properties = Array.from(erc721Properties);
+    await erc721.save();
 
     res.status(201).json({ erc721, erc721Tokens });
 };
@@ -156,6 +131,20 @@ function castToString(value: any, valueType: string) {
         default:
             return value.toString();
     }
+}
+
+function convertRawMetadataToAttributes(rawMetadata: any) {
+    const properties: TERC721MetadataProp[] = [];
+    const attributes = Object.keys(rawMetadata).map((k) => {
+        const valueType = k === 'image' ? k : detectType(rawMetadata[k]);
+        const property: TERC721MetadataProp = { name: k, propType: valueType, description: '' };
+
+        properties.push(property);
+
+        return { key: k, value: castToString(rawMetadata[k], valueType) };
+    });
+
+    return { properties, attributes };
 }
 
 export default { controller, validation };

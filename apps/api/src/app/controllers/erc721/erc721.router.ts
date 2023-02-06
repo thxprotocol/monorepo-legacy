@@ -32,7 +32,7 @@ router.post(
     CreateERC721.controller,
 );
 router.post(
-    '/import/:address',
+    '/import',
     ImportERC721Contract.controller,
     assertAssetPoolOwnership,
     assertRequestInput(ImportERC721Contract.validation),
