@@ -98,3 +98,4 @@ export const RELAYER_SPEED = 'fastest';
 export const MIXPANEL_TOKEN = process.env.MIXPANEL_TOKEN;
 export const MIXPANEL_API_URL = 'https://api.mixpanel.com';
 export const CYPRESS_EMAIL = process.env.CYPRESS_EMAIL || 'cypress@thx.network';
+export const STRIPE_SECRET_TEST_KEY = process.env.STRIPE_SECRET_TEST_KEY || '';
