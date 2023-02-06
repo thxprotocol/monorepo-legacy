@@ -10,7 +10,7 @@ export const controller = async (req: Request, res: Response) => {
     #swagger.tags = ['ERC20 Balance']
     */
     const erc20 = await ERC20Service.getById(req.params.id);
-    if (!erc20) throw new NotFoundError('Could not found the Transaction');
+    if (!erc20) throw new NotFoundError('Could not find the ERC20');
 
     const balance = await erc20.contract.methods.balanceOf(req.params.address).call();
 

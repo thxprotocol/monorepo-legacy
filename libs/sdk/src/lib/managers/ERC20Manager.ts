@@ -21,14 +21,8 @@ class ERC20Manager extends BaseManager {
         return await this.client.request.get(`/v1/erc20/${id}`);
     }
 
-    async transferFrom(erc20: string, from: string, to: string, amount: string, chainId: ChainId) {
-        const params = new URLSearchParams();
-        params.append('erc20', erc20);
-        params.append('from', from);
-        params.append('to', to);
-        params.append('amount', amount);
-        params.append('chainId', chainId.toString());
-        return await this.client.request.post(`/v1/erc20/transfer`, { body: params });
+    async transfer(config: { erc20Id: string; to: string; amount: string; chainId: ChainId }) {
+        return await this.client.request.post(`/v1/erc20/transfer`, { body: JSON.stringify(config) });
     }
 
     async getReward({ rewardUuid, poolId }: { rewardUuid: string; poolId: string }) {

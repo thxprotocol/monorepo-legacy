@@ -1,5 +1,6 @@
 import { ChainInfo } from '@thxnetwork/wallet/types/ChainInfo';
 import { ChainId } from '@thxnetwork/wallet/types/enums/ChainId';
+import { toHex } from 'web3-utils';
 
 const chainInfo: { [chainId: number]: ChainInfo } = {
     // 1: {
@@ -41,6 +42,18 @@ const chainInfo: { [chainId: number]: ChainInfo } = {
         logo: require('@thxnetwork/wallet/../public/assets/thx_logo_polygon.svg'),
         blockExplorer: 'https://polygonscan.com',
         relayer: '0x1ece1975d2372c881d0c27c36f3c4f2df055ee40',
+        metamask: {
+            chainId: toHex(ChainId.Polygon),
+            chainName: 'Polygon Mainnet',
+            nativeCurrency: {
+                name: 'Matic',
+                symbol: 'MATIC',
+                decimals: 18,
+            },
+            rpcUrls: ['https://polygon-rpc.com'],
+            blockExplorerUrls: ['https://polygonscan.com'],
+            iconUrls: require('@thxnetwork/wallet/../public/assets/thx_logo_polygon.svg'),
+        },
     },
 };
 
@@ -52,6 +65,18 @@ if (process.env.NODE_ENV !== 'production') {
         logo: require('@thxnetwork/wallet/../public/assets/thx_logo_hardhat.svg'),
         blockExplorer: 'https://hardhatscan.com',
         relayer: '0x08302CF8648A961c607e3e7Bd7B7Ec3230c2A6c5',
+        metamask: {
+            chainId: toHex(ChainId.Hardhat),
+            chainName: 'Hardhat',
+            nativeCurrency: {
+                name: 'Ether',
+                symbol: 'ETH',
+                decimals: 18,
+            },
+            rpcUrls: ['http://localhost:8547'],
+            blockExplorerUrls: ['https://hardhatscan.com'],
+            iconUrls: require('@thxnetwork/wallet/../public/assets/thx_logo_hardhat.svg'),
+        },
     };
 }
 

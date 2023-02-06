@@ -24,6 +24,7 @@ export const callbackPreAuth = async (req: Request) => {
 };
 
 export const callbackPostAuth = async (interaction, account: AccountDocument) => {
+    const { params, returnTo, prompt } = interaction;
     if (!account) throw new UnauthorizedError('Could not find or create an account');
 
     // Update interaction with login state
@@ -33,12 +34,9 @@ export const callbackPostAuth = async (interaction, account: AccountDocument) =>
     // Create a wallet if wallet can not be found for user
     createWallet(account);
 
-    const returnUrl = interaction.prompt.name === 'connect' ? interaction.params.return_url : interaction.returnTo;
-
+    const returnUrl = prompt.name === 'connect' ? params.return_url : returnTo;
     if (returnUrl.startsWith(DASHBOARD_URL)) {
-        hubspot.upsert({
-            email: account.email,
-        });
+        hubspot.upsert({ email: account.email });
     }
 
     return returnUrl;

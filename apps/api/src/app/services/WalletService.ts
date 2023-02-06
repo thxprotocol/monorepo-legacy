@@ -1,4 +1,4 @@
-import { ContractName, diamondFacetConfigs, DiamondVariant } from '@thxnetwork/contracts/exports';
+import { ContractName, currentVersion, diamondFacetConfigs, DiamondVariant } from '@thxnetwork/contracts/exports';
 import { getByteCodeForContractName, getContractFromName } from '../config/contracts';
 import { IAccount } from '../models/Account';
 import { Wallet, WalletDocument } from '../models/Wallet';
@@ -7,12 +7,12 @@ import { TWalletDeployCallbackArgs } from '../types/TTransaction';
 import { getProvider, getSelectors } from '../util/network';
 import TransactionService from './TransactionService';
 import { TransactionReceipt } from 'web3-core';
-import { FacetCutAction } from '../util/upgrades';
+import { FacetCutAction, updateDiamondContract } from '../util/upgrades';
 import WalletManagerService from './WalletManagerService';
 
 async function create(chainId: ChainId, account: IAccount, forceSync = true) {
     const sub = String(account.sub);
-    const wallet = await Wallet.create({ sub, chainId });
+    const wallet = await Wallet.create({ sub, chainId, version: currentVersion });
     return deploy(wallet, chainId, sub, forceSync);
 }
 
@@ -68,4 +68,15 @@ async function deployCallback(args: TWalletDeployCallbackArgs, receipt: Transact
     await WalletManagerService.setupManagerRoleAdmin(wallet, args.owner);
 }
 
-export default { create, findOneByAddress, findByQuery, deploy, deployCallback, findOneByQuery };
+async function upgrade(wallet: WalletDocument, version?: string) {
+    const tx = await updateDiamondContract(wallet.chainId, wallet.contract, 'sharedWallet', version);
+
+    if (tx) {
+        wallet.version = version;
+        await wallet.save();
+    }
+
+    return tx;
+}
+
+export default { upgrade, create, findOneByAddress, findByQuery, deploy, deployCallback, findOneByQuery };

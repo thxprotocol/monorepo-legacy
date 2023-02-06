@@ -47,9 +47,7 @@ export const clientSecret = 'xxxxxxxxxxxxxx';
 export const registrationAccessToken = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
 export const adminAddress = '0x08302CF8648A961c607e3e7Bd7B7Ec3230c2A6c5';
 
-export const adminScopes =
-    'openid account:read account:write members:read members:write withdrawals:read withdrawals:write payments:write payments:read rewards:read wallets:read wallets:write erc20_rewards:read erc721_rewards:read referral_rewards:read';
-export const adminAccessToken = getToken(adminScopes);
+export const authScopes = 'wallets:read wallets:write';
 export const dashboardScopes =
     'openid pools:read pools:write erc20:write erc20:read erc721:write erc721:read rewards:read rewards:write deposits:read deposits:write promotions:read promotions:write widgets:write widgets:read transactions:read swaprule:read swaprule:write claims:read  erc20_rewards:read erc20_rewards:write erc721_rewards:read erc721_rewards:write referral_rewards:read referral_rewards:write';
 export const dashboardAccessToken = getToken(dashboardScopes);
@@ -61,3 +59,4 @@ export const walletAccessToken = getToken(walletScopes);
 export const walletAccessToken2 = getToken(walletScopes, sub);
 export const walletAccessToken3 = getToken(walletScopes, sub2);
 export const widgetAccessToken = getToken(widgetScopes, sub);
+export const authAccessToken = getToken(authScopes);

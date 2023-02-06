@@ -50,6 +50,7 @@ app.locals = Object.assign(app.locals, {
     dashboardUrl: DASHBOARD_URL,
     walletUrl: WALLET_URL,
     publicUrl: PUBLIC_URL,
+    deployedAt: String(Date.now()),
 });
 
 export default app;

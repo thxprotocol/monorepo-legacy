@@ -16,7 +16,7 @@ contract SharedWalletFacet is ISharedWalletFacet {
     modifier onlyManager() {
         require(
             LibAccessStorage.roleStorage().roles[keccak256('MANAGER_ROLE')].members.contains(msg.sender),
-            'Caller is not a manager'
+            'NOT_MANAGER'
         );
         _;
     }
@@ -26,6 +26,14 @@ contract SharedWalletFacet is ISharedWalletFacet {
         address _address,
         uint256 _amount
     ) external override onlyManager {
+        _approveERC20(_tokenAddress, _address, _amount);
+    }
+
+    function _approveERC20(
+        address _tokenAddress,
+        address _address,
+        uint256 _amount
+    ) internal {
         IERC20(_tokenAddress).approve(_address, _amount);
     }
 
@@ -34,8 +42,16 @@ contract SharedWalletFacet is ISharedWalletFacet {
         address _address,
         uint256 _tokenId
     ) external override onlyManager {
+        _approveERC721(_tokenAddress, _address, _tokenId);
+    }
+
+    function _approveERC721(
+        address _tokenAddress,
+        address _address,
+        uint256 _tokenId
+    ) internal {
         IERC721 erc721Token = IERC721(_tokenAddress);
-        require(erc721Token.ownerOf(_tokenId) == msg.sender, 'Sender is not the owner of the token');
+        require(erc721Token.ownerOf(_tokenId) == address(this), 'TOKEN_NOT_OWNED');
         erc721Token.approve(_address, _tokenId);
     }
 
@@ -45,8 +61,9 @@ contract SharedWalletFacet is ISharedWalletFacet {
         uint256 _amount
     ) external override onlyManager {
         IERC20 erc20Token = IERC20(_tokenAddress);
-        require(erc20Token.balanceOf(msg.sender) >= _amount, 'INSUFFICIENT BALANCE');
-        erc20Token.safeTransferFrom(msg.sender, _to, _amount);
+        require(erc20Token.balanceOf(address(this)) >= _amount, 'INSUFFICIENT_BALANCE');
+        _approveERC20(_tokenAddress, address(this), _amount);
+        erc20Token.safeTransferFrom(address(this), _to, _amount);
     }
 
     function transferERC721(
@@ -55,7 +72,7 @@ contract SharedWalletFacet is ISharedWalletFacet {
         uint256 _tokenId
     ) external override onlyManager {
         IERC721 erc721Token = IERC721(_tokenAddress);
-        require(erc721Token.ownerOf(_tokenId) == msg.sender, 'Sender is not the owner of the token');
-        erc721Token.safeTransferFrom(msg.sender, _to, _tokenId);
+        require(erc721Token.ownerOf(_tokenId) == address(this), 'TOKEN_NOT_OWNED');
+        erc721Token.safeTransferFrom(address(this), _to, _tokenId);
     }
 }

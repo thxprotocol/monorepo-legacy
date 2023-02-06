@@ -1,4 +1,4 @@
-<script src="/js/vendors/detect.min.js"></script>
+<script type="module" src="/js/signin.js?v=<%= locals.deployedAt %>"></script>
 <% if (params.backgroundImgUrl) { %>
 <style type="text/css">
   body {
@@ -71,7 +71,7 @@
       <p class="text-muted">Continue with a trusted provider</p>
       <div class="d-flex align-items-center justify-content-start flex-wrap">
         <% if (params.authRequestMessage) { %>
-        <a style="width: 40px; height: 40px;" class="mr-2 mb-2 d-block p-1 btn btn-light" @click="signin()"
+        <a style="width: 40px; height: 40px;" class="mr-2 mb-2 d-block p-1 btn btn-light" @click="onClickSigninMetamask"
            data-toggle="tooltip" title="Sign in with Metamask">
           <img v-if="!isDisabledMetamask" width="25" src="/img/mm-logo.svg" alt="Metamask logo" />
           <div v-else class="spinner-border spinner-primary spinner-border-sm" role="status">
@@ -127,7 +127,6 @@
         <% if (params.authRequestMessage) { %>
         <input type="hidden" name="authRequestMessage" value="<%= params.authRequestMessage %>" />
         <input type="hidden" name="authRequestSignature" value="" />
-        <script type="module" src="/js/signin.js"></script>
         <% } %>
 
         <input type="hidden" name="returnUrl" value="<%= params.return_url %>" />
@@ -143,11 +142,11 @@
         </button>
       </form>
     </div>
-
-    <div class="card-footer d-flex align-items-center justify-content-center">
+    <div class="card-footer d-flex align-items-center justify-content-end">
+      <a href="<%= params.return_url %>" class="text-muted mr-auto">Return to app</a>
       <a href="https://discord.com/invite/TzbbSmkE7Y" class="text-muted">Help</a>
-      <a href="" class="text-muted ml-3">Privacy</a>
-      <a href="" class="text-muted ml-3">Terms</a>
+      <a href="https://thx.network/privacy.pdf" target="_blank" class="text-muted ml-3">Privacy</a>
+      <a href="https://thx.network/general-terms-and-conditions.pdf" target="_blank" class="text-muted ml-3">Terms</a>
     </div>
     <% } %>
   </div>

@@ -1,7 +1,7 @@
 {
     "name": "@thxnetwork/sdk",
     "description": "This SDK contains a client class that simplifies interactions with THX Network API's. Configure your digital assets in your dashboard and use the SDK to integrate distribution of those assets into your application.",
-    "version": "1.0.14",
+    "version": "1.0.17",
     "dependencies": {
         "oidc-client-ts": "2.1.0"
     }

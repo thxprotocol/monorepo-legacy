@@ -12,13 +12,8 @@ describe('ERC20', () => {
     const ACCESS_TOKEN = dashboardAccessToken;
     let tokenId: string, tokenAddress: string, tokenName: string, tokenSymbol: string;
 
-    beforeAll(async () => {
-        await beforeAllCallback();
-    });
-
-    afterAll(async () => {
-        await afterAllCallback();
-    });
+    beforeAll(beforeAllCallback);
+    afterAll(afterAllCallback);
 
     describe('POST /erc20', () => {
         const TOTAL_SUPPLY = 1000,
@@ -64,7 +59,7 @@ describe('ERC20', () => {
                     type: ERC20Type.Unlimited,
                 })
                 .expect(({ body }: request.Response) => {
-                    expect(isAddress(body._id)).toBeDefined();
+                    expect(body._id).toBeDefined();
                     expect(isAddress(body.address)).toBe(true);
                 })
                 .expect(201, done);

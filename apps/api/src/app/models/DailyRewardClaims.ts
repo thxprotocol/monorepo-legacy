@@ -9,7 +9,7 @@ const schema = new mongoose.Schema(
         sub: { type: String, index: 'hashed' },
         uuid: String,
         amount: String,
-        polId: String,
+        poolId: String,
     },
     { timestamps: true },
 );

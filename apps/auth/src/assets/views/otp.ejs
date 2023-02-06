@@ -1,4 +1,4 @@
-<script type="module" src="/js/otp.js"></script>
+<script type="module" src="/js/otp.js?v=<%= locals.deployedAt %>"></script>
 <% if (params.backgroundImgUrl) { %>
 <style type="text/css">
     body {
@@ -80,11 +80,12 @@
             <form id="otp-resend" action="/oidc/<%= uid %>/signin/resend-otp" method="post"></form>
         </div>
         <div class="card-footer justify-content-end d-flex align-items-center">
-            <a class="text-muted mr-auto" href="/oidc/<%= uid %>/signin"> Go back</a>
+            <a class="text-muted mr-auto" href="/oidc/<%= uid %>/signin">Return to app</a>
             <div>
-                <a class="text-muted ml-3" href="https://discord.com/invite/TzbbSmkE7Y"> Help </a>
-                <a href="" class="text-muted ml-3">Privacy</a>
-                <a href="" class="text-muted ml-3">Terms</a>
+                <a href="https://discord.com/invite/TzbbSmkE7Y" class="text-muted">Help</a>
+                <a href="https://thx.network/privacy.pdf" target="_blank" class="text-muted ml-3">Privacy</a>
+                <a href="https://thx.network/general-terms-and-conditions.pdf" target="_blank"
+                   class="text-muted ml-3">Terms</a>
             </div>
         </div>
     </div>

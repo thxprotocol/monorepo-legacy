@@ -22,6 +22,8 @@ import { DefenderRelayProvider } from 'defender-relay-client/lib/web3';
 import { Relayer } from 'defender-relay-client';
 import { TNetworkName } from '@thxnetwork/contracts/exports';
 
+export const MaxUint256 = '115792089237316195423570985008687907853269984665640564039457584007913129639935';
+
 const web3 = new Web3();
 const networks: {
     [chainId: number]: {

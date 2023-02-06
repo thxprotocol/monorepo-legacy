@@ -5,7 +5,7 @@ export type ERC20TransferDocument = mongoose.Document & TERC20Transfer;
 
 const erc20TransferSchema = new mongoose.Schema(
     {
-        erc20: String,
+        erc20Id: String,
         from: String,
         to: String,
         chainId: Number,

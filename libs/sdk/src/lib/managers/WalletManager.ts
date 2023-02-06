@@ -25,6 +25,10 @@ class WalletManager extends BaseManager {
         return await this.client.request.post(`/v1/wallets`, { body: params });
     }
 
+    async upgrade(walletId: string) {
+        return await this.client.request.post(`/v1/wallets/${walletId}/upgrade`);
+    }
+
     async getManagers(walletId: string) {
         return await this.client.request.get(`/v1/wallets/${walletId}/managers`);
     }

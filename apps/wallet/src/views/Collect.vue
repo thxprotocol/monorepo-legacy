@@ -111,6 +111,11 @@ import { RewardConditionInteraction, RewardConditionPlatform, TERC20Perk, TERC72
 import { TERC20 } from '../store/modules/erc20';
 import { TWallet } from '../types/Wallet';
 
+const getChainId = (claim: TClaim) => {
+    const { erc20, erc721 } = claim;
+    return erc20 ? erc20.chainId : erc721.chainId;
+};
+
 type TClaim = {
     metadata: TERC721Metadata;
     reward:
@@ -176,7 +181,12 @@ export default class Collect extends Vue {
         // Get claim information based on url claimUuid or rewardHash. rewardHash will be deprecated
         this.claim = await this.$store.dispatch('assetpools/getClaim', this.state.claimUuid);
         if (!this.claim) return;
+
         this.reward = this.claim.reward;
+
+        // Set correct chain
+        const chainId = getChainId(this.claim);
+        this.$store.commit('setChainId', chainId);
 
         // If no condition applies claim directly
         if (!this.claim.reward.platform) {

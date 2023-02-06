@@ -10,7 +10,7 @@ import {
 } from '@thxnetwork/wallet/utils/secrets';
 import { fromWei, toWei } from 'web3-utils';
 import { ChainId } from '@thxnetwork/wallet/types/enums/ChainId';
-import { toHex, toChecksumAddress } from 'web3-utils';
+import { toHex, hexToNumber, toChecksumAddress } from 'web3-utils';
 import { mockPrivateKeyForSubject, torusClient } from '@thxnetwork/wallet/utils/torus';
 import { User } from 'oidc-client-ts';
 import { chainInfo } from '@thxnetwork/wallet/utils/chains';
@@ -121,14 +121,15 @@ class NetworkModule extends VuexModule {
     @Action({ rawError: true })
     async connect(chainId: ChainId) {
         const user = this.context.rootGetters['account/user'];
+        if (!user) return;
+
         const isValidPrivateKey = this.privateKey && isPrivateKey(this.privateKey);
-        const isMetamaskAccount = user ? user.profile.variant === AccountVariant.Metamask : false;
-        const web3 =
-            user && !isMetamaskAccount
-                ? // Use a local web3 instance as per requested chainId
-                  new Web3(networks[chainId])
-                : // Bind window.ethereum as provider
-                  new Web3(ethereum);
+        const isMetamaskAccount = user.profile.variant === AccountVariant.Metamask;
+        const web3 = !isMetamaskAccount
+            ? // Use a local web3 instance as per requested chainId
+              new Web3(networks[chainId])
+            : // Bind window.ethereum as provider
+              new Web3(ethereum);
 
         this.context.commit('setChainId', chainId);
         this.context.commit('setWeb3', { web3, privateKey: this.privateKey });
@@ -144,25 +145,54 @@ class NetworkModule extends VuexModule {
 
         // If metamask is available request to switch chain if required
         if (isMetamaskInstalled) {
-            await this.context.dispatch('requestAccounts', user);
+            // List for accounts
+            ethereum.on('accountsChanged', (accounts: string[]) =>
+                this.context.dispatch('handleAccountsChanged', accounts),
+            );
+
+            // Listen for chain
+            ethereum.on('chainChanged', (chainIdHex: string) =>
+                this.context.dispatch('handleChainChanged', chainIdHex),
+            );
+
+            await this.context.dispatch('requestAccounts');
             await this.context.dispatch('requestSwitchChain', chainId);
         }
     }
 
     @Action({ rawError: true })
-    async requestAccounts(user?: User) {
+    handleAccountsChanged(accounts: string[]) {
+        const user = this.context.rootGetters['account/user'];
+        if (accounts.length === 0) {
+            throw new Error('Please connect to MetaMask.');
+        }
+        this.context.commit('setAddress', accounts[0]);
+        if (user && accounts[0] !== user.profile.address) {
+            throw new Error(`Please connect ${user.profile.address}`);
+        }
+    }
+
+    @Action({ rawError: true })
+    handleChainChanged(chainIdHex: string) {
+        const chainId = hexToNumber(chainIdHex);
+        if (!Object.keys(chainInfo).includes(String(chainId))) {
+            throw new Error(`Please connect ${chainInfo[chainId].name} RPC`);
+        } else {
+            this.context.commit('setChainId', chainId);
+            window.location.reload();
+        }
+    }
+
+    @Action({ rawError: true })
+    async requestAccounts() {
         try {
             const provider = this.web3?.currentProvider as any;
+
             const [account] = await provider.request({
                 method: 'eth_requestAccounts',
             });
-            this.context.commit('setAddress', account);
 
-            if (user && this.address !== user.profile.address) {
-                throw new Error(
-                    `Selected Metamask account ${this.address} does not equal the account used during signup.`,
-                );
-            }
+            this.context.commit('setAddress', account);
         } catch (error) {
             if ((error as { code: number }).code === 4001) {
                 throw new Error(`Please connect Metamask account`);
@@ -182,12 +212,23 @@ class NetworkModule extends VuexModule {
                 params: [{ chainId: toHex(chainId) }],
             });
         } catch (error) {
-            if ((error as { code: number }).code === 4001) {
+            if ((error as { code: number }).code === 4902) {
+                await this.context.dispatch('requestAddChain', chainId);
+            } else if ((error as { code: number }).code === 4001) {
                 throw new Error(`Please select ${chainInfo[chainId].name} RPC`);
             } else {
                 throw error;
             }
         }
+    }
+
+    @Action({ rawError: true })
+    async requestAddChain(chainId: ChainId) {
+        const provider = this.web3?.currentProvider as any;
+        await provider.request({
+            method: 'wallet_addEthereumChain',
+            params: [chainInfo[chainId].metamask],
+        });
     }
 
     @Action({ rawError: true })
