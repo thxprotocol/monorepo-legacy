@@ -142,7 +142,7 @@
                             <b-button
                                 variant="outline-secondary rounded-pill"
                                 class="mt-3 rounder-pill"
-                                href="https://meetings-eu1.hubspot.com/steffen-boode/call-invite"
+                                href="https://calendly.com/steffenboode/demo"
                                 target="_blank"
                                 :title="TITLES.SCHEDULE_A_DEMO"
                             >
