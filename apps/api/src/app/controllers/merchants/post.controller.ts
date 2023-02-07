@@ -3,8 +3,9 @@ import { Request, Response } from 'express';
 
 const validation = [];
 const controller = async (req: Request, res: Response) => {
-    const merchant = await MerchantService.create(req.auth.sub);
-    res.json(merchant);
+    const accountLink = await MerchantService.create(req.auth.sub);
+
+    res.json({ accountLink });
 };
 
 export default { controller, validation };

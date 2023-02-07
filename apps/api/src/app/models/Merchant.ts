@@ -1,16 +1,12 @@
 import mongoose from 'mongoose';
-
-type TMerchant = {
-    sub: string;
-    stripeAccountId: string;
-};
+import { TMerchant } from '@thxnetwork/types/merchant';
 
 export type MerchantSchema = mongoose.Document & TMerchant;
 
 const schema = new mongoose.Schema(
     {
         sub: String,
-        stripeAccountId: String,
+        stripeConnectId: String,
     },
     { timestamps: true },
 );

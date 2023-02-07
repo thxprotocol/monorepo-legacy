@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post(
     '/',
-    guard.check('merchant:write'),
+    // guard.check('merchant:write'),
     assertRequestInput(CreateMerchant.validation),
     CreateMerchant.controller,
 );

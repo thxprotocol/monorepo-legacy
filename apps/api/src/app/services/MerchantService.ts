@@ -10,8 +10,15 @@ const create = async (sub: string) => {
         sub,
         stripeConnectId: account.id,
     });
-    console.log(account, merchant);
-    return merchant;
+    const accountLink = await stripe.accountLinks.create({
+        account: account.id,
+        refresh_url: 'https://widget.thx.network/reauth.html',
+        return_url: 'https://widget.thx.network/return.html',
+        type: 'account_onboarding',
+    });
+
+    console.log(account, merchant, accountLink);
+    return accountLink;
 };
 
 export default { create };

@@ -13,7 +13,12 @@
             >
                 <div class="container container-md py-5">
                     <p class="brand-text">Commerce</p>
-                    <b-button v-b-modal="'modalMerchantCreate'" class="rounded-pill" variant="secondary">
+                    <b-button
+                        @click="onClickMerchantCreate"
+                        v-b-modal="'modalMerchantCreate'"
+                        class="rounded-pill"
+                        variant="secondary"
+                    >
                         <i class="fas fa-plus mr-2"></i>
                         <span class="mr-2">Create Merchant</span>
                     </b-button>
@@ -26,36 +31,21 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { mapGetters } from 'vuex';
-import ModalErc721Create from '@thxnetwork/dashboard/components/modals/BaseModalERC721Create.vue';
-import BaseCardErc721 from '@thxnetwork/dashboard/components/cards/BaseCardERC721.vue';
-import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
-import { IERC721s } from '@thxnetwork/dashboard/types/erc721';
-import BaseBtnToggleArchive from '@thxnetwork/dashboard/components/buttons/BaseBtnToggleArchive.vue';
-import BaseModalPoolCreate from '@thxnetwork/dashboard/components/modals/BaseModalPoolCreate.vue';
+// import { mapGetters } from 'vuex';
+// import ModalErc721Create from '@thxnetwork/dashboard/components/modals/BaseModalERC721Create.vue';
 
 @Component({
     components: {
-        BaseBtnToggleArchive,
-        BaseCardErc721,
-        ModalErc721Create,
-        BaseNothingHere,
-        BaseModalPoolCreate,
+        // BaseModalMerchantCreate,
     },
-    computed: mapGetters({
-        erc721s: 'erc721/all',
-    }),
 })
-export default class NFTView extends Vue {
-    erc721s!: IERC721s;
-
-    loadList() {
-        this.$store.dispatch('erc721/list');
+export default class CommerceView extends Vue {
+    mounted() {
+        //
     }
 
-    mounted() {
-        this.$store.dispatch('account/getProfile');
-        this.loadList();
+    onClickMerchantCreate() {
+        this.$store.dispatch('merchants/create');
     }
 }
 </script>

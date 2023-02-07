@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { RewardConditionPlatform, type TDailyReward } from '@thxnetwork/types/index';
 import { IPool } from './pools';
-import { track } from '@thxnetwork/mixpanel';
+import { TMerchant } from '@thxnetwork/types/merchant';
 
 export type TMerchantState = {
     [poolId: string]: {
@@ -51,17 +51,17 @@ class DailyRewardModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async create(payload: TDailyReward) {
+    async create() {
         const r = await axios({
             method: 'POST',
             url: '/merchants',
-            data: payload,
+            // data: payload,
         });
 
-        const profile = this.context.rootGetters['account/profile'];
-        track('UserCreates', [profile.sub, 'conditional reward']);
+        // const profile = this.context.rootGetters['account/profile'];
+        // track('UserCreates', [profile.sub, 'conditional reward']);
 
-        this.context.commit('set', { ...payload, ...r.data });
+        // this.context.commit('set', { ...payload, ...r.data });
     }
 
     @Action({ rawError: true })
