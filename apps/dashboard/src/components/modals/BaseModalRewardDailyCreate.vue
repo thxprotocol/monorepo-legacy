@@ -1,8 +1,8 @@
 <template>
-    <base-modal size="xl" title="Create Dailys Reward" :id="id" :error="error" :loading="isLoading" @show="onShow">
+    <base-modal size="xl" title="Create Daily Reward" :id="id" :error="error" :loading="isLoading" @show="onShow">
         <template #modal-body v-if="!isLoading">
-            <p class="text-gray">Dailys rewards are distributed to your customers every 24 hours</p>
-            <form v-on:submit.prevent="onSubmit()" id="formRewardDailysCreate">
+            <p class="text-gray">Daily rewards are distributed to your customers every 24 hours</p>
+            <form v-on:submit.prevent="onSubmit()" id="formRewardDailyCreate">
                 <b-row>
                     <b-col>
                         <b-form-group label="Title">
@@ -23,7 +23,7 @@
                 :disabled="isSubmitDisabled"
                 class="rounded-pill"
                 type="submit"
-                form="formRewardDailysCreate"
+                form="formRewardDailyCreate"
                 variant="primary"
                 block
             >
@@ -50,7 +50,7 @@ import { mapGetters } from 'vuex';
         totals: 'dailyRewards/totals',
     }),
 })
-export default class ModalRewardDailysCreate extends Vue {
+export default class ModalRewardDailyCreate extends Vue {
     isSubmitDisabled = false;
     isLoading = false;
     error = '';
