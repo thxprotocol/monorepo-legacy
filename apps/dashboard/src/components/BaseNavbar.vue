@@ -153,6 +153,11 @@ export default class BaseNavbar extends Vue {
     get tokenRoutes() {
         return [
             {
+                path: '/commerce',
+                label: 'Commerce',
+                iconClasses: 'fas fa-tags',
+            },
+            {
                 path: '/coins',
                 label: 'Coins',
                 iconClasses: 'fas fa-coins',

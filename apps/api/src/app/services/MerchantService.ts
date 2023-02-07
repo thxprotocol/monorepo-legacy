@@ -11,6 +11,7 @@ const create = async (sub: string) => {
         stripeConnectId: account.id,
     });
     console.log(account, merchant);
+    return merchant;
 };
 
 export default { create };
