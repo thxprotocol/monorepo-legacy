@@ -66,9 +66,9 @@
                         </button>
                     </p>
                     <div class="d-flex justify-content-between">
-                        <input v-model="otp" @input="onInput" class="form-control form-control-otp" placeholder="*****"
-                               style="letter-spacing: 1rem;" required :disabled="isLoading" min="0" max="9" type="text"
-                               name="otp" inputmode="numeric">
+                        <input v-model="otp" @input="onInput" style="letter-spacing: 1rem;"
+                               class="form-control form-control-otp" placeholder="*****" :disabled="isLoading"
+                               type="text" name="otp" inputmode="numeric" required>
                     </div>
                 </div>
                 <input type="hidden" name="otp" :value="otp" />

@@ -2,7 +2,7 @@ import { createApp } from 'https://cdnjs.cloudflare.com/ajax/libs/petite-vue/0.4
 
 createApp({
     otp: '',
-    isLoading: false,
+    isLoading: null,
     onInput() {
         if (this.otp.length === 5) {
             this.isLoading = true;
