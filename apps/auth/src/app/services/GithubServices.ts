@@ -87,6 +87,7 @@ export class GithubService {
 
         const search = new URLSearchParams(r.data);
         const accessToken = search.get('access_token');
+        const refreshToken = search.get('refresh_token');
         const user = await this.getUser(accessToken);
         const expiresIn = search.get('expires_in');
         const expiry = expiresIn && Date.now() + Number(expiresIn) * 1000;
@@ -95,8 +96,8 @@ export class GithubService {
             email: user.email,
             tokenInfo: {
                 kind: AccessTokenKind.Github,
-                accessToken: search.get('access_token'),
-                refreshToken: search.get('refresh_token'),
+                accessToken,
+                refreshToken,
                 userId: user.id,
                 expiry,
             },
