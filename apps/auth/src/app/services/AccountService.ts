@@ -135,12 +135,11 @@ export class AccountService {
 
         // When no account is matched, create the account.
         if (!account) {
-            account = await Account.create({
-                email,
-                variant,
-                plan: AccountPlanType.Basic,
-                active: true,
-            });
+            const data = { variant, plan: AccountPlanType.Basic, active: true };
+            if (email) {
+                data['email'] = email;
+            }
+            account = await Account.create(data);
         }
 
         // Always udpate latest tokenInfo for account
