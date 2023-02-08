@@ -81,9 +81,9 @@ async function deployCallback(args: TAssetPoolDeployCallbackArgs, receipt: Trans
     await createDummyContents(pool);
 }
 
-async function getAllBySub(sub: string, archived = false) {
-    if (archived) return AssetPool.find({ sub });
-    return AssetPool.find({ sub, archived });
+async function getAllBySub(sub: string, archived = false, chainId?: ChainId) {
+    if (archived) return AssetPool.find({ sub, chainId });
+    return AssetPool.find({ sub, archived, chainId });
 }
 
 function getAll() {

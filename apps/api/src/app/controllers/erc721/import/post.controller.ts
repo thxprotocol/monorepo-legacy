@@ -14,7 +14,8 @@ const validation = [body('contractAddress').exists(), body('chainId').exists().i
 
 const controller = async (req: Request, res: Response) => {
     const chainId = Number(req.body.chainId) as ChainId;
-    const nftExists = await ERC721.exists({ sub: req.auth.sub, chainId, address: req.params.contractAddress });
+    const contractAddress = req.body.contractAddress;
+    const nftExists = await ERC721.exists({ sub: req.auth.sub, chainId, address: contractAddress });
     if (nftExists) throw new BadRequestError('This contract is already present, and can not be imported');
 
     const pool = await PoolService.getById(req.header('X-PoolId'));
@@ -28,7 +29,7 @@ const controller = async (req: Request, res: Response) => {
         try {
             const key = String(++pageKey);
             const result = await alchemy.nft.getNftsForOwner(pool.address, {
-                contractAddresses: [req.params.contractAddress],
+                contractAddresses: [contractAddress],
                 omitMetadata: false,
                 pageSize,
                 pageKey: key,
@@ -65,8 +66,6 @@ const controller = async (req: Request, res: Response) => {
             .filter((nft) => nft.rawMetadata)
             .map(async ({ rawMetadata, tokenId }) => {
                 try {
-                    console.log(rawMetadata, tokenId);
-
                     const { attributes, properties } = convertRawMetadataToAttributes(rawMetadata);
                     const metadata = await ERC721Service.createMetadata(erc721, attributes);
                     const erc721Token = await ERC721Token.create({

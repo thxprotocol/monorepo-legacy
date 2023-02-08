@@ -1,17 +1,20 @@
 <template>
     <base-modal :loading="loading" title="Import NFT Contract" id="modalERC721Import">
         <template #modal-body v-if="!loading">
-            <BaseFormSelectNetwork :chainId="chainId" @selected="chainId = $event" />
+            <b-form-group>
+                <base-dropdown-select-pool class="ml-auto" @selected="pool = $event" />
+            </b-form-group>
             <b-form-group label="Contract Address">
                 <b-input-group>
                     <b-form-input v-model="erc721Address" @input="getPreview" />
+
                     <template #append>
                         <b-button
-                            v-if="chainId"
+                            v-if="pool"
                             variant="dark"
                             target="_blank"
                             :disabled="isValidAddress"
-                            :href="chainInfo[chainId].blockExplorer + `/token/${erc721Address}`"
+                            :href="chainInfo[pool.chainId].blockExplorer + `/token/${erc721Address}`"
                         >
                             <i class="fas fa-external-link-alt ml-0"></i>
                         </b-button>
@@ -31,7 +34,7 @@
 
         <template #btn-primary>
             <b-button
-                :disabled="loading || !isValidAddress"
+                :disabled="loading || !pool || !isValidAddress"
                 class="rounded-pill"
                 @click="submit()"
                 variant="primary"
@@ -44,20 +47,22 @@
 </template>
 
 <script lang="ts">
-import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseDropDownSelectPolygonERC20 from '../dropdowns/BaseDropDownSelectPolygonERC20.vue';
 import BaseModal from './BaseModal.vue';
 import BaseFormSelectNetwork from '../form-select/BaseFormSelectNetwork.vue';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { isAddress } from 'web3-utils';
+import BaseDropdownSelectPool from '../dropdowns/BaseDropdownSelectPool.vue';
+import { IPool } from '../../store/modules/pools';
 
 @Component({
     components: {
         BaseModal,
         BaseFormSelectNetwork,
         BaseDropDownSelectPolygonERC20,
+        BaseDropdownSelectPool,
     },
     computed: mapGetters({}),
 })
@@ -71,8 +76,7 @@ export default class ModalERC721Import extends Vue {
     symbol = '';
     totalSupply = '';
     previewLoading = false;
-
-    @Prop() chainId!: ChainId;
+    pool: IPool | null = null;
 
     get isValidAddress() {
         return isAddress(this.erc721Address);
@@ -80,21 +84,21 @@ export default class ModalERC721Import extends Vue {
 
     async submit() {
         this.loading = true;
-
+        if (!this.pool) {
+            return;
+        }
         const data = {
-            chainId: this.chainId,
+            pool: this.pool,
             address: this.erc721Address,
             logoImgUrl: this.erc721LogoImgUrl,
         };
 
-        await this.$store.dispatch('erc20/import', data);
-
-        this.$bvModal.hide(`modalERC20Import`);
+        await this.$store.dispatch('erc721/import', data);
         this.loading = false;
     }
 
     async getPreview(address: string) {
-        if (!isAddress(address)) {
+        if (!this.pool || !isAddress(address)) {
             this.showPreview = false;
             this.name = '';
             this.symbol = '';
@@ -105,7 +109,7 @@ export default class ModalERC721Import extends Vue {
         try {
             this.previewLoading = true;
             const { name, symbol, totalSupply } = await this.$store.dispatch('erc721/preview', {
-                chainId: this.chainId,
+                chainId: this.pool.chainId,
                 address: address,
             });
             this.name = name;

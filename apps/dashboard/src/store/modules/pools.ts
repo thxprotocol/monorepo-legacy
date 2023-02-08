@@ -138,7 +138,7 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async list(params: { archived?: boolean } = { archived: false }) {
+    async list(params: { archived?: boolean; chainId?: ChainId } = { archived: false }) {
         this.context.commit('clear');
 
         const r = await axios({

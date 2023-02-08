@@ -16,6 +16,7 @@ import ReadERC721Metadata from './metadata/get.controller';
 import PatchERC721Metadata from './metadata/patch.controller';
 import DeleteERC721Metadata from './metadata/delete.controller';
 import ImportERC721Contract from './import/post.controller';
+import PreviewERC721Contract from './import/preview/post.controller';
 
 const router = express.Router();
 
@@ -37,6 +38,7 @@ router.post(
     assertAssetPoolOwnership,
     assertRequestInput(ImportERC721Contract.validation),
 );
+router.post('/preview', assertRequestInput(PreviewERC721Contract.validation), PreviewERC721Contract.controller);
 router.patch(
     '/:id/metadata/:metadataId',
     guard.check(['erc721:write']),
