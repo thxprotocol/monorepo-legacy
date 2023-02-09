@@ -13,12 +13,7 @@
             >
                 <div class="container container-md py-5">
                     <p class="brand-text">Commerce</p>
-                    <b-button
-                        @click="onClickMerchantCreate"
-                        v-b-modal="'modalMerchantCreate'"
-                        class="rounded-pill"
-                        variant="secondary"
-                    >
+                    <b-button @click="onClickMerchantCreate" class="rounded-pill" variant="secondary">
                         <i class="fas fa-plus mr-2"></i>
                         <span class="mr-2">Create Merchant</span>
                     </b-button>
