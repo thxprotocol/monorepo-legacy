@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { TMerchant } from '@thxnetwork/types/merchant';
 
-export type MerchantSchema = mongoose.Document & TMerchant;
+export type MerchantDocument = mongoose.Document & TMerchant;
 
 const schema = new mongoose.Schema(
     {
@@ -11,4 +11,4 @@ const schema = new mongoose.Schema(
     { timestamps: true },
 );
 
-export const Merchant = mongoose.model<MerchantSchema>('merchant', schema, 'merchants');
+export const Merchant = mongoose.model<MerchantDocument>('merchant', schema, 'merchants');

@@ -6,6 +6,7 @@ import { TERC721Perk } from '@thxnetwork/types/interfaces/ERC721Perk';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
+import { stripe } from '../../util/stripe';
 
 const validation = [
     body('title').exists().isString(),
@@ -52,6 +53,15 @@ const controller = async (req: Request, res: Response) => {
         await ERC721Service.addMinter(erc721, pool.address);
     }
 
+    const product = await stripe.products.create({
+        name: req.body.title,
+    });
+
+    const price = await stripe.prices.create({
+        product: product.id,
+        currency: 'eur',
+    });
+
     const perks = await Promise.all(
         metadataIdList.map(async (erc721metadataId: string) => {
             const config = {
@@ -70,6 +80,7 @@ const controller = async (req: Request, res: Response) => {
                 expiryDate: req.body.expiryDate,
                 pointPrice: req.body.pointPrice,
                 isPromoted: req.body.isPromoted,
+                productId: product.id,
             } as TERC721Perk;
             const { reward, claims } = await createERC721Perk(pool, config);
 

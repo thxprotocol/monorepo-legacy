@@ -2,23 +2,28 @@
     <div>
         <h2 class="mb-3">Settings</h2>
         <b-card class="shadow-sm mb-5">
-            <b-form-row>
+            <b-form-row v-if="profile">
                 <b-col md="4">
                     <strong>Commerce</strong>
                     <p class="text-muted">Enable FIAT payment methods to enable your users to buy your perks.</p>
                 </b-col>
                 <b-col mb="8">
-                    <b-alert show variant="success" class="d-flex align-items-center">
+                    <b-alert v-if="!profile.merchant" show variant="success" class="d-flex align-items-center">
                         <i class="fas fa-tags mr-2"></i>
                         Become a merchant and unlock the ability to sell your perks!
                         <b-button
                             class="rounded-pill ml-auto"
                             variant="primary"
-                            @click="$store.dispatch('merchants/create')"
+                            @click="onClickMerchantCreate"
+                            :disabled="isLoadingMerchantCreate"
                         >
+                            <b-spinner v-if="isLoadingMerchantCreate" small variant="light" class="mr-2" />
                             Become a Merchant
                         </b-button>
                     </b-alert>
+                    <b-form-group label="Stripe Connect ID">
+                        <b-form-input readonly disabled :value="profile.merchant.stripeConnectId" />
+                    </b-form-group>
                 </b-col>
             </b-form-row>
             <hr />
@@ -86,22 +91,26 @@ import { mapGetters } from 'vuex';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import { TBrand } from '@thxnetwork/dashboard/store/modules/brands';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
+import { IAccount } from '@thxnetwork/dashboard/types/account';
 
 @Component({
     computed: mapGetters({
         brands: 'brands/all',
         pools: 'pools/all',
+        profile: 'account/profile',
     }),
 })
 export default class SettingsView extends Vue {
     ChainId = ChainId;
     loading = true;
     chainInfo = chainInfo;
+    profile!: IAccount;
     chainId: ChainId = ChainId.PolygonMumbai;
     pools!: IPools;
     brands!: { [poolId: string]: TBrand };
     logoImgUrl = '';
     backgroundImgUrl = '';
+    isLoadingMerchantCreate = false;
 
     get pool() {
         return this.pools[this.$route.params.id];
@@ -164,6 +173,11 @@ export default class SettingsView extends Vue {
             },
         });
         this.loading = false;
+    }
+    async onClickMerchantCreate() {
+        this.isLoadingMerchantCreate = true;
+        await this.$store.dispatch('merchants/create');
+        this.isLoadingMerchantCreate = false;
     }
 }
 </script>

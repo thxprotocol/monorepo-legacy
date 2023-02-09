@@ -1,25 +1,28 @@
-import Stripe from 'stripe';
-import { STRIPE_SECRET_TEST_KEY } from '../config/secrets';
-import { Merchant } from '../models/Merchant';
-
-export const stripe = new Stripe(STRIPE_SECRET_TEST_KEY, { apiVersion: null });
+import { Merchant, MerchantDocument } from '../models/Merchant';
+import { stripe } from '../util/stripe';
 
 const create = async (sub: string) => {
-    if (await Merchant.exists({ sub })) return;
-    const account = await stripe.accounts.create({ type: 'standard' });
+    let merchant = await Merchant.findOne({ sub });
 
-    await Merchant.create({
-        sub,
-        stripeConnectId: account.id,
-    });
+    if (!merchant) {
+        const account = await stripe.accounts.create({ type: 'standard' });
+        console.log(account, account.id);
+        merchant = await Merchant.create({
+            sub,
+            stripeConnectId: account.id,
+        });
+    }
 
-    const accountLink = await stripe.accountLinks.create({
-        account: account.id,
+    return merchant;
+};
+
+const getAccountLink = async (merchant: MerchantDocument) => {
+    return await stripe.accountLinks.create({
+        account: merchant.stripeConnectId,
         refresh_url: 'https://widget.thx.network/reauth.html',
         return_url: 'https://widget.thx.network/return.html',
         type: 'account_onboarding',
     });
-    return accountLink;
 };
 
-export default { create };
+export default { create, getAccountLink };
