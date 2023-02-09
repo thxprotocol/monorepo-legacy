@@ -1,4 +1,4 @@
-import { createApp } from 'https://cdnjs.cloudflare.com/ajax/libs/petite-vue/0.4.1/petite-vue.es.js';
+import { createApp } from 'https://cdnjs.cloudflare.com/ajax/libs/petite-vue/0.4.1/petite-vue.es.min.js';
 
 /* eslint-disable no-undef */
 const AUTH_REQUEST_MESSAGE = document.getElementsByName('authRequestMessage')[0].value;
