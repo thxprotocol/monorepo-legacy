@@ -17,7 +17,7 @@ describe('Wallet', () => {
 
         cy.contains('Your one-time password is incorrect.');
 
-        cy.get('input[placeholder="*****"]').type('000000', { force: true });
+        cy.get('input[placeholder="*****"]').type('00000', { force: true });
 
         cy.url().should('include', 'https://dev-wallet.thx.network').should('include', 'signin-oidc');
 
