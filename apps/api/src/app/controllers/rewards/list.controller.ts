@@ -8,6 +8,7 @@ import { MilestoneRewardClaim } from '@thxnetwork/api/models/MilestoneRewardClai
 import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
 import { DailyReward } from '@thxnetwork/api/models/DailyReward';
 import DailyRewardClaimService, { ONE_DAY_MS } from '@thxnetwork/api/services/DailyRewardClaimService';
+import { sub } from 'date-fns';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
@@ -31,6 +32,10 @@ const controller = async (req: Request, res: Response) => {
             dailyRewards.map(async (r) => {
                 const isDisabled = sub ? await DailyRewardClaimService.isClaimed(r.poolId, sub) : true;
                 const claims = sub ? await DailyRewardClaimService.findBySub(r, sub) : [];
+                const claimAgainTime = claims.length
+                    ? new Date(claims[claims.length - 1].createdAt).getTime() + ONE_DAY_MS
+                    : null;
+
                 return {
                     uuid: r.uuid,
                     title: r.title,
@@ -38,9 +43,7 @@ const controller = async (req: Request, res: Response) => {
                     amount: r.amount,
                     isDisabled,
                     claims,
-                    claimAgainTime: claims.length
-                        ? new Date(claims[claims.length - 1].createdAt).getTime() + ONE_DAY_MS
-                        : null,
+                    claimAgainDuration: claimAgainTime ? Math.floor((claimAgainTime - Date.now()) / 1000) : null, // Convert and floor to S,
                 };
             }),
         ),

@@ -46,7 +46,9 @@ const setToken = async function (data: IAccessToken) {
     if (index < 0) {
         this.tokens.push(data);
     } else {
-        this.tokens[index] = { ...this.tokens[index], ...data };
+        this.tokens[index]['accessToken'] = data.accessToken || this.tokens[index].accessToken;
+        this.tokens[index]['refreshToken'] = data.refreshToken || this.tokens[index].refreshToken;
+        this.tokens[index]['expiry'] = data.expiry || this.tokens[index].expiry;
     }
 };
 

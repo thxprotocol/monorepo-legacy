@@ -13,19 +13,11 @@ describe('Wallet', () => {
         cy.url().should('include', 'https://dev.auth.thx.network').should('include', 'signin/otp');
         cy.contains('We sent a password to cypress@thx.network');
 
-        cy.get('#digit0').type('1');
-        cy.get('#digit1').type('2');
-        cy.get('#digit2').type('3');
-        cy.get('#digit3').type('4');
-        cy.get('#digit4').type('5');
+        cy.get('input[placeholder="*****"]').type('12345', { force: true });
 
         cy.contains('Your one-time password is incorrect.');
 
-        cy.get('#digit0').type('0');
-        cy.get('#digit1').type('0');
-        cy.get('#digit2').type('0');
-        cy.get('#digit3').type('0');
-        cy.get('#digit4').type('0');
+        cy.get('input[placeholder="*****"]').type('00000', { force: true });
 
         cy.url().should('include', 'https://dev-wallet.thx.network').should('include', 'signin-oidc');
 

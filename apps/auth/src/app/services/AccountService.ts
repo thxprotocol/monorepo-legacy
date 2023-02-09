@@ -11,21 +11,8 @@ import { AccountPlanType } from '../types/enums/AccountPlanType';
 import { AccountVariant } from '../types/enums/AccountVariant';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import bcrypt from 'bcrypt';
+// import { SignTypedDataVersion, recoverTypedSignature } from '@metamask/eth-sig-util';
 
-function getKindFromVariant(variant: AccountVariant): AccessTokenKind {
-    switch (variant) {
-        case AccountVariant.SSOGoogle:
-            return AccessTokenKind.Google;
-        case AccountVariant.SSOTwitter:
-            return AccessTokenKind.Twitter;
-        case AccountVariant.SSOGithub:
-            return AccessTokenKind.Github;
-        case AccountVariant.SSODiscord:
-            return AccessTokenKind.Discord;
-        case AccountVariant.SSOTwitch:
-            return AccessTokenKind.Twitch;
-    }
-}
 export class AccountService {
     static async get(sub: string) {
         return await Account.findById(sub);
@@ -53,6 +40,15 @@ export class AccountService {
         } catch {
             // no-op
         }
+
+        // if (updates.authRequestMessage && updates.authRequestSignature) {
+        //     const address = recoverTypedSignature({
+        //         data: JSON.parse(updates.authRequestMessage),
+        //         signature: updates.authRequestSignature,
+        //         version: 'V3' as SignTypedDataVersion,
+        //     });
+        //     account.address = address || account.address;
+        // }
 
         if (updates.googleAccess === false) {
             const token = account.getToken(AccessTokenKind.Google);
@@ -128,19 +124,16 @@ export class AccountService {
         }
         // Find account for userId
         else if (tokenInfo.userId) {
-            // Map AccountVariant to AccessTokenKind and search for userId in tokenInfo
-            const kind = getKindFromVariant(variant);
-            account = await Account.findOne({ 'tokens.userId': tokenInfo.userId, 'tokens.kind': kind });
+            account = await Account.findOne({ 'tokens.userId': tokenInfo.userId, 'tokens.kind': tokenInfo.kind });
         }
 
         // When no account is matched, create the account.
         if (!account) {
-            account = await Account.create({
-                email,
-                variant,
-                plan: AccountPlanType.Basic,
-                active: true,
-            });
+            const data = { variant, plan: AccountPlanType.Basic, active: true };
+            if (email) {
+                data['email'] = email;
+            }
+            account = await Account.create(data);
         }
 
         // Always udpate latest tokenInfo for account
