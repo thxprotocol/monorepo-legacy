@@ -30,12 +30,6 @@ const routes: Array<RouteConfig> = [
         beforeEnter: assertAuthorization,
     },
     {
-        name: 'commerce',
-        path: '/commerce',
-        component: () => import('../views/Commerce.vue'),
-        beforeEnter: assertAuthorization,
-    },
-    {
         name: 'pool',
         path: '/pool/:id',
         redirect: '/pool/:id/dashboard',

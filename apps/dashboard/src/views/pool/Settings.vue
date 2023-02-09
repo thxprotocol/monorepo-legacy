@@ -1,66 +1,79 @@
 <template>
     <div>
-        <h2 class="">Settings</h2>
-        <p class="text-muted">
-            Personalize the unauthenticated sign-in and claim pages for your users by providing a default background
-            image and your logo.
-        </p>
+        <h2 class="mb-3">Settings</h2>
         <b-card class="shadow-sm mb-5">
             <b-form-row>
-                <b-col md="6">
-                    <b-form-group
-                        label="Logo URL"
-                        description="This logo image is shown above the login panel users see when claiming your crypto or NFT's."
-                    >
-                        <b-form-file @change="onUpload($event, 'logoImgUrl')" accept="image/*" />
-                    </b-form-group>
+                <b-col md="4">
+                    <strong>Commerce</strong>
+                    <p class="text-muted">Enable FIAT payment methods to enable your users to buy your perks.</p>
                 </b-col>
-                <b-col>
-                    <label>Preview</label>
-                    <b-card body-class="py-5 text-center" class="mb-3" bg-variant="light">
-                        <img
-                            height="65"
-                            width="65"
-                            class="m-0"
-                            alt="Signin page logo image"
-                            :src="logoImgUrl"
-                            v-if="logoImgUrl"
-                        />
-                        <span v-else class="text-gray">Preview logo URL</span>
-                    </b-card>
+                <b-col mb="8">
+                    <b-alert show variant="success" class="d-flex align-items-center">
+                        <i class="fas fa-tags mr-2"></i>
+                        Become a merchant and unlock the ability to sell your perks!
+                        <b-button
+                            class="rounded-pill ml-auto"
+                            variant="primary"
+                            @click="$store.dispatch('merchants/create')"
+                        >
+                            Become a Merchant
+                        </b-button>
+                    </b-alert>
                 </b-col>
             </b-form-row>
             <hr />
             <b-form-row>
-                <b-col md="6">
-                    <b-form-group
-                        label="Background URL"
-                        description="This background image is shown on the login page users see when claiming your crypto or NFT's."
-                    >
-                        <b-form-file @change="onUpload($event, 'backgroundImgUrl')" accept="image/*" />
-                    </b-form-group>
+                <b-col md="4">
+                    <strong>Widget Theming</strong>
+                    <p class="text-muted">Configure background and logo used on the user authentication pages.</p>
                 </b-col>
-                <b-col>
-                    <label>Preview</label>
-                    <b-card body-class="py-5 text-center" class="mb-3" bg-variant="light">
-                        <img
-                            width="100%"
-                            class="m-0"
-                            alt="Signin page background image"
-                            :src="backgroundImgUrl"
-                            v-if="backgroundImgUrl"
-                        />
-                        <span v-else class="text-gray">Preview background URL.</span>
-                    </b-card>
+                <b-col mb="8">
+                    <b-form-row>
+                        <b-col md="8">
+                            <b-form-group label="Logo URL">
+                                <b-form-file class="mb-3" @change="onUpload($event, 'logoImgUrl')" accept="image/*" />
+                            </b-form-group>
+                        </b-col>
+                        <b-col md="4">
+                            <b-card body-class="py-5 text-center" class="mb-3" bg-variant="light">
+                                <template v-if="logoImgUrl">
+                                    <img
+                                        width="100%"
+                                        height="auto"
+                                        class="m-0"
+                                        alt="Signin page logo image"
+                                        :src="logoImgUrl"
+                                    /><br />
+                                    <b-link @click="onClickRemoveLogo" class="text-danger">Remove</b-link>
+                                </template>
+                                <span v-else class="text-gray">Preview logo URL</span>
+                            </b-card>
+                        </b-col>
+                    </b-form-row>
+                    <b-form-row>
+                        <b-col md="8">
+                            <b-form-group label="Background URL">
+                                <b-form-file @change="onUpload($event, 'backgroundImgUrl')" accept="image/*" />
+                            </b-form-group>
+                        </b-col>
+                        <b-col md="4">
+                            <b-card body-class="py-5 text-center" class="mb-3" bg-variant="light">
+                                <template v-if="backgroundImgUrl">
+                                    <img
+                                        width="100%"
+                                        height="auto"
+                                        class="m-0"
+                                        alt="Signin page background image"
+                                        :src="backgroundImgUrl"
+                                    /><br />
+                                    <b-link @click="onClickRemoveBackground" class="text-danger">Remove</b-link>
+                                </template>
+                                <span v-else class="text-gray">Preview background URL</span>
+                            </b-card>
+                        </b-col>
+                    </b-form-row>
                 </b-col>
             </b-form-row>
-            <hr />
-            <div class="d-flex justify-content-end">
-                <b-button variant="primary" :disabled="!isBrandUpdateInvalid" @click="update()" class="rounded-pill">
-                    <b-spinner v-if="loading" class="mr-2" small variant="white" />
-                    <span>Update</span>
-                </b-button>
-            </div>
         </b-card>
     </div>
 </template>
@@ -128,6 +141,17 @@ export default class SettingsView extends Vue {
     async onUpload(event: any, key: string) {
         const publicUrl = await this.upload(event.target.files[0]);
         Vue.set(this, key, publicUrl);
+        await this.update();
+    }
+
+    async onClickRemoveBackground() {
+        this.backgroundImgUrl = '';
+        await this.update();
+    }
+
+    async onClickRemoveLogo() {
+        this.logoImgUrl = '';
+        await this.update();
     }
 
     async update() {
