@@ -28,7 +28,7 @@ const controller = async (req: Request, res: Response) => {
             }),
         erc721Perks: await Promise.all(
             erc721Perks
-                .filter((p: ERC721PerkDocument) => p.pointPrice > 0)
+                .filter((p: ERC721PerkDocument) => p.pointPrice > 0 || p.price > 0)
                 .map(async (r) => {
                     return {
                         _id: r._id,
@@ -39,6 +39,8 @@ const controller = async (req: Request, res: Response) => {
                         erc721metadataId: r.erc721metadataId,
                         metadata: await ERC721Service.findMetadataById(r.erc721metadataId),
                         pointPrice: r.pointPrice,
+                        price: r.price,
+                        priceCurrency: r.priceCurrency,
                         image: r.image,
                         isOwned: false,
                         isPromoted: r.isPromoted,
