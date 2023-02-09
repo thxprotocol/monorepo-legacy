@@ -59,7 +59,8 @@ const controller = async (req: Request, res: Response) => {
 
     const price = await stripe.prices.create({
         product: product.id,
-        currency: 'eur',
+        currency: req.body.priceCurrency,
+        unit_amount: req.body.price,
     });
 
     const perks = await Promise.all(
@@ -80,7 +81,9 @@ const controller = async (req: Request, res: Response) => {
                 expiryDate: req.body.expiryDate,
                 pointPrice: req.body.pointPrice,
                 isPromoted: req.body.isPromoted,
-                productId: product.id,
+                price: req.body.price,
+                priceCurrency: req.body.priceCurrency,
+                priceId: price.id,
             } as TERC721Perk;
             const { reward, claims } = await createERC721Perk(pool, config);
 

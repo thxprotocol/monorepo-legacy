@@ -18,8 +18,23 @@
                         Become a Merchant
                     </b-button>
                 </b-alert>
-                <p class="text-muted">Sell your perks to your audience in our widget to make a little extra cash.</p>
-                <b-form-group label="Price"> // </b-form-group>
+                <p class="text-muted">
+                    Sell your perks to your audience in our widget to make a little extra cash. Pick any supported FIAT
+                    or Crypto currency.
+                </p>
+                <b-form-group label="Price">
+                    <b-input-group>
+                        <b-form-input step=".01" type="number" :value="p" @change="onChangePrice" />
+                        <b-input-group-append>
+                            <b-dropdown variant="dark" :text="priceCurrency">
+                                <b-dropdown-item @click="$emit('change-price-currency', 'EUR')">EUR</b-dropdown-item>
+                                <b-dropdown-item @click="$emit('change-price-currency', 'USD')">USD</b-dropdown-item>
+                                <b-dropdown-divider></b-dropdown-divider>
+                                <b-dropdown-item disabled>$THX</b-dropdown-item>
+                            </b-dropdown>
+                        </b-input-group-append>
+                    </b-input-group>
+                </b-form-group>
             </div>
         </b-collapse>
     </b-card>
@@ -35,6 +50,7 @@ import BaseModalPoolCreate from '@thxnetwork/dashboard/components/modals/BaseMod
 import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { mapGetters } from 'vuex';
 import { IAccount } from '@thxnetwork/dashboard/types/account';
+import { parseUnitAmount } from '@thxnetwork/dashboard/utils/price';
 
 @Component({
     components: {
@@ -52,11 +68,22 @@ export default class BaseCardERC20 extends Vue {
     isVisible = true;
     profile!: IAccount;
 
+    @Prop() price!: number;
+    @Prop() priceCurrency!: string;
     @Prop() pool!: IPool;
+
+    get p() {
+        return parseUnitAmount(this.price);
+    }
 
     async onClickMerchantCreate() {
         await this.$store.dispatch('merchants/create');
         await this.$store.dispatch('account/read');
+    }
+
+    onChangePrice(value: string) {
+        const price = (Math.round(Number(value) * 100) / 100).toFixed(2);
+        this.$emit('change-price', Number(price) * 100);
     }
 }
 </script>

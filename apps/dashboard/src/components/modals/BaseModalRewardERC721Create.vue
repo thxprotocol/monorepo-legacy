@@ -36,7 +36,14 @@
                         </b-form-group>
                     </b-col>
                     <b-col md="6">
-                        <BaseCardCommerce class="mb-3" :pool="pool" />
+                        <BaseCardCommerce
+                            class="mb-3"
+                            :pool="pool"
+                            :price="price"
+                            :price-currency="priceCurrency"
+                            @change-price="price = $event"
+                            @change-price-currency="priceCurrency = $event"
+                        />
                         <BaseCardRewardExpiry
                             class="mb-3"
                             :expiryDate="expiryDate"
@@ -135,6 +142,8 @@ export default class ModalRewardERC721Create extends Vue {
     imageFile: File | null = null;
     image = '';
     isPromoted = false;
+    price = 0;
+    priceCurrency = 'USD';
 
     @Prop() id!: string;
     @Prop() pool!: IPool;
@@ -154,6 +163,8 @@ export default class ModalRewardERC721Create extends Vue {
         this.rewardLimit = this.reward ? this.reward.rewardLimit : 0;
         this.claimAmount = this.reward ? this.reward.claimAmount : 0;
         this.claimLimit = this.reward ? this.reward.claimLimit : 1;
+        this.price = this.reward ? this.reward.price : this.price;
+        this.priceCurrency = this.reward ? this.reward.priceCurrency : this.priceCurrency;
         this.rewardCondition = this.reward
             ? {
                   platform: this.reward.platform as RewardConditionPlatform,
@@ -207,6 +218,8 @@ export default class ModalRewardERC721Create extends Vue {
             claimLimit: this.claimLimit,
             rewardLimit: this.rewardLimit,
             pointPrice: this.pointPrice,
+            price: this.price,
+            priceCurrency: this.priceCurrency,
             file: this.imageFile,
             isPromoted: this.isPromoted,
             platform: this.rewardCondition.platform,
