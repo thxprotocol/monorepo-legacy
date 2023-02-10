@@ -2,28 +2,31 @@
 pragma solidity ^0.7.6;
 
 interface IERC1155ProxyFacet {
-    event ERC71155TransferredSingle(address from, address to, uint256 tokenId, uint256 amount, bytes data);
-    event ERC71155TransferredBatch(address from, address to, uint256[] tokenIds, uint256[] amounts, bytes data);
-    /**
-     * @dev See {IERC1155-safeTransferFrom}.
-     */
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 id,
-        uint256 amount,
+    event ERC1155MintedSingle(address recipient, uint256 tokenId, uint256 amount, address _tokenAddress);
+    event ERC1155MintedBatch(address recipient, uint256[] tokenIds, uint256[] amounts, address _tokenAddress);
+    event ERC71155TransferredSingle(address from, address to, uint256 tokenId, uint256 amount);
+    event ERC71155TransferredBatch(address from, address to, uint256[] tokenIds, uint256[] amounts);
+
+    function mintERC1155For(address _tokenAddress, address _recipient, uint256 _id, uint256 _amount) external;
+    function mintERC1155BatchFor(address _tokenAddress, address _recipient, uint256[] memory _ids, uint256[] memory _amounts) external;
+    
+    function transferFromERC1155(
+        address _tokenAddress,
+        address _to,
+        uint256 _tokenIid,
+        uint256 _amount,
         bytes memory data
     ) external;
 
     /**
      * @dev See {IERC1155-safeBatchTransferFrom}.
      */
-    function safeBatchTransferFrom(
-        address from,
-        address to,
-        uint256[] memory ids,
-        uint256[] memory amounts,
-        bytes memory data
+    function batchTransferFromERC1155(
+        address _tokenAddress,
+        address _to,
+        uint256[] memory _tokenIds,
+        uint256[] memory _amounts,
+        bytes memory _data
     ) external;
     
 }
