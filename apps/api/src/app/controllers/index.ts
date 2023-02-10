@@ -40,11 +40,11 @@ router.use('/rewards', rewardsRouter);
 router.use('/perks', perksRouter);
 router.use('/webhook', webhooksRouter);
 router.use('/data', dataRouter);
+router.use('/merchants', merchantsRouter);
 
 router.use(checkJwt);
 router.use(corsHandler);
 router.use('/point-rewards', pointRewardsRouter);
-router.use('/merchants', merchantsRouter);
 router.use('/milestone-rewards', milestonesRewardRouter);
 router.use('/daily-rewards', dailyRewardsRouter);
 router.use('/point-balances', pointBalancesRouter);

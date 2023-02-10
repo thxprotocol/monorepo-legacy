@@ -21,9 +21,32 @@
                             Become a Merchant
                         </b-button>
                     </b-alert>
+                    <b-alert
+                        show
+                        variant="warning"
+                        class="center-center"
+                        v-if="merchantStatus.includes((s) => !s.status)"
+                    >
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                        You have not finished the configuration of your Merchant account.
+                    </b-alert>
                     <b-form-group label="Stripe Connect ID">
                         <b-form-input readonly disabled :value="profile.merchant.stripeConnectId" />
                     </b-form-group>
+                    <b-list-group>
+                        <b-list-item v-for="(s, key) in merchantStatus" :key="key">
+                            <b-link v-if="!s.status" @click="onClickMerchantLink">
+                                <i class="fas fa-check-circle mr-2" :class="s.status ? 'text-success' : 'text-muted'">
+                                </i>
+                                {{ s.label }}
+                            </b-link>
+                            <template v-else>
+                                <i class="fas fa-check-circle mr-2" :class="s.status ? 'text-success' : 'text-muted'">
+                                </i>
+                                {{ s.label }}
+                            </template>
+                        </b-list-item>
+                    </b-list-group>
                 </b-col>
             </b-form-row>
             <hr />
@@ -92,13 +115,17 @@ import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import { TBrand } from '@thxnetwork/dashboard/store/modules/brands';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { IAccount } from '@thxnetwork/dashboard/types/account';
+import { TMerchant } from '@thxnetwork/types/merchant';
 
 @Component({
-    computed: mapGetters({
-        brands: 'brands/all',
-        pools: 'pools/all',
-        profile: 'account/profile',
-    }),
+    computed: {
+        ...mapGetters({
+            brands: 'brands/all',
+            pools: 'pools/all',
+            profile: 'account/profile',
+            merchant: 'merchants/merchant',
+        }),
+    },
 })
 export default class SettingsView extends Vue {
     ChainId = ChainId;
@@ -108,10 +135,28 @@ export default class SettingsView extends Vue {
     chainId: ChainId = ChainId.PolygonMumbai;
     pools!: IPools;
     brands!: { [poolId: string]: TBrand };
+    merchant!: TMerchant;
     logoImgUrl = '';
     backgroundImgUrl = '';
     isLoadingMerchantCreate = false;
+    isLoadingMerchantCreateLink = false;
 
+    get merchantStatus(): boolean {
+        return [
+            {
+                status: this.merchant.detailsSubmitted,
+                label: 'Provide company details',
+            },
+            {
+                status: this.merchant.chargesEnabled,
+                label: 'Enable user payments',
+            },
+            {
+                status: this.merchant.payoutsEnabled,
+                label: 'Enable company payouts',
+            },
+        ];
+    }
     get pool() {
         return this.pools[this.$route.params.id];
     }
@@ -128,11 +173,12 @@ export default class SettingsView extends Vue {
         return this.brands[this.$route.params.id];
     }
 
-    mounted() {
+    async mounted() {
         this.chainId = this.pool.chainId;
         this.get().then(() => {
             this.loading = false;
         });
+        await this.$store.dispatch('merchants/read');
     }
 
     async upload(file: File) {
@@ -173,6 +219,11 @@ export default class SettingsView extends Vue {
             },
         });
         this.loading = false;
+    }
+    async onClickMerchantLink() {
+        this.isLoadingMerchantCreateLink = true;
+        await this.$store.dispatch('merchants/createLink', this.pool);
+        this.isLoadingMerchantCreateLink = false;
     }
     async onClickMerchantCreate() {
         this.isLoadingMerchantCreate = true;

@@ -1,6 +1,7 @@
 import axios from 'axios';
-import { Module, VuexModule, Action } from 'vuex-module-decorators';
+import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { TMerchant } from '@thxnetwork/types/merchant';
+import { IPool } from './pools';
 
 export type TMerchantState = {
     [poolId: string]: {
@@ -9,7 +10,27 @@ export type TMerchantState = {
 };
 
 @Module({ namespaced: true })
-class DailyRewardModule extends VuexModule {
+class MerchantsModule extends VuexModule {
+    _merchant: TMerchant | null = null;
+
+    get merchant() {
+        return this._merchant;
+    }
+
+    @Mutation
+    setMerchant(merchant: TMerchant) {
+        this._merchant = merchant;
+    }
+
+    @Action({ rawError: true })
+    async read() {
+        const { data } = await axios({
+            method: 'GET',
+            url: '/merchants',
+        });
+        this.context.commit('setMerchant', data);
+    }
+
     @Action({ rawError: true })
     create() {
         return axios({
@@ -17,6 +38,19 @@ class DailyRewardModule extends VuexModule {
             url: '/merchants',
         });
     }
+
+    @Action({ rawError: true })
+    async createLink(pool: IPool) {
+        const { data } = await axios({
+            method: 'POST',
+            url: '/merchants/link',
+            headers: {
+                'X-PoolId': pool._id,
+            },
+        });
+
+        window.open(data.accountLink.url, '_blank');
+    }
 }
 
-export default DailyRewardModule;
+export default MerchantsModule;
