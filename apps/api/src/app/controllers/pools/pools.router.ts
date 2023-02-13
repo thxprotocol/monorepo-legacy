@@ -8,6 +8,7 @@ import PoolsAnalyticsMetrics from './analytics/metrics/get.controller';
 import DeletePool from './delete.controller';
 import ListPools from './list.controller';
 import CreatePoolTopup from './topup/post.controller';
+import CreatePoolTransfer from './transfer/post.controller';
 import UpdatePool from './patch.controller';
 
 const router = express.Router();
@@ -17,6 +18,13 @@ router.post(
     guard.check(['pools:read', 'pools:write']),
     assertRequestInput(CreatePool.validation),
     CreatePool.controller,
+);
+
+router.post(
+    '/:id/transfer',
+    guard.check(['pools:read', 'pools:write']),
+    assertRequestInput(CreatePoolTransfer.validation),
+    CreatePoolTransfer.controller,
 );
 
 router.get('/', guard.check(['pools:read']), assertRequestInput(ListPools.validation), ListPools.controller);
