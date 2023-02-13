@@ -3,7 +3,7 @@
         <BaseFormSelectNetwork @selected="onNetworkSelected" />
         <b-form-group>
             <label>Pool</label>
-            <b-dropdown variant="link" class="dropdown-select" v-if="hasPools">
+            <b-dropdown variant="link" class="dropdown-select" v-if="poolsPerChain.length">
                 <template #button-content>
                     <div v-if="pool">
                         <div class="d-flex align-items-center">
@@ -16,7 +16,7 @@
 
                 <b-dropdown-item-button
                     :key="p.address"
-                    v-for="p of pools"
+                    v-for="p of poolsPerChain"
                     :disabled="p.archived"
                     @click="onListItemClick(p)"
                 >
@@ -52,31 +52,21 @@ export default class ModalAssetPoolCreate extends Vue {
     loading = false;
     selectedChainId: ChainId | null = null;
 
-    async mounted() {
-        await this.getPoolList();
-    }
-
     onListItemClick(pool: IPool | null) {
         this.pool = pool;
         this.$emit('selected', this.pool);
-    }
-
-    async getPoolList() {
-        if (!this.selectedChainId) {
-            return;
-        }
-        this.loading = true;
-        await this.$store.dispatch('pools/list', { chainId: this.selectedChainId });
-        this.loading = false;
     }
 
     get hasPools() {
         return this.pools && Object.keys(this.pools).length;
     }
 
+    get poolsPerChain() {
+        return Object.values(this.pools).filter((pool) => pool.chainId === this.selectedChainId);
+    }
+
     async onNetworkSelected(chainId: ChainId) {
         this.selectedChainId = chainId;
-        await this.getPoolList();
     }
 }
 </script>
