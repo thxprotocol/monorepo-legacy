@@ -91,7 +91,7 @@ const routes: Array<RouteConfig> = [
     {
         path: '/preview/:poolId',
         component: () => import('../views/Preview.vue'),
-        beforeEnter: assertAuthorization,
+        // beforeEnter: assertAuthorization,
     },
     {
         name: 'coins',
