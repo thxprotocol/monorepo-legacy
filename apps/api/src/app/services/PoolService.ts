@@ -82,8 +82,12 @@ async function deployCallback(args: TAssetPoolDeployCallbackArgs, receipt: Trans
 }
 
 async function getAllBySub(sub: string, archived = false, chainId?: ChainId) {
-    if (archived) return AssetPool.find({ sub, chainId });
-    return AssetPool.find({ sub, archived, chainId });
+    if (archived) return await AssetPool.find({ sub });
+
+    let query = { sub, archived };
+    if (chainId) query = Object.assign(query, { chainId });
+
+    return await AssetPool.find(query);
 }
 
 function getAll() {
