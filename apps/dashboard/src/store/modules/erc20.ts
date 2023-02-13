@@ -99,7 +99,7 @@ class ERC20Module extends VuexModule {
     async import(payload: any) {
         const { data } = await axios({
             method: 'POST',
-            url: '/erc20/import',
+            url: '/erc20/token',
             data: payload,
         });
 
