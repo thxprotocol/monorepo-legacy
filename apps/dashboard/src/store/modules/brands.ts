@@ -21,20 +21,20 @@ class BrandModule extends VuexModule {
     }
 
     @Mutation
-    set({ pool, brand }: { pool: IPool; brand: TBrand }) {
-        Vue.set(this._all, pool._id, brand);
+    set({ poolId, brand }: { poolId: string; brand: TBrand }) {
+        Vue.set(this._all, poolId, brand);
     }
 
     @Action({ rawError: true })
-    async getForPool(pool: IPool) {
+    async getForPool(poolId: string) {
         const { data } = await axios({
             url: '/brands',
             method: 'GET',
             headers: {
-                'X-PoolId': pool._id,
+                'X-PoolId': poolId,
             },
         });
-        this.context.commit('set', { pool, brand: data });
+        this.context.commit('set', { poolId, brand: data });
     }
 
     @Action({ rawError: true })
@@ -48,7 +48,7 @@ class BrandModule extends VuexModule {
             data: brand,
         });
 
-        this.context.commit('set', { pool, brand: data });
+        this.context.commit('set', { poolId: pool._id, brand: data });
     }
 }
 
