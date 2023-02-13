@@ -72,12 +72,7 @@ export const getHealth = async (_req: Request, res: Response) => {
     if (NODE_ENV !== 'production') {
         result.hardhat = await getNetworkDetails(ChainId.Hardhat);
     } else {
-        const [mumbai, polygon] = await Promise.all([
-            await getNetworkDetails(ChainId.PolygonMumbai),
-            await getNetworkDetails(ChainId.Polygon),
-        ]);
-        result.testnet = mumbai;
-        result.mainnet = polygon;
+        result.mainnet = await getNetworkDetails(ChainId.Polygon);
     }
 
     result.assetPath = assetsPath;
