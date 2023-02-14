@@ -11,12 +11,7 @@
     >
         <b-form-group :key="key" v-for="(transfer, key) of pool.transfers">
             <b-input-group>
-                <b-form-input
-                    size="sm"
-                    :state="transfer.isExpired ? false : true || transfer.isTransferred ? true : null"
-                    readonly
-                    :value="transfer.url"
-                />
+                <b-form-input size="sm" readonly :value="transfer.url" />
                 <b-input-group-append>
                     <b-button
                         variant="primary"
@@ -29,10 +24,11 @@
                     </b-button>
                 </b-input-group-append>
             </b-input-group>
-            <div class="small text-muted" v-if="transfer.isExpired">
-                Expired at {{ format(new Date(transfer.expiry), 'dd-MM-yyyy HH:mm') }}
+            <div class="small text-muted" :class="transfer.isExpired ? 'text-danger' : 'text-muted'">
+                Expires at {{ format(new Date(transfer.expiry), 'dd-MM-yyyy HH:mm') }}
             </div>
         </b-form-group>
+        <b-link @click="$store.dispatch('pools/createTransfer', pool)">Add pool transfer URL</b-link>
         <template #modal-footer="{ hide }">
             <b-button :disabled="loading" class="rounded-pill" variant="primary" @click="hide" block> Close </b-button>
         </template>

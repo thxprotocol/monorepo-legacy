@@ -131,6 +131,11 @@ class PoolModule extends VuexModule {
     }
 
     @Mutation
+    clearTransfers(pool: IPool) {
+        Vue.set(this._all[pool._id], 'transfers', []);
+    }
+
+    @Mutation
     setTransfer(poolTransfer: TPoolTransfer) {
         const pool = this._all[poolTransfer.poolId];
         poolTransfer.isCopied = false;
@@ -167,6 +172,8 @@ class PoolModule extends VuexModule {
 
     @Action({ rawError: true })
     async listTransfers(pool: IPool) {
+        this.context.commit('clearTransfers', pool);
+
         const r = await axios({
             method: 'GET',
             url: `/pools/${pool._id}/transfers`,
@@ -186,19 +193,6 @@ class PoolModule extends VuexModule {
         });
 
         this.context.commit('setTransfer', r.data);
-    }
-
-    @Action({ rawError: true })
-    async transferOwnership(poolTransfer: TPoolTransfer) {
-        await axios({
-            method: 'POST',
-            url: `/pools/${poolTransfer.poolId}/transfer`,
-            data: {
-                token: poolTransfer.token,
-            },
-        });
-
-        this.context.dispatch('list');
     }
 
     @Action({ rawError: true })

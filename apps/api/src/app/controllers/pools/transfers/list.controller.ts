@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { PoolTransfer, PoolTransferDocument } from '@thxnetwork/api/models/PoolTransfer';
+import { v4 } from 'uuid';
 
 const validation = [param('id').isMongoId()];
 
@@ -11,7 +12,17 @@ const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(req.params.id);
     if (!pool) throw new NotFoundError('Could not find pool for this ID');
 
-    const poolTransfers = await PoolTransfer.find({ poolId: req.params.id });
+    let poolTransfers = await PoolTransfer.find({ poolId: req.params.id });
+
+    if (!poolTransfers.length) {
+        const poolTransfer = await PoolTransfer.create({
+            sub: req.auth.sub,
+            poolId: pool._id,
+            token: v4(),
+            expiry: Date.now() + 1000 * 60 * 60 * 24 * 7, // n + 7 days
+        });
+        poolTransfers = [poolTransfer];
+    }
 
     res.json(
         poolTransfers.map((poolTransfer: PoolTransferDocument) => {
