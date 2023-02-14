@@ -1,13 +1,12 @@
 import express from 'express';
-
-import { assertRequestInput, guard } from '@thxnetwork/api/middlewares';
+import { guard } from '@thxnetwork/api/middlewares';
 import ReadAccount from './get.controller';
 import UpdateAccount from './patch.controller';
 import DeleteAccount from './delete.controller';
 import ReadAccountYoutube from './youtube/get.controller';
 import ReadAccountTwitter from './twitter/get.controller';
 import ReadAccountDiscord from './discord/get.controller';
-import CreateAccountLogin from './login/post.controller';
+import CreateAccountTwitterPreview from './twitter/preview/post.controller';
 
 const router = express.Router();
 
@@ -19,11 +18,6 @@ router.get('/twitter', guard.check(['account:read']), ReadAccountTwitter.control
 router.get('/youtube', guard.check(['account:read']), ReadAccountYoutube.controller);
 router.get('/discord', guard.check(['account:read']), ReadAccountDiscord.controller);
 
-router.post(
-    '/login',
-    assertRequestInput(CreateAccountLogin.validation),
-    guard.check(['account:write']),
-    CreateAccountLogin.controller,
-);
+router.post('/twitter/preview', guard.check(['account:read']), CreateAccountTwitterPreview.controller);
 
 export default router;
