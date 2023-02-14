@@ -3,12 +3,12 @@ import { Contract, Signer } from 'ethers';
 import { ethers } from 'hardhat';
 import { deploy, deployFactory, deployRegistry, deployToken, getDiamondCuts, MINTER_ROLE } from './utils';
 
-describe.only('ERC1155ProxyFacet', function () {
-    let owner: Signer, collector: Signer, recipient: Signer, newOwner: Signer, diamond: Contract, erc1155: Contract;
+describe('ERC1155ProxyFacet', function () {
+    let owner: Signer, collector: Signer, newOwner: Signer, diamond: Contract, erc1155: Contract;
     const ipfsURL = 'https://ipfs.io/ipfs/bafybeihjjkwdrxxjnuwevlqtqmh3iegcadc32sio4wmo7bv2gbf34qs34a/{id}.json';
 
     before(async function () {
-        [owner, collector, recipient, newOwner] = await ethers.getSigners();
+        [owner, collector, newOwner] = await ethers.getSigners();
 
         const registry = await deployRegistry(await collector.getAddress(), '0');
         const factory = await deployFactory(await owner.getAddress(), registry.address);

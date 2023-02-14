@@ -4,7 +4,7 @@ pragma solidity ^0.7.6;
 import '../../../utils/ERC1155/ITHX_ERC1155.sol';
 
 library LibERC1155Storage {
-    bytes32 constant ERC1155_STORAGE_POSITION = keccak256('diamond.standard.erc1155connect.storage');
+    bytes32 constant ERC1155_STORAGE_POSITION = keccak256('diamond.standard.erc1155.storage');
 
     struct ERC1155Storage {
         address registry;
