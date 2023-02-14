@@ -3,7 +3,7 @@
         <img
             v-if="brand && brand.logoImgUrl"
             v-b-tooltip
-            :title="`Preview of loyalty widget for ${pool.title}`"
+            :title="`Preview of loyalty widget`"
             :src="brand.logoImgUrl"
             width="150"
             alt="Example logo image"
@@ -18,18 +18,15 @@ import { mapGetters } from 'vuex';
 import { THXWidget } from 'libs/sdk/src';
 import { initWidget } from '../utils/widget';
 import { TBrand } from '../store/modules/brands';
-import { IPools } from '../store/modules/pools';
 
 @Component({
     computed: mapGetters({
         brands: 'brands/all',
-        pools: 'pools/all',
         account: 'account/profile',
     }),
 })
 export default class PoolView extends Vue {
     widget: THXWidget | null = null;
-    pools!: IPools;
     brands!: { [poolId: string]: TBrand };
     logoImgUrl = '';
     backgroundImgUrl = '';
@@ -38,8 +35,7 @@ export default class PoolView extends Vue {
         const poolId = this.$route.params.poolId;
         initWidget(poolId);
 
-        await this.$store.dispatch('pools/read', poolId);
-        await this.$store.dispatch('brands/getForPool', this.pool);
+        await this.$store.dispatch('brands/getForPool', poolId);
 
         const app = document.getElementById('app');
         if (app) {
@@ -52,10 +48,6 @@ export default class PoolView extends Vue {
 
     get brand() {
         return this.brands[this.$route.params.poolId];
-    }
-
-    get pool() {
-        return this.pools[this.$route.params.poolId];
     }
 }
 </script>

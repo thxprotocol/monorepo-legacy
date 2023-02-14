@@ -12,7 +12,7 @@ type TERC721Attribute = {
     value: string;
 };
 
-type TERC721MetadataProp = {
+export type TERC721MetadataProp = {
     name: string;
     propType: string;
     description: string;

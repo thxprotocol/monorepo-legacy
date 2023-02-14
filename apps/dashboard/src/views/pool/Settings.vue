@@ -1,66 +1,59 @@
 <template>
     <div>
-        <h2 class="">Settings</h2>
-        <p class="text-muted">
-            Personalize the unauthenticated sign-in and claim pages for your users by providing a default background
-            image and your logo.
-        </p>
+        <h2 class="mb-3">Settings</h2>
         <b-card class="shadow-sm mb-5">
             <b-form-row>
-                <b-col md="6">
-                    <b-form-group
-                        label="Logo URL"
-                        description="This logo image is shown above the login panel users see when claiming your crypto or NFT's."
-                    >
-                        <b-form-file @change="onUpload($event, 'logoImgUrl')" accept="image/*" />
-                    </b-form-group>
+                <b-col md="4">
+                    <strong>Widget Theming</strong>
+                    <p class="text-muted">Configure background and logo used on the user authentication pages.</p>
                 </b-col>
-                <b-col>
-                    <label>Preview</label>
-                    <b-card body-class="py-5 text-center" class="mb-3" bg-variant="light">
-                        <img
-                            height="65"
-                            width="65"
-                            class="m-0"
-                            alt="Signin page logo image"
-                            :src="logoImgUrl"
-                            v-if="logoImgUrl"
-                        />
-                        <span v-else class="text-gray">Preview logo URL</span>
-                    </b-card>
+                <b-col mb="8">
+                    <b-form-row>
+                        <b-col md="8">
+                            <b-form-group label="Logo URL">
+                                <b-form-file class="mb-3" @change="onUpload($event, 'logoImgUrl')" accept="image/*" />
+                            </b-form-group>
+                        </b-col>
+                        <b-col md="4">
+                            <b-card body-class="py-5 text-center" class="mb-3" bg-variant="light">
+                                <template v-if="logoImgUrl">
+                                    <img
+                                        width="100%"
+                                        height="auto"
+                                        class="m-0"
+                                        alt="Signin page logo image"
+                                        :src="logoImgUrl"
+                                    /><br />
+                                    <b-link @click="onClickRemoveLogo" class="text-danger">Remove</b-link>
+                                </template>
+                                <span v-else class="text-gray">Preview logo URL</span>
+                            </b-card>
+                        </b-col>
+                    </b-form-row>
+                    <b-form-row>
+                        <b-col md="8">
+                            <b-form-group label="Background URL">
+                                <b-form-file @change="onUpload($event, 'backgroundImgUrl')" accept="image/*" />
+                            </b-form-group>
+                        </b-col>
+                        <b-col md="4">
+                            <b-card body-class="py-5 text-center" class="mb-3" bg-variant="light">
+                                <template v-if="backgroundImgUrl">
+                                    <img
+                                        width="100%"
+                                        height="auto"
+                                        class="m-0"
+                                        alt="Signin page background image"
+                                        :src="backgroundImgUrl"
+                                    /><br />
+                                    <b-link @click="onClickRemoveBackground" class="text-danger">Remove</b-link>
+                                </template>
+                                <span v-else class="text-gray">Preview background URL</span>
+                            </b-card>
+                        </b-col>
+                    </b-form-row>
                 </b-col>
             </b-form-row>
-            <hr />
-            <b-form-row>
-                <b-col md="6">
-                    <b-form-group
-                        label="Background URL"
-                        description="This background image is shown on the login page users see when claiming your crypto or NFT's."
-                    >
-                        <b-form-file @change="onUpload($event, 'backgroundImgUrl')" accept="image/*" />
-                    </b-form-group>
-                </b-col>
-                <b-col>
-                    <label>Preview</label>
-                    <b-card body-class="py-5 text-center" class="mb-3" bg-variant="light">
-                        <img
-                            width="100%"
-                            class="m-0"
-                            alt="Signin page background image"
-                            :src="backgroundImgUrl"
-                            v-if="backgroundImgUrl"
-                        />
-                        <span v-else class="text-gray">Preview background URL.</span>
-                    </b-card>
-                </b-col>
-            </b-form-row>
-            <hr />
-            <div class="d-flex justify-content-end">
-                <b-button variant="primary" :disabled="!isBrandUpdateInvalid" @click="update()" class="rounded-pill">
-                    <b-spinner v-if="loading" class="mr-2" small variant="white" />
-                    <span>Update</span>
-                </b-button>
-            </div>
         </b-card>
     </div>
 </template>
@@ -73,20 +66,27 @@ import { mapGetters } from 'vuex';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import { TBrand } from '@thxnetwork/dashboard/store/modules/brands';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
+import { IAccount } from '@thxnetwork/dashboard/types/account';
 
 @Component({
-    computed: mapGetters({
-        brands: 'brands/all',
-        pools: 'pools/all',
-    }),
+    computed: {
+        ...mapGetters({
+            brands: 'brands/all',
+            pools: 'pools/all',
+            profile: 'account/profile',
+            merchant: 'merchants/merchant',
+        }),
+    },
 })
 export default class SettingsView extends Vue {
     ChainId = ChainId;
     loading = true;
     chainInfo = chainInfo;
+    profile!: IAccount;
     chainId: ChainId = ChainId.PolygonMumbai;
     pools!: IPools;
     brands!: { [poolId: string]: TBrand };
+
     logoImgUrl = '';
     backgroundImgUrl = '';
 
@@ -106,7 +106,7 @@ export default class SettingsView extends Vue {
         return this.brands[this.$route.params.id];
     }
 
-    mounted() {
+    async mounted() {
         this.chainId = this.pool.chainId;
         this.get().then(() => {
             this.loading = false;
@@ -118,7 +118,7 @@ export default class SettingsView extends Vue {
     }
 
     async get() {
-        await this.$store.dispatch('brands/getForPool', this.pool);
+        await this.$store.dispatch('brands/getForPool', this.pool._id);
         if (this.brand) {
             this.backgroundImgUrl = this.brand.backgroundImgUrl;
             this.logoImgUrl = this.brand.logoImgUrl;
@@ -128,6 +128,17 @@ export default class SettingsView extends Vue {
     async onUpload(event: any, key: string) {
         const publicUrl = await this.upload(event.target.files[0]);
         Vue.set(this, key, publicUrl);
+        await this.update();
+    }
+
+    async onClickRemoveBackground() {
+        this.backgroundImgUrl = '';
+        await this.update();
+    }
+
+    async onClickRemoveLogo() {
+        this.logoImgUrl = '';
+        await this.update();
     }
 
     async update() {

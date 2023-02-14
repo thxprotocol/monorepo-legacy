@@ -40,6 +40,7 @@ router.use('/rewards', rewardsRouter);
 router.use('/perks', perksRouter);
 router.use('/webhook', webhooksRouter);
 router.use('/data', dataRouter);
+router.use('/brands', brandsRouter);
 
 router.use(checkJwt);
 router.use(corsHandler);
@@ -57,7 +58,6 @@ router.use('/erc20-perks', erc20PerksRouter);
 router.use('/erc721-perks', erc721PerksRouter);
 router.use('/referral-rewards', referralRewardsRouter);
 router.use('/upload', uploadRouter);
-router.use('/brands', brandsRouter);
 router.use('/clients', clientRouter);
 router.use('/claims', claimsRouter);
 router.use('/wallets', walletsRouter);

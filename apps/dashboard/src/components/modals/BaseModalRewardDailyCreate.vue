@@ -92,7 +92,6 @@ export default class ModalRewardDailyCreate extends Vue {
             rewardLimit: this.rewardLimit,
             page: this.reward ? this.reward.page : 1,
         };
-        console.log('payload', payload);
         this.isLoading = true;
         this.$store.dispatch(`dailyRewards/${this.reward ? 'update' : 'create'}`, payload).then(() => {
             this.$bvModal.hide(this.id);
