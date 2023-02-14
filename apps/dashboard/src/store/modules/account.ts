@@ -180,6 +180,8 @@ class AccountModule extends VuexModule {
         signupEmail: string;
         passwordResetToken: string;
         verifyEmailToken: string;
+        poolTransferToken: string;
+        poolId: string;
     }) {
         let distinctId;
         try {
@@ -188,10 +190,19 @@ class AccountModule extends VuexModule {
         } catch (err) {
             console.log('err', err);
         }
+
         const extraQueryParams: any = {
             return_url: BASE_URL,
             distinct_id: distinctId,
         };
+
+        if (payload.poolId) {
+            extraQueryParams['pool_id'] = payload.poolId;
+        }
+
+        if (payload.poolTransferToken) {
+            extraQueryParams['pool_transfer_token'] = payload.poolTransferToken;
+        }
 
         if (payload.signupEmail) {
             extraQueryParams['signupEmail'] = payload.signupEmail;
