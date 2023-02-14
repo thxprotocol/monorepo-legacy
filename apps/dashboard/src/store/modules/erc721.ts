@@ -311,6 +311,32 @@ class ERC721Module extends VuexModule {
             data: formData,
         });
     }
+
+    @Action({ rawError: true })
+    async preview(payload: { chainId: ChainId; address: string }) {
+        const { data } = await axios({
+            method: 'POST',
+            url: '/erc721/preview',
+            data: payload,
+        });
+
+        return data;
+    }
+
+    @Action({ rawError: true })
+    async import(payload: { address: string; pool: IPool }) {
+        const { data } = await axios({
+            method: 'POST',
+            url: `/erc721/import`,
+            headers: { 'X-PoolId': payload.pool._id },
+            data: {
+                contractAddress: payload.address,
+                chainId: payload.pool.chainId,
+            },
+        });
+
+        await this.context.dispatch('read', data._id);
+    }
 }
 
 export default ERC721Module;

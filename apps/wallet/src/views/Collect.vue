@@ -110,6 +110,8 @@ import { UserProfile } from '../store/modules/account';
 import { RewardConditionInteraction, RewardConditionPlatform, TERC20Perk, TERC721Perk } from '@thxnetwork/types/index';
 import { TERC20 } from '../store/modules/erc20';
 import { TWallet } from '../types/Wallet';
+import { ChainId } from '@thxnetwork/sdk/types/enums/ChainId';
+import poll from 'promise-poller';
 
 const getChainId = (claim: TClaim) => {
     const { erc20, erc721 } = claim;
@@ -188,6 +190,9 @@ export default class Collect extends Vue {
         const chainId = getChainId(this.claim);
         this.$store.commit('setChainId', chainId);
 
+        // Wait for wallet to be deployed
+        await this.waitForAddress(this.user.profile.sub, chainId);
+
         // If no condition applies claim directly
         if (!this.claim.reward.platform) {
             return this.claimReward();
@@ -211,6 +216,18 @@ export default class Collect extends Vue {
         } else {
             this.claimReward();
         }
+    }
+
+    async waitForAddress(sub: string, chainId: ChainId) {
+        const taskFn = async () => {
+            await this.$store.dispatch('walletManagers/getWallet', { sub, chainId });
+            if (!this.wallet.address) {
+                return Promise.reject(`sub: ${sub} chainId: ${chainId} withdrawals pending`);
+            } else {
+                return Promise.resolve();
+            }
+        };
+        return poll({ taskFn, interval: 3000, retries: 10 });
     }
 
     async claimReward() {
