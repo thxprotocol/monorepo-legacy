@@ -25,7 +25,7 @@
                         show
                         variant="warning"
                         class="center-center"
-                        v-if="merchantStatus.includes((s) => !s.status)"
+                        v-if="merchantStatus.filter((s) => !s.status).length"
                     >
                         <i class="fas fa-exclamation-triangle mr-2"></i>
                         You have not finished the configuration of your Merchant account.
@@ -50,6 +50,58 @@
                 </b-col>
             </b-form-row>
             <hr />
+            <b-form-row>
+                <b-col md="4">
+                    <strong>Widget Theming</strong>
+                    <p class="text-muted">Configure background and logo used on the user authentication pages.</p>
+                </b-col>
+                <b-col mb="8">
+                    <b-form-row>
+                        <b-col md="8">
+                            <b-form-group label="Logo URL">
+                                <b-form-file class="mb-3" @change="onUpload($event, 'logoImgUrl')" accept="image/*" />
+                            </b-form-group>
+                        </b-col>
+                        <b-col md="4">
+                            <b-card body-class="py-5 text-center" class="mb-3" bg-variant="light">
+                                <template v-if="logoImgUrl">
+                                    <img
+                                        width="100%"
+                                        height="auto"
+                                        class="m-0"
+                                        alt="Signin page logo image"
+                                        :src="logoImgUrl"
+                                    /><br />
+                                    <b-link @click="onClickRemoveLogo" class="text-danger">Remove</b-link>
+                                </template>
+                                <span v-else class="text-gray">Preview logo URL</span>
+                            </b-card>
+                        </b-col>
+                    </b-form-row>
+                    <b-form-row>
+                        <b-col md="8">
+                            <b-form-group label="Background URL">
+                                <b-form-file @change="onUpload($event, 'backgroundImgUrl')" accept="image/*" />
+                            </b-form-group>
+                        </b-col>
+                        <b-col md="4">
+                            <b-card body-class="py-5 text-center" class="mb-3" bg-variant="light">
+                                <template v-if="backgroundImgUrl">
+                                    <img
+                                        width="100%"
+                                        height="auto"
+                                        class="m-0"
+                                        alt="Signin page background image"
+                                        :src="backgroundImgUrl"
+                                    /><br />
+                                    <b-link @click="onClickRemoveBackground" class="text-danger">Remove</b-link>
+                                </template>
+                                <span v-else class="text-gray">Preview background URL</span>
+                            </b-card>
+                        </b-col>
+                    </b-form-row>
+                </b-col>
+            </b-form-row>
             <b-form-row>
                 <b-col md="4">
                     <strong>Widget Theming</strong>
@@ -136,12 +188,13 @@ export default class SettingsView extends Vue {
     pools!: IPools;
     brands!: { [poolId: string]: TBrand };
     merchant!: TMerchant;
+
     logoImgUrl = '';
     backgroundImgUrl = '';
     isLoadingMerchantCreate = false;
     isLoadingMerchantCreateLink = false;
 
-    get merchantStatus(): boolean {
+    get merchantStatus() {
         return [
             {
                 status: this.merchant.detailsSubmitted,
@@ -186,7 +239,7 @@ export default class SettingsView extends Vue {
     }
 
     async get() {
-        await this.$store.dispatch('brands/getForPool', this.pool);
+        await this.$store.dispatch('brands/getForPool', this.pool._id);
         if (this.brand) {
             this.backgroundImgUrl = this.brand.backgroundImgUrl;
             this.logoImgUrl = this.brand.logoImgUrl;

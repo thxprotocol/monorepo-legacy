@@ -101,7 +101,7 @@
         "register-service-worker": "^1.7.1",
         "semver": "^7.3.7",
         "short-uuid": "^4.2.0",
-        "stripe": "^11.9.1",
+        "stripe": "^11.10.0",
         "svg-to-pdfkit": "^0.1.8",
         "swagger-autogen": "^2.21.1",
         "swagger-ui-express": "^4.1.4",

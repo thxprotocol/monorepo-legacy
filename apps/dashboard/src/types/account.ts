@@ -16,6 +16,7 @@ export interface IAccount {
     plan: AccountPlanType;
     profileImg?: string;
     email?: string;
+    logoImgUrl?: string;
 }
 export interface IAccountUpdates {
     address: string;

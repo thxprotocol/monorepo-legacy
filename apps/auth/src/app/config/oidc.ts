@@ -69,6 +69,8 @@ const config: Configuration = {
         'verifyEmailToken',
         'access_token_kind',
         'distinct_id',
+        'pool_id',
+        'pool_transfer_token',
     ],
     scopes: [
         'openid',

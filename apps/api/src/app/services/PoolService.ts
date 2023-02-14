@@ -82,8 +82,8 @@ async function deployCallback(args: TAssetPoolDeployCallbackArgs, receipt: Trans
 }
 
 async function getAllBySub(sub: string, archived = false) {
-    if (archived) return AssetPool.find({ sub });
-    return AssetPool.find({ sub, archived });
+    if (archived) return await AssetPool.find({ sub });
+    return await AssetPool.find({ sub, archived });
 }
 
 function getAll() {

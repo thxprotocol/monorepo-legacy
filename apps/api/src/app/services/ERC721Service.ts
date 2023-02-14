@@ -227,6 +227,18 @@ export const update = (erc721: ERC721Document, updates: IERC721Updates) => {
     return ERC721.findByIdAndUpdate(erc721._id, updates, { new: true });
 };
 
+export const getOnChainERC721Token = async (chainId: number, address: string) => {
+    const contract = getContractFromName(chainId, 'NonFungibleToken', address);
+
+    const [name, symbol, totalSupply] = await Promise.all([
+        contract.methods.name().call(),
+        contract.methods.symbol().call(),
+        contract.methods.totalSupply().call(),
+    ]);
+
+    return { name, symbol, totalSupply };
+};
+
 export default {
     deploy,
     deployCallback,
@@ -251,4 +263,5 @@ export default {
     update,
     initialize,
     queryDeployTransaction,
+    getOnChainERC721Token,
 };

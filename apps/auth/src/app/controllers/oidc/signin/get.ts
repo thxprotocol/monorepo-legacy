@@ -1,6 +1,6 @@
 import { GithubService } from './../../../services/GithubServices';
 import { Request, Response } from 'express';
-import { AUTH_URL, DASHBOARD_URL, WALLET_URL } from '../../../config/secrets';
+import { AUTH_URL, WALLET_URL } from '../../../config/secrets';
 import { TwitterService } from '../../../services/TwitterService';
 import { YouTubeService } from '../../../services/YouTubeService';
 import { AUTH_REQUEST_TYPED_MESSAGE, createTypedMessage } from '../../../util/typedMessage';
@@ -15,6 +15,17 @@ async function controller(req: Request, res: Response) {
     let claim,
         brand,
         claimUrl = '';
+
+    if (params.pool_id) {
+        brand = await BrandProxy.get(params.pool_id);
+    }
+
+    if (params.pool_transfer_token) {
+        alert['variant'] = 'success';
+        alert[
+            'message'
+        ] = `<i class="fas fa-gift mr-2" aria-hidden="true"></i>Sign in to access your <strong>loyalty pool</strong>!`;
+    }
 
     if (params.claim_id) {
         claim = await ClaimProxy.get(params.claim_id);
