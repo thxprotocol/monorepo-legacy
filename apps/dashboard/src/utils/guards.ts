@@ -20,6 +20,9 @@ export function redirectSignin() {
 export function redirectSignout() {
     return store.dispatch('account/signoutRedirect', {});
 }
+export function redirectPoolTransfer(to: Route) {
+    return store.dispatch('account/signinRedirect', { poolId: to.params.poolId, poolTransferToken: to.params.token });
+}
 
 export function redirectSignup(to: Route) {
     return store.dispatch('account/signinRedirect', { signupEmail: to.query.signup_email });

@@ -4,6 +4,7 @@ import {
     redirectAccount,
     redirectConfirmationLink,
     redirectPasswordResetLink,
+    redirectPoolTransfer,
     redirectSignin,
     redirectSigninSilent,
     redirectSignout,
@@ -127,6 +128,11 @@ const routes: Array<RouteConfig> = [
         name: 'verify email',
         path: '/verify_email',
         beforeEnter: redirectVerifyEmail,
+    },
+    {
+        name: 'pool transfer',
+        path: '/pools/:poolId/transfer/:token',
+        beforeEnter: redirectPoolTransfer,
     },
     {
         name: 'reset password',

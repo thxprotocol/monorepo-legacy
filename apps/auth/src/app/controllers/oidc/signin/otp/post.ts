@@ -1,13 +1,11 @@
-import { DASHBOARD_URL } from '@thxnetwork/auth/config/secrets';
 import BrandProxy from '@thxnetwork/auth/proxies/BrandProxy';
 import ClaimProxy from '@thxnetwork/auth/proxies/ClaimProxy';
 import { AccountService } from '@thxnetwork/auth/services/AccountService';
-import { hubspot } from '@thxnetwork/auth/util/hubspot';
 import { oidc } from '@thxnetwork/auth/util/oidc';
-import { createWallet } from '@thxnetwork/auth/util/wallet';
 import { AccessTokenKind } from '@thxnetwork/types/index';
 import { Request, Response } from 'express';
 import { body } from 'express-validator';
+import { callbackPostAuth } from '../../get';
 
 const validation = [
     body('otp').exists().isString().isLength({ min: 5, max: 5 }),
@@ -16,7 +14,7 @@ const validation = [
 
 async function controller(req: Request, res: Response) {
     let claim, brand;
-    const { uid, params, prompt, returnTo } = req.interaction;
+    const { uid, params } = req.interaction;
 
     if (params.claim_id) {
         claim = await ClaimProxy.get(params.claim_id);
@@ -38,13 +36,7 @@ async function controller(req: Request, res: Response) {
             active: true,
         });
 
-        const returnUrl = prompt.name === 'connect' ? params.return_url : returnTo;
-        if (returnUrl.startsWith(DASHBOARD_URL)) {
-            hubspot.upsert({ email: account.email });
-        }
-
-        // Create a wallet if wallet can not be found for user
-        createWallet(account);
+        await callbackPostAuth(account, req.interaction);
 
         return await oidc.interactionFinished(req, res, { login: { accountId: String(account._id) } });
     } catch (error) {
