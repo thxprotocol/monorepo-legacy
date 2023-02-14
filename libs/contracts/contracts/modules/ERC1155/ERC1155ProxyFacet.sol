@@ -8,11 +8,19 @@ pragma solidity ^0.7.6;
 /******************************************************************************/
 import 'diamond-2/contracts/libraries/LibDiamond.sol';
 import './interfaces/IERC1155ProxyFacet.sol';
+
+import '@openzeppelin/contracts/access/AccessControl.sol';
+import '@openzeppelin/contracts/access/Ownable.sol';
+import '@openzeppelin/contracts/utils/Strings.sol';
 import './lib/LibERC1155Storage.sol';
 import '../../utils/ERC1155/ITHX_ERC1155.sol';
 import '../../utils/Access.sol';
 
+import "hardhat/console.sol";
+
+
 contract ERC1155ProxyFacet is Access, IERC1155ProxyFacet {
+     bytes32 public constant MINTER_ROLE = keccak256('MINTER_ROLE');
 
     function mintERC1155For(address _tokenAddress, address _recipient, uint256 _id, uint256 _amount) external override onlyOwner {
         require(_tokenAddress != address(0), 'NO_TOKEN');
@@ -36,16 +44,21 @@ contract ERC1155ProxyFacet is Access, IERC1155ProxyFacet {
     function transferFromERC1155(
         address _tokenAddress,
         address _to,
-        uint256 _tokenId,
-        uint256 _amount,
-        bytes memory data
+        uint256 _id,
+        uint256 _amount
     ) external override onlyOwner {
         require(_tokenAddress != address(0), 'NO_TOKEN');
         
         ITHX_ERC1155 multiToken = ITHX_ERC1155(_tokenAddress);
-        multiToken.safeTransferFrom(address(this),  _to, _tokenId, _amount, data);
-
-        emit ERC71155TransferredSingle(address(this), _to, _tokenId, _amount);
+        console.log("THIS", address(this));
+        try multiToken.safeTransferFrom(address(this),  _to, _id, _amount, "")  {
+             
+        } catch Error(string memory reason) {
+            console.log("REASON", reason);
+        }
+       
+        
+        emit ERC71155TransferredSingle(address(this), _to, _id, _amount);
     }
 
     /**
@@ -54,15 +67,14 @@ contract ERC1155ProxyFacet is Access, IERC1155ProxyFacet {
     function batchTransferFromERC1155(
         address _tokenAddress,
         address _to,
-        uint256[] memory _tokenIds,
-        uint256[] memory _amounts,
-        bytes memory _data
+        uint256[] memory _ids,
+        uint256[] memory _amounts
     ) external override onlyOwner {
         require(_tokenAddress != address(0), 'NO_TOKEN');
 
         ITHX_ERC1155 multiToken = ITHX_ERC1155(_tokenAddress);
-        multiToken.safeBatchTransferFrom(address(this),  _to, _tokenIds, _amounts, _data);
+        multiToken.safeBatchTransferFrom(address(this),  _to, _ids, _amounts, "");
 
-        emit ERC71155TransferredBatch(address(this), _to, _tokenIds, _amounts);
+        emit ERC71155TransferredBatch(address(this), _to, _ids, _amounts);
     }
 }
