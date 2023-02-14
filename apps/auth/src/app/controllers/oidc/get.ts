@@ -5,6 +5,7 @@ import { createWallet } from '@thxnetwork/auth/util/wallet';
 import { Request, Response } from 'express';
 import { hubspot } from '@thxnetwork/auth/util/hubspot';
 import { DASHBOARD_URL } from '@thxnetwork/auth/config/secrets';
+import PoolProxy from '@thxnetwork/auth/proxies/PoolProxy';
 
 export const callbackPreAuth = async (req: Request) => {
     // Get code from url
@@ -23,20 +24,30 @@ export const callbackPreAuth = async (req: Request) => {
     return { interaction, code };
 };
 
-export const callbackPostAuth = async (interaction, account: AccountDocument) => {
-    const { params, returnTo, prompt } = interaction;
+export const callbackPostSSOCallback = async (interaction, account: AccountDocument) => {
     if (!account) throw new UnauthorizedError('Could not find or create an account');
 
     // Update interaction with login state
     interaction.result = { login: { accountId: String(account._id) } };
     await interaction.save(Date.now() + 10000);
 
-    // Create a wallet if wallet can not be found for user
-    createWallet(account);
+    return await callbackPostAuth(account, interaction);
+};
 
+export const callbackPostAuth = async (
+    account: AccountDocument,
+    { params, returnTo, prompt }: { params; returnTo; prompt },
+) => {
     const returnUrl = prompt.name === 'connect' ? params.return_url : returnTo;
     if (returnUrl.startsWith(DASHBOARD_URL)) {
         hubspot.upsert({ email: account.email });
+    }
+
+    // Create a wallet if wallet can not be found for user
+    createWallet(account);
+
+    if (params.pool_id && params.pool_transfer_token) {
+        await PoolProxy.transferOwnership(account, params.pool_id, params.pool_transfer_token);
     }
 
     return returnUrl;

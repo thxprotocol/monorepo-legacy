@@ -19,7 +19,18 @@
                     </b-col>
                 </b-row>
                 <b-row class="mt-5">
-                    <b-col md="4">
+                    <b-col md="3">
+                        <b-skeleton-wrapper :loading="!metrics">
+                            <template #loading>
+                                <b-skeleton-img no-aspect height="110px"></b-skeleton-img>
+                            </template>
+                            <b-card v-if="metrics" bg-variant="dark" class="shadow-sm text-white">
+                                <span>Daily</span><br />
+                                <div class="h2">{{ metrics.dailyRewards.totalClaimPoints }}</div>
+                            </b-card>
+                        </b-skeleton-wrapper>
+                    </b-col>
+                    <b-col md="3">
                         <b-skeleton-wrapper :loading="!metrics">
                             <template #loading>
                                 <b-skeleton-img no-aspect height="110px"></b-skeleton-img>
@@ -30,7 +41,7 @@
                             </b-card>
                         </b-skeleton-wrapper>
                     </b-col>
-                    <b-col md="4">
+                    <b-col md="3">
                         <b-skeleton-wrapper :loading="!metrics">
                             <template #loading>
                                 <b-skeleton-img no-aspect height="110px"></b-skeleton-img>
@@ -41,7 +52,7 @@
                             </b-card>
                         </b-skeleton-wrapper>
                     </b-col>
-                    <b-col md="4">
+                    <b-col md="3">
                         <b-skeleton-wrapper :loading="!metrics">
                             <template #loading>
                                 <b-skeleton-img no-aspect height="110px"></b-skeleton-img>
@@ -67,18 +78,30 @@
                             </template>
                             <b-list-group v-if="leaderBoard">
                                 <b-list-group-item
-                                    v-for="(row, key) of leaderBoard"
+                                    v-for="(result, key) of leaderBoard"
                                     :key="key"
                                     class="d-flex justify-content-between align-items-center"
                                 >
                                     <div class="d-flex center-center">
+                                        <img
+                                            :height="30"
+                                            :width="30"
+                                            :src="result.account.profileImg"
+                                            alt=""
+                                            class="mr-2"
+                                        />
                                         <div style="line-height: 1.2">
-                                            <strong>{{ row.email || row.address }}</strong>
+                                            <strong>
+                                                {{ result.account.firstName }} {{ result.account.lastName }}
+                                            </strong>
+                                            <span>{{ result.account.email }}</span>
+                                            <br />
+                                            <small class="text-muted">{{ result.account.address }}</small>
                                         </div>
                                     </div>
                                     <div>
                                         <i class="fas fa-trophy m-1" style="font-size: 1.1rem; color: silver"></i>
-                                        <strong class="text-primary"> {{ row.score }} </strong>
+                                        <strong class="text-primary"> {{ result.score }} </strong>
                                     </div>
                                 </b-list-group-item>
                             </b-list-group>
@@ -270,6 +293,7 @@ export default class TransactionsView extends Vue {
         let referralChartPoints: number[] = [];
         let conditionalChartPoints: number[] = [];
         let milestoneChartPoints: number[] = [];
+        let dailyChartPoints: number[] = [];
 
         if (this.poolAnalytics) {
             // REFERRALS
@@ -286,6 +310,20 @@ export default class TransactionsView extends Vue {
                     return;
                 }
                 referralChartPoints.push(x + referralChartPoints[index - 1]);
+            });
+
+            // Daily
+            points = this.chartDates.map((data) => {
+                const dayData = this.poolAnalytics.dailyRewards.find((x) => x.day == data);
+                return dayData ? dayData.totalClaimPoints : 0;
+            });
+
+            points.forEach((x, index) => {
+                if (index === 0) {
+                    dailyChartPoints.push(x);
+                    return;
+                }
+                dailyChartPoints.push(x + dailyChartPoints[index - 1]);
             });
 
             // CONDITIONALS
@@ -320,6 +358,16 @@ export default class TransactionsView extends Vue {
         const result = {
             labels: this.chartDates.map((x) => format(new Date(x), 'MM-dd')),
             datasets: [
+                {
+                    label: 'Daily',
+                    backgroundColor: '#5FE2F8',
+                    data: dailyChartPoints,
+                    borderColor: '#5FE2F8',
+                    borderJoinStyle: 'round',
+                    pointRadius: 5,
+                    pointHoverRadius: 8,
+                    hoverBorderJoinStyle: 'round',
+                },
                 {
                     label: 'Referral',
                     backgroundColor: 'rgb(152, 216, 13)',

@@ -1,10 +1,10 @@
-import request from 'supertest';
+import request, { Response } from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId } from '@thxnetwork/api/types/enums';
-import { dashboardAccessToken } from '@thxnetwork/api/util/jest/constants';
+import { dashboardAccessToken, dashboardAccessToken2, sub2 } from '@thxnetwork/api/util/jest/constants';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { PoolTransferDocument } from '@thxnetwork/api/models/PoolTransfer';
+import { PoolTransfer, PoolTransferDocument } from '@thxnetwork/api/models/PoolTransfer';
 
 const user = request.agent(app);
 
@@ -39,31 +39,69 @@ describe('Pool Transfer', () => {
                 .send({
                     poolId: pool._id,
                 })
-                .expect((res: request.Response) => {
-                    console.log(res);
-                    poolTransfer = res.body;
-                    expect(poolTransfer.token).toBeDefined();
-                    expect(poolTransfer.sub).toBeDefined();
-                    expect(poolTransfer.expiry).toBeDefined();
+                .expect(({ body }: Response) => {
+                    expect(body.token).toBeDefined();
+                    expect(body.sub).toBeDefined();
+                    expect(new Date(body.expiry).getTime()).toBeGreaterThan(Date.now());
+
+                    poolTransfer = body;
                 })
                 .expect(201, done);
         });
     });
 
-    describe('POST /pools/:id/transfer', () => {
-        it('HTTP 201 (success)', (done) => {
-            user.post(`/v1/pool/${pool._id}/transfers`)
+    describe('GET /pools/:id/transfer', () => {
+        it('HTTP 200', (done) => {
+            user.get(`/v1/pools/${pool._id}/transfers`)
                 .set('Authorization', dashboardAccessToken)
+                .expect(({ body }: Response) => {
+                    expect(body.length).toBe(1);
+                    expect(body[0].token).toBeDefined();
+                    expect(body[0].sub).toBeDefined();
+                })
+                .expect(200, done);
+        });
+    });
+
+    describe('POST /pools/:id/transfer', () => {
+        it('HTTP 403 (Already owner)', (done) => {
+            user.post(`/v1/pools/${pool._id}/transfers`)
+                .set('Authorization', dashboardAccessToken)
+                .send({ token: poolTransfer.token })
+                .expect(async ({ body }: Response) => {
+                    expect(body.error.message).toBe('You are already an owner for this pool.');
+                })
+                .expect(403, done);
+        });
+        it('HTTP 403 (Token expired)', async () => {
+            await PoolTransfer.findByIdAndUpdate(poolTransfer._id, { expiry: new Date(Date.now() - 10000) });
+            await user
+                .post(`/v1/pools/${pool._id}/transfers`)
+                .set('Authorization', dashboardAccessToken)
+                .send({ token: poolTransfer.token })
+                .expect(async ({ body }: Response) => {
+                    expect(body.error.message).toBe('Pool transfer token has expired');
+
+                    await PoolTransfer.findByIdAndUpdate(poolTransfer._id, { expiry: poolTransfer.expiry });
+                })
+                .expect(403);
+        });
+        it('HTTP 200', (done) => {
+            user.post(`/v1/pools/${pool._id}/transfers`)
+                .set('Authorization', dashboardAccessToken2)
                 .send({ token: poolTransfer.token })
                 .expect(200, done);
         });
-        // Check pool sub and access
-        it('HTTP 201 (success)', (done) => {
-            user.get(`/v1/pool/${pool._id}/transfers`)
+    });
+
+    describe('GET /pools/:id/transfer (after)', () => {
+        it('HTTP 200', (done) => {
+            user.get(`/v1/pools/${pool._id}/transfers`)
                 .set('Authorization', dashboardAccessToken)
                 .expect(({ body }: Response) => {
-                    console.log(body);
-                    //
+                    expect(body[0].sub).toBe(sub2);
+                    expect(body[0].isExpired).toBe(true);
+                    expect(body[0].isTransferred).toBe(true);
                 })
                 .expect(200, done);
         });

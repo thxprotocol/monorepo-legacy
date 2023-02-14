@@ -15,6 +15,10 @@
         <b-dropdown-item @click.stop="$copyText(pool._id)">
             <span class="text-muted"><i class="fas fa-clipboard mr-3"></i>Copy ID </span>
         </b-dropdown-item>
+        <b-dropdown-item @click.stop="onClickTransferPool">
+            <span class="text-muted"><i class="fas fa-exchange-alt mr-3"></i>Transfer </span>
+            <BaseModalPoolTransfer :pool="pool" title="Transfer pool ownership" />
+        </b-dropdown-item>
         <b-dropdown-item size="sm" variant="dark" @click.stop="$emit('remove')">
             <span class="text-muted"><i class="fas fa-trash-alt mr-3"></i>Remove</span>
         </b-dropdown-item>
@@ -24,9 +28,20 @@
 <script lang="ts">
 import type { IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import BaseModalPoolTransfer from '../modals/BaseModalPoolTransfer.vue';
 
-@Component({})
+@Component({
+    components: {
+        BaseModalPoolTransfer,
+    },
+})
 export default class BaseDropdownMenuPool extends Vue {
+    error = '';
+
     @Prop() pool!: IPool;
+
+    onClickTransferPool() {
+        this.$bvModal.show(`modalPoolTransfer${this.pool._id}`);
+    }
 }
 </script>
