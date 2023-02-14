@@ -38,6 +38,17 @@ describe.only('ERC1155ProxyFacet', function () {
         expect(await erc1155.balanceOf(diamond.address, id)).to.eq(2);
     });
 
+    it('can batch mint erc1155', async () => {
+        const ids = [1, 2];
+        const amounts = [1, 1];
+        await expect(diamond.mintERC1155BatchFor(erc1155.address, diamond.address, ids, amounts)).to.emit(
+            diamond,
+            'ERC1155MintedBatch',
+        );
+        expect(await erc1155.balanceOf(diamond.address, ids[0])).to.eq(3);
+        expect(await erc1155.balanceOf(diamond.address, ids[1])).to.eq(1);
+    });
+
     it('can NOT mint erc1155 if not owner', async () => {
         const id = 1;
         const amount = 2;
@@ -51,7 +62,17 @@ describe.only('ERC1155ProxyFacet', function () {
             diamond,
             'ERC71155TransferredSingle',
         );
-        // expect(await erc1155.balanceOf(await newOwner.getAddress())).to.eq(1);
-        // expect(await erc1155.balanceOf(diamond.address)).to.eq(0);
+        expect(await erc1155.balanceOf(await newOwner.getAddress(), 1)).to.eq(1);
+        expect(await erc1155.balanceOf(diamond.address, 1)).to.eq(2);
+    });
+
+    it('can transfer batch nft ownership', async () => {
+        const ids = [1, 2];
+        const amounts = [1, 1];
+        await expect(
+            diamond.batchTransferFromERC1155(erc1155.address, await newOwner.getAddress(), ids, amounts),
+        ).to.emit(diamond, 'ERC71155TransferredBatch');
+        expect(await erc1155.balanceOf(await newOwner.getAddress(), 1)).to.eq(2);
+        expect(await erc1155.balanceOf(diamond.address, 1)).to.eq(1);
     });
 });

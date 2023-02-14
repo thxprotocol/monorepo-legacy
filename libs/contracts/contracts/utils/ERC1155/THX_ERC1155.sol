@@ -6,8 +6,6 @@ import '@openzeppelin/contracts/access/AccessControl.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/utils/Strings.sol';
 
-import 'hardhat/console.sol';
-
 contract THX_ERC1155 is ERC1155, AccessControl, Ownable {
 
     bytes32 public constant MINTER_ROLE = keccak256('MINTER_ROLE');
@@ -43,10 +41,8 @@ contract THX_ERC1155 is ERC1155, AccessControl, Ownable {
         uint256 amount,
         bytes memory data
     ) public override {
-            require(hasRole(MINTER_ROLE, msg.sender), 'NOT_MINTER');
-            console.log("SONO QUAAAAAAA", from);
-            safeTransferFrom(from, to, id, amount, data);
-            console.log("SONO QUAAAAAAA 2", to);
+        require(hasRole(MINTER_ROLE, msg.sender), 'NOT_MINTER');
+        super.safeTransferFrom(from, to, id, amount, data);
     }
 
     function safeBatchTransferFrom(
@@ -57,7 +53,6 @@ contract THX_ERC1155 is ERC1155, AccessControl, Ownable {
         bytes memory data
     ) public override {
         require(hasRole(MINTER_ROLE, msg.sender), 'NOT_MINTER');
-        safeBatchTransferFrom(from, to, ids, amounts, data);
+        super.safeBatchTransferFrom(from, to, ids, amounts, data);
     }
-   
 }

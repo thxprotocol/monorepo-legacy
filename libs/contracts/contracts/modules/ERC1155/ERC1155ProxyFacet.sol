@@ -16,9 +16,6 @@ import './lib/LibERC1155Storage.sol';
 import '../../utils/ERC1155/ITHX_ERC1155.sol';
 import '../../utils/Access.sol';
 
-import "hardhat/console.sol";
-
-
 contract ERC1155ProxyFacet is Access, IERC1155ProxyFacet {
      bytes32 public constant MINTER_ROLE = keccak256('MINTER_ROLE');
 
@@ -38,9 +35,6 @@ contract ERC1155ProxyFacet is Access, IERC1155ProxyFacet {
         emit ERC1155MintedBatch(_recipient, _ids, _amounts, _tokenAddress);
     }
 
-    /**
-     * @dev See {IERC1155-safeTransferFrom}.
-     */
     function transferFromERC1155(
         address _tokenAddress,
         address _to,
@@ -50,14 +44,7 @@ contract ERC1155ProxyFacet is Access, IERC1155ProxyFacet {
         require(_tokenAddress != address(0), 'NO_TOKEN');
         
         ITHX_ERC1155 multiToken = ITHX_ERC1155(_tokenAddress);
-        console.log("THIS", address(this));
-        try multiToken.safeTransferFrom(address(this),  _to, _id, _amount, "")  {
-             
-        } catch Error(string memory reason) {
-            console.log("REASON", reason);
-        }
-       
-        
+        multiToken.safeTransferFrom(address(this),  _to, _id, _amount, "");
         emit ERC71155TransferredSingle(address(this), _to, _id, _amount);
     }
 
