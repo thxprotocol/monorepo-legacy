@@ -38,7 +38,7 @@ export const callbackPostAuth = async (
     account: AccountDocument,
     { params, returnTo, prompt }: { params; returnTo; prompt },
 ) => {
-    const returnUrl = prompt.name === 'connect' ? params.return_url : returnTo;
+    const returnUrl = prompt && prompt.name === 'connect' ? params.return_url : returnTo;
     if (returnUrl.startsWith(DASHBOARD_URL)) {
         hubspot.upsert({ email: account.email });
     }
