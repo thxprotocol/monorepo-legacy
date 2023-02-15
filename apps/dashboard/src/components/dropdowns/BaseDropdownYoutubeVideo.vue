@@ -1,5 +1,5 @@
 <template>
-    <b-form-group label="YouTube Video URL">
+    <b-form-group label="Video URL">
         <b-form-input
             :value="url"
             :class="{ 'is-valid': videoId.length }"
