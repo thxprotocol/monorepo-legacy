@@ -1,7 +1,7 @@
 <template>
     <b-form-group label="Username">
         <b-input-group prepend="@">
-            <b-form-input @change="onChange" :state="state" :value="item" />
+            <b-form-input @change="onChange" :state="state" :value="username" />
         </b-input-group>
         <b-card v-if="preview" body-class="d-flex align-items-center" class="mt-3">
             <b-avatar :src="preview.profile_image_url" class="mr-2" />
@@ -25,10 +25,22 @@ import { mapGetters } from 'vuex';
     computed: mapGetters({}),
 })
 export default class BaseDropdownDiscordGuilds extends Vue {
+    username = '';
     state: boolean | null = null;
     preview: { profile_image_url: string; name: string; id: string; username: string } | null = null;
 
-    @Prop({ required: false }) item!: string;
+    @Prop({ required: false }) item!: number;
+
+    async mounted() {
+        if (this.item) {
+            const { data } = await axios({
+                method: 'POST',
+                url: '/account/twitter/user',
+                data: { userId: this.item },
+            });
+            this.username = data.username;
+        }
+    }
 
     async onChange(username: string) {
         if (username.length < 4) {
@@ -39,7 +51,7 @@ export default class BaseDropdownDiscordGuilds extends Vue {
 
         const { data } = await axios({
             method: 'POST',
-            url: '/account/twitter/user',
+            url: '/account/twitter/user/by/username',
             data: { username },
         });
 
@@ -49,7 +61,7 @@ export default class BaseDropdownDiscordGuilds extends Vue {
         } else {
             this.preview = data;
             this.state = true;
-            this.$emit('selected', username);
+            this.$emit('selected', data.id);
         }
     }
 }

@@ -11,7 +11,7 @@ export function twitterClient(config: AxiosRequestConfig) {
 const controller = async (req: Request, res: Response) => {
     const { data } = await twitterClient({
         method: 'GET',
-        url: `/users/by/username/${req.body.username}`,
+        url: `/users/${req.body.userId}`,
         params: {
             'user.fields': 'profile_image_url',
         },

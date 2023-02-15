@@ -8,6 +8,7 @@ import ReadAccountTwitter from './twitter/get.controller';
 import ReadAccountDiscord from './discord/get.controller';
 import CreateTwitterTweet from './twitter/tweet/post.controller';
 import CreateTwitterUser from './twitter/user/post.controller';
+import CreateTwitterUserByUsername from './twitter/user/by/username/post.controller';
 
 const router = express.Router();
 
@@ -23,6 +24,7 @@ router.get('/discord', guard.check(['account:read']), ReadAccountDiscord.control
 // router.post('/youtube/channel', guard.check(['account:read']), CreateTwitterTweet.controller);
 
 router.post('/twitter/tweet', guard.check(['account:read']), CreateTwitterTweet.controller);
-router.post('/twitter/user', guard.check(['account:read']), CreateTwitterUser.controller);
+router.post('/twitter/user/', guard.check(['account:read']), CreateTwitterUser.controller);
+router.post('/twitter/user/by/username', guard.check(['account:read']), CreateTwitterUserByUsername.controller);
 
 export default router;
