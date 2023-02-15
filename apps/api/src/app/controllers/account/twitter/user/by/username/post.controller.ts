@@ -1,5 +1,8 @@
 import { Request, Response } from 'express';
 import { twitterClient } from '../../post.controller';
+import { body } from 'express-validator';
+
+const validation = [body('username').isString()];
 
 const controller = async (req: Request, res: Response) => {
     const { data } = await twitterClient({
@@ -13,4 +16,4 @@ const controller = async (req: Request, res: Response) => {
     res.json(data.data);
 };
 
-export default { controller };
+export default { controller, validation };

@@ -1,5 +1,5 @@
 import express from 'express';
-import { guard } from '@thxnetwork/api/middlewares';
+import { assertRequestInput, guard } from '@thxnetwork/api/middlewares';
 import ReadAccount from './get.controller';
 import UpdateAccount from './patch.controller';
 import DeleteAccount from './delete.controller';
@@ -23,8 +23,23 @@ router.get('/discord', guard.check(['account:read']), ReadAccountDiscord.control
 // router.post('/youtube/video', guard.check(['account:read']), CreateTwitterTweet.controller);
 // router.post('/youtube/channel', guard.check(['account:read']), CreateTwitterTweet.controller);
 
-router.post('/twitter/tweet', guard.check(['account:read']), CreateTwitterTweet.controller);
-router.post('/twitter/user/', guard.check(['account:read']), CreateTwitterUser.controller);
-router.post('/twitter/user/by/username', guard.check(['account:read']), CreateTwitterUserByUsername.controller);
+router.post(
+    '/twitter/tweet',
+    assertRequestInput(CreateTwitterTweet.validation),
+    guard.check(['account:read']),
+    CreateTwitterTweet.controller,
+);
+router.post(
+    '/twitter/user/',
+    assertRequestInput(CreateTwitterUser.validation),
+    guard.check(['account:read']),
+    CreateTwitterUser.controller,
+);
+router.post(
+    '/twitter/user/by/username',
+    assertRequestInput(CreateTwitterUserByUsername.validation),
+    guard.check(['account:read']),
+    CreateTwitterUserByUsername.controller,
+);
 
 export default router;

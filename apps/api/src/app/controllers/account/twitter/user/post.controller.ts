@@ -1,12 +1,15 @@
 import { TWITTER_API_TOKEN } from '@thxnetwork/api/config/secrets';
 import axios, { AxiosRequestConfig } from 'axios';
 import { Request, Response } from 'express';
+import { body } from 'express-validator';
 
 export function twitterClient(config: AxiosRequestConfig) {
     axios.defaults.headers['Authorization'] = `Bearer ${TWITTER_API_TOKEN}`;
     axios.defaults.baseURL = 'https://api.twitter.com/2';
     return axios(config);
 }
+
+const validation = [body('userId').isString()];
 
 const controller = async (req: Request, res: Response) => {
     const { data } = await twitterClient({
@@ -20,4 +23,4 @@ const controller = async (req: Request, res: Response) => {
     res.json(data.data);
 };
 
-export default { controller };
+export default { controller, validation };
