@@ -1,15 +1,23 @@
 <template>
-    <b-form-group
-        label="User ID"
-        description="Get your user id by proving us with the URL shown when sending someone a message."
-    >
-        <b-input-group prepend="#">
-            <b-form-input @change="onChangeInput" :value="item" />
+    <b-form-group label="Username">
+        <b-input-group prepend="@">
+            <b-form-input @change="onChange" :state="state" :value="item" />
         </b-input-group>
+        <b-card v-if="preview" body-class="d-flex align-items-center" class="mt-3">
+            <b-avatar :src="preview.profile_image_url" class="mr-2" />
+            <div>
+                <div>
+                    <strong>{{ preview.name }}</strong>
+                    <small> #{{ preview.id }}</small>
+                </div>
+                <b-link target="_blank">@{{ preview.username }}</b-link>
+            </div>
+        </b-card>
     </b-form-group>
 </template>
 
 <script lang="ts">
+import axios from 'axios';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 
@@ -17,10 +25,32 @@ import { mapGetters } from 'vuex';
     computed: mapGetters({}),
 })
 export default class BaseDropdownDiscordGuilds extends Vue {
+    state: boolean | null = null;
+    preview: { profile_image_url: string; name: string; id: string; username: string } | null = null;
+
     @Prop({ required: false }) item!: string;
 
-    onChangeInput(item: string) {
-        this.$emit('selected', item);
+    async onChange(username: string) {
+        if (username.length < 4) {
+            this.preview = null;
+            this.state = null;
+            return;
+        }
+
+        const { data } = await axios({
+            method: 'POST',
+            url: '/account/twitter/user',
+            data: { username },
+        });
+
+        if (!data) {
+            this.preview = null;
+            this.state = false;
+        } else {
+            this.preview = data;
+            this.state = true;
+            this.$emit('selected', username);
+        }
     }
 }
 </script>

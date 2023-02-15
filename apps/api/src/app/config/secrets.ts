@@ -99,3 +99,4 @@ export const MIXPANEL_TOKEN = process.env.MIXPANEL_TOKEN;
 export const MIXPANEL_API_URL = 'https://api.mixpanel.com';
 export const CYPRESS_EMAIL = process.env.CYPRESS_EMAIL || 'cypress@thx.network';
 export const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
+export const TWITTER_API_TOKEN = process.env.TWITTER_API_TOKEN;

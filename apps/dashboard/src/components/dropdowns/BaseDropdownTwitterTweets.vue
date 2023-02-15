@@ -3,16 +3,16 @@
         <b-form-input
             @change="onChange"
             :value="url"
-            :state="preview ? !!preview : null"
+            :state="state"
             placeholder="e.g. https://twitter.com/twitter/status/1603121182101970945"
         />
         <b-card class="mt-3" v-if="preview">
             <template #header>
-                <b-link class="text-dark" target="_blank" :href="preview.author_url">
-                    {{ preview.author_name }}
+                <b-link class="text-dark" target="_blank" :href="`https://twitter.com/${preview.user.username}`">
+                    {{ preview.user.name }}
                 </b-link>
             </template>
-            <div v-html="preview.html"></div>
+            <div v-html="preview.tweet.text"></div>
         </b-card>
     </b-form-group>
 </template>
@@ -26,11 +26,13 @@ import { mapGetters } from 'vuex';
     computed: mapGetters({}),
 })
 export default class BaseDropdownTwitterTweets extends Vue {
-    preview: { author_name: string; author_url: string; html: string } | null = null;
+    preview: { tweet: { text: string }; user: { username: string; name: string } } | null = null;
     url = '';
+    state: boolean | null = null;
 
     @Prop({ required: false }) item!: string;
 
+    // https://twitter.com/twitter/status/1603121182101970945
     mounted() {
         this.url = this.item ? 'https://twitter.com/twitter/status/' + this.item : '';
         if (this.url) this.onChange(this.url);
@@ -38,20 +40,29 @@ export default class BaseDropdownTwitterTweets extends Vue {
 
     async onChange(url: string) {
         const urlParts = url.split('/');
-        const id = urlParts[urlParts.length - 1];
-        if (!id) {
+        const tweetId = urlParts[urlParts.length - 1];
+        const isValid = url.includes('twitter.com') && url.includes('status');
+
+        if (!isValid || !tweetId) {
             this.preview = null;
+            this.state = false;
             return;
         }
 
         const { data } = await axios({
             method: 'POST',
-            url: '/account/twitter/preview',
-            data: { url },
+            url: '/account/twitter/tweet',
+            data: { tweetId },
         });
 
-        this.preview = data;
-        this.$emit('selected', id);
+        if (!data) {
+            this.preview = null;
+            this.state = false;
+        } else {
+            this.state = true;
+            this.preview = data;
+            this.$emit('selected', tweetId);
+        }
     }
 }
 </script>
