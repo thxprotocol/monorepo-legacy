@@ -9,6 +9,10 @@
         :hide-footer="loading"
         @show="onShow"
     >
+        <p class="text-muted">
+            Configure a loyalty pool for someone else and transfer pool ownership afterwards by sharing this URL with
+            someone else.
+        </p>
         <b-form-group :key="key" v-for="(transfer, key) of pool.transfers">
             <b-input-group>
                 <b-form-input size="sm" readonly :value="transfer.url" />
@@ -24,11 +28,15 @@
                     </b-button>
                 </b-input-group-append>
             </b-input-group>
-            <div class="small text-muted" :class="transfer.isExpired ? 'text-danger' : 'text-muted'">
-                Expires at {{ format(new Date(transfer.expiry), 'dd-MM-yyyy HH:mm') }}
+            <div class="small" :class="transfer.isExpired ? 'text-danger' : 'text-muted'">
+                {{ transfer.isExpired ? 'Expired' : 'Expires' }} at
+                {{ format(new Date(transfer.expiry), 'dd-MM-yyyy HH:mm') }}
             </div>
         </b-form-group>
-        <b-link @click="$store.dispatch('pools/createTransfer', pool)">Add pool transfer URL</b-link>
+        <b-alert variant="warning" show class="mb-0">
+            <i class="fas fa-exclamation-triangle mr-2"></i>
+            Ask to sign out and sign in through this URL for the pool to be transfered.
+        </b-alert>
         <template #modal-footer="{ hide }">
             <b-button :disabled="loading" class="rounded-pill" variant="primary" @click="hide" block> Close </b-button>
         </template>
@@ -58,10 +66,6 @@ export default class BaseModalPoolTransfer extends Vue {
 
     async onShow() {
         await this.$store.dispatch('pools/listTransfers', this.pool);
-
-        if (!this.pool.transfers || !this.pool.transfers.length) {
-            await this.$store.dispatch('pools/createTransfer', this.pool);
-        }
     }
 }
 </script>

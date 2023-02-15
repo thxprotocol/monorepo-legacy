@@ -185,17 +185,6 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async createTransfer(pool: IPool) {
-        const r = await axios({
-            method: 'POST',
-            url: `/pool-transfers`,
-            headers: { 'X-PoolId': pool._id },
-        });
-
-        this.context.commit('setTransfer', r.data);
-    }
-
-    @Action({ rawError: true })
     async list(params: { archived?: boolean } = { archived: false }) {
         this.context.commit('clear');
 

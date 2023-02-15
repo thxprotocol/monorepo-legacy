@@ -8,12 +8,6 @@
     >
         <template #card-header>
             <div v-if="!isLoading">
-                <b-alert show variant="warning" v-if="outOfDate && artifacts">
-                    <i class="fas fa-exclamation-circle mr-2"></i>
-                    Please contact us in
-                    <b-link href="https://discord.com/invite/TzbbSmkE7Y" target="_blank"> Discord </b-link>
-                </b-alert>
-
                 <base-badge-network :chainId="pool.chainId" class="mr-1" />
             </div>
             <base-dropdown-menu-pool
@@ -25,35 +19,24 @@
             />
         </template>
         <template #card-body>
+            <b-alert show variant="warning" v-if="outOfDate && artifacts">
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                Pool out of date! Please start a support chat.
+            </b-alert>
             <p class="text-muted">
                 {{ pool.title }}
             </p>
-            <hr />
-            <b-container class="mb-0 text-center text-gray">
-                <b-row class="pb-2">
-                    <b-col>
-                        <strong class="text-primary" style="font-size: 1.3rem">
-                            {{
-                                (metrics.referralRewards ? metrics.referralRewards.totalClaimPoints : 0) +
-                                (metrics.pointRewards ? metrics.pointRewards.totalClaimPoints : 0)
-                            }}
-                        </strong>
-                        <div class="small">Points Claimed</div>
-                    </b-col>
-                </b-row>
-                <b-row>
-                    <b-col>
-                        <strong class="text-primary">{{ metrics.erc20Perks ? metrics.erc20Perks.payments : 0 }}</strong>
-                        <div class="small">Coin Perks Redeemed</div>
-                    </b-col>
-                    <b-col>
-                        <strong class="text-primary">{{
-                            metrics.erc721Perks ? metrics.erc721Perks.payments : 0
-                        }}</strong>
-                        <div class="small">NFT Perks Redeemed</div>
-                    </b-col>
-                </b-row>
-            </b-container>
+            <b-input-group size="sm">
+                <b-input-group-prepend class="px-2">
+                    <img width="20" :src="`https://avatars.dicebear.com/api/identicon/${pool._id}.svg`" />
+                </b-input-group-prepend>
+                <b-form-input size="sm" readonly :value="pool.address" />
+                <b-input-group-append>
+                    <b-button variant="primary" @click.stop="onClickCopy" style="white-space: normal" size="sm">
+                        <i class="fas ml-0" :class="isCopied ? 'fa-clipboard-check' : 'fa-clipboard'"></i>
+                    </b-button>
+                </b-input-group-append>
+            </b-input-group>
             <base-modal-delete
                 :id="`modalDelete-${pool._id}`"
                 @submit="remove(pool._id)"
@@ -96,8 +79,10 @@ import { IPoolAnalyticsMetrics } from '../../store/modules/pools';
     },
 })
 export default class BaseCardPool extends Vue {
+    $clipboard!: any;
     warning = '';
     error = '';
+    isCopied = false;
     isLoading = true;
     isDeploying = false;
     fromWei = fromWei;
@@ -141,6 +126,11 @@ export default class BaseCardPool extends Vue {
             this.isDeploying = false;
             this.isLoading = false;
         }
+    }
+
+    onClickCopy() {
+        this.$copyText(this.pool.address);
+        this.isCopied = true;
     }
 
     waitForAddress() {
