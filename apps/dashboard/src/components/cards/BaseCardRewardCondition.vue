@@ -15,8 +15,7 @@
                 <b-form-group label="Platform">
                     <BaseDropdownChannelTypes @selected="onSelectPlatform" :platform="platform" />
                 </b-form-group>
-                <BSpinner v-if="isLoadingPlatform" variant="dark" small />
-                <template v-if="platform && platform.type !== RewardConditionPlatform.None && !isLoadingPlatform">
+                <template v-if="platform && platform.type !== RewardConditionPlatform.None">
                     <b-form-group label="Interaction">
                         <BaseDropdownChannelActions
                             @selected="onSelectInteraction"
@@ -37,10 +36,18 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { UserProfile } from 'oidc-client-ts';
-import { platformList, platformInteractionList, IChannel, IChannelAction } from '@thxnetwork/dashboard/types/rewards';
+import {
+    platformList,
+    platformInteractionList,
+    IChannel,
+    IChannelAction,
+    getPlatform,
+    getInteraction,
+    getInteractionComponent,
+} from '@thxnetwork/dashboard/types/rewards';
 import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
 import BaseDropdownChannelTypes from '../dropdowns/BaseDropdownChannelTypes.vue';
 import BaseDropdownChannelActions from '../dropdowns/BaseDropdownChannelActions.vue';
@@ -81,7 +88,6 @@ export default class BaseCardRewardCondition extends Vue {
     interaction: IChannelAction = platformInteractionList[0];
     content = '';
     isVisible = false;
-
     profile!: UserProfile;
 
     @Prop({ required: false }) rewardCondition!: {
@@ -95,31 +101,19 @@ export default class BaseCardRewardCondition extends Vue {
     }
 
     async mounted() {
-        this.isLoadingPlatform = true;
-        this.platform = this.rewardCondition
-            ? (platformList.find((c) => c.type === this.rewardCondition.platform) as IChannel)
-            : platformList[0];
-        this.interaction = this.rewardCondition
-            ? this.getInteraction(this.rewardCondition.interaction)
-            : this.getInteraction(0);
+        this.platform = this.rewardCondition ? getPlatform(this.rewardCondition.platform) : getPlatform(0);
+        this.interaction = this.rewardCondition ? getInteraction(this.rewardCondition.interaction) : getInteraction(0);
         this.content = this.rewardCondition ? this.rewardCondition.content : '';
+
         this.isVisible = !!this.platform.type;
-        this.isLoadingPlatform = false;
     }
 
-    onClickConnect() {
-        this.$store.dispatch('account/connectRedirect', {
-            platform: this.platform.type,
-            returnUrl: window.location.href,
-        });
-    }
-
-    async onSelectPlatform(platform: IChannel) {
+    onSelectPlatform(platform: IChannel) {
         if (!platform) return;
 
-        this.isLoadingPlatform = true;
         this.platform = platform;
-        this.isLoadingPlatform = false;
+        this.content = '';
+        this.onSelectInteraction(this.actions[0]);
         this.change();
     }
 
@@ -127,10 +121,11 @@ export default class BaseCardRewardCondition extends Vue {
         if (!interaction) return;
 
         this.interaction = interaction;
-        this.interactionComponent = this.getInteractionComponent();
+        this.interactionComponent = getInteractionComponent(this.interaction.type);
+        this.change();
     }
 
-    onSelectContent(content: any) {
+    onSelectContent(content: string) {
         this.content = content;
         this.change();
     }
@@ -142,28 +137,6 @@ export default class BaseCardRewardCondition extends Vue {
             interaction: this.interaction.type,
             content: this.content,
         });
-    }
-
-    getInteractionComponent() {
-        switch (this.interaction.type) {
-            case RewardConditionInteraction.YouTubeSubscribe:
-                return 'BaseDropdownYoutubeChannels';
-            case RewardConditionInteraction.YouTubeLike:
-                return 'BaseDropdownYoutubeVideo';
-            case RewardConditionInteraction.TwitterLike:
-            case RewardConditionInteraction.TwitterRetweet:
-                return 'BaseDropdownTwitterTweets';
-            case RewardConditionInteraction.TwitterFollow:
-                return 'BaseDropdownTwitterUsers';
-            case RewardConditionInteraction.DiscordGuildJoined:
-                return 'BaseDropdownDiscordGuilds';
-            default:
-                return '';
-        }
-    }
-
-    getInteraction(interactionType: RewardConditionInteraction): IChannelAction {
-        return platformInteractionList.find((a) => a.type === interactionType) as IChannelAction;
     }
 }
 </script>

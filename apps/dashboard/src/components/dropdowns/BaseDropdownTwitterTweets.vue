@@ -1,13 +1,11 @@
 <template>
-    <b-form-group label="Your Tweet">
-        <b-input-group>
-            <b-form-input
-                @change="onChange"
-                :value="url"
-                :state="preview ? !!preview : null"
-                placeholder="https://twitter.com/twitter/status/1603121182101970945"
-            />
-        </b-input-group>
+    <b-form-group label="Tweet URL">
+        <b-form-input
+            @change="onChange"
+            :value="url"
+            :state="preview ? !!preview : null"
+            placeholder="e.g. https://twitter.com/twitter/status/1603121182101970945"
+        />
         <b-card class="mt-3" v-if="preview">
             <template #header>
                 <b-link class="text-dark" target="_blank" :href="preview.author_url">
@@ -39,8 +37,8 @@ export default class BaseDropdownTwitterTweets extends Vue {
     }
 
     async onChange(url: string) {
-        const splitted = url.split('/');
-        const id = splitted[splitted.length - 1];
+        const urlParts = url.split('/');
+        const id = urlParts[urlParts.length - 1];
         if (!id) {
             this.preview = null;
             return;

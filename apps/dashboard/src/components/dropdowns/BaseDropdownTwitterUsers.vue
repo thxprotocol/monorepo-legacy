@@ -1,44 +1,25 @@
 <template>
-    <b-form-group label="Your Profiles">
-        <b-dropdown variant="link" class="dropdown-select bg-white">
-            <template #button-content>
-                <div v-if="item" class="text-overflow-ellipsis">
-                    {{ item.name }}<b-badge class="ml-2" variant="secondary">@{{ item.username }}</b-badge>
-                </div>
-            </template>
-            <b-dropdown-item-button :key="item.id" v-for="item of items" @click="onItemClick(item)">
-                {{ item.name }}<b-badge class="ml-2" variant="secondary">@{{ item.username }}</b-badge>
-            </b-dropdown-item-button>
-        </b-dropdown>
+    <b-form-group
+        label="User ID"
+        description="Get your user id by proving us with the URL shown when sending someone a message."
+    >
+        <b-input-group prepend="#">
+            <b-form-input @change="onChangeInput" :value="item" />
+        </b-input-group>
     </b-form-group>
 </template>
 
 <script lang="ts">
-import { BDropdown, BDropdownItemButton, BBadge, BSpinner } from 'bootstrap-vue';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 
 @Component({
-    components: {
-        BBadge,
-        BDropdown,
-        BDropdownItemButton,
-        BSpinner,
-    },
     computed: mapGetters({}),
 })
-export default class BaseDropdownTwitterUsers extends Vue {
-    @Prop() items!: any;
+export default class BaseDropdownDiscordGuilds extends Vue {
+    @Prop({ required: false }) item!: string;
 
-    item: any = null;
-
-    mounted() {
-        this.item = this.items[0];
-        this.onItemClick(this.item);
-    }
-
-    onItemClick(item: any) {
-        this.item = item;
+    onChangeInput(item: string) {
         this.$emit('selected', item);
     }
 }
