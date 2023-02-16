@@ -9,7 +9,7 @@ const controller = async (req: Request, res: Response) => {
     res.json({
         ...merchant.toJSON(),
         detailsSubmitted: stripeConnectAccount.details_submitted,
-        chargesEnabled: false,
+        chargesEnabled: stripeConnectAccount.charges_enabled,
         payoutsEnabled: stripeConnectAccount.payouts_enabled,
     });
 };

@@ -7,46 +7,58 @@
                     <strong>Commerce</strong>
                     <p class="text-muted">Enable FIAT payment methods to enable your users to buy your perks.</p>
                 </b-col>
-                <b-col mb="8">
-                    <b-alert v-if="!profile.merchant" show variant="success" class="d-flex align-items-center">
-                        <i class="fas fa-tags mr-2"></i>
-                        Become a merchant and unlock the ability to sell your perks!
-                        <b-button
-                            class="rounded-pill ml-auto"
-                            variant="primary"
-                            @click="onClickMerchantCreate"
-                            :disabled="isLoadingMerchantCreate"
-                        >
-                            <b-spinner v-if="isLoadingMerchantCreate" small variant="light" class="mr-2" />
-                            Become a Merchant
-                        </b-button>
-                    </b-alert>
-                    <b-alert
-                        show
-                        variant="warning"
-                        class="center-center"
-                        v-if="merchantStatus.filter((s) => !s.status).length"
-                    >
-                        <i class="fas fa-exclamation-triangle mr-2"></i>
-                        You have not finished the configuration of your Merchant account.
-                    </b-alert>
-                    <b-form-group label="Stripe Connect ID">
-                        <b-form-input readonly disabled :value="profile.merchant.stripeConnectId" />
-                    </b-form-group>
-                    <b-list-group>
-                        <b-list-item v-for="(s, key) in merchantStatus" :key="key">
-                            <b-link v-if="!s.status" @click="onClickMerchantLink">
-                                <i class="fas fa-check-circle mr-2" :class="s.status ? 'text-success' : 'text-muted'">
-                                </i>
-                                {{ s.label }}
-                            </b-link>
-                            <template v-else>
-                                <i class="fas fa-check-circle mr-2" :class="s.status ? 'text-success' : 'text-muted'">
-                                </i>
-                                {{ s.label }}
-                            </template>
-                        </b-list-item>
-                    </b-list-group>
+                <b-col md="8">
+                    <b-form-row>
+                        <b-col md="8">
+                            <b-alert v-if="!profile.merchant" show variant="success" class="d-flex align-items-center">
+                                <i class="fas fa-tags mr-2"></i>
+                                Become a merchant and unlock the ability to sell your perks!
+                                <b-button
+                                    class="rounded-pill ml-auto"
+                                    variant="primary"
+                                    @click="onClickMerchantCreate"
+                                    :disabled="isLoadingMerchantCreate"
+                                >
+                                    <b-spinner v-if="isLoadingMerchantCreate" small variant="light" class="mr-2" />
+                                    Become a Merchant
+                                </b-button>
+                            </b-alert>
+                            <b-alert
+                                show
+                                variant="warning"
+                                class="center-center"
+                                v-if="merchantStatus.filter((s) => !s.status).length"
+                            >
+                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                You have not finished the configuration of your Merchant account.
+                            </b-alert>
+                            <b-form-group label="Stripe Connect ID">
+                                <b-form-input readonly disabled :value="profile.merchant.stripeConnectId" />
+                            </b-form-group>
+                        </b-col>
+                        <b-col md="4">
+                            <b-list-group class="list-inline">
+                                <b-list-group-item v-for="(s, key) in merchantStatus" :key="key">
+                                    <b-link v-if="!s.status" @click="onClickMerchantLink">
+                                        <i
+                                            class="fas fa-check-circle mr-2"
+                                            :class="s.status ? 'text-success' : 'text-muted'"
+                                        >
+                                        </i>
+                                        {{ s.label }}
+                                    </b-link>
+                                    <template v-else>
+                                        <i
+                                            class="fas fa-check-circle mr-2"
+                                            :class="s.status ? 'text-success' : 'text-muted'"
+                                        >
+                                        </i>
+                                        {{ s.label }}
+                                    </template>
+                                </b-list-group-item>
+                            </b-list-group>
+                        </b-col>
+                    </b-form-row>
                 </b-col>
             </b-form-row>
             <hr />
@@ -55,59 +67,7 @@
                     <strong>Widget Theming</strong>
                     <p class="text-muted">Configure background and logo used on the user authentication pages.</p>
                 </b-col>
-                <b-col mb="8">
-                    <b-form-row>
-                        <b-col md="8">
-                            <b-form-group label="Logo URL">
-                                <b-form-file class="mb-3" @change="onUpload($event, 'logoImgUrl')" accept="image/*" />
-                            </b-form-group>
-                        </b-col>
-                        <b-col md="4">
-                            <b-card body-class="py-5 text-center" class="mb-3" bg-variant="light">
-                                <template v-if="logoImgUrl">
-                                    <img
-                                        width="100%"
-                                        height="auto"
-                                        class="m-0"
-                                        alt="Signin page logo image"
-                                        :src="logoImgUrl"
-                                    /><br />
-                                    <b-link @click="onClickRemoveLogo" class="text-danger">Remove</b-link>
-                                </template>
-                                <span v-else class="text-gray">Preview logo URL</span>
-                            </b-card>
-                        </b-col>
-                    </b-form-row>
-                    <b-form-row>
-                        <b-col md="8">
-                            <b-form-group label="Background URL">
-                                <b-form-file @change="onUpload($event, 'backgroundImgUrl')" accept="image/*" />
-                            </b-form-group>
-                        </b-col>
-                        <b-col md="4">
-                            <b-card body-class="py-5 text-center" class="mb-3" bg-variant="light">
-                                <template v-if="backgroundImgUrl">
-                                    <img
-                                        width="100%"
-                                        height="auto"
-                                        class="m-0"
-                                        alt="Signin page background image"
-                                        :src="backgroundImgUrl"
-                                    /><br />
-                                    <b-link @click="onClickRemoveBackground" class="text-danger">Remove</b-link>
-                                </template>
-                                <span v-else class="text-gray">Preview background URL</span>
-                            </b-card>
-                        </b-col>
-                    </b-form-row>
-                </b-col>
-            </b-form-row>
-            <b-form-row>
-                <b-col md="4">
-                    <strong>Widget Theming</strong>
-                    <p class="text-muted">Configure background and logo used on the user authentication pages.</p>
-                </b-col>
-                <b-col mb="8">
+                <b-col md="8">
                     <b-form-row>
                         <b-col md="8">
                             <b-form-group label="Logo URL">
@@ -195,6 +155,7 @@ export default class SettingsView extends Vue {
     isLoadingMerchantCreateLink = false;
 
     get merchantStatus() {
+        if (!this.merchant) return [];
         return [
             {
                 status: this.merchant.detailsSubmitted,
