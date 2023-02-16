@@ -26,7 +26,6 @@ app.use(express.static(assetsPath));
 app.use(
     express.json({
         verify(req: Request, res, buf, encoding: BufferEncoding) {
-            console.log(buf, encoding);
             if (buf && buf.length) {
                 req.rawBody = buf.toString(encoding || 'utf8');
             }
