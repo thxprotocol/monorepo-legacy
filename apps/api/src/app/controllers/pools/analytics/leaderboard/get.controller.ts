@@ -9,6 +9,7 @@ import mongoose from 'mongoose';
 import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
+import { IAccount } from '@thxnetwork/api/models/Account';
 
 export const validation = [param('id').isMongoId()];
 
@@ -67,21 +68,26 @@ export const controller = async (req: Request, res: Response) => {
         ...topMilestonesClaimsBySub,
     ];
 
-    const leaderBoard: { sub: string; score: number; name: string; email: string }[] = [];
+    const leaderBoard: { sub: string; score: number; account: IAccount }[] = [];
     // Group by sub and sort by highest score
     for (let i = 0; i < leaderBoardQueryResultMerged.length; i++) {
         const data = leaderBoardQueryResultMerged[i];
         const sub = data._id;
+        const account = await AccountProxy.getById(sub);
+        const address = await account.getAddress(pool.chainId);
+
         if (i === 0) {
-            const account = await AccountProxy.getById(sub);
-            leaderBoard.push({ sub, score: data.total_amount, name: account.firstName, email: account.email });
+            leaderBoard.push({
+                sub,
+                score: data.total_amount,
+                account: { ...account, address },
+            });
         } else {
             const index = leaderBoard.map((x) => x.sub).indexOf(data._id);
             if (index >= 0) {
                 leaderBoard[index].score += data.total_amount;
             } else {
-                const account = await AccountProxy.getById(sub);
-                leaderBoard.push({ sub, score: data.total_amount, name: account.firstName, email: account.email });
+                leaderBoard.push({ sub, score: data.total_amount, account: { ...account, address } });
             }
         }
     }

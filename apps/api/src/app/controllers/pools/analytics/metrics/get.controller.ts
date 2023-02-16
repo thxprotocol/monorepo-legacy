@@ -9,6 +9,7 @@ import { ERC721Perk, ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Per
 import mongoose from 'mongoose';
 import { ReferralReward, ReferralRewardDocument } from '@thxnetwork/api/models/ReferralReward';
 import { MilestoneReward, MilestoneRewardDocument } from '@thxnetwork/api/models/MilestoneReward';
+import { DailyReward, DailyRewardDocument } from '@thxnetwork/api/models/DailyReward';
 
 export const validation = [param('id').isMongoId()];
 
@@ -32,6 +33,13 @@ export const controller = async (req: Request, res: Response) => {
         model: ERC721Perk,
         poolId: String(pool._id),
         amountField: 'pointPrice',
+    });
+    const dailyRewardsQueryResult = await runAggregateQuery<DailyRewardDocument>({
+        joinTable: 'dailyrewardclaims',
+        key: 'dailyRewardId',
+        model: DailyReward,
+        poolId: String(pool._id),
+        amountField: 'amount',
     });
     const referralRewardsQueryResult = await runAggregateQuery<ReferralRewardDocument>({
         joinTable: 'referralrewardclaims',
@@ -68,6 +76,11 @@ export const controller = async (req: Request, res: Response) => {
             total: erc721PerksQueryResult.recordsCount,
             payments: erc721PerksQueryResult.claimsCount,
             totalAmount: erc721PerksQueryResult.totalAmount,
+        },
+        dailyRewards: {
+            total: dailyRewardsQueryResult.recordsCount,
+            claims: dailyRewardsQueryResult.claimsCount,
+            totalClaimPoints: dailyRewardsQueryResult.totalAmount,
         },
         referralRewards: {
             total: referralRewardsQueryResult.recordsCount,

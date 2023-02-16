@@ -1,5 +1,31 @@
 import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
 
+export function getInteractionComponent(interactionType: RewardConditionInteraction) {
+    switch (interactionType) {
+        case RewardConditionInteraction.YouTubeSubscribe:
+            return 'BaseDropdownYoutubeChannels';
+        case RewardConditionInteraction.YouTubeLike:
+            return 'BaseDropdownYoutubeVideo';
+        case RewardConditionInteraction.TwitterLike:
+        case RewardConditionInteraction.TwitterRetweet:
+            return 'BaseDropdownTwitterTweets';
+        case RewardConditionInteraction.TwitterFollow:
+            return 'BaseDropdownTwitterUsers';
+        case RewardConditionInteraction.DiscordGuildJoined:
+            return 'BaseDropdownDiscordGuilds';
+        default:
+            return '';
+    }
+}
+
+export const getInteraction = (interactionType: RewardConditionInteraction): IChannelAction => {
+    return platformInteractionList.find((a) => a.type === interactionType) as IChannelAction;
+};
+
+export const getPlatform = (platformType: RewardConditionPlatform) => {
+    return platformList.find((c) => c.type === platformType) as IChannel;
+};
+
 export const platformList: IChannel[] = [
     {
         type: RewardConditionPlatform.None,

@@ -8,6 +8,7 @@ import { ERC721Perk, ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Per
 import mongoose from 'mongoose';
 import { ReferralReward, ReferralRewardDocument } from '@thxnetwork/api/models/ReferralReward';
 import { MilestoneReward, MilestoneRewardDocument } from '@thxnetwork/api/models/MilestoneReward';
+import { DailyReward, DailyRewardDocument } from '@thxnetwork/api/models/DailyReward';
 
 export const validation = [param('id').isMongoId(), query('startDate').exists(), query('endDate').exists()];
 
@@ -69,6 +70,15 @@ export const controller = async (req: Request, res: Response) => {
         startDate,
         endDate,
     });
+    const dailyRewardsQueryResult = await runAggregateQuery<DailyRewardDocument>({
+        joinTable: 'dailyrewardclaims',
+        key: 'dailyRewardId',
+        model: DailyReward,
+        poolId: String(pool._id),
+        amountField: 'amount',
+        startDate,
+        endDate,
+    });
 
     const result: any = {
         _id: pool._id,
@@ -82,6 +92,12 @@ export const controller = async (req: Request, res: Response) => {
             return {
                 day: x._id,
                 totalAmount: x.total_amount,
+            };
+        }),
+        dailyRewards: dailyRewardsQueryResult.map((x) => {
+            return {
+                day: x._id,
+                totalClaimPoints: x.total_amount,
             };
         }),
         milestoneRewards: milestoneRewardsQueryResult.map((x) => {
@@ -103,6 +119,7 @@ export const controller = async (req: Request, res: Response) => {
             };
         }),
     };
+
     res.json(result);
 };
 

@@ -79,7 +79,7 @@ export class TwitterService {
 
         while (resultCount >= maxResults) {
             const { data } = await twitterClient({
-                url: `/users/${channelItem}/followers`,
+                url: `/users/${user.id}/following`,
                 method: 'GET',
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
@@ -89,7 +89,7 @@ export class TwitterService {
 
             resultCount = data.meta.result_count;
             params = Object.assign(params, { pagination_token: data.meta.next_token });
-            result = !!data.data.filter((u: { id: number }) => u.id === user.id).length;
+            result = !!data.data.filter((u: { id: string }) => u.id === channelItem).length;
 
             if (!data.meta.next_token) break;
         }

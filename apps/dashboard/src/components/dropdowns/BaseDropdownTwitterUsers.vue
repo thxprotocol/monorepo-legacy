@@ -1,45 +1,68 @@
 <template>
-    <b-form-group label="Your Profiles">
-        <b-dropdown variant="link" class="dropdown-select bg-white">
-            <template #button-content>
-                <div v-if="item" class="text-overflow-ellipsis">
-                    {{ item.name }}<b-badge class="ml-2" variant="secondary">@{{ item.username }}</b-badge>
+    <b-form-group label="Username">
+        <b-input-group prepend="@">
+            <b-form-input @change="onChange" :state="state" :value="username" />
+        </b-input-group>
+        <b-card v-if="preview" body-class="d-flex align-items-center" class="mt-3">
+            <b-avatar :src="preview.profile_image_url" class="mr-2" />
+            <div>
+                <div>
+                    <strong>{{ preview.name }}</strong>
+                    <small> #{{ preview.id }}</small>
                 </div>
-            </template>
-            <b-dropdown-item-button :key="item.id" v-for="item of items" @click="onItemClick(item)">
-                {{ item.name }}<b-badge class="ml-2" variant="secondary">@{{ item.username }}</b-badge>
-            </b-dropdown-item-button>
-        </b-dropdown>
+                <b-link target="_blank">@{{ preview.username }}</b-link>
+            </div>
+        </b-card>
     </b-form-group>
 </template>
 
 <script lang="ts">
-import { BDropdown, BDropdownItemButton, BBadge, BSpinner } from 'bootstrap-vue';
+import axios from 'axios';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 
 @Component({
-    components: {
-        BBadge,
-        BDropdown,
-        BDropdownItemButton,
-        BSpinner,
-    },
     computed: mapGetters({}),
 })
-export default class BaseDropdownTwitterUsers extends Vue {
-    @Prop() items!: any;
+export default class BaseDropdownDiscordGuilds extends Vue {
+    username = '';
+    state: boolean | null = null;
+    preview: { profile_image_url: string; name: string; id: string; username: string } | null = null;
 
-    item: any = null;
+    @Prop({ required: false }) item!: number;
 
-    mounted() {
-        this.item = this.items[0];
-        this.onItemClick(this.item);
+    async mounted() {
+        if (this.item) {
+            const { data } = await axios({
+                method: 'POST',
+                url: '/account/twitter/user',
+                data: { userId: this.item },
+            });
+            this.username = data.username;
+        }
     }
 
-    onItemClick(item: any) {
-        this.item = item;
-        this.$emit('selected', item);
+    async onChange(username: string) {
+        if (username.length < 4) {
+            this.preview = null;
+            this.state = null;
+            return;
+        }
+
+        const { data } = await axios({
+            method: 'POST',
+            url: '/account/twitter/user/by/username',
+            data: { username },
+        });
+
+        if (!data) {
+            this.preview = null;
+            this.state = false;
+        } else {
+            this.preview = data;
+            this.state = true;
+            this.$emit('selected', data.id);
+        }
     }
 }
 </script>
