@@ -135,6 +135,8 @@ describe('ERC721 Perks', () => {
                 image,
                 erc721Id: String(erc721._id),
                 erc721metadataIds: JSON.stringify([erc721metadata._id]),
+                price: 0,
+                priceCurrency: 'USD',
                 pointPrice,
                 platform,
                 interaction,

@@ -1,11 +1,13 @@
 import { body, check } from 'express-validator';
 import { Request, Response } from 'express';
 import { createERC721Perk } from '@thxnetwork/api/util/rewards';
-import ImageService from '@thxnetwork/api/services/ImageService';
 import { TERC721Perk } from '@thxnetwork/types/interfaces/ERC721Perk';
+import { NotFoundError } from '@thxnetwork/api/util/errors';
+import ImageService from '@thxnetwork/api/services/ImageService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
-import { NotFoundError } from '@thxnetwork/api/util/errors';
+import MerchantService from '@thxnetwork/api/services/MerchantService';
+import { ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
 
 const validation = [
     body('title').exists().isString(),
@@ -18,6 +20,8 @@ const validation = [
     body('interaction').optional().isNumeric(),
     body('content').optional().isString(),
     body('pointPrice').optional().isNumeric(),
+    body('price').isInt(),
+    body('priceCurrency').isString(),
     check('file')
         .optional()
         .custom((value, { req }) => {
@@ -30,14 +34,15 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721 Rewards']
     let image: string;
 
+    const pool = await PoolService.getById(req.header('X-PoolId'));
+    if (!pool) throw new NotFoundError('Could not find pool');
+
     if (req.file) {
         const response = await ImageService.upload(req.file);
         image = ImageService.getPublicUrl(response.key);
     }
 
     const metadataIdList = JSON.parse(req.body.erc721metadataIds);
-    const pool = await PoolService.getById(req.header('X-PoolId'));
-    if (!pool) throw new NotFoundError('Could not find pool');
 
     // Get one metadata so we can obtain erc721Id from it
     const metadata = await ERC721Service.findMetadataById(metadataIdList[0]);
@@ -70,6 +75,8 @@ const controller = async (req: Request, res: Response) => {
                 expiryDate: req.body.expiryDate,
                 pointPrice: req.body.pointPrice,
                 isPromoted: req.body.isPromoted,
+                price: req.body.price,
+                priceCurrency: req.body.priceCurrency,
             } as TERC721Perk;
             const { reward, claims } = await createERC721Perk(pool, config);
 

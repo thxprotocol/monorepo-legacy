@@ -1,3 +1,5 @@
+import { TMerchant } from '@thxnetwork/types/merchant';
+
 export enum AccountPlanType {
     Basic = 0,
     Premium = 1,
@@ -5,6 +7,7 @@ export enum AccountPlanType {
 
 export interface IAccount {
     sub: string;
+    merchant: TMerchant;
     privateKey: string;
     address: string;
     firstName: string;

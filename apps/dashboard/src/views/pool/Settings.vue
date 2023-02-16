@@ -2,12 +2,101 @@
     <div>
         <h2 class="mb-3">Settings</h2>
         <b-card class="shadow-sm mb-5">
+            <template v-if="profile && profile.plan === 1">
+                <b-form-row>
+                    <b-col md="4">
+                        <strong>Commerce</strong>
+                        <p class="text-muted">Enable FIAT payment methods to enable your users to buy your perks.</p>
+                    </b-col>
+                    <b-col md="8">
+                        <b-form-row v-if="!profile.merchant">
+                            <b-col md="12">
+                                <b-alert show variant="success" class="d-flex align-items-center">
+                                    <i class="fas fa-tags mr-2"></i>
+                                    Become a merchant and unlock the ability to sell your perks!
+                                    <b-button
+                                        class="rounded-pill ml-auto"
+                                        variant="primary"
+                                        @click="onClickMerchantCreate"
+                                        :disabled="isLoadingMerchantCreate"
+                                    >
+                                        <b-spinner v-if="isLoadingMerchantCreate" small variant="light" class="mr-2" />
+                                        Become a Merchant
+                                    </b-button>
+                                </b-alert>
+                            </b-col>
+                        </b-form-row>
+                        <b-form-row v-else>
+                            <b-col md="8">
+                                <b-form-group label="Merchant ID">
+                                    <b-form-input
+                                        readonly
+                                        disabled
+                                        :value="profile.merchant ? profile.merchant.stripeConnectId : ''"
+                                    />
+                                </b-form-group>
+                                <b-alert
+                                    show
+                                    variant="warning"
+                                    class="center-center"
+                                    v-if="
+                                        merchantStatus.filter((s) => !s.status).length &&
+                                        merchantStatus.filter((s) => !s.status).length < 3
+                                    "
+                                >
+                                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                                    You have not finished the configuration of your Merchant account.
+                                </b-alert>
+                            </b-col>
+                            <b-col md="4">
+                                <b-form-group label="Connection">
+                                    <b-list-group class="mb-3">
+                                        <b-list-group-item v-for="(s, key) in merchantStatus" :key="key">
+                                            <b-link v-if="!s.status" @click="onClickMerchantLink">
+                                                <i
+                                                    class="fas fa-check-circle mr-2"
+                                                    :class="s.status ? 'text-success' : 'text-muted'"
+                                                >
+                                                </i>
+                                                {{ s.label }}
+                                            </b-link>
+                                            <template v-else>
+                                                <i
+                                                    class="fas fa-check-circle mr-2"
+                                                    :class="s.status ? 'text-success' : 'text-muted'"
+                                                >
+                                                </i>
+                                                {{ s.label }}
+                                            </template>
+                                        </b-list-group-item>
+                                    </b-list-group>
+                                    <b-button
+                                        block
+                                        variant="light"
+                                        @click="onClickDisconnectMerchant"
+                                        class="text-danger"
+                                    >
+                                        <b-spinner
+                                            v-if="isLoadingMerchantDisconnect"
+                                            small
+                                            variant="light"
+                                            class="mr-2"
+                                        />
+                                        Disconnect
+                                    </b-button>
+                                </b-form-group>
+                            </b-col>
+                        </b-form-row>
+                    </b-col>
+                </b-form-row>
+                <hr />
+            </template>
             <b-form-row>
                 <b-col md="4">
                     <strong>Widget Theming</strong>
                     <p class="text-muted">Configure background and logo used on the user authentication pages.</p>
                 </b-col>
-                <b-col mb="8">
+                <b-col md="8">
                     <b-form-row>
                         <b-col md="8">
                             <b-form-group label="Logo URL">
@@ -67,6 +156,7 @@ import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import { TBrand } from '@thxnetwork/dashboard/store/modules/brands';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { IAccount } from '@thxnetwork/dashboard/types/account';
+import { TMerchant } from '@thxnetwork/types/merchant';
 
 @Component({
     computed: {
@@ -86,10 +176,31 @@ export default class SettingsView extends Vue {
     chainId: ChainId = ChainId.PolygonMumbai;
     pools!: IPools;
     brands!: { [poolId: string]: TBrand };
+    merchant!: TMerchant;
 
     logoImgUrl = '';
     backgroundImgUrl = '';
+    isLoadingMerchantCreate = false;
+    isLoadingMerchantCreateLink = false;
+    isLoadingMerchantDisconnect = false;
 
+    get merchantStatus() {
+        if (!this.merchant) return [];
+        return [
+            {
+                status: this.merchant.detailsSubmitted,
+                label: 'Provide company details',
+            },
+            {
+                status: this.merchant.chargesEnabled,
+                label: 'Enable user payments',
+            },
+            {
+                status: this.merchant.payoutsEnabled,
+                label: 'Enable company payouts',
+            },
+        ];
+    }
     get pool() {
         return this.pools[this.$route.params.id];
     }
@@ -108,21 +219,19 @@ export default class SettingsView extends Vue {
 
     async mounted() {
         this.chainId = this.pool.chainId;
-        this.get().then(() => {
-            this.loading = false;
-        });
-    }
 
-    async upload(file: File) {
-        return await this.$store.dispatch('images/upload', file);
-    }
-
-    async get() {
         await this.$store.dispatch('brands/getForPool', this.pool._id);
         if (this.brand) {
             this.backgroundImgUrl = this.brand.backgroundImgUrl;
             this.logoImgUrl = this.brand.logoImgUrl;
         }
+        await this.$store.dispatch('merchants/read');
+
+        this.loading = false;
+    }
+
+    async upload(file: File) {
+        return await this.$store.dispatch('images/upload', file);
     }
 
     async onUpload(event: any, key: string) {
@@ -151,6 +260,24 @@ export default class SettingsView extends Vue {
             },
         });
         this.loading = false;
+    }
+    async onClickMerchantLink() {
+        this.isLoadingMerchantCreateLink = true;
+        await this.$store.dispatch('merchants/createLink', this.pool);
+        this.isLoadingMerchantCreateLink = false;
+    }
+    async onClickMerchantCreate() {
+        this.isLoadingMerchantCreate = true;
+        await this.$store.dispatch('merchants/create');
+        await this.$store.dispatch('account/getProfile');
+        await this.$store.dispatch('merchants/read');
+        this.isLoadingMerchantCreate = false;
+    }
+    async onClickDisconnectMerchant() {
+        this.isLoadingMerchantDisconnect = true;
+        await this.$store.dispatch('merchants/delete');
+        await this.$store.dispatch('account/getProfile');
+        this.isLoadingMerchantDisconnect = false;
     }
 }
 </script>

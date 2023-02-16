@@ -22,6 +22,7 @@ import rewardsRouter from './rewards/rewards.router';
 import perksRouter from './perks/perks.router';
 import dailyRewardsRouter from './daily-rewards/daily-rewards.router';
 import milestonesRewardRouter from './milestone-reward/milestone-rewards.router';
+import merchantsRouter from './merchants/merchants.router';
 import webhooksRouter from './webhooks/webhooks.router';
 import widgetsRouter from './widgets/widgets.router';
 import dataRouter from './data/data.router';
@@ -39,6 +40,7 @@ router.use('/rewards', rewardsRouter);
 router.use('/perks', perksRouter);
 router.use('/webhook', webhooksRouter);
 router.use('/data', dataRouter);
+router.use('/merchants', merchantsRouter);
 router.use('/brands', brandsRouter);
 
 router.use(checkJwt);
