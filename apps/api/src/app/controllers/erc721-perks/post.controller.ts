@@ -32,7 +32,7 @@ const validation = [
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721 Rewards']
-    let image: string, paymentLinkId: string;
+    let image: string;
 
     const pool = await PoolService.getById(req.header('X-PoolId'));
     if (!pool) throw new NotFoundError('Could not find pool');
@@ -77,28 +77,8 @@ const controller = async (req: Request, res: Response) => {
                 isPromoted: req.body.isPromoted,
                 price: req.body.price,
                 priceCurrency: req.body.priceCurrency,
-                paymentLinkId,
             } as TERC721Perk;
-            const created = await createERC721Perk(pool, config);
-            const claims = created.claims;
-
-            let reward = created.reward;
-
-            // If price details are given create required Stripe objects
-            if (req.body.price > 0 && req.body.priceCurrency) {
-                const paymentLink = await MerchantService.createPaymentLink(
-                    req.auth.sub,
-                    req.body.price,
-                    req.body.priceCurrency,
-                    String(created.reward._id),
-                );
-
-                reward = await ERC721Perk.findByIdAndUpdate(
-                    reward._id,
-                    { price: req.body.price, priceCurrency: req.body.priceCurrency, paymentLinkId: paymentLink.id },
-                    { new: true },
-                );
-            }
+            const { reward, claims } = await createERC721Perk(pool, config);
 
             return { ...reward.toJSON(), claims, erc721 };
         }),

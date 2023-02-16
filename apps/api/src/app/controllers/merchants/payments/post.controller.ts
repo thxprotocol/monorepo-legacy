@@ -1,4 +1,4 @@
-import { STRIPE_SECRET_TEST_WEBHOOK } from '@thxnetwork/api/config/secrets';
+import { STRIPE_SECRET_WEBHOOK } from '@thxnetwork/api/config/secrets';
 import { ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
 import { stripe } from '@thxnetwork/api/util/stripe';
 import { Request, Response } from 'express';
@@ -6,10 +6,10 @@ import { Request, Response } from 'express';
 const controller = async (req: Request, res: Response) => {
     let event = req.body;
 
-    if (STRIPE_SECRET_TEST_WEBHOOK) {
+    if (STRIPE_SECRET_WEBHOOK) {
         const signature = req.header('stripe-signature');
         try {
-            event = stripe.webhooks.constructEvent(req.rawBody, signature, STRIPE_SECRET_TEST_WEBHOOK);
+            event = stripe.webhooks.constructEvent(req.rawBody, signature, STRIPE_SECRET_WEBHOOK);
         } catch (err) {
             console.log(`⚠️  Webhook signature verification failed.`, err.message);
             return res.sendStatus(400);
@@ -23,7 +23,8 @@ const controller = async (req: Request, res: Response) => {
             break;
         }
         case 'payment_intent.succeeded': {
-            console.log(event);
+            const paymentIntent = event.data.object;
+            console.log({ paymentIntent });
             break;
         }
         case 'payment_link.created': {
