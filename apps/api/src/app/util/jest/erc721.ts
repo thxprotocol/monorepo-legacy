@@ -3,12 +3,12 @@ import { getByteCodeForContractName, getContractFromName } from '@thxnetwork/api
 import { ChainId } from '@thxnetwork/api/types/enums';
 import { getProvider } from '../network';
 
-export async function deployNFT(nftName: string, nftSymbol: string) {
+export async function deployERC721(nftName: string, nftSymbol: string) {
     const { web3, defaultAccount } = getProvider(ChainId.Hardhat);
     const contractName = 'NonFungibleToken';
     const contract = getContractFromName(ChainId.Hardhat, contractName);
     const bytecode = getByteCodeForContractName(contractName);
-    const baseURL = `${API_URL}/${VERSION}/metadata/`;
+    const baseURL = `${API_URL}/${VERSION}/erc721/metadata/`;
     const fn = contract.deploy({
         data: bytecode,
         arguments: [nftName, nftSymbol, baseURL, defaultAccount],

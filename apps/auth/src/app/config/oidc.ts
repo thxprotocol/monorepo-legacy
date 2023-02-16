@@ -94,6 +94,7 @@ const config: Configuration = {
         'erc20:read',
         'erc20:write',
         'erc721:read',
+        'erc1155:read',
         'erc721:write',
         'promotions:read',
         'promotions:write',

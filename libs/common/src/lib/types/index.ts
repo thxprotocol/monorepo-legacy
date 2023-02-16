@@ -10,6 +10,8 @@ export * from './interfaces/DailyReward';
 export * from './interfaces/ERC20PerkPayment';
 export * from './interfaces/ERC721Perk';
 export * from './interfaces/ERC721PerkPayment';
+export * from './interfaces/ERC1155Perk';
+export * from './interfaces/ERC1155PerkPayment';
 export * from './interfaces/PointReward';
 export * from './interfaces/BaseReward';
 export * from './interfaces/ReferralReward';

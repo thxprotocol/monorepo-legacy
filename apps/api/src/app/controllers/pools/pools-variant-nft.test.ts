@@ -126,7 +126,7 @@ describe('NFT Pool', () => {
         });
     });
 
-    describe('PATCH /metadata/:metadataId', () => {
+    describe('PATCH erc721/:id/metadata/:metadataId', () => {
         const value1 = 'blue',
             value2 = 'small',
             value3 = 'http://imageURL2';

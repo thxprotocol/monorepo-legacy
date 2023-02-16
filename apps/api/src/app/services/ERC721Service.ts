@@ -27,7 +27,7 @@ async function deploy(data: TERC721, forceSync = true): Promise<ERC721Document> 
     const contract = getContractFromName(data.chainId, contractName);
     const bytecode = getByteCodeForContractName(contractName);
 
-    data.baseURL = `${API_URL}/${VERSION}/metadata/`;
+    data.baseURL = `${API_URL}/${VERSION}/erc721/metadata/`;
 
     const erc721 = await ERC721.create(data);
 
