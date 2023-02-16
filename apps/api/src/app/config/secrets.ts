@@ -101,3 +101,4 @@ export const CYPRESS_EMAIL = process.env.CYPRESS_EMAIL || 'cypress@thx.network';
 export const STRIPE_SECRET_TEST_KEY = process.env.STRIPE_SECRET_TEST_KEY || '';
 export const STRIPE_SECRET_TEST_WEBHOOK = process.env.STRIPE_SECRET_TEST_WEBHOOK || '';
 export const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
+export const TWITTER_API_TOKEN = process.env.TWITTER_API_TOKEN;

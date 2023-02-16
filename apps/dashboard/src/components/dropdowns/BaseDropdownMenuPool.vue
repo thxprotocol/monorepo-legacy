@@ -3,24 +3,27 @@
         <template #button-content>
             <i class="fas fa-ellipsis-v m-0 p-1 px-2 text-muted" aria-hidden="true" style="font-size: 1rem"></i>
         </template>
-        <b-dropdown-item @click.stop="$emit('edit')">
-            <span class="text-muted"><i class="fas fa-pen mr-3"></i>Edit </span>
+        <b-dropdown-item @click.stop="$emit('edit')" link-class="text-muted small">
+            <span class="d-inline-block" style="width: 30px"><i class="fas fa-pen mr-3"></i></span>
+            <span>Edit</span>
         </b-dropdown-item>
-        <b-dropdown-item size="sm" variant="dark" @click.stop="$emit('archive')">
-            <span class="text-muted"
-                ><i class="fas fa-archive mr-2"></i>
-                {{ !pool.archived ? 'Archive' : 'Unarchive' }}
-            </span>
+        <b-dropdown-item @click.stop="$emit('archive')" link-class="text-muted small">
+            <span class="d-inline-block" style="width: 30px"><i class="fas fa-archive mr-2"></i></span>
+            <span>{{ !pool.archived ? 'Archive' : 'Unarchive' }}</span>
         </b-dropdown-item>
-        <b-dropdown-item @click.stop="$copyText(pool._id)">
-            <span class="text-muted"><i class="fas fa-clipboard mr-3"></i>Copy ID </span>
-        </b-dropdown-item>
-        <b-dropdown-item @click.stop="onClickTransferPool">
-            <span class="text-muted"><i class="fas fa-exchange-alt mr-3"></i>Transfer </span>
+        <b-dropdown-item @click.stop="onClickTransferPool" link-class="text-muted small">
+            <span class="d-inline-block" style="width: 30px"><i class="fas fa-exchange-alt mr-3"></i></span>
+            <span>Transfer</span>
             <BaseModalPoolTransfer :pool="pool" title="Transfer pool ownership" />
         </b-dropdown-item>
-        <b-dropdown-item size="sm" variant="dark" @click.stop="$emit('remove')">
-            <span class="text-muted"><i class="fas fa-trash-alt mr-3"></i>Remove</span>
+        <b-dropdown-item @click.stop="$emit('remove')" link-class="text-muted small">
+            <span class="d-inline-block" style="width: 30px"><i class="fas fa-trash-alt mr-3"></i></span>
+            <span>Remove</span>
+        </b-dropdown-item>
+        <b-dropdown-divider />
+        <b-dropdown-item @click.stop="$copyText(pool._id)" link-class="text-muted small">
+            <span class="d-inline-block" style="width: 30px"><i class="fas fa-clipboard mr-3"></i></span>
+            <span>Copy ID</span>
         </b-dropdown-item>
     </b-dropdown>
 </template>

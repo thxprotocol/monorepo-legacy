@@ -1,58 +1,73 @@
 <template>
-    <b-form-group label="Your Tweets">
-        <b-dropdown variant="link" class="dropdown-select bg-white mb-3">
-            <template #button-content>
-                <div v-if="selected" class="text-overflow-ellipsis">
-                    {{ selected.text }}
-                </div>
+    <b-form-group label="Tweet URL">
+        <b-form-input
+            @change="onChange"
+            :value="url"
+            :state="state"
+            placeholder="e.g. https://twitter.com/twitter/status/1603121182101970945"
+        />
+        <b-card class="mt-3" v-if="preview">
+            <template #header>
+                <b-link class="text-dark" target="_blank" :href="`https://twitter.com/${preview.user.username}`">
+                    {{ preview.user.name }}
+                </b-link>
             </template>
-            <b-dropdown-item-button
-                button-class="border-bottom small"
-                :key="item.id"
-                v-for="item of items"
-                @click="onItemClick(item)"
-            >
-                <span class="text-muted"> {{ format(new Date(item.created_at), 'HH:mm MMMM dd, yyyy') }}</span
-                ><br />
-                {{ item.text }}
-            </b-dropdown-item-button>
-        </b-dropdown>
+            <div v-html="preview.tweet.text"></div>
+        </b-card>
     </b-form-group>
 </template>
 
 <script lang="ts">
+import axios from 'axios';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { format } from 'date-fns';
 
 @Component({
     computed: mapGetters({}),
 })
 export default class BaseDropdownTwitterTweets extends Vue {
-    format = format;
+    preview: { tweet: { text: string }; user: { username: string; name: string } } | null = null;
+    url = '';
+    state: boolean | null = null;
 
-    @Prop() items!: any[];
     @Prop({ required: false }) item!: string;
 
-    selected: any = null;
-
+    // https://twitter.com/twitter/status/1603121182101970945
     mounted() {
-        if (!this.item && this.items[0]) {
-            this.onItemClick(this.items[0]);
-        } else {
-            for (const key in this.items) {
-                const id = this.items[key]?.referenced_tweets?.[0]?.id || this.items[key].id;
-                if (id === this.item) {
-                    this.onItemClick(this.items[key]);
-                    break;
-                }
-            }
-        }
+        this.url = this.item ? 'https://twitter.com/twitter/status/' + this.item : '';
+        if (this.url) this.onChange(this.url);
     }
 
-    onItemClick(item: any) {
-        this.selected = item;
-        this.$emit('selected', item);
+    async onChange(url: string) {
+        const urlParts = url.split('/');
+        const tweetId = urlParts[urlParts.length - 1];
+        const isValid = url.includes('twitter.com') && url.includes('status');
+
+        if (!isValid || !tweetId) {
+            this.preview = null;
+            this.state = false;
+            return;
+        }
+
+        const { data } = await axios({
+            method: 'POST',
+            url: '/account/twitter/tweet',
+            data: { tweetId },
+        });
+
+        if (!data) {
+            this.preview = null;
+            this.state = false;
+        } else {
+            this.state = true;
+            this.preview = data;
+            this.$emit('selected', tweetId);
+        }
     }
 }
 </script>
+<style>
+.twitter-tweet {
+    margin: 0;
+}
+</style>
