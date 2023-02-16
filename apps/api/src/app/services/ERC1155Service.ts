@@ -229,7 +229,7 @@ export const update = (erc1155: ERC1155Document, updates: IERC1155Updates) => {
 
 export const getOnChainERC1155Token = async (chainId: number, address: string) => {
     const contract = getContractFromName(chainId, contractName, address);
-    const uri = await contract.methods.uri().call();
+    const uri = await contract.methods.uri(1).call();
 
     return { uri };
 };

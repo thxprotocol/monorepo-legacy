@@ -1,12 +1,15 @@
 <template>
-    <base-modal :loading="loading" title="Import NFT Contract" id="modalERC721Import">
+    <base-modal :loading="loading" title="Import NFT Contract" id="modalNftImport">
         <template #modal-body v-if="!loading">
             <b-form-group>
                 <base-dropdown-select-pool class="ml-auto" @selected="pool = $event" />
             </b-form-group>
+            <b-form-group>
+                <base-dropdown-select-nft-variant class="ml-auto" @selected="nftVariant = $event" />
+            </b-form-group>
             <b-form-group label="Contract Address">
                 <b-input-group>
-                    <b-form-input v-model="erc721Address" @input="getPreview" />
+                    <b-form-input v-model="nftAddress" @input="getPreview" />
 
                     <template #append>
                         <b-button
@@ -14,7 +17,7 @@
                             variant="dark"
                             target="_blank"
                             :disabled="isValidAddress"
-                            :href="chainInfo[pool.chainId].blockExplorer + `/token/${erc721Address}`"
+                            :href="chainInfo[pool.chainId].blockExplorer + `/token/${nftAddress}`"
                         >
                             <i class="fas fa-external-link-alt ml-0"></i>
                         </b-button>
@@ -25,22 +28,27 @@
                 <p><i class="fas fa-spinner fa-spin"></i> loading token info...</p>
             </div>
             <div v-if="showPreview">
-                <p>
-                    <strong>{{ name }}</strong> ({{ symbol }})
-                </p>
-                <p><strong>Total Supply:</strong> {{ totalSupply }}</p>
+                <div v-if="nftVariant == NftVariant.ERC721">
+                    <p>
+                        <strong>{{ name }}</strong> ({{ symbol }})
+                    </p>
+                    <p><strong>Total Supply:</strong> {{ totalSupply }}</p>
+                </div>
+                <div v-else>
+                    <p><strong>URI:</strong> {{ uri }}</p>
+                </div>
             </div>
         </template>
 
         <template #btn-primary>
             <b-button
-                :disabled="loading || !pool || !isValidAddress"
+                :disabled="loading || !pool || !nftVariant || !isValidAddress"
                 class="rounded-pill"
                 @click="submit()"
                 variant="primary"
                 block
             >
-                Import ERC721 Tokens
+                Import Nft Tokens
             </b-button>
         </template>
     </base-modal>
@@ -55,7 +63,9 @@ import BaseFormSelectNetwork from '../form-select/BaseFormSelectNetwork.vue';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { isAddress } from 'web3-utils';
 import BaseDropdownSelectPool from '../dropdowns/BaseDropdownSelectPool.vue';
+import BaseDropdownSelectNftVariant from '../dropdowns/BaseDropdownSelectNftVariant.vue';
 import { IPool } from '../../store/modules/pools';
+import { NftVariant } from '@thxnetwork/dashboard/types/enums/NftVariant';
 
 @Component({
     components: {
@@ -63,23 +73,27 @@ import { IPool } from '../../store/modules/pools';
         BaseFormSelectNetwork,
         BaseDropDownSelectPolygonERC20,
         BaseDropdownSelectPool,
+        BaseDropdownSelectNftVariant,
     },
     computed: mapGetters({}),
 })
-export default class ModalERC721Import extends Vue {
+export default class ModalNftImport extends Vue {
+    NftVariant = NftVariant;
     loading = false;
     chainInfo = chainInfo;
-    erc721Address = '';
-    erc721LogoImgUrl = '';
+    nftAddress = '';
+    nftLogoImgUrl = '';
     showPreview = false;
     name = '';
     symbol = '';
     totalSupply = '';
+    uri = '';
     previewLoading = false;
     pool: IPool | null = null;
+    nftVariant: NftVariant | null = null;
 
     get isValidAddress() {
-        return isAddress(this.erc721Address);
+        return isAddress(this.nftAddress);
     }
 
     async submit() {
@@ -89,11 +103,12 @@ export default class ModalERC721Import extends Vue {
         }
         const data = {
             pool: this.pool,
-            address: this.erc721Address,
-            logoImgUrl: this.erc721LogoImgUrl,
+            address: this.nftAddress,
+            logoImgUrl: this.nftLogoImgUrl,
+            name: this.name,
         };
 
-        await this.$store.dispatch('erc721/import', data);
+        await this.$store.dispatch(`${this.nftVariant}/import`, data);
         this.loading = false;
     }
 
@@ -103,24 +118,26 @@ export default class ModalERC721Import extends Vue {
             this.name = '';
             this.symbol = '';
             this.totalSupply = '';
+            this.uri = '';
             return;
         }
 
         try {
             this.previewLoading = true;
-            const { name, symbol, totalSupply } = await this.$store.dispatch('erc721/preview', {
+            const nftInfo = await this.$store.dispatch(`${this.nftVariant}/preview`, {
                 chainId: this.pool.chainId,
                 address: address,
             });
-            this.name = name;
-            this.symbol = symbol;
-            this.totalSupply = totalSupply;
+            this.name = nftInfo.name;
+            this.symbol = nftInfo.symbol;
+            this.totalSupply = nftInfo.totalSupply;
+            this.uri = nftInfo.uri;
             this.previewLoading = false;
             this.showPreview = true;
         } catch (err) {
             this.previewLoading = false;
             this.showPreview = false;
-
+            console.log('error', err);
             throw new Error('Invalid Contract Address');
         }
     }

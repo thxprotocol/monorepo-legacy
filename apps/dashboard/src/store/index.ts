@@ -8,6 +8,7 @@ import WidgetStore from './modules/widgets';
 import ERC20Store from './modules/erc20';
 import ERC20PerksStore from './modules/erc20Perks';
 import ERC721Store from './modules/erc721';
+import ERC1155Store from './modules/erc1155';
 import ERC721PerksStore from './modules/erc721Perks';
 import ReferralRewardRewardsStore from './modules/referralRewards';
 import ReferralRewardRewardClaimsStore from './modules/referralRewardClaims';
@@ -31,6 +32,7 @@ const modules = {
     erc20: ERC20Store,
     erc20Perks: ERC20PerksStore,
     erc721: ERC721Store,
+    erc1155: ERC1155Store,
     erc721Perks: ERC721PerksStore,
     referralRewards: ReferralRewardRewardsStore,
     referralRewardClaims: ReferralRewardRewardClaimsStore,
