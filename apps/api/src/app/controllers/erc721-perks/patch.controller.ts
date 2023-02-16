@@ -1,5 +1,6 @@
 import ERC721PerkService from '@thxnetwork/api/services/ERC721PerkService';
 import ImageService from '@thxnetwork/api/services/ImageService';
+import MerchantService from '@thxnetwork/api/services/MerchantService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { TERC721Perk } from '@thxnetwork/types/index';
 import { Request, Response } from 'express';
@@ -16,6 +17,8 @@ const validation = [
     body('interaction').optional().isNumeric(),
     body('content').optional().isString(),
     body('pointPrice').optional().isNumeric(),
+    body('price').isInt(),
+    body('priceCurrency').isString(),
     check('file')
         .optional()
         .custom((value, { req }) => {
@@ -26,14 +29,26 @@ const validation = [
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['RewardsNft']
-    let reward = await ERC721PerkService.get(req.params.id);
-    if (!reward) throw new NotFoundError('Could not find the reward');
-    let image: string | undefined;
+    let perk = await ERC721PerkService.get(req.params.id);
+    if (!perk) throw new NotFoundError('Could not find the perk');
+
+    let image: string;
     if (req.file) {
         const response = await ImageService.upload(req.file);
         image = ImageService.getPublicUrl(response.key);
     }
-    reward = await ERC721PerkService.update(reward, {
+
+    // If there is a change in price or currency create a new payment link and store its id
+    let paymentLinkId = perk.paymentLinkId;
+    if (req.body.price && req.body.priceCurrency) {
+        const paymentLink = await MerchantService.updatePaymentLink(req.auth.sub, perk.paymentLinkId, {
+            price: req.body.price,
+            priceCurrency: req.body.priceCurrency,
+        });
+        paymentLinkId = paymentLink.id;
+    }
+
+    perk = await ERC721PerkService.update(perk, {
         poolId: req.header('X-PoolId'),
         erc721metadataId: JSON.parse(req.body.erc721metadataIds)[0],
         image,
@@ -43,12 +58,16 @@ const controller = async (req: Request, res: Response) => {
         expiryDate: req.body.expiryDate,
         claimAmount: req.body.claimAmount,
         pointPrice: req.body.pointPrice,
+        price: req.body.price,
+        priceCurrency: req.body.priceCurrency,
         isPromoted: req.body.isPromoted,
         interaction: req.body.interaction,
         platform: req.body.platform,
         content: req.body.content,
+        paymentLinkId,
     } as TERC721Perk);
-    return res.json(reward);
+
+    return res.json(perk);
 };
 
 export default { controller, validation };

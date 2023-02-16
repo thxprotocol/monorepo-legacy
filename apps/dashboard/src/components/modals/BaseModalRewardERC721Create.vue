@@ -37,6 +37,7 @@
                     </b-col>
                     <b-col md="6">
                         <BaseCardCommerce
+                            v-if="profile && profile.plan === 1"
                             class="mb-3"
                             :pool="pool"
                             :price="price"

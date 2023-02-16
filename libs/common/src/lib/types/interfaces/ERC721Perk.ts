@@ -7,6 +7,6 @@ export type TERC721Perk = TBaseReward & {
     image: string;
     isPromoted: boolean;
     price: number;
-    priceId: string;
     priceCurrency: string;
+    paymentLinkId: string;
 };

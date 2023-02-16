@@ -40,6 +40,14 @@ class MerchantsModule extends VuexModule {
     }
 
     @Action({ rawError: true })
+    delete() {
+        return axios({
+            method: 'DELETE',
+            url: '/merchants',
+        });
+    }
+
+    @Action({ rawError: true })
     async createLink(pool: IPool) {
         const { data } = await axios({
             method: 'POST',

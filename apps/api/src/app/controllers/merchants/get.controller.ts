@@ -4,6 +4,8 @@ import { Merchant } from '@thxnetwork/api/models/Merchant';
 
 const controller = async (req: Request, res: Response) => {
     const merchant = await Merchant.findOne({ sub: req.auth.sub });
+    if (!merchant) return res.end();
+
     const stripeConnectAccount = await stripe.accounts.retrieve(merchant.stripeConnectId);
 
     res.json({

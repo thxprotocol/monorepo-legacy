@@ -2,66 +2,95 @@
     <div>
         <h2 class="mb-3">Settings</h2>
         <b-card class="shadow-sm mb-5">
-            <b-form-row v-if="profile">
-                <b-col md="4">
-                    <strong>Commerce</strong>
-                    <p class="text-muted">Enable FIAT payment methods to enable your users to buy your perks.</p>
-                </b-col>
-                <b-col md="8">
-                    <b-form-row>
-                        <b-col md="8">
-                            <b-alert v-if="!profile.merchant" show variant="success" class="d-flex align-items-center">
-                                <i class="fas fa-tags mr-2"></i>
-                                Become a merchant and unlock the ability to sell your perks!
-                                <b-button
-                                    class="rounded-pill ml-auto"
-                                    variant="primary"
-                                    @click="onClickMerchantCreate"
-                                    :disabled="isLoadingMerchantCreate"
+            <template v-if="profile && profile.plan === 1">
+                <b-form-row>
+                    <b-col md="4">
+                        <strong>Commerce</strong>
+                        <p class="text-muted">Enable FIAT payment methods to enable your users to buy your perks.</p>
+                    </b-col>
+                    <b-col md="8">
+                        <b-form-row v-if="!profile.merchant">
+                            <b-col md="12">
+                                <b-alert show variant="success" class="d-flex align-items-center">
+                                    <i class="fas fa-tags mr-2"></i>
+                                    Become a merchant and unlock the ability to sell your perks!
+                                    <b-button
+                                        class="rounded-pill ml-auto"
+                                        variant="primary"
+                                        @click="onClickMerchantCreate"
+                                        :disabled="isLoadingMerchantCreate"
+                                    >
+                                        <b-spinner v-if="isLoadingMerchantCreate" small variant="light" class="mr-2" />
+                                        Become a Merchant
+                                    </b-button>
+                                </b-alert>
+                            </b-col>
+                        </b-form-row>
+                        <b-form-row v-else>
+                            <b-col md="8">
+                                <b-form-group label="Merchant ID">
+                                    <b-form-input
+                                        readonly
+                                        disabled
+                                        :value="profile.merchant ? profile.merchant.stripeConnectId : ''"
+                                    />
+                                </b-form-group>
+                                <b-alert
+                                    show
+                                    variant="warning"
+                                    class="center-center"
+                                    v-if="
+                                        merchantStatus.filter((s) => !s.status).length &&
+                                        merchantStatus.filter((s) => !s.status).length < 3
+                                    "
                                 >
-                                    <b-spinner v-if="isLoadingMerchantCreate" small variant="light" class="mr-2" />
-                                    Become a Merchant
-                                </b-button>
-                            </b-alert>
-                            <b-alert
-                                show
-                                variant="warning"
-                                class="center-center"
-                                v-if="merchantStatus.filter((s) => !s.status).length"
-                            >
-                                <i class="fas fa-exclamation-triangle mr-2"></i>
-                                You have not finished the configuration of your Merchant account.
-                            </b-alert>
-                            <b-form-group label="Stripe Connect ID">
-                                <b-form-input readonly disabled :value="profile.merchant.stripeConnectId" />
-                            </b-form-group>
-                        </b-col>
-                        <b-col md="4">
-                            <b-list-group class="list-inline">
-                                <b-list-group-item v-for="(s, key) in merchantStatus" :key="key">
-                                    <b-link v-if="!s.status" @click="onClickMerchantLink">
-                                        <i
-                                            class="fas fa-check-circle mr-2"
-                                            :class="s.status ? 'text-success' : 'text-muted'"
-                                        >
-                                        </i>
-                                        {{ s.label }}
-                                    </b-link>
-                                    <template v-else>
-                                        <i
-                                            class="fas fa-check-circle mr-2"
-                                            :class="s.status ? 'text-success' : 'text-muted'"
-                                        >
-                                        </i>
-                                        {{ s.label }}
-                                    </template>
-                                </b-list-group-item>
-                            </b-list-group>
-                        </b-col>
-                    </b-form-row>
-                </b-col>
-            </b-form-row>
-            <hr />
+                                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                                    You have not finished the configuration of your Merchant account.
+                                </b-alert>
+                            </b-col>
+                            <b-col md="4">
+                                <b-form-group label="Connection">
+                                    <b-list-group class="mb-3">
+                                        <b-list-group-item v-for="(s, key) in merchantStatus" :key="key">
+                                            <b-link v-if="!s.status" @click="onClickMerchantLink">
+                                                <i
+                                                    class="fas fa-check-circle mr-2"
+                                                    :class="s.status ? 'text-success' : 'text-muted'"
+                                                >
+                                                </i>
+                                                {{ s.label }}
+                                            </b-link>
+                                            <template v-else>
+                                                <i
+                                                    class="fas fa-check-circle mr-2"
+                                                    :class="s.status ? 'text-success' : 'text-muted'"
+                                                >
+                                                </i>
+                                                {{ s.label }}
+                                            </template>
+                                        </b-list-group-item>
+                                    </b-list-group>
+                                    <b-button
+                                        block
+                                        variant="light"
+                                        @click="onClickDisconnectMerchant"
+                                        class="text-danger"
+                                    >
+                                        <b-spinner
+                                            v-if="isLoadingMerchantDisconnect"
+                                            small
+                                            variant="light"
+                                            class="mr-2"
+                                        />
+                                        Disconnect
+                                    </b-button>
+                                </b-form-group>
+                            </b-col>
+                        </b-form-row>
+                    </b-col>
+                </b-form-row>
+                <hr />
+            </template>
             <b-form-row>
                 <b-col md="4">
                     <strong>Widget Theming</strong>
@@ -153,6 +182,7 @@ export default class SettingsView extends Vue {
     backgroundImgUrl = '';
     isLoadingMerchantCreate = false;
     isLoadingMerchantCreateLink = false;
+    isLoadingMerchantDisconnect = false;
 
     get merchantStatus() {
         if (!this.merchant) return [];
@@ -189,22 +219,19 @@ export default class SettingsView extends Vue {
 
     async mounted() {
         this.chainId = this.pool.chainId;
-        this.get().then(() => {
-            this.loading = false;
-        });
-        await this.$store.dispatch('merchants/read');
-    }
 
-    async upload(file: File) {
-        return await this.$store.dispatch('images/upload', file);
-    }
-
-    async get() {
         await this.$store.dispatch('brands/getForPool', this.pool._id);
         if (this.brand) {
             this.backgroundImgUrl = this.brand.backgroundImgUrl;
             this.logoImgUrl = this.brand.logoImgUrl;
         }
+        await this.$store.dispatch('merchants/read');
+
+        this.loading = false;
+    }
+
+    async upload(file: File) {
+        return await this.$store.dispatch('images/upload', file);
     }
 
     async onUpload(event: any, key: string) {
@@ -242,7 +269,15 @@ export default class SettingsView extends Vue {
     async onClickMerchantCreate() {
         this.isLoadingMerchantCreate = true;
         await this.$store.dispatch('merchants/create');
+        await this.$store.dispatch('account/getProfile');
+        await this.$store.dispatch('merchants/read');
         this.isLoadingMerchantCreate = false;
+    }
+    async onClickDisconnectMerchant() {
+        this.isLoadingMerchantDisconnect = true;
+        await this.$store.dispatch('merchants/delete');
+        await this.$store.dispatch('account/getProfile');
+        this.isLoadingMerchantDisconnect = false;
     }
 }
 </script>

@@ -1,12 +1,13 @@
 import { body, check } from 'express-validator';
 import { Request, Response } from 'express';
 import { createERC721Perk } from '@thxnetwork/api/util/rewards';
-import ImageService from '@thxnetwork/api/services/ImageService';
 import { TERC721Perk } from '@thxnetwork/types/interfaces/ERC721Perk';
+import { NotFoundError } from '@thxnetwork/api/util/errors';
+import ImageService from '@thxnetwork/api/services/ImageService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
-import { NotFoundError } from '@thxnetwork/api/util/errors';
-import { stripe } from '../../util/stripe';
+import MerchantService from '@thxnetwork/api/services/MerchantService';
+import { ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
 
 const validation = [
     body('title').exists().isString(),
@@ -31,7 +32,7 @@ const validation = [
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721 Rewards']
-    let image: string, priceId: string;
+    let image: string, paymentLinkId: string;
 
     const pool = await PoolService.getById(req.header('X-PoolId'));
     if (!pool) throw new NotFoundError('Could not find pool');
@@ -56,19 +57,6 @@ const controller = async (req: Request, res: Response) => {
         await ERC721Service.addMinter(erc721, pool.address);
     }
 
-    // If price details are given is set create required Stripe objects
-    if (req.body.price > 0 && req.body.priceCurrency) {
-        const product = await stripe.products.create({
-            name: req.body.title,
-        });
-        const price = await stripe.prices.create({
-            product: product.id,
-            currency: req.body.priceCurrency,
-            unit_amount: req.body.price,
-        });
-        priceId = price.id;
-    }
-
     const perks = await Promise.all(
         metadataIdList.map(async (erc721metadataId: string) => {
             const config = {
@@ -89,9 +77,28 @@ const controller = async (req: Request, res: Response) => {
                 isPromoted: req.body.isPromoted,
                 price: req.body.price,
                 priceCurrency: req.body.priceCurrency,
-                priceId,
+                paymentLinkId,
             } as TERC721Perk;
-            const { reward, claims } = await createERC721Perk(pool, config);
+            const created = await createERC721Perk(pool, config);
+            const claims = created.claims;
+
+            let reward = created.reward;
+
+            // If price details are given create required Stripe objects
+            if (req.body.price > 0 && req.body.priceCurrency) {
+                const paymentLink = await MerchantService.createPaymentLink(
+                    req.auth.sub,
+                    req.body.price,
+                    req.body.priceCurrency,
+                    String(created.reward._id),
+                );
+
+                reward = await ERC721Perk.findByIdAndUpdate(
+                    reward._id,
+                    { price: req.body.price, priceCurrency: req.body.priceCurrency, paymentLinkId: paymentLink.id },
+                    { new: true },
+                );
+            }
 
             return { ...reward.toJSON(), claims, erc721 };
         }),

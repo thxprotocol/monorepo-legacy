@@ -51,8 +51,13 @@
                 </template>
 
                 <template #cell(price)="{ item }">
-                    <strong class="line-height-1 text-primary">{{ item.price.price }} {{ item.price.currency }}</strong>
-                    <small class="line-height-1 text-muted"> / {{ item.price.pointPrice }} pts</small>
+                    <strong class="line-height-1 text-primary" v-if="item.price.price > 0">
+                        {{ item.price.price }} {{ item.price.currency }}
+                    </strong>
+                    <strong class="line-height-1 text-primary" v-else> {{ item.price.pointPrice }} pts </strong>
+                    <small v-if="item.price.price > 0" class="line-height-1 text-muted">
+                        / {{ item.price.pointPrice }} pts
+                    </small>
                 </template>
                 <template #cell(claims)="{ item }">
                     <b-link v-b-modal="`modalRewardClaimsDownload${item.id}`" v-if="item.claims.length">
