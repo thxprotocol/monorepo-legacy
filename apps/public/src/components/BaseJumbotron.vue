@@ -49,7 +49,7 @@
                     <div class="col-lg-7 pb-5 py-md-5 order-0 order-md-1 text-center">
                         <div>
                             <img
-                                v-lazy="require('../../public/assets/img/thx_jumbotron_apps.png')"
+                                v-lazy="require('../../public/assets/img/thx_jumbotron_apps.webp')"
                                 :alt="ALT_TEXT.HOME_MAN_WATCHING_PHONE"
                                 class="img-fluid"
                             />
