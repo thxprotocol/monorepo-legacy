@@ -26,7 +26,7 @@
         </template>
         <template #btn-primary>
             <b-button :disabled="loading" class="rounded-pill" @click="submit()" variant="primary" block>
-                Create NFT collection
+                Create NFT Collection
             </b-button>
         </template>
     </base-modal>

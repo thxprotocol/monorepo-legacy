@@ -36,10 +36,14 @@
                         </b-form-group>
                     </b-col>
                     <b-col md="6">
-                        <BaseCardRewardCondition
+                        <BaseCardCommerce
+                            v-if="profile && profile.plan === 1"
                             class="mb-3"
-                            :rewardCondition="rewardCondition"
-                            @change="rewardCondition = $event"
+                            :pool="pool"
+                            :price="price"
+                            :price-currency="priceCurrency"
+                            @change-price="price = $event"
+                            @change-price-currency="priceCurrency = $event"
                         />
                         <BaseCardRewardExpiry
                             class="mb-3"
@@ -81,15 +85,16 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { platformList, platformInteractionList } from '@thxnetwork/dashboard/types/rewards';
 import { RewardConditionInteraction, RewardConditionPlatform, type TERC721Perk } from '@thxnetwork/types/index';
 import BaseModal from './BaseModal.vue';
-import BaseCardRewardCondition from '../cards/BaseCardRewardCondition.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
 import BaseCardRewardQRCodes from '../cards/BaseCardRewardQRCodes.vue';
+import BaseCardCommerce from '../cards/BaseCardCommerce.vue';
 import BaseDropdownERC721Metadata from '../dropdowns/BaseDropdownERC721Metadata.vue';
 import type { IERC721s, TERC721, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
 import { mapGetters } from 'vuex';
 import BaseDropdownSelectERC721 from '../dropdowns/BaseDropdownSelectERC721.vue';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
+import { IAccount } from '@thxnetwork/dashboard/types/account';
 
 type TRewardCondition = {
     platform: RewardConditionPlatform;
@@ -100,7 +105,7 @@ type TRewardCondition = {
 @Component({
     components: {
         BaseModal,
-        BaseCardRewardCondition,
+        BaseCardCommerce,
         BaseCardRewardExpiry,
         BaseCardRewardLimits,
         BaseCardRewardQRCodes,
@@ -110,6 +115,7 @@ type TRewardCondition = {
     computed: mapGetters({
         pools: 'pools/all',
         erc721s: 'erc721/all',
+        profile: 'account/profile',
     }),
 })
 export default class ModalRewardERC721Create extends Vue {
@@ -118,6 +124,7 @@ export default class ModalRewardERC721Create extends Vue {
     erc721: TERC721 | null = null;
     erc721Id = '';
     pools!: IPools;
+    profile!: IAccount;
     error = '';
     title = '';
     erc721metadataId = '';
@@ -136,6 +143,8 @@ export default class ModalRewardERC721Create extends Vue {
     imageFile: File | null = null;
     image = '';
     isPromoted = false;
+    price = 0;
+    priceCurrency = 'USD';
 
     @Prop() id!: string;
     @Prop() pool!: IPool;
@@ -155,6 +164,8 @@ export default class ModalRewardERC721Create extends Vue {
         this.rewardLimit = this.reward ? this.reward.rewardLimit : 0;
         this.claimAmount = this.reward ? this.reward.claimAmount : 0;
         this.claimLimit = this.reward ? this.reward.claimLimit : 1;
+        this.price = this.reward ? this.reward.price : this.price;
+        this.priceCurrency = this.reward ? this.reward.priceCurrency : this.priceCurrency;
         this.rewardCondition = this.reward
             ? {
                   platform: this.reward.platform as RewardConditionPlatform,
@@ -208,6 +219,8 @@ export default class ModalRewardERC721Create extends Vue {
             claimLimit: this.claimLimit,
             rewardLimit: this.rewardLimit,
             pointPrice: this.pointPrice,
+            price: this.price,
+            priceCurrency: this.priceCurrency,
             file: this.imageFile,
             isPromoted: this.isPromoted,
             platform: this.rewardCondition.platform,

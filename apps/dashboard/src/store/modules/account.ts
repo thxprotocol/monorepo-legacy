@@ -3,7 +3,7 @@ import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { User, UserManager } from 'oidc-client-ts';
 import { config } from '@thxnetwork/dashboard/utils/oidc';
 import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
-import type { IAccount, IAccountUpdates, IDiscord, ITwitter, IYoutube } from '@thxnetwork/dashboard/types/account';
+import type { IAccount, IAccountUpdates } from '@thxnetwork/dashboard/types/account';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { RewardConditionPlatform } from '@thxnetwork/types/enums/RewardConditionPlatform';
 import Mixpanel, { track } from '@thxnetwork/mixpanel';
@@ -15,9 +15,6 @@ class AccountModule extends VuexModule {
     version = '';
     _user!: User;
     _profile: IAccount | null = null;
-    _youtube: IYoutube | null = null;
-    _twitter: ITwitter | null = null;
-    _discord: IDiscord | null = null;
 
     get user() {
         return this._user;
@@ -25,18 +22,6 @@ class AccountModule extends VuexModule {
 
     get profile() {
         return this._profile;
-    }
-
-    get youtube() {
-        return this._youtube;
-    }
-
-    get twitter() {
-        return this._twitter;
-    }
-
-    get discord() {
-        return this._discord;
     }
 
     @Mutation
@@ -47,21 +32,6 @@ class AccountModule extends VuexModule {
     @Mutation
     setAccount(profile: IAccount) {
         this._profile = profile;
-    }
-
-    @Mutation
-    setYoutube(data: IYoutube) {
-        this._youtube = data;
-    }
-
-    @Mutation
-    setTwitter(data: ITwitter) {
-        this._twitter = data;
-    }
-
-    @Mutation
-    setDiscord(data: IDiscord) {
-        this._discord = data;
     }
 
     @Mutation
@@ -93,45 +63,6 @@ class AccountModule extends VuexModule {
         track('UserIdentify', [r.data]);
 
         this.context.commit('setAccount', r.data);
-    }
-
-    @Action({ rawError: true })
-    async getYoutube() {
-        const r = await axios({
-            method: 'GET',
-            url: '/account/youtube',
-        });
-
-        this.context.commit('setYoutube', r.data.isAuthorized ? r.data : null);
-
-        if (r.data.isAuthorized) return { youtube: r.data, isAuthorized: true };
-        return { isAuthorized: false };
-    }
-
-    @Action({ rawError: true })
-    async getTwitter() {
-        const r = await axios({
-            method: 'GET',
-            url: '/account/twitter',
-        });
-
-        this.context.commit('setTwitter', r.data.isAuthorized ? r.data : null);
-
-        if (r.data.isAuthorized) return { twitter: r.data, isAuthorized: true };
-        return { isAuthorized: false };
-    }
-
-    @Action({ rawError: true })
-    async getDiscord() {
-        const r = await axios({
-            method: 'GET',
-            url: '/account/discord',
-        });
-
-        this.context.commit('setDiscord', r.data.isAuthorized ? r.data : null);
-
-        if (r.data.isAuthorized) return { discord: r.data, isAuthorized: true };
-        return { isAuthorized: false };
     }
 
     @Action({ rawError: true })

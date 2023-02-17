@@ -4,6 +4,7 @@ declare global {
         interface Request {
             origin?: string;
             auth?: any;
+            rawBody?: string;
             pool?: AssetPoolDocument;
         }
     }

@@ -126,8 +126,8 @@ describe('ERC20 Perk Payment', () => {
             .expect(201, done);
     });
 
-    it('POST /perks/erc20/:uuid/payment', (done) => {
-        user.post(`/v1/perks/erc20/${perkUuid}/payment`)
+    it('POST /perks/erc20/:uuid/redemption', (done) => {
+        user.post(`/v1/perks/erc20/${perkUuid}/redemption`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
             .expect((res: request.Response) => {
                 expect(res.body.withdrawal).toBeDefined();

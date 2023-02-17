@@ -6,7 +6,7 @@
         >
             <div class="container">
                 <div class="row py-md-5">
-                    <div class="brand-intro col-lg-4 offset-lg-1 order-1 order-md-0">
+                    <div class="brand-intro col-lg-4 order-1 order-md-0">
                         <div>
                             <h1 class="brand-text mb-3">Token powered loyalty in any app or website</h1>
                             <p class="lead mb-4">
@@ -46,7 +46,7 @@
                             </b-form>
                         </div>
                     </div>
-                    <div class="col-lg-7 pb-5 py-md-5 order-0 order-md-1 text-center">
+                    <div class="col-lg-8 pb-5 py-md-5 order-0 order-md-1 text-center">
                         <div>
                             <img
                                 v-lazy="require('../../public/assets/img/thx_jumbotron_apps.webp')"

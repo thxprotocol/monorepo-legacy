@@ -1,6 +1,9 @@
 <template>
     <div class="pb-5">
         <b-row class="mb-3">
+            <b-col class="d-flex align-items-center">
+                <h2 class="mb-0">API Access</h2>
+            </b-col>
             <b-col class="d-flex justify-content-end">
                 <b-button variant="primary" v-b-modal="'modalClientCreate'" class="rounded-pill">
                     <i class="fas fa-plus mr-2"></i>

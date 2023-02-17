@@ -18,6 +18,7 @@ import BrandStore from './modules/brands';
 import ImageStore from './modules/images';
 import MilestoneRewardStore from './modules/milestoneRewards';
 import DailyRewardStore from './modules/dailyRewards';
+import MerchantStore from './modules/merchants';
 
 Vue.use(Vuex);
 
@@ -42,6 +43,7 @@ const modules = {
     images: ImageStore,
     milestoneRewards: MilestoneRewardStore,
     dailyRewards: DailyRewardStore,
+    merchants: MerchantStore,
 };
 
 export default new Vuex.Store({
