@@ -11,6 +11,7 @@ import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { Contract } from 'web3-eth-contract';
 import { getProvider } from '@thxnetwork/api/util/network';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
+import { ethers } from 'ethers';
 
 const user = request.agent(app);
 
@@ -41,15 +42,11 @@ describe('ERC1155 import', () => {
             const id = 1;
             const amount = 1;
             // Mint 1 token in the collection
-            try {
-                await TransactionService.sendAsync(
-                    nftContract.options.address,
-                    nftContract.methods.mintERC1155For(erc1155.address, pool.address, id, amount),
-                    chainId,
-                );
-            } catch (err) {
-                console.log(err);
-            }
+            await TransactionService.sendAsync(
+                nftContract.options.address,
+                nftContract.methods.mint(pool.address, id, amount, ethers.constants.HashZero),
+                chainId,
+            );
 
             // Mock Alchemy SDK return value for getNftsForOwner
             jest.spyOn(alchemy.nft, 'getNftsForOwner').mockImplementation(() =>
