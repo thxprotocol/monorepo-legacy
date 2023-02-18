@@ -25,7 +25,10 @@ const controller = async (req: Request, res: Response) => {
         automatic_payment_methods: { enabled: true },
         application_fee_amount: Math.ceil(erc721Perk.price * 0.025),
         transfer_data: { destination: merchant.stripeConnectId },
-        metadata: { perkId: erc721Perk._id },
+        metadata: {
+            sub: req.auth.sub,
+            perk_id: String(erc721Perk._id),
+        },
     });
 
     res.status(201).json({ clientSecret: paymentIntent.client_secret });

@@ -38,16 +38,6 @@ const controller = async (req: Request, res: Response) => {
         image = ImageService.getPublicUrl(response.key);
     }
 
-    // If there is a change in price or currency create a new payment link and store its id
-    let paymentLinkId = perk.paymentLinkId;
-    if (req.body.price && req.body.priceCurrency) {
-        const paymentLink = await MerchantService.updatePaymentLink(req.auth.sub, perk.paymentLinkId, {
-            price: req.body.price,
-            priceCurrency: req.body.priceCurrency,
-        });
-        paymentLinkId = paymentLink.id;
-    }
-
     perk = await ERC721PerkService.update(perk, {
         poolId: req.header('X-PoolId'),
         erc721metadataId: JSON.parse(req.body.erc721metadataIds)[0],
@@ -64,7 +54,6 @@ const controller = async (req: Request, res: Response) => {
         interaction: req.body.interaction,
         platform: req.body.platform,
         content: req.body.content,
-        paymentLinkId,
     } as TERC721Perk);
 
     return res.json(perk);
