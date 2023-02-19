@@ -1,6 +1,7 @@
 import { API_URL, NODE_ENV, WIDGET_URL } from '@thxnetwork/api/config/secrets';
 import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
 import { Widget } from '@thxnetwork/api/models/Widget';
+import BrandService from '@thxnetwork/api/services/BrandService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { Request, Response } from 'express';
@@ -28,6 +29,7 @@ const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(req.params.id);
     if (!pool) throw new NotFoundError('Pool not found.');
 
+    const brand = await BrandService.get(pool._id);
     const widget = await Widget.findOne({ poolId: req.params.id });
 
     const data = `
@@ -62,7 +64,8 @@ const controller = async (req: Request, res: Response) => {
             this.iframe = this.createIframe(settings.widgetUrl, settings.poolId, settings.chainId, settings.origin, settings.theme);
             this.iframe.setAttribute('data-hj-allow-iframe', true);
             this.notifications = this.createNotifications(0);
-            this.launcher = this.createLauncher(this.notifications);
+            this.message = this.createMessage(settings.message, settings.logo);
+            this.launcher = this.createLauncher(this.notifications, this.message);
             this.container = this.createContainer(this.iframe, this.launcher);
             this.referrals = JSON.parse(this.settings.refs).filter((r) => r.successUrl);
 
@@ -140,8 +143,58 @@ const controller = async (req: Request, res: Response) => {
     
             return notifications;
         }
+
+        createMessage(message, logoUrl) {
+            const messageBox = document.createElement('div');
+            const logoBox = document.createElement('div');
+            const closeBox = document.createElement('div');
+            messageBox.id = 'thx-message';
+            
+            closeBox.innerHTML = '<button id="thx-close" style="display: block; width: 40px; height: 40px; background: red; position: absolute; right: 2px; top: 2px;">
+                <div style="display: block; width: 40px; height: 5px; background: blue; position: absolute;"></div>
+                <div style="display: block; width: 40px; height: 5px; background: blue; position: absolute;"></div>
+            </button>'; 
+
+            Object.assign(messageBox.style, {
+                display: 'flex',
+                fontFamily: 'Arial',
+                fontSize: '13px',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '200px',
+                color: '#000000',
+                position: 'absolute',
+                backgroundColor: '#FFFFFF',
+                borderRadius: '5px',
+                userSelect: 'none',
+                padding: '10px 10px 5px',
+                bottom: 'calc(100% + 20px)',
+                right: '0',
+                boxShadow: 'rgb(50 50 93 / 25%) 0px 50px 100px -20px, rgb(0 0 0 / 30%) 0px 30px 60px -30px',
+            });
+
+            Object.assign(logoBox.style, {
+                zIndex: '0',
+                display: 'block',
+                backgroundColor: '#FFFFFF',
+                backgroundImage: 'url(' + logoUrl + ')',
+                width: '40px',
+                height: '40px',
+                top: '-20px',
+                position: 'absolute',
+                borderRadius: '20px',
+                backgroundSize: '30px auto',
+                backgroundPosition: 'center center',
+                backgroundRepeat: 'no-repeat',
+            });
+
+            messageBox.innerHTML = '<span style="z-index: 0">' + message + '</span>';
+            messageBox.prepend(logoBox)
+
+            return messageBox;
+        }
     
-        createLauncher(notifications) {
+        createLauncher(notifications, messageBox) {
             const svgGift =
                 '<svg id="thx-svg-gift" style="display:block; margin: auto; fill: '+this.settings.color+'; width: 20px; height: 20px; transform: scale(1); transition: transform .2s ease;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M32 448c0 17.7 14.3 32 32 32h160V320H32v128zm256 32h160c17.7 0 32-14.3 32-32V320H288v160zm192-320h-42.1c6.2-12.1 10.1-25.5 10.1-40 0-48.5-39.5-88-88-88-41.6 0-68.5 21.3-103 68.3-34.5-47-61.4-68.3-103-68.3-48.5 0-88 39.5-88 88 0 14.5 3.8 27.9 10.1 40H32c-17.7 0-32 14.3-32 32v80c0 8.8 7.2 16 16 16h480c8.8 0 16-7.2 16-16v-80c0-17.7-14.3-32-32-32zm-326.1 0c-22.1 0-40-17.9-40-40s17.9-40 40-40c19.9 0 34.6 3.3 86.1 80h-86.1zm206.1 0h-86.1c51.4-76.5 65.7-80 86.1-80 22.1 0 40 17.9 40 40s-17.9 40-40 40z"/></svg>';
             const launcher = document.createElement('div');
@@ -166,7 +219,7 @@ const controller = async (req: Request, res: Response) => {
                 const iframe = document.getElementById('thx-iframe');
                 iframe.style.opacity = iframe.style.opacity === '0' ? '1' : '0';
                 iframe.style.transform = iframe.style.transform === 'scale(0)' ? 'scale(1)' : 'scale(0)';
-
+                
                 this.iframe.contentWindow.postMessage({ message: 'thx.iframe.show', isShown: !!Number(iframe.style.opacity) }, this.settings.widgetUrl);
             });
             launcher.addEventListener('mouseenter', () => {
@@ -177,8 +230,8 @@ const controller = async (req: Request, res: Response) => {
                 const gift = document.getElementById('thx-svg-gift');
                 gift.style.transform = 'scale(1)';
             });
+            launcher.appendChild(messageBox);
             launcher.appendChild(notifications);
-    
             setTimeout(() => {
                 launcher.style.opacity = 1;
                 launcher.style.transform = 'scale(1)';
@@ -249,6 +302,10 @@ const controller = async (req: Request, res: Response) => {
         apiUrl: '${API_URL}',
         widgetUrl: '${WIDGET_URL}',
         poolId: '${req.params.id}',
+        logo: '${brand ? brand.logoImgUrl : ''}',
+        message: '${
+            widget.message || 'Hi there! Enjoy special perks if you are an engaging members in this community.'
+        }',
         chainId: '${pool.chainId}',
         color: '${widget.color}',
         bgColor: '${widget.bgColor}',
