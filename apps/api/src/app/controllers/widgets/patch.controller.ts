@@ -11,12 +11,13 @@ const validation = [
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Widgets']
+    console.log(req.body);
     const widget = await Widget.findOneAndUpdate(
         { uuid: req.params.uuid },
         { color: req.body.color, message: req.body.message, bgColor: req.body.bgColor, theme: req.body.theme },
         { new: true },
     );
-    res.json(widget);
+    return res.json(widget);
 };
 
 export default { controller, validation };

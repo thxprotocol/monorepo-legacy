@@ -2,12 +2,16 @@
     <div>
         <h2 class="mb-3">Loyalty Widget</h2>
         <BCard variant="white" body-class="shadow-sm">
-            <strong>Embed code</strong>
-            <p class="text-muted">
-                Place this code before the closing body tag of your HTML page. The launcher will show for your web page
-                visitors.
-            </p>
-            <pre class="rounded text-white p-3 d-flex align-items-center bg-dark" style="white-space: nowrap">
+            <b-form-row>
+                <b-col md="4">
+                    <strong>Embed code</strong>
+                    <p class="text-muted">
+                        Place this code before the closing body tag of your HTML page. The launcher will show for your
+                        web page visitors.
+                    </p>
+                </b-col>
+                <b-col md="8">
+                    <pre class="rounded text-white p-3 d-flex align-items-center bg-dark" style="white-space: nowrap">
                 <b-button 
                     variant="light" 
                     v-clipboard:copy="code"
@@ -16,71 +20,104 @@
                 </b-button>
                 <code class="language-html" v-html="codeExample"></code>
             </pre>
-            <b-alert show variant="info" class="d-flex justify-content-between">
-                <div>
-                    <i class="fas fa-info-circle mr-2"></i>
-                    Get our SDK on NPM and construct the THXWidget class in your SPA.
-                </div>
-                <b-link target="_blank" href="https://www.npmjs.com/package/@thxnetwork/sdk">
-                    Read more
-                    <i class="fas fa-chevron-right ml-2"></i>
-                </b-link>
-            </b-alert>
-            <hr />
-            <strong>Color scheme</strong>
-            <p class="text-muted">Choose a color scheme for the widget launcher.</p>
-            <b-row>
-                <b-col md="6">
-                    <b-form-group label="Background color">
-                        <b-input style="width: 100px" size="sm" type="color" v-model="bgColor" />
-                    </b-form-group>
-                    <b-form-group label="Color">
-                        <b-input style="width: 100px" size="sm" type="color" v-model="color" /><br />
-                    </b-form-group>
-                </b-col>
-                <b-col md="6">
-                    <BCard body-class="bg-light p-5 d-flex justify-content-center">
-                        <div class="widget-launcher" :style="`background-color: ${bgColor}`">
-                            <div class="widget-notifications">3</div>
-                            <svg
-                                id="thx-svg-gift"
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 512 512"
-                                :style="`fill: ${color}`"
-                            >
-                                <path
-                                    d="M32 448c0 17.7 14.3 32 32 32h160V320H32v128zm256 32h160c17.7 0 32-14.3 32-32V320H288v160zm192-320h-42.1c6.2-12.1 10.1-25.5 10.1-40 0-48.5-39.5-88-88-88-41.6 0-68.5 21.3-103 68.3-34.5-47-61.4-68.3-103-68.3-48.5 0-88 39.5-88 88 0 14.5 3.8 27.9 10.1 40H32c-17.7 0-32 14.3-32 32v80c0 8.8 7.2 16 16 16h480c8.8 0 16-7.2 16-16v-80c0-17.7-14.3-32-32-32zm-326.1 0c-22.1 0-40-17.9-40-40s17.9-40 40-40c19.9 0 34.6 3.3 86.1 80h-86.1zm206.1 0h-86.1c51.4-76.5 65.7-80 86.1-80 22.1 0 40 17.9 40 40s-17.9 40-40 40z"
-                                />
-                            </svg>
+                    <b-alert show variant="info" class="d-flex justify-content-between">
+                        <div>
+                            <i class="fas fa-info-circle mr-2"></i>
+                            Get our SDK on NPM and construct the THXWidget class in your SPA.
                         </div>
-                    </BCard>
+                        <b-link target="_blank" href="https://www.npmjs.com/package/@thxnetwork/sdk">
+                            Read more
+                            <i class="fas fa-chevron-right ml-2"></i>
+                        </b-link>
+                    </b-alert>
                 </b-col>
-            </b-row>
+            </b-form-row>
             <hr />
-            <strong>Default theme</strong>
-            <p class="text-muted">Choose the default theme for widget frame when opened.</p>
-            <b-row>
-                <b-col md="6">
-                    <b-form-group>
-                        <b-form-radio v-model="theme" name="themes" value="light"> Light </b-form-radio>
-                        <b-form-radio v-model="theme" name="themes" value="dark"> Dark </b-form-radio>
+            <b-form-row>
+                <b-col md="4">
+                    <strong>Welcome Message</strong>
+                    <p class="text-muted">
+                        This message is shown when the widget is loaded and should inform the user about the loyalty
+                        pool.
+                    </p>
+                </b-col>
+                <b-col md="8">
+                    <b-form-group :description="`${message ? message.length : 0}/280`">
+                        <b-textarea
+                            v-model="message"
+                            placeholder="Hi there! Click me to earn rewards and redeem crypto perks."
+                        >
+                        </b-textarea>
                     </b-form-group>
                 </b-col>
-                <b-col md="6" class="d-flex justify-content-between">
-                    <img
-                        width="200"
-                        :style="{ opacity: theme === 'light' ? 1 : 0.5 }"
-                        :src="require('@thxnetwork/dashboard/../public/assets/theme-light.png')"
-                        alt="Light theme"
-                    />
-                    <img
-                        width="200"
-                        :style="{ opacity: theme === 'dark' ? 1 : 0.5 }"
-                        :src="require('@thxnetwork/dashboard/../public/assets/theme-dark.png')"
-                        alt="Dark theme"
-                    />
+            </b-form-row>
+            <hr />
+            <b-form-row>
+                <b-col md="4">
+                    <strong>Color scheme</strong>
+                    <p class="text-muted">Choose a color scheme for the widget launcher.</p>
                 </b-col>
-            </b-row>
+                <b-col md="8">
+                    <b-row>
+                        <b-col md="6">
+                            <b-form-group label="Background color">
+                                <b-input style="width: 100px" size="sm" type="color" v-model="bgColor" />
+                            </b-form-group>
+                            <b-form-group label="Color">
+                                <b-input style="width: 100px" size="sm" type="color" v-model="color" /><br />
+                            </b-form-group>
+                        </b-col>
+                        <b-col md="6">
+                            <BCard body-class="bg-light p-5 d-flex justify-content-center">
+                                <div class="widget-launcher" :style="`background-color: ${bgColor}`">
+                                    <div class="widget-notifications">3</div>
+                                    <svg
+                                        id="thx-svg-gift"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 512 512"
+                                        :style="`fill: ${color}`"
+                                    >
+                                        <path
+                                            d="M32 448c0 17.7 14.3 32 32 32h160V320H32v128zm256 32h160c17.7 0 32-14.3 32-32V320H288v160zm192-320h-42.1c6.2-12.1 10.1-25.5 10.1-40 0-48.5-39.5-88-88-88-41.6 0-68.5 21.3-103 68.3-34.5-47-61.4-68.3-103-68.3-48.5 0-88 39.5-88 88 0 14.5 3.8 27.9 10.1 40H32c-17.7 0-32 14.3-32 32v80c0 8.8 7.2 16 16 16h480c8.8 0 16-7.2 16-16v-80c0-17.7-14.3-32-32-32zm-326.1 0c-22.1 0-40-17.9-40-40s17.9-40 40-40c19.9 0 34.6 3.3 86.1 80h-86.1zm206.1 0h-86.1c51.4-76.5 65.7-80 86.1-80 22.1 0 40 17.9 40 40s-17.9 40-40 40z"
+                                        />
+                                    </svg>
+                                </div>
+                            </BCard>
+                        </b-col>
+                    </b-row>
+                </b-col>
+            </b-form-row>
+            <hr />
+            <b-form-row>
+                <b-col md="4">
+                    <strong>Default theme</strong>
+                    <p class="text-muted">Choose the default theme for widget frame when opened.</p>
+                </b-col>
+                <b-col md="8">
+                    <b-row>
+                        <b-col md="6">
+                            <b-form-group>
+                                <b-form-radio v-model="theme" name="themes" value="light"> Light </b-form-radio>
+                                <b-form-radio v-model="theme" name="themes" value="dark"> Dark </b-form-radio>
+                            </b-form-group>
+                        </b-col>
+                        <b-col md="6" class="d-flex justify-content-between">
+                            <img
+                                v-if="theme === 'light'"
+                                width="200"
+                                :src="require('@thxnetwork/dashboard/../public/assets/theme-light.png')"
+                                alt="Light theme"
+                            />
+                            <img
+                                v-if="theme === 'dark'"
+                                width="200"
+                                :src="require('@thxnetwork/dashboard/../public/assets/theme-dark.png')"
+                                alt="Dark theme"
+                            />
+                        </b-col>
+                    </b-row>
+                </b-col>
+            </b-form-row>
             <hr />
             <div class="d-flex justify-content-end">
                 <b-button variant="link" @click="onClickPreview"> Preview </b-button>
@@ -124,6 +161,7 @@ export default class WidgetsView extends Vue {
     pools!: IPools;
     widgets!: IWidgets;
     isCopied = false;
+    message = '';
     bgColor = '#5942c1';
     color = '#FFFFFF';
     theme = 'light';
@@ -153,11 +191,13 @@ export default class WidgetsView extends Vue {
             if (!this.widget) {
                 await this.$store.dispatch('widgets/create', {
                     poolId: this.pool._id,
+                    message: this.message,
                     color: this.color,
                     bgColor: this.bgColor,
                     theme: this.theme,
                 });
             } else {
+                this.message = this.widget.message;
                 this.color = this.widget.color;
                 this.bgColor = this.widget.bgColor;
                 this.theme = this.widget.theme;
@@ -175,6 +215,7 @@ export default class WidgetsView extends Vue {
         this.isSubmitting = true;
         await this.$store.dispatch('widgets/update', {
             poolId: this.pool._id,
+            message: this.message,
             uuid: this.widget.uuid,
             color: this.color,
             bgColor: this.bgColor,

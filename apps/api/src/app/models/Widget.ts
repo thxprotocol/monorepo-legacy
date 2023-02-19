@@ -13,7 +13,7 @@ const widgetSchema = new mongoose.Schema(
     {
         uuid: String,
         poolId: String,
-        messsage: String,
+        message: String,
         color: String,
         bgColor: String,
         theme: String,

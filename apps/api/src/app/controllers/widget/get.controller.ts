@@ -65,8 +65,8 @@ const controller = async (req: Request, res: Response) => {
             this.iframe.setAttribute('data-hj-allow-iframe', true);
             this.notifications = this.createNotifications(0);
             this.message = this.createMessage(settings.message, settings.logo);
-            this.launcher = this.createLauncher(this.notifications, this.message);
-            this.container = this.createContainer(this.iframe, this.launcher);
+            this.launcher = this.createLauncher(this.notifications);
+            this.container = this.createContainer(this.iframe, this.launcher, this.message);
             this.referrals = JSON.parse(this.settings.refs).filter((r) => r.successUrl);
 
             this.parseURL();
@@ -147,32 +147,12 @@ const controller = async (req: Request, res: Response) => {
         createMessage(message, logoUrl) {
             const messageBox = document.createElement('div');
             const logoBox = document.createElement('div');
-            const closeBox = document.createElement('div');
+            const closeBox = document.createElement('button');
+
             messageBox.id = 'thx-message';
             
-            closeBox.innerHTML = '<button id="thx-close" style="display: block; width: 40px; height: 40px; background: red; position: absolute; right: 2px; top: 2px;">
-                <div style="display: block; width: 40px; height: 5px; background: blue; position: absolute;"></div>
-                <div style="display: block; width: 40px; height: 5px; background: blue; position: absolute;"></div>
-            </button>'; 
-
-            Object.assign(messageBox.style, {
-                display: 'flex',
-                fontFamily: 'Arial',
-                fontSize: '13px',
-                justifyContent: 'center',
-                alignItems: 'center',
-                width: '200px',
-                color: '#000000',
-                position: 'absolute',
-                backgroundColor: '#FFFFFF',
-                borderRadius: '5px',
-                userSelect: 'none',
-                padding: '10px 10px 5px',
-                bottom: 'calc(100% + 20px)',
-                right: '0',
-                boxShadow: 'rgb(50 50 93 / 25%) 0px 50px 100px -20px, rgb(0 0 0 / 30%) 0px 30px 60px -30px',
-            });
-
+            closeBox.innerHTML = '&times;';             
+            
             Object.assign(logoBox.style, {
                 zIndex: '0',
                 display: 'block',
@@ -188,9 +168,62 @@ const controller = async (req: Request, res: Response) => {
                 backgroundRepeat: 'no-repeat',
             });
 
-            messageBox.innerHTML = '<span style="z-index: 0">' + message + '</span>';
-            messageBox.prepend(logoBox)
+            Object.assign(closeBox.style, {
+                display: 'flex',
+                fontFamily: 'Arial',
+                fontSize: '16px',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '20px',
+                height: '20px',
+                border: '0',
+                color: '#000000',
+                position: 'absolute',
+                backgroundColor: 'transparent',
+                top: '0',
+                right: '0',
+                opacity: '0.5',
+                transform: 'scale(.9)',
+                transition: '.2s opacity ease, .1s transform ease',
+            });
+            closeBox.addEventListener('mouseenter', () => {
+                closeBox.style.opacity = '1';
+                closeBox.style.transform = 'scale(1)';
+            });
+            closeBox.addEventListener('mouseleave', () => {
+                closeBox.style.opacity = '.5';
+                closeBox.style.transform = 'scale(.9)';
+            });
+            closeBox.addEventListener('click', () => {
+                this.message.remove();
+            });
+            
+            Object.assign(messageBox.style, {
+                display: message ? 'flex' : 'none',
+                fontFamily: 'Arial',
+                fontSize: '13px',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '200px',
+                color: '#000000',
+                position: 'fixed',
+                backgroundColor: '#FFFFFF',
+                borderRadius: '5px',
+                userSelect: 'none',
+                padding: '15px 10px 5px',
+                bottom: '90px',
+                right: '1rem',
+                boxShadow: 'rgb(50 50 93 / 25%) 0px 50px 100px -20px, rgb(0 0 0 / 30%) 0px 30px 60px -30px',
+                opacity: 0,
+                transform: 'scale(0)',
+                transition: '.2s opacity ease, .1s transform ease',
+            });
 
+            messageBox.innerHTML = '<span style="z-index: 0">' + message + '</span>';
+            messageBox.appendChild(closeBox);
+            messageBox.prepend(logoBox);
+
+                
             return messageBox;
         }
     
@@ -220,6 +253,7 @@ const controller = async (req: Request, res: Response) => {
                 iframe.style.opacity = iframe.style.opacity === '0' ? '1' : '0';
                 iframe.style.transform = iframe.style.transform === 'scale(0)' ? 'scale(1)' : 'scale(0)';
                 
+                this.message.remove();
                 this.iframe.contentWindow.postMessage({ message: 'thx.iframe.show', isShown: !!Number(iframe.style.opacity) }, this.settings.widgetUrl);
             });
             launcher.addEventListener('mouseenter', () => {
@@ -230,22 +264,26 @@ const controller = async (req: Request, res: Response) => {
                 const gift = document.getElementById('thx-svg-gift');
                 gift.style.transform = 'scale(1)';
             });
-            launcher.appendChild(messageBox);
+           
             launcher.appendChild(notifications);
             setTimeout(() => {
                 launcher.style.opacity = 1;
                 launcher.style.transform = 'scale(1)';
+
+                this.message.style.opacity = 1;
+                this.message.style.transform = 'scale(1)';
             }, 1500);
     
             return launcher;
         }
     
-        createContainer(iframe, launcher) {
+        createContainer(iframe, launcher, messageBox) {
             const container = document.createElement('div');
             container.id = 'thx-container';
             container.appendChild(iframe);
             container.appendChild(launcher);
-    
+            container.appendChild(messageBox);
+           
             document.body.appendChild(container);
     
             return container;
@@ -302,10 +340,8 @@ const controller = async (req: Request, res: Response) => {
         apiUrl: '${API_URL}',
         widgetUrl: '${WIDGET_URL}',
         poolId: '${req.params.id}',
-        logo: '${brand ? brand.logoImgUrl : ''}',
-        message: '${
-            widget.message || 'Hi there! Enjoy special perks if you are an engaging members in this community.'
-        }',
+        logo: '${brand && brand.logoImgUrl ? brand.logoImgUrl : 'https://auth.thx.network/img/logo.png'}',
+        message: '${widget.message}',
         chainId: '${pool.chainId}',
         color: '${widget.color}',
         bgColor: '${widget.bgColor}',

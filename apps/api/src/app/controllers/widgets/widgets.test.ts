@@ -16,7 +16,9 @@ describe('Widgets', () => {
         theme = 'light',
         newColor = '#00FF00',
         newBgColor = '#0F0F0F',
-        newTheme = 'dark';
+        newTheme = 'dark',
+        message = 'Hi there!👋 Click me to earn rewards and collect crypto perks...',
+        newMessage = 'Lorem ipsum dolor sit amet';
 
     beforeAll(async () => {
         await beforeAllCallback();
@@ -41,15 +43,12 @@ describe('Widgets', () => {
     it('POST /widgets/', (done) => {
         user.post('/v1/widgets/')
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-            .send({
-                color,
-                bgColor,
-                theme,
-            })
+            .send({ color, bgColor, theme })
             .expect(({ body }: Response) => {
                 expect(body.uuid).toBeDefined();
                 expect(body.color).toEqual(color);
                 expect(body.bgColor).toEqual(bgColor);
+                expect(body.message).toEqual('');
                 expect(body.theme).toEqual(theme);
 
                 widget = body;
@@ -65,6 +64,7 @@ describe('Widgets', () => {
                 expect(body[0].color).toEqual(color);
                 expect(body[0].bgColor).toEqual(bgColor);
                 expect(body[0].theme).toEqual(theme);
+                expect(body[0].message).toEqual('');
             })
             .expect(200, done);
     });
@@ -73,6 +73,7 @@ describe('Widgets', () => {
         user.patch('/v1/widgets/' + widget.uuid)
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .send({
+                message: newMessage,
                 color: newColor,
                 bgColor: newBgColor,
                 theme: newTheme,
@@ -82,6 +83,7 @@ describe('Widgets', () => {
                 expect(body.color).toEqual(newColor);
                 expect(body.bgColor).toEqual(newBgColor);
                 expect(body.theme).toEqual(newTheme);
+                expect(body.message).toEqual(newMessage);
             })
             .expect(200, done);
     });
@@ -94,6 +96,7 @@ describe('Widgets', () => {
                 expect(body.color).toEqual(newColor);
                 expect(body.bgColor).toEqual(newBgColor);
                 expect(body.theme).toEqual(newTheme);
+                expect(body.message).toEqual(newMessage);
             })
             .expect(200, done);
     });

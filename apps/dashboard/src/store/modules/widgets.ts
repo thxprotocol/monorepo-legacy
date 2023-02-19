@@ -5,6 +5,7 @@ import { type IPool } from './pools';
 
 export type TWidget = {
     uuid: string;
+    message: string;
     color: string;
     bgColor: string;
     poolId: string;
