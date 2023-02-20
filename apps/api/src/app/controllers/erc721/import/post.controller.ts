@@ -57,6 +57,7 @@ const controller = async (req: Request, res: Response) => {
         address,
         name,
         symbol,
+        archived: false,
     });
     const erc721Tokens = [];
     const erc721Properties = [];
