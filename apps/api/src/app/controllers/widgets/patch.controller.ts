@@ -12,7 +12,6 @@ const validation = [
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Widgets']
-    console.log(req.body);
     const widget = await Widget.findOneAndUpdate(
         { uuid: req.params.uuid },
         {
