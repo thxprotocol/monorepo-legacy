@@ -7,6 +7,7 @@ import PointBalanceService, { PointBalance } from '@thxnetwork/api/services/Poin
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
+import { ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
 
 const validation = [param('uuid').exists()];
 
@@ -21,7 +22,9 @@ const controller = async (req: Request, res: Response) => {
     if (!erc721) throw new NotFoundError('Could not find this erc721');
 
     const metadata = await ERC721Service.findMetadataById(erc721Perk.erc721metadataId);
-    if (!metadata) throw new NotFoundError('Could not find the erc721 metadata for this perk');
+    if (!metadata && !erc721Perk.erc721tokenId) {
+        throw new NotFoundError('Could not find the erc721 metadata or the tokenId for this perk');
+    }
 
     const pointBalance = await PointBalance.findOne({ sub: req.auth.sub, poolId: pool._id });
     if (!pointBalance || Number(pointBalance.balance) < Number(erc721Perk.pointPrice))
@@ -31,7 +34,13 @@ const controller = async (req: Request, res: Response) => {
     const account = await AccountProxy.getById(req.auth.sub);
     const to = await account.getAddress(erc721.chainId);
 
-    const erc721Token = await ERC721Service.mint(pool, erc721, metadata, req.auth.sub, to);
+    let erc721Token;
+    if (metadata) {
+        erc721Token = await ERC721Service.mint(pool, erc721, metadata, req.auth.sub, to);
+    } else {
+        erc721Token = await ERC721Service.safeTransferFrom(pool.address, wallet.address, erc721Perk.erc721tokenId);
+    }
+
     const erc721PerkPayment = await ERC20PerkPayment.create({
         perkId: erc721Perk._id,
         sub: req.auth.sub,
