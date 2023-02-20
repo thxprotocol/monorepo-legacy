@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 export type WidgetDocument = mongoose.Document & {
     uuid: string;
     poolId: string;
+    align: string;
     message: string;
     color: string;
     bgColor: string;
@@ -13,6 +14,7 @@ const widgetSchema = new mongoose.Schema(
     {
         uuid: String,
         poolId: String,
+        align: String,
         message: String,
         color: String,
         bgColor: String,

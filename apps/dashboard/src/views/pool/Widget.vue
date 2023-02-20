@@ -12,14 +12,14 @@
                 </b-col>
                 <b-col md="8">
                     <pre class="rounded text-white p-3 d-flex align-items-center bg-dark" style="white-space: nowrap">
-                <b-button 
-                    variant="light" 
-                    v-clipboard:copy="code"
-                    v-clipboard:success="() => isCopied = true" size="sm" class="mr-3">
-                    <i class="fas  ml-0" :class="isCopied ? 'fa-clipboard-check' : 'fa-clipboard'"></i>
-                </b-button>
-                <code class="language-html" v-html="codeExample"></code>
-            </pre>
+                        <b-button 
+                            variant="light" 
+                            v-clipboard:copy="code"
+                            v-clipboard:success="() => isCopied = true" size="sm" class="mr-3">
+                            <i class="fas  ml-0" :class="isCopied ? 'fa-clipboard-check' : 'fa-clipboard'"></i>
+                        </b-button>
+                        <code class="language-html" v-html="codeExample"></code>
+                    </pre>
                     <b-alert show variant="info" class="d-flex justify-content-between">
                         <div>
                             <i class="fas fa-info-circle mr-2"></i>
@@ -30,12 +30,12 @@
                             <i class="fas fa-chevron-right ml-2"></i>
                         </b-link>
                     </b-alert>
-                </b-col>
+                </b-col> 
             </b-form-row>
             <hr />
             <b-form-row>
                 <b-col md="4">
-                    <strong>Welcome Message</strong>
+                    <strong>Welcome message</strong>
                     <p class="text-muted">
                         This message is shown when the widget is loaded and should inform the user about the loyalty
                         pool.
@@ -48,6 +48,21 @@
                             placeholder="Hi there! Click me to earn rewards and redeem crypto perks."
                         >
                         </b-textarea>
+                    </b-form-group>
+                </b-col>
+            </b-form-row>
+            <hr />
+            <b-form-row>
+                <b-col md="4">
+                    <strong>Alignment</strong>
+                    <p class="text-muted">
+                        Position the widget launcher on the left or right bottom side of the window.
+                    </p>
+                </b-col>
+                <b-col md="8">
+                    <b-form-group>
+                        <b-form-radio v-model="align" name="align" value="left"> Left </b-form-radio>
+                        <b-form-radio v-model="align" name="align" value="right"> Right </b-form-radio>
                     </b-form-group>
                 </b-col>
             </b-form-row>
@@ -94,7 +109,7 @@
                     <p class="text-muted">Choose the default theme for widget frame when opened.</p>
                 </b-col>
                 <b-col md="8">
-                    <b-row>
+                    <b-form-row>
                         <b-col md="6">
                             <b-form-group>
                                 <b-form-radio v-model="theme" name="themes" value="light"> Light </b-form-radio>
@@ -115,7 +130,7 @@
                                 alt="Dark theme"
                             />
                         </b-col>
-                    </b-row>
+                    </b-form-row>
                 </b-col>
             </b-form-row>
             <hr />
@@ -162,6 +177,7 @@ export default class WidgetsView extends Vue {
     widgets!: IWidgets;
     isCopied = false;
     message = '';
+    align = 'left';
     bgColor = '#5942c1';
     color = '#FFFFFF';
     theme = 'light';
@@ -191,12 +207,14 @@ export default class WidgetsView extends Vue {
             if (!this.widget) {
                 await this.$store.dispatch('widgets/create', {
                     poolId: this.pool._id,
+                    align: this.align,
                     message: this.message,
                     color: this.color,
                     bgColor: this.bgColor,
                     theme: this.theme,
                 });
             } else {
+                this.align = this.widget.align;
                 this.message = this.widget.message;
                 this.color = this.widget.color;
                 this.bgColor = this.widget.bgColor;
@@ -216,6 +234,7 @@ export default class WidgetsView extends Vue {
         await this.$store.dispatch('widgets/update', {
             poolId: this.pool._id,
             message: this.message,
+            align: this.align,
             uuid: this.widget.uuid,
             color: this.color,
             bgColor: this.bgColor,
