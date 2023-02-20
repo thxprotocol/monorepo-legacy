@@ -86,7 +86,6 @@ describe('Widgets', () => {
                 expect(body.theme).toEqual(newTheme);
                 expect(body.message).toEqual(message);
                 expect(body.align).toEqual(align);
-                expect(body.message).toEqual(newMessage);
             })
             .expect(200, done);
     });
@@ -100,7 +99,6 @@ describe('Widgets', () => {
                 expect(body.bgColor).toEqual(newBgColor);
                 expect(body.theme).toEqual(newTheme);
                 expect(body.message).toEqual(message);
-                expect(body.message).toEqual(newMessage);
             })
             .expect(200, done);
     });
