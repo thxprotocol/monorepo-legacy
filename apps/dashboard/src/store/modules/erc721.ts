@@ -335,7 +335,7 @@ class ERC721Module extends VuexModule {
             },
         });
 
-        await this.context.dispatch('read', data._id);
+        this.context.commit('set', data.erc721);
     }
 }
 
