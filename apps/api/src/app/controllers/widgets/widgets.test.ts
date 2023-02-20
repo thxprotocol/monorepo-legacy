@@ -16,7 +16,9 @@ describe('Widgets', () => {
         theme = 'light',
         newColor = '#00FF00',
         newBgColor = '#0F0F0F',
-        newTheme = 'dark';
+        newTheme = 'dark',
+        align = 'left',
+        message = 'Hi there!👋 Click me to earn rewards and collect crypto perks...';
 
     beforeAll(async () => {
         await beforeAllCallback();
@@ -73,6 +75,8 @@ describe('Widgets', () => {
         user.patch('/v1/widgets/' + widget.uuid)
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .send({
+                align,
+                message,
                 color: newColor,
                 bgColor: newBgColor,
                 theme: newTheme,
@@ -82,6 +86,8 @@ describe('Widgets', () => {
                 expect(body.color).toEqual(newColor);
                 expect(body.bgColor).toEqual(newBgColor);
                 expect(body.theme).toEqual(newTheme);
+                expect(body.message).toEqual(message);
+                expect(body.align).toEqual(align);
             })
             .expect(200, done);
     });
@@ -94,6 +100,7 @@ describe('Widgets', () => {
                 expect(body.color).toEqual(newColor);
                 expect(body.bgColor).toEqual(newBgColor);
                 expect(body.theme).toEqual(newTheme);
+                expect(body.message).toEqual(message);
             })
             .expect(200, done);
     });
