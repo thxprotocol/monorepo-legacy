@@ -43,15 +43,12 @@ describe('Widgets', () => {
     it('POST /widgets/', (done) => {
         user.post('/v1/widgets/')
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-            .send({
-                color,
-                bgColor,
-                theme,
-            })
+            .send({ color, bgColor, theme })
             .expect(({ body }: Response) => {
                 expect(body.uuid).toBeDefined();
                 expect(body.color).toEqual(color);
                 expect(body.bgColor).toEqual(bgColor);
+                expect(body.message).toEqual('');
                 expect(body.theme).toEqual(theme);
 
                 widget = body;
@@ -67,6 +64,7 @@ describe('Widgets', () => {
                 expect(body[0].color).toEqual(color);
                 expect(body[0].bgColor).toEqual(bgColor);
                 expect(body[0].theme).toEqual(theme);
+                expect(body[0].message).toEqual('');
             })
             .expect(200, done);
     });
@@ -88,6 +86,7 @@ describe('Widgets', () => {
                 expect(body.theme).toEqual(newTheme);
                 expect(body.message).toEqual(message);
                 expect(body.align).toEqual(align);
+                expect(body.message).toEqual(newMessage);
             })
             .expect(200, done);
     });
@@ -101,6 +100,7 @@ describe('Widgets', () => {
                 expect(body.bgColor).toEqual(newBgColor);
                 expect(body.theme).toEqual(newTheme);
                 expect(body.message).toEqual(message);
+                expect(body.message).toEqual(newMessage);
             })
             .expect(200, done);
     });

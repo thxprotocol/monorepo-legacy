@@ -10,6 +10,7 @@ const controller = async (req: Request, res: Response) => {
     const widget = await Widget.create({
         poolId: req.header('X-PoolId'),
         uuid: db.createUUID(),
+        message: '',
         color: req.body.color,
         bgColor: req.body.bgColor,
         theme: req.body.theme,

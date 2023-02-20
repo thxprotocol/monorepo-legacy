@@ -30,7 +30,7 @@
                             <i class="fas fa-chevron-right ml-2"></i>
                         </b-link>
                     </b-alert>
-                </b-col>
+                </b-col> 
             </b-form-row>
             <hr />
             <b-form-row>
@@ -118,14 +118,14 @@
                         </b-col>
                         <b-col md="6" class="d-flex justify-content-between">
                             <img
+                                v-if="theme === 'light'"
                                 width="200"
-                                :style="{ opacity: theme === 'light' ? 1 : 0.5 }"
                                 :src="require('@thxnetwork/dashboard/../public/assets/theme-light.png')"
                                 alt="Light theme"
                             />
                             <img
+                                v-if="theme === 'dark'"
                                 width="200"
-                                :style="{ opacity: theme === 'dark' ? 1 : 0.5 }"
                                 :src="require('@thxnetwork/dashboard/../public/assets/theme-dark.png')"
                                 alt="Dark theme"
                             />
