@@ -4,12 +4,21 @@ import CreateERC721Perk from './post.controller';
 import ReadERC721Perk from './get.controller';
 import UpdateERC721Perk from './patch.controller';
 import ListERC721Perk from './list.controller';
+import ListERC721TokenImported from './import/list.controller';
 import DeleteERC721Perk from './delete.controller';
 import { upload } from '@thxnetwork/api/util/multer';
 
 const router = express.Router();
 
+router.get(
+    '/import',
+    guard.check(['erc721_rewards:read']),
+    assertAssetPoolOwnership,
+    ListERC721TokenImported.controller,
+    assertRequestInput(ListERC721TokenImported.validation),
+);
 router.get('/', guard.check(['erc721_rewards:read']), assertAssetPoolOwnership, ListERC721Perk.controller);
+
 router.get(
     '/:id',
     guard.check(['erc721_rewards:read']),

@@ -53,7 +53,7 @@ const controller = async (req: Request, res: Response) => {
 
     const { address, name, symbol } = ownedNfts[0].contract;
     const erc721 = await ERC721.create({
-        sub: req.auth.sub,
+        //sub: req.auth.sub,
         chainId,
         address: toChecksumAddress(address, chainId),
         name,

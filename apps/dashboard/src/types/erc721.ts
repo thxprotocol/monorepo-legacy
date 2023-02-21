@@ -42,7 +42,6 @@ export type TERC721 = {
     totalSupply: string;
     logoURI: string;
     properties: TERC721DefaultProp[];
-    // metadata: { [id: string]: TERC721Metadata };
     archived: boolean;
     poolId?: string;
 };
@@ -84,3 +83,13 @@ export type TMetadataState = {
         byPage: MetadataByPage;
     };
 };
+
+export type TERC721Token = {
+    _id: string;
+    tokenId: number;
+    erc721Id: string;
+};
+
+export interface IERC721Tokens {
+    [id: string]: { [id: string]: TERC721Token };
+}

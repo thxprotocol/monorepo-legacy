@@ -147,6 +147,18 @@ type ERC20TransferFromCallBack = {
     args: TERC20TransferFromCallBackArgs;
 };
 
+type ERC721TransferFromCallBack = {
+    type: 'erc721nTransferFromCallback';
+    args: TERC721TransferFromCallBackArgs;
+};
+
+export type TERC721TransferFromCallBackArgs = {
+    erc721Id: string;
+    erc721tokenId: string;
+    sub: string;
+    assetPoolId: string;
+};
+
 export type TTransactionCallback =
     | ERC20DeployCallback
     | ERC721DeployCallback
@@ -160,4 +172,5 @@ export type TTransactionCallback =
     | WalletDeployCallback
     | WalletGrantRoleCallBack
     | WalletRevokeRoleCallBack
-    | ERC20TransferFromCallBack;
+    | ERC20TransferFromCallBack
+    | ERC721TransferFromCallBack;
