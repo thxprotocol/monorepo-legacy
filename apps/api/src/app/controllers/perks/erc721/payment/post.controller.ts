@@ -3,8 +3,8 @@ import { param } from 'express-validator';
 import { ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { Merchant } from '@thxnetwork/api/models/Merchant';
-import PoolService from '@thxnetwork/api/services/PoolService';
 import { stripe } from '@thxnetwork/api/util/stripe';
+import PoolService from '@thxnetwork/api/services/PoolService';
 
 const validation = [param('uuid').exists()];
 
@@ -23,7 +23,7 @@ const controller = async (req: Request, res: Response) => {
         amount: erc721Perk.price,
         currency: erc721Perk.priceCurrency,
         automatic_payment_methods: { enabled: true },
-        application_fee_amount: Math.ceil(erc721Perk.price * 0.025),
+        application_fee_amount: erc721Perk.price * 0.05, // 5% is 2.5% app fee and 1.4-3.5% stripe fee
         transfer_data: { destination: merchant.stripeConnectId },
         metadata: {
             sub: req.auth.sub,

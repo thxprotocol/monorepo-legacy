@@ -30,7 +30,7 @@
                             <i class="fas fa-chevron-right ml-2"></i>
                         </b-link>
                     </b-alert>
-                </b-col> 
+                </b-col>
             </b-form-row>
             <hr />
             <b-form-row>
@@ -48,6 +48,18 @@
                             placeholder="Hi there! Click me to earn rewards and redeem crypto perks."
                         >
                         </b-textarea>
+                    </b-form-group>
+                </b-col>
+            </b-form-row>
+            <hr />
+            <b-form-row>
+                <b-col md="4">
+                    <strong>Domain</strong>
+                    <p class="text-muted">Configure the domain the widget will be loaded on.</p>
+                </b-col>
+                <b-col md="8">
+                    <b-form-group>
+                        <b-form-input v-model="domain" />
                     </b-form-group>
                 </b-col>
             </b-form-row>
@@ -181,6 +193,7 @@ export default class WidgetsView extends Vue {
     bgColor = '#5942c1';
     color = '#FFFFFF';
     theme = 'light';
+    domain = '';
     isSubmitting = false;
 
     get pool() {
@@ -209,6 +222,7 @@ export default class WidgetsView extends Vue {
                     poolId: this.pool._id,
                     align: this.align,
                     message: this.message,
+                    domain: this.domain,
                     color: this.color,
                     bgColor: this.bgColor,
                     theme: this.theme,
@@ -216,6 +230,7 @@ export default class WidgetsView extends Vue {
             } else {
                 this.align = this.widget.align;
                 this.message = this.widget.message;
+                this.domain = this.widget.domain;
                 this.color = this.widget.color;
                 this.bgColor = this.widget.bgColor;
                 this.theme = this.widget.theme;
@@ -234,6 +249,7 @@ export default class WidgetsView extends Vue {
         await this.$store.dispatch('widgets/update', {
             poolId: this.pool._id,
             message: this.message,
+            domain: this.domain,
             align: this.align,
             uuid: this.widget.uuid,
             color: this.color,
