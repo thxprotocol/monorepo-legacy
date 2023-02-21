@@ -94,6 +94,13 @@ export default class ModalERC721Import extends Vue {
         };
 
         await this.$store.dispatch('erc721/import', data);
+        this.$bvModal.hide(`modalERC721Import`);
+        this.erc721Address = '';
+        this.erc721LogoImgUrl = '';
+        this.name = '';
+        this.symbol = '';
+        this.totalSupply = '';
+        this.$emit('imported');
         this.loading = false;
     }
 

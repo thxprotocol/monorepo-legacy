@@ -9,6 +9,7 @@ import { alchemy } from '@thxnetwork/api/util/alchemy';
 import { ChainId } from '@thxnetwork/api/types/enums';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
+import { toChecksumAddress } from 'web3-utils';
 
 const validation = [body('contractAddress').exists(), body('chainId').exists().isNumeric()];
 
@@ -54,9 +55,10 @@ const controller = async (req: Request, res: Response) => {
     const erc721 = await ERC721.create({
         sub: req.auth.sub,
         chainId,
-        address,
+        address: toChecksumAddress(address, chainId),
         name,
         symbol,
+        archived: false,
     });
     const erc721Tokens = [];
     const erc721Properties = [];
