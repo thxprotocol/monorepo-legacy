@@ -11,6 +11,7 @@ const controller = async (req: Request, res: Response) => {
         poolId: req.header('X-PoolId'),
         uuid: db.createUUID(),
         message: '',
+        align: 'right',
         color: req.body.color,
         bgColor: req.body.bgColor,
         theme: req.body.theme,

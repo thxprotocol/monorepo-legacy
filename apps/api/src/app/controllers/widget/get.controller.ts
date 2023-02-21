@@ -347,7 +347,7 @@ const controller = async (req: Request, res: Response) => {
         widgetUrl: '${WIDGET_URL}',
         poolId: '${req.params.id}',
         logo: '${brand && brand.logoImgUrl ? brand.logoImgUrl : 'https://auth.thx.network/img/logo.png'}',
-        message: '${widget.message}',
+        message: '${widget.message || ''}',
         align: '${widget.align || 'right'}',
         chainId: '${pool.chainId}',
         color: '${widget.color}',
