@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { AccountPlanType } from '@thxnetwork/api/types/enums';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import ImageService from '@thxnetwork/api/services/ImageService';
-import IPFSService from '@thxnetwork/api/util/ipfs';
+import IPFSService from '@thxnetwork/api/services/IPFSService';
 
 export default {
     controller: async (req: Request, res: Response) => {

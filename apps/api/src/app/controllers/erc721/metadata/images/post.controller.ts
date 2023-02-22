@@ -15,6 +15,9 @@ import { RewardConditionPlatform, TERC721Perk } from '@thxnetwork/types/index';
 import short from 'short-uuid';
 import db from '@thxnetwork/api/util/database';
 import PoolService from '@thxnetwork/api/services/PoolService';
+import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
+import IPFSService from '@thxnetwork/api/services/IPFSService';
+import { AccountPlanType } from '@thxnetwork/api/types/enums';
 
 const validation = [
     param('id').isMongoId(),
@@ -36,6 +39,8 @@ const controller = async (req: Request, res: Response) => {
     const erc721 = await ERC721Service.findById(req.params.id);
     if (!erc721) throw new NotFoundError('Could not find this NFT in the database');
     const pool = await PoolService.getById(req.header('X-PoolId'));
+    const account = await AccountProxy.getById(req.auth.sub);
+
     // UNZIP THE FILE
     const zip = createArchiver().jsZip;
 
@@ -91,7 +96,11 @@ const controller = async (req: Request, res: Response) => {
                     // --------------------------------------------------------------------
 
                     // COLLECT THE URL
-                    const url = ImageService.getPublicUrl(filename);
+                    let url = ImageService.getPublicUrl(filename);
+                    if (account.plan === AccountPlanType.Premium) {
+                        const result = await IPFSService.add(url);
+                        url = 'https://ipfs.io/ipfs/' + result.cid.toString();
+                    }
 
                     // CREATE THE METADATA
                     const metadata = await ERC721Service.createMetadata(erc721, [
