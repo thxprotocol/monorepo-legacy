@@ -70,7 +70,7 @@
         "http": "^0.0.1-security",
         "http-proxy": "^1.18.1",
         "https": "^1.0.0",
-        "ipfs-http-client": "^60.0.0",
+        "ipfs-http-client": "56.0.2",
         "jsonwebtoken": "^8.5.1",
         "jspdf": "^2.5.1",
         "jszip": "^3.10.0",
