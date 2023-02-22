@@ -8,7 +8,6 @@ import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
-import WalletService from '@thxnetwork/api/services/WalletService';
 
 const validation = [param('uuid').exists()];
 
@@ -39,6 +38,7 @@ const controller = async (req: Request, res: Response) => {
         erc721Token = await ERC721Service.mint(pool, erc721, metadata, req.auth.sub, to);
     } else {
         erc721Token = await ERC721Token.findById(erc721Perk.erc721tokenId);
+        console.log('ADDRESS', to);
         erc721Token = await ERC721Service.transferFrom(pool, erc721Token, erc721, req.auth.sub, to);
     }
 

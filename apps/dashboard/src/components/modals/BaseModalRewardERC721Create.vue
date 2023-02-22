@@ -270,6 +270,7 @@ export default class ModalRewardERC721Create extends Vue {
                     ? this.rewardCondition.interaction
                     : RewardConditionInteraction.None,
             content: this.rewardCondition.platform !== RewardConditionPlatform.None ? this.rewardCondition.content : '',
+            erc721tokenId: this.erc721tokenId,
         };
 
         if (this.expiryDate) Object.assign(payload, { expiryDate: this.expiryDate });

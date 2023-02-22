@@ -53,7 +53,7 @@ const controller = async (req: Request, res: Response) => {
 
     const { address, name, symbol } = ownedNfts[0].contract;
     const erc721 = await ERC721.create({
-        //sub: req.auth.sub,
+        sub: req.auth.sub,
         chainId,
         address: toChecksumAddress(address, chainId),
         name,
@@ -71,7 +71,7 @@ const controller = async (req: Request, res: Response) => {
                     const { attributes, properties } = convertRawMetadataToAttributes(rawMetadata);
                     const metadata = await ERC721Service.createMetadata(erc721, attributes);
                     const erc721Token = await ERC721Token.create({
-                        sub: req.auth.sub,
+                        //sub: req.auth.sub,
                         recipient: pool.address,
                         state: ERC721TokenState.Minted,
                         erc721Id: String(erc721._id),
