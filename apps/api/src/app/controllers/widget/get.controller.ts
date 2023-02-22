@@ -75,10 +75,10 @@ const controller = async (req: Request, res: Response) => {
 
         parseURL() {
             const url = new URL(window.location.href)
-            const param = url.searchParams.get('ref');
-            if (!param) return;
-
-            this.ref = param;
+            const ref = url.searchParams.get('ref');
+            if (!ref) return;
+            
+            this.ref = ref;
             
             const { uuid } = JSON.parse(atob(this.ref));
             const referral = this.referrals.find((r) => r.uuid === uuid);
@@ -294,28 +294,44 @@ const controller = async (req: Request, res: Response) => {
     
             return container;
         }
-    
+        
         onMessage(event) {
             if (!this.settings.widgetUrl || event.origin !== this.settings.widgetUrl) return;
             const { message, amount } = event.data;
             switch (message) {
                 case 'thx.widget.ready':{
-                    this.storeReferrer()      
+                    this.onWidgetReady();
                     break
                 }
                 case 'thx.reward.amount': {
                     this.notifications.innerText = amount;
                     break;
                 }
-                case 'thx.widget.close': {
-                    this.iframe.style.opacity = this.iframe.style.opacity === '0' ? '1' : '0';
-                    this.iframe.style.transform = this.iframe.style.transform === 'scale(0)' ? 'scale(1)' : 'scale(0)';
-                    this.iframe.contentWindow.postMessage({ message: 'thx.iframe.show', isShown: false }, this.settings.widgetUrl);
+                case 'thx.widget.toggle': {
+                    this.onWidgetToggle();
                     break;
                 }
             }
         }
     
+        onWidgetReady() {      
+            const url = new URL(window.location.href)
+            const widgetPath = url.searchParams.get('thx_widget_path');
+            const redirectStatus = url.searchParams.get('redirect_status');
+            if (widgetPath) {
+                this.iframe.contentWindow.postMessage({ message: 'thx.iframe.navigate', path: widgetPath + '?status=' + redirectStatus }, this.settings.widgetUrl);
+                this.onWidgetToggle();
+            }
+    
+            this.storeReferrer();
+        }
+
+        onWidgetToggle() {
+            this.iframe.style.opacity = this.iframe.style.opacity === '0' ? '1' : '0';
+            this.iframe.style.transform = this.iframe.style.transform === 'scale(0)' ? 'scale(1)' : 'scale(0)';
+            this.iframe.contentWindow.postMessage({ message: 'thx.iframe.show', isShown: false }, this.settings.widgetUrl);
+        }
+
         onMatchSuccessUrl() {
             for (const ref of this.referrals) {
                 if (window.location.href !== ref.successUrl) continue;
@@ -347,7 +363,7 @@ const controller = async (req: Request, res: Response) => {
         widgetUrl: '${WIDGET_URL}',
         poolId: '${req.params.id}',
         logo: '${brand && brand.logoImgUrl ? brand.logoImgUrl : 'https://auth.thx.network/img/logo.png'}',
-        message: '${widget.message}',
+        message: '${widget.message || ''}',
         align: '${widget.align || 'right'}',
         chainId: '${pool.chainId}',
         color: '${widget.color}',
@@ -362,7 +378,7 @@ const controller = async (req: Request, res: Response) => {
         sourceMap: NODE_ENV !== 'production',
     });
 
-    res.set({ 'Content-Type': 'application/javascript' }).send(result.code);
+    res.set({ 'Content-Type': 'application/javascript' }).send(data);
 };
 
 export default { controller, validation };

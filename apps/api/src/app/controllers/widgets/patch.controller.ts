@@ -6,8 +6,9 @@ const validation = [
     body('color').isHexColor(),
     body('bgColor').isHexColor(),
     body('align').isString(),
-    body('message').isString().isLength({ min: 3, max: 280 }),
     body('theme').isString(),
+    body('domain').optional().isURL({ require_tld: false }),
+    body('message').optional().isString().isLength({ max: 280 }),
 ];
 
 const controller = async (req: Request, res: Response) => {
@@ -17,6 +18,7 @@ const controller = async (req: Request, res: Response) => {
         {
             color: req.body.color,
             align: req.body.align,
+            domain: req.body.domain,
             message: req.body.message,
             bgColor: req.body.bgColor,
             theme: req.body.theme,
