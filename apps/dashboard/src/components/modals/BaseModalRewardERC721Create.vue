@@ -164,7 +164,7 @@ export default class ModalRewardERC721Create extends Vue {
         this.rewardLimit = this.reward ? this.reward.rewardLimit : 0;
         this.claimAmount = this.reward ? this.reward.claimAmount : 0;
         this.claimLimit = this.reward ? this.reward.claimLimit : 1;
-        this.price = this.reward ? this.reward.price : this.price;
+        this.price = this.reward && this.reward.price ? this.reward.price : this.price;
         this.priceCurrency = this.reward ? this.reward.priceCurrency : this.priceCurrency;
         this.rewardCondition = this.reward
             ? {
