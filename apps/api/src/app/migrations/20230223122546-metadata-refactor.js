@@ -11,7 +11,6 @@ module.exports = {
         await Promise.all(
             metadata.map(async (m) => {
                 try {
-                    console.log(m);
                     await metadataColl.updateOne(
                         { _id: m._id },
                         {
@@ -19,6 +18,7 @@ module.exports = {
                                 name: m.attributes ? getValue(m.attributes, 'name') : '',
                                 description: m.attributes ? getValue(m.attributes, 'description') : '',
                                 image: m.attributes ? getValue(m.attributes, 'image') : '',
+                                imageUrl: m.attributes ? getValue(m.attributes, 'image') : '',
                                 externalUrl: m.attributes ? getValue(m.attributes, 'externalUrl') : '',
                             },
                         },

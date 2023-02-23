@@ -164,11 +164,14 @@ export default class MetadataView extends Vue {
     erc721s!: IERC721s;
     metadata!: IERC721Metadatas;
 
-    @Prop() erc721!: TERC721;
+    get erc721() {
+        if (!this.erc721s[this.$route.params.erc721Id]) return;
+        return this.erc721s[this.$route.params.erc721Id];
+    }
 
     get metadataByPage() {
-        if (!this.metadata[this.erc721._id]) return [];
-        return Object.values(this.metadata[this.erc721._id])
+        if (!this.erc721 || !this.metadata[this.erc721._id]) return [];
+        return Object.values(this.metadata[this.$route.params.erc721Id])
             .filter((metadata: TERC721Metadata) => metadata.page === this.page)
             .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
             .map((r: TERC721Metadata) => ({
@@ -208,6 +211,7 @@ export default class MetadataView extends Vue {
     }
 
     onClickAction(action: { variant: number; label: string }) {
+        if (!this.erc721) return;
         switch (action.variant) {
             case 0:
                 for (const id of Object.values(this.selectedItems)) {
