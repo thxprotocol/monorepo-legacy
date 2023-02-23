@@ -39,10 +39,12 @@ export type TERC721Token = {
 
 export type TERC721Metadata = {
     _id: string;
-    erc721: string;
-    title: string;
+    erc721Id: string;
+    imageUrl: string;
+    name: string;
     description: string;
-    attributes: { key: string; value: string }[];
+    image: string;
+    externalUrl: string;
 };
 
 @Module({ namespaced: true })
@@ -140,8 +142,8 @@ class ERC721Module extends VuexModule {
 
     @Action({ rawError: true })
     async getMetadata(token: TERC721Token) {
-        const data = await thxClient.erc721.getMetadata(token.erc721Id, token.metadataId);
-        this.context.commit('setMetadata', { tokenId: token._id, metadata: data });
+        const metadata = await thxClient.erc721.getMetadata(token.erc721Id, token.metadataId);
+        this.context.commit('setMetadata', { tokenId: token._id, metadata });
     }
 }
 

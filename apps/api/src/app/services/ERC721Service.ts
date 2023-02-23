@@ -1,8 +1,6 @@
 import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
 import { TransactionReceipt } from 'web3-core';
-
 import { getByteCodeForContractName, getContractFromName } from '@thxnetwork/api/config/contracts';
-import { API_URL, VERSION } from '@thxnetwork/api/config/secrets';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { ERC721, ERC721Document, IERC721Updates } from '@thxnetwork/api/models/ERC721';
 import { ERC721Metadata, ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
@@ -14,28 +12,22 @@ import { TERC721DeployCallbackArgs, TERC721TokenMintCallbackArgs } from '@thxnet
 import { assertEvent, ExpectedEventNotFound, findEvent, parseLogs } from '@thxnetwork/api/util/events';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
-
 import PoolService from './PoolService';
 import TransactionService from './TransactionService';
-
 import type { TERC721, TERC721Metadata, TERC721Token } from '@thxnetwork/api/types/TERC721';
 import type { IAccount } from '@thxnetwork/api/models/Account';
+
 const contractName = 'NonFungibleToken';
 
 async function deploy(data: TERC721, forceSync = true): Promise<ERC721Document> {
     const { defaultAccount } = getProvider(data.chainId);
     const contract = getContractFromName(data.chainId, contractName);
     const bytecode = getByteCodeForContractName(contractName);
-
-    data.baseURL = `${API_URL}/${VERSION}/metadata/`;
-
     const erc721 = await ERC721.create(data);
-
     const fn = contract.deploy({
         data: bytecode,
         arguments: [erc721.name, erc721.symbol, erc721.baseURL, defaultAccount],
     });
-
     const txId = await TransactionService.sendAsync(null, fn, erc721.chainId, forceSync, {
         type: 'Erc721DeployCallback',
         args: { erc721Id: String(erc721._id) },
@@ -81,13 +73,6 @@ export async function findBySub(sub: string): Promise<ERC721Document[]> {
     return ERC721.find({ sub });
 }
 
-export async function createMetadata(erc721: ERC721Document, attributes: any): Promise<ERC721MetadataDocument> {
-    return ERC721Metadata.create({
-        erc721: String(erc721._id),
-        attributes,
-    });
-}
-
 export async function deleteMetadata(id: string) {
     return ERC721Metadata.findOneAndDelete({ _id: id });
 }
@@ -100,7 +85,6 @@ export async function mint(
     address: string,
     forceSync = true,
 ): Promise<ERC721TokenDocument> {
-    // const address = await account.getAddress(pool.chainId);
     const erc721token = await ERC721Token.create({
         sub,
         recipient: address,
@@ -148,13 +132,12 @@ export async function queryMintTransaction(erc721Token: ERC721TokenDocument): Pr
 }
 
 export async function parseAttributes(entry: ERC721MetadataDocument) {
-    const attrs: { [key: string]: string } = {};
-
-    for (const { key, value } of entry.attributes) {
-        attrs[key.toLowerCase()] = value;
-    }
-
-    return attrs;
+    return {
+        name: entry.name,
+        description: entry.description,
+        image: entry.image,
+        external_url: entry.externalUrl,
+    };
 }
 
 async function isMinter(erc721: ERC721Document, address: string) {
@@ -243,7 +226,6 @@ export default {
     deploy,
     deployCallback,
     findById,
-    createMetadata,
     deleteMetadata,
     mint,
     mintCallback,

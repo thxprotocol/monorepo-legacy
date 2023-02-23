@@ -5,7 +5,14 @@
         </b-button>
         <b-dropdown v-else no-flip variant="link" class="dropdown-select">
             <template #button-content>
-                {{ selectedTitle }}
+                <img
+                    v-if="selectedImageUrl"
+                    :src="selectedImageUrl"
+                    height="25"
+                    class="rounded mr-3"
+                    alt="Metadata image"
+                />
+                <span class="mr-auto">{{ selectedTitle }}</span>
             </template>
             <b-dropdown-group style="max-height: 320px; overflow-y: auto">
                 <b-dropdown-item-button
@@ -13,35 +20,29 @@
                     :key="metadata._id"
                     @click="onClick(metadata)"
                 >
-                    <div class="d-flex justify-content-between">
+                    <small class="text-muted float-right">
+                        {{ format(new Date(metadata.createdAt), 'dd-MM-yyyy HH:mm') }}
+                    </small>
+                    <div class="d-flex align-items-center">
+                        <img :src="metadata.imageUrl" height="25" class="rounded mr-3" alt="Metadata image" />
                         <div>
-                            <b-badge
-                                :key="key"
-                                v-for="(value, key) in metadata.attributes"
-                                variant="dark"
-                                v-b-tooltip
-                                :title="value.value"
-                                class="mr-2"
-                            >
-                                {{ value.key }}
-                            </b-badge>
+                            <strong>{{ metadata.name }}</strong>
+                            <br />
+                            <div class="text-truncate-75">{{ metadata.description }}</div>
                         </div>
-                        <small class="text-muted">
-                            {{ format(new Date(metadata.createdAt), 'dd-MM-yyyy HH:mm') }}
-                        </small>
                     </div>
                 </b-dropdown-item-button>
+                <b-dropdown-divider></b-dropdown-divider>
+                <b-dropdown-form>
+                    <b-pagination
+                        @change="onChangePage"
+                        v-model="page"
+                        :per-page="limit"
+                        :total-rows="total"
+                        align="center"
+                    ></b-pagination>
+                </b-dropdown-form>
             </b-dropdown-group>
-            <b-dropdown-divider></b-dropdown-divider>
-            <b-dropdown-form>
-                <b-pagination
-                    @change="onChangePage"
-                    v-model="page"
-                    :per-page="limit"
-                    :total-rows="total"
-                    align="center"
-                ></b-pagination>
-            </b-dropdown-form>
         </b-dropdown>
     </div>
 </template>
@@ -64,7 +65,7 @@ export default class BaseDropdownERC721Metadata extends Vue {
     format = format;
     erc721s!: IERC721s;
     metadata!: IERC721Metadatas;
-    limit = 5;
+    limit = 25;
     page = 1;
     query = '';
 
@@ -81,7 +82,14 @@ export default class BaseDropdownERC721Metadata extends Vue {
         if (!this.erc721metadataId) return 'None';
         const metadata = this.metadata[this.erc721._id][this.erc721metadataId];
         if (!metadata) return;
-        return metadata.attributes.find((attr) => attr.key === 'name')?.value;
+        return metadata.name;
+    }
+
+    get selectedImageUrl() {
+        if (!this.erc721metadataId) return;
+        const metadata = this.metadata[this.erc721._id][this.erc721metadataId];
+        if (!metadata) return;
+        return metadata.imageUrl;
     }
 
     get erc721metadataByPage() {

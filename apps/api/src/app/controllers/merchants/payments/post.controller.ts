@@ -24,11 +24,6 @@ const controller = async (req: Request, res: Response) => {
     }
 
     switch (event.type) {
-        case 'checkout.session.completed': {
-            const session = event.data.object;
-            console.log({ session });
-            break;
-        }
         case 'payment_intent.succeeded': {
             const { perk_id, sub } = event.data.object.metadata;
 
@@ -42,25 +37,6 @@ const controller = async (req: Request, res: Response) => {
 
                 await ERC721Service.mint(pool, erc721, metadata, sub, address);
             }
-            break;
-        }
-        case 'payment_link.created': {
-            const paymentLink = event.data.object;
-            const lineItems = await stripe.paymentLinks.listLineItems(paymentLink.id);
-            const lineItemPrice = lineItems.data[0].price;
-            const product = await stripe.products.retrieve(lineItemPrice.product as string);
-
-            if (product.metadata.perkId) {
-                await ERC721Perk.findOneAndUpdate(
-                    { _id: product.metadata.perkId },
-                    {
-                        price: lineItemPrice.unit_amount,
-                        priceCurrency: lineItemPrice.currency.toUpperCase(),
-                        paymentLinkId: paymentLink.id,
-                    },
-                );
-            }
-
             break;
         }
         default:
