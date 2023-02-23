@@ -11,7 +11,7 @@
                 <b-input-group>
                     <template #prepend>
                         <b-spinner v-if="isSubmitImage" variant="primary"></b-spinner>
-                        <img v-else :src="imageUrl" width="100%" alt="Metadata image" />
+                        <img v-else-if="imageUrl" :src="imageUrl" width="100" alt="Metadata image" />
                     </template>
                     <b-form-file @change="onFileChange" accept="image/*" width="50%" :disabled="isSubmitImage" />
                 </b-input-group>
