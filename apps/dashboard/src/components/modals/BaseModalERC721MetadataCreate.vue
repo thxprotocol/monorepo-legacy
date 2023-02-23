@@ -11,7 +11,7 @@
                 <b-input-group>
                     <template #prepend>
                         <b-spinner v-if="isSubmitImage" variant="primary"></b-spinner>
-                        <img v-else :src="imageUrl" width="100%" />
+                        <img v-else :src="imageUrl" width="100%" alt="Metadata image" />
                     </template>
                     <b-form-file @change="onFileChange" accept="image/*" width="50%" :disabled="isSubmitImage" />
                 </b-input-group>
@@ -50,7 +50,7 @@ export default class ModalRewardCreate extends Vue {
     name = '';
     description = '';
     externalUrl = '';
-    image = '';
+    imageUrl = '';
 
     @Prop() id!: string;
     @Prop() erc721!: TERC721;
@@ -58,13 +58,13 @@ export default class ModalRewardCreate extends Vue {
 
     async onFileChange(event: any) {
         this.isSubmitImage = true;
-        this.image = await this.$store.dispatch('images/upload', event.target.files[0]);
+        this.imageUrl = await this.$store.dispatch('images/upload', event.target.files[0]);
         this.isSubmitImage = false;
     }
 
     onShow() {
         this.name = this.metadata ? this.metadata.name : this.name;
-        this.image = this.metadata ? this.metadata.image : this.image;
+        this.imageUrl = this.metadata ? this.metadata.imageUrl : this.imageUrl;
         this.description = this.metadata ? this.metadata.description : this.description;
         this.externalUrl = this.metadata ? this.metadata.externalUrl : this.externalUrl;
     }
@@ -77,7 +77,7 @@ export default class ModalRewardCreate extends Vue {
                 name: this.name,
                 description: this.description,
                 externalUrl: this.externalUrl,
-                image: this.image,
+                imageUrl: this.imageUrl,
             },
         });
         this.$emit('update');

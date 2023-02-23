@@ -25,7 +25,7 @@ const controller = async (req: Request, res: Response) => {
     let image = req.body.imageUrl;
 
     if (req.body.imageUrl && account.plan === AccountPlanType.Premium) {
-        const result = await IPFSService.addImageUrl(req.body.image);
+        const result = await IPFSService.addImageUrl(req.body.imageUrl);
         image = IPFS_BASE_URL + result.cid.toString();
     }
 

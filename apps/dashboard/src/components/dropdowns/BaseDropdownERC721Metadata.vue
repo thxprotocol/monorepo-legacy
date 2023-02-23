@@ -5,7 +5,13 @@
         </b-button>
         <b-dropdown v-else no-flip variant="link" class="dropdown-select">
             <template #button-content>
-                <img v-if="selectedImageUrl" :src="selectedImageUrl" height="25" class="rounded mr-3" />
+                <img
+                    v-if="selectedImageUrl"
+                    :src="selectedImageUrl"
+                    height="25"
+                    class="rounded mr-3"
+                    alt="Metadata image"
+                />
                 <span class="mr-auto">{{ selectedTitle }}</span>
             </template>
             <b-dropdown-group style="max-height: 320px; overflow-y: auto">
@@ -18,7 +24,7 @@
                         {{ format(new Date(metadata.createdAt), 'dd-MM-yyyy HH:mm') }}
                     </small>
                     <div class="d-flex align-items-center">
-                        <img :src="metadata.imageUrl" height="25" class="rounded mr-3" />
+                        <img :src="metadata.imageUrl" height="25" class="rounded mr-3" alt="Metadata image" />
                         <div>
                             <strong>{{ metadata.name }}</strong>
                             <br />

@@ -70,7 +70,7 @@
                     <b-form-checkbox :value="item.checkbox" v-model="selectedItems" />
                 </template>
                 <template #cell(image)="{ item }">
-                    <img :src="item.image" height="40" />
+                    <img :src="item.image" height="40" alt="Metadata image" />
                 </template>
                 <template #cell(info)="{ item }">
                     <strong>{{ item.info.name }}</strong
