@@ -46,9 +46,8 @@ const controller = async (req: Request, res: Response) => {
     }
 
     let perks: any;
-    if (req.body.erc721metadataIds) {
-        const metadataIdList = JSON.parse(req.body.erc721metadataIds);
-
+    const metadataIdList = JSON.parse(req.body.erc721metadataIds);
+    if (metadataIdList.length > 0) {
         // Get one metadata so we can obtain erc721Id from it
         const metadata = await ERC721Service.findMetadataById(metadataIdList[0]);
         if (!metadata) throw new NotFoundError('Could not find first metadata from list');

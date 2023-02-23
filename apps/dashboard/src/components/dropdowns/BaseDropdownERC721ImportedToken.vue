@@ -23,6 +23,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 @Component({})
 export default class BaseDropdownERC721ImportedToken extends Vue {
     @Prop() erc721Id!: string;
+    @Prop({ required: false }) erc721tokenId!: string;
     @Prop() pool!: IPool;
     @Prop() erc721Tokens!: IERC721Tokens;
 
@@ -35,6 +36,12 @@ export default class BaseDropdownERC721ImportedToken extends Vue {
         return Object.keys(this.erc721Tokens[this.erc721Id]).map((key) => {
             return this.erc721Tokens[this.erc721Id][key] as TERC721Token;
         });
+    }
+
+    mounted() {
+        if (this.erc721tokenId) {
+            this.selectedERC721Token = this.erc721Tokens[this.erc721Id][this.erc721tokenId] as TERC721Token;
+        }
     }
 
     onTokenSelected(token: TERC721Token) {

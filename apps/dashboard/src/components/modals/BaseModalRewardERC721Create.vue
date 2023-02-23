@@ -17,6 +17,7 @@
                         <b-form-group label="Token Id" v-if="erc721 && hasImportedTokens">
                             <BaseDropdownERC721ImportedToken
                                 :erc721Id="erc721._id"
+                                :erc721tokenId="erc721tokenId"
                                 :erc721Tokens="erc721Tokens"
                                 :pool="pool"
                                 @selected="onSelectERC721Token"
@@ -143,7 +144,7 @@ export default class ModalRewardERC721Create extends Vue {
     error = '';
     title = '';
     erc721metadataId = '';
-    erc721tokenId = '';
+    erc721tokenId: string | undefined = undefined;
     description = '';
     expiryDate: Date | null = null;
     claimAmount = 0;
@@ -199,7 +200,7 @@ export default class ModalRewardERC721Create extends Vue {
 
         this.erc721 = this.reward ? this.erc721s[this.reward.erc721Id] : null;
         this.erc721metadataId = this.reward ? this.reward.erc721metadataId : '';
-        this.erc721tokenId = this.reward ? this.reward.erc721tokenId : '';
+        this.erc721tokenId = this.reward ? this.reward.erc721tokenId : undefined;
     }
 
     get hasImportedTokens() {
@@ -242,8 +243,8 @@ export default class ModalRewardERC721Create extends Vue {
 
     onSubmit() {
         // TODO Remove when proper UI validation is implemented
-        if (!this.erc721metadataId.length) {
-            this.error = 'Select the NFT metadata fort this perk';
+        if (!this.erc721metadataId.length && !this.erc721tokenId) {
+            this.error = 'Select the NFT metadata or a Token ID fort this perk';
             return;
         }
 
