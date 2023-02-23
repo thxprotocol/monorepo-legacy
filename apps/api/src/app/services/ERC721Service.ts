@@ -255,13 +255,6 @@ export async function transferFrom(
     walletAddress: string,
     forceSync = true,
 ): Promise<ERC721TokenDocument> {
-    console.log('pool.contract.methods', pool.contract.methods.transferFromERC721);
-    console.log('function args', {
-        to: walletAddress,
-        tokenId: erc721Token.tokenId,
-        tokenAddress: erc721.address,
-    });
-
     const txId = await TransactionService.sendAsync(
         pool.contract.options.address,
         pool.contract.methods.transferFromERC721(walletAddress, erc721Token.tokenId, erc721.address),

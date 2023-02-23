@@ -21,7 +21,6 @@ const controller = async (req: Request, res: Response) => {
 
     const erc721 = await ERC721Service.findById(erc721Perk.erc721Id);
     if (!erc721) throw new NotFoundError('Could not find this erc721');
-    console.log('erc721Perk', erc721Perk);
 
     let metadata: ERC721MetadataDocument;
     if (erc721Perk.erc721metadataId) {
@@ -43,7 +42,6 @@ const controller = async (req: Request, res: Response) => {
         erc721Token = await ERC721Service.mint(pool, erc721, metadata, req.auth.sub, to);
     } else {
         erc721Token = await ERC721Token.findById(erc721Perk.erc721tokenId);
-        console.log('ADDRESS', to);
         erc721Token = await ERC721Service.transferFrom(pool, erc721Token, erc721, req.auth.sub, to);
     }
 

@@ -25,4 +25,11 @@ interface ISharedWalletFacet {
         address _to,
         uint256 _tokenId
     ) external;
+
+    function onERC721Received(
+        address, 
+        address, 
+        uint256, 
+        bytes calldata
+    ) external pure returns (bytes4);
 }

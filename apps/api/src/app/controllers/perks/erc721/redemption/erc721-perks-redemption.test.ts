@@ -26,7 +26,8 @@ describe('ERC721 Perks Redemtpion', () => {
         erc721Token: ERC721Document,
         perk: ERC721PerkDocument,
         balance: string,
-        dailyReward: any;
+        dailyReward: any,
+        walletAddress: string;
     const chainId = ChainId.Hardhat,
         nftName = 'Test Collection',
         nftSymbol = 'TST';
@@ -46,6 +47,7 @@ describe('ERC721 Perks Redemtpion', () => {
                 expect(res.body.sub).toEqual(sub);
                 expect(res.body.chainId).toEqual(ChainId.Hardhat);
                 expect(res.body.address).toBeDefined();
+                walletAddress = res.body.address;
             })
             .expect(201, done);
     });
@@ -111,7 +113,6 @@ describe('ERC721 Perks Redemtpion', () => {
                 .expect(({ body }: request.Response) => {
                     expect(body.balance).toBe(dailyReward.amount.toString());
                     balance = body.balance;
-                    console.log('USER BALANCE', balance);
                 })
                 .expect(200, done);
         });
@@ -247,7 +248,6 @@ describe('ERC721 Perks Redemtpion', () => {
             user.post(`/v1/perks/erc721/${perk.uuid}/redemption`)
                 .set({ 'X-PoolId': pool._id, 'Authorization': widgetAccessToken })
                 .expect(({ body }: request.Response) => {
-                    console.log('POST /perks/erc721/:uuid/redemption ', body);
                     expect(body.erc721PerkPayment).toBeDefined();
                     expect(body.erc721PerkPayment.perkId).toBe(perk._id);
                     expect(body.erc721PerkPayment.poolId).toBe(pool._id);
@@ -255,7 +255,7 @@ describe('ERC721 Perks Redemtpion', () => {
                     expect(body.erc721Token.sub).toBe(sub);
                     expect(body.erc721Token.erc721Id).toBe(erc721._id);
                     expect(body.erc721Token.state).toBe(ERC721TokenState.Transferred);
-                    expect(body.erc721Token.recipient).toBe(pool.address);
+                    expect(body.erc721Token.recipient).toBe(walletAddress);
                     expect(body.erc721Token.tokenId).toBeDefined();
                 })
                 .expect(201, done);
@@ -265,8 +265,7 @@ describe('ERC721 Perks Redemtpion', () => {
             user.get(`/v1/point-balances`)
                 .set({ 'X-PoolId': pool._id, 'Authorization': widgetAccessToken })
                 .expect(({ body }: request.Response) => {
-                    expect(body.balance).toBe(Number(balance) - perk.pointPrice);
-                    console.log('USER BALANCE', balance);
+                    expect(body.balance).toBe((Number(balance) - perk.pointPrice).toString());
                 })
                 .expect(200, done);
         });

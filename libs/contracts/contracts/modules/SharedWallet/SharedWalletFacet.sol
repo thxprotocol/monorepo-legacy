@@ -5,6 +5,7 @@ import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
 import '@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
 import '@openzeppelin/contracts/utils/EnumerableSet.sol';
+import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
 import './interfaces/ISharedWalletFacet.sol';
 import '../AccessControl/lib/LibAccessStorage.sol';
@@ -74,5 +75,9 @@ contract SharedWalletFacet is ISharedWalletFacet {
         IERC721 erc721Token = IERC721(_tokenAddress);
         require(erc721Token.ownerOf(_tokenId) == address(this), 'TOKEN_NOT_OWNED');
         erc721Token.safeTransferFrom(address(this), _to, _tokenId);
+    }
+
+    function onERC721Received(address, address, uint256, bytes calldata) override external pure returns (bytes4) {
+        return IERC721Receiver.onERC721Received.selector;
     }
 }
