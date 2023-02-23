@@ -1,5 +1,5 @@
-import { AWS_S3_PUBLIC_BUCKET_NAME } from '@thxnetwork/api/config/secrets';
-import { ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
+import { AWS_S3_PUBLIC_BUCKET_NAME, INFURA_IPFS_BASE_URL, IPFS_BASE_URL } from '@thxnetwork/api/config/secrets';
+import { ERC721Metadata, ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import ImageService from '@thxnetwork/api/services/ImageService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
@@ -10,14 +10,10 @@ import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { fromBuffer } from 'file-type';
 import { Request, Response } from 'express';
 import { body, check, param } from 'express-validator';
-import { createERC721Perk } from '@thxnetwork/api/util/rewards';
-import { RewardConditionPlatform, TERC721Perk } from '@thxnetwork/types/index';
+import { AccountPlanType } from '@thxnetwork/api/types/enums';
 import short from 'short-uuid';
-import db from '@thxnetwork/api/util/database';
-import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import IPFSService from '@thxnetwork/api/services/IPFSService';
-import { AccountPlanType } from '@thxnetwork/api/types/enums';
 
 const validation = [
     param('id').isMongoId(),
@@ -34,118 +30,64 @@ const validation = [
     }),
 ];
 
+function parseFilename(filename: string, extension: string) {
+    return filename.toLowerCase().split(' ').join('-').split('.') + '-' + short.generate() + `.${extension}`;
+}
+
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721']
     const erc721 = await ERC721Service.findById(req.params.id);
     if (!erc721) throw new NotFoundError('Could not find this NFT in the database');
-    const pool = await PoolService.getById(req.header('X-PoolId'));
+
     const account = await AccountProxy.getById(req.auth.sub);
-
-    // UNZIP THE FILE
     const zip = createArchiver().jsZip;
-
-    // LOAD ZIP IN MEMORY
     const contents = await zip.loadAsync(req.file.buffer);
 
-    // ITERATE THE CONTENT BY OBJECT KEYS
-    const objectKeys = Object.keys(contents.files);
+    for (const fileName of Object.keys(contents.files)) {
+        try {
+            const extension = fileName.substring(fileName.lastIndexOf('.')).substring(1);
+            if (!extension) continue;
 
-    const promises = [];
+            const originalFileName = fileName.substring(0, fileName.lastIndexOf('.'));
+            if (!isValidExtension(extension)) continue;
 
-    for (const file of objectKeys) {
-        const extension = file.substring(file.lastIndexOf('.')).substring(1);
-        const originalFileName = file.substring(0, file.lastIndexOf('.'));
+            const file = await zip.file(fileName).async('nodebuffer');
+            if (!(await isValidFileType(file))) continue;
 
-        if (!extension) {
-            continue;
-        }
-        // FILE VALIDATION
-        if (!isValidExtension(extension)) {
-            logger.info(`INVALID EXTENSION, FILE SKIPPED: ${file}`);
-            continue;
-        }
-
-        // CREATE THE FILE BUFFER
-        const buffer = await zip.file(file).async('nodebuffer');
-
-        if (!(await isValidFileType(buffer))) {
-            logger.info(`INVALID FILE TYPE, FILE SKIPPED: ${file}`);
-            continue;
-        }
-
-        promises.push(
-            (async () => {
-                try {
-                    // FORMAT FILENAME
-                    const filename =
-                        originalFileName.toLowerCase().split(' ').join('-').split('.') +
-                        '-' +
-                        short.generate() +
-                        `.${extension}`;
-                    // --------------------------------------------------------------------
-                    // PREPARE PARAMS FOR UPLOAD TO S3 BUCKET
-                    const uploadParams = {
+            let imgUrl, image;
+            if (account.plan === AccountPlanType.Premium) {
+                const result = await IPFSService.add({ buffer: file } as Express.Multer.File);
+                const cid = result.cid.toString();
+                imgUrl = INFURA_IPFS_BASE_URL + cid;
+                image = IPFS_BASE_URL + cid;
+            } else {
+                const filename = parseFilename(originalFileName, extension);
+                await s3Client.send(
+                    new PutObjectCommand({
                         Key: filename,
                         Bucket: AWS_S3_PUBLIC_BUCKET_NAME,
                         ACL: 'public-read',
-                        Body: buffer,
-                    };
+                        Body: file,
+                    }),
+                );
+                imgUrl = image = ImageService.getPublicUrl(filename);
+            }
 
-                    // UPLOAD THE FILE TO S3
-                    await s3Client.send(new PutObjectCommand(uploadParams));
-                    // --------------------------------------------------------------------
-
-                    // COLLECT THE URL
-                    let url = ImageService.getPublicUrl(filename);
-                    if (account.plan === AccountPlanType.Premium) {
-                        const result = await IPFSService.add(url);
-                        url = 'https://ipfs.io/ipfs/' + result.cid.toString();
-                    }
-
-                    // CREATE THE METADATA
-                    const metadata = await ERC721Service.createMetadata(erc721, [
-                        {
-                            key: req.body.propName,
-                            value: url,
-                        },
-                        {
-                            key: 'name',
-                            value: req.body.name,
-                        },
-                        {
-                            key: 'description',
-                            value: req.body.description,
-                        },
-                        {
-                            key: 'external_url',
-                            value: req.body.external_url,
-                        },
-                    ]);
-
-                    await createERC721Perk(pool, {
-                        uuid: db.createUUID(),
-                        erc721metadataId: String(metadata._id),
-                        poolId: String(pool._id),
-                        title: '',
-                        description: '',
-                        expiryDate: null,
-                        claimAmount: 1,
-                        rewardLimit: 1,
-                        platform: RewardConditionPlatform.None,
-                        isPromoted: false,
-                    } as TERC721Perk);
-
-                    return metadata;
-                } catch (err) {
-                    logger.error(err);
-                }
-            })(),
-        );
+            await ERC721Metadata.create({
+                erc721Id: String(erc721._id),
+                imgUrl,
+                name: req.body.name,
+                description: req.body.description,
+                image,
+                externalUrl: req.body.externalUrl,
+            });
+        } catch (err) {
+            console.log(err);
+            logger.error(err);
+        }
     }
 
-    const metadatas: ERC721MetadataDocument[] = await Promise.all(promises);
-
-    res.status(201).json({ metadatas });
+    res.status(201).end();
 };
 
 function isValidExtension(extension: string) {

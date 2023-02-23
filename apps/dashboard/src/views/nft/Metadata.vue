@@ -22,8 +22,8 @@
                 </b-dropdown-item>
             </b-dropdown>
             <BaseModalErc721MetadataCreate @update="listMetadata" id="modalERC721MetadataCreate" :erc721="erc721" />
-            <BaseModalErc721MetadataBulkCreate :erc721="erc721" />
-            <BaseModalErc721MetadataUploadCSV :erc721="erc721" />
+            <BaseModalErc721MetadataBulkCreate @update="listMetadata" :erc721="erc721" />
+            <BaseModalErc721MetadataUploadCSV @update="listMetadata" :erc721="erc721" />
         </b-row>
 
         <BCard variant="white" body-class="p-0 shadow-sm">

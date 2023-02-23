@@ -70,25 +70,24 @@ export default class ModalERC721MetadataBulkCreate extends Vue {
     name = '';
     description = '';
     external_url = '';
-
     loading = false;
     error = '';
     selectedProp: TERC721DefaultProp | null = null;
     selectedKey: number | null = null;
     files: FileList | null = null;
 
+    get isSubmitDisabled() {
+        return this.loading || !this.files;
+    }
+
     @Prop() pool!: IPool;
     @Prop() erc721!: TERC721;
 
     onShow() {
         const imageProps = this.erc721.properties.filter((x) => x.propType === 'image');
-        if (imageProps.length) {
-            this.selectedProp = imageProps[0];
-        }
-    }
-
-    get isSubmitDisabled() {
-        return this.loading || !this.files;
+        this.selectedProp = imageProps.length ? imageProps[0] : null;
+        this.files = null;
+        this.selectedKey = null;
     }
 
     onPropSelect(prop: TERC721DefaultProp, key: number) {
@@ -101,36 +100,25 @@ export default class ModalERC721MetadataBulkCreate extends Vue {
     }
 
     async submit() {
-        try {
-            this.loading = true;
-            if (!this.selectedProp || !this.files) {
-                return;
-            }
+        if (!this.selectedProp || !this.files) return;
 
-            for (let i = 0; i < this.files.length; i++) {
-                let file = this.files.item(i);
-                await this.$store.dispatch('erc721/uploadMultipleMetadataImages', {
-                    pool: this.pool,
-                    erc721: this.erc721,
-                    propName: this.selectedProp.name,
-                    file: file,
-                    name: this.name,
-                    description: this.description,
-                    external_url: this.external_url,
-                });
-                this.$emit('success');
-            }
+        this.loading = true;
 
-            //this.$emit('success');
-        } catch (err) {
-            /* NO-OP */
-        } finally {
-            this.$bvModal.hide('modalNFTBulkCreate');
-            this.loading = false;
-            this.files = null;
-            this.selectedProp = null;
-            this.selectedKey = null;
+        for (let i = 0; i < this.files.length; i++) {
+            await this.$store.dispatch('erc721/uploadMultipleMetadataImages', {
+                pool: this.pool,
+                erc721: this.erc721,
+                propName: this.selectedProp.name,
+                file: this.files.item(i),
+                name: this.name,
+                description: this.description,
+                external_url: this.external_url,
+            });
         }
+
+        this.$emit('update');
+        this.$bvModal.hide('modalNFTBulkCreate');
+        this.loading = false;
     }
 }
 </script>

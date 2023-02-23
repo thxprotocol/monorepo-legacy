@@ -23,30 +23,27 @@ describe('ERC721 Perks', () => {
                 name: 'name',
                 propType: 'string',
                 description: 'The name of this item.',
-                disabled: true,
             },
             {
                 name: 'description',
                 propType: 'string',
                 description: 'A brief description of your item.',
-                disabled: true,
             },
 
             {
                 name: 'image',
                 propType: 'image',
                 description: 'A visual representation of the item.',
-                disabled: true,
             },
             {
-                name: 'external_url',
+                name: 'externalUrl',
                 propType: 'link',
                 description: 'A link referencing to a page with more information on the item.',
-                disabled: true,
             },
         ],
         metadataTitle = 'Lorem',
         metadataDescription = 'Lorem ipsum dolor sit.',
+        metadataImage = 'https://image.com',
         externalUrl = 'https://example.com';
 
     beforeAll(async () => {
@@ -80,19 +77,16 @@ describe('ERC721 Perks', () => {
                 attributes: [
                     { key: schema[0].name, value: metadataTitle },
                     { key: schema[1].name, value: metadataDescription },
+                    { key: schema[2].name, value: metadataImage },
                     { key: schema[3].name, value: externalUrl },
                 ],
             })
             .expect(({ body }: request.Response) => {
                 expect(body._id).toBeDefined();
-                expect(body.attributes[0].key).toBe(schema[0].name);
-                expect(body.attributes[1].key).toBe(schema[1].name);
-                expect(body.attributes[2].key).toBe(schema[3].name);
-
-                expect(body.attributes[0].value).toBe(metadataTitle);
-                expect(body.attributes[1].value).toBe(metadataDescription);
-                expect(body.attributes[2].value).toBe(externalUrl);
-
+                expect(body.name).toBe(metadataTitle);
+                expect(body.description).toBe(metadataDescription);
+                expect(body.image).toBe(metadataImage);
+                expect(body.externalUrl).toBe(externalUrl);
                 erc721metadata = body;
             })
             .expect(201, done);

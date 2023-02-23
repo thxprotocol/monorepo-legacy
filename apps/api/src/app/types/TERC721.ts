@@ -7,7 +7,7 @@ export enum ERC721TokenState {
     Minted = 2,
 }
 
-type TERC721Attribute = {
+export type TERC721Attribute = {
     key: string;
     value: string;
 };
@@ -51,11 +51,13 @@ export type TERC721 = {
 
 export type TERC721Metadata = {
     _id?: string;
-    erc721: string;
-    title: string;
+    erc721Id: string;
+    imgUrl: string;
+    name: string;
+    image: string;
     description: string;
-    attributes: TERC721Attribute[];
+    externalUrl: string;
     tokens?: TERC721Token[];
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt?: Date;
+    updatedAt?: Date;
 };

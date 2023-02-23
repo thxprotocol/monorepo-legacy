@@ -105,3 +105,5 @@ export const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || '';
 export const STRIPE_SECRET_WEBHOOK = process.env.STRIPE_SECRET_WEBHOOK || '';
 export const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
 export const TWITTER_API_TOKEN = process.env.TWITTER_API_TOKEN;
+export const IPFS_BASE_URL = 'https://ipfs.io/ipfs/';
+export const INFURA_IPFS_BASE_URL = 'https://thx-network.infura-ipfs.io/ipfs/';

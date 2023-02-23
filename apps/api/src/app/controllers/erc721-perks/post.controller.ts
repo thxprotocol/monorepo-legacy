@@ -48,7 +48,7 @@ const controller = async (req: Request, res: Response) => {
     const metadata = await ERC721Service.findMetadataById(metadataIdList[0]);
     if (!metadata) throw new NotFoundError('Could not find first metadata from list');
 
-    const erc721 = await ERC721Service.findById(metadata.erc721);
+    const erc721 = await ERC721Service.findById(metadata.erc721Id);
     if (!erc721) throw new NotFoundError('Could not find erc721');
 
     // Check if erc721 already is mintable by pool

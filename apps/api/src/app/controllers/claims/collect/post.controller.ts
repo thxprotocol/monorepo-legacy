@@ -116,7 +116,7 @@ const controller = async (req: Request, res: Response) => {
         metadata = await ERC721Service.findMetadataById(erc721metadataId);
         if (!metadata) throw new NotFoundError('No metadata found for this perk');
 
-        erc721 = await ERC721Service.findById(metadata.erc721);
+        erc721 = await ERC721Service.findById(metadata.erc721Id);
         if (!metadata) throw new NotFoundError('No erc721 found for this perk');
 
         token = await ERC721Service.mint(pool, erc721, metadata, account.sub, account.address, false);
