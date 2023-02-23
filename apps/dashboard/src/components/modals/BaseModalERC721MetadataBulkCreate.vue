@@ -7,43 +7,32 @@
         id="modalERC721MetadataBulkCreate"
     >
         <template #modal-body v-if="!loading">
-            <label>Select image property</label>
-            <b-dropdown variant="link" class="dropdown-select">
-                <template #button-content>
-                    <div v-if="selectedProp">
-                        {{ selectedProp.name }}
-                    </div>
-                </template>
-                <b-dropdown-item-button
-                    v-for="(prop, key) of erc721.properties.filter((x) => x.propType === 'image')"
-                    :key="key"
-                    @click="onPropSelect(prop, key)"
-                >
-                    {{ prop.name }}
-                </b-dropdown-item-button>
-            </b-dropdown>
-            <br />
-            <b-form-group v-if="selectedProp">
-                <label>Select image folder</label>
-                <b-form-file
-                    @change="onFolderSelected"
-                    :data-key="selectedKey"
-                    accept="image/*"
-                    :directory="true"
-                    :multiple="true"
-                />
-            </b-form-group>
+            <p class="text-muted">
+                Select a folder containing the images for your NFT collection. We will create a metadata object for
+                every image in that folder.
+            </p>
             <b-form-group>
-                <label>Name</label>
-                <input class="form-control" v-model="name" required placeholder="" />
+                <label>Image folder</label>
+                <b-form-file @change="onFolderSelected" accept="image/*" :directory="true" :multiple="true" />
             </b-form-group>
-            <b-form-group>
-                <label>Description</label>
-                <input class="form-control" v-model="description" required placeholder="" /> </b-form-group
-            ><b-form-group>
-                <label>External URL</label>
-                <input class="form-control" v-model="external_url" required placeholder="" />
-            </b-form-group>
+            <hr />
+            <b-card class="bg-light">
+                <p class="text-muted">
+                    Provide default metadata values for other properties when creating metadata for every uploaded
+                    image.
+                </p>
+                <b-form-group>
+                    <label>Name</label>
+                    <input class="form-control" v-model="name" required placeholder="" />
+                </b-form-group>
+                <b-form-group>
+                    <label>Description</label>
+                    <input class="form-control" v-model="description" required placeholder="" /> </b-form-group
+                ><b-form-group>
+                    <label>External URL</label>
+                    <input class="form-control" v-model="externalUrl" required placeholder="" />
+                </b-form-group>
+            </b-card>
         </template>
         <template #btn-primary>
             <b-button :disabled="isSubmitDisabled" class="rounded-pill" @click="submit()" variant="primary" block>
@@ -69,7 +58,7 @@ import BaseModal from './BaseModal.vue';
 export default class ModalERC721MetadataBulkCreate extends Vue {
     name = '';
     description = '';
-    external_url = '';
+    externalUrl = '';
     loading = false;
     error = '';
     selectedProp: TERC721DefaultProp | null = null;
@@ -90,11 +79,6 @@ export default class ModalERC721MetadataBulkCreate extends Vue {
         this.selectedKey = null;
     }
 
-    onPropSelect(prop: TERC721DefaultProp, key: number) {
-        this.selectedProp = prop;
-        this.selectedKey = key;
-    }
-
     async onFolderSelected(event: any) {
         this.files = event.target.files;
     }
@@ -108,11 +92,11 @@ export default class ModalERC721MetadataBulkCreate extends Vue {
             await this.$store.dispatch('erc721/uploadMultipleMetadataImages', {
                 pool: this.pool,
                 erc721: this.erc721,
-                propName: this.selectedProp.name,
+                propName: 'image',
                 file: this.files.item(i),
                 name: this.name,
                 description: this.description,
-                external_url: this.external_url,
+                externalUrl: this.externalUrl,
             });
         }
 

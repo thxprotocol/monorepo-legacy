@@ -73,16 +73,6 @@ export async function findBySub(sub: string): Promise<ERC721Document[]> {
     return ERC721.find({ sub });
 }
 
-export async function createMetadata(
-    erc721: ERC721Document,
-    metadata: TERC721Metadata,
-): Promise<ERC721MetadataDocument> {
-    return ERC721Metadata.create({
-        erc721Id: String(erc721._id),
-        ...metadata,
-    });
-}
-
 export async function deleteMetadata(id: string) {
     return ERC721Metadata.findOneAndDelete({ _id: id });
 }
@@ -236,7 +226,6 @@ export default {
     deploy,
     deployCallback,
     findById,
-    createMetadata,
     deleteMetadata,
     mint,
     mintCallback,

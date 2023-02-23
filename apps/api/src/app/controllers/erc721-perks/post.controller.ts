@@ -6,8 +6,6 @@ import { NotFoundError } from '@thxnetwork/api/util/errors';
 import ImageService from '@thxnetwork/api/services/ImageService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
-import MerchantService from '@thxnetwork/api/services/MerchantService';
-import { ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
 
 const validation = [
     body('title').exists().isString(),
@@ -16,9 +14,6 @@ const validation = [
     body('expiryDate').optional().isString(),
     body('claimAmount').optional().isInt({ lt: 1000 }),
     body('claimLimit').optional().isInt(),
-    body('platform').exists().isNumeric(),
-    body('interaction').optional().isNumeric(),
-    body('content').optional().isString(),
     body('pointPrice').optional().isNumeric(),
     body('price').isInt(),
     body('priceCurrency').isString(),

@@ -59,7 +59,8 @@
                 <template #head(checkbox)>
                     <b-form-checkbox @change="onSelectAll" />
                 </template>
-                <template #head(attributes)> Attributes </template>
+                <template #head(image))> Image </template>
+                <template #head(info)> Details </template>
                 <template #head(tokens)> Tokens </template>
                 <template #head(created)> Created </template>
                 <template #head(id)> &nbsp; </template>
@@ -68,29 +69,16 @@
                 <template #cell(checkbox)="{ item }">
                     <b-form-checkbox :value="item.checkbox" v-model="selectedItems" />
                 </template>
-                <template #cell(attributes)="{ item }">
-                    <b-badge
-                        :key="key"
-                        v-for="(atribute, key) in item.attributes"
-                        variant="gray"
-                        v-b-tooltip
-                        :title="atribute.value"
-                        class="mr-2 text-white"
-                    >
-                        {{ atribute.key }}
-                    </b-badge>
+                <template #cell(image)="{ item }">
+                    <img :src="item.image" height="40" />
+                </template>
+                <template #cell(info)="{ item }">
+                    <strong>{{ item.info.name }}</strong
+                    ><br />
+                    {{ item.info.description }}
                 </template>
                 <template #cell(tokens)="{ item }">
-                    <b-badge
-                        class="mr-2"
-                        variant="dark"
-                        :key="token.tokenId"
-                        v-for="token of item.tokens"
-                        v-b-tooltip
-                        :title="`Minted at: ${format(new Date(token.createdAt), 'dd-MM-yyyy HH:mm')}`"
-                    >
-                        #{{ token.tokenId }}
-                    </b-badge>
+                    {{ item.tokens.length }}
                 </template>
                 <template #cell(created)="{ item }">
                     {{ format(new Date(item.created), 'dd-MM-yyyy HH:mm') }}
@@ -185,7 +173,8 @@ export default class MetadataView extends Vue {
             .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
             .map((r: TERC721Metadata) => ({
                 checkbox: r._id,
-                attributes: r.attributes,
+                image: r.imageUrl,
+                info: { name: r.name, description: r.description, url: r.externalUrl },
                 tokens: r.tokens,
                 created: r.createdAt,
                 id: r._id,

@@ -43,7 +43,7 @@ describe('ERC721 Perks', () => {
         ],
         metadataTitle = 'Lorem',
         metadataDescription = 'Lorem ipsum dolor sit.',
-        metadataImage = 'https://image.com',
+        metadataImageUrl = 'https://image.com',
         externalUrl = 'https://example.com';
 
     beforeAll(async () => {
@@ -74,18 +74,16 @@ describe('ERC721 Perks', () => {
         user.post('/v1/erc721/' + erc721._id + '/metadata')
             .set('Authorization', dashboardAccessToken)
             .send({
-                attributes: [
-                    { key: schema[0].name, value: metadataTitle },
-                    { key: schema[1].name, value: metadataDescription },
-                    { key: schema[2].name, value: metadataImage },
-                    { key: schema[3].name, value: externalUrl },
-                ],
+                name: metadataTitle,
+                description: metadataDescription,
+                imageUrl: metadataImageUrl,
+                externalUrl: externalUrl,
             })
             .expect(({ body }: request.Response) => {
                 expect(body._id).toBeDefined();
                 expect(body.name).toBe(metadataTitle);
                 expect(body.description).toBe(metadataDescription);
-                expect(body.image).toBe(metadataImage);
+                expect(body.image).toBe(metadataImageUrl);
                 expect(body.externalUrl).toBe(externalUrl);
                 erc721metadata = body;
             })

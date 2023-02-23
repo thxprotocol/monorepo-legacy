@@ -4,7 +4,7 @@ import { OwnedNft } from 'alchemy-sdk';
 import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
 import { ERC721 } from '@thxnetwork/api/models/ERC721';
 import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
-import { ERC721TokenState, TERC721MetadataProp } from '@thxnetwork/api/types/TERC721';
+import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
 import { alchemy } from '@thxnetwork/api/util/alchemy';
 import { ChainId } from '@thxnetwork/api/types/enums';
 import PoolService from '@thxnetwork/api/services/PoolService';
@@ -76,6 +76,7 @@ const controller = async (req: Request, res: Response) => {
                         name: rawMetadata.name,
                         description: rawMetadata.description,
                         image: rawMetadata.image,
+                        imageUrl: rawMetadata.image,
                         externalUrl: rawMetadata.external_url,
                     });
                     const erc721Token = await ERC721Token.create({

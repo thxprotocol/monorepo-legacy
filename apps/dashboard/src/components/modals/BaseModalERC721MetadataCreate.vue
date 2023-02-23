@@ -1,45 +1,23 @@
 <template>
     <base-modal @show="onShow" :error="error" :title="metadata ? 'Update metadata' : 'Create metadata'" :id="id">
         <template #modal-body>
-            <b-form-group :key="key" v-for="(prop, key) of erc721.properties">
-                <template #label>
-                    {{ prop.name }}
-                    <a href="#" v-b-tooltip :title="prop.description">
-                        <i class="fas fa-question-circle"></i>
-                    </a>
-                </template>
-                <template v-if="parsePropType(prop.propType) === 'image'">
-                    <b-row>
-                        <b-col md="2" v-if="prop.value && prop.value.length">
-                            <b-spinner v-if="imgLoading == key.toString()" variant="primary"></b-spinner>
-                            <img v-else :src="prop.value" width="100%" />
-                        </b-col>
-                        <b-col md="2" v-else>
-                            <b-spinner v-if="imgLoading == key.toString()" variant="primary"></b-spinner>
-                        </b-col>
-                        <b-col md="10">
-                            <b-form-file
-                                @change="onFileChange"
-                                :data-key="key"
-                                accept="image/*"
-                                width="50%"
-                                :placeholder="
-                                    !metadata || !prop.value
-                                        ? 'Browse to upload the image'
-                                        : 'Browse to change the image...'
-                                "
-                                :disabled="imgLoading == key.toString()"
-                            />
-                        </b-col>
-                    </b-row>
-                </template>
-                <b-form-input
-                    v-else
-                    :type="parsePropType(prop.propType)"
-                    v-model="prop.value"
-                    required
-                    :placeholder="`Provide a ${prop.propType} value in this field.`"
-                />
+            <b-form-group label="Name">
+                <b-form-input v-model="name" required />
+            </b-form-group>
+            <b-form-group label="Description">
+                <b-form-input v-model="description" required />
+            </b-form-group>
+            <b-form-group label="Image">
+                <b-input-group>
+                    <template #prepend>
+                        <b-spinner v-if="isSubmitImage" variant="primary"></b-spinner>
+                        <img v-else :src="imageUrl" width="100%" />
+                    </template>
+                    <b-form-file @change="onFileChange" accept="image/*" width="50%" :disabled="isSubmitImage" />
+                </b-input-group>
+            </b-form-group>
+            <b-form-group label="External URL">
+                <b-form-input v-model="externalUrl" required />
             </b-form-group>
         </template>
         <template #btn-primary>
@@ -51,17 +29,10 @@
 </template>
 
 <script lang="ts">
-import type { TERC721, TERC721DefaultProp, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
+import type { TERC721, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseModal from './BaseModal.vue';
-
-const PROPTYPE_MAP: { [key: string]: string } = {
-    string: 'text',
-    number: 'number',
-    image: 'image',
-    link: 'url',
-};
 
 @Component({
     components: {
@@ -74,65 +45,39 @@ export default class ModalRewardCreate extends Vue {
     docsUrl = process.env['VUE_APP_DOCS_URL'];
     error = '';
     isSubmitDisabled = false;
-    title = '';
+    isSubmitImage = false;
+
+    name = '';
     description = '';
-    imgLoading = '';
+    externalUrl = '';
+    image = '';
 
     @Prop() id!: string;
     @Prop() erc721!: TERC721;
     @Prop({ required: false }) metadata!: TERC721Metadata;
 
-    parsePropType(propType: string) {
-        return PROPTYPE_MAP[propType];
-    }
-
     async onFileChange(event: any) {
-        this.imgLoading = event.target.dataset.key;
-        this.isSubmitDisabled = true;
-        const publicUrl = await this.$store.dispatch('images/upload', event.target.files[0]);
-        Vue.set(this.erc721.properties[event.target.dataset['key']], 'value', publicUrl);
-        this.isSubmitDisabled = false;
-        this.imgLoading = '';
+        this.isSubmitImage = true;
+        this.image = await this.$store.dispatch('images/upload', event.target.files[0]);
+        this.isSubmitImage = false;
     }
 
     onShow() {
-        if (this.metadata) {
-            this.erc721.properties.forEach((prop, index) => {
-                this.metadata.attributes.forEach((attr) => {
-                    if (prop.name === attr.key) {
-                        Vue.set(this.erc721.properties[index], 'value', attr.value);
-                    }
-                });
-            });
-        } else {
-            this.erc721.properties.forEach((prop) => {
-                prop.value = '';
-            });
-        }
+        this.name = this.metadata ? this.metadata.name : this.name;
+        this.image = this.metadata ? this.metadata.image : this.image;
+        this.description = this.metadata ? this.metadata.description : this.description;
+        this.externalUrl = this.metadata ? this.metadata.externalUrl : this.externalUrl;
     }
 
-    submit() {
-        const attributes: { key: string; value: string | number | undefined }[] = [];
-
-        this.erc721.properties.forEach((prop: TERC721DefaultProp) => {
-            if (prop.propType == 'image' && (!prop.value || !prop.value.length)) {
-                return;
-            }
-            attributes.push({
-                key: prop.name,
-                value: prop.value,
-            });
-        });
-
-        this.$store.dispatch(`erc721/${this.metadata ? 'updateMetadata' : 'createMetadata'}`, {
+    async submit() {
+        await this.$store.dispatch(`erc721/${this.metadata ? 'updateMetadata' : 'createMetadata'}`, {
             erc721: this.erc721,
             metadata: {
                 ...this.metadata,
-                ...{
-                    title: this.title,
-                    description: this.description,
-                    attributes,
-                },
+                name: this.name,
+                description: this.description,
+                externalUrl: this.externalUrl,
+                image: this.image,
             },
         });
         this.$emit('update');

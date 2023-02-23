@@ -222,14 +222,8 @@ export default class ModalRewardERC721Create extends Vue {
             priceCurrency: this.priceCurrency,
             file: this.imageFile,
             isPromoted: this.isPromoted,
-            platform: this.rewardCondition.platform,
-            interaction:
-                this.rewardCondition.platform !== RewardConditionPlatform.None
-                    ? this.rewardCondition.interaction
-                    : RewardConditionInteraction.None,
-            content: this.rewardCondition.platform !== RewardConditionPlatform.None ? this.rewardCondition.content : '',
         };
-        debugger;
+
         if (this.expiryDate) Object.assign(payload, { expiryDate: this.expiryDate });
 
         this.$store

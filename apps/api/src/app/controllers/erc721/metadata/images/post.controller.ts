@@ -1,5 +1,5 @@
-import { AWS_S3_PUBLIC_BUCKET_NAME, INFURA_IPFS_BASE_URL, IPFS_BASE_URL } from '@thxnetwork/api/config/secrets';
-import { ERC721Metadata, ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
+import { AWS_S3_PUBLIC_BUCKET_NAME, IPFS_BASE_URL } from '@thxnetwork/api/config/secrets';
+import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import ImageService from '@thxnetwork/api/services/ImageService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
@@ -54,32 +54,31 @@ const controller = async (req: Request, res: Response) => {
             const file = await zip.file(fileName).async('nodebuffer');
             if (!(await isValidFileType(file))) continue;
 
-            let imgUrl, image;
+            const filename = parseFilename(originalFileName, extension);
+            await s3Client.send(
+                new PutObjectCommand({
+                    Key: filename,
+                    Bucket: AWS_S3_PUBLIC_BUCKET_NAME,
+                    ACL: 'public-read',
+                    Body: file,
+                }),
+            );
+
+            const imageUrl = ImageService.getPublicUrl(filename);
+
+            let image = imageUrl;
             if (account.plan === AccountPlanType.Premium) {
                 const result = await IPFSService.add({ buffer: file } as Express.Multer.File);
-                const cid = result.cid.toString();
-                imgUrl = INFURA_IPFS_BASE_URL + cid;
-                image = IPFS_BASE_URL + cid;
-            } else {
-                const filename = parseFilename(originalFileName, extension);
-                await s3Client.send(
-                    new PutObjectCommand({
-                        Key: filename,
-                        Bucket: AWS_S3_PUBLIC_BUCKET_NAME,
-                        ACL: 'public-read',
-                        Body: file,
-                    }),
-                );
-                imgUrl = image = ImageService.getPublicUrl(filename);
+                image = IPFS_BASE_URL + result.cid.toString();
             }
 
             await ERC721Metadata.create({
                 erc721Id: String(erc721._id),
-                imgUrl,
                 name: req.body.name,
                 description: req.body.description,
-                image,
                 externalUrl: req.body.externalUrl,
+                image,
+                imageUrl,
             });
         } catch (err) {
             console.log(err);

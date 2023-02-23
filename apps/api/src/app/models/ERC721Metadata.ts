@@ -6,7 +6,7 @@ export type ERC721MetadataDocument = mongoose.Document & TERC721Metadata;
 const schema = new mongoose.Schema(
     {
         erc721Id: String,
-        imgUrl: String,
+        imageUrl: String,
         name: String,
         image: String,
         description: String,

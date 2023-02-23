@@ -266,14 +266,7 @@ export default class Collect extends Vue {
     }
 
     firstImageURL(metadata: TERC721Metadata) {
-        let url = '';
-        this.claim?.erc721.properties.forEach((p) => {
-            if (p.propType === 'image') {
-                const prop = metadata.attributes.find((a: { value: string; key: string }) => a.key === p.name);
-                url = prop?.value as string;
-            }
-        });
-        return url;
+        return metadata.imageUrl;
     }
 
     startConfetti() {

@@ -1,7 +1,6 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId } from '@thxnetwork/api/types/enums';
-import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { dashboardAccessToken } from '@thxnetwork/api/util/jest/constants';
 import { createArchiver } from '@thxnetwork/api/util/zip';
@@ -10,8 +9,7 @@ import { createImage } from '@thxnetwork/api/util/jest/images';
 const user = request.agent(app);
 
 describe('NFT Pool', () => {
-    let poolId: string, erc721ID: string, metadataId: string;
-
+    let erc721ID: string, metadataId: string;
     const chainId = ChainId.Hardhat,
         name = 'Planets of the Galaxy',
         symbol = 'GLXY',
@@ -46,48 +44,28 @@ describe('NFT Pool', () => {
         });
     });
 
-    describe('POST /pools', () => {
-        it('HTTP 201 (success)', (done) => {
-            user.post('/v1/pools')
-                .set('Authorization', dashboardAccessToken)
-                .send({
-                    chainId: ChainId.Hardhat,
-                    title: 'My Pool',
-                })
-                .expect(({ body }: request.Response) => {
-                    expect(body.title).toBe('My Pool');
-                    expect(isAddress(body.address)).toBe(true);
-                    poolId = body._id;
-                })
-                .expect(201, done);
-        });
-    });
-
     describe('POST /erc721/:id/metadata', () => {
-        const value1 = 'red',
-            value2 = 'large',
-            value3 = 'http://imageURL',
-            value4 = 'http://externalurl.com';
+        const name = 'red',
+            description = 'large',
+            imageUrl = 'http://imageURL.com',
+            externalUrl = 'http://externalurl.com';
 
         it('HTTP 201', (done) => {
             user.post('/v1/erc721/' + erc721ID + '/metadata')
                 .set('Authorization', dashboardAccessToken)
-                .set('X-PoolId', poolId)
                 .send({
-                    attributes: [
-                        { key: schema[0].name, value: value1 },
-                        { key: schema[1].name, value: value2 },
-                        { key: schema[2].name, value: value3 },
-                        { key: schema[3].name, value: value4 },
-                    ],
+                    name,
+                    description,
+                    imageUrl,
+                    externalUrl,
                 })
                 .expect(({ body }: request.Response) => {
                     expect(body._id).toBeDefined();
-                    expect(body.name).toBe(value1);
-                    expect(body.description).toBe(value2);
-                    expect(body.image).toBe(value3);
-                    expect(body.externalUrl).toBe(value4);
-
+                    expect(body.name).toBe(name);
+                    expect(body.description).toBe(description);
+                    expect(body.image).toBe(imageUrl);
+                    expect(body.imageUrl).toBe(imageUrl);
+                    expect(body.externalUrl).toBe(externalUrl);
                     metadataId = body._id;
                 })
                 .expect(201, done);
@@ -97,25 +75,23 @@ describe('NFT Pool', () => {
     describe('PATCH /metadata/:metadataId', () => {
         const value1 = 'blue',
             value2 = 'small',
-            value3 = 'http://imageURL2',
+            value3 = 'http://imageURL2.com',
             value4 = 'http://externalurl2.com';
 
         it('should return modified metadata for metadataId', (done) => {
             user.patch('/v1/erc721/' + erc721ID + '/metadata/' + metadataId)
-                .set('X-PoolId', poolId)
                 .set('Authorization', dashboardAccessToken)
                 .send({
-                    attributes: [
-                        { key: schema[0].name, value: value1 },
-                        { key: schema[1].name, value: value2 },
-                        { key: schema[2].name, value: value3 },
-                        { key: schema[3].name, value: value4 },
-                    ],
+                    name: value1,
+                    description: value2,
+                    imageUrl: value3,
+                    externalUrl: value4,
                 })
                 .expect(({ body }: request.Response) => {
                     expect(body.name).toBe(value1);
                     expect(body.description).toBe(value2);
                     expect(body.image).toBe(value3);
+                    expect(body.imageUrl).toBe(value3);
                     expect(body.externalUrl).toBe(value4);
                 })
                 .expect(200, done);
@@ -137,7 +113,6 @@ describe('NFT Pool', () => {
             await user
                 .post('/v1/erc721/' + erc721ID + '/metadata/zip')
                 .set('Authorization', dashboardAccessToken)
-                .set('X-PoolId', poolId)
                 .attach('file', zipFile, { filename: 'images.zip', contentType: 'application/zip' })
                 .field({
                     description,

@@ -1,29 +1,41 @@
 import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
-import ERC721Service from '@thxnetwork/api/services/ERC721Service';
-import { TERC721Attribute } from '@thxnetwork/api/types/TERC721';
 import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
+import { IPFS_BASE_URL } from '@thxnetwork/api/config/secrets';
+import { AccountPlanType } from '@thxnetwork/api/types/enums';
+import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
+import ERC721Service from '@thxnetwork/api/services/ERC721Service';
+import IPFSService from '@thxnetwork/api/services/IPFSService';
 
-export function getValue(attributes: TERC721Attribute[], key: string) {
-    const attr = attributes.find((attr: TERC721Attribute) => attr.key === key);
-    return attr ? attr.value : '';
-}
-
-const validation = [param('id').isMongoId(), body('attributes').exists()];
+const validation = [
+    param('id').isMongoId(),
+    body('name').optional().isString(),
+    body('imageUrl').optional().isURL(),
+    body('description').optional().isString(),
+    body('externalUrl').optional().isURL(),
+];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721']
     const erc721 = await ERC721Service.findById(req.params.id);
     if (!erc721) throw new NotFoundError('Could not find this NFT in the database');
 
+    const account = await AccountProxy.getById(req.auth.sub);
+    let image = req.body.imageUrl;
+
+    if (req.body.imageUrl && account.plan === AccountPlanType.Premium) {
+        const result = await IPFSService.addImageUrl(req.body.image);
+        image = IPFS_BASE_URL + result.cid.toString();
+    }
+
     const metadata = await ERC721Metadata.create({
         erc721Id: String(erc721._id),
-        imgUrl: getValue(req.body.attributes, 'image'),
-        name: getValue(req.body.attributes, 'name'),
-        image: getValue(req.body.attributes, 'image'),
-        description: getValue(req.body.attributes, 'description'),
-        externalUrl: getValue(req.body.attributes, 'externalUrl'),
+        name: req.body.name,
+        image,
+        imageUrl: req.body.imageUrl,
+        description: req.body.description,
+        externalUrl: req.body.externalUrl,
     });
 
     res.status(201).json(metadata);

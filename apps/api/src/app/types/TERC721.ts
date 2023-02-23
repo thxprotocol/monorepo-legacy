@@ -52,7 +52,7 @@ export type TERC721 = {
 export type TERC721Metadata = {
     _id?: string;
     erc721Id: string;
-    imgUrl: string;
+    imageUrl: string;
     name: string;
     image: string;
     description: string;

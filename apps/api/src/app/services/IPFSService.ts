@@ -1,6 +1,6 @@
 import { ImportCandidate } from 'ipfs-core-types/src/utils';
 import { INFURA_IPFS_PROJECT_ID, INFURA_IPFS_PROJECT_SECRET } from '../config/secrets';
-import { create } from 'ipfs-http-client';
+import { create, urlSource } from 'ipfs-http-client';
 
 const ipfsClient = create({
     host: 'ipfs.infura.io',
@@ -19,4 +19,8 @@ export async function add(file: Express.Multer.File) {
     } as ImportCandidate);
 }
 
-export default { add };
+export async function addImageUrl(url: string) {
+    return await ipfsClient.add(urlSource(url) as ImportCandidate);
+}
+
+export default { add, addImageUrl };

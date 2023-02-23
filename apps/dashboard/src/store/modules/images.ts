@@ -4,10 +4,9 @@ import { Action, Module, VuexModule } from 'vuex-module-decorators';
 @Module({ namespaced: true })
 class ImageModule extends VuexModule {
     @Action({ rawError: true })
-    async upload({ ipfs, file }: { ipfs: boolean; file: File }) {
+    async upload(file: File) {
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('ipfs', String(ipfs));
 
         const { data } = await axios({
             url: '/upload',
