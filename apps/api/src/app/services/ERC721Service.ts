@@ -183,12 +183,12 @@ async function findTokensByMetadata(metadata: ERC721MetadataDocument): Promise<T
     return ERC721Token.find({ metadataId: String(metadata._id) });
 }
 
-async function findMetadataByNFT(erc721: string, page = 1, limit = 10, q?: string) {
+async function findMetadataByNFT(erc721Id: string, page = 1, limit = 10, q?: string) {
     let query;
     if (q && q != 'null' && q != 'undefined') {
-        query = { erc721, title: { $regex: `.*${q}.*`, $options: 'i' } };
+        query = { erc721Id, title: { $regex: `.*${q}.*`, $options: 'i' } };
     } else {
-        query = { erc721 };
+        query = { erc721Id };
     }
 
     const paginatedResult = await paginatedResults(ERC721Metadata, page, limit, query);
