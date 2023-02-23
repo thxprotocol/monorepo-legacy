@@ -94,10 +94,11 @@
                         >
                             Edit
                         </b-dropdown-item>
-                        <b-dropdown-item target="_blank" v-bind:href="`${apiUrl}/v1/metadata/${item.id}`">
-                            View JSON
+                        <b-dropdown-item target="_blank" :href="`${apiUrl}/v1/metadata/${item.id}`">
+                            Preview URI
                         </b-dropdown-item>
                         <b-dropdown-item
+                            v-if="erc721"
                             :disabled="!!item.tokens.length"
                             @click="onClickDelete(metadata[erc721._id][item.id])"
                         >
@@ -118,9 +119,9 @@
 
 <script lang="ts">
 import { format } from 'date-fns';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import type { IERC721Metadatas, IERC721s, TERC721, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
+import type { IERC721Metadatas, IERC721s, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
 import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
 import BaseCardErc721Metadata from '@thxnetwork/dashboard/components/cards/BaseCardERC721Metadata.vue';
 import BaseModalErc721MetadataCreate from '@thxnetwork/dashboard/components/modals/BaseModalERC721MetadataCreate.vue';

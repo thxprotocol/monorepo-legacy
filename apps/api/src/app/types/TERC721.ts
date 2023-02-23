@@ -7,11 +7,6 @@ export enum ERC721TokenState {
     Minted = 2,
 }
 
-export type TERC721Attribute = {
-    key: string;
-    value: string;
-};
-
 export type TERC721MetadataProp = {
     name: string;
     propType: string;
@@ -26,6 +21,7 @@ export type TERC721Token = {
     failReason: string;
     transactions: string[];
     tokenId: number;
+    tokenUri: string;
     metadataId: string;
     erc721Id?: string;
     metadata?: TERC721Metadata;

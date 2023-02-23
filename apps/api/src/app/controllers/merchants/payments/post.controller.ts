@@ -2,11 +2,9 @@ import { STRIPE_SECRET_WEBHOOK } from '@thxnetwork/api/config/secrets';
 import { ERC721 } from '@thxnetwork/api/models/ERC721';
 import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
 import { ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
-import { Wallet } from '@thxnetwork/api/models/Wallet';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
-import { account } from '@thxnetwork/api/util/jest/constants';
 import { stripe } from '@thxnetwork/api/util/stripe';
 import { Request, Response } from 'express';
 

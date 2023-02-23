@@ -40,6 +40,7 @@ export type TERC721 = {
     chainId: ChainId;
     poolAddress: string;
     address: string;
+    baseURL: string;
     name: string;
     symbol: string;
     totalSupply: string;

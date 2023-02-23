@@ -6,7 +6,7 @@ import { ERC721, ERC721Document, IERC721Updates } from '@thxnetwork/api/models/E
 import { ERC721Metadata, ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
 import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
-import { ChainId, TransactionState } from '@thxnetwork/api/types/enums';
+import { AccountPlanType, ChainId, TransactionState } from '@thxnetwork/api/types/enums';
 import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
 import { TERC721DeployCallbackArgs, TERC721TokenMintCallbackArgs } from '@thxnetwork/api/types/TTransaction';
 import { assertEvent, ExpectedEventNotFound, findEvent, parseLogs } from '@thxnetwork/api/util/events';
@@ -16,6 +16,10 @@ import PoolService from './PoolService';
 import TransactionService from './TransactionService';
 import type { TERC721, TERC721Metadata, TERC721Token } from '@thxnetwork/api/types/TERC721';
 import type { IAccount } from '@thxnetwork/api/models/Account';
+import AccountProxy from '../proxies/AccountProxy';
+import { Account } from '@nomicfoundation/ethereumjs-util';
+import IPFSService from './IPFSService';
+import { API_URL } from '../config/secrets';
 
 const contractName = 'NonFungibleToken';
 
@@ -77,6 +81,14 @@ export async function deleteMetadata(id: string) {
     return ERC721Metadata.findOneAndDelete({ _id: id });
 }
 
+async function getTokenURI(erc721: ERC721Document, metadataId: string) {
+    const account = await AccountProxy.getById(erc721.sub);
+    if (account.plan !== AccountPlanType.Premium) return metadataId;
+
+    const result = await IPFSService.addImageUrl(`${API_URL}/v1/metadata/${metadataId}`);
+    return result.cid.toString();
+}
+
 export async function mint(
     pool: AssetPoolDocument,
     erc721: ERC721Document,
@@ -85,6 +97,7 @@ export async function mint(
     address: string,
     forceSync = true,
 ): Promise<ERC721TokenDocument> {
+    const tokenUri = await getTokenURI(erc721, String(metadata._id));
     const erc721token = await ERC721Token.create({
         sub,
         recipient: address,
@@ -92,9 +105,10 @@ export async function mint(
         erc721Id: String(erc721._id),
         metadataId: String(metadata._id),
     });
+
     const txId = await TransactionService.sendAsync(
         pool.contract.options.address,
-        pool.contract.methods.mintFor(address, String(metadata._id), erc721.address),
+        pool.contract.methods.mintFor(address, tokenUri, erc721.address),
         pool.chainId,
         forceSync,
         {
