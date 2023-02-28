@@ -1,299 +1,150 @@
-import axios from 'axios';
-import { google, youtube_v3 } from 'googleapis';
-import { AccountDocument } from '../models/Account';
-import { AUTH_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../config/secrets';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
+import { google } from 'googleapis';
+import {
+    AUTH_URL,
+    GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET,
+    SHOPIFY_CLIENT_ID,
+    SHOPIFY_CLIENT_SECRET,
+} from '../config/secrets';
+import { AccountDocument } from '../models/Account';
 import { IAccessToken } from '../types/TAccount';
-import { parseJwt } from '../util/jwt';
+import { shopifyClient } from '../util/axios';
 
 const client = new google.auth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, AUTH_URL + '/oidc/callback/google');
 
 google.options({ auth: client });
 
-const ERROR_NO_DATA = 'Could not find an youtube data for this accesstoken';
+const ERROR_NO_DATA = 'Could not find Shopify data for this accesstoken';
+const ERROR_NOT_AUTHORIZED = 'Not authorized for Shopify API';
+const ERROR_TOKEN_REQUEST_FAILED = 'Failed to request access token';
+export const SHOPIFY_API_SCOPE = ['read_customers', 'read_orders'];
 
 export class ShopifyService {
-    static async isAuthorized(account: AccountDocument, accessTokenKind: AccessTokenKind) {
-        const token = account.getToken(accessTokenKind);
+    static async isAuthorized(account: AccountDocument) {
+        const token = account.getToken(AccessTokenKind.Shopify);
         if (!token || !token.accessToken) return false;
         const isExpired = Date.now() > token.expiry;
         if (isExpired) {
             try {
-                const refreshToken = this.getRefreshToken(account);
-
-                client.setCredentials({
-                    refresh_token: refreshToken,
-                    access_token: token.accessToken,
-                });
-
-                const res = await client.getAccessToken();
-                const { expiry_date } = await client.getTokenInfo(res.token);
-
+                const tokens = await this.refreshTokens(token.refreshToken);
+                const expiry = tokens.expires_in ? Date.now() + Number(tokens.expires_in) * 1000 : undefined;
                 account.setToken({
-                    kind: accessTokenKind,
-                    accessToken: res.token,
-                    expiry: expiry_date,
-                    refreshToken: refreshToken,
+                    kind: AccessTokenKind.Shopify,
+                    accessToken: tokens.access_token,
+                    refreshToken: tokens.refresh_token,
+                    expiry,
                 });
                 await account.save();
-            } catch {
+            } catch (error) {
                 return false;
             }
         }
-
-        const hasYoutubeScopes = await this.hasYoutubeScopes(token.accessToken, accessTokenKind);
-        if (!hasYoutubeScopes) return false;
         return true;
     }
 
-    // TODO We should actually rethinkg the storage of those tokens and group them by provider
-    // as we only get a refresh token once per provider. Currently this workaround should suffice.
-    static getRefreshToken(account: AccountDocument) {
-        const token = account.tokens.find(
-            (t) => ['google', 'youtube-view', 'youtube-manage'].includes(t.kind) && t.refreshToken,
-        );
-        return token && token.refreshToken;
-    }
+    static async getTokens(storeUrl: string, code: string): Promise<{ tokenInfo: IAccessToken }> {
+        const body = new URLSearchParams();
+        body.append('code', code);
+        body.append('client_id', SHOPIFY_CLIENT_ID);
+        body.append('code', code);
 
-    static async getYoutubeClient(account: AccountDocument, accessTokenKind: AccessTokenKind) {
-        const googleToken: IAccessToken = account.getToken(accessTokenKind);
-        const refreshToken = this.getRefreshToken(account);
-
-        client.setCredentials({
-            refresh_token: refreshToken,
-            access_token: googleToken.accessToken,
-        });
-
-        const { token } = await client.getAccessToken();
-        const { expiry_date } = await client.getTokenInfo(token);
-
-        account.setToken({
-            kind: AccessTokenKind.YoutubeView,
-            accessToken: token,
-            expiry: expiry_date,
-            refreshToken: refreshToken,
-        });
-        await account.save();
-
-        return google.youtube({ version: 'v3' });
-    }
-
-    static async validateLike(account: AccountDocument, channelItem: string) {
-        const youtube = await this.getYoutubeClient(account, AccessTokenKind.YoutubeManage);
-        const r = await youtube.videos.getRating({
-            id: [channelItem],
-        });
-        if (!r.data) {
-            throw new Error(ERROR_NO_DATA);
-        }
-        return r.data.items.length ? r.data.items[0].rating == 'like' : false;
-    }
-    static async validateSubscribe(account: AccountDocument, channelItem: string) {
-        const youtube = await this.getYoutubeClient(account, AccessTokenKind.YoutubeManage);
-        const r = await youtube.subscriptions.list({
-            forChannelId: channelItem,
-            part: ['snippet'],
-            mine: true,
-        });
-
-        if (!r.data) {
-            throw new Error(ERROR_NO_DATA);
-        }
-
-        return r.data.items.length > 0;
-    }
-
-    static async getChannelList(account: AccountDocument) {
-        const youtube = await this.getYoutubeClient(account, AccessTokenKind.YoutubeView);
-        const r = await youtube.channels.list({
-            part: ['snippet'],
-            mine: true,
-        });
-
-        if (!r.data) {
-            throw new Error(ERROR_NO_DATA);
-        }
-
-        if (!r.data.items?.length) {
-            return [];
-        }
-
-        return r.data.items.map((item: any) => {
-            return {
-                id: item.id,
-                title: item.snippet.title,
-                thumbnailURI: item.snippet.thumbnails.default.url,
-            };
-        });
-    }
-
-    static async getVideoList(account: AccountDocument) {
-        async function getChannels(youtube: youtube_v3.Youtube) {
-            const r = await youtube.channels.list({
-                part: ['contentDetails'],
-                mine: true,
-            });
-
-            if (!r.data) {
-                throw new Error(ERROR_NO_DATA);
-            }
-
-            return r.data;
-        }
-
-        async function getPlaylistItems(youtube: youtube_v3.Youtube, id: string) {
-            const r = await youtube.playlistItems.list({
-                playlistId: id,
-                part: ['contentDetails'],
-            });
-            if (!r.data) {
-                throw new Error(ERROR_NO_DATA);
-            }
-            return r.data.items;
-        }
-
-        async function getVideos(youtube: youtube_v3.Youtube, videoIds: string[]) {
-            const r = await youtube.videos.list({
-                id: videoIds,
-                part: ['snippet'],
-            });
-
-            if (!r.data) {
-                throw new Error(ERROR_NO_DATA);
-            }
-
-            return r.data.items;
-        }
-
-        const youtube = await this.getYoutubeClient(account, AccessTokenKind.YoutubeView);
-        const channel = await getChannels(youtube);
-
-        if (!channel.items?.length) {
-            return [];
-        }
-
-        const uploadsChannelId = channel.items[0].contentDetails.relatedPlaylists.uploads;
-        const playlistItems = await getPlaylistItems(youtube, uploadsChannelId);
-        const videoIds = playlistItems.map((item: any) => item.contentDetails.videoId);
-        const videos = videoIds.length ? await getVideos(youtube, videoIds) : [];
-
-        return videos.map((item: any) => {
-            return {
-                id: item.id,
-                title: item.snippet.title,
-                tags: item.snippet.tags,
-                thumbnailURI: item.snippet.thumbnails.default.url,
-            };
-        });
-    }
-
-    static async getScopesOfAccessToken(token: string): Promise<string[]> {
-        try {
-            const r = await axios({
-                url: `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${token}`,
-            });
-            return r.data['scope'].split(' ');
-        } catch (error) {
-            return [];
-        }
-    }
-
-    static async hasYoutubeScopes(token: string, accessTokenKind: AccessTokenKind): Promise<boolean> {
-        const youtubeScopes = this.getYoutubeScopes(accessTokenKind);
-        const scopes = await YouTubeService.getScopesOfAccessToken(token);
-        if (scopes.length !== youtubeScopes.length) {
-            return false;
-        }
-        return youtubeScopes
-            .map((x) => x.toLowerCase())
-            .every((element) => {
-                if (scopes.map((x) => x.toLowerCase()).includes(element)) {
-                    return true;
-                }
-                return false;
-            });
-    }
-
-    static async revokeAccess(account: AccountDocument, token: IAccessToken) {
-        return await axios({
-            url: `https://oauth2.googleapis.com/revoke?token=${token.accessToken}`,
+        const { data } = await shopifyClient({
+            url: `${storeUrl}/admin/oauth/access_token`,
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization':
+                    'Basic ' + Buffer.from(`${SHOPIFY_CLIENT_ID}:${SHOPIFY_CLIENT_SECRET}`).toString('base64'),
+            },
+            data: body,
         });
-    }
 
-    static getLoginUrl(uid: string, scope: string[]) {
-        return client.generateAuthUrl({
-            state: uid,
-            access_type: 'offline',
-            scope,
-        });
-    }
-
-    static async getTokens(code: string): Promise<{ tokenInfo: IAccessToken; email: string }> {
-        const { tokens } = await client.getToken(code);
-        const expiry = tokens.expiry_date ? Date.now() + Number(tokens.expiry_date) * 1000 : undefined;
-
-        let kind = YouTubeService.getAccessTokenKindFromScope(tokens.scope);
-        if (!kind) kind = AccessTokenKind.Google;
-
-        const claims = await parseJwt(tokens.id_token);
+        const expiry = data.expires_in ? Date.now() + Number(data.expires_in) * 1000 : undefined;
 
         return {
-            email: claims.email,
             tokenInfo: {
-                kind,
+                kind: AccessTokenKind.Shopify,
+                accessToken: data.access_token,
+                refreshToken: data.refresh_token,
                 expiry,
-                accessToken: tokens.access_token,
-                refreshToken: tokens.refresh_token,
-                userId: claims.sub,
             },
         };
     }
 
-    static getYoutubeScopes(accessTokenKind: AccessTokenKind) {
-        switch (accessTokenKind) {
-            case AccessTokenKind.Google:
-                return this.getBasicScopes();
+    static async refreshTokens(refreshToken: string) {
+        const data = new URLSearchParams();
+        data.append('refresh_token', refreshToken);
+        data.append('grant_type', 'refresh_token');
+        data.append('client_id', SHOPIFY_CLIENT_ID);
 
-            case AccessTokenKind.YoutubeView:
-                return this.getYoutubeViewScopes();
+        const r = await shopifyClient({
+            url: '/oauth2/token',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization':
+                    'Basic ' + Buffer.from(`${SHOPIFY_CLIENT_ID}:${SHOPIFY_CLIENT_SECRET}`).toString('base64'),
+            },
+            data,
+        });
 
-            case AccessTokenKind.YoutubeManage:
-                return this.getYoutubeManageScopes();
-        }
+        if (r.status !== 200) throw new Error(ERROR_TOKEN_REQUEST_FAILED);
+
+        return r.data;
     }
 
-    static getBasicScopes() {
-        return ['https://www.googleapis.com/auth/userinfo.email', 'openid'];
+    static getLoginURL() {
+        const body = new URLSearchParams();
+        body.append('client_id', SHOPIFY_CLIENT_ID);
+        body.append('redirect_uri', AUTH_URL + '/oidc/callback/shopify');
+        body.append('scope', SHOPIFY_API_SCOPE.join(' '));
+
+        return `/admin/oauth/authorize??${body.toString()}`;
     }
 
-    static getYoutubeViewScopes() {
-        return ['https://www.googleapis.com/auth/youtube.readonly', 'openid'];
+    static async getCustomer(query: { email: string }) {
+        const r = await shopifyClient({
+            method: 'GET',
+            url: '/customers/search.json',
+            params: {
+                query: `email%3A${query.email}`,
+            },
+        });
+
+        if (r.status !== 200) throw new Error(ERROR_NOT_AUTHORIZED);
+        if (!r.data) throw new Error(ERROR_NO_DATA);
+
+        return r.data;
     }
 
-    static getYoutubeManageScopes() {
-        return ['https://www.googleapis.com/auth/youtube', 'openid'];
+    static async getCustomerOrders(customerId: number) {
+        const r = await shopifyClient({
+            method: 'GET',
+            url: `/customers/${customerId}/orders.json`,
+            // params: {
+            //     status: 1, // closed,
+            // },
+        });
+
+        if (r.status !== 200) throw new Error(ERROR_NOT_AUTHORIZED);
+        if (!r.data) throw new Error(ERROR_NO_DATA);
+
+        return r.data;
     }
 
-    static getAccessTokenKindFromScope(scope: string) {
-        if (!scope || !scope.length) {
-            return undefined;
+    static async validatePurchase(email: string, amount: string) {
+        if (isNaN(Number(amount))) {
+            throw new Error('Invalid purchase amount');
         }
-        const joinChar = ' ';
-        const openid = 'openid';
-        const empty = '';
-        scope = scope.replace(openid, empty).trim();
-
-        if (scope === this.getBasicScopes().join(joinChar).replace(openid, empty).trim()) {
-            return AccessTokenKind.Google;
+        const customer = await this.getCustomer({ email });
+        const orders = await this.getCustomerOrders(customer.id);
+        if (!orders.length) {
+            return false;
         }
-        if (scope === this.getYoutubeViewScopes().join(joinChar).replace(openid, empty).trim()) {
-            return AccessTokenKind.YoutubeView;
-        }
-        if (scope === this.getYoutubeManageScopes().join(joinChar).replace(openid, empty).trim()) {
-            return AccessTokenKind.YoutubeManage;
-        }
-
-        return undefined;
+        const validOrders = orders.filter(
+            (x: any) => x.confirmed && x.cancelled_at === null && Number(x.current_total_price) >= Number(amount),
+        );
+        return validOrders.length > 0;
     }
 }

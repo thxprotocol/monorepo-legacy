@@ -10,4 +10,5 @@ export enum AccessTokenKind {
     VerifyEmail = 'verify-email',
     YoutubeView = 'youtube-view',
     YoutubeManage = 'youtube-manage',
+    Shopify = 'shopify',
 }

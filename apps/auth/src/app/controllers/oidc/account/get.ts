@@ -6,6 +6,7 @@ import { AccountService } from '../../../services/AccountService';
 import { GithubService } from '../../../services/GithubServices';
 import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
+import { ShopifyService } from '@thxnetwork/auth/services/ShopifyService';
 
 async function controller(req: Request, res: Response) {
     const { uid, params, alert, session } = req.interaction;
@@ -16,6 +17,7 @@ async function controller(req: Request, res: Response) {
     params.twitterLoginUrl = TwitterService.getLoginURL(uid, {});
     params.discordLoginUrl = DiscordService.getLoginURL(uid, {});
     params.twitchLoginUrl = TwitchService.getLoginURL(uid, {});
+    params.shopifyLoginUrl = ShopifyService.getLoginURL();
 
     return res.render('account', {
         uid,
@@ -40,6 +42,7 @@ async function controller(req: Request, res: Response) {
             githubAccess: await GithubService.isAuthorized(account),
             discordAccess: await DiscordService.isAuthorized(account),
             twitchAccess: await TwitchService.isAuthorized(account),
+            shopifyAccess: await ShopifyService.isAuthorized(account),
         },
     });
 }
