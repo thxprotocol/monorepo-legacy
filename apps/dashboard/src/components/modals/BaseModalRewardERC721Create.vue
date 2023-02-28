@@ -200,8 +200,7 @@ export default class ModalRewardERC721Create extends Vue {
     }
 
     onSubmit() {
-        // TODO Remove when proper UI validation is implemented
-        if (!this.erc721metadataId.length) {
+        if (!this.erc721metadataId && !this.erc721SelectedMetadataIds.length) {
             this.error = 'Select the NFT metadata fort this perk';
             return;
         }
@@ -223,12 +222,6 @@ export default class ModalRewardERC721Create extends Vue {
             priceCurrency: this.priceCurrency,
             file: this.imageFile,
             isPromoted: this.isPromoted,
-            platform: this.rewardCondition.platform,
-            interaction:
-                this.rewardCondition.platform !== RewardConditionPlatform.None
-                    ? this.rewardCondition.interaction
-                    : RewardConditionInteraction.None,
-            content: this.rewardCondition.platform !== RewardConditionPlatform.None ? this.rewardCondition.content : '',
         };
 
         if (this.expiryDate) Object.assign(payload, { expiryDate: this.expiryDate });

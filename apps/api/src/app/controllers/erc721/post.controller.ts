@@ -1,8 +1,11 @@
+import { API_URL, IPFS_BASE_URL, VERSION } from '@thxnetwork/api/config/secrets';
 import { Request, Response } from 'express';
 import { body, check, query } from 'express-validator';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import ImageService from '@thxnetwork/api/services/ImageService';
 import { BadRequestError } from '@thxnetwork/api/util/errors';
+import { AccountPlanType } from '@thxnetwork/api/types/enums';
+import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 
 const validation = [
     body('name').exists().isString(),
@@ -23,22 +26,14 @@ const controller = async (req: Request, res: Response) => {
 
     let logoImgUrl;
     if (req.file) {
-        const response = await ImageService.upload(req.file);
-        logoImgUrl = ImageService.getPublicUrl(response.key);
-    }
-    let properties: any;
-    try {
-        properties = typeof req.body.schema == 'string' ? JSON.parse(req.body.schema) : req.body.schema;
-    } catch (err) {
-        throw new BadRequestError('invalid schema');
+        const result = await ImageService.upload(req.file);
+        logoImgUrl = ImageService.getPublicUrl(result.key);
     }
 
-    if (!Array.isArray(properties)) {
-        throw new BadRequestError('schema must be an Array');
-    }
-
+    const properties = typeof req.body.schema == 'string' ? JSON.parse(req.body.schema) : req.body.schema;
     const forceSync = req.query.forceSync !== undefined ? req.query.forceSync === 'true' : false;
-
+    const account = await AccountProxy.getById(req.auth.sub);
+    const baseURL = account.plan === AccountPlanType.Premium ? IPFS_BASE_URL : `${API_URL}/${VERSION}/metadata/`;
     const erc721 = await ERC721Service.deploy(
         {
             sub: req.auth.sub,
@@ -46,6 +41,7 @@ const controller = async (req: Request, res: Response) => {
             name: req.body.name,
             symbol: req.body.symbol,
             description: req.body.description,
+            baseURL,
             properties,
             archived: false,
             logoImgUrl,

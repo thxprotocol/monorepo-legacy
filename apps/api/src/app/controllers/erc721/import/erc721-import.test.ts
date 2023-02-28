@@ -86,6 +86,8 @@ describe('ERC721 import', () => {
                     expect(body.properties[1].propType).toBe('string');
                     expect(body.properties[2].name).toBe('image');
                     expect(body.properties[2].propType).toBe('image');
+                    expect(body.properties[3].name).toBe('externalUrl');
+                    expect(body.properties[3].propType).toBe('url');
                     expect(body.totalSupply).toBe('1');
                     expect(body.owner).toBe(defaultAccount);
                 })
@@ -119,13 +121,10 @@ describe('ERC721 import', () => {
                 .send()
                 .expect(({ body }: request.Response) => {
                     expect(body.total).toBe(1);
-                    expect(body.results[0].attributes.length).toBe(3);
-                    expect(body.results[0].attributes[0].key).toEqual('name');
-                    expect(body.results[0].attributes[0].value).toBeDefined();
-                    expect(body.results[0].attributes[1].key).toBe('description');
-                    expect(body.results[0].attributes[1].value).toBeDefined();
-                    expect(body.results[0].attributes[2].key).toBe('image');
-                    expect(body.results[0].attributes[2].value).toBeDefined();
+                    expect(body.results[0].name).toBeDefined();
+                    expect(body.results[0].description).toBeDefined();
+                    expect(body.results[0].image).toBeDefined();
+                    expect(body.results[0].externalUrl).toBeDefined();
                 })
                 .expect(200, done);
         });

@@ -22,8 +22,8 @@
                 </b-dropdown-item>
             </b-dropdown>
             <BaseModalErc721MetadataCreate @update="listMetadata" id="modalERC721MetadataCreate" :erc721="erc721" />
-            <BaseModalErc721MetadataBulkCreate :erc721="erc721" />
-            <BaseModalErc721MetadataUploadCSV :erc721="erc721" />
+            <BaseModalErc721MetadataBulkCreate @update="listMetadata" :erc721="erc721" />
+            <BaseModalErc721MetadataUploadCSV @update="listMetadata" :erc721="erc721" />
         </b-row>
 
         <BCard variant="white" body-class="p-0 shadow-sm">
@@ -59,7 +59,8 @@
                 <template #head(checkbox)>
                     <b-form-checkbox @change="onSelectAll" />
                 </template>
-                <template #head(attributes)> Attributes </template>
+                <template #head(image))> Image </template>
+                <template #head(info)> Details </template>
                 <template #head(tokens)> Tokens </template>
                 <template #head(created)> Created </template>
                 <template #head(id)> &nbsp; </template>
@@ -68,29 +69,16 @@
                 <template #cell(checkbox)="{ item }">
                     <b-form-checkbox :value="item.checkbox" v-model="selectedItems" />
                 </template>
-                <template #cell(attributes)="{ item }">
-                    <b-badge
-                        :key="key"
-                        v-for="(atribute, key) in item.attributes"
-                        variant="gray"
-                        v-b-tooltip
-                        :title="atribute.value"
-                        class="mr-2 text-white"
-                    >
-                        {{ atribute.key }}
-                    </b-badge>
+                <template #cell(image)="{ item }">
+                    <img :src="item.image" height="40" alt="Metadata image" />
+                </template>
+                <template #cell(info)="{ item }">
+                    <strong>{{ item.info.name }}</strong
+                    ><br />
+                    {{ item.info.description }}
                 </template>
                 <template #cell(tokens)="{ item }">
-                    <b-badge
-                        class="mr-2"
-                        variant="dark"
-                        :key="token.tokenId"
-                        v-for="token of item.tokens"
-                        v-b-tooltip
-                        :title="`Minted at: ${format(new Date(token.createdAt), 'dd-MM-yyyy HH:mm')}`"
-                    >
-                        #{{ token.tokenId }}
-                    </b-badge>
+                    {{ item.tokens.length }}
                 </template>
                 <template #cell(created)="{ item }">
                     {{ format(new Date(item.created), 'dd-MM-yyyy HH:mm') }}
@@ -106,10 +94,11 @@
                         >
                             Edit
                         </b-dropdown-item>
-                        <b-dropdown-item target="_blank" v-bind:href="`${apiUrl}/v1/metadata/${item.id}`">
-                            View JSON
+                        <b-dropdown-item target="_blank" :href="`${apiUrl}/v1/metadata/${item.id}`">
+                            Preview URI
                         </b-dropdown-item>
                         <b-dropdown-item
+                            v-if="erc721"
                             :disabled="!!item.tokens.length"
                             @click="onClickDelete(metadata[erc721._id][item.id])"
                         >
@@ -130,9 +119,9 @@
 
 <script lang="ts">
 import { format } from 'date-fns';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import type { IERC721Metadatas, IERC721s, TERC721, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
+import type { IERC721Metadatas, IERC721s, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
 import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
 import BaseCardErc721Metadata from '@thxnetwork/dashboard/components/cards/BaseCardERC721Metadata.vue';
 import BaseModalErc721MetadataCreate from '@thxnetwork/dashboard/components/modals/BaseModalERC721MetadataCreate.vue';
@@ -176,16 +165,20 @@ export default class MetadataView extends Vue {
     erc721s!: IERC721s;
     metadata!: IERC721Metadatas;
 
-    @Prop() erc721!: TERC721;
+    get erc721() {
+        if (!this.erc721s[this.$route.params.erc721Id]) return;
+        return this.erc721s[this.$route.params.erc721Id];
+    }
 
     get metadataByPage() {
-        if (!this.metadata[this.erc721._id]) return [];
-        return Object.values(this.metadata[this.erc721._id])
+        if (!this.erc721 || !this.metadata[this.erc721._id]) return [];
+        return Object.values(this.metadata[this.$route.params.erc721Id])
             .filter((metadata: TERC721Metadata) => metadata.page === this.page)
             .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
             .map((r: TERC721Metadata) => ({
                 checkbox: r._id,
-                attributes: r.attributes,
+                image: r.imageUrl,
+                info: { name: r.name, description: r.description, url: r.externalUrl },
                 tokens: r.tokens,
                 created: r.createdAt,
                 id: r._id,
@@ -219,6 +212,7 @@ export default class MetadataView extends Vue {
     }
 
     onClickAction(action: { variant: number; label: string }) {
+        if (!this.erc721) return;
         switch (action.variant) {
             case 0:
                 for (const id of Object.values(this.selectedItems)) {

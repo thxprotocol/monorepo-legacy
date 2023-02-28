@@ -3,17 +3,15 @@ import type { TERC721Metadata } from '@thxnetwork/api/types/TERC721';
 
 export type ERC721MetadataDocument = mongoose.Document & TERC721Metadata;
 
-const ERC721MetadataSchema = new mongoose.Schema(
+const schema = new mongoose.Schema(
     {
-        erc721: String,
-        title: String,
+        erc721Id: String,
+        imageUrl: String,
+        name: String,
+        image: String,
         description: String,
-        attributes: [{ key: String, value: String }],
+        externalUrl: String,
     },
     { timestamps: true },
 );
-export const ERC721Metadata = mongoose.model<ERC721MetadataDocument>(
-    'ERC721Metadata',
-    ERC721MetadataSchema,
-    'erc721metadata',
-);
+export const ERC721Metadata = mongoose.model<ERC721MetadataDocument>('ERC721Metadata', schema, 'erc721metadata');

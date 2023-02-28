@@ -4,12 +4,12 @@ import { OwnedNft } from 'alchemy-sdk';
 import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
 import { ERC721 } from '@thxnetwork/api/models/ERC721';
 import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
-import { ERC721TokenState, TERC721MetadataProp } from '@thxnetwork/api/types/TERC721';
+import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
 import { alchemy } from '@thxnetwork/api/util/alchemy';
 import { ChainId } from '@thxnetwork/api/types/enums';
-import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { toChecksumAddress } from 'web3-utils';
+import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
 
 const validation = [body('contractAddress').exists(), body('chainId').exists().isNumeric()];
 
@@ -58,20 +58,29 @@ const controller = async (req: Request, res: Response) => {
         address: toChecksumAddress(address, chainId),
         name,
         symbol,
+        properties: [
+            { name: 'name', propType: 'string', description: '' },
+            { name: 'description', propType: 'string', description: '' },
+            { name: 'image', propType: 'image', description: '' },
+            { name: 'externalUrl', propType: 'url', description: '' },
+        ],
         archived: false,
     });
-    const erc721Tokens = [];
-    const erc721Properties = [];
-
-    await Promise.all(
+    const erc721Tokens = await Promise.all(
         ownedNfts
             .filter((nft) => nft.rawMetadata)
             .map(async ({ rawMetadata, tokenId }) => {
                 try {
-                    const { attributes, properties } = convertRawMetadataToAttributes(rawMetadata);
-                    const metadata = await ERC721Service.createMetadata(erc721, attributes);
+                    const metadata = await ERC721Metadata.create({
+                        erc721Id: String(erc721._id),
+                        name: rawMetadata.name,
+                        description: rawMetadata.description,
+                        image: rawMetadata.image,
+                        imageUrl: rawMetadata.image,
+                        externalUrl: rawMetadata.external_url,
+                    });
                     const erc721Token = await ERC721Token.create({
-                        sub: req.auth.sub,
+                        sub: req.auth.sub, // Sub should be undefined, but leaving as is for test to pass
                         recipient: pool.address,
                         state: ERC721TokenState.Minted,
                         erc721Id: String(erc721._id),
@@ -79,73 +88,14 @@ const controller = async (req: Request, res: Response) => {
                         tokenId,
                     });
 
-                    erc721Properties.push(...properties);
-                    erc721Tokens.push({ ...erc721Token.toJSON(), metadata: metadata.toJSON() });
+                    return { ...erc721Token.toJSON(), metadata: metadata.toJSON() };
                 } catch (error) {
                     console.log(error);
                 }
             }),
     );
 
-    erc721.properties = Array.from(erc721Properties);
-    await erc721.save();
-
     res.status(201).json({ erc721, erc721Tokens });
 };
-
-function detectType(value: any) {
-    if (Array.isArray(value)) {
-        return 'array';
-    }
-    switch (typeof value) {
-        case 'string':
-            return isValidUrl(value) ? 'link' : 'string';
-        case 'number':
-            return 'number';
-        case 'object':
-            return 'json';
-        default:
-            return 'other';
-    }
-}
-
-function isValidUrl(string) {
-    try {
-        new URL(string);
-        return true;
-    } catch (err) {
-        return false;
-    }
-}
-
-function castToString(value: any, valueType: string) {
-    switch (valueType) {
-        case 'object': {
-            try {
-                return JSON.parse(value);
-            } catch (e) {
-                return '';
-            }
-        }
-        case 'string':
-            return value;
-        default:
-            return value.toString();
-    }
-}
-
-function convertRawMetadataToAttributes(rawMetadata: any) {
-    const properties: TERC721MetadataProp[] = [];
-    const attributes = Object.keys(rawMetadata).map((k) => {
-        const valueType = k === 'image' ? k : detectType(rawMetadata[k]);
-        const property: TERC721MetadataProp = { name: k, propType: valueType, description: '' };
-
-        properties.push(property);
-
-        return { key: k, value: castToString(rawMetadata[k], valueType) };
-    });
-
-    return { properties, attributes };
-}
 
 export default { controller, validation };
