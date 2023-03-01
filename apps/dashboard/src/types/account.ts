@@ -17,6 +17,7 @@ export interface IAccount {
     profileImg?: string;
     email?: string;
     logoImgUrl?: string;
+    shopifyStoreUrl?: string;
 }
 export interface IAccountUpdates {
     address: string;

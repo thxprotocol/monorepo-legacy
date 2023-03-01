@@ -55,6 +55,7 @@ import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardRewardQRCodes from '../cards/BaseCardRewardQRCodes.vue';
 import { mapGetters } from 'vuex';
 import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
+import { IAccount } from '@thxnetwork/dashboard/types/account';
 
 @Component({
     components: {
@@ -65,6 +66,7 @@ import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork
     },
     computed: mapGetters({
         totals: 'pointRewards/totals',
+        profile: 'account/profile',
     }),
 })
 export default class ModalRewardPointsCreate extends Vue {
@@ -81,7 +83,7 @@ export default class ModalRewardPointsCreate extends Vue {
         interaction: platformInteractionList[0].type,
         content: '',
     };
-
+    profile!: IAccount;
     @Prop() id!: string;
     @Prop() pool!: IPool;
     @Prop({ required: false }) reward!: TPointReward;
@@ -128,7 +130,12 @@ export default class ModalRewardPointsCreate extends Vue {
                 this.rewardCondition.platform != RewardConditionPlatform.None
                     ? this.rewardCondition.interaction
                     : RewardConditionInteraction.None,
-            content: this.rewardCondition.platform != RewardConditionPlatform.None ? this.rewardCondition.content : '',
+            content:
+                this.rewardCondition.platform === RewardConditionPlatform.Shopify && this.profile.shopifyStoreUrl
+                    ? this.profile.shopifyStoreUrl
+                    : this.rewardCondition.platform != RewardConditionPlatform.None
+                    ? this.rewardCondition.content
+                    : '',
             page: this.reward ? this.reward.page : 1,
         };
         this.isLoading = true;

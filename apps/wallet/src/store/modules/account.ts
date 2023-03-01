@@ -22,6 +22,7 @@ export interface UserProfile {
     authRequestMessage: string;
     authRequestSignature: string;
     variant: AccountVariant;
+    shopifyStoreUrl?: string;
     googleAccess: boolean;
     youtubeViewAccess: boolean;
     youtubeManageAccess: boolean;

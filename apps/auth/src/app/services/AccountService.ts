@@ -90,6 +90,10 @@ export class AccountService {
             account.unsetToken(AccessTokenKind.Discord);
         }
 
+        if (updates.shopifyAccess === false) {
+            account.unsetToken(AccessTokenKind.Shopify);
+        }
+
         return await account.save();
     }
 

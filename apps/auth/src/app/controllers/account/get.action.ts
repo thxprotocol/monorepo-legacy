@@ -19,6 +19,7 @@ async function formatAccountRes(account) {
         email: account.email,
         profileImg: account.profileImg,
         variant: account.variant,
+        shopifyStoreUrl: account.shopifyStoreUrl,
         googleAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.Google),
         youtubeViewAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.YoutubeView),
         youtubeManageAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.YoutubeManage),

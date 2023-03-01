@@ -27,7 +27,7 @@ export class ShopifyService {
         const isExpired = Date.now() > token.expiry;
         if (isExpired) {
             try {
-                const tokens = await this.refreshTokens(token.refreshToken);
+                const tokens = await this.refreshTokens(account.shopifyStoreUrl, token.refreshToken);
                 const expiry = tokens.expires_in ? Date.now() + Number(tokens.expires_in) * 1000 : undefined;
                 account.setToken({
                     kind: AccessTokenKind.Shopify,
@@ -47,10 +47,8 @@ export class ShopifyService {
         const body = new URLSearchParams();
         body.append('code', code);
         body.append('client_id', SHOPIFY_CLIENT_ID);
-        body.append('code', code);
-
-        const { data } = await shopifyClient({
-            url: `${storeUrl}/admin/oauth/access_token`,
+        const r = await shopifyClient(storeUrl, {
+            url: `https://${storeUrl}/admin/oauth/access_token`,
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -59,26 +57,28 @@ export class ShopifyService {
             },
             data: body,
         });
+        if (r.status !== 200) throw new Error(ERROR_NOT_AUTHORIZED);
+        if (!r.data) throw new Error(ERROR_NO_DATA);
 
-        const expiry = data.expires_in ? Date.now() + Number(data.expires_in) * 1000 : undefined;
+        const expiry = r.data.expires_in ? Date.now() + Number(r.data.expires_in) * 1000 : undefined;
 
         return {
             tokenInfo: {
                 kind: AccessTokenKind.Shopify,
-                accessToken: data.access_token,
-                refreshToken: data.refresh_token,
+                accessToken: r.data.access_token,
+                refreshToken: r.data.refresh_token,
                 expiry,
             },
         };
     }
 
-    static async refreshTokens(refreshToken: string) {
+    static async refreshTokens(storeUrl: string, refreshToken: string) {
         const data = new URLSearchParams();
         data.append('refresh_token', refreshToken);
         data.append('grant_type', 'refresh_token');
         data.append('client_id', SHOPIFY_CLIENT_ID);
 
-        const r = await shopifyClient({
+        const r = await shopifyClient(storeUrl, {
             url: '/oauth2/token',
             method: 'POST',
             headers: {
@@ -94,17 +94,18 @@ export class ShopifyService {
         return r.data;
     }
 
-    static getLoginURL() {
+    static getLoginURL(uid: string) {
         const body = new URLSearchParams();
         body.append('client_id', SHOPIFY_CLIENT_ID);
         body.append('redirect_uri', AUTH_URL + '/oidc/callback/shopify');
         body.append('scope', SHOPIFY_API_SCOPE.join(' '));
+        body.append('state', uid);
 
-        return `/admin/oauth/authorize??${body.toString()}`;
+        return `/admin/oauth/authorize?${body.toString()}`;
     }
 
-    static async getCustomer(query: { email: string }) {
-        const r = await shopifyClient({
+    static async getCustomer(storeUrl: string, query: { email: string }) {
+        const r = await shopifyClient(storeUrl, {
             method: 'GET',
             url: '/customers/search.json',
             params: {
@@ -118,8 +119,8 @@ export class ShopifyService {
         return r.data;
     }
 
-    static async getCustomerOrders(customerId: number) {
-        const r = await shopifyClient({
+    static async getCustomerOrders(storeUrl: string, customerId: number) {
+        const r = await shopifyClient(storeUrl, {
             method: 'GET',
             url: `/customers/${customerId}/orders.json`,
             // params: {
@@ -133,12 +134,12 @@ export class ShopifyService {
         return r.data;
     }
 
-    static async validatePurchase(email: string, amount: string) {
+    static async validatePurchase(storeUrl: string, email: string, amount: string) {
         if (isNaN(Number(amount))) {
             throw new Error('Invalid purchase amount');
         }
-        const customer = await this.getCustomer({ email });
-        const orders = await this.getCustomerOrders(customer.id);
+        const customer = await this.getCustomer(storeUrl, { email });
+        const orders = await this.getCustomerOrders(storeUrl, customer.id);
         if (!orders.length) {
             return false;
         }

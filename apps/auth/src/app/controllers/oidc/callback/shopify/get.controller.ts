@@ -1,24 +1,25 @@
-import { DASHBOARD_URL } from '@thxnetwork/auth/config/secrets';
 import { Account } from '@thxnetwork/auth/models/Account';
 import { ShopifyService } from '@thxnetwork/auth/services/ShopifyService';
 import { UnauthorizedError } from '@thxnetwork/auth/util/errors';
 import { Request, Response } from 'express';
-import { callbackPreAuth } from '../../get';
+import { callbackPostSSOCallback, callbackPreAuth } from '../../get';
 
 export async function controller(req: Request, res: Response) {
     const { code, interaction } = await callbackPreAuth(req);
 
-    if (!code) throw new UnauthorizedError('Could not find code in query');
+    const account = await Account.findById(String(interaction.session.accountId));
+    if (!account) throw new UnauthorizedError('Invald account');
 
-    const tokens = await ShopifyService.getTokens(String(req.query.shop), String(code));
-    if (!interaction.session || interaction.session.accountId) {
-        throw new UnauthorizedError();
-    }
-    const account = await Account.findById(interaction.session.accountId);
+    if (!req.query.shop) throw new UnauthorizedError('Could not find shop in query');
+    const shop = String(req.query.shop);
+    const tokens = await ShopifyService.getTokens(shop, String(code));
     account.setToken(tokens.tokenInfo);
-
+    account.shopifyStoreUrl = 'https://' + shop;
     await account.save();
-    return res.redirect(DASHBOARD_URL);
+
+    const returnUrl = await callbackPostSSOCallback(interaction, account);
+
+    res.redirect(returnUrl);
 }
 
 export default { controller };

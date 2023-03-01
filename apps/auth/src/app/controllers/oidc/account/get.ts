@@ -17,7 +17,7 @@ async function controller(req: Request, res: Response) {
     params.twitterLoginUrl = TwitterService.getLoginURL(uid, {});
     params.discordLoginUrl = DiscordService.getLoginURL(uid, {});
     params.twitchLoginUrl = TwitchService.getLoginURL(uid, {});
-    params.shopifyLoginUrl = ShopifyService.getLoginURL();
+    params.shopifyLoginUrl = ShopifyService.getLoginURL(uid);
 
     return res.render('account', {
         uid,
@@ -35,6 +35,7 @@ async function controller(req: Request, res: Response) {
             plan: account.plan,
             otpSecret: account.otpSecret,
             variant: account.variant,
+            shopifyStoreUrl: account.shopifyStoreUrl,
             googleAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.Google),
             youtubeViewAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.YoutubeView),
             youtubeManageAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.YoutubeManage),

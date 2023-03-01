@@ -2,8 +2,6 @@ import axios, { AxiosRequestConfig } from 'axios';
 import {
     DISCORD_API_ENDPOINT,
     GITHUB_API_ENDPOINT,
-    SHOPIFY_ACCESS_TOKEN,
-    SHOPIFY_API_ENDPOINT,
     SPOTIFY_API_ENDPOINT,
     TWITCH_API_ENDPOINT,
     TWITTER_API_ENDPOINT,
@@ -34,7 +32,7 @@ export function twitchClient(config: AxiosRequestConfig) {
     return axios(config);
 }
 
-export function shopifyClient(config: AxiosRequestConfig) {
-    config.baseURL = SHOPIFY_API_ENDPOINT;
+export function shopifyClient(shopUrl: string, config: AxiosRequestConfig) {
+    config.baseURL = shopUrl;
     return axios(config);
 }

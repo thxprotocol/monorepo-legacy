@@ -57,7 +57,7 @@ import BaseDropdownYoutubeVideo from '../dropdowns/BaseDropdownYoutubeVideo.vue'
 import BaseDropdownTwitterTweets from '../dropdowns/BaseDropdownTwitterTweets.vue';
 import BaseDropdownTwitterUsers from '../dropdowns/BaseDropdownTwitterUsers.vue';
 import BaseDropdownDiscordGuilds from '../dropdowns/BaseDropdownDiscordGuilds.vue';
-
+import BaseDropdownShopifyPurchase from '../dropdowns/BaseDropdownShopifyPurchase.vue';
 @Component({
     components: {
         BaseDropdownDiscordGuilds,
@@ -68,12 +68,14 @@ import BaseDropdownDiscordGuilds from '../dropdowns/BaseDropdownDiscordGuilds.vu
         BaseDropdownYoutubeVideo,
         BaseDropdownTwitterTweets,
         BaseDropdownTwitterUsers,
+        BaseDropdownShopifyPurchase,
     },
     computed: mapGetters({
         profile: 'account/profile',
         youtube: 'account/youtube',
         twitter: 'account/twitter',
         discord: 'account/discord',
+        shopify: 'account/shopify',
     }),
 })
 export default class BaseCardRewardCondition extends Vue {

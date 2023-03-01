@@ -209,7 +209,7 @@
                         <% } %>
                         <% if (params.shopifyLoginUrl && !params.shopifyAccess) { %>
                             <script>
-                                function onShopifyConnect() {
+                                function onShopifyConnectClick() {
                                  var div = document.getElementById("div_shopify_shop_url");
                                   if (div.style.display === "none") {
                                     div.style.display = "block";
@@ -217,31 +217,28 @@
                                     div.style.display = "none";
                                   }
                                 }
-                                function validateShopifyConnect(e) {
-                                    e.preventDefault();
+                                function authShopify() {
                                     var shopUrl = document.getElementById("input_shopify_shop_url").value;
                                     if(shopUrl.length === 0) {
                                         return false;
                                     }
-                                    var form = document.getElementById("frm_shopify_connect");
-                                    form.action = shopUrl + form.action;
-                                    form.submit();
+                                    var url = shopUrl + document.getElementById("input_shopify_action").value;
+                                     window.location.href = url;
                                 }
                             </script>
-                            <form method="get" action="<%= params.shopifyLoginUrl %>" id="frm_shopify_connect" onsubmit="return validateShopifyConnect(event)">
-                                <button class="btn btn-sign-in btn-shopify btn-block my-1" onclick="onShopifyConnect()">
-                                    <div class="logo">
-                                        <img src="/img/shopify-logo.png" alt="Shopify logo" />
-                                    </div>
-                                    <div class="label">Connect Shopify</div>
-                                </button>
-                                <div class="hidden" id="div_shopify_shop_url">
-                                    <div class="label">Shopify Store URL</div>
-                                    <input type="url" id="input_shopify_shop_url">
-                                    <button class="btn btn-sign-in btn-shopify btn-block my-1" type="submit" value="Connect"></button>
+                            <button class="btn btn-sign-in btn-shopify btn-block my-1" onclick="onShopifyConnectClick()">
+                                <div class="logo">
+                                    <img src="/img/shopify-logo.png" alt="Shopify logo" />
                                 </div>
-                            </form>
-                           
+                                <div class="label">Connect Shopify</div>
+                            </button>
+                            <div style="display:none" id="div_shopify_shop_url">
+                                <input type="hidden" id="input_uid" value="<%= uid %>">
+                                <input type="hidden" id="input_shopify_action" value="<%= params.shopifyLoginUrl %>" />
+                                <div class="label">Shopify Store URL</div>
+                                <input type="url" id="input_shopify_shop_url" class="form-control">
+                                <button class="btn btn-sign-in my-1 btn-shopify" type="button" value="Connect" onclick="authShopify()"><div class="label"> Connect </div></button>
+                            </div>
                             <% } %>
                             <% if (params.shopifyAccess) { %>
                             <form method="post" action="/oidc/<%= uid %>/account/shopify/disconnect">
