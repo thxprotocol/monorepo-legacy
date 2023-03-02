@@ -28,6 +28,7 @@ export interface UserProfile {
     youtubeManageAccess: boolean;
     twitterAccess: boolean;
     discordAccess: boolean;
+    shopifyAccess: boolean;
 }
 
 @Module({ namespaced: true })

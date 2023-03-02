@@ -104,25 +104,32 @@ export class ShopifyService {
         return `/admin/oauth/authorize?${body.toString()}`;
     }
 
-    static async getCustomer(storeUrl: string, query: { email: string }) {
+    static async getCustomer(accessToken: string, storeUrl: string, query: { email: string }) {
         const r = await shopifyClient(storeUrl, {
             method: 'GET',
             url: '/customers/search.json',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Shopify-Access-Token': accessToken,
+            },
             params: {
-                query: `email%3A${query.email}`,
+                query: `email:${query.email}`,
             },
         });
-
         if (r.status !== 200) throw new Error(ERROR_NOT_AUTHORIZED);
         if (!r.data) throw new Error(ERROR_NO_DATA);
 
-        return r.data;
+        return r.data.customers[0];
     }
 
-    static async getCustomerOrders(storeUrl: string, customerId: number) {
+    static async getCustomerOrders(accessToken: string, storeUrl: string, customerId: number) {
         const r = await shopifyClient(storeUrl, {
             method: 'GET',
             url: `/customers/${customerId}/orders.json`,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Shopify-Access-Token': accessToken,
+            },
             // params: {
             //     status: 1, // closed,
             // },
@@ -130,19 +137,20 @@ export class ShopifyService {
 
         if (r.status !== 200) throw new Error(ERROR_NOT_AUTHORIZED);
         if (!r.data) throw new Error(ERROR_NO_DATA);
-
-        return r.data;
+        return r.data.orders;
     }
 
-    static async validatePurchase(storeUrl: string, email: string, amount: string) {
+    static async validatePurchase(accessToken: string, storeUrl: string, email: string, amount: string) {
         if (isNaN(Number(amount))) {
             throw new Error('Invalid purchase amount');
         }
-        const customer = await this.getCustomer(storeUrl, { email });
-        const orders = await this.getCustomerOrders(storeUrl, customer.id);
+        const customer = await this.getCustomer(accessToken, storeUrl, { email });
+        const orders = await this.getCustomerOrders(accessToken, storeUrl, customer.id);
+
         if (!orders.length) {
             return false;
         }
+
         const validOrders = orders.filter(
             (x: any) => x.confirmed && x.cancelled_at === null && Number(x.current_total_price) >= Number(amount),
         );

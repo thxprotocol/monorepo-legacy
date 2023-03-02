@@ -4,6 +4,7 @@ import YouTubeDataProxy from '@thxnetwork/api/proxies/YoutubeDataProxy';
 import DiscordDataProxy from '@thxnetwork/api/proxies/DiscordDataProxy';
 
 import { RewardConditionPlatform, RewardConditionInteraction, TBaseReward } from '@thxnetwork/types/index';
+import ShopifyDataProxy from '../proxies/ShopifyDataProxy';
 
 export const validateCondition = async (account: IAccount, reward: TBaseReward): Promise<string> => {
     if (reward.platform === RewardConditionPlatform.None) return;
@@ -38,6 +39,11 @@ export const validateCondition = async (account: IAccount, reward: TBaseReward):
             case RewardConditionInteraction.DiscordGuildJoined: {
                 const result = await DiscordDataProxy.validateGuildJoined(account, reward.content);
                 if (!result) return 'Discord: Server is not joined.';
+                break;
+            }
+            case RewardConditionInteraction.ShopifyPurchase: {
+                const result = await ShopifyDataProxy.validatePurchase(account, reward.content);
+                if (!result) return 'Shopify: no any product purchased equal or higer than the reward amount.';
                 break;
             }
         }

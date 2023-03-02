@@ -7,6 +7,7 @@ export interface IAccount {
     youtubeViewAccess: boolean;
     youtubeManageAccess: boolean;
     twitterAccess: boolean;
+    shopifyAccess: boolean;
     youtube?: any;
     twitter?: any;
     plan: AccountPlanType;

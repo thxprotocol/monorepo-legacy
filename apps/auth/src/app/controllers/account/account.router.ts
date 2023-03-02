@@ -15,6 +15,7 @@ import { getDiscord } from './discord/get.action';
 import { getDiscordGuildJoined } from './discord/guild/get.action';
 import { getTwitch } from './twitch/get.action';
 import { getGithub } from './github/get.controller';
+import { getShopifyPurchase } from './shopify/getPurchase.action';
 
 const router = express.Router();
 
@@ -25,6 +26,8 @@ router.get('/:sub/twitter', guard.check(['accounts:read']), getTwitter);
 router.get('/:sub/twitter/like/:item', guard.check(['accounts:read']), getTwitterLike);
 router.get('/:sub/twitter/retweet/:item', guard.check(['accounts:read']), getTwitterRetweet);
 router.get('/:sub/twitter/follow/:item', guard.check(['accounts:read']), getTwitterFollow);
+
+router.get('/:sub/shopify/purchase', guard.check(['accounts:read']), getShopifyPurchase);
 
 router.get('/:sub/google/youtube', guard.check(['accounts:read']), getYoutube);
 router.get('/:sub/google/youtube/like/:item', guard.check(['accounts:read']), getYoutubeLike);
