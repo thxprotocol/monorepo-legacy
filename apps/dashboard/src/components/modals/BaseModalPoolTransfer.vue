@@ -28,9 +28,12 @@
                     </b-button>
                 </b-input-group-append>
             </b-input-group>
-            <div class="small" :class="transfer.isExpired ? 'text-danger' : 'text-muted'">
-                {{ transfer.isExpired ? 'Expired' : 'Expires' }} at
-                {{ format(new Date(transfer.expiry), 'dd-MM-yyyy HH:mm') }}
+            <div class="small">
+                <span :class="transfer.isExpired ? 'text-danger' : 'text-muted'">
+                    {{ transfer.isExpired ? 'Expired' : 'Expires' }} at
+                    {{ format(new Date(transfer.expiry), 'dd-MM-yyyy HH:mm') }}
+                </span>
+                <b-link @click="onClickTransferRefresh">Refresh</b-link>
             </div>
         </b-form-group>
         <b-alert variant="warning" show class="mb-0">
@@ -66,6 +69,10 @@ export default class BaseModalPoolTransfer extends Vue {
 
     async onShow() {
         await this.$store.dispatch('pools/listTransfers', this.pool);
+    }
+
+    async onClickTransferRefresh() {
+        await this.$store.dispatch('pools/refreshTransfers', this.pool);
     }
 }
 </script>
