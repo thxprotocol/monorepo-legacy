@@ -1,10 +1,10 @@
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { Request, Response } from 'express';
-import { param } from 'express-validator';
+import { body, param } from 'express-validator';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { PoolTransfer } from '@thxnetwork/api/models/PoolTransfer';
 
-const validation = [param('id').isMongoId()];
+const validation = [param('id').isMongoId(), body('token').isString()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']

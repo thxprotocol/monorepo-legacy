@@ -197,6 +197,17 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
+    async deleteTransfers(pool: IPool) {
+        await axios({
+            method: 'DELETE',
+            url: `/pools/${pool._id}/transfers`,
+            headers: { 'X-PoolId': pool._id },
+            data: { token: pool.transfers[0].token },
+        });
+        this.context.dispatch('listTransfers', pool);
+    }
+
+    @Action({ rawError: true })
     async list(params: { archived?: boolean } = { archived: false }) {
         this.context.commit('clear');
 
