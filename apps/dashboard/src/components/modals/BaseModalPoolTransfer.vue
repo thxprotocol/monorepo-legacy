@@ -27,10 +27,31 @@
                         <i class="fas ml-0" :class="transfer.isCopied ? 'fa-clipboard-check' : 'fa-clipboard'"></i>
                     </b-button>
                 </b-input-group-append>
+                <b-input-group-append>
+                    <b-dropdown
+                        size="sm"
+                        variant="primary"
+                        right
+                        no-caret
+                        toggle-class="d-flex align-items-center float-right"
+                    >
+                        <template #button-content>
+                            <i class="fas fa-ellipsis-v m-0" aria-hidden="true"></i>
+                        </template>
+                        <b-dropdown-item @click="onClickTransferRefresh" link-class="text-muted small">
+                            Refresh expiry
+                        </b-dropdown-item>
+                        <b-dropdown-item @click="onClickTransferRecreate" link-class="text-muted small">
+                            Recreate URL
+                        </b-dropdown-item>
+                    </b-dropdown>
+                </b-input-group-append>
             </b-input-group>
-            <div class="small" :class="transfer.isExpired ? 'text-danger' : 'text-muted'">
-                {{ transfer.isExpired ? 'Expired' : 'Expires' }} at
-                {{ format(new Date(transfer.expiry), 'dd-MM-yyyy HH:mm') }}
+            <div class="small">
+                <span :class="transfer.isExpired ? 'text-danger' : 'text-muted'">
+                    {{ transfer.isExpired ? 'Expired' : 'Expires' }} at
+                    {{ format(new Date(transfer.expiry), 'dd-MM-yyyy HH:mm') }}
+                </span>
             </div>
         </b-form-group>
         <b-alert variant="warning" show class="mb-0">
@@ -64,8 +85,16 @@ export default class BaseModalPoolTransfer extends Vue {
 
     @Prop() pool!: IPool;
 
-    async onShow() {
-        await this.$store.dispatch('pools/listTransfers', this.pool);
+    onShow() {
+        this.$store.dispatch('pools/listTransfers', this.pool);
+    }
+
+    onClickTransferRefresh() {
+        this.$store.dispatch('pools/refreshTransfers', this.pool);
+    }
+
+    onClickTransferRecreate() {
+        this.$store.dispatch('pools/deleteTransfers', this.pool);
     }
 }
 </script>

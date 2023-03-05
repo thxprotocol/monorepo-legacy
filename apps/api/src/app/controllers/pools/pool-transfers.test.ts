@@ -35,7 +35,7 @@ describe('Pool Transfer', () => {
     describe('GET /pools/:id/transfer', () => {
         it('HTTP 200', (done) => {
             user.get(`/v1/pools/${pool._id}/transfers`)
-                .set('Authorization', dashboardAccessToken)
+                .set({ 'Authorization': dashboardAccessToken, 'X-PoolId': pool._id })
                 .expect(({ body }: Response) => {
                     expect(body.length).toBe(1);
                     expect(body[0].token).toBeDefined();
@@ -52,18 +52,27 @@ describe('Pool Transfer', () => {
             await PoolTransfer.findByIdAndUpdate(poolTransfer._id, { expiry: new Date(Date.now() - 10000) });
             await user
                 .post(`/v1/pools/${pool._id}/transfers`)
-                .set('Authorization', dashboardAccessToken)
+                .set({ 'Authorization': dashboardAccessToken, 'X-PoolId': pool._id })
                 .send({ token: poolTransfer.token, sub: sub2 })
                 .expect(async ({ body }: Response) => {
                     expect(body.error.message).toBe('Pool transfer token has expired');
-
-                    await PoolTransfer.findByIdAndUpdate(poolTransfer._id, { expiry: poolTransfer.expiry });
                 })
                 .expect(403);
         });
-        it('HTTP 200', (done) => {
+    });
+
+    describe('POST /pools/:id/transfer/refresh', () => {
+        it('HTTP 201 (Token refreshed)', async () => {
+            await user
+                .post(`/v1/pools/${pool._id}/transfers/refresh`)
+                .set({ 'Authorization': dashboardAccessToken, 'X-PoolId': pool._id })
+                .send({ token: poolTransfer.token })
+                .expect(201);
+        });
+
+        it('HTTP 200 (Pool transferred)', (done) => {
             user.post(`/v1/pools/${pool._id}/transfers`)
-                .set('Authorization', dashboardAccessToken2)
+                .set({ 'Authorization': dashboardAccessToken2, 'X-PoolId': pool._id })
                 .send({ token: poolTransfer.token, sub: sub2 })
                 .expect(200, done);
         });
@@ -72,7 +81,7 @@ describe('Pool Transfer', () => {
     describe('GET /pools/:id/transfer (after)', () => {
         it('HTTP 200', (done) => {
             user.get(`/v1/pools/${pool._id}/transfers`)
-                .set('Authorization', dashboardAccessToken2)
+                .set({ 'Authorization': dashboardAccessToken2, 'X-PoolId': pool._id })
                 .expect(({ body }: Response) => {
                     expect(body.length).toBe(1);
                     expect(body[0].token !== poolTransfer.token).toBeTruthy();
