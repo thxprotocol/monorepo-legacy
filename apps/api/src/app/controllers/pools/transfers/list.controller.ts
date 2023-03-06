@@ -19,7 +19,7 @@ const controller = async (req: Request, res: Response) => {
             sub: req.auth.sub,
             poolId: pool._id,
             token: v4(),
-            expiry: Date.now() + 1000 * 60 * 60 * 24 * 7, // n + 7 days
+            expiry: Date.now() + 1000 * 60 * 60 * 24 * 7, // t + 7 days
         });
         poolTransfers = [poolTransfer];
     }
