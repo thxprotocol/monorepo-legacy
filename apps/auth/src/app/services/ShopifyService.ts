@@ -152,8 +152,11 @@ export class ShopifyService {
         }
 
         const validOrders = orders.filter(
-            (x: any) => x.confirmed && x.cancelled_at === null && Number(x.current_total_price) >= Number(amount),
+            (x: any) => x.confirmed && x.cancelled_at === null && Number(x.current_total_price),
         );
-        return validOrders.length > 0;
+        const totalOrderPurchased = validOrders
+            .map((x: any) => x.current_total_price)
+            .reduce((a: string, b: string) => Number(a) + Number(b));
+        return totalOrderPurchased >= Number(amount);
     }
 }
