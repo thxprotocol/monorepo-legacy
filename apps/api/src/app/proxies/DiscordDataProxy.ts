@@ -7,6 +7,16 @@ class NoDataError extends THXError {
 }
 
 export default class DiscordDataProxy {
+    static async getUserId(account: IAccount) {
+        const { data } = await authClient({
+            method: 'GET',
+            url: `/account/${account.sub}/discord/user`,
+            headers: {
+                Authorization: await getAuthAccessToken(),
+            },
+        });
+        return data.userId;
+    }
     static async get(sub: string) {
         const r = await authClient({
             method: 'GET',
