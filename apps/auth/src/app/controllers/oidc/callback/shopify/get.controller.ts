@@ -6,7 +6,6 @@ import { callbackPostSSOCallback, callbackPreAuth } from '../../get';
 
 export async function controller(req: Request, res: Response) {
     const { code, interaction } = await callbackPreAuth(req);
-
     const account = await Account.findById(String(interaction.session.accountId));
     if (!account) throw new UnauthorizedError('Invald account');
 
