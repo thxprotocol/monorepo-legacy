@@ -13,7 +13,6 @@ const schema = new mongoose.Schema(
         image: String,
         price: Number,
         priceCurrency: String,
-        paymentLinkId: String,
     },
     { timestamps: true },
 );

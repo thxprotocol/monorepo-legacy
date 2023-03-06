@@ -109,6 +109,12 @@ export default class ModalNftImport extends Vue {
         };
 
         await this.$store.dispatch(`${this.nftVariant}/import`, data);
+
+        this.$bvModal.hide(`modalERC721Import`);
+        this.name = '';
+        this.symbol = '';
+        this.totalSupply = '';
+        this.$emit('imported');
         this.loading = false;
     }
 

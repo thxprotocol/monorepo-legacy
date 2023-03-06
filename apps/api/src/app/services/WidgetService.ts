@@ -1,3 +1,3 @@
-import { Widget as WidgetDocument } from '@thxnetwork/api/models/Widget';
+import { Widget as WidgetModel } from '@thxnetwork/api/models/Widget';
 
-export const Widget = WidgetDocument;
+export const Widget = WidgetModel;

@@ -55,7 +55,7 @@ export const createERC721Perk = async (assetPool: AssetPoolDocument, config: TER
         Array.from({ length: Number(config.claimAmount) }).map(() =>
             ClaimService.create({
                 poolId: assetPool._id,
-                erc721Id: metadata.erc721,
+                erc721Id: metadata.erc721Id,
                 rewardUuid: reward.uuid,
             }),
         ),

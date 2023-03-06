@@ -42,6 +42,7 @@ export const mockGetNftsForOwner = (contractAddress: string, nftName: string, nf
                     name: '#1',
                     description: 'image description piece #1',
                     image: 'https://gateway.pinata.cloud/ipfs/QmemtAVJMkfUj3bAXee1H7vccbX6nC6Vbkbu6gBjdn1Kdh/1.png',
+                    external_url: 'https://externalurl.com',
                 },
             },
         ],

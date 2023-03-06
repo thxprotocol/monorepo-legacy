@@ -1,36 +1,31 @@
 <template>
-    <div>
+    <div v-if="mdata">
         <b-tooltip :target="`tooltip-target-${metadataId}-${index}`" triggers="hover">
-            <b-link :href="attributes.image" target="_blank" v-if="attributes.image">
-                <img :src="attributes.image" class="mt-2 rounded" width="180" height="auto" />
+            <b-link :href="mdata.imageUrl" target="_blank" v-if="mdata.image">
+                <img :src="mdata.imageUrl" class="mt-2 rounded" width="180" height="auto" />
             </b-link>
-            <strong>{{ attributes.name }}</strong>
-            {{ attributes.description }}
-            <b-link :href="attributes.external_url" target="_blank">External URL</b-link>
+            <strong>{{ mdata.name }}</strong>
+            {{ mdata.description }}
+            <b-link :href="mdata.externalUrl" target="_blank">External URL</b-link>
         </b-tooltip>
         <div class="d-flex align-items-center">
             <div class="d-flex mr-2 rounded bg-gray text-white p-2" :id="`tooltip-target-${metadataId}-${index}`">
                 <i class="fas fa-photo-video"></i>
             </div>
             <p style="line-height: 1" class="text-gray m-0">
-                <strong>{{ attributes.name }}</strong>
-                <b-link
-                    v-if="attributes.external_url"
-                    :href="attributes.external_url"
-                    target="_blank"
-                    class="ml-2 text-gray"
-                >
+                <strong>{{ mdata.name }}</strong>
+                <b-link :href="mdata.externalUrl" target="_blank" class="ml-2 text-gray">
                     <i class="fas fa-external-link-alt" style="font-size: 0.8rem"></i>
                 </b-link>
                 <br />
-                <span v-if="attributes.description">{{ attributes.description.substring(0, 25) }}... </span>
+                <span v-if="mdata.description">{{ mdata.description.substring(0, 25) }}... </span>
             </p>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-import { IERC721Metadatas, IERC721s } from '@thxnetwork/dashboard/types/erc721';
+import { IERC721Metadatas, IERC721s, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 
@@ -52,15 +47,9 @@ export default class BaseBadgeMetadataPreview extends Vue {
         return this.erc721s[this.erc721Id];
     }
 
-    get attributes() {
-        if (!this.metadata[this.erc721Id] || !this.metadata[this.erc721Id][this.metadataId]) return {};
-
-        const attributes: { [key: string]: string } = {};
-        for (const attr of this.metadata[this.erc721Id][this.metadataId].attributes) {
-            attributes[attr.key] = attr.value;
-        }
-
-        return attributes;
+    get mdata(): TERC721Metadata | null {
+        if (!this.metadata[this.erc721Id] || !this.metadata[this.erc721Id][this.metadataId]) return null;
+        return this.metadata[this.erc721Id][this.metadataId];
     }
 
     async mounted() {
