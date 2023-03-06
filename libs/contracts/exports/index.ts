@@ -3,7 +3,7 @@ import { AbiItem } from 'web3-utils';
 import fs from 'fs';
 import path from 'path';
 
-export const networkNames = ['mumbai', 'matic', 'mumbaidev', 'maticdev', 'hardhat'] as const;
+export const networkNames = ['matic', 'maticdev', 'hardhat'] as const;
 export type TNetworkName = typeof networkNames[number];
 
 export const contractNames = [
@@ -92,9 +92,7 @@ export const diamondVariants = Object.keys(diamondVariantsConfig) as DiamondVari
 const cache: { [key in TNetworkName]: { versions: string[]; contracts: { [version: string]: ExportJsonFile } } } = {
     hardhat: { versions: [], contracts: {} },
     matic: { versions: [], contracts: {} },
-    mumbai: { versions: [], contracts: {} },
     maticdev: { versions: [], contracts: {} },
-    mumbaidev: { versions: [], contracts: {} },
 };
 
 const getArtifacts = (network: TNetworkName, version: string) => {

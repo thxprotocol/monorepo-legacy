@@ -22,7 +22,6 @@ fi
 npx hardhat deploy --network hardhat --export exports/hardhat/latest.json
 
 # Deploy and export for all networks.
-# for NETWORK in hardhat # Use this line locally
 for NETWORK in maticdev matic 
 do
     echo ""
@@ -33,7 +32,3 @@ done
 # Exports the latest versions of abis for direct imports.
 npx nx run contracts:build-abi
 npx nx run contracts:build-bytecodes
-
-git add . 
-git commit --allow-empty -m "Bumps version to $VERSION for Contracts"
-git push origin

@@ -7,9 +7,20 @@ interface IERC1155ProxyFacet {
     event ERC71155TransferredSingle(address from, address to, uint256 _id, uint256 amount);
     event ERC71155TransferredBatch(address from, address to, uint256[] _ids, uint256[] amounts);
 
-    function mintERC1155For(address _tokenAddress, address _recipient, uint256 _id, uint256 _amount) external;
-    function mintERC1155BatchFor(address _tokenAddress, address _recipient, uint256[] memory _ids, uint256[] memory _amounts) external;
-    
+    function mintForERC1155(
+        address _tokenAddress,
+        address _recipient,
+        uint256 _id,
+        uint256 _amount
+    ) external;
+
+    function mintBatchForERC1155(
+        address _tokenAddress,
+        address _recipient,
+        uint256[] memory _ids,
+        uint256[] memory _amounts
+    ) external;
+
     function transferFromERC1155(
         address _tokenAddress,
         address _to,
@@ -26,5 +37,4 @@ interface IERC1155ProxyFacet {
         uint256[] memory _ids,
         uint256[] memory _amounts
     ) external;
-    
 }

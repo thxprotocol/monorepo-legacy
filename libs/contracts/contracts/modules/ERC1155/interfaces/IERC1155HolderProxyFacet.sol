@@ -2,16 +2,13 @@
 pragma solidity ^0.7.6;
 
 interface IERC1155HolderProxyFacet {
-
     function onERC1155Received(
         address operator,
         address from,
         uint256 id,
         uint256 value,
         bytes calldata data
-    )
-        external
-        returns(bytes4);
+    ) external returns (bytes4);
 
     function onERC1155BatchReceived(
         address operator,
@@ -19,7 +16,5 @@ interface IERC1155HolderProxyFacet {
         uint256[] calldata ids,
         uint256[] calldata values,
         bytes calldata data
-    )
-        external
-        returns(bytes4);
+    ) external returns (bytes4);
 }

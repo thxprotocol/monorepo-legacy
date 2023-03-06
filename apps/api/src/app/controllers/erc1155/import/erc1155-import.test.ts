@@ -118,13 +118,9 @@ describe('ERC1155 import', () => {
                 .send()
                 .expect(({ body }: request.Response) => {
                     expect(body.total).toBe(1);
-                    expect(body.results[0].attributes.length).toBe(3);
-                    expect(body.results[0].attributes[0].key).toEqual('name');
-                    expect(body.results[0].attributes[0].value).toBeDefined();
-                    expect(body.results[0].attributes[1].key).toBe('description');
-                    expect(body.results[0].attributes[1].value).toBeDefined();
-                    expect(body.results[0].attributes[2].key).toBe('image');
-                    expect(body.results[0].attributes[2].value).toBeDefined();
+                    expect(body.results[0].name).toBeDefined();
+                    expect(body.results[0].description).toBeDefined();
+                    expect(body.results[0].image).toBeDefined();
                 })
                 .expect(200, done);
         });

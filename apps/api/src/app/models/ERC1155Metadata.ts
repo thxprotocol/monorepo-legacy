@@ -5,10 +5,12 @@ export type ERC1155MetadataDocument = mongoose.Document & TERC1155Metadata;
 
 const ERC1155MetadataSchema = new mongoose.Schema(
     {
-        erc1155: String,
-        title: String,
+        erc1155Id: String,
+        imageUrl: String,
+        name: String,
+        image: String,
         description: String,
-        attributes: [{ key: String, value: String }],
+        externalUrl: String,
     },
     { timestamps: true },
 );

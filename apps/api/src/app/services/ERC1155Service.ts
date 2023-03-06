@@ -110,7 +110,7 @@ export async function mint(
     });
     const txId = await TransactionService.sendAsync(
         pool.contract.options.address,
-        pool.contract.methods.mintERC1155For(erc1155.address, address, 1, String(metadata._id)),
+        pool.contract.methods.mintForERC1155(erc1155.address, address, 1, String(metadata._id)),
         pool.chainId,
         forceSync,
         {

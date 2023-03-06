@@ -1,29 +1,22 @@
 <template>
     <div>
         <BaseFormSelectNetwork @selected="onNetworkSelected" />
-        <b-form-group>
-            <label>Pool</label>
+        <b-form-group label="Pool">
             <b-dropdown variant="link" class="dropdown-select" v-if="poolsPerChain.length">
                 <template #button-content>
-                    <div v-if="pool">
-                        <div class="d-flex align-items-center">
-                            <strong class="mr-1">{{ pool.title }}</strong>
-                        </div>
-                    </div>
-                    <div v-else>Select a Loyalty Pool</div>
+                    <div v-if="pool">{{ pool.title }}</div>
+                    <div v-else>Select a pool</div>
                 </template>
-                <b-dropdown-divider />
-
                 <b-dropdown-item-button
                     :key="p.address"
                     v-for="p of poolsPerChain"
                     :disabled="p.archived"
                     @click="onListItemClick(p)"
                 >
-                    <strong>{{ p.title }}</strong>
+                    {{ p.title }}
                 </b-dropdown-item-button>
             </b-dropdown>
-            <div v-else class="small">No Pools available</div>
+            <b-alert variant="info" show class="mb-0" v-else>No pools available for this chain.</b-alert>
         </b-form-group>
     </div>
 </template>

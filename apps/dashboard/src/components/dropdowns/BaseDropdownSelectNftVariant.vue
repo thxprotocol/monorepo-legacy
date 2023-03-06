@@ -1,24 +1,19 @@
 <template>
-    <div>
-        <b-form-group>
-            <label>Nft Type</label>
-            <b-dropdown variant="link" class="dropdown-select">
-                <template #button-content>
-                    <div v-if="variant">
-                        <div class="d-flex align-items-center">
-                            <strong class="mr-1">{{ variant.toUpperCase() }}</strong>
-                        </div>
+    <b-form-group label="NFT Standard">
+        <b-dropdown variant="link" class="dropdown-select">
+            <template #button-content>
+                <div v-if="variant">
+                    <div class="d-flex align-items-center">
+                        <strong class="mr-1">{{ variant.toUpperCase() }}</strong>
                     </div>
-                    <div v-else>Select the Nft type</div>
-                </template>
-                <b-dropdown-divider />
-
-                <b-dropdown-item-button :key="variant" v-for="variant of NftVariant" @click="onListItemClick(variant)">
-                    <strong>{{ variant.toUpperCase() }}</strong>
-                </b-dropdown-item-button>
-            </b-dropdown>
-        </b-form-group>
-    </div>
+                </div>
+                <div v-else>Select an NFT Standard</div>
+            </template>
+            <b-dropdown-item-button :key="variant" v-for="variant of NftVariant" @click="onListItemClick(variant)">
+                {{ variant.toUpperCase() }}
+            </b-dropdown-item-button>
+        </b-dropdown>
+    </b-form-group>
 </template>
 
 <script lang="ts">

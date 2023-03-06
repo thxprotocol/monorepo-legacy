@@ -31,7 +31,7 @@ describe('ERC1155ProxyFacet', function () {
     it('can mint erc1155', async () => {
         const id = 1;
         const amount = 2;
-        await expect(diamond.mintERC1155For(erc1155.address, diamond.address, id, amount)).to.emit(
+        await expect(diamond.mintForERC1155(erc1155.address, diamond.address, id, amount)).to.emit(
             diamond,
             'ERC1155MintedSingle',
         );
@@ -41,7 +41,7 @@ describe('ERC1155ProxyFacet', function () {
     it('can batch mint erc1155', async () => {
         const ids = [1, 2];
         const amounts = [1, 1];
-        await expect(diamond.mintERC1155BatchFor(erc1155.address, diamond.address, ids, amounts)).to.emit(
+        await expect(diamond.mintBatchForERC1155(erc1155.address, diamond.address, ids, amounts)).to.emit(
             diamond,
             'ERC1155MintedBatch',
         );
@@ -53,7 +53,7 @@ describe('ERC1155ProxyFacet', function () {
         const id = 1;
         const amount = 2;
         await expect(
-            diamond.connect(newOwner).mintERC1155For(erc1155.address, diamond.address, id, amount),
+            diamond.connect(newOwner).mintForERC1155(erc1155.address, diamond.address, id, amount),
         ).to.revertedWith('NOT_OWNER');
     });
 

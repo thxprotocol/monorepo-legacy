@@ -1,16 +1,11 @@
 <template>
-    <base-modal :loading="loading" title="Import NFT Contract" id="modalNftImport">
+    <base-modal :loading="loading" title="Import NFT Collection" id="modalNftImport">
         <template #modal-body v-if="!loading">
-            <b-form-group>
-                <base-dropdown-select-pool class="ml-auto" @selected="pool = $event" />
-            </b-form-group>
-            <b-form-group>
-                <base-dropdown-select-nft-variant class="ml-auto" @selected="nftVariant = $event" />
-            </b-form-group>
+            <base-dropdown-select-pool class="ml-auto" @selected="pool = $event" />
+            <base-dropdown-select-nft-variant class="ml-auto" @selected="nftVariant = $event" />
             <b-form-group label="Contract Address">
                 <b-input-group>
                     <b-form-input v-model="nftAddress" @input="getPreview" />
-
                     <template #append>
                         <b-button
                             v-if="pool"
@@ -48,7 +43,7 @@
                 variant="primary"
                 block
             >
-                Import Nft Tokens
+                Import NFT Collection
             </b-button>
         </template>
     </base-modal>

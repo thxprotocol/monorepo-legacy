@@ -7,19 +7,20 @@ import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/utils/Strings.sol';
 
 contract THX_ERC1155 is ERC1155, AccessControl, Ownable {
-
     bytes32 public constant MINTER_ROLE = keccak256('MINTER_ROLE');
 
-    constructor(
-        string memory URI_,
-        address owner_
-    ) ERC1155(URI_) {
+    constructor(string memory URI_, address owner_) ERC1155(URI_) {
         transferOwnership(owner_);
         _setupRole(DEFAULT_ADMIN_ROLE, owner_);
         _setupRole(MINTER_ROLE, owner_);
     }
 
-    function mint(address to, uint256 id, uint256 amount, bytes memory data) public {
+    function mint(
+        address to,
+        uint256 id,
+        uint256 amount,
+        bytes memory data
+    ) public {
         require(hasRole(MINTER_ROLE, msg.sender), 'NOT_MINTER');
         _mint(to, id, amount, data);
     }
@@ -32,27 +33,5 @@ contract THX_ERC1155 is ERC1155, AccessControl, Ownable {
     ) public {
         require(hasRole(MINTER_ROLE, msg.sender), 'NOT_MINTER');
         _mintBatch(to, ids, amounts, data);
-    }
-
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 id,
-        uint256 amount,
-        bytes memory data
-    ) public override {
-        require(hasRole(MINTER_ROLE, msg.sender), 'NOT_MINTER');
-        super.safeTransferFrom(from, to, id, amount, data);
-    }
-
-    function safeBatchTransferFrom(
-        address from,
-        address to,
-        uint256[] memory ids,
-        uint256[] memory amounts,
-        bytes memory data
-    ) public override {
-        require(hasRole(MINTER_ROLE, msg.sender), 'NOT_MINTER');
-        super.safeBatchTransferFrom(from, to, ids, amounts, data);
     }
 }

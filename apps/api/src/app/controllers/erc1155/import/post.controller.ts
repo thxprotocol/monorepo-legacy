@@ -4,11 +4,11 @@ import { OwnedNft } from 'alchemy-sdk';
 import { ERC1155Token } from '@thxnetwork/api/models/ERC1155Token';
 import { ERC1155 } from '@thxnetwork/api/models/ERC1155';
 import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
-import { ERC1155TokenState, TERC1155MetadataProp } from '@thxnetwork/api/types/TERC1155';
+import { ERC1155TokenState } from '@thxnetwork/api/types/TERC1155';
 import { alchemy } from '@thxnetwork/api/util/alchemy';
 import { ChainId } from '@thxnetwork/api/types/enums';
-import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
+import { ERC1155Metadata } from '@thxnetwork/api/models/ERC1155Metadata';
 
 const validation = [
     body('contractAddress').exists(),
@@ -60,17 +60,26 @@ const controller = async (req: Request, res: Response) => {
         chainId,
         address,
         name: req.body.name,
+        properties: [
+            { name: 'name', propType: 'string', description: '' },
+            { name: 'description', propType: 'string', description: '' },
+            { name: 'image', propType: 'image', description: '' },
+            { name: 'externalUrl', propType: 'url', description: '' },
+        ],
     });
-    const erc1155Tokens = [];
-    const erc1155Properties = [];
-
-    await Promise.all(
+    const erc1155Tokens = await Promise.all(
         ownedNfts
             .filter((nft) => nft.rawMetadata)
             .map(async ({ rawMetadata, tokenId }) => {
                 try {
-                    const { attributes, properties } = convertRawMetadataToAttributes(rawMetadata);
-                    const metadata = await ERC1155Service.createMetadata(erc1155, attributes);
+                    const metadata = await ERC1155Metadata.create({
+                        erc1155Id: String(erc1155._id),
+                        name: rawMetadata.name,
+                        description: rawMetadata.description,
+                        image: rawMetadata.image,
+                        imageUrl: rawMetadata.image,
+                        externalUrl: rawMetadata.external_url,
+                    });
                     const erc1155Token = await ERC1155Token.create({
                         sub: req.auth.sub,
                         recipient: pool.address,
@@ -80,73 +89,14 @@ const controller = async (req: Request, res: Response) => {
                         tokenId,
                     });
 
-                    erc1155Properties.push(...properties);
-                    erc1155Tokens.push({ ...erc1155Token.toJSON(), metadata: metadata.toJSON() });
+                    return { ...erc1155Token.toJSON(), metadata: metadata.toJSON() };
                 } catch (error) {
                     console.log(error);
                 }
             }),
     );
 
-    erc1155.properties = Array.from(erc1155Properties);
-    await erc1155.save();
-
     res.status(201).json({ erc1155, erc1155Tokens });
 };
-
-function detectType(value: any) {
-    if (Array.isArray(value)) {
-        return 'array';
-    }
-    switch (typeof value) {
-        case 'string':
-            return isValidUrl(value) ? 'link' : 'string';
-        case 'number':
-            return 'number';
-        case 'object':
-            return 'json';
-        default:
-            return 'other';
-    }
-}
-
-function isValidUrl(string) {
-    try {
-        new URL(string);
-        return true;
-    } catch (err) {
-        return false;
-    }
-}
-
-function castToString(value: any, valueType: string) {
-    switch (valueType) {
-        case 'object': {
-            try {
-                return JSON.parse(value);
-            } catch (e) {
-                return '';
-            }
-        }
-        case 'string':
-            return value;
-        default:
-            return value.toString();
-    }
-}
-
-function convertRawMetadataToAttributes(rawMetadata: any) {
-    const properties: TERC1155MetadataProp[] = [];
-    const attributes = Object.keys(rawMetadata).map((k) => {
-        const valueType = k === 'image' ? k : detectType(rawMetadata[k]);
-        const property: TERC1155MetadataProp = { name: k, propType: valueType, description: '' };
-
-        properties.push(property);
-
-        return { key: k, value: castToString(rawMetadata[k], valueType) };
-    });
-
-    return { properties, attributes };
-}
 
 export default { controller, validation };
