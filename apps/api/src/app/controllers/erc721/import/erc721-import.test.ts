@@ -6,7 +6,7 @@ import { dashboardAccessToken, sub } from '@thxnetwork/api/util/jest/constants';
 import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
 import { ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { alchemy } from '@thxnetwork/api/util/alchemy';
-import { deployNFT, mockGetNftsForOwner } from '@thxnetwork/api/util/jest/nft';
+import { deployERC721, mockGetNftsForOwner } from '@thxnetwork/api/util/jest/erc721';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { Contract } from 'web3-eth-contract';
 import { getProvider } from '@thxnetwork/api/util/network';
@@ -38,7 +38,7 @@ describe('ERC721 import', () => {
     describe('POST /erc721/import', () => {
         it('HTTP 201`', async () => {
             // Create 1 NFT collection
-            nftContract = await deployNFT(nftName, nftSymbol);
+            nftContract = await deployERC721(nftName, nftSymbol);
 
             // Mint 1 token in the collection
             await TransactionService.sendAsync(
@@ -86,6 +86,8 @@ describe('ERC721 import', () => {
                     expect(body.properties[1].propType).toBe('string');
                     expect(body.properties[2].name).toBe('image');
                     expect(body.properties[2].propType).toBe('image');
+                    expect(body.properties[3].name).toBe('externalUrl');
+                    expect(body.properties[3].propType).toBe('url');
                     expect(body.totalSupply).toBe('1');
                     expect(body.owner).toBe(defaultAccount);
                 })
@@ -100,13 +102,10 @@ describe('ERC721 import', () => {
                 .send()
                 .expect(({ body }: request.Response) => {
                     expect(body.total).toBe(1);
-                    expect(body.results[0].attributes.length).toBe(3);
-                    expect(body.results[0].attributes[0].key).toEqual('name');
-                    expect(body.results[0].attributes[0].value).toBeDefined();
-                    expect(body.results[0].attributes[1].key).toBe('description');
-                    expect(body.results[0].attributes[1].value).toBeDefined();
-                    expect(body.results[0].attributes[2].key).toBe('image');
-                    expect(body.results[0].attributes[2].value).toBeDefined();
+                    expect(body.results[0].name).toBeDefined();
+                    expect(body.results[0].description).toBeDefined();
+                    expect(body.results[0].image).toBeDefined();
+                    expect(body.results[0].externalUrl).toBeDefined();
                 })
                 .expect(200, done);
         });

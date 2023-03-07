@@ -32,7 +32,7 @@ export default class BaseDropdownYoutubeVideo extends Vue {
 
         if (result !== this.url) {
             this.videoId = result;
-            this.$emit('selected', { id: result });
+            this.$emit('selected', result);
             if (this.videoId.toLowerCase().includes('shorts')) {
                 this.videoId = '';
                 this.url = '';

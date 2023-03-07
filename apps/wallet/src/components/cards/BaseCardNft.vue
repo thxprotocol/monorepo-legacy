@@ -1,28 +1,15 @@
 <template>
-    <b-card class="mb-3" :img-src="imgUrl" img-alt="Image" img-top>
+    <b-card v-if="mdata" class="mb-3" :img-src="mdata.imageUrl" img-alt="Image" img-top>
         <div class="d-flex align-items-center justify-content-between">
-            <strong class="mr-2">{{ token.erc721.name }} </strong>
+            <strong class="mr-2">{{ mdata.name }} </strong>
             <div>
                 <b-spinner v-if="!token.tokenId" small variant="gray" v-b-tooltip title="NFT minting in progress..." />
                 <b-badge variant="light" class="p-2" v-else>#{{ token.tokenId }}</b-badge>
             </div>
         </div>
+        <p>{{ token.erc721.description }}</p>
+        <b-link :href="mdata.externalUrl" target="_blank">External URL</b-link>
         <hr />
-        <div v-if="mdata">
-            <b-form-group label="Attributes" label-class="text-muted">
-                <b-badge
-                    variant="darker"
-                    v-b-tooltip
-                    :title="attr.value"
-                    class="p-2 mr-1 mb-1 rounded-pill"
-                    :key="key"
-                    v-for="(attr, key) in mdata.attributes"
-                >
-                    {{ attr.key }}
-                </b-badge>
-            </b-form-group>
-            <hr />
-        </div>
         <b-button
             block
             class="rounded-pill"
@@ -80,21 +67,6 @@ export default class BaseCardNFT extends Vue {
     async mounted() {
         await this.$store.dispatch('erc721/getMetadata', this.token);
         this.waitForMinted();
-    }
-
-    get imgUrl() {
-        let url = '';
-        this.token.erc721.properties.forEach((p) => {
-            if (!this.metadata[this.token._id]) return;
-            if (p.propType === 'image') {
-                const attrs = this.metadata[this.token._id].attributes;
-                const attr = Object.values(attrs).find((a) => a.key === p.name);
-                if (attr) {
-                    url = attr.value;
-                }
-            }
-        });
-        return url;
     }
 
     async waitForMinted() {

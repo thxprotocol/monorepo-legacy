@@ -7,43 +7,32 @@
         id="modalERC721MetadataBulkCreate"
     >
         <template #modal-body v-if="!loading">
-            <label>Select image property</label>
-            <b-dropdown variant="link" class="dropdown-select">
-                <template #button-content>
-                    <div v-if="selectedProp">
-                        {{ selectedProp.name }}
-                    </div>
-                </template>
-                <b-dropdown-item-button
-                    v-for="(prop, key) of erc721.properties.filter((x) => x.propType === 'image')"
-                    :key="key"
-                    @click="onPropSelect(prop, key)"
-                >
-                    {{ prop.name }}
-                </b-dropdown-item-button>
-            </b-dropdown>
-            <br />
-            <b-form-group v-if="selectedProp">
-                <label>Select image folder</label>
-                <b-form-file
-                    @change="onFolderSelected"
-                    :data-key="selectedKey"
-                    accept="image/*"
-                    :directory="true"
-                    :multiple="true"
-                />
-            </b-form-group>
+            <p class="text-muted">
+                Select a folder containing the images for your NFT collection. We will create a metadata object for
+                every image in that folder.
+            </p>
             <b-form-group>
-                <label>Name</label>
-                <input class="form-control" v-model="name" required placeholder="" />
+                <label>Image folder</label>
+                <b-form-file @change="onFolderSelected" accept="image/*" :directory="true" :multiple="true" />
             </b-form-group>
-            <b-form-group>
-                <label>Description</label>
-                <input class="form-control" v-model="description" required placeholder="" /> </b-form-group
-            ><b-form-group>
-                <label>External URL</label>
-                <input class="form-control" v-model="external_url" required placeholder="" />
-            </b-form-group>
+            <hr />
+            <b-card class="bg-light">
+                <p class="text-muted">
+                    Provide default metadata values for other properties when creating metadata for every uploaded
+                    image.
+                </p>
+                <b-form-group>
+                    <label>Name</label>
+                    <input class="form-control" v-model="name" required placeholder="" />
+                </b-form-group>
+                <b-form-group>
+                    <label>Description</label>
+                    <input class="form-control" v-model="description" required placeholder="" /> </b-form-group
+                ><b-form-group>
+                    <label>External URL</label>
+                    <input class="form-control" v-model="externalUrl" required placeholder="" />
+                </b-form-group>
+            </b-card>
         </template>
         <template #btn-primary>
             <b-button :disabled="isSubmitDisabled" class="rounded-pill" @click="submit()" variant="primary" block>
@@ -69,31 +58,25 @@ import BaseModal from './BaseModal.vue';
 export default class ModalERC721MetadataBulkCreate extends Vue {
     name = '';
     description = '';
-    external_url = '';
-
+    externalUrl = '';
     loading = false;
     error = '';
     selectedProp: TERC721DefaultProp | null = null;
     selectedKey: number | null = null;
     files: FileList | null = null;
 
+    get isSubmitDisabled() {
+        return this.loading || !this.files;
+    }
+
     @Prop() pool!: IPool;
     @Prop() erc721!: TERC721;
 
     onShow() {
         const imageProps = this.erc721.properties.filter((x) => x.propType === 'image');
-        if (imageProps.length) {
-            this.selectedProp = imageProps[0];
-        }
-    }
-
-    get isSubmitDisabled() {
-        return this.loading || !this.files;
-    }
-
-    onPropSelect(prop: TERC721DefaultProp, key: number) {
-        this.selectedProp = prop;
-        this.selectedKey = key;
+        this.selectedProp = imageProps.length ? imageProps[0] : null;
+        this.files = null;
+        this.selectedKey = null;
     }
 
     async onFolderSelected(event: any) {
@@ -101,36 +84,25 @@ export default class ModalERC721MetadataBulkCreate extends Vue {
     }
 
     async submit() {
-        try {
-            this.loading = true;
-            if (!this.selectedProp || !this.files) {
-                return;
-            }
+        if (!this.selectedProp || !this.files) return;
 
-            for (let i = 0; i < this.files.length; i++) {
-                let file = this.files.item(i);
-                await this.$store.dispatch('erc721/uploadMultipleMetadataImages', {
-                    pool: this.pool,
-                    erc721: this.erc721,
-                    propName: this.selectedProp.name,
-                    file: file,
-                    name: this.name,
-                    description: this.description,
-                    external_url: this.external_url,
-                });
-                this.$emit('success');
-            }
+        this.loading = true;
 
-            //this.$emit('success');
-        } catch (err) {
-            /* NO-OP */
-        } finally {
-            this.$bvModal.hide('modalNFTBulkCreate');
-            this.loading = false;
-            this.files = null;
-            this.selectedProp = null;
-            this.selectedKey = null;
+        for (let i = 0; i < this.files.length; i++) {
+            await this.$store.dispatch('erc721/uploadMultipleMetadataImages', {
+                pool: this.pool,
+                erc721: this.erc721,
+                propName: 'image',
+                file: this.files.item(i),
+                name: this.name,
+                description: this.description,
+                externalUrl: this.externalUrl,
+            });
         }
+
+        this.$emit('update');
+        this.$bvModal.hide('modalNFTBulkCreate');
+        this.loading = false;
     }
 }
 </script>

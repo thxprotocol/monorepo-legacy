@@ -108,7 +108,7 @@ import BaseDropdownSelectERC721 from '../dropdowns/BaseDropdownSelectERC721.vue'
 import BaseDropdownERC721ImportedToken from '../dropdowns/BaseDropdownERC721ImportedToken.vue';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import { IAccount } from '@thxnetwork/dashboard/types/account';
-import { TERC721Token } from '../../../../../../wallet/src/store/modules/erc721';
+import { TERC721Token } from '@thxnetwork/dashboard/types/erc721';
 
 type TRewardCondition = {
     platform: RewardConditionPlatform;
@@ -243,8 +243,8 @@ export default class ModalRewardERC721Create extends Vue {
 
     onSubmit() {
         // TODO Remove when proper UI validation is implemented
-        if (!this.erc721metadataId.length && !this.erc721tokenId) {
-            this.error = 'Select the NFT metadata or a Token ID fort this perk';
+        if (!this.erc721metadataId && !this.erc721SelectedMetadataIds.length) {
+            this.error = 'Select the NFT metadata fort this perk';
             return;
         }
 
@@ -265,12 +265,6 @@ export default class ModalRewardERC721Create extends Vue {
             priceCurrency: this.priceCurrency,
             file: this.imageFile,
             isPromoted: this.isPromoted,
-            platform: this.rewardCondition.platform,
-            interaction:
-                this.rewardCondition.platform !== RewardConditionPlatform.None
-                    ? this.rewardCondition.interaction
-                    : RewardConditionInteraction.None,
-            content: this.rewardCondition.platform !== RewardConditionPlatform.None ? this.rewardCondition.content : '',
             erc721tokenId: this.erc721tokenId,
         };
 

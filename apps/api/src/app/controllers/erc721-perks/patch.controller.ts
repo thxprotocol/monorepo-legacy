@@ -1,6 +1,5 @@
 import ERC721PerkService from '@thxnetwork/api/services/ERC721PerkService';
 import ImageService from '@thxnetwork/api/services/ImageService';
-import MerchantService from '@thxnetwork/api/services/MerchantService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { TERC721Perk } from '@thxnetwork/types/index';
 import { Request, Response } from 'express';
@@ -13,9 +12,6 @@ const validation = [
     body('erc721metadataIds').exists().isString(),
     body('claimAmount').exists().isInt({ lt: 1000 }),
     body('expiryDate').optional().isString(),
-    body('platform').exists().isNumeric(),
-    body('interaction').optional().isNumeric(),
-    body('content').optional().isString(),
     body('pointPrice').optional().isNumeric(),
     body('price').isInt(),
     body('priceCurrency').isString(),

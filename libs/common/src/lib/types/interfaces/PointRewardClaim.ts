@@ -3,4 +3,5 @@ export type TPointRewardClaim = {
     sub: string;
     amount: string;
     poolId: string;
+    platformUserId: string;
 };

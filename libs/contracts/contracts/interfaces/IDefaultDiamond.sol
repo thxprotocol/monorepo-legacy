@@ -10,6 +10,8 @@ import '../modules/ERC20/interfaces/IERC20SwapFacet.sol';
 import '../modules/ERC20/interfaces/IERC20DepositFacet.sol';
 import '../modules/ERC20/interfaces/IERC20WithdrawFacet.sol';
 import '../modules/ERC721/interfaces/IERC721ProxyFacet.sol';
+import '../modules/ERC1155/interfaces/IERC1155ProxyFacet.sol';
+import '../modules/ERC1155/interfaces/IERC1155HolderProxyFacet.sol';
 
 interface IDefaultDiamond is
     IERC173,
@@ -19,5 +21,7 @@ interface IDefaultDiamond is
     IERC20DepositFacet,
     IERC20WithdrawFacet,
     IERC20SwapFacet,
-    IERC721ProxyFacet
+    IERC721ProxyFacet,
+    IERC1155ProxyFacet,
+    IERC1155HolderProxyFacet
 {}

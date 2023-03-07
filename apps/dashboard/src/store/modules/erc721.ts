@@ -219,11 +219,7 @@ class ERC721Module extends VuexModule {
         const { data } = await axios({
             method: 'POST',
             url: `/erc721/${erc721._id}/metadata`,
-            data: {
-                title: metadata.title,
-                description: metadata.description,
-                attributes: metadata.attributes,
-            },
+            data: metadata,
         });
         this.context.commit('setMetadata', {
             erc721,
@@ -236,11 +232,7 @@ class ERC721Module extends VuexModule {
         const { data } = await axios({
             method: 'PATCH',
             url: `/erc721/${erc721._id}/metadata/${metadata._id}`,
-            data: {
-                title: metadata.title,
-                description: metadata.description,
-                attributes: metadata.attributes,
-            },
+            data: metadata,
         });
 
         this.context.commit('setMetadata', {
@@ -257,7 +249,7 @@ class ERC721Module extends VuexModule {
         propName: string;
         name: string;
         description: string;
-        external_url: string;
+        externalUrl: string;
     }) {
         const now = Date.now();
         const zip = new JSZip();
@@ -271,7 +263,7 @@ class ERC721Module extends VuexModule {
 
         formData.set('name', payload.name);
         formData.set('description', payload.description);
-        formData.set('external_url', payload.external_url);
+        formData.set('externalUrl', payload.externalUrl);
         formData.set('propName', payload.propName);
         formData.append('file', files);
 

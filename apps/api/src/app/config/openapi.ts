@@ -10,8 +10,6 @@ import { ERC20SwapRule } from '@thxnetwork/api/models/ERC20SwapRule';
 import { ERC20Swap } from '@thxnetwork/api/models/ERC20Swap';
 import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
 import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
-import { Payment } from '@thxnetwork/api/models/Payment';
-import { Promotion } from '@thxnetwork/api/models/Promotion';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
 import { Withdrawal } from '@thxnetwork/api/models/Withdrawal';
 import { AssetPool } from '@thxnetwork/api/models/AssetPool';
@@ -50,8 +48,6 @@ const doc: any = {
         ERC721: m2s(ERC721).properties,
         ERC721Metadata: m2s(ERC721Metadata).properties,
         ERC721Token: m2s(ERC721Token).properties,
-        Payment: m2s(Payment).properties,
-        Promotion: m2s(Promotion).properties,
         Transaction: m2s(Transaction).properties,
         Wallet: m2s(Wallet).properties,
         Withdrawal: m2s(Withdrawal).properties,

@@ -26,6 +26,12 @@
                 </strong>
             </p>
             <p>
+                <span class="text-muted">Base URL</span><br />
+                <b-badge variant="primary" class="mr-1 mb-1">
+                    {{ erc721.baseURL }}
+                </b-badge>
+            </p>
+            <p>
                 <span class="text-muted">Properties</span><br />
                 <b-badge
                     v-b-tooltip

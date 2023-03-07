@@ -26,7 +26,15 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     await deploy('NonFungibleToken', {
         from: owner,
-        args: ['THX Non Fungible Token', 'NFT-THX', 'https://api.thx.network/v1/metadata/', owner],
+        args: ['THX Non Fungible Token', 'NFT-THX', 'https://api.thx.network/v1/erc721/metadata/', owner],
+        log: true,
+        autoMine: true, // speed up deployment on local network (ganache, hardhat), no effect on live networks
+        waitConfirmations: network.live ? 3 : 0,
+    });
+
+    await deploy('THX_ERC1155', {
+        from: owner,
+        args: ['https://api.thx.network/v1/erc1155/metadata/', owner],
         log: true,
         autoMine: true, // speed up deployment on local network (ganache, hardhat), no effect on live networks
         waitConfirmations: network.live ? 3 : 0,
