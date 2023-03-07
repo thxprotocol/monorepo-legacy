@@ -241,6 +241,9 @@ async function executeCallback(tx: TransactionDocument, receipt: TransactionRece
         case 'revokeRoleCallBack':
             await WalletManagerService.revokeRoleCallBack(tx.callback.args, receipt);
             break;
+        case 'erc721nTransferFromCallback':
+            await ERC721Service.transferFromCallback(tx.callback.args, receipt);
+            break;
     }
 }
 

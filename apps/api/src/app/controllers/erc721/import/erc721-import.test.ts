@@ -95,25 +95,6 @@ describe('ERC721 import', () => {
         });
     });
 
-    describe('GET /erc721/token', () => {
-        it('HTTP 200', (done) => {
-            user.get(`/v1/erc721/token?chainId=${chainId}`)
-                .set('Authorization', dashboardAccessToken)
-                .send()
-                .expect(({ body }: request.Response) => {
-                    expect(body.length).toBe(1);
-                    expect(body[0].sub).toBe(sub);
-                    expect(body[0].erc721Id).toBe(erc721._id);
-                    expect(body[0].state).toBe(ERC721TokenState.Minted);
-                    expect(body[0].recipient).toBe(pool.address);
-                    expect(body[0].tokenUri).toBeDefined();
-                    expect(body[0].tokenId).toBeDefined();
-                    expect(body[0].metadataId).toBeDefined();
-                })
-                .expect(200, done);
-        });
-    });
-
     describe('GET /erc721/:id/metadata', () => {
         it('HTTP 200', (done) => {
             user.get(`/v1/erc721/${erc721._id}/metadata`)

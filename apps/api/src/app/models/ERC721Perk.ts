@@ -9,6 +9,7 @@ const schema = new mongoose.Schema(
         ...rewardBaseSchema,
         erc721Id: String,
         erc721metadataId: String,
+        erc721tokenId: String,
         pointPrice: Number,
         image: String,
         price: Number,
