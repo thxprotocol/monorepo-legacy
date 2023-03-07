@@ -10,6 +10,8 @@ import type {
     MetadataListProps,
     TMetadataResponse,
     IERC721Metadatas,
+    IERC721Tokens,
+    TERC721Token,
 } from '@thxnetwork/dashboard/types/erc721';
 import JSZip from 'jszip';
 import { track } from '@thxnetwork/mixpanel';
@@ -18,6 +20,7 @@ import { track } from '@thxnetwork/mixpanel';
 class ERC721Module extends VuexModule {
     _all: IERC721s = {};
     _metadata: IERC721Metadatas = {};
+    _erc721Tokens: IERC721Tokens = {};
     _totalsMetadata: { [erc721Id: string]: number } = {};
 
     get all() {
@@ -30,6 +33,10 @@ class ERC721Module extends VuexModule {
 
     get totalsMetadata() {
         return this._totalsMetadata;
+    }
+
+    get erc721Tokens() {
+        return this._erc721Tokens;
     }
 
     @Mutation
@@ -46,6 +53,12 @@ class ERC721Module extends VuexModule {
     setMetadata({ erc721, metadata }: { erc721: TERC721; metadata: TERC721Metadata }) {
         if (!this._metadata[erc721._id]) Vue.set(this._metadata, erc721._id, {});
         Vue.set(this._metadata[erc721._id], metadata._id, metadata);
+    }
+
+    @Mutation
+    setERC721Token({ erc721Id, token }: { erc721Id: string; token: TERC721Token }) {
+        if (!this._erc721Tokens[erc721Id]) Vue.set(this._erc721Tokens, erc721Id, {});
+        Vue.set(this._erc721Tokens[erc721Id], token._id, token);
     }
 
     @Mutation
@@ -328,6 +341,19 @@ class ERC721Module extends VuexModule {
         });
 
         this.context.commit('set', data.erc721);
+    }
+
+    @Action({ rawError: true })
+    async listImportedERC721Tokens(params: { erc721Id: string; pool: IPool }) {
+        const { data } = await axios({
+            method: 'GET',
+            url: '/erc721-perks/import',
+            headers: { 'X-PoolId': params.pool._id },
+            params: { erc721Id: params.erc721Id },
+        });
+        data.forEach((erc721Token: TERC721Token) => {
+            this.context.commit('setERC721Token', { erc721Id: params.erc721Id, token: erc721Token });
+        });
     }
 }
 

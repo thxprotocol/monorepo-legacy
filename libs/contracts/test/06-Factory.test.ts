@@ -73,7 +73,7 @@ describe('FactoryFacet', function () {
     describe('NFT', function () {
         const name = 'Test Non Fungible Token',
             symbol = 'TST-NFT',
-            baseURI = 'https://api.thx.network/v1/metadata/',
+            baseURI = 'https://api.thx.network/v1/erc721/metadata/',
             uri = '123456789123';
         let erc721: Contract;
 

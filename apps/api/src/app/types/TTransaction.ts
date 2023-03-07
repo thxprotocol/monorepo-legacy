@@ -32,6 +32,10 @@ export type TERC721DeployCallbackArgs = {
     erc721Id: string;
 };
 
+export type TERC1155DeployCallbackArgs = {
+    erc1155Id: string;
+};
+
 type WalletDeployCallback = {
     type: 'walletDeployCallback';
     args: TWalletDeployCallbackArgs;
@@ -46,6 +50,11 @@ export type TWalletDeployCallbackArgs = {
 type ERC721DeployCallback = {
     type: 'Erc721DeployCallback';
     args: TERC721DeployCallbackArgs;
+};
+
+type ERC1155DeployCallback = {
+    type: 'ERC1155DeployCallback';
+    args: TERC1155DeployCallbackArgs;
 };
 
 export type TAssetPoolDeployCallbackArgs = {
@@ -93,9 +102,29 @@ export type TERC721TokenMintCallbackArgs = {
     assetPoolId: string;
 };
 
+export type TERC1155TokenMintCallbackArgs = {
+    erc1155tokenId: string;
+    assetPoolId: string;
+};
+
+export type TERC1155TokenTransferCallbackArgs = {
+    erc1155tokenId: string;
+    assetPoolId: string;
+};
+
 type ERC721TokenMintCallback = {
     type: 'erc721TokenMintCallback';
     args: TERC721TokenMintCallbackArgs;
+};
+
+type ERC1155TokenMintCallback = {
+    type: 'erc1155TokenMintCallback';
+    args: TERC1155TokenMintCallbackArgs;
+};
+
+type ERC1155TokenTransferCallback = {
+    type: 'erc1155TokenTransferCallback';
+    args: TERC1155TokenTransferCallbackArgs;
 };
 
 export type TPayCallbackArgs = {
@@ -147,17 +176,33 @@ type ERC20TransferFromCallBack = {
     args: TERC20TransferFromCallBackArgs;
 };
 
+type ERC721TransferFromCallBack = {
+    type: 'erc721nTransferFromCallback';
+    args: TERC721TransferFromCallBackArgs;
+};
+
+export type TERC721TransferFromCallBackArgs = {
+    erc721Id: string;
+    erc721tokenId: string;
+    sub: string;
+    assetPoolId: string;
+};
+
 export type TTransactionCallback =
     | ERC20DeployCallback
     | ERC721DeployCallback
+    | ERC1155DeployCallback
     | AssetPoolDeployCallback
     | TopupCallback
     | DepositCallback
     | SwapCreateCallback
     | ERC721TokenMintCallback
+    | ERC1155TokenMintCallback
+    | ERC1155TokenTransferCallback
     | PaymentCallback
     | WithdrawForCallback
     | WalletDeployCallback
     | WalletGrantRoleCallBack
     | WalletRevokeRoleCallBack
-    | ERC20TransferFromCallBack;
+    | ERC20TransferFromCallBack
+    | ERC721TransferFromCallBack;

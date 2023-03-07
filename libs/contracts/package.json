@@ -1,6 +1,6 @@
 {
     "name": "@thxnetwork/contracts",
-    "version": "4.0.9",
+    "version": "4.0.12",
     "type": "commonjs",
     "parserOptions": {
         "ecmaVersion": 2021,

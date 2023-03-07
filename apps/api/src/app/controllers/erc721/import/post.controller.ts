@@ -80,7 +80,6 @@ const controller = async (req: Request, res: Response) => {
                         externalUrl: rawMetadata.external_url,
                     });
                     const erc721Token = await ERC721Token.create({
-                        sub: req.auth.sub, // Sub should be undefined, but leaving as is for test to pass
                         recipient: pool.address,
                         state: ERC721TokenState.Minted,
                         erc721Id: String(erc721._id),

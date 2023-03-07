@@ -71,9 +71,7 @@ const config: HardhatUserConfig = {
         },
         collector: {
             hardhat: '0xaf9d56684466fcFcEA0a2B7fC137AB864d642946',
-            mumbaidev: '0x960911a62FdDf7BA84D0d3aD016EF7D15966F7Dc',
             maticdev: '0x960911a62FdDf7BA84D0d3aD016EF7D15966F7Dc',
-            mumbai: '0x2e2fe80CD6C4933B3B97b4c0B5c8eC56b073bE27',
             matic: '0x802505465CB707c9347B9631818e14f6066f7513',
         },
     },

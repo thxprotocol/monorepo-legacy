@@ -43,6 +43,7 @@
                 <template #head(claims)> Claim URL's </template>
                 <template #head(erc721)> NFT </template>
                 <template #head(erc721metadataId)> Metadata </template>
+                <template #head(tokenId)> Token ID </template>
                 <template #head(id)> &nbsp; </template>
 
                 <!-- Cell formatting -->
@@ -60,7 +61,7 @@
                     </small>
                 </template>
                 <template #cell(claims)="{ item }">
-                    <b-link v-b-modal="`modalRewardClaimsDownload${item.id}`" v-if="item.claims.length">
+                    <b-link v-b-modal="`modalRewardClaimsDownload${item.id}`" v-if="item.claims && item.claims.length">
                         <b-progress
                             :value="item.claims.filter((c) => c.sub).length"
                             :max="item.claims.length"
@@ -79,11 +80,17 @@
                 </template>
                 <template #cell(metadata)="{ index, item }">
                     <BaseBadgeMetadataPreview
+                        v-if="item.metadata && item.metadata.metadataId"
                         :index="index"
                         :erc721Id="item.metadata.erc721Id"
                         :metadataId="item.metadata.metadataId"
                     />
                 </template>
+
+                <template #cell(tokenId)="{ item }">
+                    <strong v-if="item.tokenId" class="text-muted">{{ item.tokenId }}</strong>
+                </template>
+
                 <template #cell(id)="{ item }">
                     <b-dropdown variant="link" size="sm" right no-caret>
                         <template #button-content>
@@ -118,6 +125,7 @@ import { RewardConditionPlatform, RewardConditionInteraction, TERC721Perk } from
 import { IERC721s, TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import BaseModalRewardClaimsDownload from '@thxnetwork/dashboard/components/modals/BaseModalRewardClaimsDownload.vue';
 import { parseUnitAmount } from '@thxnetwork/dashboard/utils/price';
+import { TERC721Token } from '../../../../../../wallet/src/store/modules/erc721';
 
 @Component({
     components: {
@@ -160,7 +168,7 @@ export default class ERC721PerksView extends Vue {
         return Object.values(this.erc721Perks[this.$route.params.id])
             .filter((reward: TERC721Perk) => reward.page === this.page)
             .sort((a, b) => (a.createdAt && b.createdAt && a.createdAt < b.createdAt ? 1 : -1))
-            .map((r: TERC721Perk & { erc721: TERC721 }) => ({
+            .map((r: TERC721Perk & { erc721: TERC721; erc721Token?: TERC721Token }) => ({
                 checkbox: r._id,
                 title: r.title,
                 price: {
@@ -172,6 +180,7 @@ export default class ERC721PerksView extends Vue {
                     name: r.erc721.name,
                     symbol: r.erc721.symbol,
                 },
+                tokenId: r.erc721Token ? r.erc721Token.tokenId : undefined,
                 metadata: {
                     erc721Id: r.erc721Id,
                     metadataId: r.erc721metadataId,
