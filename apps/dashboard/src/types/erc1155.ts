@@ -1,0 +1,83 @@
+import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
+import { AxiosResponse } from 'axios';
+
+export enum ERC1155Variant {
+    Uknown = -1,
+    Default = 0,
+    OpenSea = 1,
+}
+
+export type TERC1155DefaultProp = {
+    name: string;
+    description: string;
+    propType: string;
+    value?: string;
+    disabled?: boolean;
+};
+export interface IERC1155Metadatas {
+    [id: string]: { [id: string]: TERC1155Metadata };
+}
+export interface TERC1155Metadata {
+    _id: string;
+    beneficiary: string;
+    title: string;
+    description: string;
+    metadata: { key: string; value: string }[];
+    tokenId: number;
+    createdAt: Date;
+    attributes: [{ key: string; value: string }];
+    tokens: any[];
+    page: number;
+}
+
+export type TERC1155 = {
+    _id: string;
+    type: ERC1155Variant;
+    chainId: ChainId;
+    poolAddress: string;
+    address: string;
+    name: string;
+    logoURI: string;
+    properties: TERC1155DefaultProp[];
+    archived: boolean;
+    poolId?: string;
+};
+
+export interface IERC1155s {
+    [id: string]: TERC1155;
+}
+
+export type PaginationParams = Partial<{
+    page: number;
+    limit: number;
+}>;
+
+export type MetadataListProps = PaginationParams & {
+    erc1155: TERC1155;
+    pool: IPool;
+    query?: string;
+};
+
+export type TMetadataMeta = {
+    limit: number;
+    total: number;
+    next?: { page: number };
+    previous?: { page: number };
+};
+
+export type TMetadataResponse = AxiosResponse<
+    TMetadataMeta & {
+        results: TERC1155Metadata[];
+    }
+>;
+
+export type MetadataByPage = {
+    [page: number]: TERC1155Metadata[];
+};
+
+export type TMetadataState = {
+    [poolId: string]: TMetadataMeta & {
+        byPage: MetadataByPage;
+    };
+};

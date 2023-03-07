@@ -17,7 +17,6 @@ import TransactionService from './TransactionService';
 import type { TERC721, TERC721Metadata, TERC721Token } from '@thxnetwork/api/types/TERC721';
 import type { IAccount } from '@thxnetwork/api/models/Account';
 import AccountProxy from '../proxies/AccountProxy';
-import { Account } from '@nomicfoundation/ethereumjs-util';
 import IPFSService from './IPFSService';
 import { API_URL } from '../config/secrets';
 

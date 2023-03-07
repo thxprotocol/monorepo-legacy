@@ -3,7 +3,7 @@ import { BigNumber, Contract, Signer } from 'ethers';
 import { ethers } from 'hardhat';
 import { getDiamondCuts, MANAGER_ROLE } from './utils';
 
-describe.only('Smart Wallet', function () {
+describe('Smart Wallet', function () {
     let owner: any,
         user: Signer,
         user2: Signer,
