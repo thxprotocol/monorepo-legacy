@@ -1,34 +1,127 @@
-describe('Wallet', () => {
-    it('Use Claim URL', function () {
-        cy.visit('https://dev-wallet.thx.network/claim/6f2bae81-febc-40fc-8871-985404720fde');
+// const DASHBOARD_URL = 'https://dev-dashboard.thx.network';
+// const AUTH_URL = 'https://dev.auth.thx.network';
+// const CYPRESS_ACCOUNT = 'cypress@thx.network';
+const DASHBOARD_URL = 'https://localhost:8082';
+const AUTH_URL = 'https://localhost:3030';
+const CYPRESS_ACCOUNT = 'cypress@thx.network';
 
-        cy.url().should('include', 'https://dev.auth.thx.network');
+describe('Dashboard', () => {
+    beforeEach(() => {
+        cy.visit(DASHBOARD_URL);
+
+        cy.url().should('include', AUTH_URL);
         cy.url().should('include', 'signin');
 
-        cy.contains('Sign in and claim your');
-
-        cy.get('input[name="email"]').type('cypress@thx.network');
+        cy.get('input[name="email"]').type(CYPRESS_ACCOUNT);
         cy.get('button[type="submit"]').click();
 
-        cy.url().should('include', 'https://dev.auth.thx.network').should('include', 'signin/otp');
-        cy.contains('We sent a password to cypress@thx.network');
-
-        cy.get('input[placeholder="*****"]').type('12345', { force: true });
-
-        cy.contains('Your one-time password is incorrect.');
+        cy.url().should('include', AUTH_URL).should('include', 'signin/otp');
+        cy.contains(`We sent a password to ${CYPRESS_ACCOUNT}`);
 
         cy.get('input[placeholder="*****"]').type('00000', { force: true });
+        cy.url().should('include', DASHBOARD_URL).should('include', 'signin-oidc');
+    });
 
-        cy.url().should('include', 'https://dev-wallet.thx.network').should('include', 'signin-oidc');
+    it('Daily Reward', function () {
+        cy.visit(DASHBOARD_URL + '/pools');
+        cy.get('.card').click();
+        cy.get('.nav-item').contains('Daily').click();
+        cy.get('.btn').contains('Daily Reward').click();
 
-        cy.contains('Fetching private key...');
+        cy.contains('Daily rewards are distributed to your customers every 24 hours');
 
-        cy.url().should('include', 'collect');
+        cy.get('.form-group:nth-child(1) input').type('Test reward title');
+        cy.get('.form-group:nth-child(2) textarea').type('Test reward description');
+        cy.get('.form-group:nth-child(3) input').clear().type('15');
 
-        cy.contains('Congratulations!');
+        cy.get('.btn').contains('Create Daily Reward').click();
 
-        cy.contains('Continue').click();
+        cy.get('tbody tr:nth-child(1)').contains('Test reward title');
+        cy.get('tbody tr:nth-child(1)').contains('15');
 
-        cy.url().should('include', 'nft');
+        cy.get('tbody tr:nth-child(1) .dropdown-toggle').click();
+        cy.get('tbody tr:nth-child(1) .dropdown').contains('Edit').click();
+
+        cy.get('.form-group:nth-child(1) input').clear().type('Test reward title edit');
+        cy.get('.form-group:nth-child(2) textarea').clear().type('Test reward description edit');
+        cy.get('.form-group:nth-child(3) input').clear().type('20');
+
+        cy.get('.btn').contains('Update Daily Reward').click();
+
+        cy.get('tbody tr:nth-child(1)').contains('Test reward title edit');
+        cy.get('tbody tr:nth-child(1)').contains('20');
+
+        cy.get('tbody tr:nth-child(1) .dropdown-toggle').click();
+        cy.get('tbody tr:nth-child(1) .dropdown').contains('Delete').click();
+    });
+
+    it('Referral Reward', function () {
+        cy.visit(DASHBOARD_URL + '/pools');
+        cy.get('.card').click();
+        cy.get('.nav-item').contains('Referrals').click();
+        cy.get('.btn').contains('Referral Reward').click();
+
+        cy.contains(
+            'Referral rewards incentive your existing users to attract new users and will drive down your customer acquisition costs.',
+        );
+
+        cy.get('.form-group:nth-child(1) input').type('Test reward title');
+        cy.get('.form-group:nth-child(2) textarea').type('Test reward description');
+        cy.get('.form-group:nth-child(3) input').clear().type('15');
+
+        cy.get('.btn').contains('Create Referral Reward').click();
+
+        cy.get('tbody tr:nth-child(1)').contains('Test reward title');
+        cy.get('tbody tr:nth-child(1)').contains('15');
+
+        cy.get('tbody tr:nth-child(1) .dropdown-toggle').click();
+        cy.get('tbody tr:nth-child(1) .dropdown').contains('Edit').click();
+
+        cy.get('.form-group:nth-child(1) input').clear().type('Test reward title edit');
+        cy.get('.form-group:nth-child(2) textarea').clear().type('Test reward description edit');
+        cy.get('.form-group:nth-child(3) input').clear().type('20');
+
+        cy.get('.btn').contains('Update Referral Reward').click();
+
+        cy.get('tbody tr:nth-child(1)').contains('Test reward title edit');
+        cy.get('tbody tr:nth-child(1)').contains('20');
+
+        cy.get('tbody tr:nth-child(1) .dropdown-toggle').click();
+        cy.get('tbody tr:nth-child(1) .dropdown').contains('Delete').click();
+    });
+
+    it('Conditional Reward', function () {
+        cy.visit(DASHBOARD_URL + '/pools');
+        cy.get('.card').click();
+        cy.get('.nav-item').contains('Conditional').click();
+        cy.get('.btn').contains('Conditional Reward').click();
+
+        cy.contains(
+            'Referral rewards incentive your existing users to attract new users and will drive down your customer acquisition costs.',
+        );
+
+        cy.get('.form-group:nth-child(1) input').type('Test reward title');
+        cy.get('.form-group:nth-child(2) textarea').type('Test reward description');
+        cy.get('.form-group:nth-child(3) input').clear().type('15');
+
+        cy.get('.btn').contains('Create Referral Reward').click();
+
+        cy.get('tbody tr:nth-child(1)').contains('Test reward title');
+        cy.get('tbody tr:nth-child(1)').contains('15');
+
+        cy.get('tbody tr:nth-child(1) .dropdown-toggle').click();
+        cy.get('tbody tr:nth-child(1) .dropdown').contains('Edit').click();
+
+        cy.get('.form-group:nth-child(1) input').clear().type('Test reward title edit');
+        cy.get('.form-group:nth-child(2) textarea').clear().type('Test reward description edit');
+        cy.get('.form-group:nth-child(3) input').clear().type('20');
+
+        cy.get('.btn').contains('Update Referral Reward').click();
+
+        cy.get('tbody tr:nth-child(1)').contains('Test reward title edit');
+        cy.get('tbody tr:nth-child(1)').contains('20');
+
+        cy.get('tbody tr:nth-child(1) .dropdown-toggle').click();
+        cy.get('tbody tr:nth-child(1) .dropdown').contains('Delete').click();
     });
 });
