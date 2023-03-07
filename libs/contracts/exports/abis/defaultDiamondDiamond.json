@@ -636,7 +636,7 @@
         "type": "uint256[]"
       }
     ],
-    "name": "mintERC1155BatchFor",
+    "name": "mintBatchForERC1155",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -664,7 +664,7 @@
         "type": "uint256"
       }
     ],
-    "name": "mintERC1155For",
+    "name": "mintForERC1155",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

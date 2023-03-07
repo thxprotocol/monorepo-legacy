@@ -3,7 +3,6 @@
 set -e
 
 BASE_DIR=$( cd "$(dirname "${BASH_SOURCE[0]}")/.." ; pwd -P )
-VERSION=`echo $(node -e "console.log(require('$BASE_DIR/package.json').version);")`
 
 # Remove compiled artifacts so they are built fresh.
 rm -rf $BASE_DIR/artifacts
@@ -17,6 +16,8 @@ if [ "$BUMP" != "none" ]
 then
     npm version --no-git-tag --silent $BUMP
 fi
+
+VERSION=`echo $(node -e "console.log(require('$BASE_DIR/package.json').version);")`
 
 # # Store latest version for hardhat network.
 npx hardhat deploy --network hardhat --export exports/hardhat/latest.json
