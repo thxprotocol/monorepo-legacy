@@ -11,6 +11,7 @@ export const adminScopes = [
     'erc20_rewards:read',
     'erc721_rewards:read',
     'referral_rewards:read',
+    'shopify_rewards:read',
 ];
 export const dashboardScopes = [
     'asset_pools:read',
@@ -31,6 +32,8 @@ export const dashboardScopes = [
     'erc721_rewards:write',
     'referral_rewards:read',
     'referral_rewards:write',
+    'shopify_rewards:read',
+    'shopify_rewards:write',
 ];
 export const userScopes = [
     'asset_pools:read',
@@ -50,6 +53,7 @@ export const userScopes = [
     'referral_rewards:read',
     'referal_reward_claims:read',
     'referal_reward_claims:write',
+    'shopify_rewards:read',
 ];
 
 export const opneIdAdminScopes = `${openId} ${adminScopes.join(' ')}`;

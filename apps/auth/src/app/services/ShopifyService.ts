@@ -18,7 +18,7 @@ google.options({ auth: client });
 const ERROR_NO_DATA = 'Could not find Shopify data for this accesstoken';
 const ERROR_NOT_AUTHORIZED = 'Not authorized for Shopify API';
 const ERROR_TOKEN_REQUEST_FAILED = 'Failed to request access token';
-export const SHOPIFY_API_SCOPE = ['read_customers', 'read_orders'];
+export const SHOPIFY_API_SCOPE = ['read_customers', 'read_orders', 'read_price_rules', 'write_price_rules'];
 
 export class ShopifyService {
     static async isAuthorized(account: AccountDocument) {
@@ -130,9 +130,6 @@ export class ShopifyService {
                 'Content-Type': 'application/json',
                 'X-Shopify-Access-Token': accessToken,
             },
-            // params: {
-            //     status: 1, // closed,
-            // },
         });
 
         if (r.status !== 200) throw new Error(ERROR_NOT_AUTHORIZED);
@@ -158,5 +155,36 @@ export class ShopifyService {
             .map((x: any) => x.current_total_price)
             .reduce((a: string, b: string) => Number(a) + Number(b));
         return totalOrderPurchased >= Number(amount);
+    }
+
+    static async getDiscountPriceRules(accessToken: string, storeUrl: string) {
+        const r = await shopifyClient(storeUrl, {
+            method: 'GET',
+            url: `/price_rules.json`,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Shopify-Access-Token': accessToken,
+            },
+        });
+
+        if (r.status !== 200) throw new Error(ERROR_NOT_AUTHORIZED);
+        if (!r.data) throw new Error(ERROR_NO_DATA);
+        return r.data.price_rules;
+    }
+
+    static async createDiscountCode(accessToken: string, storeUrl: string, priceRuleId: string, discountCode: string) {
+        const r = await shopifyClient(storeUrl, {
+            method: 'POST',
+            url: `/price_rules/${priceRuleId}/discount_codes.json`,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Shopify-Access-Token': accessToken,
+            },
+            data: { discount_code: { code: discountCode } },
+        });
+
+        if (r.status !== 201) throw new Error(ERROR_NOT_AUTHORIZED);
+        if (!r.data) throw new Error(ERROR_NO_DATA);
+        return r.data.discount_code;
     }
 }
