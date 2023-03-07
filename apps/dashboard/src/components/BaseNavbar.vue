@@ -74,13 +74,7 @@
                     <b-nav-item to="/account" class="nav-link-plain">
                         <div class="nav-link-wrapper">
                             <div class="nav-link-icon">
-                                <b-avatar
-                                    v-if="account.profileImg"
-                                    size="sm"
-                                    variant="light"
-                                    :src="account.profileImg"
-                                ></b-avatar>
-                                <b-avatar v-else size="sm" variant="light"></b-avatar>
+                                <b-avatar size="sm" variant="light" :src="account.profileImg"></b-avatar>
                             </div>
                             <div class="flex-grow-1 align-items-center d-flex">
                                 <span>Account</span>

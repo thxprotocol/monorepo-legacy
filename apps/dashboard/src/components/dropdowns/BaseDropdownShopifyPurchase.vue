@@ -1,13 +1,18 @@
 <template>
     <div v-if="profile.shopifyStoreUrl">
-        <b-form-group>
-            <label>Store URL</label>
-            <b-form-input :value="profile.shopifyStoreUrl" disabled />
-            <label>Min order amount</label>
-            <b-form-input type="number" :value="amount" @change="onChange" placeholder="e.g. 50" min="1" />
+        <b-form-group
+            label="Minimal order amount"
+            description="Will verify if a customers e-mail address is known to have ordered once for at least this amount."
+        >
+            <b-form-input type="number" :value="amount" @change="onChange" min="1" />
         </b-form-group>
     </div>
-    <div v-else>Please, go to the Account page and connect your Shopify Store with the THX App</div>
+    <div v-else>
+        <b-alert variant="info" show>
+            <i class="fas fa-link mr-2"></i>
+            Shopify Store not connected. <b-link to="/account">Connect</b-link>
+        </b-alert>
+    </div>
 </template>
 
 <script lang="ts">

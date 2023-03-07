@@ -2,7 +2,7 @@ import { IAccount } from '@thxnetwork/api/models/Account';
 import TwitterDataProxy from '@thxnetwork/api/proxies/TwitterDataProxy';
 import YouTubeDataProxy from '@thxnetwork/api/proxies/YoutubeDataProxy';
 import DiscordDataProxy from '@thxnetwork/api/proxies/DiscordDataProxy';
-import ShopifyDataProxy from '@thxnetwork/api/proxies/YoutubeDataProxy';
+import ShopifyDataProxy from '@thxnetwork/api/proxies/ShopifyDataProxy';
 import { RewardConditionPlatform, RewardConditionInteraction, TBaseReward } from '@thxnetwork/types/index';
 
 export const validateCondition = async (account: IAccount, reward: TBaseReward): Promise<string> => {
@@ -55,7 +55,7 @@ export const getPlatformUserId = async (account: IAccount, reward: TBaseReward) 
     try {
         switch (reward.platform) {
             case RewardConditionPlatform.Google:
-                return await YoutubeDataProxy.getUserId(account);
+                return await YouTubeDataProxy.getUserId(account);
             case RewardConditionPlatform.Twitter:
                 return await TwitterDataProxy.getUserId(account);
             case RewardConditionPlatform.Discord: {
