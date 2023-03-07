@@ -11,7 +11,10 @@ db.connect(MONGODB_URI);
 
 async function main() {
     let counter = 0;
-    const pools: AssetPoolDocument[] = await AssetPool.find({ version: { $ne: currentVersion } });
+    const pools: AssetPoolDocument[] = await AssetPool.find({
+        version: { $ne: currentVersion },
+        chainId: ChainId.Polygon,
+    });
     const startTime = Date.now();
     const diamonds: Partial<Record<ContractName, DiamondVariant>> = {
         Registry: 'registry',
@@ -19,7 +22,7 @@ async function main() {
     };
 
     for (const [contractName, diamondVariant] of Object.entries(diamonds)) {
-        for (const chainId of [ChainId.PolygonMumbai, ChainId.Polygon]) {
+        for (const chainId of [ChainId.Polygon]) {
             try {
                 const contract = getContract(chainId, contractName as ContractName);
                 const tx = await updateDiamondContract(chainId, contract, diamondVariant);
