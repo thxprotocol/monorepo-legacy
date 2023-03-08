@@ -1,2 +1,4 @@
 User-agent: *
 Disallow:
+
+Sitemap: https://thx.network/sitemap.xml

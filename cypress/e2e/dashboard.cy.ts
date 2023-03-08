@@ -21,7 +21,7 @@ describe('Dashboard', () => {
 
     it('Daily Reward', function () {
         cy.visit(DASHBOARD_URL + '/pools');
-        cy.get('.card').click();
+        cy.contains('My Loyalty Pool').parents('.card').click();
         cy.get('.nav-item').contains('Daily').click();
         cy.get('.btn').contains('Daily Reward').click();
 
@@ -54,7 +54,7 @@ describe('Dashboard', () => {
 
     it('Referral Reward', function () {
         cy.visit(DASHBOARD_URL + '/pools');
-        cy.get('.card').click();
+        cy.contains('My Loyalty Pool').click();
         cy.get('.nav-item').contains('Referrals').click();
         cy.get('.btn').contains('Referral Reward').click();
 
@@ -89,19 +89,27 @@ describe('Dashboard', () => {
 
     it('Conditional Reward', function () {
         cy.visit(DASHBOARD_URL + '/pools');
-        cy.get('.card').click();
+        cy.contains('My Loyalty Pool').click();
         cy.get('.nav-item').contains('Conditional').click();
         cy.get('.btn').contains('Conditional Reward').click();
 
         cy.contains(
-            'Referral rewards incentive your existing users to attract new users and will drive down your customer acquisition costs.',
+            'Conditional rewards are distributed to your customers that have completed reward conditions in external platforms.',
         );
 
         cy.get('.form-group:nth-child(1) input').type('Test reward title');
         cy.get('.form-group:nth-child(2) textarea').type('Test reward description');
         cy.get('.form-group:nth-child(3) input').clear().type('15');
 
-        cy.get('.btn').contains('Create Referral Reward').click();
+        cy.contains('Conditions').click();
+        cy.get('#collapse-card-condition .form-group .dropdown-toggle').click();
+        cy.contains('Twitter').click();
+        cy.get('#collapse-card-condition .form-group .custom-select').select('Retweet');
+        cy.get('#collapse-card-condition .form-group input')
+            .clear()
+            .type('https://twitter.com/twitter/status/1603121182101970945');
+
+        cy.get('.btn').contains('Create Conditional Reward').click();
 
         cy.get('tbody tr:nth-child(1)').contains('Test reward title');
         cy.get('tbody tr:nth-child(1)').contains('15');
