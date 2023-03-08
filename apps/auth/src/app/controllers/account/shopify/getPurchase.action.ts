@@ -18,8 +18,8 @@ export const getShopifyPurchase = async (req: Request, res: Response) => {
     const result = await ShopifyService.validatePurchase(
         token.accessToken,
         account.shopifyStoreUrl,
-        account.email,
-        amount.toString(),
+        String(req.query.email),
+        String(amount),
     );
 
     res.json({

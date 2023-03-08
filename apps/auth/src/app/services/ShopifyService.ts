@@ -94,6 +94,17 @@ export class ShopifyService {
         return r.data;
     }
 
+    static async revokeAccess(storeUrl: string, accessToken: string) {
+        await shopifyClient(storeUrl, {
+            method: 'DELETE',
+            url: storeUrl + '/admin/api_permissions/current.json',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Shopify-Access-Token': accessToken,
+            },
+        });
+    }
+
     static getLoginURL(uid: string) {
         const body = new URLSearchParams();
         body.append('client_id', SHOPIFY_CLIENT_ID);
@@ -130,9 +141,6 @@ export class ShopifyService {
                 'Content-Type': 'application/json',
                 'X-Shopify-Access-Token': accessToken,
             },
-            // params: {
-            //     status: 1, // closed,
-            // },
         });
 
         if (r.status !== 200) throw new Error(ERROR_NOT_AUTHORIZED);

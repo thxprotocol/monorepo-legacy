@@ -4,6 +4,7 @@ import YouTubeDataProxy from '@thxnetwork/api/proxies/YoutubeDataProxy';
 import DiscordDataProxy from '@thxnetwork/api/proxies/DiscordDataProxy';
 import ShopifyDataProxy from '@thxnetwork/api/proxies/ShopifyDataProxy';
 import { RewardConditionPlatform, RewardConditionInteraction, TBaseReward } from '@thxnetwork/types/index';
+import PoolService from '../services/PoolService';
 
 export const validateCondition = async (account: IAccount, reward: TBaseReward): Promise<string> => {
     if (reward.platform === RewardConditionPlatform.None) return;
@@ -41,7 +42,8 @@ export const validateCondition = async (account: IAccount, reward: TBaseReward):
                 break;
             }
             case RewardConditionInteraction.ShopifyPurchase: {
-                const result = await ShopifyDataProxy.validatePurchase(account, reward.content);
+                const pool = await PoolService.getById(reward.poolId);
+                const result = await ShopifyDataProxy.validatePurchase(pool, account, reward.content);
                 if (!result) return 'Shopify: no any product purchased equal or higer than the reward amount.';
                 break;
             }

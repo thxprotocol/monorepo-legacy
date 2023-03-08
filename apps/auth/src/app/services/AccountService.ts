@@ -11,6 +11,8 @@ import { AccountPlanType } from '../types/enums/AccountPlanType';
 import { AccountVariant } from '../types/enums/AccountVariant';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import bcrypt from 'bcrypt';
+import { ShopifyService } from './ShopifyService';
+import { logger } from '../util/logger';
 // import { SignTypedDataVersion, recoverTypedSignature } from '@metamask/eth-sig-util';
 
 export class AccountService {
@@ -91,7 +93,14 @@ export class AccountService {
         }
 
         if (updates.shopifyAccess === false) {
-            account.unsetToken(AccessTokenKind.Shopify);
+            const token = account.getToken(AccessTokenKind.Shopify);
+            try {
+                await ShopifyService.revokeAccess(account.shopifyStoreUrl, token.accessToken);
+            } catch (error) {
+                logger.error(error);
+            } finally {
+                account.unsetToken(AccessTokenKind.Shopify);
+            }
         }
 
         return await account.save();

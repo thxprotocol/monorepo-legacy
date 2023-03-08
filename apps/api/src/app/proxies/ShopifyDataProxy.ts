@@ -1,6 +1,7 @@
 import type { IAccount } from '@thxnetwork/api/models/Account';
 import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
 import { THXError } from '@thxnetwork/api/util/errors';
+import { AssetPoolDocument } from '../models/AssetPool';
 
 class NoShopifyPurchaseDataError extends THXError {
     message = 'Could not find a purchase';
@@ -22,12 +23,12 @@ export default class ShopifyDataProxy {
         return { isAuthorized: r.data.isAuthorized, tweets: r.data.tweets, users: r.data.users };
     }
 
-    static async validatePurchase(account: IAccount, content: string) {
+    static async validatePurchase(pool: AssetPoolDocument, account: IAccount, content: string) {
         const amount = JSON.parse(content).amount;
 
         const r = await authClient({
             method: 'GET',
-            url: `/account/${account.sub}/shopify/purchase?amount=${amount}`,
+            url: `/account/${pool.sub}/shopify/purchase?amount=${amount}&email=${account.email}`,
             headers: {
                 Authorization: await getAuthAccessToken(),
             },
