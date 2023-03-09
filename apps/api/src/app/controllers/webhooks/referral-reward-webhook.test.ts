@@ -62,7 +62,6 @@ describe('Referral Rewards', () => {
         user.post(`/v1/webhook/referral/${token}/qualify`)
             .send({ code })
             .expect((res: request.Response) => {
-                console.log(res.body);
                 expect(res.body.referralRewardId).toBe(referralRewardId);
                 expect(res.body.uuid).toBeDefined();
                 expect(res.body.sub).toBe(sub2);

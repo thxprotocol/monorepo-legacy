@@ -5,6 +5,8 @@ import { NotFoundError } from '@thxnetwork/api/util/errors';
 import ReferralRewardClaimService from '@thxnetwork/api/services/ReferralRewardClaimService';
 import MailService from '@thxnetwork/api/services/MailService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
+import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
+import PoolService from '@thxnetwork/api/services/PoolService';
 
 const validation = [body('code').exists().isString()];
 
@@ -22,6 +24,9 @@ const controller = async (req: Request, res: Response) => {
         poolId: reward.poolId,
     });
     const account = await AccountProxy.getById(sub);
+    const pool = await PoolService.getById(reward.poolId);
+
+    await PointBalanceService.add(pool, claim.sub, reward.amount);
 
     await MailService.send(
         account.email,
