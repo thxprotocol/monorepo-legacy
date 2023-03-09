@@ -4,7 +4,7 @@
         description="Enable 'Developer Mode' in 'App settings' > 'Advanced' and right click your server icon to Copy ID. "
     >
         <b-input-group prepend="#">
-            <b-form-input @change="onChangeInput" :value="item" />
+            <b-form-input @change="onChangeInput" :value="serverId" />
         </b-input-group>
     </b-form-group>
 </template>
@@ -17,10 +17,17 @@ import { mapGetters } from 'vuex';
     computed: mapGetters({}),
 })
 export default class BaseDropdownDiscordGuilds extends Vue {
+    serverId = '';
+
     @Prop({ required: false }) item!: string;
 
-    onChangeInput(item: string) {
-        this.$emit('selected', item);
+    mounted() {
+        this.serverId = this.item ? this.item : '';
+    }
+
+    onChangeInput(serverId: string) {
+        this.serverId = serverId;
+        this.$emit('selected', this.serverId);
     }
 }
 </script>

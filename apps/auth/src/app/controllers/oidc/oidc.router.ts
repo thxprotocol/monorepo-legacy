@@ -13,6 +13,7 @@ import ReadCallbackTwitter from './callback/twitter/get.controller';
 import ReadCallbackDiscord from './callback/discord/get.controller';
 import ReadCallbackGithub from './callback/github/get.controller';
 import ReadCallbackTwitch from './callback/twitch/get.controller';
+import ReadCallbackShopify from './callback/shopify/get.controller';
 import ReadAccount from './account/get';
 import UpdateAccount from './account/post';
 import UpdateAccountTOTP from './account/totp/post';
@@ -22,6 +23,7 @@ import PostTwitterDisconnect from './account/twitter/disconnect/post.controller'
 import PostTwitchDisconnect from './account/twitch/disconnect/post.controller';
 import PostGithubDisconnect from './account/github/disconnect/post.controller';
 import PostDiscordDisconnect from './account/discord/disconnect/post.controller';
+import PostShopifyDisconnect from './account/shopify/disconnect/post.controller';
 import ReadAccountEmailVerify from './account/email/get';
 import { assertInput, assertAuthorization, assertInteraction } from '../../middlewares';
 
@@ -32,6 +34,7 @@ router.get('/callback/twitter', ReadCallbackTwitter.controller);
 router.get('/callback/github', ReadCallbackGithub.controller);
 router.get('/callback/discord', ReadCallbackDiscord.controller);
 router.get('/callback/twitch', ReadCallbackTwitch.controller);
+router.get('/callback/shopify', ReadCallbackShopify.controller);
 
 // Routes require no auth
 router.get('/:uid', assertInteraction, ReadOIDC.controller);
@@ -74,6 +77,12 @@ router.post(
     assertInteraction,
     assertAuthorization,
     PostDiscordDisconnect.controller,
+);
+router.post(
+    '/:uid/account/shopify/disconnect',
+    assertInteraction,
+    assertAuthorization,
+    PostShopifyDisconnect.controller,
 );
 
 router.post(

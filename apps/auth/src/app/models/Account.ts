@@ -27,6 +27,7 @@ const accountSchema = new mongoose.Schema(
         acceptUpdates: Boolean,
         lastLoginAt: Date,
         tokens: [{ kind: String, accessToken: String, refreshToken: String, expiry: Number, userId: String }],
+        shopifyStoreUrl: String,
     },
     { timestamps: true },
 );

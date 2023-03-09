@@ -40,6 +40,7 @@ export const GOOGLE_API_ENDPOINT = 'https://www.googleapis.com';
 export const SPOTIFY_API_ENDPOINT = 'https://api.spotify.com/v1';
 export const DISCORD_API_ENDPOINT = 'https://discord.com/api/v10';
 export const TWITCH_API_ENDPOINT = 'https://api.twitch.tv/helix';
+export const SHOPIFY_API_ENDPOINT = '/admin/api/2023-01';
 
 export const CWD = process.env.CWD || path.resolve(__dirname, '../../../apps/auth/src');
 
@@ -64,6 +65,8 @@ export const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 export const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
 export const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
 export const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
+export const SHOPIFY_CLIENT_ID = process.env.SHOPIFY_CLIENT_ID;
+export const SHOPIFY_CLIENT_SECRET = process.env.SHOPIFY_CLIENT_SECRET;
 export const TWITCH_CLIENT_ID = process.env.TWITCH_CLIENT_ID;
 export const TWITCH_CLIENT_SECRET = process.env.TWITCH_CLIENT_SECRET;
 export const AUTH_CLIENT_SECRET = process.env.AUTH_CLIENT_SECRET;

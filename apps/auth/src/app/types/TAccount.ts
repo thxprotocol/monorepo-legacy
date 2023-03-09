@@ -22,6 +22,7 @@ export interface TAccount {
     acceptUpdates: boolean;
     comparePassword: any;
     tokens: IAccessToken[];
+    shopifyStoreUrl?: string;
     getToken: (token: AccessTokenKind) => IAccessToken;
     setToken: (token: IAccessToken) => IAccessToken;
     unsetToken: (token: AccessTokenKind) => void;
@@ -49,6 +50,7 @@ export interface IAccountUpdates {
     githubAccess?: boolean;
     twitchAccess?: boolean;
     discordAccess?: boolean;
+    shopifyAccess?: boolean;
     authenticationToken?: string;
     authenticationTokenExpires?: number;
     lastLoginAt?: number;

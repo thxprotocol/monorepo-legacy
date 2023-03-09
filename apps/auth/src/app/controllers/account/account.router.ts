@@ -15,6 +15,9 @@ import { getDiscord } from './discord/get.action';
 import { getDiscordGuildJoined } from './discord/guild/get.action';
 import { getTwitch } from './twitch/get.action';
 import { getGithub } from './github/get.controller';
+import { getShopify } from './shopify/get.action';
+import { getShopifyOrderAmount } from './shopify/order-amount/get.controller';
+import { getShopifyTotalSpent } from './shopify/total-spent/get.controller';
 
 import GetGoogleUser from './google/user/get.controller';
 import GetTwitterUser from './twitter/user/get.controller';
@@ -30,6 +33,10 @@ router.get('/:sub/twitter/user', guard.check(['accounts:read']), GetTwitterUser.
 router.get('/:sub/twitter/like/:item', guard.check(['accounts:read']), getTwitterLike);
 router.get('/:sub/twitter/retweet/:item', guard.check(['accounts:read']), getTwitterRetweet);
 router.get('/:sub/twitter/follow/:item', guard.check(['accounts:read']), getTwitterFollow);
+
+router.get('/:sub/shopify', guard.check(['accounts:read']), getShopify);
+router.get('/:sub/shopify/order-amount', guard.check(['accounts:read']), getShopifyOrderAmount);
+router.get('/:sub/shopify/total-spent', guard.check(['accounts:read']), getShopifyTotalSpent);
 
 router.get('/:sub/google/youtube', guard.check(['accounts:read']), getYoutube);
 router.get('/:sub/google/user', guard.check(['accounts:read']), GetGoogleUser.controller);

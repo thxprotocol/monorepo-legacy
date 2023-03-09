@@ -2,9 +2,9 @@ import { IAccount } from '@thxnetwork/api/models/Account';
 import TwitterDataProxy from '@thxnetwork/api/proxies/TwitterDataProxy';
 import YouTubeDataProxy from '@thxnetwork/api/proxies/YoutubeDataProxy';
 import DiscordDataProxy from '@thxnetwork/api/proxies/DiscordDataProxy';
-
+import ShopifyDataProxy from '@thxnetwork/api/proxies/ShopifyDataProxy';
 import { RewardConditionPlatform, RewardConditionInteraction, TBaseReward } from '@thxnetwork/types/index';
-import YoutubeDataProxy from '@thxnetwork/api/proxies/YoutubeDataProxy';
+import PoolService from '../services/PoolService';
 
 export const validateCondition = async (account: IAccount, reward: TBaseReward): Promise<string> => {
     if (reward.platform === RewardConditionPlatform.None) return;
@@ -41,6 +41,18 @@ export const validateCondition = async (account: IAccount, reward: TBaseReward):
                 if (!result) return 'Discord: Server is not joined.';
                 break;
             }
+            case RewardConditionInteraction.ShopifyOrderAmount: {
+                const pool = await PoolService.getById(reward.poolId);
+                const result = await ShopifyDataProxy.validateOrderAmount(pool, account, reward.content);
+                if (!result) return `Shopify: Order amount for ${account.email} not sufficient.`;
+                break;
+            }
+            case RewardConditionInteraction.ShopifyTotalSpent: {
+                const pool = await PoolService.getById(reward.poolId);
+                const result = await ShopifyDataProxy.validateTotalSpent(pool, account, reward.content);
+                if (!result) return `Shopify: Total spent for ${account.email} not sufficient.`;
+                break;
+            }
         }
     } catch (error) {
         return 'Could not validate the platform condition for this claim.';
@@ -51,7 +63,7 @@ export const getPlatformUserId = async (account: IAccount, reward: TBaseReward) 
     try {
         switch (reward.platform) {
             case RewardConditionPlatform.Google:
-                return await YoutubeDataProxy.getUserId(account);
+                return await YouTubeDataProxy.getUserId(account);
             case RewardConditionPlatform.Twitter:
                 return await TwitterDataProxy.getUserId(account);
             case RewardConditionPlatform.Discord: {

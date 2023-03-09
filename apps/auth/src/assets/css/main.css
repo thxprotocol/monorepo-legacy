@@ -9062,6 +9062,12 @@ textarea.form-control-underlined {
 .btn-metamask:active {
   background-color: #037dd6;
 }
+.btn-shopify {
+  background-color: #96bf48;
+}
+.btn-shopify:active {
+  background-color: #3367d6;
+}
 
 .card-logo {
   display: flex;
@@ -9097,6 +9103,7 @@ body {
   background-image: url("../img/thx_landing_crater.webp") !important;
   background-position: center center;
   background-size: cover;
+  background-attachment: fixed;
 }
 
 /*# sourceMappingURL=main.css.map */

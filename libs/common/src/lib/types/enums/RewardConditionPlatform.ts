@@ -6,4 +6,5 @@ export enum RewardConditionPlatform {
     Github = 4,
     Discord = 5,
     Twitch = 6,
+    Shopify = 7,
 }
