@@ -48,6 +48,13 @@
                                 </b-form-group>
                             </b-col>
                         </b-row>
+                        <b-row>
+                            <b-col>
+                                <b-form-group label="Discount Code Prefix">
+                                    <b-form-input type="text" :value="discountCode" @input="onDiscountCodeInput" />
+                                </b-form-group>
+                            </b-col>
+                        </b-row>
                     </b-col>
                     <b-col md="6">
                         <BaseCardRewardCondition
@@ -101,7 +108,8 @@ import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardRewardQRCodes from '../cards/BaseCardRewardQRCodes.vue';
 import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
 import BaseDropdownSelectShopifyPriceRule from '../dropdowns/BaseDropdownSelectShopifyPriceRule.vue';
-import { TShopifyPriceRule } from '@thxnetwork/dashboard/store/modules/shopifyPerks';
+import { TShopifyPerkState, TShopifyPriceRule } from '@thxnetwork/dashboard/store/modules/shopifyPerks';
+import { mapGetters } from 'vuex';
 
 @Component({
     components: {
@@ -112,6 +120,9 @@ import { TShopifyPriceRule } from '@thxnetwork/dashboard/store/modules/shopifyPe
         BaseCardRewardQRCodes,
         BaseDropdownSelectShopifyPriceRule,
     },
+    computed: mapGetters({
+        shopifyPerks: 'shopifyPerks/all',
+    }),
 })
 export default class ModalRewardShopifyCreate extends Vue {
     isLoading = false;
@@ -132,6 +143,8 @@ export default class ModalRewardShopifyCreate extends Vue {
     };
     isPromoted = false;
     priceRuleId: string | null = null;
+    discountCode: string | null = null;
+    shopifyPerks!: TShopifyPerkState;
 
     @Prop() id!: string;
     @Prop() pool!: IPool;
@@ -160,13 +173,18 @@ export default class ModalRewardShopifyCreate extends Vue {
         this.image = this.reward && this.reward.image ? this.reward.image : '';
         this.isPromoted = this.reward ? this.reward.isPromoted : false;
         this.priceRuleId = this.reward ? this.reward.priceRuleId : null;
+        this.discountCode = this.reward ? this.reward.discountCode : null;
     }
 
     get isSubmitDisabled() {
-        return !this.priceRuleId || !this.pointPrice || this.title === '';
+        return !this.priceRuleId || !this.discountCode || !this.pointPrice || this.title === '';
     }
 
     onSubmit() {
+        if (!this.checkDiscountCode()) {
+            this.error = 'Discount code already used';
+            return;
+        }
         this.isLoading = true;
         this.$store
             .dispatch(`shopifyPerks/${this.reward ? 'update' : 'create'}`, {
@@ -187,6 +205,7 @@ export default class ModalRewardShopifyCreate extends Vue {
                     file: this.imageFile,
                     isPromoted: this.isPromoted,
                     priceRuleId: this.priceRuleId,
+                    discountCode: this.discountCode,
                 },
             })
             .then(() => {
@@ -211,6 +230,30 @@ export default class ModalRewardShopifyCreate extends Vue {
 
     onPriceRuleSelected(priceRule: TShopifyPriceRule) {
         this.priceRuleId = priceRule.id;
+        this.discountCode = priceRule.title;
+    }
+
+    onDiscountCodeInput(value: string) {
+        this.discountCode = value.toUpperCase();
+    }
+
+    checkDiscountCode() {
+        this.error = '';
+        let isValid = true;
+        if (this.reward && this.reward.discountCode === this.discountCode) {
+            return true;
+        }
+        const perks = Object.keys(this.shopifyPerks[this.pool._id]);
+
+        perks.forEach((perk) => {
+            const discountCode = this.shopifyPerks[this.pool._id][perk].discountCode;
+            console.log('discountCode', discountCode);
+            if (discountCode && discountCode.toUpperCase() === this.discountCode) {
+                isValid = false;
+                return;
+            }
+        });
+        return isValid;
     }
 }
 </script>

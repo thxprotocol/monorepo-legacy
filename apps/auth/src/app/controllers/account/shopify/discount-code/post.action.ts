@@ -9,13 +9,14 @@ export const createShopifyDiscountCode = async (req: Request, res: Response) => 
     const account: AccountDocument = await AccountService.get(req.params.sub);
     const isAuthorized = await ShopifyService.isAuthorized(account);
     if (!isAuthorized) return new UnauthorizedError();
-    if (!req.body.priceRuledId || !req.body.discountCode) {
+
+    if (!req.body.priceRuleId || !req.body.discountCode) {
         throw new BadRequestError();
     }
     const discountCode = await ShopifyService.createDiscountCode(
         account.getToken(AccessTokenKind.Shopify).accessToken,
         account.shopifyStoreUrl,
-        req.body.priceRuledId,
+        req.body.priceRuleId,
         req.body.discountCode,
     );
     return res.status(201).json(discountCode);

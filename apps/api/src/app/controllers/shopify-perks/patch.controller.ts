@@ -21,6 +21,7 @@ const validation = [
             return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
         }),
     body('priceRuleId').optional().isString(),
+    body('discountCode').optional().isString(),
 ];
 
 const controller = async (req: Request, res: Response) => {

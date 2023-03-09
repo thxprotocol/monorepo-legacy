@@ -12,6 +12,7 @@ const schema = new mongoose.Schema(
         pointPrice: Number,
         image: String,
         priceRuleId: String,
+        discountCode: String,
         price: Number,
         priceCurrency: String,
     },

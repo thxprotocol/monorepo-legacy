@@ -63,6 +63,7 @@ const controller = async (req: Request, res: Response) => {
                         isOwned: false,
                         isPromoted: r.isPromoted,
                         priceRuleId: r.priceRuleId,
+                        discountCode: r.discountCode,
                     };
                 }),
         ),

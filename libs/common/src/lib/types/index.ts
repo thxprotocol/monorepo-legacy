@@ -13,6 +13,7 @@ export * from './interfaces/ERC721Perk';
 export * from './interfaces/ERC721PerkPayment';
 export * from './interfaces/ShopifyPerk';
 export * from './interfaces/ShopifyPerkPayment';
+export * from './interfaces/ShopifyDiscountCode';
 export * from './interfaces/ERC1155Perk';
 export * from './interfaces/ERC1155PerkPayment';
 export * from './interfaces/PointReward';

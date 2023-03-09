@@ -7,6 +7,9 @@ import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import ShopifyDataProxy from '@thxnetwork/api/proxies/ShopifyDataProxy';
 import { ShopifyPerkPayment } from '@thxnetwork/api/models/ShopifyPerkPayment';
+import { ShopifyDiscountCode } from '@thxnetwork/api/models/ShopifyDiscountCode';
+import crypto from 'crypto';
+import { generateRandomString } from '@thxnetwork/api/util/random';
 
 const validation = [param('uuid').exists()];
 
@@ -23,7 +26,20 @@ const controller = async (req: Request, res: Response) => {
 
     const account = await AccountProxy.getById(req.auth.sub);
 
-    const discountCode = await ShopifyDataProxy.createDiscountCode(account, shopifyPerk.priceRuleId, 'TEST DISCOUNT');
+    const discountCode = await ShopifyDataProxy.createDiscountCode(
+        account,
+        shopifyPerk.priceRuleId,
+        shopifyPerk.discountCode + '#' + generateRandomString(5).toUpperCase(),
+    );
+
+    await ShopifyDiscountCode.create({
+        sub: account.sub,
+        poolId: pool._id,
+        shopifyPerkId: shopifyPerk._id,
+        discountCodeId: discountCode.id,
+        priceRuleId: discountCode.price_rule_id,
+        code: discountCode.code,
+    });
 
     const shopifyPerkPayment = await ShopifyPerkPayment.create({
         perkId: shopifyPerk._id,

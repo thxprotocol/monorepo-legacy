@@ -51,6 +51,9 @@ class PerksManager extends BaseManager {
                 return await this.client.request.post(`/v1/perks/shopify/${uuid}/payment`);
             },
         },
+        discountCodes: async (uuid: string) => {
+            return await this.client.request.get(`/v1/perks/shopify/${uuid}/discount-codes`);
+        },
     };
 }
 

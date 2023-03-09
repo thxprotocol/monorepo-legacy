@@ -24,6 +24,7 @@ const validation = [
         }),
     body('image').optional().isString(),
     body('priceRuleId').exists().isString(),
+    body('discountCode').exists().isString(),
 ];
 
 const controller = async (req: Request, res: Response) => {

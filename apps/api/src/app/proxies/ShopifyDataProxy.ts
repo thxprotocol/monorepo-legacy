@@ -50,13 +50,18 @@ export default class ShopifyDataProxy {
     }
 
     static async createDiscountCode(account: IAccount, priceRuleId: string, discountCode: string) {
+        const body = new URLSearchParams();
+
+        body.append('priceRuleId', priceRuleId);
+        body.append('discountCode', discountCode);
+
         const { data } = await authClient({
             method: 'POST',
             url: `/account/${account.sub}/shopify/discount-code`,
             headers: {
                 Authorization: await getAuthAccessToken(),
             },
-            data: { priceRuleId, discountCode },
+            data: body,
         });
         return data;
     }

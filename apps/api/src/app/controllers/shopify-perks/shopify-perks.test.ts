@@ -47,7 +47,8 @@ describe('Shopify Perks', () => {
             rewardLimit = 1,
             claimAmount = 0,
             isPromoted = true,
-            priceRuleId = '1234';
+            priceRuleId = '1234',
+            discountCode = 'BLACK FRIDAY';
         user.post('/v1/shopify-perks/')
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .attach('file', image, {
@@ -68,6 +69,7 @@ describe('Shopify Perks', () => {
                 claimAmount,
                 isPromoted,
                 priceRuleId,
+                discountCode,
             })
             .expect(({ body }: request.Response) => {
                 expect(body.uuid).toBeDefined();
@@ -85,6 +87,7 @@ describe('Shopify Perks', () => {
                 expect(body.claims.length).toBe(0);
                 expect(body.isPromoted).toBe(true);
                 expect(body.priceRuleId).toBe(priceRuleId);
+                expect(body.discountCode).toBe(discountCode);
             })
             .expect(201, done);
     });

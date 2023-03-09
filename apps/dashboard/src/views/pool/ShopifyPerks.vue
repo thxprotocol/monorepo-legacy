@@ -163,6 +163,7 @@ export default class ShopifyPerksView extends Vue {
             .map((r: TShopifyPerk) => ({
                 checkbox: r._id,
                 title: r.title,
+                code: r.discountCode,
                 rewardCondition: {
                     platform: platformList.find((p) => r.platform === p.type),
                     interaction: platformInteractionList.find((i) => r.interaction === i.type),
