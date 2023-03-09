@@ -1,41 +1,42 @@
 import type { IAccount } from '@thxnetwork/api/models/Account';
 import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
-import { THXError } from '@thxnetwork/api/util/errors';
 import { AssetPoolDocument } from '../models/AssetPool';
-
-class NoShopifyPurchaseDataError extends THXError {
-    message = 'Could not find a purchase';
-}
 
 export default class ShopifyDataProxy {
     static async getShopify(sub: string) {
-        const r = await authClient({
+        const { data } = await authClient({
             method: 'GET',
             url: `/account/${sub}/shopify`,
             headers: {
                 Authorization: await getAuthAccessToken(),
             },
         });
-
-        if (r.status !== 200) throw new NoShopifyPurchaseDataError();
-        if (!r.data) throw new NoShopifyPurchaseDataError();
-
-        return { isAuthorized: r.data.isAuthorized, tweets: r.data.tweets, users: r.data.users };
+        return { isAuthorized: data.isAuthorized, enabledCurrencies: data.enabledCurrencies };
     }
 
-    static async validatePurchase(pool: AssetPoolDocument, account: IAccount, content: string) {
+    static async validateOrderAmount(pool: AssetPoolDocument, account: IAccount, content: string) {
         const amount = JSON.parse(content).amount;
-
-        const r = await authClient({
+        const { data } = await authClient({
             method: 'GET',
-            url: `/account/${pool.sub}/shopify/purchase?amount=${amount}&email=${account.email}`,
+            url: `/account/${pool.sub}/shopify/order-amount?amount=${amount}&email=${account.email}`,
             headers: {
                 Authorization: await getAuthAccessToken(),
             },
         });
+        console.log(data);
+        return data.result;
+    }
 
-        if (!r.data) throw new NoShopifyPurchaseDataError();
-
-        return r.data.result;
+    static async validateTotalSpent(pool: AssetPoolDocument, account: IAccount, content: string) {
+        const amount = JSON.parse(content).amount;
+        const { data } = await authClient({
+            method: 'GET',
+            url: `/account/${pool.sub}/shopify/total-spent?amount=${amount}&email=${account.email}`,
+            headers: {
+                Authorization: await getAuthAccessToken(),
+            },
+        });
+        console.log(data);
+        return data.result;
     }
 }

@@ -14,10 +14,13 @@ const controller = async (req: Request, res: Response) => {
 
     // We validate for both here since there are claims that only contain a sub and should not be claimed again
     const platformUserId = await getPlatformUserId(account, reward);
+    let ids: any[] = [{ sub: req.auth.sub }];
+    if (platformUserId) ids = [...ids, { platformUserId }];
+
     if (
         await PointRewardClaim.exists({
             pointRewardId: reward._id,
-            $or: [{ sub: req.auth.sub }, { platformUserId }],
+            $or: ids,
         })
     ) {
         return res.json({ error: 'You have claimed this reward already.' });

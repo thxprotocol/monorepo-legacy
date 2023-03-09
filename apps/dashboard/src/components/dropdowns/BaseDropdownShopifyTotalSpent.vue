@@ -2,9 +2,9 @@
     <div v-if="profile.shopifyStoreUrl">
         <b-form-group
             label="Minimal order amount"
-            description="Will verify if a customers e-mail address is known to have ordered once for at least this amount."
+            :description="`Will verify if a customer has spent at least ${amount} in your store.`"
         >
-            <b-form-input type="number" :value="amount" @change="onChange" min="1" />
+            <b-form-input type="number" :value="amount" @change="onChange" min="0" />
         </b-form-group>
     </div>
     <div v-else>
@@ -25,22 +25,17 @@ import { mapGetters } from 'vuex';
         profile: 'account/profile',
     }),
 })
-export default class BaseDropdownShopifyPurchase extends Vue {
+export default class BaseDropdownShopifyTotalSpent extends Vue {
     profile!: IAccount;
-    @Prop({ required: false }) item!: string;
-
     amount: number | null = null;
 
+    @Prop({ required: false }) item!: string;
+
     mounted() {
-        if (this.item) {
-            this.amount = Number(JSON.parse(this.item).amount);
-        }
+        this.amount = this.item ? Number(JSON.parse(this.item).amount) : 0;
     }
 
     onChange(amount: number) {
-        if (!amount) {
-            return;
-        }
         this.amount = amount;
         this.$emit('selected', JSON.stringify({ amount: this.amount, shopifyStoreUrl: this.profile.shopifyStoreUrl }));
     }

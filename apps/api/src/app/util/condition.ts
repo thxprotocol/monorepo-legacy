@@ -41,10 +41,16 @@ export const validateCondition = async (account: IAccount, reward: TBaseReward):
                 if (!result) return 'Discord: Server is not joined.';
                 break;
             }
-            case RewardConditionInteraction.ShopifyPurchase: {
+            case RewardConditionInteraction.ShopifyOrderAmount: {
                 const pool = await PoolService.getById(reward.poolId);
-                const result = await ShopifyDataProxy.validatePurchase(pool, account, reward.content);
-                if (!result) return 'Shopify: no any product purchased equal or higer than the reward amount.';
+                const result = await ShopifyDataProxy.validateOrderAmount(pool, account, reward.content);
+                if (!result) return `Shopify: Order amount for ${account.email} not sufficient.`;
+                break;
+            }
+            case RewardConditionInteraction.ShopifyTotalSpent: {
+                const pool = await PoolService.getById(reward.poolId);
+                const result = await ShopifyDataProxy.validateTotalSpent(pool, account, reward.content);
+                if (!result) return `Shopify: Total spent for ${account.email} not sufficient.`;
                 break;
             }
         }
