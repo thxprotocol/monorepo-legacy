@@ -118,7 +118,7 @@ describe('Account Controller', () => {
                     .post(/.*?/)
                     .reply(200, { access_token: 'abcds' });
 
-                nock('https://dev-thx-store.myshopify.com/admin/api/2023-01/price_rules.json')
+                nock(shopifyStoreUrl + '/admin/api/2023-01/price_rules.json')
                     .persist()
                     .get(/.*?/)
                     .reply(200, {
