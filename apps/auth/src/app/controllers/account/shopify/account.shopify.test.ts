@@ -7,7 +7,6 @@ import { API_URL, DASHBOARD_URL, INITIAL_ACCESS_TOKEN } from '../../../config/se
 import { mockWalletProxy } from '@thxnetwork/auth/util/jest/mock';
 import { AccessTokenKind } from '@thxnetwork/types/index';
 import bcrypt from 'bcrypt';
-import oidc from '@thxnetwork/auth/config/oidc';
 
 const http = request.agent(app);
 
@@ -138,7 +137,9 @@ describe('Account Controller', () => {
             });
 
             it('GET /oidc/callback/shopify', async () => {
-                const res = await http.get(`/oidc/callback/shopify?code=${code}&state=${uid}&shop=${shopifyStoreUrl}`);
+                const res = await http.get(
+                    `/oidc/callback/shopify?code=${code}&state=${uid}&shop=${shopifyStoreUrl.replace('https://', '')}`,
+                );
                 expect(res.status).toBe(302);
                 expect(res.headers['location']).toContain('/auth/');
             });
