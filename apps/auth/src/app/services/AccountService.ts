@@ -99,6 +99,7 @@ export class AccountService {
             } catch (error) {
                 logger.error(error);
             } finally {
+                account.shopifyStoreUrl = undefined;
                 account.unsetToken(AccessTokenKind.Shopify);
             }
         }

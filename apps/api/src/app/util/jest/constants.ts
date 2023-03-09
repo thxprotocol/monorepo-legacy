@@ -60,4 +60,5 @@ export const walletAccessToken = getToken(walletScopes);
 export const walletAccessToken2 = getToken(walletScopes, sub);
 export const walletAccessToken3 = getToken(walletScopes, sub2);
 export const widgetAccessToken = getToken(widgetScopes, sub);
+export const widgetAccessToken2 = getToken(widgetScopes, sub2);
 export const authAccessToken = getToken(authScopes);

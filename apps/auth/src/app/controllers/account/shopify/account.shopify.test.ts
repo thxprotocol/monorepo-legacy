@@ -215,7 +215,9 @@ describe('Account Controller', () => {
             });
 
             it('GET /oidc/callback/shopify', async () => {
-                const res = await http.get(`/oidc/callback/shopify?code=${code}&state=${uid}&shop=${shopifyStoreUrl}`);
+                const res = await http.get(
+                    `/oidc/callback/shopify?code=${code}&state=${uid}&shop=${shopifyStoreUrl.replace('https://', '')}`,
+                );
                 expect(res.status).toBe(302);
                 expect(res.headers['location']).toContain('/auth/');
             });

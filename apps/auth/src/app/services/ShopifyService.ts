@@ -17,7 +17,8 @@ export class ShopifyService {
         const body = new URLSearchParams();
         body.append('code', code);
         body.append('client_id', SHOPIFY_CLIENT_ID);
-        const r = await shopifyClient(storeUrl, {
+
+        const { data } = await shopifyClient(storeUrl, {
             url: `${storeUrl}/admin/oauth/access_token`,
             method: 'POST',
             headers: {
@@ -31,15 +32,15 @@ export class ShopifyService {
         return {
             tokenInfo: {
                 kind: AccessTokenKind.Shopify,
-                accessToken: r.data.access_token,
+                accessToken: data.access_token,
             },
         };
     }
 
-    static async revokeAccess(storeUrl: string, accessToken: string) {
-        await shopifyClient(storeUrl, {
+    static async revokeAccess(shopifyStoreUrl: string, accessToken: string) {
+        await shopifyClient(shopifyStoreUrl, {
             method: 'DELETE',
-            url: storeUrl + '/admin/api_permissions/current.json',
+            url: shopifyStoreUrl + '/admin/api_permissions/current.json',
             headers: {
                 'Content-Type': 'application/json',
                 'X-Shopify-Access-Token': accessToken,

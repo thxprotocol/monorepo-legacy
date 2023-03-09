@@ -1,7 +1,7 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId } from '../../types/enums';
-import { dashboardAccessToken, sub2 } from '@thxnetwork/api/util/jest/constants';
+import { dashboardAccessToken, widgetAccessToken2, sub2 } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { addMinutes } from '@thxnetwork/api/util/rewards';
@@ -58,15 +58,25 @@ describe('Referral Rewards', () => {
     });
 
     it('POST /referral/:token/qualify', (done) => {
+        const code = Buffer.from(JSON.stringify({ sub: sub2 })).toString('base64');
         user.post(`/v1/webhook/referral/${token}/qualify`)
-            .send({
-                code: sub2,
-            })
+            .send({ code })
             .expect((res: request.Response) => {
                 expect(res.body.referralRewardId).toBe(referralRewardId);
                 expect(res.body.uuid).toBeDefined();
                 expect(res.body.sub).toBe(sub2);
             })
             .expect(201, done);
+    });
+
+    it('GET /point_balance', (done) => {
+        user.get(`/v1/point-balances`)
+
+            .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken2 })
+            .send()
+            .expect((res: request.Response) => {
+                expect(Number(res.body.balance)).toBe(100);
+            })
+            .expect(200, done);
     });
 });
