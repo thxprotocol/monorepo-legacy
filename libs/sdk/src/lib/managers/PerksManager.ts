@@ -36,6 +36,22 @@ class PerksManager extends BaseManager {
             },
         },
     };
+
+    shopify = {
+        get: async (uuid: string) => {
+            return await this.client.request.get(`/v1/perks/shopify/${uuid}`);
+        },
+        redemption: {
+            post: async (uuid: string) => {
+                return await this.client.request.post(`/v1/perks/shopify/${uuid}/redemption`);
+            },
+        },
+        payment: {
+            post: async (uuid: string) => {
+                return await this.client.request.post(`/v1/perks/shopify/${uuid}/payment`);
+            },
+        },
+    };
 }
 
 export default PerksManager;

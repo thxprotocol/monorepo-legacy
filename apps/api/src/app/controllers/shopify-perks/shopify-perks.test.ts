@@ -13,7 +13,7 @@ import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork
 const user = request.agent(app);
 
 describe('Shopify Perks', () => {
-    let poolId: string, shopify: ShopifyPerkDocument, perk: ShopifyPerkDocument;
+    let poolId: string, perk: ShopifyPerkDocument;
 
     beforeAll(async () => {
         await beforeAllCallback();
@@ -43,10 +43,11 @@ describe('Shopify Perks', () => {
             amount = '1',
             platform = RewardConditionPlatform.Shopify,
             interaction = RewardConditionInteraction.ShopifyPurchase,
-            content = JSON.stringify({ priceRuleId: '1234', discountCode: 'BLACKFRIDAY' }),
+            content = 'content',
             rewardLimit = 1,
             claimAmount = 0,
-            isPromoted = true;
+            isPromoted = true,
+            priceRuleId = '1234';
         user.post('/v1/shopify-perks/')
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .attach('file', image, {
@@ -66,6 +67,7 @@ describe('Shopify Perks', () => {
                 rewardLimit,
                 claimAmount,
                 isPromoted,
+                priceRuleId,
             })
             .expect(({ body }: request.Response) => {
                 expect(body.uuid).toBeDefined();
@@ -82,6 +84,7 @@ describe('Shopify Perks', () => {
                 expect(body.claimAmount).toBe(claimAmount);
                 expect(body.claims.length).toBe(0);
                 expect(body.isPromoted).toBe(true);
+                expect(body.priceRuleId).toBe(priceRuleId);
             })
             .expect(201, done);
     });
@@ -89,12 +92,12 @@ describe('Shopify Perks', () => {
     it('GET /shopify-perks', (done) => {
         user.get('/v1/shopify-perks')
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-            .expect((res: request.Response) => {
-                expect(res.body.results.length).toBe(1);
-                expect(res.body.results[0].claims).toHaveLength(0);
-                expect(res.body.limit).toBe(10);
-                expect(res.body.total).toBe(1);
-                perk = res.body.results[0];
+            .expect(({ body }: request.Response) => {
+                expect(body.results.length).toBe(1);
+                expect(body.results[0].claims).toHaveLength(0);
+                expect(body.limit).toBe(10);
+                expect(body.total).toBe(1);
+                perk = body.results[0];
             })
             .expect(200, done);
     });
@@ -102,9 +105,9 @@ describe('Shopify Perks', () => {
     it('GET /shopify-perks/:uuid', (done) => {
         user.get('/v1/shopify-perks/' + perk._id)
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-            .expect((res: request.Response) => {
-                expect(res.body.claims).toHaveLength(perk.claims.length);
-                expect(res.body.payments).toHaveLength(0);
+            .expect(({ body }: request.Response) => {
+                expect(body.claims).toHaveLength(perk.claims.length);
+                expect(body.payments).toHaveLength(0);
             })
             .expect(200, done);
     });

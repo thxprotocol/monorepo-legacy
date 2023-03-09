@@ -9,7 +9,7 @@ import { ShopifyPerkPayment } from '@thxnetwork/api/models/ShopifyPerkPayment';
 export const validation = [query('limit').optional().isInt({ gt: 0 }), query('page').optional().isInt({ gt: 0 })];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['RewardsToken']
+    // #swagger.tags = ['RewardsShopify']
     const limit = req.query.limit ? Number(req.query.limit) : 10;
     const page = req.query.page ? Number(req.query.page) : 1;
     const pool = await PoolService.getById(req.header('X-PoolId'));

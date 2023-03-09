@@ -6,7 +6,7 @@ import ShopifyPerkService from '@thxnetwork/api/services/ShopifyPerkService';
 const validation = [param('id').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['RewardsToken']
+    // #swagger.tags = ['RewardsShopify']
     const reward = await ShopifyPerkService.get(req.params.id);
     if (!reward) throw new NotFoundError('Could not find the reward');
     await ShopifyPerkService.remove(reward);

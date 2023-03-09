@@ -8,10 +8,8 @@ import ImageService from '@thxnetwork/api/services/ImageService';
 const validation = [
     body('title').exists().isString(),
     body('description').exists().isString(),
-    body('amount').exists().isInt({ gt: 0 }),
     body('claimAmount').exists().isInt({ lt: 1000 }),
     body('claimLimit').optional().isInt(),
-    body('shopifyId').exists().isMongoId(),
     body('expiryDate').optional().isString(),
     body('platform').exists().isNumeric(),
     body('interaction').optional().isNumeric(),
@@ -25,6 +23,7 @@ const validation = [
             return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
         }),
     body('image').optional().isString(),
+    body('priceRuleId').exists().isString(),
 ];
 
 const controller = async (req: Request, res: Response) => {

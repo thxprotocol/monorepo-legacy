@@ -11,6 +11,9 @@ const schema = new mongoose.Schema(
         amount: String,
         pointPrice: Number,
         image: String,
+        priceRuleId: String,
+        price: Number,
+        priceCurrency: String,
     },
     { timestamps: true },
 );

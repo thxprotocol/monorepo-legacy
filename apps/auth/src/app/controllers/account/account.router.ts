@@ -17,6 +17,8 @@ import { getTwitch } from './twitch/get.action';
 import { getGithub } from './github/get.controller';
 import { getShopify } from './shopify/get.action';
 import { getShopifyPurchase } from './shopify/getPurchase.action';
+import { getShopifyPriceRules } from './shopify/price-rules/list.action';
+import { createShopifyDiscountCode } from './shopify/discount-code/post.action';
 
 const router = express.Router();
 
@@ -30,6 +32,8 @@ router.get('/:sub/twitter/follow/:item', guard.check(['accounts:read']), getTwit
 
 router.get('/:sub/shopify', guard.check(['accounts:read']), getShopify);
 router.get('/:sub/shopify/purchase', guard.check(['accounts:read']), getShopifyPurchase);
+router.get('/:sub/shopify/price-rules', guard.check(['accounts:read']), getShopifyPriceRules);
+router.post('/:sub/shopify/discount-code', guard.check(['accounts:read']), createShopifyDiscountCode);
 
 router.get('/:sub/google/youtube', guard.check(['accounts:read']), getYoutube);
 router.get('/:sub/google/youtube/like/:item', guard.check(['accounts:read']), getYoutubeLike);

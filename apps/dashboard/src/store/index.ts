@@ -9,6 +9,7 @@ import ERC20Store from './modules/erc20';
 import ERC20PerksStore from './modules/erc20Perks';
 import ERC721Store from './modules/erc721';
 import ERC721PerksStore from './modules/erc721Perks';
+import ShopifyPerksStore from './modules/shopifyPerks';
 import ReferralRewardRewardsStore from './modules/referralRewards';
 import ReferralRewardRewardClaimsStore from './modules/referralRewardClaims';
 import SwapRuleStore from './modules/swaprules';
@@ -33,6 +34,7 @@ const modules = {
     erc20Perks: ERC20PerksStore,
     erc721: ERC721Store,
     erc721Perks: ERC721PerksStore,
+    shopifyPerks: ShopifyPerksStore,
     referralRewards: ReferralRewardRewardsStore,
     referralRewardClaims: ReferralRewardRewardClaimsStore,
     swaprules: SwapRuleStore,

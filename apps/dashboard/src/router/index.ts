@@ -78,6 +78,11 @@ const routes: Array<RouteConfig> = [
                 component: () => import('../views/pool/ERC721Perks.vue'),
             },
             {
+                name: 'shopify perks',
+                path: 'shopify-perks',
+                component: () => import('../views/pool/ShopifyPerks.vue'),
+            },
+            {
                 name: 'clients',
                 path: 'clients',
                 component: () => import('../views/pool/Clients.vue'),

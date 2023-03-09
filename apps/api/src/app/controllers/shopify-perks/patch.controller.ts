@@ -11,7 +11,6 @@ const validation = [
     body('claimAmount').exists().isInt({ lt: 1000 }),
     body('expiryDate').optional().isString(),
     body('rewardLimit').isNumeric(),
-    body('shopifyId').isMongoId(),
     body('platform').exists().isNumeric(),
     body('interaction').optional().isNumeric(),
     body('content').optional().isString(),
@@ -21,6 +20,7 @@ const validation = [
         .custom((value, { req }) => {
             return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
         }),
+    body('priceRuleId').optional().isString(),
 ];
 
 const controller = async (req: Request, res: Response) => {

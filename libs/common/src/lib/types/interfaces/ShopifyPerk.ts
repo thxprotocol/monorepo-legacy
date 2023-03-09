@@ -5,4 +5,8 @@ export type TShopifyPerk = TBaseReward & {
     amount: string;
     pointPrice: number;
     isPromoted: boolean;
+    priceRuleId: string;
+    image: string;
+    price: number;
+    priceCurrency: string;
 };
