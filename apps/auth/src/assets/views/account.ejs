@@ -1,4 +1,3 @@
-
 <div class="col-md-6 offset-md-3 order-0 order-sm-1">
     <div class="text-center pb-4 pt-4">
         <img src="/img/logo.png" width="60" alt="THX Logo" />
@@ -208,48 +207,63 @@
                         </form>
                         <% } %>
                         <% if (params.shopifyLoginUrl && !params.shopifyAccess) { %>
-                            <script>
-                                function onShopifyConnectClick() {
-                                 var div = document.getElementById("div_shopify_shop_url");
-                                  if (div.style.display === "none") {
-                                    div.style.display = "block";
-                                  } else {
-                                    div.style.display = "none";
-                                  }
-                                }
-                                function authShopify() {
-                                    var shopUrl = document.getElementById("input_shopify_shop_url").value;
-                                    if(shopUrl.length === 0) {
-                                        return false;
-                                    }
-                                    var url = shopUrl + document.getElementById("input_shopify_action").value;
-                                     window.location.href = url;
-                                }
-                            </script>
-                            <button class="btn btn-sign-in btn-shopify btn-block my-1" onclick="onShopifyConnectClick()">
+                        <script>
+                            function authShopify() {
+                                const shopUrl = `https://${document.getElementById("input_shopify_shop_url").value}.myshopify.com`;
+                                if (shopUrl.length === 0) return false;
+
+                                const url = shopUrl + document.getElementById("input_shopify_action").value;
+                                window.location.href = url;
+                            }
+                        </script>
+                        <button class="btn btn-sign-in btn-shopify btn-block my-1" type="button" data-toggle="collapse"
+                                data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                            <div class="logo">
+                                <img src="/img/shopify-logo.png" alt="Shopify logo" />
+                            </div>
+                            <div class="label">Connect Shopify</div>
+                        </button>
+                        <input type="hidden" id="input_uid" value="<%= uid %>">
+                        <input type="hidden" id="input_shopify_action" value="<%= params.shopifyLoginUrl %>" />
+                        <!-- <div style="display:none" id="div_shopify_shop_url" class="collapse" id="collapseExample"> -->
+                        <div class="collapse mt-3" id="collapseExample">
+                            <div class="card">
+                                <div class="card-body bg-light">
+                                    <div class="form-group">
+                                        <label>Store URL</label>
+                                        <div class="input-group input-group-sm">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text">
+                                                    https://
+                                                </div>
+                                            </div>
+                                            <input type="url" id="input_shopify_shop_url" placeholder="example-store"
+                                                   class="form-control">
+                                            <div class="input-group-append">
+                                                <div class="input-group-text">
+                                                    .myshopify.com
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-block btn-primary rounded-pill" type="button" value="Connect"
+                                            onclick="authShopify()">
+                                        <div class="label"> Connect </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <% } %>
+                        <% if (params.shopifyAccess) { %>
+                        <form method="post" action="/oidc/<%= uid %>/account/shopify/disconnect">
+                            <button class="btn btn-sign-in bg-gray btn-shopify btn-block my-1" type="submit">
                                 <div class="logo">
                                     <img src="/img/shopify-logo.png" alt="Shopify logo" />
                                 </div>
-                                <div class="label">Connect Shopify</div>
+                                <div class="label">Disconnect Shopify</div>
                             </button>
-                            <div style="display:none" id="div_shopify_shop_url">
-                                <input type="hidden" id="input_uid" value="<%= uid %>">
-                                <input type="hidden" id="input_shopify_action" value="<%= params.shopifyLoginUrl %>" />
-                                <div class="label">Shopify Store URL</div>
-                                <input type="url" id="input_shopify_shop_url" class="form-control">
-                                <button class="btn btn-sign-in my-1 btn-shopify" type="button" value="Connect" onclick="authShopify()"><div class="label"> Connect </div></button>
-                            </div>
-                            <% } %>
-                            <% if (params.shopifyAccess) { %>
-                            <form method="post" action="/oidc/<%= uid %>/account/shopify/disconnect">
-                                <button class="btn btn-sign-in bg-gray btn-shopify btn-block my-1" type="submit">
-                                    <div class="logo">
-                                        <img src="/img/shopify-logo.png" alt="Shopify logo" />
-                                    </div>
-                                    <div class="label">Disconnect Shopify</div>
-                                </button>
-                            </form>
-                            <% } %>
+                        </form>
+                        <% } %>
                     </div>
                 </div>
             </div>

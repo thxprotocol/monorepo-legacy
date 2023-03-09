@@ -6,6 +6,7 @@ import DeleteAccount from './delete.controller';
 import ReadAccountYoutube from './youtube/get.controller';
 import ReadAccountTwitter from './twitter/get.controller';
 import ReadAccountDiscord from './discord/get.controller';
+import ReadAccountShopify from './shopify/get.controller';
 import CreateTwitterTweet from './twitter/tweet/post.controller';
 import CreateTwitterUser from './twitter/user/post.controller';
 import CreateTwitterUserByUsername from './twitter/user/by/username/post.controller';
@@ -19,6 +20,7 @@ router.delete('/', guard.check(['account:write']), DeleteAccount.controller);
 router.get('/twitter', guard.check(['account:read']), ReadAccountTwitter.controller);
 router.get('/youtube', guard.check(['account:read']), ReadAccountYoutube.controller);
 router.get('/discord', guard.check(['account:read']), ReadAccountDiscord.controller);
+router.get('/shopify', guard.check(['account:read']), ReadAccountShopify.controller);
 
 // router.post('/youtube/video', guard.check(['account:read']), CreateTwitterTweet.controller);
 // router.post('/youtube/channel', guard.check(['account:read']), CreateTwitterTweet.controller);

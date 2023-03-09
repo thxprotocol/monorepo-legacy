@@ -97,6 +97,8 @@ const config: Configuration = {
         'erc20:write',
         'erc721:read',
         'erc721:write',
+        'erc1155:read',
+        'erc1155:write',
         'promotions:read',
         'promotions:write',
         'point_balances:read',

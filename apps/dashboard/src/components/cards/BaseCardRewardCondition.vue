@@ -57,7 +57,9 @@ import BaseDropdownYoutubeVideo from '../dropdowns/BaseDropdownYoutubeVideo.vue'
 import BaseDropdownTwitterTweets from '../dropdowns/BaseDropdownTwitterTweets.vue';
 import BaseDropdownTwitterUsers from '../dropdowns/BaseDropdownTwitterUsers.vue';
 import BaseDropdownDiscordGuilds from '../dropdowns/BaseDropdownDiscordGuilds.vue';
-import BaseDropdownShopifyPurchase from '../dropdowns/BaseDropdownShopifyPurchase.vue';
+import BaseDropdownShopifyTotalSpent from '../dropdowns/BaseDropdownShopifyTotalSpent.vue';
+import BaseDropdownShopifyOrderAmount from '../dropdowns/BaseDropdownShopifyOrderAmount.vue';
+
 @Component({
     components: {
         BaseDropdownDiscordGuilds,
@@ -68,7 +70,8 @@ import BaseDropdownShopifyPurchase from '../dropdowns/BaseDropdownShopifyPurchas
         BaseDropdownYoutubeVideo,
         BaseDropdownTwitterTweets,
         BaseDropdownTwitterUsers,
-        BaseDropdownShopifyPurchase,
+        BaseDropdownShopifyTotalSpent,
+        BaseDropdownShopifyOrderAmount,
     },
     computed: mapGetters({
         profile: 'account/profile',

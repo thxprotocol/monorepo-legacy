@@ -9103,6 +9103,7 @@ body {
   background-image: url("../img/thx_landing_crater.webp") !important;
   background-position: center center;
   background-size: cover;
+  background-attachment: fixed;
 }
 
 /*# sourceMappingURL=main.css.map */

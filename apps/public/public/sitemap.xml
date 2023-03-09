@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://thx.network</loc>
+    <lastmod>2023-03-08</lastmod>
+  </url>
+  <url>
+    <loc>https://thx.network/pricing</loc>
+    <lastmod>2023-03-08</lastmod>
+  </url>
+  <url>
+    <loc>https://thx.network/use-cases</loc>
+    <lastmod>2023-03-08</lastmod>
+  </url>
+  <url>
+    <loc>https://thx.network/integrations</loc>
+    <lastmod>2023-03-08</lastmod>
+  </url>
+  <url>
+    <loc>https://dashboard.thx.network/</loc>
+    <lastmod>2023-03-08</lastmod>
+  </url>
+  <url>
+    <loc>https://wallet.thx.network/</loc>
+    <lastmod>2023-03-08</lastmod>
+  </url>
+</urlset>

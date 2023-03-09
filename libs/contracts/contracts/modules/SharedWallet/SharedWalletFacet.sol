@@ -3,8 +3,11 @@ pragma solidity ^0.7.6;
 
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
+import '@openzeppelin/contracts/token/ERC1155/IERC1155.sol';
 import '@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
 import '@openzeppelin/contracts/utils/EnumerableSet.sol';
+import '@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol';
+import '@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol';
 
 import './interfaces/ISharedWalletFacet.sol';
 import '../AccessControl/lib/LibAccessStorage.sol';
@@ -74,5 +77,54 @@ contract SharedWalletFacet is ISharedWalletFacet {
         IERC721 erc721Token = IERC721(_tokenAddress);
         require(erc721Token.ownerOf(_tokenId) == address(this), 'TOKEN_NOT_OWNED');
         erc721Token.safeTransferFrom(address(this), _to, _tokenId);
+    }
+
+    function transferERC1155(
+        address _tokenAddress,
+        address _to,
+        uint256 _tokenId,
+        uint256 _amount
+    ) external override onlyManager {
+        IERC1155 erc1155Token = IERC1155(_tokenAddress);
+        erc1155Token.safeTransferFrom(address(this), _to, _tokenId, _amount, '');
+    }
+
+    function batchTransferERC1155(
+        address _tokenAddress,
+        address _to,
+        uint256[] calldata _tokenIds,
+        uint256[] calldata _amounts
+    ) external override onlyManager {
+        IERC1155 erc1155Token = IERC1155(_tokenAddress);
+        erc1155Token.safeBatchTransferFrom(address(this), _to, _tokenIds, _amounts, '');
+    }
+
+    function onERC721Received(
+        address,
+        address,
+        uint256,
+        bytes calldata
+    ) external pure override returns (bytes4) {
+        return IERC721Receiver.onERC721Received.selector;
+    }
+
+    function onERC1155Received(
+        address,
+        address,
+        uint256,
+        uint256,
+        bytes memory
+    ) external pure override returns (bytes4) {
+        return IERC1155Receiver.onERC1155Received.selector;
+    }
+
+    function onERC1155BatchReceived(
+        address,
+        address,
+        uint256[] memory,
+        uint256[] memory,
+        bytes memory
+    ) external pure override returns (bytes4) {
+        return IERC1155Receiver.onERC1155BatchReceived.selector;
     }
 }

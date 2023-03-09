@@ -67,7 +67,6 @@ export const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
 export const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
 export const SHOPIFY_CLIENT_ID = process.env.SHOPIFY_CLIENT_ID;
 export const SHOPIFY_CLIENT_SECRET = process.env.SHOPIFY_CLIENT_SECRET;
-export const SPOTIFY_REDIRECT_URI = process.env.SPOTIFY_REDIRECT_URI;
 export const TWITCH_CLIENT_ID = process.env.TWITCH_CLIENT_ID;
 export const TWITCH_CLIENT_SECRET = process.env.TWITCH_CLIENT_SECRET;
 export const AUTH_CLIENT_SECRET = process.env.AUTH_CLIENT_SECRET;

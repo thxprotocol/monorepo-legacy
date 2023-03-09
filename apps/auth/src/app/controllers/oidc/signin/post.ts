@@ -42,11 +42,12 @@ async function controller(req: Request, res: Response) {
         );
     } else if (req.body.email) {
         try {
-            let account: AccountDocument = await AccountService.getByEmail(req.body.email);
+            const email = req.body.email.toLowerCase();
+            let account: AccountDocument = await AccountService.getByEmail(email);
 
             if (!account) {
                 account = await AccountService.signup({
-                    email: req.body.email,
+                    email,
                     variant: AccountVariant.EmailPassword,
                     active: false,
                 });
@@ -56,7 +57,7 @@ async function controller(req: Request, res: Response) {
 
             // Store the sub in the interaction so we can lookup the hashed OTP later
             req.interaction.params.sub = String(account._id);
-            req.interaction.params.email = req.body.email;
+            req.interaction.params.email = email;
             await req.interaction.save(Date.now() + 10 * 60 * 1000); // ttl 10min
 
             return res.redirect(`/oidc/${req.params.uid}/signin/otp`);

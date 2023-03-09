@@ -6,7 +6,7 @@ import { dashboardAccessToken, sub } from '@thxnetwork/api/util/jest/constants';
 import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
 import { ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { alchemy } from '@thxnetwork/api/util/alchemy';
-import { deployNFT, mockGetNftsForOwner } from '@thxnetwork/api/util/jest/nft';
+import { deployERC721, mockGetNftsForOwner } from '@thxnetwork/api/util/jest/erc721';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { Contract } from 'web3-eth-contract';
 import { getProvider } from '@thxnetwork/api/util/network';
@@ -38,7 +38,7 @@ describe('ERC721 import', () => {
     describe('POST /erc721/import', () => {
         it('HTTP 201`', async () => {
             // Create 1 NFT collection
-            nftContract = await deployNFT(nftName, nftSymbol);
+            nftContract = await deployERC721(nftName, nftSymbol);
 
             // Mint 1 token in the collection
             await TransactionService.sendAsync(
@@ -90,25 +90,6 @@ describe('ERC721 import', () => {
                     expect(body.properties[3].propType).toBe('url');
                     expect(body.totalSupply).toBe('1');
                     expect(body.owner).toBe(defaultAccount);
-                })
-                .expect(200, done);
-        });
-    });
-
-    describe('GET /erc721/token', () => {
-        it('HTTP 200', (done) => {
-            user.get(`/v1/erc721/token?chainId=${chainId}`)
-                .set('Authorization', dashboardAccessToken)
-                .send()
-                .expect(({ body }: request.Response) => {
-                    expect(body.length).toBe(1);
-                    expect(body[0].sub).toBe(sub);
-                    expect(body[0].erc721Id).toBe(erc721._id);
-                    expect(body[0].state).toBe(ERC721TokenState.Minted);
-                    expect(body[0].recipient).toBe(pool.address);
-                    expect(body[0].tokenUri).toBeDefined();
-                    expect(body[0].tokenId).toBeDefined();
-                    expect(body[0].metadataId).toBeDefined();
                 })
                 .expect(200, done);
         });

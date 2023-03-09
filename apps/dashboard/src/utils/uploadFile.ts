@@ -6,7 +6,9 @@ export function prepareFormDataForUpload(payload: any) {
                 formData.append('file', payload.file);
             }
         } else {
-            formData.set(key, payload[key]);
+            if (payload[key] !== undefined) {
+                formData.set(key, payload[key]);
+            }
         }
     });
     return formData;

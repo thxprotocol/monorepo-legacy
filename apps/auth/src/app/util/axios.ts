@@ -7,6 +7,7 @@ import {
     TWITCH_API_ENDPOINT,
     TWITTER_API_ENDPOINT,
 } from '../config/secrets';
+import { logger } from './logger';
 
 export function spotifyClient(config: AxiosRequestConfig) {
     config.baseURL = SPOTIFY_API_ENDPOINT;
@@ -35,5 +36,9 @@ export function twitchClient(config: AxiosRequestConfig) {
 
 export function shopifyClient(shopUrl: string, config: AxiosRequestConfig) {
     config.baseURL = shopUrl + SHOPIFY_API_ENDPOINT;
-    return axios(config);
+    try {
+        return axios(config);
+    } catch (error) {
+        logger.error(error);
+    }
 }
