@@ -12,7 +12,6 @@ const http = request.agent(app);
 
 describe('Account Controller', () => {
     let authHeader: string,
-        basicAuthHeader: string,
         sub: string,
         uid = '',
         clientId = '',
@@ -103,7 +102,6 @@ describe('Account Controller', () => {
         });
 
         describe('GET /account/:sub/shopify', () => {
-            let account;
             beforeAll(async () => {
                 nock(shopifyStoreUrl + '/admin/oauth/authorize')
                     .persist()
