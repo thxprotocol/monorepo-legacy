@@ -1,7 +1,7 @@
 <template>
     <b-form-group label="Username">
         <b-input-group prepend="@">
-            <b-form-input @change="onChange" :state="state" :value="username" />
+            <b-form-input @input="onInput" :state="state" :value="username" />
         </b-input-group>
         <b-card v-if="preview" body-class="d-flex align-items-center" class="mt-3">
             <b-avatar :src="preview.profile_image_url" class="mr-2" />
@@ -42,7 +42,7 @@ export default class BaseDropdownDiscordGuilds extends Vue {
         }
     }
 
-    async onChange(username: string) {
+    async onInput(username: string) {
         if (username.length < 4) {
             this.preview = null;
             this.state = null;
