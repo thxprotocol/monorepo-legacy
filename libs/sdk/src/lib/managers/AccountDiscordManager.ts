@@ -1,4 +1,3 @@
-import { URLSearchParams } from 'url';
 import { THXClient } from '../client';
 import BaseManager from './BaseManager';
 
