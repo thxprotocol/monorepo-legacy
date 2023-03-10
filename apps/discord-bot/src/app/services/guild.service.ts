@@ -10,4 +10,7 @@ export default {
     connect: async (id: string, poolId: string, channelId: string) => {
         return await Guild.findOneAndUpdate({ id }, { poolId, channelId }, { new: true, upsert: true });
     },
+    disconnect: async (id: string) => {
+        return await Guild.deleteOne({ id });
+    },
 };

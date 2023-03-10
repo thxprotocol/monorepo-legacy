@@ -6,9 +6,11 @@ import {
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
     channelLink,
+    GuildChannel,
 } from 'discord.js';
 import { thxClient } from '../configs/oidc';
 import GuildService from '../services/guild.service';
+import { client } from '../../bootstrap';
 
 export default {
     data: new SlashCommandBuilder()
@@ -32,6 +34,11 @@ export default {
             new SlashCommandSubcommandBuilder()
                 .setName('info')
                 .setDescription('Details for the pool connected to this server. '),
+        )
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder()
+                .setName('disconnect')
+                .setDescription('Disconnect the connected pool from the server. '),
         ),
     executor: async (interaction: CommandInteraction) => {
         const isAdmin = (interaction.member.permissions as any).has(PermissionFlagsBits.Administrator);
@@ -66,7 +73,7 @@ export default {
                 }
 
                 const embed = new EmbedBuilder()
-                    .setTitle('Loyalty Pool')
+                    .setTitle('Pool')
                     .addFields(
                         {
                             name: ':gift: Pool ID',
@@ -95,9 +102,29 @@ export default {
                     });
                 }
 
+                const guild = await GuildService.get(interaction.guildId);
+                if (!guild) {
+                    const channel: any = client.channels.cache.get(channelId);
+                    channel.send(
+                        "Hi!:wave: I'm THX Bot, keep an eye on this channel to earn points that you can redeem for coins and NFT's:gift:",
+                    );
+                }
+
                 await GuildService.connect(interaction.guildId, poolId, channelId);
+
                 interaction.reply({ content: `Connected pool #${poolId}! 🥳`, ephemeral: true });
+
                 break;
+            }
+
+            case 'disconnect': {
+                const guild = await GuildService.get(interaction.guildId);
+                if (!guild) return interaction.reply({ content: `Server connection not found.`, ephemeral: true });
+
+                const channel: any = client.channels.cache.get(guild.channelId);
+                channel.send('Bye!:wave: I hope you enjoy your rewards:pray:');
+
+                await GuildService.disconnect(guild.id);
             }
         }
     },

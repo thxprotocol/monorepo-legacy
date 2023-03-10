@@ -3,30 +3,21 @@ import { thxClient } from '../configs/oidc';
 import guildService from '../services/guild.service';
 
 export default {
-    data: new SlashCommandBuilder().setName('wallet').setDescription('Show current user wallet infomation.'),
+    data: new SlashCommandBuilder().setName('wallet').setDescription('Show your loyalty point balance.'),
     executor: async (interaction: CommandInteraction) => {
-        const account = await thxClient.account.getByDiscordId(interaction.user.id);
-        const { poolId } = await guildService.get(interaction.guildId);
+        const guild = await guildService.get(interaction.guildId);
+        if (!guild) return interaction.reply({ content: `Server connection not found.`, ephemeral: true });
 
-        const pointRes = await thxClient.account.discord.pointBalance(account._id, poolId);
-        const erc20Res = await thxClient.account.discord.erc20Tokens(account._id);
-        // const erc721Res = await thxClient.account.discord.erc721Tokens(account._id);
+        const account = await thxClient.account.getByDiscordId(interaction.user.id);
+        const pointBalance = await thxClient.account.discord.pointBalance(account._id, guild.poolId);
 
         const embed = new EmbedBuilder()
-            .setTitle('Wallet Infomation')
+            .setTitle('Wallet')
             .addFields({
-                name: 'Point Balance',
-                value: `${pointRes.balance}`,
+                name: ' :sparkles: Points',
+                value: `${pointBalance.balance}`,
             })
             .setTimestamp();
-
-        const erc20str = (erc20Res || [])
-            .map((erc20) => {
-                return `${erc20.balance || 0} ${erc20.erc20.symbol}`;
-            })
-            .join(',');
-
-        embed.addFields({ name: 'ERC20', value: erc20str });
 
         interaction.reply({ embeds: [embed], ephemeral: true });
     },

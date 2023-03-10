@@ -158,7 +158,7 @@ export class AccountService {
         else if (tokenInfo.userId) {
             account = await Account.findOne({ 'tokens.userId': tokenInfo.userId, 'tokens.kind': tokenInfo.kind });
         }
-        console.log(account._id, account.email);
+
         // When no account is matched, create the account.
         if (!account) {
             const data = { variant, plan: AccountPlanType.Basic, active: true };
