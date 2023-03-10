@@ -181,10 +181,6 @@ export default class ModalRewardShopifyCreate extends Vue {
     }
 
     onSubmit() {
-        if (!this.checkDiscountCode()) {
-            this.error = 'Discount code already used';
-            return;
-        }
         this.isLoading = true;
         this.$store
             .dispatch(`shopifyPerks/${this.reward ? 'update' : 'create'}`, {
@@ -235,25 +231,6 @@ export default class ModalRewardShopifyCreate extends Vue {
 
     onDiscountCodeInput(value: string) {
         this.discountCode = value.toUpperCase();
-    }
-
-    checkDiscountCode() {
-        this.error = '';
-        let isValid = true;
-        if (this.reward && this.reward.discountCode === this.discountCode) {
-            return true;
-        }
-        const perks = Object.keys(this.shopifyPerks[this.pool._id]);
-
-        perks.forEach((perk) => {
-            const discountCode = this.shopifyPerks[this.pool._id][perk].discountCode;
-            console.log('discountCode', discountCode);
-            if (discountCode && discountCode.toUpperCase() === this.discountCode) {
-                isValid = false;
-                return;
-            }
-        });
-        return isValid;
     }
 }
 </script>
