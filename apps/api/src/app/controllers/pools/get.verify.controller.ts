@@ -8,10 +8,10 @@ export const validation = [param('id').isMongoId(), param('discordId').isString(
 export const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
     const pool = await PoolService.getById(req.params.id);
-    const account = await AccountProxy.getByDiscordId(req.params.discordId);
+    const account: any = await AccountProxy.getByDiscordId(req.params.discordId);
+    if (pool.sub !== account._id) return res.status(400).end();
 
-    if (pool.sub === (account as any)._id) return res.json(pool);
-    res.status(400).send();
+    res.json(pool);
 };
 
 export default { controller, validation };

@@ -7,8 +7,7 @@ export default {
      * @returns GuildDocument | null
      */
     get: async (id: string) => Guild.findOne({ id }),
-    connect: async (id: string, poolId: string) => {
-        const guildDoc = await Guild.findOneAndUpdate({ id }, { poolId }, { new: true, upsert: true });
-        return guildDoc;
+    connect: async (id: string, poolId: string, channelId: string) => {
+        return await Guild.findOneAndUpdate({ id }, { poolId, channelId }, { new: true, upsert: true });
     },
 };

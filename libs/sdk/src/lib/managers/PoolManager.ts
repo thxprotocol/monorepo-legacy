@@ -6,13 +6,8 @@ class PoolManager extends BaseManager {
         super(client);
     }
 
-    async verifyAccessByDiscordId(discordId: string, poolId: string) {
-        try {
-            const data = await this.client.request.get(`/v1/pools/${poolId}/discord/${discordId}/verify`);
-            return data;
-        } catch {
-            return null;
-        }
+    async get(id: string) {
+        return await this.client.request.get(`/v1/pools/${id}`);
     }
 }
 

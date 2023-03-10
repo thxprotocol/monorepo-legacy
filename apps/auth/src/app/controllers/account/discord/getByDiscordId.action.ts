@@ -5,15 +5,12 @@ import { param } from 'express-validator';
 
 const validation = [param('discordId')];
 
-const getAccount = async (req: Request, res: Response) => {
-    const { discordId } = req.params;
-    const account = await AccountService.getByDiscordId(discordId);
-    if (!account) throw new NotFoundError();
-
-    return res.json(account.toJSON());
+const controller = async (req: Request, res: Response) => {
+    console.log({ discordId: req.params.discordId });
+    const account = await AccountService.getByDiscordId(req.params.discordId);
+    if (!account) throw new NotFoundError('Account not found');
+    console.log(account);
+    return res.json(account);
 };
 
-export default {
-    validation,
-    controller: getAccount,
-};
+export default { validation, controller };

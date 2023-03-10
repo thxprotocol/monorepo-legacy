@@ -1,4 +1,5 @@
 export type TGuild = {
-  id: string; // GUILD_ID
-  poolId: string;
+    id: string;
+    poolId: string;
+    channelId: string;
 };

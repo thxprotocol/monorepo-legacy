@@ -5,6 +5,7 @@ import {
     PermissionFlagsBits,
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
+    channelLink,
 } from 'discord.js';
 import { thxClient } from '../configs/oidc';
 import GuildService from '../services/guild.service';
@@ -12,17 +13,25 @@ import GuildService from '../services/guild.service';
 export default {
     data: new SlashCommandBuilder()
         .setName('pool')
-        .setDescription('Connect and manage Pool Interactions')
+        .setDescription('Manage loyalty pool')
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
                 .setName('connect')
-                .setDescription('Connect a Pool into current guild')
+                .setDescription('Connect a pool to a server')
                 .addStringOption((option) =>
-                    option.setName('pool_id').setDescription('Pool ID to connect with').setRequired(true),
+                    option.setName('pool_id').setDescription('Pool ID for server connection.').setRequired(true),
+                )
+                .addStringOption((option) =>
+                    option
+                        .setName('channel_id')
+                        .setDescription('Channel ID for reward announcements')
+                        .setRequired(true),
                 ),
         )
         .addSubcommand(
-            new SlashCommandSubcommandBuilder().setName('info').setDescription('Show current Guild Infomations'),
+            new SlashCommandSubcommandBuilder()
+                .setName('info')
+                .setDescription('Details for the pool connected to this server. '),
         ),
     executor: async (interaction: CommandInteraction) => {
         const isAdmin = (interaction.member.permissions as any).has(PermissionFlagsBits.Administrator);
@@ -32,56 +41,62 @@ export default {
                 ephemeral: true,
             });
 
-        let userConnected;
-
-        try {
-            userConnected = await thxClient.account.getByDiscordId(interaction.user.id).catch();
-        } catch (e) {
-            userConnected = null;
-        }
-
-        if (!userConnected)
+        const account = await thxClient.account.getByDiscordId(interaction.user.id).catch();
+        if (!account)
             return interaction.reply({
                 content: 'Please connect your THX Account with Discord first.',
                 ephemeral: true,
             });
+
         const options = interaction.options as CommandInteractionOptionResolver;
         const subcommand = options.getSubcommand();
 
         switch (subcommand) {
             case 'info': {
                 const guild = await GuildService.get(interaction.guildId);
-                if (!guild)
+                if (!guild) return interaction.reply({ content: `Server connection not found.`, ephemeral: true });
+
+                const pool = await thxClient.pools.get(guild.poolId);
+                if (!pool) return interaction.reply({ content: 'Pool could not be found.', ephemeral: true });
+                if (pool.sub !== account._id) {
                     return interaction.reply({
-                        content: `There not yet any infomation about this guild`,
+                        content: 'This Discord account is not connected to the account of the pool owner.',
                         ephemeral: true,
                     });
-                const pool = await thxClient.pools.verifyAccessByDiscordId(interaction.user.id, guild.poolId);
+                }
 
                 const embed = new EmbedBuilder()
-                    .setTitle('Pool Infomation')
+                    .setTitle('Loyalty Pool')
                     .addFields(
                         {
-                            name: 'ID',
-                            value: pool._id,
+                            name: ':gift: Pool ID',
+                            value: `[${pool.title}](https://dashboard.thx.network/pool/${pool._id}/dashboard)`,
                         },
-                        { name: 'Address', value: pool.address },
+                        {
+                            name: ':bell: Reward Announcements',
+                            value: `[${guild.channelId}](${channelLink(guild.channelId, guild.id)})`,
+                        },
                     )
                     .setTimestamp();
+
                 interaction.reply({ embeds: [embed], ephemeral: true });
+
                 break;
             }
             case 'connect': {
                 const poolId = options.getString('pool_id', true);
-                const isVerified = await thxClient.pools.verifyAccessByDiscordId(interaction.user.id, poolId);
-                if (!isVerified)
+                const channelId = options.getString('channel_id', true);
+                const pool = await thxClient.pools.get(poolId);
+                if (!pool) return interaction.reply({ content: 'Pool could not be found.', ephemeral: true });
+                if (pool.sub !== account._id) {
                     return interaction.reply({
-                        content: 'Cannot connect current guild into this PoolId',
+                        content: 'This Discord account is not connected to the account of the pool owner.',
                         ephemeral: true,
                     });
+                }
 
-                await GuildService.connect(interaction.guildId, poolId);
-                interaction.reply({ content: `Connected Pool with ID ${poolId} into current Guild`, ephemeral: true });
+                await GuildService.connect(interaction.guildId, poolId, channelId);
+                interaction.reply({ content: `Connected pool #${poolId}! 🥳`, ephemeral: true });
                 break;
             }
         }
