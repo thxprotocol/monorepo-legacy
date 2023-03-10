@@ -1,6 +1,6 @@
 import nock from 'nock';
-import { getToken, jwksResponse } from './jwt';
-import { API_URL, AUTH_URL } from '@thxnetwork/auth/config/secrets';
+import { getToken, jwksResponse } from './constants';
+import { API_URL, AUTH_URL } from '../../config/secrets';
 
 export function mockAuthPath(method: string, path: string, status: number, callback: any = {}) {
     const n = nock(AUTH_URL).persist() as any;
@@ -22,12 +22,11 @@ export function mockUrl(method: string, baseUrl: string, path: string, status: n
     return n[method](path).reply(status, callback);
 }
 
-export function mockWalletProxy() {
+export const mockWalletProxy = () => {
+    const token = getToken('openid account:read account:write');
     mockAuthPath('get', '/jwks', 200, jwksResponse);
     mockAuthPath('post', '/token', 200, async () => {
-        return {
-            access_token: getToken('openid account:read account:write'),
-        };
+        return { access_token: token };
     });
 
     mockApiPath(
@@ -43,7 +42,7 @@ export function mockWalletProxy() {
     mockApiPath('post', `/v1/wallets`, 200, async () => {
         return true;
     });
-}
+};
 
 export function mockClear() {
     return nock.cleanAll();

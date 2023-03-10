@@ -21,6 +21,7 @@ async function authAccountRequest(url: string) {
 
     if (!data) throw new NoAccountError();
 
+    data.profileImg = data.profileImg || `https://avatars.dicebear.com/api/identicon/${data.sub}.svg`;
     data.getAddress = async (chainId: ChainId) => {
         if (data.variant === 4) return data.address;
         const wallet = await Wallet.findOne({ sub: data.sub, chainId });

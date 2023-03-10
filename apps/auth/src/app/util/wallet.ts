@@ -8,9 +8,11 @@ export async function createWallet(account: AccountDocument) {
     if (account.variant === AccountVariant.Metamask) return;
 
     const sub = String(account._id);
-    const chains = [ChainId.Polygon];
+    const chains = [];
 
-    if (NODE_ENV === 'development') {
+    if (NODE_ENV === 'production') {
+        chains.push(ChainId.Polygon);
+    } else {
         chains.push(ChainId.Hardhat);
     }
 

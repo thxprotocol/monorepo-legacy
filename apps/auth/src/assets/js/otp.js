@@ -1,17 +1,9 @@
-import { createApp } from 'https://unpkg.com/petite-vue?module';
+import { createApp } from 'https://cdnjs.cloudflare.com/ajax/libs/petite-vue/0.4.1/petite-vue.es.js';
 
 createApp({
-    otpValues: {},
     otp: '',
-    isLoading: false,
-    onInput(key, value) {
-        this.otpValues[key] = value.data[0];
-        this.otp = Object.values(this.otpValues).join('');
-
-        if (key !== 4) {
-            document.getElementById(`digit${++key}`).focus();
-        }
-
+    isLoading: null,
+    onInput() {
         if (this.otp.length === 5) {
             this.isLoading = true;
             setTimeout(() => {

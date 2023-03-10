@@ -15,7 +15,7 @@
                             <b-button
                                 variant="outline-secondary"
                                 class="rounded-pill float-md-right mt-5 mt-md-0"
-                                href="https://calendly.com/mieszko/demo"
+                                href="https://calendly.com/steffenboode/demo"
                                 target="_blank"
                                 :title="TITLES.SCHEDULE_A_DEMO"
                             >

@@ -7,6 +7,7 @@ import { TwitterService } from '@thxnetwork/auth/services/TwitterService';
 import { DiscordService } from '@thxnetwork/auth/services/DiscordService';
 import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
+import { ShopifyService } from '@thxnetwork/auth/services/ShopifyService';
 
 async function formatAccountRes(account) {
     return {
@@ -19,6 +20,7 @@ async function formatAccountRes(account) {
         email: account.email,
         profileImg: account.profileImg,
         variant: account.variant,
+        shopifyStoreUrl: account.shopifyStoreUrl,
         googleAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.Google),
         youtubeViewAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.YoutubeView),
         youtubeManageAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.YoutubeManage),
@@ -26,6 +28,7 @@ async function formatAccountRes(account) {
         githubAccess: await GithubService.isAuthorized(account),
         discordAccess: await DiscordService.isAuthorized(account),
         twitchAccess: await TwitchService.isAuthorized(account),
+        shopifyAccess: await ShopifyService.isAuthorized(account),
     };
 }
 

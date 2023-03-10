@@ -5,6 +5,7 @@ import { oidc } from '@thxnetwork/auth/util/oidc';
 import { AccessTokenKind } from '@thxnetwork/types/index';
 import { Request, Response } from 'express';
 import { body } from 'express-validator';
+import { callbackPostAuth } from '../../get';
 
 const validation = [
     body('otp').exists().isString().isLength({ min: 5, max: 5 }),
@@ -35,10 +36,15 @@ async function controller(req: Request, res: Response) {
             active: true,
         });
 
+        await callbackPostAuth(account, req.interaction);
+
         return await oidc.interactionFinished(req, res, { login: { accountId: String(account._id) } });
     } catch (error) {
-        const alert = { variant: 'danger', icon: 'exclamation-circle', message: error.message };
-        return res.render('otp', { uid, alert, params: { ...params, ...brand, claim } });
+        return res.render('otp', {
+            uid,
+            alert: { variant: 'danger', icon: 'exclamation-circle', message: error.message },
+            params: { ...params, ...brand, claim },
+        });
     }
 }
 

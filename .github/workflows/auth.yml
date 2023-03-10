@@ -171,9 +171,15 @@ jobs:
             - name: Deploy-script
               run: thx-deploy AuthDev sha-$(echo ${{github.sha}} | cut -c1-7)
 
-            - name: Update Discord
+    discord:
+        name: Update Discord
+        runs-on: ubuntu-latest
+        if: github.ref == 'refs/heads/develop'
+        needs: [autodeploy, bumpVersion]
+        steps:
+            - name: Send message
               env:
                   DISCORD_WEBHOOK: ${{ secrets.DISCORD_AWS_WEBHOOK }}
               uses: Ilshidur/action-discord@master
               with:
-                  args: 'Released AuthDev 🔐 `${{needs.bumpVersion.outputs.newTag}}`'
+                  args: "${{ needs.autodeploy.result == 'success' && '✅' || '⛔' }} Released AuthDev `${{ needs.bumpVersion.outputs.newTag }}`"

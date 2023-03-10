@@ -7,9 +7,9 @@ const validation = [param('id').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['RewardsNft']
-    const reward = await ERC721PerkService.get(req.params.id);
-    if (!reward) throw new NotFoundError('Could not find the reward');
-    await ERC721PerkService.remove(reward);
+    const perk = await ERC721PerkService.get(req.params.id);
+    if (!perk) throw new NotFoundError('Could not find the reward');
+    await ERC721PerkService.remove(perk);
     return res.status(204).end();
 };
 

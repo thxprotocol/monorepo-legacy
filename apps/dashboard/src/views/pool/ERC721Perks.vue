@@ -39,28 +39,29 @@
                     <b-form-checkbox @change="onSelectAll" />
                 </template>
                 <template #head(title)> Title </template>
+                <template #head(price)> Price </template>
+                <template #head(claims)> Claim URL's </template>
                 <template #head(erc721)> NFT </template>
                 <template #head(erc721metadataId)> Metadata </template>
-                <template #head(rewardCondition)> Condition </template>
-                <template #head(claims)> Claim URL's </template>
+                <template #head(tokenId)> Token ID </template>
                 <template #head(id)> &nbsp; </template>
 
                 <!-- Cell formatting -->
                 <template #cell(checkbox)="{ item }">
                     <b-form-checkbox :value="item.checkbox" v-model="selectedItems" />
                 </template>
-                <template #cell(erc721)="{ item }">
-                    <strong class="text-primary">{{ item.erc721.name }}</strong>
-                </template>
-                <template #cell(metadata)="{ index, item }">
-                    <BaseBadgeMetadataPreview
-                        :index="index"
-                        :erc721Id="item.metadata.erc721Id"
-                        :metadataId="item.metadata.metadataId"
-                    />
+
+                <template #cell(price)="{ item }">
+                    <strong class="line-height-1 text-primary" v-if="item.price.price > 0">
+                        {{ item.price.price }} {{ item.price.currency }}
+                    </strong>
+                    <strong class="line-height-1 text-primary" v-else> {{ item.price.pointPrice }} pts </strong>
+                    <small v-if="item.price.price > 0" class="line-height-1 text-muted">
+                        / {{ item.price.pointPrice }} pts
+                    </small>
                 </template>
                 <template #cell(claims)="{ item }">
-                    <b-link v-b-modal="`modalRewardClaimsDownload${item.id}`" v-if="item.claims.length">
+                    <b-link v-b-modal="`modalRewardClaimsDownload${item.id}`" v-if="item.claims && item.claims.length">
                         <b-progress
                             :value="item.claims.filter((c) => c.sub).length"
                             :max="item.claims.length"
@@ -74,12 +75,22 @@
                         :rewards="erc721Perks[pool._id]"
                     />
                 </template>
-                <template #cell(rewardCondition)="{ item }">
-                    <BaseBadgeRewardConditionPreview
-                        v-if="item.rewardCondition.platform.type !== RewardConditionPlatform.None"
-                        :rewardCondition="item.rewardCondition"
+                <template #cell(erc721)="{ item }">
+                    <strong class="text-muted">{{ item.erc721.name }}</strong>
+                </template>
+                <template #cell(metadata)="{ index, item }">
+                    <BaseBadgeMetadataPreview
+                        v-if="item.metadata && item.metadata.metadataId"
+                        :index="index"
+                        :erc721Id="item.metadata.erc721Id"
+                        :metadataId="item.metadata.metadataId"
                     />
                 </template>
+
+                <template #cell(tokenId)="{ item }">
+                    <strong v-if="item.tokenId" class="text-muted">{{ item.tokenId }}</strong>
+                </template>
+
                 <template #cell(id)="{ item }">
                     <b-dropdown variant="link" size="sm" right no-caret>
                         <template #button-content>
@@ -112,8 +123,9 @@ import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/ba
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import { RewardConditionPlatform, RewardConditionInteraction, TERC721Perk } from '@thxnetwork/types/index';
 import { IERC721s, TERC721 } from '@thxnetwork/dashboard/types/erc721';
-import { platformInteractionList, platformList } from '@thxnetwork/dashboard/types/rewards';
 import BaseModalRewardClaimsDownload from '@thxnetwork/dashboard/components/modals/BaseModalRewardClaimsDownload.vue';
+import { parseUnitAmount } from '@thxnetwork/dashboard/utils/price';
+import { TERC721Token } from '../../../../../../wallet/src/store/modules/erc721';
 
 @Component({
     components: {
@@ -156,24 +168,25 @@ export default class ERC721PerksView extends Vue {
         return Object.values(this.erc721Perks[this.$route.params.id])
             .filter((reward: TERC721Perk) => reward.page === this.page)
             .sort((a, b) => (a.createdAt && b.createdAt && a.createdAt < b.createdAt ? 1 : -1))
-            .map((r: TERC721Perk & { erc721: TERC721 }) => ({
+            .map((r: TERC721Perk & { erc721: TERC721; erc721Token?: TERC721Token }) => ({
                 checkbox: r._id,
                 title: r.title,
+                price: {
+                    pointPrice: r.pointPrice,
+                    price: parseUnitAmount(r.price),
+                    currency: r.priceCurrency,
+                },
                 erc721: {
                     name: r.erc721.name,
                     symbol: r.erc721.symbol,
                 },
+                tokenId: r.erc721Token ? r.erc721Token.tokenId : undefined,
                 metadata: {
                     erc721Id: r.erc721Id,
                     metadataId: r.erc721metadataId,
                 },
-                rewardCondition: {
-                    platform: platformList.find((p) => r.platform === p.type),
-                    interaction: platformInteractionList.find((i) => r.interaction === i.type),
-                    content: r.content,
-                },
                 claims: r.claims,
-                rewardLimit: r.rewardLimit,
+                // rewardLimit: r.rewardLimit,
                 id: r._id,
             }))
             .slice(0, this.limit);

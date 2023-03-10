@@ -9,6 +9,10 @@ import DeletePool from './delete.controller';
 import ListPools from './list.controller';
 import CreatePoolTopup from './topup/post.controller';
 import VerifyPoolAccess from './get.verify.controller';
+import CreatePoolTransfer from './transfers/post.controller';
+import DeletePoolTransfer from './transfers/delete.controller';
+import CreatePoolTransferRefresh from './transfers/refresh/post.controller';
+import ListPoolTransfer from './transfers/list.controller';
 import UpdatePool from './patch.controller';
 
 const router = express.Router();
@@ -19,9 +23,43 @@ router.post(
     assertRequestInput(CreatePool.validation),
     CreatePool.controller,
 );
+router.post(
+    '/:id/transfers',
+    guard.check(['pools:write']),
+    assertRequestInput(CreatePoolTransfer.validation),
+    CreatePoolTransfer.controller,
+);
+
+router.delete(
+    '/:id/transfers',
+    guard.check(['pools:write']),
+    assertAssetPoolOwnership,
+    assertRequestInput(DeletePoolTransfer.validation),
+    DeletePoolTransfer.controller,
+);
+router.get(
+    '/:id/transfers',
+    guard.check(['pools:read']),
+    assertAssetPoolOwnership,
+    assertRequestInput(ListPoolTransfer.validation),
+    ListPoolTransfer.controller,
+);
+router.post(
+    '/:id/transfers/refresh',
+    guard.check(['pools:write']),
+    assertAssetPoolOwnership,
+    assertRequestInput(CreatePoolTransferRefresh.validation),
+    CreatePoolTransferRefresh.controller,
+);
 
 router.get('/', guard.check(['pools:read']), assertRequestInput(ListPools.validation), ListPools.controller);
-router.get('/:id', guard.check(['pools:read']), assertRequestInput(ReadPool.validation), ReadPool.controller);
+router.get(
+    '/:id',
+    guard.check(['pools:read']),
+    assertAssetPoolOwnership,
+    assertRequestInput(ReadPool.validation),
+    ReadPool.controller,
+);
 router.get(
     '/:id/discord/:discordId/verify',
     guard.check(['pools:read']),
@@ -31,18 +69,21 @@ router.get(
 router.get(
     '/:id/analytics',
     guard.check(['pools:read']),
+    assertAssetPoolOwnership,
     assertRequestInput(PoolsAnalytics.validation),
     PoolsAnalytics.controller,
 );
 router.get(
     '/:id/analytics/leaderboard',
     guard.check(['pools:read']),
+    assertAssetPoolOwnership,
     assertRequestInput(PoolsAnalyticsLeaderBoard.validation),
     PoolsAnalyticsLeaderBoard.controller,
 );
 router.get(
     '/:id/analytics/metrics',
     guard.check(['pools:read']),
+    assertAssetPoolOwnership,
     assertRequestInput(PoolsAnalyticsMetrics.validation),
     PoolsAnalyticsMetrics.controller,
 );

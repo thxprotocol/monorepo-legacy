@@ -6,6 +6,7 @@ import ListWallets from './list.controller';
 import ListWalletManagers from './managers/list.controller';
 import CreateWalletManager from './managers/post.controller';
 import DeleteWalletManager from './managers/delete.controller';
+import CreateWalletUpgrade from './upgrade/post.controller';
 
 const router = express.Router();
 router.get('/', guard.check(['wallets:read']), assertRequestInput(ListWallets.validation), ListWallets.controller);
@@ -24,6 +25,14 @@ router.post(
     assertRequestInput(CreateWalletManager.validation),
     CreateWalletManager.controller,
 );
+
+router.post(
+    '/:id/upgrade',
+    guard.check(['wallets:write']),
+    assertRequestInput(CreateWalletUpgrade.validation),
+    CreateWalletUpgrade.controller,
+);
+
 router.delete(
     '/managers/:id',
     guard.check(['wallets:write']),

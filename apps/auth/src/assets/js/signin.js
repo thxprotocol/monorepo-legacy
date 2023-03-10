@@ -1,4 +1,4 @@
-import { createApp } from 'https://unpkg.com/petite-vue?module';
+import { createApp } from 'https://cdnjs.cloudflare.com/ajax/libs/petite-vue/0.4.1/petite-vue.es.min.js';
 
 /* eslint-disable no-undef */
 const AUTH_REQUEST_MESSAGE = document.getElementsByName('authRequestMessage')[0].value;
@@ -6,12 +6,11 @@ const ERROR_CONNECT_METAMASK = 'Please connect to MetaMask.';
 const ERROR_INSTALL_METAMASK = 'Please install MetaMask.';
 
 createApp({
-    alert: {
-        variant: 'warning',
-        message: '',
-    },
+    isMounted: false,
+    alert: { variant: 'warning', message: '' },
     email: '',
     isLoading: false,
+    isDisabledMetamask: false,
     get isDisabled() {
         return this.email
             ? !this.email.match(
@@ -19,14 +18,19 @@ createApp({
               )
             : true;
     },
+    onMounted() {
+        this.isMounted = true;
+    },
     onClickSubmit() {
         this.isLoading = true;
     },
     onAccountsChanged(accounts) {
+        const { ethereum } = window;
+
         if (!accounts.length) {
             this.alert.message = ERROR_CONNECT_METAMASK;
         } else {
-            window.ethereum
+            ethereum
                 .request({
                     method: 'eth_signTypedData_v3',
                     params: [accounts[0], AUTH_REQUEST_MESSAGE],
@@ -42,22 +46,44 @@ createApp({
                 });
         }
     },
-    signin() {
-        if (typeof window.ethereum !== 'undefined') {
-            window.ethereum
-                .request({ method: 'eth_requestAccounts' })
-                .then(this.onAccountsChanged)
-                .catch((err) => {
-                    if (err.code === 4001) {
-                        this.alert.message = ERROR_CONNECT_METAMASK;
-                    } else {
-                        console.error(err);
-                    }
-                });
+    requestAccounts() {
+        const { ethereum } = window;
+
+        ethereum
+            .request({ method: 'eth_requestAccounts' })
+            .then(this.onAccountsChanged)
+            .catch((err) => {
+                if (err.code === 4001) {
+                    this.alert.message = ERROR_CONNECT_METAMASK;
+                } else {
+                    console.error(err);
+                }
+            });
+    },
+    async onClickSigninMetamask() {
+        if (this.isDisabledMetamask) return;
+        const { ethereum } = window;
+        const isMobile = window.matchMedia('(pointer:coarse)').matches;
+
+        this.isDisabledMetamask = true;
+
+        if (ethereum) {
+            this.requestAccounts();
+        } else if (isMobile && !ethereum) {
+            const claimUrlInput = document.getElementsByName('claimUrl');
+            const claimUrl = claimUrlInput.length ? claimUrlInput[0].value : '';
+            const returnUrlInput = document.getElementsByName('returnUrl');
+            const returnUrl = returnUrlInput.length ? returnUrlInput[0].value : '';
+            const url = new URL(claimUrl || returnUrl);
+            const link = url.href.replace(/.*?:\/\//g, '');
+
+            window.open('https://metamask.app.link/dapp/' + link, '_blank');
         } else {
             this.alert.message = ERROR_INSTALL_METAMASK;
-            console.info(ERROR_INSTALL_METAMASK);
+            console.log(ERROR_INSTALL_METAMASK);
         }
+
+        this.isDisabledMetamask = false;
     },
 }).mount();
 

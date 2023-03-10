@@ -212,7 +212,7 @@ export default class BaseCardReward extends Vue {
             );
         }
         if (this.reward.amount == 1) {
-            this.$store.dispatch('brands/getForPool', this.pool).then(() => {
+            this.$store.dispatch('brands/getForPool', this.pool._id).then(() => {
                 const logoImgUrl = this.brand
                     ? this.brand.logoImgUrl
                     : BASE_URL + require('@thxnetwork/dashboard/../public/assets/qr-logo.jpg');

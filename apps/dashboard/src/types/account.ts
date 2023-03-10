@@ -1,3 +1,5 @@
+import { TMerchant } from '@thxnetwork/types/merchant';
+
 export enum AccountPlanType {
     Basic = 0,
     Premium = 1,
@@ -5,6 +7,7 @@ export enum AccountPlanType {
 
 export interface IAccount {
     sub: string;
+    merchant: TMerchant;
     privateKey: string;
     address: string;
     firstName: string;
@@ -13,6 +16,8 @@ export interface IAccount {
     plan: AccountPlanType;
     profileImg?: string;
     email?: string;
+    logoImgUrl?: string;
+    shopifyStoreUrl?: string;
 }
 export interface IAccountUpdates {
     address: string;

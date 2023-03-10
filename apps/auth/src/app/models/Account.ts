@@ -11,6 +11,7 @@ const accountSchema = new mongoose.Schema(
         firstName: String,
         lastName: String,
         profileImg: String,
+        website: String,
         organisation: String,
         plan: Number,
         // email.sparse allows the value to be null and unique if defined
@@ -25,8 +26,9 @@ const accountSchema = new mongoose.Schema(
         acceptTermsPrivacy: Boolean,
         acceptUpdates: Boolean,
         lastLoginAt: Date,
-        tokens: [{ kind: String, accessToken: String, refreshToken: String, expiry: Number }],
         discordId: String,
+        tokens: [{ kind: String, accessToken: String, refreshToken: String, expiry: Number, userId: String }],
+        shopifyStoreUrl: String,
     },
     { timestamps: true },
 );
@@ -46,7 +48,9 @@ const setToken = async function (data: IAccessToken) {
     if (index < 0) {
         this.tokens.push(data);
     } else {
-        this.tokens[index] = { ...this.tokens[index], ...data };
+        this.tokens[index]['accessToken'] = data.accessToken || this.tokens[index].accessToken;
+        this.tokens[index]['refreshToken'] = data.refreshToken || this.tokens[index].refreshToken;
+        this.tokens[index]['expiry'] = data.expiry || this.tokens[index].expiry;
     }
 };
 

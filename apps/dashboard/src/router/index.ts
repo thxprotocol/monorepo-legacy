@@ -4,6 +4,7 @@ import {
     redirectAccount,
     redirectConfirmationLink,
     redirectPasswordResetLink,
+    redirectPoolTransfer,
     redirectSignin,
     redirectSigninSilent,
     redirectSignout,
@@ -47,14 +48,19 @@ const routes: Array<RouteConfig> = [
                 component: () => import('../views/pool/Widget.vue'),
             },
             {
-                name: 'points',
-                path: 'points',
-                component: () => import('../views/pool/Points.vue'),
+                name: 'conditional',
+                path: 'conditional',
+                component: () => import('../views/pool/Conditional.vue'),
             },
             {
                 name: 'milestones',
                 path: 'milestones',
                 component: () => import('../views/pool/Milestones.vue'),
+            },
+            {
+                name: 'daily',
+                path: 'daily',
+                component: () => import('../views/pool/Daily.vue'),
             },
             {
                 name: 'referrals',
@@ -86,7 +92,7 @@ const routes: Array<RouteConfig> = [
     {
         path: '/preview/:poolId',
         component: () => import('../views/Preview.vue'),
-        beforeEnter: assertAuthorization,
+        // beforeEnter: assertAuthorization,
     },
     {
         name: 'coins',
@@ -122,6 +128,11 @@ const routes: Array<RouteConfig> = [
         name: 'verify email',
         path: '/verify_email',
         beforeEnter: redirectVerifyEmail,
+    },
+    {
+        name: 'pool transfer',
+        path: '/pools/:poolId/transfer/:token',
+        beforeEnter: redirectPoolTransfer,
     },
     {
         name: 'reset password',

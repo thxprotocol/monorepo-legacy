@@ -2,10 +2,12 @@ import axios, { AxiosRequestConfig } from 'axios';
 import {
     DISCORD_API_ENDPOINT,
     GITHUB_API_ENDPOINT,
+    SHOPIFY_API_ENDPOINT,
     SPOTIFY_API_ENDPOINT,
     TWITCH_API_ENDPOINT,
     TWITTER_API_ENDPOINT,
 } from '../config/secrets';
+import { logger } from './logger';
 
 export function spotifyClient(config: AxiosRequestConfig) {
     config.baseURL = SPOTIFY_API_ENDPOINT;
@@ -30,4 +32,13 @@ export function discordClient(config: AxiosRequestConfig) {
 export function twitchClient(config: AxiosRequestConfig) {
     config.baseURL = TWITCH_API_ENDPOINT;
     return axios(config);
+}
+
+export function shopifyClient(shopUrl: string, config: AxiosRequestConfig) {
+    config.baseURL = shopUrl + SHOPIFY_API_ENDPOINT;
+    try {
+        return axios(config);
+    } catch (error) {
+        logger.error(error);
+    }
 }

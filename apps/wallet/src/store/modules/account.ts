@@ -22,11 +22,13 @@ export interface UserProfile {
     authRequestMessage: string;
     authRequestSignature: string;
     variant: AccountVariant;
+    shopifyStoreUrl?: string;
     googleAccess: boolean;
     youtubeViewAccess: boolean;
     youtubeManageAccess: boolean;
     twitterAccess: boolean;
     discordAccess: boolean;
+    shopifyAccess: boolean;
 }
 
 @Module({ namespaced: true })

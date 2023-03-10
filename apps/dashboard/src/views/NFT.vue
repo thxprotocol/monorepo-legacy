@@ -24,6 +24,16 @@
                         <i class="fas fa-plus mr-2"></i>
                         <span class="mr-2">Create NFT</span>
                     </b-button>
+                    <b-button
+                        v-b-modal="'modalNftImport'"
+                        variant="link"
+                        class="text-light"
+                        v-b-tooltip
+                        title="Transfer tokens to your pool and import an existing ERC721 or ERC1155 token contract."
+                    >
+                        <i class="fas fa-arrow-down mr-2"></i>
+                        <span>Import NFT</span>
+                    </b-button>
                 </div>
             </b-jumbotron>
         </div>
@@ -49,6 +59,7 @@
             </b-row>
         </div>
         <modal-erc721-create />
+        <base-modal-nft-import />
     </div>
 </template>
 
@@ -61,6 +72,7 @@ import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty
 import { IERC721s } from '@thxnetwork/dashboard/types/erc721';
 import BaseBtnToggleArchive from '@thxnetwork/dashboard/components/buttons/BaseBtnToggleArchive.vue';
 import BaseModalPoolCreate from '@thxnetwork/dashboard/components/modals/BaseModalPoolCreate.vue';
+import BaseModalNftImport from '@thxnetwork/dashboard/components/modals/BaseModalNftImport.vue';
 
 @Component({
     components: {
@@ -69,6 +81,7 @@ import BaseModalPoolCreate from '@thxnetwork/dashboard/components/modals/BaseMod
         ModalErc721Create,
         BaseNothingHere,
         BaseModalPoolCreate,
+        BaseModalNftImport,
     },
     computed: mapGetters({
         erc721s: 'erc721/all',

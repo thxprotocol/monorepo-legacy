@@ -1,8 +1,9 @@
 import { isValidUrl } from '@thxnetwork/api/util/url';
 import { Request, Response } from 'express';
 import { body } from 'express-validator';
-
 import BrandService from '../../services/BrandService';
+import PoolService from '@thxnetwork/api/services/PoolService';
+import { ForbiddenError } from '@thxnetwork/api/util/errors';
 
 export default {
     validation: [
@@ -14,7 +15,11 @@ export default {
         }),
     ],
     controller: async (req: Request, res: Response) => {
-        const brand = await BrandService.update({ poolId: req.header('X-PoolId') }, req.body);
+        const poolId = req.header('X-PoolId');
+        const pool = await PoolService.getById(poolId);
+        if (pool.sub !== req.auth.sub) throw new ForbiddenError('Not your pool');
+
+        const brand = await BrandService.update({ poolId }, req.body);
         res.json(brand);
     },
 };

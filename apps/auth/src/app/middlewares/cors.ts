@@ -1,19 +1,9 @@
 import cors from 'cors';
-import { Client } from '../models/Client';
-import { AUTH_URL, WALLET_URL, DASHBOARD_URL, WIDGET_URL } from '../config/secrets';
+import { AUTH_URL, WALLET_URL, DASHBOARD_URL, WIDGET_URL, PUBLIC_URL } from '../config/secrets';
 
 export const corsHandler = cors(async (req: any, callback: any) => {
     const origin = req.header('Origin');
-    const allowedOrigins = [AUTH_URL, WALLET_URL, DASHBOARD_URL, WIDGET_URL];
-    const clients = await Client.find({});
-
-    for (const client of clients) {
-        for (const uri of client.payload.request_uris) {
-            if (!allowedOrigins.includes(uri)) {
-                allowedOrigins.push(uri);
-            }
-        }
-    }
+    const allowedOrigins = [AUTH_URL, WALLET_URL, DASHBOARD_URL, WIDGET_URL, PUBLIC_URL];
 
     if (!origin || allowedOrigins.indexOf(origin) > -1) {
         callback(null, {

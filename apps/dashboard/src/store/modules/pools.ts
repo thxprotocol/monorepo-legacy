@@ -4,6 +4,19 @@ import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import { track } from '@thxnetwork/mixpanel';
+import { DASHBOARD_URL } from '@thxnetwork/wallet/utils/secrets';
+import { IAccount } from '@thxnetwork/dashboard/types/account';
+
+type TPoolTransfer = {
+    sub: string;
+    poolId: string;
+    token: string;
+    expiry: Date;
+    isExpired: boolean;
+    isTransferred: boolean;
+    isCopied: boolean;
+    url: string;
+};
 
 export interface IPool {
     _id: string;
@@ -15,6 +28,7 @@ export interface IPool {
     version: string;
     archived: boolean;
     title: string;
+    transfers: TPoolTransfer[];
 }
 
 export interface IPoolAnalytic {
@@ -29,6 +43,12 @@ export interface IPoolAnalytic {
         {
             day: string;
             totalAmount: number;
+        },
+    ];
+    dailyRewards: [
+        {
+            day: string;
+            totalClaimPoints: number;
         },
     ];
     referralRewards: [
@@ -53,15 +73,13 @@ export interface IPoolAnalytic {
 
 export interface IPoolAnalyticLeaderBoard {
     _id: string;
-    sub: string;
     score: number;
-    name: string;
-    email: string;
-    address: string;
+    account: IAccount;
 }
 
 export interface IPoolAnalyticMetrics {
     _id: string;
+    dailyRewards: { totalClaimPoints: number };
     pointRewards: { totalClaimPoints: number };
     referralRewards: { totalClaimPoints: number };
     milestoneRewards: { totalClaimPoints: number };
@@ -113,13 +131,28 @@ class PoolModule extends VuexModule {
     }
 
     @Mutation
+    clearTransfers(pool: IPool) {
+        Vue.set(this._all[pool._id], 'transfers', []);
+    }
+
+    @Mutation
+    setTransfer(poolTransfer: TPoolTransfer) {
+        const pool = this._all[poolTransfer.poolId];
+        poolTransfer.isCopied = false;
+        poolTransfer.url = `${DASHBOARD_URL}/pools/${pool._id}/transfer/${poolTransfer.token}`;
+
+        const transfers = [...(pool.transfers ? pool.transfers : []), poolTransfer];
+        Vue.set(this._all[pool._id], 'transfers', transfers);
+    }
+
+    @Mutation
     setAnalytics(data: IPoolAnalytic) {
         Vue.set(this._analytics, data._id, data);
     }
 
     @Mutation
-    setAnalyticsLeaderBoard(data: IPoolAnalyticLeaderBoard) {
-        Vue.set(this._analyticsLeaderBoard, data._id, data);
+    setAnalyticsLeaderBoard({ poolId, data }: { poolId: string; data: IPoolAnalyticLeaderBoard }) {
+        Vue.set(this._analyticsLeaderBoard, poolId, data);
     }
 
     @Mutation
@@ -135,6 +168,43 @@ class PoolModule extends VuexModule {
     @Mutation
     clear() {
         Vue.set(this, '_all', {});
+    }
+
+    @Action({ rawError: true })
+    async listTransfers(pool: IPool) {
+        this.context.commit('clearTransfers', pool);
+
+        const r = await axios({
+            method: 'GET',
+            url: `/pools/${pool._id}/transfers`,
+            headers: { 'X-PoolId': pool._id },
+        });
+
+        r.data.forEach((poolTransfer: TPoolTransfer) => {
+            this.context.commit('setTransfer', poolTransfer);
+        });
+    }
+
+    @Action({ rawError: true })
+    async refreshTransfers(pool: IPool) {
+        await axios({
+            method: 'POST',
+            url: `/pools/${pool._id}/transfers/refresh`,
+            headers: { 'X-PoolId': pool._id },
+            data: { token: pool.transfers[0].token },
+        });
+        this.context.dispatch('listTransfers', pool);
+    }
+
+    @Action({ rawError: true })
+    async deleteTransfers(pool: IPool) {
+        await axios({
+            method: 'DELETE',
+            url: `/pools/${pool._id}/transfers`,
+            headers: { 'X-PoolId': pool._id },
+            data: { token: pool.transfers[0].token },
+        });
+        this.context.dispatch('listTransfers', pool);
     }
 
     @Action({ rawError: true })
@@ -157,6 +227,7 @@ class PoolModule extends VuexModule {
         const r = await axios({
             method: 'get',
             url: '/pools/' + _id,
+            headers: { 'X-PoolId': _id },
         });
 
         this.context.commit('set', r.data);
@@ -170,8 +241,8 @@ class PoolModule extends VuexModule {
             method: 'get',
             url: `/pools/${payload.poolId}/analytics`,
             params: { startDate: payload.startDate, endDate: payload.endDate },
+            headers: { 'X-PoolId': payload.poolId },
         });
-
         this.context.commit('setAnalytics', r.data);
         return r.data;
     }
@@ -181,9 +252,9 @@ class PoolModule extends VuexModule {
         const r = await axios({
             method: 'get',
             url: `/pools/${payload.poolId}/analytics/leaderboard`,
+            headers: { 'X-PoolId': payload.poolId },
         });
-
-        this.context.commit('setAnalyticsLeaderBoard', { _id: payload.poolId, ...r.data });
+        this.context.commit('setAnalyticsLeaderBoard', { poolId: payload.poolId, data: r.data });
         return r.data;
     }
 
@@ -192,6 +263,7 @@ class PoolModule extends VuexModule {
         const r = await axios({
             method: 'get',
             url: `/pools/${payload.poolId}/analytics/metrics`,
+            headers: { 'X-PoolId': payload.poolId },
         });
         this.context.commit('setAnalyticsMetrics', { _id: payload.poolId, ...r.data });
         return r.data;

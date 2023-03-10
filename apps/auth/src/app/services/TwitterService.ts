@@ -72,18 +72,29 @@ export class TwitterService {
         const user = await this.getUser(accessToken);
         if (!user) throw new Error('Could not find Twitter user.');
 
-        const r = await twitterClient({
-            url: `/users/${channelItem}/followers`,
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        });
+        const maxResults = 1000;
+        let result = false,
+            resultCount = maxResults,
+            params = { max_results: maxResults };
 
-        if (r.status !== 200) throw new Error(ERROR_NOT_AUTHORIZED);
-        if (!r.data) throw new Error(ERROR_NO_DATA);
+        while (resultCount >= maxResults) {
+            const { data } = await twitterClient({
+                url: `/users/${user.id}/following`,
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+                params,
+            });
 
-        return r.data.data ? !!r.data.data.filter((u: { id: number }) => u.id === user.id).length : false;
+            resultCount = data.meta.result_count;
+            params = Object.assign(params, { pagination_token: data.meta.next_token });
+            result = !!data.data.filter((u: { id: string }) => u.id === channelItem).length;
+
+            if (!data.meta.next_token) break;
+        }
+
+        return result;
     }
 
     static async getUser(accessToken: string) {

@@ -3,7 +3,7 @@ import { AbiItem } from 'web3-utils';
 import fs from 'fs';
 import path from 'path';
 
-export const networkNames = ['mumbai', 'matic', 'mumbaidev', 'maticdev', 'hardhat'] as const;
+export const networkNames = ['matic', 'maticdev', 'hardhat'] as const;
 export type TNetworkName = typeof networkNames[number];
 
 export const contractNames = [
@@ -26,6 +26,8 @@ export const contractNames = [
     'ERC20WithdrawFacet',
     'ERC20SwapFacet',
     'ERC721ProxyFacet',
+    'ERC1155ProxyFacet',
+    'ERC1155HolderProxyFacet',
     'SharedWalletFacet',
 
     // Deprecated facets
@@ -48,7 +50,13 @@ export const contractNames = [
     'WithdrawByPollProxyFacet',
 ] as const;
 export type ContractName = typeof contractNames[number];
-export const tokenContractNames = ['LimitedSupplyToken', 'UnlimitedSupplyToken', 'NonFungibleToken'] as const;
+export const tokenContractNames = [
+    'LimitedSupplyToken',
+    'UnlimitedSupplyToken',
+    'NonFungibleToken',
+    'UnlimitedSupplyToken',
+    'THX_ERC1155',
+] as const;
 export type TokenContractName = typeof tokenContractNames[number];
 
 export interface ContractConfig {
@@ -71,6 +79,8 @@ const diamondVariantsConfig: { [key in DiamondVariant]: ContractName[] } = {
         'ERC20WithdrawFacet',
         'ERC20SwapFacet',
         'ERC721ProxyFacet',
+        'ERC1155ProxyFacet',
+        'ERC1155HolderProxyFacet',
     ],
     sharedWallet: ['AccessControlFacet', 'SharedWalletFacet'],
     registry: ['RegistryFacet'],
@@ -82,9 +92,7 @@ export const diamondVariants = Object.keys(diamondVariantsConfig) as DiamondVari
 const cache: { [key in TNetworkName]: { versions: string[]; contracts: { [version: string]: ExportJsonFile } } } = {
     hardhat: { versions: [], contracts: {} },
     matic: { versions: [], contracts: {} },
-    mumbai: { versions: [], contracts: {} },
     maticdev: { versions: [], contracts: {} },
-    mumbaidev: { versions: [], contracts: {} },
 };
 
 const getArtifacts = (network: TNetworkName, version: string) => {

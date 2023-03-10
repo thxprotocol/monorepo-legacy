@@ -21,14 +21,17 @@ export interface IERC721Metadatas {
 export interface TERC721Metadata {
     _id: string;
     beneficiary: string;
-    title: string;
-    description: string;
-    metadata: { key: string; value: string }[];
     tokenId: number;
     createdAt: Date;
-    attributes: [{ key: string; value: string }];
+    imageUrl: string;
+    name: string;
+    image: string;
+    description: string;
+    externalUrl: string;
     tokens: any[];
     page: number;
+    // metadata: { key: string; value: string }[];
+    // attributes: [{ key: string; value: string }];
 }
 
 export type TERC721 = {
@@ -37,12 +40,12 @@ export type TERC721 = {
     chainId: ChainId;
     poolAddress: string;
     address: string;
+    baseURL: string;
     name: string;
     symbol: string;
     totalSupply: string;
     logoURI: string;
     properties: TERC721DefaultProp[];
-    // metadata: { [id: string]: TERC721Metadata };
     archived: boolean;
     poolId?: string;
 };
@@ -84,3 +87,13 @@ export type TMetadataState = {
         byPage: MetadataByPage;
     };
 };
+
+export type TERC721Token = {
+    _id: string;
+    tokenId: number;
+    erc721Id: string;
+};
+
+export interface IERC721Tokens {
+    [id: string]: { [id: string]: TERC721Token };
+}

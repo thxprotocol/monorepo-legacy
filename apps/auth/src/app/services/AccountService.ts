@@ -11,24 +11,13 @@ import { AccountPlanType } from '../types/enums/AccountPlanType';
 import { AccountVariant } from '../types/enums/AccountVariant';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import bcrypt from 'bcrypt';
+import { ShopifyService } from './ShopifyService';
+import { logger } from '../util/logger';
+// import { SignTypedDataVersion, recoverTypedSignature } from '@metamask/eth-sig-util';
 
-function getKindFromVariant(variant: AccountVariant): AccessTokenKind {
-    switch (variant) {
-        case AccountVariant.SSOGoogle:
-            return AccessTokenKind.Google;
-        case AccountVariant.SSOTwitter:
-            return AccessTokenKind.Twitter;
-        case AccountVariant.SSOGithub:
-            return AccessTokenKind.Github;
-        case AccountVariant.SSODiscord:
-            return AccessTokenKind.Discord;
-        case AccountVariant.SSOTwitch:
-            return AccessTokenKind.Twitch;
-    }
-}
 export class AccountService {
-    static get(sub: string) {
-        return Account.findById(sub);
+    static async get(sub: string) {
+        return await Account.findById(sub);
     }
 
     static getByDiscordId(discordId: string) {
@@ -43,40 +32,15 @@ export class AccountService {
         return Account.findOne({ address });
     }
 
-    static getByTwitterId(twitterId: string) {
-        return Account.findOne({ twitterId });
-    }
-
-    static async isActiveUserByEmail(email: string) {
-        return await Account.exists({ email, active: true });
-    }
-
     static async update(account: AccountDocument, updates: IAccountUpdates) {
-        if (updates.email) {
-            account.email = updates.email;
-        }
-        // No strict checking here since null == undefined
-        if (account.acceptTermsPrivacy == null) {
-            account.acceptTermsPrivacy = updates.acceptTermsPrivacy == null ? false : account.acceptTermsPrivacy;
-        } else {
-            account.acceptTermsPrivacy = updates.acceptTermsPrivacy || account.acceptTermsPrivacy;
-        }
-
-        if (updates.organisation) {
-            account.organisation = updates.organisation;
-        }
-
-        if (updates.firstName) {
-            account.firstName = updates.firstName;
-        }
-
-        if (updates.lastName) {
-            account.lastName = updates.lastName;
-        }
-
-        if (updates.lastLoginAt) {
-            account.lastLoginAt = updates.lastLoginAt;
-        }
+        account.email = updates.email || account.email;
+        account.profileImg = updates.profileImg || account.profileImg;
+        account.firstName = updates.firstName || account.firstName;
+        account.lastName = updates.lastName || account.lastName;
+        account.plan = updates.plan || account.plan;
+        account.organisation = updates.organisation || account.organisation;
+        account.address = updates.address ? toChecksumAddress(updates.address) : account.address;
+        account.acceptUpdates = updates.acceptUpdates === null ? false : account.acceptUpdates;
 
         if (updates.profileImg) {
             account.profileImg = updates.profileImg;
@@ -90,37 +54,43 @@ export class AccountService {
             account.plan = updates.plan;
         }
 
-        if (account.acceptUpdates == null) {
-            account.acceptUpdates = updates.acceptUpdates == null ? false : account.acceptUpdates;
-        } else {
-            account.acceptUpdates = updates.acceptUpdates || account.acceptTermsPrivacy;
+        try {
+            account.website = updates.website ? new URL(updates.website).hostname : account.website;
+        } catch {
+            // no-op
         }
 
-        if (updates.authenticationToken || updates.authenticationTokenExpires) {
-            account.setToken({
-                kind: AccessTokenKind.Auth,
-                accessToken: updates.authenticationToken,
-                expiry: updates.authenticationTokenExpires,
-            });
-        }
-
-        if (updates.address) {
-            account.address = toChecksumAddress(updates.address);
-        }
+        // if (updates.authRequestMessage && updates.authRequestSignature) {
+        //     const address = recoverTypedSignature({
+        //         data: JSON.parse(updates.authRequestMessage),
+        //         signature: updates.authRequestSignature,
+        //         version: 'V3' as SignTypedDataVersion,
+        //     });
+        //     account.address = address || account.address;
+        // }
 
         if (updates.googleAccess === false) {
-            YouTubeService.revokeAccess(account, AccessTokenKind.Google);
-            account.unsetToken(AccessTokenKind.Google);
+            const token = account.getToken(AccessTokenKind.Google);
+            if (token) {
+                await YouTubeService.revokeAccess(account, token);
+                account.unsetToken(AccessTokenKind.Google);
+            }
         }
 
         if (updates.youtubeViewAccess === false) {
-            YouTubeService.revokeAccess(account, AccessTokenKind.YoutubeView);
-            account.unsetToken(AccessTokenKind.YoutubeView);
+            const token = account.getToken(AccessTokenKind.YoutubeView);
+            if (token) {
+                await YouTubeService.revokeAccess(account, token);
+                account.unsetToken(AccessTokenKind.YoutubeView);
+            }
         }
 
         if (updates.youtubeManageAccess === false) {
-            YouTubeService.revokeAccess(account, AccessTokenKind.YoutubeManage);
-            account.unsetToken(AccessTokenKind.YoutubeManage);
+            const token = account.getToken(AccessTokenKind.YoutubeManage);
+            if (token) {
+                await YouTubeService.revokeAccess(account, token);
+                account.unsetToken(AccessTokenKind.YoutubeManage);
+            }
         }
 
         if (updates.twitterAccess === false) {
@@ -140,7 +110,19 @@ export class AccountService {
             account.discordId = null;
         }
 
-        await account.save();
+        if (updates.shopifyAccess === false) {
+            const token = account.getToken(AccessTokenKind.Shopify);
+            try {
+                await ShopifyService.revokeAccess(account.shopifyStoreUrl, token.accessToken);
+            } catch (error) {
+                logger.error(error);
+            } finally {
+                account.shopifyStoreUrl = undefined;
+                account.unsetToken(AccessTokenKind.Shopify);
+            }
+        }
+
+        return await account.save();
     }
 
     static async signinWithAddress(addr: string) {
@@ -151,8 +133,6 @@ export class AccountService {
         return await Account.create({
             address,
             variant: AccountVariant.Metamask,
-            acceptTermsPrivacy: true,
-            acceptUpdates: true,
             plan: AccountPlanType.Basic,
             active: true,
         });
@@ -176,21 +156,16 @@ export class AccountService {
         }
         // Find account for userId
         else if (tokenInfo.userId) {
-            // Map AccountVariant to AccessTokenKind and search for userId in tokenInfo
-            const kind = getKindFromVariant(variant);
-            account = await Account.findOne({ 'tokens.userId': tokenInfo.userId, 'tokens.kind': kind });
+            account = await Account.findOne({ 'tokens.userId': tokenInfo.userId, 'tokens.kind': tokenInfo.kind });
         }
 
         // When no account is matched, create the account.
         if (!account) {
-            account = await Account.create({
-                email,
-                variant,
-                acceptTermsPrivacy: true,
-                acceptUpdates: true,
-                plan: AccountPlanType.Basic,
-                active: true,
-            });
+            const data = { variant, plan: AccountPlanType.Basic, active: true };
+            if (email) {
+                data['email'] = email;
+            }
+            account = await Account.create(data);
         }
 
         // Always udpate latest tokenInfo for account
@@ -199,13 +174,11 @@ export class AccountService {
         return await account.save();
     }
 
-    static async signup(data: { email?: string; variant: AccountVariant; active: boolean; twitterId?: string }) {
+    static async signup(data: { email?: string; variant: AccountVariant; active: boolean }) {
         let account: AccountDocument;
 
         if (data.email) {
             account = await Account.findOne({ email: data.email, active: false });
-        } else if (data.twitterId) {
-            account = await Account.findOne({ twitterId: data.twitterId });
         }
 
         if (!account) {
@@ -213,8 +186,6 @@ export class AccountService {
                 email: data.email,
                 active: data.active,
                 variant: data.variant,
-                acceptTermsPrivacy: true,
-                acceptUpdates: true,
                 plan: AccountPlanType.Basic,
             });
         }
@@ -222,10 +193,7 @@ export class AccountService {
         account.active = data.active;
         account.email = data.email;
         account.variant = data.variant;
-        account.acceptTermsPrivacy = true;
-        account.acceptUpdates = true;
         account.plan = AccountPlanType.Basic;
-        account.twitterId = data.twitterId;
 
         return await account.save();
     }

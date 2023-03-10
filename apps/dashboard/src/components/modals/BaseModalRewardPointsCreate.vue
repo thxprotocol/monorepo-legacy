@@ -1,8 +1,8 @@
 <template>
-    <base-modal size="xl" title="Create Points Reward" :id="id" :error="error" :loading="isLoading" @show="onShow">
+    <base-modal size="xl" title="Create Conditional Reward" :id="id" :error="error" :loading="isLoading" @show="onShow">
         <template #modal-body v-if="!isLoading">
             <p class="text-gray">
-                Points rewards are distributed to your customers that have completed reward conditions in external
+                Conditional rewards are distributed to your customers that have completed reward conditions in external
                 platforms.
             </p>
             <form v-on:submit.prevent="onSubmit()" id="formRewardPointsCreate">
@@ -55,6 +55,7 @@ import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardRewardQRCodes from '../cards/BaseCardRewardQRCodes.vue';
 import { mapGetters } from 'vuex';
 import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
+import { IAccount } from '@thxnetwork/dashboard/types/account';
 
 @Component({
     components: {
@@ -65,6 +66,7 @@ import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork
     },
     computed: mapGetters({
         totals: 'pointRewards/totals',
+        profile: 'account/profile',
     }),
 })
 export default class ModalRewardPointsCreate extends Vue {
@@ -81,7 +83,7 @@ export default class ModalRewardPointsCreate extends Vue {
         interaction: platformInteractionList[0].type,
         content: '',
     };
-
+    profile!: IAccount;
     @Prop() id!: string;
     @Prop() pool!: IPool;
     @Prop({ required: false }) reward!: TPointReward;

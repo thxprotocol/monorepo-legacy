@@ -1,6 +1,9 @@
 <template>
     <div>
-        <b-jumbotron class="large" v-lazy:background-image="require('../../../public/assets/img/thx_jumbotron_token_bg.webp')">
+        <b-jumbotron
+            class="large"
+            v-lazy:background-image="require('../../../public/assets/img/thx_jumbotron_token_bg.webp')"
+        >
             <div class="container">
                 <div class="row">
                     <div class="col-lg-4 d-flex flex-column justify-content-center align-items-start">
@@ -18,9 +21,7 @@
                             <div>
                                 <i class="fas fa-video mr-3"></i>
                             </div>
-                            <p>
-                                Web conferencing details provided upon confirmation.
-                            </p>
+                            <p>Web conferencing details provided upon confirmation.</p>
                         </div>
                         <p class="mb-3 text-white">
                             THX Network allows you to create and embed your own tokens in any app or website, boosting
@@ -81,13 +82,13 @@
             <div class="container">
                 <div class="row py-5">
                     <div class="col-lg-3 mb-3 mb-lg-0">
-                        <strong class="h2 ">THX Network Communities</strong>
+                        <strong class="h2">THX Network Communities</strong>
                     </div>
                     <div class="col-lg-3 align-items-center d-flex">
                         <div class="d-flex py-2">
                             <div
                                 class="d-inline-flex p-3 bg-dark rounded-circle text-secondary mr-3"
-                                style="width: 50px; height: 50px;"
+                                style="width: 50px; height: 50px"
                             >
                                 <i class="fab fa-twitter"></i>
                             </div>
@@ -101,7 +102,7 @@
                         <div class="d-flex py-2">
                             <div
                                 class="d-inline-flex p-3 bg-dark rounded-circle text-secondary mr-3"
-                                style="width: 50px; height: 50px;"
+                                style="width: 50px; height: 50px"
                             >
                                 <i class="fab fa-discord"></i>
                             </div>
@@ -115,7 +116,7 @@
                         <div class="d-flex py-2">
                             <div
                                 class="d-inline-flex p-3 bg-dark rounded-circle text-secondary mr-3"
-                                style="width: 50px; height: 50px;"
+                                style="width: 50px; height: 50px"
                             >
                                 <i class="fab fa-telegram-plane"></i>
                             </div>

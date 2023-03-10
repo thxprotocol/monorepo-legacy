@@ -24,7 +24,7 @@
 
             <template v-if="!isLoading && claimedReward">
                 <template v-if="claimedReward.erc20">
-                    <div class="img-treasure" :style="`background-image: url(${imgUrl});`"></div>
+                    <div class="img-treasure" :style="`background-image: url(${defaultImgUrl});`"></div>
                     <h2 class="text-secondary text-center my-3">
                         <strong>Congratulations!</strong> You have received
                         <strong>{{ claimedReward.withdrawal.amount }} {{ claimedReward.erc20.symbol }}</strong>
@@ -110,6 +110,13 @@ import { UserProfile } from '../store/modules/account';
 import { RewardConditionInteraction, RewardConditionPlatform, TERC20Perk, TERC721Perk } from '@thxnetwork/types/index';
 import { TERC20 } from '../store/modules/erc20';
 import { TWallet } from '../types/Wallet';
+import { ChainId } from '@thxnetwork/sdk/types/enums/ChainId';
+import poll from 'promise-poller';
+
+const getChainId = (claim: TClaim) => {
+    const { erc20, erc721 } = claim;
+    return erc20 ? erc20.chainId : erc721.chainId;
+};
 
 type TClaim = {
     metadata: TERC721Metadata;
@@ -135,6 +142,7 @@ type TClaim = {
 export default class Collect extends Vue {
     $confetti!: { start: (options: unknown) => void; stop: () => void };
     imgUrl = '';
+    defaultImgUrl = require('@thxnetwork/wallet/../public/assets/img/thx_treasure.png');
     format = format;
     error = '';
     isLoading = true;
@@ -175,7 +183,15 @@ export default class Collect extends Vue {
         // Get claim information based on url claimUuid or rewardHash. rewardHash will be deprecated
         this.claim = await this.$store.dispatch('assetpools/getClaim', this.state.claimUuid);
         if (!this.claim) return;
+
         this.reward = this.claim.reward;
+
+        // Set correct chain
+        const chainId = getChainId(this.claim);
+        this.$store.commit('setChainId', chainId);
+
+        // Wait for wallet to be deployed
+        await this.waitForAddress(this.user.profile.sub, chainId);
 
         // If no condition applies claim directly
         if (!this.claim.reward.platform) {
@@ -202,6 +218,18 @@ export default class Collect extends Vue {
         }
     }
 
+    async waitForAddress(sub: string, chainId: ChainId) {
+        const taskFn = async () => {
+            await this.$store.dispatch('walletManagers/getWallet', { sub, chainId });
+            if (!this.wallet.address) {
+                return Promise.reject(`sub: ${sub} chainId: ${chainId} withdrawals pending`);
+            } else {
+                return Promise.resolve();
+            }
+        };
+        return poll({ taskFn, interval: 3000, retries: 10 });
+    }
+
     async claimReward() {
         try {
             this.isLoading = true;
@@ -218,7 +246,7 @@ export default class Collect extends Vue {
                 this.$store.commit('erc721/set', this.claim.erc721);
 
                 const imgUrl = this.firstImageURL(this.claim.metadata);
-                this.imgUrl = imgUrl ? imgUrl : require('@thxnetwork/wallet/../public/assets/img/thx_treasure.png');
+                this.imgUrl = imgUrl ? imgUrl : this.defaultImgUrl;
             } else if (this.claim && this.claim.erc20) {
                 await this.$store.dispatch('network/connect', this.claim.erc20.chainId);
             }
@@ -238,14 +266,7 @@ export default class Collect extends Vue {
     }
 
     firstImageURL(metadata: TERC721Metadata) {
-        let url = '';
-        this.claim?.erc721.properties.forEach((p) => {
-            if (p.propType === 'image') {
-                const prop = metadata.attributes.find((a: { value: string; key: string }) => a.key === p.name);
-                url = prop?.value as string;
-            }
-        });
-        return url;
+        return metadata.imageUrl;
     }
 
     startConfetti() {

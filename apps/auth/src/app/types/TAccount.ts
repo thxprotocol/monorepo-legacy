@@ -6,6 +6,7 @@ export interface TAccount {
     lastName: string;
     profileImg: string;
     plan: AccountPlanType;
+    website: string;
     organisation: string;
     active: boolean;
     isEmailVerified: boolean;
@@ -22,6 +23,7 @@ export interface TAccount {
     comparePassword: any;
     tokens: IAccessToken[];
     discordId?: string;
+    shopifyStoreUrl?: string;
     getToken: (token: AccessTokenKind) => IAccessToken;
     setToken: (token: IAccessToken) => IAccessToken;
     unsetToken: (token: AccessTokenKind) => void;
@@ -37,6 +39,7 @@ export interface IAccessToken {
     userId?: string;
 }
 export interface IAccountUpdates {
+    website?: string;
     acceptTermsPrivacy?: boolean;
     acceptUpdates?: boolean;
     address?: string;
@@ -48,6 +51,7 @@ export interface IAccountUpdates {
     githubAccess?: boolean;
     twitchAccess?: boolean;
     discordAccess?: boolean;
+    shopifyAccess?: boolean;
     authenticationToken?: string;
     authenticationTokenExpires?: number;
     lastLoginAt?: number;

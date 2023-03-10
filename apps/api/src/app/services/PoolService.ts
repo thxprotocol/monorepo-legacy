@@ -76,15 +76,14 @@ async function deployCallback(args: TAssetPoolDeployCallbackArgs, receipt: Trans
 
     // if is the first pool for the account, create dummy contents for the pool
     const poolsCount = await AssetPool.find({ sub: pool.sub }).count();
-    if (poolsCount > 1) {
-        return;
-    }
+    if (poolsCount > 1) return;
+
     await createDummyContents(pool);
 }
 
 async function getAllBySub(sub: string, archived = false) {
-    if (archived) return AssetPool.find({ sub });
-    return AssetPool.find({ sub, archived });
+    if (archived) return await AssetPool.find({ sub });
+    return await AssetPool.find({ sub, archived });
 }
 
 function getAll() {

@@ -214,18 +214,11 @@ export class YouTubeService {
             });
     }
 
-    static async revokeAccess(account: AccountDocument, accessTokenKind: AccessTokenKind) {
-        const token: IAccessToken | undefined = account.getToken(accessTokenKind);
-        if (!token) throw new Error('Could not find the token');
-
-        const r = await axios({
+    static async revokeAccess(account: AccountDocument, token: IAccessToken) {
+        return await axios({
             url: `https://oauth2.googleapis.com/revoke?token=${token.accessToken}`,
             method: 'POST',
         });
-
-        if (r.status !== 200) throw new Error('Could not revoke access token');
-
-        return r.data;
     }
 
     static getLoginUrl(uid: string, scope: string[]) {

@@ -111,7 +111,7 @@
             "client_secret_expires_at": 0,
             "client_secret": "o7RMGeLieULzp0bAiuq6nfukFBCLKxo8N867SzeZNrinshSb15W9NggU93CdtrE_0jTWLUl3U2YkcXYtD3hdcQ",
             "redirect_uris": [],
-            "scope": "openid brands:read claims:write claims:read wallets:write wallets:read"
+            "scope": "openid brands:read claims:write claims:read wallets:write wallets:read pools:write"
         }
     },
     {
@@ -134,7 +134,7 @@
             "client_secret_expires_at": 0,
             "client_secret": "9rfpbMSwVxEaZUpmsCWVldpO-xy7H13YT5AoMIdFNUX9pWosR3cTfoDyJgnuqFqepqRXbgMhb0PFYwOWgwQoEQ",
             "redirect_uris": ["https://localhost:8080/signin-popup.html"],
-            "scope": "openid account:read erc20:read erc721:read point_balances:read referral_rewards:read point_rewards:read wallets:read"
+            "scope": "openid account:read erc20:read erc721:read point_balances:read referral_rewards:read point_rewards:read wallets:read wallets:write"
         }
     },
     {

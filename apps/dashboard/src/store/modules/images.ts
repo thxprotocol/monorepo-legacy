@@ -7,15 +7,15 @@ class ImageModule extends VuexModule {
     async upload(file: File) {
         const formData = new FormData();
         formData.append('file', file);
-        const response = await axios({
+
+        const { data } = await axios({
             url: '/upload',
             method: 'PUT',
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
+            headers: { 'Content-Type': 'multipart/form-data' },
             data: formData,
         });
-        return response.data.publicUrl;
+
+        return data.publicUrl;
     }
 }
 

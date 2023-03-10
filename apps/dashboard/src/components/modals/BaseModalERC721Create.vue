@@ -26,7 +26,7 @@
         </template>
         <template #btn-primary>
             <b-button :disabled="loading" class="rounded-pill" @click="submit()" variant="primary" block>
-                Create NFT collection
+                Create NFT
             </b-button>
         </template>
     </base-modal>
@@ -36,14 +36,12 @@
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import { ERC721Variant, TERC721, TERC721DefaultProp } from '@thxnetwork/dashboard/types/erc721';
 import { Component, Vue } from 'vue-property-decorator';
-import BaseCardERC721DefaultPropertyConfig from '../cards/BaseCardERC721DefaultPropertyConfig.vue';
 import BaseFormSelectNetwork from '../form-select/BaseFormSelectNetwork.vue';
 import BaseModal from './BaseModal.vue';
 
 @Component({
     components: {
         BaseModal,
-        BaseCardERC721DefaultPropertyConfig,
         BaseFormSelectNetwork,
     },
 })

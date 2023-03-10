@@ -12,10 +12,9 @@ const validation = [
     body('erc721metadataIds').exists().isString(),
     body('claimAmount').exists().isInt({ lt: 1000 }),
     body('expiryDate').optional().isString(),
-    body('platform').exists().isNumeric(),
-    body('interaction').optional().isNumeric(),
-    body('content').optional().isString(),
     body('pointPrice').optional().isNumeric(),
+    body('price').isInt(),
+    body('priceCurrency').isString(),
     check('file')
         .optional()
         .custom((value, { req }) => {
@@ -26,14 +25,16 @@ const validation = [
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['RewardsNft']
-    let reward = await ERC721PerkService.get(req.params.id);
-    if (!reward) throw new NotFoundError('Could not find the reward');
-    let image: string | undefined;
+    let perk = await ERC721PerkService.get(req.params.id);
+    if (!perk) throw new NotFoundError('Could not find the perk');
+
+    let image: string;
     if (req.file) {
         const response = await ImageService.upload(req.file);
         image = ImageService.getPublicUrl(response.key);
     }
-    reward = await ERC721PerkService.update(reward, {
+
+    perk = await ERC721PerkService.update(perk, {
         poolId: req.header('X-PoolId'),
         erc721metadataId: JSON.parse(req.body.erc721metadataIds)[0],
         image,
@@ -43,12 +44,15 @@ const controller = async (req: Request, res: Response) => {
         expiryDate: req.body.expiryDate,
         claimAmount: req.body.claimAmount,
         pointPrice: req.body.pointPrice,
+        price: req.body.price,
+        priceCurrency: req.body.priceCurrency,
         isPromoted: req.body.isPromoted,
         interaction: req.body.interaction,
         platform: req.body.platform,
         content: req.body.content,
     } as TERC721Perk);
-    return res.json(reward);
+
+    return res.json(perk);
 };
 
 export default { controller, validation };

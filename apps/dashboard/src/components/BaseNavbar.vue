@@ -67,44 +67,17 @@
                     <base-navbar-nav :routes="perkRoutes" />
                     <hr />
                 </template>
-                <label class="px-3 text-muted">Contracts</label>
                 <base-navbar-nav :routes="tokenRoutes" />
             </div>
-            <div class="d-flex justify-content-end flex-column flex-grow-0 w-100">
+            <div class="d-flex justify-content-end flex-column flex-grow-0 w-100 border-top py-2">
                 <b-navbar-nav>
                     <b-nav-item to="/account" class="nav-link-plain">
                         <div class="nav-link-wrapper">
                             <div class="nav-link-icon">
-                                <b-avatar
-                                    v-if="account.profileImg"
-                                    size="sm"
-                                    variant="light"
-                                    :src="account.profileImg"
-                                ></b-avatar>
-                                <b-avatar v-else size="sm" variant="light"></b-avatar>
+                                <b-avatar size="sm" variant="light" :src="account.profileImg"></b-avatar>
                             </div>
                             <div class="flex-grow-1 align-items-center d-flex">
                                 <span>Account</span>
-                            </div>
-                        </div>
-                    </b-nav-item>
-                    <b-nav-item :href="docsUrl" target="_blank" class="nav-link-plain">
-                        <div class="nav-link-wrapper">
-                            <div class="nav-link-icon">
-                                <i class="far fa-file-alt"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <span>User Guides</span>
-                            </div>
-                        </div>
-                    </b-nav-item>
-                    <b-nav-item href="https://discord.com/invite/TzbbSmkE7Y" target="_blank" class="nav-link-plain">
-                        <div class="nav-link-wrapper">
-                            <div class="nav-link-icon">
-                                <i class="fas fa-question"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <span>Support</span>
                             </div>
                         </div>
                     </b-nav-item>
@@ -174,12 +147,17 @@ export default class BaseNavbar extends Vue {
         if (!this.selectedPool) return;
         return [
             {
+                path: `/pool/${this.selectedPool._id}/daily`,
+                label: 'Daily',
+                iconClasses: 'fas fa-calendar',
+            },
+            {
                 path: `/pool/${this.selectedPool._id}/referrals`,
                 label: 'Referrals',
                 iconClasses: 'fas fa-comments',
             },
             {
-                path: `/pool/${this.selectedPool._id}/points`,
+                path: `/pool/${this.selectedPool._id}/conditional`,
                 label: 'Conditional',
                 iconClasses: 'fas fa-trophy',
             },
@@ -223,7 +201,7 @@ export default class BaseNavbar extends Vue {
             },
             {
                 path: `/pool/${this.selectedPool._id}/clients`,
-                label: 'Clients',
+                label: 'API Access',
                 iconClasses: 'fas fa-key',
                 isPremium: true,
             },

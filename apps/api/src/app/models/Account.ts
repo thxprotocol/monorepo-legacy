@@ -7,12 +7,14 @@ export interface IAccount {
     youtubeViewAccess: boolean;
     youtubeManageAccess: boolean;
     twitterAccess: boolean;
+    shopifyAccess: boolean;
     youtube?: any;
     twitter?: any;
     plan: AccountPlanType;
     email: string;
     firstName: string;
     lastName: string;
+    shopifyStoreUrl?: string;
     getAddress: (chainId: ChainId) => Promise<string>;
 }
 export interface ERC20Token {
