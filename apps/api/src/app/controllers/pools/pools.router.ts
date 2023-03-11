@@ -8,7 +8,6 @@ import PoolsAnalyticsMetrics from './analytics/metrics/get.controller';
 import DeletePool from './delete.controller';
 import ListPools from './list.controller';
 import CreatePoolTopup from './topup/post.controller';
-import VerifyPoolAccess from './get.verify.controller';
 import CreatePoolTransfer from './transfers/post.controller';
 import DeletePoolTransfer from './transfers/delete.controller';
 import CreatePoolTransferRefresh from './transfers/refresh/post.controller';
@@ -59,12 +58,6 @@ router.get(
     assertAssetPoolOwnership,
     assertRequestInput(ReadPool.validation),
     ReadPool.controller,
-);
-router.get(
-    '/:id/discord/:discordId/verify',
-    guard.check(['pools:read']),
-    assertRequestInput(VerifyPoolAccess.validation),
-    VerifyPoolAccess.controller,
 );
 router.get(
     '/:id/analytics',

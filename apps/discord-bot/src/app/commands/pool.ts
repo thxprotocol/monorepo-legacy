@@ -6,7 +6,7 @@ import {
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
     channelLink,
-    GuildChannel,
+    hyperlink,
 } from 'discord.js';
 import { thxClient } from '../configs/oidc';
 import GuildService from '../services/guild.service';
@@ -39,6 +39,11 @@ export default {
             new SlashCommandSubcommandBuilder()
                 .setName('disconnect')
                 .setDescription('Disconnect the connected pool from the server. '),
+        )
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder()
+                .setName('rewards')
+                .setDescription('List earne-able rewards for this pool.'),
         ),
     executor: async (interaction: CommandInteraction) => {
         const isAdmin = (interaction.member.permissions as any).has(PermissionFlagsBits.Administrator);
@@ -125,6 +130,47 @@ export default {
                 channel.send('Bye!:wave: I hope you enjoy your rewards:pray:');
 
                 await GuildService.disconnect(guild.id);
+                break;
+            }
+
+            case 'rewards': {
+                const guild = await GuildService.get(interaction.guildId);
+                if (!guild) return interaction.reply({ content: `Server connection not found.`, ephemeral: true });
+
+                const { dailyRewards, pointRewards } = await thxClient.rewardsManager.list();
+
+                const dailyRewardEmbed = new EmbedBuilder()
+                    .setTitle(':calendar: Daily rewards')
+                    .addFields(
+                        dailyRewards.map((r) => {
+                            return {
+                                name: `${r.title} (${r.amount})`,
+                                value: r.description,
+                            };
+                        }),
+                    )
+                    .setFooter({
+                        text: 'Earn points every day with daily rewards.',
+                        iconURL: 'https://auth.thx.network/img/logo.png',
+                    });
+
+                const conditonalRewardEmbed = new EmbedBuilder()
+                    .setTitle(':sparkles: Conditional rewards')
+                    .addFields(
+                        pointRewards.map((r) => {
+                            return {
+                                name: `${r.title} (${r.amount})`,
+                                value: r.description,
+                            };
+                        }),
+                    )
+                    .setFooter({
+                        text: 'Earn points for engagement in other platforms with conditional rewards.',
+                        iconURL: 'https://auth.thx.network/img/logo.png',
+                    });
+
+                interaction.reply({ embeds: [dailyRewardEmbed, conditonalRewardEmbed], ephemeral: true });
+                break;
             }
         }
     },

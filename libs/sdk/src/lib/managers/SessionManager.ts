@@ -8,7 +8,7 @@ export default class SessionManager extends CacheManager<Session> {
         super(client, session);
     }
 
-    async update(session: Session) {
+    update(session: Session) {
         this._cached = { ...this._cached, ...session };
     }
 
