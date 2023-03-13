@@ -8,7 +8,6 @@ import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import ShopifyDataProxy from '@thxnetwork/api/proxies/ShopifyDataProxy';
 import { ShopifyPerkPayment } from '@thxnetwork/api/models/ShopifyPerkPayment';
 import { ShopifyDiscountCode } from '@thxnetwork/api/models/ShopifyDiscountCode';
-import crypto from 'crypto';
 import { generateRandomString } from '@thxnetwork/api/util/random';
 
 const validation = [param('uuid').exists()];
@@ -16,7 +15,6 @@ const validation = [param('uuid').exists()];
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Perks Payment']
     const pool = await PoolService.getById(req.header('X-PoolId'));
-
     const shopifyPerk = await ShopifyPerk.findOne({ uuid: req.params.uuid });
     if (!shopifyPerk) throw new NotFoundError('Could not find this perk');
 
@@ -25,13 +23,12 @@ const controller = async (req: Request, res: Response) => {
         throw new BadRequestError('Not enough points on this account for this perk.');
 
     const account = await AccountProxy.getById(req.auth.sub);
-
+    const poolAccount = await AccountProxy.getById(pool.sub);
     const discountCode = await ShopifyDataProxy.createDiscountCode(
-        account,
+        poolAccount,
         shopifyPerk.priceRuleId,
         shopifyPerk.discountCode + '#' + generateRandomString(5).toUpperCase(),
     );
-
     await ShopifyDiscountCode.create({
         sub: account.sub,
         poolId: pool._id,
@@ -40,15 +37,12 @@ const controller = async (req: Request, res: Response) => {
         priceRuleId: discountCode.price_rule_id,
         code: discountCode.code,
     });
-
     const shopifyPerkPayment = await ShopifyPerkPayment.create({
         perkId: shopifyPerk._id,
         sub: req.auth.sub,
         poolId: pool._id,
     });
-
     await PointBalanceService.subtract(pool, req.auth.sub, shopifyPerk.pointPrice);
-
     res.status(201).json({ discountCode, shopifyPerkPayment });
 };
 

@@ -6,21 +6,15 @@ import UpdateShopifyPerk from './patch.controller';
 import ListShopifyPerk from './list.controller';
 import ListShopifyPriceRules from './price-rules/list.controller';
 import DeleteShopifyPerk from './delete.controller';
-import ListShopifyDiscountCodes from './discount-codes/list.controller';
 import { upload } from '@thxnetwork/api/util/multer';
 
 const router = express.Router();
+
 router.get(
     '/price-rules',
     guard.check(['shopify_rewards:read']),
     assertAssetPoolOwnership,
     ListShopifyPriceRules.controller,
-);
-router.get(
-    '/discount-codes',
-    guard.check(['shopify_rewards:read']),
-    assertAssetPoolOwnership,
-    ListShopifyDiscountCodes.controller,
 );
 router.get('/', guard.check(['shopify_rewards:read']), assertAssetPoolOwnership, ListShopifyPerk.controller);
 router.get(
