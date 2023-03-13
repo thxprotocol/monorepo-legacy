@@ -1,9 +1,9 @@
 import { REST, Routes } from 'discord.js';
-import { DISCORD_CLIENT_ID, TOKEN } from '../configs/secrets';
+import { DISCORD_CLIENT_ID, BOT_TOKEN } from '../configs/secrets';
 import { ICommand } from '../types/ICommand';
 import { logger } from './logger';
 
-const rest = new REST({ version: '10' }).setToken(TOKEN);
+const rest = new REST({ version: '10' }).setToken(BOT_TOKEN);
 
 const commandRegister = async (commandRouter: ICommand[], guildId?: string) => {
     // Grab the SlashCommandBuilder#toJSON() output of each command's data for deployment
