@@ -14,6 +14,9 @@ module.exports = {
     const auth = await clientColl.findOne({
       'payload.client_name': 'THX Auth',
     });
+    const widget = await clientColl.findOne({
+      'payload.client_name': 'THX Widget',
+    });
 
     await clientColl.updateOne(
       { _id: wallet._id },
@@ -29,6 +32,10 @@ module.exports = {
     );
     await clientColl.updateOne(
       { _id: auth._id },
+      { $set: { 'payload.scope': auth.payload.scope + ' shopify_rewards:read' } },
+    );
+    await clientColl.updateOne(
+      { _id: widget._id },
       { $set: { 'payload.scope': auth.payload.scope + ' shopify_rewards:read' } },
     );
 
