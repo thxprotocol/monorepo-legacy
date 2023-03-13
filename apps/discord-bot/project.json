@@ -51,6 +51,21 @@
                 "jestConfig": "apps/discord-bot/jest.config.ts",
                 "passWithNoTests": true
             }
+        },
+        "migrate-db": {
+            "dependsOn": ["^build"],
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "node migrate-mongo.js up",
+                "cwd": "dist/apps/discord-bot"
+            }
+        },
+        "migrate-db-create": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "migrate-mongo create -f src/app/config/migrate-mongo-create-only.json",
+                "cwd": "apps/discord-bot"
+            }
         }
     },
     "tags": []
