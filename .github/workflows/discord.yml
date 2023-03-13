@@ -29,7 +29,7 @@ jobs:
         name: 'Bump Version on develop'
         runs-on: ubuntu-latest
         if: github.ref == 'refs/heads/develop'
-        # needs: buildAndTest
+        needs: buildAndTest
         outputs:
             newTag: ${{ steps.version-bump.outputs.newTag }}
 
@@ -106,7 +106,7 @@ jobs:
         name: Build and Push Hotfix docker image
         runs-on: ubuntu-latest
         if: startsWith(github.ref,'refs/heads/hotfix/')
-        # needs: buildAndTest
+        needs: buildAndTest
         steps:
             - name: Checkout
               uses: actions/checkout@v2
