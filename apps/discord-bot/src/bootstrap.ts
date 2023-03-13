@@ -1,5 +1,5 @@
 import { Client, GatewayIntentBits } from 'discord.js';
-import { MONGODB_URI, TOKEN } from './app/configs/secrets';
+import { MONGODB_URI, BOT_TOKEN } from './app/configs/secrets';
 
 import eventRouter from './app/events';
 import eventRegister from './app/utils/eventRegister';
@@ -12,5 +12,5 @@ eventRegister(client, eventRouter);
 export default async () => {
     await database.connect(MONGODB_URI);
     await thxClient.init();
-    client.login(TOKEN);
+    client.login(BOT_TOKEN);
 };

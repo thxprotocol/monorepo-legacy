@@ -1,0 +1,21 @@
+version: '3.5'
+
+# This compose file only works when used in conjunction with the default docker-compose file.
+# docker compose -f docker-compose.yml -r docker-compose.auth.yml
+
+services:    
+    auth:
+        container_name: thx_discord
+        build:
+            context: .
+            dockerfile: apps/discord-bot/Dockerfile
+            target: develop
+        volumes:
+            - ./coverage/apps/discord-bot:/usr/src/app/coverage/apps/discord-bot
+        env_file: 
+          - apps/discord/.env.example
+          - apps/discord/.env.ci
+        ports:
+            - 3041:3040
+        depends_on:
+            - mongo
