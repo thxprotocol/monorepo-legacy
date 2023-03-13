@@ -1,7 +1,7 @@
 <template>
     <b-form-group label="Tweet URL">
         <b-form-input
-            @change="onChange"
+            @input="onInput"
             :value="url"
             :state="state"
             placeholder="e.g. https://twitter.com/twitter/status/1603121182101970945"
@@ -35,10 +35,10 @@ export default class BaseDropdownTwitterTweets extends Vue {
     // https://twitter.com/twitter/status/1603121182101970945
     mounted() {
         this.url = this.item ? 'https://twitter.com/twitter/status/' + this.item : '';
-        if (this.url) this.onChange(this.url);
+        if (this.url) this.onInput(this.url);
     }
 
-    async onChange(url: string) {
+    async onInput(url: string) {
         const urlParts = url.split('/');
         const tweetId = urlParts[urlParts.length - 1];
         const isValid = url.includes('twitter.com') && url.includes('status');
