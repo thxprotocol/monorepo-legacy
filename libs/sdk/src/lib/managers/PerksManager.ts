@@ -6,8 +6,8 @@ class PerksManager extends BaseManager {
         super(client);
     }
 
-    async list() {
-        return await this.client.request.get(`/v1/perks`);
+    async list(poolId?: string) {
+        return await this.client.request.get(`/v1/perks`, { poolId });
     }
 
     erc20 = {

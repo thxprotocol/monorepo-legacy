@@ -6,8 +6,8 @@ class RewardsManager extends BaseManager {
         super(client);
     }
 
-    async list() {
-        return await this.client.request.get(`/v1/rewards`);
+    async list(poolId?: string) {
+        return await this.client.request.get(`/v1/rewards`, { poolId });
     }
 
     points = {

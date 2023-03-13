@@ -91,6 +91,32 @@
                 </b-form-row>
                 <hr />
             </template>
+            <template v-if="profile && profile.plan === 1">
+                <b-form-row>
+                    <b-col md="4">
+                        <strong>Discord</strong>
+                        <p class="text-muted">Install THX Bot to increase engagement in your Discord server.</p>
+                    </b-col>
+                    <b-col md="8">
+                        <b-form-row>
+                            <b-col md="12">
+                                <b-alert show variant="info" class="d-flex align-items-center">
+                                    <i class="fab fa-discord mr-2"></i>
+                                    Install THX Bot to increase engagement in your Discord server.
+                                    <b-button
+                                        class="rounded-pill ml-auto"
+                                        variant="primary"
+                                        href="https://discord.com/api/oauth2/authorize?client_id=837684067352838184&permissions=133120&scope=bot"
+                                    >
+                                        Install THX Bot
+                                    </b-button>
+                                </b-alert>
+                            </b-col>
+                        </b-form-row>
+                    </b-col>
+                </b-form-row>
+                <hr />
+            </template>
             <b-form-row>
                 <b-col md="4">
                     <strong>Widget Theming</strong>
