@@ -1,5 +1,5 @@
 import { REST, Routes } from 'discord.js';
-import { DISCORD_CLIENT_ID, BOT_TOKEN } from '../configs/secrets';
+import { DISCORD_CLIENT_ID, BOT_TOKEN } from '../config/secrets';
 import { ICommand } from '../types/ICommand';
 import { logger } from './logger';
 

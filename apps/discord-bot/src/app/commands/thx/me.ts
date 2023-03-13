@@ -1,5 +1,5 @@
 import { CommandInteraction, EmbedBuilder } from 'discord.js';
-import { thxClient } from '../../configs/oidc';
+import { thxClient } from '../../config/oidc';
 import guildService from '../../services/guild.service';
 
 export const onSubcommandMe = async (interaction: CommandInteraction) => {

@@ -1,7 +1,7 @@
 import GuildService from '../../services/guild.service';
 import { client } from '../../../bootstrap';
 import { CommandInteractionOptionResolver, PermissionFlagsBits, channelLink } from 'discord.js';
-import { thxClient } from '@thxnetwork/discord/configs/oidc';
+import { thxClient } from '../../config/oidc';
 
 export const onSubcommandConnect = async (interaction) => {
     const options = interaction.options as CommandInteractionOptionResolver;

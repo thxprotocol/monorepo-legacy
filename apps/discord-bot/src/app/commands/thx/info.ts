@@ -1,5 +1,5 @@
 import { EmbedBuilder, channelLink } from 'discord.js';
-import { thxClient } from '../../configs/oidc';
+import { thxClient } from '../../config/oidc';
 import GuildService from '../../services/guild.service';
 import { client } from '../../../bootstrap';
 
