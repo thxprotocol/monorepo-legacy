@@ -10,7 +10,14 @@
                 "outputPath": "dist/apps/discord-bot",
                 "main": "apps/discord-bot/src/main.ts",
                 "tsConfig": "apps/discord-bot/tsconfig.app.json",
-                "assets": ["apps/discord-bot/src/assets"]
+                "assets": ["apps/discord-bot/src/assets"],
+                "additionalEntryPoints": [
+                    {
+                        "entryPath": "apps/auth/scripts/migrate-mongo.ts",
+                        "entryName": "migrate-mongo"
+                    }
+                ],
+                "generatePackageJson": true
             },
             "configurations": {
                 "production": {
@@ -68,5 +75,5 @@
             }
         }
     },
-    "tags": []
+    "tags": ["backend"]
 }
