@@ -4,7 +4,7 @@ version: '3.5'
 # docker compose -f docker-compose.yml -r docker-compose.auth.yml
 
 services:    
-    auth:
+    discord:
         container_name: thx_discord
         build:
             context: .
