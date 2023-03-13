@@ -1,7 +1,8 @@
-import { EmbedBuilder, channelLink } from 'discord.js';
+import { EmbedBuilder } from 'discord.js';
 import { thxClient } from '../../config/oidc';
 import GuildService from '../../services/guild.service';
 import { client } from '../../../bootstrap';
+import { version } from '../../../../package.json';
 
 export const onSubcommandInfo = async (interaction) => {
     const guild = await GuildService.get(interaction.guildId);
@@ -29,8 +30,8 @@ export const onSubcommandInfo = async (interaction) => {
                 inline: true,
             },
             {
-                name: 'Notifications',
-                value: `[${channel.name}](${channelLink(guild.channelId, guild.id)})`,
+                name: 'Version',
+                value: `v${version}`,
                 inline: true,
             },
         );
