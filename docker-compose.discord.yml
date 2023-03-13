@@ -13,8 +13,8 @@ services:
         volumes:
             - ./coverage/apps/discord-bot:/usr/src/app/coverage/apps/discord-bot
         env_file: 
-          - apps/discord/.env.example
-          - apps/discord/.env.ci
+          - apps/discord-bot/.env.example
+          - apps/discord-bot/.env.ci
         ports:
             - 3041:3040
         depends_on:

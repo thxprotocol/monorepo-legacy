@@ -4,26 +4,26 @@ on:
     push:
 
 jobs:
-    # buildAndTest:
-    #     name: CI Pipeline
-    #     runs-on: ubuntu-latest
+    buildAndTest:
+        name: CI Pipeline
+        runs-on: ubuntu-latest
 
-    #     steps:
-    #         - name: Checkout repository
-    #           uses: actions/checkout@v3
-    #           with:
-    #               fetch-depth: 0
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
 
-    #         - name: Run test
-    #           run: docker compose -f docker-compose.yml -f docker-compose.discord.yml run -T discord sh -c "npx nx lint discord"
+            - name: Run test
+              run: docker compose -f docker-compose.yml -f docker-compose.discord.yml run -T discord sh -c "npx nx lint discord-bot"
 
-    #         - name: SonarCloud Scan
-    #           uses: SonarSource/sonarcloud-github-action@master
-    #           env:
-    #               GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #               SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-    #           with:
-    #               projectBaseDir: apps/discord-bot
+            # - name: SonarCloud Scan
+            #   uses: SonarSource/sonarcloud-github-action@master
+            #   env:
+            #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            #       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+            #   with:
+            #       projectBaseDir: apps/discord-bot
 
     bumpVersion:
         name: 'Bump Version on develop'
