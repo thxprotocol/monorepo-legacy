@@ -17,4 +17,6 @@ export type TAssetPool = {
     archived?: boolean;
     title: string;
     discordWebhookUrl?: string;
+    isTwitterSyncEnabled: boolean;
+    defaultTwitterConditionalRewardSettings?: string;
 };

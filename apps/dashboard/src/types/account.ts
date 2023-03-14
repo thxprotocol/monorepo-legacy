@@ -18,6 +18,7 @@ export interface IAccount {
     email?: string;
     logoImgUrl?: string;
     shopifyStoreUrl?: string;
+    twitterAccess: boolean;
 }
 export interface IAccountUpdates {
     address: string;

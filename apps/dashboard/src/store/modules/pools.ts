@@ -30,6 +30,8 @@ export interface IPool {
     title: string;
     transfers: TPoolTransfer[];
     discordWebhookUrl?: string;
+    isTwitterSyncEnabled: boolean;
+    defaultTwitterConditionalRewardSettings?: string;
 }
 
 export interface IPoolAnalytic {

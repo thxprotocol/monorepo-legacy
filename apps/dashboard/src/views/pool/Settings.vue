@@ -168,6 +168,60 @@
                     </b-form-row>
                 </b-col>
             </b-form-row>
+
+            <b-form-row v-if="profile && profile.twitterAccess">
+                <b-col md="4">
+                    <strong>Automated Conditional Rewards</strong>
+                    <p class="text-muted">Configure the required params to generate automated conditional rewards</p>
+                </b-col>
+                <b-col md="8">
+                    <b-form-row>
+                        <b-col md="8">
+                            <div class="mb-3 d-flex align-items-center">
+                                <img height="20" :src="require('../../../public/assets/logo-twitter.png')" alt="" />
+                                <strong>Twitter</strong>
+                            </div>
+                            <b-form-group>
+                                <b-form-checkbox v-model="isTwitterSyncEnabled" @change="onTwitterSyncChange"
+                                    >Sync Enabled</b-form-checkbox
+                                >
+                            </b-form-group>
+                        </b-col>
+                    </b-form-row>
+                    <b-form-row v-if="isTwitterSyncEnabled">
+                        <b-col md="8">
+                            <b-form-group label="Default title">
+                                <b-form-input v-model="twitterDeafultTitle" />
+                            </b-form-group>
+                        </b-col>
+                    </b-form-row>
+                    <b-form-row v-if="isTwitterSyncEnabled">
+                        <b-col md="8">
+                            <b-form-group label="Default description">
+                                <b-form-input v-model="twitterDeafultDescription" />
+                            </b-form-group>
+                        </b-col>
+                    </b-form-row>
+                    <b-form-row v-if="isTwitterSyncEnabled">
+                        <b-col md="8">
+                            <b-form-group label="Default amount">
+                                <b-form-input v-model="twitterDeafultAmount" />
+                            </b-form-group>
+                        </b-col>
+                    </b-form-row>
+                    <b-form-row v-if="isTwitterSyncEnabled">
+                        <b-col md="8">
+                            <b-button
+                                class="rounded-pill ml-auto"
+                                variant="primary"
+                                @click="updateAutomatedConditionalRewards"
+                            >
+                                Save
+                            </b-button></b-col
+                        ></b-form-row
+                    >
+                </b-col>
+            </b-form-row>
         </b-card>
     </div>
 </template>
@@ -209,6 +263,11 @@ export default class SettingsView extends Vue {
     isLoadingMerchantCreate = false;
     isLoadingMerchantCreateLink = false;
     isLoadingMerchantDisconnect = false;
+
+    isTwitterSyncEnabled = false;
+    twitterDeafultTitle: string | null = null;
+    twitterDeafultDescription: string | null = null;
+    twitterDeafultAmount: string | null = null;
 
     get urlDiscordBotInstall() {
         return `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&permissions=133120&scope=bot`;
@@ -256,6 +315,15 @@ export default class SettingsView extends Vue {
             this.logoImgUrl = this.brand.logoImgUrl;
         }
         await this.$store.dispatch('merchants/read');
+        if (this.pool) {
+            this.isTwitterSyncEnabled = this.pool.isTwitterSyncEnabled;
+            if (this.pool.defaultTwitterConditionalRewardSettings) {
+                const settings = JSON.parse(this.pool.defaultTwitterConditionalRewardSettings);
+                this.twitterDeafultTitle = settings.title;
+                this.twitterDeafultDescription = settings.description;
+                this.twitterDeafultAmount = settings.amount;
+            }
+        }
 
         this.loading = false;
     }
@@ -288,7 +356,13 @@ export default class SettingsView extends Vue {
                 backgroundImgUrl: this.backgroundImgUrl,
                 logoImgUrl: this.logoImgUrl,
             },
+            defaultTwitterConditionalRewardSettings: {
+                title: this.twitterDeafultTitle,
+                description: this.twitterDeafultDescription,
+                amount: this.twitterDeafultAmount,
+            },
         });
+
         this.loading = false;
     }
     async onChangeDiscordWebhookUrl(value: string) {
@@ -316,6 +390,32 @@ export default class SettingsView extends Vue {
         await this.$store.dispatch('merchants/delete');
         await this.$store.dispatch('account/getProfile');
         this.isLoadingMerchantDisconnect = false;
+    }
+
+    async onTwitterSyncChange() {
+        if (this.profile.twitterAccess) {
+            await this.$store.dispatch('pools/update', {
+                pool: this.pool,
+                data: {
+                    isTwitterSyncEnabled: this.isTwitterSyncEnabled,
+                },
+            });
+        }
+    }
+
+    async updateAutomatedConditionalRewards() {
+        if (this.profile.twitterAccess) {
+            await this.$store.dispatch('pools/update', {
+                pool: this.pool,
+                data: {
+                    defaultTwitterConditionalRewardSettings: JSON.stringify({
+                        title: this.twitterDeafultTitle,
+                        description: this.twitterDeafultDescription,
+                        amount: this.twitterDeafultAmount,
+                    }),
+                },
+            });
+        }
     }
 }
 </script>

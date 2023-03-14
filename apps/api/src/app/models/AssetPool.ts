@@ -16,6 +16,8 @@ const assetPoolSchema = new mongoose.Schema(
         archived: Boolean,
         title: String,
         discordWebhookUrl: String,
+        isTwitterSyncEnabled: { type: Boolean, default: false },
+        defaultTwitterConditionalRewardSettings: String,
     },
     { timestamps: true },
 );
