@@ -74,7 +74,7 @@ export const onSubcommandInfo = async (interaction) => {
     if (erc20Perks.length) {
         embed
             .addFields({
-                name: ':diamond_shape_with_a_dot_inside: Coin Perks',
+                name: ':gem: Coin Perks',
                 value: 'Redeem points for coins.',
             })
             .addFields(
