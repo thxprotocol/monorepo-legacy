@@ -5,7 +5,7 @@ FROM node:16-alpine as develop
 
 WORKDIR /usr/src/app
 
-ENV NODE_OPTIONS="--max_old_space_size=4096"
+ENV NODE_OPTIONS="--max_old_space_size=8192"
 
 RUN apk --no-cache add g++ make py3-pip 
 COPY package.json yarn.lock ./
