@@ -16,4 +16,5 @@ export type TAssetPool = {
     variant?: DiamondVariant;
     archived?: boolean;
     title: string;
+    discordWebhookUrl?: string;
 };

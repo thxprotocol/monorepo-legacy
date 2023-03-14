@@ -29,6 +29,7 @@ export interface IPool {
     archived: boolean;
     title: string;
     transfers: TPoolTransfer[];
+    discordWebhookUrl?: string;
 }
 
 export interface IPoolAnalytic {

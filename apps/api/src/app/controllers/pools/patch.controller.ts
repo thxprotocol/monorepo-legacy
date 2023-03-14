@@ -6,8 +6,9 @@ import { AssetPool } from '@thxnetwork/api/models/AssetPool';
 
 export const validation = [
     param('id').exists(),
-    body('archived').exists().isBoolean(),
+    body('archived').optional().isBoolean(),
     body('title').optional().isString(),
+    body('discordWebhookUrl').optional({ checkFalsy: true }).isURL(),
 ];
 
 export const controller = async (req: Request, res: Response) => {

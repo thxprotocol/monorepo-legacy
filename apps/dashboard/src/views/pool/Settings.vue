@@ -106,9 +106,12 @@
                     </b-alert>
                     <b-form-group
                         label="Announcements"
-                        description="Provide a webhook URL connect to the channel where you want to publish notifications about newly created rewards."
+                        description="Discord webhook URL for publishing notifications about newly created rewards."
                     >
-                        <b-form-input placeholder="https://eawgw"></b-form-input>
+                        <b-form-input
+                            :value="pool.discordWebhookUrl"
+                            @change="onChangeDiscordWebhookUrl"
+                        ></b-form-input>
                     </b-form-group>
                 </b-col>
             </b-form-row>
@@ -285,6 +288,14 @@ export default class SettingsView extends Vue {
                 backgroundImgUrl: this.backgroundImgUrl,
                 logoImgUrl: this.logoImgUrl,
             },
+        });
+        this.loading = false;
+    }
+    async onChangeDiscordWebhookUrl(value: string) {
+        this.loading = true;
+        await this.$store.dispatch('pools/update', {
+            pool: this.pool,
+            data: { discordWebhookUrl: value },
         });
         this.loading = false;
     }

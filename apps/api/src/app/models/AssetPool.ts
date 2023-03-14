@@ -15,6 +15,7 @@ const assetPoolSchema = new mongoose.Schema(
         version: String,
         archived: Boolean,
         title: String,
+        discordWebhookUrl: String,
     },
     { timestamps: true },
 );
