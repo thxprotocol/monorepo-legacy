@@ -42,11 +42,7 @@ const routes: Array<RouteConfig> = [
                 path: 'dashboard',
                 component: () => import('../views/pool/Dashboard.vue'),
             },
-            {
-                name: 'widget',
-                path: 'widget',
-                component: () => import('../views/pool/Widget.vue'),
-            },
+
             {
                 name: 'conditional',
                 path: 'conditional',
@@ -78,14 +74,36 @@ const routes: Array<RouteConfig> = [
                 component: () => import('../views/pool/ERC721Perks.vue'),
             },
             {
-                name: 'clients',
-                path: 'clients',
-                component: () => import('../views/pool/Clients.vue'),
-            },
-            {
-                name: 'settings',
+                name: 'Settings',
                 path: 'settings',
                 component: () => import('../views/pool/Settings.vue'),
+                children: [
+                    {
+                        name: 'General',
+                        path: 'general',
+                        component: () => import('../views/pool/settings/General.vue'),
+                    },
+                    {
+                        name: 'Discord',
+                        path: 'discord',
+                        component: () => import('../views/pool/settings/Discord.vue'),
+                    },
+                    {
+                        name: 'Commerce',
+                        path: 'commerce',
+                        component: () => import('../views/pool/settings/Commerce.vue'),
+                    },
+                    {
+                        name: 'Widget',
+                        path: 'widget',
+                        component: () => import('../views/pool/settings/Widget.vue'),
+                    },
+                    {
+                        name: 'API',
+                        path: 'api',
+                        component: () => import('../views/pool/settings/API.vue'),
+                    },
+                ],
             },
         ],
     },
