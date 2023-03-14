@@ -2,10 +2,7 @@
     "name": "@thxnetwork/discord-bot",
     "contributors": [
         "Peter Polman <peter@thx.network>",
-        "GarfDev <garfdev.13@gmail.com>",
-        "Valeria Grazzini <vgrazzini@gmail.com>",
-        "Bram Rongen <mail@bramrongen.nl>",
-        "Justina Mary <justinamary27@gmail.com>"
+        "GarfDev <garfdev.13@gmail.com>"
     ],
     "license": "AGPL-3.0",
     "version": "1.0.11",

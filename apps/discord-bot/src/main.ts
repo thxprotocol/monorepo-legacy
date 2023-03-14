@@ -8,4 +8,5 @@ if (!globalThis.fetch) {
 }
 
 dotenv.config();
+
 bootstrap();
