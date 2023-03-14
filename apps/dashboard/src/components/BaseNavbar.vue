@@ -194,18 +194,6 @@ export default class BaseNavbar extends Vue {
                 iconClasses: 'fas fa-chart-line',
             },
             {
-                path: `/pool/${this.selectedPool._id}/widget`,
-                label: 'Widget',
-                iconClasses: 'fas fa-code',
-                isNew: true,
-            },
-            {
-                path: `/pool/${this.selectedPool._id}/clients`,
-                label: 'API Access',
-                iconClasses: 'fas fa-key',
-                isPremium: true,
-            },
-            {
                 path: `/pool/${this.selectedPool._id}/settings`,
                 label: 'Settings',
                 iconClasses: 'fas fa-cog',
