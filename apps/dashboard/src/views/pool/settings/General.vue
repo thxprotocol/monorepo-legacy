@@ -72,35 +72,27 @@
                 <b-form-row v-if="isTwitterSyncEnabled">
                     <b-col md="8">
                         <b-form-group label="Default title">
-                            <b-form-input v-model="twitterDeafultTitle" />
+                            <b-form-input v-model="twitterDeafultTitle" @change="updateAutomatedConditionalRewards" />
                         </b-form-group>
                     </b-col>
                 </b-form-row>
                 <b-form-row v-if="isTwitterSyncEnabled">
                     <b-col md="8">
                         <b-form-group label="Default description">
-                            <b-form-input v-model="twitterDeafultDescription" />
+                            <b-form-input
+                                v-model="twitterDeafultDescription"
+                                @change="updateAutomatedConditionalRewards"
+                            />
                         </b-form-group>
                     </b-col>
                 </b-form-row>
                 <b-form-row v-if="isTwitterSyncEnabled">
                     <b-col md="8">
                         <b-form-group label="Default amount">
-                            <b-form-input v-model="twitterDeafultAmount" />
+                            <b-form-input v-model="twitterDeafultAmount" @change="updateAutomatedConditionalRewards" />
                         </b-form-group>
                     </b-col>
                 </b-form-row>
-                <b-form-row v-if="isTwitterSyncEnabled">
-                    <b-col md="8">
-                        <b-button
-                            class="rounded-pill ml-auto"
-                            variant="primary"
-                            @click="updateAutomatedConditionalRewards"
-                        >
-                            Save
-                        </b-button></b-col
-                    ></b-form-row
-                >
             </b-col>
         </b-form-row>
     </b-form-row>
