@@ -71,7 +71,7 @@ export const onSubcommandInfo = async (interaction: CommandInteraction) => {
     if (erc20Perks.length) {
         embed.addFields(
             erc20Perks.map((r) => {
-                return { name: r.title, value: r.title };
+                return { name: `${r.pointPrice}`, value: r.title };
             }),
         );
         embed.addFields({ name: ' ', value: ' ' });
@@ -80,7 +80,7 @@ export const onSubcommandInfo = async (interaction: CommandInteraction) => {
     if (erc721Perks.length) {
         embed.addFields(
             erc721Perks.map((r) => {
-                return { name: r.pointPrice, value: r.title };
+                return { name: `${r.pointPrice}`, value: r.title };
             }),
         );
         embed.addFields({ name: ' ', value: ' ' });
