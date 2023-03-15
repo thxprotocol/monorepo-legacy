@@ -5,6 +5,7 @@ import {
     SlashCommandSubcommandBuilder,
 } from 'discord.js';
 import { onSubcommandInfo, onSubcommandDisconnect, onSubcommandConnect, onSubcommandMe } from './thx/index';
+import { onSubcommandError } from './error';
 
 export default {
     data: new SlashCommandBuilder()
@@ -38,24 +39,28 @@ export default {
             new SlashCommandSubcommandBuilder().setName('me').setDescription('Your point balance for this pool.'),
         ),
     executor: async (interaction: CommandInteraction) => {
-        const options = interaction.options as CommandInteractionOptionResolver;
-        switch (options.getSubcommand()) {
-            case 'connect': {
-                await onSubcommandConnect(interaction);
-                break;
+        try {
+            const options = interaction.options as CommandInteractionOptionResolver;
+            switch (options.getSubcommand()) {
+                case 'connect': {
+                    await onSubcommandConnect(interaction);
+                    break;
+                }
+                case 'disconnect': {
+                    await onSubcommandDisconnect(interaction);
+                    break;
+                }
+                case 'info': {
+                    await onSubcommandInfo(interaction);
+                    break;
+                }
+                case 'me': {
+                    await onSubcommandMe(interaction);
+                    break;
+                }
             }
-            case 'disconnect': {
-                await onSubcommandDisconnect(interaction);
-                break;
-            }
-            case 'info': {
-                await onSubcommandInfo(interaction);
-                break;
-            }
-            case 'me': {
-                await onSubcommandMe(interaction);
-                break;
-            }
+        } catch (error) {
+            await onSubcommandError(interaction, error);
         }
     },
 };

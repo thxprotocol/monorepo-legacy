@@ -10,7 +10,7 @@
                 "outputPath": "dist/apps/discord-bot",
                 "main": "apps/discord-bot/src/main.ts",
                 "tsConfig": "apps/discord-bot/tsconfig.app.json",
-                "assets": ["apps/discord-bot/src/assets"],
+                "assets": ["apps/discord-bot/src/assets", "apps/discord-bot/src/app/migrations"],
                 "additionalEntryPoints": [
                     {
                         "entryPath": "apps/discord-bot/scripts/migrate-mongo.ts",
