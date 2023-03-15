@@ -6,14 +6,14 @@
                 <b-tab active>
                     <template #title>
                         <i class="fas fa-cog mr-1"></i>
-                        Settings
+                        General
                     </template>
                     <BaseTabSettingsGeneral />
                 </b-tab>
                 <b-tab>
                     <template #title>
                         <div class="d-flex align-items-center">
-                            <i class="fas fa-code mr-2"></i>
+                            <i class="fas fa-gift mr-2"></i>
                             Widget
                         </div>
                     </template>
@@ -30,6 +30,7 @@
                     <template #title>
                         <i class="fas fa-tags mr-1"></i>
                         Commerce
+                        <b-badge variant="dark" class="ml-2 text-white"> New </b-badge>
                     </template>
                     <BaseTabSettingsCommerce />
                 </b-tab>
@@ -38,20 +39,22 @@
                         <div class="d-flex align-items-center">
                             <i class="fas fa-key mr-1"></i>
                             API
-                            <b-badge variant="dark" class="ml-2 text-white">Premium</b-badge>
+                            <b-badge v-if="profile && profile.plan !== 1" variant="dark" class="ml-2 text-white">
+                                Premium
+                            </b-badge>
                         </div>
                     </template>
                     <BaseTabSettingsApi />
                 </b-tab>
                 <template #tabs-end>
                     <b-button
-                        variant="dark"
+                        variant="success"
                         class="d-flex align-items-center ml-auto rounded-pill"
                         target="_blank"
                         :href="`${dashboardUrl}/preview/${$route.params.id}`"
                     >
                         <i class="fas fa-search mr-2"></i>
-                        Preview
+                        Preview Widget
                     </b-button>
                 </template>
             </b-tabs>
@@ -90,3 +93,10 @@ export default class SettingsView extends Vue {
     dashboardUrl = DASHBOARD_URL;
 }
 </script>
+<style>
+.nav-pills .nav-link.active,
+.nav-pills .show > .nav-link {
+    color: var(--primary);
+    background-color: #e9ecef;
+}
+</style>

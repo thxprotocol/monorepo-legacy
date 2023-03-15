@@ -1,9 +1,9 @@
 import GuildService from '../../services/guild.service';
 import { client } from '../../../bootstrap';
-import { CommandInteractionOptionResolver, PermissionFlagsBits, channelLink } from 'discord.js';
+import { CommandInteraction, CommandInteractionOptionResolver, PermissionFlagsBits, channelLink } from 'discord.js';
 import { thxClient } from '../../config/oidc';
 
-export const onSubcommandConnect = async (interaction) => {
+export const onSubcommandConnect = async (interaction: CommandInteraction) => {
     const options = interaction.options as CommandInteractionOptionResolver;
     const poolId = options.getString('pool_id', true);
     const channelId = options.getString('channel_id', true);

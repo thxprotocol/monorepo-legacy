@@ -67,6 +67,7 @@
                     <base-navbar-nav :routes="perkRoutes" />
                     <hr />
                 </template>
+                <label class="px-3 text-muted">Blockchain</label>
                 <base-navbar-nav :routes="tokenRoutes" />
             </div>
             <div class="d-flex justify-content-end flex-column flex-grow-0 w-100 border-top py-2">

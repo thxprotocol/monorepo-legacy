@@ -25,7 +25,7 @@
                                 <b-skeleton-img no-aspect height="110px"></b-skeleton-img>
                             </template>
                             <b-card v-if="metrics" bg-variant="dark" class="shadow-sm text-white">
-                                <span>Daily (pts)</span><br />
+                                <span>Daily</span><br />
                                 <div class="h2">{{ metrics.dailyRewards.totalClaimPoints }}</div>
                             </b-card>
                         </b-skeleton-wrapper>
@@ -36,7 +36,7 @@
                                 <b-skeleton-img no-aspect height="110px"></b-skeleton-img>
                             </template>
                             <b-card v-if="metrics" bg-variant="dark" class="shadow-sm text-white">
-                                <span>Referrals (pts)</span><br />
+                                <span>Referrals</span><br />
                                 <div class="h2">{{ metrics.referralRewards.totalClaimPoints }}</div>
                             </b-card>
                         </b-skeleton-wrapper>
@@ -47,7 +47,7 @@
                                 <b-skeleton-img no-aspect height="110px"></b-skeleton-img>
                             </template>
                             <b-card v-if="metrics" bg-variant="dark" class="shadow-sm text-white">
-                                <span>Conditionals (pts)</span><br />
+                                <span>Conditionals</span><br />
                                 <div class="h2">{{ metrics.pointRewards.totalClaimPoints }}</div>
                             </b-card>
                         </b-skeleton-wrapper>
@@ -58,7 +58,7 @@
                                 <b-skeleton-img no-aspect height="110px"></b-skeleton-img>
                             </template>
                             <b-card v-if="metrics" bg-variant="dark" class="shadow-sm text-white">
-                                <span>Milestones (pts)</span><br />
+                                <span>Milestones</span><br />
                                 <div class="h2">{{ metrics.milestoneRewards.totalClaimPoints }}</div>
                             </b-card>
                         </b-skeleton-wrapper>
@@ -132,7 +132,7 @@
                                 <b-skeleton-img no-aspect height="110px"></b-skeleton-img>
                             </template>
                             <b-card v-if="metrics" bg-variant="dark" class="shadow-sm text-white">
-                                <span>Coin Perks (#)</span><br />
+                                <span>Coin Perks</span><br />
                                 <div class="h2">{{ metrics.erc20Perks.payments }}</div>
                             </b-card>
                         </b-skeleton-wrapper>
@@ -143,7 +143,7 @@
                                 <b-skeleton-img no-aspect height="110px"></b-skeleton-img>
                             </template>
                             <b-card v-if="metrics" bg-variant="dark" class="shadow-sm text-white">
-                                <span>NFT Perks (#)</span><br />
+                                <span>NFT Perks</span><br />
                                 <div class="h2">{{ metrics.erc721Perks.payments }}</div>
                             </b-card>
                         </b-skeleton-wrapper>

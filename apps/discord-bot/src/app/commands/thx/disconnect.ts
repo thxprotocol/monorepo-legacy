@@ -1,8 +1,8 @@
 import GuildService from '../../services/guild.service';
 import { client } from '../../../bootstrap';
-import { PermissionFlagsBits } from 'discord.js';
+import { CommandInteraction, PermissionFlagsBits } from 'discord.js';
 
-export async function onSubcommandDisconnect(interaction) {
+export const onSubcommandDisconnect = async (interaction: CommandInteraction) => {
     const guild = await GuildService.get(interaction.guildId);
     if (!guild) return interaction.reply({ content: `Server connection not found.`, ephemeral: true });
 
@@ -17,4 +17,4 @@ export async function onSubcommandDisconnect(interaction) {
     channel.send('Bye!:wave: I hope you enjoy your rewards:pray:');
 
     return await GuildService.disconnect(guild.id);
-}
+};
