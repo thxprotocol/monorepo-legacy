@@ -44,7 +44,7 @@ export const onSubcommandInfo = async (interaction: CommandInteraction) => {
             dailyRewards.map((r) => {
                 return {
                     name: `• ${r.amount} │ ${r.title}`,
-                    value: r.description,
+                    value: r.description || ' ',
                 };
             }),
         );
@@ -55,7 +55,7 @@ export const onSubcommandInfo = async (interaction: CommandInteraction) => {
             pointRewards.map((r) => {
                 return {
                     name: `• ${r.amount} │ ${r.title} `,
-                    value: r.description,
+                    value: r.description || ' ',
                 };
             }),
         );
@@ -72,7 +72,7 @@ export const onSubcommandInfo = async (interaction: CommandInteraction) => {
             erc20Perks.map((r) => {
                 return {
                     name: `• ${r.amount} │ ${r.title}`,
-                    value: r.description,
+                    value: r.description || ' ',
                 };
             }),
         );
@@ -87,7 +87,7 @@ export const onSubcommandInfo = async (interaction: CommandInteraction) => {
             erc721Perks.map((r) => {
                 return {
                     name: `• ${r.amount} │ ${r.title}`,
-                    value: r.description,
+                    value: r.description || ' ',
                 };
             }),
         );
