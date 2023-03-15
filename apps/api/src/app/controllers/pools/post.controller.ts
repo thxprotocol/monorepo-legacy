@@ -16,7 +16,7 @@ const controller = async (req: Request, res: Response) => {
         uuid: v4(),
         align: 'right',
         message: 'Hi there!👋 Click me to earn rewards and collect crypto perks...',
-        domain: '',
+        domain: 'https://www.example.com',
         color: '#FFFFFF',
         bgColor: '#5942C1',
         theme: 'dark',
