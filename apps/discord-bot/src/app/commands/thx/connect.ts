@@ -15,7 +15,7 @@ export const onSubcommandConnect = async (interaction: CommandInteraction) => {
             ephemeral: true,
         });
 
-    const account = await thxClient.account.getByDiscordId(interaction.user.id).catch();
+    const { account } = await thxClient.account.getByDiscordId(interaction.user.id).catch();
     if (!account)
         return interaction.reply({
             content: 'Please connect your THX Account with Discord first.',
@@ -41,15 +41,14 @@ export const onSubcommandConnect = async (interaction: CommandInteraction) => {
         });
     }
 
+    await GuildService.connect(interaction.guildId, poolId, channelId);
+
     const guild = await GuildService.get(interaction.guildId);
     if (!guild) {
         const channel: any = client.channels.cache.get(channelId);
-        channel.send(
-            "Hi!:wave: I'm THX Bot, keep an eye on this channel to earn points that you can redeem for coins and NFT's:gift:",
-        );
+        await channel.send("Hi!:wave: I'm THX Bot, thanks for having me! :pray:");
+        channel.send('This channel will notify you when new point rewards are available :bell:');
     }
-
-    await GuildService.connect(interaction.guildId, poolId, channelId);
 
     interaction.reply({
         content: `Well done!🥳 You have connected "${pool.title}" with this server. I will publish announcements in [${

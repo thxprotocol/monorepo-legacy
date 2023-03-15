@@ -1,5 +1,5 @@
 <template>
-    <b-form-row>
+    <b-form-row v-if="profile">
         <b-col md="4">
             <strong>Commerce</strong>
             <p class="text-muted">Enable FIAT payment methods to enable your users to buy your perks.</p>

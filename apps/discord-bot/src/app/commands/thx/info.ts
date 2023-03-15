@@ -21,9 +21,11 @@ export const onSubcommandInfo = async (interaction: CommandInteraction) => {
     const { dailyRewards, pointRewards } = await thxClient.rewardsManager.list(guild.poolId);
     const { erc20Perks, erc721Perks } = await thxClient.perksManager.list(guild.poolId);
 
-    embed.setColor(widget.bgColor);
-    embed.setURL(widget.domain);
-    embed.setTitle(pool.title);
+    embed.setColor(widget.bgColor).setTitle(pool.title);
+
+    if (widget.domain) {
+        embed.setURL(widget.domain);
+    }
 
     if (widget.message) {
         embed.setDescription(widget.message);
@@ -33,73 +35,68 @@ export const onSubcommandInfo = async (interaction: CommandInteraction) => {
         embed.setThumbnail(brand.logoImgUrl);
     }
 
-    embed.addFields({ name: 'Domain', value: `[${widget.domain}](${widget.domain})`, inline: true });
+    embed.addFields({ name: 'Widget', value: `[${widget.domain}](${widget.domain})`, inline: true });
     embed.addFields({ name: 'Version', value: `v${version}`, inline: true });
 
+    embed.addFields({
+        name: ':trophy: POINTS',
+        value: ' ',
+    });
+
     if (dailyRewards.length) {
-        embed
-            .addFields({
-                name: ':calendar: Daily rewards',
-                value: 'Earn points every day with daily rewards.',
-            })
-            .addFields(
-                dailyRewards.map((r) => {
-                    return {
-                        name: `• ${r.title} (${r.amount})`,
-                        value: r.description,
-                    };
-                }),
-            );
+        embed.addFields(
+            dailyRewards.map((r) => {
+                return {
+                    name: `• ${r.amount} │ ${r.title}`,
+                    value: r.description,
+                };
+            }),
+        );
     }
     if (pointRewards.length) {
-        embed
-            .addFields({
-                name: ':sparkles: Conditional rewards',
-                value: 'Earn points for engagement in other platforms with conditional rewards.',
-            })
-            .addFields(
-                pointRewards.map((r) => {
-                    return {
-                        name: `• ${r.title} (${r.amount})`,
-                        value: r.description,
-                    };
-                }),
-            );
+        embed.addFields(
+            pointRewards.map((r) => {
+                return {
+                    name: `• ${r.amount} │ ${r.title} `,
+                    value: r.description,
+                };
+            }),
+        );
     }
 
-    // Add referral rewards
+    embed.addFields({
+        name: ':gift: PERKS',
+        value: ' ',
+    });
 
-    // Add milestone rewards
+    if (!erc20Perks.length) {
+        embed.addFields({ name: '• Coin perks', value: 'None' });
+    }
 
     if (erc20Perks.length) {
-        embed
-            .addFields({
-                name: ':gem: Coin Perks',
-                value: 'Redeem points for coins.',
-            })
-            .addFields(
-                erc20Perks.map((r) => {
-                    return {
-                        name: `• ${r.title} (${r.amount})`,
-                        value: r.description,
-                    };
-                }),
-            );
+        embed.addFields(
+            erc20Perks.map((r) => {
+                return {
+                    name: `• ${r.amount} │ ${r.title}`,
+                    value: r.description,
+                };
+            }),
+        );
     }
+
+    if (!erc721Perks.length) {
+        embed.addFields({ name: '• NFT perks', value: 'None' });
+    }
+
     if (erc721Perks.length) {
-        embed
-            .addFields({
-                name: ':star: NFT Perks',
-                value: "Redeem points for NFT's.",
-            })
-            .addFields(
-                erc721Perks.map((r) => {
-                    return {
-                        name: `• ${r.title} (${r.amount})`,
-                        value: r.description,
-                    };
-                }),
-            );
+        embed.addFields(
+            erc721Perks.map((r) => {
+                return {
+                    name: `• ${r.amount} │ ${r.title}`,
+                    value: r.description,
+                };
+            }),
+        );
     }
 
     return interaction.reply({ embeds: [embed], ephemeral: true });
