@@ -93,3 +93,10 @@ export default class SettingsView extends Vue {
     dashboardUrl = DASHBOARD_URL;
 }
 </script>
+<style>
+.nav-pills .nav-link.active,
+.nav-pills .show > .nav-link {
+    color: var(--primary);
+    background-color: #e9ecef;
+}
+</style>
