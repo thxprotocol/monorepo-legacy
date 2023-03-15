@@ -35,13 +35,9 @@ export const onSubcommandInfo = async (interaction: CommandInteraction) => {
         embed.setThumbnail(brand.logoImgUrl);
     }
 
-    embed.addFields({ name: 'Widget', value: `[${widget.domain}](${widget.domain})`, inline: true });
-    embed.addFields({ name: 'Version', value: `v${version}`, inline: true });
-
-    embed.addFields({
-        name: ':trophy: POINTS',
-        value: ' ',
-    });
+    embed.addFields({ name: 'Widget', value: widget.domain, inline: true });
+    embed.addFields({ name: 'Version', value: version, inline: true });
+    embed.addFields({ name: ':trophy: POINTS', value: ' ' });
 
     if (dailyRewards.length) {
         embed.addFields(
@@ -53,6 +49,7 @@ export const onSubcommandInfo = async (interaction: CommandInteraction) => {
             }),
         );
     }
+
     if (pointRewards.length) {
         embed.addFields(
             pointRewards.map((r) => {
@@ -64,10 +61,7 @@ export const onSubcommandInfo = async (interaction: CommandInteraction) => {
         );
     }
 
-    embed.addFields({
-        name: ':gift: PERKS',
-        value: ' ',
-    });
+    embed.addFields({ name: ':gift: PERKS', value: ' ' });
 
     if (!erc20Perks.length) {
         embed.addFields({ name: '• Coin perks', value: 'None' });
@@ -99,5 +93,5 @@ export const onSubcommandInfo = async (interaction: CommandInteraction) => {
         );
     }
 
-    return interaction.reply({ embeds: [embed], ephemeral: true });
+    interaction.reply({ embeds: [embed], ephemeral: true });
 };
