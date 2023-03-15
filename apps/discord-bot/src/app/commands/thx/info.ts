@@ -29,6 +29,7 @@ export const onSubcommandInfo = async (interaction: CommandInteraction) => {
 
     if (widget.message) {
         embed.setDescription(widget.message);
+        embed.addFields({ name: ' ', value: ' ' });
     }
 
     if (brand && brand.logoImgUrl) {
@@ -37,60 +38,52 @@ export const onSubcommandInfo = async (interaction: CommandInteraction) => {
 
     embed.addFields({ name: 'Widget', value: widget.domain, inline: true });
     embed.addFields({ name: 'Version', value: version, inline: true });
-    embed.addFields({ name: ':trophy: POINTS', value: ' ' });
+    embed.addFields({ name: ' ', value: ' ' });
+
+    if (dailyRewards.length || pointRewards.length) {
+        embed.addFields({ name: ':trophy: │ Points', value: ' ' });
+        embed.addFields({ name: ' ', value: ' ' });
+    }
 
     if (dailyRewards.length) {
         embed.addFields(
             dailyRewards.map((r) => {
-                return {
-                    name: `• ${r.amount} │ ${r.title}`,
-                    value: r.description || ' ',
-                };
+                return { name: `${r.amount} Points`, value: r.title };
             }),
         );
+        embed.addFields({ name: ' ', value: ' ' });
     }
 
     if (pointRewards.length) {
         embed.addFields(
             pointRewards.map((r) => {
-                return {
-                    name: `• ${r.amount} │ ${r.title} `,
-                    value: r.description || ' ',
-                };
+                return { name: `${r.amount} Points`, value: r.title };
             }),
         );
+        embed.addFields({ name: ' ', value: ' ' });
     }
 
-    embed.addFields({ name: ':gift: PERKS', value: ' ' });
-
-    if (!erc20Perks.length) {
-        embed.addFields({ name: '• Coin perks', value: 'None' });
+    if (erc20Perks.length || erc721Perks.length) {
+        embed.addFields({ name: ':gift: │ Perks', value: ' ' });
+        embed.addFields({ name: ' ', value: ' ' });
     }
 
     if (erc20Perks.length) {
         embed.addFields(
             erc20Perks.map((r) => {
-                return {
-                    name: `• ${r.amount} │ ${r.title}`,
-                    value: r.description || ' ',
-                };
+                return { name: r.title, value: r.title };
             }),
         );
-    }
-
-    if (!erc721Perks.length) {
-        embed.addFields({ name: '• NFT perks', value: 'None' });
+        embed.addFields({ name: ' ', value: ' ' });
     }
 
     if (erc721Perks.length) {
         embed.addFields(
             erc721Perks.map((r) => {
-                return {
-                    name: `• ${r.amount} │ ${r.title}`,
-                    value: r.description || ' ',
-                };
+                return { name: r.pointPrice, value: r.title };
             }),
         );
+        embed.addFields({ name: ' ', value: ' ' });
     }
 
     interaction.reply({ embeds: [embed], ephemeral: true });
