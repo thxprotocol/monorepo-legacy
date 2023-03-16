@@ -59,7 +59,7 @@ import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { isAddress } from 'web3-utils';
 import BaseDropdownSelectPool from '../dropdowns/BaseDropdownSelectPool.vue';
 import BaseDropdownSelectNftVariant from '../dropdowns/BaseDropdownSelectNftVariant.vue';
-import { IPool } from '../../store/modules/pools';
+import { TPool } from '../../store/modules/pools';
 import { NftVariant } from '@thxnetwork/dashboard/types/enums/NftVariant';
 
 @Component({
@@ -84,7 +84,7 @@ export default class ModalNftImport extends Vue {
     totalSupply = '';
     uri = '';
     previewLoading = false;
-    pool: IPool | null = null;
+    pool: TPool | null = null;
     nftVariant: NftVariant | null = null;
 
     get isValidAddress() {

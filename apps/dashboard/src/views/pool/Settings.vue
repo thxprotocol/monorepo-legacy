@@ -21,6 +21,13 @@
                 </b-tab>
                 <b-tab>
                     <template #title>
+                        <i class="fab fa-twitter mr-1"></i>
+                        Twitter
+                    </template>
+                    <BaseTabSettingsTwitter />
+                </b-tab>
+                <b-tab>
+                    <template #title>
                         <i class="fab fa-discord mr-1"></i>
                         Discord
                     </template>
@@ -70,6 +77,7 @@ import { IAccount } from '@thxnetwork/dashboard/types/account';
 import BaseTabSettingsGeneral from '@thxnetwork/dashboard/views/pool/settings/General.vue';
 import BaseTabSettingsCommerce from '@thxnetwork/dashboard/views/pool/settings/Commerce.vue';
 import BaseTabSettingsDiscord from '@thxnetwork/dashboard/views/pool/settings/Discord.vue';
+import BaseTabSettingsTwitter from '@thxnetwork/dashboard/views/pool/settings/Twitter.vue';
 import BaseTabSettingsWidget from '@thxnetwork/dashboard/views/pool/settings/Widget.vue';
 import BaseTabSettingsApi from '@thxnetwork/dashboard/views/pool/settings/API.vue';
 import { DASHBOARD_URL } from '@thxnetwork/wallet/utils/secrets';
@@ -78,6 +86,7 @@ import { DASHBOARD_URL } from '@thxnetwork/wallet/utils/secrets';
     components: {
         BaseTabSettingsGeneral,
         BaseTabSettingsDiscord,
+        BaseTabSettingsTwitter,
         BaseTabSettingsCommerce,
         BaseTabSettingsWidget,
         BaseTabSettingsApi,

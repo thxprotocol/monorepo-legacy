@@ -1,5 +1,5 @@
 import { assertEvent, parseLogs } from '@thxnetwork/api/util/events';
-import { ChainId } from '@thxnetwork/api/types/enums';
+import { ChainId } from '@thxnetwork/types/enums';
 import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { Membership } from '@thxnetwork/api/models/Membership';
 import TransactionService from './TransactionService';

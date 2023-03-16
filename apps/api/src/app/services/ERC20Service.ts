@@ -3,7 +3,7 @@ import { toWei } from 'web3-utils';
 import { ICreateERC20Params } from '@thxnetwork/api/types/interfaces';
 import TransactionService from './TransactionService';
 import { assertEvent, ExpectedEventNotFound, findEvent, parseLogs } from '@thxnetwork/api/util/events';
-import { ChainId, ERC20Type, TransactionState } from '@thxnetwork/api/types/enums';
+import { ChainId, ERC20Type, TransactionState } from '@thxnetwork/types/enums';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { getByteCodeForContractName, getContractFromName } from '@thxnetwork/api/config/contracts';
 import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
@@ -197,10 +197,6 @@ export const getOnChainERC20Token = async (chainId: number, address: string) => 
     return { name, symbol, totalSupply };
 };
 
-export const findByPool = async (pool: AssetPoolDocument): Promise<ERC20Document> => {
-    return await getById(pool.erc20Id);
-};
-
 export const update = (erc20: ERC20Document, updates: IERC20Updates) => {
     return ERC20.findByIdAndUpdate(erc20._id, updates, { new: true });
 };
@@ -245,7 +241,6 @@ export default {
     deploy,
     getAll,
     findBy,
-    findByPool,
     getById,
     addToken,
     addMinter,

@@ -6,8 +6,6 @@ import ERC20 from '@thxnetwork/api/models/ERC20';
 import Brand from '@thxnetwork/api/models/Brand';
 import { ERC721 } from '@thxnetwork/api/models/ERC721';
 import { ERC20Token } from '@thxnetwork/api/models/ERC20Token';
-import { ERC20SwapRule } from '@thxnetwork/api/models/ERC20SwapRule';
-import { ERC20Swap } from '@thxnetwork/api/models/ERC20Swap';
 import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
 import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
@@ -16,7 +14,6 @@ import { AssetPool } from '@thxnetwork/api/models/AssetPool';
 import { Wallet } from '@thxnetwork/api//models/Wallet';
 import { Claim } from '@thxnetwork/api/models/Claim';
 import { Client } from '@thxnetwork/api/models/Client';
-import { Deposit } from '@thxnetwork/api/models/Deposit';
 
 const doc: any = {
     info: {
@@ -40,10 +37,7 @@ const doc: any = {
         Brand: m2s(Brand).properties,
         Claim: m2s(Claim).properties,
         Client: m2s(Client).properties,
-        Deposit: m2s(Deposit).properties,
         ERC20: m2s(ERC20).properties,
-        ERC20Swap: m2s(ERC20Swap).properties,
-        ERC20SwapRule: m2s(ERC20SwapRule).properties,
         ERC20Token: m2s(ERC20Token).properties,
         ERC721: m2s(ERC721).properties,
         ERC721Metadata: m2s(ERC721Metadata).properties,

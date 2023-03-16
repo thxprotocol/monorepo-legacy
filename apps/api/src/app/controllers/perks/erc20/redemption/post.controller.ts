@@ -6,7 +6,7 @@ import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { getContractFromName } from '@thxnetwork/api/config/contracts';
 import { BigNumber } from 'ethers';
 import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
-import { ERC20Type } from '@thxnetwork/api/types/enums';
+import { ERC20Type } from '@thxnetwork/types/enums';
 import PointBalanceService, { PointBalance } from '@thxnetwork/api/services/PointBalanceService';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';

@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { TERC20 } from '@thxnetwork/api/types/TERC20';
 import { getAbiForContractName } from '@thxnetwork/api/config/contracts';
-import { ERC20Type } from '@thxnetwork/api/types/enums';
+import { ERC20Type } from '@thxnetwork/types/enums';
 import { getProvider } from '@thxnetwork/api/util/network';
 
 export type ERC20Document = mongoose.Document & TERC20;

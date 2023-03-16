@@ -1,4 +1,4 @@
-import { WithdrawalState } from '@thxnetwork/api/types/enums';
+import { WithdrawalState } from '@thxnetwork/types/enums';
 
 export type TWithdrawal = {
     state: WithdrawalState;

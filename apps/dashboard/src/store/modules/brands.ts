@@ -1,8 +1,7 @@
 import axios from 'axios';
 import Vue from 'vue';
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
-import type { IPool } from './pools';
-
+import { type TPool } from '@thxnetwork/types/index';
 export interface TBrand {
     logoImgUrl: string;
     backgroundImgUrl: string;
@@ -38,7 +37,7 @@ class BrandModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async update({ pool, brand }: { pool: IPool; brand: TBrand }) {
+    async update({ pool, brand }: { pool: TPool; brand: TBrand }) {
         const { data } = await axios({
             url: '/brands',
             method: 'PUT',

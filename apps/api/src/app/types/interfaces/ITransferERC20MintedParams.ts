@@ -1,4 +1,4 @@
-import { ChainId } from '@thxnetwork/api/types/enums';
+import { ChainId } from '@thxnetwork/types/enums';
 
 export interface ITransferERC20MintedParams {
     id: string;

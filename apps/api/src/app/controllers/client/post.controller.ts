@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { GrantType } from '@thxnetwork/api/types/enums/GrantType';
+import { GrantType } from '@thxnetwork/types/enums/GrantType';
 import ClientProxy from '@thxnetwork/api/proxies/ClientProxy';
 
 export default {

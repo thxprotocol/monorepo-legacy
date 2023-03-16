@@ -67,7 +67,7 @@
 </template>
 
 <script lang="ts">
-import type { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import type { TPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { ERC20Type, type TERC20, type IERC20s } from '@thxnetwork/dashboard/types/erc20';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
@@ -93,7 +93,7 @@ export default class BaseModalDepositCreate extends Vue {
     ERC20Type = ERC20Type;
 
     @Prop() erc20!: TERC20;
-    @Prop() pool!: IPool;
+    @Prop() pool!: TPool;
 
     onShow() {
         this.loading = true;

@@ -1,7 +1,7 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { IPool } from './pools';
+import { type TPool } from '@thxnetwork/types/index';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import type {
     TERC721,
@@ -154,7 +154,7 @@ class ERC721Module extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async deleteMetadata({ erc721, metadata }: { pool: IPool; erc721: TERC721; metadata: TERC721Metadata }) {
+    async deleteMetadata({ erc721, metadata }: { pool: TPool; erc721: TERC721; metadata: TERC721Metadata }) {
         await axios({
             method: 'DELETE',
             url: `/erc721/${erc721._id}/metadata/${metadata._id}`,
@@ -243,7 +243,7 @@ class ERC721Module extends VuexModule {
 
     @Action({ rawError: true })
     async uploadMultipleMetadataImages(payload: {
-        pool: IPool;
+        pool: TPool;
         erc721: TERC721;
         file: File;
         propName: string;
@@ -282,7 +282,7 @@ class ERC721Module extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async createMetadataCSV(payload: { pool: IPool; erc721: TERC721 }) {
+    async createMetadataCSV(payload: { pool: TPool; erc721: TERC721 }) {
         const { status, data } = await axios({
             method: 'GET',
             url: `/erc721/${payload.erc721._id}/metadata/csv`,
@@ -303,7 +303,7 @@ class ERC721Module extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async uploadMetadataCSV(payload: { pool: IPool; erc721: TERC721; file: File }) {
+    async uploadMetadataCSV(payload: { pool: TPool; erc721: TERC721; file: File }) {
         const formData = new FormData();
         formData.append('file', payload.file);
 
@@ -329,7 +329,7 @@ class ERC721Module extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async import(payload: { address: string; pool: IPool }) {
+    async import(payload: { address: string; pool: TPool }) {
         const { data } = await axios({
             method: 'POST',
             url: `/erc721/import`,
@@ -344,7 +344,7 @@ class ERC721Module extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async listImportedERC721Tokens(params: { erc721Id: string; pool: IPool }) {
+    async listImportedERC721Tokens(params: { erc721Id: string; pool: TPool }) {
         const { data } = await axios({
             method: 'GET',
             url: '/erc721-perks/import',

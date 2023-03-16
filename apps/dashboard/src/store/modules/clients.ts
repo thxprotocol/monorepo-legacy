@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { Vue } from 'vue-property-decorator';
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
-import { IPool } from './pools';
+import { type TPool } from '@thxnetwork/types/index';
 import { track } from '@thxnetwork/mixpanel';
 
 export type TClient = {
@@ -26,12 +26,12 @@ export type PaginationParams = Partial<{
 }>;
 
 export type ClientListProps = PaginationParams & {
-    pool: IPool;
+    pool: TPool;
 };
 
 export type GetClientProps = {
     client: TClient;
-    pool: IPool;
+    pool: TPool;
 };
 
 export type TClientResponse = AxiosResponse<
@@ -50,7 +50,7 @@ export type TClientMeta = {
 export type TClientCreate = {
     name: string;
     page: number;
-    pool: IPool;
+    pool: TPool;
     grantType: string;
     redirectUri: string;
     requestUri: string;
@@ -76,13 +76,13 @@ class ClientModule extends VuexModule {
     }
 
     @Mutation
-    set({ pool, client }: { pool: IPool; client: TClient }) {
+    set({ pool, client }: { pool: TPool; client: TClient }) {
         if (!this._all[pool._id]) Vue.set(this._all, pool._id, {});
         Vue.set(this._all[pool._id], client._id, client);
     }
 
     @Mutation
-    setTotal({ pool, total }: { pool: IPool; total: number }) {
+    setTotal({ pool, total }: { pool: TPool; total: number }) {
         Vue.set(this._totals, pool._id, total);
     }
 

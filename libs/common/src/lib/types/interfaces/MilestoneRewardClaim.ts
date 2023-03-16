@@ -2,6 +2,6 @@ export type TMilestoneRewardClaim = {
     milestoneRewardId: string;
     sub: string;
     uuid: string;
-    amount: string;
+    amount: number;
     isClaimed: boolean;
 };

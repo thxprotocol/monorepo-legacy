@@ -148,7 +148,7 @@
 </template>
 
 <script lang="ts">
-import type { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import type { TPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import type { Reward } from '@thxnetwork/dashboard/types/rewards';
@@ -202,7 +202,7 @@ export default class ModalWidgetEdit extends Vue {
         },
     ];
 
-    @Prop() pool!: IPool;
+    @Prop() pool!: TPool;
     @Prop() filteredRewards!: Reward[];
     @Prop() widget!: Widget;
 

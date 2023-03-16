@@ -4,7 +4,7 @@ import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import IPFSService from '@thxnetwork/api/services/IPFSService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import { AccountPlanType } from '@thxnetwork/api/types/enums';
+import { AccountPlanType } from '@thxnetwork/types/enums';
 import { IPFS_BASE_URL } from '@thxnetwork/api/config/secrets';
 
 const validation = [

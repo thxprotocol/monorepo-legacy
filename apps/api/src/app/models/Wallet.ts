@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { getDiamondAbi } from '../config/contracts';
 import { Contract } from 'web3-eth-contract';
-import { ChainId } from '../types/enums';
+import { ChainId } from '@thxnetwork/types/enums';
 import { getProvider } from '../util/network';
 
 export type WalletDocument = mongoose.Document & TWallet;

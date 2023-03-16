@@ -3,7 +3,7 @@ import newrelic from 'newrelic';
 import { fromWei } from 'web3-utils';
 import { diamondFacetAddresses, getContractConfig, getContractFromName } from '@thxnetwork/api/config/contracts';
 import { NODE_ENV } from '@thxnetwork/api/config/secrets';
-import { ChainId } from '@thxnetwork/api/types/enums';
+import { ChainId } from '@thxnetwork/types/enums';
 import { logger } from '@thxnetwork/api/util/logger';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { currentVersion, diamondVariants } from '@thxnetwork/contracts/exports';
