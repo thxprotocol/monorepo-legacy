@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { TMerchant } from '@thxnetwork/types/merchant';
-import { IPool } from './pools';
+import { type TPool } from '@thxnetwork/types/index';
 
 export type TMerchantState = {
     [poolId: string]: {
@@ -48,7 +48,7 @@ class MerchantsModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async createLink(pool: IPool) {
+    async createLink(pool: TPool) {
         const { data } = await axios({
             method: 'POST',
             url: '/merchants/link',

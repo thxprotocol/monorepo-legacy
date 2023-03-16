@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId, ERC20Type } from '@thxnetwork/api/types/enums';
+import { ChainId, ERC20Type } from '@thxnetwork/types/enums';
 import {
     dashboardAccessToken,
     sub,
@@ -83,7 +83,7 @@ describe('Daily Rewards', () => {
                 expect(body.uuid).toBeDefined();
                 expect(body.title).toBe(title);
                 expect(body.description).toBe(description);
-                expect(body.amount).toBe(amount.toString());
+                expect(body.amount).toBe(amount);
                 dailyRewardUuid = body.uuid;
                 dailyReward = body;
             })
@@ -97,7 +97,7 @@ describe('Daily Rewards', () => {
                 expect(body.uuid).toBeDefined();
                 expect(body.title).toBe(dailyReward.title);
                 expect(body.description).toBe(dailyReward.description);
-                expect(body.amount).toBe(dailyReward.amount.toString());
+                expect(body.amount).toBe(dailyReward.amount);
             })
             .expect(200, done);
     });
@@ -110,7 +110,7 @@ describe('Daily Rewards', () => {
                 expect(body.results[0].uuid).toBeDefined();
                 expect(body.results[0].title).toBe(dailyReward.title);
                 expect(body.results[0].description).toBe(dailyReward.description);
-                expect(body.results[0].amount).toBe(dailyReward.amount.toString());
+                expect(body.results[0].amount).toBe(dailyReward.amount);
                 expect(body.total).toBe(2);
             })
             .expect(200, done);
@@ -124,7 +124,7 @@ describe('Daily Rewards', () => {
                 amount,
             })
             .expect(({ body }: request.Response) => {
-                expect(body.amount).toBe(amount.toString());
+                expect(body.amount).toBe(amount);
                 dailyReward = body;
             })
             .expect(200, done);
@@ -143,7 +143,7 @@ describe('Daily Rewards', () => {
         user.get(`/v1/point-balances`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
             .expect(({ body }: request.Response) => {
-                expect(body.balance).toBe(dailyReward.amount.toString());
+                expect(body.balance).toBe(dailyReward.amount);
             })
             .expect(200, done);
     });

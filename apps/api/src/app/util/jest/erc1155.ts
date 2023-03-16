@@ -1,6 +1,6 @@
 import { API_URL, MINIMUM_GAS_LIMIT, VERSION } from '@thxnetwork/api/config/secrets';
 import { getByteCodeForContractName, getContractFromName } from '@thxnetwork/api/config/contracts';
-import { ChainId } from '@thxnetwork/api/types/enums';
+import { ChainId } from '@thxnetwork/types/enums';
 import { getProvider } from '../network';
 
 export async function deployERC1155() {

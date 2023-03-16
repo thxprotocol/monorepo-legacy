@@ -130,6 +130,19 @@ export class TwitterService {
         return r.data.data;
     }
 
+    static async getLatestTweets(token: IAccessToken, startDate: Date, endDate: Date) {
+        const { data } = await twitterClient({
+            url: `/users/${
+                token.userId
+            }/tweets?start_time=${startDate.toISOString()}&end_time=${endDate.toISOString()}`,
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token.accessToken}`,
+            },
+        });
+        return data.data;
+    }
+
     static async refreshTokens(refreshToken: string) {
         const data = new URLSearchParams();
         data.append('refresh_token', refreshToken);

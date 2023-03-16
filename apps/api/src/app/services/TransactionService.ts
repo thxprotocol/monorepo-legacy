@@ -1,6 +1,6 @@
 import { Transaction, TransactionDocument } from '@thxnetwork/api/models/Transaction';
 import { getProvider } from '@thxnetwork/api/util/network';
-import { ChainId, TransactionState, TransactionType } from '@thxnetwork/api/types/enums';
+import { ChainId, TransactionState, TransactionType } from '@thxnetwork/types/enums';
 import { MINIMUM_GAS_LIMIT, RELAYER_SPEED } from '@thxnetwork/api/config/secrets';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import type { TTransaction, TTransactionCallback } from '@thxnetwork/api/types/TTransaction';
@@ -9,7 +9,6 @@ import { toChecksumAddress } from 'web3-utils';
 import { poll } from '@thxnetwork/api/util/polling';
 import { deployCallback as erc20DeployCallback } from './ERC20Service';
 import PoolService from './PoolService';
-import ERC20SwapService from './ERC20SwapService';
 import ERC721Service from './ERC721Service';
 import WithdrawalService from './WithdrawalService';
 import { RelayerTransactionPayload } from 'defender-relay-client';
@@ -222,9 +221,6 @@ async function executeCallback(tx: TransactionDocument, receipt: TransactionRece
             break;
         case 'assetPoolDeployCallback':
             await PoolService.deployCallback(tx.callback.args, receipt);
-            break;
-        case 'swapCreateCallback':
-            await ERC20SwapService.createCallback(tx.callback.args, receipt);
             break;
         case 'erc721TokenMintCallback':
             await ERC721Service.mintCallback(tx.callback.args, receipt);

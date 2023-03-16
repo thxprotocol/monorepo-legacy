@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId, ERC20Type } from '../../types/enums';
+import { ChainId, ERC20Type } from '@thxnetwork/types/enums';
 import {
     dashboardAccessToken,
     sub2,
@@ -170,7 +170,7 @@ describe('Referral Rewards', () => {
         user.get(`/v1/point-balances`)
             .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken3 })
             .expect((res: request.Response) => {
-                expect(res.body.balance).toBe(referralReward.amount.toString());
+                expect(res.body.balance).toBe(referralReward.amount);
             })
             .expect(200, done);
     });

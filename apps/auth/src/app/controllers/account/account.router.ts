@@ -5,6 +5,7 @@ import { deleteAccount } from './delete.action';
 import { validate } from '../../util/validate';
 import { guard, validateJwt } from '../../middlewares';
 import { getTwitter } from './twitter/get.action';
+import { getLatestTweets } from './twitter/getLatestTweets.action';
 import { getTwitterLike } from './twitter/getLike.action';
 import { getTwitterRetweet } from './twitter/getRetweet.action';
 import { getTwitterFollow } from './twitter/getFollow.action';
@@ -23,6 +24,7 @@ import { getShopifyTotalSpent } from './shopify/total-spent/get.controller';
 import GetGoogleUser from './google/user/get.controller';
 import GetTwitterUser from './twitter/user/get.controller';
 import GetDiscordUser from './discord/user/get.controller';
+import { getShopifyNewsletterSubscription } from './shopify/newsletter-subscription/get.controller';
 
 const router = express.Router();
 
@@ -30,6 +32,7 @@ router.use(validateJwt);
 router.get('/:sub', guard.check(['accounts:read']), getAccount);
 
 router.get('/:sub/twitter', guard.check(['accounts:read']), getTwitter);
+router.get('/:sub/twitter/tweets/latest', guard.check(['accounts:read']), getLatestTweets);
 router.get('/:sub/twitter/user', guard.check(['accounts:read']), GetTwitterUser.controller);
 router.get('/:sub/twitter/like/:item', guard.check(['accounts:read']), getTwitterLike);
 router.get('/:sub/twitter/retweet/:item', guard.check(['accounts:read']), getTwitterRetweet);
@@ -38,6 +41,7 @@ router.get('/:sub/twitter/follow/:item', guard.check(['accounts:read']), getTwit
 router.get('/:sub/shopify', guard.check(['accounts:read']), getShopify);
 router.get('/:sub/shopify/order-amount', guard.check(['accounts:read']), getShopifyOrderAmount);
 router.get('/:sub/shopify/total-spent', guard.check(['accounts:read']), getShopifyTotalSpent);
+router.get('/:sub/shopify/newsletter-subscription', guard.check(['accounts:read']), getShopifyNewsletterSubscription);
 
 router.get('/:sub/google/youtube', guard.check(['accounts:read']), getYoutube);
 router.get('/:sub/google/user', guard.check(['accounts:read']), GetGoogleUser.controller);

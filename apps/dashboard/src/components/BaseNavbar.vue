@@ -99,7 +99,7 @@
 </template>
 
 <script lang="ts">
-import { IPool, IPools } from '@thxnetwork/dashboard/store/modules/pools';
+import { TPool, IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { ERC20Type } from '@thxnetwork/dashboard/types/erc20';
 import { plans } from '@thxnetwork/dashboard/utils/plans';
 import { Component, Vue } from 'vue-property-decorator';
@@ -230,7 +230,7 @@ export default class BaseNavbar extends Vue {
         });
     }
 
-    async onPoolSelect(pool: IPool) {
+    async onPoolSelect(pool: TPool) {
         if (!pool.address) {
             await this.$store.dispatch('pools/read', pool._id);
         }

@@ -88,7 +88,7 @@
 </template>
 
 <script lang="ts">
-import { type IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import { type TPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { platformList, platformInteractionList } from '@thxnetwork/dashboard/types/rewards';
 import { RewardConditionInteraction, RewardConditionPlatform, type TERC20Perk } from '@thxnetwork/types/index';
@@ -132,7 +132,7 @@ export default class ModalRewardERC20Create extends Vue {
     isPromoted = false;
 
     @Prop() id!: string;
-    @Prop() pool!: IPool;
+    @Prop() pool!: TPool;
     @Prop({ required: false }) reward!: TERC20Perk;
 
     onShow() {

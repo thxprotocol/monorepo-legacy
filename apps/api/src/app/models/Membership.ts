@@ -1,4 +1,4 @@
-import { ChainId } from '@thxnetwork/api/types/enums';
+import { ChainId } from '@thxnetwork/types/enums';
 import mongoose from 'mongoose';
 
 export type TMembership = {

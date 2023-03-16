@@ -6,7 +6,7 @@ import { ERC721 } from '@thxnetwork/api/models/ERC721';
 import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
 import { alchemy } from '@thxnetwork/api/util/alchemy';
-import { ChainId } from '@thxnetwork/api/types/enums';
+import { ChainId } from '@thxnetwork/types/enums';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { toChecksumAddress } from 'web3-utils';
 import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';

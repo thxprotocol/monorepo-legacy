@@ -6,7 +6,7 @@ import { ERC1155 } from '@thxnetwork/api/models/ERC1155';
 import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { ERC1155TokenState } from '@thxnetwork/api/types/TERC1155';
 import { alchemy } from '@thxnetwork/api/util/alchemy';
-import { ChainId } from '@thxnetwork/api/types/enums';
+import { ChainId } from '@thxnetwork/types/enums';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { ERC1155Metadata } from '@thxnetwork/api/models/ERC1155Metadata';
 

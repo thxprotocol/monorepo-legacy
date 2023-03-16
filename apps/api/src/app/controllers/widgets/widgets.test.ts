@@ -1,6 +1,6 @@
 import request, { Response } from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId } from '@thxnetwork/api/types/enums';
+import { ChainId } from '@thxnetwork/types/enums';
 import { dashboardAccessToken } from '@thxnetwork/api/util/jest/constants';
 import { Contract } from 'web3-eth-contract';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';

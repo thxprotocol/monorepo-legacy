@@ -17,9 +17,9 @@ export async function create(pool: AssetPoolDocument, payload: Partial<TPointRew
         ...payload,
     });
 
-    if (pool.discordWebhookUrl) {
+    if (pool.settings.discordWebhookUrl) {
         const widget = await Widget.findOne({ poolId: pool._id });
-        await axios.post(pool.discordWebhookUrl, {
+        await axios.post(pool.settings.discordWebhookUrl, {
             embeds: [
                 {
                     title: `:sparkles: Earn ${reward.amount} points!`,

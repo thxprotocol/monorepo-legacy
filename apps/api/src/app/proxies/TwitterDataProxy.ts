@@ -33,6 +33,23 @@ export default class TwitterDataProxy {
         return { isAuthorized: r.data.isAuthorized, tweets: r.data.tweets, users: r.data.users };
     }
 
+    static async getLatestTweets(sub: string, startDate: Date, endDate: Date) {
+        const params = new URLSearchParams();
+        params.append('startDate', String(startDate.getTime()));
+        params.append('endDate', String(endDate.getTime()));
+
+        const { data } = await authClient({
+            method: 'GET',
+            url: `/account/${sub}/twitter/tweets/latest`,
+            headers: {
+                Authorization: await getAuthAccessToken(),
+            },
+            params,
+        });
+
+        return data;
+    }
+
     static async validateLike(account: IAccount, channelItem: string) {
         const r = await authClient({
             method: 'GET',

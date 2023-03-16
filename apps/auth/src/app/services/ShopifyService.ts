@@ -96,4 +96,10 @@ export class ShopifyService {
         if (!customer) return false;
         return customer.total_spent >= amount;
     }
+
+    static async validateNewsletterSubscription(accessToken: string, storeUrl: string, email: string) {
+        const customer = await this.getCustomer(accessToken, storeUrl, { email });
+        if (!customer) return false;
+        return customer.email_marketing_consent.state === 'subscribed';
+    }
 }

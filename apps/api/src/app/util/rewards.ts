@@ -83,20 +83,20 @@ export async function createDummyContents(pool: AssetPoolDocument) {
     await DailyRewardService.create(pool, {
         title: 'Daily Reward 🗓️',
         description: 'Return every 24h to claim your poin reward.',
-        amount: '15',
+        amount: 15,
     });
 
     await ReferralRewardService.create(pool, {
         title: 'Spread the word! ❤️',
         description: 'Let your customers earn points by referring people to your site.',
         successUrl: '',
-        amount: '250',
+        amount: 250,
     });
 
     await PointRewardService.create(pool, {
         title: 'Engage in our social 💬',
         description: 'Set social conditions for people to meet when claiming points.',
-        amount: '50',
+        amount: 50,
     });
 
     await MilestoneRewardService.create(pool, {

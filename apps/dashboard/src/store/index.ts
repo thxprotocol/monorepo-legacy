@@ -12,7 +12,6 @@ import ERC1155Store from './modules/erc1155';
 import ERC721PerksStore from './modules/erc721Perks';
 import ReferralRewardRewardsStore from './modules/referralRewards';
 import ReferralRewardRewardClaimsStore from './modules/referralRewardClaims';
-import SwapRuleStore from './modules/swaprules';
 import ClientStore from './modules/clients';
 import BrandStore from './modules/brands';
 import ImageStore from './modules/images';
@@ -37,7 +36,6 @@ const modules = {
     erc721Perks: ERC721PerksStore,
     referralRewards: ReferralRewardRewardsStore,
     referralRewardClaims: ReferralRewardRewardClaimsStore,
-    swaprules: SwapRuleStore,
     clients: ClientStore,
     brands: BrandStore,
     images: ImageStore,
