@@ -19,6 +19,7 @@ import { ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
 import { ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
 import { ERC721PerkPayment, ERC721PerkPaymentDocument } from '@thxnetwork/api/models/ERC721PerkPayment';
 import { WithdrawalDocument } from '@thxnetwork/api/models/Withdrawal';
+import { redeemValidation } from '@thxnetwork/api/util/perks';
 
 type PerkDocument = ERC20PerkDocument | ERC721PerkDocument;
 type PerkPaymentDocument = ERC20PerkPaymentDocument | ERC721PerkPaymentDocument;
@@ -57,36 +58,44 @@ const controller = async (req: Request, res: Response) => {
     const model = getPaymentModel(perk);
     if (!model) throw new BadRequestError('Could not determine payment model for this claim.');
 
+    // // Can be claimed only if point price is 0
+    // if ((isTERC20Perk(perk) || isTERC721Perk(perk)) && perk.pointPrice > 0) {
+    //     throw new ForbiddenError('This perk should be redeemed with points.');
+    // }
+
+    // // Can be claimed only before the expiry date
+    // const isExpired = new Date(perk.expiryDate).getTime() < Date.now();
+    // if (perk.expiryDate && isExpired) {
+    //     throw new ForbiddenError('This perk claim has expired.');
+    // }
+
+    // // Can only be claimed for the amount of times per sub specified in the claimLimit
+    // const amountOfPaymentsPerSub = await model.countDocuments({ perkId: perk._id, sub: req.auth.sub });
+    // if (perk.claimLimit > 0 && amountOfPaymentsPerSub >= perk.claimLimit) {
+    //     throw new ForbiddenError('You have claimed this perk for the maximum amount of times.');
+    // }
+
+    // // Can only be claimed for the amount of times per perk specified in the rewardLimit
+    // if (perk.rewardLimit > 0) {
+    //     const amountOfPayments = await model.countDocuments({ perkId: perk._id });
+    //     if (amountOfPayments >= perk.rewardLimit) {
+    //         throw new ForbiddenError("This perk has reached it's limit.");
+    //     }
+    // }
+
+    // // Can not be claimed when sub is set for this claim URL and claim amount is greater than 1
+    // if (perk.claimAmount > 1 && claim.sub) {
+    //     throw new ForbiddenError('This perk has been claimed by someone else.');
+    // }
     // Can be claimed only if point price is 0
     if ((isTERC20Perk(perk) || isTERC721Perk(perk)) && perk.pointPrice > 0) {
         throw new ForbiddenError('This perk should be redeemed with points.');
     }
 
-    // Can be claimed only before the expiry date
-    const isExpired = new Date(perk.expiryDate).getTime() < Date.now();
-    if (perk.expiryDate && isExpired) {
-        throw new ForbiddenError('This perk claim has expired.');
+    const redeemValidationResult = await redeemValidation({ perk, sub: req.auth.sub, claim });
+    if (redeemValidationResult.isError) {
+        throw new ForbiddenError(redeemValidationResult.errorMessage);
     }
-
-    // Can only be claimed for the amount of times per sub specified in the claimLimit
-    const amountOfPaymentsPerSub = await model.countDocuments({ perkId: perk._id, sub: req.auth.sub });
-    if (perk.claimLimit > 0 && amountOfPaymentsPerSub >= perk.claimLimit) {
-        throw new ForbiddenError('You have claimed this perk for the maximum amount of times.');
-    }
-
-    // Can only be claimed for the amount of times per perk specified in the rewardLimit
-    if (perk.rewardLimit > 0) {
-        const amountOfPayments = await model.countDocuments({ perkId: perk._id });
-        if (amountOfPayments >= perk.rewardLimit) {
-            throw new ForbiddenError("This perk has reached it's limit.");
-        }
-    }
-
-    // Can not be claimed when sub is set for this claim URL and claim amount is greater than 1
-    if (perk.claimAmount > 1 && claim.sub) {
-        throw new ForbiddenError('This perk has been claimed by someone else.');
-    }
-
     // Can only claim if potential platform conditions passes.
     const failReason = await validateCondition(account, perk);
     if (failReason) {

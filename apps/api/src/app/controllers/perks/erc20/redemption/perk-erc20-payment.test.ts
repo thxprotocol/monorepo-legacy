@@ -10,13 +10,13 @@ import {
 } from '@thxnetwork/api/util/jest/constants';
 import { fromWei, isAddress, toWei } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { addMinutes } from '@thxnetwork/api/util/rewards';
+import { addMinutes, subMinutes } from '@thxnetwork/api/util/rewards';
 import { ERC20Document } from '@thxnetwork/api/models/ERC20';
 
 const user = request.agent(app);
 
 describe('ERC20 Perk Payment', () => {
-    let erc20: ERC20Document, poolId: string, rewardUuid: string, perkUuid: string;
+    let erc20: ERC20Document, poolId: string, rewardUuid: string, perkUuid: string, perk: any;
     const totalSupply = toWei('100000');
 
     beforeAll(async () => {
@@ -96,7 +96,7 @@ describe('ERC20 Perk Payment', () => {
     });
 
     it('POST /erc20-perks', (done) => {
-        const expiryDate = addMinutes(new Date(), 30);
+        const expiryDate = subMinutes(new Date(), 30);
         const image = 'http://myimage.com/1';
 
         user.post('/v1/erc20-perks/')
@@ -107,7 +107,7 @@ describe('ERC20 Perk Payment', () => {
                 description: 'Lorem ipsum dolor sit amet.',
                 image,
                 amount: 500,
-                rewardLimit: 0,
+                rewardLimit: 1,
                 claimAmount: 1,
                 pointPrice: 1500,
                 platform: 0,
@@ -116,8 +116,32 @@ describe('ERC20 Perk Payment', () => {
             .expect((res: request.Response) => {
                 expect(res.body.uuid).toBeDefined();
                 perkUuid = res.body.uuid;
+                perk = res.body;
             })
             .expect(201, done);
+    });
+
+    it('GET /perks should return isDisabled = true, because the Perk is expired', (done) => {
+        user.get(`/v1/perks`)
+            .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
+            .expect(({ body }: request.Response) => {
+                expect(body.erc20Perks.length).toBe(1);
+                expect(body.erc20Perks[0].isDisabled).toBe(true);
+            })
+            .expect(200, done);
+    });
+
+    it('PATCH /erc20-perks/:id', (done) => {
+        perk.expiryDate = addMinutes(new Date(), 30);
+        user.patch(`/v1/erc20-perks/${perk._id}`)
+            .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
+            .send({
+                ...perk,
+            })
+            .expect(({ body }: request.Response) => {
+                perk = body;
+            })
+            .expect(200, done);
     });
 
     it('POST /rewards/points/:uuid/claim', (done) => {
@@ -135,5 +159,15 @@ describe('ERC20 Perk Payment', () => {
                 expect(res.body.erc20PerkPayment.poolId).toBe(poolId);
             })
             .expect(201, done);
+    });
+
+    it('GET /perks should return isDisabled = true, because the is already claimed once', (done) => {
+        user.get(`/v1/perks`)
+            .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
+            .expect(({ body }: request.Response) => {
+                expect(body.erc20Perks.length).toBe(1);
+                expect(body.erc20Perks[0].isDisabled).toBe(true);
+            })
+            .expect(200, done);
     });
 });

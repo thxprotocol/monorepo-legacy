@@ -93,14 +93,14 @@ class AccountModule extends VuexModule {
                 break;
             }
         }
-        const client = Mixpanel.client();
+        //const client = Mixpanel.client();
         await this.userManager.signinRedirect({
             extraQueryParams: {
                 prompt: 'connect',
                 channel: payload.platform,
                 return_url: payload.returnUrl,
                 access_token_kind,
-                distinct_id: client && client.get_distinct_id(),
+                //distinct_id: client && client.get_distinct_id(),
             },
         });
     }
@@ -114,10 +114,10 @@ class AccountModule extends VuexModule {
         poolTransferToken: string;
         poolId: string;
     }) {
-        const client = Mixpanel.client();
+        //const client = Mixpanel.client();
         const extraQueryParams: any = {
             return_url: BASE_URL,
-            distinct_id: client && client.get_distinct_id(),
+            //distinct_id: client && client.get_distinct_id(),
         };
 
         if (payload.poolId) {
@@ -156,12 +156,12 @@ class AccountModule extends VuexModule {
 
     @Action({ rawError: true })
     async accountRedirect(returnPath: string) {
-        const client = Mixpanel.client();
+        //const client = Mixpanel.client();
         await this.userManager.signinRedirect({
             extraQueryParams: {
                 prompt: 'account-settings',
                 return_url: BASE_URL + returnPath,
-                distinct_id: client && client.get_distinct_id(),
+                //distinct_id: client && client.get_distinct_id(),
             },
         });
     }
