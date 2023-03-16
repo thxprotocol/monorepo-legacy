@@ -130,22 +130,17 @@ export class TwitterService {
         return r.data.data;
     }
 
-    static async getLatestTweets(accessToken: string, startDate: Date, endDate: Date) {
-        const user = await this.getUser(accessToken);
-        if (!user) throw new Error('Could not find Twitter user.');
-
-        const r = await twitterClient({
-            url: `/users/${user.id}/tweets?start_time=${startDate.toISOString()}&end_time=${endDate.toISOString()}`,
+    static async getLatestTweets(token: IAccessToken, startDate: Date, endDate: Date) {
+        const { data } = await twitterClient({
+            url: `/users/${
+                token.userId
+            }/tweets?start_time=${startDate.toISOString()}&end_time=${endDate.toISOString()}`,
             method: 'GET',
             headers: {
-                Authorization: `Bearer ${accessToken}`,
+                Authorization: `Bearer ${token.accessToken}`,
             },
         });
-
-        if (r.status !== 200) throw new Error(ERROR_NOT_AUTHORIZED);
-        if (!r.data) throw new Error(ERROR_NO_DATA);
-
-        return r.data.data;
+        return data.data;
     }
 
     static async refreshTokens(refreshToken: string) {

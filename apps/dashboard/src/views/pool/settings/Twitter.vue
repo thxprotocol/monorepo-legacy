@@ -5,13 +5,13 @@
             <p class="text-muted">Enable automated creation of conditional rewards for your new tweets.</p>
         </b-col>
         <b-col md="8">
-            <b-alert show variant="warning" v-if="profile && profile.twitterAccess">
+            <b-alert show variant="warning" v-if="profile && !profile.twitterAccess">
                 <i class="fab fa-twitter mr-2"></i>
                 Connect your Twitter account to your THX account in order to benefit from reward automation.
             </b-alert>
             <b-form-group>
                 <b-form-checkbox v-model="settings.isTwitterSyncEnabled" @change="updateSettings()">
-                    Enable
+                    Enable automated reward creation for your Tweets
                 </b-form-checkbox>
             </b-form-group>
         </b-col>

@@ -6,21 +6,24 @@ import { RewardConditionInteraction, RewardConditionPlatform, TPointReward } fro
 import { IAccount } from '../models/Account';
 import AccountProxy from '../proxies/AccountProxy';
 import MailService from '../services/MailService';
+import { PointReward } from '../models/PointReward';
 
 export async function createConditionalRewards() {
-    const pools = await AssetPool.find({ isTwitterSyncEnabled: true });
     const endDate = new Date();
     const startDate = subMinutes(endDate, 15);
 
-    for (const pool of pools) {
+    for await (const pool of AssetPool.find({ 'settings.isTwitterSyncEnabled': true })) {
         const { isAuthorized } = await TwitterDataProxy.getTwitter(pool.sub);
-        if (!isAuthorized || !pool.settings.isTwitterSyncEnabled) continue;
+        if (!isAuthorized) continue;
 
         const latestTweets = await TwitterDataProxy.getLatestTweets(pool.sub, startDate, endDate);
         const { title, description, amount }: TPointReward = pool.settings.defaults.conditionalRewards;
+        const rewards = [];
 
         for (const tweet of latestTweets) {
-            await PointRewardService.create(pool, {
+            const result = await PointReward.exists({ poolId: String(pool._id), content: tweet.id });
+            if (result) continue;
+            const reward = await PointRewardService.create(pool, {
                 title,
                 description,
                 amount,
@@ -28,14 +31,15 @@ export async function createConditionalRewards() {
                 interaction: RewardConditionInteraction.TwitterLike,
                 content: tweet.id,
             });
+            rewards.push(reward);
         }
 
         const account: IAccount = await AccountProxy.getById(pool.sub);
-        if (account.email) {
+        if (rewards.length && account.email) {
             await MailService.send(
                 account.email,
-                `Published ${latestTweets.length} conditional rewards!`,
-                `We discovered ${latestTweets.length} new tweets in your connected account and habe published conditional rewards in your widget.`,
+                `Published ${rewards.length} conditional rewards!`,
+                `We discovered ${rewards.length} new tweets in your connected account! A conditional reward for each has been added to your widget.`,
             );
         }
     }

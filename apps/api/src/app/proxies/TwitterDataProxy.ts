@@ -35,10 +35,10 @@ export default class TwitterDataProxy {
 
     static async getLatestTweets(sub: string, startDate: Date, endDate: Date) {
         const params = new URLSearchParams();
-        params.append('startDate', startDate.getTime().toString());
-        params.append('endDate', endDate.getTime().toString());
+        params.append('startDate', String(startDate.getTime()));
+        params.append('endDate', String(endDate.getTime()));
 
-        const r = await authClient({
+        const { data } = await authClient({
             method: 'GET',
             url: `/account/${sub}/twitter/tweets/latest`,
             headers: {
@@ -47,10 +47,7 @@ export default class TwitterDataProxy {
             params,
         });
 
-        if (r.status !== 200) throw new NoTwitterDataError();
-        if (!r.data) throw new NoTwitterDataError();
-
-        return r.data;
+        return data;
     }
 
     static async validateLike(account: IAccount, channelItem: string) {

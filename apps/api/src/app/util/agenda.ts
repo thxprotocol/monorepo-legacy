@@ -21,9 +21,8 @@ db.connection.once('open', async () => {
     agenda.mongo(db.connection.getClient().db() as any, 'jobs');
 
     await agenda.start();
-
-    agenda.every('30 seconds', EVENT_UPDATE_PENDING_TRANSACTIONS);
-    agenda.every('15 minutes', EVENT_CREATE_CONDITIONAL_REWARDS);
+    await agenda.every('10 seconds', EVENT_UPDATE_PENDING_TRANSACTIONS);
+    await agenda.every('15 minutes', EVENT_CREATE_CONDITIONAL_REWARDS);
 
     logger.info('AgendaJS successfully started job processor');
 });
