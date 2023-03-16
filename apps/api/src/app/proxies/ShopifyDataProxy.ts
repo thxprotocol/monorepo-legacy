@@ -38,7 +38,7 @@ export default class ShopifyDataProxy {
         return data.result;
     }
 
-    static async validateNewsletterSubscription(pool: AssetPoolDocument, account: IAccount, content: string) {
+    static async validateNewsletterSubscription(pool: AssetPoolDocument, account: IAccount) {
         const { data } = await authClient({
             method: 'GET',
             url: `/account/${pool.sub}/shopify/newsletter-subscription?email=${account.email}`,
