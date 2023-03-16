@@ -24,6 +24,7 @@ import { getShopifyTotalSpent } from './shopify/total-spent/get.controller';
 import GetGoogleUser from './google/user/get.controller';
 import GetTwitterUser from './twitter/user/get.controller';
 import GetDiscordUser from './discord/user/get.controller';
+import { getShopifyNewsletterSubscription } from './shopify/newsletter-subscription/get.controller';
 
 const router = express.Router();
 
@@ -40,6 +41,7 @@ router.get('/:sub/twitter/follow/:item', guard.check(['accounts:read']), getTwit
 router.get('/:sub/shopify', guard.check(['accounts:read']), getShopify);
 router.get('/:sub/shopify/order-amount', guard.check(['accounts:read']), getShopifyOrderAmount);
 router.get('/:sub/shopify/total-spent', guard.check(['accounts:read']), getShopifyTotalSpent);
+router.get('/:sub/shopify/newsletter-subscription', guard.check(['accounts:read']), getShopifyNewsletterSubscription);
 
 router.get('/:sub/google/youtube', guard.check(['accounts:read']), getYoutube);
 router.get('/:sub/google/user', guard.check(['accounts:read']), GetGoogleUser.controller);

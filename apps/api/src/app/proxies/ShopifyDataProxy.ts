@@ -23,7 +23,6 @@ export default class ShopifyDataProxy {
                 Authorization: await getAuthAccessToken(),
             },
         });
-        console.log(data);
         return data.result;
     }
 
@@ -36,7 +35,17 @@ export default class ShopifyDataProxy {
                 Authorization: await getAuthAccessToken(),
             },
         });
-        console.log(data);
+        return data.result;
+    }
+
+    static async validateNewsletterSubscription(pool: AssetPoolDocument, account: IAccount) {
+        const { data } = await authClient({
+            method: 'GET',
+            url: `/account/${pool.sub}/shopify/newsletter-subscription?email=${account.email}`,
+            headers: {
+                Authorization: await getAuthAccessToken(),
+            },
+        });
         return data.result;
     }
 }
