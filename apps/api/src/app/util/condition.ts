@@ -53,6 +53,12 @@ export const validateCondition = async (account: IAccount, reward: TBaseReward):
                 if (!result) return `Shopify: Total spent for ${account.email} not sufficient.`;
                 break;
             }
+            case RewardConditionInteraction.ShopifyNewsletterSubscription: {
+                const pool = await PoolService.getById(reward.poolId);
+                const result = await ShopifyDataProxy.validateNewsletterSubscription(pool, account);
+                if (!result) return `Shopify: No subscription found for ${account.email}`;
+                break;
+            }
         }
     } catch (error) {
         return 'Could not validate the platform condition for this claim.';

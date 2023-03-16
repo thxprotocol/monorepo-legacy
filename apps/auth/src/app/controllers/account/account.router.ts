@@ -26,6 +26,7 @@ import { createShopifyDiscountCode } from './shopify/discount-code/post.action';
 import GetGoogleUser from './google/user/get.controller';
 import GetTwitterUser from './twitter/user/get.controller';
 import GetDiscordUser from './discord/user/get.controller';
+import { getShopifyNewsletterSubscription } from './shopify/newsletter-subscription/get.controller';
 
 const router = express.Router();
 
@@ -44,6 +45,7 @@ router.get('/:sub/shopify', guard.check(['accounts:read']), getShopify);
 router.get('/:sub/shopify/order-amount', guard.check(['accounts:read']), getShopifyOrderAmount);
 router.get('/:sub/shopify/total-spent', guard.check(['accounts:read']), getShopifyTotalSpent);
 router.get('/:sub/shopify/price-rules', guard.check(['accounts:read']), getShopifyPriceRules);
+router.get('/:sub/shopify/newsletter-subscription', guard.check(['accounts:read']), getShopifyNewsletterSubscription);
 router.post('/:sub/shopify/discount-code', guard.check(['accounts:read']), createShopifyDiscountCode);
 
 router.get('/:sub/google/youtube', guard.check(['accounts:read']), getYoutube);
