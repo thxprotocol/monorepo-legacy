@@ -63,7 +63,11 @@ export const platformList: IChannel[] = [
         type: RewardConditionPlatform.Shopify,
         name: 'Shopify',
         logoURI: require('@thxnetwork/dashboard/../public/assets/logo-shopify.png'),
-        actions: [RewardConditionInteraction.ShopifyOrderAmount, RewardConditionInteraction.ShopifyTotalSpent],
+        actions: [
+            RewardConditionInteraction.ShopifyOrderAmount,
+            RewardConditionInteraction.ShopifyTotalSpent,
+            RewardConditionInteraction.ShopifyNewsletterSubscription,
+        ],
     },
 ];
 export const platformInteractionList = [
@@ -110,6 +114,11 @@ export const platformInteractionList = [
     {
         type: RewardConditionInteraction.ShopifyTotalSpent,
         name: 'Total Spent',
+        items: [],
+    },
+    {
+        type: RewardConditionInteraction.ShopifyNewsletterSubscription,
+        name: 'Newsletter Subscription',
         items: [],
     },
 ];
