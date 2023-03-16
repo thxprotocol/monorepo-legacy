@@ -72,7 +72,7 @@ import hljs from 'highlight.js/lib/core';
 import Shell from 'highlight.js/lib/languages/shell';
 import { mapGetters } from 'vuex';
 import { UserProfile } from 'oidc-client-ts';
-import { type IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import { type TPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { type TReferralReward } from '@thxnetwork/types/index';
 import BaseModal from './BaseModal.vue';
@@ -109,7 +109,7 @@ export default class ModalReferralRewardCreate extends Vue {
     profile!: UserProfile;
 
     @Prop() id!: string;
-    @Prop() pool!: IPool;
+    @Prop() pool!: TPool;
     @Prop({ required: false }) reward!: TReferralReward;
 
     get code() {

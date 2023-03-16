@@ -2,7 +2,7 @@ import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { widgetAccessToken, sub } from '@thxnetwork/api/util/jest/constants';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { ChainId } from '@thxnetwork/api/types/enums';
+import { ChainId } from '@thxnetwork/types/enums';
 const user = request.agent(app);
 
 describe('Wallets', () => {

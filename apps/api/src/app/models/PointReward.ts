@@ -7,7 +7,7 @@ export type PointRewardDocument = mongoose.Document & TPointReward;
 const schema = new mongoose.Schema(
     {
         ...rewardBaseSchema,
-        amount: String,
+        amount: Number,
     },
     { timestamps: true },
 );

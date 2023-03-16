@@ -1,6 +1,6 @@
 import { VOTER_PK, DEPOSITOR_PK } from './constants';
 import { getProvider } from '@thxnetwork/api/util/network';
-import { ChainId } from '@thxnetwork/api/types/enums';
+import { ChainId } from '@thxnetwork/types/enums';
 
 const { web3 } = getProvider(ChainId.Hardhat);
 

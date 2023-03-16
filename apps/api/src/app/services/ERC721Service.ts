@@ -6,7 +6,7 @@ import { ERC721, ERC721Document, IERC721Updates } from '@thxnetwork/api/models/E
 import { ERC721Metadata, ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
 import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
-import { AccountPlanType, ChainId, TransactionState } from '@thxnetwork/api/types/enums';
+import { AccountPlanType, ChainId, TransactionState } from '@thxnetwork/types/enums';
 import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
 import {
     TERC721DeployCallbackArgs,

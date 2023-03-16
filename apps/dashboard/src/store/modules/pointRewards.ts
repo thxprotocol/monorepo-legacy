@@ -2,7 +2,7 @@ import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { RewardConditionPlatform, type TPointReward } from '@thxnetwork/types/index';
-import { IPool } from './pools';
+import { type TPool } from '@thxnetwork/types/index';
 import { track } from '@thxnetwork/mixpanel';
 
 export type TPointRewardState = {
@@ -37,7 +37,7 @@ class PointRewardModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async list({ page, pool }: { page: number; pool: IPool }) {
+    async list({ page, pool }: { page: number; pool: TPool }) {
         const { data } = await axios({
             method: 'GET',
             url: '/point-rewards',

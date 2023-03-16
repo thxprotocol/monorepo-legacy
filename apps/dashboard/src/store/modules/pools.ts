@@ -1,11 +1,11 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import { track } from '@thxnetwork/mixpanel';
 import { DASHBOARD_URL } from '@thxnetwork/wallet/utils/secrets';
 import { IAccount } from '@thxnetwork/dashboard/types/account';
+import { TPool } from '@thxnetwork/types/index';
 
 type TPoolTransfer = {
     sub: string;
@@ -17,22 +17,6 @@ type TPoolTransfer = {
     isCopied: boolean;
     url: string;
 };
-
-export interface IPool {
-    _id: string;
-    variant: string;
-    address: string;
-    chainId: ChainId;
-    rewardPollDuration: number;
-    proposeWithdrawPollDuration: number;
-    version: string;
-    archived: boolean;
-    title: string;
-    transfers: TPoolTransfer[];
-    discordWebhookUrl?: string;
-    isTwitterSyncEnabled: boolean;
-    defaultTwitterConditionalRewardSettings?: string;
-}
 
 export interface IPoolAnalytic {
     _id: string;
@@ -90,7 +74,7 @@ export interface IPoolAnalyticMetrics {
     erc721Perks: { payments: number };
 }
 export interface IPools {
-    [id: string]: IPool;
+    [id: string]: TPool;
 }
 
 export interface IPoolAnalytics {
@@ -129,18 +113,18 @@ class PoolModule extends VuexModule {
     }
 
     @Mutation
-    set(pool: IPool) {
+    set(pool: TPool) {
         Vue.set(this._all, pool._id, pool);
     }
 
     @Mutation
-    clearTransfers(pool: IPool) {
+    clearTransfers(pool: TPool) {
         Vue.set(this._all[pool._id], 'transfers', []);
     }
 
     @Mutation
     setTransfer(poolTransfer: TPoolTransfer) {
-        const pool = this._all[poolTransfer.poolId];
+        const pool = this._all[poolTransfer.poolId] as TPool & { transfers: TPoolTransfer[] };
         poolTransfer.isCopied = false;
         poolTransfer.url = `${DASHBOARD_URL}/pools/${pool._id}/transfer/${poolTransfer.token}`;
 
@@ -164,7 +148,7 @@ class PoolModule extends VuexModule {
     }
 
     @Mutation
-    unset(pool: IPool) {
+    unset(pool: TPool) {
         Vue.delete(this._all, pool._id);
     }
 
@@ -174,7 +158,7 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async listTransfers(pool: IPool) {
+    async listTransfers(pool: TPool) {
         this.context.commit('clearTransfers', pool);
 
         const r = await axios({
@@ -189,7 +173,7 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async refreshTransfers(pool: IPool) {
+    async refreshTransfers(pool: TPool & { transfers: TPoolTransfer[] }) {
         await axios({
             method: 'POST',
             url: `/pools/${pool._id}/transfers/refresh`,
@@ -200,7 +184,7 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async deleteTransfers(pool: IPool) {
+    async deleteTransfers(pool: TPool & { transfers: TPoolTransfer[] }) {
         await axios({
             method: 'DELETE',
             url: `/pools/${pool._id}/transfers`,
@@ -220,7 +204,7 @@ class PoolModule extends VuexModule {
             params,
         });
 
-        r.data.forEach((pool: IPool) => {
+        r.data.forEach((pool: TPool) => {
             this.context.commit('set', pool);
         });
     }
@@ -300,7 +284,7 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async update({ pool, data }: { pool: IPool; data: { archived: boolean; title: string } }) {
+    async update({ pool, data }: { pool: TPool; data: { archived: boolean; title: string } }) {
         await axios({
             method: 'PATCH',
             url: '/pools/' + pool._id,
@@ -315,7 +299,7 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async remove(pool: IPool) {
+    async remove(pool: TPool) {
         await axios({
             method: 'DELETE',
             url: '/pools/' + pool._id,

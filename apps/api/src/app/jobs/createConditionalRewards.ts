@@ -1,57 +1,41 @@
-import { AssetPool, AssetPoolDocument } from '../models/AssetPool';
+import { AssetPool } from '../models/AssetPool';
 import TwitterDataProxy from '../proxies/TwitterDataProxy';
 import { subMinutes } from 'date-fns';
 import PointRewardService from '../services/PointRewardService';
-import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
+import { RewardConditionInteraction, RewardConditionPlatform, TPointReward } from '@thxnetwork/types/index';
 import { IAccount } from '../models/Account';
 import AccountProxy from '../proxies/AccountProxy';
 import MailService from '../services/MailService';
 
 export async function createConditionalRewards() {
     const pools = await AssetPool.find({ isTwitterSyncEnabled: true });
-    if (!pools.length) {
-        return;
-    }
     const endDate = new Date();
     const startDate = subMinutes(endDate, 15);
 
-    let currentAccount: IAccount;
+    for (const pool of pools) {
+        const { isAuthorized } = await TwitterDataProxy.getTwitter(pool.sub);
+        if (!isAuthorized || !pool.settings.isTwitterSyncEnabled) continue;
 
-    for (let i = 0; i < pools.length; i++) {
-        const pool = pools[i];
-        if (!pool.defaultTwitterConditionalRewardSettings) {
-            continue;
-        }
-        const defaultSettings: { title: string; description: string; amount: string } = JSON.parse(
-            pool.defaultTwitterConditionalRewardSettings,
-        );
-        const sub = pool.sub;
-        const { isAuthorized } = await TwitterDataProxy.getTwitter(sub);
-        if (!isAuthorized) {
-            continue;
-        }
-        const latestTweets = await TwitterDataProxy.getLatestTweets(sub, startDate, endDate);
+        const latestTweets = await TwitterDataProxy.getLatestTweets(pool.sub, startDate, endDate);
+        const { title, description, amount }: TPointReward = pool.settings.defaults.conditionalRewards;
 
-        for (let j = 0; j < latestTweets.length; j++) {
-            const tweet = latestTweets[j];
-            await PointRewardService.create(pools[i] as AssetPoolDocument, {
-                title: defaultSettings.title,
-                description: defaultSettings.description,
-                amount: defaultSettings.amount,
+        for (const tweet of latestTweets) {
+            await PointRewardService.create(pool, {
+                title,
+                description,
+                amount,
                 platform: RewardConditionPlatform.Twitter,
                 interaction: RewardConditionInteraction.TwitterLike,
                 content: tweet.id,
             });
-            if (!currentAccount || currentAccount.sub != pool.sub) {
-                currentAccount = await AccountProxy.getById(pool.sub);
-            }
-            if (!currentAccount.email) {
-                continue;
-            }
+        }
+
+        const account: IAccount = await AccountProxy.getById(pool.sub);
+        if (account.email) {
             await MailService.send(
-                currentAccount.email,
-                `New Tweet added to the widget for the pool: ${pool.address}`,
-                `The tweet "${tweet.text}" has been added to the widget`,
+                account.email,
+                `Published ${latestTweets.length} conditional rewards!`,
+                `We discovered ${latestTweets.length} new tweets in your connected account and habe published conditional rewards in your widget.`,
             );
         }
     }

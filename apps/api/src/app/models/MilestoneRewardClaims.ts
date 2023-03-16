@@ -8,7 +8,7 @@ const schema = new mongoose.Schema(
         milestoneRewardId: String,
         sub: { type: String, index: 'hashed' },
         uuid: String,
-        amount: String,
+        amount: Number,
         isClaimed: Boolean,
     },
     { timestamps: true },

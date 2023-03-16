@@ -45,7 +45,7 @@
 </template>
 
 <script lang="ts">
-import { type IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import { type TPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { type TPointReward } from '@thxnetwork/types/interfaces/PointReward';
 import { platformInteractionList, platformList } from '@thxnetwork/dashboard/types/rewards';
@@ -85,7 +85,7 @@ export default class ModalRewardPointsCreate extends Vue {
     };
     profile!: IAccount;
     @Prop() id!: string;
-    @Prop() pool!: IPool;
+    @Prop() pool!: TPool;
     @Prop({ required: false }) reward!: TPointReward;
 
     onShow() {

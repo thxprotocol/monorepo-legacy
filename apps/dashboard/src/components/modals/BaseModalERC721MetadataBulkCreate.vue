@@ -43,7 +43,7 @@
 </template>
 
 <script lang="ts">
-import type { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import type { TPool } from '@thxnetwork/dashboard/store/modules/pools';
 import type { TERC721, TERC721DefaultProp } from '@thxnetwork/dashboard/types/erc721';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
@@ -69,7 +69,7 @@ export default class ModalERC721MetadataBulkCreate extends Vue {
         return this.loading || !this.files;
     }
 
-    @Prop() pool!: IPool;
+    @Prop() pool!: TPool;
     @Prop() erc721!: TERC721;
 
     onShow() {

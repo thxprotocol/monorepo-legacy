@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId } from '@thxnetwork/api/types/enums';
+import { ChainId } from '@thxnetwork/types/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { dashboardAccessToken, sub, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
 import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
@@ -80,7 +80,7 @@ describe('ERC721 Perks Redemtpion', () => {
                     expect(body.uuid).toBeDefined();
                     expect(body.title).toBe(title);
                     expect(body.description).toBe(description);
-                    expect(body.amount).toBe(amount.toString());
+                    expect(body.amount).toBe(amount);
                     dailyReward = body;
                 })
                 .expect(201, done);
@@ -93,7 +93,7 @@ describe('ERC721 Perks Redemtpion', () => {
                     expect(body.uuid).toBeDefined();
                     expect(body.title).toBe(dailyReward.title);
                     expect(body.description).toBe(dailyReward.description);
-                    expect(body.amount).toBe(dailyReward.amount.toString());
+                    expect(body.amount).toBe(dailyReward.amount);
                 })
                 .expect(200, done);
         });
@@ -111,7 +111,7 @@ describe('ERC721 Perks Redemtpion', () => {
             user.get(`/v1/point-balances`)
                 .set({ 'X-PoolId': pool._id, 'Authorization': widgetAccessToken })
                 .expect(({ body }: request.Response) => {
-                    expect(body.balance).toBe(dailyReward.amount.toString());
+                    expect(body.balance).toBe(dailyReward.amount);
                     balance = body.balance;
                 })
                 .expect(200, done);
@@ -265,7 +265,7 @@ describe('ERC721 Perks Redemtpion', () => {
             user.get(`/v1/point-balances`)
                 .set({ 'X-PoolId': pool._id, 'Authorization': widgetAccessToken })
                 .expect(({ body }: request.Response) => {
-                    expect(body.balance).toBe((Number(balance) - perk.pointPrice).toString());
+                    expect(body.balance).toBe(Number(balance) - perk.pointPrice);
                 })
                 .expect(200, done);
         });

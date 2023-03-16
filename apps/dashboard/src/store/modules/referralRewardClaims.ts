@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Vue } from 'vue-property-decorator';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { type IPool } from './pools';
+import { type TPool } from '@thxnetwork/types/index';
 import { TReferralReward, type TReferralRewardClaim } from '@thxnetwork/types/index';
 import { track } from '@thxnetwork/mixpanel';
 
@@ -16,7 +16,7 @@ export type TRewardClaimState = {
 };
 
 export type RewardListProps = {
-    pool: IPool;
+    pool: TPool;
     page: number;
     limit: number;
 };
@@ -43,23 +43,23 @@ class ReferralRewardModule extends VuexModule {
     }
 
     @Mutation
-    set({ pool, claim }: { pool: IPool; claim: TReferralRewardClaimAccount }) {
+    set({ pool, claim }: { pool: TPool; claim: TReferralRewardClaimAccount }) {
         if (!this._all[pool._id]) Vue.set(this._all, pool._id, {});
         Vue.set(this._all[pool._id], claim._id, claim);
     }
 
     @Mutation
-    unset(claim: TReferralRewardClaimAccount, pool: IPool) {
+    unset(claim: TReferralRewardClaimAccount, pool: TPool) {
         Vue.delete(this._all[pool._id], claim._id as string);
     }
 
     @Mutation
-    setTotal({ pool, total }: { pool: IPool; total: number }) {
+    setTotal({ pool, total }: { pool: TPool; total: number }) {
         Vue.set(this._totals, pool._id, total);
     }
 
     @Action({ rawError: true })
-    async list(payload: { pool: IPool; reward: TReferralReward; page: number; limit: number }) {
+    async list(payload: { pool: TPool; reward: TReferralReward; page: number; limit: number }) {
         const { data } = await axios({
             method: 'GET',
             url: `/referral-rewards/${payload.reward.uuid}/claims`,
@@ -84,7 +84,7 @@ class ReferralRewardModule extends VuexModule {
         claims,
         page = 1,
     }: {
-        pool: IPool;
+        pool: TPool;
         reward: TReferralReward;
         claims: TReferralRewardClaimAccount[];
         page: number;
@@ -112,7 +112,7 @@ class ReferralRewardModule extends VuexModule {
         claim,
         payload,
     }: {
-        pool: IPool;
+        pool: TPool;
         reward: TReferralReward;
         claim: TReferralRewardClaimAccount;
         payload: TReferralRewardClaim;

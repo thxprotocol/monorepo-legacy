@@ -50,51 +50,6 @@
                 </b-col>
             </b-form-row>
         </b-col>
-        <b-form-row v-if="profile && profile.twitterAccess">
-            <b-col md="4">
-                <strong>Automated Conditional Rewards</strong>
-                <p class="text-muted">Configure the required params to generate automated conditional rewards</p>
-            </b-col>
-            <b-col md="8">
-                <b-form-row>
-                    <b-col md="8">
-                        <div class="mb-3 d-flex align-items-center">
-                            <img height="20" :src="require('../../../../public/assets/logo-twitter.png')" alt="" />
-                            <strong>Twitter</strong>
-                        </div>
-                        <b-form-group>
-                            <b-form-checkbox v-model="isTwitterSyncEnabled" @change="onTwitterSyncChange"
-                                >Sync Enabled</b-form-checkbox
-                            >
-                        </b-form-group>
-                    </b-col>
-                </b-form-row>
-                <b-form-row v-if="isTwitterSyncEnabled">
-                    <b-col md="8">
-                        <b-form-group label="Default title">
-                            <b-form-input v-model="twitterDeafultTitle" @change="updateAutomatedConditionalRewards" />
-                        </b-form-group>
-                    </b-col>
-                </b-form-row>
-                <b-form-row v-if="isTwitterSyncEnabled">
-                    <b-col md="8">
-                        <b-form-group label="Default description">
-                            <b-form-input
-                                v-model="twitterDeafultDescription"
-                                @change="updateAutomatedConditionalRewards"
-                            />
-                        </b-form-group>
-                    </b-col>
-                </b-form-row>
-                <b-form-row v-if="isTwitterSyncEnabled">
-                    <b-col md="8">
-                        <b-form-group label="Default amount">
-                            <b-form-input v-model="twitterDeafultAmount" @change="updateAutomatedConditionalRewards" />
-                        </b-form-group>
-                    </b-col>
-                </b-form-row>
-            </b-col>
-        </b-form-row>
     </b-form-row>
 </template>
 
@@ -128,11 +83,6 @@ export default class SettingsView extends Vue {
     logoImgUrl = '';
     backgroundImgUrl = '';
 
-    isTwitterSyncEnabled = false;
-    twitterDeafultTitle: string | null = null;
-    twitterDeafultDescription: string | null = null;
-    twitterDeafultAmount: string | null = null;
-
     get pool() {
         return this.pools[this.$route.params.id];
     }
@@ -158,16 +108,6 @@ export default class SettingsView extends Vue {
             this.logoImgUrl = this.brand.logoImgUrl;
         }
         await this.$store.dispatch('merchants/read');
-
-        if (this.pool) {
-            this.isTwitterSyncEnabled = this.pool.isTwitterSyncEnabled;
-            if (this.pool.defaultTwitterConditionalRewardSettings) {
-                const settings = JSON.parse(this.pool.defaultTwitterConditionalRewardSettings);
-                this.twitterDeafultTitle = settings.title;
-                this.twitterDeafultDescription = settings.description;
-                this.twitterDeafultAmount = settings.amount;
-            }
-        }
 
         this.loading = false;
     }
@@ -199,37 +139,6 @@ export default class SettingsView extends Vue {
             brand: {
                 backgroundImgUrl: this.backgroundImgUrl,
                 logoImgUrl: this.logoImgUrl,
-            },
-        });
-        this.loading = false;
-    }
-
-    async onTwitterSyncChange() {
-        if (!this.profile.twitterAccess) {
-            return;
-        }
-        this.loading = true;
-        await this.$store.dispatch('pools/update', {
-            pool: this.pool,
-            data: {
-                isTwitterSyncEnabled: this.isTwitterSyncEnabled,
-            },
-        });
-    }
-
-    async updateAutomatedConditionalRewards() {
-        if (!this.profile.twitterAccess) {
-            return;
-        }
-        this.loading = true;
-        await this.$store.dispatch('pools/update', {
-            pool: this.pool,
-            data: {
-                defaultTwitterConditionalRewardSettings: JSON.stringify({
-                    title: this.twitterDeafultTitle,
-                    description: this.twitterDeafultDescription,
-                    amount: this.twitterDeafultAmount,
-                }),
             },
         });
         this.loading = false;

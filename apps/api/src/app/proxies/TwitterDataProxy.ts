@@ -37,6 +37,7 @@ export default class TwitterDataProxy {
         const params = new URLSearchParams();
         params.append('startDate', startDate.getTime().toString());
         params.append('endDate', endDate.getTime().toString());
+
         const r = await authClient({
             method: 'GET',
             url: `/account/${sub}/twitter/tweets/latest`,

@@ -2,7 +2,7 @@ import type { IAccount, IAccountUpdates } from '@thxnetwork/api/models/Account';
 import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
 import { THXError } from '@thxnetwork/api/util/errors';
 import { Wallet } from '../models/Wallet';
-import { ChainId } from '../types/enums';
+import { ChainId } from '@thxnetwork/types/enums';
 
 class NoAccountError extends THXError {
     message = 'Could not find an account for this address';

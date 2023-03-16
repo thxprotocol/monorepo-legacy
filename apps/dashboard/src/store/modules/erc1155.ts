@@ -1,7 +1,7 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { IPool } from './pools';
+import { type TPool } from '@thxnetwork/types/index';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import type {
     TERC1155,
@@ -140,7 +140,7 @@ class ERC1155Module extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async deleteMetadata({ erc1155, metadata }: { pool: IPool; erc1155: TERC1155; metadata: TERC1155Metadata }) {
+    async deleteMetadata({ erc1155, metadata }: { pool: TPool; erc1155: TERC1155; metadata: TERC1155Metadata }) {
         await axios({
             method: 'DELETE',
             url: `/erc1155/${erc1155._id}/metadata/${metadata._id}`,
@@ -234,7 +234,7 @@ class ERC1155Module extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async import(payload: { address: string; pool: IPool; name?: string }) {
+    async import(payload: { address: string; pool: TPool; name?: string }) {
         const { data } = await axios({
             method: 'POST',
             url: `/erc1155/import`,

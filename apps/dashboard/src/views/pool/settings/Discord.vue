@@ -22,7 +22,10 @@
             </b-col>
             <b-col md="8">
                 <b-form-group label="Webhook URL" description="">
-                    <b-form-input :value="pool.discordWebhookUrl" @change="onChangeDiscordWebhookUrl"></b-form-input>
+                    <b-form-input
+                        :value="pool.settings.discordWebhookUrl"
+                        @change="onChangeDiscordWebhookUrl"
+                    ></b-form-input>
                 </b-form-group>
             </b-col>
         </b-form-row>

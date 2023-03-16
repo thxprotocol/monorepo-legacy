@@ -36,7 +36,7 @@
 </template>
 
 <script lang="ts">
-import type { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import type { TPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 
@@ -50,6 +50,6 @@ export default class ModalWidgetCreate extends Vue {
     isSubmitDisabled = false;
     error = '';
 
-    @Prop() pool!: IPool;
+    @Prop() pool!: TPool;
 }
 </script>

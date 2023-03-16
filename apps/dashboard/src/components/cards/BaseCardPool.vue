@@ -50,7 +50,7 @@
 
 <script lang="ts">
 import type { IAccount } from '@thxnetwork/dashboard/types/account';
-import type { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import type { TPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters, mapState } from 'vuex';
 import BaseModalDelete from '@thxnetwork/dashboard/components/modals/BaseModalDelete.vue';
@@ -87,7 +87,7 @@ export default class BaseCardPool extends Vue {
     isDeploying = false;
     fromWei = fromWei;
 
-    @Prop() pool!: IPool;
+    @Prop() pool!: TPool;
 
     profile!: IAccount;
     artifacts!: string;

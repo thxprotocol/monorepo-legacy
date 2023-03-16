@@ -1,4 +1,4 @@
-import { AccountPlanType } from '@thxnetwork/api/types/enums';
+import { AccountPlanType } from '@thxnetwork/types/enums';
 import { getToken } from './jwt';
 import { toWei } from 'web3-utils';
 

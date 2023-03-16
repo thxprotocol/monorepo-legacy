@@ -4,7 +4,7 @@ import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { body } from 'express-validator';
 import { UnauthorizedError } from '@thxnetwork/api/util/errors';
 import { Wallet } from '../../models/Wallet';
-import { ChainId } from '@thxnetwork/api/types/enums';
+import { ChainId } from '@thxnetwork/types/enums';
 
 export const validation = [
     body('sub').exists().isMongoId(),

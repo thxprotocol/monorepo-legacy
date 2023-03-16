@@ -99,7 +99,7 @@
 </template>
 
 <script lang="ts">
-import { IPools, type IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import { IPools, type TPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { platformList, platformInteractionList } from '@thxnetwork/dashboard/types/rewards';
 import { RewardConditionInteraction, RewardConditionPlatform, type TERC721Perk } from '@thxnetwork/types/index';
@@ -172,7 +172,7 @@ export default class ModalRewardERC721Create extends Vue {
     priceCurrency = 'USD';
 
     @Prop() id!: string;
-    @Prop() pool!: IPool;
+    @Prop() pool!: TPool;
     @Prop({ required: false }) reward!: TERC721Perk;
     @Prop({ required: false, default: () => [] }) erc721SelectedMetadataIds!: string[];
 

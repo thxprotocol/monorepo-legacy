@@ -8,7 +8,7 @@ import { ERC1155, ERC1155Document, IERC1155Updates } from '@thxnetwork/api/model
 import { ERC1155Metadata, ERC1155MetadataDocument } from '@thxnetwork/api/models/ERC1155Metadata';
 import { ERC1155Token, ERC1155TokenDocument } from '@thxnetwork/api/models/ERC1155Token';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
-import { ChainId, TransactionState } from '@thxnetwork/api/types/enums';
+import { ChainId, TransactionState } from '@thxnetwork/types/enums';
 import { ERC1155TokenState } from '@thxnetwork/api/types/TERC1155';
 import { TERC1155DeployCallbackArgs, TERC1155TokenMintCallbackArgs } from '@thxnetwork/api/types/TTransaction';
 import { assertEvent, ExpectedEventNotFound, findEvent, parseLogs } from '@thxnetwork/api/util/events';

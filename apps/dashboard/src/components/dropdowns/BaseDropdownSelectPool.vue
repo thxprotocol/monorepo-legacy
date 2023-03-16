@@ -26,7 +26,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseIdenticon from '../BaseIdenticon.vue';
 
-import { IPool, IPools } from '../../store/modules/pools';
+import { TPool, IPools } from '../../store/modules/pools';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import BaseFormSelectNetwork from '../form-select/BaseFormSelectNetwork.vue';
 
@@ -41,11 +41,11 @@ import BaseFormSelectNetwork from '../form-select/BaseFormSelectNetwork.vue';
 })
 export default class ModalAssetPoolCreate extends Vue {
     pools!: IPools;
-    pool: IPool | null = null;
+    pool: TPool | null = null;
     loading = false;
     selectedChainId: ChainId | null = null;
 
-    onListItemClick(pool: IPool | null) {
+    onListItemClick(pool: TPool | null) {
         this.pool = pool;
         this.$emit('selected', this.pool);
     }

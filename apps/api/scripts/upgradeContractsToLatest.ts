@@ -3,7 +3,7 @@ import { ContractName, currentVersion, DiamondVariant } from '../../../libs/cont
 import { getContract } from '../src/app/config/contracts';
 import { MONGODB_URI } from '../src/app/config/secrets';
 import { AssetPool, AssetPoolDocument } from '../src/app/models/AssetPool';
-import { ChainId } from '../src/app/types/enums';
+import { ChainId } from '@thxnetwork/types/enums';
 import { updateDiamondContract } from '../src/app/util/upgrades';
 import PoolService from '../src/app/services/PoolService';
 

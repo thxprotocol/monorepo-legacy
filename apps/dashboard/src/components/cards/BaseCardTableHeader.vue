@@ -4,9 +4,16 @@
             <span class="text-muted mr-2">
                 Selected <strong>{{ selectedItems.length }}</strong> item{{ selectedItems.length === 1 ? '' : 's' }}
             </span>
-            <b-dropdown v-if="actions.length" variant="dark" size="sm" split class="mr-5"
-                :text="selectedBulkAction ? selectedBulkAction.label : ''" :disabled="!selectedItems.length"
-                @click="selectedBulkAction ? onClickAction(selectedBulkAction) : null">
+            <b-dropdown
+                v-if="actions.length"
+                variant="dark"
+                size="sm"
+                split
+                class="mr-5"
+                :text="selectedBulkAction ? selectedBulkAction.label : ''"
+                :disabled="!selectedItems.length"
+                @click="selectedBulkAction ? onClickAction(selectedBulkAction) : null"
+            >
                 <b-dropdown-item class="small" @click="onClickAction(item)" :key="key" v-for="(item, key) of actions">
                     {{ item.label }}
                 </b-dropdown-item>
@@ -22,14 +29,21 @@
                 :options="[5, 10, 25, 50, 100, 500]"
                 class="mr-5"
             />
-            <b-pagination size="sm" class="my-0" @change="$emit('change-page', $event)" v-model="page" :per-page="limit"
-                :total-rows="totalRows" align="center"></b-pagination>
+            <b-pagination
+                size="sm"
+                class="my-0"
+                @change="$emit('change-page', $event)"
+                v-model="page"
+                :per-page="limit"
+                :total-rows="totalRows"
+                align="center"
+            ></b-pagination>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-import { type IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import { type TPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import BaseModalRewardClaimsDownload from '../modals/BaseModalRewardClaimsDownload.vue';
 
@@ -46,7 +60,7 @@ export default class BaseCardTableHeader extends Vue {
     @Prop() actions!: TTableBulkAction[];
     @Prop() page!: number;
     @Prop() limit!: number;
-    @Prop() pool!: IPool;
+    @Prop() pool!: TPool;
     @Prop() totalRows!: number;
 
     selectedBulkAction: TTableBulkAction | null = null;

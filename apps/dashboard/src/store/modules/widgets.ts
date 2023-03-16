@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Vue } from 'vue-property-decorator';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { type IPool } from './pools';
+import { type TPool } from '@thxnetwork/types/index';
 
 export type TWidget = {
     uuid: string;
@@ -39,7 +39,7 @@ class WidgetModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async list(pool: IPool) {
+    async list(pool: TPool) {
         const r = await axios({
             method: 'GET',
             url: '/widgets',
