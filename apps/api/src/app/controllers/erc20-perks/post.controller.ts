@@ -4,7 +4,7 @@ import { createERC20Perk } from '@thxnetwork/api/util/rewards';
 import ImageService from '@thxnetwork/api/services/ImageService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
-import { ERC20Type } from '@thxnetwork/api/types/enums';
+import { ERC20Type } from '@thxnetwork/types/enums';
 
 const validation = [
     body('title').exists().isString(),

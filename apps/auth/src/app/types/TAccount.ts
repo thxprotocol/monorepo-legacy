@@ -22,6 +22,7 @@ export interface TAccount {
     acceptUpdates: boolean;
     comparePassword: any;
     tokens: IAccessToken[];
+    discordId?: string;
     shopifyStoreUrl?: string;
     getToken: (token: AccessTokenKind) => IAccessToken;
     setToken: (token: IAccessToken) => IAccessToken;
@@ -57,6 +58,7 @@ export interface IAccountUpdates {
     firstName?: string;
     lastName?: string;
     plan?: AccountPlanType;
+    discordId?: string;
     organisation?: string;
     email?: string;
     profileImg?: string;

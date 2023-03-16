@@ -1,4 +1,4 @@
-import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import { TPool } from '@thxnetwork/types/index';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import { AxiosResponse } from 'axios';
 
@@ -55,7 +55,7 @@ export type PaginationParams = Partial<{
 
 export type MetadataListProps = PaginationParams & {
     erc1155: TERC1155;
-    pool: IPool;
+    pool: TPool;
     query?: string;
 };
 

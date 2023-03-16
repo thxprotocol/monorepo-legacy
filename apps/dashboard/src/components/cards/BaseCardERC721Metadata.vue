@@ -71,7 +71,7 @@ import type { TERC721, TERC721Metadata } from '@thxnetwork/dashboard/types/erc72
 import { format } from 'date-fns';
 import { API_URL } from '@thxnetwork/dashboard/utils/secrets';
 import BaseModalErc721MetadataMint from '@thxnetwork/dashboard/components/modals/BaseModalERC721MetadataMint.vue';
-import type { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import type { TPool } from '@thxnetwork/dashboard/store/modules/pools';
 
 @Component({
     components: {
@@ -89,7 +89,7 @@ export default class BaseListItemERC721Metadata extends Vue {
 
     @Prop() metadata!: TERC721Metadata[];
     @Prop() erc721!: TERC721;
-    @Prop() pool!: IPool;
+    @Prop() pool!: TPool;
 
     onEdit(metadata: TERC721Metadata) {
         this.$emit('edit', metadata);

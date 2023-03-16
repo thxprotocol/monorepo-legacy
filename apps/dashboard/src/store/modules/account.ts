@@ -114,17 +114,10 @@ class AccountModule extends VuexModule {
         poolTransferToken: string;
         poolId: string;
     }) {
-        let distinctId;
-        try {
-            const client = Mixpanel.client();
-            distinctId = client.get_distinct_id();
-        } catch (err) {
-            console.log('err', err);
-        }
-
+        const client = Mixpanel.client();
         const extraQueryParams: any = {
             return_url: BASE_URL,
-            distinct_id: distinctId,
+            distinct_id: client && client.get_distinct_id(),
         };
 
         if (payload.poolId) {

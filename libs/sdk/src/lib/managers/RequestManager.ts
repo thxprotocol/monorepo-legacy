@@ -4,6 +4,7 @@ import BaseManager from './BaseManager';
 
 interface Config extends RequestInit {
     waitForAuth?: boolean;
+    poolId?: string;
 }
 
 class RequestManager extends BaseManager {
@@ -29,14 +30,15 @@ class RequestManager extends BaseManager {
         return URL_CONFIG[env]['API_URL'] + path;
     }
 
-    private getHeaders() {
-        const headers: any = {};
+    private getHeaders(poolId?: string) {
+        const headers: { [key: string]: string } = {};
+        const token = this.client.session._cached.accessToken || this.client.session.user?.access_token;
 
-        if (this.client.session.user?.access_token) {
-            headers['Authorization'] = `Bearer ${this.client.session.user?.access_token}`;
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
         }
-        if (this.client.session.poolId) {
-            headers['X-PoolId'] = this.client.session.poolId;
+        if (poolId || this.client.session.poolId) {
+            headers['X-PoolId'] = (poolId || this.client.session.poolId) as string;
         }
 
         return headers;
@@ -68,7 +70,7 @@ class RequestManager extends BaseManager {
     async get(path: string, config?: Config) {
         if (config?.waitForAuth) await this.waitForAuth();
 
-        const headers = this.getHeaders();
+        const headers = this.getHeaders(config?.poolId);
         const url = this.getUrl(path);
         const r = await fetch(url, {
             ...config,

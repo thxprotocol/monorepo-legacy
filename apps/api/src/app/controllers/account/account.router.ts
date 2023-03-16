@@ -6,6 +6,10 @@ import DeleteAccount from './delete.controller';
 import ReadAccountYoutube from './youtube/get.controller';
 import ReadAccountTwitter from './twitter/get.controller';
 import ReadAccountDiscord from './discord/get.controller';
+import GetAccountByDiscordId from './discord/get.by-discord-id.controller';
+import GetPointBalance from './discord/get.point-balance.controller';
+import GetListERC20Tokens from './discord/get.list-erc20.controller';
+import GetListERC721Tokens from './discord/get.list-erc721.controller';
 import ReadAccountShopify from './shopify/get.controller';
 import CreateTwitterTweet from './twitter/tweet/post.controller';
 import CreateTwitterUser from './twitter/user/post.controller';
@@ -24,6 +28,17 @@ router.get('/shopify', guard.check(['account:read']), ReadAccountShopify.control
 
 // router.post('/youtube/video', guard.check(['account:read']), CreateTwitterTweet.controller);
 // router.post('/youtube/channel', guard.check(['account:read']), CreateTwitterTweet.controller);
+
+router.get(
+    '/discord/:discordId',
+    guard.check(['account:read']),
+    assertRequestInput(GetAccountByDiscordId.validations),
+    GetAccountByDiscordId.controller,
+);
+
+router.get('/:sub/discord/point_balance', guard.check(['account:read']), GetPointBalance.controller);
+router.get('/:sub/discord/erc20/token', guard.check(['account:read']), GetListERC20Tokens.controller);
+router.get('/:sub/discord/erc721/token', guard.check(['account:read']), GetListERC721Tokens.controller);
 
 router.post(
     '/twitter/tweet',

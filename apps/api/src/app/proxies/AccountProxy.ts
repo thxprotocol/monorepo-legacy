@@ -2,7 +2,7 @@ import type { IAccount, IAccountUpdates } from '@thxnetwork/api/models/Account';
 import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
 import { THXError } from '@thxnetwork/api/util/errors';
 import { Wallet } from '../models/Wallet';
-import { ChainId } from '../types/enums';
+import { ChainId } from '@thxnetwork/types/enums';
 
 class NoAccountError extends THXError {
     message = 'Could not find an account for this address';
@@ -36,6 +36,22 @@ async function authAccountRequest(url: string) {
 export default class AccountProxy {
     static async getById(sub: string): Promise<IAccount> {
         return await authAccountRequest(`/account/${sub}`);
+    }
+
+    static async getByDiscordId(discordId: string): Promise<IAccount> {
+        const r = await authClient({
+            method: 'GET',
+            url: `/account/discord/${discordId}`,
+            headers: {
+                Authorization: await getAuthAccessToken(),
+            },
+        });
+
+        if (!r.data) {
+            throw new NoAccountError();
+        }
+
+        return r.data;
     }
 
     static async getByEmail(email: string) {

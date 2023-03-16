@@ -1,5 +1,12 @@
 <template>
-    <base-modal @show="onShow" size="xl" title="Create NFT Perk" :id="id" :error="error" :loading="isLoading">
+    <base-modal
+        @show="onShow"
+        size="xl"
+        :title="reward ? 'Update NFT Perk' : 'Create NFT Perk'"
+        :id="id"
+        :error="error"
+        :loading="isLoading"
+    >
         <template #modal-body v-if="!isLoading">
             <p class="text-gray">NFT perks let your customers claim NFTs from your collection.</p>
             <form v-on:submit.prevent="onSubmit()" id="formRewardPointsCreate">
@@ -92,7 +99,7 @@
 </template>
 
 <script lang="ts">
-import { IPools, type IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import { IPools, type TPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { platformList, platformInteractionList } from '@thxnetwork/dashboard/types/rewards';
 import { RewardConditionInteraction, RewardConditionPlatform, type TERC721Perk } from '@thxnetwork/types/index';
@@ -165,7 +172,7 @@ export default class ModalRewardERC721Create extends Vue {
     priceCurrency = 'USD';
 
     @Prop() id!: string;
-    @Prop() pool!: IPool;
+    @Prop() pool!: TPool;
     @Prop({ required: false }) reward!: TERC721Perk;
     @Prop({ required: false, default: () => [] }) erc721SelectedMetadataIds!: string[];
 

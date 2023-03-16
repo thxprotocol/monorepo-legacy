@@ -1,283 +1,111 @@
 <template>
     <div>
         <h2 class="mb-3">Settings</h2>
-        <b-card class="shadow-sm mb-5">
-            <template v-if="profile && profile.plan === 1">
-                <b-form-row>
-                    <b-col md="4">
-                        <strong>Commerce</strong>
-                        <p class="text-muted">Enable FIAT payment methods to enable your users to buy your perks.</p>
-                    </b-col>
-                    <b-col md="8">
-                        <b-form-row v-if="!profile.merchant">
-                            <b-col md="12">
-                                <b-alert show variant="success" class="d-flex align-items-center">
-                                    <i class="fas fa-tags mr-2"></i>
-                                    Become a merchant and unlock the ability to sell your perks!
-                                    <b-button
-                                        class="rounded-pill ml-auto"
-                                        variant="primary"
-                                        @click="onClickMerchantCreate"
-                                        :disabled="isLoadingMerchantCreate"
-                                    >
-                                        <b-spinner v-if="isLoadingMerchantCreate" small variant="light" class="mr-2" />
-                                        Become a Merchant
-                                    </b-button>
-                                </b-alert>
-                            </b-col>
-                        </b-form-row>
-                        <b-form-row v-else>
-                            <b-col md="8">
-                                <b-form-group label="Merchant ID">
-                                    <b-form-input
-                                        readonly
-                                        disabled
-                                        :value="profile.merchant ? profile.merchant.stripeConnectId : ''"
-                                    />
-                                </b-form-group>
-                                <b-alert
-                                    show
-                                    variant="warning"
-                                    class="center-center"
-                                    v-if="
-                                        merchantStatus.filter((s) => !s.status).length &&
-                                        merchantStatus.filter((s) => !s.status).length < 3
-                                    "
-                                >
-                                    <i class="fas fa-exclamation-triangle mr-2"></i>
-                                    You have not finished the configuration of your Merchant account.
-                                </b-alert>
-                            </b-col>
-                            <b-col md="4">
-                                <b-form-group label="Connection">
-                                    <b-list-group class="mb-3">
-                                        <b-list-group-item v-for="(s, key) in merchantStatus" :key="key">
-                                            <b-link v-if="!s.status" @click="onClickMerchantLink">
-                                                <i
-                                                    class="fas fa-check-circle mr-2"
-                                                    :class="s.status ? 'text-success' : 'text-muted'"
-                                                >
-                                                </i>
-                                                {{ s.label }}
-                                            </b-link>
-                                            <template v-else>
-                                                <i
-                                                    class="fas fa-check-circle mr-2"
-                                                    :class="s.status ? 'text-success' : 'text-muted'"
-                                                >
-                                                </i>
-                                                {{ s.label }}
-                                            </template>
-                                        </b-list-group-item>
-                                    </b-list-group>
-                                    <b-button
-                                        block
-                                        variant="light"
-                                        @click="onClickDisconnectMerchant"
-                                        class="text-danger"
-                                    >
-                                        <b-spinner
-                                            v-if="isLoadingMerchantDisconnect"
-                                            small
-                                            variant="light"
-                                            class="mr-2"
-                                        />
-                                        Disconnect
-                                    </b-button>
-                                </b-form-group>
-                            </b-col>
-                        </b-form-row>
-                    </b-col>
-                </b-form-row>
-                <hr />
-            </template>
-            <b-form-row>
-                <b-col md="4">
-                    <strong>Widget Theming</strong>
-                    <p class="text-muted">Configure background and logo used on the user authentication pages.</p>
-                </b-col>
-                <b-col md="8">
-                    <b-form-row>
-                        <b-col md="8">
-                            <b-form-group label="Logo URL">
-                                <b-form-file class="mb-3" @change="onUpload($event, 'logoImgUrl')" accept="image/*" />
-                            </b-form-group>
-                        </b-col>
-                        <b-col md="4">
-                            <b-card body-class="py-5 text-center" class="mb-3" bg-variant="light">
-                                <template v-if="logoImgUrl">
-                                    <img
-                                        width="100%"
-                                        height="auto"
-                                        class="m-0"
-                                        alt="Signin page logo image"
-                                        :src="logoImgUrl"
-                                    /><br />
-                                    <b-link @click="onClickRemoveLogo" class="text-danger">Remove</b-link>
-                                </template>
-                                <span v-else class="text-gray">Preview logo URL</span>
-                            </b-card>
-                        </b-col>
-                    </b-form-row>
-                    <b-form-row>
-                        <b-col md="8">
-                            <b-form-group label="Background URL">
-                                <b-form-file @change="onUpload($event, 'backgroundImgUrl')" accept="image/*" />
-                            </b-form-group>
-                        </b-col>
-                        <b-col md="4">
-                            <b-card body-class="py-5 text-center" class="mb-3" bg-variant="light">
-                                <template v-if="backgroundImgUrl">
-                                    <img
-                                        width="100%"
-                                        height="auto"
-                                        class="m-0"
-                                        alt="Signin page background image"
-                                        :src="backgroundImgUrl"
-                                    /><br />
-                                    <b-link @click="onClickRemoveBackground" class="text-danger">Remove</b-link>
-                                </template>
-                                <span v-else class="text-gray">Preview background URL</span>
-                            </b-card>
-                        </b-col>
-                    </b-form-row>
-                </b-col>
-            </b-form-row>
+        <b-card class="shadow-sm mb-5" no-body>
+            <b-tabs card pills active-nav-item-class="rounded-pill">
+                <b-tab active>
+                    <template #title>
+                        <i class="fas fa-cog mr-1"></i>
+                        General
+                    </template>
+                    <BaseTabSettingsGeneral />
+                </b-tab>
+                <b-tab>
+                    <template #title>
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-gift mr-2"></i>
+                            Widget
+                        </div>
+                    </template>
+                    <BaseTabSettingsWidget />
+                </b-tab>
+                <b-tab>
+                    <template #title>
+                        <i class="fab fa-twitter mr-1"></i>
+                        Twitter
+                    </template>
+                    <BaseTabSettingsTwitter />
+                </b-tab>
+                <b-tab>
+                    <template #title>
+                        <i class="fab fa-discord mr-1"></i>
+                        Discord
+                    </template>
+                    <BaseTabSettingsDiscord />
+                </b-tab>
+                <b-tab :disabled="profile && profile.plan !== 1">
+                    <template #title>
+                        <i class="fas fa-tags mr-1"></i>
+                        Commerce
+                        <b-badge variant="dark" class="ml-2 text-white"> New </b-badge>
+                    </template>
+                    <BaseTabSettingsCommerce />
+                </b-tab>
+                <b-tab :disabled="profile && profile.plan !== 1">
+                    <template #title>
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-key mr-1"></i>
+                            API
+                            <b-badge v-if="profile && profile.plan !== 1" variant="dark" class="ml-2 text-white">
+                                Premium
+                            </b-badge>
+                        </div>
+                    </template>
+                    <BaseTabSettingsApi />
+                </b-tab>
+                <template #tabs-end>
+                    <b-button
+                        variant="success"
+                        class="d-flex align-items-center ml-auto rounded-pill"
+                        target="_blank"
+                        :href="`${dashboardUrl}/preview/${$route.params.id}`"
+                    >
+                        <i class="fas fa-search mr-2"></i>
+                        Preview Widget
+                    </b-button>
+                </template>
+            </b-tabs>
+            <router-view :key="$route.fullPath" />
         </b-card>
     </div>
 </template>
 
 <script lang="ts">
-import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
-import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import { mapGetters } from 'vuex';
-import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
-import { TBrand } from '@thxnetwork/dashboard/store/modules/brands';
-import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { IAccount } from '@thxnetwork/dashboard/types/account';
-import { TMerchant } from '@thxnetwork/types/merchant';
+import BaseTabSettingsGeneral from '@thxnetwork/dashboard/views/pool/settings/General.vue';
+import BaseTabSettingsCommerce from '@thxnetwork/dashboard/views/pool/settings/Commerce.vue';
+import BaseTabSettingsDiscord from '@thxnetwork/dashboard/views/pool/settings/Discord.vue';
+import BaseTabSettingsTwitter from '@thxnetwork/dashboard/views/pool/settings/Twitter.vue';
+import BaseTabSettingsWidget from '@thxnetwork/dashboard/views/pool/settings/Widget.vue';
+import BaseTabSettingsApi from '@thxnetwork/dashboard/views/pool/settings/API.vue';
+import { DASHBOARD_URL } from '@thxnetwork/wallet/utils/secrets';
 
 @Component({
+    components: {
+        BaseTabSettingsGeneral,
+        BaseTabSettingsDiscord,
+        BaseTabSettingsTwitter,
+        BaseTabSettingsCommerce,
+        BaseTabSettingsWidget,
+        BaseTabSettingsApi,
+    },
     computed: {
         ...mapGetters({
-            brands: 'brands/all',
-            pools: 'pools/all',
             profile: 'account/profile',
-            merchant: 'merchants/merchant',
         }),
     },
 })
 export default class SettingsView extends Vue {
-    ChainId = ChainId;
-    loading = true;
-    chainInfo = chainInfo;
     profile!: IAccount;
-    chainId: ChainId = ChainId.PolygonMumbai;
-    pools!: IPools;
-    brands!: { [poolId: string]: TBrand };
-    merchant!: TMerchant;
-
-    logoImgUrl = '';
-    backgroundImgUrl = '';
-    isLoadingMerchantCreate = false;
-    isLoadingMerchantCreateLink = false;
-    isLoadingMerchantDisconnect = false;
-
-    get merchantStatus() {
-        if (!this.merchant) return [];
-        return [
-            {
-                status: this.merchant.detailsSubmitted,
-                label: 'Provide company details',
-            },
-            {
-                status: this.merchant.chargesEnabled,
-                label: 'Enable user payments',
-            },
-            {
-                status: this.merchant.payoutsEnabled,
-                label: 'Enable company payouts',
-            },
-        ];
-    }
-    get pool() {
-        return this.pools[this.$route.params.id];
-    }
-
-    get isBrandUpdateInvalid() {
-        const backgroundUrlIsValid = this.backgroundImgUrl
-            ? isValidUrl(this.backgroundImgUrl)
-            : this.backgroundImgUrl === '';
-        const logoUrlIsValid = this.logoImgUrl ? isValidUrl(this.logoImgUrl) : this.logoImgUrl === '';
-        return logoUrlIsValid && backgroundUrlIsValid;
-    }
-
-    get brand() {
-        return this.brands[this.$route.params.id];
-    }
-
-    async mounted() {
-        this.chainId = this.pool.chainId;
-
-        await this.$store.dispatch('brands/getForPool', this.pool._id);
-        if (this.brand) {
-            this.backgroundImgUrl = this.brand.backgroundImgUrl;
-            this.logoImgUrl = this.brand.logoImgUrl;
-        }
-        await this.$store.dispatch('merchants/read');
-
-        this.loading = false;
-    }
-
-    async upload(file: File) {
-        return await this.$store.dispatch('images/upload', file);
-    }
-
-    async onUpload(event: any, key: string) {
-        const publicUrl = await this.upload(event.target.files[0]);
-        Vue.set(this, key, publicUrl);
-        await this.update();
-    }
-
-    async onClickRemoveBackground() {
-        this.backgroundImgUrl = '';
-        await this.update();
-    }
-
-    async onClickRemoveLogo() {
-        this.logoImgUrl = '';
-        await this.update();
-    }
-
-    async update() {
-        this.loading = true;
-        await this.$store.dispatch('brands/update', {
-            pool: this.pool,
-            brand: {
-                backgroundImgUrl: this.backgroundImgUrl,
-                logoImgUrl: this.logoImgUrl,
-            },
-        });
-        this.loading = false;
-    }
-    async onClickMerchantLink() {
-        this.isLoadingMerchantCreateLink = true;
-        await this.$store.dispatch('merchants/createLink', this.pool);
-        this.isLoadingMerchantCreateLink = false;
-    }
-    async onClickMerchantCreate() {
-        this.isLoadingMerchantCreate = true;
-        await this.$store.dispatch('merchants/create');
-        await this.$store.dispatch('account/getProfile');
-        await this.$store.dispatch('merchants/read');
-        this.isLoadingMerchantCreate = false;
-    }
-    async onClickDisconnectMerchant() {
-        this.isLoadingMerchantDisconnect = true;
-        await this.$store.dispatch('merchants/delete');
-        await this.$store.dispatch('account/getProfile');
-        this.isLoadingMerchantDisconnect = false;
-    }
+    dashboardUrl = DASHBOARD_URL;
 }
 </script>
+<style>
+.nav-pills .nav-link.active,
+.nav-pills .show > .nav-link {
+    color: var(--primary);
+    background-color: #e9ecef;
+}
+</style>

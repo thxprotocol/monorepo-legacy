@@ -28,7 +28,7 @@ import type { IAccount } from '@thxnetwork/dashboard/types/account';
 import type { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import type { TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import BaseIdenticon from '../BaseIdenticon.vue';
-import { type IPool } from '../../store/modules/pools';
+import { type TPool } from '../../store/modules/pools';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 
 @Component({
@@ -54,7 +54,7 @@ export default class ModalAssetPoolCreate extends Vue {
     @Prop() id!: string;
     @Prop() erc20?: TERC20;
     @Prop() erc721?: TERC721;
-    @Prop({ required: false }) pool!: IPool;
+    @Prop({ required: false }) pool!: TPool;
 
     title = '';
     isEditMode = false;

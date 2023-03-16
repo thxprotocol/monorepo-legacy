@@ -29,7 +29,7 @@
 </template>
 
 <script lang="ts">
-import type { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import type { TPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import BaseModalPoolTransfer from '../modals/BaseModalPoolTransfer.vue';
 
@@ -41,7 +41,7 @@ import BaseModalPoolTransfer from '../modals/BaseModalPoolTransfer.vue';
 export default class BaseDropdownMenuPool extends Vue {
     error = '';
 
-    @Prop() pool!: IPool;
+    @Prop() pool!: TPool;
 
     onClickTransferPool() {
         this.$bvModal.show(`modalPoolTransfer${this.pool._id}`);

@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 import { getDiamondAbi } from '@thxnetwork/api/config/contracts';
-import { TAssetPool } from '@thxnetwork/api/types/TAssetPool';
+import { TPool } from '@thxnetwork/types/index';
 import { getProvider } from '@thxnetwork/api/util/network';
 
-export type AssetPoolDocument = mongoose.Document & TAssetPool;
+export type AssetPoolDocument = mongoose.Document & TPool;
 
 const assetPoolSchema = new mongoose.Schema(
     {
@@ -15,6 +15,17 @@ const assetPoolSchema = new mongoose.Schema(
         version: String,
         archived: Boolean,
         title: String,
+        discordWebhookUrl: String,
+        settings: {
+            isTwitterSyncEnabled: { type: Boolean, default: false },
+            defaults: {
+                conditionalRewards: {
+                    title: String,
+                    description: String,
+                    amount: Number,
+                },
+            },
+        },
     },
     { timestamps: true },
 );

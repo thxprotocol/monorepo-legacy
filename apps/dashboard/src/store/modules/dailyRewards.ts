@@ -2,7 +2,7 @@ import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { RewardConditionPlatform, type TDailyReward } from '@thxnetwork/types/index';
-import { IPool } from './pools';
+import { type TPool } from '@thxnetwork/types/index';
 import { track } from '@thxnetwork/mixpanel';
 
 export type TDailyRewardState = {
@@ -37,7 +37,7 @@ class DailyRewardModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async list({ page, pool }: { page: number; pool: IPool }) {
+    async list({ page, pool }: { page: number; pool: TPool }) {
         const { data } = await axios({
             method: 'GET',
             url: '/daily-rewards',

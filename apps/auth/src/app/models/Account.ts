@@ -26,6 +26,7 @@ const accountSchema = new mongoose.Schema(
         acceptTermsPrivacy: Boolean,
         acceptUpdates: Boolean,
         lastLoginAt: Date,
+        discordId: String,
         tokens: [{ kind: String, accessToken: String, refreshToken: String, expiry: Number, userId: String }],
         shopifyStoreUrl: String,
     },

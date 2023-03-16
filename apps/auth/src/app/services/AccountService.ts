@@ -20,6 +20,10 @@ export class AccountService {
         return await Account.findById(sub);
     }
 
+    static getByDiscordId(discordId: string) {
+        return Account.findOne({ 'tokens.userId': discordId });
+    }
+
     static getByEmail(email: string) {
         return Account.findOne({ email });
     }
@@ -36,6 +40,19 @@ export class AccountService {
         account.plan = updates.plan || account.plan;
         account.organisation = updates.organisation || account.organisation;
         account.address = updates.address ? toChecksumAddress(updates.address) : account.address;
+        account.acceptUpdates = updates.acceptUpdates === null ? false : account.acceptUpdates;
+
+        if (updates.profileImg) {
+            account.profileImg = updates.profileImg;
+        }
+
+        if (updates.discordId) {
+            account.discordId = updates.discordId;
+        }
+
+        if (updates.plan) {
+            account.plan = updates.plan;
+        }
 
         try {
             account.website = updates.website ? new URL(updates.website).hostname : account.website;
@@ -90,6 +107,7 @@ export class AccountService {
 
         if (updates.discordAccess === false) {
             account.unsetToken(AccessTokenKind.Discord);
+            account.discordId = null;
         }
 
         if (updates.shopifyAccess === false) {

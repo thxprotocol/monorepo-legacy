@@ -18,6 +18,7 @@ import DepositManager from '../managers/DepositManager';
 import MembershipManager from '../managers/MembershipManager';
 import PaymentManager from '../managers/PaymentManager';
 import ClaimsManager from '../managers/ClaimsManager';
+import PoolManager from '../managers/PoolManager';
 
 type Props = Omit<Credential, 'grantType'>;
 
@@ -41,9 +42,12 @@ export default class THXClient {
     payments: PaymentManager;
     deposit: DepositManager;
     claims: ClaimsManager;
+    pools: PoolManager;
 
     constructor({ scopes = 'openid', ...rest }: Props) {
         const env = rest.env || 'prod';
+        const grantType = rest.redirectUrl ? 'authorization_code' : 'client_credentials';
+
         const settings: UserManagerSettings = {
             authority: URL_CONFIG[env]['AUTH_URL'],
             client_id: rest.clientId,
@@ -51,7 +55,7 @@ export default class THXClient {
             redirect_uri: rest.redirectUrl || '',
             post_logout_redirect_uri: rest.post_logout_redirect_uri || rest.redirectUrl,
             popup_post_logout_redirect_uri: rest.popup_post_logout_redirect_uri || rest.redirectUrl,
-            response_type: 'code',
+            response_type: grantType === 'authorization_code' ? 'code' : undefined,
             revokeTokenTypes: ['refresh_token'],
             resource: URL_CONFIG[env]['API_URL'],
             automaticSilentRenew: rest.automaticSilentRenew,
@@ -62,7 +66,6 @@ export default class THXClient {
 
         /* Mapped values */
         const userManager = new BaseUserManager(settings);
-        const grantType = rest.redirectUrl ? 'authorization_code' : 'client_credentials';
 
         /** Init managers */
         this.request = new RequestManager(this);
@@ -86,6 +89,7 @@ export default class THXClient {
         this.claims = new ClaimsManager(this);
         this.memberships = new MembershipManager(this);
         this.payments = new PaymentManager(this);
+        this.pools = new PoolManager(this);
     }
 
     public async init() {

@@ -69,7 +69,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { type IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import { type TPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { mapGetters } from 'vuex';
 import BaseModalReferralRewardCreate from '@thxnetwork/dashboard/components/modals/BaseModalReferralRewardCreate.vue';
 import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
@@ -108,7 +108,7 @@ export default class ReferralRewardClaimsModal extends Vue {
     referralRewardClaims!: TRewardClaimState;
 
     @Prop() id!: string;
-    @Prop() pool!: IPool;
+    @Prop() pool!: TPool;
     @Prop() reward!: TReferralReward;
 
     get total() {

@@ -1,18 +1,47 @@
 import request, { Response } from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId } from '@thxnetwork/api/types/enums';
-import { dashboardAccessToken, dashboardAccessToken2, sub2 } from '@thxnetwork/api/util/jest/constants';
+import { ChainId, ERC20Type } from '@thxnetwork/types/enums';
+import {
+    dashboardAccessToken,
+    dashboardAccessToken2,
+    sub2,
+    tokenName,
+    tokenSymbol,
+} from '@thxnetwork/api/util/jest/constants';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { PoolTransfer, PoolTransferDocument } from '@thxnetwork/api/models/PoolTransfer';
+import { ERC20Document } from '@thxnetwork/api/models/ERC20';
+import { ERC20PerkDocument } from '@thxnetwork/api/models/ERC20Perk';
+import { createImage } from '@thxnetwork/api/util/jest/images';
+import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
+import { addMinutes } from 'date-fns';
+import { isAddress } from 'web3-utils';
 
 const user = request.agent(app);
 
 describe('Pool Transfer', () => {
-    let pool: AssetPoolDocument, poolTransfer: PoolTransferDocument;
+    let pool: AssetPoolDocument, poolTransfer: PoolTransferDocument, erc20: ERC20Document, perk: ERC20PerkDocument;
 
     beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
+
+    it('POST /erc20', (done) => {
+        user.post('/v1/erc20')
+            .set('Authorization', dashboardAccessToken)
+            .send({
+                chainId: ChainId.Hardhat,
+                name: tokenName,
+                symbol: tokenSymbol,
+                type: ERC20Type.Unlimited,
+                totalSupply: 0,
+            })
+            .expect(({ body }: request.Response) => {
+                erc20 = body;
+                expect(isAddress(body.address)).toBe(true);
+            })
+            .expect(201, done);
+    });
 
     describe('POST /pools', () => {
         it('HTTP 201 (success)', (done) => {
@@ -27,6 +56,61 @@ describe('Pool Transfer', () => {
                     pool = res.body;
                     expect(res.body.title).toBe(title);
                     expect(res.body.archived).toBe(false);
+                })
+                .expect(201, done);
+        });
+    });
+
+    describe('ERC20 PERKS', () => {
+        it('POST /erc20-perks', (done) => {
+            const title = 'Lorem',
+                description = 'Ipsum',
+                expiryDate = addMinutes(new Date(), 30),
+                pointPrice = 200,
+                image = createImage(),
+                amount = '1',
+                platform = RewardConditionPlatform.Google,
+                interaction = RewardConditionInteraction.YouTubeLike,
+                content = 'videoid',
+                rewardLimit = 0,
+                claimAmount = 0,
+                isPromoted = true;
+            user.post('/v1/erc20-perks/')
+                .set({ 'X-PoolId': pool._id, 'Authorization': dashboardAccessToken })
+                .attach('file', image, {
+                    filename: 'test.jpg',
+                    contentType: 'image/jpg',
+                })
+                .field({
+                    title,
+                    description,
+                    image,
+                    erc20Id: String(erc20._id),
+                    amount,
+                    pointPrice,
+                    platform,
+                    interaction,
+                    content,
+                    expiryDate: expiryDate.toString(),
+                    rewardLimit,
+                    claimAmount,
+                    isPromoted,
+                })
+                .expect((res: request.Response) => {
+                    expect(res.body.uuid).toBeDefined();
+                    expect(res.body.title).toBe(title);
+                    expect(res.body.description).toBe(description);
+                    expect(res.body.image).toBeDefined();
+                    expect(res.body.amount).toBe(amount);
+                    expect(res.body.pointPrice).toBe(pointPrice);
+                    expect(res.body.platform).toBe(platform);
+                    expect(res.body.interaction).toBe(interaction);
+                    expect(res.body.content).toBe(content);
+                    expect(new Date(res.body.expiryDate).getDate()).toBe(expiryDate.getDate());
+                    expect(res.body.rewardLimit).toBe(rewardLimit);
+                    expect(res.body.claimAmount).toBe(claimAmount);
+                    expect(res.body.claims.length).toBe(0);
+                    expect(res.body.isPromoted).toBe(true);
                 })
                 .expect(201, done);
         });
@@ -86,6 +170,19 @@ describe('Pool Transfer', () => {
                     expect(body.length).toBe(1);
                     expect(body[0].token !== poolTransfer.token).toBeTruthy();
                     expect(body[0].sub).toBe(sub2);
+                })
+                .expect(200, done);
+        });
+    });
+
+    describe('GET /erc20/token', () => {
+        it('HTTP 200', (done) => {
+            user.get(`/v1/erc20/token/`)
+                .set({ 'Authorization': dashboardAccessToken2, 'X-PoolId': pool._id })
+                .expect(({ body }: Response) => {
+                    expect(body.length).toBe(1);
+                    expect(body[0].sub).toBe(sub2);
+                    expect(body[0].erc20.address).toBe(erc20.address);
                 })
                 .expect(200, done);
         });

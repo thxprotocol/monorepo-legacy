@@ -1,4 +1,4 @@
-import { AccountPlanType, ChainId } from '@thxnetwork/api/types/enums';
+import { AccountPlanType, ChainId } from '@thxnetwork/types/enums';
 export interface IAccount {
     sub?: string;
     address: string;

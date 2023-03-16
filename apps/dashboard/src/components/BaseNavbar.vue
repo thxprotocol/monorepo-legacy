@@ -67,6 +67,7 @@
                     <base-navbar-nav :routes="perkRoutes" />
                     <hr />
                 </template>
+                <label class="px-3 text-muted">Blockchain</label>
                 <base-navbar-nav :routes="tokenRoutes" />
             </div>
             <div class="d-flex justify-content-end flex-column flex-grow-0 w-100 border-top py-2">
@@ -98,7 +99,7 @@
 </template>
 
 <script lang="ts">
-import { IPool, IPools } from '@thxnetwork/dashboard/store/modules/pools';
+import { TPool, IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { ERC20Type } from '@thxnetwork/dashboard/types/erc20';
 import { plans } from '@thxnetwork/dashboard/utils/plans';
 import { Component, Vue } from 'vue-property-decorator';
@@ -185,7 +186,7 @@ export default class BaseNavbar extends Vue {
             {
                 path: `/pool/${this.selectedPool._id}/shopify-perks`,
                 label: 'Shopify',
-                iconClasses: 'fas fa-award',
+                iconClasses: 'fas fa-shopping-basket',
             },
         ];
     }
@@ -197,18 +198,6 @@ export default class BaseNavbar extends Vue {
                 path: `/pool/${this.selectedPool._id}/dashboard`,
                 label: 'Dashboard',
                 iconClasses: 'fas fa-chart-line',
-            },
-            {
-                path: `/pool/${this.selectedPool._id}/widget`,
-                label: 'Widget',
-                iconClasses: 'fas fa-code',
-                isNew: true,
-            },
-            {
-                path: `/pool/${this.selectedPool._id}/clients`,
-                label: 'API Access',
-                iconClasses: 'fas fa-key',
-                isPremium: true,
             },
             {
                 path: `/pool/${this.selectedPool._id}/settings`,
@@ -246,7 +235,7 @@ export default class BaseNavbar extends Vue {
         });
     }
 
-    async onPoolSelect(pool: IPool) {
+    async onPoolSelect(pool: TPool) {
         if (!pool.address) {
             await this.$store.dispatch('pools/read', pool._id);
         }

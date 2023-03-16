@@ -1,0 +1,13 @@
+{
+    "name": "@thxnetwork/discord-bot",
+    "contributors": [
+        "Peter Polman <peter@thx.network>",
+        "GarfDev <garfdev.13@gmail.com>"
+    ],
+    "license": "AGPL-3.0",
+    "version": "1.0.28",
+    "scripts": {
+        "migrate": "node migrate-mongo.js up",
+        "migrate:down": "node migrate-mongo.js down"
+    }
+}

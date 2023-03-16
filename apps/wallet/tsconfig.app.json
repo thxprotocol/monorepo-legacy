@@ -1,6 +1,7 @@
 {
     "extends": "./tsconfig.json",
     "compilerOptions": {
+        "noImplicitAny": false,
         "declaration": true,
         "types": ["webpack-env", "node"]
     },

@@ -3,7 +3,7 @@ import { mockStart, mockClear } from './mock';
 import { agenda } from '@thxnetwork/api/util/agenda';
 import { logger } from '@thxnetwork/api/util/logger';
 import { getProvider } from '@thxnetwork/api/util/network';
-import { ChainId } from '@thxnetwork/api/types/enums';
+import { ChainId } from '@thxnetwork/types/enums';
 import { getContract, getContractConfig } from '@thxnetwork/api/config/contracts';
 import { poll } from '../polling';
 import { currentVersion } from '@thxnetwork/contracts/exports';

@@ -16,15 +16,15 @@
     </b-dropdown>
 </template>
 <script lang="ts">
-import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
-import { IERC721Tokens, TERC721Token } from '@thxnetwork/dashboard/types/erc721';
+import type { TPool } from '@thxnetwork/types/index';
+import type { IERC721Tokens, TERC721Token } from '@thxnetwork/dashboard/types/erc721';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component({})
 export default class BaseDropdownERC721ImportedToken extends Vue {
     @Prop() erc721Id!: string;
     @Prop({ required: false }) erc721tokenId!: string;
-    @Prop() pool!: IPool;
+    @Prop() pool!: TPool;
     @Prop() erc721Tokens!: IERC721Tokens;
 
     selectedERC721Token: TERC721Token | null = null;

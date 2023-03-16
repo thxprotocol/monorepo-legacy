@@ -1,5 +1,5 @@
 import { assertEvent, parseLogs } from '@thxnetwork/api/util/events';
-import { ChainId } from '@thxnetwork/api/types/enums';
+import { ChainId } from '@thxnetwork/types/enums';
 import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { Membership } from '@thxnetwork/api/models/Membership';
 import TransactionService from './TransactionService';
@@ -73,10 +73,6 @@ async function deployCallback(args: TAssetPoolDeployCallbackArgs, receipt: Trans
     const event = assertEvent('DiamondDeployed', events);
     pool.address = event.args.diamond;
     await pool.save();
-
-    // if is the first pool for the account, create dummy contents for the pool
-    const poolsCount = await AssetPool.find({ sub: pool.sub }).count();
-    if (poolsCount > 1) return;
 
     await createDummyContents(pool);
 }

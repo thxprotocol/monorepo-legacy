@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId, ERC20Type } from '../../types/enums';
+import { ChainId, ERC20Type } from '@thxnetwork/types/enums';
 import { dashboardAccessToken, tokenName, tokenSymbol } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
@@ -77,7 +77,7 @@ describe('Rewards', () => {
         const expiryDate = addMinutes(new Date(), 30);
         const title = 'title';
         const description = 'description';
-        const amount = '160';
+        const amount = 160;
         user.post('/v1/point-rewards/')
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .send({
@@ -101,7 +101,7 @@ describe('Rewards', () => {
     it('POST /milestone-rewards', (done) => {
         const title = 'title';
         const description = 'description';
-        const amount = '250';
+        const amount = 250;
         user.post('/v1/milestone-rewards/')
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .send({
@@ -112,7 +112,7 @@ describe('Rewards', () => {
             .expect((res: request.Response) => {
                 expect(res.body.title).toBe(title);
                 expect(res.body.description).toBe(description);
-                expect(String(res.body.amount)).toBe(amount);
+                expect(res.body.amount).toBe(amount);
                 milestoneReward = res.body;
             })
             .expect(201, done);

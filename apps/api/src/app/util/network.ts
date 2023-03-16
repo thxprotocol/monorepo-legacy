@@ -17,7 +17,7 @@ import {
 import Web3 from 'web3';
 import { Contract } from 'web3-eth-contract';
 import { arrayify, computeAddress, hashMessage, recoverPublicKey } from 'ethers/lib/utils';
-import { ChainId } from '../types/enums';
+import { ChainId } from '@thxnetwork/types/enums';
 import { DefenderRelayProvider } from 'defender-relay-client/lib/web3';
 import { Relayer } from 'defender-relay-client';
 import { TNetworkName } from '@thxnetwork/contracts/exports';

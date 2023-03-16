@@ -1,7 +1,7 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { IPool } from './pools';
+import { type TPool } from '@thxnetwork/types/index';
 import { RewardConditionPlatform, type TERC721Perk } from '@thxnetwork/types/index';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 import { track } from '@thxnetwork/mixpanel';
@@ -17,7 +17,7 @@ export type TRewardState = {
 };
 
 export type RewardListProps = {
-    pool: IPool;
+    pool: TPool;
     page: number;
     limit: number;
 };
@@ -40,7 +40,7 @@ class ERC721PerkModule extends VuexModule {
     }
 
     @Mutation
-    set({ pool, reward }: { reward: TERC721Perk & { _id: string }; pool: IPool }) {
+    set({ pool, reward }: { reward: TERC721Perk & { _id: string }; pool: TPool }) {
         if (!this._all[pool._id]) Vue.set(this._all, pool._id, {});
         if (typeof reward.platform === 'undefined') reward.platform = RewardConditionPlatform.None; // Temp fix for corrupt data
         Vue.set(this._all[pool._id], reward._id, reward);
@@ -52,7 +52,7 @@ class ERC721PerkModule extends VuexModule {
     }
 
     @Mutation
-    setTotal({ pool, total }: { pool: IPool; total: number }) {
+    setTotal({ pool, total }: { pool: TPool; total: number }) {
         Vue.set(this._totals, pool._id, total);
     }
 
@@ -77,7 +77,7 @@ class ERC721PerkModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async create({ pool, payload }: { pool: IPool; payload: TERC721PerkInputData }) {
+    async create({ pool, payload }: { pool: TPool; payload: TERC721PerkInputData }) {
         const formData = prepareFormDataForUpload(payload);
         const r = await axios({
             method: 'POST',
@@ -95,7 +95,7 @@ class ERC721PerkModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async update({ pool, reward, payload }: { pool: IPool; reward: TERC721Perk; payload: TERC721PerkInputData }) {
+    async update({ pool, reward, payload }: { pool: TPool; reward: TERC721Perk; payload: TERC721PerkInputData }) {
         const formData = prepareFormDataForUpload(payload);
         const { data } = await axios({
             method: 'PATCH',

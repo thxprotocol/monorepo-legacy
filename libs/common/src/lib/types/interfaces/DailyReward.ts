@@ -1,5 +1,5 @@
 import { TBaseReward } from './BaseReward';
 
 export type TDailyReward = TBaseReward & {
-    amount: string;
+    amount: number;
 };
