@@ -127,6 +127,8 @@ describe('ERC20 Perk Payment', () => {
             .expect(({ body }: request.Response) => {
                 expect(body.erc20Perks.length).toBe(1);
                 expect(body.erc20Perks[0].isDisabled).toBe(true);
+                expect(body.erc20Perks[0].now).toBeDefined();
+                expect(body.erc20Perks[0].progress).toBe(0);
             })
             .expect(200, done);
     });
@@ -167,6 +169,8 @@ describe('ERC20 Perk Payment', () => {
             .expect(({ body }: request.Response) => {
                 expect(body.erc20Perks.length).toBe(1);
                 expect(body.erc20Perks[0].isDisabled).toBe(true);
+                expect(body.erc20Perks[0].now).toBeDefined();
+                expect(body.erc20Perks[0].progress).toBe(1);
             })
             .expect(200, done);
     });

@@ -4,6 +4,8 @@ import { ERC721Perk, ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Per
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { redeemValidation } from '@thxnetwork/api/util/perks';
+import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
+import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
@@ -27,6 +29,8 @@ const controller = async (req: Request, res: Response) => {
                         isOwned: false,
                         isPromoted: r.isPromoted,
                         isDisabled: (await redeemValidation({ perk: r })).isError,
+                        now: r.expiryDate ? Date.now() : undefined,
+                        progress: await ERC20PerkPayment.countDocuments({ perkId: r._id }),
                     };
                 }),
         ),
@@ -49,6 +53,8 @@ const controller = async (req: Request, res: Response) => {
                         isOwned: false,
                         isPromoted: r.isPromoted,
                         isDisabled: (await redeemValidation({ perk: r })).isError,
+                        now: r.expiryDate ? Date.now() : undefined,
+                        progress: await ERC721PerkPayment.countDocuments({ perkId: r._id }),
                     };
                 }),
         ),
