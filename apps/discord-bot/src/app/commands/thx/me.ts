@@ -12,7 +12,7 @@ export const onSubcommandMe = async (interaction: CommandInteraction) => {
     const { widget, brand } = pool;
     if (!widget) return interaction.reply({ content: 'Widget could not be found.', ephemeral: true });
 
-    const account = await thxClient.account.getByDiscordId(interaction.user.id);
+    const { account, wallets } = await thxClient.account.getByDiscordId(interaction.user.id);
     if (!account)
         return interaction.reply({
             content: `Account not found for your Discord ID. Visit [${pool.widget.domain}](${pool.widget.domain})`,
@@ -28,17 +28,28 @@ export const onSubcommandMe = async (interaction: CommandInteraction) => {
     }
 
     embed
-        .setTitle('Your Account')
-        .setDescription(`Earn more points at ${pool.widget.domain}!`)
+        .setTitle('Your personal wallet')
+        .setDescription(`Earn and redeem points! Visit: ${pool.widget.domain}`)
         .addFields({
-            name: ':sparkles: Points',
+            name: ':sparkles: Point balance',
             value: `${pointBalance.balance}`,
-        })
-        .addFields({
-            name: ':sparkles: Wallet',
-            value: `${account.walletAddress}`,
-        })
-        .setTimestamp();
+        });
+
+    if (account.address) {
+        embed.addFields({
+            name: `:fox_face: Metamask`,
+            value: `${account.address}`,
+        });
+    }
+
+    if (wallets.length) {
+        for (const wallet of wallets) {
+            embed.addFields({
+                name: `:identification_card: Address ${wallet.chainId}`,
+                value: `${wallet.address}`,
+            });
+        }
+    }
 
     interaction.reply({ embeds: [embed], ephemeral: true });
 };
