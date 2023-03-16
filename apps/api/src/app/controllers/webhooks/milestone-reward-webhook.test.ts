@@ -1,7 +1,7 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId } from '../../types/enums';
-import { dashboardAccessToken, sub2, userWalletAddress2, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
+import { ChainId } from '@thxnetwork/types/enums';
+import { dashboardAccessToken, userWalletAddress2, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 

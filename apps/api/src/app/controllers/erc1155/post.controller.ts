@@ -4,7 +4,7 @@ import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
 import ImageService from '@thxnetwork/api/services/ImageService';
 import { BadRequestError } from '@thxnetwork/api/util/errors';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import { AccountPlanType } from '@thxnetwork/api/types/enums';
+import { AccountPlanType } from '@thxnetwork/types/enums';
 import { API_URL, IPFS_BASE_URL, VERSION } from '@thxnetwork/api/config/secrets';
 
 const validation = [

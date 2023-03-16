@@ -62,7 +62,7 @@
 
 <script lang="ts">
 import type { TClient } from '@thxnetwork/dashboard/store/modules/clients';
-import type { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import type { TPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import BaseModal from './BaseModal.vue';
 
@@ -74,7 +74,7 @@ type GrantType = 'authorization_code' | 'client_credentials';
     },
 })
 export default class BaseModalClientCreate extends Vue {
-    @Prop() pool!: IPool;
+    @Prop() pool!: TPool;
     @Prop() page!: number;
     @Prop() client: TClient | undefined;
 

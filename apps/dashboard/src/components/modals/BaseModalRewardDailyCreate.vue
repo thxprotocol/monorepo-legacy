@@ -34,7 +34,7 @@
 </template>
 
 <script lang="ts">
-import { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import { TPool } from '@thxnetwork/types/index';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { type TDailyReward } from '@thxnetwork/types/interfaces/DailyReward';
 import BaseModal from './BaseModal.vue';
@@ -60,7 +60,7 @@ export default class ModalRewardDailyCreate extends Vue {
     rewardLimit = 0;
 
     @Prop() id!: string;
-    @Prop() pool!: IPool;
+    @Prop() pool!: TPool;
     @Prop({ required: false }) reward!: TDailyReward;
 
     onShow() {

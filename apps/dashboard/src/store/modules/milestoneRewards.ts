@@ -2,7 +2,7 @@ import axios from 'axios';
 import { type TMilestoneReward } from '@thxnetwork/types/index';
 import { Vue } from 'vue-property-decorator';
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
-import { IPool } from './pools';
+import { type TPool } from '@thxnetwork/types/index';
 
 export type TMilestoneRewardState = {
     [poolId: string]: {
@@ -35,7 +35,7 @@ class MilestoneRewardModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async list({ page, pool }: { page: number; pool: IPool }) {
+    async list({ page, pool }: { page: number; pool: TPool }) {
         const { data } = await axios({
             method: 'GET',
             url: '/milestone-rewards',

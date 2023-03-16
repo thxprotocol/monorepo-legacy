@@ -4,7 +4,7 @@ import GetController from './get.controller';
 import PostController from './post.controller';
 import PatchController from './patch.controller';
 import { assertAssetPoolOwnership, assertPlan, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
-import { AccountPlanType } from '@thxnetwork/api/types/enums';
+import { AccountPlanType } from '@thxnetwork/types/enums';
 
 const router = express.Router();
 

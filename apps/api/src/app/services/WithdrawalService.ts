@@ -1,5 +1,5 @@
 import { toWei } from 'web3-utils';
-import { ChainId, TransactionState, WithdrawalState } from '@thxnetwork/api/types/enums';
+import { ChainId, TransactionState, WithdrawalState } from '@thxnetwork/types/enums';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { Withdrawal, WithdrawalDocument } from '@thxnetwork/api/models/Withdrawal';
 import type { IAccount } from '@thxnetwork/api/models/Account';

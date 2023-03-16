@@ -3,7 +3,7 @@ import { body, param } from 'express-validator';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
 import { IPFS_BASE_URL } from '@thxnetwork/api/config/secrets';
-import { AccountPlanType } from '@thxnetwork/api/types/enums';
+import { AccountPlanType } from '@thxnetwork/types/enums';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import IPFSService from '@thxnetwork/api/services/IPFSService';

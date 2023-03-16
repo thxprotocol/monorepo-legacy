@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { BadRequestError, InsufficientBalanceError } from '@thxnetwork/api/util/errors';
 import { toWei } from 'web3-utils';
 import { MaxUint256, getProvider } from '@thxnetwork/api/util/network';
-import { ERC20Type } from '@thxnetwork/api/types/enums';
+import { ERC20Type } from '@thxnetwork/types/enums';
 import { body, param } from 'express-validator';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import TransactionService from '@thxnetwork/api/services/TransactionService';

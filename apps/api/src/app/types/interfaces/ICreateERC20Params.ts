@@ -1,4 +1,4 @@
-import { ERC20Type, ChainId } from '../enums';
+import { ERC20Type, ChainId } from '@thxnetwork/types/enums';
 
 export interface ICreateERC20Params {
     name: string;

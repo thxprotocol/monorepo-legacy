@@ -63,7 +63,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import type { TClient } from '@thxnetwork/dashboard/store/modules/clients';
-import type { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import type { TPool } from '@thxnetwork/dashboard/store/modules/pools';
 
 export interface TClientInfo {
     clientId: string;
@@ -74,7 +74,7 @@ export interface TClientInfo {
 @Component({})
 export default class BaseListItemClient extends Vue {
     @Prop() client!: TClient;
-    @Prop() pool!: IPool;
+    @Prop() pool!: TPool;
 
     editingClient: TClient | undefined;
 

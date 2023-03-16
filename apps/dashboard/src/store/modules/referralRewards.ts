@@ -1,7 +1,7 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { IPool } from './pools';
+import { type TPool } from '@thxnetwork/types/index';
 import { type TReferralReward } from '@thxnetwork/types/index';
 import { track } from '@thxnetwork/mixpanel';
 
@@ -16,7 +16,7 @@ export type TRewardState = {
 };
 
 export type RewardListProps = {
-    pool: IPool;
+    pool: TPool;
     page: number;
     limit: number;
 };
@@ -35,7 +35,7 @@ class ReferralRewardModule extends VuexModule {
     }
 
     @Mutation
-    set({ pool, reward }: { reward: TReferralReward & { _id: string }; pool: IPool }) {
+    set({ pool, reward }: { reward: TReferralReward & { _id: string }; pool: TPool }) {
         if (!this._all[pool._id]) Vue.set(this._all, pool._id, {});
         Vue.set(this._all[pool._id], reward._id, reward);
     }
@@ -46,7 +46,7 @@ class ReferralRewardModule extends VuexModule {
     }
 
     @Mutation
-    setTotal({ pool, total }: { pool: IPool; total: number }) {
+    setTotal({ pool, total }: { pool: TPool; total: number }) {
         Vue.set(this._totals, pool._id, total);
     }
 
@@ -71,7 +71,7 @@ class ReferralRewardModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async create({ pool, payload }: { pool: IPool; payload: TReferralReward }) {
+    async create({ pool, payload }: { pool: TPool; payload: TReferralReward }) {
         const { data } = await axios({
             method: 'POST',
             url: '/referral-rewards',
@@ -87,7 +87,7 @@ class ReferralRewardModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async update({ pool, reward, payload }: { pool: IPool; reward: TReferralReward; payload: TReferralReward }) {
+    async update({ pool, reward, payload }: { pool: TPool; reward: TReferralReward; payload: TReferralReward }) {
         const { data } = await axios({
             method: 'PATCH',
             url: `/referral-rewards/${reward._id}`,

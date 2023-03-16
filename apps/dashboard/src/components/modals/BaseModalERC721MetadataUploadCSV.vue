@@ -26,7 +26,7 @@
 </template>
 
 <script lang="ts">
-import type { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import type { TPool } from '@thxnetwork/dashboard/store/modules/pools';
 import type { TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
@@ -39,7 +39,7 @@ import BaseModal from './BaseModal.vue';
     computed: mapGetters({}),
 })
 export default class BaseModalErc721MetadataUploadCSV extends Vue {
-    @Prop() pool!: IPool;
+    @Prop() pool!: TPool;
     @Prop() erc721!: TERC721;
 
     selectedFile: File | null = null;

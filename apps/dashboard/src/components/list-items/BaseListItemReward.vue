@@ -135,7 +135,7 @@
 </template>
 
 <script lang="ts">
-import type { IPool } from '@thxnetwork/dashboard/store/modules/pools';
+import type { TPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { ChannelType, ChannelAction, RewardState } from '@thxnetwork/dashboard/types/rewards';
 import type { Reward } from '@thxnetwork/dashboard/types/rewards';
 import { Component, Prop, Vue } from 'vue-property-decorator';
@@ -181,7 +181,7 @@ export default class BaseCardReward extends Vue {
     isDownloading = false;
     isDownloadScheduled = false;
 
-    @Prop() pool!: IPool;
+    @Prop() pool!: TPool;
     @Prop() reward!: Reward;
     @Prop() erc721!: TERC721;
 

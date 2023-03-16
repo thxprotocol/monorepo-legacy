@@ -1,5 +1,5 @@
 import { Contract } from 'web3-eth-contract';
-import { ChainId } from './enums';
+import { ChainId } from '@thxnetwork/types/enums';
 
 export enum ERC721TokenState {
     Pending = 0,

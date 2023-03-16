@@ -1,6 +1,6 @@
 import request, { Response } from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId, ERC20Type } from '@thxnetwork/api/types/enums';
+import { ChainId, ERC20Type } from '@thxnetwork/types/enums';
 import {
     dashboardAccessToken,
     dashboardAccessToken2,
