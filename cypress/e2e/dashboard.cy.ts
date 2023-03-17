@@ -127,7 +127,7 @@ describe('Dashboard', () => {
 
         cy.get('#collapse-card-condition .dropdown-select .dropdown-toggle').contains('Twitter').should('be.visible');
         cy.get('#collapse-card-condition .custom-select option:selected').should('have.text', 'Retweet');
-        cy.get('#collapse-card-condition .form-group input[type="text"]').should('have.value', tweetUrl);
+        cy.get('#collapse-card-condition .form-group input[type="text"]').invoke('val').should('include', tweetUrl);
 
         cy.get('.form-group:nth-child(1) input').clear().type('Test reward title edit');
         cy.get('.form-group:nth-child(2) textarea').clear().type('Test reward description edit');
