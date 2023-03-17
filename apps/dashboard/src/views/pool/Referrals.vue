@@ -158,7 +158,7 @@ export default class ReferralRewardsView extends Vue {
                 points: r.amount,
                 successUrl: r.successUrl,
                 //progress: {
-                //     limit: r.rewardLimit,
+                //     limit: r.limit,
                 //     progress: r.progress,
                 // },
                 claims: r.claims ? r.claims.length : 0,

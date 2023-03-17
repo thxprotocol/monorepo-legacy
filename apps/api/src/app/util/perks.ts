@@ -35,10 +35,10 @@ export const redeemValidation = async ({
         return { isError: true, errorMessage: 'This perk claim has expired.' };
     }
 
-    // Can only be claimed for the amount of times per perk specified in the rewardLimit
-    if (perk.rewardLimit > 0) {
+    // Can only be claimed for the amount of times per perk specified in the limit
+    if (perk.limit > 0) {
         const amountOfPayments = await model.countDocuments({ perkId: perk._id });
-        if (amountOfPayments >= perk.rewardLimit) {
+        if (amountOfPayments >= perk.limit) {
             return { isError: true, errorMessage: "This perk has reached it's limit." };
         }
     }

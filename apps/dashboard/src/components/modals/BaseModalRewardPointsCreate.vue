@@ -77,7 +77,7 @@ export default class ModalRewardPointsCreate extends Vue {
     amount = '0';
     description = '';
     rewardExpiry = {};
-    rewardLimit = 0;
+    limit = 0;
     rewardCondition: { platform: RewardConditionPlatform; interaction: RewardConditionInteraction; content: string } = {
         platform: platformList[0].type,
         interaction: platformInteractionList[0].type,
@@ -93,7 +93,7 @@ export default class ModalRewardPointsCreate extends Vue {
             this.title = this.reward.title;
             this.description = this.reward.description;
             this.amount = this.reward.amount;
-            this.rewardLimit = this.reward.rewardLimit;
+            this.limit = this.reward.limit;
             this.rewardCondition = {
                 platform: this.reward.platform as RewardConditionPlatform,
                 interaction: this.reward.interaction as RewardConditionInteraction,
@@ -103,7 +103,7 @@ export default class ModalRewardPointsCreate extends Vue {
             this.title = '';
             this.description = '';
             this.amount = '0';
-            this.rewardLimit = 0;
+            this.limit = 0;
             this.rewardCondition = {
                 platform: RewardConditionPlatform.None,
                 interaction: RewardConditionInteraction.None,
@@ -124,7 +124,7 @@ export default class ModalRewardPointsCreate extends Vue {
             title: this.title,
             description: this.description,
             amount: this.amount,
-            rewardLimit: this.rewardLimit,
+            limit: this.limit,
             platform: this.rewardCondition.platform,
             interaction:
                 this.rewardCondition.platform != RewardConditionPlatform.None

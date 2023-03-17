@@ -83,7 +83,7 @@ describe('Default Pool', () => {
                         amount: 100,
                         platform: 0,
                         expiryDate,
-                        rewardLimit: 0,
+                        limit: 0,
                         claimAmount: 1,
                         successUrl,
                     })
@@ -129,7 +129,7 @@ describe('Default Pool', () => {
                         amount: 50,
                         platform: 0,
                         expiryDate,
-                        rewardLimit: 0,
+                        limit: 0,
                         claimAmount: 1,
                         successUrl,
                     })
@@ -180,7 +180,7 @@ describe('Default Pool', () => {
                         amount,
                         platform: 0,
                         expiryDate,
-                        rewardLimit: 1,
+                        limit: 1,
                         claimAmount: 1,
                     })
                     .expect((res: request.Response) => {
@@ -212,7 +212,7 @@ describe('Default Pool', () => {
                         amount,
                         platform: 0,
                         expiryDate,
-                        rewardLimit: 1,
+                        limit: 1,
                         claimAmount: 1,
                     })
                     .expect((res: request.Response) => {
@@ -310,7 +310,7 @@ describe('Default Pool', () => {
                         description: 'Lorem ipsum dolor sit amet.',
                         image,
                         amount: 1,
-                        rewardLimit: 0,
+                        limit: 0,
                         claimAmount: 1,
                         pointPrice: 5,
                         platform: 0,

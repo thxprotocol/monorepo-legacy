@@ -62,7 +62,7 @@ describe('Referral Rewards', () => {
                 amount: 100,
                 platform: 0,
                 expiryDate,
-                rewardLimit: 0,
+                limit: 0,
                 claimAmount: 1,
                 successUrl,
             })

@@ -44,11 +44,11 @@ export default class BaseCardRewardLimits extends Vue {
     selectedRewardLimit = 0;
     selectedClaimAmount = 0;
 
-    @Prop() rewardLimit!: number;
+    @Prop() limit!: number;
     @Prop() claimAmount!: number;
 
     mounted() {
-        this.selectedRewardLimit = this.rewardLimit ? this.rewardLimit : 0;
+        this.selectedRewardLimit = this.limit ? this.limit : 0;
         this.selectedClaimAmount = this.claimAmount ? this.claimAmount : 0;
     }
 

@@ -59,10 +59,10 @@
                         />
                         <BaseCardRewardLimits
                             class="mb-3"
-                            :rewardLimit="rewardLimit"
+                            :limit="limit"
                             :claimAmount="claimAmount"
                             :claimLimit="claimLimit"
-                            @change-reward-limit="rewardLimit = $event"
+                            @change-reward-limit="limit = $event"
                             @change-claim-amount="onChangeClaimAmount"
                         />
                         <b-form-group>
@@ -120,7 +120,7 @@ export default class ModalRewardERC20Create extends Vue {
     expiryDate: Date | null = null;
     claimAmount = 0;
     claimLimit = 1;
-    rewardLimit = 0;
+    limit = 0;
     pointPrice = 0;
     imageFile: File | null = null;
     image = '';
@@ -142,7 +142,7 @@ export default class ModalRewardERC20Create extends Vue {
         this.amount = this.reward ? String(this.reward.amount) : '0';
         this.pointPrice = this.reward ? this.reward.pointPrice : 0;
         this.expiryDate = this.reward ? this.reward.expiryDate : null;
-        this.rewardLimit = this.reward ? this.reward.rewardLimit : 0;
+        this.limit = this.reward ? this.reward.limit : 0;
         this.claimLimit = this.reward ? this.reward.claimLimit : 1;
         this.claimAmount = this.reward ? this.reward.claimAmount : 0;
         this.rewardCondition = this.reward
@@ -177,7 +177,7 @@ export default class ModalRewardERC20Create extends Vue {
                     pointPrice: this.pointPrice,
                     claimAmount: Number(this.claimAmount),
                     claimLimit: this.claimLimit,
-                    rewardLimit: this.rewardLimit,
+                    limit: this.limit,
                     platform: this.rewardCondition.platform,
                     interaction: this.rewardCondition.interaction,
                     content: this.rewardCondition.content,

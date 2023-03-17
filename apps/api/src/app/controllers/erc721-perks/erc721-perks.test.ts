@@ -112,7 +112,7 @@ describe('ERC721 Perks', () => {
             platform = RewardConditionPlatform.Google,
             interaction = RewardConditionInteraction.YouTubeLike,
             content = 'videoid',
-            rewardLimit = 0,
+            limit = 0,
             claimAmount = 0,
             isPromoted = true;
         user.post('/v1/erc721-perks')
@@ -134,7 +134,7 @@ describe('ERC721 Perks', () => {
                 interaction,
                 content,
                 expiryDate: expiryDate.toString(),
-                rewardLimit,
+                limit,
                 claimAmount,
                 isPromoted,
             })
@@ -148,7 +148,7 @@ describe('ERC721 Perks', () => {
                 expect(res.body[0].interaction).toBe(interaction);
                 expect(res.body[0].content).toBe(content);
                 expect(new Date(res.body[0].expiryDate).getDate()).toBe(expiryDate.getDate());
-                expect(res.body[0].rewardLimit).toBe(rewardLimit);
+                expect(res.body[0].limit).toBe(limit);
                 expect(res.body[0].claimAmount).toBe(claimAmount);
                 expect(res.body[0].claims.length).toBe(0);
                 expect(res.body[0].isPromoted).toBe(isPromoted);

@@ -107,7 +107,7 @@ describe('ERC20 Perk Payment', () => {
                 description: 'Lorem ipsum dolor sit amet.',
                 image,
                 amount: 500,
-                rewardLimit: 1,
+                limit: 1,
                 claimAmount: 1,
                 pointPrice: 1500,
                 platform: 0,
