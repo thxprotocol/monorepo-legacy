@@ -131,6 +131,8 @@ const config: Configuration = {
         'referral_rewards:write',
         'referal_reward_claims:read',
         'referal_reward_claims:write',
+        'shopify_rewards:read',
+        'shopify_rewards:write',
     ],
     claims: {
         openid: ['sub', 'email', 'variant', 'address'],

@@ -183,6 +183,11 @@ export default class BaseNavbar extends Vue {
                 label: 'NFT',
                 iconClasses: 'fas fa-award',
             },
+            {
+                path: `/pool/${this.selectedPool._id}/shopify-perks`,
+                label: 'Shopify',
+                iconClasses: 'fas fa-shopping-basket',
+            },
         ];
     }
 

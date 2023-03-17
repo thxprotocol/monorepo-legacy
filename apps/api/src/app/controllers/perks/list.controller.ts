@@ -3,12 +3,14 @@ import { ERC20Perk, ERC20PerkDocument } from '@thxnetwork/api/models/ERC20Perk';
 import { ERC721Perk, ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
+import { ShopifyPerk, ShopifyPerkDocument } from '@thxnetwork/api/models/ShopifyPerk';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
     const pool = await PoolService.getById(req.header('X-PoolId'));
     const erc20Perks = await ERC20Perk.find({ poolId: pool._id });
     const erc721Perks = await ERC721Perk.find({ poolId: pool._id });
+    const shopifyPerks = await ShopifyPerk.find({ poolId: pool._id });
 
     res.json({
         erc20Perks: erc20Perks
@@ -44,6 +46,24 @@ const controller = async (req: Request, res: Response) => {
                         image: r.image,
                         isOwned: false,
                         isPromoted: r.isPromoted,
+                    };
+                }),
+        ),
+        shopifyPerks: await Promise.all(
+            shopifyPerks
+                .filter((p: ShopifyPerkDocument) => p.pointPrice > 0)
+                .map(async (r) => {
+                    return {
+                        _id: r._id,
+                        uuid: r.uuid,
+                        title: r.title,
+                        description: r.description,
+                        pointPrice: r.pointPrice,
+                        image: r.image,
+                        isOwned: false,
+                        isPromoted: r.isPromoted,
+                        priceRuleId: r.priceRuleId,
+                        discountCode: r.discountCode,
                     };
                 }),
         ),

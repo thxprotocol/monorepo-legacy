@@ -48,4 +48,32 @@ export default class ShopifyDataProxy {
         });
         return data.result;
     }
+
+    static async getPriceRules(account: IAccount) {
+        const { data } = await authClient({
+            method: 'GET',
+            url: `/account/${account.sub}/shopify/price-rules`,
+            headers: {
+                Authorization: await getAuthAccessToken(),
+            },
+        });
+        return data;
+    }
+
+    static async createDiscountCode(account: IAccount, priceRuleId: string, discountCode: string) {
+        const body = new URLSearchParams();
+
+        body.append('priceRuleId', priceRuleId);
+        body.append('discountCode', discountCode);
+
+        const { data } = await authClient({
+            method: 'POST',
+            url: `/account/${account.sub}/shopify/discount-code`,
+            headers: {
+                Authorization: await getAuthAccessToken(),
+            },
+            data: body,
+        });
+        return data;
+    }
 }
