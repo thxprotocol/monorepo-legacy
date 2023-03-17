@@ -1,6 +1,9 @@
 import { CommandInteraction } from 'discord.js';
+import { logger } from '../utils/logger';
 
-export const handleError = async (interaction: CommandInteraction, error: Error) => {
-    console.log(error);
-    await interaction.reply({ content: 'An error occured.', ephemeral: true });
+export const handleError = async (error: Error, interaction?: CommandInteraction) => {
+    logger.error(error);
+    if (interaction) {
+        interaction.reply({ content: 'An error occured.', ephemeral: true });
+    }
 };

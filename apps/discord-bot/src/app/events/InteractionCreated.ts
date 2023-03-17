@@ -5,10 +5,10 @@ import { handleError } from '../commands/error';
 
 const onInteractionCreated = async (interaction: ChatInputCommandInteraction) => {
     try {
-        logger.info('User: ' + interaction.user.id + ' ran ' + interaction.commandName + ' command');
-        router[interaction.commandName].executor(interaction);
+        logger.info(`#${interaction.user.id} ran /${interaction.commandName} ${interaction.options.getSubcommand()}`);
+        await router[interaction.commandName].executor(interaction);
     } catch (error) {
-        handleError(interaction, error);
+        handleError(error, interaction);
     }
 };
 
