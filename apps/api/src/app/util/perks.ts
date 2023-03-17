@@ -3,11 +3,13 @@ import { ERC20PerkDocument } from '../models/ERC20Perk';
 import { ERC20PerkPayment } from '../models/ERC20PerkPayment';
 import { ERC721PerkDocument } from '../models/ERC721Perk';
 import { ERC721PerkPayment } from '../models/ERC721PerkPayment';
+import { ShopifyPerkDocument } from '../models/ShopifyPerk';
+import { ShopifyPerkPayment } from '../models/ShopifyPerkPayment';
 import { ClaimDocument } from '../types/TClaim';
 import { BadRequestError } from './errors';
-import { isTERC20Perk, isTERC721Perk } from './rewards';
+import { isTERC20Perk, isTERC721Perk, isTShopifyPerk } from './rewards';
 
-type PerkDocument = ERC20PerkDocument | ERC721PerkDocument;
+type PerkDocument = ERC20PerkDocument | ERC721PerkDocument | ShopifyPerkDocument;
 
 function getPaymentModel(perk: PerkDocument): mongoose.Model<any> {
     if (isTERC20Perk(perk)) {
@@ -16,6 +18,9 @@ function getPaymentModel(perk: PerkDocument): mongoose.Model<any> {
     if (isTERC721Perk(perk)) {
         return ERC721PerkPayment;
     }
+    if (isTShopifyPerk(perk)) {
+        return ShopifyPerkPayment;
+    }
 }
 
 export const redeemValidation = async ({
@@ -23,7 +28,7 @@ export const redeemValidation = async ({
     sub,
     claim,
 }: {
-    perk: ERC20PerkDocument | ERC721PerkDocument;
+    perk: ERC20PerkDocument | ERC721PerkDocument | ShopifyPerkDocument;
     sub?: string;
     claim?: ClaimDocument;
 }): Promise<{ isError: boolean; errorMessage?: string }> => {

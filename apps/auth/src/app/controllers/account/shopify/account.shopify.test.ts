@@ -11,7 +11,12 @@ import bcrypt from 'bcrypt';
 const http = request.agent(app);
 
 describe('Account Controller', () => {
-    let uid = '',
+    let basicAuthHeaderApi: string,
+        basicAuthHeaderDashboard: string,
+        authHeaderApi: string,
+        authHeaderDashboard: string,
+        sub: string,
+        uid = '',
         clientId = '',
         urlParts = [];
     const code = 'code';
@@ -22,19 +27,56 @@ describe('Account Controller', () => {
         beforeAll(async () => {
             await db.truncate();
 
-            const res = await http
-                .post('/reg')
-                .set({ Authorization: `Bearer ${INITIAL_ACCESS_TOKEN}` })
-                .send({
-                    application_type: 'web',
-                    client_name: 'THX Dashboard',
-                    grant_types: ['authorization_code'],
-                    redirect_uris: [redirectUri],
-                    response_types: ['code'],
-                    scope: 'openid pools:read pools:write withdrawals:read rewards:write deposits:read deposits:write wallets:read wallets:write',
-                });
+            async function requestToken(basicAuthHeader: string, payload: any) {
+                const res = await http
+                    .post('/token')
+                    .set({
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorization': basicAuthHeader,
+                    })
+                    .send(payload);
 
-            clientId = res.body.client_id;
+                return `Bearer ${res.body.access_token}`;
+            }
+
+            async function registerAPIClient() {
+                const res = await http
+                    .post('/reg')
+                    .set({ Authorization: `Bearer ${INITIAL_ACCESS_TOKEN}` })
+                    .send({
+                        application_type: 'web',
+                        client_name: 'THX API',
+                        grant_types: ['client_credentials'],
+                        redirect_uris: [],
+                        response_types: [],
+                        scope: 'openid accounts:read accounts:write',
+                    });
+
+                return 'Basic ' + Buffer.from(`${res.body.client_id}:${res.body.client_secret}`).toString('base64');
+            }
+
+            async function registerDashboardClient() {
+                const res = await http
+                    .post('/reg')
+                    .set({ Authorization: `Bearer ${INITIAL_ACCESS_TOKEN}` })
+                    .send({
+                        application_type: 'web',
+                        client_name: 'THX Dashboard',
+                        grant_types: ['authorization_code'],
+                        redirect_uris: [redirectUri],
+                        response_types: ['code'],
+                        scope: 'openid pools:read pools:write withdrawals:read rewards:write deposits:read deposits:write wallets:read wallets:write',
+                    });
+
+                clientId = res.body.client_id;
+            }
+
+            authHeaderApi = await requestToken(await registerAPIClient(), {
+                grant_type: 'client_credentials',
+                scope: 'openid accounts:read accounts:write',
+            });
+
+            await registerDashboardClient();
 
             mockWalletProxy();
         });
@@ -83,6 +125,8 @@ describe('Account Controller', () => {
                 const hashedOtp = await bcrypt.hash(otp, 10);
                 const account = await AccountService.getByEmail(email);
 
+                sub = String(account._id);
+
                 account.setToken({ kind: AccessTokenKind.Auth, accessToken: hashedOtp });
                 await account.save();
 
@@ -113,6 +157,82 @@ describe('Account Controller', () => {
                     .persist()
                     .post(/.*?/)
                     .reply(200, { access_token: 'abcds' });
+
+                nock(shopifyStoreUrl + '/admin/api/2023-01/price_rules.json')
+                    .persist()
+                    .get(/.*?/)
+                    .reply(200, {
+                        price_rules: [
+                            {
+                                id: 507328175,
+                                value_type: 'fixed_amount',
+                                value: '-10.0',
+                                customer_selection: 'all',
+                                target_type: 'line_item',
+                                target_selection: 'all',
+                                allocation_method: 'across',
+                                allocation_limit: null,
+                                once_per_customer: false,
+                                usage_limit: null,
+                                starts_at: '2023-01-27T09:09:49-05:00',
+                                ends_at: '2023-02-08T09:09:49-05:00',
+                                created_at: '2023-02-02T09:09:49-05:00',
+                                updated_at: '2023-02-02T09:09:49-05:00',
+                                entitled_product_ids: [],
+                                entitled_variant_ids: [],
+                                entitled_collection_ids: [],
+                                entitled_country_ids: [],
+                                prerequisite_product_ids: [],
+                                prerequisite_variant_ids: [],
+                                prerequisite_collection_ids: [],
+                                prerequisite_saved_search_ids: [],
+                                prerequisite_customer_ids: [],
+                                prerequisite_subtotal_range: null,
+                                prerequisite_quantity_range: null,
+                                prerequisite_shipping_price_range: null,
+                                prerequisite_to_entitlement_quantity_ratio: {
+                                    prerequisite_quantity: null,
+                                    entitled_quantity: null,
+                                },
+                                title: 'SUMMERSALE10OFF',
+                                admin_graphql_api_id: 'gid://shopify/PriceRule/507328175',
+                            },
+                            {
+                                id: 106886544,
+                                value_type: 'fixed_amount',
+                                value: '-10.0',
+                                customer_selection: 'all',
+                                target_type: 'line_item',
+                                target_selection: 'all',
+                                allocation_method: 'across',
+                                allocation_limit: null,
+                                once_per_customer: false,
+                                usage_limit: null,
+                                starts_at: '2023-01-31T09:09:49-05:00',
+                                ends_at: '2023-02-04T09:09:49-05:00',
+                                created_at: '2023-02-02T09:09:49-05:00',
+                                updated_at: '2023-02-02T09:09:49-05:00',
+                                entitled_product_ids: [],
+                                entitled_variant_ids: [],
+                                entitled_collection_ids: [],
+                                entitled_country_ids: [],
+                                prerequisite_product_ids: [],
+                                prerequisite_variant_ids: [],
+                                prerequisite_collection_ids: [],
+                                prerequisite_saved_search_ids: [],
+                                prerequisite_customer_ids: [],
+                                prerequisite_subtotal_range: null,
+                                prerequisite_quantity_range: null,
+                                prerequisite_shipping_price_range: null,
+                                prerequisite_to_entitlement_quantity_ratio: {
+                                    prerequisite_quantity: null,
+                                    entitled_quantity: null,
+                                },
+                                title: 'TENOFF',
+                                admin_graphql_api_id: 'gid://shopify/PriceRule/106886544',
+                            },
+                        ],
+                    });
             });
 
             it('GET /auth', async () => {
@@ -142,6 +262,17 @@ describe('Account Controller', () => {
                 );
                 expect(res.status).toBe(302);
                 expect(res.headers['location']).toContain('/auth/');
+            });
+
+            it('GET /account/:sub/shopify/price-rules', (done) => {
+                http.get(`/account/${sub}/shopify/price-rules`)
+                    .set({
+                        Authorization: authHeaderApi,
+                    })
+                    .expect(({ body }: request.Response) => {
+                        console.log('body', body);
+                    })
+                    .expect(200, done);
             });
         });
     });

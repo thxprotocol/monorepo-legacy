@@ -4,7 +4,7 @@ import { AccountDocument } from '../models/Account';
 import { IAccessToken } from '../types/TAccount';
 import { shopifyClient } from '../util/axios';
 
-export const SHOPIFY_API_SCOPE = ['read_customers', 'read_orders'];
+export const SHOPIFY_API_SCOPE = ['read_customers', 'read_orders', 'read_price_rules', 'write_price_rules'];
 
 export class ShopifyService {
     static async isAuthorized(account: AccountDocument) {
@@ -97,9 +97,36 @@ export class ShopifyService {
         return customer.total_spent >= amount;
     }
 
+    static async getDiscountPriceRules(accessToken: string, storeUrl: string) {
+        const { data } = await shopifyClient(storeUrl, {
+            method: 'GET',
+            url: `/price_rules.json`,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Shopify-Access-Token': accessToken,
+            },
+        });
+
+        return data.price_rules;
+    }
+
+    static async createDiscountCode(accessToken: string, storeUrl: string, priceRuleId: string, discountCode: string) {
+        const { data } = await shopifyClient(storeUrl, {
+            method: 'POST',
+            url: `/price_rules/${priceRuleId}/discount_codes.json`,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Shopify-Access-Token': accessToken,
+            },
+            data: { discount_code: { code: discountCode } },
+        });
+        return data.discount_code;
+    }
+
     static async validateNewsletterSubscription(accessToken: string, storeUrl: string, email: string) {
         const customer = await this.getCustomer(accessToken, storeUrl, { email });
         if (!customer) return false;
+
         return customer.email_marketing_consent.state === 'subscribed';
     }
 }

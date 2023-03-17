@@ -15,3 +15,6 @@ export * from './PointRewardClaim';
 export * from './MilestoneRewardClaim';
 export * from './DailyRewardClaim';
 export * from './Pool';
+export * from './ShopifyPerk';
+export * from './ShopifyPerkPayment';
+export * from './ShopifyDiscountCode';

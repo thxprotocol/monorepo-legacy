@@ -6,12 +6,14 @@ import PoolService from '@thxnetwork/api/services/PoolService';
 import { redeemValidation } from '@thxnetwork/api/util/perks';
 import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
 import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
+import { ShopifyPerk, ShopifyPerkDocument } from '@thxnetwork/api/models/ShopifyPerk';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
     const pool = await PoolService.getById(req.header('X-PoolId'));
     const erc20Perks = await ERC20Perk.find({ poolId: pool._id });
     const erc721Perks = await ERC721Perk.find({ poolId: pool._id });
+    const shopifyPerks = await ShopifyPerk.find({ poolId: pool._id });
 
     res.json({
         erc20Perks: await Promise.all(
@@ -53,6 +55,28 @@ const controller = async (req: Request, res: Response) => {
                         image: r.image,
                         isOwned: false,
                         isPromoted: r.isPromoted,
+                        limit: r.limit,
+                        isDisabled: (await redeemValidation({ perk: r })).isError,
+                        now: r.expiryDate ? Date.now() : undefined,
+                        progress: await ERC721PerkPayment.countDocuments({ perkId: r._id }),
+                    };
+                }),
+        ),
+        shopifyPerks: await Promise.all(
+            shopifyPerks
+                .filter((p: ShopifyPerkDocument) => p.pointPrice > 0)
+                .map(async (r) => {
+                    return {
+                        _id: r._id,
+                        uuid: r.uuid,
+                        title: r.title,
+                        description: r.description,
+                        pointPrice: r.pointPrice,
+                        image: r.image,
+                        isOwned: false,
+                        isPromoted: r.isPromoted,
+                        priceRuleId: r.priceRuleId,
+                        discountCode: r.discountCode,
                         limit: r.limit,
                         isDisabled: (await redeemValidation({ perk: r })).isError,
                         now: r.expiryDate ? Date.now() : undefined,
