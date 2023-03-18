@@ -117,6 +117,8 @@ describe('Dashboard', () => {
         cy.get('#collapse-card-condition .form-group .custom-select').select('Retweet');
         cy.get('#collapse-card-condition .form-group input[type="text"]').clear().type(tweetUrl);
 
+        // HACK Do this again to blur the previous text input and store value in state
+        cy.get('#collapse-card-condition .form-group .custom-select').select('Retweet');
         cy.get('.btn').contains('Create Conditional Reward').click();
 
         cy.get('tbody tr:nth-child(1)').contains('Test reward title');
