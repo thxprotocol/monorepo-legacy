@@ -166,8 +166,8 @@ const controller = async (req: Request, res: Response) => {
                 height: '40px',
                 top: '-20px',
                 position: 'absolute',
-                borderRadius: '20px',
-                backgroundSize: '30px auto',
+                borderRadius: '50%',
+                backgroundSize: '40px auto',
                 backgroundPosition: 'center center',
                 backgroundRepeat: 'no-repeat',
             });
@@ -203,8 +203,9 @@ const controller = async (req: Request, res: Response) => {
             });
             
             Object.assign(messageBox.style, {
+                zIndex: 9999999,
                 display: message ? 'flex' : 'none',
-                fontFamily: 'Arial',
+                lineHeight: 1.5,
                 fontSize: '13px',
                 justifyContent: 'center',
                 alignItems: 'center',
@@ -378,7 +379,7 @@ const controller = async (req: Request, res: Response) => {
         sourceMap: NODE_ENV !== 'production',
     });
 
-    res.set({ 'Content-Type': 'application/javascript' }).send(data);
+    res.set({ 'Content-Type': 'application/javascript' }).send(result.code);
 };
 
 export default { controller, validation };
