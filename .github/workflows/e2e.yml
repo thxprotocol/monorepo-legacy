@@ -2,6 +2,8 @@ name: E2E Tests
 
 on:
     push:
+        paths:
+            - .github/workflows/e2e.yml
         branches:
             - main
     schedule:
@@ -43,4 +45,4 @@ jobs:
                   DISCORD_WEBHOOK: ${{ secrets.DISCORD_CYPRESS_WEBHOOK }}
               uses: Ilshidur/action-discord@master
               with:
-                  args: "E2E Tested Dev ${{ steps.test.outcome == 'success' && '✅' || '⛔' }} `${{ steps.test.outcome }}` "
+                  args: "${{ steps.test.outcome == 'success' && '✅' || '⛔' }} E2EDev `develop` "
