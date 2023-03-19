@@ -167,6 +167,19 @@ class AccountModule extends VuexModule {
     }
 
     @Action({ rawError: true })
+    async connect(kind: AccessTokenKind) {
+        const client = Mixpanel.client();
+        await this.userManager.signinRedirect({
+            prompt: 'connect',
+            extraQueryParams: {
+                access_token_kind: AccessTokenKind.Twitter,
+                return_url: window.location.href,
+                distinct_id: client && client.get_distinct_id(),
+            },
+        });
+    }
+
+    @Action({ rawError: true })
     async signinRedirectCallback() {
         const user = await this.userManager.signinRedirectCallback();
         this.context.commit('setUser', user);

@@ -50,6 +50,11 @@ async function deploy(sub: string, chainId: ChainId, title: string): Promise<Ass
         version: currentVersion,
         archived: false,
         title,
+        settings: {
+            defaults: {
+                conditionalRewards: { title: 'Retweet this tweet', description: '', amount: 50 },
+            },
+        },
     });
     const txId = await TransactionService.sendAsync(
         factory.options.address,
