@@ -11,6 +11,7 @@ import * as en from 'vee-validate/dist/locale/en.json';
 import { ValidationObserver, ValidationProvider, extend, localize } from 'vee-validate';
 import { API_URL, MIXPANEL_TOKEN } from '@thxnetwork/dashboard/utils/secrets';
 import Mixpanel from '@thxnetwork/mixpanel';
+import vueDebounce from 'vue-debounce';
 
 Mixpanel.init(MIXPANEL_TOKEN, API_URL);
 
@@ -83,6 +84,7 @@ Vue.use(ToastPlugin);
 Vue.use(VueClipboard);
 Vue.use(TooltipPlugin);
 Vue.use(VBTogglePlugin);
+Vue.use(vueDebounce);
 
 new Vue({
     router,
