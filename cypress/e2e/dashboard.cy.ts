@@ -1,5 +1,7 @@
-const DASHBOARD_URL = 'https://dev-dashboard.thx.network';
-const AUTH_URL = 'https://dev.auth.thx.network';
+// const DASHBOARD_URL = 'https://dev-dashboard.thx.network';
+// const AUTH_URL = 'https://dev.auth.thx.network';
+const DASHBOARD_URL = 'https://localhost:8082';
+const AUTH_URL = 'https://localhost:3030';
 const CYPRESS_ACCOUNT = 'cypress@thx.network';
 
 describe('Dashboard', () => {
@@ -105,20 +107,19 @@ describe('Dashboard', () => {
             'Conditional rewards are distributed to your customers that have completed reward conditions in external platforms.',
         ).should('be.visible');
 
-        cy.get('.form-group:nth-child(1) input').type('Test reward title');
-        cy.get('.form-group:nth-child(2) textarea').type('Test reward description');
-        cy.get('.form-group:nth-child(3) input').clear().type('15');
-
         const tweetUrl = 'https://twitter.com/twitter/status/1603121182101970945';
 
         cy.contains('Conditions').click();
         cy.get('#collapse-card-condition .form-group .dropdown-toggle').click();
         cy.contains('Twitter').click();
         cy.get('#collapse-card-condition .form-group .custom-select').select('Retweet');
-        cy.get('#collapse-card-condition .form-group input[type="text"]').clear().type(tweetUrl);
+        cy.get('#collapse-card-condition .form-group input[type="text"]').type(tweetUrl);
 
-        // HACK Do this again to blur the previous text input and store value in state
-        cy.get('#collapse-card-condition .form-group .custom-select').select('Retweet');
+        cy.contains('Loyalty Networks are here').should('be.visible');
+
+        cy.get('.form-group:nth-child(1) input').type('Test reward title');
+        cy.get('.form-group:nth-child(2) textarea').type('Test reward description');
+        cy.get('.form-group:nth-child(3) input').clear().type('15');
 
         cy.get('.btn').contains('Create Conditional Reward').click();
 
