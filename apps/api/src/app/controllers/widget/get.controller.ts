@@ -167,7 +167,7 @@ const controller = async (req: Request, res: Response) => {
                 top: '-20px',
                 position: 'absolute',
                 borderRadius: '50%',
-                backgroundSize: '40px auto',
+                backgroundSize: '30px auto',
                 backgroundPosition: 'center center',
                 backgroundRepeat: 'no-repeat',
             });
@@ -215,7 +215,7 @@ const controller = async (req: Request, res: Response) => {
                 backgroundColor: '#FFFFFF',
                 borderRadius: '5px',
                 userSelect: 'none',
-                padding: '15px 10px 5px',
+                padding: '15px 10px 10px',
                 bottom: '90px',
                 right: align === 'right' ? '15px' : 'auto',
                 left: align === 'left' ? '15px' : 'auto',
