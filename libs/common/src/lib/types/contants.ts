@@ -36,7 +36,7 @@ export const DEFAULT_ELEMENTS = {
 export const DEFAULT_COLORS = {
     success: {
         label: 'Success',
-        color: '#28a745', //
+        color: '#28a745',
     },
     warning: {
         label: 'Warning',

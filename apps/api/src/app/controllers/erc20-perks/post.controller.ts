@@ -14,9 +14,6 @@ const validation = [
     body('claimLimit').optional().isInt(),
     body('erc20Id').exists().isMongoId(),
     body('expiryDate').optional().isString(),
-    body('platform').exists().isNumeric(),
-    body('interaction').optional().isNumeric(),
-    body('content').optional().isString(),
     body('pointPrice').optional().isNumeric(),
     check('file')
         .optional()

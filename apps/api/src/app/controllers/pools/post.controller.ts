@@ -18,7 +18,7 @@ const controller = async (req: Request, res: Response) => {
         align: 'right',
         message: 'Hi there!👋 Click me to earn rewards and collect crypto perks...',
         domain: 'https://www.example.com',
-        theme: JSON.stringify({ elements: DEFAULT_ELEMENTS, color: DEFAULT_COLORS }),
+        theme: JSON.stringify({ elements: DEFAULT_ELEMENTS, colors: DEFAULT_COLORS }),
     });
 
     res.status(201).json(pool);

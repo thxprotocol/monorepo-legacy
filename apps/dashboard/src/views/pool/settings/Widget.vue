@@ -32,7 +32,7 @@
                     <b-col md="3">
                         <div class="d-flex">
                             <strong>Elements</strong>
-                            <b-button class="ml-auto" variant="light" size="sm" @click="elements = DEFAULT_ELEMENTS">
+                            <b-button class="ml-auto" variant="light" size="sm" @click="onClickResetElements">
                                 <i class="fas fa-undo ml-0"></i>
                             </b-button>
                         </div>
@@ -50,7 +50,7 @@
                     <b-col md="3">
                         <div class="d-flex">
                             <strong>Colors</strong>
-                            <b-button class="ml-auto" variant="light" size="sm" @click="colors = DEFAULT_COLORS">
+                            <b-button class="ml-auto" variant="light" size="sm" @click="onClickResetColors">
                                 <i class="fas fa-undo ml-0"></i>
                             </b-button>
                         </div>
@@ -323,7 +323,6 @@ export default class WidgetsView extends Vue {
             this.bgColor = this.widget.bgColor;
 
             const { elements, colors } = JSON.parse(this.widget.theme);
-            debugger;
             for (const key in this.elements) {
                 this.elements[key] = elements[key] ? elements[key] : this.elements[key];
             }
@@ -331,6 +330,18 @@ export default class WidgetsView extends Vue {
                 this.colors[key] = colors[key] ? colors[key] : this.colors[key];
             }
         });
+    }
+
+    onClickResetColors() {
+        for (const key in DEFAULT_COLORS) {
+            this.colors[key] = DEFAULT_COLORS[key];
+        }
+    }
+
+    onClickResetElements() {
+        for (const key in DEFAULT_ELEMENTS) {
+            this.elements[key] = DEFAULT_ELEMENTS[key];
+        }
     }
 
     onClickPreview() {

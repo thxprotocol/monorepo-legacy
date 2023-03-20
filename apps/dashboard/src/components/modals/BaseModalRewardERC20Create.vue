@@ -47,11 +47,6 @@
                         </b-row>
                     </b-col>
                     <b-col md="6">
-                        <BaseCardRewardCondition
-                            class="mb-3"
-                            :rewardCondition="rewardCondition"
-                            @change="rewardCondition = $event"
-                        />
                         <BaseCardRewardExpiry
                             class="mb-3"
                             :expiryDate="expiryDate"
@@ -88,12 +83,9 @@
 </template>
 
 <script lang="ts">
-import { type TPool } from '@thxnetwork/dashboard/store/modules/pools';
+import { type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { platformList, platformInteractionList } from '@thxnetwork/dashboard/types/rewards';
-import { RewardConditionInteraction, RewardConditionPlatform, type TERC20Perk } from '@thxnetwork/types/index';
 import BaseModal from './BaseModal.vue';
-import BaseCardRewardCondition from '../cards/BaseCardRewardCondition.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardRewardQRCodes from '../cards/BaseCardRewardQRCodes.vue';
 import BaseDropdownSelectERC20 from '../dropdowns/BaseDropdownSelectERC20.vue';
@@ -102,7 +94,6 @@ import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
 @Component({
     components: {
         BaseModal,
-        BaseCardRewardCondition,
         BaseCardRewardExpiry,
         BaseCardRewardLimits,
         BaseCardRewardQRCodes,
@@ -124,11 +115,7 @@ export default class ModalRewardERC20Create extends Vue {
     pointPrice = 0;
     imageFile: File | null = null;
     image = '';
-    rewardCondition: { platform: RewardConditionPlatform; interaction: RewardConditionInteraction; content: string } = {
-        platform: platformList[0].type,
-        interaction: platformInteractionList[0].type,
-        content: '',
-    };
+
     isPromoted = false;
 
     @Prop() id!: string;
@@ -145,17 +132,6 @@ export default class ModalRewardERC20Create extends Vue {
         this.rewardLimit = this.reward ? this.reward.rewardLimit : 0;
         this.claimLimit = this.reward ? this.reward.claimLimit : 1;
         this.claimAmount = this.reward ? this.reward.claimAmount : 0;
-        this.rewardCondition = this.reward
-            ? {
-                  platform: this.reward.platform as RewardConditionPlatform,
-                  interaction: this.reward.interaction as RewardConditionInteraction,
-                  content: this.reward.content as string,
-              }
-            : {
-                  platform: platformList[0].type,
-                  interaction: platformInteractionList[0].type,
-                  content: '',
-              };
 
         this.image = this.reward && this.reward.image ? this.reward.image : '';
         this.isPromoted = this.reward ? this.reward.isPromoted : false;
@@ -178,9 +154,6 @@ export default class ModalRewardERC20Create extends Vue {
                     claimAmount: Number(this.claimAmount),
                     claimLimit: this.claimLimit,
                     rewardLimit: this.rewardLimit,
-                    platform: this.rewardCondition.platform,
-                    interaction: this.rewardCondition.interaction,
-                    content: this.rewardCondition.content,
                     file: this.imageFile,
                     isPromoted: this.isPromoted,
                 },
