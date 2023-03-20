@@ -1,4 +1,5 @@
-import BrandModel, { TBrand, TBrandUpdate } from '@thxnetwork/api/models/Brand';
+import BrandModel, { TBrandUpdate } from '@thxnetwork/api/models/Brand';
+import { TBrand } from '@thxnetwork/types/interfaces';
 
 type FindOptions = Partial<Pick<TBrand, 'poolId'>>;
 

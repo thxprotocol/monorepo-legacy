@@ -6,7 +6,7 @@ module.exports = {
         const widgets = await widgetsColl.find({});
 
         for await (const widget of widgets) {
-            const theme = { elements: DEFAULT_ELEMENTS, color: DEFAULT_COLORS };
+            const theme = { elements: DEFAULT_ELEMENTS, colors: DEFAULT_COLORS };
             if (widget.bgColor) {
                 theme.elements.launcherBg = { label: 'Launcher', color: widget.bgColor };
             }
