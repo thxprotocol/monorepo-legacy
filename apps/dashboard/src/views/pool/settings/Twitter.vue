@@ -18,7 +18,7 @@
                 <b-form-group>
                     <b-form-checkbox
                         v-model="settings.isTwitterSyncEnabled"
-                        :disabled="!settings.isTwitterSyncEnabled && !profile.twitterAccess"
+                        :disabled="!settings.isTwitterSyncEnabled && profile && !profile.twitterAccess"
                         @change="updateSettings()"
                     >
                         Enable automated reward creation for your Tweets

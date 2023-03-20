@@ -1,56 +1,68 @@
 <template>
-    <b-form-row>
-        <b-col md="4">
-            <strong>Page Theming</strong>
-            <p class="text-muted">Configure background and logo used on the user authentication pages.</p>
-        </b-col>
-        <b-col md="8">
-            <b-form-row>
-                <b-col md="8">
-                    <b-form-group label="Logo URL">
-                        <b-form-file class="mb-3" @change="onUpload($event, 'logoImgUrl')" accept="image/*" />
-                    </b-form-group>
-                </b-col>
-                <b-col md="4">
-                    <b-card body-class="py-5 text-center" class="mb-3" bg-variant="light">
-                        <template v-if="logoImgUrl">
-                            <img
-                                width="100%"
-                                height="auto"
-                                class="m-0"
-                                alt="Signin page logo image"
-                                :src="logoImgUrl"
-                            /><br />
-                            <b-link @click="onClickRemoveLogo" class="text-danger">Remove</b-link>
-                        </template>
-                        <span v-else class="text-gray">Preview logo URL</span>
-                    </b-card>
-                </b-col>
-            </b-form-row>
-            <b-form-row>
-                <b-col md="8">
-                    <b-form-group label="Background URL">
-                        <b-form-file @change="onUpload($event, 'backgroundImgUrl')" accept="image/*" />
-                    </b-form-group>
-                </b-col>
-                <b-col md="4">
-                    <b-card body-class="py-5 text-center" class="mb-3" bg-variant="light">
-                        <template v-if="backgroundImgUrl">
-                            <img
-                                width="100%"
-                                height="auto"
-                                class="m-0"
-                                alt="Signin page background image"
-                                :src="backgroundImgUrl"
-                            /><br />
-                            <b-link @click="onClickRemoveBackground" class="text-danger">Remove</b-link>
-                        </template>
-                        <span v-else class="text-gray">Preview background URL</span>
-                    </b-card>
-                </b-col>
-            </b-form-row>
-        </b-col>
-    </b-form-row>
+    <div>
+        <b-form-row>
+            <b-col md="4">
+                <strong>Logo</strong>
+                <p class="text-muted">
+                    Used as logo on auth.thx.network, Discord Bot messages and your widget welcome message.
+                </p>
+            </b-col>
+            <b-col md="8">
+                <b-form-row>
+                    <b-col md="8">
+                        <b-form-group>
+                            <b-form-file class="mb-3" @change="onUpload($event, 'logoImgUrl')" accept="image/*" />
+                        </b-form-group>
+                    </b-col>
+                    <b-col md="4">
+                        <b-card body-class="py-5 text-center" class="mb-3" bg-variant="light">
+                            <template v-if="logoImgUrl">
+                                <img
+                                    width="100%"
+                                    height="auto"
+                                    class="m-0"
+                                    alt="Signin page logo image"
+                                    :src="logoImgUrl"
+                                /><br />
+                                <b-link @click="onClickRemoveLogo" class="text-danger">Remove</b-link>
+                            </template>
+                            <span v-else class="text-gray">Preview logo URL</span>
+                        </b-card>
+                    </b-col>
+                </b-form-row>
+            </b-col>
+        </b-form-row>
+        <b-form-row>
+            <b-col md="4">
+                <strong>Background</strong>
+                <p class="text-muted">Used as background on auth.thx.network when authenticating for your widget.</p>
+            </b-col>
+            <b-col md="8">
+                <b-form-row>
+                    <b-col md="8">
+                        <b-form-group>
+                            <b-form-file @change="onUpload($event, 'backgroundImgUrl')" accept="image/*" />
+                        </b-form-group>
+                    </b-col>
+                    <b-col md="4">
+                        <b-card body-class="py-5 text-center" class="mb-3" bg-variant="light">
+                            <template v-if="backgroundImgUrl">
+                                <img
+                                    width="100%"
+                                    height="auto"
+                                    class="m-0"
+                                    alt="Signin page background image"
+                                    :src="backgroundImgUrl"
+                                /><br />
+                                <b-link @click="onClickRemoveBackground" class="text-danger">Remove</b-link>
+                            </template>
+                            <span v-else class="text-gray">Preview background URL</span>
+                        </b-card>
+                    </b-col>
+                </b-form-row>
+            </b-col>
+        </b-form-row>
+    </div>
 </template>
 
 <script lang="ts">

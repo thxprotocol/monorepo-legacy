@@ -167,7 +167,7 @@ const controller = async (req: Request, res: Response) => {
                 top: '-20px',
                 position: 'absolute',
                 borderRadius: '50%',
-                backgroundSize: '30px auto',
+                backgroundSize: '40px auto',
                 backgroundPosition: 'center center',
                 backgroundRepeat: 'no-repeat',
             });

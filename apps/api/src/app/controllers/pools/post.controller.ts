@@ -3,6 +3,7 @@ import { body } from 'express-validator';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { Widget } from '@thxnetwork/api/models/Widget';
 import { v4 } from 'uuid';
+import { DEFAULT_COLORS, DEFAULT_ELEMENTS } from '@thxnetwork/types/contants';
 
 const validation = [body('chainId').exists().isNumeric(), body('title').optional().isString()];
 
@@ -17,9 +18,7 @@ const controller = async (req: Request, res: Response) => {
         align: 'right',
         message: 'Hi there!👋 Click me to earn rewards and collect crypto perks...',
         domain: 'https://www.example.com',
-        color: '#FFFFFF',
-        bgColor: '#5942C1',
-        theme: 'dark',
+        theme: JSON.stringify({ elements: DEFAULT_ELEMENTS, color: DEFAULT_COLORS }),
     });
 
     res.status(201).json(pool);
