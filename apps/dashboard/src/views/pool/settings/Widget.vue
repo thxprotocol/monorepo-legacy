@@ -117,6 +117,7 @@
                                             <p style="opacity: 0.65">
                                                 Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                                             </p>
+                                            <blockquote>Retweet a tweet</blockquote>
                                             <b-button
                                                 variant="primary"
                                                 class="rounded-pill"
@@ -393,6 +394,20 @@ export default class WidgetsView extends Vue {
 }
 #widget-iframe-preview {
     display: block;
+
+    blockquote {
+        border-left: 3px solid #5942c1;
+        background-color: #3d2d88;
+        padding: 0.5rem;
+
+        a {
+            transition: color 0.2s ease;
+
+            &:hover {
+                color: #ffffff !important;
+            }
+        }
+    }
 
     .widget-iframe {
         font-size: 14px;
