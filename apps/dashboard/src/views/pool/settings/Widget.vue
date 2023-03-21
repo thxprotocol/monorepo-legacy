@@ -379,7 +379,7 @@ export default class WidgetsView extends Vue {
 }
 .widget-notifications {
     display: flex;
-    font-family: Arial;
+    font-family: Helvetica, Arial, sans-serif;
     font-size: 13px;
     justify-content: center;
     align-items: center;
@@ -471,7 +471,7 @@ export default class WidgetsView extends Vue {
 
     .widget-message-close {
         display: flex;
-        font-family: Arial;
+        font-family: Helvetica, Arial, sans-serif;
         font-size: 16px;
         justify-content: center;
         align-items: center;
