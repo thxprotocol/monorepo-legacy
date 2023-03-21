@@ -24,7 +24,7 @@
         <hr />
         <b-form-row>
             <b-col md="4">
-                <strong>Theme</strong>
+                <strong>Color scheme</strong>
                 <p class="text-muted">Customize the color scheme of your widget.</p>
             </b-col>
             <b-col md="8">
@@ -278,20 +278,16 @@ hljs.registerLanguage('xml', XML);
     }),
 })
 export default class WidgetsView extends Vue {
-    DEFAULT_ELEMENTS = DEFAULT_ELEMENTS;
-    DEFAULT_COLORS = DEFAULT_COLORS;
     pools!: IPools;
     widgets!: IWidgets;
     Color = Color;
     isCopied = false;
     message = '';
     align = 'left';
-    bgColor = '#5942c1';
-    color = '#FFFFFF';
     domain = '';
     isSubmitting = false;
-    elements = DEFAULT_ELEMENTS;
-    colors = DEFAULT_COLORS;
+    elements = Object.assign({}, DEFAULT_ELEMENTS);
+    colors = Object.assign({}, DEFAULT_COLORS);
 
     get pool() {
         return this.pools[this.$route.params.id];
@@ -319,8 +315,6 @@ export default class WidgetsView extends Vue {
             this.align = this.widget.align;
             this.message = this.widget.message;
             this.domain = this.widget.domain;
-            this.color = this.widget.color;
-            this.bgColor = this.widget.bgColor;
 
             const { elements, colors } = JSON.parse(this.widget.theme);
             for (const key in this.elements) {
@@ -334,13 +328,13 @@ export default class WidgetsView extends Vue {
 
     onClickResetColors() {
         for (const key in DEFAULT_COLORS) {
-            this.colors[key] = DEFAULT_COLORS[key];
+            Object.assign(this.colors[key], DEFAULT_COLORS[key]);
         }
     }
 
     onClickResetElements() {
         for (const key in DEFAULT_ELEMENTS) {
-            this.elements[key] = DEFAULT_ELEMENTS[key];
+            Object.assign(this.elements[key], DEFAULT_ELEMENTS[key]);
         }
     }
 
@@ -358,8 +352,6 @@ export default class WidgetsView extends Vue {
             domain: this.domain,
             align: this.align,
             uuid: this.widget.uuid,
-            color: this.color,
-            bgColor: this.bgColor,
             theme: JSON.stringify({ elements: this.elements, colors: this.colors }),
         });
         this.isSubmitting = false;
