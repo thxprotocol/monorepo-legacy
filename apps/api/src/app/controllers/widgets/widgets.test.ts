@@ -11,12 +11,8 @@ const user = request.agent(app);
 
 describe('Widgets', () => {
     let poolId: string, testToken: Contract, widget: WidgetDocument;
-    const color = '#FFFFFF',
-        bgColor = '#5942C1',
-        theme = 'dark',
-        newColor = '#00FF00',
-        newBgColor = '#0F0F0F',
-        newTheme = 'light',
+    const newTheme =
+            '{"elements":{"btnBg":{"label":"Button","color":"#FF0000"},"btnText":{"label":"Button Text","color":"#000000"},"text":{"label":"Text","color":"#ffffff"},"bodyBg":{"label":"Background","color":"#000000"},"cardBg":{"label":"Card","color":"#3b3b3b"},"navbarBg":{"label":"Navigation","color":"#3b3b3b"},"launcherBg":{"label":"Launcher","color":"#ffffff"},"launcherIcon":{"label":"Launcher Icon","color":"#000000"}},"colors":{"success":{"label":"Success","color":"#28a745"},"warning":{"label":"Warning","color":"#ffe500"},"danger":{"label":"Danger","color":"#dc3545"},"info":{"label":"Info","color":"#17a2b8"}}}',
         align = 'left',
         message = 'New message';
 
@@ -45,9 +41,7 @@ describe('Widgets', () => {
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .expect(({ body }: Response) => {
                 expect(body[0].uuid).toBeDefined();
-                expect(body[0].color).toEqual(color);
-                expect(body[0].bgColor).toEqual(bgColor);
-                expect(body[0].theme).toEqual(theme);
+                expect(body[0].theme).toBeDefined();
                 expect(body[0].message).toEqual('Hi there!👋 Click me to earn rewards and collect crypto perks...');
                 widget = body[0];
             })
@@ -60,14 +54,10 @@ describe('Widgets', () => {
             .send({
                 align,
                 message,
-                color: newColor,
-                bgColor: newBgColor,
                 theme: newTheme,
             })
             .expect(({ body }: Response) => {
                 expect(body.uuid).toBeDefined();
-                expect(body.color).toEqual(newColor);
-                expect(body.bgColor).toEqual(newBgColor);
                 expect(body.theme).toEqual(newTheme);
                 expect(body.message).toEqual(message);
                 expect(body.align).toEqual(align);
@@ -80,8 +70,6 @@ describe('Widgets', () => {
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .expect(({ body }: Response) => {
                 expect(body.uuid).toBeDefined();
-                expect(body.color).toEqual(newColor);
-                expect(body.bgColor).toEqual(newBgColor);
                 expect(body.theme).toEqual(newTheme);
                 expect(body.message).toEqual(message);
             })

@@ -12,9 +12,6 @@ const validation = [
     body('expiryDate').optional().isString(),
     body('limit').isNumeric(),
     body('erc20Id').isMongoId(),
-    body('platform').exists().isNumeric(),
-    body('interaction').optional().isNumeric(),
-    body('content').optional().isString(),
     check('file')
         .optional()
         .custom((value, { req }) => {

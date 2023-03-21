@@ -1,7 +1,8 @@
 <template>
     <b-form-group label="Tweet URL">
         <b-form-input
-            @input="onInput"
+            :debounce="1000"
+            @change="onInput"
             :value="url"
             :state="state"
             placeholder="e.g. https://twitter.com/twitter/status/1603121182101970945"

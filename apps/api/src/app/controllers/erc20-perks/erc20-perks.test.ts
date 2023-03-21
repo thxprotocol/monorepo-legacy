@@ -8,7 +8,6 @@ import { addMinutes } from '@thxnetwork/api/util/rewards';
 import { createImage } from '@thxnetwork/api/util/jest/images';
 import { ERC20Document } from '@thxnetwork/api/models/ERC20';
 import { ERC20PerkDocument } from '@thxnetwork/api/models/ERC20Perk';
-import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
 
 const user = request.agent(app);
 
@@ -58,9 +57,6 @@ describe('ERC20 Perks', () => {
             pointPrice = 200,
             image = createImage(),
             amount = '1',
-            platform = RewardConditionPlatform.Google,
-            interaction = RewardConditionInteraction.YouTubeLike,
-            content = 'videoid',
             limit = 0,
             claimAmount = 0,
             isPromoted = true;
@@ -77,9 +73,6 @@ describe('ERC20 Perks', () => {
                 erc20Id: String(erc20._id),
                 amount,
                 pointPrice,
-                platform,
-                interaction,
-                content,
                 expiryDate: expiryDate.toString(),
                 limit,
                 claimAmount,
@@ -92,9 +85,6 @@ describe('ERC20 Perks', () => {
                 expect(res.body.image).toBeDefined();
                 expect(res.body.amount).toBe(amount);
                 expect(res.body.pointPrice).toBe(pointPrice);
-                expect(res.body.platform).toBe(platform);
-                expect(res.body.interaction).toBe(interaction);
-                expect(res.body.content).toBe(content);
                 expect(new Date(res.body.expiryDate).getDate()).toBe(expiryDate.getDate());
                 expect(res.body.limit).toBe(limit);
                 expect(res.body.claimAmount).toBe(claimAmount);

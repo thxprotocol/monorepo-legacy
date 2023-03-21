@@ -3,27 +3,36 @@
         <b-form-row>
             <b-col md="4">
                 <strong>Automated Rewards</strong>
-                <p class="text-muted">Enable automated creation of conditional rewards for your new tweets.</p>
+                <p class="text-muted">
+                    Checks every 15min if new tweets are posted and creates conditional rewards for them.
+                </p>
             </b-col>
             <b-col md="8">
                 <b-alert show variant="warning" v-if="profile && !profile.twitterAccess">
                     <i class="fab fa-twitter mr-2"></i>
-                    Connect your Twitter account to your THX account in order to benefit from reward automation.
+                    <b-link @click="$store.dispatch('account/connect', AccessTokenKind.Twitter)">
+                        Connect your Twitter account
+                    </b-link>
+                    to benefit from reward automation.
                 </b-alert>
                 <b-form-group>
-                    <b-form-checkbox v-model="settings.isTwitterSyncEnabled" @change="updateSettings()">
+                    <b-form-checkbox
+                        v-model="settings.isTwitterSyncEnabled"
+                        :disabled="!settings.isTwitterSyncEnabled && profile && !profile.twitterAccess"
+                        @change="updateSettings()"
+                    >
                         Enable automated reward creation for your Tweets
                     </b-form-checkbox>
                 </b-form-group>
             </b-col>
         </b-form-row>
-        <hr />
         <b-form-row>
-            <b-col md="4">
-                <strong>Reward defaults</strong>
-                <p class="text-muted">Configure fields for automatically created conditional rewards.</p>
-            </b-col>
+            <b-col md="4"> </b-col>
             <b-col md="8">
+                <p class="text-muted">
+                    We will use these values as a default when automatically creating your conditional rewards. You can
+                    always change them later individually.
+                </p>
                 <b-card body-class="bg-light">
                     <b-form-group label="Title">
                         <b-form-input v-model="settings.defaults.conditionalRewards.title" @change="updateSettings()" />
@@ -53,7 +62,8 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { IAccount } from '@thxnetwork/dashboard/types/account';
-import { TPoolSettings } from '@thxnetwork/types/index';
+import { AccessTokenKind, TPoolSettings } from '@thxnetwork/types/index';
+import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 
 @Component({
     computed: {
@@ -64,6 +74,8 @@ import { TPoolSettings } from '@thxnetwork/types/index';
     },
 })
 export default class SettingsTwitterView extends Vue {
+    BASE_URL = BASE_URL;
+    AccessTokenKind = AccessTokenKind;
     loading = true;
     chainInfo = chainInfo;
     profile!: IAccount;

@@ -3,8 +3,6 @@ import { body } from 'express-validator';
 import { Widget } from '@thxnetwork/api/services/WidgetService';
 
 const validation = [
-    body('color').isHexColor(),
-    body('bgColor').isHexColor(),
     body('align').isString(),
     body('theme').isString(),
     body('domain').optional().isURL({ require_tld: false }),

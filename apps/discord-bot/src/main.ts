@@ -7,4 +7,8 @@ if (!globalThis.fetch) {
     globalThis.Headers = Headers as any;
 }
 
+process.on('unhandledRejection', (error) => {
+    console.error('Unhandled promise rejection:', error);
+});
+
 bootstrap();
