@@ -1,4 +1,4 @@
-export const DEFAULT_ELEMENTS = {
+const DEFAULT_ELEMENTS = {
     btnBg: {
         label: 'Button',
         color: '#5942c1',
@@ -33,7 +33,7 @@ export const DEFAULT_ELEMENTS = {
     },
 };
 
-export const DEFAULT_COLORS = {
+const DEFAULT_COLORS = {
     accent: {
         label: 'Accent',
         color: '#98D80D',
