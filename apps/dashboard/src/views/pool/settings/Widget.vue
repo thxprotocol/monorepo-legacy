@@ -80,7 +80,7 @@
                                         <div class="card-header">
                                             <div class="card-title mb-0 d-flex justify-content-between">
                                                 Daily Reward
-                                                <strong class="ml-auto" :style="`color: ${colors.success.color}`">
+                                                <strong class="ml-auto" :style="`color: ${colors.accent.color}`">
                                                     15
                                                 </strong>
                                             </div>
@@ -137,13 +137,13 @@
                                         class="text-center"
                                         :style="`background-color: ${elements.btnBg.color}; color: ${elements.btnText.color};`"
                                     >
-                                        <i class="fas fa-trophy m-0" style="font-size: 1.3rem"></i><br />Earn
+                                        <i class="fas fa-trophy m-0" style="font-size: 1.3rem"></i>Earn
                                     </b-button>
                                     <b-button variant="link" class="text-center">
-                                        <i class="fas fa-store m-0" style="font-size: 1.3rem"></i><br />Shop
+                                        <i class="fas fa-store m-0" style="font-size: 1.3rem"></i>Shop
                                     </b-button>
                                     <b-button variant="link" class="text-center">
-                                        <i class="fas fa-wallet m-0" style="font-size: 1.3rem"></i><br />Wallet
+                                        <i class="fas fa-wallet m-0" style="font-size: 1.3rem"></i>Wallet
                                     </b-button>
                                 </div>
                             </div>
@@ -244,6 +244,7 @@
         <div class="d-flex justify-content-center">
             <b-button variant="link" @click="onClickPreview"> Preview </b-button>
             <BButton :disabled="!widget || isSubmitting" variant="primary" class="rounded-pill" @click="onClickUpdate">
+                <b-spinner v-if="isSubmitting" small variant="white" class="mr-2" />
                 Update
             </BButton>
         </div>
@@ -410,7 +411,7 @@ export default class WidgetsView extends Vue {
         border-top: 1px solid var(--txh-navbar-bottom-border-color);
         background-color: var(--thx-navbar-bg);
 
-        a {
+        button {
             margin: 0;
             line-height: 1;
             width: 70px;
@@ -422,6 +423,11 @@ export default class WidgetsView extends Vue {
             text-decoration: none;
             border-radius: 8px;
             font-size: 14px;
+            flex-direction: column;
+
+            i {
+                margin-bottom: 0.25rem !important;
+            }
         }
 
         .btn-link {

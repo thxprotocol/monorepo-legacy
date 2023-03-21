@@ -13,15 +13,15 @@ export const DEFAULT_ELEMENTS = {
     },
     bodyBg: {
         label: 'Background',
-        color: '#231a4e',
+        color: '#241956',
     },
     cardBg: {
         label: 'Card',
-        color: '#352675',
+        color: '#31236d',
     },
     navbarBg: {
         label: 'Navigation',
-        color: '#352675',
+        color: '#31236d',
     },
     launcherBg: {
         label: 'Launcher',
@@ -34,6 +34,10 @@ export const DEFAULT_ELEMENTS = {
 };
 
 export const DEFAULT_COLORS = {
+    accent: {
+        label: 'Accent',
+        color: '#98D80D',
+    },
     success: {
         label: 'Success',
         color: '#28a745',
