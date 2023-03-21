@@ -1,7 +1,7 @@
 <template>
     <b-form-group label="Tweet URL">
         <b-form-input
-            v-debounce:1000ms="onInput"
+            :debounce="1000"
             @change="onInput"
             :value="url"
             :state="state"
