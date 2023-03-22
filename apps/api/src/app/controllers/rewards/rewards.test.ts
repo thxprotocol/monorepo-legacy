@@ -59,7 +59,7 @@ describe('Rewards', () => {
                 amount: 100,
                 platform: 0,
                 expiryDate,
-                rewardLimit: 0,
+                limit: 0,
                 claimAmount: 1,
                 successUrl,
             })
@@ -86,7 +86,7 @@ describe('Rewards', () => {
                 amount,
                 platform: 0,
                 expiryDate,
-                rewardLimit: 1,
+                limit: 1,
                 claimAmount: 1,
             })
             .expect((res: request.Response) => {

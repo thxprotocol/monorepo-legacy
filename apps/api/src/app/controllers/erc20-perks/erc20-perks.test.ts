@@ -8,7 +8,6 @@ import { addMinutes } from '@thxnetwork/api/util/rewards';
 import { createImage } from '@thxnetwork/api/util/jest/images';
 import { ERC20Document } from '@thxnetwork/api/models/ERC20';
 import { ERC20PerkDocument } from '@thxnetwork/api/models/ERC20Perk';
-import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
 
 const user = request.agent(app);
 
@@ -58,7 +57,7 @@ describe('ERC20 Perks', () => {
             pointPrice = 200,
             image = createImage(),
             amount = '1',
-            rewardLimit = 0,
+            limit = 0,
             claimAmount = 0,
             isPromoted = true;
         user.post('/v1/erc20-perks/')
@@ -75,7 +74,7 @@ describe('ERC20 Perks', () => {
                 amount,
                 pointPrice,
                 expiryDate: expiryDate.toString(),
-                rewardLimit,
+                limit,
                 claimAmount,
                 isPromoted,
             })
@@ -87,7 +86,7 @@ describe('ERC20 Perks', () => {
                 expect(res.body.amount).toBe(amount);
                 expect(res.body.pointPrice).toBe(pointPrice);
                 expect(new Date(res.body.expiryDate).getDate()).toBe(expiryDate.getDate());
-                expect(res.body.rewardLimit).toBe(rewardLimit);
+                expect(res.body.limit).toBe(limit);
                 expect(res.body.claimAmount).toBe(claimAmount);
                 expect(res.body.claims.length).toBe(0);
                 expect(res.body.isPromoted).toBe(true);

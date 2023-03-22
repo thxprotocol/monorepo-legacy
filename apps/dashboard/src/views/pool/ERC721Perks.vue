@@ -186,7 +186,7 @@ export default class ERC721PerksView extends Vue {
                     metadataId: r.erc721metadataId,
                 },
                 claims: r.claims,
-                // rewardLimit: r.rewardLimit,
+                // limit: r.limit,
                 id: r._id,
             }))
             .slice(0, this.limit);

@@ -9,7 +9,7 @@ export type TBaseReward = {
     expiryDate: Date;
     claimAmount: number;
     claimLimit: number;
-    rewardLimit: number;
+    limit: number;
     platform: RewardConditionPlatform;
     interaction?: RewardConditionInteraction;
     content?: string;

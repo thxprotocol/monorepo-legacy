@@ -44,7 +44,7 @@ describe('Shopify Perks', () => {
             platform = RewardConditionPlatform.Shopify,
             interaction = RewardConditionInteraction.ShopifyTotalSpent,
             content = 'content',
-            rewardLimit = 1,
+            limit = 1,
             claimAmount = 0,
             isPromoted = true,
             priceRuleId = '1234',
@@ -65,7 +65,7 @@ describe('Shopify Perks', () => {
                 interaction,
                 content,
                 expiryDate: expiryDate.toString(),
-                rewardLimit,
+                limit,
                 claimAmount,
                 isPromoted,
                 priceRuleId,
@@ -82,7 +82,7 @@ describe('Shopify Perks', () => {
                 expect(body.interaction).toBe(interaction);
                 expect(body.content).toBe(content);
                 expect(new Date(body.expiryDate).getDate()).toBe(expiryDate.getDate());
-                expect(body.rewardLimit).toBe(rewardLimit);
+                expect(body.limit).toBe(limit);
                 expect(body.claimAmount).toBe(claimAmount);
                 expect(body.claims.length).toBe(0);
                 expect(body.isPromoted).toBe(true);
