@@ -1,5 +1,6 @@
-import { CommandInteraction, EmbedBuilder, Client } from 'discord.js';
+import { CommandInteraction, EmbedBuilder } from 'discord.js';
 import { thxClient } from '../../config/oidc';
+import { client } from '../../../bootstrap';
 import GuildService from '../../services/guild.service';
 
 export const onSubcommandLeaderboard = async (interaction: CommandInteraction) => {
@@ -35,7 +36,6 @@ export const onSubcommandLeaderboard = async (interaction: CommandInteraction) =
     embed.addFields({ name: ' ', value: ' ' });
 
     if (leaderboard.length) {
-        const client = new Client({ intents: 'GuildMembers' });
         embed.addFields(
             leaderboard.map((r, index) => {
                 let userName = '';
