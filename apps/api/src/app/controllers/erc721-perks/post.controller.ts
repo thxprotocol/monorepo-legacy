@@ -98,7 +98,7 @@ function getPerkConfig(args: {
         content: args.req.body.content,
         claimAmount: args.req.body.claimAmount,
         claimLimit: args.req.body.claimLimit,
-        rewardLimit: args.req.body.rewardLimit,
+        limit: args.req.body.limit,
         expiryDate: args.req.body.expiryDate,
         pointPrice: args.req.body.pointPrice,
         isPromoted: args.req.body.isPromoted,

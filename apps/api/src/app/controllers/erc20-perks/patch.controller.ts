@@ -10,7 +10,7 @@ const validation = [
     body('description').isString(),
     body('claimAmount').exists().isInt({ lt: 1000 }),
     body('expiryDate').optional().isString(),
-    body('rewardLimit').isNumeric(),
+    body('limit').isNumeric(),
     body('erc20Id').isMongoId(),
     check('file')
         .optional()

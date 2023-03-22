@@ -69,7 +69,7 @@ describe('Claims', () => {
                     expiryDate: String(expiryDate),
                     pointPrice: 0,
                     claimAmount: 1,
-                    rewardLimit: 0,
+                    limit: 0,
                     platform: 0,
                 })
                 .expect((res: request.Response) => {
@@ -101,7 +101,7 @@ describe('Claims', () => {
                     amount: 1,
                     pointPrice: 100,
                     claimAmount: 1,
-                    rewardLimit: 0,
+                    limit: 0,
                     platform: 0,
                 })
                 .expect((res: request.Response) => {
@@ -121,7 +121,7 @@ describe('Claims', () => {
         });
     });
 
-    describe('RewardLimit = 0', () => {
+    describe('Limit = 0', () => {
         let claim: ClaimDocument;
 
         it('POST /erc20-perks', (done) => {
@@ -133,7 +133,7 @@ describe('Claims', () => {
                     erc20Id: erc20._id,
                     amount: 1,
                     pointPrice: 0,
-                    rewardLimit: 0,
+                    limit: 0,
                     claimAmount: 1,
                     platform: 0,
                 })
@@ -155,7 +155,7 @@ describe('Claims', () => {
         });
     });
 
-    describe('RewardLimit = 1', () => {
+    describe('Limit = 1', () => {
         let claim: ClaimDocument;
 
         it('POST /erc20-perks', (done) => {
@@ -167,7 +167,7 @@ describe('Claims', () => {
                     erc20Id: erc20._id,
                     amount: 1,
                     pointPrice: 0,
-                    rewardLimit: 1,
+                    limit: 1,
                     claimAmount: 1,
                     platform: 0,
                 })
@@ -206,7 +206,7 @@ describe('Claims', () => {
                     amount: 1,
                     platform: 0,
                     expiryDate,
-                    rewardLimit: 0,
+                    limit: 0,
                     claimLimit: 1,
                     claimAmount: 2,
                 })

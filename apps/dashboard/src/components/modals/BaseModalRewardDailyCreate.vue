@@ -57,7 +57,7 @@ export default class ModalRewardDailyCreate extends Vue {
     title = '';
     amount = '0';
     description = '';
-    rewardLimit = 0;
+    limit = 0;
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
@@ -68,12 +68,12 @@ export default class ModalRewardDailyCreate extends Vue {
             this.title = this.reward.title;
             this.description = this.reward.description;
             this.amount = this.reward.amount;
-            this.rewardLimit = this.reward.rewardLimit;
+            this.limit = this.reward.limit;
         } else {
             this.title = '';
             this.description = '';
             this.amount = '0';
-            this.rewardLimit = 0;
+            this.limit = 0;
         }
     }
 
@@ -89,7 +89,7 @@ export default class ModalRewardDailyCreate extends Vue {
             title: this.title,
             description: this.description,
             amount: this.amount,
-            rewardLimit: this.rewardLimit,
+            limit: this.limit,
             page: this.reward ? this.reward.page : 1,
         };
         this.isLoading = true;

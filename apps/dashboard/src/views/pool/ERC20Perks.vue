@@ -42,7 +42,7 @@
                 <template #head(progress)> Progress </template>
                 <template #head(rewardCondition)> Condition </template>
                 <template #head(claims)> Claim URL's </template>
-                <template #head(rewardLimit)> Reward Limit </template>
+                <template #head(limit)> Reward Limit </template>
                 <template #head(id)> &nbsp; </template>
 
                 <!-- Cell formatting -->
@@ -175,7 +175,7 @@ export default class ERC20PerksView extends Vue {
                     content: r.content,
                 },
                 claims: r.claims,
-                rewardLimit: r.rewardLimit,
+                limit: r.limit,
                 id: r._id,
             }))
             .slice(0, this.limit);
