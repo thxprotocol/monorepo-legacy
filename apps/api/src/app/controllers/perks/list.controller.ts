@@ -5,8 +5,8 @@ import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { redeemValidation } from '@thxnetwork/api/util/perks';
 import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
-import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
 import { ShopifyPerk, ShopifyPerkDocument } from '@thxnetwork/api/models/ShopifyPerk';
+import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
@@ -20,6 +20,19 @@ const controller = async (req: Request, res: Response) => {
             erc20Perks
                 .filter((p: ERC20PerkDocument) => p.pointPrice > 0)
                 .map(async (r) => {
+                    const progress = r.limit
+                        ? {
+                              count: await ERC721PerkPayment.countDocuments({ perkId: r._id }),
+                              limit: r.limit,
+                          }
+                        : undefined;
+                    const expiry = r.expiryDate
+                        ? {
+                              now: Date.now(),
+                              date: new Date(r.expiryDate).getTime(),
+                          }
+                        : undefined;
+
                     return {
                         _id: r._id,
                         uuid: r.uuid,
@@ -31,9 +44,10 @@ const controller = async (req: Request, res: Response) => {
                         isOwned: false,
                         isPromoted: r.isPromoted,
                         limit: r.limit,
+                        erc20: await ERC20Service.getById(r.erc20Id),
                         isDisabled: (await redeemValidation({ perk: r })).isError,
-                        now: r.expiryDate ? Date.now() : undefined,
-                        progress: await ERC20PerkPayment.countDocuments({ perkId: r._id }),
+                        expiry,
+                        progress,
                     };
                 }),
         ),
@@ -41,6 +55,18 @@ const controller = async (req: Request, res: Response) => {
             erc721Perks
                 .filter((p: ERC721PerkDocument) => p.pointPrice > 0 || p.price > 0)
                 .map(async (r) => {
+                    const progress = r.limit
+                        ? {
+                              count: await ERC721PerkPayment.countDocuments({ perkId: r._id }),
+                              limit: r.limit,
+                          }
+                        : undefined;
+                    const expiry = r.expiryDate
+                        ? {
+                              now: Date.now(),
+                              date: new Date(r.expiryDate).getTime(),
+                          }
+                        : undefined;
                     return {
                         _id: r._id,
                         uuid: r.uuid,
@@ -55,10 +81,9 @@ const controller = async (req: Request, res: Response) => {
                         image: r.image,
                         isOwned: false,
                         isPromoted: r.isPromoted,
-                        limit: r.limit,
                         isDisabled: (await redeemValidation({ perk: r })).isError,
-                        now: r.expiryDate ? Date.now() : undefined,
-                        progress: await ERC721PerkPayment.countDocuments({ perkId: r._id }),
+                        expiry,
+                        progress,
                     };
                 }),
         ),

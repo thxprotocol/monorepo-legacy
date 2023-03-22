@@ -69,11 +69,10 @@
                             :expiryDate="expiryDate"
                             @change-date="expiryDate = $event"
                         />
-                        <BaseCardRewardLimits
+                        <BaseCardRewardLimits class="mb-3" :limit="limit" @change-reward-limit="limit = $event" />
+                        <BaseCardClaimAmount
                             class="mb-3"
-                            :limit="limit"
                             :claimAmount="claimAmount"
-                            @change-reward-limit="limit = $event"
                             @change-claim-amount="onChangeClaimAmount"
                         />
                         <b-form-group>
@@ -99,7 +98,8 @@
 </template>
 
 <script lang="ts">
-import { IPools, type TPool } from '@thxnetwork/dashboard/store/modules/pools';
+import { type TPool } from '@thxnetwork/types/index';
+import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { platformList, platformInteractionList } from '@thxnetwork/dashboard/types/rewards';
 import { RewardConditionInteraction, RewardConditionPlatform, type TERC721Perk } from '@thxnetwork/types/index';
@@ -113,6 +113,7 @@ import type { IERC721s, IERC721Tokens, TERC721, TERC721Metadata } from '@thxnetw
 import { mapGetters } from 'vuex';
 import BaseDropdownSelectERC721 from '../dropdowns/BaseDropdownSelectERC721.vue';
 import BaseDropdownERC721ImportedToken from '../dropdowns/BaseDropdownERC721ImportedToken.vue';
+import BaseCardClaimAmount from '../cards/BaseCardClaimAmount.vue';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import { IAccount } from '@thxnetwork/dashboard/types/account';
 import { TERC721Token } from '@thxnetwork/dashboard/types/erc721';
@@ -133,6 +134,7 @@ type TRewardCondition = {
         BaseDropdownERC721Metadata,
         BaseDropdownSelectERC721,
         BaseDropdownERC721ImportedToken,
+        BaseCardClaimAmount,
     },
     computed: mapGetters({
         pools: 'pools/all',

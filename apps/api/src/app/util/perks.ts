@@ -49,9 +49,9 @@ export const redeemValidation = async ({
     }
 
     // Can only be claimed for the amount of times per sub specified in the claimLimit
-    if (sub) {
+    if (perk.claimLimit > 0 && sub) {
         const amountOfPaymentsPerSub = await model.countDocuments({ perkId: perk._id, sub });
-        if (perk.claimLimit > 0 && amountOfPaymentsPerSub >= perk.claimLimit) {
+        if (amountOfPaymentsPerSub >= perk.claimLimit) {
             return { isError: true, errorMessage: 'You have claimed this perk for the maximum amount of times.' };
         }
     }

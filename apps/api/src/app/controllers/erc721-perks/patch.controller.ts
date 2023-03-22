@@ -12,6 +12,7 @@ const validation = [
     body('erc721metadataIds').exists().isString(),
     body('claimAmount').exists().isInt({ lt: 1000 }),
     body('expiryDate').optional().isString(),
+    body('limit').optional().isInt(),
     body('pointPrice').optional().isNumeric(),
     body('price').isInt(),
     body('priceCurrency').isString(),
@@ -47,9 +48,7 @@ const controller = async (req: Request, res: Response) => {
         price: req.body.price,
         priceCurrency: req.body.priceCurrency,
         isPromoted: req.body.isPromoted,
-        interaction: req.body.interaction,
-        platform: req.body.platform,
-        content: req.body.content,
+        limit: req.body.limit,
     } as TERC721Perk);
 
     return res.json(perk);
