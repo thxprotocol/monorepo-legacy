@@ -4,7 +4,13 @@ import {
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
 } from 'discord.js';
-import { onSubcommandInfo, onSubcommandDisconnect, onSubcommandConnect, onSubcommandMe } from './thx/index';
+import {
+    onSubcommandInfo,
+    onSubcommandDisconnect,
+    onSubcommandConnect,
+    onSubcommandMe,
+    onSubcommandLeaderboard,
+} from './thx/index';
 
 export default {
     data: new SlashCommandBuilder()
@@ -36,6 +42,11 @@ export default {
         )
         .addSubcommand(
             new SlashCommandSubcommandBuilder().setName('me').setDescription('Your point balance for this pool.'),
+        )
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder()
+                .setName('leaderboard')
+                .setDescription('shows the Pool points leaderboard'),
         ),
     executor: (interaction: CommandInteraction) => {
         const options = interaction.options as CommandInteractionOptionResolver;
@@ -51,6 +62,9 @@ export default {
             }
             case 'me': {
                 return onSubcommandMe(interaction);
+            }
+            case 'leaderboard': {
+                return onSubcommandLeaderboard(interaction);
             }
         }
     },

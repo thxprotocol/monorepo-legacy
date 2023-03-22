@@ -133,6 +133,7 @@ const config: Configuration = {
         'referal_reward_claims:write',
         'shopify_rewards:read',
         'shopify_rewards:write',
+        'pool_analytics:read',
     ],
     claims: {
         openid: ['sub', 'email', 'variant', 'address'],
