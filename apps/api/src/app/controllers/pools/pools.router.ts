@@ -4,6 +4,7 @@ import CreatePool from './post.controller';
 import ReadPool from './get.controller';
 import PoolsAnalytics from './analytics/get.controller';
 import PoolsAnalyticsLeaderBoard from './analytics/leaderboard/get.controller';
+import PoolsAnalyticsLeaderBoardClient from './analytics/leaderboard/client/get.controller';
 import PoolsAnalyticsMetrics from './analytics/metrics/get.controller';
 import DeletePool from './delete.controller';
 import ListPools from './list.controller';
@@ -65,6 +66,13 @@ router.get(
     assertAssetPoolOwnership,
     assertRequestInput(PoolsAnalytics.validation),
     PoolsAnalytics.controller,
+);
+router.get(
+    '/:id/analytics/leaderboard/client',
+    guard.check(['pool_analytics:read']),
+    //assertAssetPoolOwnership,
+    assertRequestInput(PoolsAnalyticsLeaderBoardClient.validation),
+    PoolsAnalyticsLeaderBoardClient.controller,
 );
 router.get(
     '/:id/analytics/leaderboard',
