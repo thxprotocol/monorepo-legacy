@@ -7,6 +7,7 @@ import { redeemValidation } from '@thxnetwork/api/util/perks';
 import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
 import { ShopifyPerk, ShopifyPerkDocument } from '@thxnetwork/api/models/ShopifyPerk';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
+import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
@@ -22,7 +23,7 @@ const controller = async (req: Request, res: Response) => {
                 .map(async (r) => {
                     const progress = r.limit
                         ? {
-                              count: await ERC721PerkPayment.countDocuments({ perkId: r._id }),
+                              count: await ERC20PerkPayment.countDocuments({ perkId: r._id }),
                               limit: r.limit,
                           }
                         : undefined;
@@ -32,7 +33,7 @@ const controller = async (req: Request, res: Response) => {
                               date: new Date(r.expiryDate).getTime(),
                           }
                         : undefined;
-
+                    const { isError } = await redeemValidation({ perk: r });
                     return {
                         _id: r._id,
                         uuid: r.uuid,
@@ -45,7 +46,7 @@ const controller = async (req: Request, res: Response) => {
                         isPromoted: r.isPromoted,
                         limit: r.limit,
                         erc20: await ERC20Service.getById(r.erc20Id),
-                        isDisabled: (await redeemValidation({ perk: r })).isError,
+                        isDisabled: isError,
                         expiry,
                         progress,
                     };

@@ -108,10 +108,9 @@ describe('ERC20 Perk Payment', () => {
                 image,
                 amount: 500,
                 limit: 1,
-                claimAmount: 1,
                 pointPrice: 1500,
-                platform: 0,
                 expiryDate,
+                claimAmount: 0,
             })
             .expect((res: request.Response) => {
                 expect(res.body.uuid).toBeDefined();
@@ -127,8 +126,10 @@ describe('ERC20 Perk Payment', () => {
             .expect(({ body }: request.Response) => {
                 expect(body.erc20Perks.length).toBe(1);
                 expect(body.erc20Perks[0].isDisabled).toBe(true);
-                expect(body.erc20Perks[0].now).toBeDefined();
-                expect(body.erc20Perks[0].progress).toBe(0);
+                expect(body.erc20Perks[0].expiry.now).toBeDefined();
+                expect(body.erc20Perks[0].expiry.date).toBeDefined();
+                expect(body.erc20Perks[0].progress.limit).toBe(1);
+                expect(body.erc20Perks[0].progress.count).toBe(0);
             })
             .expect(200, done);
     });
@@ -163,14 +164,15 @@ describe('ERC20 Perk Payment', () => {
             .expect(201, done);
     });
 
-    it('GET /perks should return isDisabled = true, because the is already claimed once', (done) => {
+    it('GET /perks should return isDisabled = true, because the supply is gone', (done) => {
         user.get(`/v1/perks`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
             .expect(({ body }: request.Response) => {
                 expect(body.erc20Perks.length).toBe(1);
                 expect(body.erc20Perks[0].isDisabled).toBe(true);
-                expect(body.erc20Perks[0].now).toBeDefined();
-                expect(body.erc20Perks[0].progress).toBe(1);
+                console.log(body.erc20Perks[0].progress);
+                expect(body.erc20Perks[0].progress.limit).toBe(1);
+                expect(body.erc20Perks[0].progress.count).toBe(1);
             })
             .expect(200, done);
     });
