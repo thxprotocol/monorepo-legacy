@@ -2,7 +2,7 @@
     <b-form-row v-if="profile">
         <b-col md="4">
             <strong>Commerce</strong>
-            <p class="text-muted">Enable FIAT payment methods to enable your users to buy your perks.</p>
+            <p class="text-muted">Enable payment methods and use your widget as a market place for crypto perks.</p>
         </b-col>
         <b-col md="8">
             <b-form-row v-if="!profile.merchant">
@@ -24,53 +24,78 @@
             </b-form-row>
             <b-form-row v-else>
                 <b-col md="8">
-                    <b-form-group label="Merchant ID">
-                        <b-form-input
-                            readonly
-                            disabled
-                            :value="profile.merchant ? profile.merchant.stripeConnectId : ''"
-                        />
-                    </b-form-group>
                     <b-alert
                         show
                         variant="warning"
-                        class="center-center"
-                        v-if="
-                            merchantStatus.filter((s) => !s.status).length &&
-                            merchantStatus.filter((s) => !s.status).length < 3
-                        "
+                        class="d-flex align-items-center"
+                        v-if="merchantStatus.filter((s) => !s.status).length"
                     >
                         <i class="fas fa-exclamation-triangle mr-2"></i>
-                        You have not finished the configuration of your Merchant account.
+                        Complete your commerce configuration.
+                        <b-button variant="primary" class="rounded-pill ml-auto" @click="onClickMerchantLink">
+                            Continue
+                            <i class="fas fa-chevron-right"></i>
+                        </b-button>
                     </b-alert>
+                    <b-alert show variant="success" class="d-flex align-items-center" v-else>
+                        <i class="fas fa-handshake mr-2"></i>
+                        Congratulations! You are now able to sell your NFT perks.
+                        <b-button variant="primary" class="rounded-pill ml-auto" :to="`/pool/${pool._id}/erc721-perks`">
+                            NFT Perks
+                            <i class="fas fa-chevron-right"></i>
+                        </b-button>
+                    </b-alert>
+                    <b-form-group label="Stripe Account ID">
+                        <b-input-group>
+                            <b-form-input
+                                readonly
+                                disabled
+                                :value="profile.merchant ? profile.merchant.stripeConnectId : ''"
+                            />
+                            <b-input-group-append>
+                                <b-button variant="primary" target="_blank" href="https://dashboard.stripe.com">
+                                    <!-- <i class="fab fa-stripe-s m-0"></i> -->
+                                    <i class="fab fa-cc-stripe m-0" style="font-size: 1.3rem"></i>
+                                </b-button>
+                            </b-input-group-append>
+                        </b-input-group>
+                    </b-form-group>
                 </b-col>
                 <b-col md="4">
-                    <b-form-group label="Connection">
-                        <b-list-group class="mb-3">
-                            <b-list-group-item v-for="(s, key) in merchantStatus" :key="key">
-                                <b-link v-if="!s.status" @click="onClickMerchantLink">
-                                    <i
-                                        class="fas fa-check-circle mr-2"
-                                        :class="s.status ? 'text-success' : 'text-muted'"
-                                    >
-                                    </i>
-                                    {{ s.label }}
-                                </b-link>
-                                <template v-else>
-                                    <i
-                                        class="fas fa-check-circle mr-2"
-                                        :class="s.status ? 'text-success' : 'text-muted'"
-                                    >
-                                    </i>
-                                    {{ s.label }}
-                                </template>
-                            </b-list-group-item>
-                        </b-list-group>
-                        <b-button block variant="light" @click="onClickDisconnectMerchant" class="text-danger">
-                            <b-spinner v-if="isLoadingMerchantDisconnect" small variant="light" class="mr-2" />
-                            Disconnect
-                        </b-button>
-                    </b-form-group>
+                    <BCard body-class="bg-light">
+                        <b-form-group label="Stripe Connect status:">
+                            <b-list-group class="mb-3">
+                                <b-list-group-item v-for="(s, key) in merchantStatus" :key="key">
+                                    <b-link v-if="!s.status" @click="onClickMerchantLink">
+                                        <i
+                                            class="fas fa-check-circle mr-2"
+                                            :class="s.status ? 'text-success' : 'text-muted'"
+                                        >
+                                        </i>
+                                        {{ s.label }}
+                                    </b-link>
+                                    <template v-else>
+                                        <i
+                                            class="fas fa-check-circle mr-2"
+                                            :class="s.status ? 'text-success' : 'text-muted'"
+                                        >
+                                        </i>
+                                        {{ s.label }}
+                                    </template>
+                                </b-list-group-item>
+                            </b-list-group>
+                            <b-button
+                                block
+                                variant="danger"
+                                @click="onClickDisconnectMerchant"
+                                class="rounded-pill"
+                                size="sm"
+                            >
+                                <b-spinner v-if="isLoadingMerchantDisconnect" small variant="light" class="mr-2" />
+                                Disconnect
+                            </b-button>
+                        </b-form-group>
+                    </BCard>
                 </b-col>
             </b-form-row>
         </b-col>

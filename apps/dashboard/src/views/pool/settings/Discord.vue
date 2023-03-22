@@ -10,7 +10,8 @@
                     <i class="fab fa-discord mr-2"></i>
                     Install THX Bot to increase engagement in your Discord server.
                     <b-button class="rounded-pill ml-auto" variant="primary" :href="urlDiscordBotInstall">
-                        Install THX Bot
+                        Install
+                        <i class="fas fa-chevron-right"></i>
                     </b-button>
                 </b-alert>
             </b-col>

@@ -70,6 +70,7 @@ export default class ModalRewardCreate extends Vue {
     }
 
     async submit() {
+        this.isSubmitDisabled = true;
         await this.$store.dispatch(`erc721/${this.metadata ? 'updateMetadata' : 'createMetadata'}`, {
             erc721: this.erc721,
             metadata: {
@@ -82,6 +83,7 @@ export default class ModalRewardCreate extends Vue {
         });
         this.$emit('update');
         this.$bvModal.hide(this.id);
+        this.isSubmitDisabled = false;
     }
 }
 </script>
