@@ -19,6 +19,10 @@ export const DEFAULT_ELEMENTS = {
         label: 'Card',
         color: '#31236d',
     },
+    cardText: {
+        label: 'Card Text',
+        color: '#FFFFFF',
+    },
     navbarBg: {
         label: 'Navigation',
         color: '#31236d',

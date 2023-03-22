@@ -1,9 +1,9 @@
 <template>
     <b-form-group label="Tweet URL">
         <b-form-input
-            :debounce="1000"
+            debounce="1000"
+            v-model="url"
             @change="onInput"
-            :value="url"
             :state="state"
             placeholder="e.g. https://twitter.com/twitter/status/1603121182101970945"
         />
@@ -20,7 +20,7 @@
 
 <script lang="ts">
 import axios from 'axios';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 
 @Component({
@@ -39,6 +39,7 @@ export default class BaseDropdownTwitterTweets extends Vue {
         if (this.url) this.onInput(this.url);
     }
 
+    @Watch('url')
     async onInput(url: string) {
         const urlParts = url.split('/');
         const tweetId = urlParts[urlParts.length - 1];
