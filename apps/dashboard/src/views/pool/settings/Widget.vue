@@ -76,7 +76,14 @@
                                 :style="`background-color: ${elements.bodyBg.color}; color: ${elements.text.color}; `"
                             >
                                 <div style="padding: 0.5rem">
-                                    <div class="card" :style="`background-color: ${elements.cardBg.color};`">
+                                    <div class="pl-3 py-2 text-center text-decoration-none">
+                                        <strong :style="`color: ${colors.accent.color};`" class="h3 m-0">250</strong>
+                                        <div>points</div>
+                                    </div>
+                                    <div
+                                        class="card"
+                                        :style="`background-color: ${elements.cardBg.color}; color: ${elements.cardText.color};`"
+                                    >
                                         <div class="card-header">
                                             <div class="card-title mb-0 d-flex justify-content-between">
                                                 Daily Reward
@@ -117,7 +124,11 @@
                                             <p style="opacity: 0.65">
                                                 Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                                             </p>
-                                            <blockquote>Retweet a tweet</blockquote>
+                                            <blockquote
+                                                :style="`border-color: ${elements.btnBg.color}; background-color: ${elements.bodyBg.color}; color:  ${elements.text.color}`"
+                                            >
+                                                Retweet a tweet
+                                            </blockquote>
                                             <b-button
                                                 variant="primary"
                                                 class="rounded-pill"
@@ -208,8 +219,8 @@
                                     class="widget-message-logo"
                                     :style="`background-image: url(${pool.brand ? pool.brand.logoImgUrl : ''});`"
                                 ></div>
-                                <span style="z-index: 0">{{ message }}</span
-                                ><button class="widget-message-close">×</button>
+                                <span style="z-index: 0">{{ message }}</span>
+                                <button class="widget-message-close">×</button>
                             </div>
                             <div class="widget-launcher mt-3" :style="`background-color: ${elements.launcherBg.color}`">
                                 <div class="widget-notifications">3</div>
