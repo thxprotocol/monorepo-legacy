@@ -39,7 +39,8 @@ export const callbackPostAuth = async (
     { params, returnTo, prompt }: { params; returnTo; prompt },
 ) => {
     const returnUrl = prompt && prompt.name === 'connect' ? params.return_url : returnTo;
-    if (returnUrl.startsWith(DASHBOARD_URL)) {
+    // No matter the session state params.return_url will redirect to the client app
+    if (params.return_url.startsWith(DASHBOARD_URL)) {
         hubspot.upsert({ email: account.email });
     }
 
