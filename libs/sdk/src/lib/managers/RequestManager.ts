@@ -30,13 +30,15 @@ class RequestManager extends BaseManager {
         return URL_CONFIG[env]['API_URL'] + path;
     }
 
-    private getHeaders(poolId?: string) {
+    private async getHeaders(poolId?: string) {
         const headers: { [key: string]: string } = {};
-        const token = this.client.session._cached.accessToken || this.client.session.user?.access_token;
+        if (!this.client.session.isExpired) await this.silentSignin();
 
+        const token = this.client.session.accessToken;
         if (token) {
             headers['Authorization'] = `Bearer ${token}`;
         }
+
         if (poolId || this.client.session.poolId) {
             headers['X-PoolId'] = (poolId || this.client.session.poolId) as string;
         }
@@ -70,7 +72,7 @@ class RequestManager extends BaseManager {
     async get(path: string, config?: Config) {
         if (config?.waitForAuth) await this.waitForAuth();
 
-        const headers = this.getHeaders(config?.poolId);
+        const headers = await this.getHeaders(config?.poolId);
         const url = this.getUrl(path);
         const r = await fetch(url, {
             ...config,
@@ -88,7 +90,7 @@ class RequestManager extends BaseManager {
     async post(path: string, config?: Config) {
         if (config?.waitForAuth) await this.waitForAuth();
 
-        const headers = this.getHeaders();
+        const headers = await this.getHeaders();
         const env = this.client.credential.cached.env;
         const r = await fetch(URL_CONFIG[env]['API_URL'] + path, {
             ...config,
@@ -111,7 +113,7 @@ class RequestManager extends BaseManager {
     async patch(path: string, config?: Config) {
         if (config?.waitForAuth) await this.waitForAuth();
 
-        const headers = this.getHeaders();
+        const headers = await this.getHeaders();
         const url = this.getUrl(path);
         const r = await fetch(url, {
             ...config,
@@ -134,7 +136,7 @@ class RequestManager extends BaseManager {
     async put(path: string, config?: Config) {
         if (config?.waitForAuth) await this.waitForAuth();
 
-        const headers = this.getHeaders();
+        const headers = await this.getHeaders();
         const url = this.getUrl(path);
         const r = await fetch(url, {
             ...config,
@@ -157,7 +159,7 @@ class RequestManager extends BaseManager {
     async delete(path: string, config?: Config) {
         if (config?.waitForAuth) await this.waitForAuth();
 
-        const headers = this.getHeaders();
+        const headers = await this.getHeaders();
         const url = this.getUrl(path);
         const r = await fetch(url, {
             ...config,

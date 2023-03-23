@@ -19,4 +19,13 @@ export default class SessionManager extends CacheManager<Session> {
     get poolId() {
         return this.cached.poolId;
     }
+
+    get accessToken() {
+        return this.cached.accessToken;
+    }
+
+    get isExpired() {
+        if (!this.cached.expiry) return true;
+        return Date.now() > this.cached.expiry;
+    }
 }

@@ -66,6 +66,10 @@ body {
     background: $light;
 }
 
+h2 {
+    font-weight: bold;
+}
+
 @media (min-width: map-get($grid-breakpoints, 'lg')) {
     .container {
         max-width: map-get($grid-breakpoints, 'lg');

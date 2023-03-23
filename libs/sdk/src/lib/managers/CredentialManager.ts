@@ -80,7 +80,10 @@ export default class CredentialManager extends CacheManager<Credential> {
             });
             const data = await res.json();
 
-            this.client.session.update({ accessToken: data['access_token'] });
+            this.client.session.update({
+                expiry: Date.now() + data['expires_in'] * 1000,
+                accessToken: data['access_token'],
+            });
 
             return true;
         } catch {
