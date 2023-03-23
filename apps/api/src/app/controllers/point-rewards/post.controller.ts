@@ -10,6 +10,7 @@ const validation = [
     body('platform').isNumeric(),
     body('interaction').optional().isNumeric(),
     body('content').optional().isString(),
+    body('contentMetadata').optional().isString(),
 ];
 
 const controller = async (req: Request, res: Response) => {
@@ -22,6 +23,7 @@ const controller = async (req: Request, res: Response) => {
         platform,
         interaction,
         content,
+        contentMetadata: req.body.contentMetadata,
     });
 
     res.status(201).json(pointReward);

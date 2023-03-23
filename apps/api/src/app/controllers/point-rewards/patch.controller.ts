@@ -12,6 +12,8 @@ const validation = [
     body('platform').isNumeric(),
     body('interaction').optional().isNumeric(),
     body('content').optional().isString(),
+    body('content').optional().isString(),
+    body('contentMetadata').optional().isString(),
 ];
 
 const controller = async (req: Request, res: Response) => {
@@ -26,6 +28,7 @@ const controller = async (req: Request, res: Response) => {
         platform: req.body.platform,
         interaction: req.body.interaction,
         content: req.body.content,
+        contentMetadata: req.body.contentMetadata,
     });
 
     return res.json(reward);

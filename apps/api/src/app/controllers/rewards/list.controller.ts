@@ -8,7 +8,6 @@ import { MilestoneRewardClaim } from '@thxnetwork/api/models/MilestoneRewardClai
 import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
 import { DailyReward } from '@thxnetwork/api/models/DailyReward';
 import DailyRewardClaimService, { ONE_DAY_MS } from '@thxnetwork/api/services/DailyRewardClaimService';
-import { sub } from 'date-fns';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
@@ -80,6 +79,7 @@ const controller = async (req: Request, res: Response) => {
                     platform: r.platform,
                     interaction: r.interaction,
                     content: r.content,
+                    contentMedatata: r.contentMetadata,
                 };
             }),
         ),

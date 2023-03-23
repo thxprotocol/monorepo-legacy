@@ -13,6 +13,7 @@ export type TBaseReward = {
     platform: RewardConditionPlatform;
     interaction?: RewardConditionInteraction;
     content?: string;
+    contentMetadata?: string;
     createdAt?: string;
     updatedAt?: string;
     progress?: number;

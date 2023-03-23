@@ -92,6 +92,7 @@ export default class BaseCardRewardCondition extends Vue {
     platform: IChannel = platformList[0];
     interaction: IChannelAction = platformInteractionList[0];
     content = '';
+    contentMetadata: object | undefined = undefined;
     isVisible = false;
     profile!: UserProfile;
 
@@ -99,6 +100,7 @@ export default class BaseCardRewardCondition extends Vue {
         platform: RewardConditionPlatform;
         interaction: RewardConditionInteraction;
         content: string;
+        contentMetadata?: any;
     };
 
     get actions() {
@@ -109,6 +111,7 @@ export default class BaseCardRewardCondition extends Vue {
         this.platform = this.rewardCondition ? getPlatform(this.rewardCondition.platform) : getPlatform(0);
         this.interaction = this.rewardCondition ? getInteraction(this.rewardCondition.interaction) : getInteraction(0);
         this.content = this.rewardCondition ? this.rewardCondition.content : '';
+        this.contentMetadata = this.rewardCondition.contentMetadata;
 
         this.isVisible = !!this.platform.type;
     }
@@ -130,8 +133,9 @@ export default class BaseCardRewardCondition extends Vue {
         this.change();
     }
 
-    onSelectContent(content: string) {
+    onSelectContent({ content, contentMetadata }: { content: string; contentMetadata: any }) {
         this.content = content;
+        this.contentMetadata = contentMetadata;
         this.change();
     }
 
@@ -141,6 +145,7 @@ export default class BaseCardRewardCondition extends Vue {
             platform: this.platform.type,
             interaction: this.interaction.type,
             content: this.content,
+            contentMetadata: this.contentMetadata,
         });
     }
 }

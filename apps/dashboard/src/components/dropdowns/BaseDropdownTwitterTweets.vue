@@ -63,7 +63,14 @@ export default class BaseDropdownTwitterTweets extends Vue {
         } else {
             this.state = true;
             this.preview = data;
-            this.$emit('selected', tweetId);
+            this.$emit('selected', {
+                content: tweetId,
+                contentMetadata: {
+                    tweetUrl: this.url,
+                    twitterUsername: data.user.username,
+                    tweetContent: data.tweet.text,
+                },
+            });
         }
     }
 }

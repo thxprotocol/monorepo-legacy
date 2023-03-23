@@ -78,7 +78,12 @@ export default class ModalRewardPointsCreate extends Vue {
     description = '';
     rewardExpiry = {};
     limit = 0;
-    rewardCondition: { platform: RewardConditionPlatform; interaction: RewardConditionInteraction; content: string } = {
+    rewardCondition: {
+        platform: RewardConditionPlatform;
+        interaction: RewardConditionInteraction;
+        content: string;
+        contentMetadata?: object;
+    } = {
         platform: platformList[0].type,
         interaction: platformInteractionList[0].type,
         content: '',
@@ -98,6 +103,7 @@ export default class ModalRewardPointsCreate extends Vue {
                 platform: this.reward.platform as RewardConditionPlatform,
                 interaction: this.reward.interaction as RewardConditionInteraction,
                 content: this.reward.content as string,
+                contentMetadata: this.reward.contentMetadata ? JSON.parse(this.reward.contentMetadata) : undefined,
             };
         } else {
             this.title = '';
@@ -108,6 +114,7 @@ export default class ModalRewardPointsCreate extends Vue {
                 platform: RewardConditionPlatform.None,
                 interaction: RewardConditionInteraction.None,
                 content: '',
+                contentMetadata: undefined,
             };
         }
     }
@@ -131,6 +138,10 @@ export default class ModalRewardPointsCreate extends Vue {
                     ? this.rewardCondition.interaction
                     : RewardConditionInteraction.None,
             content: this.rewardCondition.platform != RewardConditionPlatform.None ? this.rewardCondition.content : '',
+            contentMetadata:
+                this.rewardCondition.contentMetadata && this.rewardCondition.platform != RewardConditionPlatform.None
+                    ? JSON.stringify(this.rewardCondition.contentMetadata)
+                    : undefined,
             page: this.reward ? this.reward.page : 1,
         };
         this.isLoading = true;
