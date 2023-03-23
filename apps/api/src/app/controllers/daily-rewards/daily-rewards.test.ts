@@ -62,7 +62,7 @@ describe('Daily Rewards', () => {
                 chainId: ChainId.Hardhat,
             })
             .expect((res: request.Response) => {
-                expect(res.body.archived).toBe(false);
+                expect(res.body.settings.isArchived).toBe(false);
                 poolId = res.body._id;
             })
             .expect(201, done);

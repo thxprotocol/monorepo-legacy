@@ -243,11 +243,20 @@ export async function getLeaderboard(pool: AssetPoolDocument, dateRange?: { star
         extraFilter: { isClaimed: true },
         dateRange,
     });
+    const topDailyRewardClaimsBySub = await runLeaderBoardQuery({
+        joinTable: 'dailyrewardclaims',
+        model: DailyReward,
+        key: 'dailyRewardId',
+        poolId: String(pool._id),
+        amountField: 'amount',
+        dateRange,
+    });
     type leaderBoardQueryResult = { _id: string; total_amount: number };
 
     const leaderBoardQueryResultMerged: leaderBoardQueryResult[] = [
         ...topErc20PerksBySub,
         ...topErc721PerksBySub,
+        ...topDailyRewardClaimsBySub,
         ...topReferralClaimsBySub,
         ...topPointClaimsBySub,
         ...topMilestonesClaimsBySub,

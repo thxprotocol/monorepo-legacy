@@ -18,10 +18,14 @@ export const onSubcommandInfo = async (interaction: CommandInteraction) => {
     const channel: any = await client.channels.fetch(guild.channelId);
     if (!channel) return interaction.reply({ content: 'Channel could not be found.', ephemeral: true });
 
-    const { dailyRewards, pointRewards } = await thxClient.rewardsManager.list(guild.poolId);
+    const { dailyRewards, referralRewards, pointRewards, milestoneRewards } = await thxClient.rewardsManager.list(
+        guild.poolId,
+    );
     const { erc20Perks, erc721Perks } = await thxClient.perksManager.list(guild.poolId);
+    const theme = JSON.parse(widget.theme);
 
-    embed.setColor(widget.bgColor).setTitle(pool.title);
+    embed.setColor(theme.colors.accent.color);
+    embed.setTitle(pool.settings.title);
 
     if (widget.domain) {
         embed.setURL(widget.domain);
@@ -36,55 +40,47 @@ export const onSubcommandInfo = async (interaction: CommandInteraction) => {
         embed.setThumbnail(brand.logoImgUrl);
     }
 
-    embed.addFields({ name: 'Widget', value: widget.domain, inline: true });
-    embed.addFields({ name: 'Version', value: version, inline: true });
-    embed.addFields({ name: ' ', value: ' ' });
+    embed.setDescription(`Earn and redeem points! [Visit our site](${widget.domain})`);
 
-    if (dailyRewards.length || pointRewards.length) {
-        embed.addFields({ name: ':trophy: │ Points', value: ' ' });
-        embed.addFields({ name: ' ', value: ' ' });
+    embed.addFields({ name: ':trophy: Earn points', value: ' ' });
+    let dailyRewardEntries = dailyRewards.length ? '' : '```None```';
+    for (const r of dailyRewards) {
+        dailyRewardEntries += `- \`${r.amount}\` ${r.title}\n`;
     }
+    embed.addFields({ name: 'Daily', value: `${dailyRewardEntries}` });
 
-    if (dailyRewards.length) {
-        embed.addFields(
-            dailyRewards.map((r) => {
-                return { name: `${r.amount} Points`, value: r.title };
-            }),
-        );
-        embed.addFields({ name: ' ', value: ' ' });
+    let referralRewardEntries = referralRewards.length ? '' : '```None```';
+    for (const r of referralRewards) {
+        referralRewardEntries += `- \`${r.amount}\` ${r.title}\n`;
     }
+    embed.addFields({ name: 'Referral', value: `${referralRewardEntries}` });
 
-    if (pointRewards.length) {
-        embed.addFields(
-            pointRewards.map((r) => {
-                return { name: `${r.amount} Points`, value: r.title };
-            }),
-        );
-        embed.addFields({ name: ' ', value: ' ' });
+    let pointRewardEntries = pointRewards.length ? '' : '```None```';
+    for (const r of pointRewards) {
+        pointRewardEntries += `- \`${r.amount}\` ${r.title}\n`;
     }
+    embed.addFields({ name: 'Conditional', value: `${pointRewardEntries}` });
 
-    if (erc20Perks.length || erc721Perks.length) {
-        embed.addFields({ name: ':gift: │ Perks', value: ' ' });
-        embed.addFields({ name: ' ', value: ' ' });
+    let milestoneRewardEntries = milestoneRewards.length ? '' : '```None```';
+    for (const r of milestoneRewards) {
+        milestoneRewardEntries += `- \`${r.amount}\` ${r.title}\n`;
     }
+    embed.addFields({ name: 'Milestone', value: `${milestoneRewardEntries}` });
 
-    if (erc20Perks.length) {
-        embed.addFields(
-            erc20Perks.map((r) => {
-                return { name: `${r.pointPrice}`, value: r.title };
-            }),
-        );
-        embed.addFields({ name: ' ', value: ' ' });
-    }
+    embed.addFields({ name: ' ', value: ` ` });
 
-    if (erc721Perks.length) {
-        embed.addFields(
-            erc721Perks.map((r) => {
-                return { name: `${r.pointPrice}`, value: r.title };
-            }),
-        );
-        embed.addFields({ name: ' ', value: ' ' });
+    embed.addFields({ name: ':gift: Shop for perks', value: ' ' });
+    let erc20PerkEntries = erc20Perks.length ? '' : '```None```';
+    for (const perk of erc20Perks) {
+        erc20PerkEntries += `- \`${perk.pointPrice}\` ${perk.title}\n`;
     }
+    embed.addFields({ name: 'Coin Perks', value: `${erc20PerkEntries}` });
+
+    let erc721PerkEntries = erc721Perks.length ? '' : '```None```';
+    for (const perk of erc721Perks) {
+        erc721PerkEntries += `- \`${perk.pointPrice}\` ${perk.title}\n`;
+    }
+    embed.addFields({ name: 'Coin Perks', value: `${erc721PerkEntries}` });
 
     interaction.reply({ embeds: [embed], ephemeral: true });
 };
