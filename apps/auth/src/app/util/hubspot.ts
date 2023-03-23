@@ -1,5 +1,5 @@
 import * as Hubspot from '@hubspot/api-client';
-import { HUBSPOT_ACCESS_TOKEN } from '../config/secrets';
+import { HUBSPOT_ACCESS_TOKEN, NODE_ENV } from '../config/secrets';
 import { PublicObjectSearchRequest } from '@hubspot/api-client/lib/codegen/crm/contacts';
 
 const hubspotClient = new Hubspot.Client({ accessToken: HUBSPOT_ACCESS_TOKEN });
@@ -7,7 +7,7 @@ const hubspotClient = new Hubspot.Client({ accessToken: HUBSPOT_ACCESS_TOKEN });
 export const hubspot = {
     // Process account information for upsert into Hubspot
     async upsert(props: { firstname?: string; lastname?: string; email: string; company?: string; website?: string }) {
-        if (!HUBSPOT_ACCESS_TOKEN) return;
+        if (!HUBSPOT_ACCESS_TOKEN || NODE_ENV !== 'production') return;
 
         try {
             // Always return when no props or no email is provided

@@ -1,4 +1,4 @@
-import { GITHUB_API_ENDPOINT } from './../../../config/secrets';
+import { DASHBOARD_URL, GITHUB_API_ENDPOINT } from './../../../config/secrets';
 import nock from 'nock';
 import request from 'supertest';
 import { AccountVariant } from '../../../types/enums/AccountVariant';
@@ -14,7 +14,7 @@ const http = request.agent(app);
 describe('SSO Sign In', () => {
     let uid = '',
         CLIENT_ID = '';
-    const REDIRECT_URL = 'https://localhost:8082/signin-oidc';
+    const REDIRECT_URL = DASHBOARD_URL + '/signin-oidc';
 
     beforeAll(async () => {
         mockWalletProxy();
@@ -47,6 +47,7 @@ describe('SSO Sign In', () => {
             response_type: 'code',
             response_mode: 'query',
             nonce: 'xun4kvy4mh',
+            return_url: DASHBOARD_URL,
         });
 
         const authRes = await http.get(`/auth?${params.toString()}`).send();

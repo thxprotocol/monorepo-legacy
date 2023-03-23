@@ -11,17 +11,14 @@ import bcrypt from 'bcrypt';
 const http = request.agent(app);
 
 describe('Account Controller', () => {
-    let basicAuthHeaderApi: string,
-        basicAuthHeaderDashboard: string,
-        authHeaderApi: string,
-        authHeaderDashboard: string,
+    let authHeaderApi: string,
         sub: string,
         uid = '',
         clientId = '',
         urlParts = [];
     const code = 'code';
     const shopifyStoreUrl = 'https://dev-thx-store.myshopify.com';
-    const redirectUri = 'https://localhost:8082/signin-oidc';
+    const redirectUri = DASHBOARD_URL + '/signin-oidc';
 
     describe('SSO Sign In', () => {
         beforeAll(async () => {
@@ -98,6 +95,7 @@ describe('Account Controller', () => {
                     response_type: 'code',
                     response_mode: 'query',
                     nonce: 'xun4kvy4mh',
+                    return_url: DASHBOARD_URL,
                 });
 
                 const res = await http.get(`/auth?${params.toString()}`).send();

@@ -4,7 +4,7 @@ import { UnauthorizedError } from '@thxnetwork/auth/util/errors';
 import { createWallet } from '@thxnetwork/auth/util/wallet';
 import { Request, Response } from 'express';
 import { hubspot } from '@thxnetwork/auth/util/hubspot';
-import { DASHBOARD_URL } from '@thxnetwork/auth/config/secrets';
+import { DASHBOARD_URL, NODE_ENV } from '@thxnetwork/auth/config/secrets';
 import PoolProxy from '@thxnetwork/auth/proxies/PoolProxy';
 
 export const callbackPreAuth = async (req: Request) => {
@@ -36,9 +36,12 @@ export const callbackPostSSOCallback = async (interaction, account: AccountDocum
 
 export const callbackPostAuth = async (
     account: AccountDocument,
-    { params, returnTo, prompt }: { params; returnTo; prompt },
+    { params, returnTo, prompt }: { params: any; returnTo: string; prompt: any },
 ) => {
+    // Connect prompts already have a session and will there for not continue the
+    // regular auth signin flow used during SSO
     const returnUrl = prompt && prompt.name === 'connect' ? params.return_url : returnTo;
+
     // No matter the session state params.return_url will redirect to the client app
     if (params.return_url.startsWith(DASHBOARD_URL)) {
         hubspot.upsert({ email: account.email });
@@ -47,6 +50,7 @@ export const callbackPostAuth = async (
     // Create a wallet if wallet can not be found for user
     createWallet(account);
 
+    // Transfer pool ownership if there is a pool_transfer_token
     if (params.pool_id && params.pool_transfer_token) {
         await PoolProxy.transferOwnership(account, params.pool_id, params.pool_transfer_token);
     }
