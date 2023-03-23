@@ -1,7 +1,7 @@
 <template>
     <div>
         <h2>Dashboard</h2>
-        <b-row>
+        <b-row v-if="pool">
             <b-col md="8">
                 <b-row class="mt-5">
                     <b-col>

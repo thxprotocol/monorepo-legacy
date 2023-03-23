@@ -3,7 +3,7 @@ import { Agenda } from 'agenda';
 import { logger } from './logger';
 import { updatePendingTransactions } from '@thxnetwork/api/jobs/updatePendingTransactions';
 import { createConditionalRewards } from '@thxnetwork/api/jobs/createConditionalRewards';
-import { createPoolAnalyticsReport } from '@thxnetwork/api/jobs/createPoolAnalyticsReport';
+import { createPoolAnalyticsReport } from '@thxnetwork/api/jobs/sendPoolAnalyticsReport';
 
 const agenda = new Agenda({
     name: 'jobs',
@@ -14,7 +14,7 @@ const agenda = new Agenda({
 
 const EVENT_UPDATE_PENDING_TRANSACTIONS = 'updatePendingTransactions';
 const EVENT_CREATE_CONDITIONAL_REWARDS = 'createConditionalRewards';
-const EVENT_CREATE_POOL_ANALYTICS_REPORT = 'createPoolMetricsReport';
+export const EVENT_CREATE_POOL_ANALYTICS_REPORT = 'createPoolMetricsReport';
 
 agenda.define(EVENT_UPDATE_PENDING_TRANSACTIONS, updatePendingTransactions);
 agenda.define(EVENT_CREATE_CONDITIONAL_REWARDS, createConditionalRewards);

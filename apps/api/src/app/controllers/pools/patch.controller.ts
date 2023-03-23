@@ -6,18 +6,25 @@ import { AssetPool } from '@thxnetwork/api/models/AssetPool';
 
 export const validation = [
     param('id').exists(),
-    body('archived').optional().isBoolean(),
-    body('title').optional().isString(),
-    body('discordWebhookUrl').optional({ checkFalsy: true }).isURL(),
-    body('isTwitterSyncEnabled').optional().isBoolean(),
-    body('defaultTwitterConditionalRewardSettings').optional().isString(),
+    body('settings.title').optional().isString(),
+    body('settings.discordWebhookUrl').optional({ checkFalsy: true }).isURL(),
+    body('settings.isArchived').optional().isBoolean(),
+    body('settings.isWeeklyDigestEnabled').optional().isBoolean(),
+    body('settings.isTwitterSyncEnabled').optional().isBoolean(),
+    body('settings.defaults.conditionalRewards.title').optional().isString(),
+    body('settings.defaults.conditionalRewards.description').optional().isString(),
+    body('settings.defaults.conditionalRewards.amount').optional().isInt(),
 ];
 
 export const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
     const pool = await PoolService.getById(req.params.id);
     if (!pool) throw new NotFoundError('Could not find the Asset Pool for this id');
-    const result = await AssetPool.findByIdAndUpdate(pool._id, req.body, { new: true });
+    const result = await AssetPool.findByIdAndUpdate(
+        pool._id,
+        { settings: Object.assign(pool.settings, req.body.settings) },
+        { new: true },
+    );
     return res.json(result);
 };
 export default { controller, validation };

@@ -67,8 +67,8 @@ describe('Default Pool', () => {
                 })
                 .expect((res: request.Response) => {
                     poolId = res.body._id;
-                    expect(res.body.title).toBe('My Pool');
-                    expect(res.body.archived).toBe(false);
+                    expect(res.body.settings.title).toBe('My Pool');
+                    expect(res.body.settings.isArchived).toBe(false);
                 })
                 .expect(201, done);
         });

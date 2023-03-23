@@ -3,14 +3,14 @@
         <h2 class="mb-3">Settings</h2>
         <b-card class="shadow-sm mb-5" no-body>
             <b-tabs card pills active-nav-item-class="rounded-pill">
-                <b-tab>
+                <b-tab active>
                     <template #title>
                         <i class="fas fa-cog mr-1"></i>
                         General
                     </template>
                     <BaseTabSettingsGeneral />
                 </b-tab>
-                <b-tab active>
+                <b-tab>
                     <template #title>
                         <div class="d-flex align-items-center">
                             <i class="fas fa-gift mr-2"></i>

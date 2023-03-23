@@ -4,7 +4,7 @@ import { UnauthorizedError } from '@thxnetwork/auth/util/errors';
 import { createWallet } from '@thxnetwork/auth/util/wallet';
 import { Request, Response } from 'express';
 import { hubspot } from '@thxnetwork/auth/util/hubspot';
-import { DASHBOARD_URL, NODE_ENV } from '@thxnetwork/auth/config/secrets';
+import { DASHBOARD_URL } from '@thxnetwork/auth/config/secrets';
 import PoolProxy from '@thxnetwork/auth/proxies/PoolProxy';
 
 export const callbackPreAuth = async (req: Request) => {
@@ -43,7 +43,7 @@ export const callbackPostAuth = async (
     const returnUrl = prompt && prompt.name === 'connect' ? params.return_url : returnTo;
 
     // No matter the session state params.return_url will redirect to the client app
-    if (params.return_url.startsWith(DASHBOARD_URL)) {
+    if (params.return_url && params.return_url.startsWith(DASHBOARD_URL)) {
         hubspot.upsert({ email: account.email });
     }
 

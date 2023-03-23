@@ -22,22 +22,26 @@ export const onSubcommandMe = async (interaction: CommandInteraction) => {
     const pointBalance = await thxClient.account.discord.pointBalance(account._id, guild.poolId);
     if (!pointBalance) return interaction.reply({ content: 'Point balance not found for account.', ephemeral: true });
 
-    const embed = new EmbedBuilder().setColor(pool.widget.bgColor).setURL(pool.widget.domain);
+    const theme = JSON.parse(widget.theme);
+    const embed = new EmbedBuilder();
+
     if (brand && brand.logoImgUrl) {
         embed.setThumbnail(pool.brand.logoImgUrl);
     }
 
     embed
-        .setTitle('Your personal wallet')
+        .setColor(theme.colors.accent.color)
+        .setURL(pool.widget.domain)
+        .setTitle('Your account')
         .setDescription(`Earn and redeem points! Visit: ${pool.widget.domain}`)
         .addFields({
             name: ':sparkles: Point balance',
-            value: `${pointBalance.balance}`,
+            value: `${String(pointBalance.balance)}`,
         });
 
     if (account.address) {
         embed.addFields({
-            name: `:fox_face: Metamask`,
+            name: `:gem: Wallet`,
             value: `${account.address}`,
         });
     }

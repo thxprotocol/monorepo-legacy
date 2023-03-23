@@ -2,6 +2,20 @@
     <div>
         <b-form-row>
             <b-col md="4">
+                <strong>Title</strong>
+                <p class="text-muted">Used in overviews, e-mails and other notifications towards your audience.</p>
+            </b-col>
+            <b-col md="8">
+                <b-form-group>
+                    <b-form-group>
+                        <b-form-input @change="onChangeSettings" v-model="title" class="mr-3" />
+                    </b-form-group>
+                </b-form-group>
+            </b-col>
+        </b-form-row>
+
+        <b-form-row>
+            <b-col md="4">
                 <strong>Logo</strong>
                 <p class="text-muted">
                     Used as logo on auth.thx.network, Discord Bot messages and your widget welcome message.
@@ -62,6 +76,27 @@
                 </b-form-row>
             </b-col>
         </b-form-row>
+        <b-form-row>
+            <b-col md="4"> </b-col>
+            <b-col md="8">
+                <b-form-group>
+                    <b-form-group>
+                        <b-form-checkbox @change="onChangeSettings" v-model="isWeeklyDigestEnabled" class="mr-3">
+                            <strong>Weekly Digest</strong><br />
+                            <span class="text-muted">
+                                Every week on monday we will send you the latest activity metrics for this loyalty pool.
+                            </span>
+                        </b-form-checkbox>
+                    </b-form-group>
+                    <b-form-group>
+                        <b-form-checkbox @change="onChangeSettings" v-model="isArchived" class="mr-3">
+                            <strong>Archived</strong><br />
+                            <span class="text-muted"> Hide this pool in your overview of pools. </span>
+                        </b-form-checkbox>
+                    </b-form-group>
+                </b-form-group>
+            </b-col>
+        </b-form-row>
     </div>
 </template>
 
@@ -74,6 +109,7 @@ import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import { TBrand } from '@thxnetwork/dashboard/store/modules/brands';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { IAccount } from '@thxnetwork/dashboard/types/account';
+import { TPoolSettings } from '@thxnetwork/types/interfaces';
 
 @Component({
     computed: {
@@ -92,8 +128,12 @@ export default class SettingsView extends Vue {
     chainId: ChainId = ChainId.PolygonMumbai;
     pools!: IPools;
     brands!: { [poolId: string]: TBrand };
+
+    title = '';
     logoImgUrl = '';
     backgroundImgUrl = '';
+    isWeeklyDigestEnabled = false;
+    isArchived = false;
 
     get pool() {
         return this.pools[this.$route.params.id];
@@ -119,7 +159,12 @@ export default class SettingsView extends Vue {
             this.backgroundImgUrl = this.brand.backgroundImgUrl;
             this.logoImgUrl = this.brand.logoImgUrl;
         }
+
         await this.$store.dispatch('merchants/read');
+
+        this.title = this.pool.settings.title;
+        this.isArchived = this.pool.settings.isArchived;
+        this.isWeeklyDigestEnabled = this.pool.settings.isWeeklyDigestEnabled;
 
         this.loading = false;
     }
@@ -131,20 +176,36 @@ export default class SettingsView extends Vue {
     async onUpload(event: any, key: string) {
         const publicUrl = await this.upload(event.target.files[0]);
         Vue.set(this, key, publicUrl);
-        await this.update();
+        await this.updateBrand();
     }
 
     async onClickRemoveBackground() {
         this.backgroundImgUrl = '';
-        await this.update();
+        await this.updateBrand();
     }
 
     async onClickRemoveLogo() {
         this.logoImgUrl = '';
-        await this.update();
+        await this.updateBrand();
     }
 
-    async update() {
+    async onChangeSettings(setting: TPoolSettings) {
+        const settings = Object.assign(
+            {
+                title: this.title,
+                isArchived: this.isArchived,
+                isWeeklyDigestEnabled: this.isWeeklyDigestEnabled,
+            },
+            setting,
+        );
+
+        await this.$store.dispatch('pools/update', {
+            pool: this.pool,
+            data: { settings },
+        });
+    }
+
+    async updateBrand() {
         this.loading = true;
         await this.$store.dispatch('brands/update', {
             pool: this.pool,

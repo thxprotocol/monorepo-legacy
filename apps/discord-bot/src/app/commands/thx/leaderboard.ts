@@ -1,6 +1,5 @@
 import { CommandInteraction, EmbedBuilder } from 'discord.js';
 import { thxClient } from '../../config/oidc';
-import { client } from '../../../bootstrap';
 import GuildService from '../../services/guild.service';
 
 export const onSubcommandLeaderboard = async (interaction: CommandInteraction) => {
@@ -15,9 +14,10 @@ export const onSubcommandLeaderboard = async (interaction: CommandInteraction) =
     if (!widget) return interaction.reply({ content: 'Widget could not be found.', ephemeral: true });
 
     const leaderboard = await thxClient.pools.getLeaderboard(pool._id);
+    const theme = JSON.parse(widget.theme);
 
-    //embed.setColor(widget.bgColor).setTitle(pool.title);
-    embed.setTitle(pool.title);
+    embed.setColor(theme.colors.accent.color).setTitle(pool.settings.title);
+    embed.setTitle(pool.settings.title);
 
     if (widget.domain) {
         embed.setURL(widget.domain);
@@ -32,29 +32,18 @@ export const onSubcommandLeaderboard = async (interaction: CommandInteraction) =
         embed.setThumbnail(brand.logoImgUrl);
     }
 
-    embed.addFields({ name: ':trophy: │ Leaderboard', value: ' ' });
-    embed.addFields({ name: ' ', value: ' ' });
-
-    if (leaderboard.length) {
-        embed.addFields(
-            leaderboard.map((r, index) => {
-                let userName = '';
-                if (r.account.discordUserId) {
-                    const user = client.users.cache.get(r.account.discordUserId);
-                    if (user) {
-                        userName = user.username;
-                    }
-                }
-                return {
-                    name: `${index + 1}. ${r.score} | ${userName} ${
-                        r.account.address ? r.account.address.substring(0, 7) + '...' : ''
-                    }`,
-                    value: ' ',
-                };
-            }),
-        );
-        embed.addFields({ name: ' ', value: ' ' });
+    let entries = leaderboard.length ? '' : ' ';
+    for (const index in leaderboard) {
+        const { account, score } = leaderboard[index];
+        const address = account.address ? account.address.substring(0, 8) + '...' : '';
+        const rank = String(Number(index) + 1).padStart(2, '0');
+        entries += `${rank} | ${address}      ${score} Points\n`;
     }
+
+    embed.addFields({
+        name: ':trophy: Leaderboard',
+        value: `\`\`\`${entries}\`\`\``,
+    });
 
     interaction.reply({ embeds: [embed], ephemeral: true });
 };

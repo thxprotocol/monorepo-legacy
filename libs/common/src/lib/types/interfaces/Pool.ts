@@ -12,13 +12,14 @@ export type TPool = {
     transactions: string[];
     version?: string;
     variant?: 'defaultDiamond' | 'registry' | 'factory' | 'sharedWallet';
-    archived?: boolean;
-    title: string;
-    settings: TPoolSettings;
     brand: TBrand;
+    settings: TPoolSettings;
 };
 
 export type TPoolSettings = {
+    title: string;
+    isArchived: boolean;
+    isWeeklyDigestEnabled: boolean;
     isTwitterSyncEnabled: boolean;
     discordWebhookUrl?: string;
     defaults: {

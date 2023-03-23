@@ -51,9 +51,9 @@ export const onSubcommandConnect = async (interaction: CommandInteraction) => {
     }
 
     interaction.reply({
-        content: `Well done!🥳 You have connected "${pool.title}" with this server. I will publish announcements in [${
-            channel.name
-        }](${channelLink(channelId)})`,
+        content: `Well done!🥳 You have connected "${
+            pool.settings.title
+        }" with this server. I will publish announcements in [${channel.name}](${channelLink(channelId)})`,
         ephemeral: true,
     });
 };
