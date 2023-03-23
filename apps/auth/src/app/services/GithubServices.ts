@@ -6,6 +6,7 @@ import { githubClient } from '../util/axios';
 import { AccountDocument } from '../models/Account';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IAccessToken } from '../types/TAccount';
+import { checkAccountAlreadyConnected } from '../util/account';
 
 export const GITHUB_API_SCOPE = ['public_repo']; // https://docs.github.com/en/developers/apps/building-oauth-apps/scopes-for-oauth-apps
 
@@ -91,6 +92,9 @@ export class GithubService {
         const user = await this.getUser(accessToken);
         const expiresIn = search.get('expires_in');
         const expiry = expiresIn && Date.now() + Number(expiresIn) * 1000;
+
+        // it throws an error if an account with the same id is already present
+        await checkAccountAlreadyConnected(user.id, AccessTokenKind.Discord);
 
         return {
             email: user.email,
