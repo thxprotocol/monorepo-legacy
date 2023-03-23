@@ -3,7 +3,7 @@ import { Agenda } from 'agenda';
 import { logger } from './logger';
 import { updatePendingTransactions } from '@thxnetwork/api/jobs/updatePendingTransactions';
 import { createConditionalRewards } from '@thxnetwork/api/jobs/createConditionalRewards';
-import { createPoolAnalyticsReport } from '@thxnetwork/api/jobs/sendPoolAnalyticsReport';
+import { sendPoolAnalyticsReport } from '@thxnetwork/api/jobs/sendPoolAnalyticsReport';
 
 const agenda = new Agenda({
     name: 'jobs',
@@ -14,11 +14,11 @@ const agenda = new Agenda({
 
 const EVENT_UPDATE_PENDING_TRANSACTIONS = 'updatePendingTransactions';
 const EVENT_CREATE_CONDITIONAL_REWARDS = 'createConditionalRewards';
-export const EVENT_CREATE_POOL_ANALYTICS_REPORT = 'createPoolMetricsReport';
+const EVENT_SEND_POOL_ANALYTICS_REPORT = 'sendPoolAnalyticsReport';
 
 agenda.define(EVENT_UPDATE_PENDING_TRANSACTIONS, updatePendingTransactions);
 agenda.define(EVENT_CREATE_CONDITIONAL_REWARDS, createConditionalRewards);
-agenda.define(EVENT_CREATE_POOL_ANALYTICS_REPORT, createPoolAnalyticsReport);
+agenda.define(EVENT_SEND_POOL_ANALYTICS_REPORT, sendPoolAnalyticsReport);
 
 db.connection.once('open', async () => {
     agenda.mongo(db.connection.getClient().db() as any, 'jobs');
@@ -26,7 +26,7 @@ db.connection.once('open', async () => {
     await agenda.start();
     await agenda.every('10 seconds', EVENT_UPDATE_PENDING_TRANSACTIONS);
     await agenda.every('15 minutes', EVENT_CREATE_CONDITIONAL_REWARDS);
-    await agenda.every('0 9 * * MON', EVENT_CREATE_POOL_ANALYTICS_REPORT);
+    await agenda.every('0 9 * * MON', EVENT_SEND_POOL_ANALYTICS_REPORT);
 
     logger.info('AgendaJS successfully started job processor');
 });

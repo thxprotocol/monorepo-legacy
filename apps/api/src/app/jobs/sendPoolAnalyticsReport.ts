@@ -8,7 +8,7 @@ import { DASHBOARD_URL } from '../config/secrets';
 const emojiMap = ['🥇', '🥈', '🥉'];
 const oneDay = 86400000; // one day in milliseconds
 
-export async function createPoolAnalyticsReport() {
+export async function sendPoolAnalyticsReport() {
     const endDate = new Date();
     endDate.setHours(0, 0, 0, 0);
 
