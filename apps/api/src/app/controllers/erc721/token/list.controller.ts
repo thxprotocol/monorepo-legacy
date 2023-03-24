@@ -12,10 +12,11 @@ export const controller = async (req: Request, res: Response) => {
             if (!erc721) return;
             if (erc721.chainId !== Number(req.query.chainId)) return { ...(token.toJSON() as TERC721Token), erc721 };
 
+            const metadata = await ERC721Service.findMetadataById(token.metadataId);
             const tokenUri = token.tokenId ? await erc721.contract.methods.tokenURI(token.tokenId).call() : '';
             erc721.logoImgUrl = erc721.logoImgUrl || `https://avatars.dicebear.com/api/identicon/${erc721.address}.svg`;
 
-            return { ...(token.toJSON() as TERC721Token), tokenUri, erc721 };
+            return { ...(token.toJSON() as TERC721Token), metadata, tokenUri, erc721 };
         }),
     );
 
