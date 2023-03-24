@@ -2,13 +2,13 @@ import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import { ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
 import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
-import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
 import PointBalanceService, { PointBalance } from '@thxnetwork/api/services/PointBalanceService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
 import { ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
+import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
 
 const validation = [param('uuid').exists()];
 
@@ -45,7 +45,7 @@ const controller = async (req: Request, res: Response) => {
         erc721Token = await ERC721Service.transferFrom(pool, erc721Token, erc721, req.auth.sub, to);
     }
 
-    const erc721PerkPayment = await ERC20PerkPayment.create({
+    const erc721PerkPayment = await ERC721PerkPayment.create({
         perkId: erc721Perk._id,
         sub: req.auth.sub,
         poolId: pool._id,
