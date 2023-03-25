@@ -3,7 +3,6 @@ import { query } from 'express-validator';
 import MilestoneRewardService from '@thxnetwork/api/services/MilestoneRewardService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import MilestoneRewardClaimService from '@thxnetwork/api/services/MilestoneRewardClaimService';
-import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
 
 export const validation = [query('limit').optional().isInt({ gt: 0 }), query('page').optional().isInt({ gt: 0 })];
 
