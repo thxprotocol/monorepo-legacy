@@ -5,6 +5,7 @@ import { AUTH_URL, TWITTER_CLIENT_ID, TWITTER_CLIENT_SECRET } from '../config/se
 import { AccountDocument } from '../models/Account';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IAccessToken } from '../types/TAccount';
+import fs from 'fs';
 
 const ERROR_NO_DATA = 'Could not find an youtube data for this accesstoken';
 const ERROR_NOT_AUTHORIZED = 'Not authorized for Twitter API';
@@ -91,6 +92,7 @@ export class TwitterService {
             params = Object.assign(params, { pagination_token: data.meta.next_token });
             result = !!data.data.filter((u: { id: string }) => u.id === channelItem).length;
 
+            if (result) break;
             if (!data.meta.next_token) break;
         }
 

@@ -23,13 +23,13 @@ export async function findRewardByUuid(uuid: string) {
 export function isTERC20Perk(
     perk: ERC20PerkDocument | ERC721PerkDocument | ShopifyPerkDocument,
 ): perk is ERC20PerkDocument {
-    return (perk as ERC20PerkDocument).amount !== undefined;
+    return (perk as ERC20PerkDocument).erc20Id !== undefined;
 }
 
 export function isTERC721Perk(
     perk: ERC20PerkDocument | ERC721PerkDocument | ShopifyPerkDocument,
 ): perk is ERC721PerkDocument {
-    return (perk as ERC721PerkDocument).erc721metadataId !== undefined;
+    return (perk as ERC721PerkDocument).erc721Id !== undefined;
 }
 
 export function isTShopifyPerk(

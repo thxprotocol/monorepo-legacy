@@ -192,9 +192,6 @@ describe('ERC721 Perks Redemtpion', () => {
                 expiryDate = addMinutes(new Date(), 30),
                 pointPrice = 200,
                 image = createImage(),
-                platform = RewardConditionPlatform.Google,
-                interaction = RewardConditionInteraction.YouTubeLike,
-                content = 'videoid',
                 limit = 0,
                 claimAmount = 0,
                 isPromoted = true;
@@ -213,9 +210,6 @@ describe('ERC721 Perks Redemtpion', () => {
                     price: 0,
                     priceCurrency: 'USD',
                     pointPrice,
-                    platform,
-                    interaction,
-                    content,
                     expiryDate: expiryDate.toString(),
                     limit,
                     claimAmount,
@@ -227,9 +221,6 @@ describe('ERC721 Perks Redemtpion', () => {
                     expect(body[0].description).toBe(description);
                     expect(body[0].image).toBeDefined();
                     expect(body[0].pointPrice).toBe(pointPrice);
-                    expect(body[0].platform).toBe(platform);
-                    expect(body[0].interaction).toBe(interaction);
-                    expect(body[0].content).toBe(content);
                     expect(new Date(body[0].expiryDate).getDate()).toBe(expiryDate.getDate());
                     expect(body[0].limit).toBe(limit);
                     expect(body[0].claimAmount).toBe(claimAmount);
@@ -248,6 +239,7 @@ describe('ERC721 Perks Redemtpion', () => {
             user.post(`/v1/perks/erc721/${perk.uuid}/redemption`)
                 .set({ 'X-PoolId': pool._id, 'Authorization': widgetAccessToken })
                 .expect(({ body }: request.Response) => {
+                    console.log(body);
                     expect(body.erc721PerkPayment).toBeDefined();
                     expect(body.erc721PerkPayment.perkId).toBe(perk._id);
                     expect(body.erc721PerkPayment.poolId).toBe(pool._id);

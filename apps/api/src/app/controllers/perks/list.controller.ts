@@ -8,6 +8,7 @@ import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
 import { ShopifyPerk, ShopifyPerkDocument } from '@thxnetwork/api/models/ShopifyPerk';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
+import { ShopifyPerkPayment } from '@thxnetwork/api/models/ShopifyPerkPayment';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
@@ -92,6 +93,18 @@ const controller = async (req: Request, res: Response) => {
             shopifyPerks
                 .filter((p: ShopifyPerkDocument) => p.pointPrice > 0)
                 .map(async (r) => {
+                    const progress = r.limit
+                        ? {
+                              count: await ShopifyPerkPayment.countDocuments({ perkId: r._id }),
+                              limit: r.limit,
+                          }
+                        : undefined;
+                    const expiry = r.expiryDate
+                        ? {
+                              now: Date.now(),
+                              date: new Date(r.expiryDate).getTime(),
+                          }
+                        : undefined;
                     return {
                         _id: r._id,
                         uuid: r.uuid,
@@ -105,8 +118,8 @@ const controller = async (req: Request, res: Response) => {
                         discountCode: r.discountCode,
                         limit: r.limit,
                         isDisabled: (await redeemValidation({ perk: r })).isError,
-                        now: r.expiryDate ? Date.now() : undefined,
-                        progress: await ERC721PerkPayment.countDocuments({ perkId: r._id }),
+                        expiry,
+                        progress,
                     };
                 }),
         ),
