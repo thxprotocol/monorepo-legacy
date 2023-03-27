@@ -73,6 +73,7 @@ const config: HardhatUserConfig = {
             hardhat: '0xaf9d56684466fcFcEA0a2B7fC137AB864d642946',
             maticdev: '0x960911a62FdDf7BA84D0d3aD016EF7D15966F7Dc',
             matic: '0x802505465CB707c9347B9631818e14f6066f7513',
+            maticzkdev: '0xE4f3EEA6CeB6D8Cda41E1F78F4c549946a1EB395', // api-dev
         },
     },
     networks: {
@@ -112,11 +113,6 @@ const config: HardhatUserConfig = {
 };
 
 if (POLYGON_PRIVATE_KEY && INFURA_PROJECT_ID && config.networks) {
-    // config.networks.mumbai = {
-    //     url: `https://polygon-mumbai.infura.io/v3/${INFURA_PROJECT_ID}`,
-    //     accounts: [POLYGON_PRIVATE_KEY],
-    //     timeout: 2483647,
-    // };
     config.networks.matic = {
         url: `https://polygon-mainnet.infura.io/v3/${INFURA_PROJECT_ID}`,
         accounts: [POLYGON_PRIVATE_KEY],
@@ -124,11 +120,11 @@ if (POLYGON_PRIVATE_KEY && INFURA_PROJECT_ID && config.networks) {
     };
 }
 if (POLYGON_PRIVATE_KEY_DEV && INFURA_PROJECT_ID && config.networks) {
-    // config.networks.mumbaidev = {
-    //     url: `https://polygon-mumbai.infura.io/v3/${INFURA_PROJECT_ID}`,
-    //     accounts: [POLYGON_PRIVATE_KEY_DEV],
-    //     timeout: 2483647,
-    // };
+    config.networks.maticzkdev = {
+        url: `https://rpc.public.zkevm-test.net`,
+        accounts: [POLYGON_PRIVATE_KEY_DEV],
+        timeout: 2483647,
+    };
     config.networks.maticdev = {
         url: `https://polygon-mainnet.infura.io/v3/${INFURA_PROJECT_ID}`,
         accounts: [POLYGON_PRIVATE_KEY_DEV],

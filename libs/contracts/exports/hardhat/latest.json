@@ -2,703 +2,75 @@
   "name": "hardhat",
   "chainId": "31337",
   "contracts": {
-    "RegistryFacet": {
+    "FactoryFacet": {
       "address": "0x278Ff6d33826D906070eE938CDc9788003749e93",
       "abi": [
         {
-          "inputs": [],
-          "name": "feeCollector",
-          "outputs": [
+          "anonymous": false,
+          "inputs": [
             {
+              "indexed": true,
               "internalType": "address",
-              "name": "",
+              "name": "diamond",
               "type": "address"
             }
           ],
-          "stateMutability": "view",
-          "type": "function"
+          "name": "DiamondDeployed",
+          "type": "event"
         },
         {
-          "inputs": [],
-          "name": "feePercentage",
-          "outputs": [
+          "inputs": [
             {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "facetAddress",
+                  "type": "address"
+                },
+                {
+                  "internalType": "enum IDiamondCut.FacetCutAction",
+                  "name": "action",
+                  "type": "uint8"
+                },
+                {
+                  "internalType": "bytes4[]",
+                  "name": "functionSelectors",
+                  "type": "bytes4[]"
+                }
+              ],
+              "internalType": "struct IDiamondCut.FacetCut[]",
+              "name": "_facets",
+              "type": "tuple[]"
             }
           ],
-          "stateMutability": "view",
+          "name": "deploy",
+          "outputs": [],
+          "stateMutability": "nonpayable",
           "type": "function"
         },
         {
           "inputs": [
             {
               "internalType": "address",
-              "name": "_feeCollector",
+              "name": "_owner",
               "type": "address"
             },
             {
-              "internalType": "uint256",
-              "name": "_feePercentage",
-              "type": "uint256"
+              "internalType": "address",
+              "name": "_registry",
+              "type": "address"
             }
           ],
           "name": "initialize",
           "outputs": [],
           "stateMutability": "nonpayable",
           "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "_feeCollector",
-              "type": "address"
-            }
-          ],
-          "name": "setFeeCollector",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "_feePercentage",
-              "type": "uint256"
-            }
-          ],
-          "name": "setFeePercentage",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
         }
       ]
     },
-    "Diamantaire": {
-      "address": "0xB812f503607Ee2259E9607Cb5E5836B550ac6492",
+    "RegistryFacet": {
+      "address": "0xEAB9a65eB0F098f822033192802B53EE159De5F0",
       "abi": [
-        {
-          "inputs": [],
-          "stateMutability": "nonpayable",
-          "type": "constructor"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "contract Diamond",
-              "name": "diamond",
-              "type": "address"
-            }
-          ],
-          "name": "DiamondCreated",
-          "type": "event"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "owner",
-              "type": "address"
-            },
-            {
-              "components": [
-                {
-                  "internalType": "address",
-                  "name": "facetAddress",
-                  "type": "address"
-                },
-                {
-                  "internalType": "enum IDiamondCut.FacetCutAction",
-                  "name": "action",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "bytes4[]",
-                  "name": "functionSelectors",
-                  "type": "bytes4[]"
-                }
-              ],
-              "internalType": "struct IDiamondCut.FacetCut[]",
-              "name": "_diamondCut",
-              "type": "tuple[]"
-            },
-            {
-              "internalType": "bytes",
-              "name": "data",
-              "type": "bytes"
-            },
-            {
-              "internalType": "bytes32",
-              "name": "salt",
-              "type": "bytes32"
-            }
-          ],
-          "name": "createDiamond",
-          "outputs": [
-            {
-              "internalType": "contract Diamond",
-              "name": "diamond",
-              "type": "address"
-            }
-          ],
-          "stateMutability": "payable",
-          "type": "function"
-        }
-      ]
-    },
-    "Registry_DiamondProxy": {
-      "address": "0xc14D994fe7C5858c93936cc3bD42bb9467d6fB2C",
-      "abi": [
-        {
-          "inputs": [
-            {
-              "components": [
-                {
-                  "internalType": "address",
-                  "name": "facetAddress",
-                  "type": "address"
-                },
-                {
-                  "internalType": "enum IDiamondCut.FacetCutAction",
-                  "name": "action",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "bytes4[]",
-                  "name": "functionSelectors",
-                  "type": "bytes4[]"
-                }
-              ],
-              "internalType": "struct IDiamondCut.FacetCut[]",
-              "name": "_diamondCut",
-              "type": "tuple[]"
-            },
-            {
-              "components": [
-                {
-                  "internalType": "address",
-                  "name": "owner",
-                  "type": "address"
-                }
-              ],
-              "internalType": "struct Diamond.DiamondArgs",
-              "name": "_args",
-              "type": "tuple"
-            }
-          ],
-          "stateMutability": "payable",
-          "type": "constructor"
-        },
-        {
-          "stateMutability": "payable",
-          "type": "fallback"
-        },
-        {
-          "stateMutability": "payable",
-          "type": "receive"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            {
-              "components": [
-                {
-                  "internalType": "address",
-                  "name": "facetAddress",
-                  "type": "address"
-                },
-                {
-                  "internalType": "enum IDiamondCut.FacetCutAction",
-                  "name": "action",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "bytes4[]",
-                  "name": "functionSelectors",
-                  "type": "bytes4[]"
-                }
-              ],
-              "indexed": false,
-              "internalType": "struct IDiamondCut.FacetCut[]",
-              "name": "_diamondCut",
-              "type": "tuple[]"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "_init",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "bytes",
-              "name": "_calldata",
-              "type": "bytes"
-            }
-          ],
-          "name": "DiamondCut",
-          "type": "event"
-        },
-        {
-          "inputs": [
-            {
-              "components": [
-                {
-                  "internalType": "address",
-                  "name": "facetAddress",
-                  "type": "address"
-                },
-                {
-                  "internalType": "enum IDiamondCut.FacetCutAction",
-                  "name": "action",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "bytes4[]",
-                  "name": "functionSelectors",
-                  "type": "bytes4[]"
-                }
-              ],
-              "internalType": "struct IDiamondCut.FacetCut[]",
-              "name": "_diamondCut",
-              "type": "tuple[]"
-            },
-            {
-              "internalType": "address",
-              "name": "_init",
-              "type": "address"
-            },
-            {
-              "internalType": "bytes",
-              "name": "_calldata",
-              "type": "bytes"
-            }
-          ],
-          "name": "diamondCut",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "bytes4",
-              "name": "_functionSelector",
-              "type": "bytes4"
-            }
-          ],
-          "name": "facetAddress",
-          "outputs": [
-            {
-              "internalType": "address",
-              "name": "facetAddress_",
-              "type": "address"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "facetAddresses",
-          "outputs": [
-            {
-              "internalType": "address[]",
-              "name": "facetAddresses_",
-              "type": "address[]"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "_facet",
-              "type": "address"
-            }
-          ],
-          "name": "facetFunctionSelectors",
-          "outputs": [
-            {
-              "internalType": "bytes4[]",
-              "name": "facetFunctionSelectors_",
-              "type": "bytes4[]"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "facets",
-          "outputs": [
-            {
-              "components": [
-                {
-                  "internalType": "address",
-                  "name": "facetAddress",
-                  "type": "address"
-                },
-                {
-                  "internalType": "bytes4[]",
-                  "name": "functionSelectors",
-                  "type": "bytes4[]"
-                }
-              ],
-              "internalType": "struct IDiamondLoupe.Facet[]",
-              "name": "facets_",
-              "type": "tuple[]"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "bytes4",
-              "name": "_interfaceId",
-              "type": "bytes4"
-            }
-          ],
-          "name": "supportsInterface",
-          "outputs": [
-            {
-              "internalType": "bool",
-              "name": "",
-              "type": "bool"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "previousOwner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "OwnershipTransferred",
-          "type": "event"
-        },
-        {
-          "inputs": [],
-          "name": "owner",
-          "outputs": [
-            {
-              "internalType": "address",
-              "name": "owner_",
-              "type": "address"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "_newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "transferOwnership",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        }
-      ]
-    },
-    "Registry": {
-      "address": "0xc14D994fe7C5858c93936cc3bD42bb9467d6fB2C",
-      "abi": [
-        {
-          "inputs": [
-            {
-              "components": [
-                {
-                  "internalType": "address",
-                  "name": "facetAddress",
-                  "type": "address"
-                },
-                {
-                  "internalType": "enum IDiamondCut.FacetCutAction",
-                  "name": "action",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "bytes4[]",
-                  "name": "functionSelectors",
-                  "type": "bytes4[]"
-                }
-              ],
-              "internalType": "struct IDiamondCut.FacetCut[]",
-              "name": "_diamondCut",
-              "type": "tuple[]"
-            },
-            {
-              "components": [
-                {
-                  "internalType": "address",
-                  "name": "owner",
-                  "type": "address"
-                }
-              ],
-              "internalType": "struct Diamond.DiamondArgs",
-              "name": "_args",
-              "type": "tuple"
-            }
-          ],
-          "stateMutability": "payable",
-          "type": "constructor"
-        },
-        {
-          "stateMutability": "payable",
-          "type": "fallback"
-        },
-        {
-          "stateMutability": "payable",
-          "type": "receive"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            {
-              "components": [
-                {
-                  "internalType": "address",
-                  "name": "facetAddress",
-                  "type": "address"
-                },
-                {
-                  "internalType": "enum IDiamondCut.FacetCutAction",
-                  "name": "action",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "bytes4[]",
-                  "name": "functionSelectors",
-                  "type": "bytes4[]"
-                }
-              ],
-              "indexed": false,
-              "internalType": "struct IDiamondCut.FacetCut[]",
-              "name": "_diamondCut",
-              "type": "tuple[]"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "_init",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "bytes",
-              "name": "_calldata",
-              "type": "bytes"
-            }
-          ],
-          "name": "DiamondCut",
-          "type": "event"
-        },
-        {
-          "inputs": [
-            {
-              "components": [
-                {
-                  "internalType": "address",
-                  "name": "facetAddress",
-                  "type": "address"
-                },
-                {
-                  "internalType": "enum IDiamondCut.FacetCutAction",
-                  "name": "action",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "bytes4[]",
-                  "name": "functionSelectors",
-                  "type": "bytes4[]"
-                }
-              ],
-              "internalType": "struct IDiamondCut.FacetCut[]",
-              "name": "_diamondCut",
-              "type": "tuple[]"
-            },
-            {
-              "internalType": "address",
-              "name": "_init",
-              "type": "address"
-            },
-            {
-              "internalType": "bytes",
-              "name": "_calldata",
-              "type": "bytes"
-            }
-          ],
-          "name": "diamondCut",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "bytes4",
-              "name": "_functionSelector",
-              "type": "bytes4"
-            }
-          ],
-          "name": "facetAddress",
-          "outputs": [
-            {
-              "internalType": "address",
-              "name": "facetAddress_",
-              "type": "address"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "facetAddresses",
-          "outputs": [
-            {
-              "internalType": "address[]",
-              "name": "facetAddresses_",
-              "type": "address[]"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "_facet",
-              "type": "address"
-            }
-          ],
-          "name": "facetFunctionSelectors",
-          "outputs": [
-            {
-              "internalType": "bytes4[]",
-              "name": "facetFunctionSelectors_",
-              "type": "bytes4[]"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "facets",
-          "outputs": [
-            {
-              "components": [
-                {
-                  "internalType": "address",
-                  "name": "facetAddress",
-                  "type": "address"
-                },
-                {
-                  "internalType": "bytes4[]",
-                  "name": "functionSelectors",
-                  "type": "bytes4[]"
-                }
-              ],
-              "internalType": "struct IDiamondLoupe.Facet[]",
-              "name": "facets_",
-              "type": "tuple[]"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "bytes4",
-              "name": "_interfaceId",
-              "type": "bytes4"
-            }
-          ],
-          "name": "supportsInterface",
-          "outputs": [
-            {
-              "internalType": "bool",
-              "name": "",
-              "type": "bool"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "previousOwner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "OwnershipTransferred",
-          "type": "event"
-        },
-        {
-          "inputs": [],
-          "name": "owner",
-          "outputs": [
-            {
-              "internalType": "address",
-              "name": "owner_",
-              "type": "address"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "_newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "transferOwnership",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
         {
           "inputs": [],
           "name": "feeCollector",
@@ -765,683 +137,6 @@
             }
           ],
           "name": "setFeePercentage",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        }
-      ]
-    },
-    "FactoryFacet": {
-      "address": "0x50aF0922d65D04D87d810048Dc640E2474eBfbd9",
-      "abi": [
-        {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "diamond",
-              "type": "address"
-            }
-          ],
-          "name": "DiamondDeployed",
-          "type": "event"
-        },
-        {
-          "inputs": [
-            {
-              "components": [
-                {
-                  "internalType": "address",
-                  "name": "facetAddress",
-                  "type": "address"
-                },
-                {
-                  "internalType": "enum IDiamondCut.FacetCutAction",
-                  "name": "action",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "bytes4[]",
-                  "name": "functionSelectors",
-                  "type": "bytes4[]"
-                }
-              ],
-              "internalType": "struct IDiamondCut.FacetCut[]",
-              "name": "_facets",
-              "type": "tuple[]"
-            }
-          ],
-          "name": "deploy",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "_owner",
-              "type": "address"
-            },
-            {
-              "internalType": "address",
-              "name": "_registry",
-              "type": "address"
-            }
-          ],
-          "name": "initialize",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        }
-      ]
-    },
-    "Factory_DiamondProxy": {
-      "address": "0xC86Ca2BB9C9c9c9F140d832dE00BfA9e153FA1e3",
-      "abi": [
-        {
-          "inputs": [
-            {
-              "components": [
-                {
-                  "internalType": "address",
-                  "name": "facetAddress",
-                  "type": "address"
-                },
-                {
-                  "internalType": "enum IDiamondCut.FacetCutAction",
-                  "name": "action",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "bytes4[]",
-                  "name": "functionSelectors",
-                  "type": "bytes4[]"
-                }
-              ],
-              "internalType": "struct IDiamondCut.FacetCut[]",
-              "name": "_diamondCut",
-              "type": "tuple[]"
-            },
-            {
-              "components": [
-                {
-                  "internalType": "address",
-                  "name": "owner",
-                  "type": "address"
-                }
-              ],
-              "internalType": "struct Diamond.DiamondArgs",
-              "name": "_args",
-              "type": "tuple"
-            }
-          ],
-          "stateMutability": "payable",
-          "type": "constructor"
-        },
-        {
-          "stateMutability": "payable",
-          "type": "fallback"
-        },
-        {
-          "stateMutability": "payable",
-          "type": "receive"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            {
-              "components": [
-                {
-                  "internalType": "address",
-                  "name": "facetAddress",
-                  "type": "address"
-                },
-                {
-                  "internalType": "enum IDiamondCut.FacetCutAction",
-                  "name": "action",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "bytes4[]",
-                  "name": "functionSelectors",
-                  "type": "bytes4[]"
-                }
-              ],
-              "indexed": false,
-              "internalType": "struct IDiamondCut.FacetCut[]",
-              "name": "_diamondCut",
-              "type": "tuple[]"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "_init",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "bytes",
-              "name": "_calldata",
-              "type": "bytes"
-            }
-          ],
-          "name": "DiamondCut",
-          "type": "event"
-        },
-        {
-          "inputs": [
-            {
-              "components": [
-                {
-                  "internalType": "address",
-                  "name": "facetAddress",
-                  "type": "address"
-                },
-                {
-                  "internalType": "enum IDiamondCut.FacetCutAction",
-                  "name": "action",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "bytes4[]",
-                  "name": "functionSelectors",
-                  "type": "bytes4[]"
-                }
-              ],
-              "internalType": "struct IDiamondCut.FacetCut[]",
-              "name": "_diamondCut",
-              "type": "tuple[]"
-            },
-            {
-              "internalType": "address",
-              "name": "_init",
-              "type": "address"
-            },
-            {
-              "internalType": "bytes",
-              "name": "_calldata",
-              "type": "bytes"
-            }
-          ],
-          "name": "diamondCut",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "bytes4",
-              "name": "_functionSelector",
-              "type": "bytes4"
-            }
-          ],
-          "name": "facetAddress",
-          "outputs": [
-            {
-              "internalType": "address",
-              "name": "facetAddress_",
-              "type": "address"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "facetAddresses",
-          "outputs": [
-            {
-              "internalType": "address[]",
-              "name": "facetAddresses_",
-              "type": "address[]"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "_facet",
-              "type": "address"
-            }
-          ],
-          "name": "facetFunctionSelectors",
-          "outputs": [
-            {
-              "internalType": "bytes4[]",
-              "name": "facetFunctionSelectors_",
-              "type": "bytes4[]"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "facets",
-          "outputs": [
-            {
-              "components": [
-                {
-                  "internalType": "address",
-                  "name": "facetAddress",
-                  "type": "address"
-                },
-                {
-                  "internalType": "bytes4[]",
-                  "name": "functionSelectors",
-                  "type": "bytes4[]"
-                }
-              ],
-              "internalType": "struct IDiamondLoupe.Facet[]",
-              "name": "facets_",
-              "type": "tuple[]"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "bytes4",
-              "name": "_interfaceId",
-              "type": "bytes4"
-            }
-          ],
-          "name": "supportsInterface",
-          "outputs": [
-            {
-              "internalType": "bool",
-              "name": "",
-              "type": "bool"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "previousOwner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "OwnershipTransferred",
-          "type": "event"
-        },
-        {
-          "inputs": [],
-          "name": "owner",
-          "outputs": [
-            {
-              "internalType": "address",
-              "name": "owner_",
-              "type": "address"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "_newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "transferOwnership",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        }
-      ]
-    },
-    "Factory": {
-      "address": "0xC86Ca2BB9C9c9c9F140d832dE00BfA9e153FA1e3",
-      "abi": [
-        {
-          "inputs": [
-            {
-              "components": [
-                {
-                  "internalType": "address",
-                  "name": "facetAddress",
-                  "type": "address"
-                },
-                {
-                  "internalType": "enum IDiamondCut.FacetCutAction",
-                  "name": "action",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "bytes4[]",
-                  "name": "functionSelectors",
-                  "type": "bytes4[]"
-                }
-              ],
-              "internalType": "struct IDiamondCut.FacetCut[]",
-              "name": "_diamondCut",
-              "type": "tuple[]"
-            },
-            {
-              "components": [
-                {
-                  "internalType": "address",
-                  "name": "owner",
-                  "type": "address"
-                }
-              ],
-              "internalType": "struct Diamond.DiamondArgs",
-              "name": "_args",
-              "type": "tuple"
-            }
-          ],
-          "stateMutability": "payable",
-          "type": "constructor"
-        },
-        {
-          "stateMutability": "payable",
-          "type": "fallback"
-        },
-        {
-          "stateMutability": "payable",
-          "type": "receive"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            {
-              "components": [
-                {
-                  "internalType": "address",
-                  "name": "facetAddress",
-                  "type": "address"
-                },
-                {
-                  "internalType": "enum IDiamondCut.FacetCutAction",
-                  "name": "action",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "bytes4[]",
-                  "name": "functionSelectors",
-                  "type": "bytes4[]"
-                }
-              ],
-              "indexed": false,
-              "internalType": "struct IDiamondCut.FacetCut[]",
-              "name": "_diamondCut",
-              "type": "tuple[]"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "_init",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "bytes",
-              "name": "_calldata",
-              "type": "bytes"
-            }
-          ],
-          "name": "DiamondCut",
-          "type": "event"
-        },
-        {
-          "inputs": [
-            {
-              "components": [
-                {
-                  "internalType": "address",
-                  "name": "facetAddress",
-                  "type": "address"
-                },
-                {
-                  "internalType": "enum IDiamondCut.FacetCutAction",
-                  "name": "action",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "bytes4[]",
-                  "name": "functionSelectors",
-                  "type": "bytes4[]"
-                }
-              ],
-              "internalType": "struct IDiamondCut.FacetCut[]",
-              "name": "_diamondCut",
-              "type": "tuple[]"
-            },
-            {
-              "internalType": "address",
-              "name": "_init",
-              "type": "address"
-            },
-            {
-              "internalType": "bytes",
-              "name": "_calldata",
-              "type": "bytes"
-            }
-          ],
-          "name": "diamondCut",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "bytes4",
-              "name": "_functionSelector",
-              "type": "bytes4"
-            }
-          ],
-          "name": "facetAddress",
-          "outputs": [
-            {
-              "internalType": "address",
-              "name": "facetAddress_",
-              "type": "address"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "facetAddresses",
-          "outputs": [
-            {
-              "internalType": "address[]",
-              "name": "facetAddresses_",
-              "type": "address[]"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "_facet",
-              "type": "address"
-            }
-          ],
-          "name": "facetFunctionSelectors",
-          "outputs": [
-            {
-              "internalType": "bytes4[]",
-              "name": "facetFunctionSelectors_",
-              "type": "bytes4[]"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "facets",
-          "outputs": [
-            {
-              "components": [
-                {
-                  "internalType": "address",
-                  "name": "facetAddress",
-                  "type": "address"
-                },
-                {
-                  "internalType": "bytes4[]",
-                  "name": "functionSelectors",
-                  "type": "bytes4[]"
-                }
-              ],
-              "internalType": "struct IDiamondLoupe.Facet[]",
-              "name": "facets_",
-              "type": "tuple[]"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "bytes4",
-              "name": "_interfaceId",
-              "type": "bytes4"
-            }
-          ],
-          "name": "supportsInterface",
-          "outputs": [
-            {
-              "internalType": "bool",
-              "name": "",
-              "type": "bool"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "previousOwner",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "OwnershipTransferred",
-          "type": "event"
-        },
-        {
-          "inputs": [],
-          "name": "owner",
-          "outputs": [
-            {
-              "internalType": "address",
-              "name": "owner_",
-              "type": "address"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "_newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "transferOwnership",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "diamond",
-              "type": "address"
-            }
-          ],
-          "name": "DiamondDeployed",
-          "type": "event"
-        },
-        {
-          "inputs": [
-            {
-              "components": [
-                {
-                  "internalType": "address",
-                  "name": "facetAddress",
-                  "type": "address"
-                },
-                {
-                  "internalType": "enum IDiamondCut.FacetCutAction",
-                  "name": "action",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "bytes4[]",
-                  "name": "functionSelectors",
-                  "type": "bytes4[]"
-                }
-              ],
-              "internalType": "struct IDiamondCut.FacetCut[]",
-              "name": "_facets",
-              "type": "tuple[]"
-            }
-          ],
-          "name": "deploy",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "_owner",
-              "type": "address"
-            },
-            {
-              "internalType": "address",
-              "name": "_registry",
-              "type": "address"
-            }
-          ],
-          "name": "initialize",
           "outputs": [],
           "stateMutability": "nonpayable",
           "type": "function"
@@ -1449,7 +144,7 @@
       ]
     },
     "AccessControlFacet": {
-      "address": "0xa4E84979c95cD4f12C53E73d63E0A8634A1f44Ae",
+      "address": "0x055cBfeD6df4AFE2452b18fd3D2592D1795592b4",
       "abi": [
         {
           "anonymous": false,
@@ -1687,7 +382,7 @@
       ]
     },
     "RegistryProxyFacet": {
-      "address": "0xd916a690676e925Ac9Faf2d01869c13Fd9757ef2",
+      "address": "0xb63564A81D5d4004F4f22E9aB074cE25540B0C26",
       "abi": [
         {
           "anonymous": false,
@@ -1737,7 +432,7 @@
       ]
     },
     "ERC20DepositFacet": {
-      "address": "0xB952d9b5de7804691e7936E88915A669B15822ef",
+      "address": "0x50aF0922d65D04D87d810048Dc640E2474eBfbd9",
       "abi": [
         {
           "anonymous": false,
@@ -1826,7 +521,7 @@
       ]
     },
     "ERC20WithdrawFacet": {
-      "address": "0x7150A3CC09429583471020A6CE5228A57736180a",
+      "address": "0x15FC0878406CcF4d2963235A5B1EF68C67F17Ee5",
       "abi": [
         {
           "anonymous": false,
@@ -1915,7 +610,7 @@
       ]
     },
     "ERC20SwapFacet": {
-      "address": "0xe1c01805a21ee0DC535afa93172a5F21CE160649",
+      "address": "0xa4E84979c95cD4f12C53E73d63E0A8634A1f44Ae",
       "abi": [
         {
           "anonymous": false,
@@ -2054,7 +749,7 @@
       ]
     },
     "ERC721ProxyFacet": {
-      "address": "0xf228ADAa4c3D07C8285C1025421afe2c4F320C59",
+      "address": "0xd916a690676e925Ac9Faf2d01869c13Fd9757ef2",
       "abi": [
         {
           "anonymous": false,
@@ -2161,7 +856,7 @@
       ]
     },
     "ERC1155ProxyFacet": {
-      "address": "0x8613B8E442219e4349fa5602C69431131a7ED114",
+      "address": "0xB952d9b5de7804691e7936E88915A669B15822ef",
       "abi": [
         {
           "anonymous": false,
@@ -2415,7 +1110,7 @@
       ]
     },
     "ERC1155HolderProxyFacet": {
-      "address": "0x8B219D3d1FC64e03F6cF3491E7C7A732bF253EC8",
+      "address": "0x7150A3CC09429583471020A6CE5228A57736180a",
       "abi": [
         {
           "inputs": [
@@ -2498,7 +1193,7 @@
       ]
     },
     "SharedWalletFacet": {
-      "address": "0xeDdBA2bDeE7c9006944aCF9379Daa64478E02290",
+      "address": "0xe1c01805a21ee0DC535afa93172a5F21CE160649",
       "abi": [
         {
           "inputs": [
@@ -2763,7 +1458,7 @@
       ]
     },
     "DiamondCutFacet": {
-      "address": "0x3eF13AcF26776BfEd682732ae34cBC86bb355862",
+      "address": "0xf228ADAa4c3D07C8285C1025421afe2c4F320C59",
       "abi": [
         {
           "anonymous": false,
@@ -2850,7 +1545,7 @@
       ]
     },
     "DiamondLoupeFacet": {
-      "address": "0xB1456cF726D8D2A2b10dD4db417674A49dB94998",
+      "address": "0x8613B8E442219e4349fa5602C69431131a7ED114",
       "abi": [
         {
           "inputs": [
@@ -2950,7 +1645,7 @@
       ]
     },
     "OwnershipFacet": {
-      "address": "0xc368fA6A4057BcFD9E49221d8354d5fA6B88945a",
+      "address": "0x8B219D3d1FC64e03F6cF3491E7C7A732bF253EC8",
       "abi": [
         {
           "anonymous": false,
@@ -3000,7 +1695,7 @@
       ]
     },
     "LimitedSupplyToken": {
-      "address": "0x439F0128d07f005e0703602f366599ACaaBfEA18",
+      "address": "0xeDdBA2bDeE7c9006944aCF9379Daa64478E02290",
       "abi": [
         {
           "inputs": [
@@ -3301,7 +1996,7 @@
       ]
     },
     "UnlimitedSupplyToken": {
-      "address": "0x24E91C3a2822bDc4bc73512872ab07fD93c8101b",
+      "address": "0x3eF13AcF26776BfEd682732ae34cBC86bb355862",
       "abi": [
         {
           "inputs": [
@@ -3890,7 +2585,7 @@
       ]
     },
     "NonFungibleToken": {
-      "address": "0x76aBe9ec9b15947ba1Ca910695B8b6CffeD8E6CA",
+      "address": "0xB1456cF726D8D2A2b10dD4db417674A49dB94998",
       "abi": [
         {
           "inputs": [
@@ -4637,7 +3332,7 @@
       ]
     },
     "THX_ERC1155": {
-      "address": "0x7Cb8d1EAd6303C079c501e93F3ba28C227cd7000",
+      "address": "0xc368fA6A4057BcFD9E49221d8354d5fA6B88945a",
       "abi": [
         {
           "inputs": [
