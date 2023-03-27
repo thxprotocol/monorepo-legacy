@@ -15,7 +15,7 @@ import { addMinutes } from '@thxnetwork/api/util/rewards';
 const user = request.agent(app);
 
 describe('Referral Rewards', () => {
-    let poolId: string, tokenAddress: string, referralRewardId: string, referralReward: any, referralRewardClaim: any;
+    let poolId: string, referralRewardId: string, referralReward: any, referralRewardClaim: any;
 
     beforeAll(async () => {
         await beforeAllCallback();
@@ -35,7 +35,6 @@ describe('Referral Rewards', () => {
             })
             .expect(({ body }: request.Response) => {
                 expect(isAddress(body.address)).toBe(true);
-                tokenAddress = body.address;
             })
             .expect(201, done);
     });
@@ -120,7 +119,7 @@ describe('Referral Rewards', () => {
     });
 
     it('POST /referral-rewards/:uuid/claims', (done) => {
-        user.post(`/v1/referral-rewards/${referralRewardId}/claims`)
+        user.post(`/v1/referral-rewards/${referralReward.uuid}/claims`)
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .send({
                 sub: sub2,
