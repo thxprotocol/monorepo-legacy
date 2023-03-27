@@ -50,7 +50,6 @@ export default class BaseDropdownTwitterUsers extends Vue {
     }
 
     async onInput(username: string) {
-        debugger;
         if (username.length < 4) {
             this.preview = null;
             this.state = null;

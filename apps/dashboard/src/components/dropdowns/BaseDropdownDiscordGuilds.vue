@@ -25,10 +25,12 @@ export default class BaseDropdownDiscordGuilds extends Vue {
     serverId = '';
     inviteURL = '';
 
-    @Prop({ required: false }) item!: string;
+    @Prop({ required: false }) content!: string;
+    @Prop({ required: false }) contentMetadata!: any;
 
     mounted() {
-        this.serverId = this.item ? this.item : '';
+        this.serverId = this.content ? this.content : '';
+        this.inviteURL = this.contentMetadata ? this.contentMetadata.inviteURL : '';
     }
 
     onChangeServerId(serverId: string) {

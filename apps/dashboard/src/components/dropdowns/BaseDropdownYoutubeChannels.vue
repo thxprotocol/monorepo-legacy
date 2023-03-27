@@ -1,7 +1,7 @@
 <template>
     <b-form-group label="Channel ID" description="">
         <b-input-group prepend="#">
-            <b-form-input @change="onChangeInput" :value="item" />
+            <b-form-input @change="onChangeInput" :value="content" />
         </b-input-group>
     </b-form-group>
 </template>
@@ -11,17 +11,17 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component({})
 export default class BaseDropdownYoutubeChannels extends Vue {
-    url = '';
+    channelId = '';
 
-    @Prop() item!: string;
+    @Prop() content!: string;
 
     mounted() {
-        this.url = this.item;
+        this.channelId = this.content;
     }
 
     onChangeInput(content: string) {
-        this.url = content;
-        this.$emit('selected', { content });
+        this.channelId = content;
+        this.$emit('selected', { content, contentMetadata: { channelId: this.channelId } });
     }
 }
 </script>
