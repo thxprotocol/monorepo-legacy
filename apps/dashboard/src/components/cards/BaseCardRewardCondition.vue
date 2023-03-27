@@ -26,7 +26,8 @@
                     <component
                         v-if="interaction"
                         :is="interactionComponent"
-                        :item="content"
+                        :content="content"
+                        :contentMetadata="contentMetadata"
                         @selected="onSelectContent"
                     />
                 </template>
@@ -52,13 +53,13 @@ import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork
 import BaseDropdownChannelTypes from '../dropdowns/BaseDropdownChannelTypes.vue';
 import BaseDropdownChannelActions from '../dropdowns/BaseDropdownChannelActions.vue';
 import BaseDropdownYoutubeChannels from '../dropdowns/BaseDropdownYoutubeChannels.vue';
-import BaseDropdownYoutubeUploads from '../dropdowns/BaseDropdownYoutubeUploads.vue';
 import BaseDropdownYoutubeVideo from '../dropdowns/BaseDropdownYoutubeVideo.vue';
 import BaseDropdownTwitterTweets from '../dropdowns/BaseDropdownTwitterTweets.vue';
 import BaseDropdownTwitterUsers from '../dropdowns/BaseDropdownTwitterUsers.vue';
 import BaseDropdownDiscordGuilds from '../dropdowns/BaseDropdownDiscordGuilds.vue';
 import BaseDropdownShopifyTotalSpent from '../dropdowns/BaseDropdownShopifyTotalSpent.vue';
 import BaseDropdownShopifyOrderAmount from '../dropdowns/BaseDropdownShopifyOrderAmount.vue';
+import { IAccount } from '@thxnetwork/dashboard/types/account';
 
 @Component({
     components: {
@@ -66,7 +67,6 @@ import BaseDropdownShopifyOrderAmount from '../dropdowns/BaseDropdownShopifyOrde
         BaseDropdownChannelTypes,
         BaseDropdownChannelActions,
         BaseDropdownYoutubeChannels,
-        BaseDropdownYoutubeUploads,
         BaseDropdownYoutubeVideo,
         BaseDropdownTwitterTweets,
         BaseDropdownTwitterUsers,
@@ -92,15 +92,15 @@ export default class BaseCardRewardCondition extends Vue {
     platform: IChannel = platformList[0];
     interaction: IChannelAction = platformInteractionList[0];
     content = '';
-    contentMetadata: object | undefined = undefined;
+    contentMetadata: any;
     isVisible = false;
-    profile!: UserProfile;
+    profile!: IAccount;
 
     @Prop({ required: false }) rewardCondition!: {
         platform: RewardConditionPlatform;
         interaction: RewardConditionInteraction;
         content: string;
-        contentMetadata?: any;
+        contentMetadata: any;
     };
 
     get actions() {
@@ -111,8 +111,7 @@ export default class BaseCardRewardCondition extends Vue {
         this.platform = this.rewardCondition ? getPlatform(this.rewardCondition.platform) : getPlatform(0);
         this.interaction = this.rewardCondition ? getInteraction(this.rewardCondition.interaction) : getInteraction(0);
         this.content = this.rewardCondition ? this.rewardCondition.content : '';
-        this.contentMetadata = this.rewardCondition.contentMetadata;
-
+        this.contentMetadata = this.rewardCondition ? this.rewardCondition.contentMetadata : {};
         this.isVisible = !!this.platform.type;
     }
 
@@ -130,6 +129,12 @@ export default class BaseCardRewardCondition extends Vue {
 
         this.interaction = interaction;
         this.interactionComponent = getInteractionComponent(this.interaction.type);
+
+        // Exception to the rest of the pattern...
+        if (interaction.type === RewardConditionInteraction.ShopifyNewsletterSubscription) {
+            this.content = this.profile.shopifyStoreUrl as string;
+        }
+
         this.change();
     }
 
@@ -145,7 +150,7 @@ export default class BaseCardRewardCondition extends Vue {
             platform: this.platform.type,
             interaction: this.interaction.type,
             content: this.content,
-            contentMetadata: this.contentMetadata,
+            contentMetadata: Object.keys(this.contentMetadata).length ? JSON.stringify(this.contentMetadata) : '',
         });
     }
 }

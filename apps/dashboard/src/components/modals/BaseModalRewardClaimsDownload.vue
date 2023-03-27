@@ -151,7 +151,7 @@ import QRCode from 'qrcode';
 import QRCodeSVG from 'qrcode-svg';
 import xml2js from 'xml2js';
 import { jsPDF } from 'jspdf';
-import { type TPool } from '@thxnetwork/dashboard/store/modules/pools';
+import { type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { TBaseReward, TERC20Perk, TERC721Perk } from '@thxnetwork/types/index';
 import { WALLET_URL, BASE_URL } from '@thxnetwork/dashboard/utils/secrets';

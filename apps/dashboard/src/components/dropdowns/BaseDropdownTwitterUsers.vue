@@ -1,7 +1,7 @@
 <template>
     <b-form-group label="Username">
         <b-input-group prepend="@">
-            <b-form-input @input="onInput" :state="state" :value="username" />
+            <b-form-input :debounce="1000" @change="onInput" :state="state" v-model="username" />
         </b-input-group>
         <b-card v-if="preview" body-class="d-flex align-items-center" class="mt-3">
             <b-avatar :src="preview.profile_image_url" class="mr-2" />
@@ -24,25 +24,33 @@ import { mapGetters } from 'vuex';
 @Component({
     computed: mapGetters({}),
 })
-export default class BaseDropdownDiscordGuilds extends Vue {
+export default class BaseDropdownTwitterUsers extends Vue {
     username = '';
     state: boolean | null = null;
     preview: { profile_image_url: string; name: string; id: string; username: string } | null = null;
 
-    @Prop({ required: false }) item!: number;
+    @Prop({ required: false }) content!: number;
+    @Prop({ required: false }) contentMetadata!: any;
 
     async mounted() {
-        if (this.item) {
+        if (this.content) {
             const { data } = await axios({
                 method: 'POST',
                 url: '/account/twitter/user',
-                data: { userId: this.item },
+                data: { userId: this.content },
             });
+            this.preview = {
+                profile_image_url: this.contentMetadata.profileImgUrl,
+                name: this.contentMetadata.name,
+                id: this.contentMetadata.id,
+                username: this.contentMetadata.username,
+            };
             this.username = data.username;
         }
     }
 
     async onInput(username: string) {
+        debugger;
         if (username.length < 4) {
             this.preview = null;
             this.state = null;
@@ -61,7 +69,15 @@ export default class BaseDropdownDiscordGuilds extends Vue {
         } else {
             this.preview = data;
             this.state = true;
-            this.$emit('selected', data.id);
+            this.$emit('selected', {
+                content: data.id,
+                contentMetadata: {
+                    id: this.preview?.id,
+                    name: this.preview?.name,
+                    profileImgUrl: this.preview?.profile_image_url,
+                    username,
+                },
+            });
         }
     }
 }

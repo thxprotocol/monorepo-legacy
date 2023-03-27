@@ -56,7 +56,7 @@
 </template>
 
 <script lang="ts">
-import { type TPool } from '@thxnetwork/dashboard/store/modules/pools';
+import { type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { type TMilestoneReward } from '@thxnetwork/types/index';
 import { API_URL } from '@thxnetwork/dashboard/utils/secrets';

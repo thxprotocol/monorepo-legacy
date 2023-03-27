@@ -43,7 +43,7 @@
 </template>
 
 <script lang="ts">
-import { type TPool } from '@thxnetwork/dashboard/store/modules/pools';
+import { type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import BaseModalRewardClaimsDownload from '../modals/BaseModalRewardClaimsDownload.vue';
 

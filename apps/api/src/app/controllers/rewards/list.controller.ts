@@ -79,7 +79,7 @@ const controller = async (req: Request, res: Response) => {
                     platform: r.platform,
                     interaction: r.interaction,
                     content: r.content,
-                    contentMedatata: r.contentMetadata,
+                    contentMetadata: r.contentMetadata,
                 };
             }),
         ),

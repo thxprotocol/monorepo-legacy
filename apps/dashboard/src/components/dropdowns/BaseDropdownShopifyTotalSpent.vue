@@ -29,15 +29,19 @@ export default class BaseDropdownShopifyTotalSpent extends Vue {
     profile!: IAccount;
     amount: number | null = null;
 
-    @Prop({ required: false }) item!: string;
+    @Prop({ required: false }) content!: string;
+    @Prop({ required: false }) contentMetadata!: any;
 
     mounted() {
-        this.amount = this.item ? Number(JSON.parse(this.item).amount) : 0;
+        this.amount = this.contentMetadata ? this.contentMetadata.amount : 0;
     }
 
     onChange(amount: number) {
         this.amount = amount;
-        this.$emit('selected', JSON.stringify({ amount: this.amount, shopifyStoreUrl: this.profile.shopifyStoreUrl }));
+        this.$emit('selected', {
+            content: this.profile.shopifyStoreUrl,
+            contentMetadata: { amount: this.amount, shopifyStoreUrl: this.profile.shopifyStoreUrl },
+        });
     }
 }
 </script>

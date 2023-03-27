@@ -24,7 +24,6 @@
                             :rewardCondition="rewardCondition"
                             @change="rewardCondition = $event"
                         />
-                        <BaseCardRewardExpiry class="mb-3" :expiry="rewardExpiry" @change="rewardExpiry = $event" />
                     </b-col>
                 </b-row>
             </form>
@@ -45,14 +44,12 @@
 </template>
 
 <script lang="ts">
-import { type TPool } from '@thxnetwork/dashboard/store/modules/pools';
+import { type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { type TPointReward } from '@thxnetwork/types/interfaces/PointReward';
 import { platformInteractionList, platformList } from '@thxnetwork/dashboard/types/rewards';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardCondition from '../cards/BaseCardRewardCondition.vue';
-import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
-import BaseCardRewardQRCodes from '../cards/BaseCardRewardQRCodes.vue';
 import { mapGetters } from 'vuex';
 import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
 import { IAccount } from '@thxnetwork/dashboard/types/account';
@@ -61,8 +58,6 @@ import { IAccount } from '@thxnetwork/dashboard/types/account';
     components: {
         BaseModal,
         BaseCardRewardCondition,
-        BaseCardRewardExpiry,
-        BaseCardRewardQRCodes,
     },
     computed: mapGetters({
         totals: 'pointRewards/totals',
@@ -74,9 +69,8 @@ export default class ModalRewardPointsCreate extends Vue {
     isLoading = false;
     error = '';
     title = '';
-    amount = '0';
+    amount = 0;
     description = '';
-    rewardExpiry = {};
     limit = 0;
     rewardCondition: {
         platform: RewardConditionPlatform;
@@ -94,33 +88,23 @@ export default class ModalRewardPointsCreate extends Vue {
     @Prop({ required: false }) reward!: TPointReward;
 
     onShow() {
-        if (this.reward) {
-            this.title = this.reward.title;
-            this.description = this.reward.description;
-            this.amount = this.reward.amount;
-            this.limit = this.reward.limit;
-            this.rewardCondition = {
-                platform: this.reward.platform as RewardConditionPlatform,
-                interaction: this.reward.interaction as RewardConditionInteraction,
-                content: this.reward.content as string,
-                contentMetadata: this.reward.contentMetadata ? JSON.parse(this.reward.contentMetadata) : undefined,
-            };
-        } else {
-            this.title = '';
-            this.description = '';
-            this.amount = '0';
-            this.limit = 0;
-            this.rewardCondition = {
-                platform: RewardConditionPlatform.None,
-                interaction: RewardConditionInteraction.None,
-                content: '',
-                contentMetadata: undefined,
-            };
-        }
-    }
-
-    setValues(reward?: TPointReward) {
-        if (!reward) return;
+        this.title = this.reward ? this.reward.title : this.title;
+        this.description = this.reward ? this.reward.description : this.description;
+        this.amount = this.reward ? this.reward.amount : this.amount;
+        this.limit = this.reward ? this.reward.limit : this.limit;
+        this.rewardCondition = this.reward
+            ? {
+                  platform: this.reward.platform,
+                  interaction: this.reward.interaction,
+                  content: this.reward.content,
+                  contentMetadata: this.reward.contentMetadata,
+              }
+            : {
+                  platform: RewardConditionPlatform.None,
+                  interaction: RewardConditionInteraction.None,
+                  content: '',
+                  contentMetadata: {},
+              };
     }
 
     onSubmit() {
@@ -134,14 +118,14 @@ export default class ModalRewardPointsCreate extends Vue {
             limit: this.limit,
             platform: this.rewardCondition.platform,
             interaction:
-                this.rewardCondition.platform != RewardConditionPlatform.None
+                this.rewardCondition.platform !== RewardConditionPlatform.None
                     ? this.rewardCondition.interaction
                     : RewardConditionInteraction.None,
-            content: this.rewardCondition.platform != RewardConditionPlatform.None ? this.rewardCondition.content : '',
+            content: this.rewardCondition.platform !== RewardConditionPlatform.None ? this.rewardCondition.content : '',
             contentMetadata:
-                this.rewardCondition.contentMetadata && this.rewardCondition.platform != RewardConditionPlatform.None
-                    ? JSON.stringify(this.rewardCondition.contentMetadata)
-                    : undefined,
+                this.rewardCondition.contentMetadata && this.rewardCondition.platform !== RewardConditionPlatform.None
+                    ? this.rewardCondition.contentMetadata
+                    : '',
             page: this.reward ? this.reward.page : 1,
         };
         this.isLoading = true;
