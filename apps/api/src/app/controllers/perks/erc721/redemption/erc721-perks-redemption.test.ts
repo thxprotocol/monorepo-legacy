@@ -12,8 +12,6 @@ import { Contract } from 'web3-eth-contract';
 import { getProvider } from '@thxnetwork/api/util/network';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
 import { addMinutes } from 'date-fns';
-import { RewardConditionPlatform } from '@thxnetwork/types/enums/RewardConditionPlatform';
-import { RewardConditionInteraction } from '@thxnetwork/types/enums/RewardConditionInteraction';
 import { createImage } from '@thxnetwork/api/util/jest/images';
 import { ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
 
@@ -239,7 +237,6 @@ describe('ERC721 Perks Redemtpion', () => {
             user.post(`/v1/perks/erc721/${perk.uuid}/redemption`)
                 .set({ 'X-PoolId': pool._id, 'Authorization': widgetAccessToken })
                 .expect(({ body }: request.Response) => {
-                    console.log(body);
                     expect(body.erc721PerkPayment).toBeDefined();
                     expect(body.erc721PerkPayment.perkId).toBe(perk._id);
                     expect(body.erc721PerkPayment.poolId).toBe(pool._id);
