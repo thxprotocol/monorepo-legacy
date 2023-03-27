@@ -1,9 +1,11 @@
 const axios = require('axios');
 
-function twitterClient(config) {
+async function twitterClient(config) {
     axios.defaults.headers['Authorization'] = `Bearer ${process.env.TWITTER_API_TOKEN}`;
     axios.defaults.baseURL = 'https://api.twitter.com/2';
-    return axios(config);
+    const r = await axios(config);
+    console.log(r.data);
+    return r;
 }
 
 module.exports = {
@@ -67,10 +69,10 @@ module.exports = {
                     });
                     content = reward.content;
                     contentMetadata = {
-                        id: data.id,
-                        name: data.name,
-                        username: data.username,
-                        profileImgUrl: data.profile_image_url,
+                        id: data.data.id,
+                        name: data.data.name,
+                        username: data.data.username,
+                        profileImgUrl: data.data.profile_image_url,
                     };
                     break;
                 }
