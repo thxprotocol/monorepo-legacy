@@ -1,18 +1,20 @@
 const axios = require('axios');
 
-async function twitterClient(config) {
-    axios.defaults.headers['Authorization'] = `Bearer ${process.env.TWITTER_API_TOKEN}`;
-    axios.defaults.baseURL = 'https://api.twitter.com/2';
-    const r = await axios(config);
-    console.log(r.data);
-    return r;
+function twitterClient(config) {
+    try {
+        axios.defaults.headers['Authorization'] = `Bearer ${process.env.TWITTER_API_TOKEN}`;
+        axios.defaults.baseURL = 'https://api.twitter.com/2';
+        return axios(config);
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 module.exports = {
     async up(db) {
         const rewardsColl = db.collection('pointrewards');
 
-        for await (const reward of rewardsColl.find({ interaction: { $exists: true, $ne: -1 } })) {
+        loop: for await (const reward of rewardsColl.find({ interaction: { $exists: true, $ne: -1 } })) {
             try {
                 let content = '';
                 let contentMetadata = {};
@@ -33,6 +35,7 @@ module.exports = {
                         break;
                     case 2: {
                         // TwitterLike
+                        if (!reward.content) continue loop;
                         const { data } = await twitterClient({
                             method: 'GET',
                             url: `/tweets`,
@@ -48,6 +51,7 @@ module.exports = {
                     }
                     case 3: {
                         // TwitterRetweet
+                        if (!reward.content) continue loop;
                         const { data } = await twitterClient({
                             method: 'GET',
                             url: `/tweets`,
@@ -63,6 +67,7 @@ module.exports = {
                     }
                     case 4: {
                         // TwitterFollow
+                        if (!reward.content) continue loop;
                         const { data } = await twitterClient({
                             method: 'GET',
                             url: `/users/${reward.content}`,
