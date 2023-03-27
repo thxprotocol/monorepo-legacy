@@ -1,16 +1,16 @@
 <template>
     <div>
         <h2 class="mb-3">Settings</h2>
-        <b-card class="shadow-sm mb-5" no-body>
+        <b-card class="shadow-sm mb-5" no-body v-if="pool">
             <b-tabs card pills active-nav-item-class="rounded-pill">
-                <b-tab>
+                <b-tab active>
                     <template #title>
                         <i class="fas fa-cog mr-1"></i>
                         General
                     </template>
                     <BaseTabSettingsGeneral />
                 </b-tab>
-                <b-tab active>
+                <b-tab>
                     <template #title>
                         <div class="d-flex align-items-center">
                             <i class="fas fa-gift mr-2"></i>
@@ -81,6 +81,7 @@ import BaseTabSettingsTwitter from '@thxnetwork/dashboard/views/pool/settings/Tw
 import BaseTabSettingsWidget from '@thxnetwork/dashboard/views/pool/settings/Widget.vue';
 import BaseTabSettingsApi from '@thxnetwork/dashboard/views/pool/settings/API.vue';
 import { DASHBOARD_URL } from '@thxnetwork/wallet/utils/secrets';
+import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 
 @Component({
     components: {
@@ -94,12 +95,18 @@ import { DASHBOARD_URL } from '@thxnetwork/wallet/utils/secrets';
     computed: {
         ...mapGetters({
             profile: 'account/profile',
+            pools: 'pools/all',
         }),
     },
 })
 export default class SettingsView extends Vue {
     profile!: IAccount;
     dashboardUrl = DASHBOARD_URL;
+    pools!: IPools;
+
+    get pool() {
+        return this.pools[this.$route.params.id];
+    }
 }
 </script>
 <style>

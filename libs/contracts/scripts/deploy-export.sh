@@ -23,7 +23,7 @@ VERSION=`echo $(node -e "console.log(require('$BASE_DIR/package.json').version);
 npx hardhat deploy --network hardhat --export exports/hardhat/latest.json
 
 # Deploy and export for all networks.
-for NETWORK in maticdev matic 
+for NETWORK in maticdev matic maticzkdev
 do
     echo ""
     echo "Deploying to $NETWORK:"

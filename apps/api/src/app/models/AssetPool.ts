@@ -11,13 +11,13 @@ const assetPoolSchema = new mongoose.Schema(
         address: String,
         chainId: Number,
         transactions: [String],
-        lastTransactionAt: Date,
         version: String,
-        archived: Boolean,
-        title: String,
-        discordWebhookUrl: String,
         settings: {
+            title: String,
+            isArchived: Boolean,
+            isWeeklyDigestEnabled: { type: Boolean, default: true },
             isTwitterSyncEnabled: { type: Boolean, default: false },
+            discordWebhookUrl: String,
             defaults: {
                 conditionalRewards: {
                     title: String,

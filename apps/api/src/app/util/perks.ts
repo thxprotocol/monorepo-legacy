@@ -48,8 +48,8 @@ export const redeemValidation = async ({
         }
     }
 
-    // Can only be claimed for the amount of times per sub specified in the claimLimit
-    if (perk.claimLimit > 0 && sub) {
+    // Can not be claimed when claimLimit > claimed perks if claimAmount > 0 (Number of QR codes)
+    if (perk.claimAmount && sub) {
         const amountOfPaymentsPerSub = await model.countDocuments({ perkId: perk._id, sub });
         if (amountOfPaymentsPerSub >= perk.claimLimit) {
             return { isError: true, errorMessage: 'You have claimed this perk for the maximum amount of times.' };

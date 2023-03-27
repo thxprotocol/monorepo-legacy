@@ -11,9 +11,6 @@ const validation = [
     body('claimAmount').exists().isInt({ lt: 1000 }),
     body('expiryDate').optional().isString(),
     body('limit').isNumeric(),
-    body('platform').exists().isNumeric(),
-    body('interaction').optional().isNumeric(),
-    body('content').optional().isString(),
     body('isPromoted').optional().isBoolean(),
     check('file')
         .optional()

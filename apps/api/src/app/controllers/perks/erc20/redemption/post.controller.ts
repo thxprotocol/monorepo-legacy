@@ -2,7 +2,7 @@ import { ERC20Perk } from '@thxnetwork/api/models/ERC20Perk';
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import { toWei } from 'web3-utils';
-import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
+import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { getContractFromName } from '@thxnetwork/api/config/contracts';
 import { BigNumber } from 'ethers';
 import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
@@ -12,6 +12,7 @@ import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
+import { redeemValidation } from '@thxnetwork/api/util/perks';
 
 const validation = [param('uuid').exists()];
 
@@ -28,6 +29,11 @@ const controller = async (req: Request, res: Response) => {
     const pointBalance = await PointBalance.findOne({ sub: req.auth.sub, poolId: pool._id });
     if (!pointBalance || Number(pointBalance.balance) < Number(erc20Perk.pointPrice)) {
         throw new BadRequestError('Not enough points on this account for this payment');
+    }
+
+    const redeemValidationResult = await redeemValidation({ perk: erc20Perk, sub: req.auth.sub });
+    if (redeemValidationResult.isError) {
+        throw new ForbiddenError(redeemValidationResult.errorMessage);
     }
 
     const contract = getContractFromName(pool.chainId, 'LimitedSupplyToken', erc20.address);

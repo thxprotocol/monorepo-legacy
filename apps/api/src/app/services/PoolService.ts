@@ -46,11 +46,12 @@ async function deploy(sub: string, chainId: ChainId, title: string): Promise<Ass
     const pool = await AssetPool.create({
         sub,
         chainId,
-        variant,
         version: currentVersion,
-        archived: false,
-        title,
         settings: {
+            title,
+            isArchived: false,
+            isWeeklyDigestEnabled: true,
+            isTwitterSyncEnabled: false,
             defaults: {
                 conditionalRewards: { title: 'Retweet this tweet', description: '', amount: 50 },
             },
@@ -84,7 +85,7 @@ async function deployCallback(args: TAssetPoolDeployCallbackArgs, receipt: Trans
 
 async function getAllBySub(sub: string, archived = false) {
     if (archived) return await AssetPool.find({ sub });
-    return await AssetPool.find({ sub, archived });
+    return await AssetPool.find({ sub, 'settings.isArchived': archived });
 }
 
 function getAll() {
