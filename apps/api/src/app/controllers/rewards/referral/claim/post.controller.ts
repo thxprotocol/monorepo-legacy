@@ -11,6 +11,7 @@ import { body, param } from 'express-validator';
 const validation = [param('uuid').exists().isString(), body('sub').exists().isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
+    console.log('SONO QUIIIIII----------------------------');
     // #swagger.tags = ['Rewards']
     const reward = await ReferralReward.findOne({ uuid: req.params.uuid });
     if (!reward) throw new NotFoundError('No reward for that uuid could be found.');
@@ -27,7 +28,7 @@ const controller = async (req: Request, res: Response) => {
         amount: reward.amount,
         uuid: v4(),
     });
-
+    console.log('REWARD AMOUNT', reward.amount);
     await MailService.send(
         account.email,
         'Status: Referral Qualified',

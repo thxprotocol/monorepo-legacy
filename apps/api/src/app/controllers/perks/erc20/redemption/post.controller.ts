@@ -47,6 +47,7 @@ const controller = async (req: Request, res: Response) => {
         perkId: erc20Perk.id,
         sub: req.auth.sub,
         poolId: erc20Perk.poolId,
+        amount: erc20Perk.pointPrice,
     });
 
     await PointBalanceService.subtract(pool, req.auth.sub, erc20Perk.pointPrice);

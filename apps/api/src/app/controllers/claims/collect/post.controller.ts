@@ -36,6 +36,7 @@ function getPaymentModel(perk: PerkDocument): mongoose.Model<any> {
 }
 
 const controller = async (req: Request, res: Response) => {
+    console.log('SONO QUIIIIII 2----------------------------');
     let withdrawal: WithdrawalDocument,
         token: ERC721TokenDocument,
         erc20: ERC20Document,
