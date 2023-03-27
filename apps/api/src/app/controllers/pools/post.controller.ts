@@ -13,8 +13,8 @@ const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.deploy(req.auth.sub, req.body.chainId, title);
 
     await Widget.create({
-        poolId: pool._id,
         uuid: v4(),
+        poolId: pool._id,
         align: 'right',
         message: 'Hi there!👋 Click me to earn rewards and collect crypto perks...',
         domain: 'https://www.example.com',

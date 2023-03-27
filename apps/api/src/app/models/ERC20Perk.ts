@@ -13,6 +13,7 @@ export const rewardBaseSchema = {
     platform: Number,
     interaction: Number,
     content: String,
+    contentMetadata: String,
     isPromoted: {
         type: Boolean,
         default: false,

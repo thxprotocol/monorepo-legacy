@@ -10,21 +10,23 @@ const validation = [
     body('platform').isNumeric(),
     body('interaction').optional().isNumeric(),
     body('content').optional().isString(),
+    body('contentMetadata').optional().isString(),
 ];
 
 const controller = async (req: Request, res: Response) => {
-    const { title, description, amount, platform, interaction, content } = req.body;
+    const { title, description, amount, platform, interaction, content, contentMetadata } = req.body;
     const pool = await PoolService.getById(req.header('X-PoolId'));
-    const pointReward = await PointRewardService.create(pool, {
+    const reward = await PointRewardService.create(pool, {
         title,
         description,
         amount,
         platform,
         interaction,
         content,
+        contentMetadata,
     });
 
-    res.status(201).json(pointReward);
+    res.status(201).json(reward);
 };
 
 export default { validation, controller };

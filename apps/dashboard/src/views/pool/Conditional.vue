@@ -127,6 +127,7 @@ export default class ConditionalView extends Vue {
                     platform: platformList.find((p) => r.platform === p.type),
                     interaction: platformInteractionList.find((i) => r.interaction === i.type),
                     content: r.content,
+                    contentMetadata: r.contentMetadata,
                 },
                 id: r._id,
             }))
