@@ -267,9 +267,6 @@ describe('Account Controller', () => {
                     .set({
                         Authorization: authHeaderApi,
                     })
-                    .expect(({ body }: request.Response) => {
-                        console.log('body', body);
-                    })
                     .expect(200, done);
             });
         });
