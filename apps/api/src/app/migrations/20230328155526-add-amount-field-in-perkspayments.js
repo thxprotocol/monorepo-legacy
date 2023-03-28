@@ -65,14 +65,12 @@ module.exports = {
                     },
                 },
             ]);
-
+            console.log('collection', collections[i]);
             for await (const project of cursor) {
                 try {
-                    await claimCollection.updateOne(
-                        { _id: project._id },
-                        { $set: { amount: String(project.pointPrice) } },
-                    );
-                    console.log('UPDATED:', project);
+                    const amount = project.amount ? String(project.amount) : 0;
+                    await claimCollection.updateOne({ _id: project._id }, { $set: { amount } });
+                    console.log('UPDATED:', project._id, amount);
                 } catch (err) {
                     console.log('ERROR UPDATING:', project, err);
                 }
