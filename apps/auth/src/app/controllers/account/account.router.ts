@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAccount, getAccountByAddress, getAccountByEmail } from './get.action';
+import { getAccount, getAccountByAddress, getAccountByEmail, getMultipleAccounts } from './get.action';
 import { patchAccount } from './patch.action';
 import { deleteAccount } from './delete.action';
 import { validate } from '../../util/validate';
@@ -31,6 +31,7 @@ import { getShopifyNewsletterSubscription } from './shopify/newsletter-subscript
 const router = express.Router();
 
 router.use(validateJwt);
+router.get('/', guard.check(['accounts:read']), getMultipleAccounts);
 router.get('/:sub', guard.check(['accounts:read']), getAccount);
 
 router.get('/:sub/twitter', guard.check(['accounts:read']), getTwitter);

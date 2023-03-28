@@ -6,7 +6,13 @@ import { ReferralRewardDocument } from '../models/ReferralReward';
 import { paginatedResults } from '../util/pagination';
 import { ReferralRewardClaimDocument } from '../models/ReferralRewardClaim';
 
-async function create(data: { referralRewardId: string; sub: string; isApproved: boolean; poolId: string }) {
+async function create(data: {
+    referralRewardId: string;
+    sub: string;
+    isApproved: boolean;
+    poolId: string;
+    amount: string;
+}) {
     return await ReferralRewardClaimModel.create({ uuid: db.createUUID(), ...data });
 }
 

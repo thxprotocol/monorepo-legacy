@@ -57,3 +57,11 @@ export const getAccountByEmail = async (req: Request, res: Response) => {
 
     res.send(await formatAccountRes(account));
 };
+
+export const getMultipleAccounts = async (req: Request, res: Response) => {
+    const accounts = await AccountService.getMany(String(req.query.subs).split(','));
+    const promises = accounts.map(async (account) => {
+        return await formatAccountRes(account);
+    });
+    res.send(await Promise.all(promises));
+};

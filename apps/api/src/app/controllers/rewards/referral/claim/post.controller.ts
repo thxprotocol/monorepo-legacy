@@ -27,7 +27,6 @@ const controller = async (req: Request, res: Response) => {
         amount: reward.amount,
         uuid: v4(),
     });
-
     await MailService.send(
         account.email,
         'Status: Referral Qualified',
