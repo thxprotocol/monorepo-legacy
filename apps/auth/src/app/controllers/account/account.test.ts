@@ -74,6 +74,17 @@ describe('Account Controller', () => {
         });
     });
 
+    describe('GET /account', () => {
+        it('HTTP 200', async () => {
+            const res = await http.get(`/account?subs=${sub}`).set({
+                Authorization: authHeader,
+            });
+            expect(res.status).toBe(200);
+            expect(res.body.length).toBe(1);
+            expect(res.body[0].email).toBe(accountEmail);
+        });
+    });
+
     describe('PATCH /account/:id', () => {
         it('HTTP 200', async () => {
             const res = await http
