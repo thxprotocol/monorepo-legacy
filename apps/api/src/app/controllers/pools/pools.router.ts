@@ -11,6 +11,9 @@ import ListPools from './list.controller';
 import CreatePoolTopup from './topup/post.controller';
 import CreatePoolTransfer from './transfers/post.controller';
 import DeletePoolTransfer from './transfers/delete.controller';
+import CreatePoolSubscription from './subscriptions/post.controller';
+import ReadPoolSubscription from './subscriptions/get.controller';
+import DeletePoolSubscription from './subscriptions/delete.controller';
 import CreatePoolTransferRefresh from './transfers/refresh/post.controller';
 import ListPoolTransfer from './transfers/list.controller';
 import UpdatePool from './patch.controller';
@@ -28,6 +31,13 @@ router.post(
     guard.check(['pools:write']),
     assertRequestInput(CreatePoolTransfer.validation),
     CreatePoolTransfer.controller,
+);
+
+router.post(
+    '/:id/subscription',
+    guard.check(['pool_subscription:write']),
+    assertRequestInput(CreatePoolSubscription.validation),
+    CreatePoolSubscription.controller,
 );
 
 router.delete(
@@ -88,7 +98,19 @@ router.get(
     assertRequestInput(PoolsAnalyticsMetrics.validation),
     PoolsAnalyticsMetrics.controller,
 );
+router.get(
+    '/:id/subscription',
+    guard.check(['pool_subscription:read']),
+    assertRequestInput(ReadPoolSubscription.validation),
+    ReadPoolSubscription.controller,
+);
 router.delete('/:id', guard.check(['pools:write']), assertRequestInput(DeletePool.validation), DeletePool.controller);
+router.delete(
+    '/:id/subscription',
+    guard.check(['pool_subscription:write']),
+    assertRequestInput(DeletePoolSubscription.validation),
+    DeletePoolSubscription.controller,
+);
 router.post(
     '/:id/topup',
     guard.check(['deposits:read', 'deposits:write']),
