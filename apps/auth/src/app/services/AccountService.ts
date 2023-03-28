@@ -21,6 +21,9 @@ export class AccountService {
     }
 
     static async getMany(subs: string[]) {
+        if (!subs.length) {
+            return [];
+        }
         const result = await Account.find({ _id: { $in: subs } });
         return result;
     }
