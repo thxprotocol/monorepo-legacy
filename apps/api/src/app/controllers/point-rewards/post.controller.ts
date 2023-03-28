@@ -2,6 +2,8 @@ import PointRewardService from '@thxnetwork/api/services/PointRewardService';
 import { Request, Response } from 'express';
 import { body } from 'express-validator';
 import PoolService from '@thxnetwork/api/services/PoolService';
+import { PointRewardDocument } from '@thxnetwork/api/models/PointReward';
+import { sendPoolNotification } from '@thxnetwork/api/jobs/sendPoolNotifications';
 
 const validation = [
     body('title').isString(),
@@ -25,7 +27,7 @@ const controller = async (req: Request, res: Response) => {
         content,
         contentMetadata,
     });
-
+    await sendPoolNotification(pool._id, reward);
     res.status(201).json(reward);
 };
 
