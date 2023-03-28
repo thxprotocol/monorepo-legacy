@@ -19,6 +19,7 @@ const controller = async (req: Request, res: Response) => {
 
     const perk = await ERC721Perk.findOne({ uuid: req.params.uuid });
     if (!perk) throw new NotFoundError('Could not find this perk');
+    if (!perk.pointPrice) throw new NotFoundError('No point price for this perk has been set.');
 
     const erc721 = await ERC721Service.findById(perk.erc721Id);
     if (!erc721) throw new NotFoundError('Could not find this erc721');
@@ -55,6 +56,7 @@ const controller = async (req: Request, res: Response) => {
         perkId: perk._id,
         sub: req.auth.sub,
         poolId: pool._id,
+        amount: perk.pointPrice,
     });
 
     await PointBalanceService.subtract(pool, req.auth.sub, perk.pointPrice);

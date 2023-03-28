@@ -16,15 +16,16 @@ const validation = [param('uuid').exists()];
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Perks Payment']
     const pool = await PoolService.getById(req.header('X-PoolId'));
-    const shopifyPerk = await ShopifyPerk.findOne({ uuid: req.params.uuid });
-    if (!shopifyPerk) throw new NotFoundError('Could not find this perk');
+    const perk = await ShopifyPerk.findOne({ uuid: req.params.uuid });
+    if (!perk) throw new NotFoundError('Could not find this perk');
+    if (!perk.pointPrice) throw new NotFoundError('No point price for this perk has been set.');
 
     const pointBalance = await PointBalance.findOne({ sub: req.auth.sub, poolId: pool._id });
-    if (!pointBalance || Number(pointBalance.balance) < Number(shopifyPerk.pointPrice)) {
+    if (!pointBalance || Number(pointBalance.balance) < Number(perk.pointPrice)) {
         throw new BadRequestError('Not enough points on this account for this perk.');
     }
 
-    const redeemValidationResult = await redeemValidation({ perk: shopifyPerk, sub: req.auth.sub });
+    const redeemValidationResult = await redeemValidation({ perk, sub: req.auth.sub });
     if (redeemValidationResult.isError) {
         throw new ForbiddenError(redeemValidationResult.errorMessage);
     }
@@ -33,23 +34,24 @@ const controller = async (req: Request, res: Response) => {
     const poolAccount = await AccountProxy.getById(pool.sub);
     const discountCode = await ShopifyDataProxy.createDiscountCode(
         poolAccount,
-        shopifyPerk.priceRuleId,
-        shopifyPerk.discountCode + '#' + generateRandomString(5).toUpperCase(),
+        perk.priceRuleId,
+        perk.discountCode + '#' + generateRandomString(5).toUpperCase(),
     );
     await ShopifyDiscountCode.create({
         sub: account.sub,
         poolId: pool._id,
-        shopifyPerkId: shopifyPerk._id,
+        shopifyPerkId: perk._id,
         discountCodeId: discountCode.id,
         priceRuleId: discountCode.price_rule_id,
         code: discountCode.code,
     });
     const shopifyPerkPayment = await ShopifyPerkPayment.create({
-        perkId: shopifyPerk._id,
+        perkId: perk._id,
         sub: req.auth.sub,
         poolId: pool._id,
+        amount: perk.pointPrice,
     });
-    await PointBalanceService.subtract(pool, req.auth.sub, shopifyPerk.pointPrice);
+    await PointBalanceService.subtract(pool, req.auth.sub, perk.pointPrice);
 
     res.status(201).json({ discountCode, shopifyPerkPayment });
 };

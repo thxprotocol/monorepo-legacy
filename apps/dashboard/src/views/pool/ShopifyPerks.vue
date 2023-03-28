@@ -41,7 +41,6 @@
                 <template #head(title)> Title </template>
                 <template #head(progress)> Progress </template>
                 <template #head(rewardCondition)> Condition </template>
-                <template #head(claims)> Claim URL's </template>
                 <template #head(limit)> Reward Limit </template>
                 <template #head(id)> &nbsp; </template>
 
@@ -67,21 +66,6 @@
                     <BaseBadgeRewardConditionPreview
                         v-if="item.rewardCondition.platform.type !== RewardConditionPlatform.None"
                         :rewardCondition="item.rewardCondition"
-                    />
-                </template>
-                <template #cell(claims)="{ item }">
-                    <b-link v-b-modal="`modalRewardClaimsDownload${item.id}`" v-if="item.claims.length">
-                        <b-progress
-                            :value="item.claims.filter((c) => c.sub).length"
-                            :max="item.claims.length"
-                            show-value
-                        />
-                    </b-link>
-                    <BaseModalRewardClaimsDownload
-                        :id="`modalRewardClaimsDownload${item.id}`"
-                        :pool="pool"
-                        :selectedItems="[item.id]"
-                        :rewards="shopifyPerks[pool._id]"
                     />
                 </template>
                 <template #cell(id)="{ item }">
@@ -164,12 +148,6 @@ export default class ShopifyPerksView extends Vue {
                 checkbox: r._id,
                 title: r.title,
                 code: r.discountCode,
-                rewardCondition: {
-                    platform: platformList.find((p) => r.platform === p.type),
-                    interaction: platformInteractionList.find((i) => r.interaction === i.type),
-                    content: r.content,
-                },
-                claims: r.claims,
                 limit: r.limit,
                 id: r._id,
             }))

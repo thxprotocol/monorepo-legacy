@@ -134,6 +134,8 @@ const config: Configuration = {
         'shopify_rewards:read',
         'shopify_rewards:write',
         'pool_analytics:read',
+        'merchants:write',
+        'merchants:read',
     ],
     claims: {
         openid: ['sub', 'email', 'variant', 'address'],
