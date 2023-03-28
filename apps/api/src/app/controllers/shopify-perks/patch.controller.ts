@@ -8,7 +8,6 @@ const validation = [
     param('id').isMongoId(),
     body('title').isString(),
     body('description').isString(),
-    body('claimAmount').exists().isInt({ lt: 1000 }),
     body('expiryDate').optional().isString(),
     body('limit').isNumeric(),
     body('isPromoted').optional().isBoolean(),

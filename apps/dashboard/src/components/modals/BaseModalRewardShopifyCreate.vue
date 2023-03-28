@@ -145,6 +145,8 @@ export default class ModalRewardShopifyCreate extends Vue {
         this.title = this.reward ? this.reward.title : '';
         this.description = this.reward ? this.reward.description : '';
         this.pointPrice = this.reward ? this.reward.pointPrice : 0;
+        this.price = this.reward ? this.reward.price : this.price;
+        this.priceCurrency = this.reward ? this.reward.priceCurrency : this.priceCurrency;
         this.expiryDate = this.reward ? this.reward.expiryDate : null;
         this.limit = this.reward ? this.reward.limit : 0;
         this.image = this.reward && this.reward.image ? this.reward.image : '';

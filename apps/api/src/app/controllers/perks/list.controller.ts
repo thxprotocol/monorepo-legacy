@@ -29,15 +29,20 @@ async function getExpiry(r: TAllPerks) {
 }
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Rewards']
+    // #swagger.tags = ['Perks']
     const pool = await PoolService.getById(req.header('X-PoolId'));
-    const query = {
-        poolId: pool._id,
-        $or: [{ pointPrice: { $gt: 0 } }, { price: { $gt: 0 } }],
-    };
-    const erc20Perks = await ERC20Perk.find(query);
-    const erc721Perks = await ERC721Perk.find(query);
-    const shopifyPerks = await ShopifyPerk.find(query);
+    const erc20Perks = await ERC20Perk.find({
+        poolId: String(pool._id),
+        pointPrice: { $exists: true, $gt: 0 },
+    });
+    const erc721Perks = await ERC721Perk.find({
+        poolId: String(pool._id),
+        $or: [{ pointPrice: { $exists: true, $gt: 0 } }, { price: { $exists: true, $gt: 0 } }],
+    });
+    const shopifyPerks = await ShopifyPerk.find({
+        poolId: String(pool._id),
+        $or: [{ pointPrice: { $exists: true, $gt: 0 } }, { price: { $exists: true, $gt: 0 } }],
+    });
 
     res.json({
         erc20Perks: await Promise.all(
