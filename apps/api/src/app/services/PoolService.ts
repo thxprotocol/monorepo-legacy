@@ -145,7 +145,7 @@ async function sendNotification(pool: AssetPoolDocument, reward: { title: string
 
             let html = `<p style="font-size: 18px">Hi there!👋</p>`;
             html += `You can earn ${reward.amount} points in pool ${pool.settings.title} (${widget.domain}) for the new reward: 
-    **${reward.title}**.`;
+    <string>${reward.title}</strong>.`;
             html += `<hr />`;
 
             const promises = subsChunk.map(async (sub) => {
