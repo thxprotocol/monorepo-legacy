@@ -5,8 +5,8 @@ export type PoolSubscriptionDocument = mongoose.Document & TPoolSubscription;
 
 const schema = new mongoose.Schema(
     {
-        sub: { type: String, unique: true },
-        poolId: { type: String, unique: true },
+        sub: { type: String },
+        poolId: { type: String },
     },
     { timestamps: true },
 );
