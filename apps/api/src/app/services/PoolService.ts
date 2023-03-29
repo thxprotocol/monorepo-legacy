@@ -14,6 +14,7 @@ import AccountProxy from '../proxies/AccountProxy';
 import MailService from './MailService';
 import { Widget } from './WidgetService';
 import { PoolSubscription } from '../models/PoolSubscription';
+import { logger } from '../util/logger';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -131,28 +132,38 @@ async function updateAssetPool(pool: AssetPoolDocument, version?: string) {
 }
 
 async function sendNotification(pool: AssetPoolDocument, reward: { title: string; amount: number }) {
-    const sleepTime = 60; // seconds
-    const chunkSize = 600;
+    try {
+        const sleepTime = 60; // seconds
+        const chunkSize = 600;
 
-    const widget = await Widget.findOne({ poolId: pool._id });
-    const subs = (await PoolSubscription.find({ poolId: pool._id }, { sub: 1 })).map((x) => x._id);
+        const widget = await Widget.findOne({ poolId: pool._id });
+        const subscriptions = await PoolSubscription.find({ poolId: pool._id }, { sub: 1, _id: 0 });
+        const subs = subscriptions.map((x) => x.sub);
 
-    for (let i = 0; i < subs.length; i += chunkSize) {
-        const subsChunk = subs.slice(i, i + chunkSize);
+        for (let i = 0; i < subs.length; i += chunkSize) {
+            const subsChunk = subs.slice(i, i + chunkSize);
 
-        let html = `<p style="font-size: 18px">Hi there!👋</p>`;
-        html += `You can earn ${reward.amount} points in pool ${pool.settings.title}(${widget.domain}) for the new reward: 
-    **${reward.title}**.`;
-        html += `<hr />`;
+            let html = `<p style="font-size: 18px">Hi there!👋</p>`;
+            html += `You can earn ${reward.amount} points in pool ${pool.settings.title} (${widget.domain}) for the new reward: 
+    <strong>${reward.title}</strong>.`;
+            html += `<hr />`;
 
-        const promises = subsChunk.map(async (sub) => {
-            const account = await AccountProxy.getById(sub);
-            if (account.email) {
-                await MailService.send(account.email, `🎁 New Reward released: "${reward.title}"`, html);
-            }
+            const promises = subsChunk.map(async (sub) => {
+                const account = await AccountProxy.getById(sub);
+                if (account.email) {
+                    await MailService.send(account.email, `🎁 New Reward released: "${reward.title}"`, html);
+                }
+            });
+            await Promise.all(promises);
+            await sleep(sleepTime);
+        }
+    } catch (err) {
+        logger.error({
+            message: 'Error on PoolService.sendNotification',
+            errorName: err.name,
+            errorMessage: err.message,
+            stack: err.stack,
         });
-        await Promise.all(promises);
-        await sleep(sleepTime);
     }
 }
 
