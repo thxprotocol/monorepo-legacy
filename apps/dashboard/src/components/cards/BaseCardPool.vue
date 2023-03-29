@@ -1,7 +1,7 @@
 <template>
     <base-card
         :is-loading="isLoading"
-        :body-bg-variant="pool.archived ? 'light' : null"
+        :body-bg-variant="pool.settings.isArchived ? 'light' : null"
         :is-deploying="isDeploying"
         @click="openPoolUrl()"
         class="cursor-pointer"
@@ -24,7 +24,7 @@
                 Pool out of date! Please start a support chat.
             </b-alert>
             <p class="text-muted">
-                {{ pool.title }}
+                {{ pool.settings.title }}
             </p>
             <b-input-group size="sm">
                 <b-input-group-prepend class="px-2">
@@ -43,14 +43,13 @@
                 :error="error"
                 :subject="pool._id"
             />
-            <base-modal-pool-create :id="`modalAssetPoolEdit-${pool._id}`" :pool="pool" />
+            <base-modal-pool-create :id="`modalAssetPoolEdit-${pool._id}`" />
         </template>
     </base-card>
 </template>
 
 <script lang="ts">
 import type { IAccount } from '@thxnetwork/dashboard/types/account';
-import type { TPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters, mapState } from 'vuex';
 import BaseModalDelete from '@thxnetwork/dashboard/components/modals/BaseModalDelete.vue';
@@ -61,6 +60,7 @@ import BaseDropdownMenuPool from '@thxnetwork/dashboard/components/dropdowns/Bas
 import BaseModalPoolCreate from '@thxnetwork/dashboard/components/modals/BaseModalPoolCreate.vue';
 import { fromWei } from 'web3-utils';
 import { IPoolAnalyticsMetrics } from '../../store/modules/pools';
+import { TPool } from '@thxnetwork/types/interfaces';
 
 @Component({
     components: {
@@ -95,24 +95,6 @@ export default class BaseCardPool extends Vue {
 
     get outOfDate() {
         return this.pool.version !== this.artifacts;
-    }
-
-    get variant() {
-        switch (this.pool.variant) {
-            default:
-                return 'Default';
-            case 'defaultPool':
-                return 'Default';
-            case 'nftPool':
-                return 'NFT';
-        }
-    }
-
-    get metrics() {
-        if (!this.analyticsMetrics[this.pool._id]) {
-            return null;
-        }
-        return this.analyticsMetrics[this.pool._id];
     }
 
     async mounted() {
@@ -174,7 +156,7 @@ export default class BaseCardPool extends Vue {
         this.isLoading = true;
         await this.$store.dispatch('pools/update', {
             pool: this.pool,
-            data: { archived: !this.pool.archived },
+            data: { archived: !this.pool.settings.isArchived },
         });
         this.isLoading = false;
     }

@@ -65,7 +65,7 @@ describe('ERC20 Perk Payment', () => {
                 chainId: ChainId.Hardhat,
             })
             .expect((res: request.Response) => {
-                expect(res.body.archived).toBe(false);
+                expect(res.body.settings.isArchived).toBe(false);
                 poolId = res.body._id;
             })
             .expect(201, done);
@@ -170,7 +170,6 @@ describe('ERC20 Perk Payment', () => {
             .expect(({ body }: request.Response) => {
                 expect(body.erc20Perks.length).toBe(1);
                 expect(body.erc20Perks[0].isDisabled).toBe(true);
-                console.log(body.erc20Perks[0].progress);
                 expect(body.erc20Perks[0].progress.limit).toBe(1);
                 expect(body.erc20Perks[0].progress.count).toBe(1);
             })

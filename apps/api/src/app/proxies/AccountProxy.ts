@@ -10,17 +10,7 @@ class NoAccountError extends THXError {
 
 class AccountApiError extends THXError {}
 
-async function authAccountRequest(url: string) {
-    const { data } = await authClient({
-        method: 'GET',
-        url,
-        headers: {
-            Authorization: await getAuthAccessToken(),
-        },
-    });
-
-    if (!data) throw new NoAccountError();
-
+function formatAccountData(data: any) {
     data.profileImg = data.profileImg || `https://avatars.dicebear.com/api/identicon/${data.sub}.svg`;
     data.getAddress = async (chainId: ChainId) => {
         if (data.variant === 4) return data.address;
@@ -33,9 +23,41 @@ async function authAccountRequest(url: string) {
     return data;
 }
 
+async function authAccountRequest(url: string) {
+    const { data } = await authClient({
+        method: 'GET',
+        url,
+        headers: {
+            Authorization: await getAuthAccessToken(),
+        },
+    });
+
+    if (!data) throw new NoAccountError();
+
+    return formatAccountData(data);
+}
+
 export default class AccountProxy {
     static async getById(sub: string): Promise<IAccount> {
         return await authAccountRequest(`/account/${sub}`);
+    }
+
+    static async getMany(subs: string[]): Promise<IAccount[]> {
+        if (!subs.length) return [];
+        const params = new URLSearchParams();
+        params.append('subs', subs.join(','));
+        const { data } = await authClient({
+            method: 'GET',
+            url: '/account',
+            headers: {
+                Authorization: await getAuthAccessToken(),
+            },
+            params,
+        });
+        const accounts = data.map((x: any) => {
+            return formatAccountData(x);
+        });
+        return accounts;
     }
 
     static async getByDiscordId(discordId: string): Promise<IAccount> {

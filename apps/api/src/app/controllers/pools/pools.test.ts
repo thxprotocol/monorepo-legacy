@@ -61,8 +61,8 @@ describe('Default Pool', () => {
                 })
                 .expect((res: request.Response) => {
                     poolId = res.body._id;
-                    expect(res.body.title).toBe('My Pool');
-                    expect(res.body.archived).toBe(false);
+                    expect(res.body.settings.title).toBe('My Pool');
+                    expect(res.body.settings.isArchived).toBe(false);
                 })
                 .expect(201, done);
         });
@@ -101,12 +101,14 @@ describe('Default Pool', () => {
             user.patch('/v1/pools/' + poolId)
                 .set({ Authorization: dashboardAccessToken })
                 .send({
-                    archived: true,
-                    title: 'My Pool 2',
+                    settings: {
+                        title: 'My Pool 2',
+                        isArchived: true,
+                    },
                 })
                 .expect(({ body }: request.Response) => {
-                    expect(body.title).toBe('My Pool 2');
-                    expect(body.archived).toBe(true);
+                    expect(body.settings.title).toBe('My Pool 2');
+                    expect(body.settings.isArchived).toBe(true);
                 })
                 .expect(200, done);
         });

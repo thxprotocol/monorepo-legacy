@@ -4,4 +4,5 @@ export type TMilestoneRewardClaim = {
     uuid: string;
     amount: number;
     isClaimed: boolean;
+    poolId: string;
 };

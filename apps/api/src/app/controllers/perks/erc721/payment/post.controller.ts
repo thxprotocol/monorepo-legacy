@@ -1,10 +1,11 @@
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import { ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
-import { NotFoundError } from '@thxnetwork/api/util/errors';
+import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { Merchant } from '@thxnetwork/api/models/Merchant';
 import { stripe } from '@thxnetwork/api/util/stripe';
 import PoolService from '@thxnetwork/api/services/PoolService';
+import { redeemValidation } from '@thxnetwork/api/util/perks';
 
 const validation = [param('uuid').exists()];
 
@@ -18,6 +19,12 @@ const controller = async (req: Request, res: Response) => {
 
     const erc721Perk = await ERC721Perk.findOne({ uuid: req.params.uuid });
     if (!erc721Perk) throw new NotFoundError('Could not find this perk');
+    if (!erc721Perk.price) throw new NotFoundError('No point price for this perk has been set.');
+
+    const redeemValidationResult = await redeemValidation({ perk: erc721Perk, sub: req.auth.sub });
+    if (redeemValidationResult.isError) {
+        throw new ForbiddenError(redeemValidationResult.errorMessage);
+    }
 
     const paymentIntent = await stripe.paymentIntents.create({
         amount: erc721Perk.price,

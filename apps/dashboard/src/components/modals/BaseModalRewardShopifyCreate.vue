@@ -57,24 +57,21 @@
                         </b-row>
                     </b-col>
                     <b-col md="6">
-                        <BaseCardRewardCondition
+                        <BaseCardCommerce
+                            v-if="profile && profile.plan === 1"
                             class="mb-3"
-                            :rewardCondition="rewardCondition"
-                            @change="rewardCondition = $event"
+                            :pool="pool"
+                            :price="price"
+                            :price-currency="priceCurrency"
+                            @change-price="price = $event"
+                            @change-price-currency="priceCurrency = $event"
                         />
                         <BaseCardRewardExpiry
                             class="mb-3"
                             :expiryDate="expiryDate"
                             @change-date="expiryDate = $event"
                         />
-                        <BaseCardRewardLimits
-                            class="mb-3"
-                            :limit="limit"
-                            :claimAmount="claimAmount"
-                            :claimLimit="claimLimit"
-                            @change-reward-limit="limit = $event"
-                            @change-claim-amount="onChangeClaimAmount"
-                        />
+                        <BaseCardRewardLimits class="mb-3" :limit="limit" @change-reward-limit="limit = $event" />
                         <b-form-group>
                             <b-form-checkbox v-model="isPromoted">Promoted</b-form-checkbox>
                         </b-form-group>
@@ -98,30 +95,28 @@
 </template>
 
 <script lang="ts">
-import { type IPool } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { platformList, platformInteractionList } from '@thxnetwork/dashboard/types/rewards';
-import { RewardConditionInteraction, RewardConditionPlatform, type TShopifyPerk } from '@thxnetwork/types/index';
 import BaseModal from './BaseModal.vue';
-import BaseCardRewardCondition from '../cards/BaseCardRewardCondition.vue';
+import BaseCardCommerce from '../cards/BaseCardCommerce.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
-import BaseCardRewardQRCodes from '../cards/BaseCardRewardQRCodes.vue';
 import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
 import BaseDropdownSelectShopifyPriceRule from '../dropdowns/BaseDropdownSelectShopifyPriceRule.vue';
 import { TShopifyPerkState, TShopifyPriceRule } from '@thxnetwork/dashboard/store/modules/shopifyPerks';
 import { mapGetters } from 'vuex';
+import { TPool, TShopifyPerk } from '@thxnetwork/types/interfaces';
+import { IAccount } from '@thxnetwork/dashboard/types/account';
 
 @Component({
     components: {
         BaseModal,
-        BaseCardRewardCondition,
+        BaseCardCommerce,
         BaseCardRewardExpiry,
         BaseCardRewardLimits,
-        BaseCardRewardQRCodes,
         BaseDropdownSelectShopifyPriceRule,
     },
     computed: mapGetters({
         shopifyPerks: 'shopifyPerks/all',
+        profile: 'account/profile',
     }),
 })
 export default class ModalRewardShopifyCreate extends Vue {
@@ -130,46 +125,30 @@ export default class ModalRewardShopifyCreate extends Vue {
     title = '';
     description = '';
     expiryDate: Date | null = null;
-    claimAmount = 0;
-    claimLimit = 1;
     limit = 0;
     pointPrice = 0;
     imageFile: File | null = null;
     image = '';
-    rewardCondition: { platform: RewardConditionPlatform; interaction: RewardConditionInteraction; content: string } = {
-        platform: platformList[0].type,
-        interaction: platformInteractionList[0].type,
-        content: '',
-    };
     isPromoted = false;
     priceRuleId: string | null = null;
     discountCode: string | null = null;
     shopifyPerks!: TShopifyPerkState;
+    profile!: IAccount;
+    price = 0;
+    priceCurrency = 'USD';
 
     @Prop() id!: string;
-    @Prop() pool!: IPool;
+    @Prop() pool!: TPool;
     @Prop({ required: false }) reward!: TShopifyPerk;
 
     onShow() {
         this.title = this.reward ? this.reward.title : '';
         this.description = this.reward ? this.reward.description : '';
         this.pointPrice = this.reward ? this.reward.pointPrice : 0;
+        this.price = this.reward ? this.reward.price : this.price;
+        this.priceCurrency = this.reward ? this.reward.priceCurrency : this.priceCurrency;
         this.expiryDate = this.reward ? this.reward.expiryDate : null;
         this.limit = this.reward ? this.reward.limit : 0;
-        this.claimLimit = this.reward ? this.reward.claimLimit : 1;
-        this.claimAmount = this.reward ? this.reward.claimAmount : 0;
-        this.rewardCondition = this.reward
-            ? {
-                  platform: this.reward.platform as RewardConditionPlatform,
-                  interaction: this.reward.interaction as RewardConditionInteraction,
-                  content: this.reward.content as string,
-              }
-            : {
-                  platform: platformList[0].type,
-                  interaction: platformInteractionList[0].type,
-                  content: '',
-              };
-
         this.image = this.reward && this.reward.image ? this.reward.image : '';
         this.isPromoted = this.reward ? this.reward.isPromoted : false;
         this.priceRuleId = this.reward ? this.reward.priceRuleId : null;
@@ -177,32 +156,34 @@ export default class ModalRewardShopifyCreate extends Vue {
     }
 
     get isSubmitDisabled() {
-        return !this.priceRuleId || !this.discountCode || !this.pointPrice || this.title === '';
+        return this.isLoading || !this.priceRuleId || !this.discountCode || !this.title;
     }
 
     onSubmit() {
         this.isLoading = true;
+
+        const payload = {
+            page: 1,
+            poolId: String(this.pool._id),
+            title: this.title,
+            description: this.description,
+            pointPrice: this.pointPrice,
+            limit: this.limit,
+            file: this.imageFile,
+            isPromoted: this.isPromoted,
+            priceRuleId: this.priceRuleId,
+            discountCode: this.discountCode,
+            price: this.price,
+            priceCurrency: this.priceCurrency,
+        };
+
+        if (this.expiryDate) Object.assign(payload, { expiryDate: this.expiryDate });
+
         this.$store
             .dispatch(`shopifyPerks/${this.reward ? 'update' : 'create'}`, {
                 pool: this.pool,
                 reward: this.reward,
-                payload: {
-                    page: 1,
-                    poolId: String(this.pool._id),
-                    title: this.title,
-                    description: this.description,
-                    pointPrice: this.pointPrice,
-                    claimAmount: Number(this.claimAmount),
-                    claimLimit: this.claimLimit,
-                    limit: this.limit,
-                    platform: this.rewardCondition.platform,
-                    interaction: this.rewardCondition.interaction,
-                    content: this.rewardCondition.content,
-                    file: this.imageFile,
-                    isPromoted: this.isPromoted,
-                    priceRuleId: this.priceRuleId,
-                    discountCode: this.discountCode,
-                },
+                payload,
             })
             .then(() => {
                 this.$bvModal.hide(this.id);
@@ -212,12 +193,6 @@ export default class ModalRewardShopifyCreate extends Vue {
 
     onChangePointPrice(price: number) {
         this.pointPrice = price;
-        if (price > 0) this.claimAmount = 0;
-    }
-
-    onChangeClaimAmount(amount: number) {
-        this.claimAmount = amount;
-        if (amount > 0) this.pointPrice = 0;
     }
 
     onImgChange() {

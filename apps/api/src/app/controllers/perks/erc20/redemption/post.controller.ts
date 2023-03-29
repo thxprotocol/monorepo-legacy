@@ -2,7 +2,7 @@ import { ERC20Perk } from '@thxnetwork/api/models/ERC20Perk';
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import { toWei } from 'web3-utils';
-import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
+import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { getContractFromName } from '@thxnetwork/api/config/contracts';
 import { BigNumber } from 'ethers';
 import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
@@ -12,6 +12,7 @@ import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
+import { redeemValidation } from '@thxnetwork/api/util/perks';
 
 const validation = [param('uuid').exists()];
 
@@ -21,6 +22,7 @@ const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(req.header('X-PoolId'));
     const erc20Perk = await ERC20Perk.findOne({ uuid: req.params.uuid });
     if (!erc20Perk) throw new NotFoundError('Could not find this perk');
+    if (!erc20Perk.pointPrice) throw new NotFoundError('No point price for this perk has been set.');
 
     const erc20 = await ERC20Service.getById(erc20Perk.erc20Id);
     if (!erc20) throw new NotFoundError('Could not find the erc20 for this perk');
@@ -28,6 +30,11 @@ const controller = async (req: Request, res: Response) => {
     const pointBalance = await PointBalance.findOne({ sub: req.auth.sub, poolId: pool._id });
     if (!pointBalance || Number(pointBalance.balance) < Number(erc20Perk.pointPrice)) {
         throw new BadRequestError('Not enough points on this account for this payment');
+    }
+
+    const redeemValidationResult = await redeemValidation({ perk: erc20Perk, sub: req.auth.sub });
+    if (redeemValidationResult.isError) {
+        throw new ForbiddenError(redeemValidationResult.errorMessage);
     }
 
     const contract = getContractFromName(pool.chainId, 'LimitedSupplyToken', erc20.address);
@@ -47,6 +54,7 @@ const controller = async (req: Request, res: Response) => {
         perkId: erc20Perk.id,
         sub: req.auth.sub,
         poolId: erc20Perk.poolId,
+        amount: erc20Perk.pointPrice,
     });
 
     await PointBalanceService.subtract(pool, req.auth.sub, erc20Perk.pointPrice);

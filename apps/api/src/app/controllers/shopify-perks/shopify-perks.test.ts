@@ -6,9 +6,7 @@ import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { addMinutes } from '@thxnetwork/api/util/rewards';
 import { createImage } from '@thxnetwork/api/util/jest/images';
-
 import { ShopifyPerkDocument } from '@thxnetwork/api/models/ShopifyPerk';
-import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
 
 const user = request.agent(app);
 
@@ -41,9 +39,6 @@ describe('Shopify Perks', () => {
             expiryDate = addMinutes(new Date(), 30),
             pointPrice = 200,
             amount = '1',
-            platform = RewardConditionPlatform.Shopify,
-            interaction = RewardConditionInteraction.ShopifyTotalSpent,
-            content = 'content',
             limit = 1,
             claimAmount = 0,
             isPromoted = true,
@@ -61,9 +56,6 @@ describe('Shopify Perks', () => {
                 image,
                 amount,
                 pointPrice,
-                platform,
-                interaction,
-                content,
                 expiryDate: expiryDate.toString(),
                 limit,
                 claimAmount,
@@ -78,13 +70,8 @@ describe('Shopify Perks', () => {
                 expect(body.image).toBeDefined();
                 expect(body.amount).toBe(amount);
                 expect(body.pointPrice).toBe(pointPrice);
-                expect(body.platform).toBe(platform);
-                expect(body.interaction).toBe(interaction);
-                expect(body.content).toBe(content);
                 expect(new Date(body.expiryDate).getDate()).toBe(expiryDate.getDate());
                 expect(body.limit).toBe(limit);
-                expect(body.claimAmount).toBe(claimAmount);
-                expect(body.claims.length).toBe(0);
                 expect(body.isPromoted).toBe(true);
                 expect(body.priceRuleId).toBe(priceRuleId);
                 expect(body.discountCode).toBe(discountCode);

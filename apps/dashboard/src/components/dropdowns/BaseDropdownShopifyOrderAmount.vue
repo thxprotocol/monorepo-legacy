@@ -1,18 +1,15 @@
 <template>
-    <div v-if="profile.shopifyStoreUrl">
-        <b-form-group
-            label="Minimal order amount"
-            :description="`Will verify if a customer has created at least ${amount} orders.`"
-        >
-            <b-form-input type="number" :value="amount" @change="onChange" min="0" />
-        </b-form-group>
-    </div>
-    <div v-else>
-        <b-alert variant="info" show>
-            <i class="fas fa-link mr-2"></i>
-            Shopify Store not connected. <b-link to="/account">Connect</b-link>
-        </b-alert>
-    </div>
+    <b-form-group
+        v-if="profile.shopifyStoreUrl"
+        label="Minimal order amount"
+        :description="`Will verify if a customer has created at least ${amount} orders.`"
+    >
+        <b-form-input type="number" :value="amount" @change="onChange" min="0" />
+    </b-form-group>
+    <b-alert variant="info" show v-else>
+        <i class="fas fa-link mr-2"></i>
+        Shopify Store not connected. <b-link to="/account">Connect</b-link>
+    </b-alert>
 </template>
 
 <script lang="ts">
@@ -29,15 +26,19 @@ export default class BaseDropdownShopifyOrderAmount extends Vue {
     profile!: IAccount;
     amount: number | null = null;
 
-    @Prop({ required: false }) item!: string;
+    @Prop({ required: false }) content!: string;
+    @Prop({ required: false }) contentMetadata!: any;
 
     mounted() {
-        this.amount = this.item ? Number(JSON.parse(this.item).amount) : 0;
+        this.amount = this.contentMetadata ? this.contentMetadata.amount : 0;
     }
 
     onChange(amount: number) {
         this.amount = amount;
-        this.$emit('selected', JSON.stringify({ amount: this.amount, shopifyStoreUrl: this.profile.shopifyStoreUrl }));
+        this.$emit('selected', {
+            content: this.profile.shopifyStoreUrl,
+            contentMetadata: { amount: this.amount, shopifyStoreUrl: this.profile.shopifyStoreUrl },
+        });
     }
 }
 </script>

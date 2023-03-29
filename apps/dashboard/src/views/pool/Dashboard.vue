@@ -1,7 +1,7 @@
 <template>
     <div>
         <h2>Dashboard</h2>
-        <b-row>
+        <b-row v-if="pool">
             <b-col md="8">
                 <b-row class="mt-5">
                     <b-col>
@@ -364,9 +364,10 @@ export default class TransactionsView extends Vue {
                     data: dailyChartPoints,
                     borderColor: '#5FE2F8',
                     borderJoinStyle: 'round',
-                    pointRadius: 5,
+                    pointRadius: 3,
                     pointHoverRadius: 8,
                     hoverBorderJoinStyle: 'round',
+                    tension: 0.4,
                 },
                 {
                     label: 'Referral',
@@ -374,9 +375,10 @@ export default class TransactionsView extends Vue {
                     data: referralChartPoints,
                     borderColor: 'rgb(152, 216, 13)',
                     borderJoinStyle: 'round',
-                    pointRadius: 5,
+                    pointRadius: 3,
                     pointHoverRadius: 8,
                     hoverBorderJoinStyle: 'round',
+                    tension: 0.4,
                 },
                 {
                     label: 'Conditional',
@@ -384,9 +386,10 @@ export default class TransactionsView extends Vue {
                     data: conditionalChartPoints,
                     borderColor: '#FFBC38',
                     borderJoinStyle: 'round',
-                    pointRadius: 5,
+                    pointRadius: 3,
                     pointHoverRadius: 8,
                     hoverBorderJoinStyle: 'round',
+                    tension: 0.4,
                 },
                 {
                     label: 'Milestone',
@@ -394,9 +397,10 @@ export default class TransactionsView extends Vue {
                     data: milestoneChartPoints,
                     borderColor: '#0d6efd',
                     borderJoinStyle: 'round',
-                    pointRadius: 5,
+                    pointRadius: 3,
                     pointHoverRadius: 8,
                     hoverBorderJoinStyle: 'round',
+                    tension: 0.4,
                 },
             ],
         };

@@ -46,6 +46,7 @@ class PointRewardModule extends VuexModule {
 
         data.results.forEach((reward: TPointReward) => {
             reward.page = page;
+            reward.contentMetadata = reward.contentMetadata ? JSON.parse(reward.contentMetadata) : '';
             this.context.commit('set', reward);
         });
     }

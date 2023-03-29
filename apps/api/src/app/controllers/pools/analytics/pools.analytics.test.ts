@@ -9,18 +9,22 @@ import {
     widgetAccessToken,
     userWalletAddress2,
     sub,
+    account,
+    account2,
 } from '@thxnetwork/api/util/jest/constants';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { addMinutes } from '@thxnetwork/api/util/rewards';
 import { fromWei, isAddress, toWei } from 'web3-utils';
+import nock from 'nock';
+import { AUTH_URL } from '@thxnetwork/api/config/secrets';
 
 const user = request.agent(app);
 
 describe('Default Pool', () => {
     let pointReward: any,
-        referralRewardId: string,
         referralReward: any,
         referralRewardClaim: any,
+        pointRewardClaim: any,
         milestoneReward: any,
         milestoneRewardClaim: any,
         perk: any,
@@ -67,8 +71,8 @@ describe('Default Pool', () => {
                 })
                 .expect((res: request.Response) => {
                     poolId = res.body._id;
-                    expect(res.body.title).toBe('My Pool');
-                    expect(res.body.archived).toBe(false);
+                    expect(res.body.settings.title).toBe('My Pool');
+                    expect(res.body.settings.isArchived).toBe(false);
                 })
                 .expect(201, done);
         });
@@ -88,14 +92,13 @@ describe('Default Pool', () => {
                         successUrl,
                     })
                     .expect((res: request.Response) => {
-                        referralRewardId = res.body._id;
                         referralReward = res.body;
                     })
                     .expect(201, done);
             });
 
             it('POST /referral-rewards/:uuid/claims', (done) => {
-                user.post(`/v1/referral-rewards/${referralRewardId}/claims`)
+                user.post(`/v1/referral-rewards/${referralReward.uuid}/claims`)
                     .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                     .send({
                         sub: sub2,
@@ -112,11 +115,8 @@ describe('Default Pool', () => {
                     .send({
                         claimUuids: [referralRewardClaim.uuid],
                     })
-                    .expect((res: request.Response) => {
-                        referralRewardClaim = res.body[0];
-                        sub1TotalAmount += referralReward.amount;
-                    })
                     .expect(200, done);
+                sub2TotalAmount += Number(referralRewardClaim.amount);
             });
 
             it('POST /referral-rewards', (done) => {
@@ -134,14 +134,13 @@ describe('Default Pool', () => {
                         successUrl,
                     })
                     .expect((res: request.Response) => {
-                        referralRewardId = res.body._id;
                         referralReward = res.body;
                     })
                     .expect(201, done);
             });
 
             it('POST /referral-rewards/:uuid/claims', (done) => {
-                user.post(`/v1/referral-rewards/${referralRewardId}/claims`)
+                user.post(`/v1/referral-rewards/${referralReward.uuid}/claims`)
                     .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                     .send({
                         sub: sub2,
@@ -158,11 +157,8 @@ describe('Default Pool', () => {
                     .send({
                         claimUuids: [referralRewardClaim.uuid],
                     })
-                    .expect((res: request.Response) => {
-                        referralRewardClaim = res.body[0];
-                        sub1TotalAmount += referralReward.amount;
-                    })
                     .expect(200, done);
+                sub2TotalAmount += Number(referralRewardClaim.amount);
             });
         });
 
@@ -193,8 +189,8 @@ describe('Default Pool', () => {
                 user.post(`/v1/rewards/points/${pointReward.uuid}/claim`)
                     .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
                     .expect((res: request.Response) => {
-                        referralRewardClaim = res.body[0];
-                        sub2TotalAmount += Number(pointReward.amount);
+                        pointRewardClaim = res.body;
+                        sub1TotalAmount += Number(pointRewardClaim.amount);
                     })
                     .expect(201, done);
             });
@@ -225,8 +221,8 @@ describe('Default Pool', () => {
                 user.post(`/v1/rewards/points/${pointReward.uuid}/claim`)
                     .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
                     .expect((res: request.Response) => {
-                        referralRewardClaim = res.body[0];
-                        sub2TotalAmount += Number(pointReward.amount);
+                        pointRewardClaim = res.body;
+                        sub1TotalAmount += Number(pointRewardClaim.amount);
                     })
                     .expect(201, done);
             });
@@ -256,7 +252,6 @@ describe('Default Pool', () => {
                         expect(res.body.milestoneRewardId).toBe(milestoneReward._id);
                         expect(res.body.uuid).toBeDefined();
                         milestoneRewardClaim = res.body;
-                        sub1TotalAmount += milestoneReward.amount;
                     })
                     .expect(201, done);
             });
@@ -269,6 +264,7 @@ describe('Default Pool', () => {
                     })
                     .expect((res: request.Response) => {
                         expect(res.body.isClaimed).toBe(true);
+                        sub2TotalAmount += Number(milestoneRewardClaim.amount);
                     })
                     .expect(201, done);
             });
@@ -331,12 +327,20 @@ describe('Default Pool', () => {
                         expect(res.body.withdrawal).toBeDefined();
                         expect(res.body.erc20PerkPayment).toBeDefined();
                         expect(res.body.erc20PerkPayment.poolId).toBe(poolId);
-                        sub2TotalAmount += perk.pointPrice;
+                        sub1TotalAmount += Number(perk.pointPrice);
                     })
                     .expect(201, done);
             });
         });
         describe('Generate Analitycs', () => {
+            beforeAll(async () => {
+                nock(`${AUTH_URL}/account?subs=${sub},${sub2}`)
+                    .persist()
+                    .get(/.*?/)
+                    .reply(200, () => {
+                        return [account, account2];
+                    });
+            });
             it('GET /pools/:id/analytics', (done) => {
                 const oneDay = 86400000; // one day in milliseconds
                 const endDate = new Date();
@@ -366,8 +370,8 @@ describe('Default Pool', () => {
                     .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                     .expect(({ body }: request.Response) => {
                         expect(body.length).toBe(2);
-                        expect(body[0].score).toBe(sub1TotalAmount);
-                        expect(body[1].score).toBe(sub2TotalAmount);
+                        expect(body[0].score).toBe(sub2TotalAmount);
+                        expect(body[1].score).toBe(sub1TotalAmount);
                     })
 
                     .expect(200, done);

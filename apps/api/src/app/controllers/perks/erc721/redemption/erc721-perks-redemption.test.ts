@@ -12,8 +12,6 @@ import { Contract } from 'web3-eth-contract';
 import { getProvider } from '@thxnetwork/api/util/network';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
 import { addMinutes } from 'date-fns';
-import { RewardConditionPlatform } from '@thxnetwork/types/enums/RewardConditionPlatform';
-import { RewardConditionInteraction } from '@thxnetwork/types/enums/RewardConditionInteraction';
 import { createImage } from '@thxnetwork/api/util/jest/images';
 import { ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
 
@@ -192,9 +190,6 @@ describe('ERC721 Perks Redemtpion', () => {
                 expiryDate = addMinutes(new Date(), 30),
                 pointPrice = 200,
                 image = createImage(),
-                platform = RewardConditionPlatform.Google,
-                interaction = RewardConditionInteraction.YouTubeLike,
-                content = 'videoid',
                 limit = 0,
                 claimAmount = 0,
                 isPromoted = true;
@@ -213,9 +208,6 @@ describe('ERC721 Perks Redemtpion', () => {
                     price: 0,
                     priceCurrency: 'USD',
                     pointPrice,
-                    platform,
-                    interaction,
-                    content,
                     expiryDate: expiryDate.toString(),
                     limit,
                     claimAmount,
@@ -227,9 +219,6 @@ describe('ERC721 Perks Redemtpion', () => {
                     expect(body[0].description).toBe(description);
                     expect(body[0].image).toBeDefined();
                     expect(body[0].pointPrice).toBe(pointPrice);
-                    expect(body[0].platform).toBe(platform);
-                    expect(body[0].interaction).toBe(interaction);
-                    expect(body[0].content).toBe(content);
                     expect(new Date(body[0].expiryDate).getDate()).toBe(expiryDate.getDate());
                     expect(body[0].limit).toBe(limit);
                     expect(body[0].claimAmount).toBe(claimAmount);

@@ -31,11 +31,11 @@ export default class BaseDropdownTwitterTweets extends Vue {
     url = '';
     state: boolean | null = null;
 
-    @Prop({ required: false }) item!: string;
+    @Prop({ required: false }) content!: string;
 
     // https://twitter.com/twitter/status/1603121182101970945
     mounted() {
-        this.url = this.item ? 'https://twitter.com/twitter/status/' + this.item : '';
+        this.url = this.content ? 'https://twitter.com/twitter/status/' + this.content : '';
         if (this.url) this.onInput(this.url);
     }
 
@@ -63,7 +63,14 @@ export default class BaseDropdownTwitterTweets extends Vue {
         } else {
             this.state = true;
             this.preview = data;
-            this.$emit('selected', tweetId);
+            this.$emit('selected', {
+                content: tweetId,
+                contentMetadata: {
+                    url: this.url,
+                    username: data.user.username,
+                    text: data.tweet.text,
+                },
+            });
         }
     }
 }

@@ -5,7 +5,7 @@ import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import { track } from '@thxnetwork/mixpanel';
 import { DASHBOARD_URL } from '@thxnetwork/wallet/utils/secrets';
 import { IAccount } from '@thxnetwork/dashboard/types/account';
-import { TPool } from '@thxnetwork/types/index';
+import { TPool, TPoolSettings } from '@thxnetwork/types/index';
 
 type TPoolTransfer = {
     sub: string;
@@ -284,7 +284,7 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async update({ pool, data }: { pool: TPool; data: { archived: boolean; title: string } }) {
+    async update({ pool, data }: { pool: TPool; data: { settings: TPoolSettings } }) {
         await axios({
             method: 'PATCH',
             url: '/pools/' + pool._id,
@@ -293,7 +293,7 @@ class PoolModule extends VuexModule {
         });
         this.context.commit('set', { ...pool, ...data });
 
-        if (data.archived) {
+        if (data.settings.isArchived) {
             this.context.commit('unset', pool);
         }
     }

@@ -13,19 +13,9 @@
                 height="15"
             />
             <span v-if="rewardCondition.interaction">{{ rewardCondition.interaction.name }}</span>
+            <span v-if="rewardCondition.contentMetadata.amount">: {{ rewardCondition.contentMetadata.amount }}</span>
         </div>
-        <span
-            class="ml-3"
-            v-if="
-                [RewardConditionInteraction.ShopifyOrderAmount, RewardConditionInteraction.ShopifyTotalSpent].includes(
-                    rewardCondition.interaction.type,
-                )
-            "
-        >
-            {{ getContent(rewardCondition.content).amount }}
-        </span>
         <b-link
-            v-else
             :href="getChannelActionURL(rewardCondition.interaction.type, rewardCondition.content)"
             target="_blank"
             class="ml-3"
@@ -40,26 +30,17 @@ import { IChannel, IChannelAction } from '@thxnetwork/dashboard/types/rewards';
 import { RewardConditionPlatform, RewardConditionInteraction } from '@thxnetwork/types/index';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
-function isJsonString(value: string) {
-    try {
-        JSON.parse(value);
-    } catch {
-        return false;
-    }
-    return true;
-}
-
 @Component({})
 export default class BaseBadgeRewardConditionPreview extends Vue {
     RewardConditionPlatform = RewardConditionPlatform;
     RewardConditionInteraction = RewardConditionInteraction;
 
-    @Prop() rewardCondition!: { platform: IChannel; interaction: IChannelAction; content: string };
-
-    getContent(content: string) {
-        if (isJsonString(content)) return JSON.parse(content);
-        return content;
-    }
+    @Prop() rewardCondition!: {
+        platform: IChannel;
+        interaction: IChannelAction;
+        content: string;
+        contentMetadata: any;
+    };
 
     getChannelActionURL(interaction: RewardConditionInteraction, content: string) {
         switch (interaction) {
@@ -73,9 +54,11 @@ export default class BaseBadgeRewardConditionPreview extends Vue {
                 return `https://www.twitter.com/twitter/status/${content}`;
             case RewardConditionInteraction.TwitterFollow:
                 return `https://www.twitter.com/i/user/${content}`;
+            case RewardConditionInteraction.DiscordGuildJoined:
+                return this.rewardCondition.contentMetadata.inviteURL;
             case RewardConditionInteraction.ShopifyOrderAmount:
             case RewardConditionInteraction.ShopifyTotalSpent:
-                return JSON.parse(content);
+                return content;
             default:
                 return '';
         }

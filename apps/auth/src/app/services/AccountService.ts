@@ -20,6 +20,14 @@ export class AccountService {
         return await Account.findById(sub);
     }
 
+    static async getMany(subs: string[]) {
+        if (!subs.length) {
+            return [];
+        }
+        const result = await Account.find({ _id: { $in: subs } });
+        return result;
+    }
+
     static getByDiscordId(discordId: string) {
         return Account.findOne({ 'tokens.userId': discordId });
     }

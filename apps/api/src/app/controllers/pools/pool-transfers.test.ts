@@ -54,8 +54,8 @@ describe('Pool Transfer', () => {
                 })
                 .expect((res: request.Response) => {
                     pool = res.body;
-                    expect(res.body.title).toBe(title);
-                    expect(res.body.archived).toBe(false);
+                    expect(res.body.settings.title).toBe(title);
+                    expect(res.body.settings.isArchived).toBe(false);
                 })
                 .expect(201, done);
         });

@@ -11,8 +11,9 @@ export type TBaseReward = {
     claimLimit: number;
     limit: number;
     platform: RewardConditionPlatform;
-    interaction?: RewardConditionInteraction;
-    content?: string;
+    interaction: RewardConditionInteraction;
+    content: string;
+    contentMetadata: any;
     createdAt?: string;
     updatedAt?: string;
     progress?: number;

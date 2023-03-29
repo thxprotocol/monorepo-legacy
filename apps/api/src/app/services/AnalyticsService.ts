@@ -11,6 +11,12 @@ import { DailyReward } from './DailyRewardService';
 import { PointReward } from './PointRewardService';
 import { IAccount } from '../models/Account';
 import AccountProxy from '../proxies/AccountProxy';
+import { ERC20PerkPayment } from '../models/ERC20PerkPayment';
+import { DailyRewardClaim } from '../models/DailyRewardClaims';
+import { ERC721PerkPayment } from '../models/ERC721PerkPayment';
+import { MilestoneRewardClaim } from '../models/MilestoneRewardClaims';
+import { PointRewardClaim } from '../models/PointRewardClaim';
+import { ReferralRewardClaim } from '../models/ReferralRewardClaim';
 
 export async function getPoolAnalyticsForChart(pool: AssetPoolDocument, startDate: Date, endDate: Date) {
     const erc20PerksQueryResult = await runPoolChartQuery<ERC20PerkDocument>({
@@ -202,45 +208,35 @@ export async function getPoolMetrics(pool: AssetPoolDocument, dateRange?: { star
 export async function getLeaderboard(pool: AssetPoolDocument, dateRange?: { startDate: Date; endDate: Date }) {
     // LEADERBOARD
     const topErc20PerksBySub = await runLeaderBoardQuery({
-        joinTable: 'erc20perkpayments',
-        model: ERC20Perk,
-        key: 'perkId',
+        model: ERC20PerkPayment,
         poolId: String(pool._id),
-        amountField: 'pointPrice',
         dateRange,
     });
     const topErc721PerksBySub = await runLeaderBoardQuery({
-        joinTable: 'erc721perkpayments',
-        model: ERC721Perk,
-        key: 'perkId',
+        model: ERC721PerkPayment,
         poolId: String(pool._id),
-        amountField: 'pointPrice',
         dateRange,
     });
     const topReferralClaimsBySub = await runLeaderBoardQuery({
-        joinTable: 'referralrewardclaims',
-        key: 'referralRewardId',
-        model: ReferralReward,
+        model: ReferralRewardClaim,
         poolId: String(pool._id),
-        amountField: 'amount',
         extraFilter: { isApproved: true },
         dateRange,
     });
     const topPointClaimsBySub = await runLeaderBoardQuery({
-        joinTable: 'pointrewardclaims',
-        model: PointReward,
-        key: 'pointRewardId',
+        model: PointRewardClaim,
         poolId: String(pool._id),
-        amountField: 'amount',
         dateRange,
     });
     const topMilestonesClaimsBySub = await runLeaderBoardQuery({
-        joinTable: 'milestonerewardclaims',
-        model: MilestoneReward,
-        key: 'milestoneRewardId',
+        model: MilestoneRewardClaim,
         poolId: String(pool._id),
-        amountField: 'amount',
         extraFilter: { isClaimed: true },
+        dateRange,
+    });
+    const topDailyRewardClaimsBySub = await runLeaderBoardQuery({
+        model: DailyRewardClaim,
+        poolId: String(pool._id),
         dateRange,
     });
     type leaderBoardQueryResult = { _id: string; total_amount: number };
@@ -248,17 +244,20 @@ export async function getLeaderboard(pool: AssetPoolDocument, dateRange?: { star
     const leaderBoardQueryResultMerged: leaderBoardQueryResult[] = [
         ...topErc20PerksBySub,
         ...topErc721PerksBySub,
+        ...topDailyRewardClaimsBySub,
         ...topReferralClaimsBySub,
         ...topPointClaimsBySub,
         ...topMilestonesClaimsBySub,
     ];
 
     const leaderBoard: { sub: string; score: number; account: IAccount }[] = [];
+    const subs = new Set(leaderBoardQueryResultMerged.map((x) => x._id));
+    const accounts = await AccountProxy.getMany(Array.from(subs));
     // Group by sub and sort by highest score
     for (let i = 0; i < leaderBoardQueryResultMerged.length; i++) {
         const data = leaderBoardQueryResultMerged[i];
         const sub = data._id;
-        const account = await AccountProxy.getById(sub);
+        const account = accounts.find((x) => x.sub == sub);
         const address = await account.getAddress(pool.chainId);
 
         if (i === 0) {
@@ -459,68 +458,38 @@ async function runQueryPoolMetrics<T>(args: {
 async function runLeaderBoardQuery<T>(args: {
     model: mongoose.Model<T>;
     poolId: string;
-    joinTable: string;
-    key: string;
-    amountField: string;
     extraFilter?: object;
     dateRange?: { startDate: Date; endDate: Date };
 }) {
-    const extraFilter = args.extraFilter ? { ...args.extraFilter } : {};
-    const dateRange = args.dateRange
-        ? {
-              createdAt: {
-                  $gte: args.dateRange.startDate,
-                  $lte: args.dateRange.endDate,
-              },
-          }
-        : {};
+    const match = createMatchFilter({
+        poolId: args.poolId,
+        _extraFilter: args.extraFilter,
+        _dateRange: args.dateRange,
+    });
+
     const queryResult = await args.model.aggregate([
         {
-            $match: {
-                poolId: args.poolId,
-            },
-        },
-        {
-            $lookup: {
-                from: args.joinTable,
-                let: {
-                    id: {
-                        $convert: {
-                            input: '$_id',
-                            to: 'string',
-                        },
-                    },
-                },
-                pipeline: [
-                    {
-                        $match: {
-                            $and: [
-                                {
-                                    $expr: {
-                                        $eq: ['$$id', `$${args.key}`],
-                                    },
-                                },
-                                dateRange,
-                                extraFilter,
-                            ],
-                        },
-                    },
-                ],
-                as: 'claims',
-            },
-        },
-        {
-            $unwind: '$claims',
+            $match: match,
         },
         {
             $group: {
-                _id: '$claims.sub',
+                _id: '$sub',
+                count: {
+                    $sum: 1,
+                },
                 total_amount: {
                     $sum: {
-                        $convert: {
-                            input: `$${args.amountField}`,
-                            to: 'int',
-                        },
+                        $multiply: [
+                            {
+                                $convert: {
+                                    input: `$amount`,
+                                    to: 'int',
+                                },
+                            },
+                            {
+                                $sum: 1,
+                            },
+                        ],
                     },
                 },
             },
@@ -536,4 +505,33 @@ async function runLeaderBoardQuery<T>(args: {
     ]);
 
     return queryResult;
+}
+
+function createMatchFilter({
+    poolId,
+    _extraFilter,
+    _dateRange,
+}: {
+    poolId: string;
+    _extraFilter?: object;
+    _dateRange?: { startDate: Date; endDate: Date };
+}) {
+    const extraFilter = _extraFilter ? { ..._extraFilter } : undefined;
+    const dateRange = _dateRange
+        ? {
+              createdAt: {
+                  $gte: _dateRange.startDate,
+                  $lte: _dateRange.endDate,
+              },
+          }
+        : undefined;
+
+    let match = { poolId: poolId };
+    if (extraFilter) {
+        match = { ...match, ...extraFilter };
+    }
+    if (dateRange) {
+        match = { ...match, ...dateRange };
+    }
+    return match;
 }

@@ -20,32 +20,29 @@ import { mapGetters } from 'vuex';
     computed: mapGetters({}),
 })
 export default class BaseDropdownYoutubeVideo extends Vue {
-    @Prop() item!: string;
     videoId = '';
     url = '';
     baseUrl = 'https://www.youtube.com/watch?v=';
 
+    @Prop() content!: string;
+
+    mounted() {
+        this.url = this.content ? this.baseUrl + this.content : '';
+        this.onChange(this.url);
+    }
+
     onChange(url: string) {
+        if (url && url.toLowerCase().includes('shorts')) return;
+
         const result = /^https?:\/\/(www\.)?youtu\.be/.test(url)
             ? url.replace(/^https?:\/\/(www\.)?youtu\.be\/([\w-]{11}).*/, '$2')
             : url.replace(/.*\?v=([\w-]{11}).*/, '$1');
 
         if (result !== this.url) {
             this.videoId = result;
-            this.$emit('selected', result);
-            if (this.videoId.toLowerCase().includes('shorts')) {
-                this.videoId = '';
-                this.url = '';
-            }
+            this.$emit('selected', { content: result, contentMetadata: { videoId: this.videoId, videoURL: url } });
         } else {
             this.videoId = '';
-        }
-    }
-
-    mounted() {
-        if (this.item) {
-            this.url = this.baseUrl + this.item;
-            this.onChange(this.url);
         }
     }
 }

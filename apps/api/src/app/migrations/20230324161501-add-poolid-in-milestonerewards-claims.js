@@ -2,24 +2,9 @@ module.exports = {
   async up(db) {
     const collections = [
       {
-        claimCollectionName: 'erc20perkpayments',
-        rewardCollectionName: 'erc20perks',
-        foreignField: 'perkId',
-      },
-      {
-        claimCollectionName: 'erc721perkpayments',
-        rewardCollectionName: 'erc721perks',
-        foreignField: 'perkId',
-      },
-      {
-        claimCollectionName: 'referralrewardclaims',
-        rewardCollectionName: 'referralrewards',
-        foreignField: 'referralRewardId',
-      },
-      {
-        claimCollectionName: 'pointrewardclaims',
-        rewardCollectionName: 'pointrewards',
-        foreignField: 'pointRewardId',
+        claimCollectionName: 'milestonerewardclaims',
+        rewardCollectionName: 'milestonerewards',
+        foreignField: 'milestoneRewardId',
       },
     ];
     // for each collection returns the claims aggregated with the parent reward

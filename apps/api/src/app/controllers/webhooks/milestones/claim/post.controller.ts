@@ -20,6 +20,7 @@ const controller = async (req: Request, res: Response) => {
         milestoneRewardId: String(reward._id),
         sub: account.sub,
         amount: String(reward.amount),
+        poolId: reward.poolId,
     });
 
     res.status(201).json(claim);

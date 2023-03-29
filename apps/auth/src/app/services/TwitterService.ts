@@ -92,6 +92,7 @@ export class TwitterService {
             params = Object.assign(params, { pagination_token: data.meta.next_token });
             result = !!data.data.filter((u: { id: string }) => u.id === channelItem).length;
 
+            if (result) break;
             if (!data.meta.next_token) break;
         }
 
