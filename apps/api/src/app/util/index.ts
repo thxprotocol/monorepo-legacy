@@ -12,3 +12,7 @@ export const pick = <T, K extends keyof T>(object: T, keys: K[]): Pick<T, K> => 
 export const uniq = <T>(array: T[]): T[] => {
     return [...new Set(array)];
 };
+
+export const sleep = async (seconds: number) => {
+    await new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+};

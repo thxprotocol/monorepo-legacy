@@ -4,12 +4,16 @@ import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { Membership } from '@thxnetwork/api/models/Membership';
 import TransactionService from './TransactionService';
 import { diamondContracts, getContract, poolFacetAdressesPermutations } from '@thxnetwork/api/config/contracts';
-import { pick } from '@thxnetwork/api/util';
+import { pick, sleep } from '@thxnetwork/api/util';
 import { diamondSelectors, getDiamondCutForContractFacets, updateDiamondContract } from '@thxnetwork/api/util/upgrades';
 import { currentVersion } from '@thxnetwork/contracts/exports';
 import { TransactionReceipt } from 'web3-core';
 import { TAssetPoolDeployCallbackArgs } from '@thxnetwork/api/types/TTransaction';
 import { createDummyContents } from '../util/rewards';
+import AccountProxy from '../proxies/AccountProxy';
+import MailService from './MailService';
+import { Widget } from './WidgetService';
+import { PoolSubscription } from '../models/PoolSubscription';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -126,6 +130,32 @@ async function updateAssetPool(pool: AssetPoolDocument, version?: string) {
     return tx;
 }
 
+async function sendNotification(pool: AssetPoolDocument, reward: { title: string; amount: number }) {
+    const sleepTime = 60; // seconds
+    const chunkSize = 600;
+
+    const widget = await Widget.findOne({ poolId: pool._id });
+    const subs = (await PoolSubscription.find({ poolId: pool._id }, { sub: 1 })).map((x) => x._id);
+
+    for (let i = 0; i < subs.length; i += chunkSize) {
+        const subsChunk = subs.slice(i, i + chunkSize);
+
+        let html = `<p style="font-size: 18px">Hi there!👋</p>`;
+        html += `You can earn ${reward.amount} points in pool ${pool.settings.title}(${widget.domain}) for the new reward: 
+    **${reward.title}**.`;
+        html += `<hr />`;
+
+        const promises = subsChunk.map(async (sub) => {
+            const account = await AccountProxy.getById(sub);
+            if (account.email) {
+                await MailService.send(account.email, `🎁 New Reward released: "${reward.title}"`, html);
+            }
+        });
+        await Promise.all(promises);
+        await sleep(sleepTime);
+    }
+}
+
 export default {
     isPoolClient,
     isPoolMember,
@@ -140,4 +170,5 @@ export default {
     countByNetwork,
     contractVersionVariant,
     updateAssetPool,
+    sendNotification,
 };
