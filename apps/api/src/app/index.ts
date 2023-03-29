@@ -11,6 +11,7 @@ import morganBody from 'morgan-body';
 import { MONGODB_URI, NODE_ENV, PORT, VERSION } from '@thxnetwork/api/config/secrets';
 import { corsHandler, errorLogger, errorNormalizer, errorOutput, notFoundHandler } from '@thxnetwork/api/middlewares';
 import { assetsPath } from './util/path';
+import morgan from './middlewares/morgan';
 
 axiosBetterStacktrace(axios);
 
@@ -33,10 +34,12 @@ app.use(
     }),
 );
 
+app.use(morgan);
+
 morganBody(app, {
     logRequestBody: NODE_ENV === 'development',
     logResponseBody: NODE_ENV === 'development',
-    skip: () => NODE_ENV === 'test',
+    skip: () => ['test', 'production'].includes(NODE_ENV),
 });
 
 app.use(express.urlencoded({ extended: true }));
