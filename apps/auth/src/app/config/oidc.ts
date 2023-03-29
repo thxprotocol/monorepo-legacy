@@ -136,6 +136,8 @@ const config: Configuration = {
         'pool_analytics:read',
         'pool_subscription:read',
         'pool_subscription:write',
+        'merchants:write',
+        'merchants:read',
     ],
     claims: {
         openid: ['sub', 'email', 'variant', 'address'],

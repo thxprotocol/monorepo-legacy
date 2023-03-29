@@ -19,6 +19,7 @@ const controller = async (req: Request, res: Response) => {
 
     const erc721Perk = await ERC721Perk.findOne({ uuid: req.params.uuid });
     if (!erc721Perk) throw new NotFoundError('Could not find this perk');
+    if (!erc721Perk.price) throw new NotFoundError('No point price for this perk has been set.');
 
     const redeemValidationResult = await redeemValidation({ perk: erc721Perk, sub: req.auth.sub });
     if (redeemValidationResult.isError) {

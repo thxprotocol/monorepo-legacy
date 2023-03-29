@@ -22,6 +22,7 @@ const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(req.header('X-PoolId'));
     const erc20Perk = await ERC20Perk.findOne({ uuid: req.params.uuid });
     if (!erc20Perk) throw new NotFoundError('Could not find this perk');
+    if (!erc20Perk.pointPrice) throw new NotFoundError('No point price for this perk has been set.');
 
     const erc20 = await ERC20Service.getById(erc20Perk.erc20Id);
     if (!erc20) throw new NotFoundError('Could not find the erc20 for this perk');

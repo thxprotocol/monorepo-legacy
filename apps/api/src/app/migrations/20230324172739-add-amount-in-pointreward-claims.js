@@ -65,10 +65,15 @@ module.exports = {
           },
         },
       ]);
-      cursor.forEach(async function (project) {
-        console.log('UPDATNG:', project)
-        await claimCollection.updateOne({ _id: project._id }, { $set: { amount: String(project.amount) } });
-      });
+
+      for await (const project of cursor) {
+        try {
+          await claimCollection.updateOne({ _id: project._id }, { $set: { amount: String(project.amount) } });
+          console.log('UPDATED:', project);
+        } catch (err) {
+          console.log('ERROR UPDATING:', project, err);
+        }
+      }
     }
   },
 

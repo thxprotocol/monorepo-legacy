@@ -43,6 +43,7 @@ export default class AccountProxy {
     }
 
     static async getMany(subs: string[]): Promise<IAccount[]> {
+        if (!subs.length) return [];
         const params = new URLSearchParams();
         params.append('subs', subs.join(','));
         const { data } = await authClient({
