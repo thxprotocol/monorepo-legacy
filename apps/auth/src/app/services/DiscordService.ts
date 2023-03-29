@@ -4,7 +4,7 @@ import CommonOauthLoginOptions from '../types/CommonOauthLoginOptions';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { discordClient } from '../util/axios';
 import { IAccessToken } from '../types/TAccount';
-import { checkAccountAlreadyConnected } from '../util/account';
+import { AccountService } from './AccountService';
 export const scopes = ['identify', 'email', 'guilds', 'guilds.join', 'guilds.members.read'];
 
 const ERROR_NO_DATA = 'Could not find an Discord data for this accesstoken';
@@ -67,7 +67,7 @@ class DiscordService {
         const { user } = await this.getUser(r.data.access_token);
 
         // it throws an error if an account with the same id is already present
-        await checkAccountAlreadyConnected(user.id, AccessTokenKind.Discord);
+        await AccountService.checkAccountAlreadyConnected(user.id, AccessTokenKind.Discord);
 
         return {
             email: user.email,

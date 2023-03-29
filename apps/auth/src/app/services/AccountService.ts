@@ -13,6 +13,7 @@ import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import bcrypt from 'bcrypt';
 import { ShopifyService } from './ShopifyService';
 import { logger } from '../util/logger';
+import { ForbiddenError } from '../util/errors';
 // import { SignTypedDataVersion, recoverTypedSignature } from '@metamask/eth-sig-util';
 
 export class AccountService {
@@ -247,4 +248,11 @@ export class AccountService {
             return { error };
         }
     }
+
+    static checkAccountAlreadyConnected = async (userId: string, tokenKind: AccessTokenKind) => {
+        const id = await Account.exists({ 'tokens.kind': tokenKind, 'tokens.userId': userId });
+        if (id != null) {
+            throw new ForbiddenError('This account is already connected to a different user.');
+        }
+    };
 }
