@@ -154,7 +154,7 @@ async function sendNotification(pool: AssetPoolDocument, reward: TPointReward) {
                 const account = await AccountProxy.getById(sub);
                 if (!account.email) return;
 
-                await MailService.send(account.email, `🎁 New Reward released: "${reward.title}"`, html);
+                await MailService.send(account.email, `🎁 New Reward: "${reward.title}"`, html);
             } catch (error) {
                 logger.error(error);
             }
