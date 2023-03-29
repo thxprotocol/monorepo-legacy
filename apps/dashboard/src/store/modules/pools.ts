@@ -285,15 +285,16 @@ class PoolModule extends VuexModule {
 
     @Action({ rawError: true })
     async update({ pool, data }: { pool: TPool; data: { settings: TPoolSettings } }) {
-        await axios({
+        const res = await axios({
             method: 'PATCH',
             url: '/pools/' + pool._id,
             data,
             headers: { 'X-PoolId': pool._id },
         });
-        this.context.commit('set', { ...pool, ...data });
 
-        if (data.settings.isArchived) {
+        this.context.commit('set', { ...pool, ...res.data });
+
+        if (res.data.settings.isArchived) {
             this.context.commit('unset', pool);
         }
     }

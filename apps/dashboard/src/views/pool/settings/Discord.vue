@@ -74,11 +74,11 @@ export default class SettingsView extends Vue {
         );
     }
 
-    async onChangeDiscordWebhookUrl(value: string) {
+    async onChangeDiscordWebhookUrl(discordWebhookUrl: string) {
         this.loading = true;
         await this.$store.dispatch('pools/update', {
             pool: this.pool,
-            data: { discordWebhookUrl: value },
+            data: { settings: { discordWebhookUrl } },
         });
         this.loading = false;
     }

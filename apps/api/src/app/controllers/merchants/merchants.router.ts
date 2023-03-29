@@ -32,7 +32,7 @@ router
     .use(corsHandler)
     .post(
         '/',
-        guard.check(['merchant:write']),
+        guard.check(['merchants:write']),
         assertRequestInput(CreateMerchant.validation),
         CreateMerchant.controller,
     );
