@@ -24,6 +24,18 @@
         <hr />
         <b-form-row>
             <b-col md="4">
+                <strong>Origin</strong>
+                <p class="text-muted">Configure the domain the widget will be loaded on.</p>
+            </b-col>
+            <b-col md="8">
+                <b-form-group>
+                    <b-form-input v-model="domain" />
+                </b-form-group>
+            </b-col>
+        </b-form-row>
+        <hr />
+        <b-form-row>
+            <b-col md="4">
                 <strong>Color scheme</strong>
                 <p class="text-muted">Customize the color scheme of your widget.</p>
             </b-col>
@@ -238,18 +250,6 @@
                         </BCard>
                     </b-col>
                 </b-form-row>
-            </b-col>
-        </b-form-row>
-        <hr />
-        <b-form-row>
-            <b-col md="4">
-                <strong>Origin</strong>
-                <p class="text-muted">Configure the domain the widget will be loaded on.</p>
-            </b-col>
-            <b-col md="8">
-                <b-form-group>
-                    <b-form-input v-model="domain" />
-                </b-form-group>
             </b-col>
         </b-form-row>
         <hr />

@@ -169,9 +169,7 @@ class RequestManager extends BaseManager {
             headers: new Headers({ ...config?.headers, ...headers }),
         });
 
-        await this.handleStatus(r);
-
-        return await r.json();
+        return await this.handleStatus(r);
     }
 }
 

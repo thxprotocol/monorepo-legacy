@@ -8,3 +8,4 @@ export { default as SessionManager } from './lib/managers/SessionManager';
 export { default as UserManager } from './lib/managers/UserManager';
 export { default as WalletManager } from './lib/managers/WalletManager';
 export { default as RewardsManager } from './lib/managers/RewardsManager';
+export { default as PoolManager } from './lib/managers/PoolManager';

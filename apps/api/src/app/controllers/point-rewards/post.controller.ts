@@ -25,7 +25,6 @@ const controller = async (req: Request, res: Response) => {
         content,
         contentMetadata,
     });
-
     res.status(201).json(reward);
 };
 

@@ -134,6 +134,8 @@ const config: Configuration = {
         'shopify_rewards:read',
         'shopify_rewards:write',
         'pool_analytics:read',
+        'pool_subscription:read',
+        'pool_subscription:write',
         'merchants:write',
         'merchants:read',
     ],

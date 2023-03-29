@@ -188,9 +188,6 @@ export class TwitterService {
         const user = await this.getUser(data.access_token);
         const expiry = data.expires_in ? Date.now() + Number(data.expires_in) * 1000 : undefined;
 
-        // it throws an error if an account with the same id is already present
-        await AccountService.checkAccountAlreadyConnected(user.id, AccessTokenKind.Discord);
-
         return {
             email: user.email,
             tokenInfo: {

@@ -4,7 +4,6 @@ import CommonOauthLoginOptions from '../types/CommonOauthLoginOptions';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { twitchClient } from '../util/axios';
 import { IAccessToken } from '../types/TAccount';
-import { AccountService } from './AccountService';
 
 export const TWITCH_API_SCOPE = ['user:read:follows', 'user:read:email', 'user:read:broadcast'];
 
@@ -69,9 +68,6 @@ class TwitchService {
 
         const user = await this.getUser(data.access_token);
         const expiry = data.expires_in ? Date.now() + Number(data.expires_in) * 1000 : undefined;
-
-        // it throws an error if an account with the same id is already present
-        await AccountService.checkAccountAlreadyConnected(user.id, AccessTokenKind.Discord);
 
         return {
             email: user.data[0].email,

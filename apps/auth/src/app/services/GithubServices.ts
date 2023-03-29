@@ -93,9 +93,6 @@ export class GithubService {
         const expiresIn = search.get('expires_in');
         const expiry = expiresIn && Date.now() + Number(expiresIn) * 1000;
 
-        // it throws an error if an account with the same id is already present
-        await AccountService.checkAccountAlreadyConnected(user.id, AccessTokenKind.Discord);
-
         return {
             email: user.email,
             tokenInfo: {

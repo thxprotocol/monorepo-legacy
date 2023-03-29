@@ -63,10 +63,12 @@ export class AccountService {
             account.plan = updates.plan;
         }
 
-        try {
-            account.website = updates.website ? new URL(updates.website).hostname : account.website;
-        } catch {
-            // no-op
+        if (updates.website) {
+            try {
+                account.website = updates.website ? new URL(updates.website).hostname : account.website;
+            } catch {
+                // no-op
+            }
         }
 
         // if (updates.authRequestMessage && updates.authRequestSignature) {
@@ -249,9 +251,8 @@ export class AccountService {
         }
     }
 
-    static checkAccountAlreadyConnected = async (userId: string, tokenKind: AccessTokenKind) => {
-        const id = await Account.exists({ 'tokens.kind': tokenKind, 'tokens.userId': userId });
-        if (id != null) {
+    static isConnected = async (userId: string, tokenKind: AccessTokenKind) => {
+        if (await Account.exists({ 'tokens.kind': tokenKind, 'tokens.userId': userId })) {
             throw new ForbiddenError('This account is already connected to a different user.');
         }
     };

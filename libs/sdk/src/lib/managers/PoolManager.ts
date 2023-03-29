@@ -13,6 +13,20 @@ class PoolManager extends BaseManager {
     async getLeaderboard(id: string) {
         return await this.client.request.get(`/v1/pools/${id}/analytics/leaderboard/client?platform=discord`);
     }
+
+    subscription = {
+        get: async (id: string) => {
+            return await this.client.request.get(`/v1/pools/${id}/subscription`);
+        },
+
+        post: async (id: string) => {
+            return await this.client.request.post(`/v1/pools/${id}/subscription`);
+        },
+
+        delete: async (id: string) => {
+            return await this.client.request.delete(`/v1/pools/${id}/subscription`);
+        },
+    };
 }
 
 export default PoolManager;

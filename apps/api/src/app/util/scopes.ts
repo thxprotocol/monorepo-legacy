@@ -34,6 +34,7 @@ export const dashboardScopes = [
     'referral_rewards:write',
     'shopify_rewards:read',
     'shopify_rewards:write',
+    'pool_subscription:read',
 ];
 export const userScopes = [
     'asset_pools:read',
