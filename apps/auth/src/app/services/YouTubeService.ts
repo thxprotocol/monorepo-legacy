@@ -5,6 +5,7 @@ import { AUTH_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../config/secr
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IAccessToken } from '../types/TAccount';
 import { parseJwt } from '../util/jwt';
+import { AccountService } from './AccountService';
 
 const client = new google.auth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, AUTH_URL + '/oidc/callback/google');
 
@@ -237,6 +238,9 @@ export class YouTubeService {
         if (!kind) kind = AccessTokenKind.Google;
 
         const claims = await parseJwt(tokens.id_token);
+
+        // it throws an error if an account with the same id is already present
+        await AccountService.checkAccountAlreadyConnected(claims.sub, AccessTokenKind.Discord);
 
         return {
             email: claims.email,

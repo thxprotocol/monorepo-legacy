@@ -5,7 +5,7 @@ import { AUTH_URL, TWITTER_CLIENT_ID, TWITTER_CLIENT_SECRET } from '../config/se
 import { AccountDocument } from '../models/Account';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IAccessToken } from '../types/TAccount';
-import fs from 'fs';
+import { AccountService } from './AccountService';
 
 const ERROR_NO_DATA = 'Could not find an youtube data for this accesstoken';
 const ERROR_NOT_AUTHORIZED = 'Not authorized for Twitter API';
@@ -187,6 +187,9 @@ export class TwitterService {
         });
         const user = await this.getUser(data.access_token);
         const expiry = data.expires_in ? Date.now() + Number(data.expires_in) * 1000 : undefined;
+
+        // it throws an error if an account with the same id is already present
+        await AccountService.checkAccountAlreadyConnected(user.id, AccessTokenKind.Discord);
 
         return {
             email: user.email,
