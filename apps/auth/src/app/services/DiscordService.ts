@@ -65,13 +65,10 @@ class DiscordService {
             data: body,
         });
         const { user } = await this.getUser(r.data.access_token);
-<<<<<<< HEAD
 
         // it throws an error if an account with the same id is already present
         await checkAccountAlreadyConnected(user.id, AccessTokenKind.Discord);
 
-=======
->>>>>>> develop
         return {
             email: user.email,
             tokenInfo: {
