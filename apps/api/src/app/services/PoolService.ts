@@ -1,5 +1,5 @@
 import { assertEvent, parseLogs } from '@thxnetwork/api/util/events';
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId, RewardConditionInteraction } from '@thxnetwork/types/enums';
 import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { Membership } from '@thxnetwork/api/models/Membership';
 import TransactionService from './TransactionService';
@@ -15,6 +15,7 @@ import MailService from './MailService';
 import { Widget } from './WidgetService';
 import { PoolSubscription } from '../models/PoolSubscription';
 import { logger } from '../util/logger';
+import { TBaseReward, TPointReward } from '@thxnetwork/types/interfaces';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -131,39 +132,36 @@ async function updateAssetPool(pool: AssetPoolDocument, version?: string) {
     return tx;
 }
 
-async function sendNotification(pool: AssetPoolDocument, reward: { title: string; amount: number }) {
-    try {
-        const sleepTime = 60; // seconds
-        const chunkSize = 600;
+async function sendNotification(pool: AssetPoolDocument, reward: TPointReward) {
+    const sleepTime = 60; // seconds
+    const chunkSize = 600;
 
-        const widget = await Widget.findOne({ poolId: pool._id });
-        const subscriptions = await PoolSubscription.find({ poolId: pool._id }, { sub: 1, _id: 0 });
-        const subs = subscriptions.map((x) => x.sub);
+    const widget = await Widget.findOne({ poolId: pool._id });
+    const subscriptions = await PoolSubscription.find({ poolId: pool._id }, { sub: 1, _id: 0 });
+    const subs = subscriptions.map((x) => x.sub);
 
-        for (let i = 0; i < subs.length; i += chunkSize) {
-            const subsChunk = subs.slice(i, i + chunkSize);
+    for (let i = 0; i < subs.length; i += chunkSize) {
+        const subsChunk = subs.slice(i, i + chunkSize);
 
-            let html = `<p style="font-size: 18px">Hi there!👋</p>`;
-            html += `You can earn ${reward.amount} points in pool ${pool.settings.title} (${widget.domain}) for the new reward: 
-    <strong>${reward.title}</strong>.`;
-            html += `<hr />`;
+        let html = `<p style="font-size: 18px">New reward!🔔</p>`;
+        html += `You can earn <strong>${reward.amount} points ✨</strong> at <a href="${widget.domain}">${pool.settings.title}</a>.`;
+        html += `<hr />`;
+        html += `<strong>${reward.title}</strong><br />`;
+        html += `<i>${reward.description}</i>`;
 
-            const promises = subsChunk.map(async (sub) => {
+        const promises = subsChunk.map(async (sub) => {
+            try {
                 const account = await AccountProxy.getById(sub);
-                if (account.email) {
-                    await MailService.send(account.email, `🎁 New Reward released: "${reward.title}"`, html);
-                }
-            });
-            await Promise.all(promises);
-            await sleep(sleepTime);
-        }
-    } catch (err) {
-        logger.error({
-            message: 'Error on PoolService.sendNotification',
-            errorName: err.name,
-            errorMessage: err.message,
-            stack: err.stack,
+                if (!account.email) return;
+
+                await MailService.send(account.email, `🎁 New Reward released: "${reward.title}"`, html);
+            } catch (error) {
+                logger.error(error);
+            }
         });
+
+        await Promise.all(promises);
+        await sleep(sleepTime);
     }
 }
 

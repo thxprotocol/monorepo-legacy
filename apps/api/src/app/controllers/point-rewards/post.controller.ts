@@ -25,7 +25,6 @@ const controller = async (req: Request, res: Response) => {
         content,
         contentMetadata,
     });
-    PoolService.sendNotification(pool, reward);
     res.status(201).json(reward);
 };
 

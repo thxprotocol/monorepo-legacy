@@ -5,6 +5,7 @@ import db from '@thxnetwork/api/util/database';
 import { TPointReward } from '@thxnetwork/types/interfaces/PointReward';
 import axios from 'axios';
 import { Widget } from './WidgetService';
+import PoolService from './PoolService';
 
 export function findByPool(pool: AssetPoolDocument, page = 1, limit = 5) {
     return paginatedResults(PointReward, page, limit, { poolId: pool._id });
@@ -43,6 +44,8 @@ export async function create(pool: AssetPoolDocument, payload: Partial<TPointRew
             ],
         });
     }
+
+    PoolService.sendNotification(pool, reward);
 
     return reward;
 }
