@@ -11,6 +11,6 @@ const schema = new mongoose.Schema(
     { timestamps: true },
 );
 
-schema.index({ sub: 1, poolId: 1 });
+schema.index({ sub: 1, poolId: 1 }, { unique: true });
 
 export const PoolSubscription = mongoose.model<PoolSubscriptionDocument>('PoolSubscription', schema);
