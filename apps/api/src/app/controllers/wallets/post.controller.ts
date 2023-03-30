@@ -9,6 +9,8 @@ import { ChainId } from '@thxnetwork/types/enums';
 export const validation = [
     body('sub').exists().isMongoId(),
     body('chainId').exists().isNumeric(),
+    body('deploy').optional().isBoolean(),
+    body('address').optional().isString(),
     body('forceSync').optional().isBoolean(),
 ];
 
@@ -22,8 +24,8 @@ const controller = async (req: Request, res: Response) => {
         if (!wallet.address) throw new Error('No address found for this wallet.');
         return res.status(201).json(wallet);
     }
-
-    wallet = await WalletService.create(req.body.chainId, account, true);
+    const { chainId, deploy, address, forceSync } = req.body;
+    wallet = await WalletService.create({ account, chainId, deploy, address, forceSync });
 
     res.status(201).json(wallet);
 };

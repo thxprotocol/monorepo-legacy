@@ -10,9 +10,24 @@ import { TransactionReceipt } from 'web3-core';
 import { FacetCutAction, updateDiamondContract } from '../util/upgrades';
 import WalletManagerService from './WalletManagerService';
 
-async function create(chainId: ChainId, account: IAccount, forceSync = true) {
+async function create(data: {
+    chainId: ChainId;
+    account: IAccount;
+    deploy?: boolean;
+    forceSync: boolean;
+    address?: string;
+}) {
+    const { chainId, account } = data;
     const sub = String(account.sub);
-    const wallet = await Wallet.create({ sub, chainId, version: currentVersion });
+    const mustDeploy = data.deploy === true || data.deploy === undefined;
+    const address = !mustDeploy ? data.address : undefined;
+
+    const wallet = await Wallet.create({ sub, chainId, version: currentVersion, address });
+
+    if (!mustDeploy) {
+        return wallet;
+    }
+    const forceSync = data.forceSync === undefined ? true : data.forceSync;
     return deploy(wallet, chainId, sub, forceSync);
 }
 

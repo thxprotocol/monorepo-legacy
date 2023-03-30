@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { widgetAccessToken, sub } from '@thxnetwork/api/util/jest/constants';
+import { widgetAccessToken, sub, sub2 } from '@thxnetwork/api/util/jest/constants';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { ChainId } from '@thxnetwork/types/enums';
 const user = request.agent(app);
@@ -14,7 +14,23 @@ describe('Wallets', () => {
     afterAll(afterAllCallback);
 
     describe('POST /wallets', () => {
-        it('HTTP 201', (done) => {
+        it('HTTP 201 without deploy', (done) => {
+            user.post('/v1/wallets')
+                .set({ Authorization: widgetAccessToken })
+                .send({
+                    chainId: ChainId.Hardhat,
+                    sub: sub2,
+                    address: '0x123Abc',
+                    deploy: false,
+                })
+                .expect((res: request.Response) => {
+                    expect(res.body.sub).toEqual(sub2);
+                    expect(res.body.chainId).toEqual(ChainId.Hardhat);
+                    expect(res.body.address).toBe('0x123Abc');
+                })
+                .expect(201, done);
+        });
+        it('HTTP 201 with deploy', (done) => {
             user.post('/v1/wallets')
                 .set({ Authorization: widgetAccessToken })
                 .send({
