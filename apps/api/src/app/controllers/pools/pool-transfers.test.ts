@@ -122,10 +122,23 @@ describe('Pool Transfer', () => {
                 .set({ 'Authorization': dashboardAccessToken, 'X-PoolId': pool._id })
                 .expect(({ body }: Response) => {
                     expect(body.length).toBe(1);
+                    expect(body[0].uuid).toBeDefined();
                     expect(body[0].token).toBeDefined();
                     expect(body[0].sub).toBeDefined();
 
                     poolTransfer = body[0];
+                    console.log('poolTransfer', poolTransfer);
+                })
+                .expect(200, done);
+        });
+    });
+
+    describe('GET /pools/:id/transfers/:uuid', () => {
+        it('HTTP 200', (done) => {
+            user.get(`/v1/pools/${pool._id}/transfers/${poolTransfer.uuid}`)
+                .set({ 'Authorization': dashboardAccessToken, 'X-PoolId': pool._id })
+                .expect(({ body }: Response) => {
+                    expect(body.uuid).toBe(poolTransfer.uuid);
                 })
                 .expect(200, done);
         });

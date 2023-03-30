@@ -18,6 +18,8 @@ import { mapGetters } from 'vuex';
 import { THXWidget } from 'libs/sdk/src';
 import { initWidget } from '../utils/widget';
 import { TBrand } from '../store/modules/brands';
+import { API_URL } from '@thxnetwork/dashboard/utils/secrets';
+import axios from 'axios';
 
 @Component({
     computed: mapGetters({
@@ -36,7 +38,6 @@ export default class PoolView extends Vue {
         initWidget(poolId);
 
         await this.$store.dispatch('brands/getForPool', poolId);
-
         const app = document.getElementById('app');
         if (app) {
             app.style.opacity = '1';
@@ -44,10 +45,24 @@ export default class PoolView extends Vue {
                 app.style.backgroundImage = this.brand.backgroundImgUrl ? `url('${this.brand.backgroundImgUrl}')` : '';
             }
         }
+        if (this.$route.query.pooltransfer) {
+            const poolTransfer = await this.getPoolTRansfer();
+            console.log('poolTransfer', poolTransfer);
+        }
     }
 
     get brand() {
         return this.brands[this.$route.params.poolId];
+    }
+
+    async getPoolTRansfer() {
+        const r = await axios({
+            method: 'GET',
+            url: `${API_URL}/v1/pools/${this.$route.params.poolId}/transfers/${this.$route.query.pooltransfer}`,
+            withCredentials: false,
+        });
+
+        return r.data;
     }
 }
 </script>
