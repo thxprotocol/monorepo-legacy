@@ -1,5 +1,5 @@
 import { assertEvent, parseLogs } from '@thxnetwork/api/util/events';
-import { ChainId, RewardConditionInteraction } from '@thxnetwork/types/enums';
+import { ChainId } from '@thxnetwork/types/enums';
 import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { Membership } from '@thxnetwork/api/models/Membership';
 import TransactionService from './TransactionService';
@@ -15,7 +15,7 @@ import MailService from './MailService';
 import { Widget } from './WidgetService';
 import { PoolSubscription } from '../models/PoolSubscription';
 import { logger } from '../util/logger';
-import { TBaseReward, TPointReward } from '@thxnetwork/types/interfaces';
+import { TPointReward } from '@thxnetwork/types/interfaces';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 

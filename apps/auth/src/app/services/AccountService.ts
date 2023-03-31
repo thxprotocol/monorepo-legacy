@@ -175,7 +175,8 @@ export class AccountService {
 
         // When no account is matched, create the account.
         if (!account) {
-            const data = { variant, plan: AccountPlanType.Basic, active: true };
+            const isEmailVerified = this.getIsEmailVerified(variant, email);
+            const data = { variant, plan: AccountPlanType.Basic, active: true, isEmailVerified };
             if (email) {
                 data['email'] = email;
             }
@@ -186,6 +187,25 @@ export class AccountService {
         account.setToken(tokenInfo);
 
         return await account.save();
+    }
+
+    private static getIsEmailVerified(accountVariant: AccountVariant, email?: string): undefined | boolean {
+        if (!email) {
+            return undefined;
+        }
+
+        const ssoVariants = [
+            AccountVariant.SSODiscord,
+            AccountVariant.SSOGoogle,
+            AccountVariant.SSOTwitter,
+            AccountVariant.SSOGithub,
+            AccountVariant.SSODiscord,
+            AccountVariant.SSOTwitch,
+        ];
+        if (ssoVariants.includes(accountVariant)) {
+            return true;
+        }
+        return false;
     }
 
     static async signup(data: { email?: string; variant: AccountVariant; active: boolean }) {
@@ -201,6 +221,7 @@ export class AccountService {
                 active: data.active,
                 variant: data.variant,
                 plan: AccountPlanType.Basic,
+                isEmailVerified: this.getIsEmailVerified(data.variant, data.email),
             });
         }
 
