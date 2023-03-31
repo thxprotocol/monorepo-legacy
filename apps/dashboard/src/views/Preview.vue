@@ -9,6 +9,12 @@
             alt="Example logo image"
             class="mb-3"
         />
+        <div v-if="poolTransfer">
+            <p>Pool transfer expires at: {{ poolTransfer.expiry }}</p>
+            <b-button variant="success" :href="getPolTransferPreviewURL()" target="_blank">
+                Go to Pool Transfer URL
+            </b-button>
+        </div>
     </div>
 </template>
 
@@ -18,7 +24,8 @@ import { mapGetters } from 'vuex';
 import { THXWidget } from 'libs/sdk/src';
 import { initWidget } from '../utils/widget';
 import { TBrand } from '../store/modules/brands';
-import { API_URL } from '@thxnetwork/dashboard/utils/secrets';
+import { API_URL, BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
+import { format } from 'date-fns';
 import axios from 'axios';
 
 @Component({
@@ -32,7 +39,7 @@ export default class PoolView extends Vue {
     brands!: { [poolId: string]: TBrand };
     logoImgUrl = '';
     backgroundImgUrl = '';
-
+    poolTransfer: { uuid: string; expiry: string } | null = null;
     async mounted() {
         const poolId = this.$route.params.poolId;
         initWidget(poolId);
@@ -45,9 +52,14 @@ export default class PoolView extends Vue {
                 app.style.backgroundImage = this.brand.backgroundImgUrl ? `url('${this.brand.backgroundImgUrl}')` : '';
             }
         }
-        if (this.$route.query.pooltransfer) {
+        if (this.$route.query.poolTransfer) {
             const poolTransfer = await this.getPoolTRansfer();
-            console.log('poolTransfer', poolTransfer);
+            if (poolTransfer) {
+                this.poolTransfer = {
+                    uuid: poolTransfer.uuid,
+                    expiry: format(new Date(poolTransfer.expiry), 'MM-dd-yyyy HH:mm'),
+                };
+            }
         }
     }
 
@@ -58,11 +70,18 @@ export default class PoolView extends Vue {
     async getPoolTRansfer() {
         const r = await axios({
             method: 'GET',
-            url: `${API_URL}/v1/pools/${this.$route.params.poolId}/transfers/${this.$route.query.pooltransfer}`,
+            url: `${API_URL}/v1/pools/${this.$route.params.poolId}/transfers/${this.$route.query.poolTransfer}`,
             withCredentials: false,
         });
 
         return r.data;
+    }
+
+    getPolTransferPreviewURL() {
+        if (!this.poolTransfer) {
+            return '#';
+        }
+        return `${BASE_URL}/pools/${this.$route.params.poolId}/transfer/${this.poolTransfer.uuid}`;
     }
 }
 </script>
