@@ -114,6 +114,10 @@ export const getTokensForSub = (sub: string) => {
     return ERC20Token.find({ sub });
 };
 
+export const getTokensForWallet = (walletId: string) => {
+    return ERC20Token.find({ walletId });
+};
+
 export const getById = (id: string) => {
     return ERC20.findById(id);
 };
@@ -236,11 +240,11 @@ async function isMinter(erc20: ERC20Document, address: string) {
 }
 
 async function createERC20Token(erc20: ERC20Document, sub: string) {
-    const wallet = await WalletService.findByQuery({ sub, chainId: erc20.chainId });
+    const wallets = await WalletService.findByQuery({ sub, chainId: erc20.chainId });
     await ERC20Token.create({
         sub,
         erc20Id: String(erc20._id),
-        walletId: wallet.length ? String(wallet[0]._id) : undefined,
+        walletId: wallets.length ? String(wallets[0]._id) : undefined,
     });
 }
 
@@ -262,4 +266,5 @@ export default {
     queryDeployTransaction,
     transferFrom,
     transferFromCallBack,
+    getTokensForWallet,
 };

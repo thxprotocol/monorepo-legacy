@@ -5,7 +5,6 @@ import { AccountVariant } from '../types/enums/AccountVariant';
 import { NODE_ENV } from '../config/secrets';
 
 export async function createWallet(account: AccountDocument) {
-    console.log('SONO QUIIIIII--------------------------------------------');
     let deploy: boolean, address: string;
     if (account.variant === AccountVariant.Metamask) {
         if (!account.address) return;

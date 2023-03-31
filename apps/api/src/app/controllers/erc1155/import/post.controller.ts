@@ -22,8 +22,8 @@ const controller = async (req: Request, res: Response) => {
     const contractAddress = req.body.contractAddress;
     const nftExists = await ERC1155.exists({ sub: req.auth.sub, chainId, address: contractAddress });
     if (nftExists) throw new BadRequestError('This contract is already present, and can not be imported');
-    const wallet = await WalletService.findByQuery({ sub: req.auth.sub, chainId: req.body.chainId });
-    const walletId = wallet.length ? String(wallet[0]._id) : undefined;
+    const wallets = await WalletService.findByQuery({ sub: req.auth.sub, chainId: req.body.chainId });
+    const walletId = wallets.length ? String(wallets[0]._id) : undefined;
     const pool = await PoolService.getById(req.header('X-PoolId'));
     const pageSize = 100;
 

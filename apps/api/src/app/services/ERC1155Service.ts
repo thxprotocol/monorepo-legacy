@@ -102,14 +102,14 @@ export async function mint(
     forceSync = true,
 ): Promise<ERC1155TokenDocument> {
     // const address = await account.getAddress(pool.chainId);
-    const wallet = await WalletService.findByQuery({ sub, chainId: erc1155.chainId });
+    const wallets = await WalletService.findByQuery({ sub, chainId: erc1155.chainId });
     const erc1155token = await ERC1155Token.create({
         sub,
         recipient: address,
         state: ERC1155TokenState.Pending,
         erc1155Id: String(erc1155._id),
         metadataId: String(metadata._id),
-        walletId: wallet.length ? String(wallet[0]._id) : undefined,
+        walletId: wallets.length ? String(wallets[0]._id) : undefined,
     });
     const txId = await TransactionService.sendAsync(
         pool.contract.options.address,
@@ -184,6 +184,10 @@ async function findTokensByMetadataAndSub(metadataId: string, account: IAccount)
 
 async function findTokensBySub(sub: string): Promise<ERC1155TokenDocument[]> {
     return ERC1155Token.find({ sub });
+}
+
+async function findTokensByWallet(walletId: string): Promise<ERC1155TokenDocument[]> {
+    return ERC1155Token.find({ walletId });
 }
 
 async function findMetadataById(id: string): Promise<ERC1155MetadataDocument> {
@@ -262,4 +266,5 @@ export default {
     initialize,
     queryDeployTransaction,
     getOnChainERC1155Token,
+    findTokensByWallet,
 };

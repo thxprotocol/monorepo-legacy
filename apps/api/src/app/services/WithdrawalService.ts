@@ -60,13 +60,13 @@ export default class WithdrawalService {
         amount: string,
         forceSync = true,
     ) {
-        const wallet = await WalletService.findByQuery({ sub, chainId: erc20.chainId });
+        const wallets = await WalletService.findByQuery({ sub, chainId: erc20.chainId });
         const withdrawal = await Withdrawal.create({
             sub,
             erc20Id: String(erc20._id),
             amount,
             state: WithdrawalState.Pending,
-            walletId: wallet.length ? String(wallet[0]._id) : undefined,
+            walletId: wallets.length ? String(wallets[0]._id) : undefined,
         });
         const amountInWei = toWei(String(withdrawal.amount));
         const txId = await TransactionService.sendAsync(

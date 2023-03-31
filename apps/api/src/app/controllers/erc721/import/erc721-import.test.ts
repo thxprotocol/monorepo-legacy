@@ -60,7 +60,6 @@ describe('ERC721 import', () => {
                 .expect(({ body }: request.Response) => {
                     expect(body.erc721._id).toBeDefined();
                     expect(body.erc721.address).toBe(nftContract.options.address);
-
                     erc721 = body.erc721;
                 })
                 .expect(201);

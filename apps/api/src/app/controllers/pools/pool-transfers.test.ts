@@ -177,12 +177,13 @@ describe('Pool Transfer', () => {
 
     describe('GET /erc20/token', () => {
         it('HTTP 200', (done) => {
-            user.get(`/v1/erc20/token/`)
+            user.get(`/v1/erc20/token?chainId=${ChainId.Hardhat}`)
                 .set({ 'Authorization': dashboardAccessToken2, 'X-PoolId': pool._id })
                 .expect(({ body }: Response) => {
                     expect(body.length).toBe(1);
                     expect(body[0].sub).toBe(sub2);
                     expect(body[0].erc20.address).toBe(erc20.address);
+                    expect(body[0].walletId).toBeDefined();
                 })
                 .expect(200, done);
         });
