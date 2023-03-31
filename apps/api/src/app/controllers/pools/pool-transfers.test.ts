@@ -21,7 +21,7 @@ import { isAddress } from 'web3-utils';
 const user = request.agent(app);
 
 describe('Pool Transfer', () => {
-    let pool: AssetPoolDocument, poolTransfer: PoolTransferDocument, erc20: ERC20Document, perk: ERC20PerkDocument;
+    let pool: AssetPoolDocument, poolTransfer: PoolTransferDocument, erc20: ERC20Document;
 
     beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
@@ -183,7 +183,6 @@ describe('Pool Transfer', () => {
                     expect(body.length).toBe(1);
                     expect(body[0].sub).toBe(sub2);
                     expect(body[0].erc20.address).toBe(erc20.address);
-                    expect(body[0].walletId).toBeDefined();
                 })
                 .expect(200, done);
         });

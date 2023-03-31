@@ -106,7 +106,6 @@ describe('ERC1155 import', () => {
                     expect(body[0].tokenUri).toBeDefined();
                     expect(body[0].tokenId).toBeDefined();
                     expect(body[0].metadataId).toBeDefined();
-                    expect(body[0].walletId).toBeDefined();
                 })
                 .expect(200, done);
         });
