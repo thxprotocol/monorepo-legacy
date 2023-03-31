@@ -20,6 +20,7 @@ import TransactionService from './TransactionService';
 
 import type { TERC1155, TERC1155Metadata, TERC1155Token } from '@thxnetwork/api/types/TERC1155';
 import type { IAccount } from '@thxnetwork/api/models/Account';
+import WalletService from './WalletService';
 const contractName = 'THX_ERC1155';
 
 async function deploy(data: TERC1155, forceSync = true): Promise<ERC1155Document> {
@@ -101,12 +102,14 @@ export async function mint(
     forceSync = true,
 ): Promise<ERC1155TokenDocument> {
     // const address = await account.getAddress(pool.chainId);
+    const wallet = await WalletService.findByQuery({ sub, chainId: erc1155.chainId });
     const erc1155token = await ERC1155Token.create({
         sub,
         recipient: address,
         state: ERC1155TokenState.Pending,
         erc1155Id: String(erc1155._id),
         metadataId: String(metadata._id),
+        walletId: wallet.length ? String(wallet[0]._id) : undefined,
     });
     const txId = await TransactionService.sendAsync(
         pool.contract.options.address,

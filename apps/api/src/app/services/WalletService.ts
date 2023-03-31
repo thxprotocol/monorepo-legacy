@@ -14,7 +14,7 @@ async function create(data: {
     chainId: ChainId;
     account: IAccount;
     deploy?: boolean;
-    forceSync: boolean;
+    forceSync?: boolean;
     address?: string;
 }) {
     const { chainId, account } = data;

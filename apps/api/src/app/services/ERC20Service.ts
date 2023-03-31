@@ -14,6 +14,7 @@ import { TERC20DeployCallbackArgs, TERC20TransferFromCallBackArgs } from '@thxne
 import { Transaction } from '@thxnetwork/api/models/Transaction';
 import ERC20Transfer from '../models/ERC20Transfer';
 import { WalletDocument } from '../models/Wallet';
+import WalletService from './WalletService';
 
 function getDeployArgs(erc20: ERC20Document, totalSupply?: string) {
     const { defaultAccount } = getProvider(erc20.chainId);
@@ -101,7 +102,7 @@ const addMinter = async (erc20: ERC20Document, address: string) => {
 const addToken = async (sub: string, erc20: ERC20Document) => {
     const query = { sub, erc20Id: erc20._id };
     if (!(await ERC20Token.exists(query))) {
-        await ERC20Token.create(query);
+        await createERC20Token(erc20, sub);
     }
 };
 
@@ -159,10 +160,7 @@ export const addTokenForSub = async (erc20: ERC20Document, sub: string) => {
     });
 
     if (!hasToken) {
-        await ERC20Token.create({
-            sub,
-            erc20Id: String(erc20._id),
-        });
+        await createERC20Token(erc20, sub);
     }
 };
 
@@ -235,6 +233,15 @@ export const transferFromCallBack = async (args: TERC20TransferFromCallBackArgs,
 
 async function isMinter(erc20: ERC20Document, address: string) {
     return await erc20.contract.methods.hasRole(keccak256(toUtf8Bytes('MINTER_ROLE')), address).call();
+}
+
+async function createERC20Token(erc20: ERC20Document, sub: string) {
+    const wallet = await WalletService.findByQuery({ sub, chainId: erc20.chainId });
+    await ERC20Token.create({
+        sub,
+        erc20Id: String(erc20._id),
+        walletId: wallet.length ? String(wallet[0]._id) : undefined,
+    });
 }
 
 export default {

@@ -19,7 +19,6 @@ module.exports = {
       }
     });
     await Promise.all(promises);
-    throw new Error('STOP!');
   },
 
   async down() {

@@ -5,7 +5,13 @@ import { AccountVariant } from '../types/enums/AccountVariant';
 import { NODE_ENV } from '../config/secrets';
 
 export async function createWallet(account: AccountDocument) {
-    if (account.variant === AccountVariant.Metamask) return;
+    console.log('SONO QUIIIIII--------------------------------------------');
+    let deploy: boolean, address: string;
+    if (account.variant === AccountVariant.Metamask) {
+        if (!account.address) return;
+        deploy = true;
+        address = account.address;
+    }
 
     const sub = String(account._id);
     const chains = [];
@@ -18,6 +24,6 @@ export async function createWallet(account: AccountDocument) {
 
     for (const chainId of chains) {
         const walletsCount = (await WalletProxy.get(sub, chainId)).length;
-        if (!walletsCount) WalletProxy.create(sub, chainId, false);
+        if (!walletsCount) WalletProxy.create({ sub, chainId, forceSync: false, deploy, address });
     }
 }

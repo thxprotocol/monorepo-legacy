@@ -1,5 +1,6 @@
 import { apiClient, getAuthAccessToken } from '../util/api';
 import { ChainId } from '../types/enums/chainId';
+import { AccountDocument } from '../models/Account';
 
 export default {
     get: async (sub: string, chainId: ChainId) => {
@@ -18,14 +19,20 @@ export default {
         return r.data;
     },
 
-    create: async (sub: string, chainId: ChainId, forceSync = true) => {
+    create: async (data: {
+        chainId: ChainId;
+        sub: string;
+        deploy?: boolean;
+        forceSync?: boolean;
+        address?: string;
+    }) => {
         const r = await apiClient({
             method: 'POST',
             url: `/v1/wallets`,
             headers: {
                 Authorization: await getAuthAccessToken(),
             },
-            data: { sub, chainId, forceSync },
+            data: data,
         });
         return r.data;
     },

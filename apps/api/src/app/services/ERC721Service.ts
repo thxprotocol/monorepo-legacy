@@ -23,6 +23,7 @@ import type { IAccount } from '@thxnetwork/api/models/Account';
 import AccountProxy from '../proxies/AccountProxy';
 import IPFSService from './IPFSService';
 import { API_URL } from '../config/secrets';
+import WalletService from './WalletService';
 
 const contractName = 'NonFungibleToken';
 
@@ -101,12 +102,14 @@ export async function mint(
     forceSync = true,
 ): Promise<ERC721TokenDocument> {
     const tokenUri = await getTokenURI(erc721, String(metadata._id));
+    const wallet = await WalletService.findByQuery({ sub, chainId: erc721.chainId });
     const erc721token = await ERC721Token.create({
         sub,
         recipient: address,
         state: ERC721TokenState.Pending,
         erc721Id: String(erc721._id),
         metadataId: String(metadata._id),
+        walletId: wallet.length ? String(wallet[0]._id) : undefined,
     });
 
     const txId = await TransactionService.sendAsync(

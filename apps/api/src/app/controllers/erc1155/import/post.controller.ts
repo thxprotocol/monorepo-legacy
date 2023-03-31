@@ -9,6 +9,7 @@ import { alchemy } from '@thxnetwork/api/util/alchemy';
 import { ChainId } from '@thxnetwork/types/enums';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { ERC1155Metadata } from '@thxnetwork/api/models/ERC1155Metadata';
+import WalletService from '@thxnetwork/api/services/WalletService';
 
 const validation = [
     body('contractAddress').exists(),
@@ -21,7 +22,8 @@ const controller = async (req: Request, res: Response) => {
     const contractAddress = req.body.contractAddress;
     const nftExists = await ERC1155.exists({ sub: req.auth.sub, chainId, address: contractAddress });
     if (nftExists) throw new BadRequestError('This contract is already present, and can not be imported');
-
+    const wallet = await WalletService.findByQuery({ sub: req.auth.sub, chainId: req.body.chainId });
+    const walletId = wallet.length ? String(wallet[0]._id) : undefined;
     const pool = await PoolService.getById(req.header('X-PoolId'));
     const pageSize = 100;
 
@@ -87,6 +89,7 @@ const controller = async (req: Request, res: Response) => {
                         erc1155Id: String(erc1155._id),
                         metadataId: String(metadata._id),
                         tokenId,
+                        walletId,
                     });
 
                     return { ...erc1155Token.toJSON(), metadata: metadata.toJSON() };
