@@ -93,26 +93,56 @@ export const createERC20Perk = async (pool: AssetPoolDocument, payload: TERC20Pe
 export async function createDummyContents(pool: AssetPoolDocument) {
     await DailyRewardService.create(pool, {
         title: 'Daily Reward 🗓️',
-        description: 'Return every 24h to claim your poin reward.',
+        description: 'Visit our site on a daily basis to earn some points.',
         amount: 15,
     });
 
     await ReferralRewardService.create(pool, {
-        title: 'Spread the word! ❤️',
-        description: 'Let your customers earn points by referring people to your site.',
+        title: 'Tell people about us ❤️',
+        description: 'Invite people for a signup and you will receive a point reward after qualification.',
         successUrl: '',
+        amount: 500,
+    });
+
+    await PointRewardService.create(pool, {
+        title: 'Retweet our latest highlight 🦜',
+        description: 'Grab the highlight and retweet! Sharing is caring.',
+        amount: 25,
+    });
+
+    await PointRewardService.create(pool, {
+        title: 'Order with us 🛍️',
+        description: 'Spend a minimum amount of 50 EUR to earn points that you can redeem for discount perks.',
+        amount: 500,
+    });
+
+    await PointRewardService.create(pool, {
+        title: 'Free points for you 🥳',
+        description: 'Celebrate the loyalty widget launch with us!',
         amount: 250,
     });
 
     await PointRewardService.create(pool, {
-        title: 'Engage in our social 💬',
-        description: 'Set social conditions for people to meet when claiming points.',
-        amount: 50,
+        title: 'Like our YouTube content 🎥',
+        description: 'Watch and like our latest content!',
+        amount: 250,
+    });
+
+    await PointRewardService.create(pool, {
+        title: 'Join our Discord server 🌱',
+        description: 'Join our Discord server and claim your points after you obtained verified access.',
+        amount: 200,
     });
 
     await MilestoneRewardService.create(pool, {
         title: 'Reach a milestone 🏁',
         description: 'Claim points when progressing in the customer journey of external software.',
-        amount: 15,
+        amount: 500,
+    });
+
+    await MilestoneRewardService.create(pool, {
+        title: 'First referral reward claimed ✨',
+        description: 'Have your audience earn a referral reward.',
+        amount: 400,
     });
 }

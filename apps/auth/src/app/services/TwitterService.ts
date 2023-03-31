@@ -5,7 +5,6 @@ import { AUTH_URL, TWITTER_CLIENT_ID, TWITTER_CLIENT_SECRET } from '../config/se
 import { AccountDocument } from '../models/Account';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IAccessToken } from '../types/TAccount';
-import { AccountService } from './AccountService';
 
 const ERROR_NO_DATA = 'Could not find an youtube data for this accesstoken';
 const ERROR_NOT_AUTHORIZED = 'Not authorized for Twitter API';
@@ -34,21 +33,33 @@ export class TwitterService {
         return true;
     }
     static async validateLike(accessToken: string, channelItem: string) {
-        const user = await this.getUser(accessToken);
+        const user = await this.getUser(accessToken); // Should pass IAccessToken so we dont have to request the user here
         if (!user) throw new Error('Could not find Twitter user.');
 
-        const r = await twitterClient({
-            url: `/users/${user.id}/liked_tweets?max_results=100&tweet.fields=referenced_tweets&expansions=referenced_tweets.id`,
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        });
+        const maxResults = 100;
+        let result = false,
+            resultCount = maxResults,
+            params = { max_results: maxResults };
 
-        if (r.status !== 200) throw new Error(ERROR_NOT_AUTHORIZED);
-        if (!r.data) throw new Error(ERROR_NO_DATA);
+        while (resultCount >= maxResults) {
+            const { data } = await twitterClient({
+                url: `/tweets/${channelItem}/liking_users`,
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+                params,
+            });
 
-        return r.data.data ? !!r.data.data.filter((t: { id: string }) => t.id === channelItem).length : false;
+            resultCount = data.meta.result_count;
+            params = Object.assign(params, { pagination_token: data.meta.next_token });
+            result = !!data.data.filter((u: { id: string }) => u.id === user.id).length;
+
+            if (result) break;
+            if (!data.meta.next_token) break;
+        }
+
+        return result;
     }
 
     static async validateRetweet(accessToken: string, channelItem: string) {
@@ -100,7 +111,7 @@ export class TwitterService {
     }
 
     static async getUser(accessToken: string) {
-        const r = await twitterClient({
+        const { data } = await twitterClient({
             url: '/users/me',
             method: 'GET',
             headers: {
@@ -108,40 +119,22 @@ export class TwitterService {
             },
         });
 
-        if (r.status !== 200) throw new Error(ERROR_NOT_AUTHORIZED);
-        if (!r.data) throw new Error(ERROR_NO_DATA);
-
-        return r.data.data;
-    }
-
-    static async getTweets(accessToken: string) {
-        const user = await this.getUser(accessToken);
-        if (!user) throw new Error('Could not find Twitter user.');
-
-        const r = await twitterClient({
-            url: `/users/${user.id}/tweets?tweet.fields=id,referenced_tweets,created_at`,
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        });
-
-        if (r.status !== 200) throw new Error(ERROR_NOT_AUTHORIZED);
-        if (!r.data) throw new Error(ERROR_NO_DATA);
-
-        return r.data.data;
+        return data.data;
     }
 
     static async getLatestTweets(token: IAccessToken, startDate: Date, endDate: Date) {
         const { data } = await twitterClient({
-            url: `/users/${
-                token.userId
-            }/tweets?start_time=${startDate.toISOString()}&end_time=${endDate.toISOString()}`,
+            url: `/users/${token.userId}/tweets`,
             method: 'GET',
             headers: {
                 Authorization: `Bearer ${token.accessToken}`,
             },
+            params: {
+                start_time: startDate.toISOString(),
+                end_time: endDate.toISOString(),
+            },
         });
+
         return data.data;
     }
 
