@@ -24,7 +24,7 @@ export const ALT_TEXT = Object.freeze({
     HOME_TESTIMONIAL_GIRL: '',
     HOME_ERIK_DE_GRAAF: 'Erik de Graaf review on THX Network Blockchain API technology',
     USECASES_USECASE_ROCKET: 'Tokenization API Use Case - Onboard new players with referrals',
-    USECASES_USECASE_AWARD: 'Tokenization API Use Case - Reward your loyal customers',
+    USECASES_USECASE_AWARD: 'Tokenization API Use Case - Boost your sales and turn customers into community members',
     USECASES_USECASE_BRAIN: 'Tokenization API Use Case - ERC-20 token pools for blockchain projects',
     USECASES_USECASE_CRATER: 'Tokenization API Use Case - Money management for groups of people',
     HOME_BASE_TEAM_PETER: 'Peter',
@@ -53,7 +53,7 @@ export const TITLES = Object.freeze({
     HOME_READ_THE_DOCUMENTATION: 'Developer-ready documentation to embed tokens in any app',
     HOME_VISIT_YOUR_DASHBOARD: 'Web3 Dashboard - As easy as 1-2-3',
     HOME_USECASE_ROCKET: 'Tokenization API Use Case - Onboard new players with referrals',
-    HOME_USECASE_REWARD: 'Tokenization API Use Case - Reward your loyal customers',
+    HOME_USECASE_REWARD: 'Tokenization API Use Case - Boost your sales and turn customers into community members',
     HOME_USECASE_ERC: 'Tokenization API Use Case - ERC-20 token pools for blockchain projects',
     HOME_USECASE_MONEY: 'Tokenization API Use Case - Money management for groups of people',
     HOME_LEARN_MORE: 'Learn more from the Blockchain experts',
@@ -61,7 +61,7 @@ export const TITLES = Object.freeze({
     HOME_LIVE_DEMO: 'Schedule a Live Demo for our Tokenization API Dashboard',
     USECASES: 'Web3 and Tokenization Use Cases',
     USECASES_USECASE_ROCKET: 'Tokenization API Use Case - Onboard new players with referrals',
-    USECASES_USECASE_REWARD: 'Tokenization API Use Case - Reward your loyal customers',
+    USECASES_USECASE_REWARD: 'Tokenization API Use Case - Boost your sales and turn customers into community members',
     USECASES_USECASE_ERC: 'Tokenization API Use Case - ERC-20 token pools for blockchain projects',
     USECASES_USECASE_MONEY: 'Tokenization API Use Case - Money management for groups of people',
     USECASES_OUR_INTEGRATIONS: 'Easy tokenization API integrations',
@@ -133,7 +133,7 @@ export const USE_CASES_ERC_TAGS = Object.freeze({
 });
 
 export const USE_CASES_REWARD_TAGS = Object.freeze({
-    TITLE: 'Reward Your Loyal Customers | Loyalty Program Use Case',
+    TITLE: 'Boost your sales and turn customers into community members | Loyalty Program Use Case',
     DESCRIPTION:
         'Reward your customers with gamification tokens. How rewarding users creates more loyal customers. THX Network Use Case ✓ Free-sign up ✓ Easy Integrations',
     KEYWORDS: 'reward, loyal, customers',
@@ -204,7 +204,7 @@ export const LINKS = Object.freeze({
     USE_CASES: 'https://thx.network/use-cases',
     USE_CASES_BOOST: 'https://thx.network/use-cases/boost-engagement-in-your-community',
     USE_CASES_ERC: 'https://thx.network/use-cases/erc-20-token-pools-for-blockchain-projects',
-    USE_CASES_REWARD: 'https://thx.network/use-cases/reward-your-loyal-customers',
+    USE_CASES_REWARD: 'https://thx.network/use-cases/boost-your-sales-and-turn-customers-into-community-members',
     USE_CASES_MONEY: 'https://thx.network/use-cases/money-management-for-groups-of-people',
     INTEGRATIONS: 'https://thx.network/integrations',
     TOKEN: 'https://thx.network/token',
