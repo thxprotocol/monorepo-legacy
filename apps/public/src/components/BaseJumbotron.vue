@@ -6,7 +6,7 @@
         >
             <div class="container">
                 <div class="row py-md-5">
-                    <div class="brand-intro col-lg-4 order-1 order-md-0">
+                    <div class="brand-intro text-white col-lg-4 order-1 order-md-0">
                         <div>
                             <h1 class="brand-text mb-3">Token powered loyalty in any app or website</h1>
                             <p class="lead mb-4">
@@ -35,6 +35,7 @@
                                     </b-button>
                                     <b-button
                                         variant="link"
+                                        class="text-dark"
                                         href="https://docs.thx.network"
                                         target="_blank"
                                         :title="TITLES.HOME_READ_OUR_DOCUMENTATION"
