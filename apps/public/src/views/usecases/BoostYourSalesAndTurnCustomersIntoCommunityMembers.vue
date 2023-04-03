@@ -1,15 +1,12 @@
 <template>
     <section>
-        <b-jumbotron
-            class="large"
-            v-lazy:background-image="require('../../../public/assets/img/thx_jumbotron_token_bg.webp')"
-        >
+        <b-jumbotron class="large" v-lazy:background-image="require('../../../public/assets/img/thx_jumbotron_bg.jpg')">
             <div class="container">
-                <div class="row py-md-5">
+                <div class="row">
                     <div class="brand-intro text-white col-md-5 col-lg-4 order-1 order-md-0">
                         <div>
                             <h1 class="brand-text mb-3" style="font-size: 3rem !important">
-                                Boost your sales and turn customers into community members
+                                Boost your sales and make your customers loyal members
                             </h1>
                             <p class="lead mb-4">Paid loyalty programs for ecommerce companies and marketers.</p>
                             <BaseCardSignup />
@@ -29,8 +26,11 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="col-md-7 col-lg-8 pb-5 py-md-5 order-0 order-md-1">
-                        <img v-lazy="require('../../../public/assets/img/thx_jumbotron_apps.png')" class="img-fluid" />
+                    <div class="col-md-7 col-lg-8 order-0 order-md-1">
+                        <img
+                            v-lazy="require('../../../public/assets/img/thx_jumbotron_commerce.png')"
+                            class="img-fluid"
+                        />
                     </div>
                 </div>
             </div>
