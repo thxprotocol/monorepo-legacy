@@ -7,6 +7,8 @@ import {
     sub2,
     tokenName,
     tokenSymbol,
+    userWalletAddress,
+    userWalletAddress2,
 } from '@thxnetwork/api/util/jest/constants';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
@@ -15,15 +17,20 @@ import { ERC20Document } from '@thxnetwork/api/models/ERC20';
 import { ERC20PerkDocument } from '@thxnetwork/api/models/ERC20Perk';
 import { createImage } from '@thxnetwork/api/util/jest/images';
 import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
-import { addMinutes } from 'date-fns';
+import { addMinutes, sub } from 'date-fns';
 import { isAddress } from 'web3-utils';
+import { Wallet } from '@thxnetwork/api/models/Wallet';
 
 const user = request.agent(app);
 
 describe('Pool Transfer', () => {
     let pool: AssetPoolDocument, poolTransfer: PoolTransferDocument, erc20: ERC20Document;
 
-    beforeAll(beforeAllCallback);
+    beforeAll(async () => {
+        await Wallet.create({ address: userWalletAddress, sub, chainId: ChainId.Hardhat });
+        await Wallet.create({ address: userWalletAddress2, sub: sub2, chainId: ChainId.Hardhat });
+        beforeAllCallback;
+    });
     afterAll(afterAllCallback);
 
     it('POST /erc20', (done) => {

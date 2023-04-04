@@ -7,8 +7,6 @@ import { ChainId } from '@thxnetwork/types/enums';
 import { getContract, getContractConfig } from '@thxnetwork/api/config/contracts';
 import { poll } from '../polling';
 import { currentVersion } from '@thxnetwork/contracts/exports';
-import { Wallet } from '@thxnetwork/api/models/Wallet';
-import { sub, userWalletAddress, userWalletAddress2, sub2 } from './constants';
 
 export async function beforeAllCallback() {
     await db.truncate();
@@ -25,8 +23,6 @@ export async function beforeAllCallback() {
 
     // TODO Make this part of hardhat container build
     await factory.methods.initialize(defaultAccount, registryAddress).send({ from: defaultAccount });
-    await Wallet.create({ address: userWalletAddress, sub, chainId: ChainId.Hardhat });
-    await Wallet.create({ address: userWalletAddress2, sub: sub2, chainId: ChainId.Hardhat });
 }
 
 export async function afterAllCallback() {
