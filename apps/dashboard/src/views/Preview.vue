@@ -11,7 +11,7 @@
         />
         <div v-if="poolTransfer">
             <p>Pool transfer expires at: {{ poolTransfer.expiry }}</p>
-            <b-button variant="success" :href="getPolTransferPreviewURL()" target="_blank">
+            <b-button variant="success" :href="poolTransferPreviewURL" target="_blank">
                 Go to Pool Transfer URL
             </b-button>
         </div>
@@ -67,6 +67,13 @@ export default class PoolView extends Vue {
         return this.brands[this.$route.params.poolId];
     }
 
+    get poolTransferPreviewURL() {
+        if (!this.poolTransfer) {
+            return '#';
+        }
+        return `${BASE_URL}/pools/${this.$route.params.poolId}/transfer/${this.poolTransfer.uuid}`;
+    }
+
     async getPoolTRansfer() {
         const r = await axios({
             method: 'GET',
@@ -75,13 +82,6 @@ export default class PoolView extends Vue {
         });
 
         return r.data;
-    }
-
-    getPolTransferPreviewURL() {
-        if (!this.poolTransfer) {
-            return '#';
-        }
-        return `${BASE_URL}/pools/${this.$route.params.poolId}/transfer/${this.poolTransfer.uuid}`;
     }
 }
 </script>
