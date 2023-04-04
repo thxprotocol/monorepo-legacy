@@ -28,9 +28,9 @@ describe('ERC1155 import', () => {
         nftName = 'Test Collection';
 
     beforeAll(async () => {
+        await beforeAllCallback();
         await Wallet.create({ address: userWalletAddress, sub, chainId: ChainId.Hardhat });
         await Wallet.create({ address: userWalletAddress2, sub: sub2, chainId: ChainId.Hardhat });
-        beforeAllCallback;
     });
     afterAll(afterAllCallback);
 

@@ -27,9 +27,9 @@ describe('Pool Transfer', () => {
     let pool: AssetPoolDocument, poolTransfer: PoolTransferDocument, erc20: ERC20Document;
 
     beforeAll(async () => {
+        await beforeAllCallback();
         await Wallet.create({ address: userWalletAddress, sub, chainId: ChainId.Hardhat });
         await Wallet.create({ address: userWalletAddress2, sub: sub2, chainId: ChainId.Hardhat });
-        beforeAllCallback;
     });
     afterAll(afterAllCallback);
 
