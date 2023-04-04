@@ -76,7 +76,7 @@
                 <div class="col-lg-5 pt-lg-5 mt-lg-5">
                     <b-card bg-variant="darker" text-variant="white" class="border-0">
                         <router-link
-                            :to="'/use-cases/reward-your-loyal-customers'"
+                            :to="'/use-cases/boost-your-sales-and-turn-customers-into-community-members'"
                             :title="TITLES.USECASES_USECASE_REWARD"
                         >
                             <img
@@ -89,15 +89,15 @@
                         <h3 class="h3 mt-2 font-size-l font-weight-normal">
                             <router-link
                                 class="text-white"
-                                :to="'/use-cases/reward-your-loyal-customers'"
+                                :to="'/use-cases/boost-your-sales-and-turn-customers-into-community-members'"
                                 :title="TITLES.USECASES_USECASE_REWARD"
                             >
-                                Reward your loyal customers
+                                Boost your sales and turn customers into community members
                             </router-link>
                         </h3>
                         <b-button
                             variant="link-primary text-secondary pl-0"
-                            :to="'/use-cases/reward-your-loyal-customers'"
+                            :to="'/use-cases/boost-your-sales-and-turn-customers-into-community-members'"
                         >
                             Discover more
                             <i class="fas fa-chevron-right"></i>

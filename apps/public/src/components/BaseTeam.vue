@@ -8,8 +8,8 @@
                 </div>
             </div>
             <div class="pb-5">
-                <hooper :infiniteScroll="false" :settings="hooperSettings">
-                    <slide class="pl-2 pr-2">
+                <b-row>
+                    <b-col md="3" class="p-2">
                         <b-card class="h-100">
                             <div class="d-flex">
                                 <div class="pr-4">
@@ -38,8 +38,8 @@
                                 Serial digital product engineer and agile team leader. Very serious about UX.
                             </p>
                         </b-card>
-                    </slide>
-                    <slide class="pl-2 pr-2">
+                    </b-col>
+                    <b-col md="3" class="p-2">
                         <b-card class="h-100">
                             <div class="d-flex">
                                 <div class="pr-4">
@@ -68,8 +68,8 @@
                                 Business developer. Background in VC/M&A. Digital asset enthousiast.
                             </p>
                         </b-card>
-                    </slide>
-                    <slide class="pl-2 pr-2">
+                    </b-col>
+                    <b-col md="3" class="p-2">
                         <b-card class="h-100">
                             <div class="d-flex">
                                 <div class="pr-4">
@@ -98,8 +98,8 @@
                                 Serial SaaS founder. Loves data-driven marketing. Into blockchain since 2013.
                             </p>
                         </b-card>
-                    </slide>
-                    <slide class="pl-2 pr-2">
+                    </b-col>
+                    <b-col md="3" class="p-2">
                         <b-card class="h-100">
                             <div class="d-flex">
                                 <div class="pr-4">
@@ -124,12 +124,10 @@
                                 </div>
                             </div>
                             <hr />
-                            <p class="font-italic font-weight-light">
-                                Digital Economy & AI consultant.
-                            </p>
+                            <p class="font-italic font-weight-light">Digital Economy & AI consultant.</p>
                         </b-card>
-                    </slide>
-                    <slide class="pl-2 pr-2">
+                    </b-col>
+                    <b-col md="3" class="p-2">
                         <b-card class="h-100">
                             <div class="d-flex">
                                 <div class="pr-4">
@@ -158,8 +156,8 @@
                                 Background in back-end engineering now Node.js, GraphQL and Solidity.
                             </p>
                         </b-card>
-                    </slide>
-                    <slide class="pl-2 pr-2">
+                    </b-col>
+                    <b-col md="3" class="p-2">
                         <b-card class="h-100">
                             <div class="d-flex">
                                 <div class="pr-4">
@@ -188,8 +186,8 @@
                                 Prize winning content strategies, 10+ years of international agency experience.
                             </p>
                         </b-card>
-                    </slide>
-                    <slide class="pl-2 pr-2">
+                    </b-col>
+                    <b-col md="3" class="p-2">
                         <b-card class="h-100">
                             <div class="d-flex">
                                 <div class="pr-4">
@@ -214,12 +212,10 @@
                                 </div>
                             </div>
                             <hr />
-                            <p class="font-italic font-weight-light">
-                                Community Lead and Blockchain Investor
-                            </p>
+                            <p class="font-italic font-weight-light">Community Lead and Blockchain Investor</p>
                         </b-card>
-                    </slide>
-                    <slide class="pl-2 pr-2">
+                    </b-col>
+                    <b-col md="3" class="p-2">
                         <b-card class="h-100">
                             <div class="d-flex">
                                 <div class="pr-4">
@@ -244,12 +240,10 @@
                                 </div>
                             </div>
                             <hr />
-                            <p class="font-italic font-weight-light">
-                                Former CTO of 3D Hubs, now DevOps for hire.
-                            </p>
+                            <p class="font-italic font-weight-light">Former CTO of 3D Hubs, now DevOps for hire.</p>
                         </b-card>
-                    </slide>
-                    <slide class="pl-2 pr-2">
+                    </b-col>
+                    <b-col md="3" class="p-2">
                         <b-card class="h-100">
                             <div class="d-flex">
                                 <div class="pr-4">
@@ -278,9 +272,9 @@
                                 Part of the 500 most talented under 26 in tech according to TheNextWeb and Accenture.
                             </p>
                         </b-card>
-                    </slide>
+                    </b-col>
 
-                    <slide class="pl-2 pr-2">
+                    <b-col md="3" class="p-2">
                         <b-card class="h-100">
                             <div class="d-flex">
                                 <div class="pr-4">
@@ -309,8 +303,8 @@
                                 Won ETHLondon 2020 and ETHGlobal 2021 hackathon. Smart contract specialist.
                             </p>
                         </b-card>
-                    </slide>
-                    <slide class="pl-2 pr-2">
+                    </b-col>
+                    <b-col md="3" class="p-2">
                         <b-card class="h-100">
                             <div class="d-flex">
                                 <div class="pr-4">
@@ -340,8 +334,8 @@
                                 online reputation.
                             </p>
                         </b-card>
-                    </slide>
-                    <slide class="pl-2 pr-2">
+                    </b-col>
+                    <b-col md="3" class="p-2">
                         <b-card class="h-100">
                             <div class="d-flex">
                                 <div class="pr-4">
@@ -367,9 +361,9 @@
                                 Typescript and Javascript developer. Created our Discord Bot, now Javascript & API.
                             </p>
                         </b-card>
-                    </slide>
+                    </b-col>
 
-                    <slide class="pl-2 pr-2">
+                    <b-col md="3" class="p-2">
                         <b-card class="h-100">
                             <div class="d-flex">
                                 <div class="pr-4">
@@ -395,9 +389,9 @@
                                 Highly rated developer on Gitcoin. Main contributor to the Slack integration.
                             </p>
                         </b-card>
-                    </slide>
+                    </b-col>
                     <hooper-pagination slot="hooper-addons"></hooper-pagination>
-                </hooper>
+                </b-row>
             </div>
         </div>
     </section>

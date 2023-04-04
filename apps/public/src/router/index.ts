@@ -42,16 +42,16 @@ const routes: Array<RouteConfig> = [
             ),
     },
     {
-        path: '/use-cases/reward-your-loyal-customers',
-        name: 'Reward your loyal customers',
+        path: '/use-cases/boost-your-sales-and-turn-customers-into-community-members',
+        name: 'Boost your sales and turn cusotmers into community members',
         component: () =>
             import(
-                /* webpackChunkName: "usecases-rewardyourloyalcustomers" */ '../views/usecases/RewardYourLoyalCustomers.vue'
+                /* webpackChunkName: "usecases-boostyoursales" */ '../views/usecases/BoostYourSalesAndTurnCustomersIntoCommunityMembers.vue'
             ),
     },
     {
         path: '/use-cases/erc-20-token-pools-for-blockchain-projects',
-        name: 'Boost engagement in your community',
+        name: 'ERC20 token pools for blockchain projects',
         component: () =>
             import(
                 /* webpackChunkName: "usecases-tokenpoolsforprojects" */ '../views/usecases/ERC20TokenPoolsForBlockchainProjects.vue'

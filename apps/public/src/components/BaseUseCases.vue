@@ -75,7 +75,7 @@
                         <slide>
                             <b-card class="border-0">
                                 <router-link
-                                    :to="'/use-cases/reward-your-loyal-customers'"
+                                    :to="'/use-cases/boost-your-sales-and-turn-customers-into-community-members'"
                                     :title="TITLES.HOME_USECASE_REWARD"
                                 >
                                     <img
@@ -87,15 +87,15 @@
                                 <div class="mt-5">Engagement</div>
                                 <h3 class="h3 text-dark mt-2 font-size-l font-weight-normal">
                                     <router-link
-                                        :to="'/use-cases/reward-your-loyal-customers'"
+                                        :to="'/use-cases/boost-your-sales-and-turn-customers-into-community-members'"
                                         :title="TITLES.HOME_USECASE_REWARD"
                                     >
-                                        Reward your loyal customers
+                                        Boost your sales and turn customers into community members
                                     </router-link>
                                 </h3>
                                 <b-button
                                     variant="link-primary text-primary pl-0"
-                                    to="/use-cases/reward-your-loyal-customers"
+                                    to="/use-cases/boost-your-sales-and-turn-customers-into-community-members"
                                 >
                                     Discover more
                                     <i class="fas fa-chevron-right"></i>

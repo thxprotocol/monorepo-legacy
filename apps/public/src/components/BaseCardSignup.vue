@@ -5,7 +5,7 @@
                 <validation-provider name="email" :rules="{ required: true, email: true }" v-slot="validationContext">
                     <b-input-group>
                         <b-form-input
-                            :class="`bg-darker border-dark`"
+                            :class="`bg-white border-light`"
                             v-model="email"
                             type="email"
                             label="email"
@@ -15,6 +15,7 @@
                         <b-input-group-append>
                             <b-button
                                 type="submit"
+                                variant="primary"
                                 form="cardBetaSignupForm"
                                 style="border-top-right-radius: 25px; border-bottom-right-radius: 25px"
                             >
@@ -57,10 +58,6 @@ export default class BaseCardSignup extends Vue {
 }
 </script>
 <style lang="scss" scoped>
-.jumbotron .form-control {
-    color: white;
-}
-
 .input-group-append {
     margin-left: -2px;
 }
