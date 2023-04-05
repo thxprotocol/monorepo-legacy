@@ -12,26 +12,30 @@ const validation = [param('id').isMongoId(), body('sub').isMongoId(), body('toke
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
     const pool = await PoolService.getById(req.params.id);
-    if (!pool) throw new NotFoundError('Could not find pool for this ID');
+    if (!pool) throw new NotFoundError('Could not find the pool for this token.');
 
     const poolTransfer = await PoolTransfer.findOne({ sub: pool.sub, token: req.body.token });
-    if (!poolTransfer) throw new NotFoundError('Could not find pool transfer');
+    if (!poolTransfer) throw new NotFoundError('Could not find this pool transfer token.');
+
+    if (pool.sub === req.body.sub) {
+        throw new ForbiddenError("You can't transfer this pool to yourself.");
+    }
 
     if (new Date(poolTransfer.expiry).getTime() < Date.now()) {
-        throw new ForbiddenError('Pool transfer token has expired');
+        throw new ForbiddenError('This pool transfer URL has expired.');
     }
 
     if (poolTransfer.poolId !== String(pool._id)) {
-        throw new ForbiddenError('Transfer token is not meant for this pool.');
+        throw new ForbiddenError('This pool transfer token is not generated for this pool.');
     }
 
-    const erc20ids = await ERC20Perk.find({ poolId: pool._id }).distinct('erc20Id');
+    const erc20Ids = await ERC20Perk.find({ poolId: pool._id }).distinct('erc20Id');
 
     pool.sub = req.body.sub;
     await pool.save();
 
-    for (let i = 0; i < erc20ids.length; i++) {
-        const erc20 = await ERC20.findById(erc20ids[i]);
+    for (let i = 0; i < erc20Ids.length; i++) {
+        const erc20 = await ERC20.findById(erc20Ids[i]);
         await ERC20Service.findOrImport(pool, erc20.address);
     }
 

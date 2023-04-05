@@ -44,6 +44,7 @@ router.use('/webhook', webhooksRouter);
 router.use('/data', dataRouter);
 router.use('/merchants', merchantsRouter);
 router.use('/brands', brandsRouter);
+router.use('/pools', poolsRouter);
 
 router.use(checkJwt);
 router.use(corsHandler);
@@ -53,7 +54,6 @@ router.use('/daily-rewards', dailyRewardsRouter);
 router.use('/point-balances', pointBalancesRouter);
 router.use('/account', accountRouter);
 router.use('/widgets', widgetsRouter);
-router.use('/pools', poolsRouter);
 router.use('/erc20', erc20Router);
 router.use('/erc721', erc721Router);
 router.use('/erc1155', erc1155Router);
