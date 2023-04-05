@@ -150,7 +150,7 @@ describe('Pool Transfer', () => {
                 .set({ 'Authorization': dashboardAccessToken, 'X-PoolId': pool._id })
                 .send({ token: poolTransfer.token, sub: sub2 })
                 .expect(async ({ body }: Response) => {
-                    expect(body.error.message).toBe('Pool transfer token has expired');
+                    expect(body.error.message).toBe('This pool transfer URL has expired.');
                 })
                 .expect(403);
         });

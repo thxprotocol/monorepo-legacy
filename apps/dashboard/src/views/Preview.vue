@@ -256,3 +256,25 @@ export default class WidgetPreviewView extends Vue {
     background-position: center center;
 }
 </style>
+<style scoped lang="scss">
+.btn-success {
+    transition: all 0.1s ease;
+    background-color: darken(#98d80d, 10%);
+    border-color: darken(#98d80d, 10%);
+    outline: none !important;
+}
+
+.btn-success:not(:disabled):not(.disabled):active:focus,
+.btn-success:not(:disabled):not(.disabled).active:focus,
+.show > .btn-success.dropdown-toggle:focus {
+    background-color: darken(#98d80d, 15%);
+    border-color: darken(#98d80d, 15%);
+    box-shadow: rgba(113, 63, 205, 0.5) 0 0px 15px;
+}
+.btn-success:hover,
+.btn-success:active {
+    box-shadow: rgba(113, 63, 205, 0.5) 0 0px 15px;
+    background-color: darken(#98d80d, 5%);
+    text-shadow: 1px 1px rgba(89, 66, 193, 0.5);
+}
+</style>
