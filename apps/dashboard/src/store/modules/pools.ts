@@ -6,17 +6,7 @@ import { track } from '@thxnetwork/mixpanel';
 import { DASHBOARD_URL } from '@thxnetwork/wallet/utils/secrets';
 import { IAccount } from '@thxnetwork/dashboard/types/account';
 import { TPool, TPoolSettings } from '@thxnetwork/types/index';
-
-type TPoolTransfer = {
-    sub: string;
-    poolId: string;
-    token: string;
-    expiry: Date;
-    isExpired: boolean;
-    isTransferred: boolean;
-    isCopied: boolean;
-    url: string;
-};
+import { TPoolTransfer, TPoolTransferResponse } from '@thxnetwork/types/interfaces';
 
 export interface IPoolAnalytic {
     _id: string;
@@ -123,10 +113,10 @@ class PoolModule extends VuexModule {
     }
 
     @Mutation
-    setTransfer(poolTransfer: TPoolTransfer) {
-        const pool = this._all[poolTransfer.poolId] as TPool & { transfers: TPoolTransfer[] };
+    setTransfer(poolTransfer: TPoolTransferResponse) {
+        const pool = this._all[poolTransfer.poolId] as TPool & { transfers: TPoolTransferResponse[] };
         poolTransfer.isCopied = false;
-        poolTransfer.url = `${DASHBOARD_URL}/pools/${pool._id}/transfer/${poolTransfer.token}`;
+        poolTransfer.url = `${DASHBOARD_URL}/preview/${pool._id}?token=${poolTransfer.token}`;
 
         const transfers = [...(pool.transfers ? pool.transfers : []), poolTransfer];
         Vue.set(this._all[pool._id], 'transfers', transfers);
@@ -167,13 +157,13 @@ class PoolModule extends VuexModule {
             headers: { 'X-PoolId': pool._id },
         });
 
-        r.data.forEach((poolTransfer: TPoolTransfer) => {
+        r.data.forEach((poolTransfer: TPoolTransferResponse) => {
             this.context.commit('setTransfer', poolTransfer);
         });
     }
 
     @Action({ rawError: true })
-    async refreshTransfers(pool: TPool & { transfers: TPoolTransfer[] }) {
+    async refreshTransfers(pool: TPool & { transfers: TPoolTransferResponse[] }) {
         await axios({
             method: 'POST',
             url: `/pools/${pool._id}/transfers/refresh`,
@@ -184,7 +174,7 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async deleteTransfers(pool: TPool & { transfers: TPoolTransfer[] }) {
+    async deleteTransfers(pool: TPool & { transfers: TPoolTransferResponse[] }) {
         await axios({
             method: 'DELETE',
             url: `/pools/${pool._id}/transfers`,

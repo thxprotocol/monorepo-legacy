@@ -50,13 +50,7 @@ router.delete(
     assertRequestInput(DeletePoolTransfer.validation),
     DeletePoolTransfer.controller,
 );
-router.get(
-    '/:id/transfers/:uuid',
-    //guard.check(['pools:read']),
-    //assertAssetPoolOwnership,
-    assertRequestInput(ReadPoolTransfer.validation),
-    ReadPoolTransfer.controller,
-);
+router.get('/:id/transfers/:token', assertRequestInput(ReadPoolTransfer.validation), ReadPoolTransfer.controller);
 router.get(
     '/:id/transfers',
     checkJwt,

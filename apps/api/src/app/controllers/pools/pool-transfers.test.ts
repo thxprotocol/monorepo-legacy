@@ -12,7 +12,6 @@ import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/c
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { PoolTransfer, PoolTransferDocument } from '@thxnetwork/api/models/PoolTransfer';
 import { ERC20Document } from '@thxnetwork/api/models/ERC20';
-import { ERC20PerkDocument } from '@thxnetwork/api/models/ERC20Perk';
 import { createImage } from '@thxnetwork/api/util/jest/images';
 import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
 import { addMinutes } from 'date-fns';
@@ -21,7 +20,7 @@ import { isAddress } from 'web3-utils';
 const user = request.agent(app);
 
 describe('Pool Transfer', () => {
-    let pool: AssetPoolDocument, poolTransfer: PoolTransferDocument, erc20: ERC20Document, perk: ERC20PerkDocument;
+    let pool: AssetPoolDocument, poolTransfer: PoolTransferDocument, erc20: ERC20Document;
 
     beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
@@ -122,7 +121,6 @@ describe('Pool Transfer', () => {
                 .set({ 'Authorization': dashboardAccessToken, 'X-PoolId': pool._id })
                 .expect(({ body }: Response) => {
                     expect(body.length).toBe(1);
-                    expect(body[0].uuid).toBeDefined();
                     expect(body[0].token).toBeDefined();
                     expect(body[0].sub).toBeDefined();
 
@@ -135,10 +133,10 @@ describe('Pool Transfer', () => {
 
     describe('GET /pools/:id/transfers/:uuid', () => {
         it('HTTP 200', (done) => {
-            user.get(`/v1/pools/${pool._id}/transfers/${poolTransfer.uuid}`)
+            user.get(`/v1/pools/${pool._id}/transfers/${poolTransfer.token}`)
                 .set({ 'Authorization': dashboardAccessToken, 'X-PoolId': pool._id })
                 .expect(({ body }: Response) => {
-                    expect(body.uuid).toBe(poolTransfer.uuid);
+                    expect(body.token).toBe(poolTransfer.token);
                 })
                 .expect(200, done);
         });

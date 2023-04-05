@@ -26,3 +26,18 @@ export type TPoolSettings = {
         conditionalRewards: TPointReward;
     };
 };
+
+export type TPoolTransfer = {
+    sub: string;
+    poolId: string;
+    token: string;
+    expiry: Date;
+};
+
+export type TPoolTransferResponse = TPoolTransfer & {
+    isExpired: boolean;
+    isTransferred: boolean;
+    isCopied: boolean;
+    url: string;
+    now: number;
+};

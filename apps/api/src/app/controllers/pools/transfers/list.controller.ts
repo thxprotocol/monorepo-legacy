@@ -16,7 +16,6 @@ const controller = async (req: Request, res: Response) => {
 
     if (!poolTransfers.length) {
         const poolTransfer = await PoolTransfer.create({
-            uuid: v4(),
             sub: req.auth.sub,
             poolId: pool._id,
             token: v4(),

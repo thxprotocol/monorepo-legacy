@@ -99,13 +99,14 @@
 </template>
 
 <script lang="ts">
-import { TPool, IPools } from '@thxnetwork/dashboard/store/modules/pools';
+import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { ERC20Type } from '@thxnetwork/dashboard/types/erc20';
 import { plans } from '@thxnetwork/dashboard/utils/plans';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { IAccount } from '../types/account';
 import BaseNavbarNav from './BaseNavbarNav.vue';
+import { TPool } from '@thxnetwork/types/interfaces';
 
 @Component({
     components: {

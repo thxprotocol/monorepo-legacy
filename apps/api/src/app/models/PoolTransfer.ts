@@ -1,11 +1,10 @@
 import mongoose from 'mongoose';
-import { TPoolTransfer } from '@thxnetwork/api/types/TPoolTransfer';
+import { TPoolTransfer } from '@thxnetwork/types/interfaces';
 
 export type PoolTransferDocument = mongoose.Document & TPoolTransfer;
 
 const schema = new mongoose.Schema(
     {
-        uuid: String,
         sub: String,
         poolId: String,
         token: String,
