@@ -111,10 +111,9 @@ import XML from 'highlight.js/lib/languages/xml';
 import 'highlight.js/styles/atom-one-dark.css';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { THXWidget } from 'libs/sdk/src';
 import { initWidget } from '../utils/widget';
 import { TBrand } from '../store/modules/brands';
-import { API_URL, BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
+import { API_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { format, formatDistance } from 'date-fns';
 import axios, { AxiosError } from 'axios';
 import { TPoolTransferResponse } from '@thxnetwork/types/interfaces';
@@ -131,7 +130,6 @@ hljs.registerLanguage('xml', XML);
 })
 export default class WidgetPreviewView extends Vue {
     format = format;
-    widget: THXWidget | null = null;
     isTransferLoading = false;
     brands!: { [poolId: string]: TBrand };
     logoImgUrl = '';
@@ -172,11 +170,6 @@ export default class WidgetPreviewView extends Vue {
             brand = { logoImgUrl: this.defaultLogoImgUrl, backgroundImgUrl: this.defaultBackgroundImgUrl };
         }
         return brand;
-    }
-
-    get poolTransferPreviewURL() {
-        if (!this.poolTransfer) return '#';
-        return `${BASE_URL}/pools/${this.$route.params.poolId}/transfer/${this.poolTransfer.token}`;
     }
 
     async mounted() {
@@ -221,7 +214,10 @@ export default class WidgetPreviewView extends Vue {
         const user = await userManager.getUser();
 
         if (!user || user.expired) {
-            window.open(this.poolTransferPreviewURL, '_blank');
+            await this.$store.dispatch('account/signinRedirect', {
+                poolId: this.poolTransfer.poolId,
+                poolTransferToken: this.poolTransfer.token,
+            });
             this.isTransferLoading = false;
             return;
         }
