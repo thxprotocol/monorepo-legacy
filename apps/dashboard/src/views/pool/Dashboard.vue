@@ -83,11 +83,11 @@
                                     class="d-flex justify-content-between align-items-center"
                                 >
                                     <div class="d-flex center-center">
-                                        <img
+                                        <b-avatar
                                             :height="30"
                                             :width="30"
+                                            variant="light"
                                             :src="result.account.profileImg"
-                                            alt=""
                                             class="mr-2"
                                         />
                                         <div style="line-height: 1.2">

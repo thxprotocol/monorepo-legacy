@@ -8,9 +8,10 @@ import { DiscordService } from '@thxnetwork/auth/services/DiscordService';
 import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { ShopifyService } from '@thxnetwork/auth/services/ShopifyService';
+import { logger } from '@thxnetwork/auth/util/logger';
 
-async function formatAccountRes(account) {
-    return {
+async function formatAccountRes(account, accessIncluded = true) {
+    const response = {
         sub: String(account._id),
         address: account.address,
         firstName: account.firstName,
@@ -21,51 +22,79 @@ async function formatAccountRes(account) {
         profileImg: account.profileImg,
         variant: account.variant,
         shopifyStoreUrl: account.shopifyStoreUrl,
-        googleAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.Google),
-        youtubeViewAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.YoutubeView),
-        youtubeManageAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.YoutubeManage),
-        twitterAccess: await TwitterService.isAuthorized(account),
-        githubAccess: await GithubService.isAuthorized(account),
-        discordAccess: await DiscordService.isAuthorized(account),
-        twitchAccess: await TwitchService.isAuthorized(account),
-        shopifyAccess: await ShopifyService.isAuthorized(account),
     };
+    if (accessIncluded) {
+        const [
+            googleAccess,
+            youtubeViewAccess,
+            youtubeManageAccess,
+            twitterAccess,
+            githubAccess,
+            discordAccess,
+            twitchAccess,
+            shopifyAccess,
+        ] = await Promise.all([
+            await YouTubeService.isAuthorized(account, AccessTokenKind.Google),
+            await YouTubeService.isAuthorized(account, AccessTokenKind.YoutubeView),
+            await YouTubeService.isAuthorized(account, AccessTokenKind.YoutubeManage),
+            await TwitterService.isAuthorized(account),
+            await GithubService.isAuthorized(account),
+            await DiscordService.isAuthorized(account),
+            await TwitchService.isAuthorized(account),
+            await ShopifyService.isAuthorized(account),
+        ]);
+
+        Object.assign(response, {
+            googleAccess,
+            youtubeViewAccess,
+            youtubeManageAccess,
+            twitterAccess,
+            githubAccess,
+            discordAccess,
+            twitchAccess,
+            shopifyAccess,
+        });
+    }
+    return response;
 }
 
 export const getAccount = async (req: Request, res: Response) => {
     const account = await AccountService.get(req.params.sub);
-    if (!account) {
-        throw new NotFoundError();
-    }
+    if (!account) throw new NotFoundError('Could not find the account for this sub');
+
     res.send(await formatAccountRes(account));
 };
 
 export const getAccountByAddress = async (req: Request, res: Response) => {
     const account = await AccountService.getByAddress(req.params.address);
-    if (!account) {
-        throw new NotFoundError();
-    }
+    if (!account) throw new NotFoundError('Could not find the account for this address');
+
     res.send(await formatAccountRes(account));
 };
 
 export const getAccountByEmail = async (req: Request, res: Response) => {
     const account = await AccountService.getByEmail(req.params.email);
-
-    if (!account) {
-        throw new NotFoundError();
-    }
+    if (!account) throw new NotFoundError('Could not find this account for this email');
 
     res.send(await formatAccountRes(account));
 };
 
 export const getMultipleAccounts = async (req: Request, res: Response) => {
-    const subs = String(req.query.subs).split(',');
-    if (!subs.length) {
-        return [];
-    }
-    const accounts = await AccountService.getMany(subs);
-    const promises = accounts.map(async (account) => {
-        return await formatAccountRes(account);
-    });
-    res.send(await Promise.all(promises));
+    const subs = String(req.query.subs)
+        .split(',')
+        .filter((sub: string) => !!sub);
+    if (!subs.length) return [];
+
+    const manyAccounts = await AccountService.getMany(subs);
+    const accounts = await Promise.all(
+        manyAccounts.map(async (account) => {
+            try {
+                return await formatAccountRes(account, false);
+            } catch (error) {
+                logger.error(error);
+            }
+        }),
+    );
+
+    res.send(accounts);
 };
