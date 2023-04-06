@@ -14,6 +14,7 @@ export type TPool = {
     variant?: 'defaultDiamond' | 'registry' | 'factory' | 'sharedWallet';
     brand: TBrand;
     settings: TPoolSettings;
+    widget: { active: boolean };
 };
 
 export type TPoolSettings = {

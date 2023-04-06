@@ -2,18 +2,46 @@
     <div>
         <b-form-row>
             <b-col md="4">
-                <strong>Title</strong>
-                <p class="text-muted">Used in overviews, e-mails and other notifications towards your audience.</p>
+                <strong>Embed code</strong>
+                <p class="text-muted">
+                    Place this code before the closing body tag of your HTML page. The launcher will show for your web
+                    page visitors.<br />
+                    <b-link target="_blank" href="https://www.npmjs.com/package/@thxnetwork/sdk"> Download SDK </b-link>
+                </p>
             </b-col>
             <b-col md="8">
-                <b-form-group>
-                    <b-form-group>
-                        <b-form-input @change="onChangeSettings" v-model="title" class="mr-3" />
-                    </b-form-group>
-                </b-form-group>
+                <b-alert variant="danger" show v-if="widget && !widget.active">
+                    <i class="fas fa-wifi mr-2"></i> <strong>No domain activity!</strong> Please add the script below in
+                    the &lt;head&gt; of your HTML page.
+                </b-alert>
+                <b-alert v-else variant="success" show>
+                    <i class="fas fa-wifi mr-2"></i> <strong>Widget is active!</strong> Make sure to update rewards
+                    frequently.
+                </b-alert>
+                <BaseCodeExample :pool="pool" />
             </b-col>
         </b-form-row>
-
+        <hr />
+        <b-form-row>
+            <b-col md="4">
+                <strong>Domain</strong>
+                <div class="text-muted">Configure the domain the widget will be loaded on.</div>
+            </b-col>
+            <b-col md="8">
+                <b-form-input v-model="domain" />
+            </b-col>
+        </b-form-row>
+        <hr />
+        <b-form-row>
+            <b-col md="4">
+                <strong>Title</strong>
+                <div class="text-muted">Used in e-mail notifications towards your audience.</div>
+            </b-col>
+            <b-col md="8">
+                <b-form-input @change="onChangeSettings" v-model="title" class="mr-3 mb-0" />
+            </b-col>
+        </b-form-row>
+        <hr />
         <b-form-row>
             <b-col md="4">
                 <strong>Logo</strong>
@@ -110,13 +138,19 @@ import { TBrand } from '@thxnetwork/dashboard/store/modules/brands';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { IAccount } from '@thxnetwork/dashboard/types/account';
 import { TPoolSettings } from '@thxnetwork/types/interfaces';
+import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
+import { IWidgets } from '@thxnetwork/dashboard/store/modules/widgets';
 
 @Component({
+    components: {
+        BaseCodeExample,
+    },
     computed: {
         ...mapGetters({
             brands: 'brands/all',
             pools: 'pools/all',
             profile: 'account/profile',
+            widgets: 'widgets/all',
         }),
     },
 })
@@ -128,8 +162,10 @@ export default class SettingsView extends Vue {
     chainId: ChainId = ChainId.PolygonMumbai;
     pools!: IPools;
     brands!: { [poolId: string]: TBrand };
+    widgets!: IWidgets;
 
     title = '';
+    domain = '';
     logoImgUrl = '';
     backgroundImgUrl = '';
     isWeeklyDigestEnabled = false;
@@ -151,8 +187,18 @@ export default class SettingsView extends Vue {
         return this.brands[this.$route.params.id];
     }
 
+    get widget() {
+        if (!this.widgets[this.$route.params.id]) return;
+        return Object.values(this.widgets[this.$route.params.id])[0];
+    }
+
     async mounted() {
         this.chainId = this.pool.chainId;
+
+        this.$store.dispatch('widgets/list', this.pool).then(async () => {
+            if (!this.widget) return;
+            this.domain = this.widget.domain;
+        });
 
         await this.$store.dispatch('brands/getForPool', this.pool._id);
         if (this.brand) {

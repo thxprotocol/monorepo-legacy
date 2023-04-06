@@ -2,40 +2,6 @@
     <div>
         <b-form-row>
             <b-col md="4">
-                <strong>Embed code</strong>
-                <p class="text-muted">
-                    Place this code before the closing body tag of your HTML page. The launcher will show for your web
-                    page visitors.<br />
-                    <b-link target="_blank" href="https://www.npmjs.com/package/@thxnetwork/sdk"> Download SDK </b-link>
-                </p>
-            </b-col>
-            <b-col md="8">
-                <pre class="rounded text-white p-3 d-flex align-items-center bg-dark" style="white-space: nowrap">
-                    <b-button 
-                        variant="light" 
-                        v-clipboard:copy="code"
-                        v-clipboard:success="() => isCopied = true" size="sm" class="mr-3">
-                        <i class="fas  ml-0" :class="isCopied ? 'fa-clipboard-check' : 'fa-clipboard'"></i>
-                    </b-button>
-                    <code class="language-html" v-html="codeExample"></code>
-                </pre>
-            </b-col>
-        </b-form-row>
-        <hr />
-        <b-form-row>
-            <b-col md="4">
-                <strong>Origin</strong>
-                <p class="text-muted">Configure the domain the widget will be loaded on.</p>
-            </b-col>
-            <b-col md="8">
-                <b-form-group>
-                    <b-form-input v-model="domain" />
-                </b-form-group>
-            </b-col>
-        </b-form-row>
-        <hr />
-        <b-form-row>
-            <b-col md="4">
                 <strong>Color scheme</strong>
                 <p class="text-muted">Customize the color scheme of your widget.</p>
             </b-col>
@@ -264,26 +230,22 @@
 </template>
 
 <script lang="ts">
-import hljs from 'highlight.js/lib/core';
-import XML from 'highlight.js/lib/languages/xml';
-import 'highlight.js/styles/atom-one-dark.css';
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { API_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { IWidgets } from '@thxnetwork/dashboard/store/modules/widgets';
 import BaseModalWidgetCreate from '@thxnetwork/dashboard/components/modals/BaseModalWidgetCreate.vue';
 import BaseWidgetAlertPreview from '@thxnetwork/dashboard/components/widget/BaseWidgetAlertPreview.vue';
-import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
+import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
 import Color from 'color';
+import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { DEFAULT_ELEMENTS, DEFAULT_COLORS } from '@thxnetwork/types/contants';
-
-hljs.registerLanguage('xml', XML);
 
 @Component({
     components: {
         BaseModalWidgetCreate,
         BaseWidgetAlertPreview,
+        BaseCodeExample,
     },
     computed: mapGetters({
         pools: 'pools/all',
@@ -294,10 +256,8 @@ export default class WidgetsView extends Vue {
     pools!: IPools;
     widgets!: IWidgets;
     Color = Color;
-    isCopied = false;
     message = '';
     align = 'left';
-    domain = '';
     isSubmitting = false;
     elements = Object.assign({}, DEFAULT_ELEMENTS);
     colors = Object.assign({}, DEFAULT_COLORS);
@@ -309,16 +269,6 @@ export default class WidgetsView extends Vue {
     get widget() {
         if (!this.widgets[this.$route.params.id]) return;
         return Object.values(this.widgets[this.$route.params.id])[0];
-    }
-
-    get code() {
-        return `<script src="${API_URL}/v1/widget/${this.pool._id}.js"><\/script>`;
-    }
-
-    get codeExample() {
-        return hljs.highlight(`<script src="${API_URL}/v1/widget/${this.pool._id}.js"><\/script>`, {
-            language: 'xml',
-        }).value;
     }
 
     mounted() {
@@ -362,7 +312,6 @@ export default class WidgetsView extends Vue {
         await this.$store.dispatch('widgets/update', {
             poolId: this.pool._id,
             message: this.message,
-            domain: this.domain,
             align: this.align,
             uuid: this.widget.uuid,
             theme: JSON.stringify({ elements: this.elements, colors: this.colors }),

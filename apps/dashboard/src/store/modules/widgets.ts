@@ -12,6 +12,7 @@ export type TWidget = {
     bgColor: string;
     poolId: string;
     theme: string;
+    active: boolean;
 };
 export interface IWidgets {
     [poolId: string]: { [widgetUuid: string]: TWidget };

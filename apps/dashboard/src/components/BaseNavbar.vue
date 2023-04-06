@@ -204,6 +204,7 @@ export default class BaseNavbar extends Vue {
                 path: `/pool/${this.selectedPool._id}/settings`,
                 label: 'Settings',
                 iconClasses: 'fas fa-cog',
+                isActive: this.selectedPool.widget ? this.selectedPool.widget.active : false,
             },
         ];
 

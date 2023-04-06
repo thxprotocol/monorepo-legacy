@@ -61,10 +61,7 @@
                         <b-badge variant="dark" pill>10 minutes</b-badge>
                     </b-list-group-item>
                     <b-list-group-item
-                        href="#"
                         class="bg-darker d-flex justify-content-between align-items-center text-white"
-                        v-clipboard:copy="code"
-                        v-clipboard:success="() => (isCopied = true)"
                         size="sm"
                     >
                         <div>
@@ -75,18 +72,9 @@
                     </b-list-group-item>
                 </b-list-group>
                 <p class="small text-muted">Ask your dev to add this to the &lt;head&gt; of your website 👇</p>
-                <pre
-                    class="rounded text-white p-3 d-flex align-items-center bg-darker overflow-hidden"
-                    style="white-space: nowrap"
-                >
-                    <b-button 
-                        variant="light" 
-                        v-clipboard:copy="code"
-                        v-clipboard:success="() => isCopied = true" size="sm" class="mr-3">
-                        <i class="fas  ml-0" :class="isCopied ? 'fa-clipboard-check' : 'fa-clipboard'"></i>
-                    </b-button>
-                    <code class="language-html" v-html="codeExample"></code>
-                </pre>
+
+                <BaseCodeExample :pool="{ _id: $route.params.poolId }" />
+
                 <b-button
                     variant="success"
                     class="rounded-pill"
@@ -107,9 +95,6 @@
 </template>
 
 <script lang="ts">
-import hljs from 'highlight.js/lib/core';
-import XML from 'highlight.js/lib/languages/xml';
-import 'highlight.js/styles/atom-one-dark.css';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { initWidget } from '../utils/widget';
@@ -120,12 +105,14 @@ import axios, { AxiosError } from 'axios';
 import { TPoolTransferResponse } from '@thxnetwork/types/interfaces';
 import { UserManager } from 'oidc-client-ts';
 import { config } from '../utils/oidc';
-import { DASHBOARD_URL } from '@thxnetwork/wallet/utils/secrets';
+import { BASE_URL } from '../utils/secrets';
 import { track } from '@thxnetwork/mixpanel';
-
-hljs.registerLanguage('xml', XML);
+import BaseCodeExample from '../components/BaseCodeExample.vue';
 
 @Component({
+    components: {
+        BaseCodeExample,
+    },
     computed: mapGetters({
         brands: 'brands/all',
     }),
@@ -139,19 +126,8 @@ export default class WidgetPreviewView extends Vue {
     poolTransfer: TPoolTransferResponse | null = null;
     defaultLogoImgUrl = require('../../public/assets/logo.png');
     defaultBackgroundImgUrl = require('../../public/assets/thx_jumbotron.webp');
-    isCopied = false;
     error = '';
     userManager = new UserManager(config);
-
-    get code() {
-        return `<script src="${API_URL}/v1/widget/${this.$route.params.poolId}.js"><\/script>`;
-    }
-
-    get codeExample() {
-        return hljs.highlight(`<script src="${API_URL}/v1/widget/${this.$route.params.poolId}.js"><\/script>`, {
-            language: 'xml',
-        }).value;
-    }
 
     get isExpired() {
         if (!this.poolTransfer) return;
@@ -239,7 +215,7 @@ export default class WidgetPreviewView extends Vue {
                 },
             });
 
-            window.location.href = `${DASHBOARD_URL}/pool/${this.poolTransfer.poolId}`;
+            window.location.href = `${BASE_URL}/pool/${this.poolTransfer.poolId}`;
         } catch (error) {
             this.setError(error as AxiosError);
         } finally {

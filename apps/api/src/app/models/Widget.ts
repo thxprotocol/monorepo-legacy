@@ -9,6 +9,7 @@ export type WidgetDocument = mongoose.Document & {
     color: string;
     bgColor: string;
     theme: string;
+    active: boolean;
 };
 
 const widgetSchema = new mongoose.Schema(
@@ -21,6 +22,7 @@ const widgetSchema = new mongoose.Schema(
         color: String,
         bgColor: String,
         theme: String,
+        active: { default: false, type: Boolean },
     },
     { timestamps: true },
 );
