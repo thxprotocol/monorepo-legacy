@@ -21,7 +21,7 @@
             <b-badge
                 v-if="poolTransfer"
                 v-b-tooltip.hover.right
-                :title="`Valid until: ${format(new Date(poolTransfer.expiry), 'MMMM do yyyy hh:mm:ss')}`"
+                :title="`Expires at: ${format(new Date(poolTransfer.expiry), 'MMMM do yyyy hh:mm:ss')}`"
                 :variant="isExpired ? 'danger' : 'primary'"
                 style="font-size: 1rem"
                 class="p-2"
@@ -31,12 +31,12 @@
             </b-badge>
 
             <template #footer>
-                <b-alert variant="danger" show v-if="error">
+                <b-alert variant="danger" show v-if="error" class="mt-2">
                     <i class="fas fa-exclamation-circle mr-2"></i>
                     {{ error }}
                 </b-alert>
                 <b-card-title>Hi there👋</b-card-title>
-                <p>A loyalty pool has been setup for you to speed up your integration efforts.</p>
+                <p>A loyalty widget has been configured for you to reduce your time spent on the integration.</p>
                 <b-list-group class="mb-3">
                     <b-list-group-item
                         class="bg-darker d-flex justify-content-between align-items-center text-white"
@@ -45,7 +45,7 @@
                     >
                         <div>
                             <i class="fas fa-check-circle text-success mr-1"></i>
-                            Have users <strong>earn points</strong> for their engagement
+                            Configure <strong>point rewards</strong> for users to earn
                         </div>
                         <b-badge variant="dark" pill>5 minutes</b-badge>
                     </b-list-group-item>
@@ -56,7 +56,7 @@
                     >
                         <div>
                             <i class="fas fa-check-circle text-success mr-1"></i>
-                            Let users <strong>redeem points</strong> for perks
+                            Configure <strong>crypto perks</strong> for users to redeem
                         </div>
                         <b-badge variant="dark" pill>10 minutes</b-badge>
                     </b-list-group-item>
@@ -69,7 +69,7 @@
                     >
                         <div>
                             <i class="fas fa-check-circle text-success mr-1"></i> Embed the
-                            <strong>widget script</strong> in your website
+                            <strong>widget script</strong> in HTML pages
                         </div>
                         <b-badge variant="dark" pill>10 minutes</b-badge>
                     </b-list-group-item>
@@ -98,7 +98,8 @@
                     <strong v-else>Start now!</strong>
                 </b-button>
                 <p class="text-center mt-2 small text-muted" v-if="poolTransfer">
-                    Expires at <strong>{{ format(new Date(poolTransfer.expiry), 'MMMM do yyyy hh:mm:ss') }}</strong>
+                    For security reasons this URL expires at
+                    <strong>{{ format(new Date(poolTransfer.expiry), 'MMMM do yyyy hh:mm:ss') }}</strong>
                 </p>
             </template>
         </b-card>
@@ -253,6 +254,9 @@ export default class WidgetPreviewView extends Vue {
 }
 </style>
 <style scoped lang="scss">
+.sidebar-sibling {
+    display: block;
+}
 .btn-success {
     transition: all 0.1s ease;
     background-color: darken(#98d80d, 10%);

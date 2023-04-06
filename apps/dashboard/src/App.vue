@@ -60,12 +60,21 @@ export default class App extends Vue {
         opacity: 1;
     }
 
-    &:not(.is-authenticated) .sidebar-sibling {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 100%;
-        margin-left: 0;
+    &:not(.is-authenticated) {
+        padding: 2rem 0 3rem;
+        height: auto;
+
+        @media (min-width: 768px) {
+            height: 100%;
+
+            .sidebar-sibling {
+                height: 100%;
+                margin-left: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
     }
 }
 </style>
