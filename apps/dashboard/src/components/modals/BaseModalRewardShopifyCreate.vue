@@ -57,15 +57,6 @@
                         </b-row>
                     </b-col>
                     <b-col md="6">
-                        <BaseCardCommerce
-                            v-if="profile && profile.plan === 1"
-                            class="mb-3"
-                            :pool="pool"
-                            :price="price"
-                            :price-currency="priceCurrency"
-                            @change-price="price = $event"
-                            @change-price-currency="priceCurrency = $event"
-                        />
                         <BaseCardRewardExpiry
                             class="mb-3"
                             :expiryDate="expiryDate"
@@ -97,7 +88,6 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import BaseModal from './BaseModal.vue';
-import BaseCardCommerce from '../cards/BaseCardCommerce.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
 import BaseDropdownSelectShopifyPriceRule from '../dropdowns/BaseDropdownSelectShopifyPriceRule.vue';
@@ -109,7 +99,6 @@ import { IAccount } from '@thxnetwork/dashboard/types/account';
 @Component({
     components: {
         BaseModal,
-        BaseCardCommerce,
         BaseCardRewardExpiry,
         BaseCardRewardLimits,
         BaseDropdownSelectShopifyPriceRule,

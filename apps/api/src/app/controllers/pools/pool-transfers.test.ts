@@ -125,7 +125,6 @@ describe('Pool Transfer', () => {
                     expect(body[0].sub).toBeDefined();
 
                     poolTransfer = body[0];
-                    console.log('poolTransfer', poolTransfer);
                 })
                 .expect(200, done);
         });

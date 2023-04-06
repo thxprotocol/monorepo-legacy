@@ -1,12 +1,8 @@
-import { STRIPE_SECRET_WEBHOOK } from '@thxnetwork/api/config/secrets';
-import { ERC721 } from '@thxnetwork/api/models/ERC721';
-import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
-import { ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
-import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import ERC721Service from '@thxnetwork/api/services/ERC721Service';
-import PoolService from '@thxnetwork/api/services/PoolService';
-import { stripe } from '@thxnetwork/api/util/stripe';
 import { Request, Response } from 'express';
+import { stripe } from '@thxnetwork/api/util/stripe';
+import { logger } from '@thxnetwork/api/util/logger';
+import PerkPaymentService from '@thxnetwork/api/services/PerkPaymentService';
+import { STRIPE_SECRET_WEBHOOK } from '@thxnetwork/api/config/secrets';
 
 const controller = async (req: Request, res: Response) => {
     let event = req.body;
@@ -22,23 +18,16 @@ const controller = async (req: Request, res: Response) => {
     }
 
     switch (event.type) {
+        // TODO implement for showing token early during iDeal flow
+        // case 'payment_intent.requires_action': {
+        //     break;
+        // }
         case 'payment_intent.succeeded': {
-            const { perk_id, sub } = event.data.object.metadata;
-
-            if (sub && perk_id) {
-                const account = await AccountProxy.getById(sub);
-                const perk = await ERC721Perk.findById(perk_id);
-                const erc721 = await ERC721.findById(perk.erc721Id);
-                const metadata = await ERC721Metadata.findById(perk.erc721metadataId);
-                const pool = await PoolService.getById(perk.poolId);
-                const address = await account.getAddress(pool.chainId);
-
-                await ERC721Service.mint(pool, erc721, metadata, sub, address);
-            }
+            await PerkPaymentService.onPaymentIntentSucceeded(event);
             break;
         }
         default:
-            console.log(`Unhandled event type ${event.type}`);
+            logger.info({ message: `Unhandled event type ${event.type}` });
     }
 
     res.json({ received: true });

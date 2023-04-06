@@ -13,7 +13,6 @@ import { ShopifyPerkPayment } from '@thxnetwork/api/models/ShopifyPerkPayment';
 type TAllPerks = ERC20PerkDocument | ERC721PerkDocument | ShopifyPerkDocument;
 
 async function getProgress(r: TAllPerks, model: any) {
-    if (!r.limit) return;
     return {
         count: await model.countDocuments({ perkId: r._id }),
         limit: r.limit,
@@ -21,7 +20,6 @@ async function getProgress(r: TAllPerks, model: any) {
 }
 
 async function getExpiry(r: TAllPerks) {
-    if (!r.expiryDate) return;
     return {
         now: Date.now(),
         date: new Date(r.expiryDate).getTime(),
