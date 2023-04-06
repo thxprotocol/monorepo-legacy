@@ -1,20 +1,20 @@
 import { Request, Response } from 'express';
-import { param, query } from 'express-validator';
+import { body, param } from 'express-validator';
 import { PoolSubscription } from '@thxnetwork/api/models/PoolSubscription';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { BadRequestError } from '@thxnetwork/api/util/errors';
 
-const validation = [param('id').isMongoId(), query('email').optional().isEmail()];
+const validation = [param('id').isMongoId(), body('email').optional().isEmail()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
-    if (req.query.email) {
+    if (req.body.email) {
         const account = await AccountProxy.getById(req.auth.sub);
         if (account.email) {
             throw new BadRequestError('The email is already present for this account');
         }
-        account.email = String(req.query.email);
-        await AccountProxy.update(req.auth.sub, account);
+
+        await AccountProxy.update(req.auth.sub, { email: String(req.body.email) });
     }
     const subscription = await PoolSubscription.create({ poolId: req.params.id, sub: req.auth.sub });
 
