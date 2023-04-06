@@ -2,7 +2,6 @@ import { CommandInteraction, EmbedBuilder } from 'discord.js';
 import { thxClient } from '../../config/oidc';
 import GuildService from '../../services/guild.service';
 import { client } from '../../../bootstrap';
-import { version } from '../../../../package.json';
 
 export const onSubcommandInfo = async (interaction: CommandInteraction) => {
     const embed = new EmbedBuilder();

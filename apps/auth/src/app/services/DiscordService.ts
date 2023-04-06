@@ -4,7 +4,6 @@ import CommonOauthLoginOptions from '../types/CommonOauthLoginOptions';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { discordClient } from '../util/axios';
 import { IAccessToken } from '../types/TAccount';
-import { AccountService } from './AccountService';
 export const scopes = ['identify', 'email', 'guilds', 'guilds.join', 'guilds.members.read'];
 
 const ERROR_NO_DATA = 'Could not find an Discord data for this accesstoken';
