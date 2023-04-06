@@ -136,7 +136,7 @@ export default class WidgetPreviewView extends Vue {
     logoImgUrl = '';
     backgroundImgUrl = '';
     poolTransfer: TPoolTransferResponse | null = null;
-    defaultLogoImgUrl = require('@thxnetwork/dashboard/../public/assets/logo.png');
+    defaultLogoImgUrl = require('../../public/assets/logo.png');
     defaultBackgroundImgUrl = require('../../public/assets/thx_jumbotron.webp');
     isCopied = false;
     error = '';
@@ -174,15 +174,12 @@ export default class WidgetPreviewView extends Vue {
     }
 
     async mounted() {
-        const poolId = this.$route.params.poolId;
-        initWidget(poolId);
-
-        await this.$store.dispatch('brands/getForPool', poolId);
-
+        initWidget(this.$route.params.poolId);
+        await this.$store.dispatch('brands/getForPool', this.$route.params.poolId);
         this.setBackground(this.brand);
 
         if (this.$route.query.token) {
-            this.poolTransfer = await this.getPoolTransfer();
+            this.getPoolTransfer();
         }
     }
 
@@ -194,7 +191,7 @@ export default class WidgetPreviewView extends Vue {
                 withCredentials: false,
             });
 
-            return r.data;
+            this.poolTransfer = r.data;
         } catch (error) {
             this.setError(error as AxiosError);
         }
