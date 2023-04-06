@@ -479,10 +479,9 @@ export default class TransactionsView extends Vue {
         endDate.setHours(23, 59, 59, 0);
 
         await this.$store.dispatch('pools/read', this.$route.params.id);
-        await this.$store.dispatch('pools/readAnalyticsMetrics', { poolId: this.pool._id });
-        await this.$store.dispatch('pools/readAnalytics', { poolId: this.pool._id, startDate, endDate });
-        await this.$store.dispatch('pools/readAnalyticsLeaderBoard', { poolId: this.pool._id });
-
+        this.$store.dispatch('pools/readAnalyticsMetrics', { poolId: this.pool._id });
+        this.$store.dispatch('pools/readAnalytics', { poolId: this.pool._id, startDate, endDate });
+        this.$store.dispatch('pools/readAnalyticsLeaderBoard', { poolId: this.pool._id });
         this.$store.dispatch('erc20/list').then(async () => {
             await Promise.all(
                 Object.values(this.erc20s).map(async (erc20) => {
