@@ -70,7 +70,7 @@ export default class SettingsView extends Vue {
     get urlDiscordBotInstall() {
         return (
             DISCORD_CLIENT_ID &&
-            `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&permissions=133120&scope=bot`
+            `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&permissions=133152&scope=bot`
         );
     }
 
