@@ -121,6 +121,7 @@ import { TPoolTransferResponse } from '@thxnetwork/types/interfaces';
 import { UserManager } from 'oidc-client-ts';
 import { config } from '../utils/oidc';
 import { DASHBOARD_URL } from '@thxnetwork/wallet/utils/secrets';
+import { track } from '@thxnetwork/mixpanel';
 
 hljs.registerLanguage('xml', XML);
 
@@ -140,6 +141,7 @@ export default class WidgetPreviewView extends Vue {
     defaultBackgroundImgUrl = require('../../public/assets/thx_jumbotron.webp');
     isCopied = false;
     error = '';
+    userManager = new UserManager(config);
 
     get code() {
         return `<script src="${API_URL}/v1/widget/${this.$route.params.poolId}.js"><\/script>`;
@@ -174,10 +176,19 @@ export default class WidgetPreviewView extends Vue {
     }
 
     async mounted() {
+        // Ping mixpanel that the page is visited
+        this.userManager.getUser().then((user) => {
+            track('UserVisits', [user?.profile.sub, 'preview', { poolId: this.$route.params.poolId }]);
+        });
+
+        // Inject the widget
         initWidget(this.$route.params.poolId);
+
+        // Get brand elements for the pool
         await this.$store.dispatch('brands/getForPool', this.$route.params.poolId);
         this.setBackground(this.brand);
 
+        // Load pool transfer if required
         if (this.$route.query.token) {
             this.getPoolTransfer();
         }
@@ -208,9 +219,7 @@ export default class WidgetPreviewView extends Vue {
         if (!this.poolTransfer) return;
         this.isTransferLoading = true;
 
-        const userManager = new UserManager(config);
-        const user = await userManager.getUser();
-
+        const user = await this.userManager.getUser();
         if (!user || user.expired) {
             await this.$store.dispatch('account/signinRedirect', {
                 poolId: this.poolTransfer.poolId,
