@@ -3,12 +3,14 @@ import { TInvite } from '../types/TInvite';
 
 export type InviteDocument = mongoose.Document & TInvite;
 
-const schema = new mongoose.Schema({
-    guildId: String,
-    inviterId: String,
-    code: String,
-    uses: Number,
-    url: String,
-});
+const schemaInvite = new mongoose.Schema(
+    {
+        guildId: String,
+        inviterId: String,
+        code: String,
+        url: String,
+    },
+    { timestamps: true },
+);
 
-export default mongoose.model<InviteDocument>('invites', schema);
+export default mongoose.model<InviteDocument>('invites', schemaInvite);

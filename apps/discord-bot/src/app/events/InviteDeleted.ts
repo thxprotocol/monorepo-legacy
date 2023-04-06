@@ -4,7 +4,6 @@ import InviteService from '../services/invite.service';
 
 const onInviteDeleted = async (invite: Invite) => {
     try {
-        console.log('INVITE DELETED!----------------------------------------------------------');
         await InviteService.delete({ guildId: invite.guild.id, code: invite.code });
     } catch (error) {
         handleError(error);
