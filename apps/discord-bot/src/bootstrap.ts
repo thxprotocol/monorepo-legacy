@@ -5,7 +5,7 @@ import eventRegister from './app/utils/eventRegister';
 import database from './app/utils/database';
 import { thxClient } from './app/config/oidc';
 
-export const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+export const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildInvites] });
 
 eventRegister(client, eventRouter);
 
