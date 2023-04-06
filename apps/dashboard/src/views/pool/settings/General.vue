@@ -28,7 +28,7 @@
                 <div class="text-muted">Configure the domain the widget will be loaded on.</div>
             </b-col>
             <b-col md="8">
-                <b-form-input v-model="domain" />
+                <b-form-input @change="onChangeWidget" v-model="domain" />
             </b-col>
         </b-form-row>
         <hr />
@@ -131,7 +131,6 @@
 <script lang="ts">
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
-import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import { mapGetters } from 'vuex';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import { TBrand } from '@thxnetwork/dashboard/store/modules/brands';
@@ -155,11 +154,9 @@ import { IWidgets } from '@thxnetwork/dashboard/store/modules/widgets';
     },
 })
 export default class SettingsView extends Vue {
-    ChainId = ChainId;
     loading = true;
     chainInfo = chainInfo;
     profile!: IAccount;
-    chainId: ChainId = ChainId.PolygonMumbai;
     pools!: IPools;
     brands!: { [poolId: string]: TBrand };
     widgets!: IWidgets;
@@ -193,20 +190,16 @@ export default class SettingsView extends Vue {
     }
 
     async mounted() {
-        this.chainId = this.pool.chainId;
-
         this.$store.dispatch('widgets/list', this.pool).then(async () => {
             if (!this.widget) return;
             this.domain = this.widget.domain;
         });
 
-        await this.$store.dispatch('brands/getForPool', this.pool._id);
-        if (this.brand) {
+        this.$store.dispatch('brands/getForPool', this.pool._id).then(async () => {
+            if (!this.brand) return;
             this.backgroundImgUrl = this.brand.backgroundImgUrl;
             this.logoImgUrl = this.brand.logoImgUrl;
-        }
-
-        await this.$store.dispatch('merchants/read');
+        });
 
         this.title = this.pool.settings.title;
         this.isArchived = this.pool.settings.isArchived;
@@ -259,6 +252,15 @@ export default class SettingsView extends Vue {
                 backgroundImgUrl: this.backgroundImgUrl,
                 logoImgUrl: this.logoImgUrl,
             },
+        });
+        this.loading = false;
+    }
+
+    async onChangeWidget() {
+        this.loading = true;
+        await this.$store.dispatch('widgets/update', {
+            ...this.widget,
+            domain: this.domain,
         });
         this.loading = false;
     }
