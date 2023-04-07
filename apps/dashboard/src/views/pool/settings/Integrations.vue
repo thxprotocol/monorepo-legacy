@@ -2,7 +2,7 @@
     <div>
         <b-form-row>
             <b-col md="4">
-                <strong>Bot</strong>
+                <strong>Discord Bot</strong>
                 <p class="text-muted">Install THX Bot to increase engagement in your Discord server.</p>
             </b-col>
             <b-col md="8">
@@ -45,7 +45,7 @@
         <hr />
         <b-form-row>
             <b-col md="4">
-                <strong>Announcements</strong>
+                <strong>Discord Notifications</strong>
                 <p class="text-muted">Publishes a default notification for every newly created conditional reward.</p>
             </b-col>
             <b-col md="8">
@@ -64,7 +64,7 @@
         <hr />
         <b-form-row>
             <b-col md="4">
-                <strong>Automatic Twitter Rewards</strong>
+                <strong>Twitter Automation</strong>
                 <p class="text-muted">
                     Detects new tweets every 15min and automatically creates a conditional rewards.
                 </p>
@@ -82,20 +82,29 @@
                         v-model="isTwitterSyncEnabled"
                         :disabled="!isTwitterSyncEnabled && profile && !profile.twitterAccess"
                         @change="updateSettings"
+                        class="m-0"
                     >
                         Enable automated reward creation for your Tweets
                     </b-form-checkbox>
+                </b-form-group>
+                <b-form-group
+                    label="Hashtag filter"
+                    description="Will only create rewards for tweets containing this hashtag. Leave empty for all tweets."
+                >
+                    <b-input-group prepend="#">
+                        <b-form-input disabled v-model="defaultConditionalHashtag" @change="updateSettings()" />
+                    </b-input-group>
                 </b-form-group>
             </b-col>
         </b-form-row>
         <b-form-row>
             <b-col md="4"> </b-col>
             <b-col md="8">
-                <p class="text-muted">
-                    We will use these values as a default when automatically creating your conditional rewards. You can
-                    always change them later individually.
-                </p>
                 <b-card body-class="bg-light">
+                    <b-alert variant="info" show>
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Defaults used to create conditional rewards. You can always change adjust them later!
+                    </b-alert>
                     <b-form-group label="Title">
                         <b-form-input v-model="defaultConditionalRewardTitle" @change="updateSettings()" />
                     </b-form-group>
@@ -145,6 +154,7 @@ export default class SettingsTwitterView extends Vue {
     isTwitterSyncEnabled = false;
     discordWebhookUrl = '';
     defaultDiscordMessage = '';
+    defaultConditionalHashtag = '';
     defaultConditionalRewardTitle = '';
     defaultConditionalRewardDescription = '';
     defaultConditionalRewardAmount = 0;
@@ -160,7 +170,8 @@ export default class SettingsTwitterView extends Vue {
     mounted() {
         this.isTwitterSyncEnabled = this.pool.settings.isTwitterSyncEnabled;
         this.discordWebhookUrl = this.pool.settings.discordWebhookUrl;
-        // this.defaultDiscordMessage = this.pool.settings.defaultDiscordMessage;
+        this.defaultDiscordMessage = this.pool.settings.defaults.discordMessage;
+        this.defaultConditionalHashtag = this.pool.settings.defaults.conditionalRewards.hashtag;
         this.defaultConditionalRewardTitle = this.pool.settings.defaults.conditionalRewards.title;
         this.defaultConditionalRewardDescription = this.pool.settings.defaults.conditionalRewards.description;
         this.defaultConditionalRewardAmount = this.pool.settings.defaults.conditionalRewards.amount;
@@ -175,7 +186,6 @@ export default class SettingsTwitterView extends Vue {
     }
 
     async updateSettings() {
-        this.loading = true;
         await this.$store.dispatch('pools/update', {
             pool: this.pool,
             data: {
@@ -192,7 +202,6 @@ export default class SettingsTwitterView extends Vue {
                 },
             },
         });
-        this.loading = false;
     }
 }
 </script>

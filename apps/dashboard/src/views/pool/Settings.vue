@@ -22,7 +22,7 @@
                 <b-tab>
                     <template #title>
                         <i class="fas fa-exchange-alt mr-1"></i>
-                        Connect
+                        Integrations
                     </template>
                     <BaseTabSettingsIntegrations />
                 </b-tab>

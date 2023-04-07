@@ -24,7 +24,8 @@ export type TPoolSettings = {
     isTwitterSyncEnabled: boolean;
     discordWebhookUrl: string;
     defaults: {
-        conditionalRewards: TPointReward;
+        discordMessage: string;
+        conditionalRewards: TPointReward & { hashtag: string };
     };
 };
 
