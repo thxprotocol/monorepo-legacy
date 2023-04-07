@@ -16,6 +16,9 @@
                 <b-badge v-if="route.isNew" variant="primary" class="ml-2 text-white"> New </b-badge>
                 <b-badge v-if="route.isPremium" variant="gray" class="ml-2 text-white"> Premium </b-badge>
                 <b-badge v-if="route.isSoon" variant="gray" class="ml-2 text-white"> Soon </b-badge>
+                <div v-if="route.isActive === false" variant="gray" class="mr-3">
+                    <i class="fas fa-exclamation text-danger"></i>
+                </div>
             </div>
         </b-nav-item>
     </b-navbar-nav>
@@ -33,6 +36,7 @@ export type RouteDefinition = {
     isNew?: boolean;
     isSoon?: boolean;
     isPremium?: boolean;
+    isActive?: boolean;
 };
 
 @Component({

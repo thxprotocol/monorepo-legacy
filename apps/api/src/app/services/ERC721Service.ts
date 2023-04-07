@@ -100,7 +100,6 @@ export async function mint(
     address: string,
     forceSync = true,
 ): Promise<ERC721TokenDocument> {
-    const tokenUri = await getTokenURI(erc721, String(metadata._id));
     const erc721token = await ERC721Token.create({
         sub,
         recipient: address,
@@ -109,6 +108,7 @@ export async function mint(
         metadataId: String(metadata._id),
     });
 
+    const tokenUri = await getTokenURI(erc721, String(metadata._id));
     const txId = await TransactionService.sendAsync(
         pool.contract.options.address,
         pool.contract.methods.mintFor(address, tokenUri, erc721.address),

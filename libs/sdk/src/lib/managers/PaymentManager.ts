@@ -7,11 +7,8 @@ class PaymentManager extends BaseManager {
     }
 
     async list({ chainId }: { chainId: string }) {
-        // method: 'GET',
-        // url: '/memberships',
         const params = new URLSearchParams({ chainId });
-        const res = await this.client.request.get(`/v1/Memberships?${params.toString()}`);
-        return res;
+        return await this.client.request.get(`/v1/memberships?${params.toString()}`);
     }
 
     async read(payload: { accessToken: string; paymentId: string }) {

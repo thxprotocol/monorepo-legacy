@@ -1,36 +1,5 @@
 <template>
-    <div>
-        <b-form-row v-if="urlDiscordBotInstall">
-            <b-col md="4">
-                <strong>Bot</strong>
-                <p class="text-muted">Install THX Bot to increase engagement in your Discord server.</p>
-            </b-col>
-            <b-col md="8">
-                <b-alert show variant="info" class="d-flex align-items-center">
-                    <i class="fab fa-discord mr-2"></i>
-                    Install THX Bot to increase engagement in your Discord server.
-                    <b-button class="rounded-pill ml-auto" variant="primary" :href="urlDiscordBotInstall">
-                        Install
-                        <i class="fas fa-chevron-right"></i>
-                    </b-button>
-                </b-alert>
-            </b-col>
-        </b-form-row>
-        <b-form-row>
-            <b-col md="4">
-                <strong>Announcements</strong>
-                <p class="text-muted">Discord webhook URL for publishing notifications about newly created rewards.</p>
-            </b-col>
-            <b-col md="8">
-                <b-form-group label="Webhook URL" description="">
-                    <b-form-input
-                        :value="pool.settings.discordWebhookUrl"
-                        @change="onChangeDiscordWebhookUrl"
-                    ></b-form-input>
-                </b-form-group>
-            </b-col>
-        </b-form-row>
-    </div>
+    <div></div>
 </template>
 
 <script lang="ts">

@@ -14,6 +14,7 @@ export type TPool = {
     variant?: 'defaultDiamond' | 'registry' | 'factory' | 'sharedWallet';
     brand: TBrand;
     settings: TPoolSettings;
+    widget: { active: boolean };
 };
 
 export type TPoolSettings = {
@@ -21,8 +22,24 @@ export type TPoolSettings = {
     isArchived: boolean;
     isWeeklyDigestEnabled: boolean;
     isTwitterSyncEnabled: boolean;
-    discordWebhookUrl?: string;
+    discordWebhookUrl: string;
     defaults: {
-        conditionalRewards: TPointReward;
+        discordMessage: string;
+        conditionalRewards: TPointReward & { hashtag: string };
     };
+};
+
+export type TPoolTransfer = {
+    sub: string;
+    poolId: string;
+    token: string;
+    expiry: Date;
+};
+
+export type TPoolTransferResponse = TPoolTransfer & {
+    isExpired: boolean;
+    isTransferred: boolean;
+    isCopied: boolean;
+    url: string;
+    now: number;
 };

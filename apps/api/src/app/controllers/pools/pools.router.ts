@@ -1,5 +1,5 @@
 import express from 'express';
-import { assertRequestInput, assertAssetPoolOwnership, guard } from '@thxnetwork/api/middlewares';
+import { assertRequestInput, assertAssetPoolOwnership, guard, checkJwt } from '@thxnetwork/api/middlewares';
 import CreatePool from './post.controller';
 import ReadPool from './get.controller';
 import PoolsAnalytics from './analytics/get.controller';
@@ -9,6 +9,7 @@ import PoolsAnalyticsMetrics from './analytics/metrics/get.controller';
 import DeletePool from './delete.controller';
 import ListPools from './list.controller';
 import CreatePoolTopup from './topup/post.controller';
+import ReadPoolTransfer from './transfers/get.controller';
 import CreatePoolTransfer from './transfers/post.controller';
 import DeletePoolTransfer from './transfers/delete.controller';
 import CreatePoolSubscription from './subscriptions/post.controller';
@@ -22,33 +23,37 @@ const router = express.Router();
 
 router.post(
     '/',
+    checkJwt,
     guard.check(['pools:read', 'pools:write']),
     assertRequestInput(CreatePool.validation),
     CreatePool.controller,
 );
 router.post(
     '/:id/transfers',
+    checkJwt,
     guard.check(['pools:write']),
     assertRequestInput(CreatePoolTransfer.validation),
     CreatePoolTransfer.controller,
 );
-
 router.post(
     '/:id/subscription',
+    checkJwt,
     guard.check(['pool_subscription:write']),
     assertRequestInput(CreatePoolSubscription.validation),
     CreatePoolSubscription.controller,
 );
-
 router.delete(
     '/:id/transfers',
+    checkJwt,
     guard.check(['pools:write']),
     assertAssetPoolOwnership,
     assertRequestInput(DeletePoolTransfer.validation),
     DeletePoolTransfer.controller,
 );
+router.get('/:id/transfers/:token', assertRequestInput(ReadPoolTransfer.validation), ReadPoolTransfer.controller);
 router.get(
     '/:id/transfers',
+    checkJwt,
     guard.check(['pools:read']),
     assertAssetPoolOwnership,
     assertRequestInput(ListPoolTransfer.validation),
@@ -56,15 +61,16 @@ router.get(
 );
 router.post(
     '/:id/transfers/refresh',
+    checkJwt,
     guard.check(['pools:write']),
     assertAssetPoolOwnership,
     assertRequestInput(CreatePoolTransferRefresh.validation),
     CreatePoolTransferRefresh.controller,
 );
-
-router.get('/', guard.check(['pools:read']), assertRequestInput(ListPools.validation), ListPools.controller);
+router.get('/', checkJwt, guard.check(['pools:read']), assertRequestInput(ListPools.validation), ListPools.controller);
 router.get(
     '/:id',
+    checkJwt,
     guard.check(['pools:read']),
     assertAssetPoolOwnership,
     assertRequestInput(ReadPool.validation),
@@ -72,6 +78,7 @@ router.get(
 );
 router.get(
     '/:id/analytics',
+    checkJwt,
     guard.check(['pools:read']),
     assertAssetPoolOwnership,
     assertRequestInput(PoolsAnalytics.validation),
@@ -79,6 +86,7 @@ router.get(
 );
 router.get(
     '/:id/analytics/leaderboard/client',
+    checkJwt,
     guard.check(['pool_analytics:read']),
     //assertAssetPoolOwnership,
     assertRequestInput(PoolsAnalyticsLeaderBoardClient.validation),
@@ -86,6 +94,7 @@ router.get(
 );
 router.get(
     '/:id/analytics/leaderboard',
+    checkJwt,
     guard.check(['pools:read']),
     assertAssetPoolOwnership,
     assertRequestInput(PoolsAnalyticsLeaderBoard.validation),
@@ -93,6 +102,7 @@ router.get(
 );
 router.get(
     '/:id/analytics/metrics',
+    checkJwt,
     guard.check(['pools:read']),
     assertAssetPoolOwnership,
     assertRequestInput(PoolsAnalyticsMetrics.validation),
@@ -100,19 +110,28 @@ router.get(
 );
 router.get(
     '/:id/subscription',
+    checkJwt,
     guard.check(['pool_subscription:read']),
     assertRequestInput(ReadPoolSubscription.validation),
     ReadPoolSubscription.controller,
 );
-router.delete('/:id', guard.check(['pools:write']), assertRequestInput(DeletePool.validation), DeletePool.controller);
+router.delete(
+    '/:id',
+    checkJwt,
+    guard.check(['pools:write']),
+    assertRequestInput(DeletePool.validation),
+    DeletePool.controller,
+);
 router.delete(
     '/:id/subscription',
+    checkJwt,
     guard.check(['pool_subscription:write']),
     assertRequestInput(DeletePoolSubscription.validation),
     DeletePoolSubscription.controller,
 );
 router.post(
     '/:id/topup',
+    checkJwt,
     guard.check(['deposits:read', 'deposits:write']),
     assertAssetPoolOwnership,
     assertRequestInput(CreatePoolTopup.validation),
@@ -120,6 +139,7 @@ router.post(
 );
 router.patch(
     '/:id',
+    checkJwt,
     guard.check(['pools:read', 'pools:write']),
     assertRequestInput(UpdatePool.validation),
     UpdatePool.controller,

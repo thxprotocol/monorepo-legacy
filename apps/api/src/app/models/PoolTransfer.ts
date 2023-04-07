@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { TPoolTransfer } from '@thxnetwork/api/types/TPoolTransfer';
+import { TPoolTransfer } from '@thxnetwork/types/interfaces';
 
 export type PoolTransferDocument = mongoose.Document & TPoolTransfer;
 

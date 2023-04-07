@@ -13,6 +13,8 @@ import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { redeemValidation } from '@thxnetwork/api/util/perks';
+import { Widget } from '@thxnetwork/api/models/Widget';
+import MailService from '@thxnetwork/api/services/MailService';
 
 const validation = [param('uuid').exists()];
 
@@ -20,6 +22,8 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Perks Payment']
 
     const pool = await PoolService.getById(req.header('X-PoolId'));
+    const widget = await Widget.findOne({ poolId: pool._id });
+
     const erc20Perk = await ERC20Perk.findOne({ uuid: req.params.uuid });
     if (!erc20Perk) throw new NotFoundError('Could not find this perk');
     if (!erc20Perk.pointPrice) throw new NotFoundError('No point price for this perk has been set.');
@@ -58,6 +62,12 @@ const controller = async (req: Request, res: Response) => {
     });
 
     await PointBalanceService.subtract(pool, req.auth.sub, erc20Perk.pointPrice);
+
+    let html = `<p style="font-size: 18px">Congratulations!🚀</p>`;
+    html += `<p>Your payment has been received and <strong>${erc20Perk.amount} ${erc20.symbol}</strong> dropped into your wallet!</p>`;
+    html += `<p class="btn"><a href="${widget.domain}">View Wallet</a></p>`;
+
+    await MailService.send(account.email, `🎁 Coin Drop! ${erc20Perk.amount} ${erc20.symbol}"`, html);
 
     res.status(201).json({ withdrawal, erc20PerkPayment });
 };

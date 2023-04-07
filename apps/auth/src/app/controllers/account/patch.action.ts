@@ -18,6 +18,7 @@ export const patchAccount = async (req: Request, res: Response) => {
         authenticationToken: req.body.authenticationToken,
         authenticationTokenExpires: req.body.authenticationTokenExpires,
         plan: req.body.plan,
+        email: req.body.email,
     });
     res.status(204).end();
 };

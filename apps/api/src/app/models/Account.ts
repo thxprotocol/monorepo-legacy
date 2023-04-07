@@ -37,4 +37,5 @@ export interface IAccountUpdates {
     twitchAccess?: boolean;
     discordAccess?: boolean;
     plan?: AccountPlanType;
+    email?: string;
 }
