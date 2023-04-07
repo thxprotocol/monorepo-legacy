@@ -14,24 +14,17 @@
                     <template #title>
                         <div class="d-flex align-items-center">
                             <i class="fas fa-gift mr-2"></i>
-                            Widget
+                            Personalize
                         </div>
                     </template>
                     <BaseTabSettingsWidget />
                 </b-tab>
                 <b-tab>
                     <template #title>
-                        <i class="fab fa-twitter mr-1"></i>
-                        Twitter
+                        <i class="fas fa-exchange-alt mr-1"></i>
+                        Connect
                     </template>
-                    <BaseTabSettingsTwitter />
-                </b-tab>
-                <b-tab>
-                    <template #title>
-                        <i class="fab fa-discord mr-1"></i>
-                        Discord
-                    </template>
-                    <BaseTabSettingsDiscord />
+                    <BaseTabSettingsIntegrations />
                 </b-tab>
                 <b-tab :disabled="profile && profile.plan !== 1">
                     <template #title>
@@ -76,8 +69,7 @@ import { mapGetters } from 'vuex';
 import { IAccount } from '@thxnetwork/dashboard/types/account';
 import BaseTabSettingsGeneral from '@thxnetwork/dashboard/views/pool/settings/General.vue';
 import BaseTabSettingsCommerce from '@thxnetwork/dashboard/views/pool/settings/Commerce.vue';
-import BaseTabSettingsDiscord from '@thxnetwork/dashboard/views/pool/settings/Discord.vue';
-import BaseTabSettingsTwitter from '@thxnetwork/dashboard/views/pool/settings/Twitter.vue';
+import BaseTabSettingsIntegrations from '@thxnetwork/dashboard/views/pool/settings/Integrations.vue';
 import BaseTabSettingsWidget from '@thxnetwork/dashboard/views/pool/settings/Widget.vue';
 import BaseTabSettingsApi from '@thxnetwork/dashboard/views/pool/settings/API.vue';
 import { DASHBOARD_URL } from '@thxnetwork/wallet/utils/secrets';
@@ -86,8 +78,7 @@ import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 @Component({
     components: {
         BaseTabSettingsGeneral,
-        BaseTabSettingsDiscord,
-        BaseTabSettingsTwitter,
+        BaseTabSettingsIntegrations,
         BaseTabSettingsCommerce,
         BaseTabSettingsWidget,
         BaseTabSettingsApi,

@@ -237,6 +237,7 @@ describe('ERC721 Perks Redemtpion', () => {
             user.post(`/v1/perks/erc721/${perk.uuid}/redemption`)
                 .set({ 'X-PoolId': pool._id, 'Authorization': widgetAccessToken })
                 .expect(({ body }: request.Response) => {
+                    console.log(body);
                     expect(body.erc721PerkPayment).toBeDefined();
                     expect(body.erc721PerkPayment.perkId).toBe(perk._id);
                     expect(body.erc721PerkPayment.poolId).toBe(pool._id);

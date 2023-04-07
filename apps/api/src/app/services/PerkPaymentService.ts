@@ -6,6 +6,8 @@ import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { ForbiddenError, BadRequestError } from '@thxnetwork/api/util/errors';
+import MailService from './MailService';
+import { Widget } from './WidgetService';
 
 async function parsePaymentIntent(event) {
     const { id, amount, currency } = event.data.object;
@@ -25,6 +27,7 @@ async function onPaymentIntentSucceeded(event) {
     const erc721 = await ERC721.findById(perk.erc721Id);
     const metadata = await ERC721Metadata.findById(perk.erc721metadataId);
     const pool = await PoolService.getById(perk.poolId);
+    const widget = await Widget.findOne({ poolId: pool._id });
     const address = await account.getAddress(pool.chainId);
 
     await ERC721Service.mint(pool, erc721, metadata, sub, address);
@@ -36,6 +39,12 @@ async function onPaymentIntentSucceeded(event) {
         amount: 0,
         paymentIntent: { id, amount, currency },
     });
+
+    let html = `<p style="font-size: 18px">Congratulations!🚀</p>`;
+    html += `<p>Your payment has been received and <strong>${metadata.name}</strong> dropped into your wallet!</p>`;
+    html += `<p class="btn"><a href="${widget.domain}">View Wallet</a></p>`;
+
+    await MailService.send(account.email, `🎁 NFT Drop! ${metadata.name}`, html);
 }
 
 export default { onPaymentIntentSucceeded };

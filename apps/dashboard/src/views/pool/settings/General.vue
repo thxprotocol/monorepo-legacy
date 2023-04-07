@@ -74,6 +74,7 @@
                 </b-form-row>
             </b-col>
         </b-form-row>
+        <hr />
         <b-form-row>
             <b-col md="4">
                 <strong>Background</strong>
@@ -104,6 +105,7 @@
                 </b-form-row>
             </b-col>
         </b-form-row>
+        <hr />
         <b-form-row>
             <b-col md="4"> </b-col>
             <b-col md="8">

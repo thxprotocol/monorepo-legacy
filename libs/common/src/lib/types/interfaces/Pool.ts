@@ -22,7 +22,7 @@ export type TPoolSettings = {
     isArchived: boolean;
     isWeeklyDigestEnabled: boolean;
     isTwitterSyncEnabled: boolean;
-    discordWebhookUrl?: string;
+    discordWebhookUrl: string;
     defaults: {
         conditionalRewards: TPointReward;
     };

@@ -7,41 +7,55 @@
             </b-col>
             <b-col md="8">
                 <b-form-row>
-                    <b-col md="3">
-                        <div class="d-flex">
-                            <strong>Elements</strong>
-                            <b-button class="ml-auto" variant="light" size="sm" @click="onClickResetElements">
-                                <i class="fas fa-undo ml-0"></i>
-                            </b-button>
-                        </div>
-                        <hr />
-                        <b-form-group
-                            :label="el.label"
-                            :key="key"
-                            v-for="(el, key) in elements"
-                            label-cols="8"
-                            label-size="sm"
+                    <b-col md="6">
+                        <b-form-row>
+                            <b-col md="6">
+                                <div class="d-flex">
+                                    <strong>Elements</strong>
+                                    <b-button class="ml-auto" variant="light" size="sm" @click="onClickResetElements">
+                                        <i class="fas fa-undo ml-0"></i>
+                                    </b-button>
+                                </div>
+                                <hr />
+                                <b-form-group
+                                    :label="el.label"
+                                    :key="key"
+                                    v-for="(el, key) in elements"
+                                    label-cols="8"
+                                    label-size="sm"
+                                >
+                                    <b-form-input size="sm" type="color" v-model="el.color" />
+                                </b-form-group>
+                            </b-col>
+                            <b-col md="6">
+                                <div class="d-flex">
+                                    <strong>Colors</strong>
+                                    <b-button class="ml-auto" variant="light" size="sm" @click="onClickResetColors">
+                                        <i class="fas fa-undo ml-0"></i>
+                                    </b-button>
+                                </div>
+                                <hr />
+                                <b-form-group
+                                    :label="el.label"
+                                    :key="key"
+                                    v-for="(el, key) in colors"
+                                    label-cols="8"
+                                    label-size="sm"
+                                >
+                                    <b-form-input size="sm" type="color" v-model="el.color" />
+                                </b-form-group>
+                            </b-col>
+                        </b-form-row>
+                        <BButton
+                            block
+                            :disabled="!widget || isSubmitting"
+                            variant="primary"
+                            class="rounded-pill"
+                            @click="onClickUpdate"
                         >
-                            <b-form-input size="sm" type="color" v-model="el.color" />
-                        </b-form-group>
-                    </b-col>
-                    <b-col md="3">
-                        <div class="d-flex">
-                            <strong>Colors</strong>
-                            <b-button class="ml-auto" variant="light" size="sm" @click="onClickResetColors">
-                                <i class="fas fa-undo ml-0"></i>
-                            </b-button>
-                        </div>
-                        <hr />
-                        <b-form-group
-                            :label="el.label"
-                            :key="key"
-                            v-for="(el, key) in colors"
-                            label-cols="8"
-                            label-size="sm"
-                        >
-                            <b-form-input size="sm" type="color" v-model="el.color" />
-                        </b-form-group>
+                            <b-spinner v-if="isSubmitting" small variant="white" class="mr-2" />
+                            Publish
+                        </BButton>
                     </b-col>
                     <b-col md="6">
                         <BCard
@@ -171,6 +185,7 @@
                     <b-col md="6">
                         <b-form-group :description="`${message ? message.length : 0}/280`" label="Message">
                             <b-textarea
+                                @change="onChangeMessage"
                                 v-model="message"
                                 placeholder="Hi there! Click me to earn rewards and redeem crypto perks."
                             >
@@ -178,8 +193,12 @@
                         </b-form-group>
                         <hr />
                         <b-form-group label="Alignment">
-                            <b-form-radio v-model="align" name="align" value="left"> Left </b-form-radio>
-                            <b-form-radio v-model="align" name="align" value="right"> Right </b-form-radio>
+                            <b-form-radio v-model="align" name="align" @change="onChangeAlign" value="left">
+                                Left
+                            </b-form-radio>
+                            <b-form-radio v-model="align" name="align" @change="onChangeAlign" value="right">
+                                Right
+                            </b-form-radio>
                         </b-form-group>
                     </b-col>
                     <b-col md="6">
@@ -218,14 +237,6 @@
                 </b-form-row>
             </b-col>
         </b-form-row>
-        <hr />
-        <div class="d-flex justify-content-center">
-            <b-button variant="link" @click="onClickPreview"> Preview </b-button>
-            <BButton :disabled="!widget || isSubmitting" variant="primary" class="rounded-pill" @click="onClickUpdate">
-                <b-spinner v-if="isSubmitting" small variant="white" class="mr-2" />
-                Update
-            </BButton>
-        </div>
     </div>
 </template>
 
@@ -277,7 +288,6 @@ export default class WidgetsView extends Vue {
 
             this.align = this.widget.align;
             this.message = this.widget.message;
-            this.domain = this.widget.domain;
 
             const { elements, colors } = JSON.parse(this.widget.theme);
             for (const key in this.elements) {
@@ -305,9 +315,17 @@ export default class WidgetsView extends Vue {
         window.open(`${BASE_URL}/preview/${this.pool._id}`, '_blank');
     }
 
-    async onClickUpdate() {
-        if (!this.widget) return;
+    onChangeMessage(value: string) {
+        this.message = value;
+        this.onClickUpdate();
+    }
 
+    onChangeAlign(value: string) {
+        this.align = value;
+        this.onClickUpdate();
+    }
+
+    async onClickUpdate() {
         this.isSubmitting = true;
         await this.$store.dispatch('widgets/update', {
             poolId: this.pool._id,
