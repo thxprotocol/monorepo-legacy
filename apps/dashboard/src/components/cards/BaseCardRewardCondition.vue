@@ -39,7 +39,6 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { UserProfile } from 'oidc-client-ts';
 import {
     platformList,
     platformInteractionList,
@@ -57,6 +56,7 @@ import BaseDropdownYoutubeVideo from '../dropdowns/BaseDropdownYoutubeVideo.vue'
 import BaseDropdownTwitterTweets from '../dropdowns/BaseDropdownTwitterTweets.vue';
 import BaseDropdownTwitterUsers from '../dropdowns/BaseDropdownTwitterUsers.vue';
 import BaseDropdownDiscordGuilds from '../dropdowns/BaseDropdownDiscordGuilds.vue';
+import BaseDropdownDiscordInviteUsed from '../dropdowns/BaseDropdownDiscordInviteUsed.vue';
 import BaseDropdownShopifyTotalSpent from '../dropdowns/BaseDropdownShopifyTotalSpent.vue';
 import BaseDropdownShopifyOrderAmount from '../dropdowns/BaseDropdownShopifyOrderAmount.vue';
 import { IAccount } from '@thxnetwork/dashboard/types/account';
@@ -64,6 +64,7 @@ import { IAccount } from '@thxnetwork/dashboard/types/account';
 @Component({
     components: {
         BaseDropdownDiscordGuilds,
+        BaseDropdownDiscordInviteUsed,
         BaseDropdownChannelTypes,
         BaseDropdownChannelActions,
         BaseDropdownYoutubeChannels,

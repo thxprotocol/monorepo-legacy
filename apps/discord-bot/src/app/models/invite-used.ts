@@ -6,8 +6,9 @@ export type InviteUsedDocument = mongoose.Document & TInviteUsed;
 const schema = new mongoose.Schema({
     guildId: String,
     inviteId: String,
+    inviterId: String,
+    url: String,
     userId: String,
-    code: String,
 });
 
 export default mongoose.model<InviteUsedDocument>('invitesused', schema);

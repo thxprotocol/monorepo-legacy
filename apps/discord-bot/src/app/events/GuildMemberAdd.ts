@@ -11,7 +11,7 @@ const onGuildMemberAdd = async (member: GuildMember) => {
         for (const memberInvite of memberInvites) {
             const inviteUsed = await InviteUsedService.findOne({
                 guildId: memberInvite[1].guild.id,
-                code: memberInvite[1].code,
+                url: memberInvite[1].url,
                 userId: member.user.id,
             });
             if (inviteUsed) {
@@ -23,9 +23,10 @@ const onGuildMemberAdd = async (member: GuildMember) => {
             }
             inviteUsedToCreate.push({
                 guildId: invite.guildId,
-                userId: member.user.id,
                 inviteId: invite._id,
-                code: invite.code,
+                url: invite.url,
+                inviterId: invite.inviterId,
+                userId: member.user.id,
             });
         }
         const promises = inviteUsedToCreate.map(async (invite) => {

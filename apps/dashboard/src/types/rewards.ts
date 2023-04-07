@@ -13,6 +13,8 @@ export function getInteractionComponent(interactionType: RewardConditionInteract
             return 'BaseDropdownTwitterUsers';
         case RewardConditionInteraction.DiscordGuildJoined:
             return 'BaseDropdownDiscordGuilds';
+        case RewardConditionInteraction.DiscordInviteUsed:
+            return 'BaseDropdownDiscordInviteUsed';
         case RewardConditionInteraction.ShopifyOrderAmount:
             return 'BaseDropdownShopifyOrderAmount';
         case RewardConditionInteraction.ShopifyTotalSpent:
@@ -57,7 +59,7 @@ export const platformList: IChannel[] = [
         type: RewardConditionPlatform.Discord,
         name: 'Discord',
         logoURI: require('@thxnetwork/dashboard/../public/assets/logo-discord.png'),
-        actions: [RewardConditionInteraction.DiscordGuildJoined],
+        actions: [RewardConditionInteraction.DiscordGuildJoined, RewardConditionInteraction.DiscordInviteUsed],
     },
     {
         type: RewardConditionPlatform.Shopify,
@@ -104,6 +106,11 @@ export const platformInteractionList = [
     {
         type: RewardConditionInteraction.DiscordGuildJoined,
         name: 'Server Joined',
+        items: [],
+    },
+    {
+        type: RewardConditionInteraction.DiscordInviteUsed,
+        name: 'Invite Used',
         items: [],
     },
     {

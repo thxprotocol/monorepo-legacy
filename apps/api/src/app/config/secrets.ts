@@ -31,7 +31,6 @@ required.forEach((value: string) => {
     }
 });
 
-
 // This allows you to use a single .env file with both regular and test configuration. This allows for an
 // easy to use setup locally without having hardcoded credentials during test runs.
 if (process.env.NODE_ENV === 'test') {
@@ -50,6 +49,7 @@ export const WALLET_URL = process.env.WALLET_URL;
 export const DASHBOARD_URL = process.env.DASHBOARD_URL;
 export const WIDGET_URL = process.env.WIDGET_URL;
 export const PUBLIC_URL = process.env.PUBLIC_URL;
+export const DISCORD_BOT_API_URL = process.env.DISCORD_BOT_API_URL;
 export const HARDHAT_RPC = process.env.HARDHAT_RPC;
 export const HARDHAT_NAME = process.env.HARDHAT_NAME;
 export const POLYGON_MUMBAI_RPC = process.env.POLYGON_MUMBAI_RPC;

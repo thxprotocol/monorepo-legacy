@@ -5,6 +5,7 @@ import DiscordDataProxy from '@thxnetwork/api/proxies/DiscordDataProxy';
 import ShopifyDataProxy from '@thxnetwork/api/proxies/ShopifyDataProxy';
 import { RewardConditionPlatform, RewardConditionInteraction, TBaseReward } from '@thxnetwork/types/index';
 import PoolService from '../services/PoolService';
+import DiscordBotProxy from '../services/DiscordBotProxy';
 
 export const validateCondition = async (account: IAccount, reward: TBaseReward): Promise<string> => {
     if (reward.platform === RewardConditionPlatform.None) return;
@@ -58,6 +59,10 @@ export const validateCondition = async (account: IAccount, reward: TBaseReward):
                 const result = await ShopifyDataProxy.validateNewsletterSubscription(pool, account);
                 if (!result) return `Shopify: No subscription found for ${account.email}`;
                 break;
+            }
+            case RewardConditionInteraction.DiscordInviteUsed: {
+                const result = await DiscordBotProxy.validateDiscordInviteUsed(account, reward.contentMetadata);
+                if (!result) return `Discord: No invites used for ${account.email}`;
             }
         }
     } catch (error) {

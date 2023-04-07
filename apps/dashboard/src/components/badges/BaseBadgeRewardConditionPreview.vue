@@ -56,6 +56,8 @@ export default class BaseBadgeRewardConditionPreview extends Vue {
                 return `https://www.twitter.com/i/user/${content}`;
             case RewardConditionInteraction.DiscordGuildJoined:
                 return this.rewardCondition.contentMetadata.inviteURL;
+            case RewardConditionInteraction.DiscordInviteUsed:
+                return this.rewardCondition.contentMetadata.inviteURL;
             case RewardConditionInteraction.ShopifyOrderAmount:
             case RewardConditionInteraction.ShopifyTotalSpent:
                 return content;
