@@ -269,8 +269,14 @@ export class AccountService {
         }
     }
 
-    static isConnected = async (userId: string, tokenKind: AccessTokenKind) => {
-        if (await Account.exists({ 'tokens.kind': tokenKind, 'tokens.userId': userId })) {
+    static isConnected = async (sub: string, userId: string, tokenKind: AccessTokenKind) => {
+        const isConnected = await Account.exists({
+            'tokens.kind': tokenKind,
+            'tokens.userId': userId,
+            '_id': { $ne: sub },
+        });
+
+        if (isConnected) {
             throw new ForbiddenError('This account is already connected to a different user.');
         }
     };

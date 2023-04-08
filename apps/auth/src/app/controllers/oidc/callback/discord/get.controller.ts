@@ -11,7 +11,7 @@ export async function controller(req: Request, res: Response) {
 
     // if there is a session we need to check for dups before we store the token
     if (interaction.session) {
-        await AccountService.isConnected(tokenInfo.userId, AccessTokenKind.Discord);
+        await AccountService.isConnected(interaction.session.accountId, tokenInfo.userId, AccessTokenKind.Discord);
     }
 
     const account = await AccountService.findOrCreate(interaction.session, tokenInfo, AccountVariant.SSODiscord, email);

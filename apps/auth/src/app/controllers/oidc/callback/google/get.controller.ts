@@ -11,7 +11,7 @@ export async function controller(req: Request, res: Response) {
 
     // if there is a session we need to check for dups before we store the token
     if (interaction.session) {
-        await AccountService.isConnected(tokenInfo.userId, AccessTokenKind.Google);
+        await AccountService.isConnected(interaction.session.accountId, tokenInfo.userId, AccessTokenKind.Google);
     }
 
     const account = await AccountService.findOrCreate(interaction.session, tokenInfo, AccountVariant.SSOGoogle, email);
