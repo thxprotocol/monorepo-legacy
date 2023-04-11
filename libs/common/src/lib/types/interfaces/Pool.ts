@@ -2,6 +2,7 @@ import { TPointReward } from './PointReward';
 import { Contract } from 'web3-eth-contract';
 import { ChainId } from '../enums';
 import { TBrand } from '@thxnetwork/types/interfaces';
+import { AccountVariant } from '@thxnetwork/auth/types/enums/AccountVariant';
 
 export type TPool = {
     _id: string;
@@ -27,6 +28,7 @@ export type TPoolSettings = {
         discordMessage: string;
         conditionalRewards: TPointReward & { hashtag: string };
     };
+    authenticationMethods: AccountVariant[];
 };
 
 export type TPoolTransfer = {

@@ -1,5 +1,29 @@
 <template>
     <div>
+        <b-form-row v-if="error">
+            <b-col md="4"></b-col>
+            <b-col md="4">
+                <b-alert variant="danger" show>
+                    {{ error }}
+                </b-alert>
+            </b-col>
+        </b-form-row>
+        <b-form-row>
+            <b-col md="4">
+                <strong>Authentication Methods</strong>
+                <div class="text-muted">Configure the autxwhentication methods available for the user</div>
+            </b-col>
+            <b-col md="8">
+                <b-form-checkbox-group
+                    v-model="selectedAuthenticationMethods"
+                    :options="authenticationMethods"
+                    value-field="key"
+                    text-field="text"
+                    @change="onChangeaAthenticationMethods"
+                >
+                </b-form-checkbox-group>
+            </b-col>
+        </b-form-row>
         <b-form-row>
             <b-col md="4">
                 <strong>Embed code</strong>
@@ -141,6 +165,7 @@ import { IAccount } from '@thxnetwork/dashboard/types/account';
 import { TPoolSettings } from '@thxnetwork/types/interfaces';
 import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
 import { IWidgets } from '@thxnetwork/dashboard/store/modules/widgets';
+import { AccountVariant } from '@thxnetwork/dashboard/types/enums/AccountVariant';
 
 @Component({
     components: {
@@ -162,13 +187,14 @@ export default class SettingsView extends Vue {
     pools!: IPools;
     brands!: { [poolId: string]: TBrand };
     widgets!: IWidgets;
-
+    error: string | null = null;
     title = '';
     domain = '';
     logoImgUrl = '';
     backgroundImgUrl = '';
     isWeeklyDigestEnabled = false;
     isArchived = false;
+    selectedAuthenticationMethods: AccountVariant[] = [];
 
     get pool() {
         return this.pools[this.$route.params.id];
@@ -191,6 +217,18 @@ export default class SettingsView extends Vue {
         return Object.values(this.widgets[this.$route.params.id])[0];
     }
 
+    get authenticationMethods(): { key: number; text: string }[] {
+        return [
+            { key: AccountVariant.EmailPassword, text: 'Email/Password' },
+            { key: AccountVariant.Metamask, text: 'Metamask' },
+            { key: AccountVariant.SSODiscord, text: 'Discord' },
+            { key: AccountVariant.SSOGithub, text: 'Github' },
+            { key: AccountVariant.SSOGoogle, text: 'Google' },
+            { key: AccountVariant.SSOTwitch, text: 'Twitch' },
+            { key: AccountVariant.SSOTwitter, text: 'Twitter' },
+        ];
+    }
+
     async mounted() {
         this.$store.dispatch('widgets/list', this.pool).then(async () => {
             if (!this.widget) return;
@@ -206,7 +244,7 @@ export default class SettingsView extends Vue {
         this.title = this.pool.settings.title;
         this.isArchived = this.pool.settings.isArchived;
         this.isWeeklyDigestEnabled = this.pool.settings.isWeeklyDigestEnabled;
-
+        this.selectedAuthenticationMethods = this.pool.settings.authenticationMethods;
         this.loading = false;
     }
 
@@ -265,6 +303,18 @@ export default class SettingsView extends Vue {
             domain: this.domain,
         });
         this.loading = false;
+    }
+
+    async onChangeaAthenticationMethods() {
+        this.error = null;
+        if (!this.selectedAuthenticationMethods.length) {
+            this.error = 'Select at least one Athentication Method';
+            return;
+        }
+        await this.$store.dispatch('pools/update', {
+            pool: this.pool,
+            data: { settings: { authenticationMethods: this.selectedAuthenticationMethods.sort((a, b) => a - b) } },
+        });
     }
 }
 </script>

@@ -10,4 +10,12 @@ export default {
         });
         return data;
     },
+
+    getPool: async (poolId: string) => {
+        const { data } = await apiClient({
+            method: 'GET',
+            url: `/v1/pools/${poolId}`,
+        });
+        return data;
+    },
 };
