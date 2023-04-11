@@ -1,4 +1,4 @@
-import GatewayEvent from '../models/gateway-events';
+import GatewayEvent from '../models/GatewayEvent';
 import { TGatewayEvent, TGatewayEventUpdates } from '../types/TGatewayEvent';
 
 export default {

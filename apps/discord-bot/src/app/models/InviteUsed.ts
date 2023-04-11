@@ -3,12 +3,14 @@ import { TInviteUsed } from '../types/TInviteUsed';
 
 export type InviteUsedDocument = mongoose.Document & TInviteUsed;
 
-const schema = new mongoose.Schema({
-    guildId: String,
-    inviteId: String,
-    inviterId: String,
-    url: String,
-    userId: String,
-});
+const schema = new mongoose.Schema(
+    {
+        guildId: String,
+        inviterId: String,
+        code: String,
+        userId: String,
+    },
+    { timestamps: true },
+);
 
 export default mongoose.model<InviteUsedDocument>('invitesused', schema);

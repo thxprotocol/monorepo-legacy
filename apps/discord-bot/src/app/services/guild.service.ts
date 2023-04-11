@@ -1,4 +1,4 @@
-import Guild from '../models/guilds';
+import Guild from '../models/Guild';
 
 export default {
     /**

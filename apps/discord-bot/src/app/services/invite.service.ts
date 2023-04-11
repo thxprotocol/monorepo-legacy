@@ -1,4 +1,4 @@
-import Invite from '../models/invite';
+import Invite from '../models/Invite';
 import { TInvite, TInviteUpdates } from '../types/TInvite';
 
 export default {

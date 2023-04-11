@@ -146,7 +146,7 @@ export default class SettingsTwitterView extends Vue {
     AccessTokenKind = AccessTokenKind;
     urlDiscordBotInstall =
         DISCORD_CLIENT_ID &&
-        `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&permissions=133120&scope=bot`;
+        `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&permissions=133152&scope=bot`;
     chainInfo = chainInfo;
     profile!: IAccount;
     pools!: IPools;

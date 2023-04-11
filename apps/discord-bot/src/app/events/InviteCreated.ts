@@ -6,16 +6,17 @@ import InviteService from '../services/invite.service';
 
 const onInviteCreated = async (invite: Invite) => {
     try {
+        console.log(invite);
+
         await InviteService.create({
             guildId: invite.guild.id,
             code: invite.code,
-            url: invite.url,
             inviterId: invite.inviter.id,
         });
         await GatewayEventService.create({
             guildId: invite.guild.id,
-            event: invite,
             name: 'inviteCreate',
+            event: JSON.stringify(invite),
         } as TGatewayEvent);
     } catch (error) {
         handleError(error);

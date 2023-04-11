@@ -6,6 +6,8 @@ import { PoolTransfer } from '@thxnetwork/api/models/PoolTransfer';
 import ERC20 from '@thxnetwork/api/models/ERC20';
 import { ERC20Perk } from '@thxnetwork/api/models/ERC20Perk';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
+import MailService from '@thxnetwork/api/services/MailService';
+import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 
 const validation = [param('id').isMongoId(), body('sub').isMongoId(), body('token').isString()];
 
@@ -40,6 +42,15 @@ const controller = async (req: Request, res: Response) => {
     }
 
     await poolTransfer.deleteOne();
+
+    const receiver = await AccountProxy.getById(req.body.sub);
+    const account = await AccountProxy.getById(poolTransfer.sub);
+
+    await MailService.send(
+        account.email,
+        `Pool Transferred: ${pool.settings.title}`,
+        `The pool transfer has been accepted by <strong>${receiver.email}</strong>`,
+    );
 
     res.status(200).end();
 };

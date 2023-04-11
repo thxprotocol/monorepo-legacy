@@ -2,7 +2,6 @@ export type TInvite = {
     guildId: string;
     inviterId: string;
     code: string;
-    url: string;
     createdAt?: Date;
 };
 

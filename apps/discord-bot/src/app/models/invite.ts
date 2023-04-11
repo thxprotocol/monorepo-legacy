@@ -8,7 +8,6 @@ const schemaInvite = new mongoose.Schema(
         guildId: String,
         inviterId: String,
         code: String,
-        url: String,
     },
     { timestamps: true },
 );
