@@ -257,7 +257,7 @@
                         </div>
                         <div class="mb-1 d-flex">
                             <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Shopify Discounts
+                            Shopify
                         </div>
                         <hr />
                         <h4 class="font-small">
@@ -276,7 +276,7 @@
                         </div>
                         <div class="mb-1">
                             <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Shopify
+                            Shopify Discounts
                         </div>
                         <hr />
                         <h4 class="font-small">Integrations</h4>
