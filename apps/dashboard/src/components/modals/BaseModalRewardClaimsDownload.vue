@@ -49,7 +49,7 @@
                                 v-clipboard:success="() => $set(isCopied, item.id, true)"
                             >
                                 <code class="text-muted">
-                                    {{ item.id }}
+                                    {{ item.url }}
                                 </code>
                                 <i
                                     class="fas ml-0 text-gray"
@@ -235,7 +235,7 @@ export default class BaseModalRewardClaimsDownload extends Vue {
             .map((c) => {
                 return {
                     checkbox: c.uuid,
-                    url: `${WALLET_URL}/claim/${c.uuid}`,
+                    url: `${this.pool.widget.domain}?thx_widget_path=/c/${c.uuid}`,
                     claimedAt: { sub: c.sub, date: c.claimedAt },
                     createdAt: c.createdAt,
                     id: c.uuid,

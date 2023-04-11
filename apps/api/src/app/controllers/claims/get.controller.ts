@@ -7,7 +7,15 @@ import PoolService from '@thxnetwork/api/services/PoolService';
 import { Claim } from '@thxnetwork/api/models/Claim';
 import { findRewardByUuid, isTERC20Perk, isTERC721Perk } from '@thxnetwork/api/util/rewards';
 
-const validation = [param('id').exists().isString()];
+const validation = [
+    param('uuid')
+        .exists()
+        .isString()
+        .custom((uuid: string) => {
+            const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+            return uuidRegex.test(uuid);
+        }),
+];
 
 const controller = async (req: Request, res: Response) => {
     /*
@@ -17,7 +25,7 @@ const controller = async (req: Request, res: Response) => {
         schema: { $ref: '#/definitions/Claim' } 
     }
     */
-    const claim = await Claim.findOne({ uuid: req.params.id });
+    const claim = await Claim.findOne({ uuid: req.params.uuid });
     if (!claim) throw new NotFoundError('Could not find this claim');
 
     const pool = await PoolService.getById(claim.poolId);

@@ -38,13 +38,11 @@ import { TPool } from '@thxnetwork/types/index';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { type TDailyReward } from '@thxnetwork/types/interfaces/DailyReward';
 import BaseModal from './BaseModal.vue';
-import BaseCardRewardQRCodes from '../cards/BaseCardRewardQRCodes.vue';
 import { mapGetters } from 'vuex';
 
 @Component({
     components: {
         BaseModal,
-        BaseCardRewardQRCodes,
     },
     computed: mapGetters({
         totals: 'dailyRewards/totals',

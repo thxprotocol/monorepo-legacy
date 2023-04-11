@@ -1,5 +1,11 @@
 import express from 'express';
-import { assertRequestInput, assertAssetPoolOwnership, guard, checkJwt } from '@thxnetwork/api/middlewares';
+import {
+    assertRequestInput,
+    assertAssetPoolOwnership,
+    guard,
+    checkJwt,
+    corsHandler,
+} from '@thxnetwork/api/middlewares';
 import CreatePool from './post.controller';
 import ReadPool from './get.controller';
 import PoolsAnalytics from './analytics/get.controller';
@@ -24,6 +30,7 @@ const router = express.Router();
 router.post(
     '/',
     checkJwt,
+    corsHandler,
     guard.check(['pools:read', 'pools:write']),
     assertRequestInput(CreatePool.validation),
     CreatePool.controller,
@@ -31,6 +38,7 @@ router.post(
 router.post(
     '/:id/transfers',
     checkJwt,
+    corsHandler,
     guard.check(['pools:write']),
     assertRequestInput(CreatePoolTransfer.validation),
     CreatePoolTransfer.controller,
@@ -38,6 +46,7 @@ router.post(
 router.post(
     '/:id/subscription',
     checkJwt,
+    corsHandler,
     guard.check(['pool_subscription:write']),
     assertRequestInput(CreatePoolSubscription.validation),
     CreatePoolSubscription.controller,
@@ -45,6 +54,7 @@ router.post(
 router.delete(
     '/:id/transfers',
     checkJwt,
+    corsHandler,
     guard.check(['pools:write']),
     assertAssetPoolOwnership,
     assertRequestInput(DeletePoolTransfer.validation),
@@ -54,6 +64,7 @@ router.get('/:id/transfers/:token', assertRequestInput(ReadPoolTransfer.validati
 router.get(
     '/:id/transfers',
     checkJwt,
+    corsHandler,
     guard.check(['pools:read']),
     assertAssetPoolOwnership,
     assertRequestInput(ListPoolTransfer.validation),
@@ -62,6 +73,7 @@ router.get(
 router.post(
     '/:id/transfers/refresh',
     checkJwt,
+    corsHandler,
     guard.check(['pools:write']),
     assertAssetPoolOwnership,
     assertRequestInput(CreatePoolTransferRefresh.validation),
@@ -71,6 +83,7 @@ router.get('/', checkJwt, guard.check(['pools:read']), assertRequestInput(ListPo
 router.get(
     '/:id',
     checkJwt,
+    corsHandler,
     guard.check(['pools:read']),
     assertAssetPoolOwnership,
     assertRequestInput(ReadPool.validation),
@@ -79,6 +92,7 @@ router.get(
 router.get(
     '/:id/analytics',
     checkJwt,
+    corsHandler,
     guard.check(['pools:read']),
     assertAssetPoolOwnership,
     assertRequestInput(PoolsAnalytics.validation),
@@ -87,6 +101,7 @@ router.get(
 router.get(
     '/:id/analytics/leaderboard/client',
     checkJwt,
+    corsHandler,
     guard.check(['pool_analytics:read']),
     //assertAssetPoolOwnership,
     assertRequestInput(PoolsAnalyticsLeaderBoardClient.validation),
@@ -95,6 +110,7 @@ router.get(
 router.get(
     '/:id/analytics/leaderboard',
     checkJwt,
+    corsHandler,
     guard.check(['pools:read']),
     assertAssetPoolOwnership,
     assertRequestInput(PoolsAnalyticsLeaderBoard.validation),
@@ -103,6 +119,7 @@ router.get(
 router.get(
     '/:id/analytics/metrics',
     checkJwt,
+    corsHandler,
     guard.check(['pools:read']),
     assertAssetPoolOwnership,
     assertRequestInput(PoolsAnalyticsMetrics.validation),
@@ -111,6 +128,7 @@ router.get(
 router.get(
     '/:id/subscription',
     checkJwt,
+    corsHandler,
     guard.check(['pool_subscription:read']),
     assertRequestInput(ReadPoolSubscription.validation),
     ReadPoolSubscription.controller,
@@ -118,6 +136,7 @@ router.get(
 router.delete(
     '/:id',
     checkJwt,
+    corsHandler,
     guard.check(['pools:write']),
     assertRequestInput(DeletePool.validation),
     DeletePool.controller,
@@ -125,6 +144,7 @@ router.delete(
 router.delete(
     '/:id/subscription',
     checkJwt,
+    corsHandler,
     guard.check(['pool_subscription:write']),
     assertRequestInput(DeletePoolSubscription.validation),
     DeletePoolSubscription.controller,
@@ -132,6 +152,7 @@ router.delete(
 router.post(
     '/:id/topup',
     checkJwt,
+    corsHandler,
     guard.check(['deposits:read', 'deposits:write']),
     assertAssetPoolOwnership,
     assertRequestInput(CreatePoolTopup.validation),
@@ -140,6 +161,7 @@ router.post(
 router.patch(
     '/:id',
     checkJwt,
+    corsHandler,
     guard.check(['pools:read', 'pools:write']),
     assertRequestInput(UpdatePool.validation),
     UpdatePool.controller,
