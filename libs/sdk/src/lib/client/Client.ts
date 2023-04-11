@@ -62,7 +62,9 @@ export default class THXClient {
             silent_redirect_uri: rest.silent_redirect_uri,
             loadUserInfo: false,
             scope: scopes,
-            userStore: new WebStorageStateStore({ store: window.localStorage }),
+            ...(typeof window !== 'undefined'
+                ? { userStore: new WebStorageStateStore({ store: window.localStorage }) }
+                : {}),
         };
 
         /* Mapped values */
