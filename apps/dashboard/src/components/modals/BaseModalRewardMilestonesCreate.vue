@@ -13,6 +13,9 @@
                         <b-form-group label="Amount">
                             <b-form-input type="number" v-model="amount" />
                         </b-form-group>
+                        <b-form-group label="Limit">
+                            <b-form-input type="number" v-model="limit" min="0" />
+                        </b-form-group>
                     </b-col>
                     <b-col md="6">
                         <BaseCardURLWebhook
@@ -77,8 +80,9 @@ export default class ModalMilestoneRewardCreate extends Vue {
     isVisible = true;
     error = '';
     title = '';
-    amount = '0';
     description = '';
+    amount = 0;
+    limit = 0;
     isCopied = false;
 
     @Prop() id!: string;
@@ -94,7 +98,8 @@ export default class ModalMilestoneRewardCreate extends Vue {
     onShow() {
         this.title = this.reward ? this.reward.title : '';
         this.description = this.reward ? this.reward.description : '';
-        this.amount = this.reward ? String(this.reward.amount) : '0';
+        this.amount = this.reward ? this.reward.amount : this.amount;
+        this.limit = this.reward && this.reward.limit ? this.reward.limit : this.limit;
     }
 
     onSubmit() {
@@ -107,6 +112,7 @@ export default class ModalMilestoneRewardCreate extends Vue {
                 title: this.title,
                 description: this.description,
                 amount: this.amount,
+                limit: this.limit,
             })
             .then(() => {
                 this.$bvModal.hide(this.id);
