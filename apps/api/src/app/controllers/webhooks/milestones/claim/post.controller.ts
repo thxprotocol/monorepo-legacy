@@ -3,7 +3,7 @@ import { MilestoneRewardClaim } from '@thxnetwork/api/models/MilestoneRewardClai
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import MilestoneRewardClaimService from '@thxnetwork/api/services/MilestoneRewardClaimService';
 import WalletService from '@thxnetwork/api/services/WalletService';
-import { NotFoundError, UnauthorizedError } from '@thxnetwork/api/util/errors';
+import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
 
@@ -16,11 +16,10 @@ const controller = async (req: Request, res: Response) => {
 
     const reward = await MilestoneReward.findOne({ uuid: req.params.token });
     if (!reward) throw new NotFoundError('Could not find milestone reward for this token');
+
     if (reward.limit) {
         const numOfClaims = await MilestoneRewardClaim.count({ milestoneRewardId: reward.id, sub: account.sub });
-        if (numOfClaims >= reward.limit) {
-            throw new UnauthorizedError("This reward has reached it's limit.");
-        }
+        if (numOfClaims >= reward.limit) throw new ForbiddenError("This reward has reached it's limit.");
     }
 
     const claim = await MilestoneRewardClaimService.create({

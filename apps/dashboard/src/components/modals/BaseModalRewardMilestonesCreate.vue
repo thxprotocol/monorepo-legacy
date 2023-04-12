@@ -14,7 +14,7 @@
                             <b-form-input type="number" v-model="amount" />
                         </b-form-group>
                         <b-form-group label="Limit">
-                            <b-form-input type="number" v-model="limit" />
+                            <b-form-input type="number" v-model="limit" min="0" />
                         </b-form-group>
                     </b-col>
                     <b-col md="6">
@@ -80,10 +80,10 @@ export default class ModalMilestoneRewardCreate extends Vue {
     isVisible = true;
     error = '';
     title = '';
-    amount = '0';
     description = '';
+    amount = 0;
+    limit = 0;
     isCopied = false;
-    limit: number | null = null;
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
@@ -98,8 +98,8 @@ export default class ModalMilestoneRewardCreate extends Vue {
     onShow() {
         this.title = this.reward ? this.reward.title : '';
         this.description = this.reward ? this.reward.description : '';
-        this.amount = this.reward ? String(this.reward.amount) : '0';
-        this.limit = this.reward && this.reward.limit ? this.reward.limit : null;
+        this.amount = this.reward ? this.reward.amount : this.amount;
+        this.limit = this.reward && this.reward.limit ? this.reward.limit : this.limit;
     }
 
     onSubmit() {
