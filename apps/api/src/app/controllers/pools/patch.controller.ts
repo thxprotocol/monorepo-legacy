@@ -14,6 +14,7 @@ export const validation = [
     body('settings.defaults.conditionalRewards.title').optional().isString(),
     body('settings.defaults.conditionalRewards.description').optional().isString(),
     body('settings.defaults.conditionalRewards.amount').optional().isInt(),
+    body('settings.authenticationMethods').optional().isArray(),
 ];
 
 export const controller = async (req: Request, res: Response) => {

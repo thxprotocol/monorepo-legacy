@@ -1,7 +1,7 @@
 import WalletProxy from '@thxnetwork/auth/proxies/WalletProxy';
 import { ChainId } from '@thxnetwork/auth/types/enums/chainId';
 import { AccountDocument } from '../models/Account';
-import { AccountVariant } from '../types/enums/AccountVariant';
+import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { NODE_ENV } from '../config/secrets';
 
 export async function createWallet(account: AccountDocument) {

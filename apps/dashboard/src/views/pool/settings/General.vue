@@ -1,5 +1,13 @@
 <template>
     <div>
+        <b-form-row v-if="error">
+            <b-col md="4"></b-col>
+            <b-col md="4">
+                <b-alert variant="danger" show>
+                    {{ error }}
+                </b-alert>
+            </b-col>
+        </b-form-row>
         <b-form-row>
             <b-col md="4">
                 <strong>Embed code</strong>
@@ -107,6 +115,23 @@
         </b-form-row>
         <hr />
         <b-form-row>
+            <b-col md="4">
+                <strong>Login Methods</strong>
+                <div class="text-muted">Enable the available login methods for your widget.</div>
+            </b-col>
+            <b-col md="8">
+                <b-form-checkbox-group
+                    v-model="selectedAuthenticationMethods"
+                    :options="authenticationMethods"
+                    value-field="key"
+                    text-field="text"
+                    @change="onChangeSettings"
+                >
+                </b-form-checkbox-group>
+            </b-col>
+        </b-form-row>
+        <hr />
+        <b-form-row>
             <b-col md="4"> </b-col>
             <b-col md="8">
                 <b-form-group>
@@ -141,6 +166,7 @@ import { IAccount } from '@thxnetwork/dashboard/types/account';
 import { TPoolSettings } from '@thxnetwork/types/interfaces';
 import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
 import { IWidgets } from '@thxnetwork/dashboard/store/modules/widgets';
+import { AccountVariant } from '@thxnetwork/dashboard/types/enums/AccountVariant';
 
 @Component({
     components: {
@@ -162,13 +188,23 @@ export default class SettingsView extends Vue {
     pools!: IPools;
     brands!: { [poolId: string]: TBrand };
     widgets!: IWidgets;
-
+    error: string | null = null;
     title = '';
     domain = '';
     logoImgUrl = '';
     backgroundImgUrl = '';
     isWeeklyDigestEnabled = false;
     isArchived = false;
+    selectedAuthenticationMethods: AccountVariant[] = [];
+    authenticationMethods = [
+        { key: AccountVariant.EmailPassword, text: 'Email/Password' },
+        { key: AccountVariant.Metamask, text: 'Metamask' },
+        { key: AccountVariant.SSODiscord, text: 'Discord' },
+        { key: AccountVariant.SSOGithub, text: 'Github' },
+        { key: AccountVariant.SSOGoogle, text: 'Google' },
+        { key: AccountVariant.SSOTwitch, text: 'Twitch' },
+        { key: AccountVariant.SSOTwitter, text: 'Twitter' },
+    ];
 
     get pool() {
         return this.pools[this.$route.params.id];
@@ -206,7 +242,7 @@ export default class SettingsView extends Vue {
         this.title = this.pool.settings.title;
         this.isArchived = this.pool.settings.isArchived;
         this.isWeeklyDigestEnabled = this.pool.settings.isWeeklyDigestEnabled;
-
+        this.selectedAuthenticationMethods = this.pool.settings.authenticationMethods;
         this.loading = false;
     }
 
@@ -231,11 +267,17 @@ export default class SettingsView extends Vue {
     }
 
     async onChangeSettings(setting: TPoolSettings) {
+        if (!this.selectedAuthenticationMethods.length) {
+            this.error = 'Select at least one login method';
+            return;
+        }
+
         const settings = Object.assign(
             {
                 title: this.title,
                 isArchived: this.isArchived,
                 isWeeklyDigestEnabled: this.isWeeklyDigestEnabled,
+                authenticationMethods: this.selectedAuthenticationMethods.sort((a, b) => a - b),
             },
             setting,
         );
@@ -244,6 +286,7 @@ export default class SettingsView extends Vue {
             pool: this.pool,
             data: { settings },
         });
+        this.error = '';
     }
 
     async updateBrand() {
