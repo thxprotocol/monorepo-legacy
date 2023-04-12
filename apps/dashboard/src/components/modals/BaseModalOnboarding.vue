@@ -21,7 +21,7 @@
             ></b-progress-bar>
         </b-progress>
         <p class="text-muted">
-            Loyalty Pools hold <strong>Coin</strong> and <strong>NFT Perks</strong> that are redeemable for points
+            Loyalty Campaigns hold <strong>Coin</strong> and <strong>NFT Perks</strong> that are redeemable for points
             earned with rewards.
         </p>
         <ul class="text-muted list-unstyled">

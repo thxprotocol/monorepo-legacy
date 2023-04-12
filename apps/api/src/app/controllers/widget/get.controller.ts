@@ -28,7 +28,7 @@ const controller = async (req: Request, res: Response) => {
 
     const pool = await PoolService.getById(req.params.id);
     if (!pool) throw new NotFoundError('Pool not found.');
-
+    const expired = pool.endDate ? pool.endDate.getTime() <= Date.now() : false;
     const brand = await BrandService.get(pool._id);
     const widget = await Widget.findOne({ poolId: req.params.id });
 
@@ -68,7 +68,7 @@ const controller = async (req: Request, res: Response) => {
             if (!settings) return console.error("THXWidget requires a settings object.");
             this.settings = settings;
             this.theme = JSON.parse(settings.theme);
-            this.iframe = this.createIframe(settings.widgetUrl, settings.poolId, settings.chainId, settings.origin, settings.theme, settings.align);
+            this.iframe = this.createIframe(settings.widgetUrl, settings.poolId, settings.chainId, settings.origin, settings.theme, settings.align, settings.expired);
             this.iframe.setAttribute('data-hj-allow-iframe', true);
             this.notifications = this.createNotifications(0);
             this.message = this.createMessage(settings.message, settings.logo, settings.align);
@@ -105,7 +105,7 @@ const controller = async (req: Request, res: Response) => {
             return window.innerWidth < this.MD_BREAKPOINT;
         }
 
-        createIframe(widgetUrl, poolId, chainId, origin, theme, align) {
+        createIframe(widgetUrl, poolId, chainId, origin, theme, align, expired) {
             const iframe = document.createElement('iframe');
             const styles = this.isSmallMedia ? this.defaultStyles['sm'] : this.defaultStyles['md'];
             const url = new URL(widgetUrl);
@@ -114,6 +114,7 @@ const controller = async (req: Request, res: Response) => {
             url.searchParams.append('origin', origin);
             url.searchParams.append('chainId', chainId);
             url.searchParams.append('theme', theme);
+            url.searchParams.append('expired', expired);
             
             iframe.id = 'thx-iframe';
             iframe.src = url;
@@ -379,6 +380,7 @@ const controller = async (req: Request, res: Response) => {
         theme: '${widget.theme}',
         origin: '${origin}',
         refs: ${JSON.stringify(refs)},
+        expired: '${expired}'
     });
 `;
     const result = await minify(data, {

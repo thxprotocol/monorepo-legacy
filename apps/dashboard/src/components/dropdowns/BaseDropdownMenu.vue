@@ -5,7 +5,7 @@
         </template>
         <b-dropdown-item to="/tokens"> Tokens </b-dropdown-item>
         <b-dropdown-item to="/nft"> NFT </b-dropdown-item>
-        <b-dropdown-item to="/pools"> Pools </b-dropdown-item>
+        <b-dropdown-item to="/pools"> Campaigns </b-dropdown-item>
         <b-dropdown-item to="/integrations"> Integrations </b-dropdown-item>
         <b-dropdown-item :href="docsUrl"> Documentation </b-dropdown-item>
         <b-dropdown-divider />

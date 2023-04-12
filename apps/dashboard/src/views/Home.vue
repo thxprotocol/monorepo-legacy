@@ -122,7 +122,7 @@
                             img-alt="Image"
                             img-top
                         >
-                            <strong>Pools</strong>
+                            <strong>Campaigns</strong>
                             <p class="text-muted m-0">Create separate reward and perk configurations.</p>
                         </b-card>
                     </b-col>
@@ -135,7 +135,7 @@
                             img-top
                         >
                             <strong>User Guides</strong>
-                            <p class="text-muted m-0">Learn how to configure your Loyalty Pool.</p>
+                            <p class="text-muted m-0">Learn how to configure your Loyalty Campaign.</p>
                         </b-card>
                     </b-col>
                     <b-col md="3">

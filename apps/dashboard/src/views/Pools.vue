@@ -12,10 +12,10 @@
                 }"
             >
                 <div class="container container-md py-5">
-                    <p class="brand-text">Pools</p>
+                    <p class="brand-text">Campaigns</p>
                     <b-button v-b-modal="`modalAssetPoolCreate`" class="rounded-pill" variant="secondary">
                         <i class="fas fa-plus mr-2"></i>
-                        <span>Create Pool</span>
+                        <span>Create Campaign</span>
                     </b-button>
                     <b-button to="/tokens" variant="link" class="text-light">
                         <i class="fas fa-coins mr-2"></i>
@@ -39,7 +39,7 @@
                 icon-class="fas fa-puzzle-piece"
                 text-submit="Add a pool"
                 title="You have not added a pool yet"
-                description="Pools have a balance and you use them to send or receive tokens."
+                description="Campaigns have a balance and you use them to send or receive tokens."
                 @clicked="$bvModal.show('modalAssetPoolCreate')"
             />
             <div class="row" v-else>
