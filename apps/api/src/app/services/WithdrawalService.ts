@@ -13,6 +13,7 @@ import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
 import { ERC20Document } from '../models/ERC20';
 import ERC20Service from './ERC20Service';
+import WalletService from './WalletService';
 
 export default class WithdrawalService {
     static getById(id: string) {
@@ -59,11 +60,13 @@ export default class WithdrawalService {
         amount: string,
         forceSync = true,
     ) {
+        const wallets = await WalletService.findByQuery({ sub, chainId: erc20.chainId });
         const withdrawal = await Withdrawal.create({
             sub,
             erc20Id: String(erc20._id),
             amount,
             state: WithdrawalState.Pending,
+            walletId: wallets.length ? String(wallets[0]._id) : undefined,
         });
         const amountInWei = toWei(String(withdrawal.amount));
         const txId = await TransactionService.sendAsync(

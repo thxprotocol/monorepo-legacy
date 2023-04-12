@@ -27,6 +27,7 @@ export type TERC721Token = {
     metadataId: string;
     erc721Id?: string;
     metadata?: TERC721Metadata;
+    walletId: string;
 };
 
 export type TERC721 = {

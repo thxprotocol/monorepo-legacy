@@ -13,10 +13,8 @@ class AccountApiError extends THXError {}
 function formatAccountData(data: any) {
     data.profileImg = data.profileImg || `https://avatars.dicebear.com/api/identicon/${data.sub}.svg`;
     data.getAddress = async (chainId: ChainId) => {
-        if (data.variant === 4) return data.address;
         const wallet = await Wallet.findOne({ sub: data.sub, chainId });
         if (!wallet) return;
-
         return wallet.address;
     };
 
