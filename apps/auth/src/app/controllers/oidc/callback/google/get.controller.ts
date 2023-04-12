@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { YouTubeService } from '@thxnetwork/auth/services/YouTubeService';
 import { AccountService } from '@thxnetwork/auth/services/AccountService';
-import { AccountVariant } from '@thxnetwork/auth/types/enums/AccountVariant';
+import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { callbackPostSSOCallback, callbackPreAuth } from '../../get';
 import { AccessTokenKind } from '@thxnetwork/types/enums';
 
@@ -11,7 +11,7 @@ export async function controller(req: Request, res: Response) {
 
     // if there is a session we need to check for dups before we store the token
     if (interaction.session) {
-        await AccountService.isConnected(tokenInfo.userId, AccessTokenKind.Google);
+        await AccountService.isConnected(interaction.session.accountId, tokenInfo.userId, AccessTokenKind.Google);
     }
 
     const account = await AccountService.findOrCreate(interaction.session, tokenInfo, AccountVariant.SSOGoogle, email);

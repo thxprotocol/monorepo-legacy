@@ -112,7 +112,6 @@ export async function mint(
         metadataId: String(metadata._id),
         walletId: wallets.length ? String(wallets[0]._id) : undefined,
     });
-
     const txId = await TransactionService.sendAsync(
         pool.contract.options.address,
         pool.contract.methods.mintFor(address, tokenUri, erc721.address),

@@ -32,6 +32,14 @@ const controller = async (req: Request, res: Response) => {
     const brand = await BrandService.get(pool._id);
     const widget = await Widget.findOne({ poolId: req.params.id });
 
+    const origin = new URL(req.header('Referrer')).origin;
+    const widgetOrigin = new URL(widget.domain).origin;
+
+    // Set active to true if there is a request made from the configured domain
+    if (widgetOrigin === origin) {
+        await widget.updateOne({ active: true });
+    }
+
     const data = `
     class THXWidget {
         MD_BREAKPOINT = 990;
@@ -369,7 +377,7 @@ const controller = async (req: Request, res: Response) => {
         message: '${widget.message || ''}',
         align: '${widget.align || 'right'}',
         theme: '${widget.theme}',
-        origin: '${new URL(req.header('Referrer')).origin}',
+        origin: '${origin}',
         refs: ${JSON.stringify(refs)},
     });
 `;

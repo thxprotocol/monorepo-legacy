@@ -163,6 +163,7 @@ import { mapGetters } from 'vuex';
 import BaseModalRequestAccountEmailUpdate from '@thxnetwork/dashboard/components/modals/BaseModalRequestAccountEmailUpdate.vue';
 import BaseModalOnboarding from '@thxnetwork/dashboard/components/modals/BaseModalOnboarding.vue';
 import BaseCardHome from '@thxnetwork/dashboard/components/cards/BaseCardHome.vue';
+import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
 import { IPools } from '../store/modules/pools';
 
 @Component({
@@ -170,6 +171,7 @@ import { IPools } from '../store/modules/pools';
         BaseModalRequestAccountEmailUpdate,
         BaseModalOnboarding,
         BaseCardHome,
+        BaseCodeExample,
     },
     computed: mapGetters({
         profile: 'account/profile',

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { AccountService } from '../../../../services/AccountService';
 import { callbackPostSSOCallback, callbackPreAuth } from '../../get';
-import { AccountVariant } from '@thxnetwork/auth/types/enums/AccountVariant';
+import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
 import { AccessTokenKind } from '@thxnetwork/types/enums';
 
@@ -11,7 +11,7 @@ export async function controller(req: Request, res: Response) {
 
     // if there is a session we need to check for dups before we store the token
     if (interaction.session) {
-        await AccountService.isConnected(tokenInfo.userId, AccessTokenKind.Twitch);
+        await AccountService.isConnected(interaction.session.accountId, tokenInfo.userId, AccessTokenKind.Twitch);
     }
 
     const account = await AccountService.findOrCreate(interaction.session, tokenInfo, AccountVariant.SSOTwitch, email);

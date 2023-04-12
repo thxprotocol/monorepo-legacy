@@ -30,7 +30,7 @@ const controller = async (req: Request, res: Response) => {
         amount: erc721Perk.price,
         currency: erc721Perk.priceCurrency,
         automatic_payment_methods: { enabled: true },
-        application_fee_amount: erc721Perk.price * 0.05, // 5% is 2.5% app fee and 1.4-3.5% stripe fee
+        application_fee_amount: erc721Perk.price * 0.05, // 5% includes 2.5% app fee and 1.4-3.5% stripe fee
         transfer_data: { destination: merchant.stripeConnectId },
         metadata: {
             sub: req.auth.sub,

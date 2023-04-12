@@ -1,4 +1,4 @@
-import { UserManager as BaseUserManager, UserManagerSettings } from 'oidc-client-ts';
+import { UserManager as BaseUserManager, UserManagerSettings, WebStorageStateStore } from 'oidc-client-ts';
 import type { Credential } from '../types';
 import { URL_CONFIG } from '../configs';
 import CredentialManager from '../managers/CredentialManager';
@@ -62,6 +62,9 @@ export default class THXClient {
             silent_redirect_uri: rest.silent_redirect_uri,
             loadUserInfo: false,
             scope: scopes,
+            ...(typeof window !== 'undefined'
+                ? { userStore: new WebStorageStateStore({ store: window.localStorage }) }
+                : {}),
         };
 
         /* Mapped values */

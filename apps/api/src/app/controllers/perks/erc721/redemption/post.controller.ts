@@ -10,12 +10,15 @@ import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721T
 import { ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
 import { redeemValidation } from '@thxnetwork/api/util/perks';
 import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
+import MailService from '@thxnetwork/api/services/MailService';
+import { Widget } from '@thxnetwork/api/models/Widget';
 
 const validation = [param('uuid').exists()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Perks Payment']
     const pool = await PoolService.getById(req.header('X-PoolId'));
+    const widget = await Widget.findOne({ poolId: pool._id });
 
     const perk = await ERC721Perk.findOne({ uuid: req.params.uuid });
     if (!perk) throw new NotFoundError('Could not find this perk');
@@ -60,6 +63,14 @@ const controller = async (req: Request, res: Response) => {
     });
 
     await PointBalanceService.subtract(pool, req.auth.sub, perk.pointPrice);
+
+    let html = `<p style="font-size: 18px">Congratulations!🚀</p>`;
+    html += `<p>Your payment has been received and <strong>${
+        metadata ? metadata.name : 'Surprise!'
+    }</strong> dropped into your wallet!</p>`;
+    html += `<p class="btn"><a href="${widget.domain}">View Wallet</a></p>`;
+
+    await MailService.send(account.email, `🎁 NFT Drop! ${metadata ? metadata.name : 'Surprise!'}`, html);
 
     res.status(201).json({ erc721Token, erc721PerkPayment });
 };

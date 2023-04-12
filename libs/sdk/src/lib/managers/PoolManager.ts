@@ -19,8 +19,10 @@ class PoolManager extends BaseManager {
             return await this.client.request.get(`/v1/pools/${id}/subscription`);
         },
 
-        post: async (id: string) => {
-            return await this.client.request.post(`/v1/pools/${id}/subscription`);
+        post: async (payload: { poolId: string; email: string }) => {
+            return await this.client.request.post(`/v1/pools/${payload.poolId}/subscription`, {
+                body: JSON.stringify({ email: payload.email }),
+            });
         },
 
         delete: async (id: string) => {

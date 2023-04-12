@@ -14,7 +14,6 @@ import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/c
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { PoolTransfer, PoolTransferDocument } from '@thxnetwork/api/models/PoolTransfer';
 import { ERC20Document } from '@thxnetwork/api/models/ERC20';
-import { ERC20PerkDocument } from '@thxnetwork/api/models/ERC20Perk';
 import { createImage } from '@thxnetwork/api/util/jest/images';
 import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
 import { addMinutes, sub } from 'date-fns';
@@ -138,6 +137,17 @@ describe('Pool Transfer', () => {
         });
     });
 
+    describe('GET /pools/:id/transfers/:uuid', () => {
+        it('HTTP 200', (done) => {
+            user.get(`/v1/pools/${pool._id}/transfers/${poolTransfer.token}`)
+                .set({ 'Authorization': dashboardAccessToken, 'X-PoolId': pool._id })
+                .expect(({ body }: Response) => {
+                    expect(body.token).toBe(poolTransfer.token);
+                })
+                .expect(200, done);
+        });
+    });
+
     describe('POST /pools/:id/transfer', () => {
         it('HTTP 403 (Token expired)', async () => {
             await PoolTransfer.findByIdAndUpdate(poolTransfer._id, { expiry: new Date(Date.now() - 10000) });
@@ -146,7 +156,7 @@ describe('Pool Transfer', () => {
                 .set({ 'Authorization': dashboardAccessToken, 'X-PoolId': pool._id })
                 .send({ token: poolTransfer.token, sub: sub2 })
                 .expect(async ({ body }: Response) => {
-                    expect(body.error.message).toBe('Pool transfer token has expired');
+                    expect(body.error.message).toBe('This pool transfer URL has expired.');
                 })
                 .expect(403);
         });

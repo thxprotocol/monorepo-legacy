@@ -4,7 +4,6 @@ import { ChainId } from '@thxnetwork/types/enums';
 import { dashboardAccessToken, sub2, widgetAccessToken2 } from '@thxnetwork/api/util/jest/constants';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 
 const user = request.agent(app);
 

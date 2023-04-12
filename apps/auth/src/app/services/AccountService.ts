@@ -8,7 +8,7 @@ import {
 } from '../util/messages';
 import { YouTubeService } from './YouTubeService';
 import { AccountPlanType } from '../types/enums/AccountPlanType';
-import { AccountVariant } from '../types/enums/AccountVariant';
+import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import bcrypt from 'bcrypt';
 import { ShopifyService } from './ShopifyService';
@@ -24,11 +24,8 @@ export class AccountService {
     }
 
     static async getMany(subs: string[]) {
-        if (!subs.length) {
-            return [];
-        }
-        const result = await Account.find({ _id: { $in: subs } });
-        return result;
+        if (!subs.length) return [];
+        return await Account.find({ _id: { $in: subs } });
     }
 
     static getByDiscordId(discordId: string) {
@@ -275,8 +272,14 @@ export class AccountService {
         }
     }
 
-    static isConnected = async (userId: string, tokenKind: AccessTokenKind) => {
-        if (await Account.exists({ 'tokens.kind': tokenKind, 'tokens.userId': userId })) {
+    static isConnected = async (sub: string, userId: string, tokenKind: AccessTokenKind) => {
+        const isConnected = await Account.exists({
+            'tokens.kind': tokenKind,
+            'tokens.userId': userId,
+            '_id': { $ne: sub },
+        });
+
+        if (isConnected) {
             throw new ForbiddenError('This account is already connected to a different user.');
         }
     };
