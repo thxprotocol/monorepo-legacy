@@ -1,7 +1,7 @@
 import { DASHBOARD_URL, GITHUB_API_ENDPOINT } from './../../../config/secrets';
 import nock from 'nock';
 import request from 'supertest';
-import { AccountVariant } from '../../../types/enums/AccountVariant';
+import { AccountVariant } from '@thxnetwork/types/interfaces';
 import app from '../../../app';
 import { AccountService } from '../../../services/AccountService';
 import db from '../../../util/database';

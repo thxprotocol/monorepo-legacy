@@ -74,42 +74,45 @@
         <%- alert.message %>
       </div>
       <% } %>
-      <p class="text-muted">Use your e-mail</p>
-      <form id="form-signin" action="/oidc/<%= uid %>/signin" method="post" class="mt-3">
+      
+      
+        
+        <form id="form-signin" action="/oidc/<%= uid %>/signin" method="post" class="mt-3">
+          <% if(params.emailPasswordEnabled) { %>
+            <p class="text-muted">Use your e-mail</p>
+            <div class="form-group">
+              <input placeholder="E-mail" class="form-control" class="form-control" required type="email" name="email"
+                    v-model="email" :class="{
+                      'is-valid': email && !isDisabled, 'is-invalid': email && isDisabled
+                  }">
+            </div>
 
-        <div class="form-group">
-          <input placeholder="E-mail" class="form-control" class="form-control" required type="email" name="email"
-                 v-model="email" :class="{
-                  'is-valid': email && !isDisabled, 'is-invalid': email && isDisabled
-              }">
-        </div>
-
-        <% if (params.mfaEnabled) { %>
-        <label>MFA code:</label>
-        <input class="form-control mb-4" required name="code">
+            <% if (params.mfaEnabled) { %>
+            <label>MFA code:</label>
+            <input class="form-control mb-4" required name="code">
+            <% } %>
+          <% } %>
+          <% if (params.authRequestMessage) { %>
+            <input type="hidden" name="authRequestMessage" value="<%= params.authRequestMessage %>" />
+            <input type="hidden" name="authRequestSignature" value="" />
+            <input type="hidden" name="claimUrl" value="<%= params.claimUrl %>" />
+            <% } %>
+          <input type="hidden" name="returnUrl" value="<%= params.return_url %>" />
+          <% if(params.emailPasswordEnabled) { %>
+          <button type="submit" class="btn rounded-pill btn-primary btn-block mb-4"
+                  :class="{'disabled': isDisabled || isLoading}" @click="onClickSubmit">
+            Send one-time password
+            <i class="fas fa-chevron-right" aria-hidden="true"></i>
+          </button>
+          <% } %>
+        </form>
+        <% if(params.emailPasswordEnabled) { %>
+        <hr />
+        <p class="text-muted">Or continue with a trusted provider</p>
         <% } %>
-
-        <% if (params.authRequestMessage) { %>
-        <input type="hidden" name="authRequestMessage" value="<%= params.authRequestMessage %>" />
-        <input type="hidden" name="authRequestSignature" value="" />
-        <% } %>
-
-        <input type="hidden" name="returnUrl" value="<%= params.return_url %>" />
-
-        <% if (params.authRequestMessage) { %>
-        <input type="hidden" name="claimUrl" value="<%= params.claimUrl %>" />
-        <% } %>
-
-        <button type="submit" class="btn rounded-pill btn-primary btn-block mb-4"
-                :class="{'disabled': isDisabled || isLoading}" @click="onClickSubmit">
-          Send one-time password
-          <i class="fas fa-chevron-right" aria-hidden="true"></i>
-        </button>
-      </form>
-      <hr />
-      <p class="text-muted">Or continue with a trusted provider</p>
+      
       <div class="d-flex align-items-center justify-content-start flex-wrap">
-        <% if (params.authRequestMessage) { %>
+        <% if (params.authRequestMessage && params.metaMaskEnabled) { %>
         <a style="width: 40px; height: 40px;" class="mr-2 mb-2 d-block p-1 btn btn-light" @click="onClickSigninMetamask"
            data-toggle="tooltip" title="Sign in with Metamask">
           <img v-if="!isDisabledMetamask" width="25" src="/img/mm-logo.svg" alt="Metamask logo" />

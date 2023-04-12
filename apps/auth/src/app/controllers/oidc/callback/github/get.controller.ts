@@ -1,7 +1,7 @@
 import GithubService from '../../../../services/GithubServices';
 import { Request, Response } from 'express';
 import { AccountService } from '../../../../services/AccountService';
-import { AccountVariant } from '../../../../types/enums/AccountVariant';
+import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { callbackPostSSOCallback, callbackPreAuth } from '../../get';
 import { AccessTokenKind } from '@thxnetwork/types/enums';
 
