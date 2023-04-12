@@ -24,6 +24,7 @@ import AccountProxy from '../proxies/AccountProxy';
 import IPFSService from './IPFSService';
 import { API_URL } from '../config/secrets';
 import WalletService from './WalletService';
+import { TWallet } from '../models/Wallet';
 
 const contractName = 'NonFungibleToken';
 
@@ -190,8 +191,8 @@ async function findTokensBySub(sub: string): Promise<ERC721TokenDocument[]> {
     return ERC721Token.find({ sub });
 }
 
-async function findTokensByWallet(walletId: string): Promise<ERC721TokenDocument[]> {
-    return ERC721Token.find({ walletId });
+async function findTokensByWallet(wallet: TWallet): Promise<ERC721TokenDocument[]> {
+    return ERC721Token.find({ walletId: wallet._id });
 }
 
 async function findMetadataById(id: string): Promise<ERC721MetadataDocument> {

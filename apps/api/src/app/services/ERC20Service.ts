@@ -13,7 +13,7 @@ import { TransactionReceipt } from 'web3-core';
 import { TERC20DeployCallbackArgs, TERC20TransferFromCallBackArgs } from '@thxnetwork/api/types/TTransaction';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
 import ERC20Transfer from '../models/ERC20Transfer';
-import { WalletDocument } from '../models/Wallet';
+import { TWallet, WalletDocument } from '../models/Wallet';
 import WalletService from './WalletService';
 
 function getDeployArgs(erc20: ERC20Document, totalSupply?: string) {
@@ -114,8 +114,8 @@ export const getTokensForSub = (sub: string) => {
     return ERC20Token.find({ sub });
 };
 
-export const getTokensForWallet = (walletId: string) => {
-    return ERC20Token.find({ walletId });
+export const getTokensForWallet = (wallet: TWallet) => {
+    return ERC20Token.find({ walletId: wallet._id });
 };
 
 export const getById = (id: string) => {

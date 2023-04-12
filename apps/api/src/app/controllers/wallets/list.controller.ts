@@ -8,7 +8,10 @@ const validation = [query('chainId').optional().isNumeric(), query('sub').exists
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Wallets']
-    const wallets = await WalletService.findByQuery(req.query);
+    const wallets = await WalletService.findByQuery({
+        sub: String(req.query.sub),
+        chainId: req.query.chainId && Number(req.query.chainId),
+    });
 
     res.json(
         wallets.map((wallet: WalletDocument) => {

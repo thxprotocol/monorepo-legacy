@@ -1,7 +1,7 @@
 import { ContractName, currentVersion, diamondFacetConfigs, DiamondVariant } from '@thxnetwork/contracts/exports';
 import { getByteCodeForContractName, getContractFromName } from '../config/contracts';
 import { IAccount } from '../models/Account';
-import { Wallet, WalletDocument } from '../models/Wallet';
+import { Wallet as WalletModel, WalletDocument } from '../models/Wallet';
 import { ChainId } from '@thxnetwork/types/enums';
 import { TWalletDeployCallbackArgs } from '../types/TTransaction';
 import { getProvider, getSelectors } from '../util/network';
@@ -10,23 +10,21 @@ import { TransactionReceipt } from 'web3-core';
 import { FacetCutAction, updateDiamondContract } from '../util/upgrades';
 import WalletManagerService from './WalletManagerService';
 
+export const Wallet = WalletModel;
+
 async function create(data: {
     chainId: ChainId;
     account: IAccount;
-    deploy?: boolean;
+    skipDeploy?: boolean;
     forceSync?: boolean;
     address?: string;
 }) {
     const { chainId, account } = data;
     const sub = String(account.sub);
-    const mustDeploy = data.deploy === true || data.deploy === undefined;
-    const address = !mustDeploy ? data.address : undefined;
-
+    const address = data.skipDeploy ? data.address : undefined;
     const wallet = await Wallet.create({ sub, chainId, version: currentVersion, address });
+    if (data.skipDeploy) return wallet;
 
-    if (!mustDeploy) {
-        return wallet;
-    }
     const forceSync = data.forceSync === undefined ? true : data.forceSync;
     return deploy(wallet, chainId, sub, forceSync);
 }

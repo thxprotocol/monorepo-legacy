@@ -148,7 +148,7 @@ export class AccountService {
             plan: AccountPlanType.Basic,
             active: true,
         });
-        await WalletProxy.create({ sub: account._id.toString(), address, deploy: false, chainId: ChainId.Polygon }); // creates a wallet object in the db without deploying
+        await WalletProxy.create({ sub: account._id.toString(), address, skipDeploy: true, chainId: ChainId.Polygon }); // creates a wallet object in the db without deploying
         return account;
     }
 

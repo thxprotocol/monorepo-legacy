@@ -5,24 +5,14 @@ import { AccountVariant } from '../types/enums/AccountVariant';
 import { NODE_ENV } from '../config/secrets';
 
 export async function createWallet(account: AccountDocument) {
-    let deploy: boolean, address: string;
-    if (account.variant === AccountVariant.Metamask) {
-        if (!account.address) return;
-        deploy = true;
-        address = account.address;
-    }
-
+    const skipDeploy = account.variant === AccountVariant.Metamask;
+    const chains = [NODE_ENV === 'production' ? ChainId.Polygon : ChainId.Hardhat];
     const sub = String(account._id);
-    const chains = [];
-
-    if (NODE_ENV === 'production') {
-        chains.push(ChainId.Polygon);
-    } else {
-        chains.push(ChainId.Hardhat);
-    }
 
     for (const chainId of chains) {
-        const walletsCount = (await WalletProxy.get(sub, chainId)).length;
-        if (!walletsCount) WalletProxy.create({ sub, chainId, forceSync: false, deploy, address });
+        const wallets = await WalletProxy.get(sub, chainId);
+        if (!wallets.length) {
+            WalletProxy.create({ sub, chainId, forceSync: false, skipDeploy, address: account.address });
+        }
     }
 }

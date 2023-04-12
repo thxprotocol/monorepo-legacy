@@ -21,6 +21,7 @@ import TransactionService from './TransactionService';
 import type { TERC1155, TERC1155Metadata, TERC1155Token } from '@thxnetwork/api/types/TERC1155';
 import type { IAccount } from '@thxnetwork/api/models/Account';
 import WalletService from './WalletService';
+import { TWallet } from '../models/Wallet';
 const contractName = 'THX_ERC1155';
 
 async function deploy(data: TERC1155, forceSync = true): Promise<ERC1155Document> {
@@ -186,8 +187,8 @@ async function findTokensBySub(sub: string): Promise<ERC1155TokenDocument[]> {
     return ERC1155Token.find({ sub });
 }
 
-async function findTokensByWallet(walletId: string): Promise<ERC1155TokenDocument[]> {
-    return ERC1155Token.find({ walletId });
+async function findTokensByWallet(wallet: TWallet): Promise<ERC1155TokenDocument[]> {
+    return ERC1155Token.find({ walletId: wallet._id });
 }
 
 async function findMetadataById(id: string): Promise<ERC1155MetadataDocument> {

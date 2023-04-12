@@ -1,6 +1,5 @@
 import { apiClient, getAuthAccessToken } from '../util/api';
 import { ChainId } from '../types/enums/chainId';
-import { AccountDocument } from '../models/Account';
 
 export default {
     get: async (sub: string, chainId: ChainId) => {
@@ -16,13 +15,14 @@ export default {
             },
             params,
         });
+
         return r.data;
     },
 
     create: async (data: {
         chainId: ChainId;
         sub: string;
-        deploy?: boolean;
+        skipDeploy?: boolean;
         forceSync?: boolean;
         address?: string;
     }) => {

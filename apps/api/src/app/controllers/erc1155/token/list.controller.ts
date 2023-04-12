@@ -3,7 +3,7 @@ import { ERC1155TokenDocument } from '@thxnetwork/api/models/ERC1155Token';
 import type { TERC1155, TERC1155Token } from '@thxnetwork/api/types/TERC1155';
 import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
 import { query } from 'express-validator';
-import WalletService from '@thxnetwork/api/services/WalletService';
+import { Wallet } from '@thxnetwork/api/services/WalletService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 
 const validation = [query('chainId').exists().isNumeric()];
@@ -11,12 +11,10 @@ const validation = [query('chainId').exists().isNumeric()];
 export const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC1155']
 
-    const wallets = await WalletService.findByQuery({ sub: req.auth.sub, chainId: Number(req.query.chainId) });
-    if (!wallets.length) {
-        throw new NotFoundError('Could not find the wallet for the user');
-    }
+    const wallet = await Wallet.findOne({ sub: req.auth.sub, chainId: Number(req.query.chainId) });
+    if (!wallet) throw new NotFoundError('Could not find the wallet for the user');
 
-    const tokens = await ERC1155Service.findTokensByWallet(wallets[0]._id);
+    const tokens = await ERC1155Service.findTokensByWallet(wallet);
 
     const result = await Promise.all(
         tokens.map(async (token: ERC1155TokenDocument) => {

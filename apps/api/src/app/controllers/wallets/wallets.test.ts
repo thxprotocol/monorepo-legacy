@@ -21,7 +21,7 @@ describe('Wallets', () => {
                     chainId: ChainId.Hardhat,
                     sub: sub2,
                     address: '0x123Abc',
-                    deploy: false,
+                    skipDeploy: true,
                 })
                 .expect((res: request.Response) => {
                     expect(res.body.sub).toEqual(sub2);
