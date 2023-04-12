@@ -16,7 +16,7 @@ import { Widget } from './WidgetService';
 import { PoolSubscription } from '../models/PoolSubscription';
 import { logger } from '../util/logger';
 import { TPointReward } from '@thxnetwork/types/interfaces';
-import { AccountVariant } from '@thxnetwork/auth/types/enums/AccountVariant';
+import { AccountVariant } from '@thxnetwork/types/interfaces';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 

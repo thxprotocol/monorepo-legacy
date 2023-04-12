@@ -9,7 +9,7 @@ import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
 import ClaimProxy from '@thxnetwork/auth/proxies/ClaimProxy';
 import BrandProxy from '@thxnetwork/auth/proxies/BrandProxy';
 import PoolProxy from '@thxnetwork/auth/proxies/PoolProxy';
-import { AccountVariant } from '@thxnetwork/auth/types/enums/AccountVariant';
+import { AccountVariant } from '@thxnetwork/types/interfaces';
 
 async function controller(req: Request, res: Response) {
     const { uid, params } = req.interaction;

@@ -10,22 +10,6 @@
         </b-form-row>
         <b-form-row>
             <b-col md="4">
-                <strong>Authentication Methods</strong>
-                <div class="text-muted">Configure the autxwhentication methods available for the user</div>
-            </b-col>
-            <b-col md="8">
-                <b-form-checkbox-group
-                    v-model="selectedAuthenticationMethods"
-                    :options="authenticationMethods"
-                    value-field="key"
-                    text-field="text"
-                    @change="onChangeaAthenticationMethods"
-                >
-                </b-form-checkbox-group>
-            </b-col>
-        </b-form-row>
-        <b-form-row>
-            <b-col md="4">
                 <strong>Embed code</strong>
                 <p class="text-muted">
                     Place this code before the closing body tag of your HTML page. The launcher will show for your web
@@ -131,6 +115,23 @@
         </b-form-row>
         <hr />
         <b-form-row>
+            <b-col md="4">
+                <strong>Login Methods</strong>
+                <div class="text-muted">Enable the available login methods for your widget.</div>
+            </b-col>
+            <b-col md="8">
+                <b-form-checkbox-group
+                    v-model="selectedAuthenticationMethods"
+                    :options="authenticationMethods"
+                    value-field="key"
+                    text-field="text"
+                    @change="onChangeSettings"
+                >
+                </b-form-checkbox-group>
+            </b-col>
+        </b-form-row>
+        <hr />
+        <b-form-row>
             <b-col md="4"> </b-col>
             <b-col md="8">
                 <b-form-group>
@@ -195,6 +196,15 @@ export default class SettingsView extends Vue {
     isWeeklyDigestEnabled = false;
     isArchived = false;
     selectedAuthenticationMethods: AccountVariant[] = [];
+    authenticationMethods = [
+        { key: AccountVariant.EmailPassword, text: 'Email/Password' },
+        { key: AccountVariant.Metamask, text: 'Metamask' },
+        { key: AccountVariant.SSODiscord, text: 'Discord' },
+        { key: AccountVariant.SSOGithub, text: 'Github' },
+        { key: AccountVariant.SSOGoogle, text: 'Google' },
+        { key: AccountVariant.SSOTwitch, text: 'Twitch' },
+        { key: AccountVariant.SSOTwitter, text: 'Twitter' },
+    ];
 
     get pool() {
         return this.pools[this.$route.params.id];
@@ -215,18 +225,6 @@ export default class SettingsView extends Vue {
     get widget() {
         if (!this.widgets[this.$route.params.id]) return;
         return Object.values(this.widgets[this.$route.params.id])[0];
-    }
-
-    get authenticationMethods(): { key: number; text: string }[] {
-        return [
-            { key: AccountVariant.EmailPassword, text: 'Email/Password' },
-            { key: AccountVariant.Metamask, text: 'Metamask' },
-            { key: AccountVariant.SSODiscord, text: 'Discord' },
-            { key: AccountVariant.SSOGithub, text: 'Github' },
-            { key: AccountVariant.SSOGoogle, text: 'Google' },
-            { key: AccountVariant.SSOTwitch, text: 'Twitch' },
-            { key: AccountVariant.SSOTwitter, text: 'Twitter' },
-        ];
     }
 
     async mounted() {
@@ -269,11 +267,17 @@ export default class SettingsView extends Vue {
     }
 
     async onChangeSettings(setting: TPoolSettings) {
+        if (!this.selectedAuthenticationMethods.length) {
+            this.error = 'Select at least one login method';
+            return;
+        }
+
         const settings = Object.assign(
             {
                 title: this.title,
                 isArchived: this.isArchived,
                 isWeeklyDigestEnabled: this.isWeeklyDigestEnabled,
+                authenticationMethods: this.selectedAuthenticationMethods.sort((a, b) => a - b),
             },
             setting,
         );
@@ -282,6 +286,7 @@ export default class SettingsView extends Vue {
             pool: this.pool,
             data: { settings },
         });
+        this.error = '';
     }
 
     async updateBrand() {
@@ -303,18 +308,6 @@ export default class SettingsView extends Vue {
             domain: this.domain,
         });
         this.loading = false;
-    }
-
-    async onChangeaAthenticationMethods() {
-        this.error = null;
-        if (!this.selectedAuthenticationMethods.length) {
-            this.error = 'Select at least one Athentication Method';
-            return;
-        }
-        await this.$store.dispatch('pools/update', {
-            pool: this.pool,
-            data: { settings: { authenticationMethods: this.selectedAuthenticationMethods.sort((a, b) => a - b) } },
-        });
     }
 }
 </script>

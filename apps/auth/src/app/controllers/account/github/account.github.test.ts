@@ -4,7 +4,7 @@ import app from '../../../app';
 import db from '../../../util/database';
 import { GITHUB_API_ENDPOINT, INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
 import { accountEmail } from '../../../util/jest';
-import { AccountVariant } from '@thxnetwork/auth/types/enums/AccountVariant';
+import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { AccountService } from '@thxnetwork/auth/services/AccountService';
 import { AccountDocument } from '@thxnetwork/auth/models/Account';
 import { AccessTokenKind } from '@thxnetwork/types/index';
