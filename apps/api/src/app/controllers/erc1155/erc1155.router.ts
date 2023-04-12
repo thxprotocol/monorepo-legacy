@@ -18,7 +18,12 @@ import PreviewERC1155Contract from './import/preview/post.controller';
 
 const router = express.Router();
 
-router.get('/token', guard.check(['erc1155:read']), ListERC1155Token.controller);
+router.get(
+    '/token',
+    guard.check(['erc1155:read']),
+    assertRequestInput(ListERC1155Token.validation),
+    ListERC1155Token.controller,
+);
 router.get('/token/:id', guard.check(['erc1155:read']), ReadERC1155Token.controller);
 router.get('/', guard.check(['erc1155:read']), assertRequestInput(ListERC1155.validation), ListERC1155.controller);
 router.get('/:id', guard.check(['erc1155:read']), assertRequestInput(ReadERC1155.validation), ReadERC1155.controller);

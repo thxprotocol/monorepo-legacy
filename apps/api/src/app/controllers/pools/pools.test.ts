@@ -61,7 +61,6 @@ describe('Default Pool', () => {
                     endDate: new Date(),
                 })
                 .expect((res: request.Response) => {
-                    console.log('BODY', res.body);
                     poolId = res.body._id;
                     expect(res.body.endDate).toBeDefined();
                     expect(res.body.settings.title).toBe('My Pool');

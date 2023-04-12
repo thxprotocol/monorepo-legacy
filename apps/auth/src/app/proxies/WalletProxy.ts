@@ -15,17 +15,24 @@ export default {
             },
             params,
         });
+
         return r.data;
     },
 
-    create: async (sub: string, chainId: ChainId, forceSync = true) => {
+    create: async (data: {
+        chainId: ChainId;
+        sub: string;
+        skipDeploy?: boolean;
+        forceSync?: boolean;
+        address?: string;
+    }) => {
         const r = await apiClient({
             method: 'POST',
             url: `/v1/wallets`,
             headers: {
                 Authorization: await getAuthAccessToken(),
             },
-            data: { sub, chainId, forceSync },
+            data: data,
         });
         return r.data;
     },

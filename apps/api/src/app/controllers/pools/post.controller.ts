@@ -15,7 +15,6 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
     const title = req.body.title || 'My Loyalty Pool';
     const endDate = req.body.endDate ? new Date(req.body.endDate) : undefined;
-    console.log('POST endDate ----------------------------------------------------------', endDate);
     const pool = await PoolService.deploy(req.auth.sub, req.body.chainId, title, endDate);
 
     await Widget.create({

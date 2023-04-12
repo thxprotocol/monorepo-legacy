@@ -14,6 +14,8 @@ import bcrypt from 'bcrypt';
 import { ShopifyService } from './ShopifyService';
 import { logger } from '../util/logger';
 import { ForbiddenError } from '../util/errors';
+import WalletProxy from '../proxies/WalletProxy';
+import { ChainId } from '@thxnetwork/types/index';
 // import { SignTypedDataVersion, recoverTypedSignature } from '@metamask/eth-sig-util';
 
 export class AccountService {
@@ -135,15 +137,16 @@ export class AccountService {
 
     static async signinWithAddress(addr: string) {
         const address = toChecksumAddress(addr);
-        const account = await Account.findOne({ address });
+        let account = await Account.findOne({ address });
         if (account) return account;
-
-        return await Account.create({
+        account = await Account.create({
             address,
             variant: AccountVariant.Metamask,
             plan: AccountPlanType.Basic,
             active: true,
         });
+        await WalletProxy.create({ sub: account._id.toString(), address, skipDeploy: true, chainId: ChainId.Polygon }); // creates a wallet object in the db without deploying
+        return account;
     }
 
     static async findOrCreate(

@@ -18,7 +18,12 @@ import ReadERC20Balance from './balance/get.controller';
 const router = express.Router();
 
 // Token Resource
-router.get('/token', guard.check(['erc20:read']), ListERC20Token.controller);
+router.get(
+    '/token',
+    guard.check(['erc20:read']),
+    assertRequestInput(ListERC20Token.validation),
+    ListERC20Token.controller,
+);
 router.get('/token/:id', guard.check(['erc20:read']), ReadERC20Token.controller);
 router.post(
     '/token',
