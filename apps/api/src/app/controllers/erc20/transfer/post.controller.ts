@@ -30,14 +30,7 @@ export const controller = async (req: Request, res: Response) => {
         throw new InsufficientBalanceError();
     }
 
-    const erc20Transfer = await ERC20Service.transferFrom(
-        erc20,
-        wallet,
-        req.body.to,
-        String(amountInWei),
-        req.body.chainId,
-        req.auth.sub,
-    );
+    const erc20Transfer = await ERC20Service.transferFrom(erc20, wallet, req.body.to, String(amountInWei));
 
     res.status(201).json(erc20Transfer);
 };

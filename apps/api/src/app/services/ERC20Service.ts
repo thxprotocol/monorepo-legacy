@@ -118,8 +118,10 @@ export const getTokensForWallet = (wallet: TWallet) => {
     return ERC20Token.find({ walletId: wallet._id });
 };
 
-export const getById = (id: string) => {
-    return ERC20.findById(id);
+export const getById = async (id: string) => {
+    const erc20 = await ERC20.findById(id);
+    erc20.logoImgUrl = erc20.logoImgUrl || `https://avatars.dicebear.com/api/identicon/${erc20.address}.svg`;
+    return erc20;
 };
 
 export const getTokenById = (id: string) => {
@@ -203,26 +205,19 @@ export const update = (erc20: ERC20Document, updates: IERC20Updates) => {
     return ERC20.findByIdAndUpdate(erc20._id, updates, { new: true });
 };
 
-export const transferFrom = async (
-    erc20: ERC20Document,
-    wallet: WalletDocument,
-    to: string,
-    amountInWei: string,
-    chainId: ChainId,
-    sub: string,
-) => {
+export const transferFrom = async (erc20: ERC20Document, wallet: WalletDocument, to: string, amountInWei: string) => {
     const erc20Transfer = await ERC20Transfer.create({
         erc20Id: erc20._id,
         from: wallet.address,
         to,
         amount: amountInWei,
-        chainId,
-        sub,
+        chainId: wallet.chainId,
+        sub: wallet.sub,
     });
     const txId = await TransactionService.sendAsync(
         wallet.address,
         wallet.contract.methods.transferERC20(erc20.address, to, amountInWei),
-        chainId,
+        wallet.chainId,
         true,
         { type: 'transferFromCallBack', args: { erc20Id: String(erc20._id) } },
     );

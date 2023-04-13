@@ -101,8 +101,6 @@ const chainIdToName = (chainId: ChainId): TNetworkName => {
     switch (chainId) {
         case ChainId.Polygon:
             return POLYGON_NAME as TNetworkName;
-        case ChainId.PolygonMumbai:
-            return POLYGON_MUMBAI_NAME as TNetworkName;
         case ChainId.Hardhat:
             return HARDHAT_NAME as TNetworkName;
     }
