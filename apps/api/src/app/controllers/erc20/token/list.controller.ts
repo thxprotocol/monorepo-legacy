@@ -24,7 +24,6 @@ export const controller = async (req: Request, res: Response) => {
         }
     }
     */
-    const account = await AccountProxy.getById(req.auth.sub);
     const chainId = Number(req.query.chainId);
     const wallet = await Wallet.findOne({ sub: req.auth.sub, chainId });
     if (!wallet) throw new NotFoundError('Could not find the wallet for the user');
@@ -34,33 +33,17 @@ export const controller = async (req: Request, res: Response) => {
         tokens.map(async (token: ERC20TokenDocument) => {
             try {
                 const erc20 = await ERC20Service.getById(token.erc20Id);
-                if (!erc20) return;
+                if (!erc20 || erc20.chainId !== chainId) return;
 
                 const pendingWithdrawals = await WithdrawalService.getPendingWithdrawals(erc20, wallet);
                 const walletBalanceInWei = await erc20.contract.methods.balanceOf(wallet.address).call();
-                const walletBalance = Number(fromWei(walletBalanceInWei, 'ether'));
+                const walletBalance = fromWei(walletBalanceInWei, 'ether');
 
-                let balanceInWei, balance, balancePending;
-                if (account.address) {
-                    balanceInWei = await erc20.contract.methods.balanceOf(account.address).call();
-                    balance = Number(fromWei(balanceInWei, 'ether'));
-                    balancePending = pendingWithdrawals
-                        .map((item: any) => item.amount)
-                        .reduce((prev: any, curr: any) => prev + curr, 0);
-                }
-
-                erc20.logoImgUrl =
-                    erc20.logoImgUrl || `https://avatars.dicebear.com/api/identicon/${erc20.address}.svg`;
-
-                return {
-                    ...(token.toJSON() as TERC20Token),
-                    balanceInWei,
-                    balance,
-                    balancePending,
+                return Object.assign(token.toJSON() as TERC20Token, {
                     walletBalance,
                     pendingWithdrawals,
                     erc20,
-                };
+                });
             } catch (error) {
                 console.log(error);
             }
@@ -69,8 +52,7 @@ export const controller = async (req: Request, res: Response) => {
 
     res.json(
         result.reverse().filter((token: TERC20Token & { erc20: TERC20 }) => {
-            if (!req.query.chainId) return true;
-            return token.erc20 && Number(req.query.chainId) === token.erc20.chainId;
+            return token && chainId === token.erc20.chainId;
         }),
     );
 };

@@ -14,7 +14,6 @@ const controller = async (req: Request, res: Response) => {
         schema: { $ref: '#/definitions/ERC721' } } 
     */
     let erc721 = await ERC721Service.findById(req.params.id);
-
     if (!erc721) throw new NotFoundError();
 
     // Check if pending transaction is mined.

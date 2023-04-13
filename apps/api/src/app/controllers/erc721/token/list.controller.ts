@@ -10,6 +10,7 @@ const validation = [query('chainId').exists().isNumeric()];
 
 export const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721']
+    const chainId = Number(req.query.chainId);
     const wallet = await Wallet.findOne({ sub: req.auth.sub, chainId: Number(req.query.chainId) });
     if (!wallet) throw new NotFoundError('Could not find the wallet for the user');
 
@@ -17,21 +18,18 @@ export const controller = async (req: Request, res: Response) => {
     const result = await Promise.all(
         tokens.map(async (token: ERC721TokenDocument) => {
             const erc721 = await ERC721Service.findById(token.erc721Id);
-            if (!erc721) return;
-            if (erc721.chainId !== Number(req.query.chainId)) return { ...(token.toJSON() as TERC721Token), erc721 };
+            if (!erc721 || erc721.chainId !== chainId) return;
 
             const metadata = await ERC721Service.findMetadataById(token.metadataId);
             const tokenUri = token.tokenId ? await erc721.contract.methods.tokenURI(token.tokenId).call() : '';
-            erc721.logoImgUrl = erc721.logoImgUrl || `https://avatars.dicebear.com/api/identicon/${erc721.address}.svg`;
 
-            return { ...(token.toJSON() as TERC721Token), metadata, tokenUri, erc721 };
+            return Object.assign(token.toJSON() as TERC721Token, { metadata, tokenUri, erc721 });
         }),
     );
 
     res.json(
         result.reverse().filter((token: TERC721Token & { erc721: TERC721 }) => {
-            if (!req.query.chainId) return true;
-            return Number(req.query.chainId) === token.erc721.chainId;
+            return token && chainId === token.erc721.chainId;
         }),
     );
 };
