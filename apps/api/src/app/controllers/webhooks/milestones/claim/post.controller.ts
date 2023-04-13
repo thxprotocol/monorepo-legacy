@@ -11,11 +11,13 @@ const validation = [body('address').exists(), param('token').exists()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
-    const wallet = await WalletService.findOneByAddress(req.body.address);
-    const account = wallet ? await AccountProxy.getById(wallet.sub) : await AccountProxy.getByAddress(req.body.address);
-
     const reward = await MilestoneReward.findOne({ uuid: req.params.token });
-    if (!reward) throw new NotFoundError('Could not find milestone reward for this token');
+    if (!reward) throw new NotFoundError('Could not find a milestone reward for this token');
+
+    const wallet = await WalletService.findOneByAddress(req.body.address);
+    if (!wallet) throw new NotFoundError('Could not find a wallet for this address');
+
+    const account = await AccountProxy.getById(wallet.sub);
 
     if (reward.limit) {
         const numOfClaims = await MilestoneRewardClaim.count({ milestoneRewardId: reward.id, sub: account.sub });

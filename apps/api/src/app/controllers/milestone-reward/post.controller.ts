@@ -7,7 +7,7 @@ const validation = [
     body('title').isString(),
     body('description').isString(),
     body('amount').isInt({ gt: 0 }),
-    body('limit').optional().isInt({ gt: 0 }),
+    body('limit').optional().isInt(),
 ];
 
 const controller = async (req: Request, res: Response) => {

@@ -1,5 +1,5 @@
 import ERC20, { ERC20Document, IERC20Updates } from '@thxnetwork/api/models/ERC20';
-import { toWei } from 'web3-utils';
+import { toChecksumAddress, toWei } from 'web3-utils';
 import { ICreateERC20Params } from '@thxnetwork/api/types/interfaces';
 import TransactionService from './TransactionService';
 import { assertEvent, ExpectedEventNotFound, findEvent, parseLogs } from '@thxnetwork/api/util/events';
@@ -14,7 +14,7 @@ import { TERC20DeployCallbackArgs, TERC20TransferFromCallBackArgs } from '@thxne
 import { Transaction } from '@thxnetwork/api/models/Transaction';
 import ERC20Transfer from '../models/ERC20Transfer';
 import { TWallet, WalletDocument } from '../models/Wallet';
-import WalletService from './WalletService';
+import WalletService, { Wallet } from './WalletService';
 
 function getDeployArgs(erc20: ERC20Document, totalSupply?: string) {
     const { defaultAccount } = getProvider(erc20.chainId);
@@ -118,8 +118,10 @@ export const getTokensForWallet = (wallet: TWallet) => {
     return ERC20Token.find({ walletId: wallet._id });
 };
 
-export const getById = (id: string) => {
-    return ERC20.findById(id);
+export const getById = async (id: string) => {
+    const erc20 = await ERC20.findById(id);
+    erc20.logoImgUrl = erc20.logoImgUrl || `https://avatars.dicebear.com/api/identicon/${erc20.address}.svg`;
+    return erc20;
 };
 
 export const getTokenById = (id: string) => {
@@ -203,26 +205,26 @@ export const update = (erc20: ERC20Document, updates: IERC20Updates) => {
     return ERC20.findByIdAndUpdate(erc20._id, updates, { new: true });
 };
 
-export const transferFrom = async (
-    erc20: ERC20Document,
-    wallet: WalletDocument,
-    to: string,
-    amountInWei: string,
-    chainId: ChainId,
-    sub: string,
-) => {
+export const transferFrom = async (erc20: ERC20Document, wallet: WalletDocument, to: string, amountInWei: string) => {
     const erc20Transfer = await ERC20Transfer.create({
         erc20Id: erc20._id,
         from: wallet.address,
         to,
         amount: amountInWei,
-        chainId,
-        sub,
+        chainId: wallet.chainId,
+        sub: wallet.sub,
     });
+
+    // Check if an erc20Token exists for a known receiving wallet and create one if not
+    const toWallet = await Wallet.findOne({ chainId: wallet.chainId, address: toChecksumAddress(to) });
+    if (toWallet && !(await ERC20Token.exists({ _id: toWallet._id }))) {
+        await createERC20Token(erc20, toWallet.sub);
+    }
+
     const txId = await TransactionService.sendAsync(
         wallet.address,
         wallet.contract.methods.transferERC20(erc20.address, to, amountInWei),
-        chainId,
+        wallet.chainId,
         true,
         { type: 'transferFromCallBack', args: { erc20Id: String(erc20._id) } },
     );

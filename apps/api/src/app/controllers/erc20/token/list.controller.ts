@@ -25,7 +25,8 @@ export const controller = async (req: Request, res: Response) => {
     }
     */
     const account = await AccountProxy.getById(req.auth.sub);
-    const wallet = await Wallet.findOne({ sub: req.auth.sub, chainId: Number(req.query.chainId) });
+    const chainId = Number(req.query.chainId);
+    const wallet = await Wallet.findOne({ sub: req.auth.sub, chainId });
     if (!wallet) throw new NotFoundError('Could not find the wallet for the user');
 
     const tokens = await ERC20Service.getTokensForWallet(wallet);
@@ -34,16 +35,10 @@ export const controller = async (req: Request, res: Response) => {
             try {
                 const erc20 = await ERC20Service.getById(token.erc20Id);
                 if (!erc20) return;
-                if (erc20.chainId !== Number(req.query.chainId)) return { ...(token.toJSON() as TERC20Token), erc20 };
 
-                const pendingWithdrawals = await WithdrawalService.getPendingWithdrawals(erc20, account);
-                const walletAddress = await account.getAddress(erc20.chainId);
-
-                let walletBalanceInWei, walletBalance;
-                if (walletAddress) {
-                    walletBalanceInWei = await erc20.contract.methods.balanceOf(walletAddress).call();
-                    walletBalance = Number(fromWei(walletBalanceInWei, 'ether'));
-                }
+                const pendingWithdrawals = await WithdrawalService.getPendingWithdrawals(erc20, wallet);
+                const walletBalanceInWei = await erc20.contract.methods.balanceOf(wallet.address).call();
+                const walletBalance = Number(fromWei(walletBalanceInWei, 'ether'));
 
                 let balanceInWei, balance, balancePending;
                 if (account.address) {

@@ -20,7 +20,7 @@ const user = request.agent(app);
 describe('ERC20Transfer', () => {
     let erc20: ERC20Document, wallet: WalletDocument, erc20Transfer: ERC20TransferDocument;
 
-    beforeAll(beforeAllCallback);
+    beforeAll(async () => await beforeAllCallback({ skipWalletCreation: true }));
     afterAll(afterAllCallback);
 
     describe('POST /erc20', () => {

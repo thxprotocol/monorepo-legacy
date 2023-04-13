@@ -9,10 +9,7 @@ describe('WalletManagers', () => {
     let walletId: string;
     let walletManagerId: string;
 
-    beforeAll(async () => {
-        await beforeAllCallback();
-    });
-
+    beforeAll(async () => await beforeAllCallback({ skipWalletCreation: true }));
     afterAll(afterAllCallback);
 
     describe('POST /wallets', () => {

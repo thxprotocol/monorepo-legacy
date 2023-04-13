@@ -24,7 +24,7 @@ import AccountProxy from '../proxies/AccountProxy';
 import IPFSService from './IPFSService';
 import { API_URL } from '../config/secrets';
 import WalletService from './WalletService';
-import { TWallet } from '../models/Wallet';
+import { TWallet, WalletDocument } from '../models/Wallet';
 
 const contractName = 'NonFungibleToken';
 
@@ -98,23 +98,21 @@ export async function mint(
     pool: AssetPoolDocument,
     erc721: ERC721Document,
     metadata: ERC721MetadataDocument,
-    sub: string,
-    address: string,
+    wallet: WalletDocument,
     forceSync = true,
 ): Promise<ERC721TokenDocument> {
     const tokenUri = await getTokenURI(erc721, String(metadata._id));
-    const wallets = await WalletService.findByQuery({ sub, chainId: erc721.chainId });
     const erc721token = await ERC721Token.create({
-        sub,
-        recipient: address,
+        sub: wallet.sub,
+        recipient: wallet.address,
         state: ERC721TokenState.Pending,
         erc721Id: String(erc721._id),
         metadataId: String(metadata._id),
-        walletId: wallets.length ? String(wallets[0]._id) : undefined,
+        walletId: wallet._id,
     });
     const txId = await TransactionService.sendAsync(
         pool.contract.options.address,
-        pool.contract.methods.mintFor(address, tokenUri, erc721.address),
+        pool.contract.methods.mintFor(wallet.address, tokenUri, erc721.address),
         pool.chainId,
         forceSync,
         {
@@ -254,18 +252,17 @@ export async function transferFrom(
     pool: AssetPoolDocument,
     erc721Token: ERC721TokenDocument,
     erc721: ERC721Document,
-    sub: string,
-    walletAddress: string,
+    wallet: WalletDocument,
     forceSync = true,
 ): Promise<ERC721TokenDocument> {
     const txId = await TransactionService.sendAsync(
         pool.contract.options.address,
-        pool.contract.methods.transferFromERC721(walletAddress, erc721Token.tokenId, erc721.address),
+        pool.contract.methods.transferFromERC721(wallet.address, erc721Token.tokenId, erc721.address),
         pool.chainId,
         forceSync,
         {
             type: 'erc721nTransferFromCallback',
-            args: { erc721Id: erc721._id, erc721tokenId: erc721Token._id, sub, assetPoolId: pool._id },
+            args: { erc721Id: erc721._id, erc721tokenId: erc721Token._id, sub: wallet.sub, assetPoolId: pool._id },
         },
     );
 
