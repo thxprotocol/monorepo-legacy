@@ -1,25 +1,31 @@
-const chainId = 137; // Polygon
 module.exports = {
-  async up(db) {
-    const tokenCollections = ['erc20token', 'erc721token', 'erc1155token', 'withdrawals'];
-    const walletColl = db.collection('wallets');
-    const promises = [];
-    for (const coll of tokenCollections) {
-      const collection = db.collection(coll);
-      const items = await (await collection.find({ walletId: { $exists: false } })).toArray();
-      promises.push(items.map(async item => {
-        const wallets = await (await walletColl.find({ sub: item.sub, chainId })).toArray();
-        if (wallets.length) {
-          const walletId = String(wallets[0]._id);
-          await collection.updateOne({ _id: item._id }, { $set: { walletId } });
-          console.log(`UPDATED token ${item._id} of ${coll}, with walletId: ${walletId} for sub: ${item.sub}`);
-        }
-      }));
-    }
-    await Promise.all(promises);
-  },
+    async up(db) {
+        const walletColl = db.collection('wallets');
 
-  async down() {
-    //
-  }
+        for (const name of ['erc20token', 'erc721token', 'erc1155token', 'withdrawals']) {
+            const collection = db.collection(name);
+            const documents = await (await collection.find({ walletId: { $exists: false } })).toArray();
+
+            await Promise.all(
+                documents.map(async (doc) => {
+                    try {
+                        const [wallet] = await (
+                            await walletColl.find({
+                                sub: doc.sub,
+                                chainId: 137, // Polygon
+                            })
+                        ).toArray();
+                        if (!wallet) return;
+                        await collection.updateOne({ _id: doc._id }, { $set: { walletId: String(wallet._id) } });
+                    } catch (error) {
+                        console.log(error);
+                    }
+                }),
+            );
+        }
+    },
+
+    async down() {
+        //
+    },
 };

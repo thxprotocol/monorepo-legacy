@@ -8,8 +8,11 @@ const chainId = 137; // Polygon
 
 module.exports = {
     async up(db) {
-        // Query for Metamask AccountVariant
-        const accounts = await (await db.collection('accounts').find({ variant: 4 })).toArray();
+        const accounts = await (
+            await db.collection('accounts').find({
+                variant: 4, // AccountVariant.Metamask
+            })
+        ).toArray();
         for (const account of accounts) {
             try {
                 if (!account.address) continue;
