@@ -21,6 +21,8 @@ export const controller = async (req: Request, res: Response) => {
             if (!erc721 || erc721.chainId !== chainId) return;
 
             const metadata = await ERC721Service.findMetadataById(token.metadataId);
+            if (!metadata) return;
+
             const tokenUri = token.tokenId ? await erc721.contract.methods.tokenURI(token.tokenId).call() : '';
 
             return Object.assign(token.toJSON() as TERC721Token, { metadata, tokenUri, erc721 });

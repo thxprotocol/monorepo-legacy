@@ -87,7 +87,6 @@ import { TERC20Perk, type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
-import BaseCardRewardQRCodes from '../cards/BaseCardRewardQRCodes.vue';
 import BaseDropdownSelectERC20 from '../dropdowns/BaseDropdownSelectERC20.vue';
 import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
 
@@ -96,7 +95,6 @@ import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
         BaseModal,
         BaseCardRewardExpiry,
         BaseCardRewardLimits,
-        BaseCardRewardQRCodes,
         BaseDropdownSelectERC20,
     },
 })

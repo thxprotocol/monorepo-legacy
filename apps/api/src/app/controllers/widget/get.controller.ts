@@ -139,7 +139,7 @@ const controller = async (req: Request, res: Response) => {
             const notifications = document.createElement('div');
             notifications.id = 'thx-notifications';
             Object.assign(notifications.style, {
-                display: 'flex',
+                display: 'none',
                 fontFamily: 'Arial',
                 fontSize: '13px',
                 justifyContent: 'center',
@@ -280,7 +280,10 @@ const controller = async (req: Request, res: Response) => {
                 const gift = document.getElementById('thx-svg-gift');
                 gift.style.transform = 'scale(1)';
             });
-           
+
+            const url = new URL(window.location.href)
+            const widgetPath = url.searchParams.get('thx_widget_path');
+
             launcher.appendChild(notifications);
             setTimeout(() => {
                 launcher.style.opacity = 1;
@@ -288,7 +291,7 @@ const controller = async (req: Request, res: Response) => {
 
                 this.message.style.opacity = 1;
                 this.message.style.transform = 'scale(1)';
-            }, 1500);
+            }, !widgetPath ? 1500 : 0);
     
             return launcher;
         }
@@ -315,6 +318,7 @@ const controller = async (req: Request, res: Response) => {
                 }
                 case 'thx.reward.amount': {
                     this.notifications.innerText = amount;
+                    this.notifications.style.display = amount ? 'flex' : 'none';
                     break;
                 }
                 case 'thx.widget.toggle': {
@@ -325,11 +329,21 @@ const controller = async (req: Request, res: Response) => {
         }
     
         onWidgetReady() {      
-            const url = new URL(window.location.href)
-            const widgetPath = url.searchParams.get('thx_widget_path');
-            const redirectStatus = url.searchParams.get('redirect_status');
+            const parentUrl = new URL(window.location.href)
+            const widgetPath = parentUrl.searchParams.get('thx_widget_path');
+            const redirectStatus = parentUrl.searchParams.get('redirect_status');
+            
             if (widgetPath) {
-                this.iframe.contentWindow.postMessage({ message: 'thx.iframe.navigate', path: widgetPath + '?status=' + redirectStatus }, this.settings.widgetUrl);
+                const { widgetUrl, poolId, origin, chainId, theme } = this.settings;
+                const url = new URL(widgetUrl + widgetPath);
+
+                url.searchParams.append('id', poolId);
+                url.searchParams.append('origin', origin);
+                url.searchParams.append('chainId', chainId);
+                url.searchParams.append('theme', theme);
+                url.searchParams.append('status', redirectStatus);
+                
+                this.iframe.contentWindow.postMessage({ message: 'thx.iframe.navigate', path: url.pathname + url.search }, this.settings.widgetUrl);
                 this.onWidgetToggle();
             }
     
@@ -381,12 +395,12 @@ const controller = async (req: Request, res: Response) => {
         refs: ${JSON.stringify(refs)},
     });
 `;
-    const result = await minify(data, {
-        mangle: { toplevel: false },
-        sourceMap: NODE_ENV !== 'production',
-    });
+    // const result = await minify(data, {
+    //     mangle: { toplevel: false },
+    //     sourceMap: NODE_ENV !== 'production',
+    // });
 
-    res.set({ 'Content-Type': 'application/javascript' }).send(result.code);
+    res.set({ 'Content-Type': 'application/javascript' }).send(data);
 };
 
 export default { controller, validation };
