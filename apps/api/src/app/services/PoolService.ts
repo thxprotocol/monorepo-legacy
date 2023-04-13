@@ -46,7 +46,7 @@ function getByAddress(address: string) {
     return AssetPool.findOne({ address });
 }
 
-async function deploy(sub: string, chainId: ChainId, title: string): Promise<AssetPoolDocument> {
+async function deploy(sub: string, chainId: ChainId, title: string, endDate?: Date): Promise<AssetPoolDocument> {
     const factory = getContract(chainId, 'Factory', currentVersion);
     const variant = 'defaultDiamond';
     const poolFacetContracts = diamondContracts(chainId, variant);
@@ -55,6 +55,7 @@ async function deploy(sub: string, chainId: ChainId, title: string): Promise<Ass
         sub,
         chainId,
         version: currentVersion,
+        endDate,
         settings: {
             title,
             isArchived: false,

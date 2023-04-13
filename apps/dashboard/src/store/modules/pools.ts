@@ -254,6 +254,7 @@ class PoolModule extends VuexModule {
         erc721tokens: string[];
         variant: string;
         title: string;
+        endDate: string;
     }) {
         const { data } = await axios({
             method: 'POST',

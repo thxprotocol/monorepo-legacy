@@ -28,7 +28,7 @@ const controller = async (req: Request, res: Response) => {
 
     const pool = await PoolService.getById(req.params.id);
     if (!pool) throw new NotFoundError('Pool not found.');
-
+    const expired = pool.endDate ? pool.endDate.getTime() <= Date.now() : false;
     const brand = await BrandService.get(pool._id);
     const widget = await Widget.findOne({ poolId: req.params.id });
 
@@ -68,7 +68,7 @@ const controller = async (req: Request, res: Response) => {
             if (!settings) return console.error("THXWidget requires a settings object.");
             this.settings = settings;
             this.theme = JSON.parse(settings.theme);
-            this.iframe = this.createIframe(settings.widgetUrl, settings.poolId, settings.chainId, settings.origin, settings.theme, settings.align);
+            this.iframe = this.createIframe(settings.widgetUrl, settings.poolId, settings.chainId, settings.origin, settings.theme, settings.align, settings.expired);
             this.iframe.setAttribute('data-hj-allow-iframe', true);
             this.notifications = this.createNotifications(0);
             this.message = this.createMessage(settings.message, settings.logo, settings.align);
@@ -105,7 +105,7 @@ const controller = async (req: Request, res: Response) => {
             return window.innerWidth < this.MD_BREAKPOINT;
         }
 
-        createIframe(widgetUrl, poolId, chainId, origin, theme, align) {
+        createIframe(widgetUrl, poolId, chainId, origin, theme, align, expired) {
             const iframe = document.createElement('iframe');
             const styles = this.isSmallMedia ? this.defaultStyles['sm'] : this.defaultStyles['md'];
             const url = new URL(widgetUrl);
@@ -114,6 +114,7 @@ const controller = async (req: Request, res: Response) => {
             url.searchParams.append('origin', origin);
             url.searchParams.append('chainId', chainId);
             url.searchParams.append('theme', theme);
+            url.searchParams.append('expired', expired);
             
             iframe.id = 'thx-iframe';
             iframe.src = url;
@@ -139,7 +140,7 @@ const controller = async (req: Request, res: Response) => {
             const notifications = document.createElement('div');
             notifications.id = 'thx-notifications';
             Object.assign(notifications.style, {
-                display: 'flex',
+                display: 'none',
                 fontFamily: 'Arial',
                 fontSize: '13px',
                 justifyContent: 'center',
@@ -280,7 +281,10 @@ const controller = async (req: Request, res: Response) => {
                 const gift = document.getElementById('thx-svg-gift');
                 gift.style.transform = 'scale(1)';
             });
-           
+
+            const url = new URL(window.location.href)
+            const widgetPath = url.searchParams.get('thx_widget_path');
+
             launcher.appendChild(notifications);
             setTimeout(() => {
                 launcher.style.opacity = 1;
@@ -288,7 +292,7 @@ const controller = async (req: Request, res: Response) => {
 
                 this.message.style.opacity = 1;
                 this.message.style.transform = 'scale(1)';
-            }, 1500);
+            }, !widgetPath ? 1500 : 0);
     
             return launcher;
         }
@@ -315,6 +319,7 @@ const controller = async (req: Request, res: Response) => {
                 }
                 case 'thx.reward.amount': {
                     this.notifications.innerText = amount;
+                    this.notifications.style.display = amount ? 'flex' : 'none';
                     break;
                 }
                 case 'thx.widget.toggle': {
@@ -325,11 +330,21 @@ const controller = async (req: Request, res: Response) => {
         }
     
         onWidgetReady() {      
-            const url = new URL(window.location.href)
-            const widgetPath = url.searchParams.get('thx_widget_path');
-            const redirectStatus = url.searchParams.get('redirect_status');
+            const parentUrl = new URL(window.location.href)
+            const widgetPath = parentUrl.searchParams.get('thx_widget_path');
+            const redirectStatus = parentUrl.searchParams.get('redirect_status');
+            
             if (widgetPath) {
-                this.iframe.contentWindow.postMessage({ message: 'thx.iframe.navigate', path: widgetPath + '?status=' + redirectStatus }, this.settings.widgetUrl);
+                const { widgetUrl, poolId, origin, chainId, theme } = this.settings;
+                const url = new URL(widgetUrl + widgetPath);
+
+                url.searchParams.append('id', poolId);
+                url.searchParams.append('origin', origin);
+                url.searchParams.append('chainId', chainId);
+                url.searchParams.append('theme', theme);
+                url.searchParams.append('status', redirectStatus);
+                
+                this.iframe.contentWindow.postMessage({ message: 'thx.iframe.navigate', path: url.pathname + url.search }, this.settings.widgetUrl);
                 this.onWidgetToggle();
             }
     
@@ -379,14 +394,15 @@ const controller = async (req: Request, res: Response) => {
         theme: '${widget.theme}',
         origin: '${origin}',
         refs: ${JSON.stringify(refs)},
+        expired: '${expired}'
     });
 `;
-    const result = await minify(data, {
-        mangle: { toplevel: false },
-        sourceMap: NODE_ENV !== 'production',
-    });
+    // const result = await minify(data, {
+    //     mangle: { toplevel: false },
+    //     sourceMap: NODE_ENV !== 'production',
+    // });
 
-    res.set({ 'Content-Type': 'application/javascript' }).send(result.code);
+    res.set({ 'Content-Type': 'application/javascript' }).send(data);
 };
 
 export default { controller, validation };

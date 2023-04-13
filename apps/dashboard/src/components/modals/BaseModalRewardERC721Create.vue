@@ -106,7 +106,6 @@ import { RewardConditionInteraction, RewardConditionPlatform, type TERC721Perk }
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
-import BaseCardRewardQRCodes from '../cards/BaseCardRewardQRCodes.vue';
 import BaseCardCommerce from '../cards/BaseCardCommerce.vue';
 import BaseDropdownERC721Metadata from '../dropdowns/BaseDropdownERC721Metadata.vue';
 import type { IERC721s, IERC721Tokens, TERC721, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
@@ -130,7 +129,6 @@ type TRewardCondition = {
         BaseCardCommerce,
         BaseCardRewardExpiry,
         BaseCardRewardLimits,
-        BaseCardRewardQRCodes,
         BaseDropdownERC721Metadata,
         BaseDropdownSelectERC721,
         BaseDropdownERC721ImportedToken,

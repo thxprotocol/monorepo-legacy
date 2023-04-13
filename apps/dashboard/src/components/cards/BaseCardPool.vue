@@ -21,7 +21,7 @@
         <template #card-body>
             <b-alert show variant="warning" v-if="outOfDate && artifacts">
                 <i class="fas fa-exclamation-circle mr-2"></i>
-                Pool out of date! Please start a support chat.
+                Campaign out of date! Please start a support chat.
             </b-alert>
             <p class="text-muted">
                 {{ pool.settings.title }}

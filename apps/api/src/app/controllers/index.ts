@@ -46,6 +46,7 @@ router.use('/data', dataRouter);
 router.use('/merchants', merchantsRouter);
 router.use('/brands', brandsRouter);
 router.use('/pools', poolsRouter);
+router.use('/claims', claimsRouter);
 
 router.use(checkJwt);
 router.use(corsHandler);
@@ -65,7 +66,6 @@ router.use('/shopify-perks', shopifyPerksRouter);
 router.use('/referral-rewards', referralRewardsRouter);
 router.use('/upload', uploadRouter);
 router.use('/clients', clientRouter);
-router.use('/claims', claimsRouter);
 router.use('/wallets', walletsRouter);
 
 export default router;

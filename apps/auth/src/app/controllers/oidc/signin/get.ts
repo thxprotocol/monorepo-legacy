@@ -54,6 +54,15 @@ async function controller(req: Request, res: Response) {
 
     params.emailPasswordEnabled = authenticationMethods.includes(AccountVariant.EmailPassword);
     params.metaMaskEnabled = authenticationMethods.includes(AccountVariant.Metamask);
+    params.trustedProviderAvailable = authenticationMethods.some((method: AccountVariant) =>
+        [
+            AccountVariant.SSOGoogle,
+            AccountVariant.SSOTwitter,
+            AccountVariant.SSOTwitch,
+            AccountVariant.SSOGithub,
+            AccountVariant.SSODiscord,
+        ].includes(method),
+    );
     params.googleLoginUrl = authenticationMethods.includes(AccountVariant.SSOGoogle)
         ? YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getBasicScopes())
         : null;
