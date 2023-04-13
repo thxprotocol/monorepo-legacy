@@ -40,7 +40,7 @@
                                 </div>
                             </div>
                         </template>
-                        <b-dropdown-text class="text-muted small"> Loyalty Pools </b-dropdown-text>
+                        <b-dropdown-text class="text-muted small"> Loyalty Campaign </b-dropdown-text>
                         <b-dropdown-divider />
                         <b-dropdown-item-btn
                             class="small"
@@ -150,7 +150,7 @@ export default class BaseNavbar extends Vue {
             },
             {
                 path: '/pools',
-                label: 'Pools',
+                label: 'Campaigns',
                 iconClasses: 'fas fa-chart-pie',
             },
         ];

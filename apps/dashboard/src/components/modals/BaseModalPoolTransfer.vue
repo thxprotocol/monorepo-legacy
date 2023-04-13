@@ -1,7 +1,7 @@
 <template>
     <b-modal
         size="lg"
-        title="Pool ownership transfer"
+        title="Campaign ownership transfer"
         :id="`modalPoolTransfer${pool._id}`"
         no-close-on-backdrop
         no-close-on-esc

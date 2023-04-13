@@ -2,7 +2,7 @@
     <base-modal
         size="lg"
         id="modalPoolMemberAdd"
-        title="Add new member to this Pool"
+        title="Add new member to this Campaign"
         :hide-footer="loading"
         :loading="loading"
         :error="error"

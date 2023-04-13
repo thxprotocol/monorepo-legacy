@@ -1,14 +1,15 @@
 <template>
-    <base-modal :loading="loading" :error="error" title="Create Pool" :id="id">
+    <base-modal :loading="loading" :error="error" title="Create Campaign" :id="id">
         <template #modal-body v-if="!loading">
             <b-form-group label="Title">
-                <b-form-input v-model="title" placeholder="My Loyalty Pool" class="mr-3" />
+                <b-form-input v-model="title" placeholder="My Loyalty Campaign" class="mr-3" />
             </b-form-group>
             <base-form-select-network v-if="!loading" :chainId="chainId" @selected="onSelectChain" />
+            <BaseCardPoolExpiry class="mb-3" :expiryDate="endDate" @change-date="endDate = $event" />
         </template>
         <template #btn-primary>
             <b-button :disabled="loading" class="rounded-pill" @click="submit()" variant="primary" block>
-                Create Pool
+                Create Campaign
             </b-button>
         </template>
     </base-modal>
@@ -23,6 +24,7 @@ import BaseModal from './BaseModal.vue';
 import type { IAccount } from '@thxnetwork/dashboard/types/account';
 import BaseIdenticon from '../BaseIdenticon.vue';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
+import BaseCardPoolExpiry from '../cards/BaseCardPoolExpiry.vue';
 
 @Component({
     components: {
@@ -30,6 +32,7 @@ import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
         BaseFormSelectNetwork,
         BaseIdenticon,
         chainInfo,
+        BaseCardPoolExpiry,
     },
     computed: mapGetters({
         profile: 'account/profile',
@@ -43,6 +46,7 @@ export default class ModalAssetPoolCreate extends Vue {
     profile!: IAccount;
     chainInfo = chainInfo;
     title = '';
+    endDate: Date | null = null;
 
     @Prop() id!: string;
 
@@ -53,7 +57,7 @@ export default class ModalAssetPoolCreate extends Vue {
     async submit() {
         this.loading = true;
 
-        await this.$store.dispatch('pools/create', { chainId: this.chainId, title: this.title });
+        await this.$store.dispatch('pools/create', { chainId: this.chainId, title: this.title, endDate: this.endDate });
 
         this.$bvModal.hide(this.id);
         this.loading = false;
