@@ -12,6 +12,7 @@ const withdrawalSchema = new mongoose.Schema(
         amount: Number,
         beneficiary: String,
         transactions: [String],
+        walletId: String,
     },
     { timestamps: true },
 );

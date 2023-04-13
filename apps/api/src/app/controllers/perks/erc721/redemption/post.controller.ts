@@ -12,6 +12,7 @@ import { redeemValidation } from '@thxnetwork/api/util/perks';
 import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
 import MailService from '@thxnetwork/api/services/MailService';
 import { Widget } from '@thxnetwork/api/models/Widget';
+import { Wallet } from '@thxnetwork/api/models/Wallet';
 
 const validation = [param('uuid').exists()];
 
@@ -45,14 +46,14 @@ const controller = async (req: Request, res: Response) => {
     }
 
     const account = await AccountProxy.getById(req.auth.sub);
-    const to = await account.getAddress(erc721.chainId);
+    const wallet = await Wallet.findOne({ sub: req.auth.sub, chainId: erc721.chainId });
 
     let erc721Token: ERC721TokenDocument;
     if (metadata) {
-        erc721Token = await ERC721Service.mint(pool, erc721, metadata, req.auth.sub, to);
+        erc721Token = await ERC721Service.mint(pool, erc721, metadata, wallet);
     } else {
         erc721Token = await ERC721Token.findById(perk.erc721tokenId);
-        erc721Token = await ERC721Service.transferFrom(pool, erc721Token, erc721, req.auth.sub, to);
+        erc721Token = await ERC721Service.transferFrom(pool, erc721Token, erc721, wallet); // TODO
     }
 
     const erc721PerkPayment = await ERC721PerkPayment.create({

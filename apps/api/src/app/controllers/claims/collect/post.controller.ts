@@ -20,6 +20,7 @@ import { ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
 import { ERC721PerkPayment, ERC721PerkPaymentDocument } from '@thxnetwork/api/models/ERC721PerkPayment';
 import { WithdrawalDocument } from '@thxnetwork/api/models/Withdrawal';
 import { redeemValidation } from '@thxnetwork/api/util/perks';
+import { Wallet } from '@thxnetwork/api/models/Wallet';
 
 type PerkDocument = ERC20PerkDocument | ERC721PerkDocument;
 type PerkPaymentDocument = ERC20PerkPaymentDocument | ERC721PerkPaymentDocument;
@@ -73,13 +74,16 @@ const controller = async (req: Request, res: Response) => {
         throw new ForbiddenError(failReason);
     }
 
+    const wallet = await Wallet.findOne({ chainId: pool.chainId, sub: req.auth.sub });
+    if (!wallet) throw new NotFoundError('No wallet found for this perk');
+
     // Create a pool withdrawal if the erc20 for the claim exists.
     if (isTERC20Perk(perk)) {
         const { amount } = perk as ERC20PerkDocument;
 
         erc20 = await ERC20Service.getById(claim.erc20Id);
         if (!erc20) throw new NotFoundError('No erc20 found for this perk');
-        withdrawal = await WithdrawalService.withdrawFor(pool, erc20, req.auth.sub, account.address, amount, false);
+        withdrawal = await WithdrawalService.withdrawFor(pool, erc20, wallet, amount, false);
 
         // Create a payment to register a completed claim.
         payment = await ERC20PerkPayment.create({
@@ -99,7 +103,7 @@ const controller = async (req: Request, res: Response) => {
         erc721 = await ERC721Service.findById(metadata.erc721Id);
         if (!metadata) throw new NotFoundError('No erc721 found for this perk');
 
-        token = await ERC721Service.mint(pool, erc721, metadata, account.sub, account.address, false);
+        token = await ERC721Service.mint(pool, erc721, metadata, wallet, false);
 
         // Create a payment to register a completed claim.
         payment = await ERC721PerkPayment.create({

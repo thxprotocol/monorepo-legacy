@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { AccountService } from '../../../../services/AccountService';
-import { AccountVariant } from '../../../../types/enums/AccountVariant';
+import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { callbackPostSSOCallback, callbackPreAuth } from '../../get';
 import { DiscordService } from '@thxnetwork/auth/services/DiscordService';
 import { AccessTokenKind } from '@thxnetwork/types/enums';

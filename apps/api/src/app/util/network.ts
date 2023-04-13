@@ -47,24 +47,6 @@ if (HARDHAT_RPC) {
     })();
 }
 
-if (MUMBAI_RELAYER) {
-    networks[ChainId.PolygonMumbai] = (() => {
-        const provider = new DefenderRelayProvider(
-            { apiKey: MUMBAI_RELAYER_API_KEY, apiSecret: MUMBAI_RELAYER_API_SECRET },
-            { speed: RELAYER_SPEED },
-        );
-        const relayer = new Relayer({ apiKey: MUMBAI_RELAYER_API_KEY, apiSecret: MUMBAI_RELAYER_API_SECRET });
-        const readProvider = new Web3(POLYGON_MUMBAI_RPC);
-        return {
-            web3: new Web3(provider),
-            networkName: POLYGON_MUMBAI_NAME as TNetworkName,
-            relayer,
-            defaultAccount: MUMBAI_RELAYER,
-            readProvider,
-        };
-    })();
-}
-
 if (POLYGON_RELAYER) {
     networks[ChainId.Polygon] = (() => {
         const provider = new DefenderRelayProvider(

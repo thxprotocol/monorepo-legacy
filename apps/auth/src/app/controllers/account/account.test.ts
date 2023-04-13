@@ -5,7 +5,7 @@ import db from '../../util/database';
 import { accountAddress, accountEmail } from '../../util/jest';
 import { INITIAL_ACCESS_TOKEN } from '@thxnetwork/auth/config/secrets';
 import { AccountService } from '@thxnetwork/auth/services/AccountService';
-import { AccountVariant } from '@thxnetwork/auth/types/enums/AccountVariant';
+import { AccountVariant } from '@thxnetwork/types/interfaces';
 
 const http = request.agent(app);
 

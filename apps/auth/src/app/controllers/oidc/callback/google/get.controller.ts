@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { YouTubeService } from '@thxnetwork/auth/services/YouTubeService';
 import { AccountService } from '@thxnetwork/auth/services/AccountService';
-import { AccountVariant } from '@thxnetwork/auth/types/enums/AccountVariant';
+import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { callbackPostSSOCallback, callbackPreAuth } from '../../get';
 import { AccessTokenKind } from '@thxnetwork/types/enums';
 

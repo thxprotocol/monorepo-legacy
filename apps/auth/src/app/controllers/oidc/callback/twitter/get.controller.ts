@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { AccountService } from '../../../../services/AccountService';
 import { TwitterService } from '../../../../services/TwitterService';
 import { callbackPostSSOCallback, callbackPreAuth } from '../../get';
-import { AccountVariant } from '@thxnetwork/auth/types/enums/AccountVariant';
+import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { AccessTokenKind } from '@thxnetwork/types/enums';
 
 export async function controller(req: Request, res: Response) {

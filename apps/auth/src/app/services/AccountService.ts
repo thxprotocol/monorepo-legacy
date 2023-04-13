@@ -8,12 +8,15 @@ import {
 } from '../util/messages';
 import { YouTubeService } from './YouTubeService';
 import { AccountPlanType } from '../types/enums/AccountPlanType';
-import { AccountVariant } from '../types/enums/AccountVariant';
+import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import bcrypt from 'bcrypt';
 import { ShopifyService } from './ShopifyService';
 import { logger } from '../util/logger';
 import { ForbiddenError } from '../util/errors';
+import WalletProxy from '../proxies/WalletProxy';
+import { ChainId } from '@thxnetwork/types/index';
+import { NODE_ENV } from '../config/secrets';
 // import { SignTypedDataVersion, recoverTypedSignature } from '@metamask/eth-sig-util';
 
 export class AccountService {
@@ -67,15 +70,6 @@ export class AccountService {
                 // no-op
             }
         }
-
-        // if (updates.authRequestMessage && updates.authRequestSignature) {
-        //     const address = recoverTypedSignature({
-        //         data: JSON.parse(updates.authRequestMessage),
-        //         signature: updates.authRequestSignature,
-        //         version: 'V3' as SignTypedDataVersion,
-        //     });
-        //     account.address = address || account.address;
-        // }
 
         if (updates.googleAccess === false) {
             const token = account.getToken(AccessTokenKind.Google);
@@ -135,15 +129,32 @@ export class AccountService {
 
     static async signinWithAddress(addr: string) {
         const address = toChecksumAddress(addr);
-        const account = await Account.findOne({ address });
-        if (account) return account;
+        const chainId = NODE_ENV === 'production' ? ChainId.Polygon : ChainId.Hardhat;
+        const wallets = await WalletProxy.get('', chainId, address);
+        console.log(wallets);
+        if (!wallets.length) {
+            return await this.createForAddress(address);
+        } else {
+            return await Account.findById(wallets[0].sub);
+        }
+    }
 
-        return await Account.create({
-            address,
+    static async createForAddress(address: string) {
+        const account = await Account.create({
             variant: AccountVariant.Metamask,
             plan: AccountPlanType.Basic,
             active: true,
         });
+        const chainId = NODE_ENV === 'production' ? ChainId.Polygon : ChainId.Hardhat;
+
+        await WalletProxy.create({
+            sub: String(account._id),
+            address,
+            skipDeploy: true,
+            chainId,
+        });
+
+        return account;
     }
 
     static async findOrCreate(
@@ -184,9 +195,7 @@ export class AccountService {
     }
 
     private static getIsEmailVerified(accountVariant: AccountVariant, email?: string): undefined | boolean {
-        if (!email) {
-            return undefined;
-        }
+        if (!email) return undefined;
 
         const ssoVariants = [
             AccountVariant.SSODiscord,
@@ -196,9 +205,8 @@ export class AccountService {
             AccountVariant.SSODiscord,
             AccountVariant.SSOTwitch,
         ];
-        if (ssoVariants.includes(accountVariant)) {
-            return true;
-        }
+
+        if (ssoVariants.includes(accountVariant)) return true;
         return false;
     }
 

@@ -9,4 +9,5 @@ export type TWithdrawal = {
     failReason?: string;
     createdAt: Date;
     updatedAt?: Date;
+    walletId: string;
 };

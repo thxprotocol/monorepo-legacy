@@ -8,7 +8,7 @@ import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/c
 const user = request.agent(app);
 
 describe('Milestone Rewards', () => {
-    let poolId: string, milestoneReward: any, token: string, claim: any;
+    let poolId: string, milestoneReward: any, claim: any;
 
     beforeAll(async () => {
         await beforeAllCallback();
@@ -36,6 +36,7 @@ describe('Milestone Rewards', () => {
                 title: 'Expiration date is next 30 min',
                 description: 'Lorem ipsum dolor sit amet',
                 amount: 100,
+                limit: 0,
             })
             .expect((res: request.Response) => {
                 expect(res.body.uuid).toBeDefined();

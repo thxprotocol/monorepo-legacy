@@ -3,6 +3,17 @@ import { Contract } from 'web3-eth-contract';
 import { ChainId } from '../enums';
 import { TBrand } from '@thxnetwork/types/interfaces';
 
+export enum AccountVariant {
+    EmailPassword = 0,
+    SSOGoogle = 1,
+    SSOTwitter = 2,
+    SSOSpotify = 3, // @dev Deprecated
+    Metamask = 4,
+    SSOGithub = 5,
+    SSODiscord = 6,
+    SSOTwitch = 7,
+}
+
 export type TPool = {
     _id: string;
     address: string;
@@ -27,6 +38,7 @@ export type TPoolSettings = {
         discordMessage: string;
         conditionalRewards: TPointReward & { hashtag: string };
     };
+    authenticationMethods: AccountVariant[];
 };
 
 export type TPoolTransfer = {

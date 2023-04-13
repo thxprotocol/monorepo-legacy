@@ -6,6 +6,7 @@ import { getProvider } from '../util/network';
 
 export type WalletDocument = mongoose.Document & TWallet;
 export interface TWallet {
+    _id: string;
     address: string;
     sub: string;
     chainId: ChainId;

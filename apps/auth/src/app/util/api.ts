@@ -15,7 +15,7 @@ async function requestAuthAccessToken() {
     const data = new URLSearchParams();
     data.append('grant_type', 'client_credentials');
     data.append('resource', API_URL);
-    data.append('scope', 'openid brands:read claims:read wallets:read wallets:write pools:write');
+    data.append('scope', 'openid brands:read claims:read wallets:read wallets:write pools:write pools:read');
     const r = await axios({
         baseURL: AUTH_URL,
         url: '/token',
