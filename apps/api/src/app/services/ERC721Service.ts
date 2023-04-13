@@ -75,7 +75,10 @@ const initialize = async (pool: AssetPoolDocument, address: string) => {
 };
 
 export async function findById(id: string): Promise<ERC721Document> {
-    return ERC721.findById(id);
+    const erc721 = await ERC721.findById(id);
+    if (!erc721) return;
+    erc721.logoImgUrl = erc721.logoImgUrl || `https://avatars.dicebear.com/api/identicon/${erc721.address}.svg`;
+    return erc721;
 }
 
 export async function findBySub(sub: string): Promise<ERC721Document[]> {
