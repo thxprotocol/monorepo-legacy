@@ -239,7 +239,7 @@ describe('Claims', () => {
             user.post(`/v1/claims/${claim0.uuid}/collect`)
                 .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken2 })
                 .expect((res: request.Response) => {
-                    expect(res.body.error.message).toBe('This perk has been claimed by someone else.');
+                    expect(res.body.error.message).toBe('This perk has been claimed already.');
                 })
                 .expect(403, done);
         });
