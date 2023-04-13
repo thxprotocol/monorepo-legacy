@@ -5,9 +5,10 @@ import MailService from '../services/MailService';
 import * as AnalyticsService from '../services/AnalyticsService';
 import { DASHBOARD_URL } from '../config/secrets';
 import { logger } from '../util/logger';
+import { ONE_DAY_MS } from '../util/dates';
 
 const emojiMap = ['🥇', '🥈', '🥉'];
-const oneDay = 86400000; // one day in milliseconds
+const oneDay = ONE_DAY_MS; // one day in milliseconds
 
 export async function sendPoolAnalyticsReport() {
     const endDate = new Date();

@@ -1,9 +1,8 @@
 import { DailyRewardClaim } from '@thxnetwork/api/models/DailyRewardClaims';
 import db from '@thxnetwork/api/util/database';
 import { DailyRewardDocument } from '../models/DailyReward';
+import { ONE_DAY_MS } from '../util/dates';
 export const DailyRewardClaimDocument = DailyRewardClaim;
-
-export const ONE_DAY_MS = 86400 * 1000; // 24 hours in milliseconds
 
 export default {
     create: (data: { dailyRewardId: string; sub: string; amount?: string; poolId: string }) => {

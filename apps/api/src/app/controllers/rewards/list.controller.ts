@@ -7,7 +7,10 @@ import jwt_decode from 'jwt-decode';
 import { MilestoneRewardClaim } from '@thxnetwork/api/models/MilestoneRewardClaims';
 import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
 import { DailyReward } from '@thxnetwork/api/models/DailyReward';
-import DailyRewardClaimService, { ONE_DAY_MS } from '@thxnetwork/api/services/DailyRewardClaimService';
+import DailyRewardClaimService from '@thxnetwork/api/services/DailyRewardClaimService';
+import { SurveyReward } from '@thxnetwork/api/models/SurveyReward';
+import { SurveyRewardClaim } from '@thxnetwork/api/models/SurveyRewardClaim';
+import { ONE_DAY_MS } from '@thxnetwork/api/util/dates';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
@@ -16,6 +19,7 @@ const controller = async (req: Request, res: Response) => {
     const pointRewards = await PointReward.find({ poolId: pool._id });
     const milestoneRewards = await MilestoneReward.find({ poolId: pool._id });
     const dailyRewards = await DailyReward.find({ poolId: pool._id });
+    const surveyRewards = await SurveyReward.find({ poolId: pool._id });
     const authHeader = req.header('authorization');
 
     let sub = '';
@@ -80,6 +84,19 @@ const controller = async (req: Request, res: Response) => {
                     interaction: r.interaction,
                     content: r.content,
                     contentMetadata: r.contentMetadata,
+                };
+            }),
+        ),
+        surveyRewards: await Promise.all(
+            surveyRewards.map(async (r) => {
+                const isClaimed = sub ? await SurveyRewardClaim.exists({ sub, surveyRewardId: String(r._id) }) : false;
+                return {
+                    uuid: r.uuid,
+                    title: r.title,
+                    description: r.description,
+                    amount: r.amount,
+                    isClaimed,
+                    questions: r.questions,
                 };
             }),
         ),

@@ -19,3 +19,7 @@ export * from './ShopifyPerk';
 export * from './ShopifyPerkPayment';
 export * from './ShopifyDiscountCode';
 export * from './Brand';
+export * from './SurveyReward';
+export * from './SurveyRewardQuestion';
+export * from './SurveyRewardAttemp';
+export * from './SurveyRewardClaim';

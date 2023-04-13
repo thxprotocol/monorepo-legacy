@@ -138,6 +138,8 @@ const config: Configuration = {
         'pool_subscription:write',
         'merchants:write',
         'merchants:read',
+        'survey_rewards:read',
+        'survey_rewards:write',
     ],
     claims: {
         openid: ['sub', 'email', 'variant', 'address'],

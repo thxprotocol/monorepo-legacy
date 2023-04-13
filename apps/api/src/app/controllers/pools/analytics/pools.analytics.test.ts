@@ -17,7 +17,7 @@ import { addMinutes } from '@thxnetwork/api/util/rewards';
 import { fromWei, isAddress, toWei } from 'web3-utils';
 import nock from 'nock';
 import { AUTH_URL } from '@thxnetwork/api/config/secrets';
-
+import { ONE_DAY_MS } from '../../../util/dates';
 const user = request.agent(app);
 
 describe('Default Pool', () => {
@@ -339,7 +339,7 @@ describe('Default Pool', () => {
                     });
             });
             it('GET /pools/:id/analytics', (done) => {
-                const oneDay = 86400000; // one day in milliseconds
+                const oneDay = ONE_DAY_MS; // one day in milliseconds
                 const endDate = new Date();
 
                 endDate.setHours(0, 0, 0, 0);
