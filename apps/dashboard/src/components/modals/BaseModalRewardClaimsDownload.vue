@@ -153,7 +153,7 @@ import xml2js from 'xml2js';
 import { jsPDF } from 'jspdf';
 import { type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { TBaseReward, TERC20Perk, TERC721Perk } from '@thxnetwork/types/index';
+import { TBaseReward } from '@thxnetwork/types/index';
 import { WALLET_URL, BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { TClaim } from '@thxnetwork/dashboard/store/modules/claims';
 import { saveAs } from 'file-saver';
@@ -235,7 +235,7 @@ export default class BaseModalRewardClaimsDownload extends Vue {
             .map((c) => {
                 return {
                     checkbox: c.uuid,
-                    url: `${this.pool.widget.domain}?thx_widget_path=/c/${c.uuid}`,
+                    url: this.getUrl(c),
                     claimedAt: { sub: c.sub, date: c.claimedAt },
                     createdAt: c.createdAt,
                     id: c.uuid,
@@ -336,6 +336,10 @@ export default class BaseModalRewardClaimsDownload extends Vue {
         return pdf.output('arraybuffer');
     }
 
+    getUrl(claim: TClaim) {
+        return `${this.pool.widget.domain}?thx_widget_path=/c/${claim.uuid}`;
+    }
+
     async onClickCreateZip() {
         const filename = `${new Date().getTime()}_${this.pool._id}_claim_qr_codes`;
         const zip = new JSZip();
@@ -346,7 +350,7 @@ export default class BaseModalRewardClaimsDownload extends Vue {
             if (!claim) continue;
 
             let data: string | ArrayBuffer;
-            const url = `${WALLET_URL}/claim/${claim.uuid}`;
+            const url = this.getUrl(claim);
 
             switch (this.selectedFormat) {
                 case 'pdf': {
@@ -367,11 +371,11 @@ export default class BaseModalRewardClaimsDownload extends Vue {
 
     onClickCreateCSV() {
         const filename = `${new Date().getTime()}_${this.pool._id}_claim_urls`;
-        const data = [];
+        const data: any = [];
         for (const uuid of this.selectedClaims) {
             const claim = this.claims.find((c) => c.uuid === uuid);
             if (!claim) continue;
-            data.push([`${WALLET_URL}/claim/${claim.uuid}`]);
+            data.push([this.getUrl(claim)]);
         }
         const csvContent = 'data:text/csv;charset=utf-8,' + data.map((e) => e.join(',')).join('\n');
 
