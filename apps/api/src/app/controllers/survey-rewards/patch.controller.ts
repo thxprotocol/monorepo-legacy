@@ -2,27 +2,32 @@ import { SurveyReward } from '@thxnetwork/api/models/SurveyReward';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import SurveyRewardService from '@thxnetwork/api/services/SurveyRewardService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
+import { TSurveyRewardAnswer } from '@thxnetwork/types/interfaces';
 import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
 
 const validation = [
     param('id').exists(),
-    body('title').isString(),
-    body('description').isString(),
-    body('amount').isInt({ gt: 0 }),
+    body('title').optional().isString(),
+    body('description').optional().isString(),
+    body('amount').optional().isInt({ gt: 0 }),
     body('questions')
         .optional()
         .custom((value) => {
-            console.log('questions');
             if (!Array.isArray(value)) {
                 throw new Error('questions must be an array');
             }
-            if (
-                !value.every(
-                    (item) => item.index !== undefined && item.value !== undefined && item.correct !== undefined,
-                )
-            ) {
-                throw new Error('questions must contains answers');
+            const isCorrectSchema = value.every(
+                (item) =>
+                    item.question !== undefined &&
+                    Array.isArray(item.answers) &&
+                    item.answers.every(
+                        (answer: TSurveyRewardAnswer) =>
+                            answer.index !== undefined && answer.value !== undefined && answer.correct !== undefined,
+                    ),
+            );
+            if (!isCorrectSchema) {
+                throw new Error('invalid questions schema');
             }
             return true;
         }),
@@ -32,16 +37,15 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Survey Rewards']
     let reward = await SurveyReward.findById(req.params.id);
     if (!reward) throw new NotFoundError('Could not find the reward');
-    const pool = await PoolService.getById(req.header('X-PoolId'));
     const { title, description, amount, questions } = req.body;
-    reward = await SurveyRewardService.update(pool, {
+    reward = await SurveyRewardService.update(reward, {
         title,
         description,
         amount,
         questions,
     });
 
-    return res.json(reward);
+    return res.json({ ...reward.toJSON(), questions: await reward.questions });
 };
 
 export default { controller, validation };

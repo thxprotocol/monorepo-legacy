@@ -9,7 +9,7 @@ const controller = async (req: Request, res: Response) => {
     const reward = await SurveyReward.findById(req.params.id);
     const isClaimed = !!(await Claim.exists({ sub: req.auth.sub, rewardUuid: reward.uuid }));
 
-    res.json({ ...reward.toJSON(), isClaimed });
+    res.json({ ...reward.toJSON(), isClaimed, questions: await reward.questions });
 };
 
 export default { controller, validation };

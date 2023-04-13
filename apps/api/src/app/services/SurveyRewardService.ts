@@ -36,20 +36,21 @@ export async function create(pool: AssetPoolDocument, payload: Partial<TSurveyRe
     return reward;
 }
 
-export async function update(pool: AssetPoolDocument, payload: Partial<TSurveyReward>) {
-    const reward = await SurveyReward.findByIdAndUpdate({
-        amount: payload.amount,
-    });
-    const questions = payload.questions.map((q) => {
-        return {
-            surveyRewardId: reward._id,
-            question: q.question,
-            answers: q.answers,
-        } as TSurveyRewardQuestion;
-    });
-    await SurveyRewardQuestion.updateMany(questions, { upsert: true });
+export async function update(reward: SurveyRewardDocument, payload: Partial<TSurveyReward>) {
+    await SurveyReward.findByIdAndUpdate(reward._id, { ...payload });
+    if (payload.questions.length) {
+        await SurveyRewardQuestion.deleteMany({ surveyRewardId: reward._id });
+        const questions = payload.questions.map((q) => {
+            return {
+                surveyRewardId: reward._id,
+                question: q.question,
+                answers: q.answers,
+            } as TSurveyRewardQuestion;
+        });
+        await SurveyRewardQuestion.create(questions);
+    }
 
-    return reward;
+    return await SurveyReward.findById(reward._id);
 }
 
 export async function remove(rewardId: string) {
@@ -69,7 +70,7 @@ export async function submitAttemp(
     }
 
     let attempResult = null;
-    for (const question of reward.questions) {
+    for (const question of await reward.questions) {
         const correctAnswers = question.answers
             .filter((x) => x.correct)
             .map((x) => x.index)

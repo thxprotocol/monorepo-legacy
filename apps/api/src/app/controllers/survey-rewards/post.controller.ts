@@ -2,20 +2,27 @@ import { Request, Response } from 'express';
 import { body } from 'express-validator';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import SurveyRewardService from '@thxnetwork/api/services/SurveyRewardService';
+import { TSurveyRewardAnswer } from '@thxnetwork/types/interfaces';
 
 const validation = [
     body('title').isString(),
     body('description').isString(),
     body('amount').isInt({ gt: 0 }),
     body('questions').custom((value) => {
-        console.log('questions');
         if (!Array.isArray(value)) {
             throw new Error('questions must be an array');
         }
-        if (
-            !value.every((item) => item.index !== undefined && item.value !== undefined && item.correct !== undefined)
-        ) {
-            throw new Error('questions must contains answers');
+        const isCorrectSchema = value.every(
+            (item) =>
+                item.question !== undefined &&
+                Array.isArray(item.answers) &&
+                item.answers.every(
+                    (answer: TSurveyRewardAnswer) =>
+                        answer.index !== undefined && answer.value !== undefined && answer.correct !== undefined,
+                ),
+        );
+        if (!isCorrectSchema) {
+            throw new Error('invalid questions schema');
         }
         return true;
     }),
@@ -31,7 +38,7 @@ const controller = async (req: Request, res: Response) => {
         amount,
         questions,
     });
-    res.status(201).json(reward);
+    res.status(201).json({ ...reward.toJSON(), questions: await reward.questions });
 };
 
 export default { validation, controller };

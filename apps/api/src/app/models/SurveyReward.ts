@@ -13,6 +13,6 @@ const schema = new mongoose.Schema(
     { timestamps: true },
 );
 schema.virtual('questions').get(async function () {
-    return SurveyRewardQuestion.find({ surveyRewardId: this._id });
+    return await SurveyRewardQuestion.find({ surveyRewardId: this._id });
 });
 export const SurveyReward = mongoose.model<SurveyRewardDocument>('surveyrewards', schema);

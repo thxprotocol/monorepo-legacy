@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { body } from 'express-validator';
-import PoolService from '@thxnetwork/api/services/PoolService';
 import SurveyRewardService from '@thxnetwork/api/services/SurveyRewardService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { SurveyReward } from '@thxnetwork/api/models/SurveyReward';
