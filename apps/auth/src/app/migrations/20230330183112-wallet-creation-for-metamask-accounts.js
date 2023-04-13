@@ -8,35 +8,27 @@ const chainId = 137; // Polygon
 
 module.exports = {
     async up(db) {
-        const accounts = await (
-            await db.collection('accounts').find({ variant: 4 }, { projection: { address: 1 } })
-        ).toArray(); //metamask account variant
-
-        const promises = accounts.map(async (account) => {
+        // Query for Metamask AccountVariant
+        const accounts = await (await db.collection('accounts').find({ variant: 4 })).toArray();
+        for (const account of accounts) {
             try {
-                const wallets = await getWallets(account._id);
-                if (!wallets.length) {
-                    await createWallet(account._id, account.address);
-                    console.log(`Wallet created for sub ${account._id}`);
-                } else {
-                    console.log(`Wallet already present for sub: ${account._id}, skipped.`);
-                }
+                if (!account.address) continue;
+                const wallets = await getWallets(account.address);
+                if (!wallets.length) await createWallet(account);
             } catch (error) {
                 console.log({ error });
             }
-        });
-        await Promise.all(promises);
+        }
     },
-
     async down() {
         //
     },
 };
 
-async function getWallets(sub) {
+async function getWallets(address) {
     const params = new URLSearchParams();
-    params.set('chainId', String(chainId));
-    params.set('sub', String(sub));
+    params.set('chainId', chainId);
+    params.set('address', address);
 
     const r = await apiClient({
         method: 'GET',
@@ -49,14 +41,14 @@ async function getWallets(sub) {
     return r.data;
 }
 
-async function createWallet(sub, address) {
+async function createWallet(account) {
     const r = await apiClient({
         method: 'POST',
         url: `/v1/wallets`,
         headers: {
             Authorization: await getAuthAccessToken(),
         },
-        data: { sub, chainId, skipDeploy: true, address },
+        data: { sub: String(account._id), chainId, address: account.address },
     });
     return r.data;
 }

@@ -3,7 +3,6 @@ import { Request, Response } from 'express';
 import { TERC20, TERC20Token } from '@thxnetwork/api/types/TERC20';
 import { fromWei } from 'web3-utils';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
-import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
 import { query } from 'express-validator';
 import { Wallet } from '@thxnetwork/api/services/WalletService';
