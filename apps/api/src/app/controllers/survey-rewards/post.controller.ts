@@ -17,8 +17,7 @@ const validation = [
                 item.question !== undefined &&
                 Array.isArray(item.answers) &&
                 item.answers.every(
-                    (answer: TSurveyRewardAnswer) =>
-                        answer.index !== undefined && answer.value !== undefined && answer.correct !== undefined,
+                    (answer: TSurveyRewardAnswer) => answer.value !== undefined && answer.correct !== undefined,
                 ),
         );
         if (!isCorrectSchema) {

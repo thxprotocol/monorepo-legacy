@@ -1,5 +1,4 @@
 import { SurveyReward } from '@thxnetwork/api/models/SurveyReward';
-import PoolService from '@thxnetwork/api/services/PoolService';
 import SurveyRewardService from '@thxnetwork/api/services/SurveyRewardService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { TSurveyRewardAnswer } from '@thxnetwork/types/interfaces';
@@ -22,8 +21,7 @@ const validation = [
                     item.question !== undefined &&
                     Array.isArray(item.answers) &&
                     item.answers.every(
-                        (answer: TSurveyRewardAnswer) =>
-                            answer.index !== undefined && answer.value !== undefined && answer.correct !== undefined,
+                        (answer: TSurveyRewardAnswer) => answer.value !== undefined && answer.correct !== undefined,
                     ),
             );
             if (!isCorrectSchema) {

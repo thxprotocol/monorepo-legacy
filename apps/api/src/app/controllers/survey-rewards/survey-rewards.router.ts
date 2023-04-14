@@ -40,9 +40,9 @@ router.delete(
 );
 router.post(
     '/:uuid/attemp',
-    guard.check(['survey_rewards:write']),
+    //guard.check(['survey_rewards:write']),
+    //assertAssetPoolOwnership,
     assertRequestInput(SubmitAttempSurveyRewards.validation),
-    assertAssetPoolOwnership,
     SubmitAttempSurveyRewards.controller,
 );
 

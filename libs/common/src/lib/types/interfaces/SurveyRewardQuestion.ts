@@ -1,5 +1,6 @@
 export type TSurveyRewardQuestion = {
     _id: string;
+    order: number;
     surveyRewardId: string;
     question: string;
     answers: TSurveyRewardAnswer[];
@@ -8,7 +9,7 @@ export type TSurveyRewardQuestion = {
 };
 
 export type TSurveyRewardAnswer = {
-    index: number;
+    _id?: string;
     correct: boolean;
     value: string;
 };

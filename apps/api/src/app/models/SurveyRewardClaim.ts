@@ -8,6 +8,7 @@ const schema = new mongoose.Schema(
         sub: String,
         surveyRewardId: String,
         amount: Number,
+        poolId: String,
     },
     { timestamps: true },
 );

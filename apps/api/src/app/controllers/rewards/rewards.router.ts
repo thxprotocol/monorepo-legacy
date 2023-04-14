@@ -5,6 +5,7 @@ import CreateReferralRewardClaim from './referral/claim/post.controller';
 import CreatePointRewardClaim from './points/claim/post.controller';
 import MilestoneRewardClaim from './milestones/claim/post.controller';
 import CreateDailyRewardClaim from './daily/claim/post.controller';
+import CreateSurveyRewardClaim from './survey/claim/post.controller';
 import rateLimit from 'express-rate-limit';
 
 const router = express.Router();
@@ -19,5 +20,5 @@ router.post(
 router.use(checkJwt).use(corsHandler).post('/points/:uuid/claim', CreatePointRewardClaim.controller);
 router.use(checkJwt).use(corsHandler).post('/milestones/claims/:uuid/collect', MilestoneRewardClaim.controller);
 router.use(checkJwt).use(corsHandler).post('/daily/:uuid/claim', CreateDailyRewardClaim.controller);
-
+router.use(checkJwt).use(corsHandler).post('/survey/:uuid/claim', CreateSurveyRewardClaim.controller);
 export default router;
