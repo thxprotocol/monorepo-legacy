@@ -179,6 +179,11 @@ export default class BaseNavbar extends Vue {
                 label: 'Milestones',
                 iconClasses: 'fas fa-flag',
             },
+            {
+                path: `/pool/${this.selectedPool._id}/surveys`,
+                label: 'Surveys',
+                iconClasses: 'fas fa-question-circle',
+            },
         ];
     }
 

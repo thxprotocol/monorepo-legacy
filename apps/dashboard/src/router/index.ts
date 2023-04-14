@@ -79,6 +79,11 @@ const routes: Array<RouteConfig> = [
                 component: () => import('../views/pool/ShopifyPerks.vue'),
             },
             {
+                name: 'surveys',
+                path: 'surveys',
+                component: () => import('../views/pool/Surveys.vue'),
+            },
+            {
                 name: 'Settings',
                 path: 'settings',
                 component: () => import('../views/pool/Settings.vue'),
