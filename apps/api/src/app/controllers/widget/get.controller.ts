@@ -1,4 +1,4 @@
-import { API_URL, NODE_ENV, WIDGET_URL } from '@thxnetwork/api/config/secrets';
+import { API_URL, AUTH_URL, NODE_ENV, WIDGET_URL } from '@thxnetwork/api/config/secrets';
 import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
 import { Widget } from '@thxnetwork/api/models/Widget';
 import BrandService from '@thxnetwork/api/services/BrandService';
@@ -388,7 +388,7 @@ const controller = async (req: Request, res: Response) => {
         widgetUrl: '${WIDGET_URL}',
         poolId: '${req.params.id}',
         chainId: '${pool.chainId}',
-        logo: '${brand && brand.logoImgUrl ? brand.logoImgUrl : 'https://auth.thx.network/img/logo.png'}',
+        logo: '${brand && brand.logoImgUrl ? brand.logoImgUrl : AUTH_URL + '/img/logo-padding.png'}',
         message: '${widget.message || ''}',
         align: '${widget.align || 'right'}',
         theme: '${widget.theme}',
@@ -397,12 +397,12 @@ const controller = async (req: Request, res: Response) => {
         expired: '${expired}'
     });
 `;
-    // const result = await minify(data, {
-    //     mangle: { toplevel: false },
-    //     sourceMap: NODE_ENV !== 'production',
-    // });
+    const result = await minify(data, {
+        mangle: { toplevel: false },
+        sourceMap: NODE_ENV !== 'production',
+    });
 
-    res.set({ 'Content-Type': 'application/javascript' }).send(data);
+    res.set({ 'Content-Type': 'application/javascript' }).send(result.code);
 };
 
 export default { controller, validation };
