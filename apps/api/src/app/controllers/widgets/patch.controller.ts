@@ -6,7 +6,7 @@ const validation = [
     body('align').isString(),
     body('theme').isString(),
     body('domain').optional().isURL({ require_tld: false }),
-    body('message').optional().isString().isLength({ max: 280 }),
+    body('message').optional().isString().isLength({ max: 280 }).trim().escape(),
 ];
 
 const controller = async (req: Request, res: Response) => {
