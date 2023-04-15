@@ -68,18 +68,19 @@ const controller = async (req: Request, res: Response) => {
             if (!settings) return console.error("THXWidget requires a settings object.");
             this.settings = settings;
             this.theme = JSON.parse(settings.theme);
-            this.iframe = this.createIframe(settings.widgetUrl, settings.poolId, settings.chainId, settings.origin, settings.theme, settings.align, settings.expired);
-            this.iframe.setAttribute('data-hj-allow-iframe', true);
-            this.notifications = this.createNotifications(0);
-            this.message = this.createMessage(settings.message, settings.logo, settings.align);
-            this.launcher = this.createLauncher(this.notifications, settings.align);
-            this.container = this.createContainer(this.iframe, this.launcher, this.message);
-            this.referrals = JSON.parse(this.settings.refs).filter((r) => r.successUrl);
-
-            this.parseURL();
 
             window.matchMedia('(max-width: 990px)').addListener(this.onMatchMedia.bind(this));
             window.onmessage = this.onMessage.bind(this);
+            window.addEventListener("load", (event) => {
+                this.iframe = this.createIframe(settings.widgetUrl, settings.poolId, settings.chainId, settings.origin, settings.theme, settings.align, settings.expired);
+                this.iframe.setAttribute('data-hj-allow-iframe', true);
+                this.notifications = this.createNotifications(0);
+                this.message = this.createMessage(settings.message, settings.logo, settings.align);
+                this.launcher = this.createLauncher(this.notifications, settings.align);
+                this.referrals = JSON.parse(this.settings.refs).filter((r) => r.successUrl);
+                this.container = this.createContainer(this.iframe, this.launcher, this.message);
+                this.parseURL();
+            });
         }
 
         parseURL() {
