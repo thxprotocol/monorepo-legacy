@@ -1,12 +1,13 @@
 import { API_URL, AUTH_URL, NODE_ENV, WIDGET_URL } from '@thxnetwork/api/config/secrets';
-import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
-import { Widget } from '@thxnetwork/api/models/Widget';
 import BrandService from '@thxnetwork/api/services/BrandService';
 import PoolService from '@thxnetwork/api/services/PoolService';
+import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
+import { Widget } from '@thxnetwork/api/models/Widget';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import { minify } from 'terser';
+import { runMilestoneRewardWebhook, runReferralRewardWebhook } from '@thxnetwork/api/services/THXService';
 
 const validation = [param('id').isMongoId()];
 
@@ -28,16 +29,19 @@ const controller = async (req: Request, res: Response) => {
 
     const pool = await PoolService.getById(req.params.id);
     if (!pool) throw new NotFoundError('Pool not found.');
+
     const expired = pool.endDate ? pool.endDate.getTime() <= Date.now() : false;
     const brand = await BrandService.get(pool._id);
     const widget = await Widget.findOne({ poolId: req.params.id });
-
     const origin = new URL(req.header('Referrer')).origin;
     const widgetOrigin = new URL(widget.domain).origin;
 
     // Set active to true if there is a request made from the configured domain
-    if (widgetOrigin === origin) {
+    if (widgetOrigin === origin && !widget.active) {
         await widget.updateOne({ active: true });
+
+        runReferralRewardWebhook(pool, { origin });
+        runMilestoneRewardWebhook(pool);
     }
 
     const data = `

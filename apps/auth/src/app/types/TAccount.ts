@@ -4,6 +4,7 @@ import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 export interface TAccount {
     firstName: string;
     lastName: string;
+    referralCode: string;
     profileImg: string;
     plan: AccountPlanType;
     website: string;
