@@ -25,6 +25,7 @@ export interface IAccountUpdates {
     googleAccessToken: string;
     youtubeViewAccessToken: string;
     youtubeManageAccessToken: string;
+    referralCode: string;
 }
 
 export interface IYoutube {

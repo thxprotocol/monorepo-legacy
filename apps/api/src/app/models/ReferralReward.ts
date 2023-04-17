@@ -10,6 +10,7 @@ const schema = new mongoose.Schema(
         amount: Number,
         successUrl: String,
         token: String,
+        isMandatoryReview: Boolean,
     },
     { timestamps: true },
 );

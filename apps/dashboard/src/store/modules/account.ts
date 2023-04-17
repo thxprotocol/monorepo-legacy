@@ -113,12 +113,17 @@ class AccountModule extends VuexModule {
         verifyEmailToken: string;
         poolTransferToken: string;
         poolId: string;
+        referralCode: string;
     }) {
         const client = Mixpanel.client();
         const extraQueryParams: any = {
             return_url: BASE_URL,
             distinct_id: client && client.get_distinct_id(),
         };
+
+        if (payload.referralCode) {
+            extraQueryParams['referral_code'] = payload.referralCode;
+        }
 
         if (payload.poolId) {
             extraQueryParams['pool_id'] = payload.poolId;

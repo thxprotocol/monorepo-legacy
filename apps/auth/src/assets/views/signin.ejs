@@ -69,6 +69,7 @@
       </strong>
       <p>You are invited to access your THX Web Wallet. Set a password and accept the invite!</p>
       <% } %>
+
       <% if (locals.alert && alert.message) { %>
       <div class="alert alert-<%= alert.variant %>">
         <%- alert.message %>
@@ -76,6 +77,11 @@
       <% } %>
 
 
+      <% if(params.referral_code) { %>
+      <div class="alert alert-info">
+        <i class="fas fa-comments mr-2"></i> We have detected a referral code!
+      </div>
+      <% } %>
 
       <form id="form-signin" action="/oidc/<%= uid %>/signin" method="post" class="mt-3">
         <% if(params.emailPasswordEnabled) { %>

@@ -16,9 +16,9 @@ async function controller(req: Request, res: Response) {
     const alert = {};
     let claim,
         brand,
-        claimUrl = '';
+        claimUrl = '',
+        authenticationMethods = Object.values(AccountVariant);
 
-    let authenticationMethods = Object.values(AccountVariant);
     if (params.pool_id) {
         brand = await BrandProxy.get(params.pool_id);
         const pool = await PoolProxy.getPool(params.pool_id);
@@ -29,9 +29,7 @@ async function controller(req: Request, res: Response) {
 
     if (params.pool_transfer_token) {
         alert['variant'] = 'success';
-        alert[
-            'message'
-        ] = `<i class="fas fa-gift mr-2" aria-hidden="true"></i>Sign in to access your <strong>loyalty pool</strong>!`;
+        alert['message'] = `<i class="fas fa-gift mr-2" aria-hidden="true"></i>Sign in to access your campaign!`;
     }
 
     if (params.claim_id) {

@@ -22,6 +22,7 @@ async function formatAccountRes(account, accessIncluded = true) {
         profileImg: account.profileImg,
         variant: account.variant,
         shopifyStoreUrl: account.shopifyStoreUrl,
+        referralCode: account.referralCode,
     };
     if (accessIncluded) {
         const [

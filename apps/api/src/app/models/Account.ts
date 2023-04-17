@@ -13,6 +13,7 @@ export interface IAccount {
     twitter?: any;
     plan: AccountPlanType;
     email: string;
+    referralCode: string;
     firstName: string;
     lastName: string;
     shopifyStoreUrl?: string;

@@ -13,7 +13,7 @@
                         <b-form-group label="Amount">
                             <b-form-input type="number" v-model="amount" />
                         </b-form-group>
-                        <b-form-group label="Limit">
+                        <b-form-group label="Limit" description="Maximum amount of claims per acount.">
                             <b-form-input type="number" v-model="limit" min="0" />
                         </b-form-group>
                     </b-col>

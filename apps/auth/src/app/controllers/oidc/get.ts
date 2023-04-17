@@ -47,6 +47,12 @@ export const callbackPostAuth = async (
         hubspot.upsert({ email: account.email });
     }
 
+    // If a referral code is present in the params store it for the authenticated account
+    console.log(params);
+    if (params.referral_code) {
+        await account.updateOne({ referralCode: params.referral_code });
+    }
+
     // Create a wallet if wallet can not be found for user
     createWallet(account);
 
