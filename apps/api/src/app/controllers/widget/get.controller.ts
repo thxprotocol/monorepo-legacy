@@ -30,7 +30,7 @@ const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(req.params.id);
     if (!pool) throw new NotFoundError('Pool not found.');
 
-    const expired = pool.endDate ? pool.endDate.getTime() <= Date.now() : false;
+    const expired = pool.settings.endDate ? pool.settings.endDate.getTime() <= Date.now() : false;
     const brand = await BrandService.get(pool._id);
     const widget = await Widget.findOne({ poolId: req.params.id });
     const origin = new URL(req.header('Referrer')).origin;

@@ -12,8 +12,8 @@ const assetPoolSchema = new mongoose.Schema(
         chainId: Number,
         transactions: [String],
         version: String,
-        endDate: Date,
         settings: {
+            endDate: Date,
             title: String,
             isArchived: Boolean,
             isWeeklyDigestEnabled: { type: Boolean, default: true },
