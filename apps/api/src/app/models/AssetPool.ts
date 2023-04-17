@@ -13,6 +13,7 @@ const assetPoolSchema = new mongoose.Schema(
         transactions: [String],
         version: String,
         settings: {
+            endDate: Date,
             title: String,
             isArchived: Boolean,
             isWeeklyDigestEnabled: { type: Boolean, default: true },
@@ -25,6 +26,7 @@ const assetPoolSchema = new mongoose.Schema(
                     amount: Number,
                 },
             },
+            authenticationMethods: [Number],
         },
     },
     { timestamps: true },

@@ -8,23 +8,28 @@ import { DiscordService } from '@thxnetwork/auth/services/DiscordService';
 import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
 import ClaimProxy from '@thxnetwork/auth/proxies/ClaimProxy';
 import BrandProxy from '@thxnetwork/auth/proxies/BrandProxy';
+import PoolProxy from '@thxnetwork/auth/proxies/PoolProxy';
+import { AccountVariant } from '@thxnetwork/types/interfaces';
 
 async function controller(req: Request, res: Response) {
     const { uid, params } = req.interaction;
     const alert = {};
     let claim,
         brand,
-        claimUrl = '';
+        claimUrl = '',
+        authenticationMethods = Object.values(AccountVariant);
 
     if (params.pool_id) {
         brand = await BrandProxy.get(params.pool_id);
+        const pool = await PoolProxy.getPool(params.pool_id);
+        if (pool.settings && pool.settings.authenticationMethods) {
+            authenticationMethods = pool.settings.authenticationMethods;
+        }
     }
 
     if (params.pool_transfer_token) {
         alert['variant'] = 'success';
-        alert[
-            'message'
-        ] = `<i class="fas fa-gift mr-2" aria-hidden="true"></i>Sign in to access your <strong>loyalty pool</strong>!`;
+        alert['message'] = `<i class="fas fa-gift mr-2" aria-hidden="true"></i>Sign in to access your campaign!`;
     }
 
     if (params.claim_id) {
@@ -45,11 +50,32 @@ async function controller(req: Request, res: Response) {
         }
     }
 
-    params.googleLoginUrl = YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getBasicScopes());
-    params.githubLoginUrl = GithubService.getLoginURL(uid, {});
-    params.discordLoginUrl = DiscordService.getLoginURL(uid, {});
-    params.twitchLoginUrl = TwitchService.getLoginURL(uid, {});
-    params.twitterLoginUrl = TwitterService.getLoginURL(uid, {});
+    params.emailPasswordEnabled = authenticationMethods.includes(AccountVariant.EmailPassword);
+    params.metaMaskEnabled = authenticationMethods.includes(AccountVariant.Metamask);
+    params.trustedProviderAvailable = authenticationMethods.some((method: AccountVariant) =>
+        [
+            AccountVariant.SSOGoogle,
+            AccountVariant.SSOTwitter,
+            AccountVariant.SSOTwitch,
+            AccountVariant.SSOGithub,
+            AccountVariant.SSODiscord,
+        ].includes(method),
+    );
+    params.googleLoginUrl = authenticationMethods.includes(AccountVariant.SSOGoogle)
+        ? YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getBasicScopes())
+        : null;
+    params.githubLoginUrl = authenticationMethods.includes(AccountVariant.SSOGithub)
+        ? GithubService.getLoginURL(uid, {})
+        : null;
+    params.discordLoginUrl = authenticationMethods.includes(AccountVariant.SSODiscord)
+        ? DiscordService.getLoginURL(uid, {})
+        : null;
+    params.twitchLoginUrl = authenticationMethods.includes(AccountVariant.SSOTwitch)
+        ? TwitchService.getLoginURL(uid, {})
+        : null;
+    params.twitterLoginUrl = authenticationMethods.includes(AccountVariant.SSOTwitter)
+        ? TwitterService.getLoginURL(uid, {})
+        : null;
     params.authRequestMessage = createTypedMessage(AUTH_REQUEST_TYPED_MESSAGE, AUTH_URL, uid);
 
     res.render('signin', {

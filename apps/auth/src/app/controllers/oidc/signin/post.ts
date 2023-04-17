@@ -4,7 +4,7 @@ import { MailService } from '../../../services/MailService';
 import { Request, Response } from 'express';
 import { recoverTypedSignature, SignTypedDataVersion } from '@metamask/eth-sig-util';
 import { body } from 'express-validator';
-import { AccountVariant } from '@thxnetwork/auth/types/enums/AccountVariant';
+import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { AccountDocument } from '@thxnetwork/auth/models/Account';
 import { UnauthorizedError } from '@thxnetwork/auth/util/errors';
 

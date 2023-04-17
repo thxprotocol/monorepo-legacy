@@ -1,7 +1,7 @@
 import { ContractName, currentVersion, diamondFacetConfigs, DiamondVariant } from '@thxnetwork/contracts/exports';
 import { getByteCodeForContractName, getContractFromName } from '../config/contracts';
 import { IAccount } from '../models/Account';
-import { Wallet, WalletDocument } from '../models/Wallet';
+import { Wallet as WalletModel, WalletDocument } from '../models/Wallet';
 import { ChainId } from '@thxnetwork/types/enums';
 import { TWalletDeployCallbackArgs } from '../types/TTransaction';
 import { getProvider, getSelectors } from '../util/network';
@@ -10,10 +10,16 @@ import { TransactionReceipt } from 'web3-core';
 import { FacetCutAction, updateDiamondContract } from '../util/upgrades';
 import WalletManagerService from './WalletManagerService';
 
-async function create(chainId: ChainId, account: IAccount, forceSync = true) {
-    const sub = String(account.sub);
-    const wallet = await Wallet.create({ sub, chainId, version: currentVersion });
-    return deploy(wallet, chainId, sub, forceSync);
+export const Wallet = WalletModel;
+
+async function create(data: { chainId: ChainId; account: IAccount; forceSync?: boolean; address?: string }) {
+    const { chainId, account, address } = data;
+    const sub = account.sub;
+    const wallet = await Wallet.create({ sub, chainId, address });
+    if (address) return wallet;
+
+    const forceSync = data.forceSync === undefined ? true : data.forceSync;
+    return deploy(wallet, forceSync);
 }
 
 function findOneByAddress(address: string) {
@@ -25,20 +31,19 @@ async function findOneByQuery(query: { sub?: string; chainId?: number }) {
 }
 
 async function findByQuery(query: { sub?: string; chainId?: number }) {
-    const result = await Wallet.find(query);
-    return result;
+    return await Wallet.find(query);
 }
 
-async function deploy(wallet: WalletDocument, chainId: ChainId, sub: string, forceSync = true) {
+async function deploy(wallet: WalletDocument, forceSync = true) {
     const variant: DiamondVariant = 'sharedWallet';
-    const { networkName, defaultAccount } = getProvider(chainId);
+    const { networkName, defaultAccount } = getProvider(wallet.chainId);
 
     const facetConfigs = diamondFacetConfigs(networkName, variant);
     const diamondCut = [];
 
     for (const contractName in facetConfigs) {
         const config = facetConfigs[contractName];
-        const contract = getContractFromName(chainId, contractName as ContractName);
+        const contract = getContractFromName(wallet.chainId, contractName as ContractName);
         const functionSelectors = getSelectors(contract);
         diamondCut.push({
             action: FacetCutAction.Add,
@@ -48,19 +53,19 @@ async function deploy(wallet: WalletDocument, chainId: ChainId, sub: string, for
     }
 
     const contractName: ContractName = 'Diamond';
-    const contract = getContractFromName(chainId, contractName);
+    const contract = getContractFromName(wallet.chainId, contractName);
     const bytecode = getByteCodeForContractName(contractName);
     const fn = contract.deploy({
         data: bytecode,
         arguments: [diamondCut, [defaultAccount]],
     });
 
-    const txId = await TransactionService.sendAsync(null, fn, chainId, forceSync, {
+    const txId = await TransactionService.sendAsync(null, fn, wallet.chainId, forceSync, {
         type: 'walletDeployCallback',
-        args: { walletId: String(wallet._id), owner: defaultAccount, sub },
+        args: { walletId: String(wallet._id), owner: defaultAccount, sub: wallet.sub },
     });
 
-    return await Wallet.findByIdAndUpdate(wallet._id, { transactions: [txId] }, { new: true });
+    return await Wallet.findByIdAndUpdate(wallet._id, { transactions: [txId], version: currentVersion }, { new: true });
 }
 
 async function deployCallback(args: TWalletDeployCallbackArgs, receipt: TransactionReceipt) {

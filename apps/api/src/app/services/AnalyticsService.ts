@@ -255,23 +255,24 @@ export async function getLeaderboard(pool: AssetPoolDocument, dateRange?: { star
     const accounts = await AccountProxy.getMany(Array.from(subs));
     // Group by sub and sort by highest score
     for (let i = 0; i < leaderBoardQueryResultMerged.length; i++) {
-        const data = leaderBoardQueryResultMerged[i];
-        const sub = data._id;
+        const entry = leaderBoardQueryResultMerged[i];
+        const sub = entry._id;
         const account = accounts.find((x) => x.sub == sub);
-        const address = await account.getAddress(pool.chainId);
+        if (!account) continue;
 
+        const address = await account.getAddress(pool.chainId);
         if (i === 0) {
             leaderBoard.push({
                 sub,
-                score: data.total_amount,
+                score: entry.total_amount,
                 account: { ...account, address },
             });
         } else {
-            const index = leaderBoard.map((x) => x.sub).indexOf(data._id);
+            const index = leaderBoard.findIndex((x) => x.sub === sub);
             if (index >= 0) {
-                leaderBoard[index].score += data.total_amount;
+                leaderBoard[index].score += entry.total_amount;
             } else {
-                leaderBoard.push({ sub, score: data.total_amount, account: { ...account, address } });
+                leaderBoard.push({ sub, score: entry.total_amount, account: { ...account, address } });
             }
         }
     }

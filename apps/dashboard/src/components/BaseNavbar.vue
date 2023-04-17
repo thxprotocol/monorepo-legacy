@@ -29,13 +29,18 @@
                                     <img
                                         v-if="selectedPool"
                                         width="20"
-                                        :src="`https://avatars.dicebear.com/api/identicon/${selectedPool._id}.svg`"
+                                        class="rounded"
+                                        :src="
+                                            selectedPool.brand && selectedPool.brand.logoImgUrl
+                                                ? selectedPool.brand.logoImgUrl
+                                                : `https://avatars.dicebear.com/api/identicon/${selectedPool._id}.svg`
+                                        "
                                     />
                                     <b-spinner v-else variant="primary" small />
                                 </div>
                             </div>
                         </template>
-                        <b-dropdown-text class="text-muted small"> Loyalty Pools </b-dropdown-text>
+                        <b-dropdown-text class="text-muted small"> Loyalty Campaign </b-dropdown-text>
                         <b-dropdown-divider />
                         <b-dropdown-item-btn
                             class="small"
@@ -47,10 +52,16 @@
                                 <div class="align-items-center d-flex">
                                     <img
                                         width="20"
-                                        class="mr-2"
-                                        :src="`https://avatars.dicebear.com/api/identicon/${p._id}.svg`"
+                                        class="mr-2 rounded"
+                                        :src="
+                                            p.brand && p.brand.logoImgUrl
+                                                ? p.brand.logoImgUrl
+                                                : `https://avatars.dicebear.com/api/identicon/${p._id}.svg`
+                                        "
                                     />
-                                    {{ p.settings.title }}
+                                    <span class="truncate-pool-title">
+                                        {{ p.settings.title }}
+                                    </span>
                                 </div>
                                 <i class="fas fa-caret-right ml-2"></i>
                             </div>
@@ -139,7 +150,7 @@ export default class BaseNavbar extends Vue {
             },
             {
                 path: '/pools',
-                label: 'Pools',
+                label: 'Campaigns',
                 iconClasses: 'fas fa-chart-pie',
             },
         ];
@@ -245,3 +256,11 @@ export default class BaseNavbar extends Vue {
     }
 }
 </script>
+<style>
+.truncate-pool-title {
+    text-overflow: ellipsis;
+    display: block;
+    width: 135px;
+    overflow: hidden;
+}
+</style>

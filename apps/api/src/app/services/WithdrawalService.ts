@@ -13,6 +13,8 @@ import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
 import { ERC20Document } from '../models/ERC20';
 import ERC20Service from './ERC20Service';
+import WalletService from './WalletService';
+import { WalletDocument } from '../models/Wallet';
 
 export default class WithdrawalService {
     static getById(id: string) {
@@ -43,10 +45,10 @@ export default class WithdrawalService {
         });
     }
 
-    static async getPendingWithdrawals(erc20: ERC20Document, account: IAccount) {
+    static async getPendingWithdrawals(erc20: ERC20Document, wallet: WalletDocument) {
         return Withdrawal.find({
             erc20Id: erc20._id,
-            sub: account.sub,
+            sub: wallet.sub,
             state: WithdrawalState.Pending,
         });
     }
@@ -54,21 +56,21 @@ export default class WithdrawalService {
     static async withdrawFor(
         pool: AssetPoolDocument,
         erc20: ERC20Document,
-        sub: string,
-        to: string,
+        wallet: WalletDocument,
         amount: string,
         forceSync = true,
     ) {
         const withdrawal = await Withdrawal.create({
-            sub,
+            sub: wallet.sub,
             erc20Id: String(erc20._id),
             amount,
             state: WithdrawalState.Pending,
+            walletId: wallet._id,
         });
         const amountInWei = toWei(String(withdrawal.amount));
         const txId = await TransactionService.sendAsync(
             pool.contract.options.address,
-            pool.contract.methods.withdrawFor(to, amountInWei, erc20.address),
+            pool.contract.methods.withdrawFor(wallet.address, amountInWei, erc20.address),
             pool.chainId,
             forceSync,
             {

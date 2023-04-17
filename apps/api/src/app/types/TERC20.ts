@@ -24,4 +24,5 @@ export type TERC20Token = {
     sub?: string;
     erc20Id: string;
     balance?: number;
+    walletId: string;
 };

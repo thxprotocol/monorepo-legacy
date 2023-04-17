@@ -15,6 +15,7 @@ import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { redeemValidation } from '@thxnetwork/api/util/perks';
 import { Widget } from '@thxnetwork/api/models/Widget';
 import MailService from '@thxnetwork/api/services/MailService';
+import { Wallet } from '@thxnetwork/api/services/WalletService';
 
 const validation = [param('uuid').exists()];
 
@@ -52,8 +53,8 @@ const controller = async (req: Request, res: Response) => {
     }
 
     const account = await AccountProxy.getById(req.auth.sub);
-    const address = await account.getAddress(pool.chainId);
-    const withdrawal = await WithdrawalService.withdrawFor(pool, erc20, req.auth.sub, address, erc20Perk.amount, false);
+    const wallet = await Wallet.findOne({ sub: account.sub, chainId: pool.chainId });
+    const withdrawal = await WithdrawalService.withdrawFor(pool, erc20, wallet, erc20Perk.amount, false);
     const erc20PerkPayment = await ERC20PerkPayment.create({
         perkId: erc20Perk.id,
         sub: req.auth.sub,

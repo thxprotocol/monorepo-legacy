@@ -1,5 +1,13 @@
 <template>
     <div>
+        <b-form-row v-if="error">
+            <b-col md="4"></b-col>
+            <b-col md="4">
+                <b-alert variant="danger" show>
+                    {{ error }}
+                </b-alert>
+            </b-col>
+        </b-form-row>
         <b-form-row>
             <b-col md="4">
                 <strong>Embed code</strong>
@@ -39,6 +47,46 @@
             </b-col>
             <b-col md="8">
                 <b-form-input @change="onChangeSettings" v-model="title" class="mr-3 mb-0" />
+            </b-col>
+        </b-form-row>
+        <hr />
+        <b-form-row>
+            <b-col md="4">
+                <strong>End date</strong>
+                <div class="text-muted">Configure an optional end date for this campaign.</div>
+            </b-col>
+            <b-col md="8">
+                <b-row>
+                    <b-col md="6">
+                        <b-input-group>
+                            <b-datepicker
+                                value-as-date
+                                :min="minDate"
+                                v-model="expirationDate"
+                                @input="onChangeSettings()"
+                            />
+                            <b-input-group-append>
+                                <b-button @click="onClickExpirationDateReset" variant="dark">
+                                    <i class="fas fa-trash ml-0"></i>
+                                </b-button>
+                            </b-input-group-append>
+                        </b-input-group>
+                    </b-col>
+                    <b-col md="6">
+                        <b-input-group>
+                            <b-timepicker
+                                :disabled="!expirationDate"
+                                v-model="expirationTime"
+                                @input="onChangeSettings()"
+                            />
+                            <b-input-group-append>
+                                <b-button @click="onClickExpirationTimeReset" variant="dark">
+                                    <i class="fas fa-trash ml-0"></i>
+                                </b-button>
+                            </b-input-group-append>
+                        </b-input-group>
+                    </b-col>
+                </b-row>
             </b-col>
         </b-form-row>
         <hr />
@@ -107,6 +155,23 @@
         </b-form-row>
         <hr />
         <b-form-row>
+            <b-col md="4">
+                <strong>Login Methods</strong>
+                <div class="text-muted">Enable the available login methods for your widget.</div>
+            </b-col>
+            <b-col md="8">
+                <b-form-checkbox-group
+                    v-model="selectedAuthenticationMethods"
+                    :options="authenticationMethods"
+                    value-field="key"
+                    text-field="text"
+                    @change="onChangeSettings"
+                >
+                </b-form-checkbox-group>
+            </b-col>
+        </b-form-row>
+        <hr />
+        <b-form-row>
             <b-col md="4"> </b-col>
             <b-col md="8">
                 <b-form-group>
@@ -141,6 +206,7 @@ import { IAccount } from '@thxnetwork/dashboard/types/account';
 import { TPoolSettings } from '@thxnetwork/types/interfaces';
 import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
 import { IWidgets } from '@thxnetwork/dashboard/store/modules/widgets';
+import { AccountVariant } from '@thxnetwork/dashboard/types/enums/AccountVariant';
 
 @Component({
     components: {
@@ -162,13 +228,26 @@ export default class SettingsView extends Vue {
     pools!: IPools;
     brands!: { [poolId: string]: TBrand };
     widgets!: IWidgets;
-
+    error: string | null = null;
     title = '';
     domain = '';
     logoImgUrl = '';
     backgroundImgUrl = '';
     isWeeklyDigestEnabled = false;
     isArchived = false;
+    selectedAuthenticationMethods: AccountVariant[] = [];
+    authenticationMethods = [
+        { key: AccountVariant.EmailPassword, text: 'Email/Password' },
+        { key: AccountVariant.Metamask, text: 'Metamask' },
+        { key: AccountVariant.SSODiscord, text: 'Discord' },
+        { key: AccountVariant.SSOGithub, text: 'Github' },
+        { key: AccountVariant.SSOGoogle, text: 'Google' },
+        { key: AccountVariant.SSOTwitch, text: 'Twitch' },
+        { key: AccountVariant.SSOTwitter, text: 'Twitter' },
+    ];
+    minDate: Date | null = null;
+    expirationDate: Date | null = null;
+    expirationTime = '00:00:00';
 
     get pool() {
         return this.pools[this.$route.params.id];
@@ -206,8 +285,31 @@ export default class SettingsView extends Vue {
         this.title = this.pool.settings.title;
         this.isArchived = this.pool.settings.isArchived;
         this.isWeeklyDigestEnabled = this.pool.settings.isWeeklyDigestEnabled;
+        this.selectedAuthenticationMethods = this.pool.settings.authenticationMethods;
+        this.minDate = this.getMinDate();
+
+        if (this.pool.settings.endDate) {
+            this.expirationDate = new Date(this.pool.settings.endDate);
+            this.expirationTime = `${this.expirationDate.getHours()}:${this.expirationDate.getMinutes()}:${this.expirationDate.getSeconds()}`;
+        }
 
         this.loading = false;
+    }
+
+    getMinDate() {
+        const date = new Date();
+        date.setDate(date.getDate() + 1);
+        return date;
+    }
+
+    getEndDate() {
+        if (!this.expirationDate) return null;
+        const endDate = new Date(this.expirationDate);
+        const parts = this.expirationTime.split(':');
+        endDate.setHours(Number(parts[0]));
+        endDate.setMinutes(Number(parts[1]));
+        endDate.setSeconds(Number(parts[2]));
+        return endDate;
     }
 
     async upload(file: File) {
@@ -230,12 +332,19 @@ export default class SettingsView extends Vue {
         await this.updateBrand();
     }
 
-    async onChangeSettings(setting: TPoolSettings) {
+    async onChangeSettings(setting?: TPoolSettings) {
+        if (!this.selectedAuthenticationMethods.length) {
+            this.error = 'Select at least one login method';
+            return;
+        }
+
         const settings = Object.assign(
             {
                 title: this.title,
+                endDate: this.getEndDate(),
                 isArchived: this.isArchived,
                 isWeeklyDigestEnabled: this.isWeeklyDigestEnabled,
+                authenticationMethods: this.selectedAuthenticationMethods.sort((a, b) => a - b),
             },
             setting,
         );
@@ -244,27 +353,34 @@ export default class SettingsView extends Vue {
             pool: this.pool,
             data: { settings },
         });
+
+        this.error = '';
     }
 
     async updateBrand() {
         this.loading = true;
         await this.$store.dispatch('brands/update', {
             pool: this.pool,
-            brand: {
-                backgroundImgUrl: this.backgroundImgUrl,
-                logoImgUrl: this.logoImgUrl,
-            },
+            brand: { backgroundImgUrl: this.backgroundImgUrl, logoImgUrl: this.logoImgUrl },
         });
         this.loading = false;
     }
 
     async onChangeWidget() {
         this.loading = true;
-        await this.$store.dispatch('widgets/update', {
-            ...this.widget,
-            domain: this.domain,
-        });
+        await this.$store.dispatch('widgets/update', { ...this.widget, domain: this.domain });
         this.loading = false;
+    }
+
+    onClickExpirationDateReset() {
+        this.expirationDate = null;
+        this.expirationTime = '00:00:00';
+        this.onChangeSettings();
+    }
+
+    onClickExpirationTimeReset() {
+        this.expirationTime = '00:00:00';
+        this.onChangeSettings();
     }
 }
 </script>

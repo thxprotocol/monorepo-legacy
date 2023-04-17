@@ -36,13 +36,10 @@ describe('Default Pool', () => {
     let sub2TotalAmount = 0;
     const totalSupply = toWei('100000');
 
-    beforeAll(async () => {
-        await beforeAllCallback();
-    });
-
+    beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
 
-    describe('CREATE ERC20 Token', () => {
+    describe('Create ERC20 Token', () => {
         it('POST /erc20', (done) => {
             user.post('/v1/erc20')
                 .set('Authorization', dashboardAccessToken)

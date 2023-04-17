@@ -1,5 +1,5 @@
 import { assertEvent, parseLogs } from '@thxnetwork/api/util/events';
-import { ChainId } from '@thxnetwork/types/enums';
+import { AccountPlanType, ChainId } from '@thxnetwork/types/enums';
 import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { Membership } from '@thxnetwork/api/models/Membership';
 import TransactionService from './TransactionService';
@@ -16,6 +16,7 @@ import { Widget } from './WidgetService';
 import { PoolSubscription } from '../models/PoolSubscription';
 import { logger } from '../util/logger';
 import { TPointReward } from '@thxnetwork/types/interfaces';
+import { AccountVariant } from '@thxnetwork/types/interfaces';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -45,22 +46,27 @@ function getByAddress(address: string) {
     return AssetPool.findOne({ address });
 }
 
-async function deploy(sub: string, chainId: ChainId, title: string): Promise<AssetPoolDocument> {
+async function deploy(sub: string, chainId: ChainId, title: string, endDate?: Date): Promise<AssetPoolDocument> {
     const factory = getContract(chainId, 'Factory', currentVersion);
     const variant = 'defaultDiamond';
     const poolFacetContracts = diamondContracts(chainId, variant);
+
     const pool = await AssetPool.create({
         sub,
         chainId,
         version: currentVersion,
         settings: {
             title,
+            endDate,
             isArchived: false,
             isWeeklyDigestEnabled: true,
             isTwitterSyncEnabled: false,
             defaults: {
                 conditionalRewards: { title: 'Retweet this tweet', description: '', amount: 50 },
             },
+            authenticationMethods: Object.keys(AccountVariant)
+                .filter((x) => x != AccountVariant.SSOSpotify.toString() && !isNaN(Number(x)))
+                .map((x) => Number(x)),
         },
     });
     const txId = await TransactionService.sendAsync(

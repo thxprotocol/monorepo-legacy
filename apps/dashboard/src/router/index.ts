@@ -5,6 +5,7 @@ import {
     redirectConfirmationLink,
     redirectPasswordResetLink,
     redirectPoolTransfer,
+    redirectReferralCode,
     redirectSignin,
     redirectSigninSilent,
     redirectSignout,
@@ -207,10 +208,8 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-    if (to.query.passwordResetToken) {
-        await store.dispatch('account/signinRedirect', {
-            passwordResetToken: to.query.passwordResetToken,
-        });
+    if (to.query.referralCode) {
+        await redirectReferralCode(to);
     }
 
     try {

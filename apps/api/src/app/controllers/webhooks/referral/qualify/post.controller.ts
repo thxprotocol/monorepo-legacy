@@ -8,7 +8,7 @@ import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 
-const validation = [body('code').exists().isString()];
+const validation = [body('code').exists().isString(), body('metadata').optional().isObject()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards Referral']
@@ -20,20 +20,28 @@ const controller = async (req: Request, res: Response) => {
     const claim = await ReferralRewardClaimService.create({
         referralRewardId: String(reward._id),
         sub,
-        isApproved: true,
+        isApproved: !reward.isMandatoryReview,
         poolId: reward.poolId,
         amount: reward.amount ? reward.amount.toString() : '0',
+        metadata: req.body.metadata ? JSON.stringify(req.body.metadata) : '',
     });
     const account = await AccountProxy.getById(sub);
     const pool = await PoolService.getById(reward.poolId);
 
-    await PointBalanceService.add(pool, claim.sub, reward.amount);
-
-    await MailService.send(
-        account.email,
-        'Status: Referral Approved',
-        `Congratulations! Your referral has been approved and your balance has been increased with <strong>${reward.amount} points</strong>.`,
-    );
+    if (reward.isMandatoryReview) {
+        await MailService.send(
+            account.email,
+            'Status: Referral Qualified',
+            `Congratulations! Your referral link has been qualified and approval for a transfer of <strong>${reward.amount} points</strong> has been requested.`,
+        );
+    } else {
+        await PointBalanceService.add(pool, claim.sub, reward.amount);
+        await MailService.send(
+            account.email,
+            'Status: Referral Approved',
+            `Congratulations! Your referral has been approved and your balance has been increased with <strong>${reward.amount} points</strong>.`,
+        );
+    }
 
     res.status(201).json(claim);
 };

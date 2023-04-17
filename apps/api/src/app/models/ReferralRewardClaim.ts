@@ -11,6 +11,7 @@ const schema = new mongoose.Schema(
         amount: String,
         isApproved: Boolean,
         poolId: String,
+        metadata: String,
     },
     { timestamps: true },
 );

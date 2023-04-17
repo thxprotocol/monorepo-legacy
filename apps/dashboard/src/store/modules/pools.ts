@@ -6,7 +6,7 @@ import { track } from '@thxnetwork/mixpanel';
 import { DASHBOARD_URL } from '@thxnetwork/wallet/utils/secrets';
 import { IAccount } from '@thxnetwork/dashboard/types/account';
 import { TPool, TPoolSettings } from '@thxnetwork/types/index';
-import { TPoolTransfer, TPoolTransferResponse } from '@thxnetwork/types/interfaces';
+import { TPoolTransferResponse } from '@thxnetwork/types/interfaces';
 
 export interface IPoolAnalytic {
     _id: string;
@@ -254,6 +254,7 @@ class PoolModule extends VuexModule {
         erc721tokens: string[];
         variant: string;
         title: string;
+        endDate: string;
     }) {
         const { data } = await axios({
             method: 'POST',

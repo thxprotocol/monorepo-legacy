@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { AccountService } from '../../../../services/AccountService';
 import { TwitterService } from '../../../../services/TwitterService';
 import { callbackPostSSOCallback, callbackPreAuth } from '../../get';
-import { AccountVariant } from '@thxnetwork/auth/types/enums/AccountVariant';
+import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { AccessTokenKind } from '@thxnetwork/types/enums';
 
 export async function controller(req: Request, res: Response) {
@@ -11,7 +11,7 @@ export async function controller(req: Request, res: Response) {
 
     // if there is a session we need to check for dups before we store the token
     if (interaction.session) {
-        await AccountService.isConnected(tokenInfo.userId, AccessTokenKind.Twitter);
+        await AccountService.isConnected(interaction.session.accountId, tokenInfo.userId, AccessTokenKind.Twitter);
     }
 
     const account = await AccountService.findOrCreate(interaction.session, tokenInfo, AccountVariant.SSOGithub, email);

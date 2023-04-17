@@ -41,6 +41,7 @@ export default class BaseCardRewardLimits extends Vue {
 
     mounted() {
         this.selectedRewardLimit = this.limit ? this.limit : 0;
+        this.isVisible = this.limit > 0;
     }
 
     onInputRewardLimit(limit: number) {

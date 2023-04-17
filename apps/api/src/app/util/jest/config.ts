@@ -7,8 +7,10 @@ import { ChainId } from '@thxnetwork/types/enums';
 import { getContract, getContractConfig } from '@thxnetwork/api/config/contracts';
 import { poll } from '../polling';
 import { currentVersion } from '@thxnetwork/contracts/exports';
+import { Wallet } from '@thxnetwork/api/models/Wallet';
+import { sub, sub2, userWalletAddress, userWalletAddress2 } from './constants';
 
-export async function beforeAllCallback() {
+export async function beforeAllCallback(options = { skipWalletCreation: false }) {
     await db.truncate();
     mockStart();
 
@@ -23,6 +25,11 @@ export async function beforeAllCallback() {
 
     // TODO Make this part of hardhat container build
     await factory.methods.initialize(defaultAccount, registryAddress).send({ from: defaultAccount });
+
+    if (!options.skipWalletCreation) {
+        await Wallet.create({ sub, address: userWalletAddress, chainId: ChainId.Hardhat });
+        await Wallet.create({ sub: sub2, address: userWalletAddress2, chainId: ChainId.Hardhat });
+    }
 }
 
 export async function afterAllCallback() {

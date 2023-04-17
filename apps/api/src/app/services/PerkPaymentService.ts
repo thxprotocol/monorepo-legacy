@@ -8,6 +8,7 @@ import PoolService from '@thxnetwork/api/services/PoolService';
 import { ForbiddenError, BadRequestError } from '@thxnetwork/api/util/errors';
 import MailService from './MailService';
 import { Widget } from './WidgetService';
+import { Wallet } from './WalletService';
 
 async function parsePaymentIntent(event) {
     const { id, amount, currency } = event.data.object;
@@ -28,9 +29,9 @@ async function onPaymentIntentSucceeded(event) {
     const metadata = await ERC721Metadata.findById(perk.erc721metadataId);
     const pool = await PoolService.getById(perk.poolId);
     const widget = await Widget.findOne({ poolId: pool._id });
-    const address = await account.getAddress(pool.chainId);
+    const wallet = await Wallet.findOne({ sub: account.sub, chainId: pool.chainId });
 
-    await ERC721Service.mint(pool, erc721, metadata, sub, address);
+    await ERC721Service.mint(pool, erc721, metadata, wallet);
 
     await ERC721PerkPayment.create({
         sub,

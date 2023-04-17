@@ -1,7 +1,7 @@
 <template>
     <div>
         <BaseFormSelectNetwork @selected="onNetworkSelected" />
-        <b-form-group label="Pool">
+        <b-form-group label="Campaign">
             <b-dropdown variant="link" class="dropdown-select" v-if="poolsPerChain.length">
                 <template #button-content>
                     <div v-if="pool">{{ pool.settings.title }}</div>

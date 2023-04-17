@@ -30,6 +30,7 @@
                     <template #head(email)> E-mail </template>
                     <template #head(firstName)> First name </template>
                     <template #head(lastName)> Last name </template>
+                    <template #head(metadata)> Metadata </template>
                     <template #head(createdAt)> Created </template>
                     <template #head(isApproved)> &nbsp; </template>
 
@@ -45,6 +46,9 @@
                     </template>
                     <template #cell(lastName)="{ item }">
                         {{ item.lastName }}
+                    </template>
+                    <template #cell(metadata)="{ item }">
+                        <code class="small">{{ item.metadata }}</code>
                     </template>
                     <template #cell(createdAt)="{ item }">
                         <small class="text-muted">{{ format(new Date(item.createdAt), 'dd-MM-yyyy HH:mm') }}</small>
@@ -127,6 +131,7 @@ export default class ReferralRewardClaimsModal extends Vue {
                 firstName: c.firstName,
                 lastName: c.lastName,
                 email: c.email,
+                metadata: c.metadata,
                 createdAt: c.createdAt,
                 isApproved: c.isApproved,
             }))

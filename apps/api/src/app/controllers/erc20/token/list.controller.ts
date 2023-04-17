@@ -3,8 +3,12 @@ import { Request, Response } from 'express';
 import { TERC20, TERC20Token } from '@thxnetwork/api/types/TERC20';
 import { fromWei } from 'web3-utils';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
-import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
+import { query } from 'express-validator';
+import { Wallet } from '@thxnetwork/api/services/WalletService';
+import { NotFoundError } from '@thxnetwork/api/util/errors';
+
+const validation = [query('chainId').exists().isNumeric()];
 
 export const controller = async (req: Request, res: Response) => {
     /*
@@ -19,45 +23,26 @@ export const controller = async (req: Request, res: Response) => {
         }
     }
     */
-    const account = await AccountProxy.getById(req.auth.sub);
-    const tokens = await ERC20Service.getTokensForSub(req.auth.sub);
+    const chainId = Number(req.query.chainId);
+    const wallet = await Wallet.findOne({ sub: req.auth.sub, chainId });
+    if (!wallet) throw new NotFoundError('Could not find the wallet for the user');
+
+    const tokens = await ERC20Service.getTokensForWallet(wallet);
     const result = await Promise.all(
         tokens.map(async (token: ERC20TokenDocument) => {
             try {
                 const erc20 = await ERC20Service.getById(token.erc20Id);
-                if (!erc20) return;
-                if (erc20.chainId !== Number(req.query.chainId)) return { ...(token.toJSON() as TERC20Token), erc20 };
+                if (!erc20 || erc20.chainId !== chainId) return;
 
-                const pendingWithdrawals = await WithdrawalService.getPendingWithdrawals(erc20, account);
-                const walletAddress = await account.getAddress(erc20.chainId);
+                const pendingWithdrawals = await WithdrawalService.getPendingWithdrawals(erc20, wallet);
+                const walletBalanceInWei = await erc20.contract.methods.balanceOf(wallet.address).call();
+                const walletBalance = fromWei(walletBalanceInWei, 'ether');
 
-                let walletBalanceInWei, walletBalance;
-                if (walletAddress) {
-                    walletBalanceInWei = await erc20.contract.methods.balanceOf(walletAddress).call();
-                    walletBalance = Number(fromWei(walletBalanceInWei, 'ether'));
-                }
-
-                let balanceInWei, balance, balancePending;
-                if (account.address) {
-                    balanceInWei = await erc20.contract.methods.balanceOf(account.address).call();
-                    balance = Number(fromWei(balanceInWei, 'ether'));
-                    balancePending = pendingWithdrawals
-                        .map((item: any) => item.amount)
-                        .reduce((prev: any, curr: any) => prev + curr, 0);
-                }
-
-                erc20.logoImgUrl =
-                    erc20.logoImgUrl || `https://avatars.dicebear.com/api/identicon/${erc20.address}.svg`;
-
-                return {
-                    ...(token.toJSON() as TERC20Token),
-                    balanceInWei,
-                    balance,
-                    balancePending,
+                return Object.assign(token.toJSON() as TERC20Token, {
                     walletBalance,
                     pendingWithdrawals,
                     erc20,
-                };
+                });
             } catch (error) {
                 console.log(error);
             }
@@ -66,10 +51,9 @@ export const controller = async (req: Request, res: Response) => {
 
     res.json(
         result.reverse().filter((token: TERC20Token & { erc20: TERC20 }) => {
-            if (!req.query.chainId) return true;
-            return token.erc20 && Number(req.query.chainId) === token.erc20.chainId;
+            return token && chainId === token.erc20.chainId;
         }),
     );
 };
 
-export default { controller };
+export default { controller, validation };

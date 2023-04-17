@@ -48,7 +48,7 @@ export default class THXClient {
         const env = rest.env || 'prod';
         const grantType = rest.redirectUrl ? 'authorization_code' : 'client_credentials';
 
-        let settings: UserManagerSettings = {
+        const settings: UserManagerSettings = {
             authority: URL_CONFIG[env]['AUTH_URL'],
             client_id: rest.clientId,
             client_secret: rest.clientSecret,
@@ -62,13 +62,10 @@ export default class THXClient {
             silent_redirect_uri: rest.silent_redirect_uri,
             loadUserInfo: false,
             scope: scopes,
+            ...(typeof window !== 'undefined'
+                ? { userStore: new WebStorageStateStore({ store: window.localStorage }) }
+                : {}),
         };
-
-        if (typeof window !== 'undefined') {
-            settings = Object.assign(settings, {
-                userStore: new WebStorageStateStore({ store: window.localStorage }),
-            });
-        }
 
         /* Mapped values */
         const userManager = new BaseUserManager(settings);
