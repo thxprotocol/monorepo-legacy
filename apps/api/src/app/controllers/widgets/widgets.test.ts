@@ -42,7 +42,7 @@ describe('Widgets', () => {
             .expect(({ body }: Response) => {
                 expect(body[0].uuid).toBeDefined();
                 expect(body[0].theme).toBeDefined();
-                expect(body[0].message).toEqual('Hi there!👋 Click me to earn rewards and collect crypto perks...');
+                expect(body[0].message).toEqual('Hi there!👋 Click me to earn rewards and collect digital perks...');
                 widget = body[0];
             })
             .expect(200, done);
