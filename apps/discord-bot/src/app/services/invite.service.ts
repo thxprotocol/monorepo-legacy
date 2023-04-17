@@ -1,5 +1,5 @@
-import Invite from '../models/Invite';
 import { TInvite, TInviteUpdates } from '../types/TInvite';
+import Invite from '../models/Invite';
 
 export default {
     get: async (_id: string) => {
