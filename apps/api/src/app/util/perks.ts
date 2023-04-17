@@ -11,7 +11,7 @@ import { isTERC20Perk, isTERC721Perk, isTShopifyPerk } from './rewards';
 
 type PerkDocument = ERC20PerkDocument | ERC721PerkDocument | ShopifyPerkDocument;
 
-function getPaymentModel(perk: PerkDocument): mongoose.Model<any> {
+export function getPaymentModel(perk: PerkDocument): mongoose.Model<any> {
     if (isTERC20Perk(perk)) {
         return ERC20PerkPayment;
     }
@@ -25,8 +25,6 @@ function getPaymentModel(perk: PerkDocument): mongoose.Model<any> {
 
 export const redeemValidation = async ({
     perk,
-    sub,
-    claim,
 }: {
     perk: ERC20PerkDocument | ERC721PerkDocument | ShopifyPerkDocument;
     sub?: string;

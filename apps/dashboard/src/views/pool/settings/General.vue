@@ -304,7 +304,6 @@ export default class SettingsView extends Vue {
 
     getEndDate() {
         if (!this.expirationDate) return null;
-        debugger;
         const endDate = new Date(this.expirationDate);
         const parts = this.expirationTime.split(':');
         endDate.setHours(Number(parts[0]));

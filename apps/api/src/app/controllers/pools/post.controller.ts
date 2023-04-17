@@ -8,14 +8,13 @@ import { DEFAULT_COLORS, DEFAULT_ELEMENTS } from '@thxnetwork/types/contants';
 const validation = [
     body('chainId').exists().isNumeric(),
     body('title').optional().isString(),
-    body('endDate').optional().isString(),
+    body('endDate').optional({ nullable: true }).isString(),
 ];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
     const title = req.body.title || 'My Loyalty Pool';
-    const endDate = req.body.endDate ? new Date(req.body.endDate) : undefined;
-    const pool = await PoolService.deploy(req.auth.sub, req.body.chainId, title, endDate);
+    const pool = await PoolService.deploy(req.auth.sub, req.body.chainId, title, req.body.endDate);
 
     await Widget.create({
         uuid: v4(),

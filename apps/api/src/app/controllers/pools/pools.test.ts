@@ -62,7 +62,7 @@ describe('Default Pool', () => {
                 })
                 .expect((res: request.Response) => {
                     poolId = res.body._id;
-                    expect(res.body.endDate).toBeDefined();
+                    expect(res.body.settings.endDate).toBeDefined();
                     expect(res.body.settings.title).toBe('My Pool');
                     expect(res.body.settings.isArchived).toBe(false);
                     expect(res.body.settings.authenticationMethods).toBeDefined();

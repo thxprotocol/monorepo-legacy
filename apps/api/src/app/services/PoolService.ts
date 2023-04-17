@@ -55,9 +55,9 @@ async function deploy(sub: string, chainId: ChainId, title: string, endDate?: Da
         sub,
         chainId,
         version: currentVersion,
-        endDate,
         settings: {
             title,
+            endDate,
             isArchived: false,
             isWeeklyDigestEnabled: true,
             isTwitterSyncEnabled: false,
