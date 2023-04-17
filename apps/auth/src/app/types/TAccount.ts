@@ -63,4 +63,5 @@ export interface IAccountUpdates {
     organisation?: string;
     email?: string;
     profileImg?: string;
+    referralCode?: string;
 }

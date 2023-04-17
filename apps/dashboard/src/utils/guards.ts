@@ -20,6 +20,20 @@ export function redirectSignin() {
 export function redirectSignout() {
     return store.dispatch('account/signoutRedirect', {});
 }
+
+export async function redirectReferralCode(to: Route) {
+    const user = await store.dispatch('account/getUser');
+    if (user) {
+        return await store.dispatch('account/update', {
+            referralCode: to.query.referralCode,
+        });
+    } else {
+        return await store.dispatch('account/signinRedirect', {
+            referralCode: to.query.referralCode,
+        });
+    }
+}
+
 export function redirectPoolTransfer(to: Route) {
     return store.dispatch('account/signinRedirect', { poolId: to.params.poolId, poolTransferToken: to.params.token });
 }

@@ -21,7 +21,7 @@ const controller = async (req: Request, res: Response) => {
         uuid: v4(),
         poolId: pool._id,
         align: 'right',
-        message: 'Hi there!👋 Click me to earn rewards and collect crypto perks...',
+        message: 'Hi there!👋 Click me to earn rewards and collect digital perks...',
         domain: 'https://www.example.com',
         theme: JSON.stringify({ elements: DEFAULT_ELEMENTS, colors: DEFAULT_COLORS }),
     });
