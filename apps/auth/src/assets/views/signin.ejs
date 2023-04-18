@@ -88,7 +88,7 @@
       </div>
       <% } %>
 
-      <form id="form-signin" action="/oidc/<%= uid %>/signin" method="post" class="mt-3">
+      <form id="form-signin" action="/oidc/<%= uid %>/signin" method="post">
         <% if(params.emailPasswordEnabled) { %>
         <p class="text-muted">Use your e-mail</p>
         <div class="form-group">
@@ -121,21 +121,21 @@
         </button>
         <% } %>
 
+        <% if (params.authRequestMessage && params.metaMaskEnabled) { %>
+        <a class="d-flex align-items-center justify-content-start btn btn-light rounded-pill"
+           style="padding: 0.75rem 1.2rem" @click="onClickSigninMetamask">
+          <img v-if="!isDisabledMetamask" width="20" src="/img/mm-logo.svg" class="mr-2" alt="Metamask logo" />
+          <div v-else class="spinner-border spinner-primary spinner-border-sm mr-2" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+          Continue with Metamask
+        </a>
+        <% } %>
+
       </form>
 
       <% if(params.emailPasswordEnabled) { %>
       <hr />
-      <% } %>
-
-      <% if (params.authRequestMessage && params.metaMaskEnabled) { %>
-      <a class="d-flex align-items-center justify-content-start btn btn-light rounded-pill"
-         style="padding: 0.75rem 1.2rem" @click="onClickSigninMetamask">
-        <img v-if="!isDisabledMetamask" width="20" src="/img/mm-logo.svg" class="mr-2" alt="Metamask logo" />
-        <div v-else class="spinner-border spinner-primary spinner-border-sm mr-2" role="status">
-          <span class="sr-only">Loading...</span>
-        </div>
-        Continue with Metamask
-      </a>
       <% } %>
 
       <% if (params.trustedProviderAvailable) { %>
