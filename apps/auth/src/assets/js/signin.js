@@ -19,7 +19,20 @@ createApp({
             : true;
     },
     onMounted() {
+        const isWidgetInput = document.getElementsByName('isWidget');
+        const returnUrlInput = document.getElementsByName('returnUrl');
+        const claimUrlInput = document.getElementsByName('claimUrl');
+        this.isWidget = isWidgetInput.length ? JSON.parse(isWidgetInput[0].value) : false;
+        this.returnUrl = returnUrlInput.length ? returnUrlInput[0].value : '';
+        this.claimUrl = claimUrlInput.length ? claimUrlInput[0].value : '';
         this.isMounted = true;
+    },
+    onClickReturn() {
+        if (this.isWidget) {
+            window.close();
+        } else {
+            window.location.href = this.returnUrl;
+        }
     },
     onClickSubmit() {
         this.isLoading = true;
@@ -70,11 +83,8 @@ createApp({
         if (ethereum) {
             this.requestAccounts();
         } else if (isMobile && !ethereum) {
-            const claimUrlInput = document.getElementsByName('claimUrl');
-            const claimUrl = claimUrlInput.length ? claimUrlInput[0].value : '';
-            const returnUrlInput = document.getElementsByName('returnUrl');
-            const returnUrl = returnUrlInput.length ? returnUrlInput[0].value : '';
-            const url = new URL(claimUrl || returnUrl);
+            const deeplink = this.getDeeplink();
+            const url = new URL(this.claimUrl || deeplink);
             const link = url.href.replace(/.*?:\/\//g, '');
 
             window.open('https://metamask.app.link/dapp/' + link, '_blank');
@@ -84,6 +94,9 @@ createApp({
         }
 
         this.isDisabledMetamask = false;
+    },
+    getDeeplink() {
+        return this.isWidget ? new URL(this.returnUrl).searchParams.get('origin') : this.returnUrl;
     },
 }).mount();
 
