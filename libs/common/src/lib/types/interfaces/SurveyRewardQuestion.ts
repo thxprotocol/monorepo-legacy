@@ -1,5 +1,5 @@
 export type TSurveyRewardQuestion = {
-    _id: string;
+    _id?: string;
     order: number;
     surveyRewardId: string;
     question: string;
@@ -12,4 +12,5 @@ export type TSurveyRewardAnswer = {
     _id?: string;
     correct: boolean;
     value: string;
+    order: number;
 };

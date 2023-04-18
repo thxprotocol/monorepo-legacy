@@ -32,6 +32,7 @@
                 <template #head(title)> Title </template>
                 <template #head(amount)> Points </template>
                 <template #head(description)> Description </template>
+
                 <template #head(id)> &nbsp; </template>
 
                 <!-- Cell formatting -->
@@ -43,6 +44,9 @@
                 </template>
                 <template #cell(amount)="{ item }">
                     <strong class="text-primary">{{ item.amount }} </strong>
+                </template>
+                <template #cell(questions)="{ item }">
+                    <strong class="text-primary">{{ item.questions }} </strong>
                 </template>
                 <template #cell(id)="{ item }">
                     <b-dropdown variant="link" size="sm" right no-caret>
@@ -118,6 +122,7 @@ export default class SurveysView extends Vue {
             .map((r: TSurveyReward) => ({
                 checkbox: r._id,
                 title: r.title,
+                description: r.description,
                 amount: r.amount,
                 id: r._id,
             }))
@@ -125,6 +130,7 @@ export default class SurveysView extends Vue {
     }
 
     async listRewards() {
+        console.log('SONO QUI!');
         this.isLoading = true;
         await this.$store.dispatch('surveyRewards/list', { page: this.page, pool: this.pool });
         this.isLoading = false;

@@ -1,28 +1,46 @@
 <template>
     <b-form-group class="mb-0">
-        <hr />
-        <b-form-group :label="`Question #${order}`">
-            <b-form-input v-model="question" />
-        </b-form-group>
-        <button
-            v-if="addAnswerEnabled"
-            type="button"
-            class="btn btn-primary rounded-pill m-auto"
-            v-on:click="addQuestion()"
-        >
-            Add Answer
-        </button>
+        <div class="d-flex justify-content-between">
+            <b-form-group :label="`Question #${question.order + 1}`">
+                <b-form-input v-model="currentQuestion.question" @change="$emit('questionChanged', currentQuestion)" />
+            </b-form-group>
+            <b-form-group>
+                <button
+                    v-if="addAnswerEnabled"
+                    type="button"
+                    class="btn btn-primary rounded-pill btn-sm"
+                    v-on:click="addAnswer()"
+                >
+                    + answer
+                </button>
+            </b-form-group>
+            <b-form-group>
+                <button
+                    type="button"
+                    class="btn btn-primary rounded-pill btn-sm"
+                    v-on:click="$emit('questionRemoved', currentQuestion.order)"
+                >
+                    - question
+                </button>
+            </b-form-group>
+        </div>
         <div class="mt-3">
-            <BaseFormGroupSurveyRewardAnswer v-for="n in numAnswers" :key="n" :order="n" />
+            <BaseFormGroupSurveyRewardAnswer
+                v-for="a in currentQuestion.answers"
+                :key="a.order"
+                :answer="a"
+                @answerChanged="onAnswerChanged"
+                @answerRemoved="onAnswerRemoved"
+            />
         </div>
     </b-form-group>
 </template>
 
 <script lang="ts">
-import { TSurveyReward } from '@thxnetwork/types/interfaces/SurveyReward';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseFormGroupSurveyRewardAnswer from '../form-group/BaseFormGroupSurveyRewardAnswer.vue';
+import { TSurveyRewardQuestion, TSurveyRewardAnswer } from '@thxnetwork/types/interfaces';
 @Component({
     components: {
         BaseFormGroupSurveyRewardAnswer,
@@ -30,26 +48,44 @@ import BaseFormGroupSurveyRewardAnswer from '../form-group/BaseFormGroupSurveyRe
     computed: mapGetters({}),
 })
 export default class BaseFormGroupSurveyRewardQuestion extends Vue {
-    @Prop() reward!: TSurveyReward;
-    @Prop() order!: number;
+    @Prop() question!: TSurveyRewardQuestion;
 
-    question: string | null = null;
-    numAnswers = 0;
+    currentQuestion: TSurveyRewardQuestion = {} as TSurveyRewardQuestion;
 
     get addAnswerEnabled() {
-        return this.question && this.question.length > 0;
+        return this.question && this.question.question.length > 0;
     }
 
     mounted() {
-        console.log('CIAO');
+        this.currentQuestion = this.question;
     }
 
-    addQuestion() {
-        this.numAnswers += 1;
+    questionChanged() {
+        this.$emit('questionChanged', this.currentQuestion);
     }
 
-    removeQuestion() {
-        this.numAnswers += 1;
+    onAnswerChanged(answer: TSurveyRewardAnswer) {
+        const index = this.currentQuestion.answers.findIndex((x) => x.order === answer.order);
+        if (index < 0) {
+            return;
+        }
+        this.currentQuestion.answers[index] = answer;
+        this.questionChanged();
+    }
+
+    onAnswerRemoved(order: number) {
+        this.currentQuestion.answers = this.currentQuestion.answers.filter((a) => a.order !== order);
+        this.questionChanged();
+    }
+
+    addAnswer() {
+        const answersCount = this.currentQuestion.answers.length;
+        this.currentQuestion.answers.push({
+            value: '',
+            correct: false,
+            order: answersCount ? this.currentQuestion.answers[answersCount - 1].order + 1 : 0,
+        });
+        this.questionChanged();
     }
 }
 </script>

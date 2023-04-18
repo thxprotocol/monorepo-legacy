@@ -6,7 +6,7 @@ import { TSurveyRewardAnswer } from '@thxnetwork/types/interfaces';
 
 const validation = [
     body('title').isString(),
-    body('description').isString(),
+    body('description').optional().isString(),
     body('amount').isInt({ gt: 0 }),
     body('questions').custom((value) => {
         if (!Array.isArray(value)) {

@@ -15,7 +15,7 @@ import MailService from './MailService';
 import { Widget } from './WidgetService';
 import { PoolSubscription } from '../models/PoolSubscription';
 import { logger } from '../util/logger';
-import { TPointReward } from '@thxnetwork/types/interfaces';
+import { TPointReward, TSurveyReward } from '@thxnetwork/types/interfaces';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
@@ -138,7 +138,7 @@ async function updateAssetPool(pool: AssetPoolDocument, version?: string) {
     return tx;
 }
 
-async function sendNotification(pool: AssetPoolDocument, reward: TPointReward) {
+async function sendNotification(pool: AssetPoolDocument, reward: TPointReward | TSurveyReward) {
     const sleepTime = 60; // seconds
     const chunkSize = 600;
 

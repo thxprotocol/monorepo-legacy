@@ -20,7 +20,9 @@ export async function create(pool: AssetPoolDocument, payload: Partial<TSurveyRe
     const reward = await SurveyReward.create({
         uuid: db.createUUID(),
         poolId: pool._id,
+        title: payload.title,
         amount: payload.amount,
+        description: payload.description,
     });
     const questions = payload.questions.map((q) => {
         return {

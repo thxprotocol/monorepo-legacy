@@ -11,7 +11,7 @@ const controller = async (req: Request, res: Response) => {
         Number(req.query.page),
         Number(req.query.limit),
     );
-
+    console.log('LIST RESULT', rewards);
     res.json(rewards);
 };
 

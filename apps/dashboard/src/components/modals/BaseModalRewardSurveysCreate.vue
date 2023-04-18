@@ -10,37 +10,43 @@
                         <b-form-group label="Description">
                             <b-textarea v-model="description" />
                         </b-form-group>
-                        <b-form-group label="Amount">
-                            <b-form-input type="number" v-model="amount" />
-                        </b-form-group>
-                    </b-col>
-                    <b-col md="6">
-                        Questions
+                        <b-form-group label="Amount"> <b-form-input type="number" v-model="amount" /> </b-form-group
+                    ></b-col>
+                    <b-col>
                         <b-form-group class="mb-0">
-                            <hr />
-                            <button
-                                type="button"
-                                class="btn btn-primary rounded-pill m-auto"
-                                v-on:click="addQuestion()"
-                            >
-                                Add Question
-                            </button>
+                            <div class="d-flex justify-content-between">
+                                Questions ({{ questions.length }})
+
+                                <button
+                                    type="button"
+                                    class="btn btn-primary rounded-pill btn-sm"
+                                    v-on:click="addQuestion()"
+                                >
+                                    + question
+                                </button>
+                            </div>
                         </b-form-group>
-                        <div class="mt-3">
-                            <BaseFormGroupSurveyRewardQuestion
-                                :reward="reward"
-                                v-for="n in numQuestions"
-                                :key="n"
-                                :order="n"
-                            />
-                        </div>
+                        <hr />
+                        <BaseFormGroupSurveyRewardQuestion
+                            v-for="q in questions"
+                            :key="q.order"
+                            :question="q"
+                            @questionAdded="onQuestionAdded"
+                            @questionChanged="onQuestionChanged"
+                            @questionRemoved="onQuestionRemoved"
+                        />
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col md="6">
+                        <BaseCardSurveyRewardPreview :questions="questions" />
                     </b-col>
                 </b-row>
             </form>
         </template>
         <template #btn-primary>
             <b-button
-                :disabled="isSubmitDisabled"
+                :disabled="!isFormValid"
                 class="rounded-pill"
                 type="submit"
                 form="formRewardSurveyCreate"
@@ -54,71 +60,116 @@
 </template>
 
 <script lang="ts">
-import { TSurveyRewardQuestion, type TPool } from '@thxnetwork/types/interfaces';
+import { TSurveyRewardQuestion, TSurveyRewardAnswer, type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { type TSurveyReward } from '@thxnetwork/types/index';
 import BaseModal from './BaseModal.vue';
 import BaseFormGroupSurveyRewardQuestion from '../form-group/BaseFormGroupSurveyRewardQuestion.vue';
+import BaseCardSurveyRewardPreview from '../cards/BaseCardSurveyRewardPreview.vue';
 
 @Component({
     components: {
         BaseModal,
         BaseFormGroupSurveyRewardQuestion,
+        BaseCardSurveyRewardPreview,
     },
 })
 export default class ModalSurveyRewardCreate extends Vue {
     isLoading = false;
     isVisible = true;
     error = '';
+
+    currentSurvey: TSurveyReward = {} as TSurveyReward;
+    questions: TSurveyRewardQuestion[] = [];
     title = '';
     description = '';
     amount = 0;
-    isCopied = false;
-    questions: TSurveyRewardQuestion[] = [];
-    numQuestions = 0;
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
     @Prop({ required: false }) reward!: TSurveyReward;
 
-    get isSubmitDisabled() {
-        const isFormValid = this.title.length > 0 && this.amount > 0 && this.questions.length > 0;
-        return !isFormValid;
+    get isFormValid() {
+        return (
+            this.title != undefined &&
+            this.title.length > 0 &&
+            this.amount > 0 &&
+            this.questions.length > 0 &&
+            this.questions[0].answers.length > 0 &&
+            this.questions[0].answers[0].value.length > 0
+        );
     }
 
     onShow() {
-        this.title = this.reward ? this.reward.title : '';
-        this.description = this.reward ? this.reward.description : '';
-        this.amount = this.reward ? this.reward.amount : this.amount;
-        this.questions = this.reward ? this.reward.questions : [];
+        this.currentSurvey = this.reward ? this.reward : ({} as TSurveyReward);
+        if (!this.currentSurvey.questions) {
+            this.currentSurvey.questions = [];
+        }
+        this.title = this.currentSurvey.title;
+        this.description = this.currentSurvey.description;
+        this.amount = this.currentSurvey.amount;
+        this.questions = this.currentSurvey.questions;
+    }
+
+    onQuestionAdded(question: TSurveyRewardQuestion) {
+        this.currentSurvey.questions.push(question);
+        this.updateForm();
+    }
+
+    onQuestionChanged(question: TSurveyRewardQuestion) {
+        const index = this.currentSurvey.questions.findIndex((x) => x.order === question.order);
+        if (index < 0) {
+            return;
+        }
+        this.currentSurvey.questions[index] = question;
+        this.updateForm();
+    }
+
+    onQuestionRemoved(order: number) {
+        this.currentSurvey.questions = this.currentSurvey.questions.filter((q) => q.order !== order);
+        this.updateForm();
     }
 
     addQuestion() {
-        this.numQuestions++;
+        const questionsCount = this.currentSurvey.questions.length;
+        this.currentSurvey.questions.push({
+            question: '',
+            answers: [] as TSurveyRewardAnswer[],
+            order: questionsCount ? this.currentSurvey.questions[questionsCount - 1].order + 1 : 0,
+            surveyRewardId: this.reward && this.reward._id ? this.reward._id : '',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        } as TSurveyRewardQuestion);
     }
 
-    removeQuestion() {
-        this.numQuestions--;
+    updateForm() {
+        this.questions = this.currentSurvey.questions;
     }
 
     onSubmit() {
-        if (this.isSubmitDisabled) {
+        if (!this.isFormValid) {
             return;
         }
         this.isLoading = true;
+        this.currentSurvey.title = this.title;
+        this.currentSurvey.description = this.description;
+        this.currentSurvey.amount = this.amount;
+        this.currentSurvey.poolId = this.pool._id;
         this.$store
             .dispatch(`surveyRewards/${this.reward ? 'update' : 'create'}`, {
-                ...this.reward,
-                page: 1,
-                poolId: String(this.pool._id),
-                title: this.title,
-                description: this.description,
-                amount: this.amount,
+                ...this.currentSurvey,
             })
             .then(() => {
                 this.$bvModal.hide(this.id);
                 this.isLoading = false;
             });
+        this.currentSurvey = {} as TSurveyReward;
+        this.questions = [];
+        this.title = '';
+        this.description = '';
+        this.amount = 0;
+        this.isLoading = false;
+        this.$emit('submit');
     }
 }
 </script>
