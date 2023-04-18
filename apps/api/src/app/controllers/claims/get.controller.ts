@@ -42,7 +42,7 @@ const controller = async (req: Request, res: Response) => {
     }
 
     // Can not be claimed when claimLimit > claimed perks if claimAmount > 0 (Number of QR codes)
-    if (perk.claimLimit && req.auth.sub) {
+    if (req.auth && req.auth.sub && perk.claimLimit) {
         const model = getPaymentModel(perk);
         if (!model) throw new BadRequestError('Could not determine payment model for this claim.');
 
