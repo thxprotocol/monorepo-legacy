@@ -6,8 +6,7 @@ export type InviteUsedDocument = mongoose.Document & TInviteUsed;
 const schema = new mongoose.Schema(
     {
         guildId: String,
-        inviterId: String,
-        code: String,
+        inviteId: String,
         userId: String,
     },
     { timestamps: true },

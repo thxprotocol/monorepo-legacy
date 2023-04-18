@@ -1,10 +1,11 @@
-import { TInviteUsed } from '@thxnetwork/discord/types/TInviteUsed';
-import InviteUsedService from '../../services/invite-used.service';
+import Invite from '@thxnetwork/discord/models/Invite';
+import InviteUsed from '@thxnetwork/discord/models/InviteUsed';
 
 export const resolvers = {
     Query: {
         invitesUsed: async (root, { guildId, inviterId }) => {
-            return await InviteUsedService.list({ guildId, inviterId } as TInviteUsed);
+            const inviterInvitesArray = await Invite.find({ inviterId, guildId });
+            return await InviteUsed.find({ inviteId: inviterInvitesArray.map((i) => String(i._id)) });
         },
     },
 };

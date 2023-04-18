@@ -6,6 +6,7 @@ export type GuildDocument = mongoose.Document & TGuild;
 const guildSchema = new mongoose.Schema(
     {
         id: String,
+        active: Boolean,
         poolId: String,
         channelId: String,
     },
