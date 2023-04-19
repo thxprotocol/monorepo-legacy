@@ -1,6 +1,6 @@
 <template>
     <b-form-group class="mb-0">
-        <div class="d-flex justify-content-between w-10">
+        <div class="d-flex justify-content-between w-10 align-items-center">
             <b-form-group :label="`Answer #${answer.order + 1}`">
                 <b-form-input v-model="currentAnswer.value" @change="onAnswerChanged" />
             </b-form-group>
