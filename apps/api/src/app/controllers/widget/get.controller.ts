@@ -115,18 +115,25 @@ const controller = async (req: Request, res: Response) => {
             return window.innerWidth < this.MD_BREAKPOINT;
         }
 
-        createIframe() {
-            const { widgetUrl, poolId, chainId, origin, theme, align, expired } = this.settings;
-            const iframe = document.createElement('iframe');
-            const styles = this.isSmallMedia ? this.defaultStyles['sm'] : this.defaultStyles['md'];
-            const url = new URL(this.settings.widgetUrl);
-
+        createURL() {
+            const { widgetUrl, poolId, chainId, origin, theme, expired } = this.settings;
+            const url = new URL(widgetUrl);
+            
             url.searchParams.append('id', poolId);
             url.searchParams.append('origin', origin);
             url.searchParams.append('chainId', chainId);
             url.searchParams.append('theme', theme);
             url.searchParams.append('expired', expired);
             
+            return url;
+        }
+
+        createIframe() {
+            const { widgetUrl, poolId, chainId, origin, theme, align, expired } = this.settings;
+            const iframe = document.createElement('iframe');
+            const styles = this.isSmallMedia ? this.defaultStyles['sm'] : this.defaultStyles['md'];
+            const url = this.createURL();
+
             iframe.id = 'thx-iframe';
             iframe.src = url;
             iframe.setAttribute('data-hj-allow-iframe', true);
@@ -287,7 +294,13 @@ const controller = async (req: Request, res: Response) => {
                 iframe.style.transform = iframe.style.transform === 'scale(0)' ? 'scale(1)' : 'scale(0)';
                
                 this.message.remove();
-                this.iframe.contentWindow.postMessage({ message: 'thx.iframe.show', isShown: !!Number(iframe.style.opacity) }, this.settings.widgetUrl);
+
+                const isMobile = window.matchMedia('(pointer:coarse)').matches;
+                if (window.ethereum && isMobile) {
+                    window.open(this.createURL(), '_self');
+                } else {
+                    this.iframe.contentWindow.postMessage({ message: 'thx.iframe.show', isShown: !!Number(iframe.style.opacity) }, this.settings.widgetUrl);
+                }
             });
             launcher.addEventListener('mouseenter', () => {
                 const gift = document.getElementById('thx-svg-gift');

@@ -31,20 +31,17 @@ createApp({
         if (this.isWidget) {
             window.close();
         } else {
-            window.location.href = this.returnUrl;
+            window.open(this.returnUrl, '_self');
         }
     },
     onClickSubmit() {
         this.isLoading = true;
     },
     async onAccountsChanged(accounts) {
-        const provider = await detectEthereumProvider();
-        alert(provider);
-
         if (!accounts.length) {
             this.alert.message = ERROR_CONNECT_METAMASK;
         } else {
-            provider
+            window.ethereum
                 .request({
                     method: 'eth_signTypedData_v3',
                     params: [accounts[0], AUTH_REQUEST_MESSAGE],
@@ -61,9 +58,7 @@ createApp({
         }
     },
     async requestAccounts() {
-        const provider = await detectEthereumProvider();
-        alert(provider);
-        provider
+        window.ethereum
             .request({ method: 'eth_requestAccounts' })
             .then(this.onAccountsChanged)
             .catch((err) => {
@@ -75,17 +70,13 @@ createApp({
             });
     },
     async onClickSigninMetamask() {
-        if (this.isDisabledMetamask) return;
-        const provider = await detectEthereumProvider();
-        alert(provider);
-
         const isMobile = window.matchMedia('(pointer:coarse)').matches;
-
+        if (this.isDisabledMetamask) return;
         this.isDisabledMetamask = true;
 
-        if (provider) {
+        if (window.ethereum) {
             this.requestAccounts();
-        } else if (isMobile && !provider) {
+        } else if (isMobile && !window.ethereum) {
             const deeplink = this.getDeeplink();
             const url = new URL(this.claimUrl || deeplink);
             const link = url.href.replace(/.*?:\/\//g, '');
