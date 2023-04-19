@@ -49,6 +49,7 @@ export async function update(reward: SurveyRewardDocument, payload: Partial<TSur
                 surveyRewardId: reward._id,
                 question: q.question,
                 answers: q.answers,
+                order: q.order,
             } as TSurveyRewardQuestion;
         });
         await SurveyRewardQuestion.create(questions);

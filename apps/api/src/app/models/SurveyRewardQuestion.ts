@@ -8,7 +8,7 @@ const schema = new mongoose.Schema(
         surveyRewardId: String,
         question: String,
         order: Number,
-        answers: [{ correct: Boolean, value: String }],
+        answers: [{ correct: Boolean, value: String, order: Number }],
     },
     { timestamps: true },
 );
