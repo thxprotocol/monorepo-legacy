@@ -37,13 +37,14 @@ createApp({
     onClickSubmit() {
         this.isLoading = true;
     },
-    onAccountsChanged(accounts) {
-        const { ethereum } = window;
+    async onAccountsChanged(accounts) {
+        const provider = await detectEthereumProvider();
+        alert(provider);
 
         if (!accounts.length) {
             this.alert.message = ERROR_CONNECT_METAMASK;
         } else {
-            ethereum
+            provider
                 .request({
                     method: 'eth_signTypedData_v3',
                     params: [accounts[0], AUTH_REQUEST_MESSAGE],
@@ -59,10 +60,10 @@ createApp({
                 });
         }
     },
-    requestAccounts() {
-        const { ethereum } = window;
-
-        ethereum
+    async requestAccounts() {
+        const provider = await detectEthereumProvider();
+        alert(provider);
+        provider
             .request({ method: 'eth_requestAccounts' })
             .then(this.onAccountsChanged)
             .catch((err) => {
@@ -75,14 +76,16 @@ createApp({
     },
     async onClickSigninMetamask() {
         if (this.isDisabledMetamask) return;
-        const { ethereum } = window;
+        const provider = await detectEthereumProvider();
+        alert(provider);
+
         const isMobile = window.matchMedia('(pointer:coarse)').matches;
 
         this.isDisabledMetamask = true;
 
-        if (ethereum) {
+        if (provider) {
             this.requestAccounts();
-        } else if (isMobile && !ethereum) {
+        } else if (isMobile && !provider) {
             const deeplink = this.getDeeplink();
             const url = new URL(this.claimUrl || deeplink);
             const link = url.href.replace(/.*?:\/\//g, '');
