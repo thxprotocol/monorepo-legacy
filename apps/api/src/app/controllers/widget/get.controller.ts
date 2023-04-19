@@ -288,28 +288,9 @@ const controller = async (req: Request, res: Response) => {
                 transition: '.2s opacity ease, .1s transform ease',
             });
             launcher.innerHTML = svgGift;
-            launcher.addEventListener('click', () => {
-                const iframe = document.getElementById('thx-iframe');
-                iframe.style.opacity = iframe.style.opacity === '0' ? '1' : '0';
-                iframe.style.transform = iframe.style.transform === 'scale(0)' ? 'scale(1)' : 'scale(0)';
-               
-                this.message.remove();
-
-                const isMobile = window.matchMedia('(pointer:coarse)').matches;
-                if (window.ethereum && isMobile) {
-                    window.open(this.createURL(), '_self');
-                } else {
-                    this.iframe.contentWindow.postMessage({ message: 'thx.iframe.show', isShown: !!Number(iframe.style.opacity) }, this.settings.widgetUrl);
-                }
-            });
-            launcher.addEventListener('mouseenter', () => {
-                const gift = document.getElementById('thx-svg-gift');
-                gift.style.transform = 'scale(1.1)';
-            });
-            launcher.addEventListener('mouseleave', () => {
-                const gift = document.getElementById('thx-svg-gift');
-                gift.style.transform = 'scale(1)';
-            });
+            launcher.addEventListener('click', this.onClickLauncher.bind(this));
+            launcher.addEventListener('mouseenter', this.onMouseEnterLauncher.bind(this));
+            launcher.addEventListener('mouseleave', this.onMouseLeaveLauncher.bind(this));
 
             const url = new URL(window.location.href)
             const widgetPath = url.searchParams.get('thx_widget_path');
@@ -356,6 +337,29 @@ const controller = async (req: Request, res: Response) => {
                     this.onWidgetToggle();
                     break;
                 }
+            }
+        }
+
+        onMouseEnterLauncher() {
+            const gift = document.getElementById('thx-svg-gift');
+            gift.style.transform = 'scale(1.1)';    
+        }
+
+        onMouseLeaveLauncher() {
+            const gift = document.getElementById('thx-svg-gift');
+            gift.style.transform = 'scale(1)';
+        }
+
+        onClickLauncher() {
+            const isMobile = window.matchMedia('(pointer:coarse)').matches;
+            if (window.ethereum && isMobile) {
+                window.open(this.createURL(), '_blank');
+            } else {
+                const iframe = document.getElementById('thx-iframe');
+                iframe.style.opacity = iframe.style.opacity === '0' ? '1' : '0';
+                iframe.style.transform = iframe.style.transform === 'scale(0)' ? 'scale(1)' : 'scale(0)';              
+                this.message.remove();
+                this.iframe.contentWindow.postMessage({ message: 'thx.iframe.show', isShown: !!Number(iframe.style.opacity) }, this.settings.widgetUrl);
             }
         }
     
