@@ -130,7 +130,6 @@ export default class SurveysView extends Vue {
     }
 
     async listRewards() {
-        console.log('SONO QUI!');
         this.isLoading = true;
         await this.$store.dispatch('surveyRewards/list', { page: this.page, pool: this.pool });
         this.isLoading = false;

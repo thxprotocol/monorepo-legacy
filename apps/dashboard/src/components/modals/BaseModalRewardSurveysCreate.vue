@@ -31,6 +31,7 @@
                             v-for="q in questions"
                             :key="q.order"
                             :question="q"
+                            :isVisible="q.order === currentOpenQuestion"
                             @questionAdded="onQuestionAdded"
                             @questionChanged="onQuestionChanged"
                             @questionRemoved="onQuestionRemoved"
@@ -84,6 +85,7 @@ export default class ModalSurveyRewardCreate extends Vue {
     title = '';
     description = '';
     amount = 0;
+    currentOpenQuestion = 0;
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
@@ -132,14 +134,16 @@ export default class ModalSurveyRewardCreate extends Vue {
 
     addQuestion() {
         const questionsCount = this.currentSurvey.questions.length;
+        const newOrder = questionsCount ? this.currentSurvey.questions[questionsCount - 1].order + 1 : 0;
         this.currentSurvey.questions.push({
             question: '',
             answers: [] as TSurveyRewardAnswer[],
-            order: questionsCount ? this.currentSurvey.questions[questionsCount - 1].order + 1 : 0,
+            order: newOrder,
             surveyRewardId: this.reward && this.reward._id ? this.reward._id : '',
             createdAt: new Date(),
             updatedAt: new Date(),
         } as TSurveyRewardQuestion);
+        this.currentOpenQuestion = newOrder;
     }
 
     updateForm() {

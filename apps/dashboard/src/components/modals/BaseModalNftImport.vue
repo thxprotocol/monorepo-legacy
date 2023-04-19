@@ -138,7 +138,6 @@ export default class ModalNftImport extends Vue {
         } catch (err) {
             this.previewLoading = false;
             this.showPreview = false;
-            console.log('error', err);
             throw new Error('Invalid Contract Address');
         }
     }

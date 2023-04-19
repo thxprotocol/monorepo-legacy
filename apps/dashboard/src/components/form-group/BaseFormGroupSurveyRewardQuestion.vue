@@ -1,39 +1,54 @@
 <template>
-    <b-form-group class="mb-0">
-        <div class="d-flex justify-content-between">
-            <b-form-group :label="`Question #${question.order + 1}`">
-                <b-form-input v-model="currentQuestion.question" @change="$emit('questionChanged', currentQuestion)" />
+    <div>
+        <b-button
+            class="d-flex align-items-center justify-content-between w-100"
+            variant="light"
+            v-b-toggle="`collapse-card-survey-question_${question.order}`"
+        >
+            <strong>Question #{{ question.order + 1 }}</strong>
+            <i :class="`fa-chevron-${isVisible ? 'up' : 'down'}`" class="fas m-0"></i>
+        </b-button>
+        <b-collapse :id="`collapse-card-survey-question_${question.order}`" v-model="isVisible">
+            <b-form-group class="mb-0">
+                <div class="d-flex justify-content-between">
+                    <b-form-group>
+                        <b-form-input
+                            v-model="currentQuestion.question"
+                            @change="$emit('questionChanged', currentQuestion)"
+                        />
+                    </b-form-group>
+                    <b-form-group>
+                        <button
+                            v-if="addAnswerEnabled"
+                            type="button"
+                            class="btn btn-primary rounded-pill btn-sm"
+                            v-on:click="addAnswer()"
+                        >
+                            + answer
+                        </button>
+                    </b-form-group>
+                    <b-form-group>
+                        <button
+                            type="button"
+                            class="btn btn-primary rounded-pill btn-sm"
+                            v-on:click="$emit('questionRemoved', currentQuestion.order)"
+                        >
+                            - question
+                        </button>
+                    </b-form-group>
+                </div>
+                <div class="mt-3">
+                    <BaseFormGroupSurveyRewardAnswer
+                        v-for="a in currentQuestion.answers"
+                        :key="a.order"
+                        :answer="a"
+                        @answerChanged="onAnswerChanged"
+                        @answerRemoved="onAnswerRemoved"
+                    />
+                </div>
             </b-form-group>
-            <b-form-group>
-                <button
-                    v-if="addAnswerEnabled"
-                    type="button"
-                    class="btn btn-primary rounded-pill btn-sm"
-                    v-on:click="addAnswer()"
-                >
-                    + answer
-                </button>
-            </b-form-group>
-            <b-form-group>
-                <button
-                    type="button"
-                    class="btn btn-primary rounded-pill btn-sm"
-                    v-on:click="$emit('questionRemoved', currentQuestion.order)"
-                >
-                    - question
-                </button>
-            </b-form-group>
-        </div>
-        <div class="mt-3">
-            <BaseFormGroupSurveyRewardAnswer
-                v-for="a in currentQuestion.answers"
-                :key="a.order"
-                :answer="a"
-                @answerChanged="onAnswerChanged"
-                @answerRemoved="onAnswerRemoved"
-            />
-        </div>
-    </b-form-group>
+        </b-collapse>
+    </div>
 </template>
 
 <script lang="ts">
@@ -48,6 +63,7 @@ import { TSurveyRewardQuestion, TSurveyRewardAnswer } from '@thxnetwork/types/in
     computed: mapGetters({}),
 })
 export default class BaseFormGroupSurveyRewardQuestion extends Vue {
+    @Prop() isVisible!: boolean;
     @Prop() question!: TSurveyRewardQuestion;
 
     currentQuestion: TSurveyRewardQuestion = {} as TSurveyRewardQuestion;
