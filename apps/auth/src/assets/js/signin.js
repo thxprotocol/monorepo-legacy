@@ -19,18 +19,29 @@ createApp({
             : true;
     },
     onMounted() {
+        const isWidgetInput = document.getElementsByName('isWidget');
+        const returnUrlInput = document.getElementsByName('returnUrl');
+        const claimUrlInput = document.getElementsByName('claimUrl');
+        this.isWidget = isWidgetInput.length ? JSON.parse(isWidgetInput[0].value) : false;
+        this.returnUrl = returnUrlInput.length ? returnUrlInput[0].value : '';
+        this.claimUrl = claimUrlInput.length ? claimUrlInput[0].value : '';
         this.isMounted = true;
+    },
+    onClickReturn() {
+        if (this.isWidget) {
+            window.close();
+        } else {
+            window.open(this.returnUrl, '_self');
+        }
     },
     onClickSubmit() {
         this.isLoading = true;
     },
-    onAccountsChanged(accounts) {
-        const { ethereum } = window;
-
+    async onAccountsChanged(accounts) {
         if (!accounts.length) {
             this.alert.message = ERROR_CONNECT_METAMASK;
         } else {
-            ethereum
+            window.ethereum
                 .request({
                     method: 'eth_signTypedData_v3',
                     params: [accounts[0], AUTH_REQUEST_MESSAGE],
@@ -46,10 +57,8 @@ createApp({
                 });
         }
     },
-    requestAccounts() {
-        const { ethereum } = window;
-
-        ethereum
+    async requestAccounts() {
+        window.ethereum
             .request({ method: 'eth_requestAccounts' })
             .then(this.onAccountsChanged)
             .catch((err) => {
@@ -61,20 +70,15 @@ createApp({
             });
     },
     async onClickSigninMetamask() {
-        if (this.isDisabledMetamask) return;
-        const { ethereum } = window;
         const isMobile = window.matchMedia('(pointer:coarse)').matches;
-
+        if (this.isDisabledMetamask) return;
         this.isDisabledMetamask = true;
 
-        if (ethereum) {
+        if (window.ethereum) {
             this.requestAccounts();
-        } else if (isMobile && !ethereum) {
-            const claimUrlInput = document.getElementsByName('claimUrl');
-            const claimUrl = claimUrlInput.length ? claimUrlInput[0].value : '';
-            const returnUrlInput = document.getElementsByName('returnUrl');
-            const returnUrl = returnUrlInput.length ? returnUrlInput[0].value : '';
-            const url = new URL(claimUrl || returnUrl);
+        } else if (isMobile && !window.ethereum) {
+            const deeplink = this.getDeeplink();
+            const url = new URL(this.claimUrl || deeplink);
             const link = url.href.replace(/.*?:\/\//g, '');
 
             window.open('https://metamask.app.link/dapp/' + link, '_blank');
@@ -84,6 +88,9 @@ createApp({
         }
 
         this.isDisabledMetamask = false;
+    },
+    getDeeplink() {
+        return this.isWidget ? new URL(this.returnUrl).searchParams.get('origin') : this.returnUrl;
     },
 }).mount();
 

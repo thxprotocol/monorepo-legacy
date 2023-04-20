@@ -1,30 +1,14 @@
 <template>
-    <b-card body-class="bg-light p-0">
-        <b-button
-            class="d-flex align-items-center justify-content-between w-100"
-            variant="light"
-            v-b-toggle.collapse-card-expiry
-        >
-            <strong>End Date</strong>
-            <i :class="`fa-chevron-${isVisible ? 'up' : 'down'}`" class="fas m-0"></i>
-        </b-button>
-        <b-collapse id="collapse-card-expiry" v-model="isVisible">
-            <hr class="mt-0" />
-            <div class="px-3">
-                <p class="text-gray">Configure until what date and time the Campaign will be alive.</p>
-                <b-form-group>
-                    <b-row>
-                        <b-col md="6">
-                            <b-datepicker value-as-date :min="minDate" :value="expirationDate" @input="onChangeDate" />
-                        </b-col>
-                        <b-col md="6">
-                            <b-timepicker :disabled="!expirationDate" :value="expirationTime" @input="onChangeTime" />
-                        </b-col>
-                    </b-row>
-                </b-form-group>
-            </div>
-        </b-collapse>
-    </b-card>
+    <b-form-group label="End date" description="Configure until what date and time the campaign will run.">
+        <b-row>
+            <b-col md="6">
+                <b-datepicker value-as-date :min="minDate" :value="expirationDate" @input="onChangeDate" />
+            </b-col>
+            <b-col md="6">
+                <b-timepicker :disabled="!expirationDate" :value="expirationTime" @input="onChangeTime" />
+            </b-col>
+        </b-row>
+    </b-form-group>
 </template>
 
 <script lang="ts">
@@ -33,7 +17,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 @Component({})
 export default class BaseCardPoolExpiry extends Vue {
     isVisible = false;
-    expirationDate: Date | null = null;
+    expirationDate: Date | undefined = undefined;
     expirationTime = '00:00:00';
 
     @Prop() endDate!: Date;

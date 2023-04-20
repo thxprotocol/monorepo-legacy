@@ -46,7 +46,7 @@ export default class ModalAssetPoolCreate extends Vue {
     profile!: IAccount;
     chainInfo = chainInfo;
     title = '';
-    endDate: Date | null = null;
+    endDate: Date | undefined = undefined;
 
     @Prop() id!: string;
 

@@ -71,6 +71,7 @@ const config: Configuration = {
         'distinct_id',
         'pool_id',
         'pool_transfer_token',
+        'referral_code',
     ],
     scopes: [
         'openid',

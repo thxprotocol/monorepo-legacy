@@ -29,6 +29,7 @@ const accountSchema = new mongoose.Schema(
         discordId: String,
         tokens: [{ kind: String, accessToken: String, refreshToken: String, expiry: Number, userId: String }],
         shopifyStoreUrl: String,
+        referralCode: String,
     },
     { timestamps: true },
 );

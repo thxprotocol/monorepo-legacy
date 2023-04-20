@@ -68,6 +68,20 @@ const controller = async (req: Request, res: Response) => {
     if (redeemValidationResult.isError) {
         throw new ForbiddenError(redeemValidationResult.errorMessage);
     }
+
+    // Can not be claimed when claimLimit > claimed perks if claimAmount > 0 (Number of QR codes)
+    if (perk.claimLimit && req.auth.sub) {
+        const amountOfPaymentsPerSub = await model.countDocuments({ perkId: perk._id, sub: req.auth.sub });
+        if (amountOfPaymentsPerSub >= perk.claimLimit) {
+            throw new ForbiddenError('You have claimed this perk for the maximum amount of times.');
+        }
+    }
+
+    // Can not be claimed when sub is set for this claim URL and claim amount is greater than 1
+    if (claim && claim.sub && perk.claimAmount > 1) {
+        throw new ForbiddenError('This perk has been claimed already.');
+    }
+
     // Can only claim if potential platform conditions passes.
     const failReason = await validateCondition(account, perk);
     if (failReason) {

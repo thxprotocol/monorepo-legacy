@@ -1,12 +1,13 @@
 import { API_URL, AUTH_URL, NODE_ENV, WIDGET_URL } from '@thxnetwork/api/config/secrets';
-import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
-import { Widget } from '@thxnetwork/api/models/Widget';
 import BrandService from '@thxnetwork/api/services/BrandService';
 import PoolService from '@thxnetwork/api/services/PoolService';
+import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
+import { Widget } from '@thxnetwork/api/models/Widget';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import { minify } from 'terser';
+import { runMilestoneRewardWebhook, runReferralRewardWebhook } from '@thxnetwork/api/services/THXService';
 
 const validation = [param('id').isMongoId()];
 
@@ -28,16 +29,19 @@ const controller = async (req: Request, res: Response) => {
 
     const pool = await PoolService.getById(req.params.id);
     if (!pool) throw new NotFoundError('Pool not found.');
-    const expired = pool.endDate ? pool.endDate.getTime() <= Date.now() : false;
+
+    const expired = pool.settings.endDate ? pool.settings.endDate.getTime() <= Date.now() : false;
     const brand = await BrandService.get(pool._id);
     const widget = await Widget.findOne({ poolId: req.params.id });
-
     const origin = new URL(req.header('Referrer')).origin;
     const widgetOrigin = new URL(widget.domain).origin;
 
     // Set active to true if there is a request made from the configured domain
-    if (widgetOrigin === origin) {
+    if (widgetOrigin === origin && !widget.active) {
         await widget.updateOne({ active: true });
+
+        runReferralRewardWebhook(pool, { origin });
+        runMilestoneRewardWebhook(pool);
     }
 
     const data = `
@@ -65,17 +69,23 @@ const controller = async (req: Request, res: Response) => {
         };
     
         constructor(settings) {
-            if (!settings) return console.error("THXWidget requires a settings object.");
             this.settings = settings;
             this.theme = JSON.parse(settings.theme);
-            this.iframe = this.createIframe(settings.widgetUrl, settings.poolId, settings.chainId, settings.origin, settings.theme, settings.align, settings.expired);
-            this.iframe.setAttribute('data-hj-allow-iframe', true);
-            this.notifications = this.createNotifications(0);
-            this.message = this.createMessage(settings.message, settings.logo, settings.align);
-            this.launcher = this.createLauncher(this.notifications, settings.align);
-            this.container = this.createContainer(this.iframe, this.launcher, this.message);
-            this.referrals = JSON.parse(this.settings.refs).filter((r) => r.successUrl);
+    
+            if (window.attachEvent) { 
+                window.attachEvent('onload', this.onLoad.bind(this)); 
+            } else { 
+                window.addEventListener('load', this.onLoad.bind(this), false); 
+            }
+        }
 
+        onLoad(event) {
+            this.iframe = this.createIframe();
+            this.notifications = this.createNotifications(0);
+            this.message = this.createMessage();
+            this.launcher = this.createLauncher();
+            this.referrals = JSON.parse(this.settings.refs).filter((r) => r.successUrl);
+            this.container = this.createContainer(this.iframe, this.launcher, this.message);
             this.parseURL();
 
             window.matchMedia('(max-width: 990px)').addListener(this.onMatchMedia.bind(this));
@@ -105,19 +115,28 @@ const controller = async (req: Request, res: Response) => {
             return window.innerWidth < this.MD_BREAKPOINT;
         }
 
-        createIframe(widgetUrl, poolId, chainId, origin, theme, align, expired) {
-            const iframe = document.createElement('iframe');
-            const styles = this.isSmallMedia ? this.defaultStyles['sm'] : this.defaultStyles['md'];
+        createURL() {
+            const { widgetUrl, poolId, chainId, origin, theme, expired } = this.settings;
             const url = new URL(widgetUrl);
-
+            
             url.searchParams.append('id', poolId);
             url.searchParams.append('origin', origin);
             url.searchParams.append('chainId', chainId);
             url.searchParams.append('theme', theme);
             url.searchParams.append('expired', expired);
             
+            return url;
+        }
+
+        createIframe() {
+            const { widgetUrl, poolId, chainId, origin, theme, align, expired } = this.settings;
+            const iframe = document.createElement('iframe');
+            const styles = this.isSmallMedia ? this.defaultStyles['sm'] : this.defaultStyles['md'];
+            const url = this.createURL();
+
             iframe.id = 'thx-iframe';
             iframe.src = url;
+            iframe.setAttribute('data-hj-allow-iframe', true);
             Object.assign(iframe.style, {
                 ...styles,
                 zIndex: 99999999,
@@ -158,7 +177,8 @@ const controller = async (req: Request, res: Response) => {
             return notifications;
         }
 
-        createMessage(message, logoUrl, align) {
+        createMessage() {
+            const { message, logoUrl, align } = this.settings;
             const messageBox = document.createElement('div');
             const logoBox = document.createElement('div');
             const closeBox = document.createElement('button');
@@ -235,7 +255,10 @@ const controller = async (req: Request, res: Response) => {
                 transition: '.2s opacity ease, .1s transform ease',
             });
 
-            messageBox.innerHTML = '<span style="z-index: 0">' + message + '</span>';
+            const wrapper = document.createElement('span');
+            wrapper.style.zIndex = 0;
+            wrapper.innerHTML = message;
+            messageBox.appendChild(wrapper);
             messageBox.appendChild(closeBox);
             messageBox.prepend(logoBox);
 
@@ -243,7 +266,7 @@ const controller = async (req: Request, res: Response) => {
             return messageBox;
         }
     
-        createLauncher(notifications, align) {
+        createLauncher() {
             const svgGift =
                 '<svg id="thx-svg-gift" style="display:block; margin: auto; fill: '+this.theme.elements.launcherIcon.color+'; width: 20px; height: 20px; transform: scale(1); transition: transform .2s ease;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M32 448c0 17.7 14.3 32 32 32h160V320H32v128zm256 32h160c17.7 0 32-14.3 32-32V320H288v160zm192-320h-42.1c6.2-12.1 10.1-25.5 10.1-40 0-48.5-39.5-88-88-88-41.6 0-68.5 21.3-103 68.3-34.5-47-61.4-68.3-103-68.3-48.5 0-88 39.5-88 88 0 14.5 3.8 27.9 10.1 40H32c-17.7 0-32 14.3-32 32v80c0 8.8 7.2 16 16 16h480c8.8 0 16-7.2 16-16v-80c0-17.7-14.3-32-32-32zm-326.1 0c-22.1 0-40-17.9-40-40s17.9-40 40-40c19.9 0 34.6 3.3 86.1 80h-86.1zm206.1 0h-86.1c51.4-76.5 65.7-80 86.1-80 22.1 0 40 17.9 40 40s-17.9 40-40 40z"/></svg>';
             const launcher = document.createElement('div');
@@ -258,41 +281,29 @@ const controller = async (req: Request, res: Response) => {
                 cursor: 'pointer',
                 position: 'fixed',
                 bottom: '15px',
-                right: align === 'right' ? '15px' : 'auto',
-                left: align === 'left' ? '15px' : 'auto',
+                right: this.settings.align === 'right' ? '15px' : 'auto',
+                left: this.settings.align === 'left' ? '15px' : 'auto',
                 opacity: 0,
                 transform: 'scale(0)',
                 transition: '.2s opacity ease, .1s transform ease',
             });
             launcher.innerHTML = svgGift;
-            launcher.addEventListener('click', () => {
-                const iframe = document.getElementById('thx-iframe');
-                iframe.style.opacity = iframe.style.opacity === '0' ? '1' : '0';
-                iframe.style.transform = iframe.style.transform === 'scale(0)' ? 'scale(1)' : 'scale(0)';
-               
-                this.message.remove();
-                this.iframe.contentWindow.postMessage({ message: 'thx.iframe.show', isShown: !!Number(iframe.style.opacity) }, this.settings.widgetUrl);
-            });
-            launcher.addEventListener('mouseenter', () => {
-                const gift = document.getElementById('thx-svg-gift');
-                gift.style.transform = 'scale(1.1)';
-            });
-            launcher.addEventListener('mouseleave', () => {
-                const gift = document.getElementById('thx-svg-gift');
-                gift.style.transform = 'scale(1)';
-            });
+            launcher.addEventListener('click', this.onClickLauncher.bind(this));
+            launcher.addEventListener('mouseenter', this.onMouseEnterLauncher.bind(this));
+            launcher.addEventListener('mouseleave', this.onMouseLeaveLauncher.bind(this));
 
             const url = new URL(window.location.href)
             const widgetPath = url.searchParams.get('thx_widget_path');
 
-            launcher.appendChild(notifications);
+            launcher.appendChild(this.notifications);
+            
             setTimeout(() => {
                 launcher.style.opacity = 1;
                 launcher.style.transform = 'scale(1)';
 
                 this.message.style.opacity = 1;
                 this.message.style.transform = 'scale(1)';
-            }, !widgetPath ? 1500 : 0);
+            }, 350);
     
             return launcher;
         }
@@ -326,6 +337,29 @@ const controller = async (req: Request, res: Response) => {
                     this.onWidgetToggle();
                     break;
                 }
+            }
+        }
+
+        onMouseEnterLauncher() {
+            const gift = document.getElementById('thx-svg-gift');
+            gift.style.transform = 'scale(1.1)';    
+        }
+
+        onMouseLeaveLauncher() {
+            const gift = document.getElementById('thx-svg-gift');
+            gift.style.transform = 'scale(1)';
+        }
+
+        onClickLauncher() {
+            const isMobile = window.matchMedia('(pointer:coarse)').matches;
+            if (window.ethereum && isMobile) {
+                window.open(this.createURL(), '_blank');
+            } else {
+                const iframe = document.getElementById('thx-iframe');
+                iframe.style.opacity = iframe.style.opacity === '0' ? '1' : '0';
+                iframe.style.transform = iframe.style.transform === 'scale(0)' ? 'scale(1)' : 'scale(0)';              
+                this.message.remove();
+                this.iframe.contentWindow.postMessage({ message: 'thx.iframe.show', isShown: !!Number(iframe.style.opacity) }, this.settings.widgetUrl);
             }
         }
     
@@ -388,7 +422,7 @@ const controller = async (req: Request, res: Response) => {
         widgetUrl: '${WIDGET_URL}',
         poolId: '${req.params.id}',
         chainId: '${pool.chainId}',
-        logo: '${brand && brand.logoImgUrl ? brand.logoImgUrl : AUTH_URL + '/img/logo-padding.png'}',
+        logoUrl: '${brand && brand.logoImgUrl ? brand.logoImgUrl : AUTH_URL + '/img/logo-padding.png'}',
         message: '${widget.message || ''}',
         align: '${widget.align || 'right'}',
         theme: '${widget.theme}',

@@ -17,9 +17,10 @@ export default {
     findBySub: async (dailyReward: DailyRewardDocument, sub: string) => {
         return await DailyRewardClaim.find({ dailyRewardId: dailyReward._id, sub });
     },
-    isClaimed: async (poolId: string, sub: string) => {
+    isClaimed: async (dailyReward: DailyRewardDocument, sub: string) => {
         const isClaimedWithinTimeframe = !!(await DailyRewardClaim.exists({
-            poolId,
+            poolId: dailyReward.poolId,
+            dailyRewardId: dailyReward._id,
             sub,
             createdAt: { $gt: new Date(Date.now() - ONE_DAY_MS) }, // Greater than now - 24h
         }));

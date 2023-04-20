@@ -31,7 +31,6 @@ required.forEach((value: string) => {
     }
 });
 
-
 // This allows you to use a single .env file with both regular and test configuration. This allows for an
 // easy to use setup locally without having hardcoded credentials during test runs.
 if (process.env.NODE_ENV === 'test') {
@@ -106,3 +105,6 @@ export const STRIPE_SECRET_WEBHOOK = process.env.STRIPE_SECRET_WEBHOOK || '';
 export const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
 export const TWITTER_API_TOKEN = process.env.TWITTER_API_TOKEN;
 export const IPFS_BASE_URL = 'https://ipfs.io/ipfs/';
+
+export const WEBHOOK_REFERRAL = process.env.WEBHOOK_REFERRAL;
+export const WEBHOOK_MILESTONE = process.env.WEBHOOK_MILESTONE;

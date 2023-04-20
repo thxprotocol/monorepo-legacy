@@ -17,6 +17,11 @@
                         <b-form-group label="Amount">
                             <b-form-input v-model="amount" />
                         </b-form-group>
+                        <b-form-group label="Qualification">
+                            <b-form-checkbox v-model="isMandatoryReview">
+                                Enable mandatory manual review
+                            </b-form-checkbox>
+                        </b-form-group>
                     </b-col>
                     <b-col md="6">
                         <BaseCardURLQualify
@@ -96,6 +101,7 @@ hljs.registerLanguage('shell', Shell);
 })
 export default class ModalReferralRewardCreate extends Vue {
     isSubmitDisabled = false;
+    isMandatoryReview = false;
     isLoading = false;
     isVisibleCardURLQualify = true;
     isVisibleCardWebhookQualify = false;
@@ -129,6 +135,7 @@ export default class ModalReferralRewardCreate extends Vue {
         this.successUrl = this.reward ? this.reward.successUrl : '';
         this.isVisibleCardURLQualify = this.reward ? !!this.reward.successUrl : true;
         this.isVisibleCardWebhookQualify = this.reward ? !this.reward.successUrl : false;
+        this.isMandatoryReview = this.reward ? this.reward.isMandatoryReview : this.isMandatoryReview;
     }
 
     onSubmit() {
@@ -144,6 +151,7 @@ export default class ModalReferralRewardCreate extends Vue {
                     amount: this.amount,
                     claimAmount: this.claimAmount,
                     successUrl: this.successUrl && this.successUrl.length ? this.successUrl : undefined,
+                    isMandatoryReview: this.isMandatoryReview,
                 },
             })
             .then(() => {

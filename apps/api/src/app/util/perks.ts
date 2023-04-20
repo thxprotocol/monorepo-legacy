@@ -11,7 +11,7 @@ import { isTERC20Perk, isTERC721Perk, isTShopifyPerk } from './rewards';
 
 type PerkDocument = ERC20PerkDocument | ERC721PerkDocument | ShopifyPerkDocument;
 
-function getPaymentModel(perk: PerkDocument): mongoose.Model<any> {
+export function getPaymentModel(perk: PerkDocument): mongoose.Model<any> {
     if (isTERC20Perk(perk)) {
         return ERC20PerkPayment;
     }
@@ -25,8 +25,6 @@ function getPaymentModel(perk: PerkDocument): mongoose.Model<any> {
 
 export const redeemValidation = async ({
     perk,
-    sub,
-    claim,
 }: {
     perk: ERC20PerkDocument | ERC721PerkDocument | ShopifyPerkDocument;
     sub?: string;
@@ -46,22 +44,6 @@ export const redeemValidation = async ({
         if (amountOfPayments >= perk.limit) {
             return { isError: true, errorMessage: "This perk has reached it's limit." };
         }
-    }
-
-    // Can not be claimed when claimLimit > claimed perks if claimAmount > 0 (Number of QR codes)
-    if (perk.claimLimit && sub) {
-        const amountOfPaymentsPerSub = await model.countDocuments({ perkId: perk._id, sub });
-        if (amountOfPaymentsPerSub >= perk.claimLimit) {
-            return { isError: true, errorMessage: 'You have claimed this perk for the maximum amount of times.' };
-        }
-    }
-
-    // Can not be claimed when sub is set for this claim URL and claim amount is greater than 1
-    if (claim && claim.sub && perk.claimAmount > 1) {
-        return {
-            isError: true,
-            errorMessage: 'This perk has been claimed already.',
-        };
     }
 
     return { isError: false };

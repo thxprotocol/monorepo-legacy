@@ -43,6 +43,7 @@ export default class BaseCardRewardExpiry extends Vue {
             const date = new Date(this.expiryDate);
             this.expirationDate = date;
             this.expirationTime = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+            this.isVisible = true;
         }
     }
 

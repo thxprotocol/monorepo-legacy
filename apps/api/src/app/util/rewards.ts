@@ -12,6 +12,7 @@ import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardServic
 import MilestoneRewardService from '../services/MilestoneRewardService';
 import DailyRewardService from '../services/DailyRewardService';
 import { ShopifyPerkDocument } from '../models/ShopifyPerk';
+import { ONE_DAY_MS } from '../services/DailyRewardClaimService';
 
 export async function findRewardByUuid(uuid: string) {
     const erc20Perk = await ERC20Perk.findOne({ uuid });
@@ -144,5 +145,14 @@ export async function createDummyContents(pool: AssetPoolDocument) {
         title: 'First referral reward claimed ✨',
         description: 'Have your audience earn a referral reward.',
         amount: 400,
+    });
+
+    await ERC20Perk.create({
+        title: 'A small bag of $THX',
+        description: 'Have your audience earn a referral reward.',
+        amount: 50,
+        pointPrice: 500,
+        limit: 10,
+        expiryDate: new Date(Date.now() + ONE_DAY_MS * 14),
     });
 }

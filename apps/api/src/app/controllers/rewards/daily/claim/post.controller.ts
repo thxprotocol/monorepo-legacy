@@ -15,7 +15,7 @@ const controller = async (req: Request, res: Response) => {
         throw new NotFoundError('Could not find the Daily Reward');
     }
 
-    if (await DailyRewardClaimService.isClaimed(reward.poolId, req.body.sub)) {
+    if (await DailyRewardClaimService.isClaimed(reward, req.body.sub)) {
         return res.json({ error: 'This reward is not claimable yet' });
     }
 

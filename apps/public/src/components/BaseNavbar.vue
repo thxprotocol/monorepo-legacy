@@ -78,7 +78,6 @@ import { DASHBOARD_URL, WALLET_URL, DOCS_URL } from '../config/secrets';
     },
 })
 export default class BaseNavbar extends Vue {
-    dashboardUrl = DASHBOARD_URL;
     walletUrl = WALLET_URL;
     docsUrl = DOCS_URL;
     toggle = false;
@@ -91,6 +90,16 @@ export default class BaseNavbar extends Vue {
             this.$route.path.startsWith('/token') ||
             this.$route.path.startsWith('/use-case')
         );
+    }
+
+    //https://localhost:8081?ref=eyJzdWIiOiI2NDM2YzVkOWM5MmQ3ZDkwNDAzZTk0ZjUiLCJwb29sSWQiOiI2NDM3Y2JkZGM3YWFlYjRlNDJhYjUzOGMiLCJ1dWlkIjoiNjExMTdkYzItOGNlNC00OWMyLThlMDktMWY2NTA0ZGFlYTI5In0=
+
+    get dashboardUrl() {
+        const url = new URL(DASHBOARD_URL);
+        const ref = this.$route.query.ref;
+        if (!ref) return url.toString();
+        url.searchParams.append('referralCode', String(ref));
+        return url.toString();
     }
 
     created() {
