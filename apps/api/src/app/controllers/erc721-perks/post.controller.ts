@@ -1,6 +1,6 @@
 import { body, check } from 'express-validator';
 import { Request, Response } from 'express';
-import { createERC721Perk } from '@thxnetwork/api/util/rewards';
+import { createERC721Perk, validateTokenGatingSchema } from '@thxnetwork/api/util/rewards';
 import { TERC721Perk } from '@thxnetwork/types/interfaces/ERC721Perk';
 import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
 import ImageService from '@thxnetwork/api/services/ImageService';
@@ -28,12 +28,16 @@ const validation = [
             return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
         }),
     body('isPromoted').optional().isBoolean(),
+    check('tokenGating')
+        .optional()
+        .custom((value) => {
+            return validateTokenGatingSchema(value);
+        }),
 ];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721 Rewards']
     let image: string;
-
     const pool = await PoolService.getById(req.header('X-PoolId'));
     if (!pool) throw new NotFoundError('Could not find pool');
 
@@ -61,6 +65,7 @@ const controller = async (req: Request, res: Response) => {
         perks = await Promise.all(
             metadataIdList.map(async (erc721metadataId: string) => {
                 const config = getPerkConfig({ pool, erc721, erc721metadataId, image, req });
+
                 const { reward, claims } = await createERC721Perk(pool, config);
                 return { ...reward.toJSON(), claims, erc721: erc721 };
             }),
@@ -74,6 +79,7 @@ const controller = async (req: Request, res: Response) => {
         const erc721 = await ERC721Service.findById(erc721Token.erc721Id);
         const config = getPerkConfig({ pool, erc721, image, req });
         const reward = await ERC721PerkService.create(pool, config);
+
         perks = [{ ...reward.toJSON(), erc721: erc721 }];
     }
     res.status(201).json(perks);
@@ -105,6 +111,7 @@ function getPerkConfig(args: {
         price: args.req.body.price,
         priceCurrency: args.req.body.priceCurrency,
         erc721tokenId: args.req.body.erc721tokenId,
+        tokenGating: args.req.body.tokenGating,
     } as TERC721Perk;
 }
 

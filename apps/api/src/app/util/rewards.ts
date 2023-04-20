@@ -156,3 +156,19 @@ export async function createDummyContents(pool: AssetPoolDocument) {
         expiryDate: new Date(Date.now() + ONE_DAY_MS * 14),
     });
 }
+
+export function validateTokenGatingSchema(value: string) {
+    {
+        try {
+            const tokenGating = JSON.parse(value);
+            return (
+                tokenGating.contractAddress !== undefined &&
+                tokenGating.contractAddress.length > 0 &&
+                tokenGating.variant !== undefined &&
+                (tokenGating.amount !== undefined ? !isNaN(Number(tokenGating.amount)) : true)
+            );
+        } catch (err) {
+            return false;
+        }
+    }
+}

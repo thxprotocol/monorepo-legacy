@@ -60,6 +60,12 @@
                             @change-reward-limit="limit = $event"
                             @change-claim-amount="onChangeClaimAmount"
                         />
+                        <BaseCardTokenGating
+                            :pool="pool"
+                            class="mb-3"
+                            :tokenGating="tokenGating"
+                            @changeTokenGating="tokenGating = $event"
+                        />
                         <b-form-group>
                             <b-form-checkbox v-model="isPromoted">Promoted</b-form-checkbox>
                         </b-form-group>
@@ -83,19 +89,20 @@
 </template>
 
 <script lang="ts">
-import { TERC20Perk, type TPool } from '@thxnetwork/types/interfaces';
+import { TERC20Perk, type TPool, TTokenGating } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseDropdownSelectERC20 from '../dropdowns/BaseDropdownSelectERC20.vue';
 import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
-
+import BaseCardTokenGating from '../cards/BaseCardTokenGating.vue';
 @Component({
     components: {
         BaseModal,
         BaseCardRewardExpiry,
         BaseCardRewardLimits,
         BaseDropdownSelectERC20,
+        BaseCardTokenGating,
     },
 })
 export default class ModalRewardERC20Create extends Vue {
@@ -115,6 +122,7 @@ export default class ModalRewardERC20Create extends Vue {
     image = '';
 
     isPromoted = false;
+    tokenGating: TTokenGating | null | undefined = null;
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
@@ -133,6 +141,7 @@ export default class ModalRewardERC20Create extends Vue {
 
         this.image = this.reward && this.reward.image ? this.reward.image : '';
         this.isPromoted = this.reward ? this.reward.isPromoted : false;
+        this.tokenGating = this.reward ? this.reward.tokenGating : null;
     }
 
     onSubmit() {
@@ -155,6 +164,7 @@ export default class ModalRewardERC20Create extends Vue {
                     limit: this.limit,
                     file: this.imageFile,
                     isPromoted: this.isPromoted,
+                    tokenGating: this.tokenGating ? JSON.stringify(this.tokenGating) : undefined,
                 },
             })
             .then(() => {

@@ -1,6 +1,6 @@
 import { body, check } from 'express-validator';
 import { Request, Response } from 'express';
-import { createERC20Perk } from '@thxnetwork/api/util/rewards';
+import { createERC20Perk, validateTokenGatingSchema } from '@thxnetwork/api/util/rewards';
 import ImageService from '@thxnetwork/api/services/ImageService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
@@ -22,6 +22,11 @@ const validation = [
         }),
     body('image').optional().isString(),
     body('isPromoted').optional().isBoolean(),
+    check('tokenGating')
+        .optional()
+        .custom((value) => {
+            return validateTokenGatingSchema(value);
+        }),
 ];
 
 const controller = async (req: Request, res: Response) => {
@@ -42,7 +47,6 @@ const controller = async (req: Request, res: Response) => {
             await ERC20Service.addMinter(erc20, pool.address);
         }
     }
-
     const { reward, claims } = await createERC20Perk(pool, { ...req.body, image });
     res.status(201).json({ ...reward.toJSON(), claims, erc20 });
 };

@@ -1,4 +1,5 @@
 import { TBaseReward } from './BaseReward';
+import { TTokenGating } from './TokenGating';
 
 export type TERC721Perk = TBaseReward & {
     erc721Id: string;
@@ -9,4 +10,5 @@ export type TERC721Perk = TBaseReward & {
     isPromoted: boolean;
     price: number;
     priceCurrency: string;
+    tokenGating?: TTokenGating;
 };

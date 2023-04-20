@@ -19,3 +19,4 @@ export * from './ShopifyPerk';
 export * from './ShopifyPerkPayment';
 export * from './ShopifyDiscountCode';
 export * from './Brand';
+export * from './TokenGating';

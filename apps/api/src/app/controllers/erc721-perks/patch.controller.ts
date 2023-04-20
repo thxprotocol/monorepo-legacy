@@ -1,6 +1,7 @@
 import ERC721PerkService from '@thxnetwork/api/services/ERC721PerkService';
 import ImageService from '@thxnetwork/api/services/ImageService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
+import { validateTokenGatingSchema } from '@thxnetwork/api/util/rewards';
 import { TERC721Perk } from '@thxnetwork/types/index';
 import { Request, Response } from 'express';
 import { body, check, param } from 'express-validator';
@@ -22,6 +23,11 @@ const validation = [
             return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
         }),
     body('isPromoted').optional().isBoolean(),
+    check('tokenGating')
+        .optional()
+        .custom((value) => {
+            return validateTokenGatingSchema(value);
+        }),
 ];
 
 const controller = async (req: Request, res: Response) => {

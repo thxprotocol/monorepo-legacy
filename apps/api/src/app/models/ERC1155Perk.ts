@@ -11,6 +11,7 @@ const schema = new mongoose.Schema(
         erc1155metadataId: String,
         pointPrice: Number,
         image: String,
+        tokenGating: String,
     },
     { timestamps: true },
 );

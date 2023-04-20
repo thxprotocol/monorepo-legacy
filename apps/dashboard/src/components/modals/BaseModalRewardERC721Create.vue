@@ -75,6 +75,12 @@
                             :claimAmount="claimAmount"
                             @change-claim-amount="onChangeClaimAmount"
                         />
+                        <BaseCardTokenGating
+                            :pool="pool"
+                            class="mb-3"
+                            :tokenGating="tokenGating"
+                            @changeTokenGating="tokenGating = $event"
+                        />
                         <b-form-group>
                             <b-form-checkbox v-model="isPromoted">Promoted</b-form-checkbox>
                         </b-form-group>
@@ -98,7 +104,7 @@
 </template>
 
 <script lang="ts">
-import { type TPool } from '@thxnetwork/types/index';
+import { TTokenGating, type TPool } from '@thxnetwork/types/index';
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { platformList, platformInteractionList } from '@thxnetwork/dashboard/types/rewards';
@@ -116,6 +122,7 @@ import BaseCardClaimAmount from '../cards/BaseCardClaimAmount.vue';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import { IAccount } from '@thxnetwork/dashboard/types/account';
 import { TERC721Token } from '@thxnetwork/dashboard/types/erc721';
+import BaseCardTokenGating from '../cards/BaseCardTokenGating.vue';
 
 type TRewardCondition = {
     platform: RewardConditionPlatform;
@@ -133,6 +140,7 @@ type TRewardCondition = {
         BaseDropdownSelectERC721,
         BaseDropdownERC721ImportedToken,
         BaseCardClaimAmount,
+        BaseCardTokenGating,
     },
     computed: mapGetters({
         pools: 'pools/all',
@@ -170,6 +178,7 @@ export default class ModalRewardERC721Create extends Vue {
     isPromoted = false;
     price = 0;
     priceCurrency = 'USD';
+    tokenGating: TTokenGating | null | undefined = null;
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
@@ -208,6 +217,7 @@ export default class ModalRewardERC721Create extends Vue {
         this.erc721 = this.reward ? this.erc721s[this.reward.erc721Id] : null;
         this.erc721metadataId = this.reward ? this.reward.erc721metadataId : '';
         this.erc721tokenId = this.reward ? this.reward.erc721tokenId : undefined;
+        this.tokenGating = this.reward ? this.reward.tokenGating : null;
     }
 
     get hasImportedTokens() {
@@ -273,6 +283,7 @@ export default class ModalRewardERC721Create extends Vue {
             file: this.imageFile,
             isPromoted: this.isPromoted,
             erc721tokenId: this.erc721tokenId,
+            tokenGating: this.tokenGating ? JSON.stringify(this.tokenGating) : undefined,
         };
 
         if (this.expiryDate) Object.assign(payload, { expiryDate: this.expiryDate });

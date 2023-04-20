@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import { TERC20Perk } from '@thxnetwork/types/';
 
 export const rewardBaseSchema = {
@@ -29,6 +29,7 @@ const schema = new mongoose.Schema(
         amount: String,
         pointPrice: Number,
         image: String,
+        tokenGating: String,
     },
     { timestamps: true },
 );

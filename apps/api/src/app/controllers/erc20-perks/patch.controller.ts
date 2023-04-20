@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { body, check, param } from 'express-validator';
 import ERC20PerkService from '@thxnetwork/api/services/ERC20PerkService';
 import ImageService from '@thxnetwork/api/services/ImageService';
+import { validateTokenGatingSchema } from '@thxnetwork/api/util/rewards';
 
 const validation = [
     param('id').isMongoId(),
@@ -18,6 +19,11 @@ const validation = [
             return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
         }),
     body('isPromoted').optional().isBoolean(),
+    check('tokenGating')
+        .optional()
+        .custom((value) => {
+            return validateTokenGatingSchema(value);
+        }),
 ];
 
 const controller = async (req: Request, res: Response) => {

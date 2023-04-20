@@ -1,4 +1,5 @@
 import { TBaseReward } from './BaseReward';
+import { TTokenGating } from './TokenGating';
 
 export type TERC20Perk = TBaseReward & {
     erc20Id: string;
@@ -6,4 +7,5 @@ export type TERC20Perk = TBaseReward & {
     pointPrice: number;
     isPromoted: boolean;
     image?: string;
+    tokenGating?: TTokenGating;
 };
