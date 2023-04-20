@@ -33,7 +33,9 @@ export async function create(pool: AssetPoolDocument, payload: Partial<TSurveyRe
         } as TSurveyRewardQuestion;
     });
 
-    await SurveyRewardQuestion.create(questions);
+    for (let i = 0; i < questions.length; i++) {
+        await SurveyRewardQuestion.create(questions[i]);
+    }
 
     PoolService.sendNotification(pool, reward);
 
