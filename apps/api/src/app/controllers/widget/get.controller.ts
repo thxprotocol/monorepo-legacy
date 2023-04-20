@@ -87,7 +87,9 @@ const controller = async (req: Request, res: Response) => {
             this.referrals = JSON.parse(this.settings.refs).filter((r) => r.successUrl);
             this.container = this.createContainer(this.iframe, this.launcher, this.message);
             this.parseURL();
-
+            
+            this.onWidgetToggle(!!this.widgetPath)
+            
             window.matchMedia('(max-width: 990px)').addListener(this.onMatchMedia.bind(this));
             window.onmessage = this.onMessage.bind(this);
         }
@@ -116,8 +118,11 @@ const controller = async (req: Request, res: Response) => {
         }
 
         createURL() {
+            const parentUrl = new URL(window.location.href)
             const { widgetUrl, poolId, chainId, origin, theme, expired } = this.settings;
-            const url = new URL(widgetUrl);
+            const path = parentUrl.searchParams.get('thx_widget_path');
+            this.widgetPath = '/' + poolId + path;
+            const url = new URL(widgetUrl + this.widgetPath);
             
             url.searchParams.append('id', poolId);
             url.searchParams.append('origin', origin);
@@ -291,10 +296,6 @@ const controller = async (req: Request, res: Response) => {
             launcher.addEventListener('click', this.onClickLauncher.bind(this));
             launcher.addEventListener('mouseenter', this.onMouseEnterLauncher.bind(this));
             launcher.addEventListener('mouseleave', this.onMouseLeaveLauncher.bind(this));
-
-            const url = new URL(window.location.href)
-            const widgetPath = url.searchParams.get('thx_widget_path');
-
             launcher.appendChild(this.notifications);
             
             setTimeout(() => {
@@ -303,6 +304,10 @@ const controller = async (req: Request, res: Response) => {
 
                 this.message.style.opacity = 1;
                 this.message.style.transform = 'scale(1)';
+
+                const url = new URL(window.location.href)
+                const widgetPath = url.searchParams.get('thx_widget_path');
+                this.onWidgetToggle(!!widgetPath)
             }, 350);
     
             return launcher;
@@ -334,7 +339,7 @@ const controller = async (req: Request, res: Response) => {
                     break;
                 }
                 case 'thx.widget.toggle': {
-                    this.onWidgetToggle();
+                    this.onWidgetToggle(!Number(this.iframe.style.opacity));
                     break;
                 }
             }
@@ -355,11 +360,8 @@ const controller = async (req: Request, res: Response) => {
             if (window.ethereum && isMobile) {
                 window.open(this.createURL(), '_blank');
             } else {
-                const iframe = document.getElementById('thx-iframe');
-                iframe.style.opacity = iframe.style.opacity === '0' ? '1' : '0';
-                iframe.style.transform = iframe.style.transform === 'scale(0)' ? 'scale(1)' : 'scale(0)';              
+                this.onWidgetToggle(!Number(this.iframe.style.opacity));
                 this.message.remove();
-                this.iframe.contentWindow.postMessage({ message: 'thx.iframe.show', isShown: !!Number(iframe.style.opacity) }, this.settings.widgetUrl);
             }
         }
     
@@ -370,7 +372,8 @@ const controller = async (req: Request, res: Response) => {
             
             if (widgetPath) {
                 const { widgetUrl, poolId, origin, chainId, theme } = this.settings;
-                const url = new URL(widgetUrl + widgetPath);
+                const path = '/' + poolId + widgetPath;
+                const url = new URL(widgetUrl + path);
 
                 url.searchParams.append('id', poolId);
                 url.searchParams.append('origin', origin);
@@ -378,17 +381,16 @@ const controller = async (req: Request, res: Response) => {
                 url.searchParams.append('theme', theme);
                 url.searchParams.append('status', redirectStatus);
                 
-                this.iframe.contentWindow.postMessage({ message: 'thx.iframe.navigate', path: url.pathname + url.search }, this.settings.widgetUrl);
-                this.onWidgetToggle();
+                this.iframe.contentWindow.postMessage({ message: 'thx.iframe.navigate', path: url.pathname + url.search }, widgetUrl);
             }
     
             this.storeReferrer();
         }
 
-        onWidgetToggle() {
-            this.iframe.style.opacity = this.iframe.style.opacity === '0' ? '1' : '0';
-            this.iframe.style.transform = this.iframe.style.transform === 'scale(0)' ? 'scale(1)' : 'scale(0)';
-            this.iframe.contentWindow.postMessage({ message: 'thx.iframe.show', isShown: false }, this.settings.widgetUrl);
+        onWidgetToggle(show) {
+            this.iframe.style.opacity = show ? '1' : '0';
+            this.iframe.style.transform = show ? 'scale(1)' : 'scale(0)';
+            this.iframe.contentWindow.postMessage({ message: 'thx.iframe.show', isShown: show }, this.settings.widgetUrl);
         }
 
         onMatchSuccessUrl() {
