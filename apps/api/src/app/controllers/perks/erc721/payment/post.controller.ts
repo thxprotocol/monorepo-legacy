@@ -6,6 +6,7 @@ import { Merchant } from '@thxnetwork/api/models/Merchant';
 import { stripe } from '@thxnetwork/api/util/stripe';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { redeemValidation } from '@thxnetwork/api/util/perks';
+import PerkService from '@thxnetwork/api/services/PerkService';
 
 const validation = [param('uuid').exists()];
 
@@ -20,6 +21,11 @@ const controller = async (req: Request, res: Response) => {
     const erc721Perk = await ERC721Perk.findOne({ uuid: req.params.uuid });
     if (!erc721Perk) throw new NotFoundError('Could not find this perk');
     if (!erc721Perk.price) throw new NotFoundError('No point price for this perk has been set.');
+
+    const isPerkLocked = await PerkService.getIsLockedFoSub(erc721Perk, req.auth.sub, pool);
+    if (isPerkLocked) {
+        throw new ForbiddenError('This Perk is Locked');
+    }
 
     const redeemValidationResult = await redeemValidation({ perk: erc721Perk, sub: req.auth.sub });
     if (redeemValidationResult.isError) {

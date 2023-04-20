@@ -13,6 +13,7 @@ import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
 import MailService from '@thxnetwork/api/services/MailService';
 import { Widget } from '@thxnetwork/api/models/Widget';
 import { Wallet } from '@thxnetwork/api/models/Wallet';
+import PerkService from '@thxnetwork/api/services/PerkService';
 
 const validation = [param('uuid').exists()];
 
@@ -34,6 +35,11 @@ const controller = async (req: Request, res: Response) => {
         if (!metadata) {
             throw new NotFoundError('Could not find the erc721 metadata for this perk');
         }
+    }
+
+    const isPerkLocked = await PerkService.getIsLockedFoSub(perk, req.auth.sub, pool);
+    if (isPerkLocked) {
+        throw new ForbiddenError('This Perk is Locked');
     }
 
     const pointBalance = await PointBalance.findOne({ sub: req.auth.sub, poolId: pool._id });

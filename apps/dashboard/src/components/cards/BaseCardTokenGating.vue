@@ -82,7 +82,7 @@ export default class BaseCardTokenGating extends Vue {
     isValidAddress = true;
 
     validateAddress() {
-        this.isValidAddress = isAddress(this.contractAddress);
+        this.isValidAddress = !this.contractAddress.length || isAddress(this.contractAddress);
     }
 
     mounted() {

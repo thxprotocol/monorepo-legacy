@@ -2,29 +2,17 @@ import { Request, Response } from 'express';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
-import { ERC20Perk, ERC20PerkDocument } from '@thxnetwork/api/models/ERC20Perk';
-import { ERC721Perk, ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
+import { ERC20Perk } from '@thxnetwork/api/models/ERC20Perk';
+import { ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
 import { redeemValidation } from '@thxnetwork/api/util/perks';
 import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
-import { ShopifyPerk, ShopifyPerkDocument } from '@thxnetwork/api/models/ShopifyPerk';
+import { ShopifyPerk } from '@thxnetwork/api/models/ShopifyPerk';
 import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
 import { ShopifyPerkPayment } from '@thxnetwork/api/models/ShopifyPerkPayment';
-
-type TAllPerks = ERC20PerkDocument | ERC721PerkDocument | ShopifyPerkDocument;
-
-async function getProgress(r: TAllPerks, model: any) {
-    return {
-        count: await model.countDocuments({ perkId: r._id }),
-        limit: r.limit,
-    };
-}
-
-async function getExpiry(r: TAllPerks) {
-    return {
-        now: Date.now(),
-        date: new Date(r.expiryDate).getTime(),
-    };
-}
+import WalletService from '@thxnetwork/api/services/WalletService';
+import { WalletDocument } from '@thxnetwork/api/models/Wallet';
+import PerkService from '@thxnetwork/api/services/PerkService';
+import jwt_decode from 'jwt-decode';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Perks']
@@ -41,6 +29,18 @@ const controller = async (req: Request, res: Response) => {
         poolId: String(pool._id),
         $or: [{ pointPrice: { $exists: true, $gt: 0 } }, { price: { $exists: true, $gt: 0 } }],
     });
+
+    let userWallet: WalletDocument;
+
+    // This endpoint is public so we do not get req.auth populated and decode the token ourselves
+    // when the request is made with an authorization header to obtain the sub.
+    const authHeader = req.header('authorization');
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        const token: { sub: string } = jwt_decode(authHeader.split(' ')[1]);
+        const sub = token.sub;
+        const wallets = await WalletService.findByQuery({ sub, chainId: pool.chainId });
+        userWallet = wallets[0];
+    }
 
     res.json({
         erc20Perks: await Promise.all(
@@ -59,8 +59,9 @@ const controller = async (req: Request, res: Response) => {
                     isDisabled: isError,
                     isOwned: false,
                     erc20: await ERC20Service.getById(r.erc20Id),
-                    expiry: await getExpiry(r),
-                    progress: await getProgress(r, ERC20PerkPayment),
+                    expiry: await PerkService.getExpiry(r),
+                    progress: await PerkService.getProgress(r, ERC20PerkPayment),
+                    isLocked: await PerkService.getIsLockedFoWallet(r, userWallet),
                 };
             }),
         ),
@@ -82,8 +83,9 @@ const controller = async (req: Request, res: Response) => {
                     erc721: await ERC721Service.findById(r.erc721Id),
                     erc721metadataId: r.erc721metadataId,
                     metadata: await ERC721Service.findMetadataById(r.erc721metadataId),
-                    expiry: await getExpiry(r),
-                    progress: await getProgress(r, ERC721PerkPayment),
+                    expiry: await PerkService.getExpiry(r),
+                    progress: await PerkService.getProgress(r, ERC721PerkPayment),
+                    isLocked: await PerkService.getIsLockedFoWallet(r, userWallet),
                 };
             }),
         ),
@@ -105,8 +107,8 @@ const controller = async (req: Request, res: Response) => {
                     limit: r.limit,
                     isDisabled: isError,
                     isOwned: false,
-                    expiry: await getExpiry(r),
-                    progress: await getProgress(r, ShopifyPerkPayment),
+                    expiry: await PerkService.getExpiry(r),
+                    progress: await PerkService.getProgress(r, ShopifyPerkPayment),
                 };
             }),
         ),
