@@ -46,8 +46,11 @@ export async function verifyOwnership(tokenGating: TTokenGating, wallet: WalletD
 }
 
 export async function getIsLockedFoWallet(perk: ERC20PerkDocument | ERC721PerkDocument, userWallet: WalletDocument) {
-    if (!userWallet || !perk.tokenGating) {
+    if (!perk.tokenGating || perk.tokenGating.contractAddress || !perk.tokenGating.variant) {
         return false;
+    }
+    if (!userWallet) {
+        return true;
     }
     const isOwned = await verifyOwnership(perk.tokenGating, userWallet);
     return !isOwned;
@@ -58,10 +61,13 @@ export async function getIsLockedFoSub(
     sub: string,
     pool: AssetPoolDocument,
 ) {
+    if (!perk.tokenGating || perk.tokenGating.contractAddress || !perk.tokenGating.variant) {
+        return false;
+    }
     const wallets = await WalletService.findByQuery({ sub, chainId: pool.chainId });
     const userWallet = wallets[0];
-    if (!userWallet || !perk.tokenGating) {
-        return false;
+    if (!userWallet) {
+        return true;
     }
     const isOwned = await verifyOwnership(perk.tokenGating, userWallet);
     return !isOwned;
