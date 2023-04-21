@@ -73,7 +73,6 @@ class ERC20PerkModule extends VuexModule {
 
         data.results.forEach((reward: TERC20Perk) => {
             reward.page = page;
-            reward.tokenGating = reward.tokenGating ? JSON.parse(String(reward.tokenGating)) : '';
             this.context.commit('set', { pool, reward });
         });
     }
@@ -90,7 +89,6 @@ class ERC20PerkModule extends VuexModule {
 
         const profile = this.context.rootGetters['account/profile'];
         track('UserCreates', [profile.sub, 'coin perk']);
-        data.tokenGating = data.tokenGating ? JSON.parse(String(data.tokenGating)) : '';
         this.context.commit('set', { pool, reward: { ...payload, ...data } });
     }
 

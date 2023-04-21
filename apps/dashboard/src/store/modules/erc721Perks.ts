@@ -72,7 +72,6 @@ class ERC721PerkModule extends VuexModule {
 
         data.results.forEach((reward: TERC721Perk) => {
             reward.page = page;
-            reward.tokenGating = reward.tokenGating ? JSON.parse(String(reward.tokenGating)) : '';
             this.context.commit('set', { pool, reward });
         });
     }
@@ -91,7 +90,6 @@ class ERC721PerkModule extends VuexModule {
         track('UserCreates', [profile.sub, 'nft perk']);
 
         r.data.forEach((data: any) => {
-            data.tokenGating = data.tokenGating ? JSON.parse(String(data.tokenGating)) : '';
             this.context.commit('set', { pool, reward: { ...payload, ...data } });
         });
     }

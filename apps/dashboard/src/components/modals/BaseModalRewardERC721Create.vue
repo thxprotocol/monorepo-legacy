@@ -283,7 +283,7 @@ export default class ModalRewardERC721Create extends Vue {
             file: this.imageFile,
             isPromoted: this.isPromoted,
             erc721tokenId: this.erc721tokenId,
-            tokenGating: this.tokenGating ? JSON.stringify(this.tokenGating) : undefined,
+            tokenGating: this.tokenGating,
         };
 
         if (this.expiryDate) Object.assign(payload, { expiryDate: this.expiryDate });

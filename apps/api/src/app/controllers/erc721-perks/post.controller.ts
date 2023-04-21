@@ -1,6 +1,6 @@
 import { body, check } from 'express-validator';
 import { Request, Response } from 'express';
-import { createERC721Perk, validateTokenGatingSchema } from '@thxnetwork/api/util/rewards';
+import { createERC721Perk } from '@thxnetwork/api/util/rewards';
 import { TERC721Perk } from '@thxnetwork/types/interfaces/ERC721Perk';
 import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
 import ImageService from '@thxnetwork/api/services/ImageService';
@@ -28,11 +28,9 @@ const validation = [
             return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
         }),
     body('isPromoted').optional().isBoolean(),
-    check('tokenGating')
-        .optional()
-        .custom((value) => {
-            return validateTokenGatingSchema(value);
-        }),
+    body('tokenGating.contractAddress').optional().isString(),
+    body('tokenGating.variant').optional().isString(),
+    body('tokenGating.amount').optional().isInt(),
 ];
 
 const controller = async (req: Request, res: Response) => {
@@ -92,6 +90,7 @@ function getPerkConfig(args: {
     image: string;
     erc721: ERC721Document;
 }) {
+    const tokenGating = args.req.body.tokenGating ? JSON.parse(args.req.body.tokenGating) : undefined;
     return {
         poolId: String(args.pool._id),
         erc721Id: String(args.erc721._id),
@@ -111,7 +110,7 @@ function getPerkConfig(args: {
         price: args.req.body.price,
         priceCurrency: args.req.body.priceCurrency,
         erc721tokenId: args.req.body.erc721tokenId,
-        tokenGating: args.req.body.tokenGating,
+        tokenGating,
     } as TERC721Perk;
 }
 

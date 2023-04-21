@@ -164,7 +164,7 @@ export default class ModalRewardERC20Create extends Vue {
                     limit: this.limit,
                     file: this.imageFile,
                     isPromoted: this.isPromoted,
-                    tokenGating: this.tokenGating ? JSON.stringify(this.tokenGating) : undefined,
+                    tokenGating: this.tokenGating,
                 },
             })
             .then(() => {

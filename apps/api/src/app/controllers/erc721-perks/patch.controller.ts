@@ -1,7 +1,6 @@
 import ERC721PerkService from '@thxnetwork/api/services/ERC721PerkService';
 import ImageService from '@thxnetwork/api/services/ImageService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
-import { validateTokenGatingSchema } from '@thxnetwork/api/util/rewards';
 import { TERC721Perk } from '@thxnetwork/types/index';
 import { Request, Response } from 'express';
 import { body, check, param } from 'express-validator';
@@ -23,11 +22,9 @@ const validation = [
             return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
         }),
     body('isPromoted').optional().isBoolean(),
-    check('tokenGating')
-        .optional()
-        .custom((value) => {
-            return validateTokenGatingSchema(value);
-        }),
+    body('tokenGating.contractAddress').optional().isString(),
+    body('tokenGating.variant').optional().isString(),
+    body('tokenGating.amount').optional().isInt(),
 ];
 
 const controller = async (req: Request, res: Response) => {
@@ -40,7 +37,7 @@ const controller = async (req: Request, res: Response) => {
         const response = await ImageService.upload(req.file);
         image = ImageService.getPublicUrl(response.key);
     }
-
+    const tokenGating = req.body.tokenGating ? JSON.parse(req.body.tokenGating) : undefined;
     perk = await ERC721PerkService.update(perk, {
         poolId: req.header('X-PoolId'),
         erc721metadataId: JSON.parse(req.body.erc721metadataIds)[0],
@@ -55,6 +52,7 @@ const controller = async (req: Request, res: Response) => {
         priceCurrency: req.body.priceCurrency,
         isPromoted: req.body.isPromoted,
         limit: req.body.limit,
+        tokenGating,
     } as TERC721Perk);
 
     return res.json(perk);

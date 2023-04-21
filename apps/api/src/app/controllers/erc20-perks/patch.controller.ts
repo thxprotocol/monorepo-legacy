@@ -3,7 +3,6 @@ import { Request, Response } from 'express';
 import { body, check, param } from 'express-validator';
 import ERC20PerkService from '@thxnetwork/api/services/ERC20PerkService';
 import ImageService from '@thxnetwork/api/services/ImageService';
-import { validateTokenGatingSchema } from '@thxnetwork/api/util/rewards';
 
 const validation = [
     param('id').isMongoId(),
@@ -19,11 +18,9 @@ const validation = [
             return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
         }),
     body('isPromoted').optional().isBoolean(),
-    check('tokenGating')
-        .optional()
-        .custom((value) => {
-            return validateTokenGatingSchema(value);
-        }),
+    body('tokenGating.contractAddress').optional().isString(),
+    body('tokenGating.variant').optional().isString(),
+    body('tokenGating.amount').optional().isInt(),
 ];
 
 const controller = async (req: Request, res: Response) => {
@@ -35,7 +32,8 @@ const controller = async (req: Request, res: Response) => {
         const response = await ImageService.upload(req.file);
         image = ImageService.getPublicUrl(response.key);
     }
-    reward = await ERC20PerkService.update(reward, { ...req.body, image });
+    const tokenGating = req.body.tokenGating ? JSON.parse(String(req.body.tokenGating)) : undefined;
+    reward = await ERC20PerkService.update(reward, { ...req.body, image, tokenGating });
     return res.json(reward.toJSON());
 };
 

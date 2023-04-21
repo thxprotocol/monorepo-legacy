@@ -49,7 +49,7 @@ export async function getIsLockedFoWallet(perk: ERC20PerkDocument | ERC721PerkDo
     if (!userWallet || !perk.tokenGating) {
         return false;
     }
-    const isOwned = await verifyOwnership(JSON.parse(String(perk.tokenGating)), userWallet);
+    const isOwned = await verifyOwnership(perk.tokenGating, userWallet);
     return !isOwned;
 }
 
@@ -63,7 +63,7 @@ export async function getIsLockedFoSub(
     if (!userWallet || !perk.tokenGating) {
         return false;
     }
-    const isOwned = await verifyOwnership(JSON.parse(String(perk.tokenGating)), userWallet);
+    const isOwned = await verifyOwnership(perk.tokenGating, userWallet);
     return !isOwned;
 }
 

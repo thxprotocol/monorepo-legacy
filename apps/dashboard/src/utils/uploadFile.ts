@@ -7,7 +7,11 @@ export function prepareFormDataForUpload(payload: any) {
             }
         } else {
             if (payload[key] !== undefined) {
-                formData.set(key, payload[key]);
+                let value = payload[key];
+                if (typeof value === 'object') {
+                    value = JSON.stringify(value);
+                }
+                formData.set(key, value);
             }
         }
     });

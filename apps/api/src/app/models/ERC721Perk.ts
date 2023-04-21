@@ -14,7 +14,11 @@ const schema = new mongoose.Schema(
         image: String,
         price: Number,
         priceCurrency: String,
-        tokenGating: String,
+        tokenGating: {
+            variant: String,
+            contractAddress: String,
+            amount: { type: Number, required: false },
+        },
     },
     { timestamps: true },
 );
