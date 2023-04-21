@@ -119,10 +119,13 @@ const controller = async (req: Request, res: Response) => {
 
         createURL() {
             const parentUrl = new URL(window.location.href)
-            const { widgetUrl, poolId, chainId, origin, theme, expired } = this.settings;
             const path = parentUrl.searchParams.get('thx_widget_path');
-            this.widgetPath = '/' + poolId + path;
-            const url = new URL(widgetUrl + this.widgetPath);
+            const { widgetUrl, poolId, chainId, origin, theme, expired } = this.settings;
+            const url = new URL(widgetUrl);
+
+            if (path) {
+                url.pathname = this.widgetPath = '/' + poolId + path;
+            }
             
             url.searchParams.append('id', poolId);
             url.searchParams.append('origin', origin);
