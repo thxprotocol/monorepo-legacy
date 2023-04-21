@@ -13,6 +13,7 @@ export async function createConditionalRewards() {
     const startDate = subMinutes(endDate, 15);
 
     for await (const pool of AssetPool.find({ 'settings.isTwitterSyncEnabled': true })) {
+        const hashTag = pool.settings.defaults.conditionalRewards.hashtag;
         const { isAuthorized } = await TwitterDataProxy.getTwitter(pool.sub);
         if (!isAuthorized) continue;
 
@@ -23,6 +24,9 @@ export async function createConditionalRewards() {
         for (const tweet of latestTweets) {
             const result = await PointReward.exists({ poolId: String(pool._id), content: tweet.id });
             if (result) continue;
+            if (hashTag && hashTag.length > 0 && !tweet.tex.toLowerCase().includes('#' + hashTag.toLowerCase())) {
+                continue;
+            }
             const reward = await PointRewardService.create(pool, {
                 title,
                 description,
