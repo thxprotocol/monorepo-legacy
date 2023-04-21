@@ -9,7 +9,6 @@ export async function runReferralRewardWebhook(pool: AssetPoolDocument, metadata
     if (!WEBHOOK_REFERRAL) return;
     try {
         const account = await AccountProxy.getById(pool.sub);
-        console.log({ account });
         if (!account || !account.referralCode) return;
 
         await axios.post(WEBHOOK_REFERRAL, { code: account.referralCode, metadata });

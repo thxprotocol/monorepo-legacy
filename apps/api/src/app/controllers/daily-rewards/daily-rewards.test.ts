@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId, ERC20Type } from '@thxnetwork/types/enums';
+import { ChainId, DailyRewardClaimState, ERC20Type } from '@thxnetwork/types/enums';
 import {
     dashboardAccessToken,
     sub,
@@ -135,6 +135,9 @@ describe('Daily Rewards', () => {
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
             .send({
                 sub,
+            })
+            .expect(({ body }: request.Response) => {
+                expect(body.state).toBe(DailyRewardClaimState.Claimed);
             })
             .expect(201, done);
     });

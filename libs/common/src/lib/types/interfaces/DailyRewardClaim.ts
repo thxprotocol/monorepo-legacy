@@ -1,3 +1,4 @@
+import { DailyRewardClaimState } from '@thxnetwork/types/enums/DailyRewardClaimState';
 export type TDailyRewardClaim = {
     dailyRewardId: string;
     sub: string;
@@ -5,4 +6,5 @@ export type TDailyRewardClaim = {
     amount: string;
     poolId: string;
     createdAt?: Date;
+    state: DailyRewardClaimState;
 };
