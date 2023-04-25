@@ -34,12 +34,7 @@ async function controller(req: Request, res: Response) {
         const account = await AccountService.signinWithAddress(address);
         if (!account) throw new UnauthorizedError('Could not find an account for this address.');
 
-        return await oidc.interactionFinished(
-            req,
-            res,
-            { login: { accountId: String(account._id) } },
-            { mergeWithLastSubmission: false },
-        );
+        return await oidc.interactionFinished(req, res, { login: { accountId: String(account._id) } });
     } else if (req.body.email) {
         try {
             const email = req.body.email.toLowerCase();
