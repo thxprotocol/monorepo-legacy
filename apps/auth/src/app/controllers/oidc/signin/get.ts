@@ -1,6 +1,6 @@
 import { GithubService } from './../../../services/GithubServices';
 import { Request, Response } from 'express';
-import { AUTH_URL, WALLET_URL, WIDGET_URL } from '../../../config/secrets';
+import { AUTH_URL, WIDGET_URL } from '../../../config/secrets';
 import { TwitterService } from '../../../services/TwitterService';
 import { YouTubeService } from '../../../services/YouTubeService';
 import { AUTH_REQUEST_TYPED_MESSAGE, createTypedMessage } from '../../../util/typedMessage';
