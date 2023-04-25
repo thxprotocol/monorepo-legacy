@@ -16,11 +16,11 @@ async function controller(req: Request, res: Response) {
     const alert = {};
     let claim,
         brand,
-        claimUrl = '',
         authenticationMethods = Object.values(AccountVariant);
 
     if (params.pool_id) {
         brand = await BrandProxy.get(params.pool_id);
+
         const pool = await PoolProxy.getPool(params.pool_id);
         if (pool.settings && pool.settings.authenticationMethods) {
             authenticationMethods = pool.settings.authenticationMethods;
@@ -34,8 +34,6 @@ async function controller(req: Request, res: Response) {
 
     if (params.claim_id) {
         claim = await ClaimProxy.get(params.claim_id);
-        claimUrl = `${WALLET_URL}/claim/${params.claim_id}`;
-        brand = await BrandProxy.get(claim.pool._id);
 
         alert['variant'] = 'success';
         if (claim.erc20) {
@@ -82,7 +80,7 @@ async function controller(req: Request, res: Response) {
 
     res.render('signin', {
         uid,
-        params: { ...params, ...brand, claim, claimUrl, isWidget },
+        params: { ...params, ...brand, claim, isWidget },
         alert,
     });
 }
