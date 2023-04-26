@@ -259,7 +259,7 @@ describe('Account Controller', () => {
                     `/oidc/callback/shopify?code=${code}&state=${uid}&shop=${shopifyStoreUrl.replace('https://', '')}`,
                 );
                 expect(res.status).toBe(302);
-                expect(res.headers['location']).toContain('/auth/');
+                expect(res.headers['location']).toBe(DASHBOARD_URL);
             });
 
             it('GET /account/:sub/shopify/price-rules', (done) => {
