@@ -6,6 +6,7 @@ import {
     redirectPasswordResetLink,
     redirectPoolTransfer,
     redirectReferralCode,
+    redirectShopifyCode,
     redirectSignin,
     redirectSigninSilent,
     redirectSignout,
@@ -142,6 +143,11 @@ const routes: Array<RouteConfig> = [
                 component: () => import('../views/nft/Metadata.vue'),
             },
         ],
+    },
+    {
+        name: 'shopify',
+        path: '/shopify-oidc',
+        beforeEnter: redirectShopifyCode,
     },
     {
         name: 'sign in redirect',

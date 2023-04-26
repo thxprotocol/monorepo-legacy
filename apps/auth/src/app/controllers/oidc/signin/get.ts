@@ -16,6 +16,7 @@ async function controller(req: Request, res: Response) {
     const alert = {};
     let claim,
         brand,
+        shopifyStoreUrl,
         authenticationMethods = Object.values(AccountVariant);
 
     if (params.pool_id) {
@@ -25,6 +26,11 @@ async function controller(req: Request, res: Response) {
         if (pool.settings && pool.settings.authenticationMethods) {
             authenticationMethods = pool.settings.authenticationMethods;
         }
+    }
+
+    if (params.shopify_params) {
+        const { shop } = JSON.parse(params.shopify_params);
+        shopifyStoreUrl = shop;
     }
 
     if (params.pool_transfer_token) {
@@ -80,7 +86,7 @@ async function controller(req: Request, res: Response) {
 
     res.render('signin', {
         uid,
-        params: { ...params, ...brand, claim, isWidget },
+        params: { ...params, ...brand, claim, isWidget, shopifyStoreUrl },
         alert,
     });
 }

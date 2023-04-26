@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { User, UserManager } from 'oidc-client-ts';
+import { SigninRedirectArgs, User, UserManager } from 'oidc-client-ts';
 import { config } from '@thxnetwork/dashboard/utils/oidc';
 import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 import type { IAccount, IAccountUpdates } from '@thxnetwork/dashboard/types/account';
@@ -92,6 +92,10 @@ class AccountModule extends VuexModule {
                 access_token_kind = AccessTokenKind.Discord;
                 break;
             }
+            case RewardConditionPlatform.Shopify: {
+                access_token_kind = AccessTokenKind.Shopify;
+                break;
+            }
         }
         const client = Mixpanel.client();
         await this.userManager.signinRedirect({
@@ -106,6 +110,11 @@ class AccountModule extends VuexModule {
     }
 
     @Action({ rawError: true })
+    async signin(args: SigninRedirectArgs) {
+        return await this.userManager.signinRedirect(args);
+    }
+
+    @Action({ rawError: true })
     async signinRedirect(payload: {
         signupToken: string;
         signupEmail: string;
@@ -114,12 +123,17 @@ class AccountModule extends VuexModule {
         poolTransferToken: string;
         poolId: string;
         referralCode: string;
+        shopifyParams: string;
     }) {
         const client = Mixpanel.client();
         const extraQueryParams: any = {
             return_url: BASE_URL,
             distinct_id: client && client.get_distinct_id(),
         };
+
+        if (payload.shopifyParams) {
+            extraQueryParams['shopify_params'] = payload.shopifyParams;
+        }
 
         if (payload.referralCode) {
             extraQueryParams['referral_code'] = payload.referralCode;
@@ -177,7 +191,7 @@ class AccountModule extends VuexModule {
         await this.userManager.signinRedirect({
             prompt: 'connect',
             extraQueryParams: {
-                access_token_kind: AccessTokenKind.Twitter,
+                access_token_kind: kind,
                 return_url: window.location.href,
                 distinct_id: client && client.get_distinct_id(),
             },

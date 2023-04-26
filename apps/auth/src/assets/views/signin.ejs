@@ -69,16 +69,16 @@
       </div>
       <% } %>
 
-      <% if (params.authentication_token && params.secure_key) { %> <strong
-              class="h2 d-block text-dark text-center mb-4">
-        Set a password
-      </strong>
-      <p>You are invited to access your THX Web Wallet. Set a password and accept the invite!</p>
-      <% } %>
-
       <% if (locals.alert && alert.message) { %>
       <div class="alert alert-<%= alert.variant %>">
         <%- alert.message %>
+      </div>
+      <% } %>
+
+      <% if(params.shopifyStoreUrl) { %>
+      <div class="alert alert-success">
+        <i class="fab fa-shopify mr-2"></i> Great! You are installing our Shopify app
+        for:<br /><strong><%- params.shopifyStoreUrl %></strong>.
       </div>
       <% } %>
 
@@ -120,6 +120,12 @@
         </button>
         <% } %>
 
+
+        <% if(params.emailPasswordEnabled && params.metaMaskEnabled) { %>
+        <hr />
+        <% } %>
+
+
         <% if (params.authRequestMessage && params.metaMaskEnabled) { %>
         <a class="d-flex align-items-center justify-content-start btn btn-light rounded-pill"
            style="padding: 0.75rem 1.2rem" @click="onClickSigninMetamask">
@@ -133,12 +139,11 @@
 
       </form>
 
-      <% if(params.emailPasswordEnabled) { %>
+      <% if (params.trustedProviderAvailable) { %>
       <hr />
       <% } %>
 
-      <% if (params.trustedProviderAvailable) { %>
-      <hr />
+      <% if (params.trustedProviderAvailable && params.metaMaskEnabled) { %>
       <p class="text-muted">Continue with a trusted provider</p>
       <% } %>
 
