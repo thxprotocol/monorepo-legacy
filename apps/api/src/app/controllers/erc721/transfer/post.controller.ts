@@ -10,6 +10,7 @@ export const validation = [
     body('erc721Id').exists().isMongoId(),
     body('erc721TokenId').exists().isMongoId(),
     body('to').exists().isString(),
+    body('forceSync').optional().isBoolean(),
 ];
 
 export const controller = async (req: Request, res: Response) => {
@@ -28,9 +29,13 @@ export const controller = async (req: Request, res: Response) => {
     const isOwner = await erc721.contract.methods.ownerOf(erc721Token.tokenId).call();
     if (!isOwner) throw new NotFoundError('Account is not owner of given tokenId');
 
-    const erc721Transfer = await ERC721Service.transferFromWallet(erc721, erc721Token, wallet, req.body.to, true);
-    console.log(erc721Transfer);
-
+    const erc721Transfer = await ERC721Service.transferFromWallet(
+        erc721,
+        erc721Token,
+        wallet,
+        req.body.to,
+        typeof req.body.forceSync !== 'undefined' ? JSON.parse(req.body.forceSync) : true,
+    );
     res.status(201).json(erc721Transfer);
 };
 export default { controller, validation };

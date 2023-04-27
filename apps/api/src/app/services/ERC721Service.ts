@@ -270,7 +270,6 @@ export async function transferFromWallet(
             args: { erc721Id: erc721._id, erc721TokenId: erc721Token._id, walletId: wallet._id, to },
         },
     );
-    console.log(txId);
 
     return ERC721Token.findByIdAndUpdate(erc721Token._id, { transactions: [txId] }, { new: true });
 }
@@ -280,17 +279,16 @@ export async function transferFromWalletCallback(
     receipt: TransactionReceipt,
 ) {
     const { erc721TokenId, walletId, to } = args;
-    const { contract, chainId } = await Wallet.findById(walletId);
+    const { contract } = await Wallet.findById(walletId);
     const events = parseLogs(contract.options.jsonInterface, receipt.logs);
     console.log(events);
     const event = assertEvent('ERC721Transferred', events);
 
     const toWallet = await WalletService.findOneByAddress(to);
-    const wallets = await WalletService.findByQuery({ sub, chainId });
     await ERC721Token.findByIdAndUpdate(erc721TokenId, {
         recipient: event.args.to,
-        sub: toWallet ? toWallet.address : '',
-        walletId: wallets.length ? String(wallets[0]._id) : undefined,
+        sub: toWallet ? toWallet.address : undefined,
+        walletId: toWallet ? toWallet._id : undefined,
         state: ERC721TokenState.Transferred,
     });
 }
@@ -309,7 +307,7 @@ export async function transferFrom(
         forceSync,
         {
             type: 'erc721nTransferFromCallback',
-            args: { erc721Id: erc721._id, erc721tokenId: erc721Token._id, sub: wallet.sub, assetPoolId: pool._id },
+            args: { erc721Id: erc721._id, erc721TokenId: erc721Token._id, sub: wallet.sub, assetPoolId: pool._id },
         },
     );
 
@@ -317,13 +315,13 @@ export async function transferFrom(
 }
 
 export async function transferFromCallback(args: TERC721TransferFromCallBackArgs, receipt: TransactionReceipt) {
-    const { assetPoolId, erc721tokenId, sub } = args;
+    const { assetPoolId, erc721TokenId, sub } = args;
     const { contract, chainId } = await PoolService.getById(assetPoolId);
     const events = parseLogs(contract.options.jsonInterface, receipt.logs);
     const event = assertEvent('ERC721Transferred', events);
 
     const wallets = await WalletService.findByQuery({ sub, chainId });
-    await ERC721Token.findByIdAndUpdate(erc721tokenId, {
+    await ERC721Token.findByIdAndUpdate(erc721TokenId, {
         sub,
         state: ERC721TokenState.Transferred,
         tokenId: Number(event.args.tokenId),
