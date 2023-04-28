@@ -6,7 +6,7 @@ import { sub, userWalletAddress, userWalletAddress2, widgetAccessToken } from '@
 import { ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { ERC721TransferDocument } from '@thxnetwork/api/models/ERC721Transfer';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
-import { ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
+import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
 import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
@@ -18,6 +18,7 @@ describe('ERC721Transfer', () => {
     let erc721: ERC721Document,
         erc721Token: ERC721TokenDocument,
         wallet: WalletDocument,
+        wallet2: WalletDocument,
         erc721Transfer: ERC721TransferDocument;
 
     const chainId = ChainId.Hardhat,
@@ -62,6 +63,8 @@ describe('ERC721Transfer', () => {
         await ERC721Service.addMinter(erc721, pool.address);
 
         erc721Token = await ERC721Service.mint(pool, erc721, metadata, wallet);
+
+        wallet2 = await WalletService.findOneByAddress(userWalletAddress2);
     });
 
     afterAll(afterAllCallback);
@@ -74,10 +77,12 @@ describe('ERC721Transfer', () => {
                     erc721Id: erc721._id,
                     erc721TokenId: erc721Token._id,
                     to: userWalletAddress2,
+                    forceSync: true,
                 })
                 .expect(async ({ body }: request.Response) => {
-                    console.log(body);
-                    erc721Transfer = body;
+                    expect(body.sub).toBe(String(wallet2.sub));
+                    expect(body.sub).toBe(String(wallet2.sub));
+                    expect(body.recipient).toBe(String(wallet2.address));
                 })
                 .expect(201, done);
         });
