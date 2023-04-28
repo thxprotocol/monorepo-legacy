@@ -278,17 +278,17 @@ export async function transferFromWalletCallback(
     args: TERC721TransferFromWalletCallbackArgs,
     receipt: TransactionReceipt,
 ) {
-    const { erc721TokenId, walletId, to } = args;
-    const { contract } = await Wallet.findById(walletId);
-    const events = parseLogs(contract.options.jsonInterface, receipt.logs);
-    console.log(events);
-    const event = assertEvent('ERC721Transferred', events);
+    const { erc721TokenId, to } = args;
+    // TODO SharedWalletFacet should cast an event that we can check here
+    // const { contract } = await Wallet.findById(walletId);
+    // const events = parseLogs(contract.options.jsonInterface, receipt.logs);
+    // const event = assertEvent('ERC721Transferred', events);
 
     const toWallet = await WalletService.findOneByAddress(to);
     await ERC721Token.findByIdAndUpdate(erc721TokenId, {
-        recipient: event.args.to,
-        sub: toWallet ? toWallet.address : undefined,
-        walletId: toWallet ? toWallet._id : undefined,
+        recipient: to,
+        sub: toWallet ? toWallet.sub : undefined,
+        walletId: toWallet ? String(toWallet._id) : undefined,
         state: ERC721TokenState.Transferred,
     });
 }
