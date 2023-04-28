@@ -34,6 +34,10 @@ class ERC721Manager extends BaseManager {
         return data;
     }
 
+    async transfer(config: { erc721Id: string; erc721TokenId: string; to: string }) {
+        return await this.client.request.post(`/v1/erc721/transfer`, { body: JSON.stringify(config) });
+    }
+
     /* Utils */
     async getItemUrl(withdrawCondition: { interaction: RewardConditionInteraction; content: string }) {
         if (!withdrawCondition) return;
