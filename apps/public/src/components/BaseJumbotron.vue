@@ -47,7 +47,7 @@
                             </b-form>
                         </div>
                     </div>
-                    <div class="col-lg-7 pb-5 py-md-5 order-0 order-md-1 offset-lg-1 text-center">
+                    <div class="col-lg-7 py-md-5 order-0 order-md-1 offset-lg-1 text-center">
                         <div>
                             <img
                                 v-lazy="require('../../public/assets/img/thx_jumbotron_bg.png')"
@@ -132,23 +132,29 @@ export default class BaseJumbotron extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .bg-custom {
     background-color: var(--yellow);
     background-image: radial-gradient(at 13% 67%, hsla(42, 75%, 75%, 1) 0px, transparent 50%),
-        radial-gradient(at 45% 10%, rgb(255, 179, 0) 0px, transparent 50%),
-        radial-gradient(at 81% 14%, hsla(55, 89%, 56%, 1) 0px, transparent 50%),
+        radial-gradient(at 45% 10%, rgb(255, 190, 38) 0px, transparent 50%),
+        radial-gradient(at 81% 14%, rgb(195, 182, 32) 0px, transparent 50%),
         radial-gradient(at 38% 10%, hsla(53, 100%, 50%, 0.84) 0px, transparent 50%),
+        radial-gradient(at 5% 50%, rgb(255, 190, 38) 0px, transparent 50%),
         radial-gradient(at 83% 2%, hsla(45, 100%, 50%, 0.79) 0px, transparent 50%),
         radial-gradient(at 83% 46%, hsla(40, 100%, 50%, 0.76) 0px, transparent 50%);
 
     h1.brand-text {
         font-size: 4rem !important;
     }
+
+    .brand-intro {
+        color: black !important;
+    }
+
     em {
         font-style: normal;
 
-        background: linear-gradient(120deg, var(--purple), hsl(302, 74%, 41%) 39%, #bb65ff);
+        background: linear-gradient(120deg, #bb65ff, hsl(270, 74%, 41%) 33%, var(--purple));
         background-clip: text;
         -webkit-background-clip: text;
         text-fill-color: transparent;

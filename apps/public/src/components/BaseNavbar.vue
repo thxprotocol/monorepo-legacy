@@ -20,6 +20,7 @@
                     <b-nav-item to="/pricing" :title="TITLES.PRICING">Pricing</b-nav-item>
                     <b-nav-item to="/use-cases" :title="TITLES.USECASES">Use Cases</b-nav-item>
                     <b-nav-item to="/integrations" :title="TITLES.INTEGRATIONS">Integrations</b-nav-item>
+                    <b-nav-item to="/campaigns" :title="TITLES.INTEGRATIONS">Campaigns</b-nav-item>
                     <b-nav-item to="/token" :title="TITLES.TOKEN">Token</b-nav-item>
                     <b-nav-item href="https://offsetra.com/profile/THX_Network" target="_blank">
                         Carbon Offset
