@@ -30,7 +30,7 @@
                                         height="75"
                                         class="rounded"
                                         style="margin-right: 1.25rem"
-                                        :src="campaign.backgroundUrl"
+                                        :src="campaign.logoUrl"
                                     />
                                 </template>
                                 <div>
@@ -38,16 +38,16 @@
                                         >{{ campaign.title }} <i class="fas fa-check-circle text-success"></i>
                                     </strong>
                                 </div>
+                                <div><i class="fas fa-users mr-1"></i> 23 participants</div>
                                 <div class="pb-1">
                                     <b-badge variant="dark" class="mr-1">Gaming</b-badge>
                                     <b-badge variant="dark" class="mr-1">Web3</b-badge>
                                 </div>
-                                <div><i class="fas fa-users mr-1"></i> 23 participants</div>
                             </b-media>
                         </div>
                         <template #footer>
-                            <b-button :href="campaign.widgetUrl" class="rounded-pill" variant="primary" size="sm" block>
-                                Visit Campaign
+                            <b-button :href="campaign.widgetUrl" class="rounded-pill" variant="light" size="sm">
+                                <i class="fas fa-link mr-1"></i> Visit Campaign
                             </b-button>
                         </template>
                     </b-card>
@@ -96,28 +96,28 @@ export default class Home extends Vue {
         {
             title: 'THX Network',
             expiryDate: new Date(),
-            logoUrl: '',
+            logoUrl: 'https://localhost:8081/img/logo.svg',
             backgroundUrl: 'https://picsum.photos/900/250/?image=3',
             widgetUrl: 'https://www.example.com',
         },
         {
             title: 'THX Network',
             expiryDate: new Date(),
-            logoUrl: '',
+            logoUrl: 'https://localhost:8081/img/logo.svg',
             backgroundUrl: 'https://picsum.photos/900/250/?image=3',
             widgetUrl: 'https://www.example.com',
         },
         {
             title: 'THX Network',
             expiryDate: new Date(),
-            logoUrl: '',
+            logoUrl: 'https://localhost:8081/img/logo.svg',
             backgroundUrl: 'https://picsum.photos/900/250/?image=3',
             widgetUrl: 'https://www.example.com',
         },
         {
             title: 'THX Network',
             expiryDate: new Date(),
-            logoUrl: '',
+            logoUrl: 'https://localhost:8081/img/logo.svg',
             backgroundUrl: 'https://picsum.photos/900/250/?image=3',
             widgetUrl: 'https://www.example.com',
         },
