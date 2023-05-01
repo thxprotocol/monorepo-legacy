@@ -26,6 +26,7 @@ export type TPool = {
     brand: TBrand;
     settings: TPoolSettings;
     widget: { domain: string; active: boolean };
+    createdAt?: Date;
 };
 
 export type TPoolSettings = {
