@@ -6,6 +6,8 @@ import { PoolTransfer } from '@thxnetwork/api/models/PoolTransfer';
 import ERC20 from '@thxnetwork/api/models/ERC20';
 import { ERC20Perk } from '@thxnetwork/api/models/ERC20Perk';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
+import MailService from '@thxnetwork/api/services/MailService';
+import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 
 const validation = [param('id').isMongoId(), body('sub').isMongoId(), body('token').isString()];
 
@@ -29,11 +31,20 @@ const controller = async (req: Request, res: Response) => {
         throw new ForbiddenError('This pool transfer token is not generated for this pool.');
     }
 
-    const erc20Ids = await ERC20Perk.find({ poolId: pool._id }).distinct('erc20Id');
+    // Send email to old account
+    const account = await AccountProxy.getById(pool.sub);
+    if (account.email) {
+        await MailService.send(
+            account.email,
+            'Campaign Transfer: Completed',
+            `Campaign "${pool.settings.title}" has been transfered to ${account.email}.`,
+        );
+    }
 
     pool.sub = req.body.sub;
     await pool.save();
 
+    const erc20Ids = await ERC20Perk.find({ poolId: pool._id }).distinct('erc20Id');
     for (let i = 0; i < erc20Ids.length; i++) {
         const erc20 = await ERC20.findById(erc20Ids[i]);
         await ERC20Service.findOrImport(pool, erc20.address);
