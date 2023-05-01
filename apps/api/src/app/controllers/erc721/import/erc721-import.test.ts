@@ -26,11 +26,7 @@ describe('ERC721 import', () => {
         nftName = 'Test Collection',
         nftSymbol = 'TST';
 
-    beforeAll(async () => {
-        await beforeAllCallback();
-        await Wallet.create({ address: userWalletAddress, sub, chainId: ChainId.Hardhat });
-        await Wallet.create({ address: userWalletAddress2, sub: sub2, chainId: ChainId.Hardhat });
-    });
+    beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
 
     describe('POST /pools', () => {
