@@ -16,5 +16,5 @@
         "../../libs/contracts/**/*.json",
         "../../libs/sdk/**/*.ts",
         "../../libs/common/**/*.ts"
-    ]
+, "../api/src/app/models/DailyRewardClaimState.ts"    ]
 }
