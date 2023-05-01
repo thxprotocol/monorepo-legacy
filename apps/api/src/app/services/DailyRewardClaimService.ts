@@ -23,7 +23,11 @@ export default {
         return await DailyRewardClaim.find({ dailyRewardId: dailyReward._id });
     },
     findBySub: async (dailyReward: DailyRewardDocument, sub: string) => {
-        return await DailyRewardClaim.find({ dailyRewardId: dailyReward._id, sub });
+        return await DailyRewardClaim.find({
+            dailyRewardId: dailyReward._id,
+            sub,
+            state: DailyRewardClaimState.Claimed,
+        });
     },
     isClaimable: async (dailyReward: DailyRewardDocument, sub: string) => {
         const claim = await DailyRewardClaim.findOne({

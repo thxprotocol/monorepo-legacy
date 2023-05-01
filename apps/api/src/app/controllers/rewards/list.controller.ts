@@ -34,7 +34,7 @@ const controller = async (req: Request, res: Response) => {
                 const claimAgainTime = claims.length
                     ? new Date(claims[claims.length - 1].createdAt).getTime() + ONE_DAY_MS
                     : null;
-
+                const now = Date.now();
                 return {
                     uuid: r.uuid,
                     title: r.title,
@@ -42,7 +42,8 @@ const controller = async (req: Request, res: Response) => {
                     amount: r.amount,
                     isDisabled,
                     claims,
-                    claimAgainDuration: claimAgainTime ? Math.floor((claimAgainTime - Date.now()) / 1000) : null, // Convert and floor to S,
+                    claimAgainDuration:
+                        claimAgainTime && claimAgainTime - now > 0 ? Math.floor((claimAgainTime - now) / 1000) : null, // Convert and floor to S,
                 };
             }),
         ),
