@@ -12,7 +12,7 @@
             <div class="row pb-5">
                 <div class="col-lg-4" :key="key" v-for="(campaign, key) of campaigns">
                     <b-card variant="light" class="mb-4">
-                        <div class="d-flex mb-3">
+                        <div class="d-flex mb-3" v-if="campaign.progress > 0">
                             <i
                                 class="fas fa-clock text-muted"
                                 v-b-tooltip
@@ -66,7 +66,7 @@ import BaseContact from '@thxnetwork/public/components/BaseContact.vue';
 import { INTEGRATIONS_TAGS, TWITTER_TAGS, ALT_TEXT, LINKS, TITLES } from '@thxnetwork/public/utils/constants';
 import axios from 'axios';
 import { API_URL } from '../config/secrets';
-import { ChainId } from '@thxnetwork/sdk/types/enums/ChainId';
+import { TWidget, TCampaign } from '@thxnetwork/types/interfaces';
 import { format } from 'date-fns';
 
 @Component({
@@ -98,26 +98,13 @@ export default class Home extends Vue {
     ALT_TEXT = ALT_TEXT;
     TITLES = TITLES;
     format = format;
-
-    campaigns = [
-        {
-            title: 'THX Network',
-            expiryDate: new Date(),
-            address: '',
-            chainId: ChainId.Hardhat,
-            logoImgUrl: 'https://localhost:8081/img/logo.svg',
-            backgroundImgUrl: 'https://picsum.photos/900/250/?image=3',
-            tags: ['Gaming', 'Web3'],
-            domain: 'https://www.example.com',
-            participants: 23,
-            active: false,
-            progress: 10,
-        },
-    ];
+    campaigns: TCampaign[] = [];
 
     async mounted() {
         const res = await axios.get(API_URL + '/v1/pools/public');
-        this.campaigns = res.data;
+        this.campaigns = res.data.sort((a: TWidget, b: TWidget) => {
+            return Number(b.active) - Number(a.active);
+        });
     }
 }
 </script>

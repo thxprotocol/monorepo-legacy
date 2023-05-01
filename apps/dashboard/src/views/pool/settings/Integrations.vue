@@ -92,7 +92,7 @@
                     description="Will only create rewards for tweets containing this hashtag. Leave empty for all tweets."
                 >
                     <b-input-group prepend="#">
-                        <b-form-input disabled v-model="defaultConditionalHashtag" @change="updateSettings()" />
+                        <b-form-input v-model="defaultConditionalHashtag" @change="updateSettings()" />
                     </b-input-group>
                 </b-form-group>
             </b-col>
@@ -197,6 +197,7 @@ export default class SettingsTwitterView extends Vue {
                             title: this.defaultConditionalRewardTitle,
                             description: this.defaultConditionalRewardDescription,
                             amount: this.defaultConditionalRewardAmount,
+                            hashtag: this.defaultConditionalHashtag,
                         },
                     },
                 },

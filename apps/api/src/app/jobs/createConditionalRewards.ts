@@ -2,7 +2,7 @@ import { AssetPool } from '../models/AssetPool';
 import TwitterDataProxy from '../proxies/TwitterDataProxy';
 import { subMinutes } from 'date-fns';
 import PointRewardService from '../services/PointRewardService';
-import { RewardConditionInteraction, RewardConditionPlatform, TPointReward } from '@thxnetwork/types/index';
+import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
 import { IAccount } from '../models/Account';
 import AccountProxy from '../proxies/AccountProxy';
 import MailService from '../services/MailService';
@@ -17,12 +17,15 @@ export async function createConditionalRewards() {
         if (!isAuthorized) continue;
 
         const latestTweets = await TwitterDataProxy.getLatestTweets(pool.sub, startDate, endDate);
-        const { title, description, amount }: TPointReward = pool.settings.defaults.conditionalRewards;
+        const { hashtag, title, description, amount } = pool.settings.defaults.conditionalRewards;
         const rewards = [];
 
         for (const tweet of latestTweets) {
             const result = await PointReward.exists({ poolId: String(pool._id), content: tweet.id });
             if (result) continue;
+            if (hashtag && !tweet.text.toLowerCase().includes('#' + hashtag.toLowerCase())) {
+                continue;
+            }
             const reward = await PointRewardService.create(pool, {
                 title,
                 description,
