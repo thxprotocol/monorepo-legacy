@@ -83,7 +83,7 @@ export default class ModalRewardDailyCreate extends Vue {
     isLoading = false;
     error = '';
     title = '';
-    amount = '0';
+    amount = 0;
     description = '';
     limit = 0;
     isEnabledWebhookQualification = false;
@@ -99,23 +99,13 @@ export default class ModalRewardDailyCreate extends Vue {
     }
 
     onShow() {
-        if (this.reward) {
-            this.title = this.reward.title;
-            this.description = this.reward.description;
-            this.amount = this.reward.amount.toString();
-            this.limit = this.reward.limit;
-            this.isEnabledWebhookQualification = this.reward.isEnabledWebhookQualification;
-        } else {
-            this.title = '';
-            this.description = '';
-            this.amount = '0';
-            this.limit = 0;
-            this.isEnabledWebhookQualification = false;
-        }
-    }
-
-    setValues(reward?: TDailyReward) {
-        if (!reward) return;
+        this.title = this.reward ? this.reward.title : this.title;
+        this.description = this.reward ? this.reward.description : this.description;
+        this.amount = this.reward ? this.reward.amount : this.amount;
+        this.limit = this.reward ? this.reward.limit : this.limit;
+        this.isEnabledWebhookQualification = this.reward
+            ? this.reward.isEnabledWebhookQualification
+            : this.isEnabledWebhookQualification;
     }
 
     onSubmit() {
