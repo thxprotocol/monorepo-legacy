@@ -4,10 +4,12 @@ import BrandService from '@thxnetwork/api/services/BrandService';
 import { Widget } from '@thxnetwork/api/models/Widget';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { logger } from '@thxnetwork/api/util/logger';
+import { ChainId } from '@thxnetwork/types/enums';
+import { NODE_ENV } from '@thxnetwork/api/config/secrets';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
-    const pools = await AssetPool.find({});
+    const pools = await AssetPool.find({ chainId: NODE_ENV === 'production' ? ChainId.Polygon : ChainId.Hardhat });
     const result = await Promise.all(
         pools.map(async (pool: AssetPoolDocument) => {
             try {

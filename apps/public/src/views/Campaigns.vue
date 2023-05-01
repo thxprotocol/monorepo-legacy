@@ -3,21 +3,25 @@
         <div class="container pb-5 pt-5 mt-5">
             <div class="row">
                 <div class="col-12 text-center">
-                    <div class="lead">Active loyalty</div>
+                    <div class="lead">Loyalty</div>
                     <h1 class="h1 font-size-xl mt-3 mb-3">Campaigns</h1>
                 </div>
             </div>
         </div>
         <div class="container pb-5">
             <div class="row pb-5">
+                <div v-if="!campaigns.length" class="col-md-12 justify-content-center d-flex">
+                    <b-spinner variant="primary" />
+                </div>
                 <div class="col-lg-4" :key="key" v-for="(campaign, key) of campaigns">
                     <b-card variant="light" class="mb-4">
-                        <div class="d-flex mb-3" v-if="campaign.progress > 0">
-                            <i
-                                class="fas fa-clock text-muted"
-                                v-b-tooltip
-                                :title="`Expires at ${format(new Date(campaign.expiryDate), 'dd-MM-yyyy HH:mm')}`"
-                            ></i>
+                        <div
+                            v-if="campaign.progress > 0"
+                            v-b-tooltip
+                            :title="`Expires at ${format(new Date(campaign.expiryDate), 'dd-MM-yyyy HH:mm')}`"
+                            class="d-flex mb-3"
+                        >
+                            <i class="fas fa-clock text-muted"></i>
                             <b-progress class="flex-grow-1 ml-3">
                                 <b-progress-bar :value="campaign.progress" :max="100" variant="gray"></b-progress-bar>
                             </b-progress>
@@ -102,9 +106,11 @@ export default class Home extends Vue {
 
     async mounted() {
         const res = await axios.get(API_URL + '/v1/pools/public');
-        this.campaigns = res.data.sort((a: TWidget, b: TWidget) => {
-            return Number(b.active) - Number(a.active);
-        });
+        this.campaigns = res.data
+            .sort((a: TWidget, b: TWidget) => {
+                return Number(b.active) - Number(a.active);
+            })
+            .filter((c) => c.participants > 0);
     }
 }
 </script>
