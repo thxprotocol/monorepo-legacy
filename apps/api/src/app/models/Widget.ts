@@ -1,16 +1,7 @@
 import mongoose from 'mongoose';
+import { TWidget } from '@thxnetwork/types/interfaces/Widget';
 
-export type WidgetDocument = mongoose.Document & {
-    uuid: string;
-    poolId: string;
-    align: string;
-    message: string;
-    domain: string;
-    color: string;
-    bgColor: string;
-    theme: string;
-    active: boolean;
-};
+export type WidgetDocument = mongoose.Document & TWidget;
 
 const widgetSchema = new mongoose.Schema(
     {
