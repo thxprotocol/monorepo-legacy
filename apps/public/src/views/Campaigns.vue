@@ -16,37 +16,39 @@
                             <i
                                 class="fas fa-clock text-muted"
                                 v-b-tooltip
-                                :title="`Expires at ${campaign.expiryDate}`"
+                                :title="`Expires at ${format(new Date(campaign.expiryDate), 'dd-MM-yyyy HH:mm')}`"
                             ></i>
                             <b-progress class="flex-grow-1 ml-3">
-                                <b-progress-bar :value="6" variant="gray"></b-progress-bar>
+                                <b-progress-bar :value="campaign.progress" :max="100" variant="gray"></b-progress-bar>
                             </b-progress>
                         </div>
                         <div class="d-flex">
                             <b-media>
-                                <template #aside>
+                                <template v-if="campaign.logoImgUrl" #aside>
                                     <b-img
                                         width="75"
                                         height="75"
                                         class="rounded"
                                         style="margin-right: 1.25rem"
-                                        :src="campaign.logoUrl"
+                                        :src="campaign.logoImgUrl"
                                     />
                                 </template>
                                 <div>
-                                    <strong
-                                        >{{ campaign.title }} <i class="fas fa-check-circle text-success"></i>
+                                    <strong>
+                                        {{ campaign.title }}
+                                        <i v-if="campaign.active" class="fas fa-check-circle text-success"></i>
                                     </strong>
                                 </div>
-                                <div><i class="fas fa-users mr-1"></i> 23 participants</div>
+                                <div><i class="fas fa-users mr-1"></i> {{ campaign.participants }} participants</div>
                                 <div class="pb-1">
-                                    <b-badge variant="dark" class="mr-1">Gaming</b-badge>
-                                    <b-badge variant="dark" class="mr-1">Web3</b-badge>
+                                    <b-badge :key="key" v-for="(tag, key) of campaign.tags" variant="dark" class="mr-1">
+                                        {{ tag }}
+                                    </b-badge>
                                 </div>
                             </b-media>
                         </div>
                         <template #footer>
-                            <b-button :href="campaign.widgetUrl" class="rounded-pill" variant="light" size="sm">
+                            <b-button :href="campaign.domain" class="rounded-pill" variant="light" size="sm">
                                 <i class="fas fa-link mr-1"></i> Visit Campaign
                             </b-button>
                         </template>
@@ -62,6 +64,10 @@
 import { Component, Vue } from 'vue-property-decorator';
 import BaseContact from '@thxnetwork/public/components/BaseContact.vue';
 import { INTEGRATIONS_TAGS, TWITTER_TAGS, ALT_TEXT, LINKS, TITLES } from '@thxnetwork/public/utils/constants';
+import axios from 'axios';
+import { API_URL } from '../config/secrets';
+import { ChainId } from '@thxnetwork/sdk/types/enums/ChainId';
+import { format } from 'date-fns';
 
 @Component({
     metaInfo: {
@@ -91,36 +97,27 @@ import { INTEGRATIONS_TAGS, TWITTER_TAGS, ALT_TEXT, LINKS, TITLES } from '@thxne
 export default class Home extends Vue {
     ALT_TEXT = ALT_TEXT;
     TITLES = TITLES;
+    format = format;
 
     campaigns = [
         {
             title: 'THX Network',
             expiryDate: new Date(),
-            logoUrl: 'https://localhost:8081/img/logo.svg',
-            backgroundUrl: 'https://picsum.photos/900/250/?image=3',
-            widgetUrl: 'https://www.example.com',
-        },
-        {
-            title: 'THX Network',
-            expiryDate: new Date(),
-            logoUrl: 'https://localhost:8081/img/logo.svg',
-            backgroundUrl: 'https://picsum.photos/900/250/?image=3',
-            widgetUrl: 'https://www.example.com',
-        },
-        {
-            title: 'THX Network',
-            expiryDate: new Date(),
-            logoUrl: 'https://localhost:8081/img/logo.svg',
-            backgroundUrl: 'https://picsum.photos/900/250/?image=3',
-            widgetUrl: 'https://www.example.com',
-        },
-        {
-            title: 'THX Network',
-            expiryDate: new Date(),
-            logoUrl: 'https://localhost:8081/img/logo.svg',
-            backgroundUrl: 'https://picsum.photos/900/250/?image=3',
-            widgetUrl: 'https://www.example.com',
+            address: '',
+            chainId: ChainId.Hardhat,
+            logoImgUrl: 'https://localhost:8081/img/logo.svg',
+            backgroundImgUrl: 'https://picsum.photos/900/250/?image=3',
+            tags: ['Gaming', 'Web3'],
+            domain: 'https://www.example.com',
+            participants: 23,
+            active: false,
+            progress: 10,
         },
     ];
+
+    async mounted() {
+        const res = await axios.get(API_URL + '/v1/pools/public');
+        this.campaigns = res.data;
+    }
 }
 </script>
