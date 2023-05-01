@@ -1,6 +1,6 @@
 import { GithubService } from './../../../services/GithubServices';
 import { Request, Response } from 'express';
-import { AUTH_URL, WALLET_URL, WIDGET_URL } from '../../../config/secrets';
+import { AUTH_URL, WIDGET_URL } from '../../../config/secrets';
 import { TwitterService } from '../../../services/TwitterService';
 import { YouTubeService } from '../../../services/YouTubeService';
 import { AUTH_REQUEST_TYPED_MESSAGE, createTypedMessage } from '../../../util/typedMessage';
@@ -16,15 +16,21 @@ async function controller(req: Request, res: Response) {
     const alert = {};
     let claim,
         brand,
-        claimUrl = '',
+        shopifyStoreUrl,
         authenticationMethods = Object.values(AccountVariant);
 
     if (params.pool_id) {
         brand = await BrandProxy.get(params.pool_id);
+
         const pool = await PoolProxy.getPool(params.pool_id);
         if (pool.settings && pool.settings.authenticationMethods) {
             authenticationMethods = pool.settings.authenticationMethods;
         }
+    }
+
+    if (params.shopify_params) {
+        const { shop } = JSON.parse(params.shopify_params);
+        shopifyStoreUrl = shop;
     }
 
     if (params.pool_transfer_token) {
@@ -34,8 +40,6 @@ async function controller(req: Request, res: Response) {
 
     if (params.claim_id) {
         claim = await ClaimProxy.get(params.claim_id);
-        claimUrl = `${WALLET_URL}/claim/${params.claim_id}`;
-        brand = await BrandProxy.get(claim.pool._id);
 
         alert['variant'] = 'success';
         if (claim.erc20) {
@@ -82,7 +86,7 @@ async function controller(req: Request, res: Response) {
 
     res.render('signin', {
         uid,
-        params: { ...params, ...brand, claim, claimUrl, isWidget },
+        params: { ...params, ...brand, claim, isWidget, shopifyStoreUrl },
         alert,
     });
 }

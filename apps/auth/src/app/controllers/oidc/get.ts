@@ -48,7 +48,6 @@ export const callbackPostAuth = async (
     }
 
     // If a referral code is present in the params store it for the authenticated account
-    console.log(params);
     if (params.referral_code) {
         await account.updateOne({ referralCode: params.referral_code });
     }

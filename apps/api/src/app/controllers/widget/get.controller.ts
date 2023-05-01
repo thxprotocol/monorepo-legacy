@@ -361,7 +361,12 @@ const controller = async (req: Request, res: Response) => {
         onClickLauncher() {
             const isMobile = window.matchMedia('(pointer:coarse)').matches;
             if (window.ethereum && isMobile) {
-                window.open(this.createURL(), '_blank');
+                const deeplink = 'https://metamask.app.link/dapp/';
+                const ua = navigator.userAgent.toLowerCase();
+                const isAndroid = ua.indexOf("android") > -1;
+                const url = isAndroid ? deeplink + this.createURL() : this.createURL();
+                
+                window.open(url, '_blank');
             } else {
                 this.onWidgetToggle(!Number(this.iframe.style.opacity));
                 this.message.remove();

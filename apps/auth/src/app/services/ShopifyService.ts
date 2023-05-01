@@ -48,14 +48,14 @@ export class ShopifyService {
         });
     }
 
-    static getLoginURL(uid: string) {
+    static getLoginURL(uid: string, storeUrl = '') {
         const body = new URLSearchParams();
         body.append('client_id', SHOPIFY_CLIENT_ID);
         body.append('redirect_uri', AUTH_URL + '/oidc/callback/shopify');
         body.append('scope', SHOPIFY_API_SCOPE.join(' '));
         body.append('state', uid);
 
-        return `/admin/oauth/authorize?${body.toString()}`;
+        return storeUrl + `/admin/oauth/authorize?${body.toString()}`;
     }
 
     static async getEnabledCurrencies(accessToken: string, storeUrl: string) {

@@ -15,6 +15,7 @@ import PatchERC721Metadata from './metadata/patch.controller';
 import DeleteERC721Metadata from './metadata/delete.controller';
 import ImportERC721Contract from './import/post.controller';
 import PreviewERC721Contract from './import/preview/post.controller';
+import CreateERC721Transfer from './transfer/post.controller';
 
 const router = express.Router();
 
@@ -34,6 +35,13 @@ router.post(
     guard.check(['erc721:read', 'erc721:write']),
     assertRequestInput(CreateERC721.validation),
     CreateERC721.controller,
+);
+
+router.post(
+    '/transfer',
+    // guard.check(['erc721_transfer:read', 'erc721_transfer:write']),
+    assertRequestInput(CreateERC721Transfer.validation),
+    CreateERC721Transfer.controller,
 );
 router.post(
     '/import',

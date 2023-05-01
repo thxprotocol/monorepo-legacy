@@ -12,19 +12,21 @@ import {
     TERC721DeployCallbackArgs,
     TERC721TokenMintCallbackArgs,
     TERC721TransferFromCallBackArgs,
+    TERC721TransferFromWalletCallbackArgs,
 } from '@thxnetwork/api/types/TTransaction';
 import { assertEvent, ExpectedEventNotFound, findEvent, parseLogs } from '@thxnetwork/api/util/events';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
-import PoolService from './PoolService';
-import TransactionService from './TransactionService';
 import type { TERC721, TERC721Metadata, TERC721Token } from '@thxnetwork/api/types/TERC721';
 import type { IAccount } from '@thxnetwork/api/models/Account';
+import { API_URL } from '../config/secrets';
+import { TWallet, Wallet, WalletDocument } from '../models/Wallet';
+import { ERC721TransferDocument } from '../models/ERC721Transfer';
+import PoolService from './PoolService';
+import TransactionService from './TransactionService';
 import AccountProxy from '../proxies/AccountProxy';
 import IPFSService from './IPFSService';
-import { API_URL } from '../config/secrets';
 import WalletService from './WalletService';
-import { TWallet, WalletDocument } from '../models/Wallet';
 
 const contractName = 'NonFungibleToken';
 
@@ -251,6 +253,46 @@ export const getOnChainERC721Token = async (chainId: number, address: string) =>
     return { name, symbol, totalSupply };
 };
 
+export async function transferFromWallet(
+    erc721: ERC721Document,
+    erc721Token: ERC721TokenDocument,
+    wallet: WalletDocument,
+    to: string,
+    forceSync = true,
+): Promise<ERC721TransferDocument> {
+    const txId = await TransactionService.sendAsync(
+        wallet.contract.options.address,
+        wallet.contract.methods.transferERC721(erc721.address, to, erc721Token.tokenId),
+        erc721.chainId,
+        forceSync,
+        {
+            type: 'erc721TransferFromWalletCallback',
+            args: { erc721Id: erc721._id, erc721TokenId: erc721Token._id, walletId: wallet._id, to },
+        },
+    );
+
+    return ERC721Token.findByIdAndUpdate(erc721Token._id, { transactions: [txId] }, { new: true });
+}
+
+export async function transferFromWalletCallback(
+    args: TERC721TransferFromWalletCallbackArgs,
+    receipt: TransactionReceipt,
+) {
+    const { erc721TokenId, to } = args;
+    // TODO SharedWalletFacet should cast an event that we can check here
+    // const { contract } = await Wallet.findById(walletId);
+    // const events = parseLogs(contract.options.jsonInterface, receipt.logs);
+    // const event = assertEvent('ERC721Transferred', events);
+
+    const toWallet = await WalletService.findOneByAddress(to);
+    await ERC721Token.findByIdAndUpdate(erc721TokenId, {
+        recipient: to,
+        sub: toWallet ? toWallet.sub : undefined,
+        walletId: toWallet ? String(toWallet._id) : undefined,
+        state: ERC721TokenState.Transferred,
+    });
+}
+
 export async function transferFrom(
     pool: AssetPoolDocument,
     erc721Token: ERC721TokenDocument,
@@ -265,7 +307,7 @@ export async function transferFrom(
         forceSync,
         {
             type: 'erc721nTransferFromCallback',
-            args: { erc721Id: erc721._id, erc721tokenId: erc721Token._id, sub: wallet.sub, assetPoolId: pool._id },
+            args: { erc721Id: erc721._id, erc721TokenId: erc721Token._id, sub: wallet.sub, assetPoolId: pool._id },
         },
     );
 
@@ -273,13 +315,13 @@ export async function transferFrom(
 }
 
 export async function transferFromCallback(args: TERC721TransferFromCallBackArgs, receipt: TransactionReceipt) {
-    const { assetPoolId, erc721tokenId, sub } = args;
+    const { assetPoolId, erc721TokenId, sub } = args;
     const { contract, chainId } = await PoolService.getById(assetPoolId);
     const events = parseLogs(contract.options.jsonInterface, receipt.logs);
     const event = assertEvent('ERC721Transferred', events);
 
     const wallets = await WalletService.findByQuery({ sub, chainId });
-    await ERC721Token.findByIdAndUpdate(erc721tokenId, {
+    await ERC721Token.findByIdAndUpdate(erc721TokenId, {
         sub,
         state: ERC721TokenState.Transferred,
         tokenId: Number(event.args.tokenId),
@@ -326,6 +368,8 @@ export default {
     getOnChainERC721Token,
     transferFrom,
     transferFromCallback,
+    transferFromWallet,
+    transferFromWalletCallback,
     queryTransferFromTransaction,
     findTokensByWallet,
 };
