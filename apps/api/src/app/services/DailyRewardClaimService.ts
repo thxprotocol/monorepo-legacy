@@ -37,6 +37,6 @@ export default {
         // If webhook qualification is enabled and we have found a claim this means
         // the claim could still be claimed, else if a claim is found the claim could
         // no longer be claimed.
-        return claim.state === DailyRewardClaimState.Pending ? true : false;
+        return claim && claim.state === DailyRewardClaimState.Pending ? true : false;
     },
 };
