@@ -20,7 +20,7 @@ import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import type { TERC721, TERC721Metadata, TERC721Token } from '@thxnetwork/api/types/TERC721';
 import type { IAccount } from '@thxnetwork/api/models/Account';
 import { API_URL } from '../config/secrets';
-import { TWallet, Wallet, WalletDocument } from '../models/Wallet';
+import { TWallet, WalletDocument } from '../models/Wallet';
 import { ERC721TransferDocument } from '../models/ERC721Transfer';
 import PoolService from './PoolService';
 import TransactionService from './TransactionService';
@@ -286,10 +286,10 @@ export async function transferFromWalletCallback(
 
     const toWallet = await WalletService.findOneByAddress(to);
     await ERC721Token.findByIdAndUpdate(erc721TokenId, {
-        recipient: to,
-        sub: toWallet ? toWallet.sub : undefined,
-        walletId: toWallet ? String(toWallet._id) : undefined,
         state: ERC721TokenState.Transferred,
+        recipient: to,
+        sub: toWallet ? toWallet.sub : '',
+        walletId: toWallet ? String(toWallet._id) : '',
     });
 }
 
