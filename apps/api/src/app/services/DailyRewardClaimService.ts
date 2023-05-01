@@ -10,7 +10,7 @@ export default {
     create: (data: {
         dailyRewardId: string;
         sub: string;
-        amount?: string;
+        amount?: number;
         poolId: string;
         state?: DailyRewardClaimState;
     }) => {
@@ -25,13 +25,18 @@ export default {
     findBySub: async (dailyReward: DailyRewardDocument, sub: string) => {
         return await DailyRewardClaim.find({ dailyRewardId: dailyReward._id, sub });
     },
-    isClaimed: async (dailyReward: DailyRewardDocument, sub: string) => {
-        const isClaimedWithinTimeframe = !!(await DailyRewardClaim.exists({
+    isClaimable: async (dailyReward: DailyRewardDocument, sub: string) => {
+        const claim = await DailyRewardClaim.findOne({
+            sub,
             poolId: dailyReward.poolId,
             dailyRewardId: dailyReward._id,
-            sub,
             createdAt: { $gt: new Date(Date.now() - ONE_DAY_MS) }, // Greater than now - 24h
-        }));
-        return isClaimedWithinTimeframe;
+        });
+        if (!dailyReward.isEnabledWebhookQualification) return !claim;
+
+        // If webhook qualification is enabled and we have found a claim this means
+        // the claim could still be claimed, else if a claim is found the claim could
+        // no longer be claimed.
+        return claim.state === DailyRewardClaimState.Pending ? true : false;
     },
 };

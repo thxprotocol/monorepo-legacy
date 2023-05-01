@@ -17,10 +17,7 @@ describe('Daily Rewards', () => {
     let poolId: string, dailyReward: any, dailyRewardUuid: string;
     const totalSupply = toWei('100000');
 
-    beforeAll(async () => {
-        await beforeAllCallback();
-    });
-
+    beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
 
     it('POST /wallets', (done) => {
@@ -78,12 +75,14 @@ describe('Daily Rewards', () => {
                 title,
                 description,
                 amount,
+                isEnabledWebhookQualification: false,
             })
             .expect(({ body }: request.Response) => {
                 expect(body.uuid).toBeDefined();
                 expect(body.title).toBe(title);
                 expect(body.description).toBe(description);
                 expect(body.amount).toBe(amount);
+                expect(body.isEnabledWebhookQualification).toBe(false);
                 dailyRewardUuid = body.uuid;
                 dailyReward = body;
             })
@@ -133,9 +132,7 @@ describe('Daily Rewards', () => {
     it('POST /rewards/daily/:uuid/claim', (done) => {
         user.post(`/v1/rewards/daily/${dailyRewardUuid}/claim`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
-            .send({
-                sub,
-            })
+            .send()
             .expect(({ body }: request.Response) => {
                 expect(body.state).toBe(DailyRewardClaimState.Claimed);
             })
@@ -151,16 +148,14 @@ describe('Daily Rewards', () => {
             .expect(200, done);
     });
 
-    it('POST /rewards/daily/:uuid/claim shoul throw an error', (done) => {
+    it('POST /rewards/daily/:uuid/claim should throw an error', (done) => {
         user.post(`/v1/rewards/daily/${dailyRewardUuid}/claim`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
-            .send({
-                sub,
-            })
+            .send()
             .expect(({ body }: request.Response) => {
-                expect(body.error).toBe('This reward is not claimable yet');
+                expect(body.error.message).toBe('This reward is not claimable yet');
             })
-            .expect(200, done);
+            .expect(403, done);
     });
 
     it('DELETE /daily-rewards/:id', (done) => {

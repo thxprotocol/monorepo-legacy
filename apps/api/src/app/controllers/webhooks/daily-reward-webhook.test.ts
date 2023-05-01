@@ -1,19 +1,23 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId, DailyRewardClaimState } from '@thxnetwork/types/enums';
-import { dashboardAccessToken, sub2, userWalletAddress2, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
+import {
+    dashboardAccessToken,
+    sub2,
+    userWalletAddress2,
+    widgetAccessToken,
+    widgetAccessToken2,
+} from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
+import { DailyRewardDocument } from '@thxnetwork/api/models/DailyReward';
 
 const user = request.agent(app);
 
 describe('Daily Rewards WebHooks', () => {
-    let poolId: string, dailyReward: any;
+    let poolId: string, dailyReward: DailyRewardDocument;
 
-    beforeAll(async () => {
-        await beforeAllCallback();
-    });
-
+    beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
 
     it('POST /pools', (done) => {
@@ -62,13 +66,21 @@ describe('Daily Rewards WebHooks', () => {
 
     it('POST /rewards/daily/:uuid/claim', (done) => {
         user.post(`/v1/rewards/daily/${dailyReward.uuid}/claim`)
-            .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
-            .send({
-                sub2,
-            })
+            .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken2 })
+            .send()
             .expect(({ body }: request.Response) => {
                 expect(body.state).toBe(DailyRewardClaimState.Claimed);
             })
             .expect(201, done);
+    });
+
+    it('POST /rewards/daily/:uuid/claim should throw an error', (done) => {
+        user.post(`/v1/rewards/daily/${dailyReward.uuid}/claim`)
+            .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken2 })
+            .send()
+            .expect(({ body }: request.Response) => {
+                expect(body.error.message).toBe('This reward is not claimable yet');
+            })
+            .expect(403, done);
     });
 });

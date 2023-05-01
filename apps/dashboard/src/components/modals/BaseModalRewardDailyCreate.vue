@@ -14,8 +14,10 @@
                         <b-form-group label="Amount">
                             <b-form-input v-model="amount" type="number" />
                         </b-form-group>
-                        <b-form-group label="Enable webhook qualification">
-                            <b-form-checkbox v-model="isEnabledWebhookQualification" />
+                        <b-form-group label="Qualification">
+                            <b-form-checkbox v-model="isEnabledWebhookQualification">
+                                Enable mandatory webhook qualification
+                            </b-form-checkbox>
                         </b-form-group>
                     </b-col>
                     <b-col md="6" v-if="isEnabledWebhookQualification">

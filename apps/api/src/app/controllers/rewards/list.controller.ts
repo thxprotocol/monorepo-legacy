@@ -29,7 +29,7 @@ const controller = async (req: Request, res: Response) => {
     res.json({
         dailyRewards: await Promise.all(
             dailyRewards.map(async (r) => {
-                const isDisabled = sub ? await DailyRewardClaimService.isClaimed(r, sub) : true;
+                const isDisabled = sub ? !(await DailyRewardClaimService.isClaimable(r, sub)) : true;
                 const claims = sub ? await DailyRewardClaimService.findBySub(r, sub) : [];
                 const claimAgainTime = claims.length
                     ? new Date(claims[claims.length - 1].createdAt).getTime() + ONE_DAY_MS
