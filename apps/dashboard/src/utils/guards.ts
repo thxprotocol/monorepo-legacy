@@ -23,15 +23,27 @@ export function redirectSignout() {
 
 export async function redirectReferralCode(to: Route) {
     const user = await store.dispatch('account/getUser');
-    if (user) {
-        return await store.dispatch('account/update', {
-            referralCode: to.query.referralCode,
-        });
-    } else {
-        return await store.dispatch('account/signinRedirect', {
-            referralCode: to.query.referralCode,
-        });
-    }
+    return await store.dispatch(user ? 'account/update' : 'account/signinRedirect', {
+        referralCode: to.query.referralCode,
+    });
+}
+
+export async function redirectShopifyCode(to: Route) {
+    const params = {
+        hmac: to.query.hmac,
+        host: to.query.host,
+        shop: to.query.shop,
+        state: to.query.state,
+        timestamp: to.query.timestamp,
+    };
+    return await store.dispatch('account/signin', {
+        state: {
+            shopify_params: params,
+        },
+        extraQueryParams: {
+            shopify_params: JSON.stringify(params),
+        },
+    });
 }
 
 export function redirectPoolTransfer(to: Route) {

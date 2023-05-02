@@ -115,7 +115,7 @@ export default class ModalRewardERC20Create extends Vue {
     description = '';
     expiryDate: Date | null = null;
     claimAmount = 0;
-    claimLimit = 1;
+    claimLimit = 0;
     limit = 0;
     pointPrice = 0;
     imageFile: File | null = null;

@@ -8,6 +8,7 @@ const schema = new mongoose.Schema(
     {
         ...rewardBaseSchema,
         amount: Number,
+        isEnabledWebhookQualification: Boolean,
     },
     { timestamps: true },
 );

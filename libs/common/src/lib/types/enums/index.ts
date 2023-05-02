@@ -13,3 +13,4 @@ export * from './TransactionState';
 export * from './TransactionType';
 export * from './WithdrawalType';
 export * from './WithdrawalState';
+export * from './DailyRewardClaimState';

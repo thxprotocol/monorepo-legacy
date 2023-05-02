@@ -73,7 +73,9 @@
                         <BaseCardClaimAmount
                             class="mb-3"
                             :claimAmount="claimAmount"
+                            :claimLimit="claimLimit"
                             @change-claim-amount="onChangeClaimAmount"
+                            @change-claim-limit="onChangeClaimLimit"
                         />
                         <BaseCardTokenGating
                             :pool="pool"
@@ -163,7 +165,7 @@ export default class ModalRewardERC721Create extends Vue {
     description = '';
     expiryDate: Date | null = null;
     claimAmount = 0;
-    claimLimit = 1;
+    claimLimit = 0;
     limit = 0;
     pointPrice = 0;
     rewardCondition: TRewardCondition = {
@@ -196,8 +198,8 @@ export default class ModalRewardERC721Create extends Vue {
         this.pointPrice = this.reward ? this.reward.pointPrice : 0;
         this.expiryDate = this.reward ? this.reward.expiryDate : null;
         this.limit = this.reward ? this.reward.limit : 0;
-        this.claimAmount = this.reward ? this.reward.claimAmount : 0;
-        this.claimLimit = this.reward ? this.reward.claimLimit : 1;
+        this.claimAmount = this.reward ? this.reward.claimAmount : this.claimAmount;
+        this.claimLimit = this.reward ? this.reward.claimLimit : this.claimLimit;
         this.price = this.reward && this.reward.price ? this.reward.price : this.price;
         this.priceCurrency = this.reward ? this.reward.priceCurrency : this.priceCurrency;
         this.rewardCondition = this.reward
@@ -246,6 +248,10 @@ export default class ModalRewardERC721Create extends Vue {
     onChangeClaimAmount(amount: number) {
         this.claimAmount = amount;
         if (amount > 0) this.pointPrice = 0;
+    }
+
+    onChangeClaimLimit(limit: number) {
+        this.claimLimit = limit;
     }
 
     onSelectMetadata(metadata: TERC721Metadata) {

@@ -192,7 +192,7 @@ describe('Claims', () => {
         });
     });
 
-    describe('ClaimAmount > 1', () => {
+    describe('ClaimLimit > 1', () => {
         let claim0: ClaimDocument, claim1: ClaimDocument;
 
         it('POST /erc20-perks', (done) => {

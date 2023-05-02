@@ -16,6 +16,7 @@ import WalletService from './WalletService';
 import WalletManagerService from './WalletManagerService';
 import { Contract } from 'web3-eth-contract';
 import ERC1155Service from './ERC1155Service';
+import { ERC721 } from '../models/ERC721';
 
 function getById(id: string) {
     return Transaction.findById(id);
@@ -239,6 +240,9 @@ async function executeCallback(tx: TransactionDocument, receipt: TransactionRece
             break;
         case 'erc721nTransferFromCallback':
             await ERC721Service.transferFromCallback(tx.callback.args, receipt);
+            break;
+        case 'erc721TransferFromWalletCallback':
+            await ERC721Service.transferFromWalletCallback(tx.callback.args, receipt);
             break;
     }
 }

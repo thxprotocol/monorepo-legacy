@@ -20,7 +20,6 @@ export async function create(pool: AssetPoolDocument, payload: Partial<TPointRew
 
     if (pool.settings.discordWebhookUrl) {
         const widget = await Widget.findOne({ poolId: pool._id });
-        const theme = JSON.parse(widget.theme);
         await axios.post(pool.settings.discordWebhookUrl, {
             embeds: [
                 {

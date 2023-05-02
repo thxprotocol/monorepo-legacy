@@ -39,7 +39,6 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { UserProfile } from 'oidc-client-ts';
 import {
     platformList,
     platformInteractionList,
