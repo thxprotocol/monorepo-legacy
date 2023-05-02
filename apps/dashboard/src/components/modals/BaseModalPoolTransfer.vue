@@ -66,7 +66,7 @@
 
 <script lang="ts">
 import { TPool, TPoolTransferResponse } from '@thxnetwork/types/index';
-import { DASHBOARD_URL } from '@thxnetwork/wallet/utils/secrets';
+import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { format } from 'date-fns';
 import { mapGetters } from 'vuex';
@@ -80,7 +80,7 @@ import { IAccount } from '@thxnetwork/dashboard/types/account';
 export default class BaseModalPoolTransfer extends Vue {
     format = format;
     loading = false;
-    dashboardUrl = DASHBOARD_URL;
+    dashboardUrl = BASE_URL;
     profile!: IAccount;
 
     @Prop() pool!: TPool & { transfers: TPoolTransferResponse[] };

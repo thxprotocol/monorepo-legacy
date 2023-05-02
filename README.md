@@ -1,7 +1,6 @@
 [![API CI](https://github.com/thxprotocol/monorepo/actions/workflows/api.yml/badge.svg?branch=main)](https://github.com/thxprotocol/monorepo/actions/workflows/api.yml)
 [![Auth CI](https://github.com/thxprotocol/monorepo/actions/workflows/auth.yml/badge.svg?branch=main)](https://github.com/thxprotocol/monorepo/actions/workflows/auth.yml)
 [![Dashboard CI](https://github.com/thxprotocol/monorepo/actions/workflows/dashboard.yml/badge.svg?branch=main)](https://github.com/thxprotocol/monorepo/actions/workflows/dashboard.yml)
-[![Wallet CI](https://github.com/thxprotocol/monorepo/actions/workflows/wallet.yml/badge.svg?branch=main)](https://github.com/thxprotocol/monorepo/actions/workflows/wallet.yml)
 [![Smart Contract CI](https://github.com/thxprotocol/monorepo/actions/workflows/contracts.yml/badge.svg?branch=main)](https://github.com/thxprotocol/monorepo/actions/workflows/contracts.yml)
 
 # Monorepo

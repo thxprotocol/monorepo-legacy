@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import { track } from '@thxnetwork/mixpanel';
-import { DASHBOARD_URL } from '@thxnetwork/wallet/utils/secrets';
+import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { IAccount } from '@thxnetwork/dashboard/types/account';
 import { TPool, TPoolSettings } from '@thxnetwork/types/index';
 import { TPoolTransferResponse } from '@thxnetwork/types/interfaces';
@@ -116,7 +116,7 @@ class PoolModule extends VuexModule {
     setTransfer(poolTransfer: TPoolTransferResponse) {
         const pool = this._all[poolTransfer.poolId] as TPool & { transfers: TPoolTransferResponse[] };
         poolTransfer.isCopied = false;
-        poolTransfer.url = `${DASHBOARD_URL}/preview/${pool._id}?token=${poolTransfer.token}`;
+        poolTransfer.url = `${BASE_URL}/preview/${pool._id}?token=${poolTransfer.token}`;
 
         const transfers = [...(pool.transfers ? pool.transfers : []), poolTransfer];
         Vue.set(this._all[pool._id], 'transfers', transfers);
