@@ -72,7 +72,7 @@ import BaseTabSettingsCommerce from '@thxnetwork/dashboard/views/pool/settings/C
 import BaseTabSettingsIntegrations from '@thxnetwork/dashboard/views/pool/settings/Integrations.vue';
 import BaseTabSettingsWidget from '@thxnetwork/dashboard/views/pool/settings/Widget.vue';
 import BaseTabSettingsApi from '@thxnetwork/dashboard/views/pool/settings/API.vue';
-import { DASHBOARD_URL } from '@thxnetwork/wallet/utils/secrets';
+import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 
 @Component({
@@ -92,7 +92,7 @@ import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 })
 export default class SettingsView extends Vue {
     profile!: IAccount;
-    dashboardUrl = DASHBOARD_URL;
+    dashboardUrl = BASE_URL;
     pools!: IPools;
 
     get pool() {

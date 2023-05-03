@@ -82,7 +82,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { type TReferralReward } from '@thxnetwork/types/index';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
-import { API_URL } from '../../../../wallet/src/utils/secrets';
+import { API_URL } from '../../../../dashboard/src/utils/secrets';
 import BaseCardURLQualify from '@thxnetwork/dashboard/components/BaseCardURLQualify.vue';
 import BaseCardURLWebhook from '@thxnetwork/dashboard/components/BaseCardURLWebhook.vue';
 
