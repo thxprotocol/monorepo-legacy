@@ -1,7 +1,7 @@
 <template>
-    <section class="bg-darker text-light pt-5 pb-5 w-100 pt-lg-10">
+    <section class="bg-darker text-light pb-5 w-100">
         <div class="container pt-lg-10">
-            <div class="row pb-5 pt-5">
+            <div class="row pb-5">
                 <div class="col-lg-6 offset-lg-3">
                     <div class="text-center">
                         <h2 class="h5 text-dark">Why THX?</h2>
