@@ -48,9 +48,8 @@ describe('Dashboard', () => {
         cy.get('tbody tr:nth-child(1)').contains('Test reward title edit').should('be.visible');
         cy.get('tbody tr:nth-child(1)').contains('20').should('be.visible');
 
-        cy.get('tbody tr:nth-child(1) .dropdown-toggle').click();
-        cy.get('tbody tr:nth-child(1)').contains('Delete').click();
-
+        cy.get('thead th[role="columnheader"] .custom-control-label').click();
+        cy.contains('Delete rewards').click();
         cy.contains('There are no records to show').should('be.visible');
     });
 
@@ -87,9 +86,8 @@ describe('Dashboard', () => {
         cy.get('tbody tr:nth-child(1)').contains('Test reward title edit');
         cy.get('tbody tr:nth-child(1)').contains('20');
 
-        cy.get('tbody tr:nth-child(1) .dropdown-toggle').click();
-        cy.get('tbody tr:nth-child(1) .dropdown').contains('Delete').click();
-
+        cy.get('thead th[role="columnheader"] .custom-control-label').click();
+        cy.contains('Delete rewards').click();
         cy.contains('There are no records to show').should('be.visible');
     });
 
@@ -140,9 +138,8 @@ describe('Dashboard', () => {
         cy.get('tbody tr:nth-child(1)').contains('Test reward title edit').should('be.visible');
         cy.get('tbody tr:nth-child(1)').contains('20').should('be.visible');
 
-        cy.get('tbody tr:nth-child(1) .dropdown-toggle').click();
-        cy.get('tbody tr:nth-child(1) .dropdown').contains('Delete').click();
-
+        cy.get('thead th[role="columnheader"] .custom-control-label').click();
+        cy.contains('Delete rewards').click();
         cy.contains('There are no records to show').should('be.visible');
     });
 });
