@@ -1,11 +1,6 @@
 import {
     HARDHAT_NAME,
     HARDHAT_RPC,
-    MUMBAI_RELAYER,
-    MUMBAI_RELAYER_API_KEY,
-    MUMBAI_RELAYER_API_SECRET,
-    POLYGON_MUMBAI_NAME,
-    POLYGON_MUMBAI_RPC,
     POLYGON_RELAYER,
     POLYGON_RELAYER_API_KEY,
     POLYGON_RELAYER_API_SECRET,
@@ -38,6 +33,21 @@ const networks: {
 if (HARDHAT_RPC) {
     networks[ChainId.Hardhat] = (() => {
         const web3 = new Web3(HARDHAT_RPC);
+        web3.extend({
+            property: 'hardhat',
+            methods: [
+                {
+                    name: 'setAutomine',
+                    call: 'evm_setAutomine',
+                    params: 1,
+                },
+                {
+                    name: 'setIntervalMining',
+                    call: 'evm_setIntervalMining',
+                    params: 1,
+                },
+            ],
+        });
         return {
             web3,
             networkName: HARDHAT_NAME as TNetworkName,

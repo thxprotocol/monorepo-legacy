@@ -1,10 +1,8 @@
-const DASHBOARD_URL = 'https://dev-dashboard.thx.network';
-const AUTH_URL = 'https://dev.auth.thx.network';
-// const DASHBOARD_URL = 'https://localhost:8082';
-// const AUTH_URL = 'https://localhost:3030';
-const CYPRESS_ACCOUNT = 'cypress@thx.network';
-
 describe('Dashboard', () => {
+    const DASHBOARD_URL = 'https://dev-dashboard.thx.network';
+    const AUTH_URL = 'https://dev.auth.thx.network';
+    const CYPRESS_ACCOUNT = 'cypress@thx.network';
+
     beforeEach(() => {
         cy.visit(DASHBOARD_URL);
 
