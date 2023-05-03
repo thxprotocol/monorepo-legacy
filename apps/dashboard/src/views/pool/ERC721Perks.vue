@@ -125,7 +125,7 @@ import { RewardConditionPlatform, RewardConditionInteraction, TERC721Perk } from
 import { IERC721s, TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import BaseModalRewardClaimsDownload from '@thxnetwork/dashboard/components/modals/BaseModalRewardClaimsDownload.vue';
 import { parseUnitAmount } from '@thxnetwork/dashboard/utils/price';
-import { TERC721Token } from '../../../../../../wallet/src/store/modules/erc721';
+import { TERC721Token } from '@thxnetwork/types/interfaces';
 
 @Component({
     components: {

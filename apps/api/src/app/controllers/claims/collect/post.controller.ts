@@ -78,7 +78,7 @@ const controller = async (req: Request, res: Response) => {
     }
 
     // Can not be claimed when sub is set for this claim URL and claim amount is greater than 1
-    if (claim && claim.sub && perk.claimAmount > 1) {
+    if (claim && claim.sub && perk.claimLimit > 0) {
         throw new ForbiddenError('This perk has been claimed already.');
     }
 
@@ -129,7 +129,7 @@ const controller = async (req: Request, res: Response) => {
     }
 
     // Mark claim as claimed by setting sub when the claimAmount is fixed ( > 1)
-    // Perks with claimAmount == 1 will create a claim with no sub that is reused for multilpe claims
+    // Perks with claimAmount == 1 will create a claim with no sub that is reused for multiple claims
     // PerkPayments are used to limit claims per account.
     if (perk.claimAmount > 1) {
         claim.sub = req.auth.sub;

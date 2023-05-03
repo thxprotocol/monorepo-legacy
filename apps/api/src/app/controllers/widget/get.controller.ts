@@ -71,15 +71,23 @@ const controller = async (req: Request, res: Response) => {
         constructor(settings) {
             this.settings = settings;
             this.theme = JSON.parse(settings.theme);
-    
-            if (window.attachEvent) { 
-                window.attachEvent('onload', this.onLoad.bind(this)); 
-            } else { 
-                window.addEventListener('load', this.onLoad.bind(this), false); 
-            }
+            this.init();
         }
 
-        onLoad(event) {
+        init() {
+            const waitForBody = () => new Promise((resolve) => {
+                const tick = () => {
+                    if (document.getElementsByTagName('body').length) {
+                        clearInterval(timer)
+                        resolve()
+                    }
+                }
+                const timer = setInterval(tick, 1000);
+            });
+            waitForBody().then(this.onLoad.bind(this));
+        }
+
+        onLoad() {
             this.iframe = this.createIframe();
             this.notifications = this.createNotifications(0);
             this.message = this.createMessage();
@@ -449,7 +457,7 @@ const controller = async (req: Request, res: Response) => {
         sourceMap: NODE_ENV !== 'production',
     });
 
-    res.set({ 'Content-Type': 'application/javascript' }).send(result.code);
+    res.set({ 'Content-Type': 'application/javascript' }).send(data);
 };
 
 export default { controller, validation };
