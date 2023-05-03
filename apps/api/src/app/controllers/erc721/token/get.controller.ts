@@ -25,7 +25,6 @@ const controller = async (req: Request, res: Response) => {
 
     res.status(200).json({
         ...token.toJSON(),
-        tokenId,
         tokenUri,
         balance,
         erc721: erc721.toJSON(),
