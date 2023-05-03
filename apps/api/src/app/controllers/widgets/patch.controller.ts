@@ -3,8 +3,8 @@ import { body } from 'express-validator';
 import { Widget } from '@thxnetwork/api/services/WidgetService';
 
 const validation = [
-    body('align').isString(),
-    body('theme').isString(),
+    body('align').optional().isString(),
+    body('theme').optional().isString(),
     body('domain').optional().isURL({ require_tld: false }),
     body('message').optional().isString().isLength({ max: 280 }).trim().escape(),
 ];

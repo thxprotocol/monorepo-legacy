@@ -32,7 +32,7 @@ describe('Wallet', () => {
         cy.contains('Collect').click();
         cy.contains('Go to wallet').click();
 
-        cy.get('.card:first-child .card-header').should('contain.text', '#');
+        cy.get('.card:first-child .card-title .text-accent').should('contain.text', '#');
     });
 
     it('Transfer NFT from wallet', function () {
@@ -47,10 +47,11 @@ describe('Wallet', () => {
         cy.contains('We sent a password to cypress@thx.network');
         cy.get('input[placeholder="*****"]').type('00000', { force: true });
 
-        cy.contains('Wallet').click();
+        // cy.get('.navbar .dropdown-toggle').click();
+        // cy.get('.navbar .dropdown-menu li:first-child button').click();
 
-        cy.get('.card:first-child .card-header .dropdown-toggle').click();
-        cy.contains('Transfer').click();
+        cy.get('.card:first-child .dropdown-toggle').click();
+        cy.get('.card:first-child .dropdown-menu li:first-child button').click();
 
         cy.get('.modal.show input[placeholder="0x0"]').type(RECEIVER);
         cy.get('.modal.show .modal-footer button').click();
