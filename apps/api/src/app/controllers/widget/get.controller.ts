@@ -122,7 +122,8 @@ const controller = async (req: Request, res: Response) => {
         }
     
         get isSmallMedia() {
-            return window.innerWidth < this.MD_BREAKPOINT;
+            const getWidth = () => window.innerWidth;
+            return getWidth() < this.MD_BREAKPOINT;
         }
 
         createURL() {

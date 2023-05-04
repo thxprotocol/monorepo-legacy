@@ -390,7 +390,6 @@
                             </p>
                         </b-card>
                     </b-col>
-                    <hooper-pagination slot="hooper-addons"></hooper-pagination>
                 </b-row>
             </div>
         </div>
@@ -399,26 +398,10 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { Hooper, Slide, Pagination as HooperPagination } from 'hooper';
-import 'hooper/dist/hooper.css';
 import { ALT_TEXT } from '@thxnetwork/public/utils/constants';
 
-@Component({
-    components: {
-        'hooper': Hooper,
-        'slide': Slide,
-        'hooper-pagination': HooperPagination,
-    },
-})
+@Component({})
 export default class BaseTeam extends Vue {
     ALT_TEXT = ALT_TEXT;
-
-    get hooperSettings() {
-        const getWidth = () => window.innerWidth;
-        return {
-            itemsToShow: getWidth() > 960 ? 3 : 1,
-            centerMode: false,
-        };
-    }
 }
 </script>

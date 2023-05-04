@@ -159,15 +159,16 @@ import { ALT_TEXT, TITLES } from '@thxnetwork/public/utils/constants';
 export default class BaseUseCases extends Vue {
     ALT_TEXT = ALT_TEXT;
     TITLES = TITLES;
-
-    get hooperSettings() {
-        const getWidth = () => window.innerWidth;
-        return {
-            infiniteScroll: false,
-            itemsToShow: getWidth() > 960 ? 2.5 : 1,
-            centerMode: false,
-        };
-    }
+    hooperSettings = {
+        infiniteScroll: true,
+        itemsToShow: 1,
+        centerMode: false,
+        breakpoints: {
+            960: {
+                itemsToShow: 3.5,
+            },
+        },
+    };
 }
 </script>
 <style lang="scss" scoped>
