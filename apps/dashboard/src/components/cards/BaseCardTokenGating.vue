@@ -9,95 +9,91 @@
             <i :class="`fa-chevron-${isVisible ? 'up' : 'down'}`" class="fas m-0"></i>
         </b-button>
         <b-collapse id="collapse-token-gating" v-model="isVisible">
-            <template>
-                <div class="p-3">
-                    <base-dropdown-select-token-gating-variant
-                        class="ml-auto"
-                        :selectedValue="tokenGating ? tokenGating.variant : null"
-                        @selected="
-                            {
-                                tokenGatingVariant = $event;
-                                emitChanged();
-                            }
-                        "
-                    />
-                    <b-form-group label="Contract Address">
-                        <b-alert variant="danger" show v-if="!isValidAddress"> Invalid Contract Address </b-alert>
-                        <b-input-group>
-                            <b-form-input
-                                v-model="contractAddress"
-                                @change="
-                                    {
-                                        validateAddress();
-                                        emitChanged();
-                                    }
-                                "
-                            />
-                            <template #append>
-                                <b-button
-                                    v-if="pool"
-                                    variant="dark"
-                                    target="_blank"
-                                    :disabled="isValidAddress"
-                                    :href="chainInfo[pool.chainId].blockExplorer + `/token/${contractAddress}`"
-                                >
-                                    <i class="fas fa-external-link-alt ml-0"></i>
-                                </b-button>
-                            </template>
-                        </b-input-group>
-                    </b-form-group>
-                    <b-form-group label="Min ERC20 amount" v-if="tokenGatingVariant === TokenGatingVariant.ERC20">
-                        <b-input-group>
-                            <b-form-input v-model="amount" type="number" @change="emitChanged" />
-                        </b-input-group>
-                    </b-form-group>
-                </div>
-            </template>
+            <hr class="mt-0" />
+            <div class="px-3">
+                <b-form-group label="Variant">
+                    <b-dropdown
+                        variant="white"
+                        :text="tokenGatingVariantMap[variant]"
+                        class="bg-white dropdown-select"
+                        v-model="variant"
+                    >
+                        <b-dropdown-item-button v-for="(v, key) of options" :key="key" @click="onClickVariant(v)">
+                            {{ tokenGatingVariantMap[v] }}
+                        </b-dropdown-item-button>
+                    </b-dropdown>
+                </b-form-group>
+                <b-form-group
+                    label="Contract Address"
+                    :state="isValidAddress"
+                    invalid-feedback="Please provide a valid contract address."
+                >
+                    <b-form-input :state="isValidAddress" v-model="contractAddress" @input="onInputContractAddress" />
+                </b-form-group>
+                <b-form-group label="Required balance" v-if="variant == TokenGatingVariant.ERC20">
+                    <b-input-group>
+                        <b-form-input v-model="amount" type="number" @input="onInputAmount" />
+                    </b-input-group>
+                </b-form-group>
+            </div>
         </b-collapse>
     </b-card>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import BaseDropdownSelectTokenGatingVariant from '../dropdowns/BaseDropdownSelectTokenGatingVariant.vue';
 import BaseDropdownSelectNftVariant from '../dropdowns/BaseDropdownSelectNftVariant.vue';
-import type { TPool } from '@thxnetwork/dashboard/store/modules/pools';
+import { TERC1155Perk, TERC20Perk, TERC721Perk, type TPool } from '@thxnetwork/types/interfaces';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { TokenGatingVariant } from '@thxnetwork/types/enums/TokenGatingVariant';
 import { isAddress } from 'web3-utils';
-import { TTokenGating } from '@thxnetwork/types/interfaces';
+
+const tokenGatingVariantMap = {
+    [TokenGatingVariant.ERC20]: 'Coin - ERC20',
+    [TokenGatingVariant.ERC721]: 'NFT - ERC721',
+    [TokenGatingVariant.ERC1155]: 'NFT - ERC1155',
+};
 
 @Component({
-    components: { BaseDropdownSelectNftVariant, BaseDropdownSelectTokenGatingVariant },
+    components: { BaseDropdownSelectNftVariant },
 })
 export default class BaseCardTokenGating extends Vue {
     @Prop() pool!: TPool;
-    @Prop() tokenGating!: TTokenGating;
+    @Prop() perk!: TERC721Perk | TERC1155Perk | TERC20Perk;
+
+    tokenGatingVariantMap = tokenGatingVariantMap;
     isVisible = false;
     chainInfo = chainInfo;
     TokenGatingVariant = TokenGatingVariant;
+    options = [TokenGatingVariant.ERC721, TokenGatingVariant.ERC1155, TokenGatingVariant.ERC20];
+    variant: TokenGatingVariant = TokenGatingVariant.ERC721;
     contractAddress = '';
     amount = 0;
-    tokenGatingVariant: TokenGatingVariant | null = null;
-    isValidAddress = true;
 
-    validateAddress() {
-        this.isValidAddress = !this.contractAddress || !this.contractAddress.length || isAddress(this.contractAddress);
+    get isValidAddress() {
+        return this.contractAddress ? isAddress(this.contractAddress) : null;
     }
 
     mounted() {
-        this.contractAddress = this.tokenGating ? this.tokenGating.contractAddress : '';
-        this.tokenGatingVariant = this.tokenGating ? this.tokenGating.variant : null;
-        this.amount = this.tokenGating && this.tokenGating.amount !== undefined ? this.tokenGating.amount : 0;
-        this.validateAddress();
+        this.contractAddress = this.perk ? this.perk.tokenGatingContractAddress : this.contractAddress;
+        this.variant = this.perk ? this.perk.tokenGatingVariant : this.variant;
+        this.amount = this.perk ? this.perk.tokenGatingAmount : this.amount;
+        this.isVisible = this.perk ? !!this.perk.tokenGatingContractAddress : this.isVisible;
     }
 
-    emitChanged() {
-        this.$emit('changeTokenGating', {
-            variant: this.tokenGatingVariant,
-            contractAddress: this.contractAddress,
-            amount: this.amount,
-        });
+    onClickVariant(value: TokenGatingVariant) {
+        this.variant = value;
+        this.$emit('change-variant', this.variant);
+    }
+
+    onInputContractAddress(value: string) {
+        this.contractAddress = value;
+        this.$emit('change-contract-address', this.contractAddress);
+    }
+
+    onInputAmount(value: number) {
+        this.amount = value;
+        this.$emit('change-amount', this.amount);
     }
 }
 </script>

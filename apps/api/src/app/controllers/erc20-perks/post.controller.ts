@@ -1,17 +1,15 @@
 import { body, check } from 'express-validator';
 import { Request, Response } from 'express';
-import { createERC20Perk } from '@thxnetwork/api/util/rewards';
 import ImageService from '@thxnetwork/api/services/ImageService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import { ERC20Type } from '@thxnetwork/types/enums';
+import ERC20PerkService from '@thxnetwork/api/services/ERC20PerkService';
 
 const validation = [
     body('title').exists().isString(),
     body('description').exists().isString(),
     body('amount').exists().isInt({ gt: 0 }),
-    body('claimAmount').exists().isInt({ lt: 1000 }),
-    body('claimLimit').optional().isInt(),
     body('erc20Id').exists().isMongoId(),
     body('expiryDate').optional().isString(),
     body('pointPrice').optional().isNumeric(),
@@ -22,9 +20,9 @@ const validation = [
         }),
     body('image').optional().isString(),
     body('isPromoted').optional().isBoolean(),
-    body('tokenGating.contractAddress').optional().isString(),
-    body('tokenGating.variant').optional().isString(),
-    body('tokenGating.amount').optional().isInt(),
+    body('tokenGatingContractAddress').optional().isString(),
+    body('tokenGatingVariant').optional().isString(),
+    body('tokenGatingAmount').optional().isInt(),
 ];
 
 const controller = async (req: Request, res: Response) => {
@@ -45,9 +43,10 @@ const controller = async (req: Request, res: Response) => {
             await ERC20Service.addMinter(erc20, pool.address);
         }
     }
-    const tokenGating = req.body.tokenGating ? JSON.parse(req.body.tokenGating) : undefined;
-    const { reward, claims } = await createERC20Perk(pool, { ...req.body, image, tokenGating });
-    res.status(201).json({ ...reward.toJSON(), claims, erc20 });
+
+    const perk = await ERC20PerkService.create(pool, { ...req.body, image });
+
+    res.status(201).json({ ...perk.toJSON(), erc20 });
 };
 
 export default { controller, validation };

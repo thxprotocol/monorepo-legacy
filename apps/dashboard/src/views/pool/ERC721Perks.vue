@@ -105,7 +105,7 @@
                         @submit="listRewards"
                         :id="'modalRewardERC721Create' + item.id"
                         :pool="pool"
-                        :reward="erc721Perks[pool._id][item.id]"
+                        :perk="erc721Perks[pool._id][item.id]"
                     />
                 </template>
             </BTable>

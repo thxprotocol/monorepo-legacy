@@ -22,12 +22,12 @@ const controller = async (req: Request, res: Response) => {
     if (!erc721Perk) throw new NotFoundError('Could not find this perk');
     if (!erc721Perk.price) throw new NotFoundError('No point price for this perk has been set.');
 
-    const isPerkLocked = await PerkService.getIsLockedFoSub(erc721Perk, req.auth.sub, pool);
+    const isPerkLocked = await PerkService.getIsLockedForSub(erc721Perk, req.auth.sub, pool);
     if (isPerkLocked) {
         throw new ForbiddenError('This Perk is Locked');
     }
 
-    const redeemValidationResult = await redeemValidation({ perk: erc721Perk, sub: req.auth.sub });
+    const redeemValidationResult = await redeemValidation({ perk: erc721Perk, sub: req.auth.sub, pool });
     if (redeemValidationResult.isError) {
         throw new ForbiddenError(redeemValidationResult.errorMessage);
     }

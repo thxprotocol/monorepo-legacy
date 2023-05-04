@@ -1,5 +1,4 @@
 import { TokenGatingVariant } from '@thxnetwork/types/enums/TokenGatingVariant';
-import { TTokenGating } from '@thxnetwork/types/index';
 import { getContractFromName } from '../config/contracts';
 import { fromWei } from 'web3-utils';
 import { logger } from '../util/logger';
@@ -13,26 +12,21 @@ import { AssetPoolDocument } from '../models/AssetPool';
 
 type TAllPerks = ERC20PerkDocument | ERC721PerkDocument | ShopifyPerkDocument;
 
-export async function verifyOwnership(tokenGating: TTokenGating, wallet: WalletDocument): Promise<boolean> {
-    const walletAddres = wallet.address;
-    const { variant, contractAddress, amount } = tokenGating;
+export async function verifyOwnership(perk: TAllPerks, wallet: WalletDocument): Promise<boolean> {
+    const { tokenGatingVariant, tokenGatingContractAddress, tokenGatingAmount } = perk;
 
-    switch (variant) {
+    switch (tokenGatingVariant) {
         case TokenGatingVariant.ERC20: {
-            try {
-                const tokenAmount = amount !== undefined ? amount : 0;
-                const contract = getContractFromName(wallet.chainId, 'LimitedSupplyToken', contractAddress);
-                const balance = Number(fromWei(await contract.methods.balanceOf(walletAddres).call(), 'ether'));
-                return balance >= tokenAmount;
-            } catch (err) {
-                logger.error(err);
-                return false;
-            }
+            const contract = getContractFromName(wallet.chainId, 'LimitedSupplyToken', tokenGatingContractAddress);
+            const balance = Number(fromWei(await contract.methods.balanceOf(wallet.address).call(), 'ether'));
+
+            return balance >= tokenGatingAmount;
         }
-        default: {
+        case TokenGatingVariant.ERC721:
+        case TokenGatingVariant.ERC1155: {
             try {
-                const result = await alchemy.nft.getNftsForOwner(walletAddres, {
-                    contractAddresses: [contractAddress],
+                const result = await alchemy.nft.getNftsForOwner(wallet.address, {
+                    contractAddresses: [tokenGatingContractAddress],
                     omitMetadata: true,
                 });
                 const totalCount = Number(result.totalCount);
@@ -45,31 +39,16 @@ export async function verifyOwnership(tokenGating: TTokenGating, wallet: WalletD
     }
 }
 
-export async function getIsLockedFoWallet(perk: ERC20PerkDocument | ERC721PerkDocument, userWallet: WalletDocument) {
-    if (!perk.tokenGating || perk.tokenGating.contractAddress || !perk.tokenGating.variant) {
-        return false;
-    }
-    if (!userWallet) {
-        return true;
-    }
-    const isOwned = await verifyOwnership(perk.tokenGating, userWallet);
+export async function getIsLockedForWallet(perk: TAllPerks, userWallet: WalletDocument) {
+    const isOwned = await verifyOwnership(perk, userWallet);
     return !isOwned;
 }
 
-export async function getIsLockedFoSub(
-    perk: ERC20PerkDocument | ERC721PerkDocument,
-    sub: string,
-    pool: AssetPoolDocument,
-) {
-    if (!perk.tokenGating || perk.tokenGating.contractAddress || !perk.tokenGating.variant) {
-        return false;
-    }
-    const wallets = await WalletService.findByQuery({ sub, chainId: pool.chainId });
-    const userWallet = wallets[0];
-    if (!userWallet) {
-        return true;
-    }
-    const isOwned = await verifyOwnership(perk.tokenGating, userWallet);
+export async function getIsLockedForSub(perk: TAllPerks, sub: string, pool: AssetPoolDocument) {
+    const wallet = await WalletService.findOneByQuery({ sub, chainId: pool.chainId });
+    if (!wallet) return true;
+
+    const isOwned = await verifyOwnership(perk, wallet);
     return !isOwned;
 }
 
@@ -87,4 +66,4 @@ async function getExpiry(r: TAllPerks) {
     };
 }
 
-export default { verifyOwnership, getIsLockedFoWallet, getExpiry, getProgress, getIsLockedFoSub };
+export default { verifyOwnership, getIsLockedForWallet, getExpiry, getProgress, getIsLockedForSub };

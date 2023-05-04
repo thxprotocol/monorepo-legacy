@@ -37,16 +37,11 @@ const controller = async (req: Request, res: Response) => {
         }
     }
 
-    const isPerkLocked = await PerkService.getIsLockedFoSub(perk, req.auth.sub, pool);
-    if (isPerkLocked) {
-        throw new ForbiddenError('This Perk is Locked');
-    }
-
     const pointBalance = await PointBalance.findOne({ sub: req.auth.sub, poolId: pool._id });
     if (!pointBalance || Number(pointBalance.balance) < Number(perk.pointPrice))
         throw new BadRequestError('Not enough points on this account for this perk.');
 
-    const redeemValidationResult = await redeemValidation({ perk, sub: req.auth.sub });
+    const redeemValidationResult = await redeemValidation({ perk, sub: req.auth.sub, pool });
     if (redeemValidationResult.isError) {
         throw new ForbiddenError(redeemValidationResult.errorMessage);
     }

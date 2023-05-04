@@ -8,7 +8,6 @@ const validation = [
     param('id').isMongoId(),
     body('title').isString(),
     body('description').isString(),
-    body('claimAmount').exists().isInt({ lt: 1000 }),
     body('expiryDate').optional().isString(),
     body('limit').isNumeric(),
     body('erc20Id').isMongoId(),
@@ -18,9 +17,9 @@ const validation = [
             return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
         }),
     body('isPromoted').optional().isBoolean(),
-    body('tokenGating.contractAddress').optional().isString(),
-    body('tokenGating.variant').optional().isString(),
-    body('tokenGating.amount').optional().isInt(),
+    body('tokenGatingContractAddress').optional().isString(),
+    body('tokenGatingVariant').optional().isString(),
+    body('tokenGatingAmount').optional().isInt(),
 ];
 
 const controller = async (req: Request, res: Response) => {
@@ -32,8 +31,7 @@ const controller = async (req: Request, res: Response) => {
         const response = await ImageService.upload(req.file);
         image = ImageService.getPublicUrl(response.key);
     }
-    const tokenGating = req.body.tokenGating ? JSON.parse(String(req.body.tokenGating)) : undefined;
-    reward = await ERC20PerkService.update(reward, { ...req.body, image, tokenGating });
+    reward = await ERC20PerkService.update(reward, { ...req.body, image });
     return res.json(reward.toJSON());
 };
 

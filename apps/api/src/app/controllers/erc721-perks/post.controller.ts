@@ -17,8 +17,8 @@ const validation = [
     body('erc721metadataIds').optional().isString(),
     body('erc721tokenId').optional().isMongoId(),
     body('expiryDate').optional().isString(),
-    body('claimAmount').optional().isInt({ lt: 1000 }),
     body('claimLimit').optional().isInt(),
+    body('claimAmount').optional().isInt({ lt: 1000 }),
     body('pointPrice').optional().isNumeric(),
     body('price').isInt(),
     body('priceCurrency').isString(),
@@ -28,9 +28,9 @@ const validation = [
             return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
         }),
     body('isPromoted').optional().isBoolean(),
-    body('tokenGating.contractAddress').optional().isString(),
-    body('tokenGating.variant').optional().isString(),
-    body('tokenGating.amount').optional().isInt(),
+    body('tokenGatingVariant').optional().isString(),
+    body('tokenGatingContractAddress').optional().isString(),
+    body('tokenGatingAmount').optional().isInt(),
 ];
 
 const controller = async (req: Request, res: Response) => {
@@ -90,7 +90,6 @@ function getPerkConfig(args: {
     image: string;
     erc721: ERC721Document;
 }) {
-    const tokenGating = args.req.body.tokenGating ? JSON.parse(args.req.body.tokenGating) : undefined;
     return {
         poolId: String(args.pool._id),
         erc721Id: String(args.erc721._id),
@@ -98,9 +97,6 @@ function getPerkConfig(args: {
         image: args.image,
         title: args.req.body.title,
         description: args.req.body.description,
-        platform: args.req.body.platform,
-        interaction: args.req.body.interaction,
-        content: args.req.body.content,
         claimAmount: args.req.body.claimAmount,
         claimLimit: args.req.body.claimLimit,
         limit: args.req.body.limit,
@@ -110,7 +106,9 @@ function getPerkConfig(args: {
         price: args.req.body.price,
         priceCurrency: args.req.body.priceCurrency,
         erc721tokenId: args.req.body.erc721tokenId,
-        tokenGating,
+        tokenGatingVariant: args.req.body.tokenGatingVariant,
+        tokenGatingAmount: args.req.body.tokenGatingAmount,
+        tokenGatingContractAddress: args.req.body.tokenGatingContractAddress,
     } as TERC721Perk;
 }
 

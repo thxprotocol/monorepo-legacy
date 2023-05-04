@@ -4,9 +4,8 @@ import { ChainId } from '@thxnetwork/types/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { sub, userWalletAddress, userWalletAddress2, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
 import { ERC721Document } from '@thxnetwork/api/models/ERC721';
-import { ERC721TransferDocument } from '@thxnetwork/api/models/ERC721Transfer';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
-import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
+import { ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
 import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
@@ -15,11 +14,7 @@ import WalletService from '@thxnetwork/api/services/WalletService';
 const user = request.agent(app);
 
 describe('ERC721Transfer', () => {
-    let erc721: ERC721Document,
-        erc721Token: ERC721TokenDocument,
-        wallet: WalletDocument,
-        wallet2: WalletDocument,
-        erc721Transfer: ERC721TransferDocument;
+    let erc721: ERC721Document, erc721Token: ERC721TokenDocument, wallet: WalletDocument, wallet2: WalletDocument;
 
     const chainId = ChainId.Hardhat,
         name = 'Test Collection',

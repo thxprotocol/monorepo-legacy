@@ -16,7 +16,6 @@ import { redeemValidation } from '@thxnetwork/api/util/perks';
 import { Widget } from '@thxnetwork/api/models/Widget';
 import MailService from '@thxnetwork/api/services/MailService';
 import { Wallet } from '@thxnetwork/api/services/WalletService';
-import PerkService from '@thxnetwork/api/services/PerkService';
 
 const validation = [param('uuid').exists()];
 
@@ -33,17 +32,12 @@ const controller = async (req: Request, res: Response) => {
     const erc20 = await ERC20Service.getById(erc20Perk.erc20Id);
     if (!erc20) throw new NotFoundError('Could not find the erc20 for this perk');
 
-    const isPerkLocked = await PerkService.getIsLockedFoSub(erc20Perk, req.auth.sub, pool);
-    if (isPerkLocked) {
-        throw new ForbiddenError('This Perk is Locked');
-    }
-
     const pointBalance = await PointBalance.findOne({ sub: req.auth.sub, poolId: pool._id });
     if (!pointBalance || Number(pointBalance.balance) < Number(erc20Perk.pointPrice)) {
         throw new BadRequestError('Not enough points on this account for this payment');
     }
 
-    const redeemValidationResult = await redeemValidation({ perk: erc20Perk, sub: req.auth.sub });
+    const redeemValidationResult = await redeemValidation({ perk: erc20Perk, sub: req.auth.sub, pool });
     if (redeemValidationResult.isError) {
         throw new ForbiddenError(redeemValidationResult.errorMessage);
     }

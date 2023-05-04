@@ -23,9 +23,9 @@ const validation = [
             return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
         }),
     body('isPromoted').optional().isBoolean(),
-    body('tokenGating.contractAddress').optional().isString(),
-    body('tokenGating.variant').optional().isString(),
-    body('tokenGating.amount').optional().isInt(),
+    body('tokenGatingContractAddress').optional().isString(),
+    body('tokenGatingVariant').optional().isString(),
+    body('tokenGatingAmount').optional().isInt(),
 ];
 
 const controller = async (req: Request, res: Response) => {
@@ -38,14 +38,14 @@ const controller = async (req: Request, res: Response) => {
         const response = await ImageService.upload(req.file);
         image = ImageService.getPublicUrl(response.key);
     }
-    const tokenGating = req.body.tokenGating ? JSON.parse(req.body.tokenGating) : undefined;
+
     perk = await ERC721PerkService.update(perk, {
         poolId: req.header('X-PoolId'),
         erc721metadataId: JSON.parse(req.body.erc721metadataIds)[0],
         image,
         title: req.body.title,
-        erc721Id: req.body.erc721Id,
         description: req.body.description,
+        erc721Id: req.body.erc721Id,
         expiryDate: req.body.expiryDate,
         claimAmount: req.body.claimAmount,
         claimLimit: req.body.claimLimit,
@@ -54,7 +54,9 @@ const controller = async (req: Request, res: Response) => {
         priceCurrency: req.body.priceCurrency,
         isPromoted: req.body.isPromoted,
         limit: req.body.limit,
-        tokenGating,
+        tokenGatingVariant: req.body.tokenGatingVariant,
+        tokenGatingContractAddress: req.body.tokenGatingContractAddress,
+        tokenGatingAmount: req.body.tokenGatingAmount,
     } as TERC721Perk);
 
     return res.json(perk);

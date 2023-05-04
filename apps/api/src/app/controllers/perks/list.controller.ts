@@ -61,7 +61,7 @@ const controller = async (req: Request, res: Response) => {
                     erc20: await ERC20Service.getById(r.erc20Id),
                     expiry: await PerkService.getExpiry(r),
                     progress: await PerkService.getProgress(r, ERC20PerkPayment),
-                    isLocked: await PerkService.getIsLockedFoWallet(r, userWallet),
+                    isLocked: await PerkService.getIsLockedForWallet(r, userWallet),
                 };
             }),
         ),
@@ -85,7 +85,7 @@ const controller = async (req: Request, res: Response) => {
                     metadata: await ERC721Service.findMetadataById(r.erc721metadataId),
                     expiry: await PerkService.getExpiry(r),
                     progress: await PerkService.getProgress(r, ERC721PerkPayment),
-                    isLocked: await PerkService.getIsLockedFoWallet(r, userWallet),
+                    isLocked: await PerkService.getIsLockedForWallet(r, userWallet),
                 };
             }),
         ),
@@ -98,8 +98,6 @@ const controller = async (req: Request, res: Response) => {
                     title: r.title,
                     description: r.description,
                     pointPrice: r.pointPrice,
-                    price: r.price,
-                    priceCurrency: r.priceCurrency,
                     image: r.image,
                     isPromoted: r.isPromoted,
                     priceRuleId: r.priceRuleId,

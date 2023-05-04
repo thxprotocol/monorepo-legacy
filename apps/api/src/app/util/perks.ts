@@ -8,6 +8,8 @@ import { ShopifyPerkPayment } from '../models/ShopifyPerkPayment';
 import { ClaimDocument } from '../types/TClaim';
 import { BadRequestError } from './errors';
 import { isTERC20Perk, isTERC721Perk, isTShopifyPerk } from './rewards';
+import { AssetPoolDocument } from '../models/AssetPool';
+import PerkService from '../services/PerkService';
 
 type PerkDocument = ERC20PerkDocument | ERC721PerkDocument | ShopifyPerkDocument;
 
@@ -25,13 +27,23 @@ export function getPaymentModel(perk: PerkDocument): mongoose.Model<any> {
 
 export const redeemValidation = async ({
     perk,
+    pool,
+    sub,
 }: {
-    perk: ERC20PerkDocument | ERC721PerkDocument | ShopifyPerkDocument;
-    sub?: string;
+    perk: PerkDocument;
+    pool?: AssetPoolDocument;
     claim?: ClaimDocument;
+    sub?: string;
 }): Promise<{ isError: boolean; errorMessage?: string }> => {
     const model = getPaymentModel(perk);
     if (!model) throw new BadRequestError('Could not determine payment model for this claim.');
+
+    if (sub && pool && perk.tokenGatingContractAddress) {
+        const isPerkLocked = await PerkService.getIsLockedForSub(perk, sub, pool);
+        if (isPerkLocked) {
+            return { isError: true, errorMessage: 'This perk has been gated with a token.' };
+        }
+    }
 
     // Can be claimed only before the expiry date
     if (perk.expiryDate && new Date(perk.expiryDate).getTime() < Date.now()) {

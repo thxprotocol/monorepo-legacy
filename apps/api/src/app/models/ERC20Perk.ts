@@ -1,4 +1,4 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose from 'mongoose';
 import { TERC20Perk } from '@thxnetwork/types/';
 
 export const rewardBaseSchema = {
@@ -6,34 +6,37 @@ export const rewardBaseSchema = {
     poolId: { type: String, index: 'hashed' },
     title: String,
     description: String,
+};
+
+export const perkBaseSchema = {
+    uuid: String,
+    poolId: { type: String, index: 'hashed' },
+    title: String,
+    description: String,
+    image: String,
+    pointPrice: Number,
     expiryDate: Date,
     claimAmount: Number,
     claimLimit: Number,
     limit: Number,
-    platform: Number,
-    interaction: Number,
-    content: String,
-    contentMetadata: String,
     isPromoted: {
         type: Boolean,
         default: false,
     },
+    tokenGatingVariant: String,
+    tokenGatingContractAddress: String,
+    tokenGatingAmount: Number,
 };
 
 export type ERC20PerkDocument = mongoose.Document & TERC20Perk;
 
 const schema = new mongoose.Schema(
     {
-        ...rewardBaseSchema,
+        ...perkBaseSchema,
         erc20Id: String,
         amount: String,
         pointPrice: Number,
         image: String,
-        tokenGating: {
-            variant: String,
-            contractAddress: String,
-            amount: { type: Number, required: false },
-        },
     },
     { timestamps: true },
 );

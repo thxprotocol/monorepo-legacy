@@ -12,11 +12,20 @@ const user = request.agent(app);
 
 describe('Shopify Perks', () => {
     let poolId: string, perk: ShopifyPerkDocument;
+    const config = {
+        title: '',
+        description: '',
+        amount: 1,
+        price: 0,
+        priceCurrency: 'USD',
+        pointPrice: 0,
+        limit: 0,
+        claimLimit: 0,
+        claimAmount: 1,
+        isPromoted: true,
+    };
 
-    beforeAll(async () => {
-        await beforeAllCallback();
-    });
-
+    beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
 
     it('POST /pools', (done) => {
@@ -34,14 +43,7 @@ describe('Shopify Perks', () => {
 
     it('POST /shopify-perks', (done) => {
         const image = createImage();
-        const title = 'Lorem',
-            description = 'Ipsum',
-            expiryDate = addMinutes(new Date(), 30),
-            pointPrice = 200,
-            amount = '1',
-            limit = 1,
-            claimAmount = 0,
-            isPromoted = true,
+        const expiryDate = addMinutes(new Date(), 30),
             priceRuleId = '1234',
             discountCode = 'BLACK FRIDAY';
         user.post('/v1/shopify-perks/')
@@ -51,27 +53,20 @@ describe('Shopify Perks', () => {
                 contentType: 'image/jpg',
             })
             .field({
-                title,
-                description,
-                image,
-                amount,
-                pointPrice,
-                expiryDate: expiryDate.toString(),
-                limit,
-                claimAmount,
-                isPromoted,
+                ...config,
+                expiryDate: String(expiryDate),
                 priceRuleId,
                 discountCode,
             })
             .expect(({ body }: request.Response) => {
                 expect(body.uuid).toBeDefined();
-                expect(body.title).toBe(title);
-                expect(body.description).toBe(description);
+                expect(body.title).toBe(config.title);
+                expect(body.description).toBe(config.description);
                 expect(body.image).toBeDefined();
-                expect(body.amount).toBe(amount);
-                expect(body.pointPrice).toBe(pointPrice);
+                expect(body.amount).toBe(config.amount);
+                expect(body.pointPrice).toBe(config.pointPrice);
                 expect(new Date(body.expiryDate).getDate()).toBe(expiryDate.getDate());
-                expect(body.limit).toBe(limit);
+                expect(body.limit).toBe(config.limit);
                 expect(body.isPromoted).toBe(true);
                 expect(body.priceRuleId).toBe(priceRuleId);
                 expect(body.discountCode).toBe(discountCode);
