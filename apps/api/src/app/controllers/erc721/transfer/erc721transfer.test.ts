@@ -83,6 +83,7 @@ describe('ERC721Transfer', () => {
                     expect(body.sub).toBe(String(wallet2.sub));
                     expect(body.sub).toBe(String(wallet2.sub));
                     expect(body.recipient).toBe(String(wallet2.address));
+                    expect(await erc721.contract.methods.ownerOf(erc721Token.tokenId).call()).toBe(body.recipient);
                 })
                 .expect(201, done);
         });
