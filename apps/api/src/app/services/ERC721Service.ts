@@ -26,7 +26,9 @@ import PoolService from './PoolService';
 import TransactionService from './TransactionService';
 import AccountProxy from '../proxies/AccountProxy';
 import IPFSService from './IPFSService';
-import WalletService from './WalletService';
+import WalletService, { Wallet } from './WalletService';
+import { toChecksumAddress } from 'web3-utils';
+import { logger } from '@thxnetwork/api/util/logger';
 
 const contractName = 'NonFungibleToken';
 
@@ -263,11 +265,16 @@ export async function transferFromWallet(
     const txId = await TransactionService.sendAsync(
         wallet.contract.options.address,
         wallet.contract.methods.transferERC721(erc721.address, to, erc721Token.tokenId),
-        erc721.chainId,
+        wallet.chainId,
         forceSync,
         {
             type: 'erc721TransferFromWalletCallback',
-            args: { erc721Id: erc721._id, erc721TokenId: erc721Token._id, walletId: wallet._id, to },
+            args: {
+                erc721Id: String(erc721._id),
+                erc721TokenId: String(erc721Token._id),
+                walletId: String(wallet._id),
+                to,
+            },
         },
     );
 
@@ -278,13 +285,17 @@ export async function transferFromWalletCallback(
     args: TERC721TransferFromWalletCallbackArgs,
     receipt: TransactionReceipt,
 ) {
-    const { erc721TokenId, to } = args;
+    const { erc721Id, erc721TokenId, to, walletId } = args;
+    const { contract } = await ERC721.findById(erc721Id);
+    const { tokenId } = await ERC721Token.findById(erc721TokenId);
+    const owner = await contract.methods.ownerOf(tokenId).call();
+    logger.error(`Current owner: ${owner}, to`);
     // TODO SharedWalletFacet should cast an event that we can check here
-    // const { contract } = await Wallet.findById(walletId);
-    // const events = parseLogs(contract.options.jsonInterface, receipt.logs);
+    const toWallet = await Wallet.findOne({ address: toChecksumAddress(to) });
+    const events = parseLogs(toWallet.contract.options.jsonInterface, receipt.logs);
+    console.log(events);
     // const event = assertEvent('ERC721Transferred', events);
 
-    const toWallet = await WalletService.findOneByAddress(to);
     await ERC721Token.findByIdAndUpdate(erc721TokenId, {
         state: ERC721TokenState.Transferred,
         recipient: to,
@@ -307,7 +318,12 @@ export async function transferFrom(
         forceSync,
         {
             type: 'erc721nTransferFromCallback',
-            args: { erc721Id: erc721._id, erc721TokenId: erc721Token._id, sub: wallet.sub, assetPoolId: pool._id },
+            args: {
+                erc721Id: String(erc721._id),
+                erc721TokenId: String(erc721Token._id),
+                sub: wallet.sub,
+                assetPoolId: String(pool._id),
+            },
         },
     );
 

@@ -1,8 +1,6 @@
 import { TokenGatingVariant } from '@thxnetwork/types/enums/TokenGatingVariant';
 import { getContractFromName } from '../config/contracts';
 import { fromWei } from 'web3-utils';
-import { logger } from '../util/logger';
-import { alchemy } from '../util/alchemy';
 import { WalletDocument } from '../models/Wallet';
 import { ERC20PerkDocument } from '../models/ERC20Perk';
 import { ERC721PerkDocument } from '../models/ERC721Perk';
@@ -12,9 +10,10 @@ import { AssetPoolDocument } from '../models/AssetPool';
 
 type TAllPerks = ERC20PerkDocument | ERC721PerkDocument | ShopifyPerkDocument;
 
-export async function verifyOwnership(perk: TAllPerks, wallet: WalletDocument): Promise<boolean> {
-    const { tokenGatingVariant, tokenGatingContractAddress, tokenGatingAmount } = perk;
-
+export async function verifyOwnership(
+    { tokenGatingVariant, tokenGatingContractAddress, tokenGatingAmount }: TAllPerks,
+    wallet: WalletDocument,
+): Promise<boolean> {
     switch (tokenGatingVariant) {
         case TokenGatingVariant.ERC20: {
             const contract = getContractFromName(wallet.chainId, 'LimitedSupplyToken', tokenGatingContractAddress);
@@ -22,29 +21,28 @@ export async function verifyOwnership(perk: TAllPerks, wallet: WalletDocument): 
 
             return balance >= tokenGatingAmount;
         }
-        case TokenGatingVariant.ERC721:
+        case TokenGatingVariant.ERC721: {
+            const contract = getContractFromName(wallet.chainId, 'NonFungibleToken', tokenGatingContractAddress);
+            const balance = Number(await contract.methods.balanceOf(wallet.address).call());
+
+            return !!balance;
+        }
         case TokenGatingVariant.ERC1155: {
-            try {
-                const result = await alchemy.nft.getNftsForOwner(wallet.address, {
-                    contractAddresses: [tokenGatingContractAddress],
-                    omitMetadata: true,
-                });
-                const totalCount = Number(result.totalCount);
-                return totalCount > 0;
-            } catch (err) {
-                logger.error(err);
-                return false;
-            }
+            const contract = getContractFromName(wallet.chainId, 'THX_ERC1155', tokenGatingContractAddress);
+            const balance = Number(await contract.methods.balanceOf(wallet.address).call());
+            return !!balance;
         }
     }
 }
 
-export async function getIsLockedForWallet(perk: TAllPerks, userWallet: WalletDocument) {
-    const isOwned = await verifyOwnership(perk, userWallet);
+export async function getIsLockedForWallet(perk: TAllPerks, wallet: WalletDocument) {
+    if (!perk.tokenGatingContractAddress || !wallet) return;
+    const isOwned = await verifyOwnership(perk, wallet);
     return !isOwned;
 }
 
 export async function getIsLockedForSub(perk: TAllPerks, sub: string, pool: AssetPoolDocument) {
+    if (!perk.tokenGatingContractAddress) return;
     const wallet = await WalletService.findOneByQuery({ sub, chainId: pool.chainId });
     if (!wallet) return true;
 

@@ -171,11 +171,6 @@ export default class ModalRewardERC721Create extends Vue {
     claimLimit = 0;
     limit = 0;
     pointPrice = 0;
-    rewardCondition: TRewardCondition = {
-        platform: platformList[0].type,
-        interaction: platformInteractionList[0].type,
-        content: '',
-    };
     erc721s!: IERC721s;
     erc721Tokens!: IERC721Tokens;
     imageFile: File | null = null;
@@ -209,7 +204,6 @@ export default class ModalRewardERC721Create extends Vue {
         this.priceCurrency = this.perk ? this.perk.priceCurrency : this.priceCurrency;
         this.image = this.perk ? this.perk.image : '';
         this.isPromoted = this.perk ? this.perk.isPromoted : false;
-
         this.erc721 = this.perk ? this.erc721s[this.perk.erc721Id] : null;
         this.erc721metadataId = this.perk ? this.perk.erc721metadataId : '';
         this.erc721tokenId = this.perk ? this.perk.erc721tokenId : undefined;

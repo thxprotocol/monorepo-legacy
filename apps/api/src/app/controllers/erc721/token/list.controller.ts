@@ -24,8 +24,9 @@ export const controller = async (req: Request, res: Response) => {
             if (!metadata) return;
 
             const tokenUri = token.tokenId ? await erc721.contract.methods.tokenURI(token.tokenId).call() : '';
+            const owner = await erc721.contract.methods.ownerOf(token.tokenId).call();
 
-            return Object.assign(token.toJSON() as TERC721Token, { metadata, tokenUri, erc721 });
+            return Object.assign(token.toJSON() as TERC721Token, { metadata, tokenUri, erc721, owner });
         }),
     );
 

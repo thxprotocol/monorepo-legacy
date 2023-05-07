@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { body } from 'express-validator';
-import { NotFoundError } from '@thxnetwork/api/util/errors';
+import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { Wallet } from '@thxnetwork/api/models/Wallet';
 import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
 import { ERC721 } from '@thxnetwork/api/models/ERC721';
@@ -26,16 +26,10 @@ export const controller = async (req: Request, res: Response) => {
     const wallet = await Wallet.findOne({ chainId: erc721.chainId, sub: req.auth.sub });
     if (!wallet) throw new NotFoundError('Could not find wallet for account');
 
-    const isOwner = await erc721.contract.methods.ownerOf(erc721Token.tokenId).call();
-    if (!isOwner) throw new NotFoundError('Account is not owner of given tokenId');
+    const owner = await erc721.contract.methods.ownerOf(erc721Token.tokenId).call();
+    if (owner !== wallet.address) throw new ForbiddenError('Account is not owner of given tokenId');
 
-    const erc721Transfer = await ERC721Service.transferFromWallet(
-        erc721,
-        erc721Token,
-        wallet,
-        req.body.to,
-        typeof req.body.forceSync !== 'undefined' ? JSON.parse(req.body.forceSync) : true,
-    );
+    const erc721Transfer = await ERC721Service.transferFromWallet(erc721, erc721Token, wallet, req.body.to);
     res.status(201).json(erc721Transfer);
 };
 export default { controller, validation };

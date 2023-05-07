@@ -15,7 +15,6 @@ import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { PoolTransfer, PoolTransferDocument } from '@thxnetwork/api/models/PoolTransfer';
 import { ERC20Document } from '@thxnetwork/api/models/ERC20';
 import { createImage } from '@thxnetwork/api/util/jest/images';
-import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
 import { addMinutes, sub } from 'date-fns';
 import { isAddress } from 'web3-utils';
 import { Wallet } from '@thxnetwork/api/models/Wallet';

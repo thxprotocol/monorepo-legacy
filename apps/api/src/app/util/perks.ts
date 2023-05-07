@@ -38,6 +38,7 @@ export const redeemValidation = async ({
     const model = getPaymentModel(perk);
     if (!model) throw new BadRequestError('Could not determine payment model for this claim.');
 
+    // Is gated and reqeust is made authenticated
     if (sub && pool && perk.tokenGatingContractAddress) {
         const isPerkLocked = await PerkService.getIsLockedForSub(perk, sub, pool);
         if (isPerkLocked) {

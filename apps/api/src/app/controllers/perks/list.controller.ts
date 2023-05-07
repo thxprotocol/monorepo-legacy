@@ -30,22 +30,21 @@ const controller = async (req: Request, res: Response) => {
         $or: [{ pointPrice: { $exists: true, $gt: 0 } }, { price: { $exists: true, $gt: 0 } }],
     });
 
-    let userWallet: WalletDocument;
+    let wallet: WalletDocument, sub: string;
 
     // This endpoint is public so we do not get req.auth populated and decode the token ourselves
     // when the request is made with an authorization header to obtain the sub.
     const authHeader = req.header('authorization');
     if (authHeader && authHeader.startsWith('Bearer ')) {
         const token: { sub: string } = jwt_decode(authHeader.split(' ')[1]);
-        const sub = token.sub;
-        const wallets = await WalletService.findByQuery({ sub, chainId: pool.chainId });
-        userWallet = wallets[0];
+        sub = token.sub;
+        wallet = await WalletService.findOneByQuery({ sub, chainId: pool.chainId });
     }
 
     res.json({
         erc20Perks: await Promise.all(
             erc20Perks.map(async (r) => {
-                const { isError } = await redeemValidation({ perk: r });
+                const { isError } = await redeemValidation({ perk: r, sub, pool });
                 return {
                     _id: r._id,
                     uuid: r.uuid,
@@ -61,13 +60,14 @@ const controller = async (req: Request, res: Response) => {
                     erc20: await ERC20Service.getById(r.erc20Id),
                     expiry: await PerkService.getExpiry(r),
                     progress: await PerkService.getProgress(r, ERC20PerkPayment),
-                    isLocked: await PerkService.getIsLockedForWallet(r, userWallet),
+                    isLocked: await PerkService.getIsLockedForWallet(r, wallet),
+                    tokenGatingContractAddress: r.tokenGatingContractAddress,
                 };
             }),
         ),
         erc721Perks: await Promise.all(
             erc721Perks.map(async (r) => {
-                const { isError } = await redeemValidation({ perk: r });
+                const { isError } = await redeemValidation({ perk: r, sub, pool });
                 return {
                     _id: r._id,
                     uuid: r.uuid,
@@ -85,13 +85,14 @@ const controller = async (req: Request, res: Response) => {
                     metadata: await ERC721Service.findMetadataById(r.erc721metadataId),
                     expiry: await PerkService.getExpiry(r),
                     progress: await PerkService.getProgress(r, ERC721PerkPayment),
-                    isLocked: await PerkService.getIsLockedForWallet(r, userWallet),
+                    isLocked: await PerkService.getIsLockedForWallet(r, wallet),
+                    tokenGatingContractAddress: r.tokenGatingContractAddress,
                 };
             }),
         ),
         shopifyPerks: await Promise.all(
             shopifyPerks.map(async (r) => {
-                const { isError } = await redeemValidation({ perk: r });
+                const { isError } = await redeemValidation({ perk: r, sub, pool });
                 return {
                     _id: r._id,
                     uuid: r.uuid,
@@ -107,6 +108,8 @@ const controller = async (req: Request, res: Response) => {
                     isOwned: false,
                     expiry: await PerkService.getExpiry(r),
                     progress: await PerkService.getProgress(r, ShopifyPerkPayment),
+                    isLocked: await PerkService.getIsLockedForWallet(r, wallet),
+                    tokenGatingContractAddress: r.tokenGatingContractAddress,
                 };
             }),
         ),

@@ -15,7 +15,7 @@ import {
     TNetworkName,
     TokenContractName,
 } from '@thxnetwork/contracts/exports';
-import { HARDHAT_NAME, POLYGON_MUMBAI_NAME, POLYGON_NAME } from './secrets';
+import { HARDHAT_NAME, POLYGON_NAME } from './secrets';
 
 export const getContractConfig = (
     chainId: ChainId,

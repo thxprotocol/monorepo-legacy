@@ -23,7 +23,7 @@ export const perkBaseSchema = {
         type: Boolean,
         default: false,
     },
-    tokenGatingVariant: String,
+    tokenGatingVariant: Number,
     tokenGatingContractAddress: String,
     tokenGatingAmount: Number,
 };
