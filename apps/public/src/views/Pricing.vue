@@ -351,6 +351,9 @@ export default class Home extends Vue {
 }
 </script>
 <style scoped>
+#section-features {
+    padding-top: 15rem;
+}
 .font-small {
     font-size: 0.9rem;
 }
