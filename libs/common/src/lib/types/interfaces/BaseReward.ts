@@ -1,6 +1,6 @@
-import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/';
+import { TokenGatingVariant } from '../enums/TokenGatingVariant';
 
-export type TBaseReward = {
+export type TBasePerk = {
     _id?: string;
     uuid: string;
     poolId: string;
@@ -10,13 +10,25 @@ export type TBaseReward = {
     claimAmount: number;
     claimLimit: number;
     limit: number;
-    platform: RewardConditionPlatform;
-    interaction: RewardConditionInteraction;
-    content: string;
-    contentMetadata: any;
+    tokenGatingVariant: TokenGatingVariant;
+    tokenGatingContractAddress: string;
+    tokenGatingAmount: number;
+    pointPrice: number;
+    image: string;
+    isPromoted: boolean;
+    page?: number;
     createdAt?: string;
     updatedAt?: string;
-    progress?: number;
+    claims: [];
+};
+
+export type TBaseReward = {
+    _id?: string;
+    uuid: string;
+    poolId: string;
+    title: string;
+    description: string;
+    createdAt?: string;
+    updatedAt?: string;
     page?: number;
-    claims?: any[];
 };

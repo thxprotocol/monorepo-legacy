@@ -2,7 +2,7 @@
     <base-modal
         @show="onShow"
         size="xl"
-        :title="reward ? 'Update Shopify Perk' : 'Create Shopify Perk'"
+        :title="perk ? 'Update Shopify Perk' : 'Create Shopify Perk'"
         :id="id"
         :error="error"
         :loading="isLoading"
@@ -79,7 +79,7 @@
                 variant="primary"
                 block
             >
-                {{ reward ? 'Update Shopify Perk' : 'Create Shopify Perk' }}
+                {{ perk ? 'Update Shopify Perk' : 'Create Shopify Perk' }}
             </b-button>
         </template>
     </base-modal>
@@ -128,20 +128,20 @@ export default class ModalRewardShopifyCreate extends Vue {
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
-    @Prop({ required: false }) reward!: TShopifyPerk;
+    @Prop({ required: false }) perk!: TShopifyPerk;
 
     onShow() {
-        this.title = this.reward ? this.reward.title : '';
-        this.description = this.reward ? this.reward.description : '';
-        this.pointPrice = this.reward ? this.reward.pointPrice : 0;
-        this.price = this.reward ? this.reward.price : this.price;
-        this.priceCurrency = this.reward ? this.reward.priceCurrency : this.priceCurrency;
-        this.expiryDate = this.reward ? this.reward.expiryDate : null;
-        this.limit = this.reward ? this.reward.limit : 0;
-        this.image = this.reward && this.reward.image ? this.reward.image : '';
-        this.isPromoted = this.reward ? this.reward.isPromoted : false;
-        this.priceRuleId = this.reward ? this.reward.priceRuleId : null;
-        this.discountCode = this.reward ? this.reward.discountCode : null;
+        this.title = this.perk ? this.perk.title : '';
+        this.description = this.perk ? this.perk.description : '';
+        this.pointPrice = this.perk ? this.perk.pointPrice : 0;
+        this.price = this.perk ? this.perk.price : this.price;
+        this.priceCurrency = this.perk ? this.perk.priceCurrency : this.priceCurrency;
+        this.expiryDate = this.perk ? this.perk.expiryDate : null;
+        this.limit = this.perk ? this.perk.limit : 0;
+        this.image = this.perk && this.perk.image ? this.perk.image : '';
+        this.isPromoted = this.perk ? this.perk.isPromoted : false;
+        this.priceRuleId = this.perk ? this.perk.priceRuleId : null;
+        this.discountCode = this.perk ? this.perk.discountCode : null;
     }
 
     get isSubmitDisabled() {
@@ -169,9 +169,9 @@ export default class ModalRewardShopifyCreate extends Vue {
         if (this.expiryDate) Object.assign(payload, { expiryDate: this.expiryDate });
 
         this.$store
-            .dispatch(`shopifyPerks/${this.reward ? 'update' : 'create'}`, {
+            .dispatch(`shopifyPerks/${this.perk ? 'update' : 'create'}`, {
                 pool: this.pool,
-                reward: this.reward,
+                reward: this.perk,
                 payload,
             })
             .then(() => {

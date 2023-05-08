@@ -13,6 +13,7 @@ import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
 import MailService from '@thxnetwork/api/services/MailService';
 import { Widget } from '@thxnetwork/api/models/Widget';
 import { Wallet } from '@thxnetwork/api/models/Wallet';
+import PerkService from '@thxnetwork/api/services/PerkService';
 
 const validation = [param('uuid').exists()];
 
@@ -40,7 +41,7 @@ const controller = async (req: Request, res: Response) => {
     if (!pointBalance || Number(pointBalance.balance) < Number(perk.pointPrice))
         throw new BadRequestError('Not enough points on this account for this perk.');
 
-    const redeemValidationResult = await redeemValidation({ perk, sub: req.auth.sub });
+    const redeemValidationResult = await redeemValidation({ perk, sub: req.auth.sub, pool });
     if (redeemValidationResult.isError) {
         throw new ForbiddenError(redeemValidationResult.errorMessage);
     }

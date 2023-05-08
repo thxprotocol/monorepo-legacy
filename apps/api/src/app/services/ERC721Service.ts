@@ -26,7 +26,9 @@ import PoolService from './PoolService';
 import TransactionService from './TransactionService';
 import AccountProxy from '../proxies/AccountProxy';
 import IPFSService from './IPFSService';
-import WalletService from './WalletService';
+import WalletService, { Wallet } from './WalletService';
+import { toChecksumAddress } from 'web3-utils';
+import { logger } from '@thxnetwork/api/util/logger';
 
 const contractName = 'NonFungibleToken';
 
@@ -267,7 +269,12 @@ export async function transferFromWallet(
         forceSync,
         {
             type: 'erc721TransferFromWalletCallback',
-            args: { erc721Id: erc721._id, erc721TokenId: erc721Token._id, walletId: wallet._id, to },
+            args: {
+                erc721Id: String(erc721._id),
+                erc721TokenId: String(erc721Token._id),
+                walletId: String(wallet._id),
+                to,
+            },
         },
     );
 
@@ -310,7 +317,12 @@ export async function transferFrom(
         forceSync,
         {
             type: 'erc721nTransferFromCallback',
-            args: { erc721Id: erc721._id, erc721TokenId: erc721Token._id, sub: wallet.sub, assetPoolId: pool._id },
+            args: {
+                erc721Id: String(erc721._id),
+                erc721TokenId: String(erc721Token._id),
+                sub: wallet.sub,
+                assetPoolId: String(pool._id),
+            },
         },
     );
 

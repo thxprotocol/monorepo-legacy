@@ -21,7 +21,7 @@ const controller = async (req: Request, res: Response) => {
     if (!erc721Perk) throw new NotFoundError('Could not find this perk');
     if (!erc721Perk.price) throw new NotFoundError('No point price for this perk has been set.');
 
-    const redeemValidationResult = await redeemValidation({ perk: erc721Perk, sub: req.auth.sub });
+    const redeemValidationResult = await redeemValidation({ perk: erc721Perk, sub: req.auth.sub, pool });
     if (redeemValidationResult.isError) {
         throw new ForbiddenError(redeemValidationResult.errorMessage);
     }

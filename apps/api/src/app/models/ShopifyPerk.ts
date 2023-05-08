@@ -1,20 +1,15 @@
 import mongoose from 'mongoose';
-import { rewardBaseSchema } from './ERC20Perk';
+import { perkBaseSchema } from './ERC20Perk';
 import { TShopifyPerk } from '@thxnetwork/types/';
 
 export type ShopifyPerkDocument = mongoose.Document & TShopifyPerk;
 
 const schema = new mongoose.Schema(
     {
-        ...rewardBaseSchema,
-        poolId: String,
-        amount: String,
-        pointPrice: Number,
-        image: String,
+        ...perkBaseSchema,
+        amount: Number,
         priceRuleId: String,
         discountCode: String,
-        price: Number,
-        priceCurrency: String,
     },
     { timestamps: true },
 );

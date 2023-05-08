@@ -1,9 +1,6 @@
-import { TBaseReward } from './BaseReward';
+import { TBasePerk } from './BaseReward';
 
-export type TERC20Perk = TBaseReward & {
+export type TERC20Perk = TBasePerk & {
     erc20Id: string;
     amount: string;
-    pointPrice: number;
-    isPromoted: boolean;
-    image?: string;
 };

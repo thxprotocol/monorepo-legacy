@@ -51,7 +51,6 @@ describe('Referral Rewards', () => {
     });
 
     it('POST /referral-rewards', (done) => {
-        const expiryDate = addMinutes(new Date(), 30);
         const successUrl = 'http://www.google.com';
         user.post('/v1/referral-rewards/')
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
@@ -59,10 +58,6 @@ describe('Referral Rewards', () => {
                 title: 'Expiration date is next 30 min',
                 description: 'Lorem ipsum dolor sit amet',
                 amount: 100,
-                platform: 0,
-                expiryDate,
-                limit: 0,
-                claimAmount: 1,
                 successUrl,
             })
             .expect((res: request.Response) => {
@@ -70,7 +65,6 @@ describe('Referral Rewards', () => {
                 expect(res.body.token).toBeDefined();
                 expect(res.body.successUrl).toBe(successUrl);
                 expect(res.body.amount).toBe(100);
-                expect(new Date(res.body.expiryDate).getTime()).toBe(expiryDate.getTime());
                 referralRewardId = res.body._id;
                 referralReward = res.body;
             })

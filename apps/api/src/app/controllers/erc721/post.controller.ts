@@ -3,7 +3,6 @@ import { Request, Response } from 'express';
 import { body, check, query } from 'express-validator';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import ImageService from '@thxnetwork/api/services/ImageService';
-import { BadRequestError } from '@thxnetwork/api/util/errors';
 import { AccountPlanType } from '@thxnetwork/types/enums';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 

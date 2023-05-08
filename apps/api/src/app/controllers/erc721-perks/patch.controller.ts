@@ -23,6 +23,9 @@ const validation = [
             return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
         }),
     body('isPromoted').optional().isBoolean(),
+    body('tokenGatingContractAddress').optional().isString(),
+    body('tokenGatingVariant').optional().isString(),
+    body('tokenGatingAmount').optional().isInt(),
 ];
 
 const controller = async (req: Request, res: Response) => {
@@ -41,8 +44,8 @@ const controller = async (req: Request, res: Response) => {
         erc721metadataId: JSON.parse(req.body.erc721metadataIds)[0],
         image,
         title: req.body.title,
-        erc721Id: req.body.erc721Id,
         description: req.body.description,
+        erc721Id: req.body.erc721Id,
         expiryDate: req.body.expiryDate,
         claimAmount: req.body.claimAmount,
         claimLimit: req.body.claimLimit,
@@ -51,6 +54,9 @@ const controller = async (req: Request, res: Response) => {
         priceCurrency: req.body.priceCurrency,
         isPromoted: req.body.isPromoted,
         limit: req.body.limit,
+        tokenGatingVariant: req.body.tokenGatingVariant,
+        tokenGatingContractAddress: req.body.tokenGatingContractAddress,
+        tokenGatingAmount: req.body.tokenGatingAmount,
     } as TERC721Perk);
 
     return res.json(perk);

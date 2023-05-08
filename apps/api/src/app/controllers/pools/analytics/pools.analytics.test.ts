@@ -20,7 +20,7 @@ import { AUTH_URL } from '@thxnetwork/api/config/secrets';
 
 const user = request.agent(app);
 
-describe('Default Pool', () => {
+describe('Pool Analytics', () => {
     let pointReward: any,
         referralReward: any,
         referralRewardClaim: any,
@@ -75,17 +75,12 @@ describe('Default Pool', () => {
         });
         describe('Create 2 Referral Rewards, claim and approve', () => {
             it('POST /referral-rewards', (done) => {
-                const expiryDate = addMinutes(new Date(), 30);
                 const successUrl = 'http://www.google.com';
                 user.post('/v1/referral-rewards/')
                     .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                     .send({
                         title: 'Referral Reward 1',
                         amount: 100,
-                        platform: 0,
-                        expiryDate,
-                        limit: 0,
-                        claimAmount: 1,
                         successUrl,
                     })
                     .expect((res: request.Response) => {
@@ -304,9 +299,7 @@ describe('Default Pool', () => {
                         image,
                         amount: 1,
                         limit: 0,
-                        claimAmount: 1,
                         pointPrice: 5,
-                        platform: 0,
                         expiryDate,
                     })
                     .expect((res: request.Response) => {
@@ -378,7 +371,7 @@ describe('Default Pool', () => {
                 user.get(`/v1/pools/${poolId}/analytics/metrics`)
                     .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                     .expect(({ body }: request.Response) => {
-                        expect(body.claims).toBe(1);
+                        expect(body.claims).toBe(0);
                         expect(body.erc20Perks).toEqual({ total: 1, payments: 1, totalAmount: 5 });
                         expect(body.referralRewards).toEqual({ total: 3, claims: 2, totalClaimPoints: 150 });
                         expect(body.pointRewards).toEqual({ total: 7, claims: 2, totalClaimPoints: 30 });

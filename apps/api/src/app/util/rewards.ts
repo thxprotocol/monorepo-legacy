@@ -76,21 +76,6 @@ export const createERC721Perk = async (assetPool: AssetPoolDocument, config: TER
     return { reward, claims };
 };
 
-export const createERC20Perk = async (pool: AssetPoolDocument, payload: TERC20Perk) => {
-    const reward = await ERC20PerkService.create(pool, payload);
-    const claims = await Promise.all(
-        Array.from({ length: Number(payload.claimAmount) }).map(() =>
-            ClaimService.create({
-                poolId: pool._id,
-                erc20Id: payload.erc20Id,
-                rewardUuid: reward.uuid,
-            }),
-        ),
-    );
-
-    return { reward, claims };
-};
-
 export async function createDummyContents(pool: AssetPoolDocument) {
     await DailyRewardService.create(pool, {
         title: 'Daily Reward 🗓️',

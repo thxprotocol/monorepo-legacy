@@ -11,9 +11,8 @@ import {
     widgetAccessToken,
 } from '@thxnetwork/api/util/jest/constants';
 import { ERC721Document } from '@thxnetwork/api/models/ERC721';
-import { ERC721TransferDocument } from '@thxnetwork/api/models/ERC721Transfer';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
-import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
+import { ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
 import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
@@ -23,11 +22,7 @@ import TransactionService from '@thxnetwork/api/services/TransactionService';
 const user = request.agent(app);
 
 describe('ERC721Transfer', () => {
-    let erc721: ERC721Document,
-        erc721Token: ERC721TokenDocument,
-        wallet: WalletDocument,
-        wallet2: WalletDocument,
-        erc721Transfer: ERC721TransferDocument;
+    let erc721: ERC721Document, erc721Token: ERC721TokenDocument, wallet: WalletDocument, wallet2: WalletDocument;
 
     const chainId = ChainId.Hardhat,
         name = 'Test Collection',
@@ -102,7 +97,9 @@ describe('ERC721Transfer', () => {
                     forceSync: true,
                 })
                 .expect(async ({ body }: request.Response) => {
-                    expect(await erc721.contract.methods.ownerOf(erc721Token.tokenId).call()).toBe(body.recipient);
+                    expect(body.sub).toBe('');
+                    expect(body.recipient).toBe(to);
+                    expect(await erc721.contract.methods.ownerOf(erc721Token.tokenId).call()).toBe(to);
                 })
                 .expect(201, done);
         });

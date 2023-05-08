@@ -15,7 +15,6 @@ import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { PoolTransfer, PoolTransferDocument } from '@thxnetwork/api/models/PoolTransfer';
 import { ERC20Document } from '@thxnetwork/api/models/ERC20';
 import { createImage } from '@thxnetwork/api/util/jest/images';
-import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
 import { addMinutes, sub } from 'date-fns';
 import { isAddress } from 'web3-utils';
 import { Wallet } from '@thxnetwork/api/models/Wallet';
@@ -75,11 +74,7 @@ describe('Pool Transfer', () => {
                 pointPrice = 200,
                 image = createImage(),
                 amount = '1',
-                platform = RewardConditionPlatform.Google,
-                interaction = RewardConditionInteraction.YouTubeLike,
-                content = 'videoid',
                 limit = 0,
-                claimAmount = 0,
                 isPromoted = true;
             user.post('/v1/erc20-perks/')
                 .set({ 'X-PoolId': pool._id, 'Authorization': dashboardAccessToken })
@@ -94,12 +89,8 @@ describe('Pool Transfer', () => {
                     erc20Id: String(erc20._id),
                     amount,
                     pointPrice,
-                    platform,
-                    interaction,
-                    content,
                     expiryDate: expiryDate.toString(),
                     limit,
-                    claimAmount,
                     isPromoted,
                 })
                 .expect((res: request.Response) => {
@@ -109,13 +100,8 @@ describe('Pool Transfer', () => {
                     expect(res.body.image).toBeDefined();
                     expect(res.body.amount).toBe(amount);
                     expect(res.body.pointPrice).toBe(pointPrice);
-                    expect(res.body.platform).toBe(platform);
-                    expect(res.body.interaction).toBe(interaction);
-                    expect(res.body.content).toBe(content);
                     expect(new Date(res.body.expiryDate).getDate()).toBe(expiryDate.getDate());
                     expect(res.body.limit).toBe(limit);
-                    expect(res.body.claimAmount).toBe(claimAmount);
-                    expect(res.body.claims.length).toBe(0);
                     expect(res.body.isPromoted).toBe(true);
                 })
                 .expect(201, done);

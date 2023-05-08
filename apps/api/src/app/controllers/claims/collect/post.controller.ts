@@ -3,7 +3,6 @@ import { Request, Response } from 'express';
 import { param, query } from 'express-validator';
 import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { findRewardByUuid, isTERC20Perk, isTERC721Perk } from '@thxnetwork/api/util/rewards';
-import { validateCondition } from '@thxnetwork/api/util/condition';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
@@ -48,8 +47,6 @@ const controller = async (req: Request, res: Response) => {
     let claim = await ClaimService.findByUuid(req.params.uuid);
     if (!claim) throw new BadRequestError('This claim URL is invalid.');
 
-    const account = await AccountProxy.getById(req.auth.sub);
-
     const pool = await PoolService.getById(claim.poolId);
     if (!pool) throw new BadRequestError('The pool for this perk has been removed.');
 
@@ -64,7 +61,7 @@ const controller = async (req: Request, res: Response) => {
         throw new ForbiddenError('This perk should be redeemed with points.');
     }
 
-    const redeemValidationResult = await redeemValidation({ perk, sub: req.auth.sub, claim });
+    const redeemValidationResult = await redeemValidation({ perk, sub: req.auth.sub, claim, pool });
     if (redeemValidationResult.isError) {
         throw new ForbiddenError(redeemValidationResult.errorMessage);
     }
@@ -80,12 +77,6 @@ const controller = async (req: Request, res: Response) => {
     // Can not be claimed when sub is set for this claim URL and claim amount is greater than 1
     if (claim && claim.sub && perk.claimLimit > 0) {
         throw new ForbiddenError('This perk has been claimed already.');
-    }
-
-    // Can only claim if potential platform conditions passes.
-    const failReason = await validateCondition(account, perk);
-    if (failReason) {
-        throw new ForbiddenError(failReason);
     }
 
     const wallet = await Wallet.findOne({ chainId: pool.chainId, sub: req.auth.sub });

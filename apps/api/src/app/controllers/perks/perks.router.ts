@@ -4,7 +4,6 @@ import ListPerks from './list.controller';
 import PayERC20Perk from './erc20/redemption/post.controller';
 import ERC721PerkPayment from './erc721/payment/post.controller';
 import ERC721PerkRedemption from './erc721/redemption/post.controller';
-import ShopifyPerkPayment from './shopify/payment/post.controller';
 import ShopifyPerkRedemption from './shopify/redemption/post.controller';
 import ListShopifyDiscountCodes from './shopify/discount-codes/list.controller';
 
@@ -38,10 +37,6 @@ router
         assertRequestInput(ShopifyPerkRedemption.validation),
         ShopifyPerkRedemption.controller,
     );
-router
-    .use(checkJwt)
-    .use(corsHandler)
-    .post('/shopify/:uuid/payment', assertRequestInput(ShopifyPerkPayment.validation), ShopifyPerkPayment.controller);
 
 router.get('/shopify/discount-codes', ListShopifyDiscountCodes.controller);
 

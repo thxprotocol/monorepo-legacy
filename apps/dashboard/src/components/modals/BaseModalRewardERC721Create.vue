@@ -2,7 +2,7 @@
     <base-modal
         @show="onShow"
         size="xl"
-        :title="reward ? 'Update NFT Perk' : 'Create NFT Perk'"
+        :title="perk ? 'Update NFT Perk' : 'Create NFT Perk'"
         :id="id"
         :error="error"
         :loading="isLoading"
@@ -70,6 +70,14 @@
                             @change-date="expiryDate = $event"
                         />
                         <BaseCardRewardLimits class="mb-3" :limit="limit" @change-reward-limit="limit = $event" />
+                        <BaseCardTokenGating
+                            class="mb-3"
+                            :pool="pool"
+                            :perk="perk"
+                            @change-contract-address="tokenGatingContractAddress = $event"
+                            @change-amount="tokenGatingAmount = $event"
+                            @change-variant="tokenGatingVariant = $event"
+                        />
                         <BaseCardClaimAmount
                             class="mb-3"
                             :claimAmount="claimAmount"
@@ -93,7 +101,7 @@
                 variant="primary"
                 block
             >
-                {{ reward ? 'Update NFT Perk' : 'Create NFT Perk' }}
+                {{ perk ? 'Update NFT Perk' : 'Create NFT Perk' }}
             </b-button>
         </template>
     </base-modal>
@@ -118,6 +126,8 @@ import BaseCardClaimAmount from '../cards/BaseCardClaimAmount.vue';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import { IAccount } from '@thxnetwork/dashboard/types/account';
 import { TERC721Token } from '@thxnetwork/dashboard/types/erc721';
+import BaseCardTokenGating from '../cards/BaseCardTokenGating.vue';
+import { TokenGatingVariant } from '@thxnetwork/types/enums/TokenGatingVariant';
 
 type TRewardCondition = {
     platform: RewardConditionPlatform;
@@ -135,6 +145,7 @@ type TRewardCondition = {
         BaseDropdownSelectERC721,
         BaseDropdownERC721ImportedToken,
         BaseCardClaimAmount,
+        BaseCardTokenGating,
     },
     computed: mapGetters({
         pools: 'pools/all',
@@ -160,11 +171,6 @@ export default class ModalRewardERC721Create extends Vue {
     claimLimit = 0;
     limit = 0;
     pointPrice = 0;
-    rewardCondition: TRewardCondition = {
-        platform: platformList[0].type,
-        interaction: platformInteractionList[0].type,
-        content: '',
-    };
     erc721s!: IERC721s;
     erc721Tokens!: IERC721Tokens;
     imageFile: File | null = null;
@@ -172,10 +178,13 @@ export default class ModalRewardERC721Create extends Vue {
     isPromoted = false;
     price = 0;
     priceCurrency = 'USD';
+    tokenGatingVariant = TokenGatingVariant.ERC721;
+    tokenGatingContractAddress = '';
+    tokenGatingAmount = 0;
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
-    @Prop({ required: false }) reward!: TERC721Perk;
+    @Prop({ required: false }) perk!: TERC721Perk;
     @Prop({ required: false, default: () => [] }) erc721SelectedMetadataIds!: string[];
 
     get chainId() {
@@ -183,33 +192,26 @@ export default class ModalRewardERC721Create extends Vue {
     }
 
     onShow() {
-        this.title = this.reward ? this.reward.title : '';
-        this.description = this.reward ? this.reward.description : '';
-        this.limit = this.reward ? this.reward.limit : 0;
-        this.pointPrice = this.reward ? this.reward.pointPrice : 0;
-        this.expiryDate = this.reward ? this.reward.expiryDate : null;
-        this.limit = this.reward ? this.reward.limit : 0;
-        this.claimAmount = this.reward ? this.reward.claimAmount : this.claimAmount;
-        this.claimLimit = this.reward ? this.reward.claimLimit : this.claimLimit;
-        this.price = this.reward && this.reward.price ? this.reward.price : this.price;
-        this.priceCurrency = this.reward ? this.reward.priceCurrency : this.priceCurrency;
-        this.rewardCondition = this.reward
-            ? {
-                  platform: this.reward.platform as RewardConditionPlatform,
-                  interaction: this.reward.interaction as RewardConditionInteraction,
-                  content: this.reward.content as string,
-              }
-            : {
-                  platform: RewardConditionPlatform.None,
-                  interaction: RewardConditionInteraction.None,
-                  content: '',
-              };
-        this.image = this.reward ? this.reward.image : '';
-        this.isPromoted = this.reward ? this.reward.isPromoted : false;
-
-        this.erc721 = this.reward ? this.erc721s[this.reward.erc721Id] : null;
-        this.erc721metadataId = this.reward ? this.reward.erc721metadataId : '';
-        this.erc721tokenId = this.reward ? this.reward.erc721tokenId : undefined;
+        this.title = this.perk ? this.perk.title : '';
+        this.description = this.perk ? this.perk.description : '';
+        this.limit = this.perk ? this.perk.limit : 0;
+        this.pointPrice = this.perk ? this.perk.pointPrice : 0;
+        this.expiryDate = this.perk ? this.perk.expiryDate : null;
+        this.limit = this.perk ? this.perk.limit : 0;
+        this.claimAmount = this.perk ? this.perk.claimAmount : this.claimAmount;
+        this.claimLimit = this.perk ? this.perk.claimLimit : this.claimLimit;
+        this.price = this.perk && this.perk.price ? this.perk.price : this.price;
+        this.priceCurrency = this.perk ? this.perk.priceCurrency : this.priceCurrency;
+        this.image = this.perk ? this.perk.image : '';
+        this.isPromoted = this.perk ? this.perk.isPromoted : false;
+        this.erc721 = this.perk ? this.erc721s[this.perk.erc721Id] : null;
+        this.erc721metadataId = this.perk ? this.perk.erc721metadataId : '';
+        this.erc721tokenId = this.perk ? this.perk.erc721tokenId : undefined;
+        this.tokenGatingContractAddress = this.perk
+            ? this.perk.tokenGatingContractAddress
+            : this.tokenGatingContractAddress;
+        this.tokenGatingVariant = this.perk ? this.perk.tokenGatingVariant : this.tokenGatingVariant;
+        this.tokenGatingAmount = this.perk ? this.perk.tokenGatingAmount : this.tokenGatingAmount;
     }
 
     get hasImportedTokens() {
@@ -279,14 +281,17 @@ export default class ModalRewardERC721Create extends Vue {
             file: this.imageFile,
             isPromoted: this.isPromoted,
             erc721tokenId: this.erc721tokenId,
+            tokenGatingContractAddress: this.tokenGatingContractAddress,
+            tokenGatingVariant: this.tokenGatingVariant,
+            tokenGatingAmount: this.tokenGatingAmount,
         };
 
         if (this.expiryDate) Object.assign(payload, { expiryDate: this.expiryDate });
 
         this.$store
-            .dispatch(`erc721Perks/${this.reward ? 'update' : 'create'}`, {
+            .dispatch(`erc721Perks/${this.perk ? 'update' : 'create'}`, {
                 pool: this.pool || Object.values(this.pools)[0],
-                reward: this.reward,
+                reward: this.perk,
                 payload,
             })
             .then(() => {
