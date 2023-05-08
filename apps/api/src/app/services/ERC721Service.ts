@@ -281,7 +281,10 @@ export async function transferFromWallet(
     return ERC721Token.findByIdAndUpdate(erc721Token._id, { transactions: [txId] }, { new: true });
 }
 
-export async function transferFromWalletCallback(args: TERC721TransferFromWalletCallbackArgs) {
+export async function transferFromWalletCallback(
+    args: TERC721TransferFromWalletCallbackArgs,
+    receipt: TransactionReceipt,
+) {
     const { erc721Id, erc721TokenId, to } = args;
 
     const { contract } = await ERC721.findById(erc721Id);
