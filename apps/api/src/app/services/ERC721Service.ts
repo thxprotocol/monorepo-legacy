@@ -111,6 +111,7 @@ export async function mint(
     const tokenUri = await getTokenURI(erc721, String(metadata._id));
     const erc721token = await ERC721Token.create({
         sub: wallet.sub,
+        tokenUri: erc721.baseURL + tokenUri,
         recipient: wallet.address,
         state: ERC721TokenState.Pending,
         erc721Id: String(erc721._id),
