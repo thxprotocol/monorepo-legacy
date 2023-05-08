@@ -158,7 +158,7 @@ export async function queryMintTransaction(erc721Token: ERC721TokenDocument): Pr
     return erc721Token;
 }
 
-export async function parseAttributes(entry: ERC721MetadataDocument) {
+export function parseAttributes(entry: ERC721MetadataDocument) {
     return {
         name: entry.name,
         description: entry.description,
@@ -263,7 +263,7 @@ export async function transferFromWallet(
     const txId = await TransactionService.sendAsync(
         wallet.contract.options.address,
         wallet.contract.methods.transferERC721(erc721.address, to, erc721Token.tokenId),
-        erc721.chainId,
+        wallet.chainId,
         forceSync,
         {
             type: 'erc721TransferFromWalletCallback',
@@ -278,11 +278,14 @@ export async function transferFromWalletCallback(
     args: TERC721TransferFromWalletCallbackArgs,
     receipt: TransactionReceipt,
 ) {
-    const { erc721TokenId, to } = args;
-    // TODO SharedWalletFacet should cast an event that we can check here
-    // const { contract } = await Wallet.findById(walletId);
-    // const events = parseLogs(contract.options.jsonInterface, receipt.logs);
-    // const event = assertEvent('ERC721Transferred', events);
+    const { erc721Id, erc721TokenId, to } = args;
+
+    const { contract } = await ERC721.findById(erc721Id);
+    const { tokenId } = await ERC721Token.findById(erc721TokenId);
+    const ownerOfToken = await contract.methods.ownerOf(tokenId).call();
+
+    // Throwing manually due to missing contract events for successful transfers
+    if (ownerOfToken !== to) throw new Error('ERC721Transfer tx failed.');
 
     const toWallet = await WalletService.findOneByAddress(to);
     await ERC721Token.findByIdAndUpdate(erc721TokenId, {

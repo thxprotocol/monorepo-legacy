@@ -133,7 +133,7 @@ async function sendAsync(
             from: defaultAccount,
             to,
             data,
-            gas,
+            gas: gas + 100000,
         });
 
         await transactionMined(tx, receipt);
