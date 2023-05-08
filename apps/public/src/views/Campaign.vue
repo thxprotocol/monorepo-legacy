@@ -1,6 +1,6 @@
 <template>
     <section class="pt-10">
-        <b-jumbotron v-lazy:background-image="backgroundImage" class="bg-jumbo">
+        <b-jumbotron v-lazy:background-image="backgroundImage" class="bg-jumbo mb-5">
             <div class="container pb-5 text-center text-white">
                 <div v-if="!campaign" class="col-md-12 justify-content-center d-flex">
                     <b-spinner variant="light" />
@@ -48,13 +48,15 @@
             <b-row>
                 <b-col md="4" :key="key" v-for="(r, key) of campaign.rewards">
                     <b-card
-                        :title="r.title"
                         img-alt="Card image"
-                        img-left
+                        img-top
                         class="mb-3"
-                        header-class="align-items-center bg-primary text-white d-flex"
+                        header-class="align-items-center justify-content-between bg-primary text-white d-flex"
                     >
-                        <template #header>{{ r.amount }}</template>
+                        <template #header>
+                            {{ r.title }}
+                            <b-badge variant="light">{{ r.amount }} </b-badge>
+                        </template>
                         <b-card-text>{{ r.description }}</b-card-text>
                     </b-card>
                 </b-col>
@@ -107,7 +109,7 @@ export default class Home extends Vue {
     async mounted() {
         const res = await axios.get(API_URL + '/v1/pools/public/' + this.$route.params.id);
         this.campaign = res.data;
-        this.backgroundImage = res.data.backgroundImgUrl;
+        this.backgroundImage = res.data.backgroundImgUrl ? res.data.backgroundImgUrl : this.backgroundImage;
     }
 }
 </script>
