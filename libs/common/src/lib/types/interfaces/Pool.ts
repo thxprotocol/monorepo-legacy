@@ -15,6 +15,7 @@ export enum AccountVariant {
 }
 
 export type TCampaign = {
+    _id: string;
     title: string;
     expiryDate: Date;
     address: string;
@@ -26,6 +27,7 @@ export type TCampaign = {
     tags: string[];
     logoImgUrl?: string;
     backgroundImgUrl?: string;
+    rewards: { title: string; description: string; amount: number }[];
 };
 
 export type TPool = {

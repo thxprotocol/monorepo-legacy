@@ -1,66 +1,79 @@
 <template>
-    <section class="pt-5">
-        <div class="container pb-5 pt-5 mt-5">
-            <div class="row">
-                <div class="col-12 text-center">
-                    <div class="lead">Loyalty</div>
-                    <h1 class="h1 font-size-xl mt-3 mb-3">Campaigns</h1>
+    <section class="pt-10">
+        <b-jumbotron v-lazy:background-image="require('../../public/assets/img/thx_jumbotron_token_bg.webp')">
+            <div class="container pb-5">
+                <div class="row pb-5">
+                    <div v-if="!campaigns.length" class="col-md-12 justify-content-center d-flex">
+                        <b-spinner variant="light" />
+                    </div>
+                    <div class="col-lg-4" :key="key" v-for="(campaign, key) of campaigns">
+                        <b-card class="bg-darker text-white mb-4" footer-class="justify-content-end d-flex">
+                            <div
+                                v-if="campaign.progress > 0"
+                                v-b-tooltip
+                                :title="`Expires at ${format(new Date(campaign.expiryDate), 'dd-MM-yyyy HH:mm')}`"
+                                class="d-flex mb-3"
+                            >
+                                <i class="fas fa-clock text-muted"></i>
+                                <b-progress class="flex-grow-1 ml-3">
+                                    <b-progress-bar
+                                        :value="campaign.progress"
+                                        :max="100"
+                                        variant="gray"
+                                    ></b-progress-bar>
+                                </b-progress>
+                            </div>
+                            <div class="d-flex">
+                                <b-media>
+                                    <template v-if="campaign.logoImgUrl" #aside>
+                                        <b-img
+                                            width="75"
+                                            height="75"
+                                            class="rounded"
+                                            style="margin-right: 1.25rem"
+                                            :src="campaign.logoImgUrl"
+                                        />
+                                    </template>
+                                    <div>
+                                        <strong>
+                                            {{ campaign.title }}
+                                            <i v-if="campaign.active" class="fas fa-check-circle text-success"></i>
+                                        </strong>
+                                    </div>
+                                    <div>
+                                        <i class="fas fa-users mr-1"></i> {{ campaign.participants }} participants
+                                    </div>
+                                    <div class="pb-1">
+                                        <b-badge
+                                            :key="key"
+                                            v-for="(tag, key) of campaign.tags"
+                                            variant="primary"
+                                            class="mr-1"
+                                        >
+                                            {{ tag }}
+                                        </b-badge>
+                                    </div>
+                                </b-media>
+                            </div>
+                            <template #footer>
+                                <b-button
+                                    :to="`/campaigns/${campaign._id}`"
+                                    class="rounded-pill pr-3"
+                                    variant="darker"
+                                    size="sm"
+                                >
+                                    <i class="fas fa-question mr-1"></i> More info
+                                </b-button>
+                                <b-button :href="campaign.domain" class="rounded-pill pr-3" variant="darker" size="sm">
+                                    <i class="fas fa-link mr-1"></i> Visit Campaign
+                                </b-button>
+                            </template>
+                        </b-card>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="container pb-5">
-            <div class="row pb-5">
-                <div v-if="!campaigns.length" class="col-md-12 justify-content-center d-flex">
-                    <b-spinner variant="primary" />
-                </div>
-                <div class="col-lg-4" :key="key" v-for="(campaign, key) of campaigns">
-                    <b-card variant="light" class="mb-4">
-                        <div
-                            v-if="campaign.progress > 0"
-                            v-b-tooltip
-                            :title="`Expires at ${format(new Date(campaign.expiryDate), 'dd-MM-yyyy HH:mm')}`"
-                            class="d-flex mb-3"
-                        >
-                            <i class="fas fa-clock text-muted"></i>
-                            <b-progress class="flex-grow-1 ml-3">
-                                <b-progress-bar :value="campaign.progress" :max="100" variant="gray"></b-progress-bar>
-                            </b-progress>
-                        </div>
-                        <div class="d-flex">
-                            <b-media>
-                                <template v-if="campaign.logoImgUrl" #aside>
-                                    <b-img
-                                        width="75"
-                                        height="75"
-                                        class="rounded"
-                                        style="margin-right: 1.25rem"
-                                        :src="campaign.logoImgUrl"
-                                    />
-                                </template>
-                                <div>
-                                    <strong>
-                                        {{ campaign.title }}
-                                        <i v-if="campaign.active" class="fas fa-check-circle text-success"></i>
-                                    </strong>
-                                </div>
-                                <div><i class="fas fa-users mr-1"></i> {{ campaign.participants }} participants</div>
-                                <div class="pb-1">
-                                    <b-badge :key="key" v-for="(tag, key) of campaign.tags" variant="dark" class="mr-1">
-                                        {{ tag }}
-                                    </b-badge>
-                                </div>
-                            </b-media>
-                        </div>
-                        <template #footer>
-                            <b-button :href="campaign.domain" class="rounded-pill" variant="light" size="sm">
-                                <i class="fas fa-link mr-1"></i> Visit Campaign
-                            </b-button>
-                        </template>
-                    </b-card>
-                </div>
-            </div>
-        </div>
-        <base-contact :dark="true" />
+        </b-jumbotron>
+        <!-- <base-contact :dark="true" /> -->
     </section>
 </template>
 
