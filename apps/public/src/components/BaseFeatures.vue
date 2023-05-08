@@ -1,5 +1,5 @@
 <template>
-    <section class="bg-darker text-light pb-5 w-100">
+    <section id="section-features" class="bg-darker text-light pb-5 w-100">
         <div class="container pt-lg-10">
             <div class="row pb-5">
                 <div class="col-lg-6 offset-lg-3">
