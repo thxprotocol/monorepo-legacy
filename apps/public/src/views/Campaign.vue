@@ -37,7 +37,7 @@
                         target="_blank"
                         :href="campaign.domain"
                         class="rounded-pill pr-3 float-right"
-                        variant="primary"
+                        variant="success"
                     >
                         <i class="fas fa-link mr-1"></i> Visit Campaign
                     </b-button>
@@ -119,6 +119,7 @@ export default class Home extends Vue {
     max-height: 100px;
     max-width: 200px;
 }
+
 .bg-jumbo {
     background-size: cover;
     background-position: center center;
