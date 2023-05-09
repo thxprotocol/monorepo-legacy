@@ -7,6 +7,14 @@ import { DailyReward } from '@thxnetwork/api/models/DailyReward';
 import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
 import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
 import { PointReward } from '@thxnetwork/api/models/PointReward';
+import { ERC20Perk } from '@thxnetwork/api/models/ERC20Perk';
+import { ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
+
+const mapper = (list) => {
+    return list.map((d) => {
+        return { title: d.title, description: d.description, amount: d.amount };
+    });
+};
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
@@ -44,11 +52,6 @@ const controller = async (req: Request, res: Response) => {
             const referralRewards = await ReferralReward.find({ poolId });
             const pointRewards = await PointReward.find({ poolId });
             const milestoneRewards = await MilestoneReward.find({ poolId });
-            const mapper = (list) => {
-                return list.map((d) => {
-                    return { title: d.title, description: d.description, amount: d.amount };
-                });
-            };
 
             return [
                 ...mapper(dailyRewards),
@@ -56,6 +59,12 @@ const controller = async (req: Request, res: Response) => {
                 ...mapper(pointRewards),
                 ...mapper(milestoneRewards),
             ];
+        })(),
+        perks: await (async () => {
+            const erc20Perks = await ERC20Perk.find({ poolId });
+            const erc721Perks = await ERC721Perk.find({ poolId });
+
+            return [...mapper(erc20Perks), ...mapper(erc721Perks)];
         })(),
     });
 };

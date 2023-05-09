@@ -46,19 +46,31 @@
         </b-jumbotron>
         <b-container v-if="campaign">
             <b-row>
-                <b-col md="4" :key="key" v-for="(r, key) of campaign.rewards">
-                    <b-card
-                        img-alt="Card image"
-                        img-top
-                        class="mb-3"
-                        header-class="align-items-center justify-content-between bg-primary text-white d-flex"
-                    >
-                        <template #header>
+                <b-col md="6">
+                    <h2>Earn</h2>
+                    <b-list-group>
+                        <b-list-group-item
+                            :key="key"
+                            v-for="(r, key) of campaign.rewards"
+                            class="d-flex align-items-center justify-content-between"
+                        >
                             {{ r.title }}
-                            <b-badge variant="light">{{ r.amount }} </b-badge>
-                        </template>
-                        <b-card-text>{{ r.description }}</b-card-text>
-                    </b-card>
+                            <b-badge variant="dark">{{ r.amount }} </b-badge>
+                        </b-list-group-item>
+                    </b-list-group>
+                </b-col>
+                <b-col md="6">
+                    <h2>Shop</h2>
+                    <b-list-group>
+                        <b-list-group-item
+                            :key="key"
+                            v-for="(r, key) of campaign.perks"
+                            class="d-flex align-items-center justify-content-between"
+                        >
+                            {{ r.title }}
+                            <b-badge variant="dark">{{ r.amount }} </b-badge>
+                        </b-list-group-item>
+                    </b-list-group>
                 </b-col>
             </b-row>
         </b-container>

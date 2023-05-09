@@ -28,6 +28,7 @@ export type TCampaign = {
     logoImgUrl?: string;
     backgroundImgUrl?: string;
     rewards: { title: string; description: string; amount: number }[];
+    perks: { title: string; description: string; amount: number }[];
 };
 
 export type TPool = {

@@ -22,7 +22,7 @@ module.exports = {
                 if (!erc721) continue;
 
                 const provider = networks[erc721.chainId];
-                if (!erc721) continue;
+                if (!provider) continue;
 
                 const contract = new provider.eth.Contract(erc721Abi, erc721.address);
                 const tokenUri = await contract.methods.tokenURI(token.tokenId).call();
