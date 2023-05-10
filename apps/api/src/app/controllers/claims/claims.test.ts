@@ -85,7 +85,6 @@ describe('Claims', () => {
                     expiryDate: String(expiryDate),
                 })
                 .expect(({ body }: request.Response) => {
-                    console.log(body);
                     expect(body[0].claims).toHaveLength(1);
                     claim = body[0].claims[0];
                 })
@@ -95,7 +94,6 @@ describe('Claims', () => {
             user.post(`/v1/claims/${claim.uuid}/collect`)
                 .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
                 .expect(({ body }: request.Response) => {
-                    console.log(body);
                     expect(body.error.message).toBe('This perk claim has expired.');
                 })
                 .expect(403, done);

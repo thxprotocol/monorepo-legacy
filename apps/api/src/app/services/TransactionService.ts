@@ -263,11 +263,8 @@ async function queryTransactionStatusDefender(tx: TransactionDocument) {
         await tx.save();
     }
 
-    console.log(defenderTx);
-
     if (['mined', 'confirmed'].includes(defenderTx.status)) {
         const receipt = await web3.eth.getTransactionReceipt(tx.transactionHash);
-        console.log(receipt);
         await transactionMined(tx, receipt);
     } else if (defenderTx.status === 'failed') {
         tx.state = TransactionState.Failed;

@@ -130,8 +130,6 @@ export async function mint(
         },
     );
 
-    console.log({ txId });
-
     return ERC1155Token.findByIdAndUpdate(
         erc1155token._id,
         { transactions: [txId], state: ERC1155TokenState.Transferring },
