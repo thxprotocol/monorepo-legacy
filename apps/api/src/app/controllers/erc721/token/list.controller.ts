@@ -6,7 +6,7 @@ import { Wallet } from '@thxnetwork/api/services/WalletService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { query } from 'express-validator';
 
-const validation = [query('chainId').exists().isNumeric(), query('recipient').exists().isString()];
+const validation = [query('chainId').exists().isNumeric(), query('recipient').optional().isString()];
 
 export const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721']
