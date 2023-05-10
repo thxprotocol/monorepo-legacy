@@ -10,7 +10,7 @@ import {
     account2,
 } from '@thxnetwork/api/util/jest/constants';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { ClaimDocument } from '@thxnetwork/api/types/TClaim';
+import { ClaimDocument } from '@thxnetwork/api/models/Claim';
 import { subMinutes } from '@thxnetwork/api/util/rewards';
 import { ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { ERC721Metadata, ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
