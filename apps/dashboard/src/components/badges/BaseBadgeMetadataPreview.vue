@@ -10,18 +10,20 @@
         </b-tooltip>
 
         <div class="d-flex align-items-center">
-            <div class="mr-2 d-flex align-items-center font-weight-bold text-gray">{{ amount }} x</div>
-            <div class="d-flex mr-2 rounded bg-gray text-white p-2" :id="`tooltip-target-${metadataId}-${index}`">
+            <div class="d-flex mr-2 rounded bg-gray text-white p-3" :id="`tooltip-target-${metadataId}-${index}`">
                 <i class="fas fa-photo-video"></i>
             </div>
-            <p style="line-height: 1" class="text-gray m-0">
-                <strong>{{ metadata.name }}</strong>
+            <div class="text-gray" style="line-height: 1.3">
+                <strong>
+                    <span v-if="amount > 1">{{ amount }} x</span>
+                    {{ metadata.name }}
+                </strong>
                 <b-link :href="metadata.externalUrl" target="_blank" class="ml-2 text-gray">
                     <i class="fas fa-external-link-alt" style="font-size: 0.8rem"></i>
                 </b-link>
                 <br />
-                <span v-if="metadata.description">{{ metadata.description.substring(0, 25) }}... </span>
-            </p>
+                <div v-if="metadata.description" class="text-truncate">{{ metadata.description }}</div>
+            </div>
         </div>
     </div>
 </template>
