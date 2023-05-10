@@ -4,7 +4,7 @@ import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
 import ImageService from '@thxnetwork/api/services/ImageService';
 import { BadRequestError } from '@thxnetwork/api/util/errors';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import { AccountPlanType } from '@thxnetwork/types/enums';
+import { AccountPlanType, NFTVariant } from '@thxnetwork/types/enums';
 import { API_URL, IPFS_BASE_URL, VERSION } from '@thxnetwork/api/config/secrets';
 
 const validation = [
@@ -40,9 +40,11 @@ const controller = async (req: Request, res: Response) => {
 
     const forceSync = req.query.forceSync !== undefined ? req.query.forceSync === 'true' : false;
     const account = await AccountProxy.getById(req.auth.sub);
-    const baseURL = account.plan === AccountPlanType.Premium ? IPFS_BASE_URL : `${API_URL}/${VERSION}/metadata/`;
+    const baseURL =
+        account.plan === AccountPlanType.Premium ? `${IPFS_BASE_URL}{id}` : `${API_URL}/${VERSION}/metadata/{id}`;
     const erc1155 = await ERC1155Service.deploy(
         {
+            variant: NFTVariant.ERC1155,
             sub: req.auth.sub,
             chainId: req.body.chainId,
             name: req.body.name,

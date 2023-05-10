@@ -8,8 +8,10 @@ const schema = new mongoose.Schema(
     {
         ...perkBaseSchema,
         erc721Id: String,
-        erc721metadataId: String,
-        erc721tokenId: String,
+        erc1155Id: String,
+        erc1155Amount: String,
+        metadataId: String,
+        tokenId: String,
         price: Number,
         priceCurrency: String,
     },

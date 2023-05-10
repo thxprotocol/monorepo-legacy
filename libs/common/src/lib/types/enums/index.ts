@@ -14,3 +14,4 @@ export * from './TransactionType';
 export * from './WithdrawalType';
 export * from './WithdrawalState';
 export * from './DailyRewardClaimState';
+export * from './NFTVariant';

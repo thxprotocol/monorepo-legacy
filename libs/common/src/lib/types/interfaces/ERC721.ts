@@ -1,5 +1,5 @@
 import { Contract } from 'web3-eth-contract';
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId, NFTVariant } from '@thxnetwork/types/enums';
 
 export enum ERC721TokenState {
     Pending = 0,
@@ -16,7 +16,7 @@ export type TERC721MetadataProp = {
 };
 
 export type TERC721Token = {
-    id?: string;
+    _id: string;
     sub: string;
     state: ERC721TokenState;
     recipient: string;
@@ -25,13 +25,15 @@ export type TERC721Token = {
     tokenId: number;
     tokenUri: string;
     metadataId: string;
-    erc721Id?: string;
-    metadata?: TERC721Metadata;
+    erc721Id: string;
+    metadata: TERC721Metadata;
     walletId: string;
+    balance?: string;
 };
 
 export type TERC721 = {
-    id?: string;
+    _id?: string;
+    variant: NFTVariant;
     sub: string;
     chainId: ChainId;
     name: string;
@@ -49,7 +51,7 @@ export type TERC721 = {
 };
 
 export type TERC721Metadata = {
-    _id?: string;
+    _id: string;
     erc721Id: string;
     imageUrl: string;
     name: string;
@@ -59,4 +61,14 @@ export type TERC721Metadata = {
     tokens?: TERC721Token[];
     createdAt?: Date;
     updatedAt?: Date;
+};
+
+export type TERC721Transfer = {
+    erc721Id: string;
+    erc721TokenId: string;
+    from: string;
+    to: string;
+    chainId: ChainId;
+    transactionId: string;
+    sub: string;
 };

@@ -38,6 +38,7 @@ export const mockGetNftsForOwner = (contractAddress: string, nftName: string, nf
                     symbol: nftSymbol,
                 },
                 tokenId: '1',
+                tokenUri: 'https://ipfs.io/ipfs/QmRvCinGkzqDdmSZ3PzQRyHbQVqaFLTDyfyMMD54Bwcjsi',
                 rawMetadata: {
                     name: '#1',
                     description: 'image description piece #1',

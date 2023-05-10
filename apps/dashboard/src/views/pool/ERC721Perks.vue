@@ -41,7 +41,7 @@
                 <template #head(title)> Title </template>
                 <template #head(price)> Price </template>
                 <template #head(claims)> Claim URL's </template>
-                <template #head(erc721)> NFT </template>
+                <template #head(nft)> NFT </template>
                 <template #head(erc721metadataId)> Metadata </template>
                 <template #head(tokenId)> Token ID </template>
                 <template #head(id)> &nbsp; </template>
@@ -75,14 +75,20 @@
                         :rewards="erc721Perks[pool._id]"
                     />
                 </template>
-                <template #cell(erc721)="{ item }">
-                    <strong class="text-muted">{{ item.erc721.name }}</strong>
+                <template #cell(nft)="{ item }">
+                    <b-link v-b-tooltip :title="item.nft.name" :href="item.nft.url" target="_blank">
+                        <b-badge variant="dark" class="p-2">
+                            {{ item.nft.variant.toUpperCase() }}
+                            <i class="fas fa-link ml-1"></i>
+                        </b-badge>
+                    </b-link>
                 </template>
                 <template #cell(metadata)="{ index, item }">
                     <BaseBadgeMetadataPreview
                         v-if="item.metadata && item.metadata.metadataId"
+                        :amount="item.metadata.amount"
                         :index="index"
-                        :erc721Id="item.metadata.erc721Id"
+                        :nft="item.metadata.nft"
                         :metadataId="item.metadata.metadataId"
                     />
                 </template>
@@ -117,15 +123,18 @@
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
+import { RewardConditionPlatform, RewardConditionInteraction, TERC721Perk } from '@thxnetwork/types/index';
+import { TERC721 } from '@thxnetwork/dashboard/types/erc721';
+import { parseUnitAmount } from '@thxnetwork/dashboard/utils/price';
+import { getTokenURL } from '@thxnetwork/dashboard/utils/chains';
+import { TERC1155 } from '@thxnetwork/dashboard/types/erc1155';
+import { TClaim } from '@thxnetwork/dashboard/store/modules/claims';
 import BaseModalRewardERC721Create from '@thxnetwork/dashboard/components/modals/BaseModalRewardERC721Create.vue';
 import BaseBadgeMetadataPreview from '@thxnetwork/dashboard/components/badges/BaseBadgeMetadataPreview.vue';
 import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/badges/BaseBadgeRewardConditionPreview.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
-import { RewardConditionPlatform, RewardConditionInteraction, TERC721Perk } from '@thxnetwork/types/index';
-import { IERC721s, TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import BaseModalRewardClaimsDownload from '@thxnetwork/dashboard/components/modals/BaseModalRewardClaimsDownload.vue';
-import { parseUnitAmount } from '@thxnetwork/dashboard/utils/price';
-import { TERC721Token } from '@thxnetwork/types/interfaces';
+import { fromWei } from 'web3-utils';
 
 @Component({
     components: {
@@ -138,7 +147,6 @@ import { TERC721Token } from '@thxnetwork/types/interfaces';
     computed: mapGetters({
         pools: 'pools/all',
         totals: 'erc721Perks/totals',
-        erc721s: 'erc721/all',
         erc721Perks: 'erc721Perks/all',
     }),
 })
@@ -151,7 +159,6 @@ export default class ERC721PerksView extends Vue {
     selectedItems: string[] = [];
 
     pools!: IPools;
-    erc721s!: IERC721s;
     totals!: { [poolId: string]: number };
     erc721Perks!: { [poolId: string]: { [id: string]: TERC721Perk & { erc721: TERC721 } } };
 
@@ -168,27 +175,25 @@ export default class ERC721PerksView extends Vue {
         return Object.values(this.erc721Perks[this.$route.params.id])
             .filter((reward: TERC721Perk) => reward.page === this.page)
             .sort((a, b) => (a.createdAt && b.createdAt && a.createdAt < b.createdAt ? 1 : -1))
-            .map((r: TERC721Perk & { erc721: TERC721; erc721Token?: TERC721Token }) => ({
-                checkbox: r._id,
-                title: r.title,
-                price: {
-                    pointPrice: r.pointPrice,
-                    price: parseUnitAmount(r.price),
-                    currency: r.priceCurrency,
-                },
-                erc721: {
-                    name: r.erc721.name,
-                    symbol: r.erc721.symbol,
-                },
-                tokenId: r.erc721Token ? r.erc721Token.tokenId : undefined,
-                metadata: {
-                    erc721Id: r.erc721Id,
-                    metadataId: r.erc721metadataId,
-                },
-                claims: r.claims,
-                // limit: r.limit,
-                id: r._id,
-            }))
+            .map((perk: TERC721Perk & { nft: TERC721 | TERC1155; claims: TClaim[] } & any) => {
+                return {
+                    checkbox: perk._id,
+                    title: perk.title,
+                    price: {
+                        price: parseUnitAmount(perk.price),
+                        pointPrice: perk.pointPrice,
+                        currency: perk.priceCurrency,
+                    },
+                    nft: { ...perk.nft, url: getTokenURL(perk.nft.chainId, perk.nft.address) },
+                    metadata: {
+                        amount: perk.erc1155Amount ? fromWei(String(perk.erc1155Amount), 'ether') : 1,
+                        nft: perk.nft,
+                        metadataId: perk.metadataId,
+                    },
+                    claims: perk.claims,
+                    id: perk._id,
+                };
+            })
             .slice(0, this.limit);
     }
 

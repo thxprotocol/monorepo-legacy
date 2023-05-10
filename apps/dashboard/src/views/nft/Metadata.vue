@@ -1,5 +1,5 @@
 <template>
-    <div v-if="erc721">
+    <div v-if="nft">
         <b-row class="mb-3">
             <b-col class="d-flex align-items-center">
                 <h2 class="mb-0">NFT Metadata</h2>
@@ -21,16 +21,15 @@
                     Import/Export
                 </b-dropdown-item>
             </b-dropdown>
-            <BaseModalErc721MetadataCreate @update="listMetadata" id="modalERC721MetadataCreate" :erc721="erc721" />
-            <BaseModalErc721MetadataBulkCreate @update="listMetadata" :erc721="erc721" />
-            <BaseModalErc721MetadataUploadCSV @update="listMetadata" :erc721="erc721" />
+            <BaseModalErc721MetadataCreate @update="listMetadata" id="modalERC721MetadataCreate" :nft="nft" />
+            <BaseModalErc721MetadataBulkCreate @update="listMetadata" :erc721="nft" />
+            <BaseModalErc721MetadataUploadCSV @update="listMetadata" :erc721="nft" />
         </b-row>
-
         <BCard variant="white" body-class="p-0 shadow-sm">
             <BaseCardTableHeader
                 :page="page"
                 :limit="limit"
-                :total-rows="totals[erc721._id]"
+                :total-rows="totals[nft._id]"
                 :selectedItems="selectedItems"
                 :actions="[
                     { variant: 0, label: `Delete metadata` },
@@ -40,18 +39,9 @@
                 @change-limit="onChangeLimit"
                 @change-page="onChangePage"
             />
-            <b-alert variant="success" show v-if="isDownloadScheduled">
-                <i class="fas fa-clock mr-2"></i>
-                You will receive an e-mail when your download is ready!
-            </b-alert>
-            <b-alert variant="info" show v-if="isDownloading">
-                <i class="fas fa-hourglass-half mr-2"></i>
-                Downloading your QR codes
-            </b-alert>
             <BaseModalRewardERC721Create
-                v-if="erc721"
                 id="modalRewardERC721Create"
-                :erc721="erc721"
+                :erc721="nft"
                 :erc721SelectedMetadataIds="selectedItems"
             />
             <BTable hover :busy="isLoading" :items="metadataByPage" responsive="lg" show-empty>
@@ -98,17 +88,17 @@
                             Preview URI
                         </b-dropdown-item>
                         <b-dropdown-item
-                            v-if="erc721"
+                            v-if="nft && metadata"
                             :disabled="!!item.tokens.length"
-                            @click="onClickDelete(metadata[erc721._id][item.id])"
+                            @click="onClickDelete(metadata[item.id])"
                         >
                             Delete
                         </b-dropdown-item>
                         <base-modal-erc721-metadata-create
                             @update="listMetadata"
                             :id="`modalERC721MetadataCreate${item.id}`"
-                            :erc721="erc721"
-                            :metadata="metadata[erc721._id][item.id]"
+                            :nft="nft"
+                            :metadata="metadata ? metadata[item.id] : null"
                         />
                     </b-dropdown>
                 </template>
@@ -121,7 +111,7 @@
 import { format } from 'date-fns';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import type { IERC721Metadatas, IERC721s, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
+import type { IERC721Metadatas, IERC721s, TNFTMetadata } from '@thxnetwork/dashboard/types/erc721';
 import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
 import BaseCardErc721Metadata from '@thxnetwork/dashboard/components/cards/BaseCardERC721Metadata.vue';
 import BaseModalErc721MetadataCreate from '@thxnetwork/dashboard/components/modals/BaseModalERC721MetadataCreate.vue';
@@ -130,6 +120,8 @@ import BaseModalErc721MetadataUploadCSV from '@thxnetwork/dashboard/components/m
 import BaseModalErc721MetadataCreateCSV from '@thxnetwork/dashboard/components/modals/BaseModalERC721MetadataCreateCSV.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseModalRewardERC721Create from '@thxnetwork/dashboard/components/modals/BaseModalRewardERC721Create.vue';
+import { IERC1155Metadatas, IERC1155s } from '@thxnetwork/dashboard/types/erc1155';
+import { NFTVariant } from '@thxnetwork/types/enums';
 
 @Component({
     components: {
@@ -143,9 +135,11 @@ import BaseModalRewardERC721Create from '@thxnetwork/dashboard/components/modals
         BaseModalRewardERC721Create,
     },
     computed: mapGetters({
-        erc721s: 'erc721/all',
-        metadata: 'erc721/metadata',
         totals: 'erc721/totalsMetadata',
+        erc721s: 'erc721/all',
+        erc721Metadata: 'erc721/metadata',
+        erc1155s: 'erc1155/all',
+        erc1155Metadata: 'erc1155/metadata',
     }),
 })
 export default class MetadataView extends Vue {
@@ -158,24 +152,44 @@ export default class MetadataView extends Vue {
     apiUrl = process.env.VUE_APP_API_ROOT;
     widgetUrl = process.env.VUE_APP_WIDGET_URL;
     qrURL = '';
-    isDownloading = false;
-    isDownloadScheduled = false;
     selectedItems: any[] = [];
-
     erc721s!: IERC721s;
-    metadata!: IERC721Metadatas;
+    erc1155s!: IERC1155s;
+    erc721Metadata!: IERC721Metadatas;
+    erc1155Metadata!: IERC1155Metadatas;
 
-    get erc721() {
-        if (!this.erc721s[this.$route.params.erc721Id]) return;
-        return this.erc721s[this.$route.params.erc721Id];
+    get nft() {
+        switch (this.$route.params.variant) {
+            case NFTVariant.ERC721:
+                if (!this.erc721s[this.$route.params.nftId]) return;
+                return this.erc721s[this.$route.params.nftId];
+            case NFTVariant.ERC1155:
+                if (!this.erc1155s[this.$route.params.nftId]) return;
+                return this.erc1155s[this.$route.params.nftId];
+            default:
+                return;
+        }
+    }
+
+    get metadata() {
+        switch (this.$route.params.variant) {
+            case NFTVariant.ERC721:
+                if (!this.erc721Metadata[this.$route.params.nftId]) return;
+                return this.erc721Metadata[this.$route.params.nftId];
+            case NFTVariant.ERC1155:
+                if (!this.erc1155Metadata[this.$route.params.nftId]) return;
+                return this.erc1155Metadata[this.$route.params.nftId];
+            default:
+                return;
+        }
     }
 
     get metadataByPage() {
-        if (!this.erc721 || !this.metadata[this.erc721._id]) return [];
-        return Object.values(this.metadata[this.$route.params.erc721Id])
-            .filter((metadata: TERC721Metadata) => metadata.page === this.page)
+        if (!this.nft || !this.metadata) return [];
+        return Object.values(this.metadata)
+            .filter((metadata: TNFTMetadata) => metadata.page === this.page)
             .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
-            .map((r: TERC721Metadata) => ({
+            .map((r: TNFTMetadata) => ({
                 checkbox: r._id,
                 image: r.imageUrl,
                 info: { name: r.name, description: r.description, url: r.externalUrl },
@@ -195,9 +209,10 @@ export default class MetadataView extends Vue {
         this.listMetadata();
     }
 
-    async onClickDelete(metadata: TERC721Metadata) {
-        await this.$store.dispatch('erc721/deleteMetadata', {
-            erc721: this.erc721,
+    async onClickDelete(metadata: TNFTMetadata) {
+        await this.$store.dispatch(`${this.$route.params.variant}/deleteMetadata`, {
+            erc721: this.nft,
+            erc1155: this.nft,
             metadata,
         });
     }
@@ -212,13 +227,14 @@ export default class MetadataView extends Vue {
     }
 
     onClickAction(action: { variant: number; label: string }) {
-        if (!this.erc721) return;
+        if (!this.nft) return;
         switch (action.variant) {
             case 0:
                 for (const id of Object.values(this.selectedItems)) {
-                    this.$store.dispatch('erc721/deleteMetadata', {
-                        erc721: this.erc721,
-                        metadata: this.metadata[this.erc721._id][id],
+                    this.$store.dispatch(`${this.$route.params.variant}/deleteMetadata`, {
+                        erc721: this.nft,
+                        erc1155: this.nft,
+                        metadata: this.metadata && this.metadata[this.nft._id][id],
                     });
                 }
                 break;
@@ -230,9 +246,10 @@ export default class MetadataView extends Vue {
 
     async listMetadata() {
         this.isLoading = true;
-        await this.$store.dispatch('erc721/read', this.$route.params.erc721Id);
-        await this.$store.dispatch('erc721/listMetadata', {
-            erc721: this.erc721,
+        await this.$store.dispatch(this.$route.params.variant + '/read', this.$route.params.nftId);
+        await this.$store.dispatch(this.$route.params.variant + '/listMetadata', {
+            erc721: this.nft,
+            erc1155: this.nft,
             page: this.page,
             limit: this.limit,
         });

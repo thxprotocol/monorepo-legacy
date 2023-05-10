@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId, NFTVariant } from '@thxnetwork/types/enums';
 import {
     sub,
     dashboardAccessToken,
@@ -10,7 +10,7 @@ import {
     account2,
 } from '@thxnetwork/api/util/jest/constants';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { ClaimDocument } from '@thxnetwork/api/types/TClaim';
+import { ClaimDocument } from '@thxnetwork/api/models/Claim';
 import { subMinutes } from '@thxnetwork/api/util/rewards';
 import { ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { ERC721Metadata, ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
@@ -48,20 +48,18 @@ describe('Claims', () => {
         await beforeAllCallback();
         pool = await PoolService.deploy(sub, chainId, 'My Loyalty Pool');
         poolId = String(pool._id);
-        erc721 = await ERC721Service.deploy(
-            {
-                sub,
-                chainId,
-                name,
-                symbol,
-                description: '',
-                baseURL,
-                properties: [],
-                archived: false,
-                logoImgUrl,
-            },
-            true,
-        );
+        erc721 = await ERC721Service.deploy({
+            variant: NFTVariant.ERC721,
+            sub,
+            chainId,
+            name,
+            symbol,
+            description: '',
+            baseURL,
+            properties: [],
+            archived: false,
+            logoImgUrl,
+        });
         metadata = await ERC721Metadata.create({
             erc721Id: String(erc721._id),
             name: metadataName,
@@ -83,20 +81,20 @@ describe('Claims', () => {
                 .send({
                     ...config,
                     erc721Id: erc721._id,
-                    erc721metadataIds: JSON.stringify([metadata._id]),
+                    metadataIds: JSON.stringify([metadata._id]),
                     expiryDate: String(expiryDate),
                 })
-                .expect((res: request.Response) => {
-                    expect(res.body[0].claims).toHaveLength(1);
-                    claim = res.body[0].claims[0];
+                .expect(({ body }: request.Response) => {
+                    expect(body[0].claims).toHaveLength(1);
+                    claim = body[0].claims[0];
                 })
                 .expect(201, done);
         });
         it('should return a 403 when expired', (done) => {
             user.post(`/v1/claims/${claim.uuid}/collect`)
                 .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
-                .expect((res: request.Response) => {
-                    expect(res.body.error.message).toBe('This perk claim has expired.');
+                .expect(({ body }: request.Response) => {
+                    expect(body.error.message).toBe('This perk claim has expired.');
                 })
                 .expect(403, done);
         });
@@ -111,7 +109,7 @@ describe('Claims', () => {
                 .send({
                     ...config,
                     erc721Id: erc721._id,
-                    erc721metadataIds: JSON.stringify([metadata._id]),
+                    metadataIds: JSON.stringify([metadata._id]),
                     pointPrice: 100,
                 })
                 .expect((res: request.Response) => {
@@ -140,7 +138,7 @@ describe('Claims', () => {
                 .send({
                     ...config,
                     erc721Id: erc721._id,
-                    erc721metadataIds: JSON.stringify([metadata._id]),
+                    metadataIds: JSON.stringify([metadata._id]),
                     claimLimit: 0,
                 })
                 .expect((res: request.Response) => {
@@ -170,7 +168,7 @@ describe('Claims', () => {
                 .send({
                     ...config,
                     erc721Id: erc721._id,
-                    erc721metadataIds: JSON.stringify([metadata._id]),
+                    metadataIds: JSON.stringify([metadata._id]),
                     claimLimit: 1,
                     claimAmount: 2,
                 })
@@ -204,7 +202,7 @@ describe('Claims', () => {
                 .send({
                     ...config,
                     erc721Id: erc721._id,
-                    erc721metadataIds: JSON.stringify([metadata._id]),
+                    metadataIds: JSON.stringify([metadata._id]),
                     claimLimit: 1,
                     claimAmount: 2,
                 })

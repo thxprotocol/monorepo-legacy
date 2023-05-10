@@ -1,15 +1,15 @@
 <template>
-    <b-dropdown variant="link" class="dropdown-select" v-if="hasERC721s">
+    <b-dropdown variant="link" class="dropdown-select" v-if="hasNFTs">
         <template #button-content>
             <div class="d-flex align-items-center" v-if="token && token.chainId === chainId">
                 <base-identicon class="mr-3" :size="20" variant="darker" :uri="token.logoURI" />
-                <strong class="mr-1">{{ token.symbol }}</strong> {{ token.name }}
+                <span class="mr-1">{{ token.name }}</span>
             </div>
-            <div v-else>Select an ERC721 token</div>
+            <div v-else>Select an NFT</div>
         </template>
         <b-dropdown-item-button @click="onTokenListItemClick(null)"> None </b-dropdown-item-button>
         <b-dropdown-divider />
-        <b-dropdown-item v-if="!hasERC721s"> No ERC721 contract selected </b-dropdown-item>
+        <b-dropdown-text>ERC721</b-dropdown-text>
         <b-dropdown-item-button
             :disabled="chainId !== erc721.chainId"
             :key="erc721._id"
@@ -21,10 +21,23 @@
                 <strong class="mr-1">{{ erc721.symbol }}</strong> {{ erc721.name }}
             </div>
         </b-dropdown-item-button>
+        <b-dropdown-divider />
+        <b-dropdown-text>ERC1155</b-dropdown-text>
+        <b-dropdown-item-button
+            :disabled="chainId !== erc1155.chainId"
+            :key="erc1155._id"
+            v-for="erc1155 of erc1155s"
+            @click="onTokenListItemClick(erc1155)"
+        >
+            <div class="d-flex align-items-center">
+                <base-identicon class="mr-3" size="20" variant="darker" :uri="erc1155.logoURI" />
+                {{ erc1155.name }}
+            </div>
+        </b-dropdown-item-button>
     </b-dropdown>
     <div v-else>
         <b-button to="/nft" variant="light" block>
-            Create NFT collection
+            Create NFT Collection
             <i class="fas fa-chevron-right ml-2"></i>
         </b-button>
     </div>
@@ -36,6 +49,7 @@ import { mapGetters } from 'vuex';
 import BaseIdenticon from '../BaseIdenticon.vue';
 import type { IERC721s, TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
+import { IERC1155s, TERC1155 } from '@thxnetwork/dashboard/types/erc1155';
 
 @Component({
     components: {
@@ -43,26 +57,29 @@ import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
     },
     computed: mapGetters({
         erc721s: 'erc721/all',
+        erc1155s: 'erc1155/all',
     }),
 })
 export default class BaseDropdownSelectERC721 extends Vue {
     ChainId = ChainId;
-    token: TERC721 | null = null;
+    token: TERC721 | TERC1155 | null = null;
     tokenList: TERC721[] = [];
 
     erc721s!: IERC721s;
+    erc1155s!: IERC1155s;
 
     @Prop({ required: false }) erc721!: TERC721;
+    @Prop({ required: false }) erc1155!: TERC1155;
     @Prop() chainId!: ChainId;
 
-    get hasERC721s() {
-        return !!Object.values(this.erc721s).length;
+    get hasNFTs() {
+        return !!Object.values(this.erc721s).length || !!Object.values(this.erc1155s).length;
     }
 
     async mounted() {
-        if (this.erc721) {
-            this.token = this.erc721;
-        }
+        if (this.erc721) this.token = this.erc721;
+        if (this.erc1155) this.token = this.erc1155;
+
         this.$store.dispatch('erc721/list').then(() => {
             for (const id in this.erc721s) {
                 this.$store.dispatch('erc721/read', id).then(() => {
@@ -74,9 +91,20 @@ export default class BaseDropdownSelectERC721 extends Vue {
                 });
             }
         });
+        this.$store.dispatch('erc1155/list').then(() => {
+            for (const id in this.erc1155s) {
+                this.$store.dispatch('erc1155/read', id).then(() => {
+                    const erc1155 = this.erc1155s[id] as unknown as TERC1155;
+                    if (!this.token && erc1155.chainId === this.chainId) {
+                        this.token = erc1155;
+                        this.$emit('selected', this.token);
+                    }
+                });
+            }
+        });
     }
 
-    onTokenListItemClick(token: TERC721 | null) {
+    onTokenListItemClick(token: TERC721 | TERC1155 | null) {
         this.token = token;
         this.$emit('selected', this.token);
     }

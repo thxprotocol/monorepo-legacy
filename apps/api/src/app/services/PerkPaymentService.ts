@@ -26,7 +26,7 @@ async function onPaymentIntentSucceeded(event) {
     const account = await AccountProxy.getById(sub);
     const perk = await ERC721Perk.findById(perk_id);
     const erc721 = await ERC721.findById(perk.erc721Id);
-    const metadata = await ERC721Metadata.findById(perk.erc721metadataId);
+    const metadata = await ERC721Metadata.findById(perk.metadataId);
     const pool = await PoolService.getById(perk.poolId);
     const widget = await Widget.findOne({ poolId: pool._id });
     const wallet = await Wallet.findOne({ sub: account.sub, chainId: pool.chainId });

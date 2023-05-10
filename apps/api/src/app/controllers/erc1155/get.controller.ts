@@ -2,7 +2,6 @@ import { param } from 'express-validator';
 import { Request, Response } from 'express';
 import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
-import { AssetPool } from '@thxnetwork/api/models/AssetPool';
 
 const validation = [param('id').isMongoId()];
 
@@ -22,10 +21,7 @@ const controller = async (req: Request, res: Response) => {
     if (!erc1155.address) return res.send(erc1155);
     const owner = await erc1155.contract.methods.owner().call();
 
-    const assetPool = await AssetPool.findOne({ erc1155Id: erc1155._id });
-    const poolId = assetPool ? String(assetPool._id) : undefined;
-
-    res.json({ ...erc1155.toJSON(), owner, poolId });
+    res.json({ ...erc1155.toJSON(), owner });
 };
 
 export default { controller, validation };

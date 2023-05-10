@@ -8,6 +8,8 @@ import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
 import { ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
 import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
 import { ERC721Document } from '@thxnetwork/api/models/ERC721';
+import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
+import { ERC1155Document } from '@thxnetwork/api/models/ERC1155';
 
 export const validation = [query('limit').optional().isInt({ gt: 0 }), query('page').optional().isInt({ gt: 0 })];
 
@@ -21,18 +23,26 @@ const controller = async (req: Request, res: Response) => {
     perks.results = await Promise.all(
         perks.results.map(async (perk: ERC721PerkDocument) => {
             const claims = await ClaimService.findByReward(perk);
-            const erc721 = await ERC721Service.findById(perk.erc721Id);
-            const payments = await ERC721PerkPayment.find({ perkId: perk._id });
-            let erc721Token: ERC721Document;
-            if (perk.erc721tokenId) {
-                erc721Token = await ERC721Token.findById(perk.erc721tokenId);
+
+            let nft: ERC721Document | ERC1155Document, token: ERC721Document;
+            if (perk.erc721Id) {
+                nft = await ERC721Service.findById(perk.erc721Id);
             }
+            if (perk.erc1155Id) {
+                nft = await ERC1155Service.findById(perk.erc1155Id);
+            }
+
+            if (perk.tokenId) {
+                token = await ERC721Token.findById(perk.tokenId);
+            }
+            const payments = await ERC721PerkPayment.find({ perkId: perk._id });
+
             return {
-                claims,
-                payments,
-                erc721,
                 ...perk,
-                erc721Token: erc721Token ? erc721Token.toJSON() : undefined,
+                claims,
+                nft,
+                token,
+                payments,
             };
         }),
     );

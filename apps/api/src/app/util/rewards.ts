@@ -1,11 +1,8 @@
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { NotFoundError } from '@thxnetwork/api/util/errors';
-import { TERC721Perk, TERC20Perk } from '@thxnetwork/types/';
+import { TERC721Perk } from '@thxnetwork/types/';
 import { ERC20Perk, ERC20PerkDocument } from '../models/ERC20Perk';
 import { ERC721Perk, ERC721PerkDocument } from '../models/ERC721Perk';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
-import ERC721Service from '@thxnetwork/api/services/ERC721Service';
-import ERC20PerkService from '../services/ERC20PerkService';
 import ERC721PerkService from '@thxnetwork/api/services/ERC721PerkService';
 import PointRewardService from '../services/PointRewardService';
 import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardService';
@@ -30,7 +27,7 @@ export function isTERC20Perk(
 export function isTERC721Perk(
     perk: ERC20PerkDocument | ERC721PerkDocument | ShopifyPerkDocument,
 ): perk is ERC721PerkDocument {
-    return (perk as ERC721PerkDocument).erc721Id !== undefined;
+    return (perk as ERC721PerkDocument).erc721Id !== undefined || (perk as ERC721PerkDocument).erc1155Id !== undefined;
 }
 
 export function isTShopifyPerk(
@@ -58,22 +55,19 @@ export function formatDate(date: Date) {
     return yyyy + '-' + mm + '-' + dd;
 }
 
-export const createERC721Perk = async (assetPool: AssetPoolDocument, config: TERC721Perk) => {
-    const metadata = await ERC721Service.findMetadataById(config.erc721metadataId);
-    if (!metadata) throw new NotFoundError('could not find the Metadata for this metadataId');
-
-    const reward = await ERC721PerkService.create(assetPool, config);
+export const createERC721Perk = async (pool: AssetPoolDocument, config: TERC721Perk) => {
+    const perk = await ERC721PerkService.create(pool, config);
     const claims = await Promise.all(
-        Array.from({ length: Number(config.claimAmount) }).map(() =>
-            ClaimService.create({
-                poolId: assetPool._id,
-                erc721Id: metadata.erc721Id,
-                rewardUuid: reward.uuid,
-            }),
-        ),
+        Array.from({ length: Number(config.claimAmount) }).map(async () => {
+            return await ClaimService.create({
+                poolId: config.poolId,
+                rewardUuid: perk.uuid,
+                erc721Id: config.erc721Id ? config.erc721Id : undefined,
+                erc1155Id: config.erc1155Id ? config.erc1155Id : undefined,
+            });
+        }),
     );
-
-    return { reward, claims };
+    return { perk, claims };
 };
 
 export async function createDummyContents(pool: AssetPoolDocument) {

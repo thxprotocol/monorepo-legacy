@@ -29,7 +29,8 @@
 </template>
 
 <script lang="ts">
-import type { TERC721, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
+import type { TERC721, TNFTMetadata } from '@thxnetwork/dashboard/types/erc721';
+import type { TERC1155 } from '@thxnetwork/dashboard/types/erc1155';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseModal from './BaseModal.vue';
@@ -53,8 +54,8 @@ export default class ModalRewardCreate extends Vue {
     imageUrl = '';
 
     @Prop() id!: string;
-    @Prop() erc721!: TERC721;
-    @Prop({ required: false }) metadata!: TERC721Metadata;
+    @Prop() nft!: TERC721 | TERC1155;
+    @Prop({ required: false }) metadata!: TNFTMetadata;
 
     async onFileChange(event: any) {
         this.isSubmitImage = true;
@@ -71,16 +72,20 @@ export default class ModalRewardCreate extends Vue {
 
     async submit() {
         this.isSubmitDisabled = true;
-        await this.$store.dispatch(`erc721/${this.metadata ? 'updateMetadata' : 'createMetadata'}`, {
-            erc721: this.erc721,
-            metadata: {
-                ...this.metadata,
-                name: this.name,
-                description: this.description,
-                externalUrl: this.externalUrl,
-                imageUrl: this.imageUrl,
+        await this.$store.dispatch(
+            `${this.$route.params.variant}/${this.metadata ? 'updateMetadata' : 'createMetadata'}`,
+            {
+                erc721: this.nft,
+                erc1155: this.nft,
+                metadata: {
+                    ...this.metadata,
+                    name: this.name,
+                    description: this.description,
+                    externalUrl: this.externalUrl,
+                    imageUrl: this.imageUrl,
+                },
             },
-        });
+        );
         this.$emit('update');
         this.$bvModal.hide(this.id);
         this.isSubmitDisabled = false;

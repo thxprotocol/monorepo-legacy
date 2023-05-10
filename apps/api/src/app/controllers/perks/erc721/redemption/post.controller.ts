@@ -1,21 +1,44 @@
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
-import { ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
+import { ERC721Perk, ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
 import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import PointBalanceService, { PointBalance } from '@thxnetwork/api/services/PointBalanceService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
-import { ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
+import { ERC721Metadata, ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
 import { redeemValidation } from '@thxnetwork/api/util/perks';
 import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
 import MailService from '@thxnetwork/api/services/MailService';
 import { Widget } from '@thxnetwork/api/models/Widget';
 import { Wallet } from '@thxnetwork/api/models/Wallet';
-import PerkService from '@thxnetwork/api/services/PerkService';
+import { ERC1155TokenDocument } from '@thxnetwork/api/models/ERC1155Token';
+import { ERC1155Metadata, ERC1155MetadataDocument } from '@thxnetwork/api/models/ERC1155Metadata';
+import { ERC721, ERC721Document } from '@thxnetwork/api/models/ERC721';
+import { ERC1155, ERC1155Document } from '@thxnetwork/api/models/ERC1155';
+import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
+import { toWei } from 'web3-utils';
 
 const validation = [param('uuid').exists()];
+
+async function getNFTForPerk(perk: ERC721PerkDocument) {
+    if (perk.erc721Id) {
+        return await ERC721.findById(perk.erc721Id);
+    }
+    if (perk.erc1155Id) {
+        return await ERC1155.findById(perk.erc1155Id);
+    }
+}
+
+async function getMetadataForPerk(perk: ERC721PerkDocument) {
+    if (perk.erc721Id) {
+        return await ERC721Metadata.findById(perk.metadataId);
+    }
+    if (perk.erc1155Id) {
+        return await ERC1155Metadata.findById(perk.metadataId);
+    }
+}
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Perks Payment']
@@ -26,16 +49,8 @@ const controller = async (req: Request, res: Response) => {
     if (!perk) throw new NotFoundError('Could not find this perk');
     if (!perk.pointPrice) throw new NotFoundError('No point price for this perk has been set.');
 
-    const erc721 = await ERC721Service.findById(perk.erc721Id);
-    if (!erc721) throw new NotFoundError('Could not find this erc721');
-
-    let metadata: ERC721MetadataDocument;
-    if (perk.erc721metadataId) {
-        metadata = await ERC721Service.findMetadataById(perk.erc721metadataId);
-        if (!metadata) {
-            throw new NotFoundError('Could not find the erc721 metadata for this perk');
-        }
-    }
+    const nft = await getNFTForPerk(perk);
+    if (!nft) throw new NotFoundError('Could not find the nft for this perk');
 
     const pointBalance = await PointBalance.findOne({ sub: req.auth.sub, poolId: pool._id });
     if (!pointBalance || Number(pointBalance.balance) < Number(perk.pointPrice))
@@ -47,14 +62,44 @@ const controller = async (req: Request, res: Response) => {
     }
 
     const account = await AccountProxy.getById(req.auth.sub);
-    const wallet = await Wallet.findOne({ sub: req.auth.sub, chainId: erc721.chainId });
+    const wallet = await Wallet.findOne({ sub: req.auth.sub, chainId: pool.chainId });
 
-    let erc721Token: ERC721TokenDocument;
+    let token: ERC721TokenDocument | ERC1155TokenDocument;
+
+    const metadata = await getMetadataForPerk(perk);
+
+    // Mint a token if metadataId is present
     if (metadata) {
-        erc721Token = await ERC721Service.mint(pool, erc721, metadata, wallet);
-    } else {
-        erc721Token = await ERC721Token.findById(perk.erc721tokenId);
-        erc721Token = await ERC721Service.transferFrom(pool, erc721Token, erc721, wallet); // TODO
+        // Handle erc721 mints
+        if (perk.erc721Id) {
+            token = await ERC721Service.mint(pool, nft as ERC721Document, metadata as ERC721MetadataDocument, wallet);
+        }
+
+        // Handle erc1155 mints
+        if (perk.erc1155Id) {
+            token = await ERC1155Service.mint(
+                pool,
+                nft as ERC1155Document,
+                metadata as ERC1155MetadataDocument,
+                perk.erc1155Amount,
+                wallet,
+            );
+        }
+    }
+
+    // Transfer a token if tokenId is present
+    if (perk.tokenId) {
+        // Handle erc721 transfer
+        if (perk.erc721Id) {
+            token = await ERC721Token.findById(perk.tokenId);
+            token = await ERC721Service.transferFrom(pool, token as ERC721TokenDocument, nft as ERC721Document, wallet);
+        }
+
+        // Handle erc1155 transfer
+        if (perk.erc1155Id) {
+            // token = await ERC721Token.findById(perk.tokenId);
+            // token = await ERC721Service.transferFrom(pool, token, nft, wallet);
+        }
     }
 
     const erc721PerkPayment = await ERC721PerkPayment.create({
@@ -74,7 +119,7 @@ const controller = async (req: Request, res: Response) => {
 
     await MailService.send(account.email, `🎁 NFT Drop! ${metadata ? metadata.name : 'Surprise!'}`, html);
 
-    res.status(201).json({ erc721Token, erc721PerkPayment });
+    res.status(201).json({ erc721Token: token, erc721PerkPayment });
 };
 
 export default { controller, validation };

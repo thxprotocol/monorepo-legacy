@@ -1,5 +1,7 @@
-import { ClaimDocument } from '@thxnetwork/api/types/TClaim';
 import mongoose from 'mongoose';
+import { TClaim } from '@thxnetwork/types/interfaces';
+
+export type ClaimDocument = mongoose.Document & TClaim;
 
 const schema = new mongoose.Schema(
     {
@@ -8,6 +10,7 @@ const schema = new mongoose.Schema(
         poolId: String,
         erc20Id: String,
         erc721Id: String,
+        erc1155Id: String,
         rewardUuid: String,
         amount: String,
         claimedAt: Date,

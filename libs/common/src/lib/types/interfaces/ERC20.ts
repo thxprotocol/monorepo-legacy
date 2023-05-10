@@ -26,3 +26,12 @@ export type TERC20Token = {
     balance?: number;
     walletId: string;
 };
+
+export type TERC20Transfer = {
+    erc20: string;
+    from: string;
+    to: string;
+    chainId: ChainId;
+    transactionId: string;
+    sub: string;
+};

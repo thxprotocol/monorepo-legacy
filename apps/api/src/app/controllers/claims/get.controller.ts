@@ -64,7 +64,7 @@ const controller = async (req: Request, res: Response) => {
 
     if (isTERC721Perk(perk) && claim.erc721Id) {
         const erc721 = await ERC721Service.findById(claim.erc721Id);
-        const metadata = await ERC721Service.findMetadataById(perk.erc721metadataId);
+        const metadata = await ERC721Service.findMetadataById(perk.metadataId);
 
         return res.json({ ...Object.assign({ claim }, { error }), pool, perk, erc721, metadata });
     }
