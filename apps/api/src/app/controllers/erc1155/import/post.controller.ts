@@ -76,7 +76,7 @@ const controller = async (req: Request, res: Response) => {
     const erc1155Tokens = await Promise.all(
         ownedNfts
             .filter((nft) => nft.rawMetadata)
-            .map(async ({ rawMetadata, tokenId }) => {
+            .map(async ({ rawMetadata, tokenId, tokenUri }) => {
                 try {
                     const erc1155Id = String(erc1155._id);
                     const metadata = await ERC1155Metadata.create({
@@ -91,6 +91,7 @@ const controller = async (req: Request, res: Response) => {
                     const erc1155Token = await ERC1155Token.create({
                         erc1155Id,
                         tokenId,
+                        tokenUri,
                         sub: req.auth.sub,
                         recipient: pool.address,
                         state: ERC1155TokenState.Minted,

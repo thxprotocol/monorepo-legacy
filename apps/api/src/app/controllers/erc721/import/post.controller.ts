@@ -73,7 +73,7 @@ const controller = async (req: Request, res: Response) => {
     const erc721Tokens = await Promise.all(
         ownedNfts
             .filter((nft) => nft.rawMetadata)
-            .map(async ({ rawMetadata, tokenId }) => {
+            .map(async ({ rawMetadata, tokenId, tokenUri }) => {
                 try {
                     const erc721Id = String(erc721._id);
                     const metadata = await ERC721Metadata.create({
@@ -90,6 +90,7 @@ const controller = async (req: Request, res: Response) => {
                         state: ERC721TokenState.Minted,
                         metadataId: String(metadata._id),
                         tokenId,
+                        tokenUri,
                     });
 
                     return { ...erc721Token.toJSON(), metadata: metadata.toJSON() };

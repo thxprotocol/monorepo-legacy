@@ -94,7 +94,7 @@ describe('ERC1155 import', () => {
 
     describe('GET /erc1155/token', () => {
         it('HTTP 200', (done) => {
-            user.get(`/v1/erc1155/token?chainId=${chainId}`)
+            user.get(`/v1/erc1155/token?chainId=${chainId}&recipient=${pool.address}`)
                 .set('Authorization', dashboardAccessToken)
                 .send()
                 .expect(({ body }: request.Response) => {
