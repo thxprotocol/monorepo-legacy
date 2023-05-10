@@ -24,7 +24,8 @@ export const controller = async (req: Request, res: Response) => {
             const metadata = await ERC1155Service.findMetadataById(token.metadataId);
             if (!metadata) return;
 
-            const tokenUri = token.tokenId ? erc1155.baseURL.replace('{id}', String(token.tokenId)) : '';
+            const tokenUri =
+                token.tokenId && erc1155.baseURL ? erc1155.baseURL.replace('{id}', String(token.tokenId)) : '';
 
             return Object.assign(token.toJSON() as TERC1155Token, { metadata, tokenUri, nft: erc1155 });
         }),

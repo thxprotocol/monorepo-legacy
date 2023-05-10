@@ -1,11 +1,8 @@
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { NotFoundError } from '@thxnetwork/api/util/errors';
-import { TERC721Perk, TERC20Perk } from '@thxnetwork/types/';
+import { TERC721Perk } from '@thxnetwork/types/';
 import { ERC20Perk, ERC20PerkDocument } from '../models/ERC20Perk';
 import { ERC721Perk, ERC721PerkDocument } from '../models/ERC721Perk';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
-import ERC721Service from '@thxnetwork/api/services/ERC721Service';
-import ERC20PerkService from '../services/ERC20PerkService';
 import ERC721PerkService from '@thxnetwork/api/services/ERC721PerkService';
 import PointRewardService from '../services/PointRewardService';
 import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardService';
@@ -13,8 +10,6 @@ import MilestoneRewardService from '../services/MilestoneRewardService';
 import DailyRewardService from '../services/DailyRewardService';
 import { ShopifyPerkDocument } from '../models/ShopifyPerk';
 import { ONE_DAY_MS } from '../services/DailyRewardClaimService';
-import { ERC721MetadataDocument } from '../models/ERC721Metadata';
-import { ERC1155MetadataDocument } from '../models/ERC1155Metadata';
 
 export async function findRewardByUuid(uuid: string) {
     const erc20Perk = await ERC20Perk.findOne({ uuid });
@@ -63,8 +58,8 @@ export function formatDate(date: Date) {
 export const createERC721Perk = async (pool: AssetPoolDocument, config: TERC721Perk) => {
     const perk = await ERC721PerkService.create(pool, config);
     const claims = await Promise.all(
-        Array.from({ length: Number(config.claimAmount) }).map(() => {
-            ClaimService.create({
+        Array.from({ length: Number(config.claimAmount) }).map(async () => {
+            return await ClaimService.create({
                 poolId: config.poolId,
                 rewardUuid: perk.uuid,
                 erc721Id: config.erc721Id ? config.erc721Id : undefined,
@@ -72,7 +67,6 @@ export const createERC721Perk = async (pool: AssetPoolDocument, config: TERC721P
             });
         }),
     );
-
     return { perk, claims };
 };
 

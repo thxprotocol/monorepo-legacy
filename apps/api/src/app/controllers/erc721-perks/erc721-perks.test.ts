@@ -6,7 +6,6 @@ import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { addMinutes } from '@thxnetwork/api/util/rewards';
 import { createImage } from '@thxnetwork/api/util/jest/images';
-import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
 import { ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
 import { ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
@@ -40,11 +39,7 @@ describe('ERC721 Perks', () => {
                 propType: 'link',
                 description: 'A link referencing to a page with more information on the item.',
             },
-        ],
-        metadataTitle = 'Lorem',
-        metadataDescription = 'Lorem ipsum dolor sit.',
-        metadataImageUrl = 'https://image.com',
-        externalUrl = 'https://example.com';
+        ];
 
     beforeAll(async () => {
         await beforeAllCallback();
@@ -71,20 +66,22 @@ describe('ERC721 Perks', () => {
     });
 
     it('POST /erc721?:id/metadata', (done) => {
+        const config = {
+            name: 'Lorem',
+            description: 'Lorem ipsum dolor sit.',
+            imageUrl: 'https://image.com',
+            externalUrl: 'https://example.com',
+        };
+
         user.post('/v1/erc721/' + erc721._id + '/metadata')
             .set('Authorization', dashboardAccessToken)
-            .send({
-                name: metadataTitle,
-                description: metadataDescription,
-                imageUrl: metadataImageUrl,
-                externalUrl: externalUrl,
-            })
+            .send(config)
             .expect(({ body }: request.Response) => {
                 expect(body._id).toBeDefined();
-                expect(body.name).toBe(metadataTitle);
-                expect(body.description).toBe(metadataDescription);
-                expect(body.image).toBe(metadataImageUrl);
-                expect(body.externalUrl).toBe(externalUrl);
+                expect(body.name).toBe(config.name);
+                expect(body.description).toBe(config.description);
+                expect(body.image).toBe(config.imageUrl);
+                expect(body.externalUrl).toBe(config.externalUrl);
                 erc721metadata = body;
             })
             .expect(201, done);
@@ -104,48 +101,42 @@ describe('ERC721 Perks', () => {
     });
 
     it('POST /erc721-perks', (done) => {
-        const title = 'Lorem',
-            description = 'Ipsum',
-            expiryDate = addMinutes(new Date(), 30),
-            pointPrice = 200,
-            image = createImage(),
-            limit = 0,
-            claimAmount = 0,
-            isPromoted = true;
+        const expiryDate = addMinutes(new Date(), 30);
+        const image = createImage();
+        const config = {
+            title: 'Lorem',
+            description: 'Lorem ipsum',
+            erc721Id: String(erc721._id),
+            metadataIds: JSON.stringify([erc721metadata._id]),
+            price: 0,
+            priceCurrency: 'USD',
+            pointPrice: 200,
+            expiryDate: expiryDate.toString(),
+            limit: 0,
+            claimAmount: 0,
+            isPromoted: true,
+        };
         user.post('/v1/erc721-perks')
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .attach('file', image, {
                 filename: 'test.jpg',
                 contentType: 'image/jpg',
             })
-            .field({
-                title,
-                description,
-                image,
-                erc721Id: String(erc721._id),
-                erc721metadataIds: JSON.stringify([erc721metadata._id]),
-                price: 0,
-                priceCurrency: 'USD',
-                pointPrice,
-                expiryDate: expiryDate.toString(),
-                limit,
-                claimAmount,
-                isPromoted,
-            })
+            .field(config)
             .expect((res: request.Response) => {
                 expect(res.body[0].uuid).toBeDefined();
-                expect(res.body[0].title).toBe(title);
-                expect(res.body[0].description).toBe(description);
+                expect(res.body[0].title).toBe(config.title);
+                expect(res.body[0].description).toBe(config.description);
                 expect(res.body[0].image).toBeDefined();
-                expect(res.body[0].pointPrice).toBe(pointPrice);
+                expect(res.body[0].pointPrice).toBe(config.pointPrice);
                 expect(new Date(res.body[0].expiryDate).getDate()).toBe(expiryDate.getDate());
-                expect(res.body[0].limit).toBe(limit);
-                expect(res.body[0].claimAmount).toBe(claimAmount);
+                expect(res.body[0].limit).toBe(config.limit);
+                expect(res.body[0].claimAmount).toBe(config.claimAmount);
                 expect(res.body[0].claims.length).toBe(0);
-                expect(res.body[0].isPromoted).toBe(isPromoted);
-                expect(res.body[0].erc721).toBeDefined();
+                expect(res.body[0].isPromoted).toBe(config.isPromoted);
+                expect(res.body[0].nft).toBeDefined();
                 expect(res.body[0].erc721Id).toBe(erc721._id);
-                expect(res.body[0].erc721metadataId).toBe(erc721metadata._id);
+                expect(res.body[0].metadataId).toBe(erc721metadata._id);
             })
             .expect(201, done);
     });

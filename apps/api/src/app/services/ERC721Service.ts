@@ -6,7 +6,7 @@ import { ERC721, ERC721Document, IERC721Updates } from '@thxnetwork/api/models/E
 import { ERC721Metadata, ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
 import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
-import { AccountPlanType, ChainId, TransactionState } from '@thxnetwork/types/enums';
+import { ChainId, TransactionState } from '@thxnetwork/types/enums';
 import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
 import {
     TERC721DeployCallbackArgs,
@@ -19,12 +19,10 @@ import { getProvider } from '@thxnetwork/api/util/network';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import type { TERC721, TERC721Metadata, TERC721Token } from '@thxnetwork/api/types/TERC721';
 import type { IAccount } from '@thxnetwork/api/models/Account';
-import { API_URL } from '../config/secrets';
 import { TWallet, WalletDocument } from '../models/Wallet';
 import { ERC721TransferDocument } from '../models/ERC721Transfer';
 import PoolService from './PoolService';
 import TransactionService from './TransactionService';
-import AccountProxy from '../proxies/AccountProxy';
 import IPFSService from './IPFSService';
 import WalletService from './WalletService';
 

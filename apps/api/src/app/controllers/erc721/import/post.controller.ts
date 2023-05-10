@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { OwnedNft } from 'alchemy-sdk';
 import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
 import { ERC721 } from '@thxnetwork/api/models/ERC721';
-import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
+import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
 import { alchemy } from '@thxnetwork/api/util/alchemy';
 import { ChainId, NFTVariant } from '@thxnetwork/types/enums';
@@ -44,9 +44,7 @@ const controller = async (req: Request, res: Response) => {
         }
     }
 
-    if (!ownedNfts.length) {
-        throw new NotFoundError('Could not find NFT tokens for this contract address');
-    }
+    if (!ownedNfts.length) throw new NotFoundError('Could not find NFT tokens for this contract address');
 
     const { address, name, symbol } = ownedNfts[0].contract;
     const erc721 = await ERC721.findOneAndUpdate(
@@ -56,7 +54,7 @@ const controller = async (req: Request, res: Response) => {
             address,
         },
         {
-            variant: NFTVariant.ERC1155,
+            variant: NFTVariant.ERC721,
             sub: req.auth.sub,
             chainId,
             address: toChecksumAddress(address, chainId),
@@ -70,14 +68,16 @@ const controller = async (req: Request, res: Response) => {
             ],
             archived: false,
         },
+        { upsert: true, new: true },
     );
     const erc721Tokens = await Promise.all(
         ownedNfts
             .filter((nft) => nft.rawMetadata)
             .map(async ({ rawMetadata, tokenId }) => {
                 try {
+                    const erc721Id = String(erc721._id);
                     const metadata = await ERC721Metadata.create({
-                        erc721Id: String(erc721._id),
+                        erc721Id,
                         name: rawMetadata.name,
                         description: rawMetadata.description,
                         image: rawMetadata.image,
@@ -85,9 +85,9 @@ const controller = async (req: Request, res: Response) => {
                         externalUrl: rawMetadata.external_url,
                     });
                     const erc721Token = await ERC721Token.create({
+                        erc721Id: String(erc721._id),
                         recipient: pool.address,
                         state: ERC721TokenState.Minted,
-                        erc721Id: String(erc721._id),
                         metadataId: String(metadata._id),
                         tokenId,
                     });

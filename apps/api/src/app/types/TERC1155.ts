@@ -42,6 +42,7 @@ export type TERC1155 = {
     chainId: ChainId;
     name: string;
     properties: TERC1155MetadataProp[];
+    logoImgUrl: string;
     transactions?: string[];
     baseURL?: string;
     description?: string;
@@ -50,7 +51,6 @@ export type TERC1155 = {
     createdAt?: Date;
     updatedAt?: Date;
     archived?: boolean;
-    logoImgUrl?: string;
 };
 
 export type TERC1155Metadata = {

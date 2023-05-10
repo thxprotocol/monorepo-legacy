@@ -15,6 +15,11 @@ import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
 import ERC721PerkService from '@thxnetwork/api/services/ERC721PerkService';
 
 const validation = [
+    check('file')
+        .optional()
+        .custom((value, { req }) => {
+            return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
+        }),
     body('title').exists().isString(),
     body('description').exists().isString(),
     body('erc721Id').optional().isString(),
@@ -27,11 +32,6 @@ const validation = [
     body('pointPrice').optional().isNumeric(),
     body('price').isInt(),
     body('priceCurrency').isString(),
-    check('file')
-        .optional()
-        .custom((value, { req }) => {
-            return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
-        }),
     body('isPromoted').optional().isBoolean(),
     body('tokenGatingVariant').optional().isString(),
     body('tokenGatingContractAddress').optional().isString(),
@@ -43,7 +43,7 @@ type ERC721PerkResponse = ERC721PerkDocument & any;
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721 Rewards']
     let perks: ERC721PerkResponse[], nft, image: string;
-    const { file, metadataIds, tokenId, erc721Id, erc1155Id } = req.body;
+    const { metadataIds, tokenId, erc721Id, erc1155Id } = req.body;
 
     const pool = await PoolService.getById(req.header('X-PoolId'));
     if (!pool) throw new NotFoundError('Could not find pool');
@@ -74,22 +74,23 @@ const controller = async (req: Request, res: Response) => {
         }
     }
 
-    if (file) {
-        const { key } = await ImageService.upload(file);
+    // Handle uploaded image file
+    if (req.file) {
+        const { key } = await ImageService.upload(req.file);
         image = ImageService.getPublicUrl(key);
     }
 
     // Create perks for provided metadataIds
     if (metadataIdList.length) {
         // Create a perk for every metadatId provided.
-        const config = { image, poolId: String(pool._id), ...req.body };
+        const config = { ...req.body, image, poolId: String(pool._id) };
         perks = await createPerksForMetadataIdList(pool, nft, config, metadataIdList);
     }
 
     // Create perks for provided tokenId
     if (tokenId) {
         // Create a perk for the tokenId
-        const config = { image, poolId: String(pool._id), ...req.body, tokenId };
+        const config = { ...req.body, image, poolId: String(pool._id) };
         perks = await createPerkForTokenId(pool, nft, config);
     }
 

@@ -49,22 +49,19 @@ const controller = async (req: Request, res: Response) => {
         }
     }
 
-    if (!ownedNfts.length) {
-        throw new NotFoundError('Could not find NFT tokens for this contract address');
-    }
+    if (!ownedNfts.length) throw new NotFoundError('Could not find NFT tokens for this contract address');
 
-    const { address } = ownedNfts[0].contract;
     const erc1155 = await ERC1155.findOneAndUpdate(
         {
             sub: req.auth.sub,
             chainId,
-            address,
+            address: contractAddress,
         },
         {
             variant: NFTVariant.ERC1155,
             sub: req.auth.sub,
             chainId,
-            address,
+            address: contractAddress,
             name: req.body.name,
             properties: [
                 { name: 'name', propType: 'string', description: '' },
@@ -72,6 +69,7 @@ const controller = async (req: Request, res: Response) => {
                 { name: 'image', propType: 'image', description: '' },
                 { name: 'externalUrl', propType: 'url', description: '' },
             ],
+            archived: false,
         },
         { upsert: true, new: true },
     );
@@ -80,8 +78,10 @@ const controller = async (req: Request, res: Response) => {
             .filter((nft) => nft.rawMetadata)
             .map(async ({ rawMetadata, tokenId }) => {
                 try {
+                    const erc1155Id = String(erc1155._id);
                     const metadata = await ERC1155Metadata.create({
-                        erc1155Id: String(erc1155._id),
+                        erc1155Id,
+                        tokenId,
                         name: rawMetadata.name,
                         description: rawMetadata.description,
                         image: rawMetadata.image,
@@ -89,11 +89,11 @@ const controller = async (req: Request, res: Response) => {
                         externalUrl: rawMetadata.external_url,
                     });
                     const erc1155Token = await ERC1155Token.create({
-                        sub: req.auth.sub,
+                        erc1155Id,
                         tokenId,
+                        sub: req.auth.sub,
                         recipient: pool.address,
                         state: ERC1155TokenState.Minted,
-                        erc1155Id: String(erc1155._id),
                         metadataId: String(metadata._id),
                         walletId: String(wallet._id),
                     });
