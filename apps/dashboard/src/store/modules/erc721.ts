@@ -169,11 +169,6 @@ class ERC721Module extends VuexModule {
             url: '/erc721/' + id,
         });
 
-        // data.properties.map((prop: TERC721DefaultProp) => {
-        //     prop.value = '';
-        //     return prop;
-        // });
-
         this.context.commit('set', {
             ...data,
             metadata: {},
@@ -344,7 +339,7 @@ class ERC721Module extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async listImportedERC721Tokens(params: { erc721Id: string; pool: TPool }) {
+    async listImportedTokens(params: { erc721Id: string; pool: TPool }) {
         const { data } = await axios({
             method: 'GET',
             url: '/erc721-perks/import',

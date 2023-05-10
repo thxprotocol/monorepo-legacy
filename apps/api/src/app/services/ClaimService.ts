@@ -4,7 +4,7 @@ import { TClaim } from '@thxnetwork/api/types/TClaim';
 import { TBaseReward } from '@thxnetwork/types/';
 import db from '@thxnetwork/api/util/database';
 
-function create(data: { poolId: string; rewardUuid: string; erc20Id?: string; erc721Id?: string }) {
+function create(data: { poolId: string; rewardUuid: string; erc20Id?: string; erc721Id?: string; erc1155Id?: string }) {
     const claim = { uuid: db.createUUID(), ...data } as TClaim;
     return Claim.create(claim);
 }

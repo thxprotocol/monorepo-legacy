@@ -182,7 +182,7 @@ class ERC1155Module extends VuexModule {
         });
 
         const profile = this.context.rootGetters['account/profile'];
-        track('UserCreates', [profile.sub, 'nft']);
+        track('UserCreates', [profile.sub, 'erc1155']);
 
         this.context.commit('set', data);
     }
@@ -192,11 +192,7 @@ class ERC1155Module extends VuexModule {
         const { data } = await axios({
             method: 'POST',
             url: `/erc1155/${erc1155._id}/metadata`,
-            data: {
-                title: metadata.title,
-                description: metadata.description,
-                attributes: metadata.attributes,
-            },
+            data: metadata,
         });
         this.context.commit('setMetadata', {
             erc1155,
@@ -209,11 +205,7 @@ class ERC1155Module extends VuexModule {
         const { data } = await axios({
             method: 'PATCH',
             url: `/erc1155/${erc1155._id}/metadata/${metadata._id}`,
-            data: {
-                title: metadata.title,
-                description: metadata.description,
-                attributes: metadata.attributes,
-            },
+            data: metadata,
         });
 
         this.context.commit('setMetadata', {
@@ -246,7 +238,20 @@ class ERC1155Module extends VuexModule {
             },
         });
 
-        await this.context.dispatch('read', data._id);
+        await this.context.dispatch('read', data.erc1155._id);
+    }
+
+    @Action({ rawError: true })
+    async listImportedTokens(params: { erc1155Id: string; pool: TPool }) {
+        // const { data } = await axios({
+        //     method: 'GET',
+        //     url: '/erc1155-perks/import',
+        //     headers: { 'X-PoolId': params.pool._id },
+        //     params: { erc1155Id: params.erc1155Id },
+        // });
+        // data.forEach((erc721Token: TERC1155Token) => {
+        //     this.context.commit('setERC1155Token', { erc721Id: params.erc721Id, token: erc721Token });
+        // });
     }
 }
 

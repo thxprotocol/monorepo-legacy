@@ -49,4 +49,12 @@ if (process.env.NODE_ENV !== 'production') {
     };
 }
 
+export function getTokenURL(chainId: ChainId, address: string) {
+    return `${chainInfo[chainId].blockExplorer}/token/${address}`;
+}
+
+export function getAddressURL(chainId: ChainId, address: string) {
+    return `${chainInfo[chainId].blockExplorer}/address/${address}`;
+}
+
 export { chainInfo };

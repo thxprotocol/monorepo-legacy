@@ -16,7 +16,7 @@ export const controller = async (req: Request, res: Response) => {
     if (!erc1155) throw new NotFoundError('Could not find this NFT in the database');
 
     const result = await ERC1155Service.findMetadataByNFT(
-        erc1155._id,
+        req.params.id,
         req.query.page ? Number(req.query.page) : null,
         req.query.limit ? Number(req.query.limit) : null,
         req.query.q ? String(req.query.q) : null,

@@ -1,6 +1,9 @@
-import { TPool } from '@thxnetwork/types/index';
+import { NFTVariant, TPool } from '@thxnetwork/types/index';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import { AxiosResponse } from 'axios';
+import { TERC1155Metadata } from './erc1155';
+
+export type TNFTMetadata = TERC721Metadata | TERC1155Metadata;
 
 export enum ERC721Variant {
     Uknown = -1,
@@ -38,6 +41,7 @@ export type TERC721 = {
     _id: string;
     type: ERC721Variant;
     chainId: ChainId;
+    variant: NFTVariant;
     poolAddress: string;
     address: string;
     baseURL: string;

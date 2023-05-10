@@ -2,20 +2,25 @@ import { body, check } from 'express-validator';
 import { Request, Response } from 'express';
 import { createERC721Perk } from '@thxnetwork/api/util/rewards';
 import { TERC721Perk } from '@thxnetwork/types/interfaces/ERC721Perk';
-import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
+import { NotFoundError } from '@thxnetwork/api/util/errors';
+import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
+import { ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
+import { ERC721Document } from '@thxnetwork/api/models/ERC721';
+import { ERC1155Document } from '@thxnetwork/api/models/ERC1155';
+import { NFTVariant } from '@thxnetwork/types/enums';
 import ImageService from '@thxnetwork/api/services/ImageService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
-import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { ERC721Document } from '@thxnetwork/api/models/ERC721';
-import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
+import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
 import ERC721PerkService from '@thxnetwork/api/services/ERC721PerkService';
 
 const validation = [
     body('title').exists().isString(),
     body('description').exists().isString(),
-    body('erc721metadataIds').optional().isString(),
-    body('erc721tokenId').optional().isMongoId(),
+    body('erc721Id').optional().isString(),
+    body('erc1155Id').optional().isString(),
+    body('metadataIds').optional().isString(),
+    body('tokenId').optional().isMongoId(),
     body('expiryDate').optional().isString(),
     body('claimLimit').optional().isInt(),
     body('claimAmount').optional().isInt({ lt: 1000 }),
@@ -33,83 +38,109 @@ const validation = [
     body('tokenGatingAmount').optional().isInt(),
 ];
 
+type ERC721PerkResponse = ERC721PerkDocument & any;
+
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721 Rewards']
-    let image: string;
+    let perks: ERC721PerkResponse[], nft, image: string;
+    const { file, metadataIds, tokenId, erc721Id, erc1155Id } = req.body;
+
     const pool = await PoolService.getById(req.header('X-PoolId'));
     if (!pool) throw new NotFoundError('Could not find pool');
 
-    if (req.file) {
-        const response = await ImageService.upload(req.file);
-        image = ImageService.getPublicUrl(response.key);
+    const metadataIdList = metadataIds ? JSON.parse(metadataIds) : [];
+
+    // Handle erc721 variant
+    if (erc721Id) {
+        nft = await ERC721Service.findById(erc721Id);
+        if (!nft) throw new NotFoundError('Could not find erc721');
+
+        // Check if relayer can mint
+        if (metadataIdList.length) {
+            const isMinter = await ERC721Service.isMinter(nft, pool.address);
+            if (!isMinter) await ERC721Service.addMinter(nft, pool.address);
+        }
     }
 
-    let perks: any;
-    const metadataIdList = req.body.erc721metadataIds ? JSON.parse(req.body.erc721metadataIds) : [];
-    if (metadataIdList.length > 0) {
-        // Get one metadata so we can obtain erc721Id from it
-        const metadata = await ERC721Service.findMetadataById(metadataIdList[0]);
-        if (!metadata) throw new NotFoundError('Could not find first metadata from list');
+    // Handle erc1155 variant
+    if (erc1155Id) {
+        nft = await ERC1155Service.findById(erc1155Id);
+        if (!nft) throw new NotFoundError('Could not find erc1155');
 
-        const erc721 = await ERC721Service.findById(metadata.erc721Id);
-        if (!erc721) throw new NotFoundError('Could not find erc721');
-
-        // Check if erc721 already is mintable by pool
-        const isMinter = await ERC721Service.isMinter(erc721, pool.address);
-        if (!isMinter) {
-            await ERC721Service.addMinter(erc721, pool.address);
+        // Check if relayer can mint
+        if (metadataIdList.length) {
+            const isMinter = await ERC721Service.isMinter(nft, pool.address);
+            if (!isMinter) await ERC721Service.addMinter(nft, pool.address);
         }
-
-        perks = await Promise.all(
-            metadataIdList.map(async (erc721metadataId: string) => {
-                const config = getPerkConfig({ pool, erc721, erc721metadataId, image, req });
-
-                const { reward, claims } = await createERC721Perk(pool, config);
-                return { ...reward.toJSON(), claims, erc721: erc721 };
-            }),
-        );
-    } else {
-        if (!req.body.erc721tokenId) {
-            throw new BadRequestError('erc721tokenId or erc721metadataIds required');
-        }
-        const erc721Token = await ERC721Token.findById(req.body.erc721tokenId);
-        if (!erc721Token) throw new NotFoundError('Could not find erc721Token');
-        const erc721 = await ERC721Service.findById(erc721Token.erc721Id);
-        const config = getPerkConfig({ pool, erc721, image, req });
-        const reward = await ERC721PerkService.create(pool, config);
-
-        perks = [{ ...reward.toJSON(), erc721: erc721 }];
     }
+
+    if (file) {
+        const { key } = await ImageService.upload(file);
+        image = ImageService.getPublicUrl(key);
+    }
+
+    // Create perks for provided metadataIds
+    if (metadataIdList.length) {
+        // Create a perk for every metadatId provided.
+        const config = { image, poolId: String(pool._id), ...req.body };
+        perks = await createPerksForMetadataIdList(pool, nft, config, metadataIdList);
+    }
+
+    // Create perks for provided tokenId
+    if (tokenId) {
+        // Create a perk for the tokenId
+        const config = { image, poolId: String(pool._id), ...req.body, tokenId };
+        perks = await createPerkForTokenId(pool, nft, config);
+    }
+
     res.status(201).json(perks);
 };
 
-function getPerkConfig(args: {
-    pool: AssetPoolDocument;
-    req: Request;
-    erc721metadataId?: string;
-    image: string;
-    erc721: ERC721Document;
-}) {
-    return {
-        poolId: String(args.pool._id),
-        erc721Id: String(args.erc721._id),
-        erc721metadataId: args.erc721metadataId,
-        image: args.image,
-        title: args.req.body.title,
-        description: args.req.body.description,
-        claimAmount: args.req.body.claimAmount,
-        claimLimit: args.req.body.claimLimit,
-        limit: args.req.body.limit,
-        expiryDate: args.req.body.expiryDate,
-        pointPrice: args.req.body.pointPrice,
-        isPromoted: args.req.body.isPromoted,
-        price: args.req.body.price,
-        priceCurrency: args.req.body.priceCurrency,
-        erc721tokenId: args.req.body.erc721tokenId,
-        tokenGatingVariant: args.req.body.tokenGatingVariant,
-        tokenGatingAmount: args.req.body.tokenGatingAmount,
-        tokenGatingContractAddress: args.req.body.tokenGatingContractAddress,
-    } as TERC721Perk;
+async function createPerksForMetadataIdList(
+    pool: AssetPoolDocument,
+    nft: ERC721Document | ERC1155Document,
+    config: TERC721Perk,
+    metadataIdList: string[],
+) {
+    return await Promise.all(
+        metadataIdList.map(async (metadataId: string) => {
+            const metadata = await getMetadataForNFTVariant(nft.variant, metadataId);
+            if (!metadata) throw new NotFoundError('Could not find the metadata for this ID');
+
+            const { perk, claims } = await createERC721Perk(pool, { ...config, metadataId });
+            return { ...perk.toJSON(), nft, claims };
+        }),
+    );
+}
+
+async function createPerkForTokenId(
+    pool: AssetPoolDocument,
+    nft: ERC721Document | ERC1155Document,
+    config: TERC721Perk,
+) {
+    const token = await getTokenForNFTVariant(nft.variant, config.tokenId);
+    if (!token) throw new NotFoundError('Could not find the token for this ID');
+
+    const perk = await ERC721PerkService.create(pool, config);
+    return [{ ...perk.toJSON(), nft }];
+}
+
+async function getMetadataForNFTVariant(variant: NFTVariant, metadataId: string) {
+    switch (variant) {
+        case NFTVariant.ERC721:
+            return await ERC721Service.findMetadataById(metadataId);
+        case NFTVariant.ERC1155:
+            return await ERC1155Service.findMetadataById(metadataId);
+    }
+}
+
+async function getTokenForNFTVariant(variant: NFTVariant, tokenId: string) {
+    switch (variant) {
+        case NFTVariant.ERC721:
+            return await ERC721Service.findTokenById(tokenId);
+        case NFTVariant.ERC1155:
+            return await ERC1155Service.findTokenById(tokenId);
+    }
 }
 
 export default { controller, validation };

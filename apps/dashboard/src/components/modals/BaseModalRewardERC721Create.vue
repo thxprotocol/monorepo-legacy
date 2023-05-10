@@ -18,10 +18,10 @@
                         <b-form-group label="Description">
                             <b-textarea v-model="description" />
                         </b-form-group>
-                        <b-form-group label="NFT" v-if="!erc721SelectedMetadataIds.length">
-                            <BaseDropdownSelectERC721 :chainId="chainId" :erc721="erc721" @selected="onSelectERC721" />
+                        <b-form-group label="NFT" v-if="!selectedMetadataIds.length">
+                            <BaseDropdownSelectERC721 :chainId="chainId" :nft="nft" @selected="onSelectNFT" />
                         </b-form-group>
-                        <b-form-group label="Token Id" v-if="erc721 && hasImportedTokens">
+                        <!-- <b-form-group label="Token Id" v-if="erc721 && hasImportedTokens">
                             <BaseDropdownERC721ImportedToken
                                 :erc721Id="erc721._id"
                                 :erc721tokenId="erc721tokenId"
@@ -29,17 +29,19 @@
                                 :pool="pool"
                                 @selected="onSelectERC721Token"
                             />
-                        </b-form-group>
-                        <b-form-group
-                            label="Metadata"
-                            v-if="erc721 && !erc721SelectedMetadataIds.length && !hasImportedTokens"
-                        >
+                        </b-form-group> -->
+                        <b-form-group label="Metadata" v-if="nft && !selectedMetadataIds.length">
                             <BaseDropdownERC721Metadata
-                                :erc721="erc721"
-                                :erc721metadataId="erc721metadataId"
+                                :nft="nft"
+                                :metadataId="metadataId"
                                 @selected="onSelectMetadata"
                             />
                         </b-form-group>
+
+                        <b-form-group label="Amount" v-if="nft && nft.variant === NFTVariant.ERC1155">
+                            <b-form-input type="number" :value="erc1155Amount" @input="onChangeERC1155Amount" />
+                        </b-form-group>
+
                         <b-form-group label="Point Price">
                             <b-form-input type="number" :value="pointPrice" @input="onChangePointPrice" />
                         </b-form-group>
@@ -108,32 +110,26 @@
 </template>
 
 <script lang="ts">
-import { type TPool } from '@thxnetwork/types/index';
+import { NFTVariant, type TPool } from '@thxnetwork/types/index';
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { platformList, platformInteractionList } from '@thxnetwork/dashboard/types/rewards';
-import { RewardConditionInteraction, RewardConditionPlatform, type TERC721Perk } from '@thxnetwork/types/index';
+import { type TERC721Perk } from '@thxnetwork/types/index';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
 import BaseCardCommerce from '../cards/BaseCardCommerce.vue';
 import BaseDropdownERC721Metadata from '../dropdowns/BaseDropdownERC721Metadata.vue';
-import type { IERC721s, IERC721Tokens, TERC721, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
+import type { IERC721s, IERC721Tokens, TERC721, TNFTMetadata } from '@thxnetwork/dashboard/types/erc721';
 import { mapGetters } from 'vuex';
 import BaseDropdownSelectERC721 from '../dropdowns/BaseDropdownSelectERC721.vue';
 import BaseDropdownERC721ImportedToken from '../dropdowns/BaseDropdownERC721ImportedToken.vue';
 import BaseCardClaimAmount from '../cards/BaseCardClaimAmount.vue';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import { IAccount } from '@thxnetwork/dashboard/types/account';
-import { TERC721Token } from '@thxnetwork/dashboard/types/erc721';
 import BaseCardTokenGating from '../cards/BaseCardTokenGating.vue';
 import { TokenGatingVariant } from '@thxnetwork/types/enums/TokenGatingVariant';
-
-type TRewardCondition = {
-    platform: RewardConditionPlatform;
-    interaction?: RewardConditionInteraction;
-    content?: string;
-};
+import { IERC1155s, TERC1155 } from '@thxnetwork/dashboard/types/erc1155';
+import { fromWei, toWei } from 'web3-utils';
 
 @Component({
     components: {
@@ -149,30 +145,39 @@ type TRewardCondition = {
     },
     computed: mapGetters({
         pools: 'pools/all',
-        erc721s: 'erc721/all',
         profile: 'account/profile',
+        erc721s: 'erc721/all',
         erc721Tokens: 'erc721/erc721Tokens',
+        erc1155s: 'erc1155/all',
+        erc1155Tokens: 'erc1155/erc1155Tokens',
     }),
 })
 export default class ModalRewardERC721Create extends Vue {
+    NFTVariant = NFTVariant;
     isSubmitDisabled = false;
     isLoading = false;
-    erc721: TERC721 | null = null;
-    erc721Id = '';
+    nft: TERC721 | TERC1155 | null = null;
+
+    erc721s!: IERC721s;
+    erc721Tokens!: IERC721Tokens;
+
+    erc1155s!: IERC1155s;
+    erc1155Tokens!: IERC721Tokens;
+
+    metadataId = '';
+    tokenId: string | null = null;
+    erc1155Amount = 1;
+
     pools!: IPools;
     profile!: IAccount;
     error = '';
     title = '';
-    erc721metadataId = '';
-    erc721tokenId: string | undefined = undefined;
     description = '';
     expiryDate: Date | null = null;
     claimAmount = 0;
     claimLimit = 0;
     limit = 0;
     pointPrice = 0;
-    erc721s!: IERC721s;
-    erc721Tokens!: IERC721Tokens;
     imageFile: File | null = null;
     image = '';
     isPromoted = false;
@@ -185,10 +190,10 @@ export default class ModalRewardERC721Create extends Vue {
     @Prop() id!: string;
     @Prop() pool!: TPool;
     @Prop({ required: false }) perk!: TERC721Perk;
-    @Prop({ required: false, default: () => [] }) erc721SelectedMetadataIds!: string[];
+    @Prop({ required: false, default: () => [] }) selectedMetadataIds!: string[];
 
     get chainId() {
-        return (this.pool && this.pool.chainId) || (this.erc721 && this.erc721.chainId) || ChainId.Hardhat;
+        return (this.pool && this.pool.chainId) || (this.nft && this.nft.chainId) || ChainId.Hardhat;
     }
 
     onShow() {
@@ -204,9 +209,18 @@ export default class ModalRewardERC721Create extends Vue {
         this.priceCurrency = this.perk ? this.perk.priceCurrency : this.priceCurrency;
         this.image = this.perk ? this.perk.image : '';
         this.isPromoted = this.perk ? this.perk.isPromoted : false;
-        this.erc721 = this.perk ? this.erc721s[this.perk.erc721Id] : null;
-        this.erc721metadataId = this.perk ? this.perk.erc721metadataId : '';
-        this.erc721tokenId = this.perk ? this.perk.erc721tokenId : undefined;
+        if (this.perk && this.perk.erc721Id) {
+            this.nft = this.perk ? this.erc721s[this.perk.erc721Id] : this.nft;
+        }
+        if (this.perk && this.perk.erc1155Id) {
+            this.nft = this.perk ? this.erc1155s[this.perk.erc1155Id] : this.nft;
+        }
+        this.metadataId = this.perk ? this.perk.metadataId : this.metadataId;
+        this.tokenId = this.perk ? this.perk.tokenId : this.tokenId;
+        this.erc1155Amount =
+            this.perk && this.perk.erc1155Amount
+                ? Number(fromWei(this.perk.erc1155Amount, 'ether'))
+                : this.erc1155Amount;
         this.tokenGatingContractAddress = this.perk
             ? this.perk.tokenGatingContractAddress
             : this.tokenGatingContractAddress;
@@ -214,20 +228,13 @@ export default class ModalRewardERC721Create extends Vue {
         this.tokenGatingAmount = this.perk ? this.perk.tokenGatingAmount : this.tokenGatingAmount;
     }
 
-    get hasImportedTokens() {
-        return (
-            this.erc721 &&
-            this.erc721Tokens &&
-            this.erc721Tokens[this.erc721._id] &&
-            Object.keys(this.erc721Tokens[this.erc721._id]).length
-        );
-    }
+    async onSelectNFT(nft: TERC721 | TERC1155) {
+        this.nft = nft;
+        if (!nft) return;
 
-    async onSelectERC721(erc721: TERC721) {
-        if (!erc721) return;
-        this.erc721 = erc721;
-        await this.$store.dispatch('erc721/listImportedERC721Tokens', {
-            erc721Id: this.erc721._id,
+        await this.$store.dispatch(nft.variant + '/listImportedTokens', {
+            erc721Id: this.nft._id,
+            erc1155Id: this.nft._id,
             pool: this.pool,
         });
     }
@@ -246,47 +253,64 @@ export default class ModalRewardERC721Create extends Vue {
         this.claimLimit = limit;
     }
 
-    onSelectMetadata(metadata: TERC721Metadata) {
-        if (!metadata) return;
-        this.erc721metadataId = metadata._id;
+    onSelectMetadata(metadata: TNFTMetadata) {
+        this.metadataId = metadata._id;
     }
 
-    onSelectERC721Token(token: TERC721Token) {
-        if (!token) return;
-        this.erc721tokenId = token._id;
+    onChangeERC1155Amount(amount: number) {
+        this.erc1155Amount = amount;
     }
+
+    // onSelectERC721Token(token: TERC721Token) {
+    //     if (!token) return;
+    //     this.erc721tokenId = token._id;
+    // }
 
     onSubmit() {
-        // TODO Remove when proper UI validation is implemented
-        if (!this.erc721metadataId && !this.erc721SelectedMetadataIds.length) {
+        // // TODO Remove when proper UI validation is implemented
+        if (!this.nft || (!this.metadataId && !this.selectedMetadataIds.length)) {
             this.error = 'Select the NFT metadata fort this perk';
             return;
         }
 
         this.isLoading = true;
 
+        let erc721Id, erc1155Id, expiryDate;
+        switch (this.nft.variant) {
+            case NFTVariant.ERC721:
+                erc721Id = this.nft._id;
+                break;
+            case NFTVariant.ERC1155:
+                erc1155Id = this.nft._id;
+                break;
+        }
+
+        if (this.expiryDate) {
+            expiryDate = this.expiryDate;
+        }
+
         const payload = {
             page: 1,
             title: this.title,
             description: this.description,
-            erc721metadataIds: JSON.stringify(
-                this.erc721metadataId ? [this.erc721metadataId] : this.erc721SelectedMetadataIds,
-            ),
-            claimAmount: this.claimAmount,
-            claimLimit: this.claimLimit,
+            file: this.imageFile,
+            erc721Id,
+            erc1155Id,
+            erc1155Amount: toWei(String(this.erc1155Amount)),
+            metadataIds: JSON.stringify(this.metadataId ? [this.metadataId] : this.selectedMetadataIds),
+            tokenId: this.tokenId || undefined,
+            expiryDate,
             limit: this.limit,
             pointPrice: this.pointPrice,
             price: this.price,
             priceCurrency: this.priceCurrency,
-            file: this.imageFile,
             isPromoted: this.isPromoted,
-            erc721tokenId: this.erc721tokenId,
+            claimAmount: this.claimAmount,
+            claimLimit: this.claimLimit,
             tokenGatingContractAddress: this.tokenGatingContractAddress,
             tokenGatingVariant: this.tokenGatingVariant,
             tokenGatingAmount: this.tokenGatingAmount,
         };
-
-        if (this.expiryDate) Object.assign(payload, { expiryDate: this.expiryDate });
 
         this.$store
             .dispatch(`erc721Perks/${this.perk ? 'update' : 'create'}`, {

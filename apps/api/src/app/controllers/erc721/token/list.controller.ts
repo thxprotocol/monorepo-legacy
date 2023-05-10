@@ -11,7 +11,7 @@ const validation = [query('chainId').exists().isNumeric()];
 export const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721']
     const chainId = Number(req.query.chainId);
-    const wallet = await Wallet.findOne({ sub: req.auth.sub, chainId: Number(req.query.chainId) });
+    const wallet = await Wallet.findOne({ sub: req.auth.sub, chainId });
     if (!wallet) throw new NotFoundError('Could not find the wallet for the user');
 
     const tokens = await ERC721Service.findTokensByWallet(wallet);
@@ -25,13 +25,13 @@ export const controller = async (req: Request, res: Response) => {
 
             // const tokenUri = token.tokenId ? await erc721.contract.methods.tokenURI(token.tokenId).call() : '';
 
-            return Object.assign(token.toJSON() as TERC721Token, { metadata, tokenUri: token.tokenUri, erc721 });
+            return Object.assign(token.toJSON() as TERC721Token, { metadata, tokenUri: token.tokenUri, nft: erc721 });
         }),
     );
 
     res.json(
-        result.reverse().filter((token: TERC721Token & { erc721: TERC721 }) => {
-            return token && chainId === token.erc721.chainId;
+        result.reverse().filter((token: TERC721Token & { nft: TERC721 }) => {
+            return token && chainId === token.nft.chainId;
         }),
     );
 };

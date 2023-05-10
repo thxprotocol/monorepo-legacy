@@ -4,6 +4,7 @@ import { URL_CONFIG } from '../configs';
 import CredentialManager from '../managers/CredentialManager';
 import ERC20Manager from '../managers/ERC20Manager';
 import ERC721Manager from '../managers/ERC721Manager';
+import ERC1155Manager from '../managers/ERC1155Manager';
 import RequestManager from '../managers/RequestManager';
 import AccountManager from '../managers/AccountManager';
 import SessionManager from '../managers/SessionManager';
@@ -27,6 +28,7 @@ export default class THXClient {
     authenticated = false;
     erc20: ERC20Manager;
     erc721: ERC721Manager;
+    erc1155: ERC1155Manager;
     request: RequestManager;
     session: SessionManager;
     userManager: UserManager;
@@ -82,6 +84,7 @@ export default class THXClient {
         this.account = new AccountManager(this);
         this.erc20 = new ERC20Manager(this);
         this.erc721 = new ERC721Manager(this);
+        this.erc1155 = new ERC1155Manager(this);
         this.walletManager = new WalletManager(this);
         this.rewardsManager = new RewardsManager(this);
         this.perksManager = new PerksManager(this);

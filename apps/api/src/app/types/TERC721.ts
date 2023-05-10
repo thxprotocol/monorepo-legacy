@@ -1,5 +1,5 @@
 import { Contract } from 'web3-eth-contract';
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId, NFTVariant } from '@thxnetwork/types/enums';
 
 export enum ERC721TokenState {
     Pending = 0,
@@ -31,6 +31,7 @@ export type TERC721Token = {
 };
 
 export type TERC721 = {
+    variant: NFTVariant;
     id?: string;
     sub: string;
     chainId: ChainId;

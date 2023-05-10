@@ -6,7 +6,7 @@ import { ERC721 } from '@thxnetwork/api/models/ERC721';
 import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
 import { alchemy } from '@thxnetwork/api/util/alchemy';
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId, NFTVariant } from '@thxnetwork/types/enums';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { toChecksumAddress } from 'web3-utils';
 import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
@@ -16,9 +16,6 @@ const validation = [body('contractAddress').exists(), body('chainId').exists().i
 const controller = async (req: Request, res: Response) => {
     const chainId = Number(req.body.chainId) as ChainId;
     const contractAddress = req.body.contractAddress;
-    const nftExists = await ERC721.exists({ sub: req.auth.sub, chainId, address: contractAddress });
-    if (nftExists) throw new BadRequestError('This contract is already present, and can not be imported');
-
     const pool = await PoolService.getById(req.header('X-PoolId'));
     const pageSize = 100;
 
@@ -52,20 +49,28 @@ const controller = async (req: Request, res: Response) => {
     }
 
     const { address, name, symbol } = ownedNfts[0].contract;
-    const erc721 = await ERC721.create({
-        sub: req.auth.sub,
-        chainId,
-        address: toChecksumAddress(address, chainId),
-        name,
-        symbol,
-        properties: [
-            { name: 'name', propType: 'string', description: '' },
-            { name: 'description', propType: 'string', description: '' },
-            { name: 'image', propType: 'image', description: '' },
-            { name: 'externalUrl', propType: 'url', description: '' },
-        ],
-        archived: false,
-    });
+    const erc721 = await ERC721.findOneAndUpdate(
+        {
+            sub: req.auth.sub,
+            chainId,
+            address,
+        },
+        {
+            variant: NFTVariant.ERC1155,
+            sub: req.auth.sub,
+            chainId,
+            address: toChecksumAddress(address, chainId),
+            name,
+            symbol,
+            properties: [
+                { name: 'name', propType: 'string', description: '' },
+                { name: 'description', propType: 'string', description: '' },
+                { name: 'image', propType: 'image', description: '' },
+                { name: 'externalUrl', propType: 'url', description: '' },
+            ],
+            archived: false,
+        },
+    );
     const erc721Tokens = await Promise.all(
         ownedNfts
             .filter((nft) => nft.rawMetadata)

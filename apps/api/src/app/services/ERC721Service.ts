@@ -26,9 +26,7 @@ import PoolService from './PoolService';
 import TransactionService from './TransactionService';
 import AccountProxy from '../proxies/AccountProxy';
 import IPFSService from './IPFSService';
-import WalletService, { Wallet } from './WalletService';
-import { toChecksumAddress } from 'web3-utils';
-import { logger } from '@thxnetwork/api/util/logger';
+import WalletService from './WalletService';
 
 const contractName = 'NonFungibleToken';
 
@@ -93,14 +91,6 @@ export async function deleteMetadata(id: string) {
     return ERC721Metadata.findOneAndDelete({ _id: id });
 }
 
-async function getTokenURI(erc721: ERC721Document, metadataId: string) {
-    const account = await AccountProxy.getById(erc721.sub);
-    if (account.plan !== AccountPlanType.Premium) return metadataId;
-
-    const result = await IPFSService.addImageUrl(`${API_URL}/v1/metadata/${metadataId}`);
-    return result.cid.toString();
-}
-
 export async function mint(
     pool: AssetPoolDocument,
     erc721: ERC721Document,
@@ -108,7 +98,7 @@ export async function mint(
     wallet: WalletDocument,
     forceSync = true,
 ): Promise<ERC721TokenDocument> {
-    const tokenUri = await getTokenURI(erc721, String(metadata._id));
+    const tokenUri = await IPFSService.getTokenURI(erc721, String(metadata._id));
     const erc721token = await ERC721Token.create({
         sub: wallet.sub,
         tokenUri: erc721.baseURL + tokenUri,

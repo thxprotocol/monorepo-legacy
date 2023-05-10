@@ -17,11 +17,10 @@ const controller = async (req: Request, res: Response) => {
     const metadata = await ERC1155Service.findMetadataById(token.metadataId);
     if (!metadata) throw new NotFoundError('ERC1155Metadata not found');
 
-    const balanceInWei = await erc1155.contract.methods.balanceOf(token.recipient).call();
-    const balance = Number(fromWei(balanceInWei, 'ether'));
+    const balanceInWei = await erc1155.contract.methods.balanceOf(token.recipient, metadata.tokenId).call();
+    const balance = fromWei(balanceInWei, 'ether');
 
-    const tokenUri = token.tokenId ? await erc1155.contract.methods.tokenURI(token.tokenId).call() : '';
-    erc1155.logoImgUrl = erc1155.logoImgUrl || `https://avatars.dicebear.com/api/identicon/${erc1155.address}.svg`;
+    const tokenUri = token.tokenId ? await erc1155.contract.methods.uri(token.tokenId).call() : '';
 
     res.status(200).json({
         ...token.toJSON(),

@@ -1,9 +1,11 @@
 import { TBasePerk } from './BaseReward';
 
 export type TERC721Perk = TBasePerk & {
+    erc1155Id: string;
     erc721Id: string;
-    erc721metadataId: string;
-    erc721tokenId: string;
+    erc1155Amount: string;
+    metadataId: string;
+    tokenId: string;
     pointPrice: number;
     image: string;
     isPromoted: boolean;

@@ -7,6 +7,7 @@ export type ERC1155Document = mongoose.Document & TERC1155;
 
 const ERC1155Schema = new mongoose.Schema(
     {
+        variant: String,
         chainId: Number,
         sub: String,
         name: String,

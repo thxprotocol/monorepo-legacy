@@ -13,6 +13,10 @@
                 "assets": ["apps/api/src/assets", "apps/api/src/app/migrations"],
                 "additionalEntryPoints": [
                     {
+                        "entryPath": "apps/api/scripts/deploy-erc1155.ts",
+                        "entryName": "deployERC1155"
+                    },
+                    {
                         "entryPath": "apps/api/scripts/upgradeContractsToLatest.ts",
                         "entryName": "upgradeContractsToLatest"
                     },
@@ -71,6 +75,14 @@
             "executor": "nx:run-commands",
             "options": {
                 "command": "node upgradeContractsToLatest.js",
+                "cwd": "dist/apps/api"
+            }
+        },
+        "deploy-erc1155": {
+            "dependsOn": ["^build"],
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "node deployERC1155.js",
                 "cwd": "dist/apps/api"
             }
         },

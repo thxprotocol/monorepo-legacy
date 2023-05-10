@@ -6,7 +6,6 @@ import { ERC721PerkPayment } from '../models/ERC721PerkPayment';
 import { ShopifyPerkDocument } from '../models/ShopifyPerk';
 import { ShopifyPerkPayment } from '../models/ShopifyPerkPayment';
 import { ClaimDocument } from '../types/TClaim';
-import { BadRequestError } from './errors';
 import { isTERC20Perk, isTERC721Perk, isTShopifyPerk } from './rewards';
 import { AssetPoolDocument } from '../models/AssetPool';
 import PerkService from '../services/PerkService';
@@ -36,7 +35,7 @@ export const redeemValidation = async ({
     sub?: string;
 }): Promise<{ isError: boolean; errorMessage?: string }> => {
     const model = getPaymentModel(perk);
-    if (!model) throw new BadRequestError('Could not determine payment model for this claim.');
+    if (!model) return { isError: true, errorMessage: 'Could not determine payment model.' };
 
     // Is gated and reqeust is made authenticated
     if (sub && pool && perk.tokenGatingContractAddress) {

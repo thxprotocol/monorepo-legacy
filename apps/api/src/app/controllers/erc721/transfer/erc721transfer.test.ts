@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId, NFTVariant } from '@thxnetwork/types/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import {
     authAccessToken,
@@ -62,6 +62,7 @@ describe('ERC721Transfer', () => {
             const pool = await PoolService.deploy(sub, chainId, 'My Loyalty Pool');
             erc721 = await ERC721Service.deploy(
                 {
+                    variant: NFTVariant.ERC721,
                     sub,
                     chainId,
                     name,

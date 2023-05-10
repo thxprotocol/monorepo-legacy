@@ -39,25 +39,13 @@ const controller = async (req: Request, res: Response) => {
         image = ImageService.getPublicUrl(response.key);
     }
 
-    perk = await ERC721PerkService.update(perk, {
+    const config = {
         poolId: req.header('X-PoolId'),
         erc721metadataId: JSON.parse(req.body.erc721metadataIds)[0],
         image,
-        title: req.body.title,
-        description: req.body.description,
-        erc721Id: req.body.erc721Id,
-        expiryDate: req.body.expiryDate,
-        claimAmount: req.body.claimAmount,
-        claimLimit: req.body.claimLimit,
-        pointPrice: req.body.pointPrice,
-        price: req.body.price,
-        priceCurrency: req.body.priceCurrency,
-        isPromoted: req.body.isPromoted,
-        limit: req.body.limit,
-        tokenGatingVariant: req.body.tokenGatingVariant,
-        tokenGatingContractAddress: req.body.tokenGatingContractAddress,
-        tokenGatingAmount: req.body.tokenGatingAmount,
-    } as TERC721Perk);
+        ...req.body,
+    };
+    perk = await ERC721PerkService.update(perk, config);
 
     return res.json(perk);
 };

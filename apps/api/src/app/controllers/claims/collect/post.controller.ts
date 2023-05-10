@@ -100,9 +100,9 @@ const controller = async (req: Request, res: Response) => {
 
     // Mint an NFT token if the erc721 and metadata for the claim exists.
     if (isTERC721Perk(perk)) {
-        const { erc721metadataId } = perk as ERC721PerkDocument;
+        const { metadataId } = perk as ERC721PerkDocument;
 
-        metadata = await ERC721Service.findMetadataById(erc721metadataId);
+        metadata = await ERC721Service.findMetadataById(metadataId);
         if (!metadata) throw new NotFoundError('No metadata found for this perk');
 
         erc721 = await ERC721Service.findById(metadata.erc721Id);

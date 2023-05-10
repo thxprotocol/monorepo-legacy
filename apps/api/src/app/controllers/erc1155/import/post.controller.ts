@@ -3,10 +3,10 @@ import { Request, Response } from 'express';
 import { OwnedNft } from 'alchemy-sdk';
 import { ERC1155Token } from '@thxnetwork/api/models/ERC1155Token';
 import { ERC1155 } from '@thxnetwork/api/models/ERC1155';
-import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
+import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { ERC1155TokenState } from '@thxnetwork/api/types/TERC1155';
 import { alchemy } from '@thxnetwork/api/util/alchemy';
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId, NFTVariant } from '@thxnetwork/types/enums';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { ERC1155Metadata } from '@thxnetwork/api/models/ERC1155Metadata';
 import WalletService from '@thxnetwork/api/services/WalletService';
@@ -20,13 +20,10 @@ const validation = [
 const controller = async (req: Request, res: Response) => {
     const chainId = Number(req.body.chainId) as ChainId;
     const contractAddress = req.body.contractAddress;
-    const nftExists = await ERC1155.exists({ sub: req.auth.sub, chainId, address: contractAddress });
-    if (nftExists) throw new BadRequestError('This contract is already present, and can not be imported');
-    const wallets = await WalletService.findByQuery({ sub: req.auth.sub, chainId: req.body.chainId });
-    const walletId = wallets.length ? String(wallets[0]._id) : undefined;
+    const wallet = await WalletService.findOneByQuery({ sub: req.auth.sub, chainId: req.body.chainId });
     const pool = await PoolService.getById(req.header('X-PoolId'));
-    const pageSize = 100;
 
+    const pageSize = 100;
     let pageKey = 0,
         pageCount = 1,
         ownedNfts: OwnedNft[] = [];
@@ -57,18 +54,27 @@ const controller = async (req: Request, res: Response) => {
     }
 
     const { address } = ownedNfts[0].contract;
-    const erc1155 = await ERC1155.create({
-        sub: req.auth.sub,
-        chainId,
-        address,
-        name: req.body.name,
-        properties: [
-            { name: 'name', propType: 'string', description: '' },
-            { name: 'description', propType: 'string', description: '' },
-            { name: 'image', propType: 'image', description: '' },
-            { name: 'externalUrl', propType: 'url', description: '' },
-        ],
-    });
+    const erc1155 = await ERC1155.findOneAndUpdate(
+        {
+            sub: req.auth.sub,
+            chainId,
+            address,
+        },
+        {
+            variant: NFTVariant.ERC1155,
+            sub: req.auth.sub,
+            chainId,
+            address,
+            name: req.body.name,
+            properties: [
+                { name: 'name', propType: 'string', description: '' },
+                { name: 'description', propType: 'string', description: '' },
+                { name: 'image', propType: 'image', description: '' },
+                { name: 'externalUrl', propType: 'url', description: '' },
+            ],
+        },
+        { upsert: true, new: true },
+    );
     const erc1155Tokens = await Promise.all(
         ownedNfts
             .filter((nft) => nft.rawMetadata)
@@ -84,12 +90,12 @@ const controller = async (req: Request, res: Response) => {
                     });
                     const erc1155Token = await ERC1155Token.create({
                         sub: req.auth.sub,
+                        tokenId,
                         recipient: pool.address,
                         state: ERC1155TokenState.Minted,
                         erc1155Id: String(erc1155._id),
                         metadataId: String(metadata._id),
-                        tokenId,
-                        walletId,
+                        walletId: String(wallet._id),
                     });
 
                     return { ...erc1155Token.toJSON(), metadata: metadata.toJSON() };

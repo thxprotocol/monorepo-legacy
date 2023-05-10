@@ -1,34 +1,24 @@
 <template>
     <div>
-        <b-button v-if="!erc721metadataByPage.length" variant="light" :to="`/nft/${erc721._id}/metadata`" block>
+        <b-button v-if="!metadataByPage" variant="light" :to="`/nft/${nft._id}/metadata`" block>
             Create Metadata
         </b-button>
         <b-dropdown v-else no-flip variant="link" class="dropdown-select">
             <template #button-content>
-                <img
-                    v-if="selectedImageUrl"
-                    :src="selectedImageUrl"
-                    height="25"
-                    class="rounded mr-3"
-                    alt="Metadata image"
-                />
-                <span class="mr-auto">{{ selectedTitle }}</span>
+                <img v-if="metadata" :src="metadata.imageUrl" height="25" class="rounded mr-3" alt="Metadata image" />
+                <span class="mr-auto">{{ metadata ? metadata.name : 'Select Metadata' }}</span>
             </template>
             <b-dropdown-group style="max-height: 320px; overflow-y: auto">
-                <b-dropdown-item-button
-                    v-for="metadata of erc721metadataByPage"
-                    :key="metadata._id"
-                    @click="onClick(metadata)"
-                >
+                <b-dropdown-item-button v-for="m of metadataByPage" :key="m._id" @click="onClick(m)">
                     <small class="text-muted float-right">
-                        {{ format(new Date(metadata.createdAt), 'dd-MM-yyyy HH:mm') }}
+                        {{ format(new Date(m.createdAt), 'dd-MM-yyyy HH:mm') }}
                     </small>
                     <div class="d-flex align-items-center">
-                        <img :src="metadata.imageUrl" height="25" class="rounded mr-3" alt="Metadata image" />
+                        <img :src="m.imageUrl" height="25" class="rounded mr-3" alt="Metadata image" />
                         <div>
-                            <strong>{{ metadata.name }}</strong>
+                            <strong>{{ m.name }}</strong>
                             <br />
-                            <div class="text-truncate-75">{{ metadata.description }}</div>
+                            <div class="text-truncate-75">{{ m.description }}</div>
                         </div>
                     </div>
                 </b-dropdown-item-button>
@@ -48,69 +38,84 @@
 </template>
 
 <script lang="ts">
-import type { IERC721Metadatas, IERC721s, TERC721 } from '@thxnetwork/dashboard/types/erc721';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import type { IERC721Metadatas, IERC721s, TERC721, TNFTMetadata } from '@thxnetwork/dashboard/types/erc721';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { format } from 'date-fns';
-import type { TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
+import { IERC1155Metadatas, IERC1155s, TERC1155 } from '@thxnetwork/dashboard/types/erc1155';
+import { NFTVariant } from '@thxnetwork/types/enums';
 
 @Component({
     computed: mapGetters({
         erc721s: 'erc721/all',
-        metadata: 'erc721/metadata',
-        totals: 'erc721/totalsMetadata',
+        erc721Metadata: 'erc721/metadata',
+        erc721Totals: 'erc721/totalsMetadata',
+        erc1155s: 'erc1155/all',
+        erc1155Metadata: 'erc1155/metadata',
+        erc1155Totals: 'erc1155/totalsMetadata',
     }),
 })
 export default class BaseDropdownERC721Metadata extends Vue {
     format = format;
     erc721s!: IERC721s;
-    metadata!: IERC721Metadatas;
+    erc721Metadata!: IERC721Metadatas;
+    erc721Totals!: { [erc721Id: string]: number };
+    erc1155s!: IERC1155s;
+    erc1155Metadata!: IERC1155Metadatas;
+    erc1155Totals!: { [erc1155Id: string]: number };
+
     limit = 25;
     page = 1;
     query = '';
 
-    totals!: { [erc721Id: string]: number };
-
-    @Prop({ required: true }) erc721!: TERC721;
-    @Prop({ required: false }) erc721metadataId!: string;
+    @Prop({ required: true }) nft!: TERC721 | TERC1155;
+    @Prop({ required: false }) metadataId!: string;
 
     get total() {
-        return this.totals[this.erc721._id];
+        switch (this.nft.variant) {
+            case NFTVariant.ERC721:
+                return this.erc721Totals[this.nft._id];
+            case NFTVariant.ERC1155:
+                return this.erc1155Totals[this.nft._id];
+        }
     }
 
-    get selectedTitle() {
-        if (!this.erc721metadataId) return 'None';
-        const metadata = this.metadata[this.erc721._id][this.erc721metadataId];
-        if (!metadata) return;
-        return metadata.name;
+    get metadata() {
+        if (!this.metadataId) return;
+        switch (this.nft.variant) {
+            case NFTVariant.ERC721: {
+                return this.erc721Metadata[this.nft._id] && this.erc721Metadata[this.nft._id][this.metadataId];
+            }
+            case NFTVariant.ERC1155: {
+                return this.erc1155Metadata[this.nft._id] && this.erc1155Metadata[this.nft._id][this.metadataId];
+            }
+        }
     }
 
-    get selectedImageUrl() {
-        if (!this.erc721metadataId) return;
-        const metadata = this.metadata[this.erc721._id][this.erc721metadataId];
-        if (!metadata) return;
-        return metadata.imageUrl;
+    get metadatas() {
+        switch (this.nft.variant) {
+            case NFTVariant.ERC721: {
+                return this.erc721Metadata[this.nft._id] ? Object.values(this.erc721Metadata[this.nft._id]) : [];
+            }
+            case NFTVariant.ERC1155: {
+                return this.erc1155Metadata[this.nft._id] ? Object.values(this.erc1155Metadata[this.nft._id]) : [];
+            }
+        }
     }
 
-    get erc721metadataByPage() {
-        if (this.erc721 && !this.metadata[this.erc721._id]) return [];
-
-        return (
-            this.erc721 &&
-            this.metadata[this.erc721._id] &&
-            Object.values(this.metadata[this.erc721._id])
-                .filter((m) => m.page === this.page)
-                .slice(0, this.limit)
-        );
+    get metadataByPage(): TNFTMetadata[] {
+        return this.metadatas.filter((m) => m.page === this.page).slice(0, this.limit);
     }
 
     mounted() {
         this.searchMetadata();
     }
 
-    async searchMetadata() {
-        await this.$store.dispatch('erc721/searchMetadata', {
-            erc721: this.erc721,
+    @Watch('nft')
+    searchMetadata() {
+        this.$store.dispatch(this.nft.variant + '/searchMetadata', {
+            erc721: this.nft,
+            erc1155: this.nft,
             page: this.page,
             limit: this.limit,
             query: this.query,
@@ -119,15 +124,15 @@ export default class BaseDropdownERC721Metadata extends Vue {
 
     async onChangePage(page: number) {
         this.page = page;
-        await this.searchMetadata();
+        this.searchMetadata();
     }
 
     async onSearch(query: string) {
         this.query = query;
-        await this.searchMetadata();
+        this.searchMetadata();
     }
 
-    onClick(metadata: TERC721Metadata) {
+    onClick(metadata: TNFTMetadata) {
         this.$emit('selected', metadata);
     }
 }

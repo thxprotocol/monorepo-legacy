@@ -11,30 +11,28 @@ const validation = [query('chainId').exists().isNumeric()];
 export const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC1155']
 
-    const wallet = await Wallet.findOne({ sub: req.auth.sub, chainId: Number(req.query.chainId) });
+    const chainId = Number(req.query.chainId);
+    const wallet = await Wallet.findOne({ sub: req.auth.sub, chainId });
     if (!wallet) throw new NotFoundError('Could not find the wallet for the user');
 
     const tokens = await ERC1155Service.findTokensByWallet(wallet);
-
     const result = await Promise.all(
         tokens.map(async (token: ERC1155TokenDocument) => {
             const erc1155 = await ERC1155Service.findById(token.erc1155Id);
-            const baseURI = await erc1155.contract.methods.uri(1).call();
-            if (!erc1155) return;
-            if (erc1155.chainId !== Number(req.query.chainId)) return { ...(token.toJSON() as TERC1155Token), erc1155 };
+            if (!erc1155 || erc1155.chainId !== chainId) return;
 
-            const tokenUri = token.tokenId ? baseURI.replace('{id}', token.tokenId) : '';
-            erc1155.logoImgUrl =
-                erc1155.logoImgUrl || `https://avatars.dicebear.com/api/identicon/${erc1155.address}.svg`;
+            const metadata = await ERC1155Service.findMetadataById(token.metadataId);
+            if (!metadata) return;
 
-            return { ...(token.toJSON() as TERC1155Token), tokenUri, erc1155 };
+            const tokenUri = token.tokenId ? erc1155.baseURL.replace('{id}', String(token.tokenId)) : '';
+
+            return Object.assign(token.toJSON() as TERC1155Token, { metadata, tokenUri, nft: erc1155 });
         }),
     );
 
     res.json(
-        result.filter((token: TERC1155Token & { erc1155: TERC1155 }) => {
-            if (!req.query.chainId) return true;
-            return Number(req.query.chainId) === token.erc1155.chainId;
+        result.reverse().filter((token: TERC1155Token & { nft: TERC1155 }) => {
+            return token && chainId === token.nft.chainId;
         }),
     );
 };

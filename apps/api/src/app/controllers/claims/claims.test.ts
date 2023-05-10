@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId, NFTVariant } from '@thxnetwork/types/enums';
 import {
     sub,
     dashboardAccessToken,
@@ -50,6 +50,7 @@ describe('Claims', () => {
         poolId = String(pool._id);
         erc721 = await ERC721Service.deploy(
             {
+                variant: NFTVariant.ERC721,
                 sub,
                 chainId,
                 name,

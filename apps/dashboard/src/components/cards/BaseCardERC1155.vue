@@ -2,37 +2,29 @@
     <base-card
         :is-loading="isLoading"
         :is-deploying="isDeploying"
-        :body-bg-variant="erc721.archived ? 'light' : null"
+        :body-bg-variant="isArchived ? 'light' : null"
         classes="cursor-pointer"
         @click="onClick"
     >
         <template #card-header>
-            <base-badge-network v-if="!isLoading" :chainId="erc721.chainId" />
-            <base-dropdown-menu-nft :erc721="erc721" @archive="archive" class="ml-auto" />
+            <base-badge-network v-if="!isLoading" :chainId="erc1155.chainId" />
+            <base-dropdown-menu-nft :archived="isArchived" :erc1155="erc1155" @archive="archive" class="ml-auto" />
         </template>
         <template #card-body>
             <div class="mb-3 d-flex align-items-center">
-                <base-identicon class="mr-2" size="40" :rounded="true" variant="darker" :uri="erc721.logoURI" />
-                <div>
-                    <strong class="m-0">{{ erc721.symbol }}</strong>
-                    <br />
-                    {{ erc721.name }}
-                </div>
+                <base-identicon class="mr-2" size="40" :rounded="true" variant="darker" :uri="erc1155.logoURI" />
+                <div>{{ erc1155.name }}</div>
             </div>
             <p>
                 <span class="text-muted">Variant</span><br />
-                <b-badge variant="primary" class="mr-1 mb-1"> ERC721 </b-badge>
-            </p>
-            <p>
-                <span class="text-muted">Total supply</span><br />
-                <strong class="font-weight-bold h3 text-primary">
-                    {{ erc721.totalSupply }}
-                </strong>
+                <b-badge variant="primary" class="mr-1 mb-1">
+                    {{ erc1155.variant && erc1155.variant.toUpperCase() }}
+                </b-badge>
             </p>
             <p>
                 <span class="text-muted">Base URL</span><br />
                 <b-badge variant="primary" class="mr-1 mb-1">
-                    {{ erc721.baseURL }}
+                    {{ erc1155.baseURL }}
                 </b-badge>
             </p>
             <b-button block variant="light" class="rounded-pill">Manage Metadata</b-button>
@@ -42,8 +34,8 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { getTokenUrl } from '@thxnetwork/dashboard/utils/chains';
-import { ERC721Variant, type TERC721 } from '@thxnetwork/dashboard/types/erc721';
+import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
+import { ERC1155Variant, type TERC1155 } from '@thxnetwork/dashboard/types/erc1155';
 import poll from 'promise-poller';
 import BaseCard from '@thxnetwork/dashboard/components/cards/BaseCard.vue';
 import BaseBadgeNetwork from '@thxnetwork/dashboard/components/badges/BaseBadgeNetwork.vue';
@@ -60,18 +52,22 @@ import BaseModalPoolCreate from '@thxnetwork/dashboard/components/modals/BaseMod
         BaseDropdownMenuNft,
     },
 })
-export default class BaseCardERC721 extends Vue {
-    ERC721Variant = ERC721Variant;
+export default class BaseCardERC1155 extends Vue {
+    ERC1155Variant = ERC1155Variant;
     isLoading = true;
     isDeploying = false;
     error = '';
 
-    @Prop() erc721!: TERC721;
+    get isArchived() {
+        return this.erc1155.address ? this.erc1155.archived : false;
+    }
+
+    @Prop() erc1155!: TERC1155;
 
     async mounted() {
-        await this.$store.dispatch('erc721/read', this.erc721._id);
+        await this.$store.dispatch('erc1155/read', this.erc1155._id);
 
-        if (!this.erc721.address) {
+        if (!this.erc1155.address) {
             this.isDeploying = true;
             this.waitForAddress();
         } else {
@@ -82,14 +78,14 @@ export default class BaseCardERC721 extends Vue {
 
     waitForAddress() {
         const taskFn = async () => {
-            const erc721 = await this.$store.dispatch('erc721/read', this.erc721._id);
-            if (erc721 && erc721.address.length) {
+            const erc1155 = await this.$store.dispatch('erc1155/read', this.erc1155._id);
+            if (erc1155 && erc1155.address.length) {
                 this.isDeploying = false;
                 this.isLoading = false;
-                return Promise.resolve(erc721);
+                return Promise.resolve(erc1155);
             } else {
                 this.isLoading = false;
-                return Promise.reject(erc721);
+                return Promise.reject(erc1155);
             }
         };
 
@@ -97,19 +93,19 @@ export default class BaseCardERC721 extends Vue {
     }
 
     onClick() {
-        this.$router.push({ path: `/nft/${this.erc721.variant}/${this.erc721._id}` });
+        this.$router.push({ path: `/nft/${this.erc1155.variant}/${this.erc1155._id}/metadata` });
     }
 
     openTokenUrl() {
-        const url = getTokenUrl(this.erc721.chainId, this.erc721.address);
+        const url = `${chainInfo[this.erc1155.chainId].blockExplorer}/token/${this.erc1155.address}`;
         return (window as any).open(url, '_blank').focus();
     }
 
     async archive() {
         this.isLoading = true;
-        await this.$store.dispatch('erc721/update', {
-            erc721: this.erc721,
-            data: { archived: !this.erc721.archived },
+        await this.$store.dispatch('erc1155/update', {
+            erc1155: this.erc1155,
+            data: { archived: !this.erc1155.archived },
         });
         this.isLoading = false;
     }

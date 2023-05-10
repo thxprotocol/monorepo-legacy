@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { body, check, query } from 'express-validator';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import ImageService from '@thxnetwork/api/services/ImageService';
-import { AccountPlanType } from '@thxnetwork/types/enums';
+import { AccountPlanType, NFTVariant } from '@thxnetwork/types/enums';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 
 const validation = [
@@ -35,6 +35,7 @@ const controller = async (req: Request, res: Response) => {
     const baseURL = account.plan === AccountPlanType.Premium ? IPFS_BASE_URL : `${API_URL}/${VERSION}/metadata/`;
     const erc721 = await ERC721Service.deploy(
         {
+            variant: NFTVariant.ERC721,
             sub: req.auth.sub,
             chainId: req.body.chainId,
             name: req.body.name,

@@ -11,6 +11,7 @@ const ERC1155MetadataSchema = new mongoose.Schema(
         image: String,
         description: String,
         externalUrl: String,
+        tokenId: Number,
     },
     { timestamps: true },
 );

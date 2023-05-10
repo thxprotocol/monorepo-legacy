@@ -117,7 +117,6 @@ const routes: Array<RouteConfig> = [
     {
         path: '/preview/:poolId',
         component: () => import('../views/Preview.vue'),
-        // beforeEnter: assertAuthorization,
     },
     {
         name: 'coins',
@@ -133,8 +132,8 @@ const routes: Array<RouteConfig> = [
     },
     {
         name: 'metadata',
-        path: '/nft/:erc721Id',
-        redirect: '/nft/:erc721Id/metadata',
+        path: '/nft/:variant/:nftId',
+        redirect: '/nft/:variant/:nftId/metadata',
         component: () => import('../views/nft/NFT.vue'),
         beforeEnter: assertAuthorization,
         children: [
