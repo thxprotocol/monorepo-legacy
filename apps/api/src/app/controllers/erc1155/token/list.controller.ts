@@ -6,7 +6,7 @@ import { NotFoundError } from '@thxnetwork/api/util/errors';
 import type { TERC1155, TERC1155Token } from '@thxnetwork/types/interfaces';
 import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
 
-const validation = [query('chainId').exists().isNumeric()];
+const validation = [query('chainId').exists().isNumeric(), query('recipient').optional().isString()];
 
 export const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC1155']
@@ -24,15 +24,17 @@ export const controller = async (req: Request, res: Response) => {
             const metadata = await ERC1155Service.findMetadataById(token.metadataId);
             if (!metadata) return;
 
-            const tokenUri =
-                token.tokenId && erc1155.baseURL ? erc1155.baseURL.replace('{id}', String(token.tokenId)) : '';
-            return Object.assign(token.toJSON() as TERC1155Token, { metadata, tokenUri, nft: erc1155 });
+            return Object.assign(token.toJSON() as TERC1155Token, { metadata, nft: erc1155 });
         }),
     );
 
     res.json(
         result.reverse().filter((token: TERC1155Token & { nft: TERC1155 }) => {
-            return token && chainId === token.nft.chainId;
+            return (
+                token &&
+                chainId === token.nft.chainId &&
+                (req.query.recipient ? req.query.recipient === token.recipient : true)
+            );
         }),
     );
 };

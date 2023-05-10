@@ -16,7 +16,7 @@ export type TERC1155MetadataProp = {
 };
 
 export type TERC1155Token = {
-    id?: string;
+    _id: string;
     sub: string;
     state: ERC1155TokenState;
     recipient: string;
@@ -25,9 +25,10 @@ export type TERC1155Token = {
     tokenId: number;
     tokenUri: string;
     metadataId: string;
-    erc1155Id?: string;
-    metadata?: TERC1155Metadata;
+    erc1155Id: string;
     walletId: string;
+    metadata: TERC1155Metadata;
+    balance: string;
 };
 
 export type TERC1155 = {

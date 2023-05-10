@@ -20,7 +20,7 @@ import { track } from '@thxnetwork/mixpanel';
 class ERC721Module extends VuexModule {
     _all: IERC721s = {};
     _metadata: IERC721Metadatas = {};
-    _erc721Tokens: IERC721Tokens = {};
+    _tokens: IERC721Tokens = {};
     _totalsMetadata: { [erc721Id: string]: number } = {};
 
     get all() {
@@ -35,8 +35,8 @@ class ERC721Module extends VuexModule {
         return this._totalsMetadata;
     }
 
-    get erc721Tokens() {
-        return this._erc721Tokens;
+    get tokens() {
+        return this._tokens;
     }
 
     @Mutation
@@ -56,9 +56,9 @@ class ERC721Module extends VuexModule {
     }
 
     @Mutation
-    setERC721Token({ erc721Id, token }: { erc721Id: string; token: TERC721Token }) {
-        if (!this._erc721Tokens[erc721Id]) Vue.set(this._erc721Tokens, erc721Id, {});
-        Vue.set(this._erc721Tokens[erc721Id], token._id, token);
+    setERC721Token(token: TERC721Token) {
+        if (!this._tokens[token.erc721Id]) Vue.set(this._tokens, token.erc721Id, {});
+        Vue.set(this._tokens[token.erc721Id], token._id, token);
     }
 
     @Mutation
@@ -339,15 +339,15 @@ class ERC721Module extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async listImportedTokens(params: { erc721Id: string; pool: TPool }) {
+    async listTokens(pool: TPool) {
         const { data } = await axios({
             method: 'GET',
-            url: '/erc721-perks/import',
-            headers: { 'X-PoolId': params.pool._id },
-            params: { erc721Id: params.erc721Id },
+            url: '/erc721/token',
+            params: { chainId: pool.chainId, recipient: pool.address },
         });
-        data.forEach((erc721Token: TERC721Token) => {
-            this.context.commit('setERC721Token', { erc721Id: params.erc721Id, token: erc721Token });
+
+        data.forEach((token: TERC721Token & { nft: TERC721 }) => {
+            this.context.commit('setERC721Token', token);
         });
     }
 }

@@ -21,25 +21,29 @@
                         <b-form-group label="NFT" v-if="!selectedMetadataIds.length">
                             <BaseDropdownSelectERC721 :chainId="chainId" :nft="nft" @selected="onSelectNFT" />
                         </b-form-group>
-                        <!-- <b-form-group label="Token Id" v-if="erc721 && hasImportedTokens">
-                            <BaseDropdownERC721ImportedToken
-                                :erc721Id="erc721._id"
-                                :erc721tokenId="erc721tokenId"
-                                :erc721Tokens="erc721Tokens"
-                                :pool="pool"
-                                @selected="onSelectERC721Token"
-                            />
-                        </b-form-group> -->
                         <b-form-group label="Metadata" v-if="nft && !selectedMetadataIds.length">
                             <BaseDropdownERC721Metadata
+                                :pool="pool"
                                 :nft="nft"
                                 :metadataId="metadataId"
+                                :tokenId="tokenId"
                                 @selected="onSelectMetadata"
+                                @selected-token="onSelectToken"
                             />
                         </b-form-group>
 
-                        <b-form-group label="Amount" v-if="nft && nft.variant === NFTVariant.ERC1155">
-                            <b-form-input type="number" :value="erc1155Amount" @input="onChangeERC1155Amount" />
+                        <b-form-group
+                            label="Amount"
+                            :state="isValidAmount"
+                            :description="erc1155Balance ? `Balance: ${erc1155Balance}` : null"
+                            v-if="nft && nft.variant === NFTVariant.ERC1155"
+                        >
+                            <b-form-input
+                                :state="isValidAmount"
+                                type="number"
+                                :value="erc1155Amount"
+                                @input="onChangeERC1155Amount"
+                            />
                         </b-form-group>
 
                         <b-form-group label="Point Price">
@@ -95,6 +99,7 @@
             </form>
         </template>
         <template #btn-primary>
+            t {{ tokenId }} m {{ metadataId }}
             <b-button
                 :disabled="isSubmitDisabled"
                 class="rounded-pill"
@@ -110,7 +115,7 @@
 </template>
 
 <script lang="ts">
-import { NFTVariant, type TPool } from '@thxnetwork/types/index';
+import { NFTVariant, TERC1155Token, TERC721Token, type TPool } from '@thxnetwork/types/index';
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { type TERC721Perk } from '@thxnetwork/types/index';
@@ -167,6 +172,7 @@ export default class ModalRewardERC721Create extends Vue {
     metadataId = '';
     tokenId: string | null = null;
     erc1155Amount = 1;
+    erc1155Balance = '';
 
     pools!: IPools;
     profile!: IAccount;
@@ -194,6 +200,13 @@ export default class ModalRewardERC721Create extends Vue {
 
     get chainId() {
         return (this.pool && this.pool.chainId) || (this.nft && this.nft.chainId) || ChainId.Hardhat;
+    }
+
+    get isValidAmount() {
+        if (!this.erc1155Balance) return null;
+        const amount = Number(this.erc1155Amount);
+        const balance = Number(this.erc1155Balance);
+        return amount > 0 && amount <= balance;
     }
 
     onShow() {
@@ -230,13 +243,21 @@ export default class ModalRewardERC721Create extends Vue {
 
     async onSelectNFT(nft: TERC721 | TERC1155) {
         this.nft = nft;
-        if (!nft) return;
+        this.metadataId = '';
+        this.tokenId = '';
 
-        await this.$store.dispatch(nft.variant + '/listImportedTokens', {
-            erc721Id: this.nft._id,
-            erc1155Id: this.nft._id,
-            pool: this.pool,
-        });
+        if (nft) {
+            await this.$store.dispatch(nft.variant + '/listTokens', this.pool);
+        }
+    }
+
+    onSelectMetadata(metadata: TNFTMetadata) {
+        this.metadataId = metadata ? metadata._id : '';
+    }
+
+    onSelectToken(token: TERC721Token | TERC1155Token) {
+        this.tokenId = token ? token._id : '';
+        this.erc1155Balance = token ? (token.balance as string) : '';
     }
 
     onChangePointPrice(price: number) {
@@ -253,18 +274,9 @@ export default class ModalRewardERC721Create extends Vue {
         this.claimLimit = limit;
     }
 
-    onSelectMetadata(metadata: TNFTMetadata) {
-        this.metadataId = metadata._id;
-    }
-
     onChangeERC1155Amount(amount: number) {
         this.erc1155Amount = amount;
     }
-
-    // onSelectERC721Token(token: TERC721Token) {
-    //     if (!token) return;
-    //     this.erc721tokenId = token._id;
-    // }
 
     onSubmit() {
         // // TODO Remove when proper UI validation is implemented

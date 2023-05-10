@@ -6,7 +6,7 @@ import { Wallet } from '@thxnetwork/api/services/WalletService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { query } from 'express-validator';
 
-const validation = [query('chainId').exists().isNumeric()];
+const validation = [query('chainId').exists().isNumeric(), query('recipient').exists().isString()];
 
 export const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721']
@@ -23,15 +23,17 @@ export const controller = async (req: Request, res: Response) => {
             const metadata = await ERC721Service.findMetadataById(token.metadataId);
             if (!metadata) return;
 
-            // const tokenUri = token.tokenId ? await erc721.contract.methods.tokenURI(token.tokenId).call() : '';
-
             return Object.assign(token.toJSON() as TERC721Token, { metadata, tokenUri: token.tokenUri, nft: erc721 });
         }),
     );
 
     res.json(
         result.reverse().filter((token: TERC721Token & { nft: TERC721 }) => {
-            return token && chainId === token.nft.chainId;
+            return (
+                token &&
+                chainId === token.nft.chainId &&
+                (req.query.recipient ? req.query.recipient === token.recipient : true)
+            );
         }),
     );
 };

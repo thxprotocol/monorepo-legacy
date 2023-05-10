@@ -16,7 +16,7 @@ export type TERC721MetadataProp = {
 };
 
 export type TERC721Token = {
-    id?: string;
+    _id: string;
     sub: string;
     state: ERC721TokenState;
     recipient: string;
@@ -25,14 +25,15 @@ export type TERC721Token = {
     tokenId: number;
     tokenUri: string;
     metadataId: string;
-    erc721Id?: string;
-    metadata?: TERC721Metadata;
+    erc721Id: string;
+    metadata: TERC721Metadata;
     walletId: string;
+    balance?: string;
 };
 
 export type TERC721 = {
+    _id?: string;
     variant: NFTVariant;
-    id?: string;
     sub: string;
     chainId: ChainId;
     name: string;
@@ -50,7 +51,7 @@ export type TERC721 = {
 };
 
 export type TERC721Metadata = {
-    _id?: string;
+    _id: string;
     erc721Id: string;
     imageUrl: string;
     name: string;
