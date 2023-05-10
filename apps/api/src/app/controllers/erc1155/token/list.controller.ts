@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import { ERC1155TokenDocument } from '@thxnetwork/api/models/ERC1155Token';
-import type { TERC1155, TERC1155Token } from '@thxnetwork/api/types/TERC1155';
-import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
 import { query } from 'express-validator';
 import { Wallet } from '@thxnetwork/api/services/WalletService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
+import type { TERC1155, TERC1155Token } from '@thxnetwork/api/types/TERC1155';
+import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
 
 const validation = [query('chainId').exists().isNumeric()];
 
@@ -26,7 +26,6 @@ export const controller = async (req: Request, res: Response) => {
 
             const tokenUri =
                 token.tokenId && erc1155.baseURL ? erc1155.baseURL.replace('{id}', String(token.tokenId)) : '';
-
             return Object.assign(token.toJSON() as TERC1155Token, { metadata, tokenUri, nft: erc1155 });
         }),
     );
