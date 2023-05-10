@@ -4,7 +4,7 @@ import { OwnedNft } from 'alchemy-sdk';
 import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
 import { ERC721 } from '@thxnetwork/api/models/ERC721';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
-import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
+import { ERC721TokenState } from '@thxnetwork/types/interfaces';
 import { alchemy } from '@thxnetwork/api/util/alchemy';
 import { ChainId, NFTVariant } from '@thxnetwork/types/enums';
 import PoolService from '@thxnetwork/api/services/PoolService';

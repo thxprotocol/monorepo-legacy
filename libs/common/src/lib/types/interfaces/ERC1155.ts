@@ -1,7 +1,7 @@
 import { Contract } from 'web3-eth-contract';
 import { ChainId, NFTVariant } from '@thxnetwork/types/enums';
 
-export enum ERC721TokenState {
+export enum ERC1155TokenState {
     Pending = 0,
     Failed = 1,
     Minted = 2,
@@ -9,35 +9,35 @@ export enum ERC721TokenState {
     Transferred = 4,
 }
 
-export type TERC721MetadataProp = {
+export type TERC1155MetadataProp = {
     name: string;
     propType: string;
     description: string;
 };
 
-export type TERC721Token = {
+export type TERC1155Token = {
     id?: string;
     sub: string;
-    state: ERC721TokenState;
+    state: ERC1155TokenState;
     recipient: string;
     failReason: string;
     transactions: string[];
     tokenId: number;
     tokenUri: string;
     metadataId: string;
-    erc721Id?: string;
-    metadata?: TERC721Metadata;
+    erc1155Id?: string;
+    metadata?: TERC1155Metadata;
     walletId: string;
 };
 
-export type TERC721 = {
-    variant: NFTVariant;
+export type TERC1155 = {
     id?: string;
+    variant: NFTVariant;
     sub: string;
     chainId: ChainId;
     name: string;
-    symbol: string;
-    properties: TERC721MetadataProp[];
+    properties: TERC1155MetadataProp[];
+    logoImgUrl: string;
     transactions?: string[];
     baseURL?: string;
     description?: string;
@@ -46,18 +46,18 @@ export type TERC721 = {
     createdAt?: Date;
     updatedAt?: Date;
     archived?: boolean;
-    logoImgUrl?: string;
 };
 
-export type TERC721Metadata = {
+export type TERC1155Metadata = {
     _id?: string;
-    erc721Id: string;
+    erc1155Id: string;
+    tokenId: number;
     imageUrl: string;
     name: string;
     image: string;
     description: string;
     externalUrl: string;
-    tokens?: TERC721Token[];
-    createdAt?: Date;
-    updatedAt?: Date;
+    tokens?: TERC1155Token[];
+    createdAt: Date;
+    updatedAt: Date;
 };

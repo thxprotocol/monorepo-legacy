@@ -7,7 +7,6 @@ import { ERC721Metadata, ERC721MetadataDocument } from '@thxnetwork/api/models/E
 import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
 import { ChainId, TransactionState } from '@thxnetwork/types/enums';
-import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
 import {
     TERC721DeployCallbackArgs,
     TERC721TokenMintCallbackArgs,
@@ -17,7 +16,7 @@ import {
 import { assertEvent, ExpectedEventNotFound, findEvent, parseLogs } from '@thxnetwork/api/util/events';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
-import type { TERC721, TERC721Metadata, TERC721Token } from '@thxnetwork/api/types/TERC721';
+import { type TERC721, type TERC721Metadata, type TERC721Token, ERC721TokenState } from '@thxnetwork/types/interfaces';
 import type { IAccount } from '@thxnetwork/api/models/Account';
 import { TWallet, WalletDocument } from '../models/Wallet';
 import { ERC721TransferDocument } from '../models/ERC721Transfer';

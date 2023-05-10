@@ -1,5 +1,3 @@
-import mongoose from 'mongoose';
-
 export type TClaim = {
     sub?: string;
     uuid: string;
@@ -10,4 +8,3 @@ export type TClaim = {
     claimedAt?: Date;
     error?: string;
 };
-export type ClaimDocument = mongoose.Document & TClaim;

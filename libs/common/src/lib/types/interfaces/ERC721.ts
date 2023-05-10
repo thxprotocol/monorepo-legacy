@@ -1,7 +1,7 @@
 import { Contract } from 'web3-eth-contract';
 import { ChainId, NFTVariant } from '@thxnetwork/types/enums';
 
-export enum ERC1155TokenState {
+export enum ERC721TokenState {
     Pending = 0,
     Failed = 1,
     Minted = 2,
@@ -9,40 +9,35 @@ export enum ERC1155TokenState {
     Transferred = 4,
 }
 
-type TERC1155Attribute = {
-    key: string;
-    value: string;
-};
-
-export type TERC1155MetadataProp = {
+export type TERC721MetadataProp = {
     name: string;
     propType: string;
     description: string;
 };
 
-export type TERC1155Token = {
+export type TERC721Token = {
     id?: string;
     sub: string;
-    state: ERC1155TokenState;
+    state: ERC721TokenState;
     recipient: string;
     failReason: string;
     transactions: string[];
     tokenId: number;
     tokenUri: string;
     metadataId: string;
-    erc1155Id?: string;
-    metadata?: TERC1155Metadata;
+    erc721Id?: string;
+    metadata?: TERC721Metadata;
     walletId: string;
 };
 
-export type TERC1155 = {
-    id?: string;
+export type TERC721 = {
     variant: NFTVariant;
+    id?: string;
     sub: string;
     chainId: ChainId;
     name: string;
-    properties: TERC1155MetadataProp[];
-    logoImgUrl: string;
+    symbol: string;
+    properties: TERC721MetadataProp[];
     transactions?: string[];
     baseURL?: string;
     description?: string;
@@ -51,18 +46,28 @@ export type TERC1155 = {
     createdAt?: Date;
     updatedAt?: Date;
     archived?: boolean;
+    logoImgUrl?: string;
 };
 
-export type TERC1155Metadata = {
+export type TERC721Metadata = {
     _id?: string;
-    erc1155Id: string;
-    tokenId: number;
+    erc721Id: string;
     imageUrl: string;
     name: string;
     image: string;
     description: string;
     externalUrl: string;
-    tokens?: TERC1155Token[];
-    createdAt: Date;
-    updatedAt: Date;
+    tokens?: TERC721Token[];
+    createdAt?: Date;
+    updatedAt?: Date;
+};
+
+export type TERC721Transfer = {
+    erc721Id: string;
+    erc721TokenId: string;
+    from: string;
+    to: string;
+    chainId: ChainId;
+    transactionId: string;
+    sub: string;
 };

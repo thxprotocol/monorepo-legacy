@@ -3,7 +3,7 @@ import app from '@thxnetwork/api/';
 import { ChainId } from '@thxnetwork/types/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { dashboardAccessToken, sub, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
-import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
+import { ERC721TokenState } from '@thxnetwork/types/interfaces';
 import { ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { alchemy } from '@thxnetwork/api/util/alchemy';
 import { deployERC721, mockGetNftsForOwner } from '@thxnetwork/api/util/jest/erc721';

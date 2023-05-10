@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { TERC20 } from '@thxnetwork/api/types/TERC20';
+import { TERC20 } from '@thxnetwork/types/interfaces';
 import { getAbiForContractName } from '@thxnetwork/api/config/contracts';
 import { ERC20Type } from '@thxnetwork/types/enums';
 import { getProvider } from '@thxnetwork/api/util/network';

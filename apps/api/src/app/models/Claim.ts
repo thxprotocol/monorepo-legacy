@@ -1,5 +1,7 @@
-import { ClaimDocument } from '@thxnetwork/api/types/TClaim';
 import mongoose from 'mongoose';
+import { TClaim } from '@thxnetwork/types/interfaces';
+
+export type ClaimDocument = mongoose.Document & TClaim;
 
 const schema = new mongoose.Schema(
     {

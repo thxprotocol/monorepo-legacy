@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { TERC721 } from '@thxnetwork/api/types/TERC721';
+import { TERC721 } from '@thxnetwork/types/interfaces';
 import { getAbiForContractName } from '@thxnetwork/api/config/contracts';
 import { getProvider } from '@thxnetwork/api/util/network';
 

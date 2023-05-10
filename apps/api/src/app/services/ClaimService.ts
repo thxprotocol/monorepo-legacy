@@ -1,6 +1,6 @@
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { Claim } from '@thxnetwork/api/models/Claim';
-import { TClaim } from '@thxnetwork/api/types/TClaim';
+import { TClaim } from '@thxnetwork/types/interfaces';
 import { TBaseReward } from '@thxnetwork/types/';
 import db from '@thxnetwork/api/util/database';
 

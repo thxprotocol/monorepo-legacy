@@ -5,7 +5,7 @@ import { ERC721PerkDocument } from '../models/ERC721Perk';
 import { ERC721PerkPayment } from '../models/ERC721PerkPayment';
 import { ShopifyPerkDocument } from '../models/ShopifyPerk';
 import { ShopifyPerkPayment } from '../models/ShopifyPerkPayment';
-import { ClaimDocument } from '../types/TClaim';
+import { ClaimDocument } from '../models/Claim';
 import { isTERC20Perk, isTERC721Perk, isTShopifyPerk } from './rewards';
 import { AssetPoolDocument } from '../models/AssetPool';
 import PerkService from '../services/PerkService';

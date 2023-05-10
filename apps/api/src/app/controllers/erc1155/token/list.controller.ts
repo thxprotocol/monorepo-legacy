@@ -3,7 +3,7 @@ import { ERC1155TokenDocument } from '@thxnetwork/api/models/ERC1155Token';
 import { query } from 'express-validator';
 import { Wallet } from '@thxnetwork/api/services/WalletService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
-import type { TERC1155, TERC1155Token } from '@thxnetwork/api/types/TERC1155';
+import type { TERC1155, TERC1155Token } from '@thxnetwork/types/interfaces';
 import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
 
 const validation = [query('chainId').exists().isNumeric()];

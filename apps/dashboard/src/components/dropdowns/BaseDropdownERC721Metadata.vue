@@ -9,22 +9,22 @@
                 <span class="mr-auto">{{ metadata ? metadata.name : 'Select Metadata' }}</span>
             </template>
             <b-dropdown-group style="max-height: 320px; overflow-y: auto">
-                <b-dropdown-item-button v-for="m of metadataByPage" :key="m._id" @click="onClick(m)">
-                    <small class="text-muted float-right">
-                        {{ format(new Date(m.createdAt), 'dd-MM-yyyy HH:mm') }}
-                    </small>
-                    <div class="d-flex align-items-center">
-                        <img :src="m.imageUrl" height="25" class="rounded mr-3" alt="Metadata image" />
-                        <div>
-                            <strong>{{ m.name }}</strong>
-                            <br />
-                            <div class="text-truncate-75">{{ m.description }}</div>
-                        </div>
-                    </div>
+                <b-dropdown-item-button v-for="m of poolTokens" :key="m._id" @click="onClickToken(m)">
+                    token
+                </b-dropdown-item-button>
+                <b-dropdown-item-button v-for="m of metadataByPage" :key="m._id" @click="onClickMetadata(m)">
+                    <b-media>
+                        <template #aside>
+                            <img :src="m.imageUrl" width="35" class="rounded" alt="Metadata image" />
+                        </template>
+                        <strong>{{ m.name }}</strong>
+                        <div class="text-truncate w-100">{{ m.description }}</div>
+                    </b-media>
                 </b-dropdown-item-button>
                 <b-dropdown-divider></b-dropdown-divider>
                 <b-dropdown-form>
                     <b-pagination
+                        size="sm"
                         @change="onChangePage"
                         v-model="page"
                         :per-page="limit"
@@ -44,6 +44,7 @@ import { mapGetters } from 'vuex';
 import { format } from 'date-fns';
 import { IERC1155Metadatas, IERC1155s, TERC1155 } from '@thxnetwork/dashboard/types/erc1155';
 import { NFTVariant } from '@thxnetwork/types/enums';
+import { TERC721Token, TERC1155Token } from '@thxnetwork/types/interfaces';
 
 @Component({
     computed: mapGetters({
@@ -132,7 +133,11 @@ export default class BaseDropdownERC721Metadata extends Vue {
         this.searchMetadata();
     }
 
-    onClick(metadata: TNFTMetadata) {
+    onClickToken(token: TERC721Token | TERC1155Token) {
+        this.$emit('selected-token', token);
+    }
+
+    onClickMetadata(metadata: TNFTMetadata) {
         this.$emit('selected', metadata);
     }
 }

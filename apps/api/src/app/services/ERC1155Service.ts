@@ -7,18 +7,17 @@ import { ERC1155Metadata, ERC1155MetadataDocument } from '@thxnetwork/api/models
 import { ERC1155Token, ERC1155TokenDocument } from '@thxnetwork/api/models/ERC1155Token';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
 import { ChainId, TransactionState } from '@thxnetwork/types/enums';
-import { ERC1155TokenState } from '@thxnetwork/api/types/TERC1155';
+import { ERC1155TokenState } from '@thxnetwork/types/interfaces';
 import { TERC1155DeployCallbackArgs, TERC1155TokenMintCallbackArgs } from '@thxnetwork/api/types/TTransaction';
 import { assertEvent, ExpectedEventNotFound, findEvent, parseLogs } from '@thxnetwork/api/util/events';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import PoolService from './PoolService';
 import TransactionService from './TransactionService';
-import type { TERC1155, TERC1155Metadata, TERC1155Token } from '@thxnetwork/api/types/TERC1155';
+import type { TERC1155, TERC1155Metadata, TERC1155Token } from '@thxnetwork/types/interfaces';
 import type { IAccount } from '@thxnetwork/api/models/Account';
 import { TWallet, WalletDocument } from '../models/Wallet';
 import IPFSService from './IPFSService';
-import { toWei } from 'web3-utils';
 
 const contractName = 'THX_ERC1155';
 
