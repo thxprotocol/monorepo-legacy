@@ -56,7 +56,6 @@ describe('Claims', () => {
             symbol,
             description: '',
             baseURL,
-            properties: [],
             archived: false,
             logoImgUrl,
         });

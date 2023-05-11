@@ -42,7 +42,6 @@ export type TERC1155 = {
     name: string;
     baseURL: string;
     logoURI: string;
-    properties: TERC1155DefaultProp[];
     archived: boolean;
     poolId?: string;
 };

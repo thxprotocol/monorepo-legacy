@@ -25,7 +25,7 @@ const validation = [
     body('erc721Id').optional().isString(),
     body('erc1155Id').optional().isString(),
     body('metadataIds').optional().isString(),
-    body('tokenId').optional().isMongoId(),
+    body('tokenId').optional().isString(),
     body('pointPrice').optional().isNumeric(),
     body('expiryDate').optional().isString(),
     body('limit').optional().isInt(),

@@ -8,7 +8,7 @@
     >
         <template #card-header>
             <base-badge-network v-if="!isLoading" :chainId="erc1155.chainId" />
-            <base-dropdown-menu-nft :archived="isArchived" :erc1155="erc1155" @archive="archive" class="ml-auto" />
+            <base-dropdown-menu-nft :archived="isArchived" :nft="erc1155" @archive="archive" class="ml-auto" />
         </template>
         <template #card-body>
             <div class="mb-3 d-flex align-items-center">
@@ -34,7 +34,6 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { ERC1155Variant, type TERC1155 } from '@thxnetwork/dashboard/types/erc1155';
 import poll from 'promise-poller';
 import BaseCard from '@thxnetwork/dashboard/components/cards/BaseCard.vue';
@@ -94,11 +93,6 @@ export default class BaseCardERC1155 extends Vue {
 
     onClick() {
         this.$router.push({ path: `/nft/${this.erc1155.variant}/${this.erc1155._id}/metadata` });
-    }
-
-    openTokenUrl() {
-        const url = `${chainInfo[this.erc1155.chainId].blockExplorer}/token/${this.erc1155.address}`;
-        return (window as any).open(url, '_blank').focus();
     }
 
     async archive() {

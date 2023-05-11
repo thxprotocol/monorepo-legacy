@@ -21,15 +21,16 @@
 <script lang="ts">
 import type { TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
+import { TERC1155 } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component({})
 export default class BaseDropdownMenuNft extends Vue {
-    @Prop() erc721!: TERC721;
+    @Prop() nft!: TERC721 | TERC1155;
     @Prop() archived!: boolean;
 
     openTokenUrl() {
-        const url = `${chainInfo[this.erc721.chainId].blockExplorer}/token/${this.erc721.address}`;
+        const url = `${chainInfo[this.nft.chainId].blockExplorer}/token/${this.nft.address}`;
         return (window as any).open(url, '_blank').focus();
     }
 }

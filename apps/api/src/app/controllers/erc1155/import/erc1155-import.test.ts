@@ -80,12 +80,6 @@ describe('ERC1155 import', () => {
                     expect(body.sub).toBe(sub);
                     expect(body.name).toBe(nftName);
                     expect(body.address).toBe(nftContract.options.address);
-                    expect(body.properties[0].name).toBe('name');
-                    expect(body.properties[0].propType).toBe('string');
-                    expect(body.properties[1].name).toBe('description');
-                    expect(body.properties[1].propType).toBe('string');
-                    expect(body.properties[2].name).toBe('image');
-                    expect(body.properties[2].propType).toBe('image');
                     expect(body.owner).toBe(defaultAccount);
                 })
                 .expect(200, done);

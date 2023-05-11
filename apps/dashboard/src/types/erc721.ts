@@ -49,7 +49,6 @@ export type TERC721 = {
     symbol: string;
     totalSupply: string;
     logoURI: string;
-    properties: TERC721DefaultProp[];
     archived: boolean;
     poolId?: string;
 };

@@ -12,7 +12,7 @@ import { ERC1155Metadata } from '@thxnetwork/api/models/ERC1155Metadata';
 import WalletService from '@thxnetwork/api/services/WalletService';
 
 const validation = [
-    body('contractAddress').exists(),
+    body('contractAddress').exists().isString(),
     body('chainId').exists().isNumeric(),
     body('name').exists().isString(),
 ];
@@ -20,7 +20,7 @@ const validation = [
 const controller = async (req: Request, res: Response) => {
     const chainId = Number(req.body.chainId) as ChainId;
     const contractAddress = req.body.contractAddress;
-    const wallet = await WalletService.findOneByQuery({ sub: req.auth.sub, chainId: req.body.chainId });
+    const wallet = await WalletService.findOneByQuery({ sub: req.auth.sub, chainId });
     const pool = await PoolService.getById(req.header('X-PoolId'));
 
     const pageSize = 100;

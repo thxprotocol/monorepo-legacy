@@ -69,7 +69,6 @@ describe('ERC721Transfer', () => {
                     symbol,
                     description: '',
                     baseURL,
-                    properties: [],
                     archived: false,
                     logoImgUrl,
                 },

@@ -9,12 +9,6 @@ export enum ERC721TokenState {
     Transferred = 4,
 }
 
-export type TERC721MetadataProp = {
-    name: string;
-    propType: string;
-    description: string;
-};
-
 export type TERC721Token = {
     _id: string;
     sub: string;
@@ -38,7 +32,6 @@ export type TERC721 = {
     chainId: ChainId;
     name: string;
     symbol: string;
-    properties: TERC721MetadataProp[];
     transactions?: string[];
     baseURL?: string;
     description?: string;

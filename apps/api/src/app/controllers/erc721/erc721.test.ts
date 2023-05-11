@@ -12,11 +12,7 @@ describe('ERC721', () => {
     const chainId = ChainId.Hardhat,
         name = 'Planets of the Galaxy',
         symbol = 'GLXY',
-        description = 'Collection full of rarities.',
-        schema = [
-            { name: 'color', propType: 'string', description: 'lorem ipsum' },
-            { name: 'size', propType: 'string', description: 'lorem ipsum dolor sit' },
-        ];
+        description = 'Collection full of rarities.';
     let erc721ID: string;
 
     beforeAll(beforeAllCallback);
@@ -34,7 +30,6 @@ describe('ERC721', () => {
                     name,
                     symbol,
                     description,
-                    schema: JSON.stringify(schema),
                 })
                 .expect(({ body }: request.Response) => {
                     expect(body._id).toBeDefined();
@@ -42,12 +37,6 @@ describe('ERC721', () => {
                     expect(body.name).toBe(name);
                     expect(body.symbol).toBe(symbol);
                     expect(body.description).toBe(description);
-                    expect(body.properties[0].description).toBe(schema[0].description);
-                    expect(body.properties[0].name).toBe(schema[0].name);
-                    expect(body.properties[0].propType).toBe(schema[0].propType);
-                    expect(body.properties[1].description).toBe(schema[1].description);
-                    expect(body.properties[1].name).toBe(schema[1].name);
-                    expect(body.properties[1].propType).toBe(schema[1].propType);
                     expect(isAddress(body.address)).toBe(true);
                     expect(body.archived).toBe(false);
                     expect(body.logoImgUrl).toBeDefined();
@@ -67,12 +56,6 @@ describe('ERC721', () => {
                     expect(body.name).toBe(name);
                     expect(body.symbol).toBe(symbol);
                     expect(body.description).toBe(description);
-                    expect(body.properties[0].description).toBe(schema[0].description);
-                    expect(body.properties[0].name).toBe(schema[0].name);
-                    expect(body.properties[0].propType).toBe(schema[0].propType);
-                    expect(body.properties[1].description).toBe(schema[1].description);
-                    expect(body.properties[1].name).toBe(schema[1].name);
-                    expect(body.properties[1].propType).toBe(schema[1].propType);
                     expect(isAddress(body.address)).toBe(true);
                     expect(body.logoImgUrl).toBeDefined();
                 })

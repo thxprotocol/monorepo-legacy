@@ -13,6 +13,8 @@ import WalletService from '@thxnetwork/api/services/WalletService';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import PerkService from '@thxnetwork/api/services/PerkService';
 import jwt_decode from 'jwt-decode';
+import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
+import { ERC1155Token } from '@thxnetwork/api/models/ERC1155Token';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Perks']
@@ -68,6 +70,13 @@ const controller = async (req: Request, res: Response) => {
         erc721Perks: await Promise.all(
             erc721Perks.map(async (r) => {
                 const { isError } = await redeemValidation({ perk: r, sub, pool });
+                let erc721metadataId = r.metadataId;
+                if (!erc721metadataId && r.tokenId) {
+                    let token = await ERC721Token.findById(r.tokenId);
+                    if (!token) token = await ERC1155Token.findById(r.tokenId);
+                    erc721metadataId = token.metadataId;
+                }
+                const metadata = await ERC721Service.findMetadataById(erc721metadataId);
                 return {
                     _id: r._id,
                     uuid: r.uuid,
@@ -81,8 +90,8 @@ const controller = async (req: Request, res: Response) => {
                     isDisabled: isError,
                     isOwned: false,
                     erc721: await ERC721Service.findById(r.erc721Id),
-                    erc721metadataId: r.metadataId,
-                    metadata: await ERC721Service.findMetadataById(r.metadataId),
+                    erc721metadataId,
+                    metadata,
                     expiry: await PerkService.getExpiry(r),
                     progress: await PerkService.getProgress(r, ERC721PerkPayment),
                     isLocked: await PerkService.getIsLockedForWallet(r, wallet),

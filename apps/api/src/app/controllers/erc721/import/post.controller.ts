@@ -60,12 +60,6 @@ const controller = async (req: Request, res: Response) => {
             address: toChecksumAddress(address, chainId),
             name,
             symbol,
-            properties: [
-                { name: 'name', propType: 'string', description: '' },
-                { name: 'description', propType: 'string', description: '' },
-                { name: 'image', propType: 'image', description: '' },
-                { name: 'externalUrl', propType: 'url', description: '' },
-            ],
             archived: false,
         },
         { upsert: true, new: true },

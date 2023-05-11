@@ -11,7 +11,6 @@ const validation = [
     body('symbol').exists().isString(),
     body('description').exists().isString(),
     body('chainId').exists().isNumeric(),
-    body('schema').exists(),
     check('file')
         .optional()
         .custom((value, { req }) => {
@@ -29,7 +28,6 @@ const controller = async (req: Request, res: Response) => {
         logoImgUrl = ImageService.getPublicUrl(result.key);
     }
 
-    const properties = typeof req.body.schema == 'string' ? JSON.parse(req.body.schema) : req.body.schema;
     const forceSync = req.query.forceSync !== undefined ? req.query.forceSync === 'true' : false;
     const account = await AccountProxy.getById(req.auth.sub);
     const baseURL = account.plan === AccountPlanType.Premium ? IPFS_BASE_URL : `${API_URL}/${VERSION}/metadata/`;
@@ -42,7 +40,6 @@ const controller = async (req: Request, res: Response) => {
             symbol: req.body.symbol,
             description: req.body.description,
             baseURL,
-            properties,
             archived: false,
             logoImgUrl,
         },

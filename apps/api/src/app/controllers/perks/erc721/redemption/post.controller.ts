@@ -13,12 +13,11 @@ import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
 import MailService from '@thxnetwork/api/services/MailService';
 import { Widget } from '@thxnetwork/api/models/Widget';
 import { Wallet } from '@thxnetwork/api/models/Wallet';
-import { ERC1155TokenDocument } from '@thxnetwork/api/models/ERC1155Token';
+import { ERC1155Token, ERC1155TokenDocument } from '@thxnetwork/api/models/ERC1155Token';
 import { ERC1155Metadata, ERC1155MetadataDocument } from '@thxnetwork/api/models/ERC1155Metadata';
 import { ERC721, ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { ERC1155, ERC1155Document } from '@thxnetwork/api/models/ERC1155';
 import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
-import { toWei } from 'web3-utils';
 
 const validation = [param('uuid').exists()];
 
@@ -32,10 +31,10 @@ async function getNFTForPerk(perk: ERC721PerkDocument) {
 }
 
 async function getMetadataForPerk(perk: ERC721PerkDocument) {
-    if (perk.erc721Id) {
+    if (perk.erc721Id && perk.metadataId) {
         return await ERC721Metadata.findById(perk.metadataId);
     }
-    if (perk.erc1155Id) {
+    if (perk.erc1155Id && perk.metadataId) {
         return await ERC1155Metadata.findById(perk.metadataId);
     }
 }
@@ -97,8 +96,14 @@ const controller = async (req: Request, res: Response) => {
 
         // Handle erc1155 transfer
         if (perk.erc1155Id) {
-            // token = await ERC721Token.findById(perk.tokenId);
-            // token = await ERC721Service.transferFrom(pool, token, nft, wallet);
+            token = await ERC1155Token.findById(perk.tokenId);
+            token = await ERC1155Service.transferFrom(
+                pool,
+                token as ERC1155TokenDocument,
+                nft as ERC1155Document,
+                wallet,
+                perk.erc1155Amount,
+            );
         }
     }
 
