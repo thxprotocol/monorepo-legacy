@@ -1,17 +1,13 @@
 import { param } from 'express-validator';
 import { Request, Response } from 'express';
-import ERC721Service from '@thxnetwork/api/services/ERC721Service';
-import { ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
-import { ERC1155MetadataDocument } from '@thxnetwork/api/models/ERC1155Metadata';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
+import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 
 export const validation = [param('metadataId').isMongoId()];
 
 export const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721 Metadata']
-    const metadata: ERC721MetadataDocument | ERC1155MetadataDocument = await ERC721Service.findMetadataById(
-        req.params.metadataId,
-    );
+    const metadata = await ERC721Service.findMetadataById(req.params.metadataId);
     if (!metadata) throw new NotFoundError('Could not find metadata for this ID');
 
     const attributes = {

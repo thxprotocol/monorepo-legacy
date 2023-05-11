@@ -46,10 +46,6 @@ async function deploy(data: TERC1155, forceSync = true): Promise<ERC1155Document
     return ERC1155.findByIdAndUpdate(erc1155._id, { transactions: [txId], baseURL }, { new: true });
 }
 
-function getBaseURL(erc1155: ERC1155Document) {
-    return `${API_URL}/${VERSION}/metadata/erc1155/${String(erc1155._id)}/{id}`;
-}
-
 async function deployCallback({ erc1155Id }: TERC1155DeployCallbackArgs, receipt: TransactionReceipt) {
     const erc1155 = await ERC1155.findById(erc1155Id);
     const contract = getContractFromName(erc1155.chainId, contractName);
@@ -72,6 +68,10 @@ export async function queryDeployTransaction(erc1155: ERC1155Document): Promise<
     }
 
     return erc1155;
+}
+
+function getBaseURL(erc1155: ERC1155Document) {
+    return `${API_URL}/${VERSION}/metadata/erc1155/${String(erc1155._id)}/{id}`;
 }
 
 const initialize = async (pool: AssetPoolDocument, address: string) => {
