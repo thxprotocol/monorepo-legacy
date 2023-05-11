@@ -91,7 +91,7 @@ const controller = async (req: Request, res: Response) => {
                     const erc1155Token = await ERC1155Token.create({
                         erc1155Id,
                         tokenId,
-                        tokenUri,
+                        tokenUri: tokenUri.raw,
                         sub: req.auth.sub,
                         recipient: pool.address,
                         state: ERC1155TokenState.Minted,

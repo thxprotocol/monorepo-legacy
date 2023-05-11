@@ -90,7 +90,7 @@ const controller = async (req: Request, res: Response) => {
                         state: ERC721TokenState.Minted,
                         metadataId: String(metadata._id),
                         tokenId,
-                        tokenUri,
+                        tokenUri: tokenUri.raw,
                     });
 
                     return { ...erc721Token.toJSON(), metadata: metadata.toJSON() };
