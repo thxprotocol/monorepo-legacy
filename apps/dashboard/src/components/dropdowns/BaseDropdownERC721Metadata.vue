@@ -106,8 +106,8 @@ export default class BaseDropdownERC721Metadata extends Vue {
 
     @Prop({ required: true }) pool!: TPool;
     @Prop({ required: true }) nft!: TERC721 | TERC1155;
-    @Prop({ required: false }) metadataId!: string;
-    @Prop({ required: false }) tokenId!: string;
+    @Prop() metadataId!: string;
+    @Prop() tokenId!: string;
 
     get hasTokens() {
         return Object.values(this.tokens).length;

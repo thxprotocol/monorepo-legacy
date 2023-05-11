@@ -184,12 +184,12 @@ export default class ERC721PerksView extends Vue {
                         pointPrice: perk.pointPrice,
                         currency: perk.priceCurrency,
                     },
-                    nft: { ...perk.nft, url: getTokenURL(perk.nft.chainId, perk.nft.address) },
                     metadata: {
                         amount: perk.erc1155Amount ? fromWei(String(perk.erc1155Amount), 'ether') : 1,
                         nft: perk.nft,
-                        metadataId: perk.metadataId,
+                        metadataId: perk.token ? perk.token.metadataId : perk.metadataId,
                     },
+                    nft: { ...perk.nft, url: getTokenURL(perk.nft.chainId, perk.nft.address) },
                     claims: perk.claims,
                     id: perk._id,
                 };

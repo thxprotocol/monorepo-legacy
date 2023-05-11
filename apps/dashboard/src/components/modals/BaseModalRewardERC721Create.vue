@@ -99,7 +99,6 @@
             </form>
         </template>
         <template #btn-primary>
-            t {{ tokenId }} m {{ metadataId }}
             <b-button
                 :disabled="isSubmitDisabled"
                 class="rounded-pill"
@@ -170,7 +169,7 @@ export default class ModalRewardERC721Create extends Vue {
     erc1155Tokens!: IERC721Tokens;
 
     metadataId = '';
-    tokenId: string | null = null;
+    tokenId = '';
     erc1155Amount = 1;
     erc1155Balance = '';
 
@@ -212,7 +211,6 @@ export default class ModalRewardERC721Create extends Vue {
     onShow() {
         this.title = this.perk ? this.perk.title : '';
         this.description = this.perk ? this.perk.description : '';
-        this.limit = this.perk ? this.perk.limit : 0;
         this.pointPrice = this.perk ? this.perk.pointPrice : 0;
         this.expiryDate = this.perk ? this.perk.expiryDate : null;
         this.limit = this.perk ? this.perk.limit : 0;
@@ -228,8 +226,9 @@ export default class ModalRewardERC721Create extends Vue {
         if (this.perk && this.perk.erc1155Id) {
             this.nft = this.perk ? this.erc1155s[this.perk.erc1155Id] : this.nft;
         }
-        this.metadataId = this.perk ? this.perk.metadataId : this.metadataId;
-        this.tokenId = this.perk ? this.perk.tokenId : this.tokenId;
+        this.metadataId = this.perk && this.perk.metadataId ? this.perk.metadataId : this.metadataId;
+        this.tokenId = this.perk && this.perk.tokenId ? this.perk.tokenId : this.tokenId;
+        console.log(this.metadataId, this.tokenId);
         this.erc1155Amount =
             this.perk && this.perk.erc1155Amount
                 ? Number(fromWei(this.perk.erc1155Amount, 'ether'))
@@ -243,8 +242,8 @@ export default class ModalRewardERC721Create extends Vue {
 
     async onSelectNFT(nft: TERC721 | TERC1155) {
         this.nft = nft;
-        this.metadataId = '';
-        this.tokenId = '';
+        // this.metadataId = '';
+        // this.tokenId = '';
 
         if (nft) {
             await this.$store.dispatch(nft.variant + '/listTokens', this.pool);
@@ -279,9 +278,8 @@ export default class ModalRewardERC721Create extends Vue {
     }
 
     onSubmit() {
-        // // TODO Remove when proper UI validation is implemented
-        if (!this.nft || (!this.metadataId && !this.selectedMetadataIds.length)) {
-            this.error = 'Select the NFT metadata fort this perk';
+        if (!this.nft || (!this.metadataId && !this.selectedMetadataIds.length && !this.tokenId)) {
+            this.error = 'Select a token or metadata for this perk.';
             return;
         }
 
@@ -301,6 +299,9 @@ export default class ModalRewardERC721Create extends Vue {
             expiryDate = this.expiryDate;
         }
 
+        console.log(this.metadataId, this.tokenId);
+        debugger;
+
         const payload = {
             page: 1,
             title: this.title,
@@ -309,8 +310,8 @@ export default class ModalRewardERC721Create extends Vue {
             erc721Id,
             erc1155Id,
             erc1155Amount: toWei(String(this.erc1155Amount)),
+            tokenId: this.tokenId,
             metadataIds: JSON.stringify(this.metadataId ? [this.metadataId] : this.selectedMetadataIds),
-            tokenId: this.tokenId || undefined,
             expiryDate,
             limit: this.limit,
             pointPrice: this.pointPrice,
