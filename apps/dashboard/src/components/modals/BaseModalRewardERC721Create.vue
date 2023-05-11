@@ -299,9 +299,6 @@ export default class ModalRewardERC721Create extends Vue {
             expiryDate = this.expiryDate;
         }
 
-        console.log(this.metadataId, this.tokenId);
-        debugger;
-
         const payload = {
             page: 1,
             title: this.title,
