@@ -48,7 +48,7 @@
 
 <script lang="ts">
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
-import { ERC721Variant, TERC721, TERC721DefaultProp } from '@thxnetwork/dashboard/types/erc721';
+import { ERC721Variant, TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import { Component, Vue } from 'vue-property-decorator';
 import BaseFormSelectNetwork from '../form-select/BaseFormSelectNetwork.vue';
 import BaseModal from './BaseModal.vue';
@@ -72,33 +72,6 @@ export default class ModalERC721Create extends Vue {
     name = '';
     symbol = '';
     description = '';
-    schema: TERC721DefaultProp[] = [
-        {
-            name: 'name',
-            propType: 'string',
-            description: 'The name of this item.',
-            disabled: true,
-        },
-        {
-            name: 'description',
-            propType: 'string',
-            description: 'A brief description of your item.',
-            disabled: true,
-        },
-
-        {
-            name: 'image',
-            propType: 'image',
-            description: 'A visual representation of the item.',
-            disabled: true,
-        },
-        {
-            name: 'external_url',
-            propType: 'link',
-            description: 'A link referencing to a page with more information on the item.',
-            disabled: true,
-        },
-    ];
     logoImg: File | null = null;
 
     async onClickSubmit() {
@@ -116,7 +89,6 @@ export default class ModalERC721Create extends Vue {
                     name: this.name,
                     symbol: this.symbol,
                     description: this.description,
-                    schema: this.schema,
                     file: this.logoImg,
                 });
             }
@@ -125,7 +97,6 @@ export default class ModalERC721Create extends Vue {
                     chainId: this.chainId,
                     name: this.name,
                     description: this.description,
-                    schema: this.schema,
                     file: this.logoImg,
                 });
             }

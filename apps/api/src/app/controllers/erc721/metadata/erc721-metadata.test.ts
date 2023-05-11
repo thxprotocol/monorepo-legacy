@@ -13,13 +13,7 @@ describe('NFT Pool', () => {
     const chainId = ChainId.Hardhat,
         name = 'Planets of the Galaxy',
         symbol = 'GLXY',
-        description = 'Collection full of rarities.',
-        schema = [
-            { name: 'name', propType: 'string', description: 'lorem ipsum' },
-            { name: 'description', propType: 'string', description: 'lorem ipsum dolor sit' },
-            { name: 'image', propType: 'image', description: 'image description' },
-            { name: 'externalUrl', propType: 'url', description: 'image description' },
-        ];
+        description = 'Collection full of rarities.';
 
     beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
@@ -33,7 +27,6 @@ describe('NFT Pool', () => {
                     name,
                     symbol,
                     description,
-                    schema,
                 })
                 .expect(({ body }: request.Response) => {
                     expect(body._id).toBeDefined();

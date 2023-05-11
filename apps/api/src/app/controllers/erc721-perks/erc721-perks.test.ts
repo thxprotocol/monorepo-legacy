@@ -16,35 +16,9 @@ describe('ERC721 Perks', () => {
     let poolId: string, erc721metadata: ERC721MetadataDocument, erc721: ERC721Document, perk: ERC721PerkDocument;
     const name = 'Planets of the Galaxy',
         symbol = 'GLXY',
-        description = 'description',
-        schema = [
-            {
-                name: 'name',
-                propType: 'string',
-                description: 'The name of this item.',
-            },
-            {
-                name: 'description',
-                propType: 'string',
-                description: 'A brief description of your item.',
-            },
+        description = 'description';
 
-            {
-                name: 'image',
-                propType: 'image',
-                description: 'A visual representation of the item.',
-            },
-            {
-                name: 'externalUrl',
-                propType: 'link',
-                description: 'A link referencing to a page with more information on the item.',
-            },
-        ];
-
-    beforeAll(async () => {
-        await beforeAllCallback();
-    });
-
+    beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
 
     it('POST /erc721', (done) => {
@@ -55,7 +29,6 @@ describe('ERC721 Perks', () => {
                 name,
                 symbol,
                 description,
-                schema,
             })
             .expect(({ body }: request.Response) => {
                 expect(body._id).toBeDefined();

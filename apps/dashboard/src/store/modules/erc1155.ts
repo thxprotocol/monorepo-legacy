@@ -175,12 +175,11 @@ class ERC1155Module extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async create(payload: { chainId: ChainId; name: string; schema: string[]; description: string; file?: File }) {
+    async create(payload: { chainId: ChainId; name: string; description: string; file?: File }) {
         const formData = new FormData();
         formData.set('chainId', payload.chainId.toString());
         formData.set('name', payload.name);
         formData.set('description', payload.description);
-        formData.set('schema', JSON.stringify(payload.schema));
 
         if (payload.file) {
             formData.append('file', payload.file);

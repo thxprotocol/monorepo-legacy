@@ -11,13 +11,6 @@ export enum ERC721Variant {
     OpenSea = 1,
 }
 
-export type TERC721DefaultProp = {
-    name: string;
-    description: string;
-    propType: string;
-    value?: string;
-    disabled?: boolean;
-};
 export interface IERC721Metadatas {
     [id: string]: { [id: string]: TERC721Metadata };
 }
