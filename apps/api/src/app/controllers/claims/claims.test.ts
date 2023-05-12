@@ -1,107 +1,63 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId, NFTVariant } from '@thxnetwork/types/enums';
-import {
-    sub,
-    dashboardAccessToken,
-    walletAccessToken,
-    walletAccessToken2,
-    account,
-    account2,
-} from '@thxnetwork/api/util/jest/constants';
+import { sub, dashboardAccessToken, widgetAccessToken, widgetAccessToken2 } from '@thxnetwork/api/util/jest/constants';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { ClaimDocument } from '@thxnetwork/api/models/Claim';
-import { subMinutes } from '@thxnetwork/api/util/rewards';
 import { ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { ERC721Metadata, ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
+import { IPFS_BASE_URL } from '@thxnetwork/api/config/secrets';
+import { TERC721Perk } from '@thxnetwork/types/interfaces';
 
 const user = request.agent(app);
 
 describe('Claims', () => {
-    let poolId: string, pool: AssetPoolDocument, erc721: ERC721Document, metadata: ERC721MetadataDocument;
-    const chainId = ChainId.Hardhat,
-        name = 'Test Collection',
-        symbol = 'TST',
-        baseURL = 'https://example.com',
-        logoImgUrl = 'https://img.url',
-        metadataName = '',
-        metadataImageUrl = '',
-        metadataIPFSImageUrl = '',
-        metadataDescription = '',
-        metadataExternalUrl = '',
-        config = {
-            title: '',
-            description: '',
-            amount: 1,
-            price: 0,
-            priceCurrency: 'USD',
-            pointPrice: 0,
-            limit: 0,
-            claimLimit: 0,
-            claimAmount: 1,
-        };
+    let poolId: string,
+        pool: AssetPoolDocument,
+        erc721: ERC721Document,
+        metadata: ERC721MetadataDocument,
+        claims: ClaimDocument[];
+    const claimAmount = 10;
+    const config = {
+        title: '',
+        description: '',
+        price: 0,
+        priceCurrency: 'USD',
+        pointPrice: 0,
+        limit: 0,
+    } as TERC721Perk;
 
     beforeAll(async () => {
         await beforeAllCallback();
+        const chainId = ChainId.Hardhat;
         pool = await PoolService.deploy(sub, chainId, 'My Loyalty Pool');
         poolId = String(pool._id);
         erc721 = await ERC721Service.deploy({
             variant: NFTVariant.ERC721,
             sub,
             chainId,
-            name,
-            symbol,
+            name: 'Test Collection',
+            symbol: 'TST',
             description: '',
-            baseURL,
+            baseURL: 'https://example.com',
             archived: false,
-            logoImgUrl,
+            logoImgUrl: 'https://img.url',
         });
         metadata = await ERC721Metadata.create({
             erc721Id: String(erc721._id),
-            name: metadataName,
-            image: metadataIPFSImageUrl,
-            imageUrl: metadataImageUrl,
-            description: metadataDescription,
-            externalUrl: metadataExternalUrl,
+            name: 'Token Silver',
+            image: IPFS_BASE_URL + 'abcdef',
+            imageUrl: 'https://image.com/image.jpg',
+            description: 'Lorem ipsum dolor sit amet',
+            externalUrl: 'https://example.com',
         });
     });
     afterAll(afterAllCallback);
 
-    describe('ExpiryDate = t-30min', () => {
-        const expiryDate = subMinutes(new Date(), 30);
-        let claim: ClaimDocument;
-
-        it('POST /erc721-perks', (done) => {
-            user.post('/v1/erc721-perks')
-                .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .send({
-                    ...config,
-                    erc721Id: erc721._id,
-                    metadataIds: JSON.stringify([metadata._id]),
-                    expiryDate: String(expiryDate),
-                })
-                .expect(({ body }: request.Response) => {
-                    expect(body[0].claims).toHaveLength(1);
-                    claim = body[0].claims[0];
-                })
-                .expect(201, done);
-        });
-        it('should return a 403 when expired', (done) => {
-            user.post(`/v1/claims/${claim.uuid}/collect`)
-                .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
-                .expect(({ body }: request.Response) => {
-                    expect(body.error.message).toBe('This perk claim has expired.');
-                })
-                .expect(403, done);
-        });
-    });
-
     describe('PointPrice = 100', () => {
-        let claim: ClaimDocument;
-
         it('POST /erc721-perks', (done) => {
             user.post('/v1/erc721-perks/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
@@ -110,17 +66,24 @@ describe('Claims', () => {
                     erc721Id: erc721._id,
                     metadataIds: JSON.stringify([metadata._id]),
                     pointPrice: 100,
+                    claimAmount,
                 })
                 .expect((res: request.Response) => {
-                    expect(res.body[0].claims).toHaveLength(1);
-                    claim = res.body[0].claims[0];
+                    expect(res.body[0].claims).toHaveLength(claimAmount);
+                    claims = res.body[0].claims;
                 })
                 .expect(201, done);
         });
 
+        it('should return a 200 for first claim attempt by wallet 0', (done) => {
+            user.get(`/v1/claims/${claims[0].uuid}`)
+                .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
+                .expect(200, done);
+        });
+
         it('should return a 403 for claim', (done) => {
-            user.post(`/v1/claims/${claim.uuid}/collect`)
-                .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
+            user.post(`/v1/claims/${claims[0].uuid}/collect`)
+                .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
                 .expect((res: request.Response) => {
                     expect(res.body.error.message).toBe('This perk should be redeemed with points.');
                 })
@@ -128,9 +91,7 @@ describe('Claims', () => {
         });
     });
 
-    describe('Limit = 0', () => {
-        let claim: ClaimDocument;
-
+    describe('PointPrice = 0', () => {
         it('POST /erc721-perks', (done) => {
             user.post('/v1/erc721-perks/')
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
@@ -138,122 +99,89 @@ describe('Claims', () => {
                     ...config,
                     erc721Id: erc721._id,
                     metadataIds: JSON.stringify([metadata._id]),
-                    claimLimit: 0,
+                    claimAmount,
                 })
                 .expect((res: request.Response) => {
-                    expect(res.body[0].claims).toHaveLength(1);
-                    claim = res.body[0].claims[0];
+                    expect(res.body[0].claims).toHaveLength(claimAmount);
+                    claims = res.body[0].claims;
                 })
                 .expect(201, done);
         });
-        it('should return a 200 for first claim attempt by wallet 0', (done) => {
-            user.post(`/v1/claims/${claim.uuid}/collect`)
-                .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
-                .expect(200, done);
-        });
-        it('should return a 200 for second claim attempt by wallet 1', (done) => {
-            user.post(`/v1/claims/${claim.uuid}/collect`)
-                .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken2 })
-                .expect(200, done);
-        });
-    });
 
-    describe('ClaimLimit = 1 (other wallet claims)', () => {
-        let claim: ClaimDocument;
-
-        it('POST /erc721-perks', (done) => {
-            user.post('/v1/erc721-perks/')
-                .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .send({
-                    ...config,
-                    erc721Id: erc721._id,
-                    metadataIds: JSON.stringify([metadata._id]),
-                    claimLimit: 1,
-                    claimAmount: 2,
-                })
-                .expect((res: request.Response) => {
-                    expect(res.body[0].claims).toHaveLength(2);
-                    claim = res.body[0].claims[0];
-                })
-                .expect(201, done);
-        });
-        it('should return a 200 for first claim attempt by wallet 0', (done) => {
-            user.post(`/v1/claims/${claim.uuid}/collect`)
-                .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
-                .expect(200, done);
-        });
-        it('should return a 403 for second claim attempt', (done) => {
-            user.post(`/v1/claims/${claim.uuid}/collect`)
-                .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken2 })
-                .expect((res: request.Response) => {
-                    expect(res.body.error.message).toBe('This perk has been claimed already.');
-                })
-                .expect(403, done);
-        });
-    });
-
-    describe('ClaimLimit = 1 (same wallet claims)', () => {
-        let claim0: ClaimDocument, claim1: ClaimDocument;
-
-        it('POST /erc20-perks', (done) => {
-            user.post('/v1/erc721-perks/')
-                .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .send({
-                    ...config,
-                    erc721Id: erc721._id,
-                    metadataIds: JSON.stringify([metadata._id]),
-                    claimLimit: 1,
-                    claimAmount: 2,
-                })
-                .expect((res: request.Response) => {
-                    expect(res.body[0].claims).toHaveLength(2);
-                    claim0 = res.body[0].claims[0];
-                    claim1 = res.body[0].claims[1];
-                    expect(res.body[0].claims[2]).toBeUndefined();
-                })
-                .expect(201, done);
-        });
-        it('should return a 200 for claim 0', (done) => {
-            user.post(`/v1/claims/${claim0.uuid}/collect`)
-                .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
+        it('200 with no error', (done) => {
+            user.get(`/v1/claims/${claims[0].uuid}`)
+                .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
                 .expect(({ body }: request.Response) => {
-                    expect(body.claim.sub).toBe(account2.sub);
-                    expect(body.claim.claimedAt).toBeDefined();
+                    expect(body.claim).toBeDefined();
+                    expect(body.pool).toBeDefined();
+                    expect(body.perk).toBeDefined();
+                    expect(body.erc721).toBeDefined();
+                    expect(body.metadata).toBeDefined();
+                    // No error
+                    expect(body.error).toBeUndefined();
                 })
                 .expect(200, done);
         });
-        it('should return a 403 for second attempt on claim 0', (done) => {
-            user.post(`/v1/claims/${claim0.uuid}/collect`)
-                .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken })
-                .expect((res: request.Response) => {
-                    expect(res.body.error.message).toBe('You have claimed this perk for the maximum amount of times.');
-                })
-                .expect(403, done);
-        });
-        it('should return a 403 for claim 0', (done) => {
-            user.post(`/v1/claims/${claim0.uuid}/collect`)
-                .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken2 })
-                .expect((res: request.Response) => {
-                    expect(res.body.error.message).toBe('This perk has been claimed already.');
-                })
-                .expect(403, done);
-        });
-        it('should return a 200 for claim 1', (done) => {
-            user.post(`/v1/claims/${claim1.uuid}/collect`)
-                .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken2 })
+
+        it('First attempt claim should succeed', (done) => {
+            user.post(`/v1/claims/${claims[0].uuid}/collect`)
+                .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
                 .expect(({ body }: request.Response) => {
-                    expect(body.claim.sub).toBe(account.sub);
-                    expect(body.claim.claimedAt).toBeDefined();
+                    expect(body.erc721).toBeDefined();
+                    expect(body.claim).toBeDefined();
+                    expect(body.payment).toBeDefined();
+                    expect(body.token).toBeDefined();
+                    expect(body.metadata).toBeDefined();
+                    expect(body.reward).toBeDefined();
                 })
                 .expect(200, done);
         });
-        it('should return a 403 for second attempt on claim 1', (done) => {
-            user.post(`/v1/claims/${claim1.uuid}/collect`)
-                .set({ 'X-PoolId': poolId, 'Authorization': walletAccessToken2 })
-                .expect((res: request.Response) => {
-                    expect(res.body.error.message).toBe('You have claimed this perk for the maximum amount of times.');
+
+        it('200 with no error.', (done) => {
+            user.get(`/v1/claims/${claims[0].uuid}`)
+                .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
+                .expect(({ body }: request.Response) => {
+                    expect(body.claim).toBeDefined();
+                    expect(body.pool).toBeDefined();
+                    expect(body.perk).toBeDefined();
+                    expect(body.erc721).toBeDefined();
+                    expect(body.metadata).toBeDefined();
+                    // Should show error
+                    expect(body.error).toBe('This NFT is claimed already.');
+                })
+                .expect(200, done);
+        });
+
+        it('Second attempt same claim should fail.', (done) => {
+            user.post(`/v1/claims/${claims[0].uuid}/collect`)
+                .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
+                .expect(({ body }: request.Response) => {
+                    expect(body.error.message).toBe('This NFT is claimed already.');
                 })
                 .expect(403, done);
+        });
+
+        it('First attempt other account should also fail', (done) => {
+            user.post(`/v1/claims/${claims[0].uuid}/collect`)
+                .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken2 })
+                .expect(({ body }: request.Response) => {
+                    expect(body.error.message).toBe('This NFT is claimed already.');
+                })
+                .expect(403, done);
+        });
+
+        it('First attempt other claim for other account should succeed', (done) => {
+            user.post(`/v1/claims/${claims[1].uuid}/collect`)
+                .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken2 })
+                .expect(({ body }: request.Response) => {
+                    expect(body.erc721).toBeDefined();
+                    expect(body.claim).toBeDefined();
+                    expect(body.payment).toBeDefined();
+                    expect(body.token).toBeDefined();
+                    expect(body.metadata).toBeDefined();
+                    expect(body.reward).toBeDefined();
+                })
+                .expect(200, done);
         });
     });
 });
