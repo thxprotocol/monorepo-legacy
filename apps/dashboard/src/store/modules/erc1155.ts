@@ -1,7 +1,7 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { TERC1155Token, type TPool } from '@thxnetwork/types/index';
+import { type TERC1155Token, type TPool } from '@thxnetwork/types/interfaces';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import type {
     TERC1155,

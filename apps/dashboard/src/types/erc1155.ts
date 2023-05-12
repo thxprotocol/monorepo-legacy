@@ -1,4 +1,5 @@
-import { NFTVariant, TPool } from '@thxnetwork/types/index';
+import { NFTVariant } from '@thxnetwork/types/enums';
+import { TPool } from '@thxnetwork/types/interfaces';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import { AxiosResponse } from 'axios';
 
