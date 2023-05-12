@@ -26,7 +26,7 @@ const controller = async (req: Request, res: Response) => {
         ...token.toJSON(),
         tokenUri,
         balance,
-        erc1155: erc1155.toJSON(),
+        nft: erc1155.toJSON(),
         metadata: metadata.toJSON(),
     });
 };
