@@ -101,7 +101,14 @@ describe('Wallet', () => {
 
         // Sign in
         cy.contains('Sign in & Collect').should('be.visible').click();
+
+        // Preps wallet after authentication
+        cy.contains('Preparing your smart wallet...').should('be.visible');
+
+        // Collects NFT
         cy.contains('Collect').should('be.visible').click();
+
+        // Visits wallet
         cy.contains('Go to wallet').should('be.visible').click();
 
         cy.get('.card:first-child .card-title .text-accent').should('contain.text', '#');
