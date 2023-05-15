@@ -3,7 +3,7 @@ import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { ERC20Perk } from '@thxnetwork/api/models/ERC20Perk';
-import { ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
+import { ERC721Perk, ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
 import { redeemValidation } from '@thxnetwork/api/util/perks';
 import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
 import { ShopifyPerk } from '@thxnetwork/api/models/ShopifyPerk';
@@ -70,13 +70,10 @@ const controller = async (req: Request, res: Response) => {
         erc721Perks: await Promise.all(
             erc721Perks.map(async (r) => {
                 const { isError } = await redeemValidation({ perk: r, sub, pool });
-                let erc721metadataId = r.metadataId;
-                if (!erc721metadataId && r.tokenId) {
-                    let token = await ERC721Token.findById(r.tokenId);
-                    if (!token) token = await ERC1155Token.findById(r.tokenId);
-                    erc721metadataId = token.metadataId;
-                }
-                const metadata = await ERC721Service.findMetadataById(erc721metadataId);
+                const nft = await getNFTForPerk(r);
+                const token = !r.metadataId && r.tokenId ? await getTokenForPerk(r) : null;
+                const metadata = await ERC721Service.findMetadataById(token ? token.metadataId : r.metadataId);
+
                 return {
                     _id: r._id,
                     uuid: r.uuid,
@@ -89,9 +86,9 @@ const controller = async (req: Request, res: Response) => {
                     isPromoted: r.isPromoted,
                     isDisabled: isError,
                     isOwned: false,
-                    erc721: await ERC721Service.findById(r.erc721Id),
-                    erc721metadataId,
+                    nft,
                     metadata,
+                    erc1155Amount: r.erc1155Amount,
                     expiry: await PerkService.getExpiry(r),
                     progress: await PerkService.getProgress(r, ERC721PerkPayment),
                     isLocked: await PerkService.getIsLockedForWallet(r, wallet),
@@ -124,5 +121,21 @@ const controller = async (req: Request, res: Response) => {
         ),
     });
 };
+async function getTokenForPerk(perk: ERC721PerkDocument) {
+    if (perk.erc721Id) {
+        return await ERC721Token.findById(r.tokenId);
+    }
+    if (perk.erc1155Id) {
+        return await ERC1155Token.findById(r.tokenId);
+    }
+}
+async function getNFTForPerk(perk: ERC721PerkDocument) {
+    if (perk.erc721Id) {
+        return await ERC721Service.findById(r.erc721Id);
+    }
+    if (perk.erc1155Id) {
+        return await ERC721Service.findById(r.erc1155Id);
+    }
+}
 
 export default { controller };
