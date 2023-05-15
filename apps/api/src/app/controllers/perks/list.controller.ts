@@ -123,18 +123,18 @@ const controller = async (req: Request, res: Response) => {
 };
 async function getTokenForPerk(perk: ERC721PerkDocument) {
     if (perk.erc721Id) {
-        return await ERC721Token.findById(r.tokenId);
+        return await ERC721Token.findById(perk.tokenId);
     }
     if (perk.erc1155Id) {
-        return await ERC1155Token.findById(r.tokenId);
+        return await ERC1155Token.findById(perk.tokenId);
     }
 }
 async function getNFTForPerk(perk: ERC721PerkDocument) {
     if (perk.erc721Id) {
-        return await ERC721Service.findById(r.erc721Id);
+        return await ERC721Service.findById(perk.erc721Id);
     }
     if (perk.erc1155Id) {
-        return await ERC721Service.findById(r.erc1155Id);
+        return await ERC721Service.findById(perk.erc1155Id);
     }
 }
 
