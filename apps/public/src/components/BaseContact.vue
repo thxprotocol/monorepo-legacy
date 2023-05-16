@@ -100,6 +100,15 @@
                                 Download press pack
                                 <i class="fas fa-chevron-right"></i>
                             </b-button>
+                            <a href="#">
+                                <img
+                                    onclick="logBadgeClick()"
+                                    id="badge-button"
+                                    style="width: 180px; height: 39px; margin-top: 3rem"
+                                    src="https://static.alchemyapi.io/images/marketing/badge.png"
+                                    alt="Alchemy Supercharged"
+                                />
+                            </a>
                         </div>
                     </div>
                 </div>
