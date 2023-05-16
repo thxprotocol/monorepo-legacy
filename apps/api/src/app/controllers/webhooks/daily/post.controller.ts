@@ -1,4 +1,5 @@
-import DailyRewardClaimService, { ONE_DAY_MS } from '@thxnetwork/api/services/DailyRewardClaimService';
+import DailyRewardClaimService from '@thxnetwork/api/services/DailyRewardClaimService';
+import { ONE_DAY_MS } from '@thxnetwork/api/util/dates';
 import WalletService from '@thxnetwork/api/services/WalletService';
 import { DailyReward } from '@thxnetwork/api/models/DailyReward';
 import { NotFoundError } from '@thxnetwork/api/util/errors';

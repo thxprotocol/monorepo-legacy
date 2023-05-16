@@ -9,7 +9,7 @@ import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardServic
 import MilestoneRewardService from '../services/MilestoneRewardService';
 import DailyRewardService from '../services/DailyRewardService';
 import { ShopifyPerkDocument } from '../models/ShopifyPerk';
-import { ONE_DAY_MS } from '../services/DailyRewardClaimService';
+import { ONE_DAY_MS } from '../util/dates';
 
 export async function findRewardByUuid(uuid: string) {
     const erc20Perk = await ERC20Perk.findOne({ uuid });

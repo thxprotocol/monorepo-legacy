@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
-import DailyRewardClaimService, { ONE_DAY_MS } from '@thxnetwork/api/services/DailyRewardClaimService';
 import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import DailyRewardService from '@thxnetwork/api/services/DailyRewardService';
+import DailyRewardClaimService from '@thxnetwork/api/services/DailyRewardClaimService';
 import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { DailyRewardClaim } from '@thxnetwork/api/models/DailyRewardClaims';
 import { DailyRewardClaimState } from '@thxnetwork/types/enums/DailyRewardClaimState';
+import { ONE_DAY_MS } from '@thxnetwork/api/util/dates';
 
 const validation = [param('uuid').exists()];
 
