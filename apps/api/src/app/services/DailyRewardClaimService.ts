@@ -10,6 +10,7 @@ export default {
     create: (data: {
         dailyRewardId: string;
         sub: string;
+        walletId: string;
         amount?: number;
         poolId: string;
         state?: DailyRewardClaimState;

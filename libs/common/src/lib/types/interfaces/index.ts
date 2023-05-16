@@ -24,3 +24,4 @@ export * from './ShopifyDiscountCode';
 export * from './Brand';
 export * from './Widget';
 export * from './Claim';
+export * from './Wallet';

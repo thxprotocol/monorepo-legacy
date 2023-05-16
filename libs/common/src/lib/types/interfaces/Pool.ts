@@ -33,6 +33,7 @@ export type TCampaign = {
 
 export type TPool = {
     _id: string;
+    token: string;
     address: string;
     contract: Contract;
     chainId: ChainId;

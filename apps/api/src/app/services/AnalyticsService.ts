@@ -17,6 +17,7 @@ import { ERC721PerkPayment } from '../models/ERC721PerkPayment';
 import { MilestoneRewardClaim } from '../models/MilestoneRewardClaims';
 import { PointRewardClaim } from '../models/PointRewardClaim';
 import { ReferralRewardClaim } from '../models/ReferralRewardClaim';
+import { Wallet, WalletDocument } from '../models/Wallet';
 
 export async function getPoolAnalyticsForChart(pool: AssetPoolDocument, startDate: Date, endDate: Date) {
     const erc20PerksQueryResult = await runPoolChartQuery<ERC20PerkDocument>({
@@ -250,29 +251,39 @@ export async function getLeaderboard(pool: AssetPoolDocument, dateRange?: { star
         ...topMilestonesClaimsBySub,
     ];
 
-    const leaderBoard: { sub: string; score: number; account: IAccount }[] = [];
-    const subs = new Set(leaderBoardQueryResultMerged.map((x) => x._id));
+    const leaderBoard: { sub: string; walletId: string; score: number; account: IAccount; wallet: WalletDocument }[] =
+        [];
+    const walletIds = new Set(leaderBoardQueryResultMerged.map((x) => x._id));
+    const wallets = await Wallet.find({ _id: Array.from(walletIds) });
+    const subs = wallets.filter((wallet) => wallet.sub).map((wallet) => wallet.sub);
     const accounts = await AccountProxy.getMany(Array.from(subs));
     // Group by sub and sort by highest score
     for (let i = 0; i < leaderBoardQueryResultMerged.length; i++) {
         const entry = leaderBoardQueryResultMerged[i];
-        const sub = entry._id;
-        const account = accounts.find((x) => x.sub == sub);
-        if (!account) continue;
+        const wallet = wallets.find((x) => x._id == entry._id);
+        if (!wallet) continue;
+        const account = wallet && accounts.find((x) => x.sub == wallet.sub);
 
-        const address = await account.getAddress(pool.chainId);
         if (i === 0) {
             leaderBoard.push({
-                sub,
+                sub: wallet?.sub,
+                walletId: String(wallet._id),
                 score: entry.total_amount,
-                account: { ...account, address },
+                account,
+                wallet,
             });
         } else {
-            const index = leaderBoard.findIndex((x) => x.sub === sub);
+            const index = leaderBoard.findIndex((x) => x.walletId === String(wallet._id));
             if (index >= 0) {
                 leaderBoard[index].score += entry.total_amount;
             } else {
-                leaderBoard.push({ sub, score: entry.total_amount, account: { ...account, address } });
+                leaderBoard.push({
+                    sub: wallet.sub,
+                    walletId: String(wallet._id),
+                    score: entry.total_amount,
+                    wallet,
+                    account: { ...account, address: wallet.address },
+                });
             }
         }
     }
@@ -474,7 +485,7 @@ async function runLeaderBoardQuery<T>(args: {
         },
         {
             $group: {
-                _id: '$sub',
+                _id: '$walletId',
                 count: {
                     $sum: 1,
                 },

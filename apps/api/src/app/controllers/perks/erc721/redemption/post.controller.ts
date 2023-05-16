@@ -51,7 +51,8 @@ const controller = async (req: Request, res: Response) => {
     const nft = await getNFTForPerk(perk);
     if (!nft) throw new NotFoundError('Could not find the nft for this perk');
 
-    const pointBalance = await PointBalance.findOne({ sub: req.auth.sub, poolId: pool._id });
+    const wallet = await Wallet.findOne({ sub: req.auth.sub, chainId: pool.chainId });
+    const pointBalance = await PointBalance.findOne({ walletId: wallet._id, poolId: pool._id });
     if (!pointBalance || Number(pointBalance.balance) < Number(perk.pointPrice))
         throw new BadRequestError('Not enough points on this account for this perk.');
 
@@ -61,7 +62,6 @@ const controller = async (req: Request, res: Response) => {
     }
 
     const account = await AccountProxy.getById(req.auth.sub);
-    const wallet = await Wallet.findOne({ sub: req.auth.sub, chainId: pool.chainId });
 
     let token: ERC721TokenDocument | ERC1155TokenDocument;
 
@@ -110,11 +110,12 @@ const controller = async (req: Request, res: Response) => {
     const erc721PerkPayment = await ERC721PerkPayment.create({
         perkId: perk._id,
         sub: req.auth.sub,
+        walletId: wallet._id,
         poolId: pool._id,
         amount: perk.pointPrice,
     });
 
-    await PointBalanceService.subtract(pool, req.auth.sub, perk.pointPrice);
+    await PointBalanceService.subtract(pool, wallet._id, perk.pointPrice);
 
     let html = `<p style="font-size: 18px">Congratulations!🚀</p>`;
     html += `<p>Your payment has been received and <strong>${

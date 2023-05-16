@@ -10,6 +10,7 @@ import { ShopifyPerkPayment } from '@thxnetwork/api/models/ShopifyPerkPayment';
 import { ShopifyDiscountCode } from '@thxnetwork/api/models/ShopifyDiscountCode';
 import { generateRandomString } from '@thxnetwork/api/util/random';
 import { redeemValidation } from '@thxnetwork/api/util/perks';
+import { Wallet } from '@thxnetwork/api/models/Wallet';
 
 const validation = [param('uuid').exists()];
 
@@ -20,7 +21,8 @@ const controller = async (req: Request, res: Response) => {
     if (!perk) throw new NotFoundError('Could not find this perk');
     if (!perk.pointPrice) throw new NotFoundError('No point price for this perk has been set.');
 
-    const pointBalance = await PointBalance.findOne({ sub: req.auth.sub, poolId: pool._id });
+    const wallet = await Wallet.findOne({ sub: req.auth.sub, chainId: pool.chainId });
+    const pointBalance = await PointBalance.findOne({ wallet: wallet._id, poolId: pool._id });
     if (!pointBalance || Number(pointBalance.balance) < Number(perk.pointPrice)) {
         throw new BadRequestError('Not enough points on this account for this perk.');
     }
@@ -29,7 +31,6 @@ const controller = async (req: Request, res: Response) => {
     if (redeemValidationResult.isError) {
         throw new ForbiddenError(redeemValidationResult.errorMessage);
     }
-
     const account = await AccountProxy.getById(req.auth.sub);
     const poolAccount = await AccountProxy.getById(pool.sub);
     const discountCode = await ShopifyDataProxy.createDiscountCode(
@@ -48,10 +49,12 @@ const controller = async (req: Request, res: Response) => {
     const shopifyPerkPayment = await ShopifyPerkPayment.create({
         perkId: perk._id,
         sub: req.auth.sub,
+        walletId: wallet._id,
         poolId: pool._id,
         amount: perk.pointPrice,
     });
-    await PointBalanceService.subtract(pool, req.auth.sub, perk.pointPrice);
+
+    await PointBalanceService.subtract(pool, wallet._id, perk.pointPrice);
 
     res.status(201).json({ discountCode, shopifyPerkPayment });
 };

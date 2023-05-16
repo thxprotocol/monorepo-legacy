@@ -12,6 +12,7 @@ const assetPoolSchema = new mongoose.Schema(
         chainId: Number,
         transactions: [String],
         version: String,
+        token: String,
         settings: {
             endDate: Date,
             title: String,

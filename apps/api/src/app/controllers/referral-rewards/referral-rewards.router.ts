@@ -51,24 +51,28 @@ router.delete(
 router.get(
     '/:uuid/claims',
     guard.check(['referral_rewards:read']),
+    assertAssetPoolOwnership,
     assertRequestInput(ListReferralRewardClaims.validation),
     ListReferralRewardClaims.controller,
 );
 router.post(
     '/:uuid/claims',
     guard.check(['referral_rewards:read', 'referral_rewards:write']),
+    assertAssetPoolOwnership,
     assertRequestInput(CreateReferralRewardClaim.validation),
     CreateReferralRewardClaim.controller,
 );
 router.patch(
     '/:uuid/claims/:id',
     guard.check(['referral_rewards:read', 'referral_rewards:write']),
+    assertAssetPoolOwnership,
     assertRequestInput(UpdateReferralRewardClaim.validation),
     UpdateReferralRewardClaim.controller,
 );
 router.post(
     '/:uuid/claims/approve',
     guard.check(['referral_rewards:read', 'referral_rewards:write']),
+    assertAssetPoolOwnership,
     assertRequestInput(ApproveReferralRewardClaims.validation),
     ApproveReferralRewardClaims.controller,
 );

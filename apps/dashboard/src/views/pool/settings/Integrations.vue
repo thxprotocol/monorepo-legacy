@@ -2,6 +2,34 @@
     <div>
         <b-form-row>
             <b-col md="4">
+                <strong>Wallet Onboarding</strong>
+                <p class="text-muted">
+                    Use this webhook to register wallets and collect points for your users event before they start using
+                    the widget.
+                </p>
+            </b-col>
+            <b-col md="8">
+                <b-form-group label="Webhook URL">
+                    <b-input-group>
+                        <b-form-input :value="`${apiUrl}/v1/webhooks/wallet/${pool.token}`" readonly />
+                        <b-input-group-append>
+                            <b-button
+                                variant="primary"
+                                v-clipboard:copy="`${apiUrl}/v1/webhooks/wallet/${pool.token}`"
+                                v-clipboard:success="() => (isCopied = true)"
+                                size="sm"
+                                class="px-3"
+                            >
+                                <i class="fas ml-0" :class="isCopied ? 'fa-clipboard-check' : 'fa-clipboard'" />
+                            </b-button>
+                        </b-input-group-append>
+                    </b-input-group>
+                </b-form-group>
+            </b-col>
+        </b-form-row>
+        <hr />
+        <b-form-row>
+            <b-col md="4">
                 <strong>Discord Bot</strong>
                 <p class="text-muted">Install THX Bot to increase engagement in your Discord server.</p>
             </b-col>
@@ -131,7 +159,7 @@ import { mapGetters } from 'vuex';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { IAccount } from '@thxnetwork/dashboard/types/account';
 import { AccessTokenKind, TPoolSettings } from '@thxnetwork/types/index';
-import { BASE_URL, DISCORD_CLIENT_ID } from '@thxnetwork/dashboard/utils/secrets';
+import { API_URL, BASE_URL, DISCORD_CLIENT_ID } from '@thxnetwork/dashboard/utils/secrets';
 
 @Component({
     computed: {
@@ -143,6 +171,8 @@ import { BASE_URL, DISCORD_CLIENT_ID } from '@thxnetwork/dashboard/utils/secrets
 })
 export default class SettingsTwitterView extends Vue {
     BASE_URL = BASE_URL;
+    apiUrl = API_URL;
+    isCopied = false;
     AccessTokenKind = AccessTokenKind;
     urlDiscordBotInstall =
         DISCORD_CLIENT_ID &&

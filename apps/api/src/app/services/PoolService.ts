@@ -21,7 +21,7 @@ import { DailyRewardClaim } from '../models/DailyRewardClaims';
 import { ReferralRewardClaim } from '../models/ReferralRewardClaim';
 import { PointRewardClaim } from '../models/PointRewardClaim';
 import { MilestoneRewardClaim } from '../models/MilestoneRewardClaims';
-import { promiseImpl } from 'ejs';
+import { v4 } from 'uuid';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -60,6 +60,7 @@ async function deploy(sub: string, chainId: ChainId, title: string, endDate?: Da
         sub,
         chainId,
         version: currentVersion,
+        token: v4(),
         settings: {
             title,
             endDate,
