@@ -8,6 +8,7 @@ import TransactionService from './TransactionService';
 import { TransactionReceipt } from 'web3-core';
 import { FacetCutAction, updateDiamondContract } from '../util/upgrades';
 import WalletManagerService from './WalletManagerService';
+import { toChecksumAddress } from 'web3-utils';
 
 export const Wallet = WalletModel;
 
@@ -21,7 +22,7 @@ async function create(data: { chainId: ChainId; sub: string; forceSync?: boolean
 }
 
 function findOneByAddress(address: string) {
-    return Wallet.findOne({ address });
+    return Wallet.findOne({ address: toChecksumAddress(address) });
 }
 
 async function findOneByQuery(query: { sub?: string; chainId?: number }) {

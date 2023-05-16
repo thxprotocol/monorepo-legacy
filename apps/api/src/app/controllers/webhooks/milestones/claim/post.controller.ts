@@ -1,5 +1,5 @@
 import MilestoneRewardClaimService from '@thxnetwork/api/services/MilestoneRewardClaimService';
-import WalletService, { Wallet } from '@thxnetwork/api/services/WalletService';
+import { Wallet } from '@thxnetwork/api/services/WalletService';
 import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
 import { MilestoneRewardClaim } from '@thxnetwork/api/models/MilestoneRewardClaims';
 import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
@@ -7,18 +7,24 @@ import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
 import { AssetPool } from '@thxnetwork/api/models/AssetPool';
 import { v4 } from 'uuid';
+import { isAddress, toChecksumAddress } from 'web3-utils';
 
-const validation = [body('address').exists(), param('token').exists()];
+const validation = [
+    body('address').exists(),
+    body('address').custom((address) => isAddress(address)),
+    param('token').exists(),
+];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
+    const address = toChecksumAddress(req.body.address);
     const reward = await MilestoneReward.findOne({ uuid: req.params.token });
     if (!reward) throw new NotFoundError('Could not find a milestone reward for this token');
 
-    let wallet = await WalletService.findOneByAddress(req.body.address);
+    const pool = await AssetPool.findById(reward.poolId);
+
+    let wallet = await Wallet.findOne({ chainId: pool.chainId, address });
     if (!wallet) {
-        // Prepare a wallet for this address
-        const pool = await AssetPool.findById(reward.poolId);
         wallet = await Wallet.create({ chainId: pool.chainId, address: req.body.address, token: v4() });
     }
 
@@ -35,7 +41,7 @@ const controller = async (req: Request, res: Response) => {
         poolId: reward.poolId,
     });
 
-    res.status(201).json(claim);
+    res.status(201).json({ ...claim.toJSON(), wallet });
 };
 
 export default { validation, controller };

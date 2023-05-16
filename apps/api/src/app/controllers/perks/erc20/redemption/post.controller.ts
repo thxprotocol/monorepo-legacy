@@ -35,7 +35,7 @@ const controller = async (req: Request, res: Response) => {
     const account = await AccountProxy.getById(req.auth.sub);
     const wallet = await Wallet.findOne({ sub: account.sub, chainId: pool.chainId });
     const pointBalance = await PointBalance.findOne({ walletId: wallet._id, poolId: pool._id });
-    console.log(pointBalance, wallet);
+
     if (!pointBalance || Number(pointBalance.balance) < Number(erc20Perk.pointPrice)) {
         throw new BadRequestError('Not enough points on this account for this payment');
     }

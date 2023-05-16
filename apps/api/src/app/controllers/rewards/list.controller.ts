@@ -8,6 +8,7 @@ import { MilestoneRewardClaim } from '@thxnetwork/api/models/MilestoneRewardClai
 import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
 import { DailyReward } from '@thxnetwork/api/models/DailyReward';
 import DailyRewardClaimService, { ONE_DAY_MS } from '@thxnetwork/api/services/DailyRewardClaimService';
+import { Wallet, WalletDocument } from '@thxnetwork/api/models/Wallet';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
@@ -18,19 +19,19 @@ const controller = async (req: Request, res: Response) => {
     const dailyRewards = await DailyReward.find({ poolId: pool._id });
     const authHeader = req.header('authorization');
 
-    let sub = '';
+    let wallet: WalletDocument;
     // This endpoint is public so we do not get req.auth populated and decode the token ourselves
     // when the request is made with an authorization header to obtain the sub.
     if (authHeader && authHeader.startsWith('Bearer ')) {
         const token: { sub: string } = jwt_decode(authHeader.split(' ')[1]);
-        sub = token.sub;
+        wallet = await Wallet.findOne({ sub: token.sub, chainId: pool.chainId });
     }
 
     res.json({
         dailyRewards: await Promise.all(
             dailyRewards.map(async (r) => {
-                const isDisabled = sub ? !(await DailyRewardClaimService.isClaimable(r, sub)) : true;
-                const claims = sub ? await DailyRewardClaimService.findBySub(r, sub) : [];
+                const isDisabled = wallet ? !(await DailyRewardClaimService.isClaimable(r, wallet)) : true;
+                const claims = wallet ? await DailyRewardClaimService.findByWallet(r, wallet) : [];
                 const claimAgainTime = claims.length
                     ? new Date(claims[claims.length - 1].createdAt).getTime() + ONE_DAY_MS
                     : null;
@@ -49,7 +50,12 @@ const controller = async (req: Request, res: Response) => {
         ),
         milestoneRewards: await Promise.all(
             milestoneRewards.map(async (r) => {
-                const claims = sub ? await MilestoneRewardClaim.find({ sub, milestoneRewardId: String(r._id) }) : [];
+                const claims = wallet
+                    ? await MilestoneRewardClaim.find({
+                          walletId: String(wallet._id),
+                          milestoneRewardId: String(r._id),
+                      })
+                    : [];
                 return {
                     uuid: r.uuid,
                     title: r.title,
@@ -70,7 +76,9 @@ const controller = async (req: Request, res: Response) => {
         }),
         pointRewards: await Promise.all(
             pointRewards.map(async (r) => {
-                const isClaimed = sub ? await PointRewardClaim.exists({ sub, pointRewardId: String(r._id) }) : false;
+                const isClaimed = wallet
+                    ? await PointRewardClaim.exists({ walletId: wallet._id, pointRewardId: String(r._id) })
+                    : false;
                 return {
                     uuid: r.uuid,
                     title: r.title,

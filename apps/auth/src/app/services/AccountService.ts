@@ -132,6 +132,7 @@ export class AccountService {
         const address = toChecksumAddress(addr);
         const chainId = NODE_ENV === 'production' ? ChainId.Polygon : ChainId.Hardhat;
         const [wallet] = await WalletProxy.get('', chainId, address);
+
         if (wallet) {
             return wallet.sub
                 ? // Wallet exists and is owned by an account, return account

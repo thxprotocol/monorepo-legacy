@@ -19,10 +19,10 @@ const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(reward.poolId);
     if (!pool) throw new NotFoundError('Could not find the campaign for this reward');
 
-    const isClaimable = await DailyRewardClaimService.isClaimable(reward, req.auth.sub);
+    const wallet = await Wallet.findOne({ sub: req.auth.sub, chainId: pool.chainId });
+    const isClaimable = await DailyRewardClaimService.isClaimable(reward, wallet);
     if (!isClaimable) throw new ForbiddenError('This reward is not claimable yet');
 
-    const wallet = await Wallet.findOne({ sub: req.auth.sub, chainId: pool.chainId });
     const claim = reward.isEnabledWebhookQualification
         ? await DailyRewardClaim.findOneAndUpdate(
               {
