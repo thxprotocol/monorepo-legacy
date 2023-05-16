@@ -314,7 +314,7 @@ export async function transferFrom(
         },
     );
 
-    return ERC721Token.findByIdAndUpdate(erc721Token._id, { transactions: [txId] }, { new: true });
+    return ERC721Token.findByIdAndUpdate(erc721Token._id, { transactions: [txId] });
 }
 
 export async function transferFromCallback(args: TERC721TransferFromCallBackArgs, receipt: TransactionReceipt) {

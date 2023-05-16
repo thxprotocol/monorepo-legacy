@@ -230,9 +230,7 @@ export default class ModalRewardERC721Create extends Vue {
         this.tokenId = this.perk && this.perk.tokenId ? this.perk.tokenId : this.tokenId;
         console.log(this.metadataId, this.tokenId);
         this.erc1155Amount =
-            this.perk && this.perk.erc1155Amount
-                ? Number(fromWei(this.perk.erc1155Amount, 'ether'))
-                : this.erc1155Amount;
+            this.perk && this.perk.erc1155Amount ? Number(this.perk.erc1155Amount) : this.erc1155Amount;
         this.tokenGatingContractAddress = this.perk
             ? this.perk.tokenGatingContractAddress
             : this.tokenGatingContractAddress;
@@ -306,7 +304,7 @@ export default class ModalRewardERC721Create extends Vue {
             file: this.imageFile,
             erc721Id,
             erc1155Id,
-            erc1155Amount: toWei(String(this.erc1155Amount)),
+            erc1155Amount: this.erc1155Amount,
             tokenId: this.tokenId,
             metadataIds: JSON.stringify(this.metadataId ? [this.metadataId] : this.selectedMetadataIds),
             expiryDate,

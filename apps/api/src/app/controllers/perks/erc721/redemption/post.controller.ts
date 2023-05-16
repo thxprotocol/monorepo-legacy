@@ -80,7 +80,7 @@ const controller = async (req: Request, res: Response) => {
                 pool,
                 nft as ERC1155Document,
                 metadata as ERC1155MetadataDocument,
-                perk.erc1155Amount,
+                String(perk.erc1155Amount),
                 wallet,
             );
         }
@@ -102,7 +102,7 @@ const controller = async (req: Request, res: Response) => {
                 token as ERC1155TokenDocument,
                 nft as ERC1155Document,
                 wallet,
-                perk.erc1155Amount,
+                String(perk.erc1155Amount),
             );
         }
     }

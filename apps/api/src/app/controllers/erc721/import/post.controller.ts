@@ -1,11 +1,10 @@
 import { body } from 'express-validator';
 import { Request, Response } from 'express';
-import { OwnedNft } from 'alchemy-sdk';
 import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
 import { ERC721 } from '@thxnetwork/api/models/ERC721';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { ERC721TokenState } from '@thxnetwork/types/interfaces';
-import { alchemy } from '@thxnetwork/api/util/alchemy';
+import { getNFTsForOwner } from '@thxnetwork/api/util/alchemy';
 import { ChainId, NFTVariant } from '@thxnetwork/types/enums';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { toChecksumAddress } from 'web3-utils';
@@ -17,33 +16,8 @@ const controller = async (req: Request, res: Response) => {
     const chainId = Number(req.body.chainId) as ChainId;
     const contractAddress = req.body.contractAddress;
     const pool = await PoolService.getById(req.header('X-PoolId'));
-    const pageSize = 100;
 
-    let pageKey = 0,
-        pageCount = 1,
-        ownedNfts: OwnedNft[] = [];
-
-    while (pageKey < pageCount) {
-        try {
-            const key = String(++pageKey);
-            const result = await alchemy.nft.getNftsForOwner(pool.address, {
-                contractAddresses: [contractAddress],
-                omitMetadata: false,
-                pageSize,
-                pageKey: key,
-            });
-            const totalCount = Number(result.totalCount);
-
-            // If total is less than size there will only be 1 page, if not round up total / size
-            // to get the max amount of pages
-            pageCount = totalCount < pageSize ? 1 : Math.ceil(totalCount / pageSize);
-
-            ownedNfts = ownedNfts.concat(result.ownedNfts);
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
+    const ownedNfts = await getNFTsForOwner(pool.address, contractAddress);
     if (!ownedNfts.length) throw new NotFoundError('Could not find NFT tokens for this contract address');
 
     const { address, name, symbol } = ownedNfts[0].contract;

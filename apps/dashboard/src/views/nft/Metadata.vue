@@ -60,38 +60,26 @@
                     <b-form-checkbox :value="item.checkbox" v-model="selectedItems" />
                 </template>
                 <template #cell(image)="{ item }">
-                    <img :src="item.image" height="40" alt="Metadata image" />
+                    <img v-if="item.image" :src="item.image" height="40" alt="Metadata image" />
                 </template>
                 <template #cell(info)="{ item }">
                     <strong>{{ item.info.name }}</strong
                     ><br />
                     {{ item.info.description }}
                 </template>
-                <template #cell(tokens)="{ item }">
-                    {{ item.tokens.length }}
-                </template>
                 <template #cell(created)="{ item }">
-                    {{ format(new Date(item.created), 'dd-MM-yyyy HH:mm') }}
+                    <small class="text-muted">{{ format(new Date(item.created), 'dd-MM-yyyy HH:mm') }}</small>
                 </template>
                 <template #cell(id)="{ item }">
                     <b-dropdown no-caret size="sm" right variant="link">
                         <template #button-content>
                             <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
                         </template>
-                        <b-dropdown-item
-                            :disabled="!!item.tokens.length"
-                            v-b-modal="'modalERC721MetadataCreate' + item.id"
-                        >
-                            Edit
-                        </b-dropdown-item>
-                        <b-dropdown-item target="_blank" :href="`${apiUrl}/v1/metadata/${item.id}`">
+                        <b-dropdown-item v-b-modal="'modalERC721MetadataCreate' + item.id"> Edit </b-dropdown-item>
+                        <b-dropdown-item target="_blank" :href="getMetadataURL(metadata[item.id])">
                             Preview URI
                         </b-dropdown-item>
-                        <b-dropdown-item
-                            v-if="nft && metadata"
-                            :disabled="!!item.tokens.length"
-                            @click="onClickDelete(metadata[item.id])"
-                        >
+                        <b-dropdown-item v-if="nft && metadata" @click="onClickDelete(metadata[item.id])">
                             Delete
                         </b-dropdown-item>
                         <base-modal-erc721-metadata-create
@@ -193,7 +181,6 @@ export default class MetadataView extends Vue {
                 checkbox: r._id,
                 image: r.imageUrl,
                 info: { name: r.name, description: r.description, url: r.externalUrl },
-                tokens: r.tokens,
                 created: r.createdAt,
                 id: r._id,
             }))
@@ -204,12 +191,21 @@ export default class MetadataView extends Vue {
         this.listMetadata();
     }
 
+    getMetadataURL(metadata: TNFTMetadata) {
+        switch (this.$route.params.variant) {
+            case NFTVariant.ERC721:
+                return `${this.apiUrl}/v1/metadata/${metadata._id}`;
+            case NFTVariant.ERC1155:
+                return `${this.apiUrl}/v1/metadata/erc1155/${this.nft?._id}/${metadata.tokenId}`;
+        }
+    }
     onChangePage(page: number) {
         this.page = page;
         this.listMetadata();
     }
 
     async onClickDelete(metadata: TNFTMetadata) {
+        if (metadata.tokens.length) throw new Error('This metadata is being used.');
         await this.$store.dispatch(`${this.$route.params.variant}/deleteMetadata`, {
             erc721: this.nft,
             erc1155: this.nft,

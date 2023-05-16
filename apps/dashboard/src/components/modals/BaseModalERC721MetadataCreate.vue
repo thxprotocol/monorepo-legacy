@@ -2,10 +2,10 @@
     <base-modal @show="onShow" :error="error" :title="metadata ? 'Update metadata' : 'Create metadata'" :id="id">
         <template #modal-body>
             <b-form-group label="Name">
-                <b-form-input v-model="name" required />
+                <b-form-input :disabled="isLocked" v-model="name" required />
             </b-form-group>
             <b-form-group label="Description">
-                <b-form-input v-model="description" required />
+                <b-form-input :disabled="isLocked" v-model="description" required />
             </b-form-group>
             <b-form-group label="Image">
                 <b-input-group>
@@ -13,15 +13,26 @@
                         <b-spinner v-if="isSubmitImage" variant="primary"></b-spinner>
                         <img v-else-if="imageUrl" :src="imageUrl" width="100" alt="Metadata image" />
                     </template>
-                    <b-form-file @change="onFileChange" accept="image/*" width="50%" :disabled="isSubmitImage" />
+                    <b-form-file
+                        :disabled="isLocked || isSubmitImage"
+                        @change="onFileChange"
+                        accept="image/*"
+                        width="50%"
+                    />
                 </b-input-group>
             </b-form-group>
             <b-form-group label="External URL">
-                <b-form-input v-model="externalUrl" required />
+                <b-form-input :disabled="isLocked" v-model="externalUrl" required />
             </b-form-group>
         </template>
         <template #btn-primary>
-            <b-button :disabled="isSubmitDisabled" class="rounded-pill" @click="submit()" variant="primary" block>
+            <b-button
+                :disabled="isLocked || isSubmitDisabled"
+                class="rounded-pill"
+                @click="submit()"
+                variant="primary"
+                block
+            >
                 {{ metadata ? 'Update Metadata' : 'Create metadata' }}
             </b-button>
         </template>
@@ -56,6 +67,10 @@ export default class ModalRewardCreate extends Vue {
     @Prop() id!: string;
     @Prop() nft!: TERC721 | TERC1155;
     @Prop({ required: false }) metadata!: TNFTMetadata;
+
+    get isLocked() {
+        return this.metadata && !!this.metadata.tokens.length;
+    }
 
     async onFileChange(event: any) {
         this.isSubmitImage = true;

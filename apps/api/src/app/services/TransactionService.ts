@@ -249,6 +249,9 @@ async function executeCallback(tx: TransactionDocument, receipt: TransactionRece
         case 'erc721TransferFromWalletCallback':
             await ERC721Service.transferFromWalletCallback(tx.callback.args, receipt);
             break;
+        case 'erc1155TransferFromWalletCallback':
+            await ERC1155Service.transferFromWalletCallback(tx.callback.args, receipt);
+            break;
     }
 }
 

@@ -12,6 +12,7 @@ import {
     TERC1155DeployCallbackArgs,
     TERC1155TokenMintCallbackArgs,
     TERC1155TransferFromCallbackArgs,
+    TERC1155TransferFromWalletCallbackArgs,
 } from '@thxnetwork/api/types/TTransaction';
 import { assertEvent, ExpectedEventNotFound, findEvent, parseLogs } from '@thxnetwork/api/util/events';
 import { getProvider } from '@thxnetwork/api/util/network';
@@ -214,6 +215,53 @@ export async function transferFromCallback(args: TERC1155TransferFromCallbackArg
     });
 }
 
+export async function transferFromWallet(
+    erc1155: ERC1155Document,
+    erc1155Token: ERC1155TokenDocument,
+    wallet: WalletDocument,
+    to: string,
+    forceSync = true,
+): Promise<any> {
+    const txId = await TransactionService.sendAsync(
+        wallet.contract.options.address,
+        wallet.contract.methods.transferERC721(erc1155.address, to, erc1155Token.tokenId),
+        wallet.chainId,
+        forceSync,
+        {
+            type: 'erc721TransferFromWalletCallback',
+            args: {
+                erc721Id: String(erc1155._id),
+                erc721TokenId: String(erc1155Token._id),
+                walletId: String(wallet._id),
+                to,
+            },
+        },
+    );
+
+    return ERC1155Token.findByIdAndUpdate(erc1155Token._id, { transactions: [txId] }, { new: true });
+}
+
+export async function transferFromWalletCallback(
+    args: TERC1155TransferFromWalletCallbackArgs,
+    receipt: TransactionReceipt,
+) {
+    const { erc1155Id, erc1155TokenId, to } = args;
+    const { contract } = await ERC1155.findById(erc1155Id);
+    const { tokenId } = await ERC1155Token.findById(erc1155TokenId);
+    const ownerOfToken = await contract.methods.ownerOf(tokenId).call();
+
+    // Throwing manually due to missing contract events for successful transfers
+    if (ownerOfToken !== to) throw new Error('ERC721Transfer tx failed.');
+
+    const toWallet = await WalletService.findOneByAddress(to);
+    await ERC1155Token.findByIdAndUpdate(erc1155TokenId, {
+        state: ERC1155TokenState.Transferred,
+        recipient: to,
+        sub: toWallet ? toWallet.sub : '',
+        walletId: toWallet ? String(toWallet._id) : '',
+    });
+}
+
 async function isMinter(erc1155: ERC1155Document, address: string) {
     return await erc1155.contract.methods.hasRole(keccak256(toUtf8Bytes('MINTER_ROLE')), address).call();
 }
@@ -318,6 +366,8 @@ export default {
     initialize,
     transferFrom,
     transferFromCallback,
+    transferFromWallet,
+    transferFromWalletCallback,
     queryDeployTransaction,
     getOnChainERC1155Token,
     findTokensByWallet,

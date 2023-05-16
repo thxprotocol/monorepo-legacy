@@ -1,11 +1,10 @@
 import { body } from 'express-validator';
 import { Request, Response } from 'express';
-import { OwnedNft } from 'alchemy-sdk';
 import { ERC1155Token } from '@thxnetwork/api/models/ERC1155Token';
 import { ERC1155 } from '@thxnetwork/api/models/ERC1155';
 import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { ERC1155TokenState } from '@thxnetwork/types/interfaces';
-import { alchemy } from '@thxnetwork/api/util/alchemy';
+import { getNFTsForOwner } from '@thxnetwork/api/util/alchemy';
 import { ChainId, NFTVariant } from '@thxnetwork/types/enums';
 import { logger } from '@thxnetwork/api/util/logger';
 import { ERC1155Metadata } from '@thxnetwork/api/models/ERC1155Metadata';
@@ -24,32 +23,7 @@ const controller = async (req: Request, res: Response) => {
     const wallet = await WalletService.findOneByQuery({ sub: req.auth.sub, chainId });
     const pool = await PoolService.getById(req.header('X-PoolId'));
 
-    const pageSize = 100;
-    let pageKey = 0,
-        pageCount = 1,
-        ownedNfts: OwnedNft[] = [];
-
-    while (pageKey < pageCount) {
-        try {
-            const key = String(++pageKey);
-            const result = await alchemy.nft.getNftsForOwner(pool.address, {
-                contractAddresses: [contractAddress],
-                omitMetadata: false,
-                pageSize,
-                pageKey: key,
-            });
-            const totalCount = Number(result.totalCount);
-
-            // If total is less than size there will only be 1 page, if not round up total / size
-            // to get the max amount of pages
-            pageCount = totalCount < pageSize ? 1 : Math.ceil(totalCount / pageSize);
-
-            ownedNfts = ownedNfts.concat(result.ownedNfts);
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
+    const ownedNfts = await getNFTsForOwner(pool.address, contractAddress);
     if (!ownedNfts.length) throw new NotFoundError('Could not find NFT tokens for this contract address');
 
     let erc1155 = await ERC1155.findOne({
@@ -77,6 +51,7 @@ const controller = async (req: Request, res: Response) => {
             variant: NFTVariant.ERC1155,
             name: req.body.name,
             archived: false,
+            baseURL: '',
         },
         { upsert: true, new: true },
     );
