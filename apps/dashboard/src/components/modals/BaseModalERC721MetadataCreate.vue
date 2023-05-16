@@ -1,6 +1,9 @@
 <template>
     <base-modal @show="onShow" :error="error" :title="metadata ? 'Update metadata' : 'Create metadata'" :id="id">
         <template #modal-body>
+            <b-alert v-if="isLocked" variant="warning" show>
+                This metadata is used by minted tokens and can no longer be changed.
+            </b-alert>
             <b-form-group label="Name">
                 <b-form-input :disabled="isLocked" v-model="name" required />
             </b-form-group>
