@@ -19,16 +19,15 @@
         "paths": {
             "@thxnetwork/api*": ["apps/api/src/app*"],
             "@thxnetwork/auth*": ["apps/auth/src/app*"],
-            "@thxnetwork/discord*": ["apps/discord-bot/src/app*"],
             "@thxnetwork/common": ["libs/common/src/index.ts"],
-            "@thxnetwork/mixpanel": ["libs/common/src/lib/mixpanel.ts"],
             "@thxnetwork/contracts*": ["libs/contracts*"],
             "@thxnetwork/dashboard*": ["apps/dashboard/src*"],
+            "@thxnetwork/discord*": ["apps/discord-bot/src/app*"],
+            "@thxnetwork/mixpanel": ["libs/common/src/lib/mixpanel.ts"],
             "@thxnetwork/public*": ["apps/public/src*"],
             "@thxnetwork/scss*": ["libs/common/src/lib/scss*"],
             "@thxnetwork/sdk*": ["libs/sdk/src/lib*"],
-            "@thxnetwork/types*": ["libs/common/src/lib/types*"],
-            "@thxnetwork/wallet*": ["apps/wallet/src*"]
+            "@thxnetwork/types*": ["libs/common/src/lib/types*"]
         }
     },
     "exclude": ["node_modules", "tmp"]

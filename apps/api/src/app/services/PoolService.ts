@@ -17,6 +17,11 @@ import { PoolSubscription } from '../models/PoolSubscription';
 import { logger } from '../util/logger';
 import { TPointReward, TSurveyReward } from '@thxnetwork/types/interfaces';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
+import { DailyRewardClaim } from '../models/DailyRewardClaims';
+import { ReferralRewardClaim } from '../models/ReferralRewardClaim';
+import { PointRewardClaim } from '../models/PointRewardClaim';
+import { MilestoneRewardClaim } from '../models/MilestoneRewardClaims';
+import { promiseImpl } from 'ejs';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -171,6 +176,21 @@ async function sendNotification(pool: AssetPoolDocument, reward: TPointReward | 
     }
 }
 
+async function getParticipantCount(pool: AssetPoolDocument) {
+    async function count(model: any) {
+        return await model.count({ poolId: String(pool._id) }).distinct('sub');
+    }
+    const result = await Promise.all(
+        [DailyRewardClaim, ReferralRewardClaim, PointRewardClaim, MilestoneRewardClaim].map(
+            async (model) => await count(model),
+        ),
+    );
+
+    // This flattens the arrays of unique subs per reward type, create a Set to filter out uniques
+    // and create an array again to count length.
+    return Array.from(new Set(result.flat(1))).length;
+}
+
 export default {
     isPoolClient,
     isPoolMember,
@@ -186,4 +206,5 @@ export default {
     contractVersionVariant,
     updateAssetPool,
     sendNotification,
+    getParticipantCount,
 };

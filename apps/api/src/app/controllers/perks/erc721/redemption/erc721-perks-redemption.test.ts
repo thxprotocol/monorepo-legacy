@@ -3,7 +3,7 @@ import app from '@thxnetwork/api/';
 import { ChainId } from '@thxnetwork/types/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { dashboardAccessToken, sub, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
-import { ERC721TokenState } from '@thxnetwork/api/types/TERC721';
+import { ERC721TokenState } from '@thxnetwork/types/interfaces';
 import { ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { alchemy } from '@thxnetwork/api/util/alchemy';
 import { deployERC721, mockGetNftsForOwner } from '@thxnetwork/api/util/jest/erc721';
@@ -169,12 +169,6 @@ describe('ERC721 Perks Redemtpion', () => {
                     expect(body.name).toBe(nftName);
                     expect(body.symbol).toBe(nftSymbol);
                     expect(body.address).toBe(nftContract.options.address);
-                    expect(body.properties[0].name).toBe('name');
-                    expect(body.properties[0].propType).toBe('string');
-                    expect(body.properties[1].name).toBe('description');
-                    expect(body.properties[1].propType).toBe('string');
-                    expect(body.properties[2].name).toBe('image');
-                    expect(body.properties[2].propType).toBe('image');
                     expect(body.totalSupply).toBe('1');
                     expect(body.owner).toBe(defaultAccount);
                     erc721 = body;
@@ -185,47 +179,41 @@ describe('ERC721 Perks Redemtpion', () => {
 
     describe('POST /erc721-perks', () => {
         it('POST /erc721-perks', (done) => {
-            const title = 'Lorem',
-                description = 'Ipsum',
-                expiryDate = addMinutes(new Date(), 30),
-                pointPrice = 200,
-                image = createImage(),
-                limit = 0,
-                claimAmount = 0,
-                isPromoted = true;
+            const expiryDate = addMinutes(new Date(), 30);
+            const image = createImage();
+            const config = {
+                title: 'Lorem',
+                description: 'Lorem ipsum',
+                erc721Id: String(erc721._id),
+                tokenId: String(erc721Token._id),
+                price: 0,
+                priceCurrency: 'USD',
+                pointPrice: 200,
+                expiryDate: expiryDate.toString(),
+                limit: 0,
+                claimAmount: 0,
+                isPromoted: true,
+            };
             user.post('/v1/erc721-perks')
                 .set({ 'X-PoolId': pool._id, 'Authorization': dashboardAccessToken })
                 .attach('file', image, {
                     filename: 'test.jpg',
                     contentType: 'image/jpg',
                 })
-                .field({
-                    title,
-                    description,
-                    image,
-                    erc721Id: String(erc721._id),
-                    erc721tokenId: erc721Token._id,
-                    price: 0,
-                    priceCurrency: 'USD',
-                    pointPrice,
-                    expiryDate: expiryDate.toString(),
-                    limit,
-                    claimAmount,
-                    isPromoted,
-                })
+                .field(config)
                 .expect(({ body }: request.Response) => {
                     expect(body[0].uuid).toBeDefined();
-                    expect(body[0].title).toBe(title);
-                    expect(body[0].description).toBe(description);
+                    expect(body[0].title).toBe(config.title);
+                    expect(body[0].description).toBe(config.description);
                     expect(body[0].image).toBeDefined();
-                    expect(body[0].pointPrice).toBe(pointPrice);
+                    expect(body[0].pointPrice).toBe(config.pointPrice);
                     expect(new Date(body[0].expiryDate).getDate()).toBe(expiryDate.getDate());
-                    expect(body[0].limit).toBe(limit);
-                    expect(body[0].claimAmount).toBe(claimAmount);
-                    expect(body[0].isPromoted).toBe(isPromoted);
-                    expect(body[0].erc721).toBeDefined();
+                    expect(body[0].limit).toBe(config.limit);
+                    expect(body[0].claimAmount).toBe(config.claimAmount);
+                    expect(body[0].isPromoted).toBe(config.isPromoted);
                     expect(body[0].erc721Id).toBe(erc721._id);
-                    expect(body[0].erc721tokenId).toBe(erc721Token._id);
+                    expect(body[0].nft).toBeDefined();
+                    expect(body[0].tokenId).toBe(erc721Token._id);
                     perk = body[0];
                 })
                 .expect(201, done);

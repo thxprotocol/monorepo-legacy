@@ -14,6 +14,8 @@ import PoolsAnalyticsLeaderBoardClient from './analytics/leaderboard/client/get.
 import PoolsAnalyticsMetrics from './analytics/metrics/get.controller';
 import DeletePool from './delete.controller';
 import ListPools from './list.controller';
+import ListPoolsPublic from './public/list.controller';
+import GetPoolsPublic from './public/get.controller';
 import CreatePoolTopup from './topup/post.controller';
 import ReadPoolTransfer from './transfers/get.controller';
 import CreatePoolTransfer from './transfers/post.controller';
@@ -80,6 +82,8 @@ router.post(
     CreatePoolTransferRefresh.controller,
 );
 router.get('/', checkJwt, guard.check(['pools:read']), assertRequestInput(ListPools.validation), ListPools.controller);
+router.get('/public', ListPoolsPublic.controller);
+router.get('/public/:id', GetPoolsPublic.controller);
 router.get(
     '/:id',
     checkJwt,

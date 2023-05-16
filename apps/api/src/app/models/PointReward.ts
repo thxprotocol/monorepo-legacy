@@ -8,6 +8,10 @@ const schema = new mongoose.Schema(
     {
         ...rewardBaseSchema,
         amount: Number,
+        platform: Number,
+        interaction: Number,
+        content: String,
+        contentMetadata: String,
     },
     { timestamps: true },
 );

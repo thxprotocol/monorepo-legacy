@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { TERC721Token } from '@thxnetwork/api/types/TERC721';
+import { TERC721Token } from '@thxnetwork/types/interfaces';
 
 export type ERC721TokenDocument = mongoose.Document & TERC721Token;
 
@@ -10,6 +10,7 @@ const ERC721TokenSchema = new mongoose.Schema(
         erc721Id: String,
         metadataId: String,
         tokenId: Number,
+        tokenUri: String,
         recipient: String,
         failReason: String,
         transactions: [String],

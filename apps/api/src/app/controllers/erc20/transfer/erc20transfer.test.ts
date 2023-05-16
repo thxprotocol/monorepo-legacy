@@ -121,7 +121,7 @@ describe('ERC20Transfer', () => {
         it('HTTP 200', (done) => {
             user.get(`/v1/erc20/transfer?erc20Id=${erc20._id}&chainId=${ChainId.Hardhat}`)
                 .set({ Authorization: widgetAccessToken })
-                .expect(({ body }: request.Response) => {
+                .expect(async ({ body }: request.Response) => {
                     expect(body.length).toEqual(1);
                     expect(body[0].erc20Id).toBeDefined();
                     expect(body[0].from).toEqual(wallet.address);
@@ -129,6 +129,10 @@ describe('ERC20Transfer', () => {
                     expect(body[0].chainId).toEqual(ChainId.Hardhat);
                     expect(body[0].transactionId).toBeDefined();
                     expect(body[0].sub).toEqual(sub);
+
+                    const { contract } = await ERC20.findById(erc20._id);
+                    const balanceInWei = await contract.methods.balanceOf(userWalletAddress2).call();
+                    expect(balanceInWei).toEqual(toWei('1', 'ether'));
                 })
                 .expect(200, done);
         });

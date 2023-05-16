@@ -1,10 +1,8 @@
-const DASHBOARD_URL = 'https://dev-dashboard.thx.network';
-const AUTH_URL = 'https://dev.auth.thx.network';
-// const DASHBOARD_URL = 'https://localhost:8082';
-// const AUTH_URL = 'https://localhost:3030';
-const CYPRESS_ACCOUNT = 'cypress@thx.network';
-
 describe('Dashboard', () => {
+    const DASHBOARD_URL = 'https://dev-dashboard.thx.network';
+    const AUTH_URL = 'https://dev.auth.thx.network';
+    const CYPRESS_ACCOUNT = 'cypress@thx.network';
+
     beforeEach(() => {
         cy.visit(DASHBOARD_URL);
 
@@ -50,9 +48,8 @@ describe('Dashboard', () => {
         cy.get('tbody tr:nth-child(1)').contains('Test reward title edit').should('be.visible');
         cy.get('tbody tr:nth-child(1)').contains('20').should('be.visible');
 
-        cy.get('tbody tr:nth-child(1) .dropdown-toggle').click();
-        cy.get('tbody tr:nth-child(1)').contains('Delete').click();
-
+        cy.get('thead th[role="columnheader"] .custom-control-label').click();
+        cy.contains('Delete rewards').click();
         cy.contains('There are no records to show').should('be.visible');
     });
 
@@ -89,9 +86,8 @@ describe('Dashboard', () => {
         cy.get('tbody tr:nth-child(1)').contains('Test reward title edit');
         cy.get('tbody tr:nth-child(1)').contains('20');
 
-        cy.get('tbody tr:nth-child(1) .dropdown-toggle').click();
-        cy.get('tbody tr:nth-child(1) .dropdown').contains('Delete').click();
-
+        cy.get('thead th[role="columnheader"] .custom-control-label').click();
+        cy.contains('Delete rewards').click();
         cy.contains('There are no records to show').should('be.visible');
     });
 
@@ -142,9 +138,8 @@ describe('Dashboard', () => {
         cy.get('tbody tr:nth-child(1)').contains('Test reward title edit').should('be.visible');
         cy.get('tbody tr:nth-child(1)').contains('20').should('be.visible');
 
-        cy.get('tbody tr:nth-child(1) .dropdown-toggle').click();
-        cy.get('tbody tr:nth-child(1) .dropdown').contains('Delete').click();
-
+        cy.get('thead th[role="columnheader"] .custom-control-label').click();
+        cy.contains('Delete rewards').click();
         cy.contains('There are no records to show').should('be.visible');
     });
 });

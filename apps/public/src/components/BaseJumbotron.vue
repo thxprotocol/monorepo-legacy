@@ -1,14 +1,14 @@
 <template>
     <div>
-        <b-jumbotron
-            bg-variant="secondary"
-            v-lazy:background-image="require('../../public/assets/img/thx_jumbotron_bg.jpg')"
-        >
+        <b-jumbotron class="bg-custom">
             <div class="container">
                 <div class="row py-md-5">
                     <div class="brand-intro text-white col-lg-4 order-1 order-md-0">
                         <div>
-                            <h1 class="brand-text mb-3">Token powered loyalty in any app or website</h1>
+                            <h1 class="brand-text mb-3">
+                                <em>Token powered loyalty</em><br />
+                                in any app
+                            </h1>
                             <p class="lead mb-4">
                                 Boost engagement and create new revenue streams. Powered by a
                                 <strong>battle tested loyalty API</strong>
@@ -47,10 +47,10 @@
                             </b-form>
                         </div>
                     </div>
-                    <div class="col-lg-8 pb-5 py-md-5 order-0 order-md-1 text-center">
+                    <div class="col-lg-7 py-md-5 order-0 order-md-1 offset-lg-1 text-center">
                         <div>
                             <img
-                                v-lazy="require('../../public/assets/img/thx_jumbotron_apps.webp')"
+                                v-lazy="require('../../public/assets/img/thx_jumbotron_apps.svg')"
                                 :alt="ALT_TEXT.HOME_MAN_WATCHING_PHONE"
                                 class="img-fluid"
                             />
@@ -131,3 +131,40 @@ export default class BaseJumbotron extends Vue {
     }
 }
 </script>
+
+<style lang="scss" scoped>
+.bg-custom {
+    background-color: var(--yellow);
+    background-image: radial-gradient(at 13% 67%, hsla(42, 75%, 75%, 1) 0px, transparent 50%),
+        radial-gradient(at 45% 10%, rgb(255, 190, 38) 0px, transparent 50%),
+        radial-gradient(at 81% 4%, rgb(255, 244, 129) 0px, transparent 50%),
+        radial-gradient(at 38% 10%, hsla(53, 100%, 50%, 0.84) 0px, transparent 50%),
+        radial-gradient(at 5% 50%, rgb(255, 190, 38) 0px, transparent 50%),
+        radial-gradient(at 83% 2%, hsla(45, 100%, 50%, 0.79) 0px, transparent 50%),
+        radial-gradient(at 83% 46%, hsla(40, 100%, 50%, 0.76) 0px, transparent 50%);
+
+    h1.brand-text {
+        font-size: 3rem !important;
+        margin-top: 3rem;
+
+        @media (min-width: 960px) {
+            margin-top: 0;
+            font-size: 4rem !important;
+        }
+    }
+
+    .brand-intro {
+        color: black !important;
+    }
+
+    em {
+        font-style: normal;
+
+        background: linear-gradient(120deg, #bb65ff, hsl(270, 74%, 41%) 33%, var(--purple));
+        background-clip: text;
+        -webkit-background-clip: text;
+        text-fill-color: transparent;
+        -webkit-text-fill-color: transparent;
+    }
+}
+</style>

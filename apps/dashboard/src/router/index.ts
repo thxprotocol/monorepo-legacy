@@ -6,6 +6,7 @@ import {
     redirectPasswordResetLink,
     redirectPoolTransfer,
     redirectReferralCode,
+    redirectShopifyCode,
     redirectSignin,
     redirectSigninSilent,
     redirectSignout,
@@ -121,7 +122,6 @@ const routes: Array<RouteConfig> = [
     {
         path: '/preview/:poolId',
         component: () => import('../views/Preview.vue'),
-        // beforeEnter: assertAuthorization,
     },
     {
         name: 'coins',
@@ -137,8 +137,8 @@ const routes: Array<RouteConfig> = [
     },
     {
         name: 'metadata',
-        path: '/nft/:erc721Id',
-        redirect: '/nft/:erc721Id/metadata',
+        path: '/nft/:variant/:nftId',
+        redirect: '/nft/:variant/:nftId/metadata',
         component: () => import('../views/nft/NFT.vue'),
         beforeEnter: assertAuthorization,
         children: [
@@ -147,6 +147,11 @@ const routes: Array<RouteConfig> = [
                 component: () => import('../views/nft/Metadata.vue'),
             },
         ],
+    },
+    {
+        name: 'shopify',
+        path: '/shopify-oidc',
+        beforeEnter: redirectShopifyCode,
     },
     {
         name: 'sign in redirect',

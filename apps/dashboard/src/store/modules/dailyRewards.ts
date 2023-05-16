@@ -1,7 +1,7 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { RewardConditionPlatform, type TDailyReward } from '@thxnetwork/types/index';
+import { type TDailyReward } from '@thxnetwork/types/index';
 import { type TPool } from '@thxnetwork/types/index';
 import { track } from '@thxnetwork/mixpanel';
 
@@ -32,7 +32,6 @@ class DailyRewardModule extends VuexModule {
     @Mutation
     set(reward: TDailyReward) {
         if (!this._all[reward.poolId]) Vue.set(this._all, reward.poolId, {});
-        if (typeof reward.platform === 'undefined') reward.platform = RewardConditionPlatform.None; // Temp fix for corrupt data
         Vue.set(this._all[reward.poolId], String(reward._id), reward);
     }
 

@@ -3,8 +3,7 @@ import { Request, Response } from 'express';
 import { body, check, query } from 'express-validator';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import ImageService from '@thxnetwork/api/services/ImageService';
-import { BadRequestError } from '@thxnetwork/api/util/errors';
-import { AccountPlanType } from '@thxnetwork/types/enums';
+import { AccountPlanType, NFTVariant } from '@thxnetwork/types/enums';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 
 const validation = [
@@ -12,7 +11,6 @@ const validation = [
     body('symbol').exists().isString(),
     body('description').exists().isString(),
     body('chainId').exists().isNumeric(),
-    body('schema').exists(),
     check('file')
         .optional()
         .custom((value, { req }) => {
@@ -30,19 +28,18 @@ const controller = async (req: Request, res: Response) => {
         logoImgUrl = ImageService.getPublicUrl(result.key);
     }
 
-    const properties = typeof req.body.schema == 'string' ? JSON.parse(req.body.schema) : req.body.schema;
     const forceSync = req.query.forceSync !== undefined ? req.query.forceSync === 'true' : false;
     const account = await AccountProxy.getById(req.auth.sub);
     const baseURL = account.plan === AccountPlanType.Premium ? IPFS_BASE_URL : `${API_URL}/${VERSION}/metadata/`;
     const erc721 = await ERC721Service.deploy(
         {
+            variant: NFTVariant.ERC721,
             sub: req.auth.sub,
             chainId: req.body.chainId,
             name: req.body.name,
             symbol: req.body.symbol,
             description: req.body.description,
             baseURL,
-            properties,
             archived: false,
             logoImgUrl,
         },

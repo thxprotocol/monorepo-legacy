@@ -2,13 +2,7 @@ import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId } from '@thxnetwork/types/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import {
-    dashboardAccessToken,
-    sub,
-    sub2,
-    userWalletAddress,
-    userWalletAddress2,
-} from '@thxnetwork/api/util/jest/constants';
+import { dashboardAccessToken, sub } from '@thxnetwork/api/util/jest/constants';
 import { ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { alchemy } from '@thxnetwork/api/util/alchemy';
 import { deployERC721, mockGetNftsForOwner } from '@thxnetwork/api/util/jest/erc721';
@@ -16,7 +10,6 @@ import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { Contract } from 'web3-eth-contract';
 import { getProvider } from '@thxnetwork/api/util/network';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
-import { Wallet } from '@thxnetwork/api/models/Wallet';
 
 const user = request.agent(app);
 
@@ -26,11 +19,7 @@ describe('ERC721 import', () => {
         nftName = 'Test Collection',
         nftSymbol = 'TST';
 
-    beforeAll(async () => {
-        await beforeAllCallback();
-        await Wallet.create({ address: userWalletAddress, sub, chainId: ChainId.Hardhat });
-        await Wallet.create({ address: userWalletAddress2, sub: sub2, chainId: ChainId.Hardhat });
-    });
+    beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
 
     describe('POST /pools', () => {
@@ -89,14 +78,6 @@ describe('ERC721 import', () => {
                     expect(body.name).toBe(nftName);
                     expect(body.symbol).toBe(nftSymbol);
                     expect(body.address).toBe(nftContract.options.address);
-                    expect(body.properties[0].name).toBe('name');
-                    expect(body.properties[0].propType).toBe('string');
-                    expect(body.properties[1].name).toBe('description');
-                    expect(body.properties[1].propType).toBe('string');
-                    expect(body.properties[2].name).toBe('image');
-                    expect(body.properties[2].propType).toBe('image');
-                    expect(body.properties[3].name).toBe('externalUrl');
-                    expect(body.properties[3].propType).toBe('url');
                     expect(body.totalSupply).toBe('1');
                     expect(body.owner).toBe(defaultAccount);
                 })

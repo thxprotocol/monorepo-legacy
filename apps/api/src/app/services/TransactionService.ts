@@ -133,7 +133,7 @@ async function sendAsync(
             from: defaultAccount,
             to,
             data,
-            gas,
+            gas: gas + 100000,
         });
 
         await transactionMined(tx, receipt);
@@ -225,6 +225,9 @@ async function executeCallback(tx: TransactionDocument, receipt: TransactionRece
         case 'erc721TokenMintCallback':
             await ERC721Service.mintCallback(tx.callback.args, receipt);
             break;
+        case 'erc1155TokenMintCallback':
+            await ERC1155Service.mintCallback(tx.callback.args, receipt);
+            break;
         case 'withdrawForCallback':
             await WithdrawalService.withdrawForCallback(tx.callback.args, receipt);
             break;
@@ -239,6 +242,15 @@ async function executeCallback(tx: TransactionDocument, receipt: TransactionRece
             break;
         case 'erc721nTransferFromCallback':
             await ERC721Service.transferFromCallback(tx.callback.args, receipt);
+            break;
+        case 'erc1155TransferFromCallback':
+            await ERC1155Service.transferFromCallback(tx.callback.args, receipt);
+            break;
+        case 'erc721TransferFromWalletCallback':
+            await ERC721Service.transferFromWalletCallback(tx.callback.args, receipt);
+            break;
+        case 'erc1155TransferFromWalletCallback':
+            await ERC1155Service.transferFromWalletCallback(tx.callback.args, receipt);
             break;
     }
 }
@@ -288,14 +300,6 @@ async function queryTransactionStatusReceipt(tx: TransactionDocument) {
     return tx.state;
 }
 
-async function findFailReason(transactions: string[]): Promise<string | undefined> {
-    const list = await Promise.all(transactions.map((id: string) => getById(id)));
-    const tx = list.filter((tx: TTransaction) => tx.state === TransactionState.Failed);
-    if (!tx.length) return;
-
-    return tx[0].failReason;
-}
-
 async function findByQuery(poolAddress: string, page = 1, limit = 10, startDate?: Date, endDate?: Date) {
     const query: Record<string, any> = { to: poolAddress };
 
@@ -317,7 +321,6 @@ export default {
     deploy,
     sendValue,
     findByQuery,
-    findFailReason,
     queryTransactionStatusDefender,
     queryTransactionStatusReceipt,
 };

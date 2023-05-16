@@ -1,8 +1,7 @@
 <template>
     <div>
-        <BaseFormSelectNetwork @selected="onNetworkSelected" />
-        <b-form-group label="Campaign">
-            <b-dropdown variant="link" class="dropdown-select" v-if="poolsPerChain.length">
+        <b-form-group label="Campaign" class="mb-0">
+            <b-dropdown variant="link" class="dropdown-select bg-white" v-if="poolsPerChain.length">
                 <template #button-content>
                     <div v-if="pool">{{ pool.settings.title }}</div>
                     <div v-else>Select a pool</div>
@@ -22,7 +21,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseIdenticon from '../BaseIdenticon.vue';
 
@@ -44,7 +43,8 @@ export default class ModalAssetPoolCreate extends Vue {
     pools!: IPools;
     pool: TPool | null = null;
     loading = false;
-    selectedChainId: ChainId | null = null;
+
+    @Prop() chainId!: ChainId;
 
     onListItemClick(pool: TPool | null) {
         this.pool = pool;
@@ -56,11 +56,7 @@ export default class ModalAssetPoolCreate extends Vue {
     }
 
     get poolsPerChain() {
-        return Object.values(this.pools).filter((pool) => pool.chainId === this.selectedChainId);
-    }
-
-    async onNetworkSelected(chainId: ChainId) {
-        this.selectedChainId = chainId;
+        return Object.values(this.pools).filter((pool) => pool.chainId === this.chainId);
     }
 }
 </script>

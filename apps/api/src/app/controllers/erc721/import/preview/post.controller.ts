@@ -1,6 +1,6 @@
+import { getNFTsForOwner } from '@thxnetwork/api/util/alchemy';
 import { Request, Response } from 'express';
 import { body } from 'express-validator';
-import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 
 export const validation = [body('address').exists().isString(), body('chainId').exists().isInt()];
 
@@ -11,8 +11,7 @@ export const controller = async (req: Request, res: Response) => {
             description: 'returns symbol, name and totalSupply of an onchain erc721 token'
     }
     */
-    const result = await ERC721Service.getOnChainERC721Token(req.body.chainId, req.body.address);
-
-    res.status(200).json(result);
+    const ownedNFTs = await getNFTsForOwner(req.body.address, req.body.contractAddress);
+    res.status(200).json(ownedNFTs);
 };
 export default { controller, validation };

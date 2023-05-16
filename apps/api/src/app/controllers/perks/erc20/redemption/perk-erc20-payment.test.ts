@@ -19,10 +19,7 @@ describe('ERC20 Perk Payment', () => {
     let erc20: ERC20Document, poolId: string, rewardUuid: string, perkUuid: string, perk: any;
     const totalSupply = toWei('100000');
 
-    beforeAll(async () => {
-        await beforeAllCallback();
-    });
-
+    beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
 
     it('POST /wallets', (done) => {

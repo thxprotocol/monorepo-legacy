@@ -84,7 +84,7 @@
                         @submit="listRewards"
                         :id="'modalRewardShopifyCreate' + item.id"
                         :pool="pool"
-                        :reward="shopifyPerks[pool._id][item.id]"
+                        :perk="shopifyPerks[pool._id][item.id]"
                     />
                 </template>
             </BTable>
@@ -98,7 +98,6 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { TShopifyPerkState } from '@thxnetwork/dashboard/store/modules/shopifyPerks';
 import { RewardConditionPlatform, RewardConditionInteraction, TShopifyPerk } from '@thxnetwork/types/index';
-import { platformInteractionList, platformList } from '@thxnetwork/dashboard/types/rewards';
 import type { IERC721s } from '@thxnetwork/dashboard/types/erc721';
 import BaseModalRewardShopifyCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardShopifyCreate.vue';
 import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/badges/BaseBadgeRewardConditionPreview.vue';

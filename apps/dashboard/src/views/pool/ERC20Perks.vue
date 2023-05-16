@@ -88,7 +88,7 @@
                     />
                 </template>
                 <template #cell(id)="{ item }">
-                    <b-dropdown variant="link" size="sm" no-caret>
+                    <b-dropdown variant="link" size="sm" no-caret right>
                         <template #button-content>
                             <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
                         </template>
@@ -101,7 +101,7 @@
                         @submit="listRewards"
                         :id="'modalRewardERC20Create' + item.id"
                         :pool="pool"
-                        :reward="erc20Perks[pool._id][item.id]"
+                        :perk="erc20Perks[pool._id][item.id]"
                     />
                 </template>
             </BTable>
@@ -115,7 +115,6 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { TERC20PerkState } from '@thxnetwork/dashboard/store/modules/erc20Perks';
 import { RewardConditionPlatform, RewardConditionInteraction, TERC20Perk } from '@thxnetwork/types/index';
-import { platformInteractionList, platformList } from '@thxnetwork/dashboard/types/rewards';
 import type { IERC721s } from '@thxnetwork/dashboard/types/erc721';
 import BaseModalRewardERC20Create from '@thxnetwork/dashboard/components/modals/BaseModalRewardERC20Create.vue';
 import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/badges/BaseBadgeRewardConditionPreview.vue';
@@ -169,12 +168,6 @@ export default class ERC20PerksView extends Vue {
                     amount: r.amount,
                     symbol: r.erc20.symbol,
                 },
-                rewardCondition: {
-                    platform: platformList.find((p) => r.platform === p.type),
-                    interaction: platformInteractionList.find((i) => r.interaction === i.type),
-                    content: r.content,
-                },
-                claims: r.claims,
                 limit: r.limit,
                 id: r._id,
             }))

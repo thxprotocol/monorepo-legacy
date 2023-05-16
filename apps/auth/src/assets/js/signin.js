@@ -77,8 +77,7 @@ createApp({
         if (window.ethereum) {
             this.requestAccounts();
         } else if (isMobile && !window.ethereum) {
-            const deeplink = this.getDeeplink();
-            const url = new URL(this.claimUrl || deeplink);
+            const url = new URL(this.returnUrl);
             const link = url.href.replace(/.*?:\/\//g, '');
 
             window.open('https://metamask.app.link/dapp/' + link, '_blank');
@@ -88,9 +87,6 @@ createApp({
         }
 
         this.isDisabledMetamask = false;
-    },
-    getDeeplink() {
-        return this.isWidget ? new URL(this.returnUrl).searchParams.get('origin') : this.returnUrl;
     },
 }).mount();
 

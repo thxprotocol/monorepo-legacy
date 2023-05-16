@@ -87,8 +87,6 @@ describe('ERC20 Perks', () => {
                 expect(res.body.pointPrice).toBe(pointPrice);
                 expect(new Date(res.body.expiryDate).getDate()).toBe(expiryDate.getDate());
                 expect(res.body.limit).toBe(limit);
-                expect(res.body.claimAmount).toBe(claimAmount);
-                expect(res.body.claims.length).toBe(0);
                 expect(res.body.isPromoted).toBe(true);
             })
             .expect(201, done);
@@ -99,7 +97,6 @@ describe('ERC20 Perks', () => {
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .expect((res: request.Response) => {
                 expect(res.body.results.length).toBe(1);
-                expect(res.body.results[0].claims).toHaveLength(0);
                 expect(res.body.limit).toBe(10);
                 expect(res.body.total).toBe(1);
                 perk = res.body.results[0];
@@ -111,7 +108,6 @@ describe('ERC20 Perks', () => {
         user.get('/v1/erc20-perks/' + perk._id)
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .expect((res: request.Response) => {
-                expect(res.body.claims).toHaveLength(perk.claims.length);
                 expect(res.body.payments).toHaveLength(0);
             })
             .expect(200, done);

@@ -2,7 +2,7 @@
     <base-modal
         @show="onShow"
         size="xl"
-        :title="reward ? 'Update Coin Perk' : 'Create Coin Perk'"
+        :title="perk ? 'Update Coin Perk' : 'Create Coin Perk'"
         :id="id"
         :error="error"
         :loading="isLoading"
@@ -60,6 +60,14 @@
                             @change-reward-limit="limit = $event"
                             @change-claim-amount="onChangeClaimAmount"
                         />
+                        <BaseCardTokenGating
+                            class="mb-3"
+                            :pool="pool"
+                            :perk="perk"
+                            @change-contract-address="tokenGatingContractAddress = $event"
+                            @change-amount="tokenGatingAmount = $event"
+                            @change-variant="tokenGatingVariant = $event"
+                        />
                         <b-form-group>
                             <b-form-checkbox v-model="isPromoted">Promoted</b-form-checkbox>
                         </b-form-group>
@@ -76,7 +84,7 @@
                 variant="primary"
                 block
             >
-                {{ reward ? 'Update Coin Perk' : 'Create Coin Perk' }}
+                {{ perk ? 'Update Coin Perk' : 'Create Coin Perk' }}
             </b-button>
         </template>
     </base-modal>
@@ -89,13 +97,15 @@ import BaseModal from './BaseModal.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseDropdownSelectERC20 from '../dropdowns/BaseDropdownSelectERC20.vue';
 import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
-
+import BaseCardTokenGating from '../cards/BaseCardTokenGating.vue';
+import { TokenGatingVariant } from '@thxnetwork/types/enums/TokenGatingVariant';
 @Component({
     components: {
         BaseModal,
         BaseCardRewardExpiry,
         BaseCardRewardLimits,
         BaseDropdownSelectERC20,
+        BaseCardTokenGating,
     },
 })
 export default class ModalRewardERC20Create extends Vue {
@@ -108,39 +118,45 @@ export default class ModalRewardERC20Create extends Vue {
     description = '';
     expiryDate: Date | null = null;
     claimAmount = 0;
-    claimLimit = 1;
+    claimLimit = 0;
     limit = 0;
     pointPrice = 0;
     imageFile: File | null = null;
     image = '';
-
     isPromoted = false;
+    tokenGatingContractAddress = '';
+    tokenGatingVariant = TokenGatingVariant.ERC20;
+    tokenGatingAmount = 0;
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
-    @Prop({ required: false }) reward!: TERC20Perk;
+    @Prop({ required: false }) perk!: TERC20Perk;
 
     onShow() {
-        this.erc20Id = this.reward ? this.reward.erc20Id : '';
-        this.title = this.reward ? this.reward.title : '';
-        this.description = this.reward ? this.reward.description : '';
-        this.amount = this.reward ? String(this.reward.amount) : '0';
-        this.pointPrice = this.reward ? this.reward.pointPrice : 0;
-        this.expiryDate = this.reward ? this.reward.expiryDate : null;
-        this.limit = this.reward ? this.reward.limit : 0;
-        this.claimLimit = this.reward ? this.reward.claimLimit : 1;
-        this.claimAmount = this.reward ? this.reward.claimAmount : 0;
-
-        this.image = this.reward && this.reward.image ? this.reward.image : '';
-        this.isPromoted = this.reward ? this.reward.isPromoted : false;
+        this.erc20Id = this.perk ? this.perk.erc20Id : this.erc20Id;
+        this.title = this.perk ? this.perk.title : this.title;
+        this.description = this.perk ? this.perk.description : this.description;
+        this.amount = this.perk ? String(this.perk.amount) : this.amount;
+        this.pointPrice = this.perk ? this.perk.pointPrice : this.pointPrice;
+        this.expiryDate = this.perk ? this.perk.expiryDate : this.expiryDate;
+        this.limit = this.perk ? this.perk.limit : 0;
+        this.claimLimit = this.perk ? this.perk.claimLimit : 1;
+        this.claimAmount = this.perk ? this.perk.claimAmount : 0;
+        this.image = this.perk && this.perk.image ? this.perk.image : '';
+        this.isPromoted = this.perk ? this.perk.isPromoted : this.isPromoted;
+        this.tokenGatingContractAddress = this.perk
+            ? this.perk.tokenGatingContractAddress
+            : this.tokenGatingContractAddress;
+        this.tokenGatingVariant = this.perk ? this.perk.tokenGatingVariant : this.tokenGatingVariant;
+        this.tokenGatingAmount = this.perk ? this.perk.tokenGatingAmount : this.tokenGatingAmount;
     }
 
     onSubmit() {
         this.isLoading = true;
         this.$store
-            .dispatch(`erc20Perks/${this.reward ? 'update' : 'create'}`, {
+            .dispatch(`erc20Perks/${this.perk ? 'update' : 'create'}`, {
                 pool: this.pool,
-                reward: this.reward,
+                reward: this.perk,
                 payload: {
                     page: 1,
                     poolId: String(this.pool._id),
@@ -155,6 +171,9 @@ export default class ModalRewardERC20Create extends Vue {
                     limit: this.limit,
                     file: this.imageFile,
                     isPromoted: this.isPromoted,
+                    tokenGatingContractAddress: this.tokenGatingContractAddress,
+                    tokenGatingVariant: this.tokenGatingVariant,
+                    tokenGatingAmount: this.tokenGatingAmount,
                 },
             })
             .then(() => {

@@ -132,7 +132,7 @@ export class AccountService {
         const address = toChecksumAddress(addr);
         const chainId = NODE_ENV === 'production' ? ChainId.Polygon : ChainId.Hardhat;
         const wallets = await WalletProxy.get('', chainId, address);
-        console.log(wallets);
+
         if (!wallets.length) {
             return await this.createForAddress(address);
         } else {

@@ -8,7 +8,7 @@
     >
         <template #card-header>
             <base-badge-network v-if="!isLoading" :chainId="erc721.chainId" />
-            <base-dropdown-menu-nft :erc721="erc721" @archive="archive" class="ml-auto" />
+            <base-dropdown-menu-nft :archived="isArchived" :nft="erc721" @archive="archive" class="ml-auto" />
         </template>
         <template #card-body>
             <div class="mb-3 d-flex align-items-center">
@@ -19,6 +19,10 @@
                     {{ erc721.name }}
                 </div>
             </div>
+            <p>
+                <span class="text-muted">Variant</span><br />
+                <b-badge variant="primary" class="mr-1 mb-1"> ERC721 </b-badge>
+            </p>
             <p>
                 <span class="text-muted">Total supply</span><br />
                 <strong class="font-weight-bold h3 text-primary">
@@ -31,19 +35,6 @@
                     {{ erc721.baseURL }}
                 </b-badge>
             </p>
-            <p>
-                <span class="text-muted">Properties</span><br />
-                <b-badge
-                    v-b-tooltip
-                    :title="`${prop.description} (${prop.propType})`"
-                    variant="primary"
-                    class="mr-1 mb-1"
-                    :key="key"
-                    v-for="(prop, key) of erc721.properties"
-                >
-                    {{ prop.name }}
-                </b-badge>
-            </p>
             <b-button block variant="light" class="rounded-pill">Manage Metadata</b-button>
         </template>
     </base-card>
@@ -51,7 +42,6 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { ERC721Variant, type TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import poll from 'promise-poller';
 import BaseCard from '@thxnetwork/dashboard/components/cards/BaseCard.vue';
@@ -76,6 +66,10 @@ export default class BaseCardERC721 extends Vue {
     error = '';
 
     @Prop() erc721!: TERC721;
+
+    get isArchived() {
+        return this.erc721.address ? this.erc721.archived : false;
+    }
 
     async mounted() {
         await this.$store.dispatch('erc721/read', this.erc721._id);
@@ -106,12 +100,7 @@ export default class BaseCardERC721 extends Vue {
     }
 
     onClick() {
-        this.$router.push({ path: `/nft/${this.erc721._id}/metadata` });
-    }
-
-    openTokenUrl() {
-        const url = `${chainInfo[this.erc721.chainId].blockExplorer}/token/${this.erc721.address}`;
-        return (window as any).open(url, '_blank').focus();
+        this.$router.push({ path: `/nft/${this.erc721.variant}/${this.erc721._id}` });
     }
 
     async archive() {

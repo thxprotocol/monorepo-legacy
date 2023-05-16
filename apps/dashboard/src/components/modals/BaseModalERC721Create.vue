@@ -2,13 +2,27 @@
     <base-modal :loading="loading" :error="error" title="Create NFT collection" id="modalERC721Create">
         <template #modal-body v-if="!loading">
             <base-form-select-network @selected="chainId = $event" />
+            <b-form-group label="Variant">
+                <b-row>
+                    <b-col>
+                        <b-form-radio v-model="variant" name="paymentVariant" :value="NFTVariant.ERC721">
+                            <strong> ERC721</strong>
+                        </b-form-radio>
+                    </b-col>
+                    <b-col>
+                        <b-form-radio v-model="variant" name="paymentVariant" :value="NFTVariant.ERC1155">
+                            <strong> ERC1155</strong>
+                        </b-form-radio>
+                    </b-col>
+                </b-row>
+            </b-form-group>
             <b-row>
                 <b-col>
                     <b-form-group label="Title">
                         <b-form-input v-model="name" placeholder="Exclusive VIP collection" />
                     </b-form-group>
                 </b-col>
-                <b-col>
+                <b-col v-if="variant === NFTVariant.ERC721">
                     <b-form-group label="Symbol">
                         <b-form-input v-model="symbol" placeholder="NFT-VIP" />
                     </b-form-group>
@@ -25,7 +39,7 @@
             </b-form-group>
         </template>
         <template #btn-primary>
-            <b-button :disabled="loading" class="rounded-pill" @click="submit()" variant="primary" block>
+            <b-button :disabled="loading" class="rounded-pill" @click="onClickSubmit" variant="primary" block>
                 Create NFT
             </b-button>
         </template>
@@ -34,10 +48,11 @@
 
 <script lang="ts">
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
-import { ERC721Variant, TERC721, TERC721DefaultProp } from '@thxnetwork/dashboard/types/erc721';
+import { ERC721Variant, TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import { Component, Vue } from 'vue-property-decorator';
 import BaseFormSelectNetwork from '../form-select/BaseFormSelectNetwork.vue';
 import BaseModal from './BaseModal.vue';
+import { NFTVariant } from '@thxnetwork/types/enums';
 
 @Component({
     components: {
@@ -46,61 +61,46 @@ import BaseModal from './BaseModal.vue';
     },
 })
 export default class ModalERC721Create extends Vue {
+    NFTVariant = NFTVariant;
     ERC721Variant = ERC721Variant;
     loading = false;
     error = '';
-    variant = ERC721Variant.OpenSea;
+    variant = NFTVariant.ERC721;
     tokenList: TERC721[] = [];
     chainId: ChainId = ChainId.PolygonMumbai;
     erc721Token: TERC721 | null = null;
     name = '';
     symbol = '';
     description = '';
-    schema: TERC721DefaultProp[] = [
-        {
-            name: 'name',
-            propType: 'string',
-            description: 'The name of this item.',
-            disabled: true,
-        },
-        {
-            name: 'description',
-            propType: 'string',
-            description: 'A brief description of your item.',
-            disabled: true,
-        },
-
-        {
-            name: 'image',
-            propType: 'image',
-            description: 'A visual representation of the item.',
-            disabled: true,
-        },
-        {
-            name: 'external_url',
-            propType: 'link',
-            description: 'A link referencing to a page with more information on the item.',
-            disabled: true,
-        },
-    ];
     logoImg: File | null = null;
 
-    async submit() {
+    async onClickSubmit() {
         this.loading = true;
-
-        const data = {
-            chainId: this.chainId,
-            name: this.name,
-            symbol: this.symbol,
-            description: this.description,
-            schema: this.schema,
-            file: this.logoImg,
-        };
-
-        await this.$store.dispatch('erc721/create', data);
-
+        await this.create(this.variant);
         this.$bvModal.hide(`modalERC721Create`);
         this.loading = false;
+    }
+
+    async create(variant: NFTVariant) {
+        switch (variant) {
+            case NFTVariant.ERC721: {
+                return await this.$store.dispatch('erc721/create', {
+                    chainId: this.chainId,
+                    name: this.name,
+                    symbol: this.symbol,
+                    description: this.description,
+                    file: this.logoImg,
+                });
+            }
+            case NFTVariant.ERC1155: {
+                return await this.$store.dispatch('erc1155/create', {
+                    chainId: this.chainId,
+                    name: this.name,
+                    description: this.description,
+                    file: this.logoImg,
+                });
+            }
+        }
     }
 }
 </script>

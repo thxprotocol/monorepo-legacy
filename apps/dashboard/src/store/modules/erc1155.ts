@@ -1,7 +1,7 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { type TPool } from '@thxnetwork/types/index';
+import { type TERC1155Token, type TPool } from '@thxnetwork/types/interfaces';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import type {
     TERC1155,
@@ -17,7 +17,12 @@ import { track } from '@thxnetwork/mixpanel';
 class ERC1155Module extends VuexModule {
     _all: IERC1155s = {};
     _metadata: IERC1155Metadatas = {};
+    _tokens: { [erc1155Id: string]: { [tokenId: string]: TERC1155Token } } = {};
     _totalsMetadata: { [erc1155Id: string]: number } = {};
+
+    get tokens() {
+        return this._tokens;
+    }
 
     get all() {
         return this._all;
@@ -39,6 +44,12 @@ class ERC1155Module extends VuexModule {
     @Mutation
     unset(erc1155: TERC1155) {
         Vue.delete(this._all, erc1155._id);
+    }
+
+    @Mutation
+    setERC1155Token(token: TERC1155Token) {
+        if (!this._tokens[token.erc1155Id]) Vue.set(this._tokens, token.erc1155Id, {});
+        Vue.set(this._tokens[token.erc1155Id], token._id, token);
     }
 
     @Mutation
@@ -164,12 +175,11 @@ class ERC1155Module extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async create(payload: { chainId: ChainId; name: string; schema: string[]; description: string; file?: File }) {
+    async create(payload: { chainId: ChainId; name: string; description: string; file?: File }) {
         const formData = new FormData();
         formData.set('chainId', payload.chainId.toString());
         formData.set('name', payload.name);
         formData.set('description', payload.description);
-        formData.set('schema', JSON.stringify(payload.schema));
 
         if (payload.file) {
             formData.append('file', payload.file);
@@ -182,7 +192,7 @@ class ERC1155Module extends VuexModule {
         });
 
         const profile = this.context.rootGetters['account/profile'];
-        track('UserCreates', [profile.sub, 'nft']);
+        track('UserCreates', [profile.sub, 'erc1155']);
 
         this.context.commit('set', data);
     }
@@ -192,11 +202,7 @@ class ERC1155Module extends VuexModule {
         const { data } = await axios({
             method: 'POST',
             url: `/erc1155/${erc1155._id}/metadata`,
-            data: {
-                title: metadata.title,
-                description: metadata.description,
-                attributes: metadata.attributes,
-            },
+            data: metadata,
         });
         this.context.commit('setMetadata', {
             erc1155,
@@ -209,11 +215,7 @@ class ERC1155Module extends VuexModule {
         const { data } = await axios({
             method: 'PATCH',
             url: `/erc1155/${erc1155._id}/metadata/${metadata._id}`,
-            data: {
-                title: metadata.title,
-                description: metadata.description,
-                attributes: metadata.attributes,
-            },
+            data: metadata,
         });
 
         this.context.commit('setMetadata', {
@@ -234,19 +236,40 @@ class ERC1155Module extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async import(payload: { address: string; pool: TPool; name?: string }) {
+    async import(payload: { contractAddress: string; pool: TPool; name?: string }) {
         const { data } = await axios({
             method: 'POST',
             url: `/erc1155/import`,
             headers: { 'X-PoolId': payload.pool._id },
             data: {
-                contractAddress: payload.address,
+                contractAddress: payload.contractAddress,
                 chainId: payload.pool.chainId,
-                name: payload.name || '',
             },
         });
 
-        await this.context.dispatch('read', data._id);
+        await this.context.dispatch('read', data.erc1155._id);
+    }
+
+    @Action({ rawError: true })
+    async listTokens(pool: TPool) {
+        const { data } = await axios({
+            method: 'GET',
+            url: '/erc1155/token',
+            params: { chainId: pool.chainId, recipient: pool.address },
+        });
+
+        data.forEach((token: TERC1155Token & { nft: TERC1155 }) => {
+            this.context.commit('setERC1155Token', token);
+        });
+    }
+
+    @Action({ rawError: true })
+    async getToken(token: TERC1155Token) {
+        const { data } = await axios({
+            method: 'GET',
+            url: `/erc1155/token/${token._id}`,
+        });
+        this.context.commit('setERC1155Token', data);
     }
 }
 

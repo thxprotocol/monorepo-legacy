@@ -1,12 +1,16 @@
 import { Request, Response } from 'express';
-import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
+import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { param } from 'express-validator';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
-import { Claim } from '@thxnetwork/api/models/Claim';
+import { Claim, ClaimDocument } from '@thxnetwork/api/models/Claim';
 import { findRewardByUuid, isTERC20Perk, isTERC721Perk } from '@thxnetwork/api/util/rewards';
 import { getPaymentModel, redeemValidation } from '@thxnetwork/api/util/perks';
+import { ERC721Perk, ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
+import { ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
+import { ERC721Document } from '@thxnetwork/api/models/ERC721';
+import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 
 const validation = [
     param('uuid')
@@ -26,47 +30,35 @@ const controller = async (req: Request, res: Response) => {
         schema: { $ref: '#/definitions/Claim' } 
     }
     */
-    const claim = await Claim.findOne({ uuid: req.params.uuid });
-    if (!claim) throw new NotFoundError('Could not find this claim');
 
-    const pool = await PoolService.getById(claim.poolId);
-    if (!pool) throw new NotFoundError('Could not find this pool');
+    let claim: ClaimDocument,
+        pool: AssetPoolDocument,
+        perk: ERC721PerkDocument,
+        erc721: ERC721Document,
+        metadata: ERC721MetadataDocument;
 
-    const perk = await findRewardByUuid(claim.rewardUuid);
-    if (!perk) throw new NotFoundError('Could not find this reward');
+    try {
+        claim = await Claim.findOne({ uuid: req.params.uuid });
+        if (!claim) throw new NotFoundError('Could not find this claim URL');
 
-    let error = '';
-    const result = await redeemValidation({ perk, sub: req.auth && req.auth.sub, claim });
-    if (result.errorMessage) {
-        error = result.errorMessage;
-    }
+        pool = await PoolService.getById(claim.poolId);
+        if (!pool) throw new NotFoundError('Could not find campaign for this claim URL');
 
-    // Can not be claimed when claimLimit > claimed perks if claimAmount > 0 (Number of QR codes)
-    if (req.auth && req.auth.sub && perk.claimLimit) {
-        const model = getPaymentModel(perk);
-        if (!model) throw new BadRequestError('Could not determine payment model for this claim.');
+        perk = await ERC721Perk.findOne({ uuid: claim.rewardUuid });
+        if (!perk) throw new NotFoundError('Could not find configuration for this claim URL');
 
-        const amountOfPaymentsPerSub = await model.countDocuments({ perkId: perk._id, sub: req.auth.sub });
-        if (amountOfPaymentsPerSub >= perk.claimLimit) {
-            error = 'You have claimed this perk for the maximum amount of times.';
-        }
-    }
+        erc721 = await ERC721Service.findById(claim.erc721Id);
+        if (!erc721) throw new NotFoundError('Could not find NFT for this claim URL');
 
-    // Can not be claimed when sub is set for this claim URL and claim amount is greater than 1
-    if (claim && claim.sub && perk.claimAmount > 1) {
-        error = 'This perk has been claimed already.';
-    }
+        metadata = await ERC721Service.findMetadataById(perk.metadataId);
+        if (!metadata) throw new NotFoundError('Could not find metadata for this claim URL');
 
-    if (isTERC20Perk(perk) && claim.erc20Id) {
-        const erc20 = await ERC20Service.getById(claim.erc20Id);
-        return res.json({ ...Object.assign({ claim }, { error }), pool, perk, erc20 });
-    }
+        // Can not be claimed when sub is set for this claim URL
+        if (claim.sub) throw new ForbiddenError('This NFT is claimed already.');
 
-    if (isTERC721Perk(perk) && claim.erc721Id) {
-        const erc721 = await ERC721Service.findById(claim.erc721Id);
-        const metadata = await ERC721Service.findMetadataById(perk.erc721metadataId);
-
-        return res.json({ ...Object.assign({ claim }, { error }), pool, perk, erc721, metadata });
+        return res.json({ claim, pool, perk, erc721, metadata });
+    } catch (error) {
+        return res.json({ ...Object.assign({ claim }, { error: error.message }), pool, perk, erc721, metadata });
     }
 };
 

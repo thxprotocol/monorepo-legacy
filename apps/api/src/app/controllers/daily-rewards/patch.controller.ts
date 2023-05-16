@@ -8,6 +8,7 @@ const validation = [
     body('title').optional().isString(),
     body('description').optional().isString(),
     body('amount').optional().isInt({ gt: 0 }),
+    body('isEnabledWebhookQualification').optional().isBoolean(),
 ];
 
 const controller = async (req: Request, res: Response) => {
@@ -18,6 +19,7 @@ const controller = async (req: Request, res: Response) => {
         title: req.body.title,
         description: req.body.description,
         amount: req.body.amount,
+        isEnabledWebhookQualification: req.body.isEnabledWebhookQualification,
     });
     dailyReward = await DailyReward.findById(req.params.id);
     return res.json(dailyReward);

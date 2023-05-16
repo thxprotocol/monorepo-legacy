@@ -3,10 +3,10 @@ import { getByteCodeForContractName, getContractFromName } from '@thxnetwork/api
 import { ChainId } from '@thxnetwork/types/enums';
 import { getProvider } from '../network';
 
-export async function deployERC1155() {
-    const { web3, defaultAccount } = getProvider(ChainId.Hardhat);
+export async function deployERC1155(chainId = ChainId.Hardhat) {
+    const { web3, defaultAccount } = getProvider(chainId);
     const contractName = 'THX_ERC1155';
-    const contract = getContractFromName(ChainId.Hardhat, contractName);
+    const contract = getContractFromName(chainId, contractName);
     const bytecode = getByteCodeForContractName(contractName);
     const baseURL = `${API_URL}/${VERSION}/erc1155/metadata/{id}`;
     const fn = contract.deploy({
@@ -36,6 +36,9 @@ export const mockGetNftsForOwner = (contractAddress: string) => {
                     address: contractAddress,
                 },
                 tokenId: '1',
+                tokenUri: {
+                    raw: 'https://ipfs.io/ipfs/QmRvCinGkzqDdmSZ3PzQRyHbQVqaFLTDyfyMMD54Bwcjsi',
+                },
                 rawMetadata: {
                     name: '#1',
                     description: 'image description piece #1',

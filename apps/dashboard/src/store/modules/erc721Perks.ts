@@ -42,7 +42,6 @@ class ERC721PerkModule extends VuexModule {
     @Mutation
     set({ pool, reward }: { reward: TERC721Perk & { _id: string }; pool: TPool }) {
         if (!this._all[pool._id]) Vue.set(this._all, pool._id, {});
-        if (typeof reward.platform === 'undefined') reward.platform = RewardConditionPlatform.None; // Temp fix for corrupt data
         Vue.set(this._all[pool._id], reward._id, reward);
     }
 

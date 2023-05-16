@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { TERC1155 } from '@thxnetwork/api/types/TERC1155';
+import { TERC1155 } from '@thxnetwork/types/interfaces';
 import { getAbiForContractName } from '@thxnetwork/api/config/contracts';
 import { getProvider } from '@thxnetwork/api/util/network';
 
@@ -7,6 +7,7 @@ export type ERC1155Document = mongoose.Document & TERC1155;
 
 const ERC1155Schema = new mongoose.Schema(
     {
+        variant: String,
         chainId: Number,
         sub: String,
         name: String,
@@ -14,7 +15,6 @@ const ERC1155Schema = new mongoose.Schema(
         transactions: [String],
         address: String,
         baseURL: String,
-        properties: [{ name: String, propType: String, description: String }],
         archived: Boolean,
         logoImgUrl: String,
     },

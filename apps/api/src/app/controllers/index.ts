@@ -10,7 +10,7 @@ import shopifyPerksRouter from './shopify-perks/shopify-perks.router';
 import tokenRouter from './token/token.router';
 import pointRewardsRouter from './point-rewards/point-rewards.router';
 import pointBalancesRouter from './point-balances/point-balances.router';
-import metadataRouter from './erc721/metadata/metadata.router';
+import metadataRouter from './metadata/metadata.router';
 import erc721Router from './erc721/erc721.router';
 import erc1155Router from './erc1155/erc1155.router';
 import uploadRouter from './upload/upload.router';

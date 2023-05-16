@@ -2,7 +2,7 @@
     <div>
         <b-form-group>
             <label>Blockchain Network</label>
-            <b-dropdown variant="link" class="dropdown-select" :toggle-class="{ disabled: disabled }">
+            <b-dropdown variant="link" class="dropdown-select bg-white" :toggle-class="{ disabled: disabled }">
                 <template #button-content>
                     <div class="d-flex align-items-center">
                         <img :src="chainInfo[currentChainId].logo" width="20" height="20" class="mr-3" />

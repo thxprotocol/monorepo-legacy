@@ -11,11 +11,7 @@ const user = request.agent(app);
 describe('ERC1155', () => {
     const chainId = ChainId.Hardhat,
         name = 'Planets of the Galaxy',
-        description = 'Collection full of rarities.',
-        schema = [
-            { name: 'color', propType: 'string', description: 'lorem ipsum' },
-            { name: 'size', propType: 'string', description: 'lorem ipsum dolor sit' },
-        ];
+        description = 'Collection full of rarities.';
     let erc1155ID: string;
 
     beforeAll(beforeAllCallback);
@@ -23,7 +19,7 @@ describe('ERC1155', () => {
 
     describe('POST /erc1155', () => {
         it('should create and return contract details', async () => {
-            const logoImg = await createImage();
+            const logoImg = createImage();
             await user
                 .post('/v1/erc1155')
                 .set('Authorization', dashboardAccessToken)
@@ -32,19 +28,12 @@ describe('ERC1155', () => {
                     chainId,
                     name,
                     description,
-                    schema: JSON.stringify(schema),
                 })
                 .expect(({ body }: request.Response) => {
                     expect(body._id).toBeDefined();
                     expect(body.chainId).toBe(chainId);
                     expect(body.name).toBe(name);
                     expect(body.description).toBe(description);
-                    expect(body.properties[0].description).toBe(schema[0].description);
-                    expect(body.properties[0].name).toBe(schema[0].name);
-                    expect(body.properties[0].propType).toBe(schema[0].propType);
-                    expect(body.properties[1].description).toBe(schema[1].description);
-                    expect(body.properties[1].name).toBe(schema[1].name);
-                    expect(body.properties[1].propType).toBe(schema[1].propType);
                     expect(isAddress(body.address)).toBe(true);
                     expect(body.archived).toBe(false);
                     expect(body.logoImgUrl).toBeDefined();
@@ -63,12 +52,6 @@ describe('ERC1155', () => {
                     expect(body.chainId).toBe(chainId);
                     expect(body.name).toBe(name);
                     expect(body.description).toBe(description);
-                    expect(body.properties[0].description).toBe(schema[0].description);
-                    expect(body.properties[0].name).toBe(schema[0].name);
-                    expect(body.properties[0].propType).toBe(schema[0].propType);
-                    expect(body.properties[1].description).toBe(schema[1].description);
-                    expect(body.properties[1].name).toBe(schema[1].name);
-                    expect(body.properties[1].propType).toBe(schema[1].propType);
                     expect(isAddress(body.address)).toBe(true);
                     expect(body.logoImgUrl).toBeDefined();
                 })

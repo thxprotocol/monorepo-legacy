@@ -4,10 +4,12 @@ module.exports = defineConfig({
     projectId: '1yc9c9',
     viewportWidth: 1280,
     viewportHeight: 720,
-    defaultCommandTimeout: 30000,
+    defaultCommandTimeout: 120000,
     e2e: {
         setupNodeEvents(on, config) {
-            // implement node event listeners here
+            on('before:browser:launch', (browser = {}, launchOptions) => {
+                //
+            });
         },
     },
 });

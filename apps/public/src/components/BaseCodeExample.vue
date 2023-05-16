@@ -3,17 +3,19 @@
         <div class="container py-5">
             <div class="row pb-lg-5">
                 <div class="col-lg-6 order-1 order-lg-0 align-items-center">
-                    <div class="text-muted font-weight-bold mb-2">Embed a personalized script tag</div>
+                    <div class="text-muted font-weight-bold mb-2">Integrate with just one script in your HTML</div>
                     <pre
                         class="rounded p-3 mb-2 w-100 text-white"
                         style="background-color: #282c34; white-space: pre-line"
                     >
                         <code class="language-common" v-html="codeExample2"></code>
                     </pre>
-                    <div class="text-muted font-weight-bold mb-2">Or use our JavaScript SDK</div>
-                    <pre class="rounded p-3 w-100 text-white" style="background-color: #282c34; white-space: pre-line">
-                        <code class="language-common" v-html="codeExample"></code>
-                    </pre>
+                    <div class="text-right">
+                        <b-button @click="onClickLaunchWidget" variant="light" class="rounded-pill">
+                            Open <i class="fas fa-gift mx-1" style="font-size: 1.1rem"></i> widget
+                            <i data-v-fddfcf4a="" class="fas fa-chevron-right" aria-hidden="true"></i>
+                        </b-button>
+                    </div>
                 </div>
                 <div class="col-lg-4 offset-lg-1 pb-3">
                     <h2 class="h5">Embedded Loyalty</h2>
@@ -24,10 +26,6 @@
                     <p class="lead font-weight-light">
                         Using our widget or SDK you save months of work compared to starting from scratch.
                     </p>
-                    <b-button @click="onClickLaunchWidget" variant="primary" class="rounded-pill">
-                        <i class="fas fa-gift ml-0 mr-2" style="font-size: 1.1rem"></i>
-                        Launch Loyalty Widget!
-                    </b-button>
                 </div>
             </div>
             <div class="row pt-5 pb-5">
@@ -132,16 +130,8 @@ hljs.registerLanguage('xml', Xml);
 export default class BaseCodeExample extends Vue {
     ALT_TEXT = ALT_TEXT;
     TITLES = TITLES;
-    codeExample = hljs.highlight(
-        `// app.js
-import THXWidget from '@thxnetwork/sdk';
-
-new THXWidget({ poolId: "507f191e810c19729de860ea" });`,
-        { language: 'javascript' },
-    ).value;
     codeExample2 = hljs.highlight(
-        `<!-- index.html -->
-<script src="https://api.thx.network/v1/widget/507f191e810c19729de860ea.js"><\/script>`,
+        `<script src="https://api.thx.network/v1/widget/507f191e810c19729de860ea.js"><\/script>`,
         {
             language: 'xml',
         },

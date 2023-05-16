@@ -2,7 +2,7 @@ import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { type TPool } from '@thxnetwork/types/index';
-import { RewardConditionPlatform, type TERC20Perk } from '@thxnetwork/types/index';
+import { type TERC20Perk } from '@thxnetwork/types/index';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import { track } from '@thxnetwork/mixpanel';
@@ -43,7 +43,6 @@ class ERC20PerkModule extends VuexModule {
     @Mutation
     set({ pool, reward }: { reward: TERC20Perk & { _id: string }; pool: TPool }) {
         if (!this._all[pool._id]) Vue.set(this._all, pool._id, {});
-        if (typeof reward.platform === 'undefined') reward.platform = RewardConditionPlatform.None; // Temp fix for corrupt data
         Vue.set(this._all[pool._id], reward._id, reward);
     }
 
@@ -89,7 +88,6 @@ class ERC20PerkModule extends VuexModule {
 
         const profile = this.context.rootGetters['account/profile'];
         track('UserCreates', [profile.sub, 'coin perk']);
-
         this.context.commit('set', { pool, reward: { ...payload, ...data } });
     }
 

@@ -1,4 +1,5 @@
-import { TPool } from '@thxnetwork/types/index';
+import { NFTVariant } from '@thxnetwork/types/enums';
+import { TPool } from '@thxnetwork/types/interfaces';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import { AxiosResponse } from 'axios';
 
@@ -21,25 +22,27 @@ export interface IERC1155Metadatas {
 export interface TERC1155Metadata {
     _id: string;
     beneficiary: string;
-    title: string;
-    description: string;
-    metadata: { key: string; value: string }[];
     tokenId: number;
     createdAt: Date;
-    attributes: [{ key: string; value: string }];
+    imageUrl: string;
+    name: string;
+    image: string;
+    description: string;
+    externalUrl: string;
     tokens: any[];
     page: number;
 }
 
 export type TERC1155 = {
     _id: string;
+    variant: NFTVariant;
     type: ERC1155Variant;
     chainId: ChainId;
     poolAddress: string;
     address: string;
     name: string;
+    baseURL: string;
     logoURI: string;
-    properties: TERC1155DefaultProp[];
     archived: boolean;
     poolId?: string;
 };

@@ -37,7 +37,7 @@ const controller = async (req: Request, res: Response) => {
         throw new BadRequestError('Not enough points on this account for this payment');
     }
 
-    const redeemValidationResult = await redeemValidation({ perk: erc20Perk, sub: req.auth.sub });
+    const redeemValidationResult = await redeemValidation({ perk: erc20Perk, sub: req.auth.sub, pool });
     if (redeemValidationResult.isError) {
         throw new ForbiddenError(redeemValidationResult.errorMessage);
     }

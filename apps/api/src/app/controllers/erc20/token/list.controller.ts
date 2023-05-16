@@ -1,6 +1,6 @@
 import { ERC20TokenDocument } from '@thxnetwork/api/models/ERC20Token';
 import { Request, Response } from 'express';
-import { TERC20, TERC20Token } from '@thxnetwork/api/types/TERC20';
+import { TERC20, TERC20Token } from '@thxnetwork/types/interfaces';
 import { fromWei } from 'web3-utils';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';

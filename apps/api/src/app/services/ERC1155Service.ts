@@ -1,41 +1,42 @@
 import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
 import { TransactionReceipt } from 'web3-core';
-
 import { getByteCodeForContractName, getContractFromName } from '@thxnetwork/api/config/contracts';
-import { API_URL, VERSION } from '@thxnetwork/api/config/secrets';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { ERC1155, ERC1155Document, IERC1155Updates } from '@thxnetwork/api/models/ERC1155';
 import { ERC1155Metadata, ERC1155MetadataDocument } from '@thxnetwork/api/models/ERC1155Metadata';
 import { ERC1155Token, ERC1155TokenDocument } from '@thxnetwork/api/models/ERC1155Token';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
 import { ChainId, TransactionState } from '@thxnetwork/types/enums';
-import { ERC1155TokenState } from '@thxnetwork/api/types/TERC1155';
-import { TERC1155DeployCallbackArgs, TERC1155TokenMintCallbackArgs } from '@thxnetwork/api/types/TTransaction';
+import { ERC1155TokenState } from '@thxnetwork/types/interfaces';
+import {
+    TERC1155DeployCallbackArgs,
+    TERC1155TokenMintCallbackArgs,
+    TERC1155TransferFromCallbackArgs,
+    TERC1155TransferFromWalletCallbackArgs,
+} from '@thxnetwork/api/types/TTransaction';
 import { assertEvent, ExpectedEventNotFound, findEvent, parseLogs } from '@thxnetwork/api/util/events';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
-
 import PoolService from './PoolService';
 import TransactionService from './TransactionService';
-
-import type { TERC1155, TERC1155Metadata, TERC1155Token } from '@thxnetwork/api/types/TERC1155';
+import type { TERC1155, TERC1155Metadata, TERC1155Token } from '@thxnetwork/types/interfaces';
 import type { IAccount } from '@thxnetwork/api/models/Account';
+import { TWallet, WalletDocument } from '../models/Wallet';
+import IPFSService from './IPFSService';
 import WalletService from './WalletService';
-import { TWallet } from '../models/Wallet';
+import { API_URL, VERSION } from '../config/secrets';
+
 const contractName = 'THX_ERC1155';
 
 async function deploy(data: TERC1155, forceSync = true): Promise<ERC1155Document> {
     const { defaultAccount } = getProvider(data.chainId);
     const contract = getContractFromName(data.chainId, contractName);
     const bytecode = getByteCodeForContractName(contractName);
-
-    data.baseURL = `${API_URL}/${VERSION}/erc1155/metadata/{id}`;
-
     const erc1155 = await ERC1155.create(data);
-
+    const baseURL = getBaseURL(erc1155);
     const fn = contract.deploy({
         data: bytecode,
-        arguments: [erc1155.baseURL, defaultAccount],
+        arguments: [baseURL, defaultAccount],
     });
 
     const txId = await TransactionService.sendAsync(null, fn, erc1155.chainId, forceSync, {
@@ -43,7 +44,7 @@ async function deploy(data: TERC1155, forceSync = true): Promise<ERC1155Document
         args: { erc1155Id: String(erc1155._id) },
     });
 
-    return ERC1155.findByIdAndUpdate(erc1155._id, { transactions: [txId] }, { new: true });
+    return ERC1155.findByIdAndUpdate(erc1155._id, { transactions: [txId], baseURL }, { new: true });
 }
 
 async function deployCallback({ erc1155Id }: TERC1155DeployCallbackArgs, receipt: TransactionReceipt) {
@@ -70,13 +71,20 @@ export async function queryDeployTransaction(erc1155: ERC1155Document): Promise<
     return erc1155;
 }
 
+function getBaseURL(erc1155: ERC1155Document) {
+    return `${API_URL}/${VERSION}/metadata/erc1155/${String(erc1155._id)}/{id}`;
+}
+
 const initialize = async (pool: AssetPoolDocument, address: string) => {
     const erc1155 = await findByQuery({ address, chainId: pool.chainId });
     await addMinter(erc1155, pool.address);
 };
 
 export async function findById(id: string): Promise<ERC1155Document> {
-    return ERC1155.findById(id);
+    const erc1155 = await ERC1155.findById(id);
+    if (!erc1155) return;
+    erc1155.logoImgUrl || erc1155.logoImgUrl || `https://avatars.dicebear.com/api/identicon/${erc1155.address}.svg`;
+    return erc1155;
 }
 
 export async function findBySub(sub: string): Promise<ERC1155Document[]> {
@@ -98,23 +106,33 @@ export async function mint(
     pool: AssetPoolDocument,
     erc1155: ERC1155Document,
     metadata: ERC1155MetadataDocument,
-    sub: string,
-    address: string,
+    amount: string,
+    wallet: WalletDocument,
     forceSync = true,
 ): Promise<ERC1155TokenDocument> {
-    // const address = await account.getAddress(pool.chainId);
-    const wallets = await WalletService.findByQuery({ sub, chainId: erc1155.chainId });
-    const erc1155token = await ERC1155Token.create({
-        sub,
-        recipient: address,
-        state: ERC1155TokenState.Pending,
-        erc1155Id: String(erc1155._id),
-        metadataId: String(metadata._id),
-        walletId: wallets.length ? String(wallets[0]._id) : undefined,
-    });
+    const tokenUri = await IPFSService.getTokenURI(erc1155, String(metadata._id));
+    const erc1155token = await ERC1155Token.findOneAndUpdate(
+        {
+            erc1155Id: String(erc1155._id),
+            walletId: String(wallet._id),
+            tokenId: metadata.tokenId,
+        },
+        {
+            sub: wallet.sub,
+            tokenUri: erc1155.baseURL.replace('{id}', tokenUri),
+            recipient: wallet.address,
+            state: ERC1155TokenState.Pending,
+            erc1155Id: String(erc1155._id),
+            metadataId: String(metadata._id),
+            walletId: String(wallet._id),
+            tokenId: metadata.tokenId,
+        },
+        { upsert: true, new: true },
+    );
+
     const txId = await TransactionService.sendAsync(
         pool.contract.options.address,
-        pool.contract.methods.mintForERC1155(erc1155.address, address, 1, String(metadata._id)),
+        pool.contract.methods.mintForERC1155(erc1155.address, wallet.address, metadata.tokenId, amount),
         pool.chainId,
         forceSync,
         {
@@ -123,14 +141,18 @@ export async function mint(
         },
     );
 
-    return ERC1155Token.findByIdAndUpdate(erc1155token._id, { transactions: [txId] }, { new: true });
+    return ERC1155Token.findByIdAndUpdate(
+        erc1155token._id,
+        { transactions: [txId], state: ERC1155TokenState.Transferring },
+        { new: true },
+    );
 }
 
 export async function mintCallback(args: TERC1155TokenMintCallbackArgs, receipt: TransactionReceipt) {
     const { assetPoolId, erc1155tokenId } = args;
     const { contract } = await PoolService.getById(assetPoolId);
     const events = parseLogs(contract.options.jsonInterface, receipt.logs);
-    const event = assertEvent('ERC1155Minted', events);
+    const event = assertEvent('ERC1155MintedSingle', events);
 
     await ERC1155Token.findByIdAndUpdate(erc1155tokenId, {
         state: ERC1155TokenState.Minted,
@@ -147,18 +169,97 @@ export async function queryMintTransaction(erc1155Token: ERC1155TokenDocument): 
             erc1155Token = await findTokenById(erc1155Token._id);
         }
     }
-
     return erc1155Token;
 }
 
-export async function parseAttributes(entry: ERC1155MetadataDocument) {
-    const attrs: { [key: string]: string } = {};
+export async function transferFrom(
+    pool: AssetPoolDocument,
+    erc1155Token: ERC1155TokenDocument,
+    erc1155: ERC1155Document,
+    wallet: WalletDocument,
+    amount: string,
+    forceSync = true,
+): Promise<ERC1155TokenDocument> {
+    const txId = await TransactionService.sendAsync(
+        pool.contract.options.address,
+        pool.contract.methods.transferFromERC1155(erc1155.address, wallet.address, erc1155Token.tokenId, amount),
+        pool.chainId,
+        forceSync,
+        {
+            type: 'erc1155TransferFromCallback',
+            args: {
+                erc1155Id: String(erc1155._id),
+                erc1155TokenId: String(erc1155Token._id),
+                sub: wallet.sub,
+                assetPoolId: String(pool._id),
+            },
+        },
+    );
 
-    for (const { key, value } of entry.attributes) {
-        attrs[key.toLowerCase()] = value;
-    }
+    return ERC1155Token.findByIdAndUpdate(erc1155Token._id, { transactions: [txId] }, { new: true });
+}
 
-    return attrs;
+export async function transferFromCallback(args: TERC1155TransferFromCallbackArgs, receipt: TransactionReceipt) {
+    const { assetPoolId, erc1155TokenId, sub } = args;
+    const { contract, chainId } = await PoolService.getById(assetPoolId);
+    const events = parseLogs(contract.options.jsonInterface, receipt.logs);
+    const event = assertEvent('ERC71155TransferredSingle', events);
+    const wallets = await WalletService.findByQuery({ sub, chainId });
+
+    await ERC1155Token.findByIdAndUpdate(erc1155TokenId, {
+        sub,
+        state: ERC1155TokenState.Transferred,
+        tokenId: Number(event.args.tokenId),
+        recipient: event.args.to,
+        walletId: wallets.length ? String(wallets[0]._id) : undefined,
+    });
+}
+
+export async function transferFromWallet(
+    erc1155: ERC1155Document,
+    erc1155Token: ERC1155TokenDocument,
+    wallet: WalletDocument,
+    to: string,
+    forceSync = true,
+): Promise<any> {
+    const txId = await TransactionService.sendAsync(
+        wallet.contract.options.address,
+        wallet.contract.methods.transferERC721(erc1155.address, to, erc1155Token.tokenId),
+        wallet.chainId,
+        forceSync,
+        {
+            type: 'erc721TransferFromWalletCallback',
+            args: {
+                erc721Id: String(erc1155._id),
+                erc721TokenId: String(erc1155Token._id),
+                walletId: String(wallet._id),
+                to,
+            },
+        },
+    );
+
+    return ERC1155Token.findByIdAndUpdate(erc1155Token._id, { transactions: [txId] }, { new: true });
+}
+
+export async function transferFromWalletCallback(
+    args: TERC1155TransferFromWalletCallbackArgs,
+    receipt: TransactionReceipt,
+) {
+    const { erc1155Id, erc1155TokenId, to } = args;
+    const { contract } = await ERC1155.findById(erc1155Id);
+    const { tokenId } = await ERC1155Token.findById(erc1155TokenId);
+    const ownerOfToken = await contract.methods.ownerOf(tokenId).call();
+
+    // Throwing manually due to missing contract events for successful transfers
+    if (ownerOfToken !== to) throw new Error('ERC721Transfer tx failed.');
+
+    const toWallet = await WalletService.findOneByAddress(to);
+    await ERC1155Token.findByIdAndUpdate(erc1155TokenId, {
+        state: ERC1155TokenState.Transferred,
+        recipient: to,
+        sub: toWallet ? toWallet.sub : '',
+        walletId: toWallet ? String(toWallet._id) : '',
+    });
 }
 
 async function isMinter(erc1155: ERC1155Document, address: string) {
@@ -208,16 +309,15 @@ async function findTokensByMetadata(metadata: ERC1155MetadataDocument): Promise<
     return ERC1155Token.find({ metadataId: String(metadata._id) });
 }
 
-async function findMetadataByNFT(erc1155: string, page = 1, limit = 10, q?: string) {
+async function findMetadataByNFT(erc1155Id: string, page = 1, limit = 10, q?: string) {
     let query;
     if (q && q != 'null' && q != 'undefined') {
-        query = { erc1155, title: { $regex: `.*${q}.*`, $options: 'i' } };
+        query = { erc1155Id, title: { $regex: `.*${q}.*`, $options: 'i' } };
     } else {
-        query = { erc1155 };
+        query = { erc1155Id };
     }
 
     const paginatedResult = await paginatedResults(ERC1155Metadata, page, limit, query);
-
     const results: TERC1155Metadata[] = [];
     for (const metadata of paginatedResult.results) {
         const tokens = (await this.findTokensByMetadata(metadata)).map((m: ERC1155MetadataDocument) => m.toJSON());
@@ -262,9 +362,12 @@ export default {
     findByQuery,
     addMinter,
     isMinter,
-    parseAttributes,
     update,
     initialize,
+    transferFrom,
+    transferFromCallback,
+    transferFromWallet,
+    transferFromWalletCallback,
     queryDeployTransaction,
     getOnChainERC1155Token,
     findTokensByWallet,

@@ -2,7 +2,7 @@
     <base-modal
         @show="onShow"
         size="xl"
-        :title="reward ? 'Update NFT Perk' : 'Create NFT Perk'"
+        :title="perk ? 'Update NFT Perk' : 'Create NFT Perk'"
         :id="id"
         :error="error"
         :loading="isLoading"
@@ -18,28 +18,34 @@
                         <b-form-group label="Description">
                             <b-textarea v-model="description" />
                         </b-form-group>
-                        <b-form-group label="NFT" v-if="!erc721SelectedMetadataIds.length">
-                            <BaseDropdownSelectERC721 :chainId="chainId" :erc721="erc721" @selected="onSelectERC721" />
+                        <b-form-group label="NFT" v-if="!selectedMetadataIds.length">
+                            <BaseDropdownSelectERC721 :chainId="chainId" :nft="nft" @selected="onSelectNFT" />
                         </b-form-group>
-                        <b-form-group label="Token Id" v-if="erc721 && hasImportedTokens">
-                            <BaseDropdownERC721ImportedToken
-                                :erc721Id="erc721._id"
-                                :erc721tokenId="erc721tokenId"
-                                :erc721Tokens="erc721Tokens"
-                                :pool="pool"
-                                @selected="onSelectERC721Token"
-                            />
-                        </b-form-group>
-                        <b-form-group
-                            label="Metadata"
-                            v-if="erc721 && !erc721SelectedMetadataIds.length && !hasImportedTokens"
-                        >
+                        <b-form-group label="Metadata" v-if="nft && !selectedMetadataIds.length">
                             <BaseDropdownERC721Metadata
-                                :erc721="erc721"
-                                :erc721metadataId="erc721metadataId"
+                                :pool="pool"
+                                :nft="nft"
+                                :metadataId="metadataId"
+                                :tokenId="tokenId"
                                 @selected="onSelectMetadata"
+                                @selected-token="onSelectToken"
                             />
                         </b-form-group>
+
+                        <b-form-group
+                            label="Amount"
+                            :state="isValidAmount"
+                            :description="erc1155Balance ? `Balance: ${erc1155Balance}` : null"
+                            v-if="nft && nft.variant === NFTVariant.ERC1155"
+                        >
+                            <b-form-input
+                                :state="isValidAmount"
+                                type="number"
+                                :value="erc1155Amount"
+                                @input="onChangeERC1155Amount"
+                            />
+                        </b-form-group>
+
                         <b-form-group label="Point Price">
                             <b-form-input type="number" :value="pointPrice" @input="onChangePointPrice" />
                         </b-form-group>
@@ -70,10 +76,20 @@
                             @change-date="expiryDate = $event"
                         />
                         <BaseCardRewardLimits class="mb-3" :limit="limit" @change-reward-limit="limit = $event" />
+                        <BaseCardTokenGating
+                            class="mb-3"
+                            :pool="pool"
+                            :perk="perk"
+                            @change-contract-address="tokenGatingContractAddress = $event"
+                            @change-amount="tokenGatingAmount = $event"
+                            @change-variant="tokenGatingVariant = $event"
+                        />
                         <BaseCardClaimAmount
                             class="mb-3"
                             :claimAmount="claimAmount"
+                            :claimLimit="claimLimit"
                             @change-claim-amount="onChangeClaimAmount"
+                            @change-claim-limit="onChangeClaimLimit"
                         />
                         <b-form-group>
                             <b-form-checkbox v-model="isPromoted">Promoted</b-form-checkbox>
@@ -91,37 +107,33 @@
                 variant="primary"
                 block
             >
-                {{ reward ? 'Update NFT Perk' : 'Create NFT Perk' }}
+                {{ perk ? 'Update NFT Perk' : 'Create NFT Perk' }}
             </b-button>
         </template>
     </base-modal>
 </template>
 
 <script lang="ts">
-import { type TPool } from '@thxnetwork/types/index';
+import { NFTVariant, TERC1155Token, TERC721Token, type TPool } from '@thxnetwork/types/index';
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { platformList, platformInteractionList } from '@thxnetwork/dashboard/types/rewards';
-import { RewardConditionInteraction, RewardConditionPlatform, type TERC721Perk } from '@thxnetwork/types/index';
+import { type TERC721Perk } from '@thxnetwork/types/index';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
 import BaseCardCommerce from '../cards/BaseCardCommerce.vue';
 import BaseDropdownERC721Metadata from '../dropdowns/BaseDropdownERC721Metadata.vue';
-import type { IERC721s, IERC721Tokens, TERC721, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';
+import type { IERC721s, IERC721Tokens, TERC721, TNFTMetadata } from '@thxnetwork/dashboard/types/erc721';
 import { mapGetters } from 'vuex';
 import BaseDropdownSelectERC721 from '../dropdowns/BaseDropdownSelectERC721.vue';
 import BaseDropdownERC721ImportedToken from '../dropdowns/BaseDropdownERC721ImportedToken.vue';
 import BaseCardClaimAmount from '../cards/BaseCardClaimAmount.vue';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import { IAccount } from '@thxnetwork/dashboard/types/account';
-import { TERC721Token } from '@thxnetwork/dashboard/types/erc721';
-
-type TRewardCondition = {
-    platform: RewardConditionPlatform;
-    interaction?: RewardConditionInteraction;
-    content?: string;
-};
+import BaseCardTokenGating from '../cards/BaseCardTokenGating.vue';
+import { TokenGatingVariant } from '@thxnetwork/types/enums/TokenGatingVariant';
+import { IERC1155s, TERC1155 } from '@thxnetwork/dashboard/types/erc1155';
+import { fromWei, toWei } from 'web3-utils';
 
 @Component({
     components: {
@@ -133,99 +145,116 @@ type TRewardCondition = {
         BaseDropdownSelectERC721,
         BaseDropdownERC721ImportedToken,
         BaseCardClaimAmount,
+        BaseCardTokenGating,
     },
     computed: mapGetters({
         pools: 'pools/all',
-        erc721s: 'erc721/all',
         profile: 'account/profile',
+        erc721s: 'erc721/all',
         erc721Tokens: 'erc721/erc721Tokens',
+        erc1155s: 'erc1155/all',
+        erc1155Tokens: 'erc1155/erc1155Tokens',
     }),
 })
 export default class ModalRewardERC721Create extends Vue {
+    NFTVariant = NFTVariant;
     isSubmitDisabled = false;
     isLoading = false;
-    erc721: TERC721 | null = null;
-    erc721Id = '';
+    nft: TERC721 | TERC1155 | null = null;
+
+    erc721s!: IERC721s;
+    erc721Tokens!: IERC721Tokens;
+
+    erc1155s!: IERC1155s;
+    erc1155Tokens!: IERC721Tokens;
+
+    metadataId = '';
+    tokenId = '';
+    erc1155Amount = 1;
+    erc1155Balance = '';
+
     pools!: IPools;
     profile!: IAccount;
     error = '';
     title = '';
-    erc721metadataId = '';
-    erc721tokenId: string | undefined = undefined;
     description = '';
     expiryDate: Date | null = null;
     claimAmount = 0;
-    claimLimit = 1;
+    claimLimit = 0;
     limit = 0;
     pointPrice = 0;
-    rewardCondition: TRewardCondition = {
-        platform: platformList[0].type,
-        interaction: platformInteractionList[0].type,
-        content: '',
-    };
-    erc721s!: IERC721s;
-    erc721Tokens!: IERC721Tokens;
     imageFile: File | null = null;
     image = '';
     isPromoted = false;
     price = 0;
     priceCurrency = 'USD';
+    tokenGatingVariant = TokenGatingVariant.ERC721;
+    tokenGatingContractAddress = '';
+    tokenGatingAmount = 0;
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
-    @Prop({ required: false }) reward!: TERC721Perk;
-    @Prop({ required: false, default: () => [] }) erc721SelectedMetadataIds!: string[];
+    @Prop({ required: false }) perk!: TERC721Perk;
+    @Prop({ required: false, default: () => [] }) selectedMetadataIds!: string[];
 
     get chainId() {
-        return (this.pool && this.pool.chainId) || (this.erc721 && this.erc721.chainId) || ChainId.Hardhat;
+        return (this.pool && this.pool.chainId) || (this.nft && this.nft.chainId) || ChainId.Hardhat;
+    }
+
+    get isValidAmount() {
+        if (!this.erc1155Balance) return null;
+        const amount = Number(this.erc1155Amount);
+        const balance = Number(this.erc1155Balance);
+        return amount > 0 && amount <= balance;
     }
 
     onShow() {
-        this.title = this.reward ? this.reward.title : '';
-        this.description = this.reward ? this.reward.description : '';
-        this.limit = this.reward ? this.reward.limit : 0;
-        this.pointPrice = this.reward ? this.reward.pointPrice : 0;
-        this.expiryDate = this.reward ? this.reward.expiryDate : null;
-        this.limit = this.reward ? this.reward.limit : 0;
-        this.claimAmount = this.reward ? this.reward.claimAmount : 0;
-        this.claimLimit = this.reward ? this.reward.claimLimit : 1;
-        this.price = this.reward && this.reward.price ? this.reward.price : this.price;
-        this.priceCurrency = this.reward ? this.reward.priceCurrency : this.priceCurrency;
-        this.rewardCondition = this.reward
-            ? {
-                  platform: this.reward.platform as RewardConditionPlatform,
-                  interaction: this.reward.interaction as RewardConditionInteraction,
-                  content: this.reward.content as string,
-              }
-            : {
-                  platform: RewardConditionPlatform.None,
-                  interaction: RewardConditionInteraction.None,
-                  content: '',
-              };
-        this.image = this.reward ? this.reward.image : '';
-        this.isPromoted = this.reward ? this.reward.isPromoted : false;
-
-        this.erc721 = this.reward ? this.erc721s[this.reward.erc721Id] : null;
-        this.erc721metadataId = this.reward ? this.reward.erc721metadataId : '';
-        this.erc721tokenId = this.reward ? this.reward.erc721tokenId : undefined;
+        this.title = this.perk ? this.perk.title : '';
+        this.description = this.perk ? this.perk.description : '';
+        this.pointPrice = this.perk ? this.perk.pointPrice : 0;
+        this.expiryDate = this.perk ? this.perk.expiryDate : null;
+        this.limit = this.perk ? this.perk.limit : 0;
+        this.claimAmount = this.perk ? this.perk.claimAmount : this.claimAmount;
+        this.claimLimit = this.perk ? this.perk.claimLimit : this.claimLimit;
+        this.price = this.perk && this.perk.price ? this.perk.price : this.price;
+        this.priceCurrency = this.perk ? this.perk.priceCurrency : this.priceCurrency;
+        this.image = this.perk ? this.perk.image : '';
+        this.isPromoted = this.perk ? this.perk.isPromoted : false;
+        if (this.perk && this.perk.erc721Id) {
+            this.nft = this.perk ? this.erc721s[this.perk.erc721Id] : this.nft;
+        }
+        if (this.perk && this.perk.erc1155Id) {
+            this.nft = this.perk ? this.erc1155s[this.perk.erc1155Id] : this.nft;
+        }
+        this.metadataId = this.perk && this.perk.metadataId ? this.perk.metadataId : this.metadataId;
+        this.tokenId = this.perk && this.perk.tokenId ? this.perk.tokenId : this.tokenId;
+        console.log(this.metadataId, this.tokenId);
+        this.erc1155Amount =
+            this.perk && this.perk.erc1155Amount ? Number(this.perk.erc1155Amount) : this.erc1155Amount;
+        this.tokenGatingContractAddress = this.perk
+            ? this.perk.tokenGatingContractAddress
+            : this.tokenGatingContractAddress;
+        this.tokenGatingVariant = this.perk ? this.perk.tokenGatingVariant : this.tokenGatingVariant;
+        this.tokenGatingAmount = this.perk ? this.perk.tokenGatingAmount : this.tokenGatingAmount;
     }
 
-    get hasImportedTokens() {
-        return (
-            this.erc721 &&
-            this.erc721Tokens &&
-            this.erc721Tokens[this.erc721._id] &&
-            Object.keys(this.erc721Tokens[this.erc721._id]).length
-        );
+    async onSelectNFT(nft: TERC721 | TERC1155) {
+        this.nft = nft;
+        // this.metadataId = '';
+        // this.tokenId = '';
+
+        if (nft) {
+            await this.$store.dispatch(nft.variant + '/listTokens', this.pool);
+        }
     }
 
-    async onSelectERC721(erc721: TERC721) {
-        if (!erc721) return;
-        this.erc721 = erc721;
-        await this.$store.dispatch('erc721/listImportedERC721Tokens', {
-            erc721Id: this.erc721._id,
-            pool: this.pool,
-        });
+    onSelectMetadata(metadata: TNFTMetadata) {
+        this.metadataId = metadata ? metadata._id : '';
+    }
+
+    onSelectToken(token: TERC721Token | TERC1155Token) {
+        this.tokenId = token ? token._id : '';
+        this.erc1155Balance = token ? (token.balance as string) : '';
     }
 
     onChangePointPrice(price: number) {
@@ -238,49 +267,63 @@ export default class ModalRewardERC721Create extends Vue {
         if (amount > 0) this.pointPrice = 0;
     }
 
-    onSelectMetadata(metadata: TERC721Metadata) {
-        if (!metadata) return;
-        this.erc721metadataId = metadata._id;
+    onChangeClaimLimit(limit: number) {
+        this.claimLimit = limit;
     }
 
-    onSelectERC721Token(token: TERC721Token) {
-        if (!token) return;
-        this.erc721tokenId = token._id;
+    onChangeERC1155Amount(amount: number) {
+        this.erc1155Amount = amount;
     }
 
     onSubmit() {
-        // TODO Remove when proper UI validation is implemented
-        if (!this.erc721metadataId && !this.erc721SelectedMetadataIds.length) {
-            this.error = 'Select the NFT metadata fort this perk';
+        if (!this.nft || (!this.metadataId && !this.selectedMetadataIds.length && !this.tokenId)) {
+            this.error = 'Select a token or metadata for this perk.';
             return;
         }
 
         this.isLoading = true;
 
+        let erc721Id, erc1155Id, expiryDate;
+        switch (this.nft.variant) {
+            case NFTVariant.ERC721:
+                erc721Id = this.nft._id;
+                break;
+            case NFTVariant.ERC1155:
+                erc1155Id = this.nft._id;
+                break;
+        }
+
+        if (this.expiryDate) {
+            expiryDate = this.expiryDate;
+        }
+
         const payload = {
             page: 1,
             title: this.title,
             description: this.description,
-            erc721metadataIds: JSON.stringify(
-                this.erc721metadataId ? [this.erc721metadataId] : this.erc721SelectedMetadataIds,
-            ),
-            claimAmount: this.claimAmount,
-            claimLimit: this.claimLimit,
+            file: this.imageFile,
+            erc721Id,
+            erc1155Id,
+            erc1155Amount: this.erc1155Amount,
+            tokenId: this.tokenId,
+            metadataIds: JSON.stringify(this.metadataId ? [this.metadataId] : this.selectedMetadataIds),
+            expiryDate,
             limit: this.limit,
             pointPrice: this.pointPrice,
             price: this.price,
             priceCurrency: this.priceCurrency,
-            file: this.imageFile,
             isPromoted: this.isPromoted,
-            erc721tokenId: this.erc721tokenId,
+            claimAmount: this.claimAmount,
+            claimLimit: this.claimLimit,
+            tokenGatingContractAddress: this.tokenGatingContractAddress,
+            tokenGatingVariant: this.tokenGatingVariant,
+            tokenGatingAmount: this.tokenGatingAmount,
         };
 
-        if (this.expiryDate) Object.assign(payload, { expiryDate: this.expiryDate });
-
         this.$store
-            .dispatch(`erc721Perks/${this.reward ? 'update' : 'create'}`, {
+            .dispatch(`erc721Perks/${this.perk ? 'update' : 'create'}`, {
                 pool: this.pool || Object.values(this.pools)[0],
-                reward: this.reward,
+                reward: this.perk,
                 payload,
             })
             .then(() => {

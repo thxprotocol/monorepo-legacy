@@ -15,6 +15,7 @@ import { Transaction } from '@thxnetwork/api/models/Transaction';
 import ERC20Transfer from '../models/ERC20Transfer';
 import { TWallet, WalletDocument } from '../models/Wallet';
 import WalletService, { Wallet } from './WalletService';
+import { ContractName } from '@thxnetwork/contracts/exports';
 
 function getDeployArgs(erc20: ERC20Document, totalSupply?: string) {
     const { defaultAccount } = getProvider(erc20.chainId);
@@ -40,8 +41,8 @@ export const deploy = async (params: ICreateERC20Params, forceSync = true) => {
         logoImgUrl: params.logoImgUrl,
     });
 
-    const contract = getContractFromName(params.chainId, erc20.contractName);
-    const bytecode = getByteCodeForContractName(erc20.contractName);
+    const contract = getContractFromName(params.chainId, erc20.contractName as ContractName);
+    const bytecode = getByteCodeForContractName(erc20.contractName as ContractName);
 
     const fn = contract.deploy({
         data: bytecode,
@@ -58,7 +59,7 @@ export const deploy = async (params: ICreateERC20Params, forceSync = true) => {
 
 export async function deployCallback({ erc20Id }: TERC20DeployCallbackArgs, receipt: TransactionReceipt) {
     const erc20 = await ERC20.findById(erc20Id);
-    const contract = getContractFromName(erc20.chainId, erc20.contractName);
+    const contract = getContractFromName(erc20.chainId, erc20.contractName as ContractName);
     const events = parseLogs(contract.options.jsonInterface, receipt.logs);
 
     // Limited and unlimited tokes emit different events. Check if one of the two is emitted.

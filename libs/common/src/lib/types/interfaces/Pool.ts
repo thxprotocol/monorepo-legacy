@@ -14,6 +14,23 @@ export enum AccountVariant {
     SSOTwitch = 7,
 }
 
+export type TCampaign = {
+    _id: string;
+    title: string;
+    expiryDate: Date;
+    address: string;
+    chainId: ChainId;
+    domain: string;
+    participants: number;
+    active: boolean;
+    progress: number;
+    tags: string[];
+    logoImgUrl?: string;
+    backgroundImgUrl?: string;
+    rewards: { title: string; description: string; amount: number }[];
+    perks: { title: string; description: string; amount: number }[];
+};
+
 export type TPool = {
     _id: string;
     address: string;
@@ -26,6 +43,7 @@ export type TPool = {
     brand: TBrand;
     settings: TPoolSettings;
     widget: { domain: string; active: boolean };
+    createdAt?: Date;
 };
 
 export type TPoolSettings = {

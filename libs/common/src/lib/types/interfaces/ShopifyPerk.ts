@@ -1,13 +1,9 @@
-import { TBaseReward } from './BaseReward';
+import { TBasePerk } from './BaseReward';
+import { TShopifyPerkPayment } from './ShopifyPerkPayment';
 
-export type TShopifyPerk = TBaseReward & {
-    poolId: string;
-    amount: string;
-    pointPrice: number;
-    isPromoted: boolean;
+export type TShopifyPerk = TBasePerk & {
+    amount: number;
     priceRuleId: string;
     discountCode: string;
-    image: string;
-    price: number;
-    priceCurrency: string;
+    claims?: TShopifyPerkPayment[];
 };

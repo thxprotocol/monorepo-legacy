@@ -24,6 +24,7 @@ const assetPoolSchema = new mongoose.Schema(
                     title: String,
                     description: String,
                     amount: Number,
+                    hashtag: String,
                 },
             },
             authenticationMethods: [Number],

@@ -71,6 +71,16 @@ const routes: Array<RouteConfig> = [
         component: () => import(/* webpackChunkName: "integrations" */ '../views/Integrations.vue'),
     },
     {
+        path: '/campaigns',
+        name: 'Campaigns',
+        component: () => import(/* webpackChunkName: "integrations" */ '../views/Campaigns.vue'),
+    },
+    {
+        path: '/campaigns/:id',
+        name: 'Campaign',
+        component: () => import(/* webpackChunkName: "integrations" */ '../views/Campaign.vue'),
+    },
+    {
         path: '/contact',
         name: 'Contact',
         component: () => import(/* webpackChunkName: "contact" */ '../views/Contact.vue'),

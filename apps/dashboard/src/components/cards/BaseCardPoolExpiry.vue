@@ -17,7 +17,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 @Component({})
 export default class BaseCardPoolExpiry extends Vue {
     isVisible = false;
-    expirationDate: Date | undefined = undefined;
+    expirationDate: Date | null = null;
     expirationTime = '00:00:00';
 
     @Prop() endDate!: Date;
