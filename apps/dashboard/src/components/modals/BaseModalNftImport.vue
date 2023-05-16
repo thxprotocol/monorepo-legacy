@@ -128,16 +128,14 @@ export default class ModalNftImport extends Vue {
         if (!this.pool) {
             return;
         }
-        const data = {
+
+        await this.$store.dispatch(`${this.variant}/import`, {
             pool: this.pool,
-            address: this.nftAddress,
-        };
+            contractAddress: this.nftAddress,
+        });
 
-        await this.$store.dispatch(`${this.variant}/import`, data);
-
-        this.$bvModal.hide(`modalERC721Import`);
+        this.$bvModal.hide(`modalNftImport`);
         this.tokens = [];
-        this.$emit('imported');
         this.loading = false;
     }
 
@@ -151,7 +149,7 @@ export default class ModalNftImport extends Vue {
         try {
             this.previewLoading = true;
             this.tokens = await this.$store.dispatch(`${this.variant}/preview`, {
-                address: '0x18dc2e54609852822e7cd847b330b33b8366da4a' || this.pool.address,
+                address: this.pool.address,
                 contractAddress: address,
             });
             this.previewLoading = false;

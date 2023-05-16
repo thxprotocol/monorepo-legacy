@@ -11,11 +11,7 @@ import { ERC1155Metadata } from '@thxnetwork/api/models/ERC1155Metadata';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import WalletService from '@thxnetwork/api/services/WalletService';
 
-const validation = [
-    body('contractAddress').exists().isString(),
-    body('chainId').exists().isNumeric(),
-    body('name').exists().isString(),
-];
+const validation = [body('contractAddress').exists().isString(), body('chainId').exists().isNumeric()];
 
 const controller = async (req: Request, res: Response) => {
     const chainId = Number(req.body.chainId) as ChainId;

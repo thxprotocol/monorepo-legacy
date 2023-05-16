@@ -236,15 +236,14 @@ class ERC1155Module extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async import(payload: { address: string; pool: TPool; name?: string }) {
+    async import(payload: { contractAddress: string; pool: TPool; name?: string }) {
         const { data } = await axios({
             method: 'POST',
             url: `/erc1155/import`,
             headers: { 'X-PoolId': payload.pool._id },
             data: {
-                contractAddress: payload.address,
+                contractAddress: payload.contractAddress,
                 chainId: payload.pool.chainId,
-                name: payload.name || '',
             },
         });
 
