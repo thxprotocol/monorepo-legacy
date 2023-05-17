@@ -26,6 +26,7 @@ import DeletePoolSubscription from './subscriptions/delete.controller';
 import CreatePoolTransferRefresh from './transfers/refresh/post.controller';
 import ListPoolTransfer from './transfers/list.controller';
 import UpdatePool from './patch.controller';
+import ListPoolWallets from './wallets/list.controller';
 
 const router = express.Router();
 
@@ -52,6 +53,15 @@ router.post(
     guard.check(['pool_subscription:write']),
     assertRequestInput(CreatePoolSubscription.validation),
     CreatePoolSubscription.controller,
+);
+router.get(
+    '/:id/wallets',
+    checkJwt,
+    corsHandler,
+    guard.check(['pools:read']),
+    assertAssetPoolOwnership,
+    assertRequestInput(ListPoolWallets.validation),
+    ListPoolWallets.controller,
 );
 router.delete(
     '/:id/transfers',

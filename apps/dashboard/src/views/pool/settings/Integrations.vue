@@ -9,7 +9,12 @@
                 </p>
             </b-col>
             <b-col md="8">
-                <b-form-group label="Webhook URL">
+                <b-form-group
+                    label="Webhook URL"
+                    :description="
+                        pool.wallets && `This campaign has created ${pool.wallets.length} wallets for unknown owners.`
+                    "
+                >
                     <b-input-group>
                         <b-form-input :value="webhookWalletURL" readonly />
                         <b-input-group-append>

@@ -12,10 +12,10 @@ import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import { redeemValidation } from '@thxnetwork/api/util/perks';
 import { Widget } from '@thxnetwork/api/models/Widget';
 import MailService from '@thxnetwork/api/services/MailService';
 import { Wallet } from '@thxnetwork/api/services/WalletService';
+import PerkService from '@thxnetwork/api/services/PerkService';
 
 const validation = [param('uuid').exists()];
 
@@ -40,7 +40,7 @@ const controller = async (req: Request, res: Response) => {
         throw new BadRequestError('Not enough points on this account for this payment');
     }
 
-    const redeemValidationResult = await redeemValidation({ perk: erc20Perk, sub: req.auth.sub, pool });
+    const redeemValidationResult = await PerkService.validate({ perk: erc20Perk, sub: req.auth.sub, pool });
     if (redeemValidationResult.isError) {
         throw new ForbiddenError(redeemValidationResult.errorMessage);
     }

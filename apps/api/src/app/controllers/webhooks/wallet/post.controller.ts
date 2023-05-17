@@ -4,20 +4,26 @@ import { AssetPool } from '@thxnetwork/api/models/AssetPool';
 import { Wallet } from '@thxnetwork/api/models/Wallet';
 import { v4 } from 'uuid';
 import { ForbiddenError } from '@thxnetwork/api/util/errors';
-import { toChecksumAddress } from 'web3-utils';
+import { isAddress, toChecksumAddress } from 'web3-utils';
 
-const validation = [param('token').exists().isString(), body('address').exists().isString()];
+const validation = [
+    param('token').exists().isString(),
+    body('address')
+        .optional()
+        .custom((address) => isAddress(address)),
+];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Wallets Webhook']
     //
     const pool = await AssetPool.findOne({ token: req.params.token });
-    if (!pool) throw new ForbiddenError('Webhook does not exist.');
+    if (!pool) throw new ForbiddenError('Webhook token is not valid');
 
     const wallet = await Wallet.create({
-        chainId: pool.chainId,
-        address: toChecksumAddress(req.body.address),
         token: v4(),
+        poolId: pool._id,
+        chainId: pool.chainId,
+        address: req.body.address ? toChecksumAddress(req.body.address) : '',
     });
 
     res.status(201).json(wallet);

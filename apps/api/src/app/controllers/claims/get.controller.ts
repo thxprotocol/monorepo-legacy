@@ -1,12 +1,9 @@
 import { Request, Response } from 'express';
-import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
+import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { param } from 'express-validator';
-import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { Claim, ClaimDocument } from '@thxnetwork/api/models/Claim';
-import { findRewardByUuid, isTERC20Perk, isTERC721Perk } from '@thxnetwork/api/util/rewards';
-import { getPaymentModel, redeemValidation } from '@thxnetwork/api/util/perks';
 import { ERC721Perk, ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
 import { ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
 import { ERC721Document } from '@thxnetwork/api/models/ERC721';
