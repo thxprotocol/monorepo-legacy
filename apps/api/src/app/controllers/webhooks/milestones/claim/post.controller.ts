@@ -23,10 +23,17 @@ const controller = async (req: Request, res: Response) => {
     if (!reward) throw new NotFoundError('Could not find a milestone reward for this token');
 
     const pool = await AssetPool.findById(reward.poolId);
+    if (!pool) throw new NotFoundError('Could not find a campaign pool for this reward.');
 
     let wallet = await Wallet.findOne({ chainId: pool.chainId, address });
     if (!wallet && req.body.address) {
-        wallet = await Wallet.create({ chainId: pool.chainId, address: req.body.address, token: v4() });
+        // Will create the wallet without sub so it can be obtained by the user at a later stage
+        wallet = await Wallet.create({
+            chainId: pool.chainId,
+            poolId: pool._id,
+            address: req.body.address,
+            token: v4(),
+        });
     }
 
     if (reward.limit) {

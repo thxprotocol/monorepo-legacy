@@ -1,43 +1,25 @@
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
-import { ERC721Perk, ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
+import { ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
 import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import PointBalanceService, { PointBalance } from '@thxnetwork/api/services/PointBalanceService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
-import { ERC721Metadata, ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
-import { redeemValidation } from '@thxnetwork/api/util/perks';
+import { ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
 import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
 import MailService from '@thxnetwork/api/services/MailService';
 import { Widget } from '@thxnetwork/api/models/Widget';
 import { Wallet } from '@thxnetwork/api/models/Wallet';
 import { ERC1155Token, ERC1155TokenDocument } from '@thxnetwork/api/models/ERC1155Token';
-import { ERC1155Metadata, ERC1155MetadataDocument } from '@thxnetwork/api/models/ERC1155Metadata';
-import { ERC721, ERC721Document } from '@thxnetwork/api/models/ERC721';
-import { ERC1155, ERC1155Document } from '@thxnetwork/api/models/ERC1155';
+import { ERC1155MetadataDocument } from '@thxnetwork/api/models/ERC1155Metadata';
+import { ERC721Document } from '@thxnetwork/api/models/ERC721';
+import { ERC1155Document } from '@thxnetwork/api/models/ERC1155';
 import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
+import PerkService from '@thxnetwork/api/services/PerkService';
 
 const validation = [param('uuid').exists()];
-
-async function getNFTForPerk(perk: ERC721PerkDocument) {
-    if (perk.erc721Id) {
-        return await ERC721.findById(perk.erc721Id);
-    }
-    if (perk.erc1155Id) {
-        return await ERC1155.findById(perk.erc1155Id);
-    }
-}
-
-async function getMetadataForPerk(perk: ERC721PerkDocument) {
-    if (perk.erc721Id && perk.metadataId) {
-        return await ERC721Metadata.findById(perk.metadataId);
-    }
-    if (perk.erc1155Id && perk.metadataId) {
-        return await ERC1155Metadata.findById(perk.metadataId);
-    }
-}
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Perks Payment']
@@ -48,7 +30,7 @@ const controller = async (req: Request, res: Response) => {
     if (!perk) throw new NotFoundError('Could not find this perk');
     if (!perk.pointPrice) throw new NotFoundError('No point price for this perk has been set.');
 
-    const nft = await getNFTForPerk(perk);
+    const nft = await PerkService.getNFT(perk);
     if (!nft) throw new NotFoundError('Could not find the nft for this perk');
 
     const wallet = await Wallet.findOne({ sub: req.auth.sub, chainId: pool.chainId });
@@ -56,7 +38,7 @@ const controller = async (req: Request, res: Response) => {
     if (!pointBalance || Number(pointBalance.balance) < Number(perk.pointPrice))
         throw new BadRequestError('Not enough points on this account for this perk.');
 
-    const redeemValidationResult = await redeemValidation({ perk, sub: req.auth.sub, pool });
+    const redeemValidationResult = await PerkService.validate({ perk, sub: req.auth.sub, pool });
     if (redeemValidationResult.isError) {
         throw new ForbiddenError(redeemValidationResult.errorMessage);
     }
@@ -65,7 +47,7 @@ const controller = async (req: Request, res: Response) => {
 
     let token: ERC721TokenDocument | ERC1155TokenDocument;
 
-    const metadata = await getMetadataForPerk(perk);
+    const metadata = await PerkService.getMetadata(perk);
 
     // Mint a token if metadataId is present
     if (metadata) {

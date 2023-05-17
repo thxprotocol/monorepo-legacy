@@ -228,7 +228,6 @@ export default class ModalRewardERC721Create extends Vue {
         }
         this.metadataId = this.perk && this.perk.metadataId ? this.perk.metadataId : this.metadataId;
         this.tokenId = this.perk && this.perk.tokenId ? this.perk.tokenId : this.tokenId;
-        console.log(this.metadataId, this.tokenId);
         this.erc1155Amount =
             this.perk && this.perk.erc1155Amount ? Number(this.perk.erc1155Amount) : this.erc1155Amount;
         this.tokenGatingContractAddress = this.perk
