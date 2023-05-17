@@ -1,7 +1,5 @@
 import { Request, Response } from 'express';
-import ERC20Service from '@thxnetwork/api/services/ERC20Service';
-import ERC721Service from '@thxnetwork/api/services/ERC721Service';
-import PoolService from '@thxnetwork/api/services/PoolService';
+import jwt_decode from 'jwt-decode';
 import { ERC20Perk } from '@thxnetwork/api/models/ERC20Perk';
 import { ERC721Perk, ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
 import { redeemValidation } from '@thxnetwork/api/util/perks';
@@ -9,12 +7,15 @@ import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
 import { ShopifyPerk } from '@thxnetwork/api/models/ShopifyPerk';
 import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
 import { ShopifyPerkPayment } from '@thxnetwork/api/models/ShopifyPerkPayment';
-import WalletService from '@thxnetwork/api/services/WalletService';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
-import PerkService from '@thxnetwork/api/services/PerkService';
-import jwt_decode from 'jwt-decode';
 import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
 import { ERC1155Token } from '@thxnetwork/api/models/ERC1155Token';
+import ERC20Service from '@thxnetwork/api/services/ERC20Service';
+import ERC721Service from '@thxnetwork/api/services/ERC721Service';
+import PoolService from '@thxnetwork/api/services/PoolService';
+import WalletService from '@thxnetwork/api/services/WalletService';
+import PerkService from '@thxnetwork/api/services/PerkService';
+import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Perks']
@@ -134,7 +135,7 @@ async function getNFTForPerk(perk: ERC721PerkDocument) {
         return await ERC721Service.findById(perk.erc721Id);
     }
     if (perk.erc1155Id) {
-        return await ERC721Service.findById(perk.erc1155Id);
+        return await ERC1155Service.findById(perk.erc1155Id);
     }
 }
 
