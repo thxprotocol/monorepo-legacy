@@ -11,11 +11,11 @@
             <b-col md="8">
                 <b-form-group label="Webhook URL">
                     <b-input-group>
-                        <b-form-input :value="`${apiUrl}/v1/webhooks/wallet/${pool.token}`" readonly />
+                        <b-form-input :value="webhookWalletURL" readonly />
                         <b-input-group-append>
                             <b-button
                                 variant="primary"
-                                v-clipboard:copy="`${apiUrl}/v1/webhooks/wallet/${pool.token}`"
+                                v-clipboard:copy="webhookWalletURL"
                                 v-clipboard:success="() => (isCopied = true)"
                                 size="sm"
                                 class="px-3"
@@ -171,7 +171,6 @@ import { API_URL, BASE_URL, DISCORD_CLIENT_ID } from '@thxnetwork/dashboard/util
 })
 export default class SettingsTwitterView extends Vue {
     BASE_URL = BASE_URL;
-    apiUrl = API_URL;
     isCopied = false;
     AccessTokenKind = AccessTokenKind;
     urlDiscordBotInstall =
@@ -195,6 +194,11 @@ export default class SettingsTwitterView extends Vue {
 
     get pool() {
         return this.pools[this.$route.params.id];
+    }
+
+    get webhookWalletURL() {
+        if (!this.pool) return;
+        return `${API_URL}/v1/webhook/wallet/${this.pool.token}`;
     }
 
     mounted() {
