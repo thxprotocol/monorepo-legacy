@@ -36,7 +36,7 @@ describe('Milestone Rewards', () => {
                 title: 'Expiration date is next 30 min',
                 description: 'Lorem ipsum dolor sit amet',
                 amount: 100,
-                limit: 0,
+                limit: 1,
             })
             .expect((res: request.Response) => {
                 expect(res.body.uuid).toBeDefined();
@@ -57,6 +57,17 @@ describe('Milestone Rewards', () => {
                 claim = res.body;
             })
             .expect(201, done);
+    });
+
+    it('POST /webhook/milestone/:token/claim second time should fail', (done) => {
+        user.post(`/v1/webhook/milestone/${milestoneReward.uuid}/claim`)
+            .send({
+                address: userWalletAddress2,
+            })
+            .expect((res: request.Response) => {
+                expect(res.body.error.message).toBe('This reward has reached its limit for this account.');
+            })
+            .expect(403, done);
     });
 
     it('POST /milestones/claims/:uuid/collect', (done) => {

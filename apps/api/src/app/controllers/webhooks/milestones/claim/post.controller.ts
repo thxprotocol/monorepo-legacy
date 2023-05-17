@@ -30,7 +30,10 @@ const controller = async (req: Request, res: Response) => {
     }
 
     if (reward.limit) {
-        const claimsForAccount = await MilestoneRewardClaim.count({ milestoneRewardId: reward.id, sub: wallet.sub });
+        const claimsForAccount = await MilestoneRewardClaim.count({
+            milestoneRewardId: reward.id,
+            walletId: String(wallet._id),
+        });
         if (claimsForAccount >= reward.limit)
             throw new ForbiddenError('This reward has reached its limit for this account.');
     }
