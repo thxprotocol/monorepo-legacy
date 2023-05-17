@@ -10,8 +10,9 @@ import { v4 } from 'uuid';
 import { isAddress, toChecksumAddress } from 'web3-utils';
 
 const validation = [
-    body('address').exists(),
-    body('address').custom((address) => isAddress(address)),
+    body('address')
+        .exists()
+        .custom((address) => isAddress(address)),
     param('token').exists(),
 ];
 
@@ -24,7 +25,7 @@ const controller = async (req: Request, res: Response) => {
     const pool = await AssetPool.findById(reward.poolId);
 
     let wallet = await Wallet.findOne({ chainId: pool.chainId, address });
-    if (!wallet) {
+    if (!wallet && req.body.address) {
         wallet = await Wallet.create({ chainId: pool.chainId, address: req.body.address, token: v4() });
     }
 
