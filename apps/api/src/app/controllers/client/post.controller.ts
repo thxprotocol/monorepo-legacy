@@ -33,7 +33,7 @@ export default {
                     request_uris: [],
                     redirect_uris: [],
                     response_types: [],
-                    scope: 'openid wallets:write wallets:read',
+                    scope: 'openid',
                 };
                 break;
         }
