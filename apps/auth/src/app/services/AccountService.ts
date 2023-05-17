@@ -15,7 +15,7 @@ import { ShopifyService } from './ShopifyService';
 import { logger } from '../util/logger';
 import { ForbiddenError } from '../util/errors';
 import WalletProxy from '../proxies/WalletProxy';
-import { ChainId } from '@thxnetwork/types/index';
+import { ChainId, TWallet } from '@thxnetwork/types/index';
 import { NODE_ENV } from '../config/secrets';
 // import { SignTypedDataVersion, recoverTypedSignature } from '@metamask/eth-sig-util';
 
@@ -131,13 +131,28 @@ export class AccountService {
     static async signinWithAddress(addr: string) {
         const address = toChecksumAddress(addr);
         const chainId = NODE_ENV === 'production' ? ChainId.Polygon : ChainId.Hardhat;
-        const wallets = await WalletProxy.get('', chainId, address);
+        const [wallet] = await WalletProxy.get('', chainId, address);
 
-        if (!wallets.length) {
-            return await this.createForAddress(address);
-        } else {
-            return await Account.findById(wallets[0].sub);
+        if (wallet) {
+            return wallet.sub
+                ? // Wallet exists and is owned by an account, return account
+                  await Account.findById(wallet.sub)
+                : // Wallet exists but is not owned, create account, update wallet.sub and return account
+                  await this.createForWallet(wallet);
         }
+        // Create a new wallet for the address
+        return await this.createForAddress(address);
+    }
+
+    static async createForWallet(wallet: TWallet) {
+        const account = await Account.create({
+            variant: AccountVariant.Metamask,
+            plan: AccountPlanType.Basic,
+            active: true,
+        });
+        wallet.sub = String(account._id);
+        await WalletProxy.update(wallet);
+        return account;
     }
 
     static async createForAddress(address: string) {

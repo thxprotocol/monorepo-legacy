@@ -33,12 +33,12 @@ export default {
                     request_uris: [],
                     redirect_uris: [],
                     response_types: [],
-                    scope: 'openid withdrawals:read withdrawals:write',
+                    scope: 'openid',
                 };
                 break;
         }
 
-        const client = await ClientProxy.create(req.auth.sub, req.headers['x-poolid'] as string, payload, name);
+        const client = await ClientProxy.create(req.auth.sub, req.headers['X-PoolId'] as string, payload, name);
 
         res.json(client);
     },

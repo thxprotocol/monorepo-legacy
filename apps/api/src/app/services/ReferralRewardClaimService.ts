@@ -9,6 +9,7 @@ import { ReferralRewardClaimDocument } from '../models/ReferralRewardClaim';
 async function create(data: {
     referralRewardId: string;
     sub: string;
+    walletId: string;
     isApproved: boolean;
     poolId: string;
     amount: string;

@@ -32,7 +32,10 @@ const controller = async (req: Request, res: Response) => {
     const erc20 = await ERC20Service.getById(erc20Perk.erc20Id);
     if (!erc20) throw new NotFoundError('Could not find the erc20 for this perk');
 
-    const pointBalance = await PointBalance.findOne({ sub: req.auth.sub, poolId: pool._id });
+    const account = await AccountProxy.getById(req.auth.sub);
+    const wallet = await Wallet.findOne({ sub: account.sub, chainId: pool.chainId });
+    const pointBalance = await PointBalance.findOne({ walletId: wallet._id, poolId: pool._id });
+
     if (!pointBalance || Number(pointBalance.balance) < Number(erc20Perk.pointPrice)) {
         throw new BadRequestError('Not enough points on this account for this payment');
     }
@@ -52,17 +55,16 @@ const controller = async (req: Request, res: Response) => {
         throw new BadRequestError('Not enough coins available in the pool for this transfer');
     }
 
-    const account = await AccountProxy.getById(req.auth.sub);
-    const wallet = await Wallet.findOne({ sub: account.sub, chainId: pool.chainId });
     const withdrawal = await WithdrawalService.withdrawFor(pool, erc20, wallet, erc20Perk.amount, false);
     const erc20PerkPayment = await ERC20PerkPayment.create({
         perkId: erc20Perk.id,
         sub: req.auth.sub,
+        walletId: wallet._id,
         poolId: erc20Perk.poolId,
         amount: erc20Perk.pointPrice,
     });
 
-    await PointBalanceService.subtract(pool, req.auth.sub, erc20Perk.pointPrice);
+    await PointBalanceService.subtract(pool, wallet._id, erc20Perk.pointPrice);
 
     let html = `<p style="font-size: 18px">Congratulations!🚀</p>`;
     html += `<p>Your payment has been received and <strong>${erc20Perk.amount} ${erc20.symbol}</strong> dropped into your wallet!</p>`;

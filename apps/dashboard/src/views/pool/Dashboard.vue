@@ -482,14 +482,14 @@ export default class TransactionsView extends Vue {
         this.$store.dispatch('pools/readAnalyticsMetrics', { poolId: this.pool._id });
         this.$store.dispatch('pools/readAnalytics', { poolId: this.pool._id, startDate, endDate });
         this.$store.dispatch('pools/readAnalyticsLeaderBoard', { poolId: this.pool._id });
-        this.$store.dispatch('erc20/list').then(async () => {
-            await Promise.all(
+        this.$store.dispatch('erc20/list').then(() =>
+            Promise.all(
                 Object.values(this.erc20s).map(async (erc20) => {
                     await this.$store.dispatch('erc20/read', erc20._id);
                     await this.$store.dispatch('erc20/getBalance', { id: erc20._id, address: this.pool.address });
                 }),
-            );
-        });
+            ),
+        );
         this.loading = false;
     }
 }

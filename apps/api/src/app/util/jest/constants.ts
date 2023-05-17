@@ -1,6 +1,7 @@
 import { AccountPlanType } from '@thxnetwork/types/enums';
 import { getToken } from './jwt';
 import { toWei } from 'web3-utils';
+import { AccountVariant } from '@thxnetwork/types/interfaces';
 
 export const tokenName = 'Volunteers United';
 export const tokenSymbol = 'VUT';
@@ -20,22 +21,26 @@ export const newAddress = '0x253cA584af3E458392982EF246066A6750Fa0735';
 export const MaxUint256 = '115792089237316195423570985008687907853269984665640564039457584007913129639935';
 export const sub = '6074cbdd1459355fae4b6a14';
 export const sub2 = '6074cbdd1459355fae4b6a15';
+export const sub3 = '6074cbdd1459355fae4b6a16';
 export const userWalletAddress = '0xE1ea36CC205923b3fC3b46bb747BE4Fd6bE23E6C';
 export const userWalletAddress2 = '0xaf9d56684466fcFcEA0a2B7fC137AB864d642946';
+export const userWalletAddress3 = '0x08302CF8648A961c607e3e7Bd7B7Ec3230c2A6c5';
 export const userWalletPrivateKey2 = '0x97093724e1748ebfa6aa2d2ec4ec68df8678423ab9a12eb2d27ddc74e35e5db9';
 export const account = {
     sub,
-    address: userWalletAddress,
     plan: AccountPlanType.Basic,
     email: 'account@test.thx.network',
-    walletAddress: userWalletAddress,
 };
 export const account2 = {
     sub: sub2,
-    address: userWalletAddress2,
     plan: AccountPlanType.Basic,
     email: 'account2@test.thx.network',
-    walletAddress: userWalletAddress2,
+};
+
+export const account3 = {
+    sub: sub3,
+    plan: AccountPlanType.Basic,
+    variant: AccountVariant.Metamask,
 };
 
 export const rewardId = 1;
@@ -45,7 +50,6 @@ export const postLogoutRedirectUris = ['http://localhost:8080'];
 export const clientId = 'xxxxxxx';
 export const clientSecret = 'xxxxxxxxxxxxxx';
 export const registrationAccessToken = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
-export const adminAddress = '0x08302CF8648A961c607e3e7Bd7B7Ec3230c2A6c5';
 
 export const authScopes = 'wallets:read wallets:write';
 export const dashboardScopes =

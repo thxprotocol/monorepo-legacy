@@ -4,6 +4,7 @@ export type TPointBalance = {
     poolId: string;
     balance: number;
     sub: string;
+    walletId: string;
 };
 
 export type PointBalanceDocument = mongoose.Document & TPointBalance;
@@ -13,6 +14,7 @@ const pointBalanceSchema = new mongoose.Schema(
         poolId: String,
         balance: Number,
         sub: String,
+        walletId: String,
     },
     { timestamps: true },
 );

@@ -20,7 +20,7 @@ const controller = async (req: Request, res: Response) => {
     // Should only create one when there is none available within the timeframe
     let claim = await DailyRewardClaim.findOne({
         dailyRewardId: reward._id,
-        sub: wallet.sub,
+        walletId: wallet._id,
         createdAt: { $gt: new Date(Date.now() - ONE_DAY_MS) }, // Greater than now - 24h
     });
 
@@ -29,6 +29,7 @@ const controller = async (req: Request, res: Response) => {
             poolId: reward.poolId,
             dailyRewardId: String(reward._id),
             sub: wallet.sub,
+            walletId: wallet._id,
             amount: reward.amount,
             state: DailyRewardClaimState.Pending,
         });

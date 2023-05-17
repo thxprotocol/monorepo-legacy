@@ -10,17 +10,13 @@ import {
 } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { addMinutes } from '@thxnetwork/api/util/rewards';
 
 const user = request.agent(app);
 
 describe('Referral Rewards', () => {
     let poolId: string, referralRewardId: string, referralReward: any, referralRewardClaim: any;
 
-    beforeAll(async () => {
-        await beforeAllCallback();
-    });
-
+    beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
 
     it('POST /erc20', (done) => {

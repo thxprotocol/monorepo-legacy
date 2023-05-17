@@ -7,6 +7,7 @@ import { getProvider } from '../util/network';
 export type WalletDocument = mongoose.Document & TWallet;
 export interface TWallet {
     _id: string;
+    token: string;
     address: string;
     sub: string;
     chainId: ChainId;
@@ -16,12 +17,7 @@ export interface TWallet {
 }
 
 const walletSchema = new mongoose.Schema(
-    {
-        address: String,
-        sub: String,
-        chainId: Number,
-        version: String,
-    },
+    { token: String, address: String, sub: String, chainId: Number, version: String },
     { timestamps: true },
 );
 

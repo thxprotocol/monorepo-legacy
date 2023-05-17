@@ -7,17 +7,20 @@ import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import MailService from '@thxnetwork/api/services/MailService';
 import { ReferralRewardClaim } from '@thxnetwork/api/models/ReferralRewardClaim';
+import { Wallet } from '@thxnetwork/api/models/Wallet';
 
 const validation = [body('claimUuids').exists().isArray()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards Referral Claims']
+    const pool = await PoolService.getById(req.header('X-PoolId'));
     const claims = await Promise.all(
         req.body.claimUuids.map(async (uuid: string) => {
             let claim = await ReferralRewardClaim.findOne({ uuid });
             if (!claim) throw new NotFoundError('Could not find the reward claim for this uuid');
 
             const account = await AccountProxy.getById(claim.sub);
+            const wallet = await Wallet.findOne({ sub: claim.sub, chainId: pool.chainId });
 
             if (!claim.isApproved) {
                 claim = await ReferralRewardClaim.findByIdAndUpdate(claim._id, { isApproved: true }, { new: true });
@@ -25,7 +28,7 @@ const controller = async (req: Request, res: Response) => {
                 const pool = await PoolService.getById(reward.poolId);
 
                 // Transfer ReferralReward.amount points to the ReferralRewardClaim.sub
-                await PointBalanceService.add(pool, claim.sub, reward.amount);
+                await PointBalanceService.add(pool, wallet._id, reward.amount);
 
                 await MailService.send(
                     account.email,

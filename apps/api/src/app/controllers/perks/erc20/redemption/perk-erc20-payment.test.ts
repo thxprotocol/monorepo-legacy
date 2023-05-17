@@ -22,22 +22,6 @@ describe('ERC20 Perk Payment', () => {
     beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
 
-    it('POST /wallets', (done) => {
-        user.post('/v1/wallets')
-            .set({ Authorization: widgetAccessToken })
-            .send({
-                chainId: ChainId.Hardhat,
-                sub,
-                forceSync: true,
-            })
-            .expect((res: request.Response) => {
-                expect(res.body.sub).toEqual(sub);
-                expect(res.body.chainId).toEqual(ChainId.Hardhat);
-                expect(res.body.address).toBeDefined();
-            })
-            .expect(201, done);
-    });
-
     it('POST /erc20', (done) => {
         user.post('/v1/erc20')
             .set('Authorization', dashboardAccessToken)

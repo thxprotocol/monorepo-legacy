@@ -6,6 +6,7 @@ export type TERC721PerkPaymentIntent = {
 
 export type TERC721PerkPayment = {
     sub: string;
+    walletId: string;
     perkId: string;
     poolId: string;
     amount: number;
