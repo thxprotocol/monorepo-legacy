@@ -15,6 +15,8 @@ export default {
             Bucket: AWS_S3_PUBLIC_BUCKET_NAME,
             ACL: 'public-read',
             Body: stream,
+            ContentType: extension === 'svg' ? 'image/svg+xml' : 'image/*',
+            ContentDisposition: 'inline',
         };
 
         return { ...(await s3Client.send(new PutObjectCommand(uploadParams))), key: filename };

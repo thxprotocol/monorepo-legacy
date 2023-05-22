@@ -156,11 +156,20 @@
                                 :style="`background-color: ${elements.launcherBg.color}`"
                             >
                                 <div class="widget-notifications">3</div>
+                                <b-img
+                                    style=""
+                                    width="40"
+                                    height="40"
+                                    :src="iconImg"
+                                    v-if="iconImg"
+                                    id="thx-svg-icon"
+                                />
                                 <svg
-                                    id="thx-svg-gift"
+                                    v-else
+                                    id="thx-svg-icon"
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 512 512"
-                                    :style="`fill: ${elements.launcherIcon.color}`"
+                                    :style="`fill: ${elements.launcherIcon.color}; width: 20px; height: 20px;`"
                                 >
                                     <path
                                         d="M32 448c0 17.7 14.3 32 32 32h160V320H32v128zm256 32h160c17.7 0 32-14.3 32-32V320H288v160zm192-320h-42.1c6.2-12.1 10.1-25.5 10.1-40 0-48.5-39.5-88-88-88-41.6 0-68.5 21.3-103 68.3-34.5-47-61.4-68.3-103-68.3-48.5 0-88 39.5-88 88 0 14.5 3.8 27.9 10.1 40H32c-17.7 0-32 14.3-32 32v80c0 8.8 7.2 16 16 16h480c8.8 0 16-7.2 16-16v-80c0-17.7-14.3-32-32-32zm-326.1 0c-22.1 0-40-17.9-40-40s17.9-40 40-40c19.9 0 34.6 3.3 86.1 80h-86.1zm206.1 0h-86.1c51.4-76.5 65.7-80 86.1-80 22.1 0 40 17.9 40 40s-17.9 40-40 40z"
@@ -183,6 +192,33 @@
             <b-col md="8">
                 <b-form-row>
                     <b-col md="6">
+                        <b-form-group description="Dimensions: 40px x 40px. File types: .jpg, .png, .svg">
+                            <template #label>
+                                Icon
+                                <b-link v-if="iconImg" @click="onClickRemoveIcon" class="text-danger float-right">
+                                    Remove
+                                </b-link>
+                            </template>
+                            <b-input-group>
+                                <b-input-group-prepend variant="light" v-if="iconImg">
+                                    <b-card
+                                        bg-variant="light"
+                                        body-class="p-0 d-flex align-items-center px-1"
+                                        style="border-top-right-radius: 0; border-bottom-right-radius: 0"
+                                    >
+                                        <b-img
+                                            width="40"
+                                            height="40"
+                                            :src="iconImg"
+                                            class="rounded"
+                                            id="thx-svg-icon"
+                                        />
+                                    </b-card>
+                                </b-input-group-prepend>
+                                <b-form-file @change="onUploadIcon($event)" accept="image/*" />
+                            </b-input-group>
+                        </b-form-group>
+                        <hr />
                         <b-form-group :description="`${message ? message.length : 0}/280`" label="Message">
                             <b-textarea
                                 @change="onChangeMessage"
@@ -193,12 +229,18 @@
                         </b-form-group>
                         <hr />
                         <b-form-group label="Alignment">
-                            <b-form-radio v-model="align" name="align" @change="onChangeAlign" value="left">
-                                Left
-                            </b-form-radio>
-                            <b-form-radio v-model="align" name="align" @change="onChangeAlign" value="right">
-                                Right
-                            </b-form-radio>
+                            <b-form-row>
+                                <b-col>
+                                    <b-form-radio v-model="align" name="align" @change="onChangeAlign" value="left">
+                                        Left
+                                    </b-form-radio>
+                                </b-col>
+                                <b-col>
+                                    <b-form-radio v-model="align" name="align" @change="onChangeAlign" value="right">
+                                        Right
+                                    </b-form-radio>
+                                </b-col>
+                            </b-form-row>
                         </b-form-group>
                     </b-col>
                     <b-col md="6">
@@ -214,18 +256,29 @@
                             <div class="widget-message" v-if="message.length">
                                 <div
                                     class="widget-message-logo"
-                                    :style="`background-image: url(${pool.brand ? pool.brand.logoImgUrl : ''});`"
+                                    :style="`background-image: url(${
+                                        pool.brand ? pool.brand.logoImgUrl : authUrl + '/img/logo-padding.png'
+                                    });`"
                                 ></div>
                                 <span style="z-index: 0">{{ message }}</span>
                                 <button class="widget-message-close">×</button>
                             </div>
                             <div class="widget-launcher mt-3" :style="`background-color: ${elements.launcherBg.color}`">
                                 <div class="widget-notifications">3</div>
+                                <b-img
+                                    style=""
+                                    width="40"
+                                    height="40"
+                                    :src="iconImg"
+                                    v-if="iconImg"
+                                    id="thx-svg-icon"
+                                />
                                 <svg
-                                    id="thx-svg-gift"
+                                    v-else
+                                    id="thx-svg-icon"
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 512 512"
-                                    :style="`fill: ${elements.launcherIcon.color}`"
+                                    :style="`fill: ${elements.launcherIcon.color}; width: 20px; height: 20px;`"
                                 >
                                     <path
                                         d="M32 448c0 17.7 14.3 32 32 32h160V320H32v128zm256 32h160c17.7 0 32-14.3 32-32V320H288v160zm192-320h-42.1c6.2-12.1 10.1-25.5 10.1-40 0-48.5-39.5-88-88-88-41.6 0-68.5 21.3-103 68.3-34.5-47-61.4-68.3-103-68.3-48.5 0-88 39.5-88 88 0 14.5 3.8 27.9 10.1 40H32c-17.7 0-32 14.3-32 32v80c0 8.8 7.2 16 16 16h480c8.8 0 16-7.2 16-16v-80c0-17.7-14.3-32-32-32zm-326.1 0c-22.1 0-40-17.9-40-40s17.9-40 40-40c19.9 0 34.6 3.3 86.1 80h-86.1zm206.1 0h-86.1c51.4-76.5 65.7-80 86.1-80 22.1 0 40 17.9 40 40s-17.9 40-40 40z"
@@ -249,7 +302,7 @@ import BaseModalWidgetCreate from '@thxnetwork/dashboard/components/modals/BaseM
 import BaseWidgetAlertPreview from '@thxnetwork/dashboard/components/widget/BaseWidgetAlertPreview.vue';
 import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
 import Color from 'color';
-import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
+import { AUTH_URL, BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { DEFAULT_ELEMENTS, DEFAULT_COLORS } from '@thxnetwork/types/contants';
 
 @Component({
@@ -266,12 +319,14 @@ import { DEFAULT_ELEMENTS, DEFAULT_COLORS } from '@thxnetwork/types/contants';
 export default class WidgetsView extends Vue {
     pools!: IPools;
     widgets!: IWidgets;
+    authUrl = AUTH_URL;
     Color = Color;
     message = '';
     align = 'left';
+    iconImg = '';
     isSubmitting = false;
-    elements = Object.assign({}, DEFAULT_ELEMENTS);
-    colors = Object.assign({}, DEFAULT_COLORS);
+    elements = Object.assign({}, DEFAULT_ELEMENTS); // Clean object for reset behavior
+    colors = Object.assign({}, DEFAULT_COLORS); // Clean object for reset behavior
 
     get pool() {
         return this.pools[this.$route.params.id];
@@ -288,6 +343,7 @@ export default class WidgetsView extends Vue {
 
             this.align = this.widget.align;
             this.message = this.widget.message;
+            this.iconImg = this.widget.iconImg;
 
             const { elements, colors } = JSON.parse(this.widget.theme);
             for (const key in this.elements) {
@@ -325,9 +381,23 @@ export default class WidgetsView extends Vue {
         this.onClickUpdate();
     }
 
+    async onUploadIcon(event: any) {
+        this.isSubmitting = true;
+        const iconImg = await this.$store.dispatch('images/upload', event.target.files[0]);
+        this.iconImg = iconImg;
+        this.onClickUpdate();
+    }
+
+    onClickRemoveIcon() {
+        this.iconImg = '';
+        this.onClickUpdate();
+    }
+
     async onClickUpdate() {
+        if (!this.widget) return;
         this.isSubmitting = true;
         await this.$store.dispatch('widgets/update', {
+            iconImg: this.iconImg,
             poolId: this.pool._id,
             message: this.message,
             align: this.align,
@@ -339,12 +409,10 @@ export default class WidgetsView extends Vue {
 }
 </script>
 <style lang="scss">
-#thx-svg-gift {
+#thx-svg-icon {
     display: block;
     margin: auto;
     fill: white;
-    width: 20px;
-    height: 20px;
     transform: scale(1);
     transition: transform 0.2s ease;
 }
@@ -357,6 +425,7 @@ export default class WidgetsView extends Vue {
     cursor: pointer;
 }
 .widget-notifications {
+    z-index: 1;
     display: flex;
     font-family: Helvetica, Arial, sans-serif;
     font-size: 13px;
