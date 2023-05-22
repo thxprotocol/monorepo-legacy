@@ -2,34 +2,26 @@ import request, { Response } from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId } from '@thxnetwork/types/enums';
 import { dashboardAccessToken } from '@thxnetwork/api/util/jest/constants';
-import { Contract } from 'web3-eth-contract';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { getContract } from '@thxnetwork/api/config/contracts';
 import { WidgetDocument } from '@thxnetwork/api/models/Widget';
 
 const user = request.agent(app);
 
 describe('Widgets', () => {
-    let poolId: string, testToken: Contract, widget: WidgetDocument;
+    let poolId: string, widget: WidgetDocument;
     const newTheme =
             '{"elements":{"btnBg":{"label":"Button","color":"#FF0000"},"btnText":{"label":"Button Text","color":"#000000"},"text":{"label":"Text","color":"#ffffff"},"bodyBg":{"label":"Background","color":"#000000"},"cardBg":{"label":"Card","color":"#3b3b3b"},"navbarBg":{"label":"Navigation","color":"#3b3b3b"},"launcherBg":{"label":"Launcher","color":"#ffffff"},"launcherIcon":{"label":"Launcher Icon","color":"#000000"}},"colors":{"success":{"label":"Success","color":"#28a745"},"warning":{"label":"Warning","color":"#ffe500"},"danger":{"label":"Danger","color":"#dc3545"},"info":{"label":"Info","color":"#17a2b8"}}}',
         align = 'left',
-        message = 'New message';
+        message = 'New message',
+        iconImg = 'https://image.icon';
 
-    beforeAll(async () => {
-        await beforeAllCallback();
-        testToken = getContract(ChainId.Hardhat, 'LimitedSupplyToken');
-    });
-
+    beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
 
     it('POST /pools', (done) => {
         user.post('/v1/pools')
             .set({ Authorization: dashboardAccessToken })
-            .send({
-                chainId: ChainId.Hardhat,
-                erc20tokens: [testToken.options.address],
-            })
+            .send({ chainId: ChainId.Hardhat })
             .expect(({ body }: Response) => {
                 poolId = body._id;
             })
@@ -52,11 +44,13 @@ describe('Widgets', () => {
         user.patch('/v1/widgets/' + widget.uuid)
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .send({
+                iconImg,
                 align,
                 message,
                 theme: newTheme,
             })
             .expect(({ body }: Response) => {
+                expect(body.iconImg).toBe(iconImg);
                 expect(body.uuid).toBeDefined();
                 expect(body.theme).toEqual(newTheme);
                 expect(body.message).toEqual(message);
@@ -69,6 +63,7 @@ describe('Widgets', () => {
         user.get('/v1/widgets/' + widget.uuid)
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .expect(({ body }: Response) => {
+                expect(body.iconImg).toBe(iconImg);
                 expect(body.uuid).toBeDefined();
                 expect(body.theme).toEqual(newTheme);
                 expect(body.message).toEqual(message);
