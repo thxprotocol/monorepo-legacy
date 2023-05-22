@@ -446,7 +446,7 @@ const controller = async (req: Request, res: Response) => {
         chainId: '${pool.chainId}',
         title: '${pool.settings.title}',
         logoUrl: '${brand && brand.logoImgUrl ? brand.logoImgUrl : AUTH_URL + '/img/logo-padding.png'}',
-        iconImg: '${widget.iconImg}',
+        iconImg: '${widget.iconImg || ''}',
         message: '${widget.message || ''}',
         align: '${widget.align || 'right'}',
         theme: '${widget.theme}',
