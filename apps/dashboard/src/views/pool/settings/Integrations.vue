@@ -12,7 +12,8 @@
                 <b-form-group
                     label="Webhook URL"
                     :description="
-                        pool.wallets && `This campaign has created ${pool.wallets.length} wallets for unknown owners.`
+                        pool.wallets &&
+                        `This campaign has created ${pool.wallets.length} wallets for unknown reward beneficiaries.`
                     "
                 >
                     <b-input-group>

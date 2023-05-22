@@ -26,7 +26,7 @@
                             below but the possibilities are endless.
                         </p>
                         <p>
-                            Don’t hesitate to reach out to explore your use case. Or contact our team on Slack if you
+                            Don't hesitate to reach out to explore your use case. Or contact our team on Slack if you
                             have any questions.
                         </p>
                         <b-button variant="dark" class="rounded-pill" to="/contact" :title="TITLES.CONTACT_US">
@@ -86,7 +86,7 @@
                 </div>
             </div>
             <div class="row pt-5 pb-5">
-                <div class="col-lg-6 ">
+                <div class="col-lg-6">
                     <img
                         class="img-fluid mb-5 mb-lg-0"
                         v-lazy="require('../../public/assets/img/thx_integration_slack.webp')"
