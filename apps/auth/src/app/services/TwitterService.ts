@@ -134,7 +134,6 @@ export class TwitterService {
                 end_time: endDate.toISOString(),
             },
         });
-
         return data.data;
     }
 

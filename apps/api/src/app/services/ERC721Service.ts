@@ -274,12 +274,13 @@ export async function transferFromWalletCallback(
     receipt: TransactionReceipt,
 ) {
     const { erc721Id, erc721TokenId, to } = args;
-
     const { contract } = await ERC721.findById(erc721Id);
     const { tokenId } = await ERC721Token.findById(erc721TokenId);
     const ownerOfToken = await contract.methods.ownerOf(tokenId).call();
 
-    // Throwing manually due to missing contract events for successful transfers
+    if (receipt) {
+        // TODO Parse events and assert instead of manual assertion
+    }
     if (ownerOfToken !== to) throw new Error('ERC721Transfer tx failed.');
 
     const toWallet = await WalletService.findOneByAddress(to);
@@ -322,8 +323,8 @@ export async function transferFromCallback(args: TERC721TransferFromCallBackArgs
     const { contract, chainId } = await PoolService.getById(assetPoolId);
     const events = parseLogs(contract.options.jsonInterface, receipt.logs);
     const event = assertEvent('ERC721Transferred', events);
-
     const wallets = await WalletService.findByQuery({ sub, chainId });
+
     await ERC721Token.findByIdAndUpdate(erc721TokenId, {
         sub,
         state: ERC721TokenState.Transferred,

@@ -27,8 +27,8 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import axios from 'axios';
-import type { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import BaseIdenticon from '../BaseIdenticon.vue';
+import type { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import type { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 
 const QUICKSWAP_TOKEN_LIST =

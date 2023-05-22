@@ -3,7 +3,7 @@ import { getProvider } from '@thxnetwork/api/util/network';
 import { ChainId, TransactionState, TransactionType } from '@thxnetwork/types/enums';
 import { MINIMUM_GAS_LIMIT, RELAYER_SPEED } from '@thxnetwork/api/config/secrets';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
-import type { TTransaction, TTransactionCallback } from '@thxnetwork/api/types/TTransaction';
+import type { TTransactionCallback } from '@thxnetwork/api/types/TTransaction';
 import { TransactionReceipt } from 'web3-core';
 import { toChecksumAddress } from 'web3-utils';
 import { poll } from '@thxnetwork/api/util/polling';

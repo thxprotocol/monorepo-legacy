@@ -4,7 +4,6 @@ import { ChainId, ERC20Type } from '@thxnetwork/types/enums';
 import { dashboardAccessToken, tokenName, tokenSymbol } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { addMinutes } from '@thxnetwork/api/util/rewards';
 
 const user = request.agent(app);
 

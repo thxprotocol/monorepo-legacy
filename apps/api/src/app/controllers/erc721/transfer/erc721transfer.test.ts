@@ -2,27 +2,18 @@ import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId, NFTVariant } from '@thxnetwork/types/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import {
-    authAccessToken,
-    sub,
-    sub2,
-    userWalletAddress,
-    userWalletAddress2,
-    widgetAccessToken,
-} from '@thxnetwork/api/util/jest/constants';
+import { authAccessToken, sub, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
 import { ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
 import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
-import WalletService from '@thxnetwork/api/services/WalletService';
-import TransactionService from '@thxnetwork/api/services/TransactionService';
 
 const user = request.agent(app);
 
 describe('ERC721Transfer', () => {
-    let erc721: ERC721Document, erc721Token: ERC721TokenDocument, wallet: WalletDocument, wallet2: WalletDocument;
+    let erc721: ERC721Document, erc721Token: ERC721TokenDocument, wallet: WalletDocument;
 
     const chainId = ChainId.Hardhat,
         name = 'Test Collection',
@@ -36,7 +27,7 @@ describe('ERC721Transfer', () => {
         metadataExternalUrl = '',
         to = '0x51193777AfF37caA0E1d5C26aBCaE3f29af5510D';
 
-    beforeAll(async () => beforeAllCallback({ skipWalletCreation: true }));
+    beforeAll(async () => await beforeAllCallback({ skipWalletCreation: true }));
     afterAll(afterAllCallback);
 
     describe('POST /wallet', () => {
