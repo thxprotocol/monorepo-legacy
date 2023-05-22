@@ -12,18 +12,14 @@
                         <div class="d-flex">
                             <div class="pr-3">
                                 <img
-                                    v-lazy="require('../../public/assets/images/nina.png')"
+                                    v-lazy="require('../../public/assets/img/nina.png')"
                                     width="50"
                                     :alt="ALT_TEXT.HOME_NINA_GRINMAN"
                                 />
                             </div>
                             <div class="align-items-center">
-                                <p class="font-weight-bold mb-0">
-                                    Nina Grinman
-                                </p>
-                                <p class="small font-weight-light mb-0">
-                                    Digital Strategist at UNDP
-                                </p>
+                                <p class="font-weight-bold mb-0">Nina Grinman</p>
+                                <p class="small font-weight-light mb-0">Digital Strategist at UNDP</p>
                             </div>
                         </div>
                     </b-card>
@@ -36,7 +32,7 @@
                 <div class="col-md-5 order-0 flex-column d-flex justify-content-between">
                     <div class="p-lg-5">
                         <h2 class="h5 text-dark">Customers love us</h2>
-                        <p class="lead mb-4 h1 " :class="{ 'text-white': home }">
+                        <p class="lead mb-4 h1" :class="{ 'text-white': home }">
                             Both clients <br />
                             and developers.
                         </p>
@@ -50,18 +46,14 @@
                         <div class="d-flex">
                             <div class="pr-3">
                                 <img
-                                    v-lazy="require('../../public/assets/images/erik.png')"
+                                    v-lazy="require('../../public/assets/img/erik.png')"
                                     width="50"
                                     :alt="ALT_TEXT.HOME_ERIK_DE_GRAAF"
                                 />
                             </div>
                             <div class="align-items-center">
-                                <p class="font-weight-bold mb-0">
-                                    Erik de Graaf
-                                </p>
-                                <p class="small font-weight-light mb-0">
-                                    Scientist Innovator and Blockchain Engineer
-                                </p>
+                                <p class="font-weight-bold mb-0">Erik de Graaf</p>
+                                <p class="small font-weight-light mb-0">Scientist Innovator and Blockchain Engineer</p>
                             </div>
                         </div>
                     </b-card>
