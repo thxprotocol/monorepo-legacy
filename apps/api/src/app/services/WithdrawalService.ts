@@ -2,19 +2,17 @@ import { toWei } from 'web3-utils';
 import { ChainId, TransactionState, WithdrawalState } from '@thxnetwork/types/enums';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { Withdrawal, WithdrawalDocument } from '@thxnetwork/api/models/Withdrawal';
-import type { IAccount } from '@thxnetwork/api/models/Account';
 import { assertEvent, parseLogs } from '@thxnetwork/api/util/events';
-import TransactionService from './TransactionService';
-import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { TWithdrawForCallbackArgs } from '@thxnetwork/api/types/TTransaction';
 import { TransactionReceipt } from 'web3-core';
-import PoolService from './PoolService';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
-import { ERC20Document } from '../models/ERC20';
+import { ERC20Document } from '@thxnetwork/api/models/ERC20';
+import { WalletDocument } from '@thxnetwork/api/models/Wallet';
+import TransactionService from '@thxnetwork/api/services/TransactionService';
+import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
+import PoolService from './PoolService';
 import ERC20Service from './ERC20Service';
-import WalletService from './WalletService';
-import { WalletDocument } from '../models/Wallet';
 
 export default class WithdrawalService {
     static getById(id: string) {

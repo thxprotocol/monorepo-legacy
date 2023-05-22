@@ -1,12 +1,13 @@
-import { AssetPool } from '../models/AssetPool';
-import TwitterDataProxy from '../proxies/TwitterDataProxy';
 import { subMinutes } from 'date-fns';
-import PointRewardService from '../services/PointRewardService';
-import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
+import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/enums';
 import { IAccount } from '../models/Account';
+import { AssetPool } from '../models/AssetPool';
+import { PointReward } from '../models/PointReward';
+import TwitterDataProxy from '../proxies/TwitterDataProxy';
+import PointRewardService from '../services/PointRewardService';
 import AccountProxy from '../proxies/AccountProxy';
 import MailService from '../services/MailService';
-import { PointReward } from '../models/PointReward';
+import { twitterClient } from '../util/twitter';
 
 export async function createConditionalRewards() {
     const endDate = new Date();
@@ -16,34 +17,69 @@ export async function createConditionalRewards() {
         const { isAuthorized } = await TwitterDataProxy.getTwitter(pool.sub);
         if (!isAuthorized) continue;
 
-        const latestTweets = await TwitterDataProxy.getLatestTweets(pool.sub, startDate, endDate);
-        const { hashtag, title, description, amount } = pool.settings.defaults.conditionalRewards;
-        const rewards = [];
+        const latestTweetsForPoolOwner = await TwitterDataProxy.getLatestTweets(pool.sub, startDate, endDate);
+        if (!latestTweetsForPoolOwner.length) continue;
 
-        for (const tweet of latestTweets) {
-            const result = await PointReward.exists({ poolId: String(pool._id), content: tweet.id });
-            if (result) continue;
-            if (hashtag && !tweet.text.toLowerCase().includes('#' + hashtag.toLowerCase())) {
-                continue;
-            }
-            const reward = await PointRewardService.create(pool, {
-                title,
-                description,
-                amount,
-                platform: RewardConditionPlatform.Twitter,
-                interaction: RewardConditionInteraction.TwitterLike,
-                content: tweet.id,
-            });
-            rewards.push(reward);
-        }
+        const { hashtag, title, description, amount } = pool.settings.defaults.conditionalRewards;
+        const filteredTweets = await Promise.all(
+            latestTweetsForPoolOwner.filter(async (tweet: any) => {
+                const isExistingReward = await PointReward.exists({ poolId: String(pool._id), content: tweet.id });
+                return (
+                    (!isExistingReward && !hashtag) ||
+                    (!isExistingReward && hashtag && containsValue(tweet.text, hashtag))
+                );
+            }),
+        );
+        if (!filteredTweets.length) continue;
+
+        const rewards = await Promise.all(
+            filteredTweets.map(async (tweet) => {
+                const contentMetadata = await getContentMetadata(filteredTweets[0].id);
+                return await PointRewardService.create(pool, {
+                    title,
+                    description,
+                    amount,
+                    platform: RewardConditionPlatform.Twitter,
+                    interaction: RewardConditionInteraction.TwitterRetweet,
+                    content: tweet.id,
+                    contentMetadata,
+                });
+            }),
+        );
 
         const account: IAccount = await AccountProxy.getById(pool.sub);
-        if (rewards.length && account.email) {
+        if (account.email) {
             await MailService.send(
                 account.email,
-                `Published ${rewards.length} conditional rewards!`,
-                `We discovered ${rewards.length} new tweets in your connected account! A conditional reward for each has been added to your widget.`,
+                `Published ${rewards.length} reward${rewards.length && 's'}!`,
+                `We discovered ${rewards.length} new tweet${
+                    rewards.length && 's'
+                } in your connected Twitter account! A conditional reward ${
+                    rewards.length && 'for each'
+                } has been published for your widget.`,
             );
         }
     }
+}
+
+function containsValue(text: string, hashtag: string) {
+    return text.toLowerCase().includes('#' + hashtag.toLowerCase());
+}
+
+async function getContentMetadata(tweetId: string) {
+    const { data } = await twitterClient({
+        method: 'GET',
+        url: `/tweets`,
+        params: {
+            ids: tweetId,
+            expansions: 'author_id',
+        },
+    });
+    const username = data.includes.users[0].username;
+
+    return JSON.stringify({
+        url: `https://twitter.com/${username}/status/${tweetId}`,
+        username,
+        text: data.data[0].text,
+    });
 }

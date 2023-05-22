@@ -21,6 +21,7 @@ const assetPoolSchema = new mongoose.Schema(
             isTwitterSyncEnabled: { type: Boolean, default: false },
             discordWebhookUrl: String,
             defaults: {
+                discordMessage: String,
                 conditionalRewards: {
                     title: String,
                     description: String,

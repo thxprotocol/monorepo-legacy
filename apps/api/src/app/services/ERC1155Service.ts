@@ -250,6 +250,9 @@ export async function transferFromWalletCallback(
     const { tokenId } = await ERC1155Token.findById(erc1155TokenId);
     const ownerOfToken = await contract.methods.ownerOf(tokenId).call();
 
+    if (receipt) {
+        // TODO implement event assert after contract events for success transfers become available
+    }
     // Throwing manually due to missing contract events for successful transfers
     if (ownerOfToken !== to) throw new Error('ERC721Transfer tx failed.');
 
