@@ -25,7 +25,7 @@
                         <img
                             width="120"
                             height="auto"
-                            v-lazy="require('../../public/assets/images/techstars.png')"
+                            v-lazy="require('../../public/assets/img/techstars.png')"
                             :alt="ALT_TEXT.HOME_NEW_TECHSTARS"
                         />
                     </a>

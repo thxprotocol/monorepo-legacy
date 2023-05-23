@@ -21,23 +21,12 @@ export async function create(pool: AssetPoolDocument, payload: Partial<TPointRew
     if (pool.settings.discordWebhookUrl) {
         const widget = await Widget.findOne({ poolId: pool._id });
         await axios.post(pool.settings.discordWebhookUrl, {
+            content: '@here ' + pool.settings.defaults.discordMessage,
             embeds: [
                 {
-                    title: ':trophy: New conditional reward!',
-                    description: `Claim these points and spend them on crypto perks.`,
+                    title: `${reward.title}`,
+                    description: reward.description,
                     url: widget.domain,
-                    fields: [
-                        {
-                            name: `${reward.title}`,
-                            value: reward.description,
-                            inline: true,
-                        },
-                        {
-                            name: ':sparkles: Points',
-                            value: reward.amount,
-                            inline: true,
-                        },
-                    ],
                 },
             ],
         });

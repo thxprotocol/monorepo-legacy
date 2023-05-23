@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { twitterClient } from '../user/post.controller';
+import { twitterClient } from '@thxnetwork/api/util/twitter';
 import { body } from 'express-validator';
 
 const validation = [body('tweetId').isString()];

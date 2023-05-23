@@ -64,7 +64,7 @@
                 <div class="col-lg-4 d-flex offset-lg-2 align-items-center pt-5">
                     <img
                         width="150"
-                        v-lazy="require('../../public/assets/images/techstars.png')"
+                        v-lazy="require('../../public/assets/img/techstars.png')"
                         class="img-fluid rounded mr-3"
                         :alt="ALT_TEXT.HOME_EU_FLAG"
                     />
@@ -77,7 +77,7 @@
                         <div class="flex-0 mr-3 rounded" style="background-color: #00349f">
                             <img
                                 width="150"
-                                v-lazy="require('../../public/assets/images/euflag.png')"
+                                v-lazy="require('../../public/assets/img/euflag.png')"
                                 class="img-fluid rounded"
                                 :alt="ALT_TEXT.HOME_EU_FLAG"
                             />

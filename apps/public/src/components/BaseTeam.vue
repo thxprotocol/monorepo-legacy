@@ -16,7 +16,7 @@
                                     <img
                                         class="rounded"
                                         height="65"
-                                        v-lazy="require('../../public/assets/images/peter.jpg')"
+                                        v-lazy="require('../../public/assets/img/peter.jpg')"
                                         :alt="ALT_TEXT.HOME_BASE_TEAM_PETER"
                                     />
                                 </div>
@@ -46,7 +46,7 @@
                                     <img
                                         class="rounded"
                                         height="65"
-                                        v-lazy="require('../../public/assets/images/steffen.jpg')"
+                                        v-lazy="require('../../public/assets/img/steffen.jpg')"
                                         :alt="ALT_TEXT.HOME_BASE_TEAM_STEFFEN"
                                     />
                                 </div>
@@ -106,7 +106,7 @@
                                     <img
                                         class="rounded"
                                         height="65"
-                                        v-lazy="require('../../public/assets/images/marloes.png')"
+                                        v-lazy="require('../../public/assets/img/marloes.png')"
                                         :alt="ALT_TEXT.HOME_BASE_TEAM_MARLOES"
                                     />
                                 </div>
@@ -134,7 +134,7 @@
                                     <img
                                         class="rounded"
                                         height="65"
-                                        v-lazy="require('../../public/assets/images/valeria.png')"
+                                        v-lazy="require('../../public/assets/img/valeria.png')"
                                         :alt="ALT_TEXT.HOME_BASE_TEAM_VALERIA"
                                     />
                                 </div>
@@ -164,7 +164,7 @@
                                     <img
                                         class="rounded"
                                         height="65"
-                                        v-lazy="require('../../public/assets/images/jorrit.png')"
+                                        v-lazy="require('../../public/assets/img/jorrit.png')"
                                         :alt="ALT_TEXT.HOME_BASE_TEAM_JORRIT"
                                     />
                                 </div>
@@ -194,7 +194,7 @@
                                     <img
                                         class="rounded"
                                         height="65"
-                                        v-lazy="require('../../public/assets/images/phillip.png')"
+                                        v-lazy="require('../../public/assets/img/phillip.png')"
                                         :alt="ALT_TEXT.HOME_BASE_TEAM_PHILLIP"
                                     />
                                 </div>
@@ -222,7 +222,7 @@
                                     <img
                                         class="rounded"
                                         height="65"
-                                        v-lazy="require('../../public/assets/images/bram.png')"
+                                        v-lazy="require('../../public/assets/img/bram.png')"
                                         :alt="ALT_TEXT.HOME_BASE_TEAM_BRAM"
                                     />
                                 </div>

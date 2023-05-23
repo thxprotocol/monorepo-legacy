@@ -12,7 +12,8 @@
                 <b-form-group
                     label="Webhook URL"
                     :description="
-                        pool.wallets && `This campaign has created ${pool.wallets.length} wallets for unknown owners.`
+                        pool.wallets &&
+                        `This campaign has created ${pool.wallets.length} wallets for unknown reward beneficiaries.`
                     "
                 >
                     <b-input-group>
@@ -89,9 +90,11 @@
                         @change="onChangeDiscordWebhookUrl"
                     ></b-form-input>
                 </b-form-group>
-                <b-form-group label="Message">
-                    <b-form-textarea disabled v-model="defaultDiscordMessage" @change="updateSettings()" />
-                </b-form-group>
+                <b-card v-if="isValidDiscordWebhookUrl" body-class="bg-light">
+                    <b-form-group label="Message" class="mb-0">
+                        <b-form-textarea v-model="defaultDiscordMessage" @change="updateSettings()" />
+                    </b-form-group>
+                </b-card>
             </b-col>
         </b-form-row>
         <hr />
@@ -99,7 +102,7 @@
             <b-col md="4">
                 <strong>Twitter Automation</strong>
                 <p class="text-muted">
-                    Detects new tweets every 15min and automatically creates a conditional rewards.
+                    Detects new tweets every 15min and automatically creates a retweet reward for the detected tweet.
                 </p>
             </b-col>
             <b-col md="8">
@@ -117,39 +120,46 @@
                         @change="updateSettings"
                         class="m-0"
                     >
-                        Enable automated reward creation for your Tweets
+                        Enable automatic <strong>Twitter Retweet</strong> rewards
                     </b-form-checkbox>
                 </b-form-group>
-                <b-form-group
-                    label="Hashtag filter"
-                    description="Will only create rewards for tweets containing this hashtag. Leave empty for all tweets."
-                >
-                    <b-input-group prepend="#">
-                        <b-form-input v-model="defaultConditionalHashtag" @change="updateSettings()" />
-                    </b-input-group>
-                </b-form-group>
-            </b-col>
-        </b-form-row>
-        <b-form-row>
-            <b-col md="4"> </b-col>
-            <b-col md="8">
-                <b-card body-class="bg-light">
-                    <b-alert variant="info" show>
-                        <i class="fas fa-info-circle mr-2"></i>
-                        Defaults used to create conditional rewards. You can always change adjust them later!
-                    </b-alert>
-                    <b-form-group label="Title">
-                        <b-form-input v-model="defaultConditionalRewardTitle" @change="updateSettings()" />
+                <b-card v-if="isTwitterSyncEnabled" body-class="bg-light">
+                    <b-form-group
+                        label="Hashtag filter"
+                        description="Will only create retweet rewards for tweets in your account that contain this hashtag. Leave empty for all tweets."
+                    >
+                        <b-input-group prepend="#">
+                            <b-form-input v-model="defaultConditionalHashtag" @change="updateSettings" />
+                        </b-input-group>
                     </b-form-group>
-                    <b-form-group label="Description">
-                        <b-form-textarea v-model="defaultConditionalRewardDescription" @change="updateSettings()" />
-                    </b-form-group>
-                    <b-form-group label="Amount">
-                        <b-form-input
-                            v-model="defaultConditionalRewardAmount"
-                            type="number"
-                            @change="updateSettings()"
-                        />
+                    <hr />
+                    <b-form-group label="Reward settings" class="mb-0">
+                        <b-form-row class="mb-2">
+                            <b-col md="8">
+                                <b-form-input
+                                    placeholder="Reward title"
+                                    v-model="defaultConditionalRewardTitle"
+                                    @change="updateSettings"
+                                />
+                            </b-col>
+                            <b-col md="4">
+                                <b-form-input
+                                    placeholder="Point amount"
+                                    type="number"
+                                    v-model="defaultConditionalRewardAmount"
+                                    @change="updateSettings"
+                                />
+                            </b-col>
+                        </b-form-row>
+                        <b-form-row>
+                            <b-col>
+                                <b-form-textarea
+                                    placeholder="Reward description"
+                                    v-model="defaultConditionalRewardDescription"
+                                    @change="updateSettings"
+                                />
+                            </b-col>
+                        </b-form-row>
                     </b-form-group>
                 </b-card>
             </b-col>
@@ -163,7 +173,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { IAccount } from '@thxnetwork/dashboard/types/account';
-import { AccessTokenKind, TPoolSettings } from '@thxnetwork/types/index';
+import { AccessTokenKind, RewardConditionInteraction, TPoolSettings } from '@thxnetwork/types/index';
 import { API_URL, BASE_URL, DISCORD_CLIENT_ID } from '@thxnetwork/dashboard/utils/secrets';
 
 @Component({
@@ -178,6 +188,7 @@ export default class SettingsTwitterView extends Vue {
     BASE_URL = BASE_URL;
     isCopied = false;
     AccessTokenKind = AccessTokenKind;
+    RewardConditionInteraction = RewardConditionInteraction;
     urlDiscordBotInstall =
         DISCORD_CLIENT_ID &&
         `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&permissions=133120&scope=bot`;
@@ -188,6 +199,7 @@ export default class SettingsTwitterView extends Vue {
     isTwitterSyncEnabled = false;
     discordWebhookUrl = '';
     defaultDiscordMessage = '';
+    defaultConditionalRewardInteraction = RewardConditionInteraction.TwitterRetweet;
     defaultConditionalHashtag = '';
     defaultConditionalRewardTitle = '';
     defaultConditionalRewardDescription = '';

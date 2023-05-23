@@ -1,13 +1,7 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId, ERC20Type } from '@thxnetwork/types/enums';
-import {
-    dashboardAccessToken,
-    sub,
-    tokenName,
-    tokenSymbol,
-    widgetAccessToken,
-} from '@thxnetwork/api/util/jest/constants';
+import { dashboardAccessToken, tokenName, tokenSymbol, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
 import { fromWei, isAddress, toWei } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { addMinutes, subMinutes } from '@thxnetwork/api/util/rewards';

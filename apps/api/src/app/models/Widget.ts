@@ -7,11 +7,10 @@ const widgetSchema = new mongoose.Schema(
     {
         uuid: String,
         poolId: String,
+        iconImg: String,
         align: String,
         message: String,
         domain: String,
-        color: String,
-        bgColor: String,
         theme: String,
         active: { default: false, type: Boolean },
     },
