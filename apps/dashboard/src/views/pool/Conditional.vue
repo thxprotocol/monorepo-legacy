@@ -136,7 +136,7 @@ export default class ConditionalView extends Vue {
 
     async listRewards() {
         this.isLoading = true;
-        await this.$store.dispatch('pointRewards/list', { page: this.page, pool: this.pool });
+        await this.$store.dispatch('pointRewards/list', { page: this.page, pool: this.pool, limit: this.limit });
         this.isLoading = false;
     }
 

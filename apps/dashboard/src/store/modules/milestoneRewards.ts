@@ -34,14 +34,20 @@ class MilestoneRewardModule extends VuexModule {
         Vue.set(this._all[reward.poolId], String(reward._id), reward);
     }
 
+    @Mutation
+    setTotal({ pool, total }: { pool: TPool; total: number }) {
+        this._totals[pool._id] = total;
+    }
+
     @Action({ rawError: true })
-    async list({ page, pool }: { page: number; pool: TPool }) {
+    async list({ page, pool, limit }: { page: number; limit: number; pool: TPool }) {
         const { data } = await axios({
             method: 'GET',
             url: '/milestone-rewards',
             headers: { 'X-PoolId': pool._id },
+            params: { page, limit },
         });
-
+        this.context.commit('setTotal', { pool, total: data.total });
         data.results.forEach((reward: TMilestoneReward) => {
             reward.page = page;
             this.context.commit('set', reward);

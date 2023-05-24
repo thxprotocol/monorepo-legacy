@@ -47,7 +47,7 @@ class ReferralRewardModule extends VuexModule {
 
     @Mutation
     setTotal({ pool, total }: { pool: TPool; total: number }) {
-        Vue.set(this._totals, pool._id, total);
+        this._totals[pool._id] = total;
     }
 
     @Action({ rawError: true })
@@ -61,9 +61,7 @@ class ReferralRewardModule extends VuexModule {
                 limit: String(limit),
             },
         });
-
         this.context.commit('setTotal', { pool, total: data.total });
-
         data.results.forEach((reward: TReferralReward) => {
             reward.page = page;
             this.context.commit('set', { pool, reward });

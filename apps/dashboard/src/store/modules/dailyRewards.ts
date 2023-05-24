@@ -36,13 +36,14 @@ class DailyRewardModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async list({ page, pool }: { page: number; pool: TPool }) {
+    async list({ page, pool, limit }: { page: number; pool: TPool; limit: number }) {
         const { data } = await axios({
             method: 'GET',
             url: '/daily-rewards',
             headers: { 'X-PoolId': pool._id },
+            params: { limit, page },
         });
-
+        this.context.commit('setTotal', { pool, total: data.total });
         data.results.forEach((reward: TDailyReward) => {
             reward.page = page;
             this.context.commit('set', reward);
