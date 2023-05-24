@@ -6,6 +6,7 @@ import { Request, Response } from 'express';
 import { hubspot } from '@thxnetwork/auth/util/hubspot';
 import { DASHBOARD_URL } from '@thxnetwork/auth/config/secrets';
 import PoolProxy from '@thxnetwork/auth/proxies/PoolProxy';
+import WalletProxy from '@thxnetwork/auth/proxies/WalletProxy';
 
 export const callbackPreAuth = async (req: Request) => {
     // Get code from url
@@ -52,7 +53,12 @@ export const callbackPostAuth = async (
         await account.updateOne({ referralCode: params.referral_code });
     }
 
-    // Create a wallet if wallet can not be found for user
+    // Create or update wallet for user
+    if (params.wallet_transfer_token) {
+        const { wallet } = await WalletProxy.getWalletTransfer(params.wallet_transfer_token);
+        await WalletProxy.update({ ...wallet, sub: String(account._id) });
+    }
+
     createWallet(account);
 
     // Transfer pool ownership if there is a pool_transfer_token

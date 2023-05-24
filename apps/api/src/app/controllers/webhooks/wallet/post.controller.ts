@@ -21,7 +21,7 @@ const controller = async (req: Request, res: Response) => {
     if (!pool) throw new ForbiddenError('Webhook token is not valid');
 
     const widget = await Widget.findOne({ poolId: pool._id });
-    if (!widget || !widget.active) throw new NotFoundError('Could not find an active widget');
+    if (!widget) throw new NotFoundError('Could not find an active widget');
 
     const wallet = await Wallet.create({
         token: v4(),
@@ -30,7 +30,11 @@ const controller = async (req: Request, res: Response) => {
         address: req.body.address ? toChecksumAddress(req.body.address) : '',
     });
 
-    res.status(201).json({ walletId: wallet._id, walletURL: widget.domain + '?thx_widget_path=/w/' + wallet.token });
+    res.status(201).json({
+        token: wallet.token,
+        walletId: wallet._id,
+        walletURL: widget.domain + '?thx_widget_path=/w/' + wallet.token,
+    });
 };
 
 export default { controller, validation };

@@ -21,7 +21,7 @@ import PoolService from './PoolService';
 import TransactionService from './TransactionService';
 import type { TERC1155, TERC1155Metadata, TERC1155Token } from '@thxnetwork/types/interfaces';
 import type { IAccount } from '@thxnetwork/api/models/Account';
-import { TWallet, WalletDocument } from '../models/Wallet';
+import { WalletDocument } from '../models/Wallet';
 import IPFSService from './IPFSService';
 import WalletService from './WalletService';
 import { API_URL, VERSION } from '../config/secrets';
@@ -204,14 +204,14 @@ export async function transferFromCallback(args: TERC1155TransferFromCallbackArg
     const { contract, chainId } = await PoolService.getById(assetPoolId);
     const events = parseLogs(contract.options.jsonInterface, receipt.logs);
     const event = assertEvent('ERC71155TransferredSingle', events);
-    const wallets = await WalletService.findByQuery({ sub, chainId });
+    const wallet = await WalletService.findPrimary(sub, chainId);
 
     await ERC1155Token.findByIdAndUpdate(erc1155TokenId, {
         sub,
         state: ERC1155TokenState.Transferred,
         tokenId: Number(event.args.tokenId),
         recipient: event.args.to,
-        walletId: wallets.length ? String(wallets[0]._id) : undefined,
+        walletId: wallet && String(wallet._id),
     });
 }
 
@@ -291,7 +291,7 @@ async function findTokensBySub(sub: string): Promise<ERC1155TokenDocument[]> {
     return ERC1155Token.find({ sub });
 }
 
-async function findTokensByWallet(wallet: TWallet): Promise<ERC1155TokenDocument[]> {
+async function findTokensByWallet(wallet: WalletDocument): Promise<ERC1155TokenDocument[]> {
     return ERC1155Token.find({ walletId: wallet._id });
 }
 

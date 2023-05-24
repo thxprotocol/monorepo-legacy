@@ -13,7 +13,7 @@ import { TransactionReceipt } from 'web3-core';
 import { TERC20DeployCallbackArgs, TERC20TransferFromCallBackArgs } from '@thxnetwork/api/types/TTransaction';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
 import ERC20Transfer from '../models/ERC20Transfer';
-import { TWallet, WalletDocument } from '../models/Wallet';
+import { WalletDocument } from '../models/Wallet';
 import WalletService, { Wallet } from './WalletService';
 import { ContractName } from '@thxnetwork/contracts/exports';
 
@@ -115,7 +115,7 @@ export const getTokensForSub = (sub: string) => {
     return ERC20Token.find({ sub });
 };
 
-export const getTokensForWallet = (wallet: TWallet) => {
+export const getTokensForWallet = (wallet: WalletDocument) => {
     return ERC20Token.find({ walletId: wallet._id });
 };
 
@@ -243,11 +243,11 @@ async function isMinter(erc20: ERC20Document, address: string) {
 }
 
 async function createERC20Token(erc20: ERC20Document, sub: string) {
-    const wallets = await WalletService.findByQuery({ sub, chainId: erc20.chainId });
+    const wallet = await WalletService.findPrimary(sub, erc20.chainId);
     await ERC20Token.create({
         sub,
         erc20Id: String(erc20._id),
-        walletId: wallets.length ? String(wallets[0]._id) : undefined,
+        walletId: wallet && String(wallet._id),
     });
 }
 

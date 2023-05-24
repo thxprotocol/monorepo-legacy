@@ -18,7 +18,7 @@ import { getProvider } from '@thxnetwork/api/util/network';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import { type TERC721, type TERC721Metadata, type TERC721Token, ERC721TokenState } from '@thxnetwork/types/interfaces';
 import type { IAccount } from '@thxnetwork/api/models/Account';
-import { TWallet, WalletDocument } from '../models/Wallet';
+import { WalletDocument } from '../models/Wallet';
 import { ERC721TransferDocument } from '../models/ERC721Transfer';
 import PoolService from './PoolService';
 import TransactionService from './TransactionService';
@@ -183,7 +183,7 @@ async function findTokensBySub(sub: string): Promise<ERC721TokenDocument[]> {
     return ERC721Token.find({ sub });
 }
 
-async function findTokensByWallet(wallet: TWallet): Promise<ERC721TokenDocument[]> {
+async function findTokensByWallet(wallet: WalletDocument): Promise<ERC721TokenDocument[]> {
     return ERC721Token.find({ walletId: wallet._id });
 }
 
@@ -323,14 +323,14 @@ export async function transferFromCallback(args: TERC721TransferFromCallBackArgs
     const { contract, chainId } = await PoolService.getById(assetPoolId);
     const events = parseLogs(contract.options.jsonInterface, receipt.logs);
     const event = assertEvent('ERC721Transferred', events);
-    const wallets = await WalletService.findByQuery({ sub, chainId });
+    const wallet = await WalletService.findPrimary(sub, chainId);
 
     await ERC721Token.findByIdAndUpdate(erc721TokenId, {
         sub,
         state: ERC721TokenState.Transferred,
         tokenId: Number(event.args.tokenId),
         recipient: event.args.to,
-        walletId: wallets.length ? String(wallets[0]._id) : undefined,
+        walletId: wallet && String(wallet._id),
     });
 }
 

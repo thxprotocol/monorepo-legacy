@@ -1,21 +1,9 @@
 import mongoose from 'mongoose';
 import { getDiamondAbi } from '../config/contracts';
-import { Contract } from 'web3-eth-contract';
-import { ChainId } from '@thxnetwork/types/enums';
 import { getProvider } from '../util/network';
+import { TWallet } from '@thxnetwork/types/interfaces';
 
 export type WalletDocument = mongoose.Document & TWallet;
-export interface TWallet {
-    _id: string;
-    poolId: string;
-    token: string;
-    address: string;
-    sub: string;
-    chainId: ChainId;
-    contract: Contract;
-    version: string;
-    isUpgradeAvailable: boolean;
-}
 
 const walletSchema = new mongoose.Schema(
     { token: String, poolId: String, address: String, sub: String, chainId: Number, version: String },

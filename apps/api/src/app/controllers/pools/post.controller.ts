@@ -13,7 +13,7 @@ const validation = [
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
-    const title = req.body.title || 'My Loyalty Pool';
+    const title = req.body.title || 'My Loyalty Campaign';
     const pool = await PoolService.deploy(req.auth.sub, req.body.chainId, title, req.body.endDate);
 
     await Widget.create({

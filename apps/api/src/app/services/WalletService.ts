@@ -25,6 +25,10 @@ function findOneByAddress(address: string) {
     return Wallet.findOne({ address: toChecksumAddress(address) });
 }
 
+async function findPrimary(sub: string, chainId: ChainId) {
+    return await Wallet.findOne({ sub, chainId, address: { $exists: true } });
+}
+
 async function findOneByQuery(query: { sub?: string; chainId?: number }) {
     return await Wallet.findOne(query);
 }
@@ -83,4 +87,4 @@ async function upgrade(wallet: WalletDocument, version?: string) {
     return tx;
 }
 
-export default { upgrade, create, findOneByAddress, findByQuery, deploy, deployCallback, findOneByQuery };
+export default { findPrimary, upgrade, create, findOneByAddress, findByQuery, deploy, deployCallback, findOneByQuery };

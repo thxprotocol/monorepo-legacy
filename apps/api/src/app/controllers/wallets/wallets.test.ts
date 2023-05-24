@@ -103,7 +103,7 @@ describe('Wallets', () => {
         let pool;
 
         beforeAll(async () => {
-            pool = await PoolService.deploy(sub, ChainId.Hardhat, 'My Loyalty Pool');
+            pool = await PoolService.deploy(sub, ChainId.Hardhat, 'My Loyalty Campaign');
         });
 
         it('HTTP 201 without sub', (done) => {
