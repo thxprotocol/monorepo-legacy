@@ -154,7 +154,7 @@ import { jsPDF } from 'jspdf';
 import { type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { TBaseReward } from '@thxnetwork/types/index';
-import { WALLET_URL, BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
+import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { TClaim } from '@thxnetwork/dashboard/store/modules/claims';
 import { saveAs } from 'file-saver';
 import { loadImage } from '@thxnetwork/dashboard/utils/loadImage';

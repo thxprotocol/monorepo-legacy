@@ -133,7 +133,6 @@ import { IAccount } from '@thxnetwork/dashboard/types/account';
 import BaseCardTokenGating from '../cards/BaseCardTokenGating.vue';
 import { TokenGatingVariant } from '@thxnetwork/types/enums/TokenGatingVariant';
 import { IERC1155s, TERC1155 } from '@thxnetwork/dashboard/types/erc1155';
-import { fromWei, toWei } from 'web3-utils';
 
 @Component({
     components: {
