@@ -1,19 +1,10 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import {
-    widgetAccessToken,
-    sub,
-    sub2,
-    userWalletAddress2,
-    authAccessToken,
-    userWalletAddress3,
-    sub3,
-} from '@thxnetwork/api/util/jest/constants';
+import { widgetAccessToken, sub, sub2, userWalletAddress2, authAccessToken } from '@thxnetwork/api/util/jest/constants';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { ChainId } from '@thxnetwork/types/enums';
 import { currentVersion } from '@thxnetwork/contracts/exports';
-import PoolService from '@thxnetwork/api/services/PoolService';
-import { validate } from 'uuid';
+
 const user = request.agent(app);
 
 describe('Wallets', () => {
