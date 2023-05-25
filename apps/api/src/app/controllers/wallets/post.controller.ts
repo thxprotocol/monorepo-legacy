@@ -22,6 +22,7 @@ const controller = async (req: Request, res: Response) => {
     if (!wallet) {
         wallet = await WalletService.create({ sub, chainId, address, forceSync });
     }
+
     return res.status(201).json(wallet);
 };
 

@@ -1,18 +1,21 @@
 import { Request, Response } from 'express';
 import { PointReward } from '@thxnetwork/api/models/PointReward';
+import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
+import { getPlatformUserId, validateCondition } from '@thxnetwork/api/util/condition';
+import { param } from 'express-validator';
 import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import PoolService from '@thxnetwork/api/services/PoolService';
-import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
-import { getPlatformUserId, validateCondition } from '@thxnetwork/api/util/condition';
-import { Wallet } from '@thxnetwork/api/models/Wallet';
+import WalletService from '@thxnetwork/api/services/WalletService';
+
+const validation = [param('id').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
-    const reward = await PointReward.findOne({ uuid: req.params.uuid });
+    const reward = await PointReward.findById(req.params.id);
     const account = await AccountProxy.getById(req.auth.sub);
     const pool = await PoolService.getById(req.header('X-PoolId'));
-    const wallet = await Wallet.findOne({ sub: req.auth.sub, chainId: pool.chainId });
+    const wallet = await WalletService.findPrimary(req.auth.sub, pool.chainId);
 
     let ids: any[] = [{ sub: req.auth.sub }, { walletId: wallet._id }];
 
@@ -46,4 +49,4 @@ const controller = async (req: Request, res: Response) => {
     res.status(201).json(claim);
 };
 
-export default { controller };
+export default { controller, validation };

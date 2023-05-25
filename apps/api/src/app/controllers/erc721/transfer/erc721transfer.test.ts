@@ -50,7 +50,7 @@ describe('ERC721Transfer', () => {
 
     describe('POST /erc721/transfer', () => {
         beforeAll(async () => {
-            const pool = await PoolService.deploy(sub, chainId, 'My Loyalty Pool');
+            const pool = await PoolService.deploy(sub, chainId, 'My Loyalty Campaign');
             erc721 = await ERC721Service.deploy(
                 {
                     variant: NFTVariant.ERC721,

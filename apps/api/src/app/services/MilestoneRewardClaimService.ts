@@ -1,12 +1,12 @@
 import { MilestoneRewardClaim } from '@thxnetwork/api/models/MilestoneRewardClaims';
-import db from '@thxnetwork/api/util/database';
 import { MilestoneRewardDocument } from '../models/MilestoneReward';
+import { v4 } from 'uuid';
 
 export const MilestoneRewardClaimDocument = MilestoneRewardClaim;
 
 export default {
     create: (data: { poolId: string; milestoneRewardId: string; walletId: string; amount: string }) => {
-        return MilestoneRewardClaim.create({ uuid: db.createUUID(), isClaimed: false, ...data });
+        return MilestoneRewardClaim.create({ uuid: v4(), isClaimed: false, ...data });
     },
     findByUUID: (uuid: string) => {
         return MilestoneRewardClaim.findOne({ uuid });

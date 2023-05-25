@@ -16,7 +16,7 @@ const validation = [body('contractAddress').exists().isString(), body('chainId')
 const controller = async (req: Request, res: Response) => {
     const chainId = Number(req.body.chainId) as ChainId;
     const contractAddress = req.body.contractAddress;
-    const wallet = await WalletService.findOneByQuery({ sub: req.auth.sub, chainId });
+    const wallet = await WalletService.findPrimary(req.auth.sub, chainId);
     const pool = await PoolService.getById(req.header('X-PoolId'));
 
     const ownedNfts = await getNFTsForOwner(pool.address, contractAddress);

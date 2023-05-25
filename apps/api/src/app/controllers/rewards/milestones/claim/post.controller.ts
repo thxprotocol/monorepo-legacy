@@ -4,6 +4,10 @@ import PoolService from '@thxnetwork/api/services/PoolService';
 import { MilestoneRewardClaim } from '@thxnetwork/api/models/MilestoneRewardClaims';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
+import { param } from 'express-validator';
+import { validate } from '@thxnetwork/api/services/PerkService';
+
+const validation = [param('uuid').custom((uuid) => validate(uuid))];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
@@ -23,4 +27,4 @@ const controller = async (req: Request, res: Response) => {
     res.status(201).json(claim);
 };
 
-export default { controller };
+export default { controller, validation };

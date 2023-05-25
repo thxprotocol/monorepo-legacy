@@ -1,4 +1,3 @@
-import nock from 'nock';
 import request from 'supertest';
 import app from '../../app';
 import db from '../../util/database';

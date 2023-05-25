@@ -36,7 +36,8 @@ const controller = async (req: Request, res: Response) => {
     if (authHeader && authHeader.startsWith('Bearer ')) {
         const token: { sub: string } = jwt_decode(authHeader.split(' ')[1]);
         sub = token.sub;
-        wallet = await WalletService.findOneByQuery({ sub, chainId: pool.chainId });
+
+        wallet = await WalletService.findPrimary(sub, pool.chainId);
     }
 
     res.json({

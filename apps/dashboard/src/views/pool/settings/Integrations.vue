@@ -9,27 +9,34 @@
                 </p>
             </b-col>
             <b-col md="8">
-                <b-form-group
-                    label="Webhook URL"
-                    :description="
-                        pool.wallets &&
-                        `This campaign has created ${pool.wallets.length} wallets for unknown reward beneficiaries.`
-                    "
-                >
-                    <b-input-group>
-                        <b-form-input :value="webhookWalletURL" readonly />
-                        <b-input-group-append>
-                            <b-button
-                                variant="primary"
-                                v-clipboard:copy="webhookWalletURL"
-                                v-clipboard:success="() => (isCopied = true)"
-                                size="sm"
-                                class="px-3"
-                            >
-                                <i class="fas ml-0" :class="isCopied ? 'fa-clipboard-check' : 'fa-clipboard'" />
-                            </b-button>
-                        </b-input-group-append>
-                    </b-input-group>
+                <b-form-group>
+                    <BaseCardURLWebhook
+                        :visible="true"
+                        :code="code"
+                        title="Webhook URL"
+                        :description="
+                            pool.wallets &&
+                            `This campaign has onboarded ${pool.wallets.length} wallet${
+                                pool.wallets.length > 1 ? 's' : ''
+                            }.`
+                        "
+                    >
+                        <template #alerts>
+                            <b-alert show variant="info">
+                                <i class="fas fa-question-circle mr-2"></i> Take note of these development guidelines:
+                                <ul class="px-3 mb-0 mt-1 small">
+                                    <li>
+                                        Store the returned <code>code</code> as part of the user data in your database
+                                        and use it when running milestone reward webhooks or to transfer ownership.
+                                    </li>
+                                    <li>
+                                        The value <strong>ADDRESS</strong> could optionally be used to register wallets
+                                        for users that have known ownership over that address.
+                                    </li>
+                                </ul>
+                            </b-alert>
+                        </template>
+                    </BaseCardURLWebhook>
                 </b-form-group>
             </b-col>
         </b-form-row>
@@ -175,8 +182,12 @@ import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { IAccount } from '@thxnetwork/dashboard/types/account';
 import { AccessTokenKind, RewardConditionInteraction, TPoolSettings } from '@thxnetwork/types/index';
 import { API_URL, BASE_URL, DISCORD_CLIENT_ID } from '@thxnetwork/dashboard/utils/secrets';
+import BaseCardURLWebhook from '@thxnetwork/dashboard/components/BaseCardURLWebhook.vue';
 
 @Component({
+    components: {
+        BaseCardURLWebhook,
+    },
     computed: {
         ...mapGetters({
             pools: 'pools/all',
@@ -213,9 +224,11 @@ export default class SettingsTwitterView extends Vue {
         return this.pools[this.$route.params.id];
     }
 
-    get webhookWalletURL() {
+    get code() {
         if (!this.pool) return;
-        return `${API_URL}/v1/webhook/wallet/${this.pool.token}`;
+        return `curl "${API_URL}/v1/webhook/wallet/${this.pool.token}" \\
+-X POST \\
+-d "address=<ADDRESS>"`;
     }
 
     mounted() {

@@ -9,6 +9,7 @@ import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
 import ClaimProxy from '@thxnetwork/auth/proxies/ClaimProxy';
 import BrandProxy from '@thxnetwork/auth/proxies/BrandProxy';
 import PoolProxy from '@thxnetwork/auth/proxies/PoolProxy';
+import WalletProxy from '@thxnetwork/auth/proxies/WalletProxy';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 
 async function controller(req: Request, res: Response) {
@@ -31,6 +32,14 @@ async function controller(req: Request, res: Response) {
     if (params.shopify_params) {
         const { shop } = JSON.parse(params.shopify_params);
         shopifyStoreUrl = shop;
+    }
+
+    if (params.wallet_transfer_token) {
+        const { pointBalance } = await WalletProxy.getWalletTransfer(params.wallet_transfer_token);
+        alert['variant'] = 'success';
+        alert[
+            'message'
+        ] = `<i class="fas fa-gift mr-2" aria-hidden="true"></i>Sign in to claim <strong>${pointBalance}</strong> points!`;
     }
 
     if (params.pool_transfer_token) {

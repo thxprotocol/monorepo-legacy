@@ -11,14 +11,14 @@ class RewardsManager extends BaseManager {
     }
 
     points = {
-        claim: async (uuid: string) => {
-            return await this.client.request.post(`/v1/rewards/points/${uuid}/claim`);
+        claim: async (id: string) => {
+            return await this.client.request.post(`/v1/rewards/points/${id}/claim`);
         },
     };
 
     milestones = {
-        claim: async (uuid: string) => {
-            return await this.client.request.post(`/v1/rewards/milestones/claims/${uuid}/collect`);
+        claim: async (id: string) => {
+            return await this.client.request.post(`/v1/rewards/milestones/claims/${id}/collect`);
         },
     };
 
@@ -31,10 +31,8 @@ class RewardsManager extends BaseManager {
     };
 
     daily = {
-        claim: async ({ uuid, sub }: { uuid: string; sub: string }) => {
-            return await this.client.request.post(`/v1/rewards/daily/${uuid}/claim`, {
-                body: JSON.stringify({ sub }),
-            });
+        claim: async (id: string) => {
+            return await this.client.request.post(`/v1/rewards/daily/${id}/claim`);
         },
     };
 }

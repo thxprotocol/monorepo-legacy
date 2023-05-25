@@ -4,6 +4,8 @@ import { TMilestoneReward } from '@thxnetwork/types/index';
 import { AssetPoolDocument } from '../models/AssetPool';
 import { MilestoneReward } from '../models/MilestoneReward';
 import { paginatedResults } from '../util/pagination';
+import { MilestoneRewardClaim } from '../models/MilestoneRewardClaims';
+import { WalletDocument } from '../models/Wallet';
 
 export default {
     async create(pool: AssetPoolDocument, payload: Partial<TMilestoneReward>) {

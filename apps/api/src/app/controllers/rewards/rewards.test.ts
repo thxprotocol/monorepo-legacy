@@ -112,9 +112,10 @@ describe('Rewards', () => {
         user.get(`/v1/rewards`)
             .set({ 'X-PoolId': poolId })
             .expect((res: request.Response) => {
-                expect(res.body.referralRewards[res.body.referralRewards.length - 1].uuid).toBe(referralReward.uuid);
-                expect(res.body.pointRewards[res.body.pointRewards.length - 1].uuid).toBe(pointReward.uuid);
-                expect(res.body.milestoneRewards[res.body.milestoneRewards.length - 1].uuid).toBe(milestoneReward.uuid);
+                // expect(res.body.dailyRewards[res.body.dailyRewards.length - 1].uuid).toBe(dailyReward._id);
+                expect(res.body.referralRewards[res.body.referralRewards.length - 1]._id).toBe(referralReward._id);
+                expect(res.body.pointRewards[res.body.pointRewards.length - 1]._id).toBe(pointReward._id);
+                expect(res.body.milestoneRewards[res.body.milestoneRewards.length - 1]._id).toBe(milestoneReward._id);
             })
             .expect(200, done);
     });

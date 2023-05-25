@@ -52,7 +52,7 @@ export const callbackPostAuth = async (
         await account.updateOne({ referralCode: params.referral_code });
     }
 
-    // Create a wallet if wallet can not be found for user
+    // Create wallet for user
     createWallet(account);
 
     // Transfer pool ownership if there is a pool_transfer_token

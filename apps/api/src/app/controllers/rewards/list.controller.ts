@@ -1,14 +1,15 @@
+import jwt_decode from 'jwt-decode';
 import { Request, Response } from 'express';
 import { PointReward } from '@thxnetwork/api/models/PointReward';
 import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
-import PoolService from '@thxnetwork/api/services/PoolService';
 import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
-import jwt_decode from 'jwt-decode';
 import { MilestoneRewardClaim } from '@thxnetwork/api/models/MilestoneRewardClaims';
 import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
 import { DailyReward } from '@thxnetwork/api/models/DailyReward';
+import { WalletDocument } from '@thxnetwork/api/models/Wallet';
+import PoolService from '@thxnetwork/api/services/PoolService';
 import DailyRewardClaimService, { ONE_DAY_MS } from '@thxnetwork/api/services/DailyRewardClaimService';
-import { Wallet, WalletDocument } from '@thxnetwork/api/models/Wallet';
+import WalletService from '@thxnetwork/api/services/WalletService';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
@@ -24,7 +25,7 @@ const controller = async (req: Request, res: Response) => {
     // when the request is made with an authorization header to obtain the sub.
     if (authHeader && authHeader.startsWith('Bearer ')) {
         const token: { sub: string } = jwt_decode(authHeader.split(' ')[1]);
-        wallet = await Wallet.findOne({ sub: token.sub, chainId: pool.chainId });
+        wallet = await WalletService.findPrimary(token.sub, pool.chainId);
     }
 
     res.json({
@@ -37,7 +38,7 @@ const controller = async (req: Request, res: Response) => {
                     : null;
                 const now = Date.now();
                 return {
-                    uuid: r.uuid,
+                    _id: r._id,
                     title: r.title,
                     description: r.description,
                     amount: r.amount,
@@ -57,7 +58,7 @@ const controller = async (req: Request, res: Response) => {
                       })
                     : [];
                 return {
-                    uuid: r.uuid,
+                    _id: r._id,
                     title: r.title,
                     description: r.description,
                     amount: r.amount,
@@ -67,7 +68,7 @@ const controller = async (req: Request, res: Response) => {
         ),
         referralRewards: referralRewards.map((r) => {
             return {
-                uuid: r.uuid,
+                _id: r._id,
                 title: r.title,
                 description: r.description,
                 amount: r.amount,
@@ -80,7 +81,7 @@ const controller = async (req: Request, res: Response) => {
                     ? await PointRewardClaim.exists({ walletId: wallet._id, pointRewardId: String(r._id) })
                     : false;
                 return {
-                    uuid: r.uuid,
+                    _id: r._id,
                     title: r.title,
                     description: r.description,
                     amount: r.amount,

@@ -80,7 +80,7 @@ export async function getIsLockedForWallet(perk: TAllPerks, wallet: WalletDocume
 
 export async function getIsLockedForSub(perk: TAllPerks, sub: string, pool: AssetPoolDocument) {
     if (!perk.tokenGatingContractAddress) return;
-    const wallet = await WalletService.findOneByQuery({ sub, chainId: pool.chainId });
+    const wallet = await WalletService.findPrimary(sub, pool.chainId);
     if (!wallet) return true;
 
     const isOwned = await verifyOwnership(perk, wallet);
