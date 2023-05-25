@@ -1,5 +1,5 @@
 import MilestoneRewardClaimService from '@thxnetwork/api/services/MilestoneRewardClaimService';
-import { Wallet } from '@thxnetwork/api/services/WalletService';
+import WalletService, { Wallet } from '@thxnetwork/api/services/WalletService';
 import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
 import { MilestoneRewardClaim } from '@thxnetwork/api/models/MilestoneRewardClaims';
 import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
@@ -8,14 +8,17 @@ import { body, param } from 'express-validator';
 import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { isAddress, toChecksumAddress } from 'web3-utils';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
-import { v4 } from 'uuid';
+import { v4, validate } from 'uuid';
 
 const validation = [
     param('token').exists(),
-    body('walletId').optional().isMongoId(),
+    body('code')
+        .optional()
+        .custom((code) => validate(code)),
     body('address')
         .optional()
-        .custom((address) => isAddress(address)),
+        .custom((address) => isAddress(address))
+        .customSanitizer((address) => toChecksumAddress(address)),
 ];
 
 const controller = async (req: Request, res: Response) => {
@@ -26,15 +29,13 @@ const controller = async (req: Request, res: Response) => {
     const pool = await AssetPool.findById(reward.poolId);
     if (!pool) throw new NotFoundError('Could not find a campaign pool for this reward.');
 
-    if (!req.body.walletId && !req.body.address) {
-        // We could create a new wallet here and deprecate wallet onboarding webhook
-        // We should return the UUID and not the URL and walletId to ease up integration
-        throw new BadRequestError('This request requires either a walletId or address body property');
+    if (!req.body.code && !req.body.address) {
+        throw new BadRequestError('This request requires either a wallet code or address');
     }
 
-    const wallet: WalletDocument = req.body.walletId
-        ? await getWalletForWalletId(pool, req.body.walletId)
-        : await getWalletForAddress(pool, toChecksumAddress(req.body.address));
+    const wallet: WalletDocument = req.body.code
+        ? await getWalletForCode(pool, req.body.code)
+        : await getWalletForAddress(pool, req.body.address);
 
     if (reward.limit) {
         const claimsForAccount = await MilestoneRewardClaim.count({
@@ -55,15 +56,14 @@ const controller = async (req: Request, res: Response) => {
     res.status(201).json({ ...claim.toJSON(), wallet });
 };
 
-async function getWalletForWalletId(pool: AssetPoolDocument, walletId: string) {
+async function getWalletForCode(pool: AssetPoolDocument, code: string) {
     // First find the wallet for the ID
-    const wallet = await Wallet.findById(walletId);
-
+    const wallet = await Wallet.findOne({ chainId: pool.chainId, uuid: code });
     // Second, if that wallet contains no sub it has not been transfered (yet)
     if (!wallet.sub) return wallet;
 
     // In case of a sub on the wallet, search all for the user by sub and return the wallet with address
-    return await Wallet.findOne({ chainId: pool.chainId, sub: wallet.sub, address: { $exists: true } });
+    return await WalletService.findPrimary(wallet.sub, pool.chainId);
 }
 
 // @peterpolman This function should deprecate as soon as clients implement the wallet onboarding webhook
@@ -77,7 +77,7 @@ async function getWalletForAddress(pool: AssetPoolDocument, address: string) {
     // If not, create a wallet for that address, claimable when the user signs in with that address
     // TODO perhaps this is undesired behavior since metamask users are forced to use the same account for the widget
     return await Wallet.create({
-        token: v4(),
+        uuid: v4(),
         poolId: pool._id,
         chainId: pool.chainId,
         address,

@@ -4,10 +4,10 @@ import { Contract } from 'web3-eth-contract';
 export type TWallet = {
     _id?: string;
     sub: string;
-    address: string;
     chainId: ChainId;
+    address?: string;
     poolId?: string;
-    token?: string;
+    uuid?: string;
     contract?: Contract;
     version?: string;
     isUpgradeAvailable?: boolean;

@@ -1,26 +1,29 @@
-import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { Request, Response } from 'express';
 import { body } from 'express-validator';
-import { ForbiddenError, UnauthorizedError } from '@thxnetwork/api/util/errors';
+import { BadRequestError, ForbiddenError, UnauthorizedError } from '@thxnetwork/api/util/errors';
 import { Wallet } from '@thxnetwork/api/models/Wallet';
-import MilestoneRewardService from '@thxnetwork/api/services/MilestoneRewardService';
+import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
+import WalletService from '@thxnetwork/api/services/WalletService';
 
-export const validation = [body('token').optional().isString()];
+export const validation = [body('code').optional().isString()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Wallets']
     const account = await AccountProxy.getById(req.auth.sub);
     if (!account) throw new UnauthorizedError('No account found for this sub.');
 
-    const wallet = await Wallet.findOne({ token: req.body.token });
+    let wallet = await Wallet.findOne({ uuid: req.body.code });
     if (!wallet || (wallet.sub && wallet.sub !== req.auth.sub)) {
         throw new ForbiddenError('You dont have access to this wallet');
     }
 
-    await wallet.updateOne({ sub: req.auth.sub });
-    await MilestoneRewardService.updateWalletId(wallet, req.auth.sub);
+    // Find the primary wallet for this sub (containing an address)
+    const primaryWallet = await WalletService.findPrimary(req.auth.sub, wallet.chainId);
+    if (!primaryWallet) throw new BadRequestError('Primary wallet not deployed yet.');
 
-    return res.json(wallet);
+    wallet = await WalletService.transferOwnership(wallet, primaryWallet);
+
+    res.json(wallet);
 };
 
 export default { controller, validation };

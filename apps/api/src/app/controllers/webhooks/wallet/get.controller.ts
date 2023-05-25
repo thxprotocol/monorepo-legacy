@@ -4,11 +4,11 @@ import { Wallet } from '@thxnetwork/api/models/Wallet';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { MilestoneRewardClaim } from '@thxnetwork/api/models/MilestoneRewardClaims';
 
-const validation = [param('token').exists().isString()];
+const validation = [param('code').exists().isString()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Wallets']
-    const wallet = await Wallet.findOne({ token: req.params.token });
+    const wallet = await Wallet.findOne({ uuid: req.params.code });
     if (!wallet) throw new NotFoundError('Could not find the wallet.');
 
     const milestoneRewardClaims = await MilestoneRewardClaim.find({

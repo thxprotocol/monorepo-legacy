@@ -97,7 +97,7 @@ describe('ERC721 Perks Redemtpion', () => {
         });
 
         it('POST /rewards/daily/:uuid/claim', (done) => {
-            user.post(`/v1/rewards/daily/${dailyReward.uuid}/claim`)
+            user.post(`/v1/rewards/daily/${dailyReward._id}/claim`)
                 .set({ 'X-PoolId': pool._id, 'Authorization': widgetAccessToken })
                 .send({
                     sub,

@@ -177,8 +177,8 @@ describe('Pool Analytics', () => {
                     .expect(201, done);
             });
 
-            it('POST /rewards/points/:uuid/claim', (done) => {
-                user.post(`/v1/rewards/points/${pointReward.uuid}/claim`)
+            it('POST /rewards/points/:id/claim', (done) => {
+                user.post(`/v1/rewards/points/${pointReward._id}/claim`)
                     .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
                     .expect((res: request.Response) => {
                         pointRewardClaim = res.body;
@@ -210,7 +210,7 @@ describe('Pool Analytics', () => {
             });
 
             it('POST /rewards/points/:uuid/claim', (done) => {
-                user.post(`/v1/rewards/points/${pointReward.uuid}/claim`)
+                user.post(`/v1/rewards/points/${pointReward._id}/claim`)
                     .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
                     .expect((res: request.Response) => {
                         pointRewardClaim = res.body;

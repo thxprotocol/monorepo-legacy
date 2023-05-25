@@ -12,6 +12,6 @@ router.post('/referral/:token/qualify', assertRequestInput(QualifyReward.validat
 router.post('/milestone/:token/claim', assertRequestInput(MilestoneReward.validation), MilestoneReward.controller);
 router.post('/daily/:token', assertRequestInput(DailyReward.validation), DailyReward.controller);
 router.post('/wallet/:token', assertRequestInput(Wallet.validation), Wallet.controller);
-router.get('/wallet/:token', assertRequestInput(ReadWallet.validation), ReadWallet.controller);
+router.get('/wallet/:code', assertRequestInput(ReadWallet.validation), ReadWallet.controller);
 
 export default router;

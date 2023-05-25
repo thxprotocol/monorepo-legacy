@@ -16,8 +16,8 @@ router.post(
     assertRequestInput(CreateReferralRewardClaim.validation),
     CreateReferralRewardClaim.controller,
 );
-router.use(checkJwt).use(corsHandler).post('/points/:uuid/claim', CreatePointRewardClaim.controller);
+router.use(checkJwt).use(corsHandler).post('/points/:id/claim', CreatePointRewardClaim.controller);
+router.use(checkJwt).use(corsHandler).post('/daily/:id/claim', CreateDailyRewardClaim.controller);
 router.use(checkJwt).use(corsHandler).post('/milestones/claims/:uuid/collect', MilestoneRewardClaim.controller);
-router.use(checkJwt).use(corsHandler).post('/daily/:uuid/claim', CreateDailyRewardClaim.controller);
 
 export default router;

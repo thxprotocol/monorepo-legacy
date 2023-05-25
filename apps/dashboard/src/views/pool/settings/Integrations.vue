@@ -26,20 +26,12 @@
                                 <i class="fas fa-question-circle mr-2"></i> Take note of these development guidelines:
                                 <ul class="px-3 mb-0 mt-1 small">
                                     <li>
-                                        Store the returned <code>walletId</code> as part of the user data in your
-                                        database and use when running milestone reward webhooks.
+                                        Store the returned <code>code</code> as part of the user data in your database
+                                        and use it when running milestone reward webhooks or to transfer ownership.
                                     </li>
                                     <li>
-                                        Store the returned <code>walletURL</code> and share with the user to transfer
-                                        wallet ownership.
-                                    </li>
-                                    <li>
-                                        The value <strong>ADDRESS</strong> for request property <code>address</code> is
-                                        optional.
-                                    </li>
-                                    <li>
-                                        The value <strong>ADDRESS</strong> could be used to register wallets for users
-                                        that have known ownership over the address.
+                                        The value <strong>ADDRESS</strong> could optionally be used to register wallets
+                                        for users that have known ownership over that address.
                                     </li>
                                 </ul>
                             </b-alert>

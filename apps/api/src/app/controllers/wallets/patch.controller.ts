@@ -1,10 +1,11 @@
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { Request, Response } from 'express';
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 import { UnauthorizedError } from '@thxnetwork/api/util/errors';
 import { Wallet } from '@thxnetwork/api/models/Wallet';
 
 export const validation = [
+    param('id').exists().isMongoId(),
     body('sub').optional().isMongoId(),
     body('chainId').optional().isNumeric(),
     body('address').optional().isString(),

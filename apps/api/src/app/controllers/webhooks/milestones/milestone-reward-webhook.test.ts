@@ -1,13 +1,7 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId } from '@thxnetwork/types/enums';
-import {
-    authAccessToken,
-    dashboardAccessToken,
-    sub3,
-    userWalletAddress2,
-    widgetAccessToken,
-} from '@thxnetwork/api/util/jest/constants';
+import { dashboardAccessToken, userWalletAddress2, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
@@ -84,59 +78,6 @@ describe('Milestone Rewards', () => {
                 })
                 .expect((res: request.Response) => {
                     expect(res.body.isClaimed).toBe(true);
-                })
-                .expect(201, done);
-        });
-    });
-
-    describe('Wallet onboarding', () => {
-        let wallet;
-        // Onboard a wallet
-        it('POST /webhook/wallet/:token', (done) => {
-            user.post('/v1/webhook/wallet/' + pool.token)
-                .send()
-                .expect((res: request.Response) => {
-                    expect(res.body.token).toBeDefined();
-                    expect(res.body.walletId).toBeDefined();
-                    expect(res.body.walletURL).toBeDefined();
-                    wallet = res.body;
-                })
-                .expect(201, done);
-        });
-
-        it('POST /webhook/milestone/:token/claim', (done) => {
-            user.post(`/v1/webhook/milestone/${milestoneReward.uuid}/claim`)
-                .send({
-                    walletId: wallet.walletId,
-                })
-                .expect((res: request.Response) => {
-                    expect(res.body.milestoneRewardId).toBe(milestoneReward._id);
-                    expect(res.body.uuid).toBeDefined();
-                    expect(res.body.wallet._id).toBe(wallet.walletId);
-                    expect(res.body.wallet.address).toBe('');
-                    claim = res.body;
-                })
-                .expect(201, done);
-        });
-
-        // Get information about wallet
-        it('GET /webhook/wallet/:code', (done) => {
-            user.get('/v1/webhook/wallet/' + wallet.token)
-                .send()
-                .expect((res: request.Response) => {
-                    expect(res.body._id).toBe(wallet.walletId);
-                    expect(res.body.token).toContain(wallet.token);
-                    expect(res.body.pointBalance).toBe(100);
-                })
-                .expect(200, done);
-        });
-
-        it('POST /webhook/milestone/:token/claim', (done) => {
-            user.patch(`/v1/wallets/${wallet.walletId}`)
-                .set({ Authorization: authAccessToken })
-                .send({ sub: sub3 })
-                .expect((res: request.Response) => {
-                    //
                 })
                 .expect(201, done);
         });

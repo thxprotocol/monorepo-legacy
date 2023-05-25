@@ -53,12 +53,7 @@ export const callbackPostAuth = async (
         await account.updateOne({ referralCode: params.referral_code });
     }
 
-    // Create or update wallet for user
-    if (params.wallet_transfer_token) {
-        const { wallet } = await WalletProxy.getWalletTransfer(params.wallet_transfer_token);
-        await WalletProxy.update({ ...wallet, sub: String(account._id) });
-    }
-
+    // Create wallet for user
     createWallet(account);
 
     // Transfer pool ownership if there is a pool_transfer_token

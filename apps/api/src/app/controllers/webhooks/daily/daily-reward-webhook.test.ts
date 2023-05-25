@@ -59,7 +59,7 @@ describe('Daily Rewards WebHooks', () => {
     });
 
     it('POST /rewards/daily/:uuid/claim', (done) => {
-        user.post(`/v1/rewards/daily/${dailyReward.uuid}/claim`)
+        user.post(`/v1/rewards/daily/${dailyReward._id}/claim`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken2 })
             .send()
             .expect(({ body }: request.Response) => {
@@ -69,7 +69,7 @@ describe('Daily Rewards WebHooks', () => {
     });
 
     it('POST /rewards/daily/:uuid/claim should throw an error', (done) => {
-        user.post(`/v1/rewards/daily/${dailyReward.uuid}/claim`)
+        user.post(`/v1/rewards/daily/${dailyReward._id}/claim`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken2 })
             .send()
             .expect(({ body }: request.Response) => {

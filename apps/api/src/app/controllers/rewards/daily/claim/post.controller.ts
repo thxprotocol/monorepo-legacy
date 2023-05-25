@@ -3,17 +3,17 @@ import { param } from 'express-validator';
 import DailyRewardClaimService, { ONE_DAY_MS } from '@thxnetwork/api/services/DailyRewardClaimService';
 import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 import PoolService from '@thxnetwork/api/services/PoolService';
-import DailyRewardService from '@thxnetwork/api/services/DailyRewardService';
+import { DailyReward } from '@thxnetwork/api/services/DailyRewardService';
 import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { DailyRewardClaim } from '@thxnetwork/api/models/DailyRewardClaims';
 import { DailyRewardClaimState } from '@thxnetwork/types/enums/DailyRewardClaimState';
 import { Wallet } from '@thxnetwork/api/models/Wallet';
 
-const validation = [param('uuid').exists()];
+const validation = [param('id').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Daily Reward Claims']
-    const reward = await DailyRewardService.findByUUID(req.params.uuid);
+    const reward = await DailyReward.findById(req.params.id);
     if (!reward) throw new NotFoundError('Could not find the Daily Reward');
 
     const pool = await PoolService.getById(reward.poolId);

@@ -10,11 +10,12 @@ import {
 } from '@thxnetwork/api/util/jest/constants';
 import { isAddress, toWei } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
+import { DailyRewardDocument } from '@thxnetwork/api/models/DailyReward';
 
 const user = request.agent(app);
 
 describe('Daily Rewards', () => {
-    let poolId: string, dailyReward: any, dailyRewardUuid: string;
+    let poolId: string, dailyReward: DailyRewardDocument;
     const totalSupply = toWei('100000');
 
     beforeAll(beforeAllCallback);
@@ -83,7 +84,6 @@ describe('Daily Rewards', () => {
                 expect(body.description).toBe(description);
                 expect(body.amount).toBe(amount);
                 expect(body.isEnabledWebhookQualification).toBe(false);
-                dailyRewardUuid = body.uuid;
                 dailyReward = body;
             })
             .expect(201, done);
@@ -130,7 +130,7 @@ describe('Daily Rewards', () => {
     });
 
     it('POST /rewards/daily/:uuid/claim', (done) => {
-        user.post(`/v1/rewards/daily/${dailyRewardUuid}/claim`)
+        user.post(`/v1/rewards/daily/${dailyReward._id}/claim`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
             .send()
             .expect(({ body }: request.Response) => {
@@ -149,7 +149,7 @@ describe('Daily Rewards', () => {
     });
 
     it('POST /rewards/daily/:uuid/claim should throw an error', (done) => {
-        user.post(`/v1/rewards/daily/${dailyRewardUuid}/claim`)
+        user.post(`/v1/rewards/daily/${dailyReward._id}/claim`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
             .send()
             .expect(({ body }: request.Response) => {

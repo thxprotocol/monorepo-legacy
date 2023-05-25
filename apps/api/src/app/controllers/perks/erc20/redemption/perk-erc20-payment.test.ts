@@ -10,7 +10,7 @@ import { ERC20Document } from '@thxnetwork/api/models/ERC20';
 const user = request.agent(app);
 
 describe('ERC20 Perk Payment', () => {
-    let erc20: ERC20Document, poolId: string, rewardUuid: string, perkUuid: string, perk: any;
+    let erc20: ERC20Document, poolId: string, rewardId: string, perkUuid: string, perk: any;
     const totalSupply = toWei('100000');
 
     beforeAll(beforeAllCallback);
@@ -65,7 +65,7 @@ describe('ERC20 Perk Payment', () => {
             })
             .expect((res: request.Response) => {
                 expect(res.body.uuid).toBeDefined();
-                rewardUuid = res.body.uuid;
+                rewardId = res.body._id;
             })
             .expect(201, done);
     });
@@ -123,7 +123,7 @@ describe('ERC20 Perk Payment', () => {
     });
 
     it('POST /rewards/points/:uuid/claim', (done) => {
-        user.post(`/v1/rewards/points/${rewardUuid}/claim`)
+        user.post(`/v1/rewards/points/${rewardId}/claim`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
             .expect(201, done);
     });

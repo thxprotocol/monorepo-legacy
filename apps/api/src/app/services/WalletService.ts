@@ -9,6 +9,8 @@ import { TransactionReceipt } from 'web3-core';
 import { FacetCutAction, updateDiamondContract } from '../util/upgrades';
 import WalletManagerService from './WalletManagerService';
 import { toChecksumAddress } from 'web3-utils';
+import MilestoneRewardService from './MilestoneRewardService';
+import { MilestoneRewardClaim } from '../models/MilestoneRewardClaims';
 
 export const Wallet = WalletModel;
 
@@ -26,7 +28,7 @@ function findOneByAddress(address: string) {
 }
 
 async function findPrimary(sub: string, chainId: ChainId) {
-    return await Wallet.findOne({ sub, chainId, address: { $exists: true } });
+    return await Wallet.findOne({ sub, chainId, address: { $exists: true, $ne: '' } });
 }
 
 async function findOneByQuery(query: { sub?: string; chainId?: number }) {
@@ -87,4 +89,24 @@ async function upgrade(wallet: WalletDocument, version?: string) {
     return tx;
 }
 
-export default { findPrimary, upgrade, create, findOneByAddress, findByQuery, deploy, deployCallback, findOneByQuery };
+async function transferOwnership(wallet: WalletDocument, primaryWallet: WalletDocument) {
+    // If found update all milestone reward claims for that walletId
+    await MilestoneRewardClaim.updateMany(
+        { walletId: String(wallet._id), isClaimed: false },
+        { walletId: String(primaryWallet._id) },
+    );
+
+    return await Wallet.findByIdAndUpdate(wallet._id, { sub: primaryWallet.sub }, { new: true });
+}
+
+export default {
+    transferOwnership,
+    findPrimary,
+    upgrade,
+    create,
+    findOneByAddress,
+    findByQuery,
+    deploy,
+    deployCallback,
+    findOneByQuery,
+};
