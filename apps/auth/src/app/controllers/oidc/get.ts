@@ -6,7 +6,6 @@ import { Request, Response } from 'express';
 import { hubspot } from '@thxnetwork/auth/util/hubspot';
 import { DASHBOARD_URL } from '@thxnetwork/auth/config/secrets';
 import PoolProxy from '@thxnetwork/auth/proxies/PoolProxy';
-import WalletProxy from '@thxnetwork/auth/proxies/WalletProxy';
 
 export const callbackPreAuth = async (req: Request) => {
     // Get code from url
