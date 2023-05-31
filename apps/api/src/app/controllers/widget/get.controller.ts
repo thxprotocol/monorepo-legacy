@@ -33,8 +33,9 @@ const controller = async (req: Request, res: Response) => {
     const expired = pool.settings.endDate ? pool.settings.endDate.getTime() <= Date.now() : false;
     const brand = await BrandService.get(pool._id);
     const widget = await Widget.findOne({ poolId: req.params.id });
-    const origin = new URL(req.header('Referrer')).origin;
-    const widgetOrigin = new URL(widget.domain).origin;
+    const referrerHeader = req.header('Referrer');
+    const widgetOrigin = widget.domain ? new URL(widget.domain).origin : '';
+    const origin = referrerHeader ? new URL(referrerHeader).origin : '';
 
     // Set active to true if there is a request made from the configured domain
     if (widgetOrigin === origin && !widget.active) {
