@@ -102,36 +102,6 @@
                                 </b-button>
                             </b-card>
                         </slide>
-                        <slide>
-                            <b-card class="border-0">
-                                <router-link
-                                    :to="'/use-cases/money-management-for-groups-of-people'"
-                                    :title="TITLES.HOME_USECASE_MONEY"
-                                >
-                                    <img
-                                        class="img-fluid rounded"
-                                        v-lazy="require('../../public/assets/img/thx_usecase_crater.webp')"
-                                        :alt="ALT_TEXT.USECASES_USECASE_CRATER"
-                                    />
-                                </router-link>
-                                <div class="mt-5">Financial</div>
-                                <h3 class="h3 text-dark mt-2 font-size-l font-weight-normal">
-                                    <router-link
-                                        :to="'/use-cases/money-management-for-groups-of-people'"
-                                        :title="TITLES.HOME_USECASE_MONEY"
-                                    >
-                                        Money management for groups of people
-                                    </router-link>
-                                </h3>
-                                <b-button
-                                    variant="link-primary text-primary pl-0"
-                                    to="/use-cases/money-management-for-groups-of-people"
-                                >
-                                    Discover more
-                                    <i class="fas fa-chevron-right"></i>
-                                </b-button>
-                            </b-card>
-                        </slide>
 
                         <hooper-pagination slot="hooper-addons"></hooper-pagination>
                     </hooper>

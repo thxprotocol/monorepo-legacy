@@ -103,37 +103,6 @@
                             <i class="fas fa-chevron-right"></i>
                         </b-button>
                     </b-card>
-                    <b-card bg-variant="darker" text-variant="white" class="border-0">
-                        <router-link
-                            :to="'/use-cases/money-management-for-groups-of-people'"
-                            :title="TITLES.USECASES_USECASE_MONEY"
-                        >
-                            <img
-                                class="img-fluid rounded"
-                                v-lazy="require('../../public/assets/img/thx_usecase_crater.webp')"
-                                :alt="ALT_TEXT.USECASES_USECASE_CRATER"
-                            />
-                        </router-link>
-                        <div class="mt-5">Financial</div>
-
-                        <h3 class="h3 mt-2 font-size-l font-weight-normal">
-                            <router-link
-                                class="text-white"
-                                :to="'/use-cases/money-management-for-groups-of-people'"
-                                :title="TITLES.USECASES_USECASE_MONEY"
-                            >
-                                Money management for groups of people
-                            </router-link>
-                        </h3>
-                        <b-button
-                            variant="link"
-                            class="text-secondary pl-0"
-                            :to="'/use-cases/money-management-for-groups-of-people'"
-                        >
-                            Discover more
-                            <i class="fas fa-chevron-right"></i>
-                        </b-button>
-                    </b-card>
                 </div>
             </div>
         </div>
