@@ -26,7 +26,7 @@ const controller = async (req: Request, res: Response) => {
     const claim = reward.isEnabledWebhookQualification
         ? await DailyRewardClaim.findOneAndUpdate(
               {
-                  dailyRewardId: reward._id,
+                  dailyRewardId: String(reward._id),
                   sub: req.auth.sub,
                   walletId: wallet._id,
                   state: DailyRewardClaimState.Pending,

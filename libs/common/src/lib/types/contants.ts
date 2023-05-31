@@ -27,6 +27,14 @@ export const DEFAULT_ELEMENTS = {
         label: 'Navigation',
         color: '#31236d',
     },
+    navbarBtnBg: {
+        label: 'Navigation Button',
+        color: '#5942c1',
+    },
+    navbarBtnText: {
+        label: 'Navigation Button Text',
+        color: '#FFFFFF',
+    },
     launcherBg: {
         label: 'Launcher',
         color: '#5942c1',
