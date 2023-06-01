@@ -1,5 +1,7 @@
 import { PointReward } from '@thxnetwork/api/services/PointRewardService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
+import { isValidUrl } from '@thxnetwork/api/util/url';
+import { TInfoLink } from '@thxnetwork/types/interfaces';
 import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
 
@@ -14,6 +16,11 @@ const validation = [
     body('content').optional().isString(),
     body('content').optional().isString(),
     body('contentMetadata').optional().isString(),
+    body('infoLinks')
+        .optional()
+        .customSanitizer((infoLinks) => {
+            return JSON.parse(infoLinks).filter((link: TInfoLink) => link.label.length && isValidUrl(link.url));
+        }),
 ];
 
 const controller = async (req: Request, res: Response) => {
@@ -26,6 +33,7 @@ const controller = async (req: Request, res: Response) => {
         amount: req.body.amount,
         expiryDate: req.body.expiryDate,
         platform: req.body.platform,
+        infoLinks: req.body.infoLinks,
         interaction: req.body.interaction,
         content: req.body.content,
         contentMetadata: req.body.contentMetadata,

@@ -11,18 +11,18 @@ const validation = [param('id').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['RewardsToken']
-    const reward = await ERC20PerkService.get(req.params.id);
-    if (!reward) throw new NotFoundError();
+    const perk = await ERC20PerkService.get(req.params.id);
+    if (!perk) throw new NotFoundError();
 
-    const claims = await ClaimService.findByReward(reward);
-    const payments = await ERC20PerkPayment.find({ perkId: reward._id });
+    const claims = await ClaimService.findByPerk(perk);
+    const payments = await ERC20PerkPayment.find({ perkId: perk._id });
     const pool = await PoolService.getById(req.header('X-PoolId'));
     const withdrawals = await WithdrawalService.findByQuery({
         poolId: pool._id,
-        rewardId: reward._id,
+        rewardId: perk._id,
     });
 
-    res.json({ ...reward.toJSON(), claims, poolAddress: pool.address, progress: withdrawals.length, payments });
+    res.json({ ...perk.toJSON(), claims, poolAddress: pool.address, progress: withdrawals.length, payments });
 };
 
 export default { controller, validation };

@@ -13,7 +13,7 @@ const controller = async (req: Request, res: Response) => {
     const reward = await ShopifyPerkService.get(req.params.id);
     if (!reward) throw new NotFoundError();
 
-    const claims = await ClaimService.findByReward(reward);
+    const claims = await ClaimService.findByPerk(reward);
     const payments = await ShopifyPerkPayment.find({ perkId: reward._id });
     const pool = await PoolService.getById(req.header('X-PoolId'));
 

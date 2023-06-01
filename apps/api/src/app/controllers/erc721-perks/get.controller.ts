@@ -14,7 +14,7 @@ const controller = async (req: Request, res: Response) => {
     const reward = await ERC721PerkService.get(req.params.id);
     if (!reward) throw new NotFoundError();
 
-    const claims = await ClaimService.findByReward(reward);
+    const claims = await ClaimService.findByPerk(reward);
     const pool = await PoolService.getById(req.header('X-PoolId'));
     const erc721 = await ERC721Service.findById(req.params.id);
     const payments = await ERC721PerkPayment.find({ perkId: reward._id });

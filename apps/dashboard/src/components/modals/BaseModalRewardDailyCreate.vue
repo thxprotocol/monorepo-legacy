@@ -20,10 +20,11 @@
                             </b-form-checkbox>
                         </b-form-group>
                     </b-col>
-                    <b-col md="6" v-if="isEnabledWebhookQualification">
+                    <b-col md="6">
                         <BaseCardURLWebhook
-                            :visible="true"
+                            :visible="isEnabledWebhookQualification"
                             :code="code"
+                            class="mb-3"
                             title="Webhook Qualification"
                             description="You can also choose to run this webhook to qualify the daily reward and trigger a point transfer."
                         >
@@ -43,6 +44,11 @@
                                 </b-alert>
                             </template>
                         </BaseCardURLWebhook>
+                        <BaseCardInfoLinks :info-links="infoLinks" @change-link="onChangeLink">
+                            <p class="text-muted">
+                                Add info links to your cards to provide more information to your audience.
+                            </p>
+                        </BaseCardInfoLinks>
                     </b-col>
                 </b-row>
             </form>
@@ -63,18 +69,21 @@
 </template>
 
 <script lang="ts">
-import { TPool } from '@thxnetwork/types/index';
+import { TInfoLink, TPool } from '@thxnetwork/types/index';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { type TDailyReward } from '@thxnetwork/types/interfaces/DailyReward';
 import BaseModal from './BaseModal.vue';
 import { mapGetters } from 'vuex';
 import { API_URL } from '@thxnetwork/dashboard/utils/secrets';
 import BaseCardURLWebhook from '../BaseCardURLWebhook.vue';
+import BaseCardInfoLinks from '../cards/BaseCardInfoLinks.vue';
+import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 
 @Component({
     components: {
         BaseModal,
         BaseCardURLWebhook,
+        BaseCardInfoLinks,
     },
     computed: mapGetters({
         totals: 'dailyRewards/totals',
@@ -88,6 +97,7 @@ export default class ModalRewardDailyCreate extends Vue {
     amount = 0;
     description = '';
     limit = 0;
+    infoLinks: TInfoLink[] = [{ label: '', url: '' }];
     isEnabledWebhookQualification = false;
 
     @Prop() id!: string;
@@ -104,10 +114,22 @@ export default class ModalRewardDailyCreate extends Vue {
         this.title = this.reward ? this.reward.title : this.title;
         this.description = this.reward ? this.reward.description : this.description;
         this.amount = this.reward ? this.reward.amount : this.amount;
-        this.limit = this.reward ? this.reward.limit : this.limit;
+        this.infoLinks = this.reward ? this.reward.infoLinks : this.infoLinks;
         this.isEnabledWebhookQualification = this.reward
             ? this.reward.isEnabledWebhookQualification
             : this.isEnabledWebhookQualification;
+    }
+
+    onChangeLink({ key, label, url }: TInfoLink & { key: number }) {
+        let update = {};
+
+        if (label || label === '') update = { ...this.infoLinks[key], label };
+        if (url || url === '') update = { ...this.infoLinks[key], url };
+        if (typeof label === 'undefined' && typeof url === 'undefined') {
+            Vue.delete(this.infoLinks, key);
+        } else {
+            Vue.set(this.infoLinks, key, update);
+        }
     }
 
     onSubmit() {
@@ -120,8 +142,10 @@ export default class ModalRewardDailyCreate extends Vue {
             amount: this.amount,
             limit: this.limit,
             page: this.reward ? this.reward.page : 1,
+            infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
             isEnabledWebhookQualification: this.isEnabledWebhookQualification,
         };
+
         this.isLoading = true;
         this.$store.dispatch(`dailyRewards/${this.reward ? 'update' : 'create'}`, payload).then(() => {
             this.$bvModal.hide(this.id);

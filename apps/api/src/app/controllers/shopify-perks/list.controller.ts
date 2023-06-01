@@ -16,7 +16,7 @@ const controller = async (req: Request, res: Response) => {
     const rewards = await ShopifyPerkService.findByPool(pool, page, limit);
     rewards.results = await Promise.all(
         rewards.results.map(async (r) => {
-            const claims = await ClaimService.findByReward(r);
+            const claims = await ClaimService.findByPerk(r);
             const payments = await ShopifyPerkPayment.find({ perkId: r._id });
 
             return {

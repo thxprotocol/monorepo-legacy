@@ -2,12 +2,19 @@ import { body } from 'express-validator';
 import { Request, Response } from 'express';
 import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardService';
 import PoolService from '@thxnetwork/api/services/PoolService';
+import { TInfoLink } from '@thxnetwork/types/interfaces';
+import { isValidUrl } from '@thxnetwork/api/util/url';
 
 const validation = [
     body('title').exists().isString(),
     body('successUrl').optional().isURL({ require_tld: false }),
     body('isMandatoryReview').optional().isBoolean(),
     body('amount').exists().isInt({ gt: 0 }),
+    body('infoLinks')
+        .optional()
+        .customSanitizer((infoLinks) => {
+            return JSON.parse(infoLinks).filter((link: TInfoLink) => link.label.length && isValidUrl(link.url));
+        }),
 ];
 
 const controller = async (req: Request, res: Response) => {

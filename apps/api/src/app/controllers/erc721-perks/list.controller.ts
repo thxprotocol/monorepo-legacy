@@ -23,7 +23,7 @@ const controller = async (req: Request, res: Response) => {
     const perks = await ERC721PerkService.findByPool(pool, page, limit);
     perks.results = await Promise.all(
         perks.results.map(async (perk: ERC721PerkDocument) => {
-            const claims = await ClaimService.findByReward(perk);
+            const claims = await ClaimService.findByPerk(perk);
             let nft: ERC721Document | ERC1155Document, token: ERC721TokenDocument | ERC1155TokenDocument;
 
             if (perk.erc721Id) {
