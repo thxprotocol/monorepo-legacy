@@ -6,11 +6,13 @@ module.exports = {
         for await (const widget of widgets) {
             try {
                 const theme = JSON.parse(widget.theme);
-                theme.elements.navbarBtnBg = theme.elements.btnBg;
-                theme.elements.navbarBtnText = theme.elements.btnText;
+
+                theme.elements['navbarBtnBg'] = { label: 'Navbar Button', color: theme.elements.btnBg.color };
+                theme.elements['navbarBtnText'] = { label: 'Navbar Button Text', color: theme.elements.btnText.color };
+
                 await widgetsColl.updateOne({ _id: widget._id }, { $set: { theme: JSON.stringify(theme) } });
             } catch (error) {
-                console.error(error);
+                console.log(error);
             }
         }
     },
