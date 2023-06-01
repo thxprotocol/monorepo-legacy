@@ -39,6 +39,11 @@
                                 </b-alert>
                             </template>
                         </BaseCardURLWebhook>
+                        <BaseCardInfoLinks :info-links="infoLinks" @change-link="onChangeLink">
+                            <p class="text-muted">
+                                Add info links to your cards to provide more information to your audience.
+                            </p>
+                        </BaseCardInfoLinks>
                     </b-col>
                 </b-row>
             </form>
@@ -59,19 +64,22 @@
 </template>
 
 <script lang="ts">
-import { type TPool } from '@thxnetwork/types/interfaces';
+import { TInfoLink, type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { type TMilestoneReward } from '@thxnetwork/types/index';
 import { API_URL } from '@thxnetwork/dashboard/utils/secrets';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardURLWebhook from '../BaseCardURLWebhook.vue';
+import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
+import BaseCardInfoLinks from '../cards/BaseCardInfoLinks.vue';
 
 @Component({
     components: {
         BaseModal,
         BaseCardRewardExpiry,
         BaseCardURLWebhook,
+        BaseCardInfoLinks,
     },
 })
 export default class ModalMilestoneRewardCreate extends Vue {
@@ -84,6 +92,7 @@ export default class ModalMilestoneRewardCreate extends Vue {
     amount = 0;
     limit = 0;
     isCopied = false;
+    infoLinks: TInfoLink[] = [{ label: '', url: '' }];
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
@@ -99,7 +108,20 @@ export default class ModalMilestoneRewardCreate extends Vue {
         this.title = this.reward ? this.reward.title : '';
         this.description = this.reward ? this.reward.description : '';
         this.amount = this.reward ? this.reward.amount : this.amount;
+        this.infoLinks = this.reward ? this.reward.infoLinks : this.infoLinks;
         this.limit = this.reward && this.reward.limit ? this.reward.limit : this.limit;
+    }
+
+    onChangeLink({ key, label, url }: TInfoLink & { key: number }) {
+        let update = {};
+
+        if (label || label === '') update = { ...this.infoLinks[key], label };
+        if (url || url === '') update = { ...this.infoLinks[key], url };
+        if (typeof label === 'undefined' && typeof url === 'undefined') {
+            Vue.delete(this.infoLinks, key);
+        } else {
+            Vue.set(this.infoLinks, key, update);
+        }
     }
 
     onSubmit() {
@@ -113,6 +135,7 @@ export default class ModalMilestoneRewardCreate extends Vue {
                 description: this.description,
                 amount: this.amount,
                 limit: this.limit,
+                infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
             })
             .then(() => {
                 this.$bvModal.hide(this.id);

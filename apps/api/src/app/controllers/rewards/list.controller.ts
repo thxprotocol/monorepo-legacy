@@ -42,6 +42,7 @@ const controller = async (req: Request, res: Response) => {
                     title: r.title,
                     description: r.description,
                     amount: r.amount,
+                    infoLinks: r.infoLinks,
                     isDisabled,
                     claims,
                     claimAgainDuration:
@@ -62,6 +63,7 @@ const controller = async (req: Request, res: Response) => {
                     title: r.title,
                     description: r.description,
                     amount: r.amount,
+                    infoLinks: r.infoLinks,
                     claims,
                 };
             }),
@@ -72,6 +74,7 @@ const controller = async (req: Request, res: Response) => {
                 title: r.title,
                 description: r.description,
                 amount: r.amount,
+                infoLinks: r.infoLinks,
                 successUrl: r.successUrl,
             };
         }),
@@ -85,6 +88,7 @@ const controller = async (req: Request, res: Response) => {
                     title: r.title,
                     description: r.description,
                     amount: r.amount,
+                    infoLinks: r.infoLinks,
                     isClaimed,
                     platform: r.platform,
                     interaction: r.interaction,

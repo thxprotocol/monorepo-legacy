@@ -1,5 +1,10 @@
 import { TokenGatingVariant } from '../enums/TokenGatingVariant';
 
+export type TInfoLink = {
+    label: string;
+    url: string;
+};
+
 export type TBasePerk = {
     _id?: string;
     uuid: string;
@@ -28,6 +33,7 @@ export type TBaseReward = {
     poolId: string;
     title: string;
     description: string;
+    infoLinks: TInfoLink[];
     createdAt?: string;
     updatedAt?: string;
     page?: number;

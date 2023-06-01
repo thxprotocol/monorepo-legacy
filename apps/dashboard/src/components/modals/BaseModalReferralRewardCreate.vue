@@ -53,6 +53,11 @@
                                 </b-alert>
                             </template>
                         </BaseCardURLWebhook>
+                        <BaseCardInfoLinks :info-links="infoLinks" @change-link="onChangeLink">
+                            <p class="text-muted">
+                                Add info links to your cards to provide more information to your audience.
+                            </p>
+                        </BaseCardInfoLinks>
                     </b-col>
                 </b-row>
             </form>
@@ -77,7 +82,7 @@ import hljs from 'highlight.js/lib/core';
 import Shell from 'highlight.js/lib/languages/shell';
 import { mapGetters } from 'vuex';
 import { UserProfile } from 'oidc-client-ts';
-import { type TPool } from '@thxnetwork/types/interfaces';
+import { TInfoLink, type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { type TReferralReward } from '@thxnetwork/types/index';
 import BaseModal from './BaseModal.vue';
@@ -85,6 +90,8 @@ import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import { API_URL } from '../../../../dashboard/src/utils/secrets';
 import BaseCardURLQualify from '@thxnetwork/dashboard/components/BaseCardURLQualify.vue';
 import BaseCardURLWebhook from '@thxnetwork/dashboard/components/BaseCardURLWebhook.vue';
+import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
+import BaseCardInfoLinks from '../cards/BaseCardInfoLinks.vue';
 
 hljs.registerLanguage('shell', Shell);
 
@@ -94,6 +101,7 @@ hljs.registerLanguage('shell', Shell);
         BaseCardRewardExpiry,
         BaseCardURLQualify,
         BaseCardURLWebhook,
+        BaseCardInfoLinks,
     },
     computed: mapGetters({
         profile: 'account/profile',
@@ -113,6 +121,7 @@ export default class ModalReferralRewardCreate extends Vue {
     description = '';
     claimAmount = 1;
     profile!: UserProfile;
+    infoLinks: TInfoLink[] = [{ label: '', url: '' }];
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
@@ -132,10 +141,23 @@ export default class ModalReferralRewardCreate extends Vue {
         this.title = this.reward ? this.reward.title : '';
         this.amount = this.reward ? String(this.reward.amount) : '0';
         this.description = this.reward ? this.reward.description : '';
+        this.infoLinks = this.reward ? this.reward.infoLinks : this.infoLinks;
         this.successUrl = this.reward ? this.reward.successUrl : '';
         this.isVisibleCardURLQualify = this.reward ? !!this.reward.successUrl : true;
         this.isVisibleCardWebhookQualify = this.reward ? !this.reward.successUrl : false;
         this.isMandatoryReview = this.reward ? this.reward.isMandatoryReview : this.isMandatoryReview;
+    }
+
+    onChangeLink({ key, label, url }: TInfoLink & { key: number }) {
+        let update = {};
+
+        if (label || label === '') update = { ...this.infoLinks[key], label };
+        if (url || url === '') update = { ...this.infoLinks[key], url };
+        if (typeof label === 'undefined' && typeof url === 'undefined') {
+            Vue.delete(this.infoLinks, key);
+        } else {
+            Vue.set(this.infoLinks, key, update);
+        }
     }
 
     onSubmit() {
@@ -152,6 +174,7 @@ export default class ModalReferralRewardCreate extends Vue {
                     claimAmount: this.claimAmount,
                     successUrl: this.successUrl && this.successUrl.length ? this.successUrl : undefined,
                     isMandatoryReview: this.isMandatoryReview,
+                    infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
                 },
             })
             .then(() => {

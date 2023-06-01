@@ -17,7 +17,7 @@ const controller = async (req: Request, res: Response) => {
     const rewards = await ERC20PerkService.findByPool(pool, page, limit);
     rewards.results = await Promise.all(
         rewards.results.map(async (r) => {
-            const claims = await ClaimService.findByReward(r);
+            const claims = await ClaimService.findByPerk(r);
             const erc20 = await ERC20Service.getById(r.erc20Id);
             const payments = await ERC20PerkPayment.find({ perkId: r._id });
 

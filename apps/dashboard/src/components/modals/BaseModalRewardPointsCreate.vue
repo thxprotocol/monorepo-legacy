@@ -24,6 +24,11 @@
                             :rewardCondition="rewardCondition"
                             @change="rewardCondition = $event"
                         />
+                        <BaseCardInfoLinks :info-links="infoLinks" @change-link="onChangeLink">
+                            <p class="text-muted">
+                                Add info links to your cards to provide more information to your audience.
+                            </p>
+                        </BaseCardInfoLinks>
                     </b-col>
                 </b-row>
             </form>
@@ -44,7 +49,7 @@
 </template>
 
 <script lang="ts">
-import { type TPool } from '@thxnetwork/types/interfaces';
+import { TInfoLink, type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { type TPointReward } from '@thxnetwork/types/interfaces/PointReward';
 import { platformInteractionList, platformList } from '@thxnetwork/dashboard/types/rewards';
@@ -53,11 +58,14 @@ import BaseCardRewardCondition from '../cards/BaseCardRewardCondition.vue';
 import { mapGetters } from 'vuex';
 import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
 import { IAccount } from '@thxnetwork/dashboard/types/account';
+import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
+import BaseCardInfoLinks from '../cards/BaseCardInfoLinks.vue';
 
 @Component({
     components: {
         BaseModal,
         BaseCardRewardCondition,
+        BaseCardInfoLinks,
     },
     computed: mapGetters({
         totals: 'pointRewards/totals',
@@ -83,6 +91,8 @@ export default class ModalRewardPointsCreate extends Vue {
         content: '',
     };
     profile!: IAccount;
+    infoLinks: TInfoLink[] = [{ label: '', url: '' }];
+
     @Prop() id!: string;
     @Prop() pool!: TPool;
     @Prop({ required: false }) reward!: TPointReward;
@@ -91,7 +101,7 @@ export default class ModalRewardPointsCreate extends Vue {
         this.title = this.reward ? this.reward.title : this.title;
         this.description = this.reward ? this.reward.description : this.description;
         this.amount = this.reward ? this.reward.amount : this.amount;
-        this.limit = this.reward ? this.reward.limit : this.limit;
+        this.infoLinks = this.reward ? this.reward.infoLinks : this.infoLinks;
         this.rewardCondition = this.reward
             ? {
                   platform: this.reward.platform,
@@ -107,6 +117,18 @@ export default class ModalRewardPointsCreate extends Vue {
               };
     }
 
+    onChangeLink({ key, label, url }: TInfoLink & { key: number }) {
+        let update = {};
+
+        if (label || label === '') update = { ...this.infoLinks[key], label };
+        if (url || url === '') update = { ...this.infoLinks[key], url };
+        if (typeof label === 'undefined' && typeof url === 'undefined') {
+            Vue.delete(this.infoLinks, key);
+        } else {
+            Vue.set(this.infoLinks, key, update);
+        }
+    }
+
     onSubmit() {
         const payload = {
             ...this.reward,
@@ -115,6 +137,7 @@ export default class ModalRewardPointsCreate extends Vue {
             title: this.title,
             description: this.description,
             amount: this.amount,
+            infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
             limit: this.limit,
             platform: this.rewardCondition.platform,
             interaction:

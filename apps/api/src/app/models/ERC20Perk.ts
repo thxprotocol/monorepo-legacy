@@ -6,6 +6,7 @@ export const rewardBaseSchema = {
     poolId: { type: String, index: 'hashed' },
     title: String,
     description: String,
+    infoLinks: [{ label: String, url: String }],
 };
 
 export const perkBaseSchema = {
