@@ -50,22 +50,6 @@ const routes: Array<RouteConfig> = [
             ),
     },
     {
-        path: '/use-cases/erc-20-token-pools-for-blockchain-projects',
-        name: 'ERC20 token pools for blockchain projects',
-        component: () =>
-            import(
-                /* webpackChunkName: "usecases-tokenpoolsforprojects" */ '../views/usecases/ERC20TokenPoolsForBlockchainProjects.vue'
-            ),
-    },
-    {
-        path: '/use-cases/money-management-for-groups-of-people',
-        name: 'Money Management For Groups Of People',
-        component: () =>
-            import(
-                /* webpackChunkName: "usecases-moneymanagement" */ '../views/usecases/MoneyManagementForGroupsOfPeople.vue'
-            ),
-    },
-    {
         path: '/integrations',
         name: 'Integrations',
         component: () => import(/* webpackChunkName: "integrations" */ '../views/Integrations.vue'),
