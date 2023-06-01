@@ -139,7 +139,7 @@
                                     <b-button
                                         variant="primary"
                                         class="text-center"
-                                        :style="`background-color: ${elements.btnBg.color}; color: ${elements.btnText.color};`"
+                                        :style="`background-color: ${elements.navbarBtnBg.color}; color: ${elements.navbarBtnText.color};`"
                                     >
                                         <i class="fas fa-trophy m-0" style="font-size: 1.3rem"></i>Earn
                                     </b-button>
