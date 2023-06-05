@@ -13,7 +13,7 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
     const claim = await MilestoneRewardClaim.findOne({ uuid: req.params.uuid });
     if (!claim) throw new NotFoundError('No milestone reward claim for that uuid could be found.');
-    if (claim.isClaimed) throw new ForbiddenError('This milestone reward claim has already been claimed');
+    if (claim.isClaimed) throw new ForbiddenError('This milestone reward claim has already been claimed');
 
     const reward = await MilestoneReward.findById(claim.milestoneRewardId);
     if (!reward) throw new NotFoundError('No milestone reward for that claim could be found.');
