@@ -9,7 +9,14 @@ const validation = [
     param('id').exists(),
     body('title').optional().isString(),
     body('description').optional().isString(),
-    body('amount').optional().isInt({ gt: 0 }),
+    body('amounts').custom((amounts) => {
+        for (const amount of amounts) {
+            if (isNaN(amount)) {
+                return false;
+            }
+        }
+        return true;
+    }),
     body('infoLinks')
         .optional()
         .customSanitizer((infoLinks) => {

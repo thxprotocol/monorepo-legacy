@@ -11,8 +11,15 @@
                         <b-form-group label="Description">
                             <b-textarea v-model="description" />
                         </b-form-group>
-                        <b-form-group label="Amount">
-                            <b-form-input v-model="amount" type="number" />
+                        <b-form-group label="Amounts">
+                            <b-form-group :key="key" v-for="(amount, key) of amounts">
+                                <b-form-input
+                                    size="sm"
+                                    v-model="amounts[key]"
+                                    type="number"
+                                    :placeholder="`Day ${key}`"
+                                />
+                            </b-form-group>
                         </b-form-group>
                         <b-form-group label="Qualification">
                             <b-form-checkbox v-model="isEnabledWebhookQualification">
@@ -94,7 +101,7 @@ export default class ModalRewardDailyCreate extends Vue {
     isLoading = false;
     error = '';
     title = '';
-    amount = 0;
+    amounts = [0];
     description = '';
     limit = 0;
     infoLinks: TInfoLink[] = [{ label: '', url: '' }];
@@ -113,7 +120,7 @@ export default class ModalRewardDailyCreate extends Vue {
     onShow() {
         this.title = this.reward ? this.reward.title : this.title;
         this.description = this.reward ? this.reward.description : this.description;
-        this.amount = this.reward ? this.reward.amount : this.amount;
+        this.amounts = this.reward ? this.reward.amounts : this.amounts;
         this.infoLinks = this.reward ? this.reward.infoLinks : this.infoLinks;
         this.isEnabledWebhookQualification = this.reward
             ? this.reward.isEnabledWebhookQualification
@@ -139,7 +146,7 @@ export default class ModalRewardDailyCreate extends Vue {
             poolId: this.pool._id,
             title: this.title,
             description: this.description,
-            amount: this.amount,
+            amounts: this.amounts,
             limit: this.limit,
             page: this.reward ? this.reward.page : 1,
             infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),

@@ -8,7 +8,14 @@ import { TInfoLink } from '@thxnetwork/types/interfaces';
 const validation = [
     body('title').isString(),
     body('description').isString(),
-    body('amount').isInt({ gt: 0 }),
+    body('amounts').custom((amounts) => {
+        for (const amount of amounts) {
+            if (isNaN(amount)) {
+                return false;
+            }
+        }
+        return true;
+    }),
     body('infoLinks')
         .optional()
         .customSanitizer((infoLinks) => {
@@ -18,12 +25,12 @@ const validation = [
 ];
 
 const controller = async (req: Request, res: Response) => {
-    const { title, description, amount, infoLinks, isEnabledWebhookQualification } = req.body;
+    const { title, description, amounts, infoLinks, isEnabledWebhookQualification } = req.body;
     const pool = await PoolService.getById(req.header('X-PoolId'));
     const dailyReward = await DailyRewardService.create(pool, {
         title,
         description,
-        amount,
+        amounts,
         infoLinks,
         isEnabledWebhookQualification,
     });
