@@ -9,14 +9,16 @@ const validation = [
     param('id').exists(),
     body('title').optional().isString(),
     body('description').optional().isString(),
-    body('amounts').custom((amounts) => {
-        for (const amount of amounts) {
-            if (isNaN(amount)) {
-                return false;
+    body('amounts')
+        .custom((amounts) => {
+            for (const amount of JSON.parse(amounts)) {
+                if (isNaN(amount)) {
+                    return false;
+                }
             }
-        }
-        return true;
-    }),
+            return true;
+        })
+        .customSanitizer((amounts) => JSON.parse(amounts)),
     body('infoLinks')
         .optional()
         .customSanitizer((infoLinks) => {
@@ -31,13 +33,13 @@ const controller = async (req: Request, res: Response) => {
     let dailyReward = await DailyReward.findById(req.params.id);
     if (!dailyReward) throw new NotFoundError('Could not find the dailyReward');
 
-    const { title, description, amount, infoLinks, isEnabledWebhookQualification } = req.body;
+    const { title, description, amounts, infoLinks, isEnabledWebhookQualification } = req.body;
     dailyReward = await DailyReward.findByIdAndUpdate(
         req.params.id,
         {
             title,
             description,
-            amount,
+            amounts,
             infoLinks,
             isEnabledWebhookQualification,
         },

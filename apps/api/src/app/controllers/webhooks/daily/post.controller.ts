@@ -25,12 +25,17 @@ const controller = async (req: Request, res: Response) => {
     });
 
     if (!claim) {
+        const claims = await DailyRewardClaim.find({
+            dailyRewardId: reward._id,
+            walletId: wallet._id,
+            state: DailyRewardClaimState.Claimed,
+        });
         claim = await DailyRewardClaimService.create({
             poolId: reward.poolId,
+            walletId: wallet._id,
             dailyRewardId: String(reward._id),
             sub: wallet.sub,
-            walletId: wallet._id,
-            amount: reward.amount,
+            amount: reward.amounts[claims.length],
             state: DailyRewardClaimState.Pending,
         });
     }

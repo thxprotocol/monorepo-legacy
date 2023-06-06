@@ -66,19 +66,19 @@ describe('ERC721 Perks Redemtpion', () => {
         it('POST /daily-rewards', (done) => {
             const title = 'First Daily Reward';
             const description = 'description';
-            const amount = 1500;
+            const amounts = [1500];
             user.post(`/v1/daily-rewards`)
                 .set({ 'X-PoolId': pool._id, 'Authorization': dashboardAccessToken })
                 .send({
                     title,
                     description,
-                    amount,
+                    amounts: JSON.stringify(amounts),
                 })
                 .expect(({ body }: request.Response) => {
                     expect(body.uuid).toBeDefined();
                     expect(body.title).toBe(title);
                     expect(body.description).toBe(description);
-                    expect(body.amount).toBe(amount);
+                    expect(body.amounts[0]).toBe(amounts[0]);
                     dailyReward = body;
                 })
                 .expect(201, done);
@@ -91,7 +91,7 @@ describe('ERC721 Perks Redemtpion', () => {
                     expect(body.uuid).toBeDefined();
                     expect(body.title).toBe(dailyReward.title);
                     expect(body.description).toBe(dailyReward.description);
-                    expect(body.amount).toBe(dailyReward.amount);
+                    expect(body.amounts[0]).toBe(dailyReward.amounts[0]);
                 })
                 .expect(200, done);
         });
@@ -109,7 +109,7 @@ describe('ERC721 Perks Redemtpion', () => {
             user.get(`/v1/point-balances`)
                 .set({ 'X-PoolId': pool._id, 'Authorization': widgetAccessToken })
                 .expect(({ body }: request.Response) => {
-                    expect(body.balance).toBe(dailyReward.amount);
+                    expect(body.balance).toBe(dailyReward.amounts[0]);
                     balance = body.balance;
                 })
                 .expect(200, done);

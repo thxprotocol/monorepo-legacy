@@ -23,28 +23,37 @@ const controller = async (req: Request, res: Response) => {
     const isClaimable = await DailyRewardClaimService.isClaimable(reward, wallet);
     if (!isClaimable) throw new ForbiddenError('This reward is not claimable yet');
 
-    const claim = reward.isEnabledWebhookQualification
-        ? await DailyRewardClaim.findOneAndUpdate(
-              {
-                  dailyRewardId: String(reward._id),
-                  sub: req.auth.sub,
-                  walletId: wallet._id,
-                  state: DailyRewardClaimState.Pending,
-                  createdAt: { $gt: new Date(Date.now() - ONE_DAY_MS) }, // Greater than now - 24h
-              },
-              { state: DailyRewardClaimState.Claimed },
-              { new: true },
-          )
-        : await DailyRewardClaimService.create({
-              sub: req.auth.sub,
-              walletId: wallet._id,
-              dailyRewardId: reward._id,
-              poolId: reward.poolId,
-              amount: reward.amount,
-              state: DailyRewardClaimState.Claimed,
-          });
+    const claims = await DailyRewardClaim.find({
+        dailyRewardId: reward._id,
+        walletId: wallet._id,
+        state: DailyRewardClaimState.Claimed,
+    });
 
-    await PointBalanceService.add(pool, wallet._id, reward.amount);
+    let claim;
+    if (reward.isEnabledWebhookQualification) {
+        claim = await DailyRewardClaim.findOneAndUpdate(
+            {
+                dailyRewardId: String(reward._id),
+                sub: req.auth.sub,
+                walletId: wallet._id,
+                state: DailyRewardClaimState.Pending,
+                createdAt: { $gt: new Date(Date.now() - ONE_DAY_MS) }, // Greater than now - 24h
+            },
+            { state: DailyRewardClaimState.Claimed },
+            { new: true },
+        );
+    } else {
+        claim = await DailyRewardClaimService.create({
+            sub: req.auth.sub,
+            walletId: wallet._id,
+            dailyRewardId: reward._id,
+            poolId: reward.poolId,
+            amount: reward.amounts[claims.length],
+            state: DailyRewardClaimState.Claimed,
+        });
+    }
+
+    await PointBalanceService.add(pool, wallet._id, reward.amounts[0]);
 
     return res.status(201).json(claim);
 };

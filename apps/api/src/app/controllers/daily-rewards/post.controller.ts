@@ -8,14 +8,16 @@ import { TInfoLink } from '@thxnetwork/types/interfaces';
 const validation = [
     body('title').isString(),
     body('description').isString(),
-    body('amounts').custom((amounts) => {
-        for (const amount of amounts) {
-            if (isNaN(amount)) {
-                return false;
+    body('amounts')
+        .custom((amounts) => {
+            for (const amount of JSON.parse(amounts)) {
+                if (isNaN(amount)) {
+                    return false;
+                }
             }
-        }
-        return true;
-    }),
+            return true;
+        })
+        .customSanitizer((amounts) => JSON.parse(amounts)),
     body('infoLinks')
         .optional()
         .customSanitizer((infoLinks) => {
