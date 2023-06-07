@@ -74,7 +74,7 @@ export async function createDummyContents(pool: AssetPoolDocument) {
     await DailyRewardService.create(pool, {
         title: 'Daily Reward 🗓️',
         description: 'Visit our site on a daily basis to earn some points.',
-        amount: 15,
+        amounts: [15],
     });
 
     await ReferralRewardService.create(pool, {

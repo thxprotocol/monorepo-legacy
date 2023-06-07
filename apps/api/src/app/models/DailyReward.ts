@@ -7,7 +7,7 @@ export type DailyRewardDocument = mongoose.Document & TDailyReward;
 const schema = new mongoose.Schema(
     {
         ...rewardBaseSchema,
-        amount: Number,
+        amounts: [Number],
         isEnabledWebhookQualification: Boolean,
     },
     { timestamps: true },
