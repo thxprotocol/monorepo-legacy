@@ -9,6 +9,7 @@ createApp({
     isMounted: false,
     alert: { variant: 'warning', message: '' },
     email: '',
+    setupFee: 50,
     isLoading: false,
     isDisabledMetamask: false,
     get isDisabled() {
