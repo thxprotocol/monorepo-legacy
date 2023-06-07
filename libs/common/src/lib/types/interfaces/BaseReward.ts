@@ -1,3 +1,4 @@
+import { QuestVariant } from '../enums';
 import { TokenGatingVariant } from '../enums/TokenGatingVariant';
 
 export type TInfoLink = {
@@ -37,4 +38,5 @@ export type TBaseReward = {
     createdAt?: string;
     updatedAt?: string;
     page?: number;
+    variant?: QuestVariant;
 };

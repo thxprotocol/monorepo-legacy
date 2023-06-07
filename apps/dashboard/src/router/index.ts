@@ -44,26 +44,10 @@ const routes: Array<RouteConfig> = [
                 path: 'dashboard',
                 component: () => import('../views/pool/Dashboard.vue'),
             },
-
             {
-                name: 'conditional',
-                path: 'conditional',
-                component: () => import('../views/pool/Conditional.vue'),
-            },
-            {
-                name: 'milestones',
-                path: 'milestones',
-                component: () => import('../views/pool/Milestones.vue'),
-            },
-            {
-                name: 'daily',
-                path: 'daily',
-                component: () => import('../views/pool/Daily.vue'),
-            },
-            {
-                name: 'referrals',
-                path: 'referrals',
-                component: () => import('../views/pool/Referrals.vue'),
+                name: 'quests',
+                path: 'quests',
+                component: () => import('../views/pool/Quests.vue'),
             },
             {
                 name: 'coin perks',

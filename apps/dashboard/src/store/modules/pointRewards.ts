@@ -1,7 +1,7 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { RewardConditionPlatform, type TPointReward } from '@thxnetwork/types/index';
+import { QuestVariant, RewardConditionPlatform, type TPointReward } from '@thxnetwork/types/index';
 import { type TPool } from '@thxnetwork/types/index';
 import { track } from '@thxnetwork/mixpanel';
 
@@ -52,6 +52,7 @@ class PointRewardModule extends VuexModule {
         this.context.commit('setTotal', { pool, total: data.total });
         data.results.forEach((reward: TPointReward) => {
             reward.page = page;
+            reward.variant = QuestVariant.Social;
             reward.contentMetadata = reward.contentMetadata ? JSON.parse(reward.contentMetadata) : '';
             this.context.commit('set', reward);
         });
