@@ -90,3 +90,9 @@ export default class BaseTestimonials extends Vue {
     ALT_TEXT = ALT_TEXT;
 }
 </script>
+
+<style scoped>
+.lead {
+    font-size: 1.8rem;
+}
+</style>
