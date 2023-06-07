@@ -2,7 +2,7 @@
     <div class="page-home">
         <base-jumbotron />
         <base-code-example />
-        <base-metrics />
+        <base-no-code />
         <base-partners />
         <base-features />
         <base-testimonials :home="true" />
@@ -26,7 +26,7 @@ import BaseFeatures from '@thxnetwork/public/components/BaseFeatures.vue';
 import BaseAboutUs from '@thxnetwork/public/components/BaseAboutUs.vue';
 import BaseTestimonials from '@thxnetwork/public/components/BaseTestimonials.vue';
 import BaseUseCases from '@thxnetwork/public/components/BaseUseCases.vue';
-import BaseMetrics from '@thxnetwork/public/components/BaseMetrics.vue';
+import BaseNoCode from '@thxnetwork/public/components/BaseNoCode.vue';
 import { HOME_TAGS, TWITTER_TAGS, LINKS } from '@thxnetwork/public/utils/constants';
 
 @Component({
@@ -54,7 +54,7 @@ import { HOME_TAGS, TWITTER_TAGS, LINKS } from '@thxnetwork/public/utils/constan
         'b-button': BButton,
         'base-jumbotron': BaseJumbotron,
         'base-code-example': BaseCodeExample,
-        'base-metrics': BaseMetrics,
+        'base-no-code': BaseNoCode,
         'base-partners': BasePartners,
         'base-features': BaseFeatures,
         'base-testimonials': BaseTestimonials,

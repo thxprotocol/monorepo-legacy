@@ -5,13 +5,13 @@
                 <div class="col-md-5 offset-md-1 text-white align-items-center d-flex py-5">
                     <div>
                         <h2 class="h5 text-dark">No Code</h2>
-                        <p class="lead h1 text-uppercase">Launch NFTs & ERC-20 Tokens</p>
+                        <p class="lead h1 text-uppercase">Launch Quests &amp; Rewards</p>
                         <p class="lead">
                             To power your loyalty rewards, just point and click to launch a token smart contract.
                         </p>
                         <p class="lead font-weight-light">
-                            Your users claim your tokenized perks using the embeddable widget or brandable wallet. 100%
-                            no code required on your end!
+                            Your users claim your rewards using the branded front-end wallet. 100% no code required on
+                            your end!
                         </p>
                         <b-button
                             class="mt-3 rounded-pill"
@@ -19,7 +19,7 @@
                             :href="dashboardUrl"
                             :title="TITLES.HOME_VISIT_YOUR_DASHBOARD"
                         >
-                            Create tokens in your Dashboard
+                            Create rewards in your Dashboard
                             <i class="fas fa-chevron-right"></i>
                         </b-button>
                     </div>
@@ -28,7 +28,7 @@
                     <img
                         class="rounded"
                         width="100%"
-                        v-lazy="require('../../public/assets/img/thx_ui-demo.png')"
+                        v-lazy="require('../../public/assets/img/thx_widget_rewards.png')"
                         alt=""
                     />
                 </div>

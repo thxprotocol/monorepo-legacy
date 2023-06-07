@@ -4,22 +4,23 @@
             <div class="row">
                 <div class="col-md-5 offset-lg-1 order-1 order-lg-0">
                     <b-card bg-variant="secondary" body-class="p-3 p-md-5" class="mb-5 border-0">
-                        <h2 class="bg-dark text-white h5 mb-4">Clients Talk</h2>
+                        <h2 class="bg-dark text-white h5 mb-4">"Can do" mindset</h2>
                         <p class="lead font-italic font-weight-light mb-5 line-height-2">
-                            "THX allows UNDP even more impactful engagements across a wide range of audiences stationed
-                            worldwide."
+                            "Working with the THX Network team has been a fantastic experience. We share a “can do”
+                            mindset, which has made it easy to work together and achieve our shared goals."
                         </p>
                         <div class="d-flex">
                             <div class="pr-3">
                                 <img
-                                    v-lazy="require('../../public/assets/img/nina.png')"
+                                    class="bg-white rounded-circle"
+                                    v-lazy="require('../../public/assets/img/logo-tryhards.png')"
                                     width="50"
                                     :alt="ALT_TEXT.HOME_NINA_GRINMAN"
                                 />
                             </div>
                             <div class="align-items-center">
-                                <p class="font-weight-bold mb-0">Nina Grinman</p>
-                                <p class="small font-weight-light mb-0">Digital Strategist at UNDP</p>
+                                <p class="font-weight-bold mb-0">Thomas</p>
+                                <p class="small font-weight-light mb-0">CEO at TryHards</p>
                             </div>
                         </div>
                     </b-card>
@@ -38,22 +39,24 @@
                         </p>
                     </div>
                     <b-card bg-variant="white" body-class="p-3 p-md-5" class="mb-3 mb-lg-0">
-                        <h2 class="bg-dark text-white h5 mb-4">Developers Talk</h2>
+                        <h2 class="bg-dark text-white h5 mb-4">Reliable partner</h2>
                         <p class="lead font-italic font-weight-light mb-5 line-height-2">
-                            "The API is easy to use and well-documented. Developers will save loads of time using THX
-                            rather than directly implementing blockchain tech."
+                            "We wanted a reliable partner who can provide us with the infrastructure we need for our
+                            Quest product, allowing us to focus solely on collecting and designing the quests for our
+                            products."
                         </p>
                         <div class="d-flex">
                             <div class="pr-3">
                                 <img
-                                    v-lazy="require('../../public/assets/img/erik.png')"
+                                    class="rounded-circle"
+                                    v-lazy="require('../../public/assets/img/thx_avatar_behfar.jpg')"
                                     width="50"
                                     :alt="ALT_TEXT.HOME_ERIK_DE_GRAAF"
                                 />
                             </div>
                             <div class="align-items-center">
-                                <p class="font-weight-bold mb-0">Erik de Graaf</p>
-                                <p class="small font-weight-light mb-0">Scientist Innovator and Blockchain Engineer</p>
+                                <p class="font-weight-bold mb-0">Behfar</p>
+                                <p class="small font-weight-light mb-0">CEO at Forest Knight</p>
                             </div>
                         </div>
                     </b-card>
@@ -87,3 +90,9 @@ export default class BaseTestimonials extends Vue {
     ALT_TEXT = ALT_TEXT;
 }
 </script>
+
+<style scoped>
+.lead {
+    font-size: 1.8rem;
+}
+</style>
