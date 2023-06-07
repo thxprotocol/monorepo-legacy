@@ -329,9 +329,9 @@
                                     <tr>
                                         <td>
                                             Payment Methods<br />
-                                            <span class="text-gray small"
-                                                >Crypto, Credit Card &amp; Local Providers</span
-                                            >
+                                            <span class="text-gray small">
+                                                Sell rewards with crypto, credit Card &amp; local payment providers
+                                            </span>
                                         </td>
                                         <td><i class="fas fa-times-circle"></i></td>
                                         <td><i class="fas fa-times-circle"></i></td>
