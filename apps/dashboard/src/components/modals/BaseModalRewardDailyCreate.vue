@@ -1,7 +1,7 @@
 <template>
     <base-modal
         size="xl"
-        :title="reward ? 'Update' : 'Create' + ' Daily Quest'"
+        :title="(reward ? 'Update' : 'Create') + ' Daily Quest'"
         :id="id"
         :error="error"
         :loading="isLoading"
@@ -78,7 +78,7 @@
                 variant="primary"
                 block
             >
-                {{ reward ? 'Update Daily Reward' : 'Create Daily Reward' }}
+                {{ (reward ? 'Update' : 'Create') + ' Daily Quest' }}
             </b-button>
         </template>
     </base-modal>

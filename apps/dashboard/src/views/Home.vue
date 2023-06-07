@@ -28,52 +28,81 @@
                     <b-col md="3">
                         <BaseCardHome
                             :loading="!firstPool"
-                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/daily`"
+                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/quests`"
                         >
                             <template #header>
                                 <i class="fas fa-calendar mr-2 text-primary"></i>
                                 <strong>Daily</strong>
                             </template>
-                            Reward frequent return visits to your site.
+                            Reward frequent return visits to your application
                         </BaseCardHome>
                     </b-col>
                     <b-col md="3">
                         <BaseCardHome
                             :loading="!firstPool"
-                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/referrals`"
+                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/quests`"
                         >
                             <template #header>
                                 <i class="fas fa-comments mr-2 text-primary"></i>
                                 <strong>Referral</strong>
                             </template>
-                            Reward your users for inviting others.
+                            Reward your users for inviting others
                         </BaseCardHome>
                     </b-col>
                     <b-col md="3">
                         <BaseCardHome
                             :loading="!firstPool"
-                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/conditional`"
+                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/quests`"
                         >
                             <template #header>
                                 <i class="fas fa-trophy mr-2 text-primary"></i>
-                                <strong>Conditional</strong> </template
-                            >Reward engagement in other platforms.
+                                <strong>Conditional</strong>
+                            </template>
+                            Reward engagement in social channels
                         </BaseCardHome>
                     </b-col>
                     <b-col md="3">
                         <BaseCardHome
                             :loading="!firstPool"
-                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/milestones`"
+                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/quests`"
                         >
                             <template #header>
                                 <i class="fas fa-trophy mr-2 text-primary"></i>
-                                <strong>Milestone</strong> </template
-                            >Reward all moments your the user expierience.
+                                <strong>Milestone</strong>
+                            </template>
+                            Reward important achievements in your application
                         </BaseCardHome>
                     </b-col>
                 </b-row>
                 <hr />
-                <strong class="text-muted">Perks</strong>
+                <b-row>
+                    <b-col md="6">
+                        <BaseCardHome
+                            :loading="!firstPool"
+                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/quests`"
+                        >
+                            <template #header>
+                                <i class="fas fa-trophy mr-2 text-primary"></i>
+                                <strong>Conditional</strong>
+                            </template>
+                            Reward engagement in social channels
+                        </BaseCardHome>
+                    </b-col>
+                    <b-col md="6">
+                        <BaseCardHome
+                            :loading="!firstPool"
+                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/quests`"
+                        >
+                            <template #header>
+                                <i class="fas fa-trophy mr-2 text-primary"></i>
+                                <strong>Milestone</strong>
+                            </template>
+                            Reward important achievements in your application
+                        </BaseCardHome>
+                    </b-col>
+                </b-row>
+                <hr />
+                <strong class="text-muted">Smart Contracts</strong>
                 <b-row>
                     <b-col md="6">
                         <b-card
