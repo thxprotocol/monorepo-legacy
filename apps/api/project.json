@@ -63,7 +63,6 @@
                 "testTimeout": 180000,
                 "passWithNoTests": false,
                 "runInBand": true,
-                "codeCoverage": true,
                 "logHeapUsage": true
             }
         },
