@@ -1,23 +1,9 @@
 <template>
     <section class="py-5">
+        <hr />
         <div class="container py-5">
             <div class="row pb-lg-5">
-                <div class="col-lg-6 order-1 order-lg-0 align-items-center">
-                    <div class="text-muted font-weight-bold mb-2">Integrate with just one script in your HTML</div>
-                    <pre
-                        class="rounded p-3 mb-2 w-100 text-white"
-                        style="background-color: #282c34; white-space: pre-line"
-                    >
-                        <code class="language-common" v-html="codeExample2"></code>
-                    </pre>
-                    <div class="text-right">
-                        <b-button @click="onClickLaunchWidget" variant="light" class="rounded-pill">
-                            Open <i class="fas fa-gift mx-1" style="font-size: 1.1rem"></i> widget
-                            <i data-v-fddfcf4a="" class="fas fa-chevron-right" aria-hidden="true"></i>
-                        </b-button>
-                    </div>
-                </div>
-                <div class="col-lg-4 offset-lg-1 pb-3">
+                <div class="col-lg-4 offset-lg-1 order-lg-0 align-items-center">
                     <h2 class="h5">Embedded Loyalty</h2>
                     <p class="lead">Engage your audience as easy as 1-2-3</p>
                     <p class="lead">
@@ -29,8 +15,27 @@
                         from scratch.
                     </p>
                 </div>
+                <div class="col-lg-6 pb-3">
+                    <img width="100%" class="mb-5" :src="require('../../public/assets/img/thx_widget_launcher.png')" />
+                </div>
+                <div class="col-md-10 offset-md-1">
+                    <div class="text-muted mb-2">All you do is paste this (example) script in your HTML page</div>
+                    <pre
+                        class="rounded p-3 mb-2 w-100 text-white"
+                        style="background-color: #282c34; white-space: pre-line"
+                    >
+                        <code class="language-common" v-html="codeExample2"></code>
+                    </pre>
+                    <div class="text-right">
+                        <b-button @click="onClickLaunchWidget" variant="link" class="rounded-pill">
+                            Open example widget
+                            <i data-v-fddfcf4a="" class="fas fa-chevron-right" aria-hidden="true"></i>
+                        </b-button>
+                    </div>
+                </div>
             </div>
-            <div class="row pt-5 pb-5">
+            <hr />
+            <div class="row pt-10 pb-5">
                 <div class="col-lg-4 offset-lg-1">
                     <h5 class="mb-4">Used technologies</h5>
                     <div class="d-flex justify-content-between flex-wrap pb-5">

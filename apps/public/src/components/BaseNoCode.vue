@@ -28,7 +28,7 @@
                     <img
                         class="rounded"
                         width="100%"
-                        v-lazy="require('../../public/assets/img/thx_ui-demo.png')"
+                        v-lazy="require('../../public/assets/img/thx_widget_rewards.png')"
                         alt=""
                     />
                 </div>
