@@ -1,7 +1,7 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { type TDailyReward } from '@thxnetwork/types/index';
+import { QuestVariant, type TDailyReward } from '@thxnetwork/types/index';
 import { type TPool } from '@thxnetwork/types/index';
 import { track } from '@thxnetwork/mixpanel';
 
@@ -46,6 +46,7 @@ class DailyRewardModule extends VuexModule {
         this.context.commit('setTotal', { pool, total: data.total });
         data.results.forEach((reward: TDailyReward) => {
             reward.page = page;
+            reward.variant = QuestVariant.Daily;
             this.context.commit('set', reward);
         });
     }

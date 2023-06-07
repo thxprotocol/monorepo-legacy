@@ -1,7 +1,13 @@
 <template>
-    <base-modal size="xl" title="Create Daily Reward" :id="id" :error="error" :loading="isLoading" @show="onShow">
+    <base-modal
+        size="xl"
+        :title="reward ? 'Update' : 'Create' + ' Daily Quest'"
+        :id="id"
+        :error="error"
+        :loading="isLoading"
+        @show="onShow"
+    >
         <template #modal-body v-if="!isLoading">
-            <p class="text-gray">Daily rewards are distributed to your customers every 24 hours</p>
             <form v-on:submit.prevent="onSubmit()" id="formRewardDailyCreate">
                 <b-row>
                     <b-col>

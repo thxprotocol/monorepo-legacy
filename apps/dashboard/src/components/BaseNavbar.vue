@@ -40,7 +40,7 @@
                                 </div>
                             </div>
                         </template>
-                        <b-dropdown-text class="text-muted small"> Loyalty Campaign </b-dropdown-text>
+                        <b-dropdown-text class="text-muted small"> Campaigns </b-dropdown-text>
                         <b-dropdown-divider />
                         <b-dropdown-item-btn
                             class="small"
@@ -71,14 +71,11 @@
                 <template v-if="selectedPool">
                     <base-navbar-nav :routes="configRoutes" />
                     <hr />
-                    <label class="px-3 text-muted">Earn points</label>
-                    <base-navbar-nav :routes="rewardRoutes" />
-                    <hr />
-                    <label class="px-3 text-muted">Shop perks</label>
+                    <label class="px-3 text-muted">Shop </label>
                     <base-navbar-nav :routes="perkRoutes" />
                     <hr />
                 </template>
-                <label class="px-3 text-muted">Blockchain</label>
+                <label class="px-3 text-muted">Smart Contracts</label>
                 <base-navbar-nav :routes="tokenRoutes" />
             </div>
             <div class="d-flex justify-content-end flex-column flex-grow-0 w-100 border-top py-2">
@@ -156,32 +153,6 @@ export default class BaseNavbar extends Vue {
         ];
     }
 
-    get rewardRoutes() {
-        if (!this.selectedPool) return;
-        return [
-            {
-                path: `/pool/${this.selectedPool._id}/daily`,
-                label: 'Daily',
-                iconClasses: 'fas fa-calendar',
-            },
-            {
-                path: `/pool/${this.selectedPool._id}/referrals`,
-                label: 'Referrals',
-                iconClasses: 'fas fa-comments',
-            },
-            {
-                path: `/pool/${this.selectedPool._id}/conditional`,
-                label: 'Conditional',
-                iconClasses: 'fas fa-trophy',
-            },
-            {
-                path: `/pool/${this.selectedPool._id}/milestones`,
-                label: 'Milestones',
-                iconClasses: 'fas fa-flag',
-            },
-        ];
-    }
-
     get perkRoutes() {
         if (!this.selectedPool) return;
         return [
@@ -210,6 +181,11 @@ export default class BaseNavbar extends Vue {
                 path: `/pool/${this.selectedPool._id}/dashboard`,
                 label: 'Dashboard',
                 iconClasses: 'fas fa-chart-line',
+            },
+            {
+                path: `/pool/${this.selectedPool._id}/quests`,
+                label: 'Quests',
+                iconClasses: 'fas fa-trophy',
             },
             {
                 path: `/pool/${this.selectedPool._id}/settings`,

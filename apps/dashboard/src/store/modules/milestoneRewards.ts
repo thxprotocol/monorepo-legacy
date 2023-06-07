@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { type TMilestoneReward } from '@thxnetwork/types/index';
+import { QuestVariant, type TMilestoneReward } from '@thxnetwork/types/index';
 import { Vue } from 'vue-property-decorator';
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
 import { type TPool } from '@thxnetwork/types/index';
@@ -50,6 +50,7 @@ class MilestoneRewardModule extends VuexModule {
         this.context.commit('setTotal', { pool, total: data.total });
         data.results.forEach((reward: TMilestoneReward) => {
             reward.page = page;
+            reward.variant = QuestVariant.Custom;
             this.context.commit('set', reward);
         });
     }
