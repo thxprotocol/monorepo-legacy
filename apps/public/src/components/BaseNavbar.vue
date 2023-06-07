@@ -44,7 +44,7 @@
                         target="_blank"
                         :title="TITLES.HOME_LIVE_DEMO"
                     >
-                        <span>Live Demo</span>
+                        <span>Sign up</span>
                         <i class="fas fa-chevron-right"></i>
                     </b-button>
                 </div>

@@ -6,14 +6,10 @@
                     <div class="brand-intro text-white col-lg-4 order-1 order-md-0">
                         <div>
                             <h1 class="brand-text mb-3">
-                                <em>Token powered loyalty</em><br />
+                                <em>Rewards</em><br />
                                 in any app
                             </h1>
-                            <p class="lead mb-4">
-                                Boost engagement and create new revenue streams. Powered by a
-                                <strong>battle tested loyalty API</strong>
-                                and the <strong>Polygon blockchain</strong>.
-                            </p>
+                            <p class="lead mb-4">Drive growth and revenue with our token-powered Loyalty Engine.</p>
                             <b-form id="formSignupRedirect" class="row" v-on:submit.prevent="submit">
                                 <div class="col-12">
                                     <b-form-input
@@ -30,7 +26,7 @@
                                         class="rounded-pill"
                                         :title="TITLES.HOME_SIGNUP"
                                     >
-                                        Sign up <strong>for free</strong>
+                                        Start <strong>free</strong> trial
                                         <i class="fas fa-chevron-right"></i>
                                     </b-button>
                                     <b-button

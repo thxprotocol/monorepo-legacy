@@ -38,11 +38,11 @@
                         <h3 class="m-0 mt-lg-4 mb-lg-3">Free Transactions</h3>
                     </div>
                     <p class="line-height-2">
-                        The Polygon side-chain provides fast and free transactions for your end-users.
+                        We sponsor the gas costs so you don't have to worry about additional UX barriers for your
+                        customers.
                     </p>
                     <p class="text-gray line-height-2">
-                        We sponsor the gas costs so you don’t have to worry about additional UX barriers for your
-                        customers.
+                        The Polygon blockchain provides fast and secure transactions for your users.
                     </p>
                 </div>
                 <div class="col-md-6 col-lg-4 pb-5">
@@ -53,12 +53,11 @@
                         <h3 class="m-0 mt-lg-4 mb-lg-3">Lower Acquisition Costs</h3>
                     </div>
                     <p class="line-height-2">
-                        Referrals by loyal members and customers leads to new users that are more engaged and eager to
-                        join your community.
+                        Referrals from community members attract enthusiastic new users, reducing your customer
+                        acquisition costs (CAC).
                     </p>
                     <p class="text-gray line-height-2">
-                        This is much more cost effective than advertising driving down your customer acquisition costs
-                        (CAC).
+                        This method proves more cost-effective than traditional advertising.
                     </p>
                 </div>
                 <div class="col-md-6 col-lg-4 pb-5">
@@ -73,12 +72,12 @@
                         <h3 class="m-0 mt-lg-4 mb-lg-3">Higher Lifetime Value</h3>
                     </div>
                     <p class="line-height-2">
-                        Loyalty points, perks and partnerships all work together to give your users a more exciting
-                        journey in your community.
+                        By combining loyalty rewards, quests, and partnerships, we enhance the user journey within your
+                        community.
                     </p>
                     <p class="text-gray line-height-2">
-                        People spend more time within your organization and very naturally tend to spend more money too
-                        leading to higher customer lifetime value (LTV).
+                        This engagement encourages users to spend more time and more money in your project or game,
+                        boosting the customer lifetime value (LTV).
                     </p>
                 </div>
             </div>
@@ -88,15 +87,13 @@
                         <span class="icon rounded text-secondary mr-3">
                             <i class="fas fa-trophy" style="font-size: 2rem"></i>
                         </span>
-                        <h3 class="m-0 mt-lg-4 mb-lg-3">Loyalty Points</h3>
+                        <h3 class="m-0 mt-lg-4 mb-lg-3">Quests</h3>
                     </div>
                     <p class="line-height-2">
-                        Reward engagement with loyalty points which are instantly claimable in the widget or brandable
-                        wallet.
+                        Reward engagement with quests and claim them instantly in the branded wallet.
                     </p>
                     <p class="text-gray line-height-2">
-                        Your users exchange points for valuable perks. Watch returning visits and conversions go through
-                        the roof!
+                        Your users exchange points for valuable rewards. Watch retention go through the roof!
                     </p>
                 </div>
                 <div class="col-md-6 col-lg-4 pb-5">
@@ -104,15 +101,14 @@
                         <span class="icon rounded text-secondary mr-3">
                             <i class="fas fa-award" style="font-size: 2rem"></i>
                         </span>
-                        <h3 class="m-0 mt-lg-4 mb-lg-3">Loyalty Perks</h3>
+                        <h3 class="m-0 mt-lg-4 mb-lg-3">Rewards</h3>
                     </div>
                     <p class="line-height-2">
-                        Signed-up users, players or customers become true community members when receiving, exchanging
-                        or buying tokenized perks.
+                        Users and players become true community members when receiving, exchanging or buying tokenized
+                        rewards.
                     </p>
                     <p class="text-gray line-height-2">
-                        Make ERC-20 tokens your community currency while NFTs prove community memberships and certain
-                        achievements.
+                        Make ERC-20 tokens your currency and gate memberships with NFTs.
                     </p>
                 </div>
                 <div class="col-md-6 col-lg-4 pb-5">
@@ -120,14 +116,13 @@
                         <span class="icon rounded text-secondary mr-3">
                             <i class="fas fa-handshake" style="font-size: 2rem"></i>
                         </span>
-                        <h3 class="m-0 mt-lg-4 mb-lg-3">Loyalty Partnerships</h3>
+                        <h3 class="m-0 mt-lg-4 mb-lg-3">Partnerships</h3>
                     </div>
                     <p class="line-height-2">
-                        Share your Perks across organizations in a marketplace to reach new members and customers.
+                        Share your Rewards across projects and games to reach new users and players.
                     </p>
                     <p class="text-gray line-height-2">
-                        You just organized your loyalty offering into a wider reaching Loyalty Network! Cross channel
-                        and cross brand loyalty is what drives long term results.
+                        Cross channel and cross brand loyalty is what drives long term results.
                     </p>
                 </div>
             </div>

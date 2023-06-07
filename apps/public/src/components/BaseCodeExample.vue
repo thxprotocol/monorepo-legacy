@@ -21,10 +21,12 @@
                     <h2 class="h5">Embedded Loyalty</h2>
                     <p class="lead">Engage your audience as easy as 1-2-3</p>
                     <p class="lead">
-                        Embed a small piece of code and immediately launch your loyalty points and perks such as NFTs.
+                        Copy-paste a small piece of code immediately launch your quests and rewards using tokens such as
+                        NFTs.
                     </p>
                     <p class="lead font-weight-light">
-                        Using our widget or SDK you save months of work compared to starting from scratch.
+                        Using our front-end integrated wallet or SDK your team saves months of work compared to starting
+                        from scratch.
                     </p>
                 </div>
             </div>

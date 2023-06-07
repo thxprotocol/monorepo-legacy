@@ -230,14 +230,11 @@ import hljs from 'highlight.js/lib/core';
 import JavaScript from 'highlight.js/lib/languages/javascript';
 import Xml from 'highlight.js/lib/languages/xml';
 import 'highlight.js/styles/atom-one-dark.css';
-import { DASHBOARD_URL } from '@thxnetwork/public/config/secrets';
-
 import BaseUseCases from '@thxnetwork/public/components/BaseUseCases.vue';
 import BaseFeatures from '@thxnetwork/public/components/BaseFeatures.vue';
 import BaseTestimonials from '@thxnetwork/public/components/BaseTestimonials.vue';
 import BaseContact from '@thxnetwork/public/components/BaseContact.vue';
 import BaseUseCaseContact from '@thxnetwork/public/components/BaseUseCaseContact.vue';
-import BaseMetrics from '@thxnetwork/public/components/BaseMetrics.vue';
 import BaseCardSignup from '@thxnetwork/public/components/BaseCardSignup.vue';
 import { USE_CASES_BOOST_TAGS, TWITTER_TAGS, LINKS } from '@thxnetwork/public/utils/constants';
 
@@ -247,7 +244,6 @@ hljs.registerLanguage('xml', Xml);
 @Component({
     components: {
         BaseCardSignup,
-        BaseMetrics,
         BaseFeatures,
         BaseUseCaseContact,
         BaseTestimonials,
