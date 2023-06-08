@@ -1,12 +1,20 @@
 import * as Hubspot from '@hubspot/api-client';
 import { HUBSPOT_ACCESS_TOKEN, NODE_ENV } from '../config/secrets';
 import { PublicObjectSearchRequest } from '@hubspot/api-client/lib/codegen/crm/contacts';
+import { AccountPlanType } from '@thxnetwork/types/enums';
 
 const hubspotClient = new Hubspot.Client({ accessToken: HUBSPOT_ACCESS_TOKEN });
 
 export const hubspot = {
     // Process account information for upsert into Hubspot
-    async upsert(props: { firstname?: string; lastname?: string; email: string; company?: string; website?: string }) {
+    async upsert(props: {
+        firstname?: string;
+        lastname?: string;
+        email: string;
+        company?: string;
+        website?: string;
+        plan?: AccountPlanType;
+    }) {
         if (!HUBSPOT_ACCESS_TOKEN || NODE_ENV !== 'production') return;
 
         try {
@@ -70,6 +78,7 @@ export const hubspot = {
                 lastname: props.lastname,
                 email: props.email,
                 signup: 'true',
+                plan: AccountPlanType[props.plan],
             },
         };
 

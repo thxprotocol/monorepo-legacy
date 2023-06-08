@@ -76,59 +76,82 @@
           if (params.signup_plan == 1) {
             premium.push({
               class: 'show',
-              title: 'Discord Bot',
+              title: '€ 89 / month (30 day free trial)',
               description:
-                  '<span class="text-white font-weight-bold">Audience engagement is scattered!</span> We will make an effort to give you a full overview of what is happening accross these channels.',
+                  'We invite you to try out all of the above for a month, with no obligation to pay unless you\'re satisfied!',
             });
-
-            premium.push({
-                class: '',
-                title: 'Twitter Automation',
-                description:
-                    '<span class="text-white font-weight-bold">We understand you are a busy person!</span> That\'s why we attempt to automate campaign management.',
-            });
-          }
+          };
 
           if (params.signup_plan == 2) {
             premium.push({
               class: 'show',
-              title: 'Dedicated Campaign Manager',
-              description:
-                  '<span class="text-white font-weight-bold">We understand you are a busy person!</span> That\'s why we offer you a dedicated campaign manager to during your free first month.',
+              title: '&euro; 449 / month (30 day free trial)',
+              description: 'We invite you to try out all of the above for a month, with no obligation to pay unless you\'re satisfied!',
             });
-            premium.push({
-              class: '',
-              title: 'Unlimited Technical Support',
-              description:
-                  '<span class="text-white font-weight-bold">Your devs are probably working on other important tasks!</span> Let our devs talk to your devs to make engine integration a piece of cake.',
-            });
-          }
+          };
+
 
           premium.push({
             class: '',
-            title: 'Weekly Performance Reports',
-            description:
-                '<span class="text-white font-weight-bold">We know budgets and results are important to you.</span> We send you weekly reports by mail and are happy to jump on a call to discuss results and potential improvements.',
+            title: '2,5% fee on rewards',
+            description: 'We charge a small % transactional fee on coin rewards (ERC-20). Your end users pay no fees.',
+          });
+
+          premium.push({
+            class: '',
+            title: 'Transaction costs (gas fees)',
+            description: 'We cover all user transaction costs (gas fees) up to the plans reward limit.',
           });
           
           if (params.signup_plan == 1) {
             premium.push({
               class: '',
-              title: 'Pay &euro; 89/m (30 days free trial)',
-              description:
-                  '<span class="text-white font-weight-bold">Obviously we also need to pay our bills,</span> but we invite you to try out all of the above for a month, with no obligation to pay unless you\'re satisfied!',
+              title: 'Setup fee',
+              description: 'We require no setup fee. You have the option to give a voluntary setup contribution on the left. Most people choose €250,-',
+            });
+
+            premium.push({
+              class: '',
+              title: 'Discord Bot',
+              description: 'Reach your community in channels that matter most. Post reward overviews and announce new rewards, all automated.',
+            });
+
+            premium.push({
+                class: '',
+                title: 'Twitter Automation',
+                description: 'You are already very busy managing campaigns... We\'ll automate your Twitter campaigns, so you can focus on growth!',
             });
           };
 
           if (params.signup_plan == 2) {
             premium.push({
               class: '',
-              title: 'Pay &euro; 449/m (30 days free trial)',
+              title: 'Setup fee',
+              description: 'We require no setup fee. Sign-up and you\'re ready to go!',
+            });
+             
+            premium.push({
+              class: '',
+              title: 'Dedicated Campaign Manager',
               description:
-                  '<span class="text-white font-weight-bold">Obviously we also need to pay our bills,</span> but we invite you to try out all of the above for a month, with no obligation to pay unless you\'re satisfied!',
+                  'We understand you are a busy person! That\'s why we offer you a dedicated campaign manager to during your free first month.',
+            });
+
+            premium.push({
+              class: '',
+              title: 'Unlimited Technical Support',
+              description:
+                  'Your devs are probably working on other important tasks. Let our devs talk to your devs to make engine integration a piece of cake.',
             });
           };
-          
+  
+          premium.push({
+            class: '',
+            title: 'Weekly Performance Reports',
+            description:
+                'We know budgets and results are important to you. We send you weekly reports by mail and are happy to jump on a call to discuss results and potential improvements.',
+          });     
+        
           %>
 
           <ul class="text-muted list-unstyled">
@@ -167,10 +190,12 @@
       <div class="<%- (['1','2'].includes(params.signup_plan)) ? 'col-md-6 order-md-0' : 'col-md-12' %>">
         <div class="card-body p-sm-4 pb-sm-0">
 
-          <% if (params.signup_plan == 2) { %>
+          <% if (params.signup_offer == 'true') { %>
           <div class="alert alert-info">
             <i class="fas fa-info-circle mr-1"></i>
-            You have received a <strong>Premium Offer 🎁 </strong>
+            You have received a
+            <strong><%- (params.signup_plan == '1') ? 'Basic' : (params.signup_plan == '2') ? 'Premium' : 'Free' %>
+              Offer 🎁 </strong>
           </div>
           <% } %>
 
@@ -214,29 +239,28 @@
             <% if (params.signup_plan == 2) { %>
             <div class="form-group mb-4">
               <label class="d-flex align-items-center font-weigh-bold text-muted mb-3" for="formControlRange">
-                <div>
-                  Setup Fee
-                  <i class="fas fa-info-circle" data-toggle="tooltip" title="If you are able to to, we'd love to learn how much you are able to compensate our
-              expenses."></i>
-                </div>
+                Setup Fee - Pay what this is worth to you!
               </label>
-
               <div class="btn-group w-100" role="group" aria-label="Basic example">
                 <button @click="setupFee = 0" type="button" class="btn btn-sm"
                         :class="setupFee == 0 ? 'btn-primary': 'btn-light' ">
                   No fee
                 </button>
-                <button @click="setupFee = 50" type="button" class="btn btn-sm"
-                        :class="setupFee == 50 ? 'btn-primary': 'btn-light' ">&euro;
-                  50,-
-                </button>
                 <button @click="setupFee = 100" type="button" class="btn btn-sm"
                         :class="setupFee == 100 ? 'btn-primary': 'btn-light' ">&euro;
                   100,-
                 </button>
-                <button @click="setupFee = 200" type="button" class="btn btn-sm"
-                        :class="setupFee == 200 ? 'btn-primary': 'btn-light' ">&euro;
-                  200,-
+                <button @click="setupFee = 250" type="button" class="btn btn-sm"
+                        :class="setupFee == 250 ? 'btn-primary': 'btn-light' ">&euro;
+                  250,-
+                </button>
+                <button @click="setupFee = 500" type="button" class="btn btn-sm"
+                        :class="setupFee == 500 ? 'btn-primary': 'btn-light' ">&euro;
+                  500,-
+                </button>
+                <button @click="setupFee = 750" type="button" class="btn btn-sm"
+                        :class="setupFee == 750 ? 'btn-primary': 'btn-light' ">&euro;
+                  750,-
                 </button>
               </div>
             </div>
@@ -259,7 +283,7 @@
             <% if(params.emailPasswordEnabled) { %>
             <button type="submit" class="btn rounded-pill btn-primary btn-block mb-4"
                     :class="{'disabled': isDisabled || isLoading}" @click="onClickSubmit">
-              <%- (params.signup_plan) ? 'Start <strong>free</strong> trial' : 'Send one-time password'%>
+              <%- (['1','2'].includes(params.signup_plan)) ? 'Start <strong>free</strong> trial' : 'Send one-time password'%>
               <i class="fas fa-chevron-right" aria-hidden="true"></i><br />
             </button>
             <% } %>

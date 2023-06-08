@@ -246,7 +246,7 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            Custom<br />
+                                            Custom Webhooks<br />
                                             <span class="text-gray small">
                                                 Use outbound webhooks to reward important achievements in your
                                                 application
@@ -291,9 +291,20 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            Custom<br />
+                                            Custom Webhooks<br />
                                             <span class="text-gray small">
                                                 Use inbound webhooks to reward with a feature in your application
+                                            </span>
+                                        </td>
+                                        <td><i class="fas fa-times-circle"></i></td>
+                                        <td><i class="fas fa-times-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            QR Codes<br />
+                                            <span class="text-gray small">
+                                                Use QR codes to distribute your rewards in offline environments
                                             </span>
                                         </td>
                                         <td><i class="fas fa-times-circle"></i></td>
@@ -333,6 +344,33 @@
                                             Payment Methods<br />
                                             <span class="text-gray small">
                                                 Sell rewards with crypto, credit Card &amp; local payment providers
+                                            </span>
+                                        </td>
+                                        <td><i class="fas fa-times-circle"></i></td>
+                                        <td><i class="fas fa-times-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="bg-dark text-white" colspan="4">
+                                            <strong>Services</strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Dedicated Campaign Manager<br />
+                                            <span class="text-gray small">
+                                                Opt-in campaign manager during the first free months of your campaign.
+                                            </span>
+                                        </td>
+                                        <td><i class="fas fa-times-circle"></i></td>
+                                        <td><i class="fas fa-times-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Unlimited Technical Support<br />
+                                            <span class="text-gray small">
+                                                Opt-in technical support for webhook integrations.
                                             </span>
                                         </td>
                                         <td><i class="fas fa-times-circle"></i></td>
@@ -506,7 +544,7 @@ export default class Home extends Vue {
 
 @media (min-width: 1200px) {
     .section-pricing {
-        max-height: 2400px;
+        max-height: 2600px;
     }
 
     #section-features {

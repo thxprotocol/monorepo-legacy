@@ -60,6 +60,7 @@ const config: Configuration = {
         'reward_hash',
         'signup_email',
         'signup_plan',
+        'signup_offer',
         'return_url',
         'signup_token',
         'authentication_token',

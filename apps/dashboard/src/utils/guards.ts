@@ -54,6 +54,7 @@ export function redirectSignup(to: Route) {
     return store.dispatch('account/signinRedirect', {
         signupEmail: to.query.signup_email,
         signupPlan: to.query.signup_plan,
+        signupOffer: to.query.signup_offer,
     });
 }
 

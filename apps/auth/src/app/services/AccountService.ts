@@ -7,9 +7,8 @@ import {
     ERROR_VERIFY_EMAIL_EXPIRED,
 } from '../util/messages';
 import { YouTubeService } from './YouTubeService';
-import { AccountPlanType } from '../types/enums/AccountPlanType';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
-import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
+import { AccessTokenKind, AccountPlanType } from '@thxnetwork/types/enums';
 import bcrypt from 'bcrypt';
 import { ShopifyService } from './ShopifyService';
 import { logger } from '../util/logger';
@@ -226,7 +225,7 @@ export class AccountService {
         return false;
     }
 
-    static async signup(data: { email?: string; variant: AccountVariant; active: boolean }) {
+    static async signup(data: { email?: string; plan: AccountPlanType; variant: AccountVariant; active: boolean }) {
         let account: AccountDocument;
 
         if (data.email) {
@@ -238,7 +237,7 @@ export class AccountService {
                 email: data.email,
                 active: data.active,
                 variant: data.variant,
-                plan: AccountPlanType.Basic,
+                plan: data.plan,
                 isEmailVerified: this.getIsEmailVerified(data.variant, data.email),
             });
         }
@@ -246,7 +245,7 @@ export class AccountService {
         account.active = data.active;
         account.email = data.email;
         account.variant = data.variant;
-        account.plan = AccountPlanType.Basic;
+        account.plan = AccountPlanType.Free;
 
         return await account.save();
     }

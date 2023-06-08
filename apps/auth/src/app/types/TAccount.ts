@@ -1,6 +1,5 @@
-import { AccountPlanType } from './enums/AccountPlanType';
+import { AccountPlanType, AccessTokenKind } from '@thxnetwork/types/enums';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
-import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 export interface TAccount {
     firstName: string;
     lastName: string;

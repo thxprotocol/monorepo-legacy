@@ -5,6 +5,7 @@ import { Request, Response } from 'express';
 import { recoverTypedSignature, SignTypedDataVersion } from '@metamask/eth-sig-util';
 import { body } from 'express-validator';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
+import { AccountPlanType } from '@thxnetwork/types/enums';
 import { AccountDocument } from '@thxnetwork/auth/models/Account';
 import { UnauthorizedError } from '@thxnetwork/auth/util/errors';
 
@@ -38,6 +39,7 @@ async function controller(req: Request, res: Response) {
     } else if (req.body.email) {
         try {
             const email = req.body.email.toLowerCase();
+            const plan = req.body.plan ? Number(req.body.plan) : AccountPlanType.Free;
             let account: AccountDocument = await AccountService.getByEmail(email);
 
             if (!account) {
@@ -45,6 +47,7 @@ async function controller(req: Request, res: Response) {
                     email,
                     variant: AccountVariant.EmailPassword,
                     active: false,
+                    plan,
                 });
             }
 
@@ -53,6 +56,8 @@ async function controller(req: Request, res: Response) {
             // Store the sub in the interaction so we can lookup the hashed OTP later
             req.interaction.params.sub = String(account._id);
             req.interaction.params.email = email;
+            req.interaction.params.plan = plan;
+
             await req.interaction.save(Date.now() + 10 * 60 * 1000); // ttl 10min
 
             return res.redirect(`/oidc/${req.params.uid}/signin/otp`);

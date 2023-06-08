@@ -40,7 +40,7 @@
                     <b-button
                         class="rounded-pill ml-3"
                         variant="primary"
-                        href="https://calendly.com/steffenboode/demo"
+                        to="/signup"
                         target="_blank"
                         :title="TITLES.HOME_LIVE_DEMO"
                     >

@@ -120,6 +120,7 @@ class AccountModule extends VuexModule {
         signupToken: string;
         signupEmail: string;
         signupPlan: AccountPlanType;
+        signupOffer: boolean;
         passwordResetToken: string;
         verifyEmailToken: string;
         poolTransferToken: string;
@@ -155,6 +156,10 @@ class AccountModule extends VuexModule {
 
         if (payload.signupPlan) {
             extraQueryParams['signup_plan'] = payload.signupPlan;
+        }
+
+        if (payload.signupOffer) {
+            extraQueryParams['signup_offer'] = payload.signupOffer;
         }
 
         if (payload.signupToken) {

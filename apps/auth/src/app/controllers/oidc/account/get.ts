@@ -5,7 +5,7 @@ import { YouTubeService } from '../../../services/YouTubeService';
 import { AccountService } from '../../../services/AccountService';
 import { GithubService } from '../../../services/GithubServices';
 import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
-import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
+import { AccountPlanType, AccessTokenKind } from '@thxnetwork/types/enums';
 import { ShopifyService } from '@thxnetwork/auth/services/ShopifyService';
 
 async function controller(req: Request, res: Response) {
@@ -33,6 +33,7 @@ async function controller(req: Request, res: Response) {
             website: account.website,
             address: account.address,
             plan: account.plan,
+            planType: AccountPlanType[account.plan],
             otpSecret: account.otpSecret,
             variant: account.variant,
             shopifyStoreUrl: account.shopifyStoreUrl,
