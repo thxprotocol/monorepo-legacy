@@ -6,7 +6,7 @@ import { TWITCH_API_ENDPOINT } from '../../../config/secrets';
 import { AccountService } from '../../../services/AccountService';
 import { INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
 import { accountEmail } from '../../../util/jest';
-import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
+import { AccessTokenKind, AccountPlanType } from '@thxnetwork/types/enums';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { AccountDocument } from '@thxnetwork/auth/models/Account';
 
@@ -52,6 +52,7 @@ describe('Account Controller', () => {
         authHeader = await requestToken();
 
         account = await AccountService.signup({
+            plan: AccountPlanType.Free,
             email: accountEmail,
             variant: AccountVariant.SSOTwitch,
             active: true,

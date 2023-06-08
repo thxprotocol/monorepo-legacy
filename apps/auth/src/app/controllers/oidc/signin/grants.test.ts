@@ -5,6 +5,7 @@ import { AccountService } from '../../../services/AccountService';
 import { INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
 import { accountEmail } from '../../../util/jest';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
+import { AccountPlanType } from '@thxnetwork/types/enums';
 
 const http = request.agent(app);
 
@@ -15,6 +16,7 @@ describe('OAuth2 Grants', () => {
         await db.truncate();
 
         const account = await AccountService.signup({
+            plan: AccountPlanType.Free,
             email: accountEmail,
             variant: AccountVariant.EmailPassword,
             active: true,

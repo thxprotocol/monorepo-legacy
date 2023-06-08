@@ -6,8 +6,8 @@ import { DISCORD_API_ENDPOINT } from '../../../config/secrets';
 import { AccountService } from '../../../services/AccountService';
 import { INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
 import { accountEmail } from '../../../util/jest';
-import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
+import { AccountPlanType, AccessTokenKind } from '@thxnetwork/types/enums';
 
 const http = request.agent(app);
 
@@ -51,6 +51,7 @@ describe('Account Controller', () => {
         authHeader = await requestToken();
 
         const account = await AccountService.signup({
+            plan: AccountPlanType.Free,
             email: accountEmail,
             variant: AccountVariant.SSODiscord,
             active: true,

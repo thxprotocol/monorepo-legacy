@@ -5,6 +5,7 @@ import { accountAddress, accountEmail } from '../../util/jest';
 import { INITIAL_ACCESS_TOKEN } from '@thxnetwork/auth/config/secrets';
 import { AccountService } from '@thxnetwork/auth/services/AccountService';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
+import { AccountPlanType } from '@thxnetwork/types/enums';
 
 const http = request.agent(app);
 
@@ -48,6 +49,7 @@ describe('Account Controller', () => {
         authHeader = await requestToken();
 
         const account = await AccountService.signup({
+            plan: AccountPlanType.Free,
             email: accountEmail,
             variant: AccountVariant.EmailPassword,
             active: true,

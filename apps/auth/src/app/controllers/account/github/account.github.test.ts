@@ -7,7 +7,7 @@ import { accountEmail } from '../../../util/jest';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { AccountService } from '@thxnetwork/auth/services/AccountService';
 import { AccountDocument } from '@thxnetwork/auth/models/Account';
-import { AccessTokenKind } from '@thxnetwork/types/index';
+import { AccessTokenKind, AccountPlanType } from '@thxnetwork/types/enums';
 
 const http = request.agent(app);
 
@@ -51,6 +51,7 @@ describe('Account Controller', () => {
         authHeader = await requestToken();
 
         account = await AccountService.signup({
+            plan: AccountPlanType.Free,
             email: accountEmail,
             variant: AccountVariant.SSOGithub,
             active: true,

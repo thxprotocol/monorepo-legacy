@@ -4,7 +4,7 @@ import app from '../../../app';
 import db from '../../../util/database';
 import { AccountService } from '../../../services/AccountService';
 import { TWITTER_API_ENDPOINT, INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
-import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
+import { AccessTokenKind, AccountPlanType } from '@thxnetwork/types/enums';
 import { accountEmail } from '@thxnetwork/auth/util/jest';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 
@@ -50,6 +50,7 @@ describe('Account Controller', () => {
         authHeader = await requestToken();
 
         const account = await AccountService.signup({
+            plan: AccountPlanType.Free,
             email: accountEmail,
             variant: AccountVariant.SSOTwitter,
             active: true,
