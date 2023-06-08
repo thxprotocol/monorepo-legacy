@@ -1,6 +1,8 @@
 describe('Dashboard', () => {
     const DASHBOARD_URL = 'https://dev-dashboard.thx.network';
+    // const DASHBOARD_URL = 'https://localhost:8082';
     const AUTH_URL = 'https://dev.auth.thx.network';
+    // const AUTH_URL = 'https://localhost:3030';
     const CYPRESS_ACCOUNT = 'cypress@thx.network';
 
     beforeEach(() => {
@@ -34,9 +36,9 @@ describe('Dashboard', () => {
 
         cy.get('.btn').contains('Create Daily Quest').click();
 
-        cy.get('tbody tr:nth-child(1)').contains('Test reward title').should('be.visible');
+        cy.get('tbody tr:nth-child(1)').contains('Daily').should('be.visible');
         cy.get('tbody tr:nth-child(1)').contains('7 days').should('be.visible');
-
+        cy.get('tbody tr:nth-child(1)').contains('Test reward title').should('be.visible');
         cy.get('tbody tr:nth-child(1) .dropdown-toggle').click();
         cy.contains('Edit').click();
 
@@ -47,6 +49,7 @@ describe('Dashboard', () => {
 
         cy.get('.btn').contains('Update Daily Quest').click();
 
+        cy.get('tbody tr:nth-child(1)').contains('Daily').should('be.visible');
         cy.get('tbody tr:nth-child(1)').contains('Test reward title edit').should('be.visible');
         cy.get('tbody tr:nth-child(1)').contains('8 days').should('be.visible');
 
@@ -70,11 +73,13 @@ describe('Dashboard', () => {
 
         cy.get('.btn').contains('Create Referral Quest').click();
 
+        cy.get('tbody tr:nth-child(1)').contains('Referral').should('be.visible');
         cy.get('tbody tr:nth-child(1)').contains('Test reward title');
         cy.get('tbody tr:nth-child(1)').contains('15');
 
-        cy.get('tbody tr:nth-child(1) .dropdown-toggle').click();
-        cy.contains('Edit').click();
+        cy.get('tbody tr:nth-child(1) .dropdown-toggle').should('be.visible').click();
+        cy.contains('Edit').should('be.visible').click();
+        cy.contains('Update Referral Quest').should('be.visible');
 
         cy.get('.form-group:nth-child(1) input').clear().type('Test reward title edit');
         cy.get('.form-group:nth-child(2) textarea').clear().type('Test reward description edit');
@@ -82,6 +87,7 @@ describe('Dashboard', () => {
 
         cy.get('.btn').contains('Update Referral Quest').click();
 
+        cy.get('tbody tr:nth-child(1)').contains('Referral').should('be.visible');
         cy.get('tbody tr:nth-child(1)').contains('Test reward title edit');
         cy.get('tbody tr:nth-child(1)').contains('20');
 
@@ -115,11 +121,13 @@ describe('Dashboard', () => {
 
         cy.get('.btn').contains('Create Social Quest').click();
 
+        cy.get('tbody tr:nth-child(1)').contains('Social').should('be.visible');
         cy.get('tbody tr:nth-child(1)').contains('Test reward title');
         cy.get('tbody tr:nth-child(1)').contains('15');
 
-        cy.get('tbody tr:nth-child(1) .dropdown-toggle').click();
-        cy.get('tbody tr:nth-child(1) .dropdown').contains('Edit').click();
+        cy.get('tbody tr:nth-child(1) .dropdown-toggle').should('be.visible').click();
+        cy.contains('Edit').should('be.visible').click();
+        cy.contains('Update Social Quest').should('be.visible');
 
         cy.get('#collapse-card-condition .dropdown-select .dropdown-toggle').contains('Twitter').should('be.visible');
         cy.get('#collapse-card-condition .custom-select option:selected').should('have.text', 'Retweet');
@@ -131,6 +139,7 @@ describe('Dashboard', () => {
 
         cy.get('.btn').contains('Update Social Quest').click();
 
+        cy.get('tbody tr:nth-child(1)').contains('Social').should('be.visible');
         cy.get('tbody tr:nth-child(1)').contains('Test reward title edit').should('be.visible');
         cy.get('tbody tr:nth-child(1)').contains('20').should('be.visible');
 
@@ -155,11 +164,13 @@ describe('Dashboard', () => {
 
         cy.get('.btn').contains('Create Custom Quest').click();
 
-        cy.get('tbody tr:nth-child(1)').contains('Test reward title');
-        cy.get('tbody tr:nth-child(1)').contains('15');
+        cy.get('tbody tr:nth-child(1)').contains('Custom').should('be.visible');
+        cy.get('tbody tr:nth-child(1)').contains('15').should('be.visible');
+        cy.get('tbody tr:nth-child(1)').contains('Test reward title').should('be.visible');
 
-        cy.get('tbody tr:nth-child(1) .dropdown-toggle').click();
-        cy.contains('Edit').click();
+        cy.get('tbody tr:nth-child(1) .dropdown-toggle').should('be.visible').click();
+        cy.contains('Edit').should('be.visible').click();
+        cy.contains('Update Custom Quest').should('be.visible');
 
         cy.get('.form-group:nth-child(1) input').clear().type('Test reward title edit');
         cy.get('.form-group:nth-child(2) textarea').clear().type('Test reward description edit');
@@ -168,6 +179,7 @@ describe('Dashboard', () => {
 
         cy.get('.btn').contains('Update Custom Quest').click();
 
+        cy.get('tbody tr:nth-child(1)').contains('Custom').should('be.visible');
         cy.get('tbody tr:nth-child(1)').contains('Test reward title edit');
         cy.get('tbody tr:nth-child(1)').contains('20');
 

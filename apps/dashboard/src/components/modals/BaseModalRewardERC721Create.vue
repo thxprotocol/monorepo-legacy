@@ -2,13 +2,12 @@
     <base-modal
         @show="onShow"
         size="xl"
-        :title="perk ? 'Update NFT Perk' : 'Create NFT Perk'"
+        :title="(perk ? 'Update' : 'Create') + ' NFT Reward'"
         :id="id"
         :error="error"
         :loading="isLoading"
     >
         <template #modal-body v-if="!isLoading">
-            <p class="text-gray">NFT perks let your customers claim NFTs from your collection.</p>
             <form v-on:submit.prevent="onSubmit()" id="formRewardPointsCreate">
                 <b-row>
                     <b-col md="6">
@@ -107,7 +106,7 @@
                 variant="primary"
                 block
             >
-                {{ perk ? 'Update NFT Perk' : 'Create NFT Perk' }}
+                {{ (perk ? 'Update' : 'Create') + ' NFT Reward' }}
             </b-button>
         </template>
     </base-modal>
