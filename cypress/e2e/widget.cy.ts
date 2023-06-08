@@ -49,11 +49,11 @@ describe('Wallet', () => {
         cy.visit(DASHBOARD_URL + '/pool/63d579aff1673a8c1a749dbb/erc721-perks');
 
         // Remove existing perks
-        cy.get('thead th[role="columnheader"] .custom-control-label').click();
+        // cy.get('thead th[role="columnheader"] .custom-control-label').click();
         cy.contains('Delete rewards').click();
 
         cy.get('.sidebar-sibling .container-md .justify-content-end .btn-primary').click();
-        cy.contains('Create NFT Reward.').should('be.visible');
+        cy.contains('Create NFT Reward').should('be.visible');
 
         // Set perk title (administrative)
         cy.get('.col-md-6 > .form-group:nth-child(1) input').type('E2E Test Reward');
@@ -61,8 +61,9 @@ describe('Wallet', () => {
         // Set collection
         cy.get('.col-md-6 > .form-group:nth-child(3) .dropdown-toggle').click();
         cy.contains('E2E-TST').click();
+
         // Set metadata
-        cy.get('.col-md-6 > .form-group:nth-child(4) .dropdown-toggle').click();
+        cy.contains('Select token or metadata').should('be.visible').click();
         cy.contains('E2E test metadata').click();
 
         // Set Claim URL amount
