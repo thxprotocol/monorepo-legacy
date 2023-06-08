@@ -51,7 +51,10 @@ export function redirectPoolTransfer(to: Route) {
 }
 
 export function redirectSignup(to: Route) {
-    return store.dispatch('account/signinRedirect', { signupEmail: to.query.signup_email });
+    return store.dispatch('account/signinRedirect', {
+        signupEmail: to.query.signup_email,
+        signupPlan: to.query.signup_plan,
+    });
 }
 
 export function redirectAccount(to: Route, from: Route) {

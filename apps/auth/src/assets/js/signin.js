@@ -22,6 +22,8 @@ createApp({
         const isWidgetInput = document.getElementsByName('isWidget');
         const returnUrlInput = document.getElementsByName('returnUrl');
         const claimUrlInput = document.getElementsByName('claimUrl');
+        const signupEmailInput = document.getElementsByName('signupEmail');
+        this.email = signupEmailInput.length ? signupEmailInput[0].value : '';
         this.isWidget = isWidgetInput.length ? JSON.parse(isWidgetInput[0].value) : false;
         this.returnUrl = returnUrlInput.length ? returnUrlInput[0].value : '';
         this.claimUrl = claimUrlInput.length ? claimUrlInput[0].value : '';

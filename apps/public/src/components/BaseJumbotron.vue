@@ -92,7 +92,6 @@
 </template>
 
 <script lang="ts">
-import { IMetrics } from '@thxnetwork/public/store/modules/metrics';
 import { BButton, BJumbotron, BFormInput } from 'bootstrap-vue';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
@@ -113,17 +112,20 @@ import BaseCardSignup from './BaseCardSignup.vue';
 })
 export default class BaseJumbotron extends Vue {
     dashboardUrl = DASHBOARD_URL;
-    metrics!: IMetrics;
     signupEmail = '';
     ALT_TEXT = ALT_TEXT;
     TITLES = TITLES;
 
     async submit() {
-        let url = `${this.dashboardUrl}/signup`;
+        const url = new URL(this.dashboardUrl);
+        url.pathname = 'signup';
+        url.searchParams.append('signup_plan', '1');
         if (this.signupEmail) {
-            url += `?signup_email=${this.signupEmail}`;
+            url.searchParams.append('signup_email', this.signupEmail);
         }
-        window.location.href = url;
+        console.log(url);
+        debugger;
+        window.open(url, '_blank');
     }
 }
 </script>

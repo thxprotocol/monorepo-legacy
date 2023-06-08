@@ -30,7 +30,7 @@ const META_DESCRIPTION = '';
 })
 export default class Signup extends Vue {
     mounted() {
-        window.location.href = DASHBOARD_URL + '/signup';
+        window.location.href = DASHBOARD_URL + '/signup?signup_plan=' + this.$route.query.signup_plan;
     }
 }
 </script>

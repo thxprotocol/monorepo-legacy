@@ -1,6 +1,6 @@
 <template>
-    <section class="pt-5 section-pricing">
-        <div class="container pt-5 pb-5">
+    <section class="pt-5">
+        <div class="container pt-5 pb-5 section-pricing">
             <div class="row">
                 <div class="col-md-12 text-center">
                     <div class="mt-sm-5 mb-5">
@@ -72,7 +72,7 @@
                             </p>
                             <b-button
                                 block
-                                to="/signup"
+                                to="/signup?signup_plan=1"
                                 variant="primary"
                                 class="rounded-pill mt-3 mb-3"
                                 :title="TITLES.PRICING_SIGN_UP"
@@ -89,7 +89,7 @@
                             <h2 class="h3 text-uppercase text-dark font-weight-bold">Premium</h2>
                             <p class="font-weight-light">Best for growth teams and game studios</p>
                             <p class="pricing-costs mt-4">
-                                <strong>&euro; 489</strong>
+                                <strong>&euro; 449</strong>
                                 / month
                             </p>
                             <p>
@@ -101,7 +101,7 @@
                             </p>
                             <b-button
                                 block
-                                to="/signup"
+                                to="/signup?signup_plan=2"
                                 variant="dark"
                                 class="rounded-pill mt-3 mb-3"
                                 :title="TITLES.CONTACT_US"
@@ -113,8 +113,8 @@
                     </b-card>
                 </div>
             </div>
-            <div class="row mt-5 justify-content-center">
-                <div class="col-md-12 text-center text-muted pt-5">
+            <div class="row mt-md-5 justify-content-center px-5 customers">
+                <div class="col-md-12 text-center text-muted pt-md-5 pb-3">
                     <div>Trusted by</div>
                 </div>
                 <div class="col-6 col-md-3 text-center d-flex align-items-center justify-content-center">
@@ -248,7 +248,8 @@
                                         <td>
                                             Custom<br />
                                             <span class="text-gray small">
-                                                Use webhook integrations to rewards important in-game achievements
+                                                Use outbound webhooks to reward important achievements in your
+                                                application
                                             </span>
                                         </td>
                                         <td><i class="fas fa-times-circle"></i></td>
@@ -290,12 +291,13 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            Shopify
-                                            <br />
-                                            <span class="text-gray small"> Create Shopify discount code rewards </span>
+                                            Custom<br />
+                                            <span class="text-gray small">
+                                                Use inbound webhooks to reward with a feature in your application
+                                            </span>
                                         </td>
                                         <td><i class="fas fa-times-circle"></i></td>
-                                        <td><i class="fas fa-check-circle"></i></td>
+                                        <td><i class="fas fa-times-circle"></i></td>
                                         <td><i class="fas fa-check-circle"></i></td>
                                     </tr>
                                     <tr>
@@ -382,7 +384,7 @@
                                         </td>
                                         <td><strong>&euro; 0,-</strong></td>
                                         <td><strong>&euro; 89</strong></td>
-                                        <td><strong>&euro; 489,-</strong></td>
+                                        <td><strong>&euro; 449,-</strong></td>
                                     </tr>
                                     <tr>
                                         <td></td>
@@ -392,13 +394,13 @@
                                             </b-button>
                                         </td>
                                         <td>
-                                            <b-button to="/signup" variant="primary" class="rounded-pill">
+                                            <b-button to="/signup?signup_plan=1" variant="primary" class="rounded-pill">
                                                 Start <strong>free</strong> trial
                                                 <i class="fas fa-chevron-right"></i>
                                             </b-button>
                                         </td>
                                         <td>
-                                            <b-button to="/signup" variant="primary" class="rounded-pill">
+                                            <b-button to="/signup?signup_plan=2" variant="primary" class="rounded-pill">
                                                 Start <strong>free</strong> trial
                                                 <i class="fas fa-chevron-right"></i>
                                             </b-button>
@@ -491,8 +493,8 @@ export default class Home extends Vue {
     text-align: left;
 }
 
-.section-pricing {
-    max-height: 1000px;
+#section-features {
+    padding-top: 5rem;
 }
 
 @media (min-width: 768px) {
@@ -500,5 +502,25 @@ export default class Home extends Vue {
         transform: scale(1.15);
         z-index: 1;
     }
+}
+
+@media (min-width: 1200px) {
+    .section-pricing {
+        max-height: 2400px;
+    }
+
+    #section-features {
+        padding-top: 10rem;
+    }
+}
+
+.customers img {
+    transition: 0.2s filter ease, 0.2s opacity ease;
+    filter: grayscale(100%);
+    opacity: 0.5;
+}
+.customers img:hover {
+    filter: grayscale(0%);
+    opacity: 1;
 }
 </style>

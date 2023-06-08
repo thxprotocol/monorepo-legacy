@@ -93,9 +93,7 @@
         <p class="text-muted">Use your e-mail</p>
         <div class="form-group">
           <input placeholder="E-mail" class="form-control" class="form-control" required type="email" name="email"
-                 v-model="email" :class="{
-                      'is-valid': email && !isDisabled, 'is-invalid': email && isDisabled
-                  }">
+                 v-model="email" :class="{ 'is-valid': email && !isDisabled, 'is-invalid': email && isDisabled }">
         </div>
         <% } %>
 
@@ -109,6 +107,7 @@
         <input type="hidden" name="authRequestSignature" value="" />
         <% } %>
 
+        <input type="hidden" name="signupEmail" value="<%= params.signup_email %>" />
         <input type="hidden" name="returnUrl" value="<%= params.return_url %>" />
         <input type="hidden" name="isWidget" value="<%= params.isWidget %>" />
 

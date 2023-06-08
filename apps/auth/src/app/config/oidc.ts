@@ -59,6 +59,7 @@ const config: Configuration = {
         'claim_id',
         'reward_hash',
         'signup_email',
+        'signup_plan',
         'return_url',
         'signup_token',
         'authentication_token',

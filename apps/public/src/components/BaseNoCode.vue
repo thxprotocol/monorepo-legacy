@@ -16,10 +16,10 @@
                         <b-button
                             class="mt-3 rounded-pill"
                             variant="primary"
-                            :href="dashboardUrl"
+                            to="/signup"
                             :title="TITLES.HOME_VISIT_YOUR_DASHBOARD"
                         >
-                            Create rewards in your Dashboard
+                            Manage rewards in your dashboard
                             <i class="fas fa-chevron-right"></i>
                         </b-button>
                     </div>

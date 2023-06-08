@@ -2,8 +2,10 @@
     <div class="page-home">
         <base-jumbotron />
         <base-code-example />
+        <base-metrics />
         <base-no-code />
         <base-partners />
+        <base-technologies />
         <base-features />
         <base-testimonials :home="true" />
         <base-use-cases />
@@ -25,6 +27,8 @@ import BaseCodeExample from '@thxnetwork/public/components/BaseCodeExample.vue';
 import BaseFeatures from '@thxnetwork/public/components/BaseFeatures.vue';
 import BaseAboutUs from '@thxnetwork/public/components/BaseAboutUs.vue';
 import BaseTestimonials from '@thxnetwork/public/components/BaseTestimonials.vue';
+import BaseTechnologies from '@thxnetwork/public/components/BaseTechnologies.vue';
+import BaseMetrics from '@thxnetwork/public/components/BaseMetrics.vue';
 import BaseUseCases from '@thxnetwork/public/components/BaseUseCases.vue';
 import BaseNoCode from '@thxnetwork/public/components/BaseNoCode.vue';
 import { HOME_TAGS, TWITTER_TAGS, LINKS } from '@thxnetwork/public/utils/constants';
@@ -57,7 +61,9 @@ import { HOME_TAGS, TWITTER_TAGS, LINKS } from '@thxnetwork/public/utils/constan
         'base-no-code': BaseNoCode,
         'base-partners': BasePartners,
         'base-features': BaseFeatures,
+        'base-technologies': BaseTechnologies,
         'base-testimonials': BaseTestimonials,
+        'base-metrics': BaseMetrics,
         'base-use-cases': BaseUseCases,
         'base-about-us': BaseAboutUs,
         'base-team': BaseTeam,
