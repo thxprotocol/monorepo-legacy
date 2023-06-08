@@ -259,7 +259,7 @@
             <% if(params.emailPasswordEnabled) { %>
             <button type="submit" class="btn rounded-pill btn-primary btn-block mb-4"
                     :class="{'disabled': isDisabled || isLoading}" @click="onClickSubmit">
-              Start your free trial
+              <%- (params.signup_plan) ? 'Start <strong>free</strong> trial' : 'Send one-time password'%>
               <i class="fas fa-chevron-right" aria-hidden="true"></i><br />
             </button>
             <% } %>
