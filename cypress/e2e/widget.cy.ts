@@ -24,28 +24,28 @@ describe('Wallet', () => {
         cy.url().should('include', DASHBOARD_URL).should('include', 'signin-oidc');
     });
 
-    // it('Transfer NFT from wallet', function () {
-    //     cy.viewport('iphone-xr');
-    //     cy.visit(WIDGET_URL);
+    it('Transfer NFT from wallet', function () {
+        cy.viewport('iphone-xr');
+        cy.visit(WIDGET_URL);
 
-    //     cy.contains('Sign in').click();
+        cy.contains('Sign in').click();
 
-    //     cy.get('.navbar .dropdown-toggle').click();
-    //     cy.get('.navbar .dropdown-menu li:first-child button').click();
+        cy.get('.navbar .dropdown-toggle').click();
+        cy.get('.navbar .dropdown-menu li:first-child button').click();
 
-    //     cy.get('.card:first-child .dropdown-toggle').click();
-    //     cy.get('.card:first-child .dropdown-menu li:first-child button').click();
+        cy.get('.card:first-child .dropdown-toggle').click();
+        cy.get('.card:first-child .dropdown-menu li:first-child button').click();
 
-    //     cy.get('.modal.show input[placeholder="0x0"]').type(RECEIVER);
-    //     cy.get('.modal.show .modal-footer button').click();
-    //     cy.get('.modal.show').should('not.exist');
-    // });
+        cy.get('.modal.show input[placeholder="0x0"]').type(RECEIVER);
+        cy.get('.modal.show .modal-footer button').click();
+        cy.get('.modal.show').should('not.exist');
+    });
 
     it('Create Claim URL', () => {
         cy.viewport('macbook-13');
         cy.visit(DASHBOARD_URL);
 
-        cy.get('.navbar').contains('Shop');
+        cy.get('.navbar').contains('Shop').should('be.visible');
         cy.visit(DASHBOARD_URL + '/pool/63d579aff1673a8c1a749dbb/erc721-perks');
 
         // Remove existing perks
