@@ -38,18 +38,23 @@
     background-size: 200% 100%;
     animation: 1.5s shine linear infinite;
   }
-</style>
-<div class="col-md-6 offset-md-3 col-xl-4 offset-xl-4 order-0 order-sm-1 fade-in" @vue:mounted="onMounted"
-     :class="{ 'is-mounted': isMounted }">
-  <div class="text-center pb-4 pt-3">
 
+  .premium-link:hover {
+    color: white;
+    text-decoration: none;
+  }
+</style>
+<div class="<%- (['1','2'].includes(params.signup_plan)) ? 'col-md-10 col-xl-8 offset-md-1 offset-xl-2' : 'col-md-6 offset-md-3 col-xl-4 offset-xl-4' %>  fade-in"
+     @vue:mounted="onMounted" :class="{ 'is-mounted': isMounted }">
+
+  <div class="text-center pb-4 pt-3">
     <% if (params.logoImgUrl) { %>
     <img src="<%- params.logoImgUrl %>" width="60" alt="THX Logo" />
     <% } else { %>
     <img src="/img/logo.png" width="60" alt="THX Logo" />
     <% } %>
-
   </div>
+
   <div class="card shadow-sm" :class="{ 'is-loading': isLoading, 'is-mounted': isMounted }">
     <div class="card-header"></div>
 
@@ -60,129 +65,271 @@
     </div>
     <% } %>
 
-    <div class="card-body p-sm-4 pb-sm-0">
+    <div class="row">
+      <% if(['1','2'].includes(params.signup_plan)) { %>
+      <div class="col-md-6 order-md-1">
+        <div class="bg-dark p-sm-4 h-100">
 
-      <% if (params.authRequestMessage) { %>
-      <div v-if="alert && alert.message" class="alert" :class="`alert-${alert.variant}`">
-        <i class="fas fa-exclamation-circle mr-2"></i>
-        {{alert.message}}
-      </div>
-      <% } %>
+          <%
+          var premium = [];
 
-      <% if (locals.alert && alert.message) { %>
-      <div class="alert alert-<%= alert.variant %>">
-        <%- alert.message %>
-      </div>
-      <% } %>
+          if (params.signup_plan == 1) {
+            premium.push({
+              class: 'show',
+              title: 'Discord Bot',
+              description:
+                  '<span class="text-white font-weight-bold">Audience engagement is scattered!</span> We will make an effort to give you a full overview of what is happening accross these channels.',
+            });
 
-      <% if(params.shopifyStoreUrl) { %>
-      <div class="alert alert-success">
-        <i class="fab fa-shopify mr-2"></i> Great! You are installing our Shopify app
-        for:<br /><strong><%- params.shopifyStoreUrl %></strong>.
-      </div>
-      <% } %>
+            premium.push({
+                class: '',
+                title: 'Twitter Automation',
+                description:
+                    '<span class="text-white font-weight-bold">We understand you are a busy person!</span> That\'s why we attempt to automate campaign management.',
+            });
+          }
 
-      <% if(params.referral_code) { %>
-      <div class="alert alert-info">
-        <i class="fas fa-comments mr-2"></i> We have detected a referral code!
-      </div>
-      <% } %>
+          if (params.signup_plan == 2) {
+            premium.push({
+              class: 'show',
+              title: 'Dedicated Campaign Manager',
+              description:
+                  '<span class="text-white font-weight-bold">We understand you are a busy person!</span> That\'s why we offer you a dedicated campaign manager to during your free first month.',
+            });
+            premium.push({
+              class: '',
+              title: 'Unlimited Technical Support',
+              description:
+                  '<span class="text-white font-weight-bold">Your devs are probably working on other important tasks!</span> Let our devs talk to your devs to make engine integration a piece of cake.',
+            });
+          }
 
-      <form id="form-signin" action="/oidc/<%= uid %>/signin" method="post">
-        <% if(params.emailPasswordEnabled) { %>
-        <p class="text-muted">Use your e-mail</p>
-        <div class="form-group">
-          <input placeholder="E-mail" class="form-control" class="form-control" required type="email" name="email"
-                 v-model="email" :class="{ 'is-valid': email && !isDisabled, 'is-invalid': email && isDisabled }">
+          premium.push({
+            class: '',
+            title: 'Weekly Performance Reports',
+            description:
+                '<span class="text-white font-weight-bold">We know budgets and results are important to you.</span> We send you weekly reports by mail and are happy to jump on a call to discuss results and potential improvements.',
+          });
+          
+          if (params.signup_plan == 1) {
+            premium.push({
+              class: '',
+              title: 'Pay &euro; 89/m (30 days free trial)',
+              description:
+                  '<span class="text-white font-weight-bold">Obviously we also need to pay our bills,</span> but we invite you to try out all of the above for a month, with no obligation to pay unless you\'re satisfied!',
+            });
+          };
+
+          if (params.signup_plan == 2) {
+            premium.push({
+              class: '',
+              title: 'Pay &euro; 449/m (30 days free trial)',
+              description:
+                  '<span class="text-white font-weight-bold">Obviously we also need to pay our bills,</span> but we invite you to try out all of the above for a month, with no obligation to pay unless you\'re satisfied!',
+            });
+          };
+          
+          %>
+
+          <ul class="text-muted list-unstyled">
+            <% for(var i=0; i < premium.length; i++) { %>
+            <li>
+              <a class="text-white d-flex premium-link py-1" data-toggle="collapse" href="#collapseExample<%= i %>"
+                 role="button" aria-expanded="false" aria-controls="collapseExample<%= i %>">
+                <div>
+                  <i class="fas fa-check-circle text-success mr-1"></i>
+                  <span><%- premium[i].title %></span>
+                </div>
+                <i class="fas fa-caret-down text-muted ml-auto"></i>
+              </a>
+              <div class="collapse <%- premium[i].class %>" id="collapseExample<%= i %>">
+                <div class="card card-body bg-darker my-2">
+                  <%- premium[i].description %>
+                </div>
+              </div>
+            </li>
+            <% } %>
+          </ul>
+
+          <hr class="bg-gray" />
+
+          <p class="text-muted small">
+            By continuing you accept THX Network's <a class="text-white"
+               href="https://thx.network/general-terms-and-conditions.pdf" target="_blank">Terms &amp; Conditions</a>
+            and <a class="text-white" href="https://thx.network/privacy-policy.pdf" target="_blank">Privacy
+              Policy</a>.
+          </p>
+
         </div>
-        <% } %>
+      </div>
+      <% } %>
 
-        <% if (params.mfaEnabled) { %>
-        <label>MFA code:</label>
-        <input class="form-control mb-4" required name="code">
-        <% } %>
+      <div class="<%- (['1','2'].includes(params.signup_plan)) ? 'col-md-6 order-md-0' : 'col-md-12' %>">
+        <div class="card-body p-sm-4 pb-sm-0">
 
-        <% if (params.authRequestMessage) { %>
-        <input type="hidden" name="authRequestMessage" value="<%= params.authRequestMessage %>" />
-        <input type="hidden" name="authRequestSignature" value="" />
-        <% } %>
-
-        <input type="hidden" name="signupEmail" value="<%= params.signup_email %>" />
-        <input type="hidden" name="returnUrl" value="<%= params.return_url %>" />
-        <input type="hidden" name="isWidget" value="<%= params.isWidget %>" />
-
-        <% if(params.emailPasswordEnabled) { %>
-        <button type="submit" class="btn rounded-pill btn-primary btn-block mb-4"
-                :class="{'disabled': isDisabled || isLoading}" @click="onClickSubmit">
-          Send one-time password
-          <i class="fas fa-chevron-right" aria-hidden="true"></i>
-        </button>
-        <% } %>
-
-
-        <% if(params.emailPasswordEnabled && params.metaMaskEnabled) { %>
-        <hr />
-        <% } %>
-
-
-        <% if (params.authRequestMessage && params.metaMaskEnabled) { %>
-        <a class="d-flex align-items-center justify-content-start btn btn-light rounded-pill"
-           style="padding: 0.75rem 1.2rem" @click="onClickSigninMetamask">
-          <img v-if="!isDisabledMetamask" width="20" src="/img/mm-logo.svg" class="mr-2" alt="Metamask logo" />
-          <div v-else class="spinner-border spinner-primary spinner-border-sm mr-2" role="status">
-            <span class="sr-only">Loading...</span>
+          <% if (params.signup_plan == 2) { %>
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle mr-1"></i>
+            You have received a <strong>Premium Offer 🎁 </strong>
           </div>
-          Continue with Metamask
-        </a>
-        <% } %>
+          <% } %>
 
-      </form>
+          <% if (params.authRequestMessage) { %>
+          <div v-if="alert && alert.message" class="alert" :class="`alert-${alert.variant}`">
+            <i class="fas fa-exclamation-circle mr-2"></i>
+            {{alert.message}}
+          </div>
+          <% } %>
 
-      <% if (params.trustedProviderAvailable) { %>
-      <hr />
-      <% } %>
+          <% if (locals.alert && alert.message) { %>
+          <div class="alert alert-<%= alert.variant %>">
+            <%- alert.message %>
+          </div>
+          <% } %>
 
-      <% if (params.trustedProviderAvailable && params.metaMaskEnabled) { %>
-      <p class="text-muted">Continue with a trusted provider</p>
-      <% } %>
+          <% if(params.shopifyStoreUrl) { %>
+          <div class="alert alert-success">
+            <i class="fab fa-shopify mr-2"></i> Great! You are installing our Shopify app
+            for:<br /><strong><%- params.shopifyStoreUrl %></strong>.
+          </div>
+          <% } %>
 
-      <div class="d-flex align-items-center justify-content-start flex-wrap">
-        <% if (params.googleLoginUrl) { %>
-        <a style="width: 40px; height: 40px;" class="mr-2 mb-2 d-block p-1 btn btn-light"
-           href="<%= params.googleLoginUrl %>" data-toggle="tooltip" title="Sign in with Google">
-          <img width="20" src="/img/g-logo.png" alt="Google logo" />
-        </a>
-        <% } %>
+          <% if(params.referral_code) { %>
+          <div class="alert alert-info">
+            <i class="fas fa-comments mr-2"></i> We have detected a referral code!
+          </div>
+          <% } %>
 
-        <% if (params.twitterLoginUrl) { %>
-        <a style="width: 40px; height: 40px;" class="mr-2 mb-2 d-block p-1 btn btn-light"
-           href="<%= params.twitterLoginUrl %>" data-toggle="tooltip" title="Sign in with Twitter">
-          <img width="20" src="/img/t-logo.png" alt="Twitter logo" />
-        </a>
-        <% } %>
+          <form id="form-signin" action="/oidc/<%= uid %>/signin" method="post">
+            <% if(params.emailPasswordEnabled) { %>
+            <p class="text-muted">Use your e-mail</p>
+            <div class="form-group">
+              <input placeholder="E-mail" class="form-control" class="form-control" required type="email" name="email"
+                     v-model="email" :class="{
+                        'is-valid': email && !isDisabled, 'is-invalid': email && isDisabled
+                    }">
+            </div>
+            <% } %>
 
-        <% if (params.discordLoginUrl) { %>
-        <a style="width: 40px; height: 40px;" class="mr-2 mb-2 d-block p-1 btn btn-light"
-           href="<%= params.discordLoginUrl %>" data-toggle="tooltip" title="Sign in with Discord">
-          <img width="20" src="/img/discord-logo.png" alt="Discord logo" />
-        </a>
-        <% } %>
+            <% if (params.signup_plan == 2) { %>
+            <div class="form-group mb-4">
+              <label class="d-flex align-items-center font-weigh-bold text-muted mb-3" for="formControlRange">
+                <div>
+                  Setup Fee
+                  <i class="fas fa-info-circle" data-toggle="tooltip" title="If you are able to to, we'd love to learn how much you are able to compensate our
+              expenses."></i>
+                </div>
+              </label>
 
-        <% if (params.githubLoginUrl) { %>
-        <a style="width: 40px; height: 40px;" class="mr-2 mb-2 d-block p-1 btn btn-light"
-           href="<%= params.githubLoginUrl %>" data-toggle="tooltip" title="Sign in with Github">
-          <img width="20" src="/img/github-logo.png" alt="github logo" />
-        </a>
-        <% } %>
+              <div class="btn-group w-100" role="group" aria-label="Basic example">
+                <button @click="setupFee = 0" type="button" class="btn btn-sm"
+                        :class="setupFee == 0 ? 'btn-primary': 'btn-light' ">
+                  No fee
+                </button>
+                <button @click="setupFee = 50" type="button" class="btn btn-sm"
+                        :class="setupFee == 50 ? 'btn-primary': 'btn-light' ">&euro;
+                  50,-
+                </button>
+                <button @click="setupFee = 100" type="button" class="btn btn-sm"
+                        :class="setupFee == 100 ? 'btn-primary': 'btn-light' ">&euro;
+                  100,-
+                </button>
+                <button @click="setupFee = 200" type="button" class="btn btn-sm"
+                        :class="setupFee == 200 ? 'btn-primary': 'btn-light' ">&euro;
+                  200,-
+                </button>
+              </div>
+            </div>
+            <% } %>
 
-        <% if (params.twitchLoginUrl) { %>
-        <a style="width: 40px; height: 40px;" class="mr-2 mb-2 d-block p-1 btn btn-light"
-           href="<%= params.twitchLoginUrl %>" data-toggle="tooltip" title="Sign in with Twitch">
-          <img width="20" src="/img/twitch-logo.png" alt="twitch logo" />
-        </a>
-        <% } %>
+            <% if (params.mfaEnabled) { %>
+            <label>MFA code:</label>
+            <input class="form-control mb-4" required name="code">
+            <% } %>
+
+            <% if (params.authRequestMessage) { %>
+            <input type="hidden" name="authRequestMessage" value="<%= params.authRequestMessage %>" />
+            <input type="hidden" name="authRequestSignature" value="" />
+            <% } %>
+
+            <input type="hidden" name="signupEmail" value="<%= params.signup_email %>" />
+            <input type="hidden" name="returnUrl" value="<%= params.return_url %>" />
+            <input type="hidden" name="isWidget" value="<%= params.isWidget %>" />
+
+            <% if(params.emailPasswordEnabled) { %>
+            <button type="submit" class="btn rounded-pill btn-primary btn-block mb-4"
+                    :class="{'disabled': isDisabled || isLoading}" @click="onClickSubmit">
+              <%- (params.signup_plan) ? 'Start <strong>free</strong> trial' : 'Send one-time password'%>
+              <i class="fas fa-chevron-right" aria-hidden="true"></i><br />
+            </button>
+            <% } %>
+
+            <% if(params.emailPasswordEnabled && params.metaMaskEnabled) { %>
+            <hr />
+            <% } %>
+
+            <% if (params.authRequestMessage && params.metaMaskEnabled) { %>
+            <a class="d-flex align-items-center justify-content-start btn btn-light rounded-pill"
+               style="padding: 0.75rem 1.2rem" @click="onClickSigninMetamask">
+              <img v-if="!isDisabledMetamask" width="20" src="/img/mm-logo.svg" class="mr-2" alt="Metamask logo" />
+              <div v-else class="spinner-border spinner-primary spinner-border-sm mr-2" role="status">
+                <span class="sr-only">Loading...</span>
+              </div>
+              Continue with Metamask
+            </a>
+            <% } %>
+
+          </form>
+
+          <% if (params.trustedProviderAvailable) { %>
+          <hr />
+          <% } %>
+
+          <% if (params.trustedProviderAvailable) { %>
+          <p class="text-muted">Continue with a trusted provider</p>
+          <% } %>
+
+          <div class="d-flex align-items-center justify-content-start flex-wrap">
+            <% if (params.googleLoginUrl) { %>
+            <a style="width: 40px; height: 40px;" class="mr-2 mb-2 d-block p-1 btn btn-light"
+               href="<%= params.googleLoginUrl %>" data-toggle="tooltip" title="Sign in with Google">
+              <img width="20" src="/img/g-logo.png" alt="Google logo" />
+            </a>
+            <% } %>
+
+            <% if (params.twitterLoginUrl) { %>
+            <a style="width: 40px; height: 40px;" class="mr-2 mb-2 d-block p-1 btn btn-light"
+               href="<%= params.twitterLoginUrl %>" data-toggle="tooltip" title="Sign in with Twitter">
+              <img width="20" src="/img/t-logo.png" alt="Twitter logo" />
+            </a>
+            <% } %>
+
+            <% if (params.discordLoginUrl) { %>
+            <a style="width: 40px; height: 40px;" class="mr-2 mb-2 d-block p-1 btn btn-light"
+               href="<%= params.discordLoginUrl %>" data-toggle="tooltip" title="Sign in with Discord">
+              <img width="20" src="/img/discord-logo.png" alt="Discord logo" />
+            </a>
+            <% } %>
+
+            <% if (params.githubLoginUrl) { %>
+            <a style="width: 40px; height: 40px;" class="mr-2 mb-2 d-block p-1 btn btn-light"
+               href="<%= params.githubLoginUrl %>" data-toggle="tooltip" title="Sign in with Github">
+              <img width="20" src="/img/github-logo.png" alt="github logo" />
+            </a>
+            <% } %>
+
+            <% if (params.twitchLoginUrl) { %>
+            <a style="width: 40px; height: 40px;" class="mr-2 mb-2 d-block p-1 btn btn-light"
+               href="<%= params.twitchLoginUrl %>" data-toggle="tooltip" title="Sign in with Twitch">
+              <img width="20" src="/img/twitch-logo.png" alt="twitch logo" />
+            </a>
+            <% } %>
+          </div>
+
+        </div>
       </div>
     </div>
+
 
     <div class="card-footer d-flex align-items-center justify-content-end">
       <a @click="onClickReturn" href="#" class="text-muted mr-auto cursor-pointer">Return to app</a>

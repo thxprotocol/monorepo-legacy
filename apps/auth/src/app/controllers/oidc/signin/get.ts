@@ -1,6 +1,6 @@
 import { GithubService } from './../../../services/GithubServices';
 import { Request, Response } from 'express';
-import { AUTH_URL, WIDGET_URL } from '../../../config/secrets';
+import { AUTH_URL, DASHBOARD_URL, WIDGET_URL } from '../../../config/secrets';
 import { TwitterService } from '../../../services/TwitterService';
 import { YouTubeService } from '../../../services/YouTubeService';
 import { AUTH_REQUEST_TYPED_MESSAGE, createTypedMessage } from '../../../util/typedMessage';
@@ -15,6 +15,9 @@ import { AccountVariant } from '@thxnetwork/types/interfaces';
 async function controller(req: Request, res: Response) {
     const { uid, params } = req.interaction;
     const alert = {};
+    const isWidget = params.return_url ? params.return_url.startsWith(WIDGET_URL) : false;
+    const isDashboard = params.return_url ? params.return_url.startsWith(DASHBOARD_URL) : false;
+
     let claim,
         brand,
         shopifyStoreUrl,
@@ -27,6 +30,15 @@ async function controller(req: Request, res: Response) {
         if (pool.settings && pool.settings.authenticationMethods) {
             authenticationMethods = pool.settings.authenticationMethods;
         }
+    }
+
+    if (isDashboard) {
+        authenticationMethods = [
+            AccountVariant.EmailPassword,
+            AccountVariant.SSOGoogle,
+            AccountVariant.SSOTwitter,
+            AccountVariant.SSODiscord,
+        ];
     }
 
     if (params.shopify_params) {
@@ -91,11 +103,9 @@ async function controller(req: Request, res: Response) {
         : null;
     params.authRequestMessage = createTypedMessage(AUTH_REQUEST_TYPED_MESSAGE, AUTH_URL, uid);
 
-    const isWidget = params.return_url ? params.return_url.startsWith(WIDGET_URL) : false;
-
     res.render('signin', {
         uid,
-        params: { ...params, ...brand, claim, isWidget, shopifyStoreUrl },
+        params: { ...params, ...brand, claim, isWidget, isDashboard, shopifyStoreUrl },
         alert,
     });
 }
