@@ -7,7 +7,7 @@ import type { IAccount, IAccountUpdates } from '@thxnetwork/dashboard/types/acco
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { RewardConditionPlatform } from '@thxnetwork/types/enums/RewardConditionPlatform';
 import Mixpanel, { track } from '@thxnetwork/mixpanel';
-import { AccountPlanType } from '@thxnetwork/types';
+import { AccountPlanType } from '@thxnetwork/types/enums';
 
 @Module({ namespaced: true })
 class AccountModule extends VuexModule {
