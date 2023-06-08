@@ -71,32 +71,64 @@
         <div class="bg-dark p-sm-4 h-100">
 
           <%
-          var premium = [
-              {
-                  class: 'show',
-                  title: 'Dedicated Campaign Manager',
-                  description:
-                      '<span class="text-white font-weight-bold">We understand you are a busy person!</span> That\'s why we offer you a dedicated campaign manager to during your free first month.',
-              },
-              {
-                  class: '',
-                  title: 'Unlimited Technical Support',
-                  description:
-                      '<span class="text-white font-weight-bold">Your devs are probably working on other important tasks!</span> Let our devs talk to your devs to make engine integration a piece of cake.',
-              },
-              {
-                  class: '',
-                  title: 'Weekly Performance Reports',
-                  description:
-                      '<span class="text-white font-weight-bold">We know budgets and results are important to you.</span> We send you weekly reports by mail and are happy to jump on a call to discuss results and potential improvements.',
-              },
-              {
-                  class: '',
-                  title: 'Pay &euro; 499/m (30 days free trial)',
-                  description:
-                      '<span class="text-white font-weight-bold">Obviously we also need to pay our bills,</span> but we invite you to try out all of the above for a month, with no obligation to pay unless you\'re satisfied!',
-              },
-          ];
+          var premium = [];
+
+          if (params.signup_plan == 1) {
+            premium.push({
+              class: 'show',
+              title: 'Discord Bot',
+              description:
+                  '<span class="text-white font-weight-bold">Audience engagement is scattered!</span> We will make an effort to give you a full overview of what is happening accross these channels.',
+            });
+
+            premium.push({
+                class: '',
+                title: 'Twitter Automation',
+                description:
+                    '<span class="text-white font-weight-bold">We understand you are a busy person!</span> That\'s why we attempt to automate campaign management.',
+            });
+          }
+
+          if (params.signup_plan == 2) {
+            premium.push({
+              class: 'show',
+              title: 'Dedicated Campaign Manager',
+              description:
+                  '<span class="text-white font-weight-bold">We understand you are a busy person!</span> That\'s why we offer you a dedicated campaign manager to during your free first month.',
+            });
+            premium.push({
+              class: '',
+              title: 'Unlimited Technical Support',
+              description:
+                  '<span class="text-white font-weight-bold">Your devs are probably working on other important tasks!</span> Let our devs talk to your devs to make engine integration a piece of cake.',
+            });
+          }
+
+          premium.push({
+            class: '',
+            title: 'Weekly Performance Reports',
+            description:
+                '<span class="text-white font-weight-bold">We know budgets and results are important to you.</span> We send you weekly reports by mail and are happy to jump on a call to discuss results and potential improvements.',
+          });
+          
+          if (params.signup_plan == 1) {
+            premium.push({
+              class: '',
+              title: 'Pay &euro; 89/m (30 days free trial)',
+              description:
+                  '<span class="text-white font-weight-bold">Obviously we also need to pay our bills,</span> but we invite you to try out all of the above for a month, with no obligation to pay unless you\'re satisfied!',
+            });
+          };
+
+          if (params.signup_plan == 2) {
+            premium.push({
+              class: '',
+              title: 'Pay &euro; 449/m (30 days free trial)',
+              description:
+                  '<span class="text-white font-weight-bold">Obviously we also need to pay our bills,</span> but we invite you to try out all of the above for a month, with no obligation to pay unless you\'re satisfied!',
+            });
+          };
+          
           %>
 
           <ul class="text-muted list-unstyled">
@@ -134,10 +166,12 @@
       <div class="col-md-6 order-md-0">
         <div class="card-body p-sm-4 pb-sm-0">
 
+          <% if (params.signup_plan == 2) { %>
           <div class="alert alert-info">
             <i class="fas fa-info-circle mr-1"></i>
             You have received a <strong>Premium Offer 🎁 </strong>
           </div>
+          <% } %>
 
           <% if (params.authRequestMessage) { %>
           <div v-if="alert && alert.message" class="alert" :class="`alert-${alert.variant}`">
@@ -176,6 +210,7 @@
             </div>
             <% } %>
 
+            <% if (params.signup_plan == 2) { %>
             <div class="form-group mb-4">
               <label class="d-flex align-items-center font-weigh-bold text-muted mb-3" for="formControlRange">
                 <div>
@@ -203,8 +238,8 @@
                   200,-
                 </button>
               </div>
-
             </div>
+            <% } %>
 
             <% if (params.mfaEnabled) { %>
             <label>MFA code:</label>
@@ -216,6 +251,7 @@
             <input type="hidden" name="authRequestSignature" value="" />
             <% } %>
 
+            <input type="hidden" name="signupEmail" value="<%= params.signup_email %>" />
             <input type="hidden" name="returnUrl" value="<%= params.return_url %>" />
             <input type="hidden" name="isWidget" value="<%= params.isWidget %>" />
 

@@ -1,10 +1,13 @@
 <template>
-    <base-modal @show="onShow" size="xl" title="Create Referral Reward" :id="id" :error="error" :loading="isLoading">
+    <base-modal
+        @show="onShow"
+        size="xl"
+        :title="(reward ? 'Update' : 'Create') + ' Referral Quest'"
+        :id="id"
+        :error="error"
+        :loading="isLoading"
+    >
         <template #modal-body v-if="!isLoading">
-            <p class="text-gray">
-                Referral rewards incentive your existing users to attract new users and will drive down your customer
-                acquisition costs.
-            </p>
             <form v-on:submit.prevent="onSubmit" id="formRewardPointsCreate">
                 <b-row>
                     <b-col md="6">
@@ -71,7 +74,7 @@
                 variant="primary"
                 block
             >
-                {{ reward ? 'Update Referral Reward' : 'Create Referral Reward' }}
+                {{ (reward ? 'Update' : 'Create') + ' Referral Quest' }}
             </b-button>
         </template>
     </base-modal>
@@ -179,6 +182,7 @@ export default class ModalReferralRewardCreate extends Vue {
             })
             .then(() => {
                 this.$bvModal.hide(this.id);
+                this.$emit('submit');
                 this.isLoading = false;
             });
     }

@@ -374,8 +374,8 @@ describe('Pool Analytics', () => {
                         expect(body.claims).toBe(0);
                         expect(body.erc20Perks).toEqual({ total: 1, payments: 1, totalAmount: 5 });
                         expect(body.referralRewards).toEqual({ total: 3, claims: 2, totalClaimPoints: 150 });
-                        expect(body.pointRewards).toEqual({ total: 7, claims: 2, totalClaimPoints: 30 });
-                        expect(body.milestoneRewards).toEqual({ total: 3, claims: 1, totalClaimPoints: 1000 });
+                        expect(body.pointRewards).toEqual({ total: 3, claims: 2, totalClaimPoints: 30 });
+                        expect(body.milestoneRewards).toEqual({ total: 2, claims: 1, totalClaimPoints: 1000 });
                     })
 
                     .expect(200, done);

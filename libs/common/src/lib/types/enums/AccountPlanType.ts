@@ -1,4 +1,5 @@
 export enum AccountPlanType {
-    Basic = 0,
-    Premium = 1,
+    Free = 0,
+    Basic = 1,
+    Premium = 2,
 }

@@ -49,7 +49,7 @@ const controller = async (req: Request, res: Response) => {
     const claim = await MilestoneRewardClaimService.create({
         milestoneRewardId: String(reward._id),
         walletId: String(wallet._id),
-        amount: String(reward.amount),
+        amount: reward.amount,
         poolId: reward.poolId,
     });
 

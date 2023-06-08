@@ -1,5 +1,12 @@
 <template>
-    <base-modal @show="onShow" size="xl" title="Create Milestone Reward" :id="id" :error="error" :loading="isLoading">
+    <base-modal
+        @show="onShow"
+        size="xl"
+        :title="(reward ? 'Update' : 'Create') + ' Custom Quest'"
+        :id="id"
+        :error="error"
+        :loading="isLoading"
+    >
         <template #modal-body v-if="!isLoading">
             <form v-on:submit.prevent="onSubmit" id="formRewardMilestoneCreate">
                 <b-row>
@@ -57,7 +64,7 @@
                 variant="primary"
                 block
             >
-                {{ reward ? 'Update Milestone Reward' : 'Create Milestone Reward' }}
+                {{ (reward ? 'Update' : 'Create') + ' Custom Quest' }}
             </b-button>
         </template>
     </base-modal>
@@ -139,6 +146,7 @@ export default class ModalMilestoneRewardCreate extends Vue {
             })
             .then(() => {
                 this.$bvModal.hide(this.id);
+                this.$emit('submit');
                 this.isLoading = false;
             });
     }

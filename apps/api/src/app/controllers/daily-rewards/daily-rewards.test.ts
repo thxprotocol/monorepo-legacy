@@ -1,13 +1,7 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId, DailyRewardClaimState, ERC20Type } from '@thxnetwork/types/enums';
-import {
-    dashboardAccessToken,
-    sub,
-    tokenName,
-    tokenSymbol,
-    widgetAccessToken,
-} from '@thxnetwork/api/util/jest/constants';
+import { dashboardAccessToken, tokenName, tokenSymbol, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
 import { isAddress, toWei } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { DailyRewardDocument } from '@thxnetwork/api/models/DailyReward';
@@ -20,22 +14,6 @@ describe('Daily Rewards', () => {
 
     beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
-
-    it('POST /wallets', (done) => {
-        user.post('/v1/wallets')
-            .set({ Authorization: widgetAccessToken })
-            .send({
-                chainId: ChainId.Hardhat,
-                sub,
-                forceSync: true,
-            })
-            .expect((res: request.Response) => {
-                expect(res.body.sub).toEqual(sub);
-                expect(res.body.chainId).toEqual(ChainId.Hardhat);
-                expect(res.body.address).toBeDefined();
-            })
-            .expect(201, done);
-    });
 
     it('POST /erc20', (done) => {
         user.post('/v1/erc20')
@@ -69,7 +47,7 @@ describe('Daily Rewards', () => {
     it('POST /daily-rewards', (done) => {
         const title = 'First Daily Reward';
         const description = 'description',
-            amount = 1500,
+            amounts = [1500],
             infoLinks = [
                 { label: 'Link 1', url: 'https://example1.com' },
                 { label: 'Link 2', url: 'https://example2.com' },
@@ -80,7 +58,7 @@ describe('Daily Rewards', () => {
             .send({
                 title,
                 description,
-                amount,
+                amounts: JSON.stringify(amounts),
                 infoLinks: JSON.stringify(infoLinks),
                 isEnabledWebhookQualification: false,
             })
@@ -92,7 +70,7 @@ describe('Daily Rewards', () => {
                 expect(body.infoLinks[0].url).toBe(infoLinks[0].url);
                 expect(body.infoLinks[1].label).toBe(infoLinks[1].label);
                 expect(body.infoLinks[1].label).toBe(infoLinks[1].label);
-                expect(body.amount).toBe(amount);
+                expect(body.amounts[0]).toBe(amounts[0]);
                 expect(body.isEnabledWebhookQualification).toBe(false);
                 dailyReward = body;
             })
@@ -106,7 +84,7 @@ describe('Daily Rewards', () => {
                 expect(body.uuid).toBeDefined();
                 expect(body.title).toBe(dailyReward.title);
                 expect(body.description).toBe(dailyReward.description);
-                expect(body.amount).toBe(dailyReward.amount);
+                expect(body.amounts[0]).toBe(dailyReward.amounts[0]);
             })
             .expect(200, done);
     });
@@ -119,23 +97,23 @@ describe('Daily Rewards', () => {
                 expect(body.results[0].uuid).toBeDefined();
                 expect(body.results[0].title).toBe(dailyReward.title);
                 expect(body.results[0].description).toBe(dailyReward.description);
-                expect(body.results[0].amount).toBe(dailyReward.amount);
+                expect(body.results[0].amounts[0]).toBe(dailyReward.amounts[0]);
                 expect(body.total).toBe(2);
             })
             .expect(200, done);
     });
 
     it('PATCH /daily-rewards/:id', (done) => {
-        const amount = 2000,
+        const amounts = [2000],
             infoLinks = [
                 { label: 'Link 2', url: 'https://example2.com' },
                 { label: 'Link 2', url: 'https://example2.com' },
             ];
         user.patch(`/v1/daily-rewards/${dailyReward._id}`)
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-            .send({ amount, infoLinks: JSON.stringify(infoLinks) })
+            .send({ amounts: JSON.stringify(amounts), infoLinks: JSON.stringify(infoLinks) })
             .expect(({ body }: request.Response) => {
-                expect(body.amount).toBe(amount);
+                expect(body.amounts[0]).toBe(amounts[0]);
                 expect(body.infoLinks[0].url).toBe(infoLinks[0].url);
                 expect(body.infoLinks[0].url).toBe(infoLinks[0].url);
                 expect(body.infoLinks[1].label).toBe(infoLinks[1].label);
@@ -159,7 +137,7 @@ describe('Daily Rewards', () => {
         user.get(`/v1/point-balances`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
             .expect(({ body }: request.Response) => {
-                expect(body.balance).toBe(dailyReward.amount);
+                expect(body.balance).toBe(dailyReward.amounts[0]);
             })
             .expect(200, done);
     });

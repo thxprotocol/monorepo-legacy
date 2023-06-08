@@ -1,10 +1,13 @@
 <template>
-    <base-modal size="xl" title="Create Conditional Reward" :id="id" :error="error" :loading="isLoading" @show="onShow">
+    <base-modal
+        size="xl"
+        :title="(reward ? 'Update' : 'Create') + ' Social Quest'"
+        :id="id"
+        :error="error"
+        :loading="isLoading"
+        @show="onShow"
+    >
         <template #modal-body v-if="!isLoading">
-            <p class="text-gray">
-                Conditional rewards are distributed to your customers that have completed reward conditions in external
-                platforms.
-            </p>
             <form v-on:submit.prevent="onSubmit()" id="formRewardPointsCreate">
                 <b-row>
                     <b-col md="6">
@@ -42,7 +45,7 @@
                 variant="primary"
                 block
             >
-                {{ reward ? 'Update Conditional Reward' : 'Create Conditional Reward' }}
+                {{ (reward ? 'Update' : 'Create') + ' Social Quest' }}
             </b-button>
         </template>
     </base-modal>

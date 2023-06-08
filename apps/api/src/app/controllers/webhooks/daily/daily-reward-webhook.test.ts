@@ -33,13 +33,13 @@ describe('Daily Rewards WebHooks', () => {
             .send({
                 title: 'Expiration date is next 30 min',
                 description: 'Lorem ipsum dolor sit amet',
-                amount: 100,
+                amounts: JSON.stringify([100]),
                 limit: 0,
                 isEnabledWebhookQualification: true,
             })
             .expect(({ body }: request.Response) => {
                 expect(body.uuid).toBeDefined();
-                expect(body.amount).toBe(100);
+                expect(body.amounts[0]).toBe(100);
                 dailyReward = body;
             })
             .expect(201, done);

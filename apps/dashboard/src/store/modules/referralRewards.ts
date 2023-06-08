@@ -1,7 +1,7 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { type TPool } from '@thxnetwork/types/index';
+import { QuestVariant, type TPool } from '@thxnetwork/types/index';
 import { type TReferralReward } from '@thxnetwork/types/index';
 import { track } from '@thxnetwork/mixpanel';
 
@@ -9,7 +9,7 @@ export type RewardByPage = {
     [page: number]: TReferralReward[];
 };
 
-export type TRewardState = {
+export type TReferralRewardState = {
     [poolId: string]: {
         [id: string]: TReferralReward;
     };
@@ -23,7 +23,7 @@ export type RewardListProps = {
 
 @Module({ namespaced: true })
 class ReferralRewardModule extends VuexModule {
-    _all: TRewardState = {};
+    _all: TReferralRewardState = {};
     _totals: { [poolId: string]: number } = {};
 
     get all() {
@@ -64,6 +64,7 @@ class ReferralRewardModule extends VuexModule {
         this.context.commit('setTotal', { pool, total: data.total });
         data.results.forEach((reward: TReferralReward) => {
             reward.page = page;
+            reward.variant = QuestVariant.Referral;
             this.context.commit('set', { pool, reward });
         });
     }

@@ -2,12 +2,12 @@
     <div>
         <b-row class="mb-3">
             <b-col md="9" class="d-flex align-items-center">
-                <h2 class="mb-0 mr-2">NFT Perks</h2>
+                <h2 class="mb-0 mr-2">NFT Rewards</h2>
             </b-col>
             <b-col md="3" class="d-flex justify-content-end">
                 <b-button v-b-modal="'modalRewardERC721Create'" class="rounded-pill" variant="primary">
                     <i class="fas fa-plus mr-2"></i>
-                    <span class="d-none d-md-inline">NFT Perk</span>
+                    <span class="d-none d-md-inline">NFT Reward</span>
                 </b-button>
                 <BaseModalRewardERC721Create @submit="listRewards" :id="'modalRewardERC721Create'" :pool="pool" />
             </b-col>
@@ -20,7 +20,7 @@
                 :total-rows="totals[pool._id]"
                 :selectedItems="selectedItems"
                 :actions="[
-                    { variant: 0, label: `Delete perks` },
+                    { variant: 0, label: `Delete rewards` },
                     { variant: 1, label: 'Download Claim URL\'s' },
                 ]"
                 @click-action="onClickAction"

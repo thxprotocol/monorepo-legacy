@@ -6,14 +6,10 @@
                     <div class="brand-intro text-white col-lg-4 order-1 order-md-0">
                         <div>
                             <h1 class="brand-text mb-3">
-                                <em>Token powered loyalty</em><br />
+                                <em>Rewards</em><br />
                                 in any app
                             </h1>
-                            <p class="lead mb-4">
-                                Boost engagement and create new revenue streams. Powered by a
-                                <strong>battle tested loyalty API</strong>
-                                and the <strong>Polygon blockchain</strong>.
-                            </p>
+                            <p class="lead mb-4">Drive growth and revenue with our token-powered Loyalty Engine.</p>
                             <b-form id="formSignupRedirect" class="row" v-on:submit.prevent="submit">
                                 <div class="col-12">
                                     <b-form-input
@@ -30,7 +26,7 @@
                                         class="rounded-pill"
                                         :title="TITLES.HOME_SIGNUP"
                                     >
-                                        Sign up <strong>for free</strong>
+                                        Start <strong>free</strong> trial
                                         <i class="fas fa-chevron-right"></i>
                                     </b-button>
                                     <b-button
@@ -96,7 +92,6 @@
 </template>
 
 <script lang="ts">
-import { IMetrics } from '@thxnetwork/public/store/modules/metrics';
 import { BButton, BJumbotron, BFormInput } from 'bootstrap-vue';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
@@ -117,17 +112,20 @@ import BaseCardSignup from './BaseCardSignup.vue';
 })
 export default class BaseJumbotron extends Vue {
     dashboardUrl = DASHBOARD_URL;
-    metrics!: IMetrics;
     signupEmail = '';
     ALT_TEXT = ALT_TEXT;
     TITLES = TITLES;
 
     async submit() {
-        let url = `${this.dashboardUrl}/signup`;
+        const url = new URL(this.dashboardUrl);
+        url.pathname = 'signup';
+        url.searchParams.append('signup_plan', '1');
         if (this.signupEmail) {
-            url += `?signup_email=${this.signupEmail}`;
+            url.searchParams.append('signup_email', this.signupEmail);
         }
-        window.location.href = url;
+        console.log(url);
+        debugger;
+        window.open(url, '_blank');
     }
 }
 </script>

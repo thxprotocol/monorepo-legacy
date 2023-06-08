@@ -1,36 +1,58 @@
 <template>
-    <section class="bg-darker py-5">
-        <div class="container py-5">
-            <div class="row">
-                <div class="col-md-5 offset-md-1 text-white align-items-center d-flex py-5">
-                    <div>
-                        <h2 class="h5 text-dark">No Code</h2>
-                        <p class="lead h1 text-uppercase">Launch NFTs & ERC-20 Tokens</p>
-                        <p class="lead">
-                            To power your loyalty rewards, just point and click to launch a token smart contract.
-                        </p>
-                        <p class="lead font-weight-light">
-                            Your users claim your tokenized perks using the embeddable widget or brandable wallet. 100%
-                            no code required on your end!
-                        </p>
-                        <b-button
-                            class="mt-3 rounded-pill"
-                            variant="primary"
-                            :href="dashboardUrl"
-                            :title="TITLES.HOME_VISIT_YOUR_DASHBOARD"
-                        >
-                            Create tokens in your Dashboard
-                            <i class="fas fa-chevron-right"></i>
-                        </b-button>
+    <section class="pb-5">
+        <div class="container">
+            <div class="row pb-5">
+                <div class="col-lg-4 offset-lg-1">
+                    <h5 class="mb-4">Overall</h5>
+                    <div class="d-flex justify-content-between">
+                        <div class="card-logo mb-3 mr-md-3">
+                            <span>Campaigns</span>
+                            <strong>642</strong>
+                        </div>
+                        <div class="card-logo mb-3 mr-md-3">
+                            <span>Users</span>
+                            <strong>13103</strong>
+                        </div>
+                        <div class="card-logo mb-3 mr-md-3">
+                            <span>Transactions</span>
+                            <strong>13797</strong>
+                        </div>
                     </div>
+                    <p class="lead font-weight-light">
+                        We provide detailed insights in the performance of your campaign in our monitoring dashboard.
+                    </p>
                 </div>
-                <div class="col-md-6 py-5">
-                    <img
-                        class="rounded"
-                        width="100%"
-                        v-lazy="require('../../public/assets/img/thx_ui-demo.png')"
-                        alt=""
-                    />
+                <div class="col-lg-1 border-right"></div>
+                <div class="col-lg-4 offset-lg-1">
+                    <h5 class="mb-4">Quests &amp; Rewards</h5>
+                    <div class="d-flex justify-content-start">
+                        <div class="card-logo mb-3 mr-md-3 w-100">
+                            <span>Daily</span>
+                            <strong>2439</strong>
+                        </div>
+                        <div class="card-logo mb-3 mr-md-3 w-100">
+                            <span>Referral</span>
+                            <strong>25</strong>
+                        </div>
+                        <div class="card-logo mb-3 mr-md-3 w-100">
+                            <span>Social</span>
+                            <strong>1318</strong>
+                        </div>
+                        <div class="card-logo mb-3 mr-md-3 w-100">
+                            <span>Custom</span>
+                            <strong>520</strong>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-start">
+                        <div class="card-logo mb-3 mr-md-3 w-100">
+                            <span>Coin</span>
+                            <strong>406</strong>
+                        </div>
+                        <div class="card-logo mb-3 mr-md-3 w-100">
+                            <span>NFT</span>
+                            <strong>412</strong>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -38,22 +60,35 @@
 </template>
 
 <script lang="ts">
-import { BButton, BJumbotron } from 'bootstrap-vue';
 import { Component, Vue } from 'vue-property-decorator';
-import { Hooper, Slide } from 'hooper';
-import { TITLES } from '@thxnetwork/public/utils/constants';
-import { DASHBOARD_URL } from '../config/secrets';
+import hljs from 'highlight.js/lib/core';
+import JavaScript from 'highlight.js/lib/languages/javascript';
+import Xml from 'highlight.js/lib/languages/xml';
+import 'highlight.js/styles/atom-one-dark.css';
+import { ALT_TEXT, TITLES } from '@thxnetwork/public/utils/constants';
 
+hljs.registerLanguage('javascript', JavaScript);
+hljs.registerLanguage('xml', Xml);
 @Component({
-    components: {
-        'b-jumbotron': BJumbotron,
-        'b-button': BButton,
-        'hooper': Hooper,
-        'slide': Slide,
-    },
+    components: {},
 })
-export default class BaseMetrics extends Vue {
+export default class BaseCodeExample extends Vue {
+    ALT_TEXT = ALT_TEXT;
     TITLES = TITLES;
-    dashboardUrl = DASHBOARD_URL;
 }
 </script>
+<style lang="scss">
+.card-logo {
+    align-items: center;
+    flex-flow: column;
+    justify-content: center;
+    span {
+        display: block;
+        color: var(--gray);
+    }
+    strong {
+        font-size: 2rem;
+        color: var(--primary);
+    }
+}
+</style>

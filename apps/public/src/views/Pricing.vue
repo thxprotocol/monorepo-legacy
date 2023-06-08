@@ -1,20 +1,26 @@
 <template>
     <section class="pt-5">
-        <div class="container pt-5 pb-5 container-pricing-max-height">
+        <div class="container pt-5 pb-5 section-pricing">
             <div class="row">
                 <div class="col-md-12 text-center">
-                    <div class="mt-sm-5">
-                        <div class="lead">Transparent</div>
-                        <h1 class="h1 font-size-xl mt-3 mb-3">Pricing</h1>
+                    <div class="mt-sm-5 mb-5">
+                        <h1 class="h1 font-size-xl mt-3 mb-3">Choose Your Plan</h1>
+                        <div class="lead">
+                            Start with a 30-day free trial, <strong>no credit card required</strong>.<br />
+                            <span class="text-muted small">
+                                Like it? Pay in crypto, credit card, Google + Apple Pay or SEPA transfer.
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
+
             <div class="row mt-3 mt-sm-5 justify-content-center">
                 <div class="col-md-4 col-lg-3 mb-5 mb-lg-0">
                     <b-card class="h-100" bg-variant="light" body-class="p-sm-4">
                         <div class="text-center">
                             <h2 class="h3 text-uppercase font-weight-bold text-dark">Starter</h2>
-                            <p class="font-weight-light">No-code customer loyalty and crypto perks</p>
+                            <p class="font-weight-light">Best for individual users</p>
                             <p class="pricing-costs mt-4">
                                 <strong>&euro; 0</strong>
                                 / month
@@ -22,7 +28,7 @@
                             <p>
                                 <i>
                                     <a href="https://docs.thx.network/pricing" target="_blank" class="text-muted mt-2">
-                                        2,5% crypto transfer fee
+                                        2,5% fee on rewards
                                     </a>
                                 </i>
                             </p>
@@ -37,79 +43,22 @@
                                 <i class="fas fa-chevron-right"></i>
                             </b-button>
                         </div>
-                        <div class="mb-1 d-flex align-items-center">Free web3 transactions</div>
-                        <div class="mb-1"><strong>50 perks</strong>/month</div>
-                        <hr />
-                        <h4 class="font-small d-flex">
-                            Loyalty Points
-                            <b-link target="_blank" href="https://docs.thx.network/user-guides/rewards" class="ml-1">
-                                <sup class="fas fa-question text-dark small"> </sup>
-                            </b-link>
-                        </h4>
-                        <div class="mb-1 d-flex">
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Daily Rewards
-                        </div>
-                        <div class="mb-1 d-flex">
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Referrals
-                        </div>
-                        <div class="mb-1 d-flex">
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Milestone
-                        </div>
-                        <div class="mb-1 d-flex">
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Twitter, Discord, Youtube
-                        </div>
-                        <div class="mb-1 d-flex">
-                            <i class="fas fa-minus icon-circle icon-circle-opaque d-inline-flex"> </i>
-                            Shopify
-                        </div>
-                        <hr />
-                        <h4 class="font-small">
-                            Loyalty Perks
-                            <b-link target="_blank" href="https://docs.thx.network/user-guides/perks" class="ml-1">
-                                <sup class="fas fa-question text-dark small"> </sup>
-                            </b-link>
-                        </h4>
-                        <div class="mb-1">
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Coin <span class="text-gray small">ERC20</span>
-                        </div>
-                        <div class="mb-1">
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            NFT <span class="text-gray small">ERC721/ERC1155</span>
-                        </div>
-                        <div class="mb-1">
-                            <i class="fas fa-minus icon-circle icon-circle-opaque d-inline-flex"> </i>
-                            Shopify Discounts
-                        </div>
-                        <hr />
-                        <h4 class="font-small">Integrations</h4>
-                        <div class="mb-1">
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Discord API
-                        </div>
-                        <div class="mb-1">
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Twitter API
-                        </div>
-                        <div class="mb-1">
-                            <i class="fas fa-minus icon-circle icon-circle-opaque d-inline-flex"> </i>
-                            Loyalty API
-                        </div>
-                        <div class="mb-1">
-                            <i class="fas fa-minus icon-circle icon-circle-opaque d-inline-flex"> </i>
-                            Paid Loyalty API
-                        </div>
                     </b-card>
                 </div>
+
                 <div class="col-md-4 col-lg-3 mb-5 mb-lg-0">
-                    <b-card class="h-100" bg-variant="secondary" body-class="p-sm-4">
+                    <b-card
+                        class="h-100 shadow-lg card-popular"
+                        bg-variant="secondary"
+                        header-class="text-center"
+                        body-class="p-sm-4"
+                    >
+                        <template #header>
+                            <b-badge variant="primary" class="p-2">POPULAR</b-badge>
+                        </template>
                         <div class="text-center text-dark">
                             <h2 class="h3 text-uppercase font-weight-bold text-dark">Basic</h2>
-                            <p class="font-weight-light">Shopify integrations for modern ecommerce</p>
+                            <p class="font-weight-light">Best for growth hackers and marketers</p>
                             <p class="pricing-costs mt-4">
                                 <strong>&euro; 89</strong>
                                 / month
@@ -117,184 +66,348 @@
                             <p>
                                 <i>
                                     <a href="https://docs.thx.network/pricing" target="_blank" class="text-dark mt-2">
-                                        2,5% crypto transfer fee
+                                        2,5% fee on rewards
                                     </a>
                                 </i>
                             </p>
                             <b-button
                                 block
-                                to="/signup"
+                                to="/signup?signup_plan=1"
                                 variant="primary"
                                 class="rounded-pill mt-3 mb-3"
                                 :title="TITLES.PRICING_SIGN_UP"
                             >
-                                Sign up
+                                Start <strong>free</strong> trial
                                 <i class="fas fa-chevron-right"></i>
                             </b-button>
-                        </div>
-                        <div class="mb-1 d-flex align-items-center">Free web3 transactions</div>
-                        <div class="mb-1">
-                            <strong>500 perks</strong>/month <span class="text-muted">(&euro; 0.25 after)</span>
-                        </div>
-                        <hr />
-                        <h4 class="font-small d-flex">
-                            Loyalty Points
-                            <b-link target="_blank" href="https://docs.thx.network/user-guides/rewards" class="ml-1">
-                                <sup class="fas fa-question text-muted small"> </sup>
-                            </b-link>
-                        </h4>
-                        <div class="mb-1 d-flex">
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Daily Rewards
-                        </div>
-                        <div class="mb-1 d-flex">
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Referrals
-                        </div>
-                        <div class="mb-1 d-flex">
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Milestone
-                        </div>
-                        <div class="mb-1 d-flex">
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Twitter, Discord, Youtube
-                        </div>
-                        <div class="mb-1 d-flex">
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Shopify
-                        </div>
-                        <hr />
-                        <h4 class="font-small">
-                            Loyalty Perks
-                            <b-link target="_blank" href="https://docs.thx.network/user-guides/perks" class="ml-1">
-                                <sup class="fas fa-question text-muted small"> </sup>
-                            </b-link>
-                        </h4>
-                        <div class="mb-1">
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Coin <span class="text-muted small">ERC20</span>
-                        </div>
-                        <div class="mb-1">
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            NFT <span class="text-muted small">ERC721/ERC1155</span>
-                        </div>
-                        <div class="mb-1">
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Shopify Discounts
-                        </div>
-                        <hr />
-                        <h4 class="font-small">Integrations</h4>
-                        <div class="mb-1">
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Discord API
-                        </div>
-                        <div class="mb-1">
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Twitter API
-                        </div>
-                        <div class="mb-1">
-                            <i class="fas fa-minus icon-circle icon-circle-opaque d-inline-flex"> </i>
-                            Loyalty API
-                        </div>
-                        <div class="mb-1">
-                            <i class="fas fa-minus icon-circle icon-circle-opaque d-inline-flex"> </i>
-                            Paid Loyalty API
                         </div>
                     </b-card>
                 </div>
                 <div class="col-md-4 col-lg-3 mb-5 mb-lg-0">
-                    <b-card class="h-100" bg-variant="light" body-class="text-dark p-sm-4">
+                    <b-card class="h-100" bg-variant="light" body-class="text-dark p-sm-4" style="z-index: 0">
                         <div class="text-center">
                             <h2 class="h3 text-uppercase text-dark font-weight-bold">Premium</h2>
-                            <p class="font-weight-light">Integrated loyalty solutions for high traffic platforms</p>
+                            <p class="font-weight-light">Best for growth teams and game studios</p>
                             <p class="pricing-costs mt-4">
-                                <strong>Custom</strong>
+                                <strong>&euro; 449</strong>
+                                / month
                             </p>
                             <p>
                                 <i>
                                     <a href="https://docs.thx.network/pricing" target="_blank" class="text-muted mt-2">
-                                        2,5% crypto transfer fee
+                                        2,5% fee on rewards
                                     </a>
                                 </i>
                             </p>
                             <b-button
                                 block
-                                to="/contact"
+                                to="/signup?signup_plan=2"
                                 variant="dark"
                                 class="rounded-pill mt-3 mb-3"
                                 :title="TITLES.CONTACT_US"
                             >
-                                Contact us
+                                Start <strong>free</strong> trial
                                 <i class="fas fa-chevron-right"></i>
                             </b-button>
                         </div>
-                        <div class="mb-1 d-flex align-items-center">Free web3 transactions</div>
-                        <div class="mb-1">
-                            <strong>5000 perks</strong>/month <span class="text-muted">(&euro; 0.25 after)</span>
-                        </div>
-                        <hr />
-                        <h4 class="font-small d-flex">
-                            Loyalty Points
-                            <b-link target="_blank" href="https://docs.thx.network/user-guides/rewards" class="ml-1">
-                                <sup class="fas fa-question text-gray small"> </sup>
-                            </b-link>
-                        </h4>
-                        <div class="mb-1 d-flex">
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Daily rewards
-                        </div>
-                        <div class="mb-1 d-flex">
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Referrals
-                        </div>
-                        <div class="mb-1 d-flex">
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Milestone
-                        </div>
-                        <div class="mb-1 d-flex">
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Twitter, Discord, Youtube
-                        </div>
-                        <div class="mb-1 d-flex">
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Shopify
-                        </div>
-                        <hr />
-                        <h4 class="font-small">
-                            Loyalty Perks
-                            <b-link target="_blank" href="https://docs.thx.network/user-guides/perks" class="ml-1">
-                                <sup class="fas fa-question text-gray small"> </sup>
-                            </b-link>
-                        </h4>
-                        <div class="mb-1">
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Coin <span class="text-gray small">ERC20</span>
-                        </div>
-                        <div class="mb-1">
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            NFT <span class="text-gray small">ERC721/ERC1155</span>
-                        </div>
-                        <div class="mb-1">
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Shopify Discounts
-                        </div>
-                        <hr />
-                        <h4 class="font-small">Integrations</h4>
-                        <div class="mb-1">
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Discord API
-                        </div>
-                        <div class="mb-1">
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Twitter API
-                        </div>
-                        <div class="mb-1">
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Loyalty API
-                        </div>
-                        <div class="mb-1">
-                            <i class="fas fa-check p-1 icon-circle icon-circle-dark d-inline-flex"> </i>
-                            Paid Loyalty API
+                    </b-card>
+                </div>
+            </div>
+            <div class="row mt-md-5 justify-content-center px-5 customers">
+                <div class="col-md-12 text-center text-muted pt-md-5 pb-3">
+                    <div>Trusted by</div>
+                </div>
+                <div class="col-6 col-md-3 text-center d-flex align-items-center justify-content-center">
+                    <b-img
+                        :src="require('../../public/assets/img/logo-toshimon.webp')"
+                        width="120"
+                        alt=""
+                        class="mx-md-5"
+                    />
+                </div>
+                <div class="col-6 col-md-3 text-center d-flex align-items-center justify-content-center">
+                    <b-img
+                        :src="require('../../public/assets/img/logo-forest-knight.png')"
+                        width="120"
+                        alt=""
+                        class="mx-md-5"
+                    />
+                </div>
+                <div class="col-6 col-md-3 text-center d-flex align-items-center justify-content-center">
+                    <b-img
+                        :src="require('../../public/assets/img/logo-tryhards.png')"
+                        width="120"
+                        alt=""
+                        class="mx-md-5"
+                    />
+                </div>
+                <div class="col-6 col-md-3 text-center d-flex align-items-center justify-content-center">
+                    <b-img
+                        :src="require('../../public/assets/img/logo-2tokens.webp')"
+                        width="120"
+                        alt=""
+                        class="mx-md-5"
+                    />
+                </div>
+            </div>
+            <div class="row mt-3 mt-sm-5 justify-content-center">
+                <div class="col-md-10 col-lg-10 mb-5 mb-lg-0">
+                    <b-card class="bg-light shadow-lg" body-class="px-0">
+                        <div class="lead text-center pb-3">Detailed plan comparison</div>
+                        <div class="table-responsive">
+                            <table class="table table-hover mt-3">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Starter</th>
+                                        <th>Basic</th>
+                                        <th>Premium</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            Smart Wallets<br />
+                                            <span class="text-gray small">
+                                                Onboard non-crypto natives without friction
+                                            </span>
+                                        </td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Free Transactions<br />
+                                            <span class="text-gray small">
+                                                Let us worry about transactions costs and delivery
+                                            </span>
+                                        </td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Performance Monitoring<br />
+                                            <span class="text-gray small">
+                                                Keep an eye on the performance of your quests
+                                            </span>
+                                        </td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="bg-dark text-white" colspan="4">
+                                            <strong>Quests</strong>
+                                            <b-link
+                                                v-b-tooltip
+                                                title="Incentivize valuable behavior by letting your players complete quests and earn points."
+                                                class="ml-1"
+                                            >
+                                                <sup class="fas fa-question-circle text-gray"> </sup>
+                                            </b-link>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Daily<br />
+                                            <span class="text-gray small">
+                                                Provide daily incentives for returning to your website
+                                            </span>
+                                        </td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Referral<br />
+                                            <span class="text-gray small">
+                                                Empower your players to invite others and earn points
+                                            </span>
+                                        </td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Social<br />
+                                            <span class="text-gray small">
+                                                Create quests for Twitter, Discord, YouTube, Github and Twitch
+                                                interactions.
+                                            </span>
+                                        </td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Custom<br />
+                                            <span class="text-gray small">
+                                                Use outbound webhooks to reward important achievements in your
+                                                application
+                                            </span>
+                                        </td>
+                                        <td><i class="fas fa-times-circle"></i></td>
+                                        <td><i class="fas fa-times-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="bg-dark text-white" colspan="4">
+                                            <strong>Rewards</strong>
+                                            <b-link
+                                                v-b-tooltip
+                                                title="Use earned points or regular payments to collect rewards."
+                                                class="ml-1"
+                                            >
+                                                <sup class="fas fa-question-circle text-gray"> </sup>
+                                            </b-link>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Coin <br />
+                                            <span class="text-gray small"> Create rewards for ERC20 contracts </span>
+                                        </td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            NFT
+                                            <br />
+                                            <span class="text-gray small">
+                                                Create rewards for ERC721 or ERC1155 contracts
+                                            </span>
+                                        </td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Custom<br />
+                                            <span class="text-gray small">
+                                                Use inbound webhooks to reward with a feature in your application
+                                            </span>
+                                        </td>
+                                        <td><i class="fas fa-times-circle"></i></td>
+                                        <td><i class="fas fa-times-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="bg-dark text-white" colspan="4">
+                                            <strong>Integrations</strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Discord Bot
+                                            <br />
+                                            <span class="text-gray small">
+                                                Create quests for Discord server activity
+                                            </span>
+                                        </td>
+                                        <td><i class="fas fa-times-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Twitter Automation<br />
+                                            <span class="text-gray small">
+                                                Automate social quest creation with hashtag filters
+                                            </span>
+                                        </td>
+                                        <td><i class="fas fa-times-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Payment Methods<br />
+                                            <span class="text-gray small">
+                                                Sell rewards with crypto, credit Card &amp; local payment providers
+                                            </span>
+                                        </td>
+                                        <td><i class="fas fa-times-circle"></i></td>
+                                        <td><i class="fas fa-times-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="bg-dark text-white" colspan="4">
+                                            <strong>Costs</strong>
+                                            <b-link
+                                                target="_blank"
+                                                href="https://docs.thx.network/fundamentals/pricing"
+                                                class="ml-1"
+                                            >
+                                                <sup class="fas fa-question-circle text-gray"> </sup>
+                                            </b-link>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Transactions<br />
+                                            <span class="text-gray small">
+                                                We cover all required campaign transactions!
+                                            </span>
+                                        </td>
+                                        <td>Free</td>
+                                        <td>Free</td>
+                                        <td>Free</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Reward Limit
+                                            <br />
+                                            <span class="text-gray small">
+                                                Accurate point pricing will help never reach these limits
+                                            </span>
+                                        </td>
+                                        <td>50</td>
+                                        <td>500</td>
+                                        <td>5000</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Monthly Fee
+                                            <br />
+                                            <span class="text-gray small">
+                                                Pay in crypto, credit card, Google + Apple Pay or SEPA transfer.
+                                            </span>
+                                        </td>
+                                        <td><strong>&euro; 0,-</strong></td>
+                                        <td><strong>&euro; 89</strong></td>
+                                        <td><strong>&euro; 449,-</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>
+                                            <b-button to="/signup" variant="primary" class="rounded-pill">
+                                                Start now <i class="fas fa-chevron-right"></i>
+                                            </b-button>
+                                        </td>
+                                        <td>
+                                            <b-button to="/signup?signup_plan=1" variant="primary" class="rounded-pill">
+                                                Start <strong>free</strong> trial
+                                                <i class="fas fa-chevron-right"></i>
+                                            </b-button>
+                                        </td>
+                                        <td>
+                                            <b-button to="/signup?signup_plan=2" variant="primary" class="rounded-pill">
+                                                Start <strong>free</strong> trial
+                                                <i class="fas fa-chevron-right"></i>
+                                            </b-button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </b-card>
                 </div>
@@ -351,10 +464,63 @@ export default class Home extends Vue {
 }
 </script>
 <style scoped>
-#section-features {
-    padding-top: 15rem;
-}
 .font-small {
     font-size: 0.9rem;
+}
+.fa-times-circle {
+    color: var(--danger);
+}
+
+.fa-check-circle {
+    color: var(--success);
+}
+.table td,
+.table th {
+    text-align: center;
+    vertical-align: middle;
+    min-width: 200px;
+}
+.table th:first-child {
+    min-width: 210px;
+    width: 50%;
+}
+.table th {
+    padding: 0.75rem 0;
+}
+
+.table td:first-child,
+.table th:first-child {
+    text-align: left;
+}
+
+#section-features {
+    padding-top: 5rem;
+}
+
+@media (min-width: 768px) {
+    .card-popular {
+        transform: scale(1.15);
+        z-index: 1;
+    }
+}
+
+@media (min-width: 1200px) {
+    .section-pricing {
+        max-height: 2400px;
+    }
+
+    #section-features {
+        padding-top: 10rem;
+    }
+}
+
+.customers img {
+    transition: 0.2s filter ease, 0.2s opacity ease;
+    filter: grayscale(100%);
+    opacity: 0.5;
+}
+.customers img:hover {
+    filter: grayscale(0%);
+    opacity: 1;
 }
 </style>

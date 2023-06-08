@@ -7,6 +7,7 @@ import type { IAccount, IAccountUpdates } from '@thxnetwork/dashboard/types/acco
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { RewardConditionPlatform } from '@thxnetwork/types/enums/RewardConditionPlatform';
 import Mixpanel, { track } from '@thxnetwork/mixpanel';
+import { AccountPlanType } from '@thxnetwork/types';
 
 @Module({ namespaced: true })
 class AccountModule extends VuexModule {
@@ -118,6 +119,7 @@ class AccountModule extends VuexModule {
     async signinRedirect(payload: {
         signupToken: string;
         signupEmail: string;
+        signupPlan: AccountPlanType;
         passwordResetToken: string;
         verifyEmailToken: string;
         poolTransferToken: string;
@@ -148,7 +150,11 @@ class AccountModule extends VuexModule {
         }
 
         if (payload.signupEmail) {
-            extraQueryParams['signupEmail'] = payload.signupEmail;
+            extraQueryParams['signup_email'] = payload.signupEmail;
+        }
+
+        if (payload.signupPlan) {
+            extraQueryParams['signup_plan'] = payload.signupPlan;
         }
 
         if (payload.signupToken) {

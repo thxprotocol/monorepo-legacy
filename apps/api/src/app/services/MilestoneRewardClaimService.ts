@@ -5,7 +5,7 @@ import { v4 } from 'uuid';
 export const MilestoneRewardClaimDocument = MilestoneRewardClaim;
 
 export default {
-    create: (data: { poolId: string; milestoneRewardId: string; walletId: string; amount: string }) => {
+    create: (data: { poolId: string; milestoneRewardId: string; walletId: string; amount: number }) => {
         return MilestoneRewardClaim.create({ uuid: v4(), isClaimed: false, ...data });
     },
     findByUUID: (uuid: string) => {
