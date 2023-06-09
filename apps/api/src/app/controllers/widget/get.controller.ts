@@ -105,21 +105,11 @@ const controller = async (req: Request, res: Response) => {
 
         parseURL() {
             const url = new URL(window.location.href)
-            const ref = url.searchParams.get('ref');
-            if (!ref) return;
-            
-            this.ref = ref;
-            
-            const { uuid } = JSON.parse(atob(this.ref));
-            const referral = this.referrals.find((r) => r.uuid === uuid);
-            if (!referral) return;
-            
-            this.successUrl = referral.successUrl;
-        }
-
-        storeReferrer() {    
-            this.timer = window.setInterval(this.onMatchSuccessUrl.bind(this), 500);
-            if (this.ref) this.iframe.contentWindow.postMessage({ message: 'thx.config.ref', ref: this.ref }, this.settings.widgetUrl);
+            this.ref = url.searchParams.get('ref');
+            if (!this.ref) return;
+                        
+            this.successUrls = this.referrals.map((r) => r.successUrl);
+            if (!this.successUrls.length) return;
         }
     
         get isSmallMedia() {
@@ -345,7 +335,7 @@ const controller = async (req: Request, res: Response) => {
             if (!this.settings.widgetUrl || event.origin !== this.settings.widgetUrl) return;
             const { message, amount } = event.data;
             switch (message) {
-                case 'thx.widget.ready':{
+                case 'thx.widget.ready': {
                     this.onWidgetReady();
                     break
                 }
@@ -404,8 +394,9 @@ const controller = async (req: Request, res: Response) => {
                 
                 this.iframe.contentWindow.postMessage({ message: 'thx.iframe.navigate', path: url.pathname + url.search }, widgetUrl);
             }
-    
-            this.storeReferrer();
+
+            this.timer = window.setInterval(this.onURLDetectionCallback.bind(this), 500);
+            this.iframe.contentWindow.postMessage({ message: 'thx.config.ref', ref: this.ref }, this.settings.widgetUrl);
         }
 
         onWidgetToggle(show) {
@@ -414,10 +405,9 @@ const controller = async (req: Request, res: Response) => {
             this.iframe.contentWindow.postMessage({ message: 'thx.iframe.show', isShown: show }, this.settings.widgetUrl);
         }
 
-        onMatchSuccessUrl() {
+        onURLDetectionCallback() {
             for (const ref of this.referrals) {
-                if (window.location.href !== ref.successUrl) continue;
-
+                if (!(this.successUrls.filter((url) => url.includes(window.location.origin + window.location.pathname))).length) continue;
                 this.iframe.contentWindow.postMessage({ message: 'thx.referral.claim.create', uuid: ref.uuid, }, this.settings.widgetUrl);
 
                 const index = this.referrals.findIndex((r) => ref.uuid);
@@ -461,7 +451,7 @@ const controller = async (req: Request, res: Response) => {
         sourceMap: NODE_ENV !== 'production',
     });
 
-    res.set({ 'Content-Type': 'application/javascript' }).send(result.code);
+    res.set({ 'Content-Type': 'application/javascript' }).send(data);
 };
 
 export default { controller, validation };

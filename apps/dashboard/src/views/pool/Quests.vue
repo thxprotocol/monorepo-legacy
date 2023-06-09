@@ -55,6 +55,7 @@
                     <b-badge variant="light" class="p-2">{{ QuestVariant[item.variant] }} </b-badge>
                 </template>
                 <template #head(title)> Title </template>
+                <template #head(claims)> Completed </template>
                 <template #head(id)> &nbsp; </template>
 
                 <!-- Cell formatting -->
@@ -63,6 +64,21 @@
                 </template>
                 <template #cell(points)="{ item }">
                     <strong class="text-primary">{{ item.points }} </strong>
+                </template>
+                <template #cell(title)="{ item }">
+                    {{ item.title }}
+                </template>
+                <template #cell(claims)="{ item }">
+                    <template v-if="item.variant === QuestVariant.Referral">
+                        <b-link v-b-modal="`modalReferralQuestClaims${item.id}`">
+                            {{ item.claims.length }}
+                        </b-link>
+                        <BaseModalReferralRewardClaims
+                            :id="`modalReferralQuestClaims${item.id}`"
+                            :pool="pool"
+                            :reward="allQuests.find((q) => q._id === item.id)"
+                        />
+                    </template>
                 </template>
                 <template #cell(id)="{ item }">
                     <b-dropdown variant="link" size="sm" right no-caret>
@@ -96,6 +112,7 @@ import BaseModalRewardDailyCreate from '@thxnetwork/dashboard/components/modals/
 import BaseModalRewardPointsCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardPointsCreate.vue';
 import BaseModalRewardReferralCreate from '@thxnetwork/dashboard/components/modals/BaseModalReferralRewardCreate.vue';
 import BaseModalRewardMilestoneCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardMilestonesCreate.vue';
+import BaseModalReferralRewardClaims from '@thxnetwork/dashboard/components/modals/BaseModalReferralRewardClaims.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import { TDailyRewardState } from '@thxnetwork/dashboard/store/modules/dailyRewards';
 import { TPointRewardState } from '@thxnetwork/dashboard/store/modules/pointRewards';
@@ -109,6 +126,7 @@ import { TMilestoneRewardState } from '@thxnetwork/dashboard/store/modules/miles
         BaseModalRewardPointsCreate,
         BaseModalRewardReferralCreate,
         BaseModalRewardMilestoneCreate,
+        BaseModalReferralRewardClaims,
     },
     computed: mapGetters({
         pools: 'pools/all',
@@ -182,6 +200,7 @@ export default class AssetPoolView extends Vue {
                 variant: r.variant,
                 points: r.amount || `${r.amounts.length} days`,
                 title: r.title,
+                claims: r.claims,
                 id: r._id,
             }))
             .slice(0, this.limit);
@@ -263,6 +282,9 @@ export default class AssetPoolView extends Vue {
     width: auto;
 }
 .table th:nth-child(5) {
+    width: 120px;
+}
+.table th:nth-child(6) {
     width: 40px;
 }
 </style>

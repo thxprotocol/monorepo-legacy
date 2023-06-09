@@ -1,5 +1,5 @@
 <template>
-    <base-modal hide-footer size="xl" :title="`Referral reward claims`" :id="id" @show="onShow">
+    <base-modal hide-footer size="xl" :title="`Referral reward claims`" :id="id" @show="onShow" v-if="pool">
         <template #modal-body>
             <BCard variant="white" body-class="p-0 shadow-sm" class="mb-3">
                 <BaseCardTableHeader
