@@ -451,7 +451,7 @@ const controller = async (req: Request, res: Response) => {
         sourceMap: NODE_ENV !== 'production',
     });
 
-    res.set({ 'Content-Type': 'application/javascript' }).send(data);
+    res.set({ 'Content-Type': 'application/javascript' }).send(result.code);
 };
 
 export default { controller, validation };
