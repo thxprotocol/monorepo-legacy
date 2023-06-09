@@ -3,54 +3,31 @@
         <div class="container">
             <div class="row pb-5">
                 <div class="col-lg-4 offset-lg-1">
-                    <h5 class="mb-4">Overall</h5>
-                    <div class="d-flex justify-content-between">
-                        <div class="card-logo mb-3 mr-md-3">
-                            <span>Campaigns</span>
-                            <strong>642</strong>
-                        </div>
-                        <div class="card-logo mb-3 mr-md-3">
-                            <span>Users</span>
-                            <strong>13103</strong>
-                        </div>
-                        <div class="card-logo mb-3 mr-md-3">
-                            <span>Transactions</span>
-                            <strong>13797</strong>
-                        </div>
-                    </div>
+                    <b-img
+                        v-lazy="require('../../public/assets/img/thx_token_governance.webp')"
+                        alt=""
+                        class="img-fluid mb-3"
+                    />
                     <p class="lead font-weight-light">
-                        We provide detailed insights in the performance of your campaign in our monitoring dashboard.
+                        We provide growth teams serving communities of all sizes with the right tools to onboard and
+                        retain more users.
                     </p>
                 </div>
                 <div class="col-lg-1 border-right"></div>
                 <div class="col-lg-4 offset-lg-1">
-                    <h5 class="mb-4">Quests &amp; Rewards</h5>
-                    <div class="d-flex justify-content-start">
+                    <h5 class="mb-4">The numbers</h5>
+                    <div class="">
                         <div class="card-logo mb-3 mr-md-3 w-100">
-                            <span>Daily</span>
+                            <span>Users</span>
+                            <strong>13103</strong>
+                        </div>
+                        <div class="card-logo mb-3 mr-md-3 w-100">
+                            <span>Quests Completed</span>
                             <strong>2439</strong>
                         </div>
                         <div class="card-logo mb-3 mr-md-3 w-100">
-                            <span>Referral</span>
-                            <strong>25</strong>
-                        </div>
-                        <div class="card-logo mb-3 mr-md-3 w-100">
-                            <span>Social</span>
-                            <strong>1318</strong>
-                        </div>
-                        <div class="card-logo mb-3 mr-md-3 w-100">
-                            <span>Custom</span>
-                            <strong>520</strong>
-                        </div>
-                    </div>
-                    <div class="d-flex justify-content-start">
-                        <div class="card-logo mb-3 mr-md-3 w-100">
-                            <span>Coin</span>
-                            <strong>406</strong>
-                        </div>
-                        <div class="card-logo mb-3 mr-md-3 w-100">
-                            <span>NFT</span>
-                            <strong>412</strong>
+                            <span>Rewards Earned</span>
+                            <strong>818</strong>
                         </div>
                     </div>
                 </div>
@@ -82,12 +59,14 @@ export default class BaseCodeExample extends Vue {
     align-items: center;
     flex-flow: column;
     justify-content: center;
+    width: 200px;
     span {
         display: block;
         color: var(--gray);
     }
+
     strong {
-        font-size: 2rem;
+        font-size: 3rem;
         color: var(--primary);
     }
 }

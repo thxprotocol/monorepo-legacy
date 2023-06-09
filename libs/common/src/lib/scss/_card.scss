@@ -4,17 +4,14 @@
     flex: 0 0 120px;
     background-color: $light;
     height: 120px;
-    width: 120px;
+    width: auto;
+    max-width: 120px;
     display: flex;
     justify-content: center;
     align-items: center;
     border-radius: 10px;
     margin-right:1rem;
     margin-bottom:1rem;
-
-    &:nth-child(3n) {
-        margin-right: 0;
-    }
 
     img {
         margin: auto;

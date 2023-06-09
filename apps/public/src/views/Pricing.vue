@@ -531,24 +531,10 @@ export default class Home extends Vue {
     text-align: left;
 }
 
-#section-features {
-    padding-top: 5rem;
-}
-
 @media (min-width: 768px) {
     .card-popular {
         transform: scale(1.15);
         z-index: 1;
-    }
-}
-
-@media (min-width: 1200px) {
-    .section-pricing {
-        max-height: 2600px;
-    }
-
-    #section-features {
-        padding-top: 10rem;
     }
 }
 

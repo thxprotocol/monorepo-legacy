@@ -16,7 +16,11 @@
                     </p>
                 </div>
                 <div class="col-lg-6 pb-3">
-                    <img width="100%" class="mb-5" :src="require('../../public/assets/img/thx_widget_launcher.png')" />
+                    <img
+                        width="100%"
+                        class="mb-5"
+                        v-lazy="require('../../public/assets/img/thx_widget_launcher.png')"
+                    />
                 </div>
                 <div class="col-md-10 offset-md-1">
                     <div class="text-muted mb-2">All you do is paste this (example) script in your HTML page</div>

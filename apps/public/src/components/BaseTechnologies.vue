@@ -52,7 +52,7 @@
                 <div class="col-lg-1 border-right"></div>
                 <div class="col-lg-4 offset-lg-1">
                     <h5 class="mb-4">Extensions</h5>
-                    <div class="d-flex justify-content-between">
+                    <div class="d-flex justify-content-between flex-wrap">
                         <div class="card-logo mr-3 mb-3">
                             <img :src="require('../../public/assets/img/thx_slack.png')" width="35" alt="logo undp" />
                         </div>
