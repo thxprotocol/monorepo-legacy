@@ -29,20 +29,26 @@ const controller = async (req: Request, res: Response) => {
         amount: reward.amount ? reward.amount.toString() : '0',
         metadata: req.body.metadata ? JSON.stringify(req.body.metadata) : '',
     });
-    const account = await AccountProxy.getById(sub);
+    const account = await AccountProxy.getById(pool.sub);
+    const lead = await AccountProxy.getById(sub);
 
     if (reward.isMandatoryReview) {
         await MailService.send(
             account.email,
+            'Referral: Lead Qualified',
+            `A lead has been qualified through a referral URL. Your approval for a transfer of <strong>${reward.amount} points</strong> has been requested.`,
+        );
+        await MailService.send(
+            lead.email,
             'Status: Referral Qualified',
             `Congratulations! Your referral link has been qualified and approval for a transfer of <strong>${reward.amount} points</strong> has been requested.`,
         );
     } else {
         await PointBalanceService.add(pool, wallet._id, reward.amount);
         await MailService.send(
-            account.email,
+            lead.email,
             'Status: Referral Approved',
-            `Congratulations! Your referral has been approved and your balance has been increased with <strong>${reward.amount} points</strong>.`,
+            `Congratulations! Your referral has been approved and your point balance increased with <strong>${reward.amount} points</strong>.`,
         );
     }
 
