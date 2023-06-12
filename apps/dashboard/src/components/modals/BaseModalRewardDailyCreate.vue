@@ -110,7 +110,7 @@ export default class ModalRewardDailyCreate extends Vue {
     isLoading = false;
     error = '';
     title = '';
-    amounts = [5, 10, 15, 20, 40, 80, 150];
+    amounts = [5, 10, 20, 40, 80, 160, 360];
     description = '';
     limit = 0;
     infoLinks: TInfoLink[] = [{ label: '', url: '' }];

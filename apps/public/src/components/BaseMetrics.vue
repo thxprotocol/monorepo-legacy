@@ -16,7 +16,7 @@
                 <div class="col-lg-1 border-right"></div>
                 <div class="col-lg-4 offset-lg-1">
                     <h5 class="mb-4">The numbers</h5>
-                    <div class="">
+                    <div>
                         <div class="card-logo mb-3 mr-md-3 w-100">
                             <span>Users</span>
                             <strong>13103</strong>
