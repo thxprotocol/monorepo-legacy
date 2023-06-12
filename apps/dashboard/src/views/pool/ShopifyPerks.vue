@@ -2,7 +2,7 @@
     <div>
         <b-row class="mb-3">
             <b-col class="d-flex align-items-center">
-                <h2 class="mb-0">Shopify Perks</h2>
+                <h2 class="mb-0">Shopify Rewards</h2>
             </b-col>
             <b-col class="d-flex justify-content-end">
                 <b-button v-b-modal="'modalRewardShopifyCreate'" class="rounded-pill" variant="primary">

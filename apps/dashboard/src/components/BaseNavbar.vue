@@ -71,7 +71,7 @@
                 <template v-if="selectedPool">
                     <base-navbar-nav :routes="configRoutes" />
                     <hr />
-                    <label class="px-3 text-muted">Shop </label>
+                    <label class="px-3 text-muted">Reward Shop </label>
                     <base-navbar-nav :routes="perkRoutes" />
                     <hr />
                 </template>

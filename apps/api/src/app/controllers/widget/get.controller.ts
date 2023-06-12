@@ -107,7 +107,7 @@ const controller = async (req: Request, res: Response) => {
             const url = new URL(window.location.href)
             this.ref = url.searchParams.get('ref');
             if (!this.ref) return;
-                        
+
             this.successUrls = this.referrals.map((r) => r.successUrl);
             if (!this.successUrls.length) return;
         }
@@ -395,8 +395,11 @@ const controller = async (req: Request, res: Response) => {
                 this.iframe.contentWindow.postMessage({ message: 'thx.iframe.navigate', path: url.pathname + url.search }, widgetUrl);
             }
 
-            this.timer = window.setInterval(this.onURLDetectionCallback.bind(this), 500);
-            this.iframe.contentWindow.postMessage({ message: 'thx.config.ref', ref: this.ref }, this.settings.widgetUrl);
+            if (this.ref) {
+                window.localStorage.setItem('thx:widget:' + this.settings.poolId + ':ref', this.ref);
+                this.iframe.contentWindow.postMessage({ message: 'thx.config.ref', ref: this.ref }, this.settings.widgetUrl);
+                this.timer = window.setInterval(this.onURLDetectionCallback.bind(this), 500);
+            }
         }
 
         onWidgetToggle(show) {

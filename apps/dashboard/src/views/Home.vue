@@ -23,7 +23,7 @@
                 </b-jumbotron>
             </div>
             <div class="container container-md">
-                <strong class="text-muted">Rewards</strong>
+                <strong class="text-muted">Quests</strong>
                 <b-row>
                     <b-col md="3">
                         <BaseCardHome
@@ -34,7 +34,7 @@
                                 <i class="fas fa-calendar mr-2 text-primary"></i>
                                 <strong>Daily</strong>
                             </template>
-                            Reward frequent return visits to your application
+                            Users visit to your website every day
                         </BaseCardHome>
                     </b-col>
                     <b-col md="3">
@@ -46,7 +46,7 @@
                                 <i class="fas fa-comments mr-2 text-primary"></i>
                                 <strong>Referral</strong>
                             </template>
-                            Reward your users for inviting others
+                            Users invite others to your application
                         </BaseCardHome>
                     </b-col>
                     <b-col md="3">
@@ -58,7 +58,7 @@
                                 <i class="fas fa-trophy mr-2 text-primary"></i>
                                 <strong>Conditional</strong>
                             </template>
-                            Reward engagement in social channels
+                            Users engage in your social channels
                         </BaseCardHome>
                     </b-col>
                     <b-col md="3">
@@ -68,13 +68,14 @@
                         >
                             <template #header>
                                 <i class="fas fa-trophy mr-2 text-primary"></i>
-                                <strong>Milestone</strong>
+                                <strong>Custom</strong>
                             </template>
-                            Reward important achievements in your application
+                            Users achieve milestones in your application
                         </BaseCardHome>
                     </b-col>
                 </b-row>
                 <hr />
+                <strong class="text-muted">Rewards</strong>
                 <b-row>
                     <b-col md="6">
                         <BaseCardHome
@@ -83,9 +84,9 @@
                         >
                             <template #header>
                                 <i class="fas fa-trophy mr-2 text-primary"></i>
-                                <strong>Conditional</strong>
+                                <strong>Coin</strong>
                             </template>
-                            Reward engagement in social channels
+                            Create rewards for ERC20 contracts
                         </BaseCardHome>
                     </b-col>
                     <b-col md="6">
@@ -95,9 +96,9 @@
                         >
                             <template #header>
                                 <i class="fas fa-trophy mr-2 text-primary"></i>
-                                <strong>Milestone</strong>
+                                <strong>NFT</strong>
                             </template>
-                            Reward important achievements in your application
+                            Create rewards for ERC721 or ERC1155 contracts
                         </BaseCardHome>
                     </b-col>
                 </b-row>
@@ -113,7 +114,7 @@
                             img-top
                         >
                             <strong>Coins</strong>
-                            <p class="text-muted m-0">Create or import ERC-20 tokens as Coins.</p>
+                            <p class="text-muted m-0">Users get rewards or import ERC-20 tokens as Coins.</p>
                         </b-card>
                     </b-col>
                     <b-col md="6">
