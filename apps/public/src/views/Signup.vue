@@ -38,7 +38,7 @@ export default class Signup extends Vue {
         if (this.$route.query.signup_plan) {
             url.searchParams.append('signup_plan', String(this.$route.query.signup_plan));
         }
-        window.open(url);
+        window.location.href = url.toString();
     }
 }
 </script>
