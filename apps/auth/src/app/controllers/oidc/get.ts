@@ -44,7 +44,7 @@ export const callbackPostAuth = async (
 
     // No matter the session state params.return_url will redirect to the client app
     if (params.return_url && params.return_url.startsWith(DASHBOARD_URL)) {
-        hubspot.upsert({ email: account.email });
+        hubspot.upsert({ email: account.email, plan: account.plan });
     }
 
     // If a referral code is present in the params store it for the authenticated account

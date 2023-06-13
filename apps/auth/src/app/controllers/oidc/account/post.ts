@@ -71,6 +71,7 @@ export async function controller(req: Request, res: Response) {
             lastname: account.lastName,
             website: account.website,
             company: account.organisation,
+            plan: account.plan,
         });
     }
 

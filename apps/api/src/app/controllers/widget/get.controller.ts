@@ -120,7 +120,7 @@ const controller = async (req: Request, res: Response) => {
         createURL() {
             const parentUrl = new URL(window.location.href)
             const path = parentUrl.searchParams.get('thx_widget_path');
-            const { widgetUrl, poolId, chainId, origin, theme, expired, logoUrl, title } = this.settings;
+            const { widgetUrl, poolId, chainId, origin, theme, expired, logoUrl, backgroundUrl, title } = this.settings;
             const url = new URL(widgetUrl);
 
             if (path) {
@@ -132,6 +132,7 @@ const controller = async (req: Request, res: Response) => {
             url.searchParams.append('chainId', chainId);
             url.searchParams.append('theme', theme);
             url.searchParams.append('logoUrl', logoUrl);
+            url.searchParams.append('backgroundUrl', backgroundUrl);
             url.searchParams.append('title', title);
             url.searchParams.append('expired', expired);
             
@@ -440,6 +441,7 @@ const controller = async (req: Request, res: Response) => {
         chainId: '${pool.chainId}',
         title: '${pool.settings.title}',
         logoUrl: '${brand && brand.logoImgUrl ? brand.logoImgUrl : AUTH_URL + '/img/logo-padding.png'}',
+        backgroundUrl: '${brand && brand.backgroundImgUrl ? brand.backgroundImgUrl : ''}',
         iconImg: '${widget.iconImg || ''}',
         message: '${widget.message || ''}',
         align: '${widget.align || 'right'}',

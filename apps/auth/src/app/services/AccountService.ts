@@ -245,7 +245,7 @@ export class AccountService {
         account.active = data.active;
         account.email = data.email;
         account.variant = data.variant;
-        account.plan = AccountPlanType.Free;
+        account.plan = data.plan;
 
         return await account.save();
     }

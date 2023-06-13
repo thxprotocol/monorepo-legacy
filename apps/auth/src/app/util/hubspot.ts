@@ -99,7 +99,7 @@ export const hubspot = {
         const filters = [{ propertyName: 'email', operator: 'EQ', value: props.email }];
         const publicObjectSearchRequest = {
             filterGroups: [{ filters }],
-            properties: ['firstname', 'lastname', 'email', 'associatedCompanyId'],
+            properties: ['firstname', 'lastname', 'email', 'plan', 'associatedCompanyId'],
             limit: 1,
         } as PublicObjectSearchRequest;
 

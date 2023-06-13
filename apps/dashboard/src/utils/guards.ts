@@ -55,6 +55,7 @@ export function redirectSignup(to: Route) {
         signupEmail: to.query.signup_email,
         signupPlan: to.query.signup_plan,
         signupOffer: to.query.signup_offer,
+        referralCode: to.query.referralCode,
     });
 }
 
