@@ -50,7 +50,7 @@ export default class Signup extends Vue {
             url.searchParams.append('signup_offer', String(this.$route.query.signup_offer));
         }
 
-        window.open(url, '_blank');
+        window.open(url, '_self');
     }
 }
 </script>
