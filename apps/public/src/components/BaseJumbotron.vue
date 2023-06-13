@@ -123,8 +123,6 @@ export default class BaseJumbotron extends Vue {
         if (this.signupEmail) {
             url.searchParams.append('signup_email', this.signupEmail);
         }
-        console.log(url);
-        debugger;
         window.open(url, '_blank');
     }
 }

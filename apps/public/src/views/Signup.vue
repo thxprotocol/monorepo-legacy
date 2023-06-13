@@ -30,15 +30,27 @@ const META_DESCRIPTION = '';
 })
 export default class Signup extends Vue {
     mounted() {
-        const ref = window.localStorage.getItem(`thx:widget:${WIDGET_ID}:ref`) as string;
         const url = new URL(DASHBOARD_URL);
+        url.pathname = 'signup';
+
+        const ref = window.localStorage.getItem(`thx:widget:${WIDGET_ID}:ref`) as string;
         if (ref) {
             url.searchParams.append('referralCode', ref);
         }
+
         if (this.$route.query.signup_plan) {
             url.searchParams.append('signup_plan', String(this.$route.query.signup_plan));
         }
-        window.location.href = url.toString();
+
+        if (this.$route.query.signup_email) {
+            url.searchParams.append('signup_email', String(this.$route.query.signup_email));
+        }
+
+        if (this.$route.query.signup_offer) {
+            url.searchParams.append('signup_offer', String(this.$route.query.signup_offer));
+        }
+
+        window.open(url, '_blank');
     }
 }
 </script>
