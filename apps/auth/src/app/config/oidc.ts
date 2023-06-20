@@ -55,6 +55,10 @@ const config: Configuration = {
             },
         };
     },
+    routes: {
+        authorization: '/authorize',
+        userinfo: '/userinfo',
+    },
     extraParams: [
         'claim_id',
         'reward_hash',
