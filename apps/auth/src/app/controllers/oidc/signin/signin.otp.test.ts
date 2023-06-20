@@ -42,7 +42,7 @@ describe('Sign In', () => {
         const otp = '00000',
             email = 'fake.user@thx.network';
 
-        it('GET /auth', async () => {
+        it('GET /authorize', async () => {
             const params = new URLSearchParams({
                 client_id: clientId,
                 redirect_uri: redirectUri,
@@ -54,7 +54,7 @@ describe('Sign In', () => {
                 return_url: DASHBOARD_URL,
             });
 
-            const res = await http.get(`/auth?${params.toString()}`).send();
+            const res = await http.get(`/authorize?${params.toString()}`).send();
 
             expect(res.status).toEqual(303);
             expect(res.header.location).toMatch(new RegExp('/oidc/.*'));

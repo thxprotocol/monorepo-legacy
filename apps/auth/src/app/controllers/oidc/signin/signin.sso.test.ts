@@ -52,7 +52,7 @@ describe('SSO Sign In', () => {
             return_url: DASHBOARD_URL,
         });
 
-        const authRes = await http.get(`/auth?${params.toString()}`).send();
+        const authRes = await http.get(`/authorize?${params.toString()}`).send();
 
         expect(authRes.status).toEqual(303);
         expect(authRes.header.location).toMatch(new RegExp('/oidc/.*'));
@@ -97,7 +97,7 @@ describe('SSO Sign In', () => {
             const res = await http.get('/oidc/callback/google?' + params.toString());
 
             expect(res.status).toBe(302);
-            expect(res.headers['location']).toContain('/auth/');
+            expect(res.headers['location']).toContain('/authorize/');
         });
     });
 
@@ -126,7 +126,7 @@ describe('SSO Sign In', () => {
             const res = await http.get('/oidc/callback/twitter?' + params.toString());
 
             expect(res.status).toBe(302);
-            expect(res.headers['location']).toContain('/auth/');
+            expect(res.headers['location']).toContain('/authorize/');
         });
     });
 
@@ -149,7 +149,7 @@ describe('SSO Sign In', () => {
             const res = await http.get('/oidc/callback/github?' + params.toString());
 
             expect(res.status).toBe(302);
-            expect(res.headers['location']).toContain('/auth/');
+            expect(res.headers['location']).toContain('/authorize/');
         });
     });
 });

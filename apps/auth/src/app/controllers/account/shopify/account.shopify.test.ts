@@ -86,7 +86,7 @@ describe('Account Controller', () => {
             const otp = '00000',
                 email = 'fake.user@thx.network';
 
-            it('GET /auth', async () => {
+            it('GET /authorize', async () => {
                 const params = new URLSearchParams({
                     client_id: clientId,
                     redirect_uri: redirectUri,
@@ -98,7 +98,7 @@ describe('Account Controller', () => {
                     return_url: DASHBOARD_URL,
                 });
 
-                const res = await http.get(`/auth?${params.toString()}`).send();
+                const res = await http.get(`/authorize?${params.toString()}`).send();
 
                 expect(res.status).toEqual(303);
                 expect(res.header.location).toMatch(new RegExp('/oidc/.*'));
@@ -134,10 +134,10 @@ describe('Account Controller', () => {
                 urlParts = res.header.location.split('/');
             });
 
-            it('POST /auth/:uid', async () => {
-                const r = await http.get(`/auth/${urlParts[urlParts.length - 1]}`);
+            it('POST /authorize/:uid', async () => {
+                const r = await http.get(`/authorize/${urlParts[urlParts.length - 1]}`);
                 urlParts = r.header.location.split('/');
-                await http.get(`/auth/${urlParts[urlParts.length - 1]}`);
+                await http.get(`/authorize/${urlParts[urlParts.length - 1]}`);
             });
         });
 
@@ -233,7 +233,7 @@ describe('Account Controller', () => {
                     });
             });
 
-            it('GET /auth', async () => {
+            it('GET /authorize', async () => {
                 const params = new URLSearchParams({
                     client_id: clientId,
                     redirect_uri: redirectUri,
@@ -246,7 +246,7 @@ describe('Account Controller', () => {
                     return_url: DASHBOARD_URL,
                 });
 
-                const res = await http.get(`/auth?${params.toString()}`).send();
+                const res = await http.get(`/authorize?${params.toString()}`).send();
 
                 expect(res.status).toEqual(303);
                 expect(res.header.location).toMatch(new RegExp('/oidc/.*'));
