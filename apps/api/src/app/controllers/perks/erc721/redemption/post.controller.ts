@@ -45,9 +45,7 @@ const controller = async (req: Request, res: Response) => {
 
     const account = await AccountProxy.getById(req.auth.sub);
 
-    let token: ERC721TokenDocument | ERC1155TokenDocument;
-
-    const metadata = await PerkService.getMetadata(perk);
+    let token: ERC721TokenDocument | ERC1155TokenDocument, metadata: ERC721MetadataDocument | ERC1155MetadataDocument;
 
     // Mint a token if metadataId is present
     if (perk.metadataId) {
@@ -58,6 +56,7 @@ const controller = async (req: Request, res: Response) => {
 
         // Handle erc1155 mints
         if (perk.erc1155Id) {
+            metadata = await PerkService.getMetadata(perk);
             token = await ERC1155Service.mint(
                 pool,
                 nft as ERC1155Document,
@@ -87,6 +86,7 @@ const controller = async (req: Request, res: Response) => {
                 String(perk.erc1155Amount),
             );
         }
+        metadata = await PerkService.getMetadata(perk, token);
     }
 
     const erc721PerkPayment = await ERC721PerkPayment.create({

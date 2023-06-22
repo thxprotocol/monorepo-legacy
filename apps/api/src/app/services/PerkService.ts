@@ -46,11 +46,12 @@ export async function verifyOwnership(
 }
 
 export async function getMetadata(perk: ERC721PerkDocument, token?: ERC721TokenDocument | ERC1155TokenDocument) {
+    const metadataId = perk.metadataId || (token && token.metadataId);
     if (perk.erc721Id) {
-        return await ERC721Service.findMetadataById(token ? token.metadataId : perk.metadataId);
+        return await ERC721Service.findMetadataById(metadataId);
     }
     if (perk.erc1155Id) {
-        return await ERC1155Service.findMetadataById(token ? token.metadataId : perk.metadataId);
+        return await ERC1155Service.findMetadataById(metadataId);
     }
 }
 
