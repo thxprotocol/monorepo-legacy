@@ -359,7 +359,7 @@
                                         <td>
                                             Dedicated Campaign Manager<br />
                                             <span class="text-gray small">
-                                                Opt-in campaign manager during the first free months of your campaign.
+                                                Opt-in campaign manager during the first three months of your campaign.
                                             </span>
                                         </td>
                                         <td><i class="fas fa-times-circle"></i></td>
