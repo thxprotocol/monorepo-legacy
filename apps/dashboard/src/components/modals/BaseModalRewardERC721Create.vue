@@ -290,10 +290,6 @@ export default class ModalRewardERC721Create extends Vue {
                 break;
         }
 
-        if (this.expiryDate) {
-            expiryDate = this.expiryDate;
-        }
-
         const payload = {
             page: 1,
             title: this.title,
@@ -304,7 +300,7 @@ export default class ModalRewardERC721Create extends Vue {
             erc1155Amount: this.erc1155Amount,
             tokenId: this.tokenId,
             metadataIds: JSON.stringify(this.metadataId ? [this.metadataId] : this.selectedMetadataIds),
-            expiryDate,
+            expiryDate: this.expiryDate ? new Date(this.expiryDate).toISOString() : undefined,
             limit: this.limit,
             pointPrice: this.pointPrice,
             price: this.price,

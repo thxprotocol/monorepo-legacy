@@ -11,7 +11,7 @@ const validation = [
     body('description').exists().isString(),
     body('amount').exists().isInt({ gt: 0 }),
     body('erc20Id').exists().isMongoId(),
-    body('expiryDate').optional().isString(),
+    body('expiryDate').optional().isISO8601(),
     body('pointPrice').optional().isNumeric(),
     check('file')
         .optional()

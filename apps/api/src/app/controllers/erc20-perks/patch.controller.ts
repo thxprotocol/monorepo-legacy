@@ -8,7 +8,7 @@ const validation = [
     param('id').isMongoId(),
     body('title').isString(),
     body('description').isString(),
-    body('expiryDate').optional().isString(),
+    body('expiryDate').optional().isISO8601(),
     body('limit').isNumeric(),
     body('erc20Id').isMongoId(),
     check('file')

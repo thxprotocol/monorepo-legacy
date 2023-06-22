@@ -20,7 +20,7 @@ const validation = [
     body('metadataIds').optional().isString(),
     body('claimAmount').exists().isInt({ lt: 1000 }),
     body('claimLimit').exists().isInt(),
-    body('expiryDate').optional().isString(),
+    body('expiryDate').optional().isISO8601(),
     body('limit').optional().isInt(),
     body('price').isInt(),
     body('priceCurrency').isString(),

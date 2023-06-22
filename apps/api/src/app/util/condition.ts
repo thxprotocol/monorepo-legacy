@@ -41,24 +41,6 @@ export const validateCondition = async (account: IAccount, reward: TPointReward)
                 if (!result) return 'Discord: Server is not joined.';
                 break;
             }
-            case RewardConditionInteraction.ShopifyOrderAmount: {
-                const pool = await PoolService.getById(reward.poolId);
-                const result = await ShopifyDataProxy.validateOrderAmount(pool, account, reward.content);
-                if (!result) return `Shopify: Order amount for ${account.email} not sufficient.`;
-                break;
-            }
-            case RewardConditionInteraction.ShopifyTotalSpent: {
-                const pool = await PoolService.getById(reward.poolId);
-                const result = await ShopifyDataProxy.validateTotalSpent(pool, account, reward.content);
-                if (!result) return `Shopify: Total spent for ${account.email} not sufficient.`;
-                break;
-            }
-            case RewardConditionInteraction.ShopifyNewsletterSubscription: {
-                const pool = await PoolService.getById(reward.poolId);
-                const result = await ShopifyDataProxy.validateNewsletterSubscription(pool, account);
-                if (!result) return `Shopify: No subscription found for ${account.email}`;
-                break;
-            }
         }
     } catch (error) {
         return 'Could not validate the platform condition for this claim.';

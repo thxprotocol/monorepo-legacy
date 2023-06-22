@@ -1,5 +1,5 @@
 import { THXClient } from '../../index';
-import { RewardConditionInteraction } from '../constants/RewardConditionInteraction';
+import { RewardConditionInteraction } from '@thxnetwork/types/enums';
 import BaseManager from './BaseManager';
 
 class ERC721Manager extends BaseManager {

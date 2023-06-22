@@ -27,7 +27,7 @@ const validation = [
     body('metadataIds').optional().isString(),
     body('tokenId').optional().isString(),
     body('pointPrice').optional().isNumeric(),
-    body('expiryDate').optional().isString(),
+    body('expiryDate').optional().isISO8601(),
     body('limit').optional().isInt(),
     body('price').isInt(),
     body('priceCurrency').isString(),

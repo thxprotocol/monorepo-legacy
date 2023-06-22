@@ -56,8 +56,6 @@ import BaseDropdownYoutubeVideo from '../dropdowns/BaseDropdownYoutubeVideo.vue'
 import BaseDropdownTwitterTweets from '../dropdowns/BaseDropdownTwitterTweets.vue';
 import BaseDropdownTwitterUsers from '../dropdowns/BaseDropdownTwitterUsers.vue';
 import BaseDropdownDiscordGuilds from '../dropdowns/BaseDropdownDiscordGuilds.vue';
-import BaseDropdownShopifyTotalSpent from '../dropdowns/BaseDropdownShopifyTotalSpent.vue';
-import BaseDropdownShopifyOrderAmount from '../dropdowns/BaseDropdownShopifyOrderAmount.vue';
 import { IAccount } from '@thxnetwork/dashboard/types/account';
 
 @Component({
@@ -69,15 +67,12 @@ import { IAccount } from '@thxnetwork/dashboard/types/account';
         BaseDropdownYoutubeVideo,
         BaseDropdownTwitterTweets,
         BaseDropdownTwitterUsers,
-        BaseDropdownShopifyTotalSpent,
-        BaseDropdownShopifyOrderAmount,
     },
     computed: mapGetters({
         profile: 'account/profile',
         youtube: 'account/youtube',
         twitter: 'account/twitter',
         discord: 'account/discord',
-        shopify: 'account/shopify',
     }),
 })
 export default class BaseCardRewardCondition extends Vue {
@@ -128,12 +123,6 @@ export default class BaseCardRewardCondition extends Vue {
 
         this.interaction = interaction;
         this.interactionComponent = getInteractionComponent(this.interaction.type);
-
-        // Exception to the rest of the pattern...
-        if (interaction.type === RewardConditionInteraction.ShopifyNewsletterSubscription) {
-            this.content = this.profile.shopifyStoreUrl as string;
-        }
-
         this.change();
     }
 

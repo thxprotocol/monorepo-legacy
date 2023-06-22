@@ -71,9 +71,6 @@
                 <template v-if="selectedPool">
                     <base-navbar-nav :routes="configRoutes" />
                     <hr />
-                    <label class="px-3 text-muted">Reward Shop </label>
-                    <base-navbar-nav :routes="perkRoutes" />
-                    <hr />
                 </template>
                 <label class="px-3 text-muted">Smart Contracts</label>
                 <base-navbar-nav :routes="tokenRoutes" />
@@ -136,6 +133,11 @@ export default class BaseNavbar extends Vue {
     get tokenRoutes() {
         return [
             {
+                path: '/pools',
+                label: 'Campaigns',
+                iconClasses: 'fas fa-chart-pie',
+            },
+            {
                 path: '/coins',
                 label: 'Coins',
                 iconClasses: 'fas fa-coins',
@@ -144,32 +146,6 @@ export default class BaseNavbar extends Vue {
                 path: '/nft',
                 label: 'NFT',
                 iconClasses: 'fas fa-palette',
-            },
-            {
-                path: '/pools',
-                label: 'Campaigns',
-                iconClasses: 'fas fa-chart-pie',
-            },
-        ];
-    }
-
-    get perkRoutes() {
-        if (!this.selectedPool) return;
-        return [
-            {
-                path: `/pool/${this.selectedPool._id}/erc20-perks`,
-                label: 'Coin',
-                iconClasses: 'fas fa-coins',
-            },
-            {
-                path: `/pool/${this.selectedPool._id}/erc721-perks`,
-                label: 'NFT',
-                iconClasses: 'fas fa-award',
-            },
-            {
-                path: `/pool/${this.selectedPool._id}/shopify-perks`,
-                label: 'Shopify',
-                iconClasses: 'fas fa-shopping-basket',
             },
         ];
     }
@@ -186,6 +162,16 @@ export default class BaseNavbar extends Vue {
                 path: `/pool/${this.selectedPool._id}/quests`,
                 label: 'Quests',
                 iconClasses: 'fas fa-trophy',
+            },
+            {
+                path: `/pool/${this.selectedPool._id}/erc20-perks`,
+                label: 'Coin Rewards',
+                iconClasses: 'fas fa-coins',
+            },
+            {
+                path: `/pool/${this.selectedPool._id}/erc721-perks`,
+                label: 'NFT Rewards',
+                iconClasses: 'fas fa-award',
             },
             {
                 path: `/pool/${this.selectedPool._id}/settings`,
