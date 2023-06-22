@@ -77,3 +77,4 @@ export const LOCAL_CERT_KEY = process.env.LOCAL_CERT_KEY;
 export const MIXPANEL_TOKEN = process.env.MIXPANEL_TOKEN;
 export const CYPRESS_EMAIL = process.env.CYPRESS_EMAIL || 'cypress@thx.network';
 export const HUBSPOT_ACCESS_TOKEN = process.env.HUBSPOT_ACCESS_TOKEN;
+export const BOT_TOKEN = process.env.BOT_TOKEN;

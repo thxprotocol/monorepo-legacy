@@ -192,10 +192,6 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-    // if (to.query.referralCode) {
-    //     await redirectReferralCode(to);
-    // }
-
     try {
         const user = await store.dispatch('account/getUser');
         if (user && to.name) track('UserVisits', [user.sub, to.name, to.params as unknown as string[]]);

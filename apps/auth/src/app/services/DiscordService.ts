@@ -1,4 +1,4 @@
-import { AUTH_URL, DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET } from '../config/secrets';
+import { AUTH_URL, BOT_TOKEN, DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET } from '../config/secrets';
 import { AccountDocument } from '../models/Account';
 import CommonOauthLoginOptions from '../types/CommonOauthLoginOptions';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
@@ -139,6 +139,39 @@ class DiscordService {
         if (!r.data) throw new Error(ERROR_NO_DATA);
 
         return r.data;
+    }
+
+    static async addToGuild(accessToken: string, userId: string, guildId: string) {
+        const { data } = await discordClient({
+            method: 'PUT',
+            url: `/guilds/${guildId}/members/${userId}`,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Bot ${BOT_TOKEN}`,
+            },
+            data: {
+                access_token: accessToken,
+            },
+        });
+        return data;
+    }
+
+    static async sendMessage(accessToken: string, channelId: string, content: string) {
+        const { data } = await discordClient({
+            method: 'POST',
+            url: `/channels/${channelId}/messages`,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Bot ${BOT_TOKEN}`,
+            },
+            data: {
+                access_token: accessToken,
+                content,
+            },
+        });
+        return data;
     }
 
     static async getGuilds(accessToken: string) {

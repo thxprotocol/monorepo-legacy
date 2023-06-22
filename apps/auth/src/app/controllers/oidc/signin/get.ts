@@ -17,6 +17,7 @@ async function controller(req: Request, res: Response) {
     const alert = {};
     const isWidget = params.return_url ? params.return_url.startsWith(WIDGET_URL) : false;
     const isDashboard = params.return_url ? params.return_url.startsWith(DASHBOARD_URL) : false;
+    const isSignup = ['1', '2'].includes(params.signup_plan);
 
     let claim,
         brand,
@@ -105,7 +106,7 @@ async function controller(req: Request, res: Response) {
 
     res.render('signin', {
         uid,
-        params: { ...params, ...brand, claim, isWidget, isDashboard, shopifyStoreUrl },
+        params: { ...params, ...brand, claim, isWidget, isDashboard, isSignup, shopifyStoreUrl },
         alert,
     });
 }

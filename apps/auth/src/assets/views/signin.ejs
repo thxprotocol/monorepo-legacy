@@ -15,6 +15,37 @@
     }
   }
 
+  hr {
+    margin: 2rem 0;
+    position: relative;
+  }
+
+  hr.or-separator:after {
+    content: 'OR';
+    background: white;
+    color: gray;
+    width: 40px;
+    font-size: .8rem;
+    margin-top: -.7rem;
+    margin-left: -20px;
+    left: 50%;
+    text-align: center;
+    position: absolute;
+  }
+
+  .btn-discord {
+    background-color: #5865F2;
+    color: white;
+    border-radius: 25px;
+    height: 50px;
+    justify-content: center;
+  }
+
+  .btn-discord:hover {
+    background-color: #3f4abe;
+    color: white;
+  }
+
   .card {
     border: 0;
   }
@@ -44,7 +75,7 @@
     text-decoration: none;
   }
 </style>
-<div class="<%- (['1','2'].includes(params.signup_plan)) ? 'col-md-10 col-xl-8 offset-md-1 offset-xl-2' : 'col-md-6 offset-md-3 col-xl-4 offset-xl-4' %>  fade-in"
+<div class="<%- (params.isSignup) ? 'col-md-10 col-xl-8 offset-md-1 offset-xl-2' : 'col-md-6 offset-md-3 col-xl-4 offset-xl-4' %>  fade-in"
      @vue:mounted="onMounted" :class="{ 'is-mounted': isMounted }">
 
   <div class="text-center pb-4 pt-3">
@@ -66,7 +97,7 @@
     <% } %>
 
     <div class="row">
-      <% if(['1','2'].includes(params.signup_plan)) { %>
+      <% if(params.isSignup) { %>
       <div class="col-md-6 order-md-1">
         <div class="bg-dark p-sm-4 h-100">
 
@@ -187,10 +218,10 @@
       </div>
       <% } %>
 
-      <div class="<%- (['1','2'].includes(params.signup_plan)) ? 'col-md-6 order-md-0' : 'col-md-12' %>">
+      <div class="<%- (params.isSignup) ? 'col-md-6 order-md-0' : 'col-md-12' %>">
         <div class="card-body p-sm-4 pb-sm-0">
 
-          <% if (params.signup_offer == 'true') { %>
+          <% if (params.signup_offer == 'true' && params.signup_plan == '2') { %>
           <div class="alert alert-info">
             <i class="fas fa-info-circle mr-1"></i>
             You have received a
@@ -206,31 +237,43 @@
           </div>
           <% } %>
 
-          <% if (locals.alert && alert.message) { %>
-          <div class="alert alert-<%= alert.variant %>">
-            <%- alert.message %>
-          </div>
-          <% } %>
-
-          <% if(params.shopifyStoreUrl) { %>
-          <div class="alert alert-success">
-            <i class="fab fa-shopify mr-2"></i> Great! You are installing our Shopify app
-            for:<br /><strong><%- params.shopifyStoreUrl %></strong>.
-          </div>
-          <% } %>
-
           <% if(params.referral_code) { %>
           <div class="alert alert-info">
             <i class="fas fa-comments mr-2"></i> We have detected a referral code!
           </div>
           <% } %>
 
+          <% if (locals.alert && alert.message) { %>
+          <div class="alert alert-<%= alert.variant %>">
+            <%- alert.message %>
+          </div>
+          <% } %>
+
+          <% if (params.isSignup) { %>
+          <h2 class="h3 mb-3 font-weight-normal text-dark">Start your <strong>free trial</strong>!</h2>
+          <% } %>
+
+          <% if (params.discordLoginUrl && params.isSignup) { %>
+          <p class="text-muted">Continue with Discord to get instant access to the <a
+               href="https://discord.com/invite/TzbbSmkE7Y">#support</a> channel 🙋.</p>
+          <a class="mb-2 d-flex align-items-center btn btn-discord" href="<%= params.discordLoginUrl %>">
+            <img width="20" class="mr-2" src="/img/discord-logo.png" alt="Discord logo" />
+            <span>Continue with Discord</span>
+            <i class="fas fa-chevron-right" aria-hidden="true"></i>
+          </a>
+          <hr class="or-separator" />
+          <% } %>
+
           <form id="form-signin" action="/oidc/<%= uid %>/signin" method="post">
+
             <% if(params.emailPasswordEnabled) { %>
-            <p class="text-muted">Use your e-mail</p>
+            <p class="text-muted">
+              <%- (params.isSignup) ? 'Use your work e-mail' : 'Use your e-mail' %>
+            </p>
             <div class="form-group">
-              <input placeholder="E-mail" class="form-control" class="form-control" required type="email" name="email"
-                     v-model="email" :class="{
+              <input placeholder="<%- (params.isSignup) ? 'yourname@work-email.com' : 'yourname@example.com' %>"
+                     class="form-control" class="form-control" required type="email" name="email" v-model="email"
+                     :class="{
                         'is-valid': email && !isDisabled, 'is-invalid': email && isDisabled
                     }">
             </div>
@@ -281,9 +324,9 @@
             <input type="hidden" name="isWidget" value="<%= params.isWidget %>" />
 
             <% if(params.emailPasswordEnabled) { %>
-            <button type="submit" class="btn rounded-pill btn-primary btn-block mb-4"
+            <button type="submit" class="btn rounded-pill btn-dark btn- btn-block mb-4"
                     :class="{'disabled': isDisabled || isLoading}" @click="onClickSubmit">
-              <%- (['1','2'].includes(params.signup_plan)) ? 'Start <strong>free</strong> trial' : 'Send one-time password'%>
+              <%- (params.isSignup) ? 'Continue with e-mail' : 'Send one-time password'%>
               <i class="fas fa-chevron-right" aria-hidden="true"></i><br />
             </button>
             <% } %>
@@ -306,11 +349,11 @@
           </form>
 
           <% if (params.trustedProviderAvailable) { %>
-          <hr />
+          <hr class="or-separator" />
           <% } %>
 
           <% if (params.trustedProviderAvailable) { %>
-          <p class="text-muted">Continue with a trusted provider</p>
+          <p class="text-muted">Use a trusted provider</p>
           <% } %>
 
           <div class="d-flex align-items-center justify-content-start flex-wrap">
@@ -328,7 +371,7 @@
             </a>
             <% } %>
 
-            <% if (params.discordLoginUrl) { %>
+            <% if (params.discordLoginUrl && !params.isSignup) { %>
             <a style="width: 40px; height: 40px;" class="mr-2 mb-2 d-block p-1 btn btn-light"
                href="<%= params.discordLoginUrl %>" data-toggle="tooltip" title="Sign in with Discord">
               <img width="20" src="/img/discord-logo.png" alt="Discord logo" />
