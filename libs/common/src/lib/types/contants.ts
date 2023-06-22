@@ -1,3 +1,5 @@
+import { Goal, Role } from './enums';
+
 export const DEFAULT_ELEMENTS = {
     btnBg: {
         label: 'Button',
@@ -66,4 +68,21 @@ export const DEFAULT_COLORS = {
         label: 'Info',
         color: '#17a2b8',
     },
+};
+
+export const roleLabelMap = {
+    [Role.None]: 'Select a role',
+    [Role.GrowthHacker]: 'Growth Hacker',
+    [Role.Marketer]: 'Marketer',
+    [Role.CommunityManager]: 'Community Manager',
+    [Role.Developer]: 'Developer',
+    [Role.Other]: 'Other',
+};
+
+export const goalLabelMap = {
+    [Goal.Reward]: 'Reward users in my game or app',
+    [Goal.Retain]: 'Retain players or members',
+    [Goal.Referral]: 'Set up referrals',
+    [Goal.Social]: 'Integrate rewards in social channels',
+    [Goal.Mint]: 'Mint tokens',
 };

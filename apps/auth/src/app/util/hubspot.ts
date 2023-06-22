@@ -1,7 +1,8 @@
 import * as Hubspot from '@hubspot/api-client';
 import { HUBSPOT_ACCESS_TOKEN, NODE_ENV } from '../config/secrets';
 import { PublicObjectSearchRequest } from '@hubspot/api-client/lib/codegen/crm/contacts';
-import { AccountPlanType } from '@thxnetwork/types/enums';
+import { AccountPlanType, Goal, Role } from '@thxnetwork/types/enums';
+import { roleLabelMap, goalLabelMap } from '@thxnetwork/types/contants';
 
 const hubspotClient = new Hubspot.Client({ accessToken: HUBSPOT_ACCESS_TOKEN });
 
@@ -14,6 +15,8 @@ export const hubspot = {
         company?: string;
         website?: string;
         plan?: AccountPlanType;
+        role?: Role;
+        goals?: Goal[];
     }) {
         if (!HUBSPOT_ACCESS_TOKEN || NODE_ENV !== 'production') return;
 
@@ -79,6 +82,8 @@ export const hubspot = {
                 email: props.email,
                 signup: 'true',
                 plan: AccountPlanType[props.plan],
+                role: props.role ? roleLabelMap[props.role] : '',
+                goal: props.goals.length ? JSON.stringify(props.goals.map((goal) => goalLabelMap[goal])) : '',
             },
         };
 
@@ -99,7 +104,7 @@ export const hubspot = {
         const filters = [{ propertyName: 'email', operator: 'EQ', value: props.email }];
         const publicObjectSearchRequest = {
             filterGroups: [{ filters }],
-            properties: ['firstname', 'lastname', 'email', 'plan', 'associatedCompanyId'],
+            properties: ['firstname', 'lastname', 'email', 'plan', 'role', 'goal', 'associatedCompanyId'],
             limit: 1,
         } as PublicObjectSearchRequest;
 

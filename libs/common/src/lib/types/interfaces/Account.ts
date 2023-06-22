@@ -2,6 +2,7 @@ import { AccountPlanType, AccessTokenKind, Role, Goal, ChainId } from '@thxnetwo
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 
 export type TAccount = {
+    _id: string;
     sub: string;
     firstName: string;
     lastName: string;

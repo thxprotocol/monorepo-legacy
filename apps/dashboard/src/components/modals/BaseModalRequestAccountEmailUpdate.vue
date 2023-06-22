@@ -95,23 +95,7 @@ import type { TAccount } from '@thxnetwork/types/interfaces';
 import { Goal, Role } from '@thxnetwork/types/enums';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-
-const roleLabelMap = {
-    [Role.None]: 'Select a role',
-    [Role.GrowthHacker]: 'Growth Hacker',
-    [Role.Marketer]: 'Marketer',
-    [Role.CommunityManager]: 'Community Manager',
-    [Role.Developer]: 'Developer',
-    [Role.Other]: 'Other',
-};
-
-const goalLabelMap = {
-    [Goal.Reward]: 'Reward users in my game or app',
-    [Goal.Retain]: 'Retain players or members',
-    [Goal.Referral]: 'Set up referrals',
-    [Goal.Social]: 'Integrate rewards in social channels',
-    [Goal.Mint]: 'Mint tokens',
-};
+import { goalLabelMap, roleLabelMap } from '@thxnetwork/types/contants';
 
 export function validateEmail(email: string) {
     return String(email)
