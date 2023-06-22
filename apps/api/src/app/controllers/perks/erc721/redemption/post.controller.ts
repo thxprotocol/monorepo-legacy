@@ -50,7 +50,7 @@ const controller = async (req: Request, res: Response) => {
     const metadata = await PerkService.getMetadata(perk);
 
     // Mint a token if metadataId is present
-    if (metadata) {
+    if (perk.metadataId) {
         // Handle erc721 mints
         if (perk.erc721Id) {
             token = await ERC721Service.mint(pool, nft as ERC721Document, metadata as ERC721MetadataDocument, wallet);
