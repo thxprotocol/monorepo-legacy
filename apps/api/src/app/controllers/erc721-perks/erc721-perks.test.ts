@@ -84,7 +84,7 @@ describe('ERC721 Perks', () => {
             price: 0,
             priceCurrency: 'USD',
             pointPrice: 200,
-            expiryDate: expiryDate.toString(),
+            expiryDate: new Date(expiryDate).toISOString(),
             limit: 0,
             claimAmount: 0,
             isPromoted: true,

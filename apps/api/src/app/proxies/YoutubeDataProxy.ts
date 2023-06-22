@@ -1,4 +1,4 @@
-import type { IAccount } from '@thxnetwork/api/models/Account';
+import type { TAccount } from '@thxnetwork/types/interfaces';
 import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
 import { THXError } from '@thxnetwork/api/util/errors';
 
@@ -7,7 +7,7 @@ class NoYoutubeDataError extends THXError {
 }
 
 export default class YoutubeDataProxy {
-    static async getUserId(account: IAccount) {
+    static async getUserId(account: TAccount) {
         const { data } = await authClient({
             method: 'GET',
             url: `/account/${account.sub}/google/user`,
@@ -32,7 +32,7 @@ export default class YoutubeDataProxy {
         return { isAuthorized: r.data.isAuthorized, channels: r.data.channels, videos: r.data.videos };
     }
 
-    static async validateLike(account: IAccount, channelItem: string) {
+    static async validateLike(account: TAccount, channelItem: string) {
         const r = await authClient({
             method: 'GET',
             url: `/account/${account.sub}/google/youtube/like/${channelItem}`,
@@ -46,7 +46,7 @@ export default class YoutubeDataProxy {
         return r.data.result;
     }
 
-    static async validateSubscribe(account: IAccount, channelItem: string) {
+    static async validateSubscribe(account: TAccount, channelItem: string) {
         const r = await authClient({
             method: 'GET',
             url: `/account/${account.sub}/google/youtube/subscribe/${channelItem}`,

@@ -1,6 +1,5 @@
-import { Request, Response } from 'express';
-import { VERSION } from '@thxnetwork/api/config/secrets';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
+import { Request, Response } from 'express';
 import { recoverSigner } from '@thxnetwork/api/util/network';
 
 export default {
@@ -11,8 +10,8 @@ export default {
             address = recoverSigner(req.body.authRequestMessage, req.body.authRequestSignature);
         }
 
-        await AccountProxy.update(req.auth.sub, { ...req.body, address });
+        const account = await AccountProxy.update(req.auth.sub, { ...req.body, address });
 
-        res.redirect(303, `/${VERSION}/account`);
+        res.json(account);
     },
 };

@@ -1,7 +1,7 @@
 <template>
     <b-modal
         size="lg"
-        title="Your e-mail address is missing!"
+        title="Welcome!👋 Please tell us a bit about yourself."
         no-close-on-backdrop
         no-close-on-esc
         centered
@@ -10,25 +10,79 @@
         :hide-footer="true"
         id="modalRequestAccountEmailUpdate"
     >
-        <p class="text-muted">
-            In order for us to deliver the best product experience we require your e-mail address. We promise not too
-            spam you too much!
-        </p>
-        <b-alert show variant="warning">
-            <i class="fas fa-exclamation-triangle mr-2"></i>
-            Please visit your account page, provide and confirm your email address.
-        </b-alert>
-        <b-button block class="rounded-pill mt-3" variant="primary" :to="'/account'">
-            Set e-mail address
+        <b-form-group label="My role is">
+            <b-form-select v-model="role">
+                <b-form-select-option
+                    :value="key"
+                    :disabled="key == Roles.None"
+                    :key="key"
+                    v-for="(label, key) of roleLabelMap"
+                >
+                    {{ label }}
+                </b-form-select-option>
+            </b-form-select>
+        </b-form-group>
+
+        <b-form-group label="I want to">
+            <b-form-checkbox-group stacked name="goals" v-model="goal" :options="goalLabelMap" />
+        </b-form-group>
+        {{ account }}
+        <b-button block @click="onClickSubmit" :disabled="isSubmitDisabled" class="rounded-pill mt-3" variant="primary">
+            Continue
             <i class="fas fa-chevron-right ml-2"></i>
         </b-button>
-        <b-button block class="rounded-pill mt-3 text-muted" variant="link" :to="'/signout'"> Signout </b-button>
     </b-modal>
 </template>
 
 <script lang="ts">
+import { IAccount } from '@thxnetwork/dashboard/types/account';
+import { Goals, Roles } from '@thxnetwork/types/enums';
 import { Component, Vue } from 'vue-property-decorator';
+import { mapGetters } from 'vuex';
 
-@Component({})
-export default class BaseModalRequestAccountEmailUpdate extends Vue {}
+const roleLabelMap = {
+    [Roles.None]: 'Select a role',
+    [Roles.GrowthHacker]: 'Growth Hacker',
+    [Roles.Marketer]: 'Marketer',
+    [Roles.CommunityManager]: 'Community Manager',
+    [Roles.Developer]: 'Developer',
+    [Roles.Other]: 'Other',
+};
+
+const goalLabelMap = {
+    [Goals.Reward]: 'Reward users in my game or app',
+    [Goals.Retain]: 'Retain players or members',
+    [Goals.Referral]: 'Set up referrals',
+    [Goals.Social]: 'Integrate rewards in social channels',
+    [Goals.Mint]: 'Mint tokens',
+};
+
+@Component({
+    computed: mapGetters({
+        account: 'account/profile',
+    }),
+})
+export default class BaseModalRequestAccountEmailUpdate extends Vue {
+    Roles = Roles;
+    Goals = Goals;
+    roleLabelMap = roleLabelMap;
+    goalLabelMap = goalLabelMap;
+    role = 'none';
+    goal = [];
+    isLoadingSubmit = false;
+
+    account!: IAccount;
+
+    get isSubmitDisabled() {
+        return this.role === Roles.None || !this.goal.length;
+    }
+
+    async onClickSubmit() {
+        if (this.isSubmitDisabled || this.isLoadingSubmit) return;
+        debugger;
+        this.isLoadingSubmit = true;
+        await this.$store.dispatch('account/update', { role: this.role, goal: this.goal });
+        this.isLoadingSubmit = false;
+    }
+}
 </script>

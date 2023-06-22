@@ -89,7 +89,7 @@ describe('Pool Transfer', () => {
                     erc20Id: String(erc20._id),
                     amount,
                     pointPrice,
-                    expiryDate: expiryDate.toString(),
+                    expiryDate: new Date(expiryDate).toISOString(),
                     limit,
                     isPromoted,
                 })

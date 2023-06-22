@@ -1,4 +1,4 @@
-import type { IAccount } from '@thxnetwork/api/models/Account';
+import type { TAccount } from '@thxnetwork/types/interfaces';
 import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
 import { THXError } from '@thxnetwork/api/util/errors';
 
@@ -7,7 +7,7 @@ class NoDataError extends THXError {
 }
 
 export default class DiscordDataProxy {
-    static async getUserId(account: IAccount) {
+    static async getUserId(account: TAccount) {
         const { data } = await authClient({
             method: 'GET',
             url: `/account/${account.sub}/discord/user`,
@@ -31,7 +31,7 @@ export default class DiscordDataProxy {
 
         return { isAuthorized: r.data.isAuthorized, guilds: r.data.guilds };
     }
-    static async validateGuildJoined(account: IAccount, channelItem: string) {
+    static async validateGuildJoined(account: TAccount, channelItem: string) {
         const { data } = await authClient({
             method: 'GET',
             url: `/account/${account.sub}/discord/guild/${channelItem}`,

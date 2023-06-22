@@ -1,4 +1,4 @@
-import type { IAccount, IAccountUpdates } from '@thxnetwork/api/models/Account';
+import type { TAccount } from '@thxnetwork/types/interfaces';
 import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
 import { THXError } from '@thxnetwork/api/util/errors';
 import { Wallet } from '../models/Wallet';
@@ -36,11 +36,11 @@ async function authAccountRequest(url: string) {
 }
 
 export default class AccountProxy {
-    static async getById(sub: string): Promise<IAccount> {
+    static async getById(sub: string): Promise<TAccount> {
         return await authAccountRequest(`/account/${sub}`);
     }
 
-    static async getMany(subs: string[]): Promise<IAccount[]> {
+    static async getMany(subs: string[]): Promise<TAccount[]> {
         if (!subs.length) return [];
         const params = new URLSearchParams();
         params.append('subs', subs.join(','));
@@ -58,7 +58,7 @@ export default class AccountProxy {
         return accounts;
     }
 
-    static async getByDiscordId(discordId: string): Promise<IAccount> {
+    static async getByDiscordId(discordId: string): Promise<TAccount> {
         const r = await authClient({
             method: 'GET',
             url: `/account/discord/${discordId}`,
@@ -78,7 +78,7 @@ export default class AccountProxy {
         return await authAccountRequest(`/account/email/${email}`);
     }
 
-    static async getByAddress(address: string): Promise<IAccount> {
+    static async getByAddress(address: string): Promise<TAccount> {
         return await authAccountRequest(`/account/address/${address}`);
     }
 
@@ -101,8 +101,8 @@ export default class AccountProxy {
         }
     }
 
-    static async update(sub: string, updates: IAccountUpdates) {
-        const { status } = await authClient({
+    static async update(sub: string, updates: TAccount) {
+        const { data, status } = await authClient({
             method: 'PATCH',
             url: `/account/${sub}`,
             data: updates,
@@ -113,6 +113,8 @@ export default class AccountProxy {
 
         if (status === 422) throw new AccountApiError('A user for this e-mail already exists.');
         if (status !== 204) throw new AccountApiError('Could not update the account');
+
+        return data;
     }
 
     static async remove(sub: string) {

@@ -39,6 +39,8 @@ async function controller(req: Request, res: Response) {
             AccountVariant.SSOGoogle,
             AccountVariant.SSOTwitter,
             AccountVariant.SSODiscord,
+            AccountVariant.SSOTwitch,
+            AccountVariant.SSOGithub,
         ];
     }
 

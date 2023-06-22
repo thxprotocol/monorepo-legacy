@@ -73,7 +73,7 @@ describe('ERC20 Perks', () => {
                 erc20Id: String(erc20._id),
                 amount,
                 pointPrice,
-                expiryDate: expiryDate.toString(),
+                expiryDate: new Date(expiryDate).toISOString(),
                 limit,
                 claimAmount,
                 isPromoted,

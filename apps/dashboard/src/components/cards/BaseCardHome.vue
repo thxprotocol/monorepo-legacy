@@ -28,14 +28,8 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import BaseModalRequestAccountEmailUpdate from '@thxnetwork/dashboard/components/modals/BaseModalRequestAccountEmailUpdate.vue';
-import BaseModalOnboarding from '@thxnetwork/dashboard/components/modals/BaseModalOnboarding.vue';
 
 @Component({
-    components: {
-        BaseModalRequestAccountEmailUpdate,
-        BaseModalOnboarding,
-    },
     computed: mapGetters({
         profile: 'account/profile',
         pools: 'pools/all',

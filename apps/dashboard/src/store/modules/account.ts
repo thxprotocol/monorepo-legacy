@@ -73,7 +73,7 @@ class AccountModule extends VuexModule {
             url: '/account',
             data,
         });
-
+        debugger;
         this.context.commit('setAccount', r.data);
     }
 

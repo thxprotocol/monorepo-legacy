@@ -17,7 +17,7 @@ import { assertEvent, ExpectedEventNotFound, findEvent, parseLogs } from '@thxne
 import { getProvider } from '@thxnetwork/api/util/network';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import { type TERC721, type TERC721Metadata, type TERC721Token, ERC721TokenState } from '@thxnetwork/types/interfaces';
-import type { IAccount } from '@thxnetwork/api/models/Account';
+import { type TAccount } from '@thxnetwork/types/interfaces';
 import { WalletDocument } from '../models/Wallet';
 import { ERC721TransferDocument } from '../models/ERC721Transfer';
 import PoolService from './PoolService';
@@ -175,7 +175,7 @@ async function findTokenById(id: string): Promise<ERC721TokenDocument> {
     return ERC721Token.findById(id);
 }
 
-async function findTokensByMetadataAndSub(metadataId: string, account: IAccount): Promise<ERC721TokenDocument[]> {
+async function findTokensByMetadataAndSub(metadataId: string, account: TAccount): Promise<ERC721TokenDocument[]> {
     return ERC721Token.find({ sub: account.sub, metadataId });
 }
 

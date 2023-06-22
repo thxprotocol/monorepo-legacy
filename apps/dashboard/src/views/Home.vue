@@ -1,7 +1,7 @@
 <template>
     <div>
         <div v-if="profile">
-            <BaseModalOnboarding :loading="!firstPool" @hide="onForceRequestEmail" />
+            <!-- <BaseModalOnboarding :loading="!firstPool" @hide="onForceRequestEmail" /> -->
             <BaseModalRequestAccountEmailUpdate />
             <div class="container-xl">
                 <b-jumbotron
@@ -223,13 +223,7 @@ export default class HomeView extends Vue {
 
     async mounted() {
         await this.$store.dispatch('account/getProfile');
-        this.onForceRequestEmail();
-    }
-
-    onForceRequestEmail() {
-        if (!this.profile.email) {
-            this.$bvModal.show('modalRequestAccountEmailUpdate');
-        }
+        this.$bvModal.show('modalRequestAccountEmailUpdate');
     }
 }
 </script>

@@ -1,3 +1,4 @@
+export * from './Account';
 export * from './DailyReward';
 export * from './ERC20';
 export * from './ERC20Perk';

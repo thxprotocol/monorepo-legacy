@@ -13,10 +13,6 @@ export function getInteractionComponent(interactionType: RewardConditionInteract
             return 'BaseDropdownTwitterUsers';
         case RewardConditionInteraction.DiscordGuildJoined:
             return 'BaseDropdownDiscordGuilds';
-        case RewardConditionInteraction.ShopifyOrderAmount:
-            return 'BaseDropdownShopifyOrderAmount';
-        case RewardConditionInteraction.ShopifyTotalSpent:
-            return 'BaseDropdownShopifyTotalSpent';
         default:
             return '';
     }
@@ -59,16 +55,6 @@ export const platformList: IChannel[] = [
         logoURI: require('@thxnetwork/dashboard/../public/assets/logo-discord.png'),
         actions: [RewardConditionInteraction.DiscordGuildJoined],
     },
-    {
-        type: RewardConditionPlatform.Shopify,
-        name: 'Shopify',
-        logoURI: require('@thxnetwork/dashboard/../public/assets/logo-shopify.png'),
-        actions: [
-            RewardConditionInteraction.ShopifyOrderAmount,
-            RewardConditionInteraction.ShopifyTotalSpent,
-            RewardConditionInteraction.ShopifyNewsletterSubscription,
-        ],
-    },
 ];
 export const platformInteractionList = [
     {
@@ -104,21 +90,6 @@ export const platformInteractionList = [
     {
         type: RewardConditionInteraction.DiscordGuildJoined,
         name: 'Server Joined',
-        items: [],
-    },
-    {
-        type: RewardConditionInteraction.ShopifyOrderAmount,
-        name: 'Order Amount',
-        items: [],
-    },
-    {
-        type: RewardConditionInteraction.ShopifyTotalSpent,
-        name: 'Total Spent',
-        items: [],
-    },
-    {
-        type: RewardConditionInteraction.ShopifyNewsletterSubscription,
-        name: 'Newsletter Subscription',
         items: [],
     },
 ];

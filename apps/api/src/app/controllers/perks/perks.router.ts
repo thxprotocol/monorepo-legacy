@@ -4,8 +4,6 @@ import ListPerks from './list.controller';
 import PayERC20Perk from './erc20/redemption/post.controller';
 import ERC721PerkPayment from './erc721/payment/post.controller';
 import ERC721PerkRedemption from './erc721/redemption/post.controller';
-import ShopifyPerkRedemption from './shopify/redemption/post.controller';
-import ListShopifyDiscountCodes from './shopify/discount-codes/list.controller';
 
 const router = express.Router();
 
@@ -28,16 +26,5 @@ router
     .use(checkJwt)
     .use(corsHandler)
     .post('/erc721/:uuid/payment', assertRequestInput(ERC721PerkPayment.validation), ERC721PerkPayment.controller);
-
-router
-    .use(checkJwt)
-    .use(corsHandler)
-    .post(
-        '/shopify/:uuid/redemption',
-        assertRequestInput(ShopifyPerkRedemption.validation),
-        ShopifyPerkRedemption.controller,
-    );
-
-router.get('/shopify/discount-codes', ListShopifyDiscountCodes.controller);
 
 export default router;

@@ -19,8 +19,7 @@ import { getProvider } from '@thxnetwork/api/util/network';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import PoolService from './PoolService';
 import TransactionService from './TransactionService';
-import type { TERC1155, TERC1155Metadata, TERC1155Token } from '@thxnetwork/types/interfaces';
-import type { IAccount } from '@thxnetwork/api/models/Account';
+import type { TAccount, TERC1155, TERC1155Metadata, TERC1155Token } from '@thxnetwork/types/interfaces';
 import { WalletDocument } from '../models/Wallet';
 import IPFSService from './IPFSService';
 import WalletService from './WalletService';
@@ -283,7 +282,7 @@ async function findTokenById(id: string): Promise<ERC1155TokenDocument> {
     return ERC1155Token.findById(id);
 }
 
-async function findTokensByMetadataAndSub(metadataId: string, account: IAccount): Promise<ERC1155TokenDocument[]> {
+async function findTokensByMetadataAndSub(metadataId: string, account: TAccount): Promise<ERC1155TokenDocument[]> {
     return ERC1155Token.find({ sub: account.sub, metadataId });
 }
 

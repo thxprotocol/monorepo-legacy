@@ -1,12 +1,10 @@
-import { IAccount } from '@thxnetwork/api/models/Account';
 import TwitterDataProxy from '@thxnetwork/api/proxies/TwitterDataProxy';
 import YouTubeDataProxy from '@thxnetwork/api/proxies/YoutubeDataProxy';
 import DiscordDataProxy from '@thxnetwork/api/proxies/DiscordDataProxy';
-import ShopifyDataProxy from '@thxnetwork/api/proxies/ShopifyDataProxy';
-import { RewardConditionPlatform, RewardConditionInteraction, TPointReward } from '@thxnetwork/types/index';
-import PoolService from '../services/PoolService';
+import { TAccount, TPointReward } from '@thxnetwork/types/interfaces';
+import { RewardConditionPlatform, RewardConditionInteraction } from '@thxnetwork/types/enums';
 
-export const validateCondition = async (account: IAccount, reward: TPointReward): Promise<string> => {
+export const validateCondition = async (account: TAccount, reward: TPointReward): Promise<string> => {
     if (reward.platform === RewardConditionPlatform.None) return;
 
     try {
@@ -47,7 +45,7 @@ export const validateCondition = async (account: IAccount, reward: TPointReward)
     }
 };
 
-export const getPlatformUserId = async (account: IAccount, reward: TPointReward) => {
+export const getPlatformUserId = async (account: TAccount, reward: TPointReward) => {
     try {
         switch (reward.platform) {
             case RewardConditionPlatform.Google:

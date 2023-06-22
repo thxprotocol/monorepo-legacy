@@ -23,7 +23,6 @@ import PostTwitterDisconnect from './account/twitter/disconnect/post.controller'
 import PostTwitchDisconnect from './account/twitch/disconnect/post.controller';
 import PostGithubDisconnect from './account/github/disconnect/post.controller';
 import PostDiscordDisconnect from './account/discord/disconnect/post.controller';
-import PostShopifyDisconnect from './account/shopify/disconnect/post.controller';
 import ReadAccountEmailVerify from './account/email/get';
 import { assertInput, assertAuthorization, assertInteraction } from '../../middlewares';
 
@@ -77,12 +76,6 @@ router.post(
     assertInteraction,
     assertAuthorization,
     PostDiscordDisconnect.controller,
-);
-router.post(
-    '/:uid/account/shopify/disconnect',
-    assertInteraction,
-    assertAuthorization,
-    PostShopifyDisconnect.controller,
 );
 
 router.post(

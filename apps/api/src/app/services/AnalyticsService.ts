@@ -1,23 +1,23 @@
-import { AssetPoolDocument } from '../models/AssetPool';
+import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import mongoose from 'mongoose';
-import { Claim } from '../models/Claim';
-import { DailyRewardDocument } from '../models/DailyReward';
-import { ERC20PerkDocument, ERC20Perk } from '../models/ERC20Perk';
-import { ERC721PerkDocument, ERC721Perk } from '../models/ERC721Perk';
-import { MilestoneRewardDocument, MilestoneReward } from '../models/MilestoneReward';
-import { PointRewardDocument } from '../models/PointReward';
-import { ReferralRewardDocument, ReferralReward } from '../models/ReferralReward';
+import { Claim } from '@thxnetwork/api/models/Claim';
+import { DailyRewardDocument } from '@thxnetwork/api/models/DailyReward';
+import { ERC20PerkDocument, ERC20Perk } from '@thxnetwork/api/models/ERC20Perk';
+import { ERC721PerkDocument, ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
+import { MilestoneRewardDocument, MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
+import { PointRewardDocument } from '@thxnetwork/api/models/PointReward';
+import { ReferralRewardDocument, ReferralReward } from '@thxnetwork/api/models/ReferralReward';
 import { DailyReward } from './DailyRewardService';
 import { PointReward } from './PointRewardService';
-import { IAccount } from '../models/Account';
 import AccountProxy from '../proxies/AccountProxy';
-import { ERC20PerkPayment } from '../models/ERC20PerkPayment';
-import { DailyRewardClaim } from '../models/DailyRewardClaims';
-import { ERC721PerkPayment } from '../models/ERC721PerkPayment';
-import { MilestoneRewardClaim } from '../models/MilestoneRewardClaims';
-import { PointRewardClaim } from '../models/PointRewardClaim';
-import { ReferralRewardClaim } from '../models/ReferralRewardClaim';
-import { Wallet, WalletDocument } from '../models/Wallet';
+import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
+import { DailyRewardClaim } from '@thxnetwork/api/models/DailyRewardClaims';
+import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
+import { MilestoneRewardClaim } from '@thxnetwork/api/models/MilestoneRewardClaims';
+import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
+import { ReferralRewardClaim } from '@thxnetwork/api/models/ReferralRewardClaim';
+import { Wallet, WalletDocument } from '@thxnetwork/api/models/Wallet';
+import { TAccount } from '@thxnetwork/types/interfaces';
 
 export async function getPoolAnalyticsForChart(pool: AssetPoolDocument, startDate: Date, endDate: Date) {
     const erc20PerksQueryResult = await runPoolChartQuery<ERC20PerkDocument>({
@@ -251,7 +251,7 @@ export async function getLeaderboard(pool: AssetPoolDocument, dateRange?: { star
         ...topMilestonesClaimsBySub,
     ];
 
-    const leaderBoard: { sub: string; walletId: string; score: number; account: IAccount; wallet: WalletDocument }[] =
+    const leaderBoard: { sub: string; walletId: string; score: number; account: TAccount; wallet: WalletDocument }[] =
         [];
     const walletIds = new Set(leaderBoardQueryResultMerged.map((x) => x._id));
     const wallets = await Wallet.find({ _id: Array.from(walletIds) });

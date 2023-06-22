@@ -1,4 +1,4 @@
-import type { IAccount } from '@thxnetwork/api/models/Account';
+import type { TAccount } from '@thxnetwork/types/interfaces';
 import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
 import { THXError } from '@thxnetwork/api/util/errors';
 
@@ -7,7 +7,7 @@ class NoTwitterDataError extends THXError {
 }
 
 export default class TwitterDataProxy {
-    static async getUserId(account: IAccount) {
+    static async getUserId(account: TAccount) {
         const { data } = await authClient({
             method: 'GET',
             url: `/account/${account.sub}/twitter/user`,
@@ -50,7 +50,7 @@ export default class TwitterDataProxy {
         return data;
     }
 
-    static async validateLike(account: IAccount, channelItem: string) {
+    static async validateLike(account: TAccount, channelItem: string) {
         const r = await authClient({
             method: 'GET',
             url: `/account/${account.sub}/twitter/like/${channelItem}`,
@@ -64,7 +64,7 @@ export default class TwitterDataProxy {
         return r.data.result;
     }
 
-    static async validateRetweet(account: IAccount, channelItem: string) {
+    static async validateRetweet(account: TAccount, channelItem: string) {
         const { data } = await authClient({
             method: 'GET',
             url: `/account/${account.sub}/twitter/retweet/${channelItem}`,
@@ -78,7 +78,7 @@ export default class TwitterDataProxy {
         return data.result;
     }
 
-    static async validateFollow(account: IAccount, channelItem: string) {
+    static async validateFollow(account: TAccount, channelItem: string) {
         const { data } = await authClient({
             method: 'GET',
             url: `/account/${account.sub}/twitter/follow/${channelItem}`,

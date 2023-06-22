@@ -1,7 +1,8 @@
-import { AccountPlanType, AccessTokenKind, Roles, Goals } from '@thxnetwork/types/enums';
+import { AccountPlanType, AccessTokenKind, Roles, Goals, ChainId } from '@thxnetwork/types/enums';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 
-export interface TAccount {
+export type TAccount = {
+    sub: string;
     firstName: string;
     lastName: string;
     referralCode: string;
@@ -23,17 +24,27 @@ export interface TAccount {
     acceptUpdates: boolean;
     comparePassword: any;
     tokens: IAccessToken[];
-    discordId: string;
-    shopifyStoreUrl: string;
-    discordAccess: boolean;
+    discordId?: string;
+    shopifyStoreUrl?: string;
     role: Roles;
     goal: Goals;
+    googleAccess?: boolean;
+    youtubeViewAccess?: boolean;
+    youtubeManageAccess?: boolean;
+    twitterAccess?: boolean;
+    githubAccess?: boolean;
+    twitchAccess?: boolean;
+    discordAccess?: boolean;
+    shopifyAccess?: boolean;
+    authenticationToken?: string;
+    authenticationTokenExpires?: number;
+    getAddress: (chainId: ChainId) => Promise<string>;
     getToken: (token: AccessTokenKind) => IAccessToken;
     setToken: (token: IAccessToken) => IAccessToken;
     unsetToken: (token: AccessTokenKind) => void;
     createdAt: Date;
     updatedAt: Date;
-}
+};
 
 export interface IAccessToken {
     kind: AccessTokenKind;

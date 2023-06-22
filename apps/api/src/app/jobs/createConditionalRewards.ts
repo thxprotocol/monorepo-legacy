@@ -1,6 +1,6 @@
 import { subMinutes } from 'date-fns';
 import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/enums';
-import { IAccount } from '../models/Account';
+import { TAccount } from '@thxnetwork/types/interfaces';
 import { AssetPool } from '../models/AssetPool';
 import { PointReward } from '../models/PointReward';
 import TwitterDataProxy from '../proxies/TwitterDataProxy';
@@ -47,7 +47,7 @@ export async function createConditionalRewards() {
             }),
         );
 
-        const account: IAccount = await AccountProxy.getById(pool.sub);
+        const account: TAccount = await AccountProxy.getById(pool.sub);
         if (account.email) {
             await MailService.send(
                 account.email,

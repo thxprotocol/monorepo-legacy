@@ -1,4 +1,4 @@
-import { IAccount } from '../models/Account';
+import { TAccount } from '@thxnetwork/types/interfaces';
 import { AssetPool } from '../models/AssetPool';
 import AccountProxy from '../proxies/AccountProxy';
 import MailService from '../services/MailService';
@@ -16,7 +16,7 @@ export async function sendPoolAnalyticsReport() {
     const startDate = new Date(new Date(endDate).getTime() - oneDay * 7);
     const dateRange = { startDate, endDate };
 
-    let account: IAccount;
+    let account: TAccount;
 
     for await (const pool of AssetPool.find({ 'settings.isWeeklyDigestEnabled': true })) {
         try {

@@ -50,6 +50,8 @@ export class AccountService {
         account.address = updates.address ? toChecksumAddress(updates.address) : account.address;
         account.acceptUpdates = updates.acceptUpdates === null ? false : account.acceptUpdates;
         account.referralCode = updates.referralCode ? updates.referralCode : account.referralCode;
+        account.role = updates.role || account.role;
+        account.goal = updates.goal || account.goal;
 
         if (updates.profileImg) {
             account.profileImg = updates.profileImg;
