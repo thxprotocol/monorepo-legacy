@@ -3,7 +3,7 @@ import { AccountDocument } from '../models/Account';
 import CommonOauthLoginOptions from '../types/CommonOauthLoginOptions';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { discordClient } from '../util/axios';
-import { IAccessToken } from '../types/TAccount';
+import { IAccessToken } from '@thxnetwork/types/interfaces';
 
 export const scopes = ['identify', 'email', 'guilds', 'guilds.join', 'guilds.members.read'];
 

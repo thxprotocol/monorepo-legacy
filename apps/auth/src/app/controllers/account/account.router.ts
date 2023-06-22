@@ -17,16 +17,10 @@ import { getDiscordGuildJoined } from './discord/guild/get.action';
 import getByDiscordIdAction from './discord/getByDiscordId.action';
 import { getTwitch } from './twitch/get.action';
 import { getGithub } from './github/get.controller';
-import { getShopify } from './shopify/get.action';
-import { getShopifyOrderAmount } from './shopify/order-amount/get.controller';
-import { getShopifyTotalSpent } from './shopify/total-spent/get.controller';
-import { getShopifyPriceRules } from './shopify/price-rules/list.action';
-import { createShopifyDiscountCode } from './shopify/discount-code/post.action';
 
 import GetGoogleUser from './google/user/get.controller';
 import GetTwitterUser from './twitter/user/get.controller';
 import GetDiscordUser from './discord/user/get.controller';
-import { getShopifyNewsletterSubscription } from './shopify/newsletter-subscription/get.controller';
 
 const router = express.Router();
 
@@ -40,14 +34,6 @@ router.get('/:sub/twitter/user', guard.check(['accounts:read']), GetTwitterUser.
 router.get('/:sub/twitter/like/:item', guard.check(['accounts:read']), getTwitterLike);
 router.get('/:sub/twitter/retweet/:item', guard.check(['accounts:read']), getTwitterRetweet);
 router.get('/:sub/twitter/follow/:item', guard.check(['accounts:read']), getTwitterFollow);
-
-router.get('/:sub/shopify', guard.check(['accounts:read']), getShopify);
-
-router.get('/:sub/shopify/order-amount', guard.check(['accounts:read']), getShopifyOrderAmount);
-router.get('/:sub/shopify/total-spent', guard.check(['accounts:read']), getShopifyTotalSpent);
-router.get('/:sub/shopify/price-rules', guard.check(['accounts:read']), getShopifyPriceRules);
-router.get('/:sub/shopify/newsletter-subscription', guard.check(['accounts:read']), getShopifyNewsletterSubscription);
-router.post('/:sub/shopify/discount-code', guard.check(['accounts:read']), createShopifyDiscountCode);
 
 router.get('/:sub/google/youtube', guard.check(['accounts:read']), getYoutube);
 router.get('/:sub/google/user', guard.check(['accounts:read']), GetGoogleUser.controller);

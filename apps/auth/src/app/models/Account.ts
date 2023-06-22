@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
-import { IAccessToken, TAccount } from '../types/TAccount';
+import { IAccessToken, TAccount } from '@thxnetwork/types/interfaces';
 
 export type AccountDocument = mongoose.Document & TAccount;
 

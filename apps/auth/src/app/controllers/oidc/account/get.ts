@@ -6,7 +6,6 @@ import { AccountService } from '../../../services/AccountService';
 import { GithubService } from '../../../services/GithubServices';
 import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
 import { AccountPlanType, AccessTokenKind } from '@thxnetwork/types/enums';
-import { ShopifyService } from '@thxnetwork/auth/services/ShopifyService';
 
 async function controller(req: Request, res: Response) {
     const { uid, params, alert, session } = req.interaction;
@@ -17,7 +16,6 @@ async function controller(req: Request, res: Response) {
     params.twitterLoginUrl = TwitterService.getLoginURL(uid, {});
     params.discordLoginUrl = DiscordService.getLoginURL(uid, {});
     params.twitchLoginUrl = TwitchService.getLoginURL(uid, {});
-    params.shopifyLoginUrl = ShopifyService.getLoginURL(uid);
 
     return res.render('account', {
         uid,
@@ -36,7 +34,6 @@ async function controller(req: Request, res: Response) {
             planType: AccountPlanType[account.plan],
             otpSecret: account.otpSecret,
             variant: account.variant,
-            shopifyStoreUrl: account.shopifyStoreUrl,
             googleAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.Google),
             youtubeViewAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.YoutubeView),
             youtubeManageAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.YoutubeManage),
@@ -44,7 +41,6 @@ async function controller(req: Request, res: Response) {
             githubAccess: await GithubService.isAuthorized(account),
             discordAccess: await DiscordService.isAuthorized(account),
             twitchAccess: await TwitchService.isAuthorized(account),
-            shopifyAccess: await ShopifyService.isAuthorized(account),
         },
     });
 }

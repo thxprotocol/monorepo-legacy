@@ -1,4 +1,4 @@
-import { IAccessToken, IAccountUpdates } from '../types/TAccount';
+import { IAccessToken } from '@thxnetwork/types/interfaces';
 import { Account, AccountDocument } from '../models/Account';
 import { toChecksumAddress } from 'web3-utils';
 import {
@@ -7,16 +7,12 @@ import {
     ERROR_VERIFY_EMAIL_EXPIRED,
 } from '../util/messages';
 import { YouTubeService } from './YouTubeService';
-import { AccountVariant } from '@thxnetwork/types/interfaces';
-import { AccessTokenKind, AccountPlanType } from '@thxnetwork/types/enums';
+import { TAccount, TWallet, AccountVariant } from '@thxnetwork/types/interfaces';
+import { AccessTokenKind, AccountPlanType, ChainId } from '@thxnetwork/types/enums';
 import bcrypt from 'bcrypt';
-import { ShopifyService } from './ShopifyService';
-import { logger } from '../util/logger';
 import { ForbiddenError } from '../util/errors';
-import WalletProxy from '../proxies/WalletProxy';
-import { ChainId, TWallet } from '@thxnetwork/types/index';
 import { NODE_ENV } from '../config/secrets';
-// import { SignTypedDataVersion, recoverTypedSignature } from '@metamask/eth-sig-util';
+import WalletProxy from '../proxies/WalletProxy';
 
 export class AccountService {
     static async get(sub: string) {
@@ -40,7 +36,7 @@ export class AccountService {
         return Account.findOne({ address });
     }
 
-    static async update(account: AccountDocument, updates: IAccountUpdates) {
+    static async update(account: AccountDocument, updates: TAccount) {
         account.email = updates.email || account.email;
         account.profileImg = updates.profileImg || account.profileImg;
         account.firstName = updates.firstName || account.firstName;
@@ -112,18 +108,6 @@ export class AccountService {
         if (updates.discordAccess === false) {
             account.unsetToken(AccessTokenKind.Discord);
             account.discordId = null;
-        }
-
-        if (updates.shopifyAccess === false) {
-            const token = account.getToken(AccessTokenKind.Shopify);
-            try {
-                await ShopifyService.revokeAccess(account.shopifyStoreUrl, token.accessToken);
-            } catch (error) {
-                logger.error(error);
-            } finally {
-                account.shopifyStoreUrl = undefined;
-                account.unsetToken(AccessTokenKind.Shopify);
-            }
         }
 
         return await account.save();
@@ -252,7 +236,7 @@ export class AccountService {
         return await account.save();
     }
 
-    static async isOTPValid(account: AccountDocument, otp: string): Promise<boolean> {
+    static async isOTPValid(account: TAccount, otp: string): Promise<boolean> {
         const token = account.getToken(AccessTokenKind.Auth);
         if (!token) return;
 

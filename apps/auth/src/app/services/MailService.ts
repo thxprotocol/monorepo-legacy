@@ -8,7 +8,7 @@ import { createRandomToken } from '../util/tokens';
 import { AUTH_URL, WALLET_URL, SENDGRID_API_KEY, NODE_ENV, CYPRESS_EMAIL } from '../config/secrets';
 import { assetsPath } from '../util/path';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
-import { IAccessToken } from '../types/TAccount';
+import { IAccessToken } from '@thxnetwork/types/interfaces';
 import { get24HoursExpiryTimestamp } from '../util/time';
 import { logger } from '../util/logger';
 

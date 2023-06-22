@@ -7,7 +7,7 @@ import { AccountService } from '../../../services/AccountService';
 import { ERROR_NO_ACCOUNT } from '../../../util/messages';
 import { createRandomToken } from '../../../util/tokens';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
-import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
+import { IAccessToken } from '@thxnetwork/types/interfaces';
 import { get24HoursExpiryTimestamp } from '@thxnetwork/auth/util/time';
 import { AccountDocument } from '@thxnetwork/auth/models/Account';
 import { DASHBOARD_URL } from '@thxnetwork/auth/config/secrets';

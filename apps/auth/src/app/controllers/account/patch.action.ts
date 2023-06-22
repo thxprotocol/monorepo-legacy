@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { AccountService } from '../../services/AccountService';
 import { NotFoundError } from '../../util/errors';
+import { TAccount } from '@thxnetwork/types/interfaces';
 
 export const patchAccount = async (req: Request, res: Response) => {
     const account = await AccountService.get(req.params.sub);
@@ -22,6 +23,6 @@ export const patchAccount = async (req: Request, res: Response) => {
         role: req.body.role,
         goal: req.body.goal,
         referralCode: req.body.referralCode,
-    });
+    } as TAccount);
     res.status(204).end();
 };

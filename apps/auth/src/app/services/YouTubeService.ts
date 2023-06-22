@@ -3,7 +3,7 @@ import { google, youtube_v3 } from 'googleapis';
 import { AccountDocument } from '../models/Account';
 import { AUTH_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../config/secrets';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
-import { IAccessToken } from '../types/TAccount';
+import { IAccessToken } from '@thxnetwork/types/interfaces';
 import { parseJwt } from '../util/jwt';
 import { logger } from '../util/logger';
 

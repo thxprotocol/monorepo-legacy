@@ -3,7 +3,7 @@ import { AccountDocument } from '../models/Account';
 import CommonOauthLoginOptions from '../types/CommonOauthLoginOptions';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { twitchClient } from '../util/axios';
-import { IAccessToken } from '../types/TAccount';
+import { IAccessToken } from '@thxnetwork/types/interfaces';
 
 export const TWITCH_API_SCOPE = ['user:read:follows', 'user:read:email', 'user:read:broadcast'];
 

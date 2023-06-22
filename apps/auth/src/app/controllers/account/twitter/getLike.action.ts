@@ -1,5 +1,5 @@
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
-import { IAccessToken } from '@thxnetwork/auth/types/TAccount';
+import { IAccessToken } from '@thxnetwork/types/interfaces';
 import { NotFoundError } from '@thxnetwork/auth/util/errors';
 import { Request, Response } from 'express';
 import { AccountService } from '../../../services/AccountService';

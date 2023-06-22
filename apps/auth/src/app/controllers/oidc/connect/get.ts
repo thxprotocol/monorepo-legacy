@@ -7,7 +7,6 @@ import { GithubService } from '@thxnetwork/auth/services/GithubServices';
 import { AccountService } from '@thxnetwork/auth/services/AccountService';
 import { DiscordService } from '@thxnetwork/auth/services/DiscordService';
 import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
-import { ShopifyService } from '@thxnetwork/auth/services/ShopifyService';
 
 /* 
 This controller is used for connecting OAuth2 supporting platforms to a user account
@@ -59,12 +58,6 @@ async function controller(req: Request, res: Response) {
             redirect = (await DiscordService.isAuthorized(account))
                 ? params.redirect_uri
                 : DiscordService.getLoginURL(uid, {});
-            break;
-        }
-        case AccessTokenKind.Shopify: {
-            const { shop } = JSON.parse(params.shopify_params as string);
-            const storeUrl = 'https://' + shop;
-            redirect = ShopifyService.getLoginURL(uid, storeUrl);
             break;
         }
     }

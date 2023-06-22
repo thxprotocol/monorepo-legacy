@@ -4,7 +4,7 @@ import { twitterClient } from '../util/axios';
 import { AUTH_URL, TWITTER_CLIENT_ID, TWITTER_CLIENT_SECRET } from '../config/secrets';
 import { AccountDocument } from '../models/Account';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
-import { IAccessToken } from '../types/TAccount';
+import { IAccessToken } from '@thxnetwork/types/interfaces';
 
 const ERROR_NO_DATA = 'Could not find an youtube data for this accesstoken';
 const ERROR_NOT_AUTHORIZED = 'Not authorized for Twitter API';

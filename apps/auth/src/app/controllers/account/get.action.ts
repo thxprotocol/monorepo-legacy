@@ -7,7 +7,6 @@ import { TwitterService } from '@thxnetwork/auth/services/TwitterService';
 import { DiscordService } from '@thxnetwork/auth/services/DiscordService';
 import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
-import { ShopifyService } from '@thxnetwork/auth/services/ShopifyService';
 import { logger } from '@thxnetwork/auth/util/logger';
 
 async function formatAccountRes(account, accessIncluded = true) {
@@ -35,7 +34,6 @@ async function formatAccountRes(account, accessIncluded = true) {
             githubAccess,
             discordAccess,
             twitchAccess,
-            shopifyAccess,
         ] = await Promise.all([
             await YouTubeService.isAuthorized(account, AccessTokenKind.Google),
             await YouTubeService.isAuthorized(account, AccessTokenKind.YoutubeView),
@@ -44,7 +42,6 @@ async function formatAccountRes(account, accessIncluded = true) {
             await GithubService.isAuthorized(account),
             await DiscordService.isAuthorized(account),
             await TwitchService.isAuthorized(account),
-            await ShopifyService.isAuthorized(account),
         ]);
 
         Object.assign(response, {
@@ -55,7 +52,6 @@ async function formatAccountRes(account, accessIncluded = true) {
             githubAccess,
             discordAccess,
             twitchAccess,
-            shopifyAccess,
         });
     }
     return response;
