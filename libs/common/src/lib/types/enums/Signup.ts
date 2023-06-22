@@ -1,4 +1,4 @@
-export enum Roles {
+export enum Role {
     None = 'none',
     GrowthHacker = 'growth_hacker',
     Marketer = 'marketer',
@@ -7,7 +7,7 @@ export enum Roles {
     Other = 'other',
 }
 
-export enum Goals {
+export enum Goal {
     Reward = 'reward',
     Retain = 'retain',
     Referral = 'referral',

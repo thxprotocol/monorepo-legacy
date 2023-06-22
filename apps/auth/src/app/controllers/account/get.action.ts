@@ -23,6 +23,8 @@ async function formatAccountRes(account, accessIncluded = true) {
         variant: account.variant,
         shopifyStoreUrl: account.shopifyStoreUrl,
         referralCode: account.referralCode,
+        role: account.role,
+        goal: account.goal,
     };
     if (accessIncluded) {
         const [

@@ -66,13 +66,12 @@ class AccountModule extends VuexModule {
 
     @Action({ rawError: true })
     async update(data: TAccount) {
-        const r = await axios({
+        await axios({
             method: 'PATCH',
             url: '/account',
             data,
         });
-        debugger;
-        this.context.commit('setAccount', r.data);
+        this.context.dispatch('getProfile');
     }
 
     @Action({ rawError: true })

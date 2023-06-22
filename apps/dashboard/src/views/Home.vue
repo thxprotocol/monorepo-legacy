@@ -1,8 +1,7 @@
 <template>
     <div>
-        <div v-if="profile">
-            <!-- <BaseModalOnboarding :loading="!firstPool" @hide="onForceRequestEmail" /> -->
-            <BaseModalRequestAccountEmailUpdate />
+        <div v-if="account">
+            <BaseModalRequestAccountEmailUpdate :deploying="!firstPool" />
             <div class="container-xl">
                 <b-jumbotron
                     class="text-left mt-3 jumbotron-header"
@@ -14,9 +13,9 @@
                     }"
                 >
                     <div class="container container-md py-5">
-                        <b-badge variant="primary" class="p-2">Plan: {{ AccountPlanType[profile.plan] }}</b-badge>
+                        <b-badge variant="primary" class="p-2">Plan: {{ AccountPlanType[account.plan] }}</b-badge>
                         <p class="brand-text">
-                            {{ 'Hi ' + (!profile.firstName ? 'Anon' : profile.firstName) }}
+                            {{ 'Hi ' + (!account.firstName ? 'Anon' : account.firstName) }}
                         </p>
                         <div class="lead mb-3">Welcome to your Loyalty Network!</div>
                     </div>
@@ -192,20 +191,20 @@ import { AccountPlanType } from '@thxnetwork/dashboard/types/account';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseModalRequestAccountEmailUpdate from '@thxnetwork/dashboard/components/modals/BaseModalRequestAccountEmailUpdate.vue';
-import BaseModalOnboarding from '@thxnetwork/dashboard/components/modals/BaseModalOnboarding.vue';
 import BaseCardHome from '@thxnetwork/dashboard/components/cards/BaseCardHome.vue';
 import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
 import { IPools } from '../store/modules/pools';
+import { NODE_ENV } from '../utils/secrets';
+import { ChainId } from '@thxnetwork/types/enums';
 
 @Component({
     components: {
         BaseModalRequestAccountEmailUpdate,
-        BaseModalOnboarding,
         BaseCardHome,
         BaseCodeExample,
     },
     computed: mapGetters({
-        profile: 'account/profile',
+        account: 'account/profile',
         pools: 'pools/all',
     }),
 })
@@ -224,7 +223,17 @@ export default class HomeView extends Vue {
 
     async mounted() {
         await this.$store.dispatch('account/getProfile');
-        if (this.account) this.$bvModal.show('modalRequestAccountEmailUpdate');
+        await this.$store.dispatch('pools/list');
+
+        if (!Object.values(this.pools).length) {
+            this.$store.dispatch('pools/create', {
+                chainId: NODE_ENV === 'production' ? ChainId.Polygon : ChainId.Hardhat,
+            });
+        }
+
+        if (!this.account.email || !this.account.role || !this.account.goal.length) {
+            this.$bvModal.show('modalRequestAccountEmailUpdate');
+        }
     }
 }
 </script>
