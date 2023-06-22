@@ -41,15 +41,14 @@
 </template>
 
 <script lang="ts">
+import type { TAccount, TPool } from '@thxnetwork/types/index';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import BaseCard from '@thxnetwork/dashboard/components/cards/BaseCard.vue';
 import BaseBadgeNetwork from '@thxnetwork/dashboard/components/badges/BaseBadgeNetwork.vue';
 import BaseIdenticon from '@thxnetwork/dashboard/components/BaseIdenticon.vue';
 import BaseDropdownTokenMenu from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownMenuToken.vue';
 import BaseModalPoolCreate from '@thxnetwork/dashboard/components/modals/BaseModalPoolCreate.vue';
-import { TPool } from '@thxnetwork/types/index';
 import { mapGetters } from 'vuex';
-import { IAccount } from '@thxnetwork/dashboard/types/account';
 import { parseUnitAmount } from '@thxnetwork/dashboard/utils/price';
 
 @Component({
@@ -66,7 +65,7 @@ import { parseUnitAmount } from '@thxnetwork/dashboard/utils/price';
 })
 export default class BaseCardERC20 extends Vue {
     isVisible = true;
-    profile!: IAccount;
+    profile!: TAccount;
 
     @Prop() price!: number;
     @Prop() priceCurrency!: string;

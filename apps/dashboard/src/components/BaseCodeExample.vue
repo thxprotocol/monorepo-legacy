@@ -13,7 +13,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { API_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { mapGetters } from 'vuex';
-import { TPool } from '@thxnetwork/types/interfaces';
+import type { TPool } from '@thxnetwork/types/interfaces';
 import hljs from 'highlight.js/lib/core';
 import XML from 'highlight.js/lib/languages/xml';
 import 'highlight.js/styles/atom-one-dark.css';

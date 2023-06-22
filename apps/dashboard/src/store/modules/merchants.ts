@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { TMerchant } from '@thxnetwork/types/merchant';
-import { type TPool } from '@thxnetwork/types/index';
+import type { TPool, TMerchant } from '@thxnetwork/types/interfaces';
 
 export type TMerchantState = {
     [poolId: string]: {

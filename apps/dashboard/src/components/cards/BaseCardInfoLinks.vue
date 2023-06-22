@@ -49,7 +49,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { TInfoLink, TPool } from '@thxnetwork/types/interfaces';
+import type { TInfoLink, TPool } from '@thxnetwork/types/interfaces';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 
 @Component({})

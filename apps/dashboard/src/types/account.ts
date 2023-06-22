@@ -1,31 +1,6 @@
-import { TMerchant } from '@thxnetwork/types/merchant';
-
 export enum AccountPlanType {
     Basic = 0,
     Premium = 1,
-}
-
-export interface IAccount {
-    sub: string;
-    merchant: TMerchant;
-    privateKey: string;
-    address: string;
-    firstName: string;
-    lastName: string;
-    company: string;
-    plan: AccountPlanType;
-    profileImg?: string;
-    email?: string;
-    logoImgUrl?: string;
-    shopifyStoreUrl?: string;
-    twitterAccess: boolean;
-}
-export interface IAccountUpdates {
-    address: string;
-    googleAccessToken: string;
-    youtubeViewAccessToken: string;
-    youtubeManageAccessToken: string;
-    referralCode: string;
 }
 
 export interface IYoutube {

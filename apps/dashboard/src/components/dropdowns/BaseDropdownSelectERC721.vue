@@ -46,10 +46,10 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
+import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import BaseIdenticon from '../BaseIdenticon.vue';
 import type { IERC721s, TERC721 } from '@thxnetwork/dashboard/types/erc721';
-import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
-import { IERC1155s, TERC1155 } from '@thxnetwork/dashboard/types/erc1155';
+import type { IERC1155s, TERC1155 } from '@thxnetwork/dashboard/types/erc1155';
 
 @Component({
     components: {

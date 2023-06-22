@@ -49,7 +49,7 @@
 </template>
 
 <script lang="ts">
-import type { IAccount } from '@thxnetwork/dashboard/types/account';
+import type { TAccount, TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters, mapState } from 'vuex';
 import BaseModalDelete from '@thxnetwork/dashboard/components/modals/BaseModalDelete.vue';
@@ -60,7 +60,6 @@ import BaseDropdownMenuPool from '@thxnetwork/dashboard/components/dropdowns/Bas
 import BaseModalPoolCreate from '@thxnetwork/dashboard/components/modals/BaseModalPoolCreate.vue';
 import { fromWei } from 'web3-utils';
 import { IPoolAnalyticsMetrics } from '../../store/modules/pools';
-import { TPool } from '@thxnetwork/types/interfaces';
 
 @Component({
     components: {
@@ -79,7 +78,7 @@ import { TPool } from '@thxnetwork/types/interfaces';
     },
 })
 export default class BaseCardPool extends Vue {
-    $clipboard!: any;
+    $clipboard!: unknown;
     warning = '';
     error = '';
     isCopied = false;
@@ -89,7 +88,7 @@ export default class BaseCardPool extends Vue {
 
     @Prop() pool!: TPool;
 
-    profile!: IAccount;
+    profile!: TAccount;
     artifacts!: string;
     analyticsMetrics!: IPoolAnalyticsMetrics;
 

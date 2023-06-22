@@ -187,7 +187,8 @@
 </template>
 
 <script lang="ts">
-import { AccountPlanType, IAccount } from '@thxnetwork/dashboard/types/account';
+import type { TAccount } from '@thxnetwork/types/interfaces';
+import { AccountPlanType } from '@thxnetwork/dashboard/types/account';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseModalRequestAccountEmailUpdate from '@thxnetwork/dashboard/components/modals/BaseModalRequestAccountEmailUpdate.vue';
@@ -211,7 +212,7 @@ import { IPools } from '../store/modules/pools';
 export default class HomeView extends Vue {
     window = window;
     pools!: IPools;
-    profile!: IAccount;
+    account!: TAccount;
     docsUrl = process.env.VUE_APP_DOCS_URL;
     AccountPlanType = AccountPlanType;
 
@@ -223,7 +224,7 @@ export default class HomeView extends Vue {
 
     async mounted() {
         await this.$store.dispatch('account/getProfile');
-        this.$bvModal.show('modalRequestAccountEmailUpdate');
+        if (this.account) this.$bvModal.show('modalRequestAccountEmailUpdate');
     }
 }
 </script>

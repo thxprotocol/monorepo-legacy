@@ -1,13 +1,11 @@
+import type { TAccount } from '@thxnetwork/types/interfaces';
+import { AccessTokenKind, RewardConditionPlatform, AccountPlanType } from '@thxnetwork/types/enums';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { SigninRedirectArgs, User, UserManager } from 'oidc-client-ts';
 import { config } from '@thxnetwork/dashboard/utils/oidc';
 import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
-import type { IAccount, IAccountUpdates } from '@thxnetwork/dashboard/types/account';
-import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
-import { RewardConditionPlatform } from '@thxnetwork/types/enums/RewardConditionPlatform';
 import Mixpanel, { track } from '@thxnetwork/mixpanel';
-import { AccountPlanType } from '@thxnetwork/types/enums';
 
 @Module({ namespaced: true })
 class AccountModule extends VuexModule {
@@ -15,7 +13,7 @@ class AccountModule extends VuexModule {
     artifacts = '';
     version = '';
     _user!: User;
-    _profile: IAccount | null = null;
+    _profile: TAccount | null = null;
 
     get user() {
         return this._user;
@@ -31,7 +29,7 @@ class AccountModule extends VuexModule {
     }
 
     @Mutation
-    setAccount(profile: IAccount) {
+    setAccount(profile: TAccount) {
         this._profile = profile;
     }
 
@@ -67,7 +65,7 @@ class AccountModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async update(data: IAccountUpdates) {
+    async update(data: TAccount) {
         const r = await axios({
             method: 'PATCH',
             url: '/account',
@@ -129,7 +127,7 @@ class AccountModule extends VuexModule {
         shopifyParams: string;
     }) {
         const client = Mixpanel.client();
-        const extraQueryParams: any = {
+        const extraQueryParams: { return_url: string; distinct_id: string } = {
             return_url: BASE_URL,
             distinct_id: client && client.get_distinct_id(),
         };

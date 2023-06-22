@@ -85,15 +85,14 @@
 </template>
 
 <script lang="ts">
-import { TInfoLink, TPool } from '@thxnetwork/types/index';
+import type { TDailyReward, TInfoLink, TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { type TDailyReward } from '@thxnetwork/types/interfaces/DailyReward';
-import BaseModal from './BaseModal.vue';
 import { mapGetters } from 'vuex';
 import { API_URL } from '@thxnetwork/dashboard/utils/secrets';
-import BaseCardURLWebhook from '../BaseCardURLWebhook.vue';
-import BaseCardInfoLinks from '../cards/BaseCardInfoLinks.vue';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
+import BaseCardURLWebhook from '../BaseCardURLWebhook.vue';
+import BaseModal from './BaseModal.vue';
+import BaseCardInfoLinks from '../cards/BaseCardInfoLinks.vue';
 
 @Component({
     components: {

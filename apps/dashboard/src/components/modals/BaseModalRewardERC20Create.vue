@@ -91,14 +91,15 @@
 </template>
 
 <script lang="ts">
-import { TERC20Perk, type TPool } from '@thxnetwork/types/interfaces';
+import type { TERC20Perk, TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import { TokenGatingVariant } from '@thxnetwork/types/enums';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseDropdownSelectERC20 from '../dropdowns/BaseDropdownSelectERC20.vue';
 import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
 import BaseCardTokenGating from '../cards/BaseCardTokenGating.vue';
-import { TokenGatingVariant } from '@thxnetwork/types/enums/TokenGatingVariant';
+
 @Component({
     components: {
         BaseModal,

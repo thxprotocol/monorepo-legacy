@@ -62,7 +62,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 @Component({})
 export default class BaseModalOnboarding extends Vue {
     progress = 5;
-    timer: any = null;
+    timer: number | null = null;
     pools!: IPools;
 
     @Prop() show!: boolean;
@@ -81,7 +81,7 @@ export default class BaseModalOnboarding extends Vue {
     }
 
     reset() {
-        clearInterval(this.timer);
+        clearInterval(this.timer as number);
         this.timer = null;
     }
 

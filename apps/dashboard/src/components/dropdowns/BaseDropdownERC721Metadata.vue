@@ -69,13 +69,14 @@
 </template>
 
 <script lang="ts">
-import type { IERC721Metadatas, IERC721s, TERC721, TNFTMetadata } from '@thxnetwork/dashboard/types/erc721';
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { format } from 'date-fns';
-import { IERC1155Metadatas, IERC1155s, TERC1155 } from '@thxnetwork/dashboard/types/erc1155';
 import { NFTVariant } from '@thxnetwork/types/enums';
-import { TERC721Token, TERC1155Token, TPool } from '@thxnetwork/types/interfaces';
+
+import type { TERC721Token, TERC1155Token, TPool } from '@thxnetwork/types/interfaces';
+import type { IERC721Metadatas, IERC721s, TERC721, TNFTMetadata } from '@thxnetwork/dashboard/types/erc721';
+import { IERC1155Metadatas, IERC1155s, TERC1155 } from '@thxnetwork/dashboard/types/erc1155';
 
 @Component({
     computed: mapGetters({

@@ -5,7 +5,6 @@ import {
     redirectConfirmationLink,
     redirectPasswordResetLink,
     redirectPoolTransfer,
-    redirectReferralCode,
     redirectShopifyCode,
     redirectSignin,
     redirectSigninSilent,

@@ -116,22 +116,21 @@
 import { NFTVariant, TERC1155Token, TERC721Token, type TPool } from '@thxnetwork/types/index';
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { type TERC721Perk } from '@thxnetwork/types/index';
+import type { TERC721Perk, TAccount } from '@thxnetwork/types/interfaces';
+import type { IERC721s, IERC721Tokens, TERC721, TNFTMetadata } from '@thxnetwork/dashboard/types/erc721';
+import type { IERC1155s, TERC1155 } from '@thxnetwork/dashboard/types/erc1155';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
 import BaseCardCommerce from '../cards/BaseCardCommerce.vue';
 import BaseDropdownERC721Metadata from '../dropdowns/BaseDropdownERC721Metadata.vue';
-import type { IERC721s, IERC721Tokens, TERC721, TNFTMetadata } from '@thxnetwork/dashboard/types/erc721';
 import { mapGetters } from 'vuex';
 import BaseDropdownSelectERC721 from '../dropdowns/BaseDropdownSelectERC721.vue';
 import BaseDropdownERC721ImportedToken from '../dropdowns/BaseDropdownERC721ImportedToken.vue';
 import BaseCardClaimAmount from '../cards/BaseCardClaimAmount.vue';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
-import { IAccount } from '@thxnetwork/dashboard/types/account';
-import BaseCardTokenGating from '../cards/BaseCardTokenGating.vue';
 import { TokenGatingVariant } from '@thxnetwork/types/enums/TokenGatingVariant';
-import { IERC1155s, TERC1155 } from '@thxnetwork/dashboard/types/erc1155';
+import BaseCardTokenGating from '../cards/BaseCardTokenGating.vue';
 
 @Component({
     components: {
@@ -172,7 +171,7 @@ export default class ModalRewardERC721Create extends Vue {
     erc1155Balance = '';
 
     pools!: IPools;
-    profile!: IAccount;
+    profile!: TAccount;
     error = '';
     title = '';
     description = '';
@@ -280,7 +279,7 @@ export default class ModalRewardERC721Create extends Vue {
 
         this.isLoading = true;
 
-        let erc721Id, erc1155Id, expiryDate;
+        let erc721Id, erc1155Id;
         switch (this.nft.variant) {
             case NFTVariant.ERC721:
                 erc721Id = this.nft._id;

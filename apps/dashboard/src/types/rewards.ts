@@ -1,4 +1,4 @@
-import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
+import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/enums';
 
 export function getInteractionComponent(interactionType: RewardConditionInteraction) {
     switch (interactionType) {
@@ -110,5 +110,5 @@ export interface IChannel {
 export interface IChannelAction {
     type: RewardConditionInteraction;
     name: string;
-    items: any[];
+    items: unknown[];
 }

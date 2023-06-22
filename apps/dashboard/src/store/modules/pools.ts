@@ -1,12 +1,10 @@
+import type { TAccount, TPool, TPoolSettings, TPoolTransferResponse } from '@thxnetwork/types/interfaces';
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import { track } from '@thxnetwork/mixpanel';
 import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
-import { IAccount } from '@thxnetwork/dashboard/types/account';
-import { TPool, TPoolSettings } from '@thxnetwork/types/index';
-import { TPoolTransferResponse } from '@thxnetwork/types/interfaces';
 
 export interface IPoolAnalytic {
     _id: string;
@@ -51,7 +49,7 @@ export interface IPoolAnalytic {
 export interface IPoolAnalyticLeaderBoard {
     _id: string;
     score: number;
-    account: IAccount;
+    account: TAccount;
 }
 
 export interface IPoolAnalyticMetrics {

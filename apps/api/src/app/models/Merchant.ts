@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { TMerchant } from '@thxnetwork/types/merchant';
+import { TMerchant } from '@thxnetwork/types/interfaces';
 
 export type MerchantDocument = mongoose.Document & TMerchant;
 
