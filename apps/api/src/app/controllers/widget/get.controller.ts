@@ -445,8 +445,8 @@ const controller = async (req: Request, res: Response) => {
         iconImg: '${widget.iconImg || ''}',
         message: '${widget.message || ''}',
         align: '${widget.align || 'right'}',
-        theme: '${origin || widget.theme}',
-        origin: '${widget.domain}',
+        theme: '${widget.theme}',
+        origin: '${origin || widget.domain}',
         refs: ${JSON.stringify(refs)},
         expired: '${expired}'
     });
