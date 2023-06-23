@@ -446,7 +446,7 @@ const controller = async (req: Request, res: Response) => {
         message: '${widget.message || ''}',
         align: '${widget.align || 'right'}',
         theme: '${widget.theme}',
-        origin: '${origin}',
+        origin: '${widget.domain}',
         refs: ${JSON.stringify(refs)},
         expired: '${expired}'
     });
