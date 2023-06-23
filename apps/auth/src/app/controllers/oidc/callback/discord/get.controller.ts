@@ -5,8 +5,8 @@ import { callbackPostSSOCallback, callbackPreAuth } from '../../get';
 import { DiscordService } from '@thxnetwork/auth/services/DiscordService';
 import { AccessTokenKind } from '@thxnetwork/types/enums';
 
-const DISCORD_GUILD_ID_THX = '718706001871765564'; // THX Network
-const DISCORD_SUPPORT_CHANNEL_ID_THX = '1113084427451506739'; // #support
+const DISCORD_GUILD_ID_THX = '836147176270856243'; // THX Network
+const DISCORD_SUPPORT_CHANNEL_ID_THX = '871853680163446794'; // #support
 
 export async function controller(req: Request, res: Response) {
     const { code, interaction } = await callbackPreAuth(req);
