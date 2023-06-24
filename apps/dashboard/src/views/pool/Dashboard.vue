@@ -36,7 +36,7 @@
                                 <b-skeleton-img no-aspect height="110px"></b-skeleton-img>
                             </template>
                             <b-card v-if="metrics" bg-variant="dark" class="shadow-sm text-white">
-                                <span>Referrals</span><br />
+                                <span>Referral</span><br />
                                 <div class="h2">{{ metrics.referralRewards.totalClaimPoints }}</div>
                             </b-card>
                         </b-skeleton-wrapper>
@@ -47,7 +47,7 @@
                                 <b-skeleton-img no-aspect height="110px"></b-skeleton-img>
                             </template>
                             <b-card v-if="metrics" bg-variant="dark" class="shadow-sm text-white">
-                                <span>Conditionals</span><br />
+                                <span>Social</span><br />
                                 <div class="h2">{{ metrics.pointRewards.totalClaimPoints }}</div>
                             </b-card>
                         </b-skeleton-wrapper>
@@ -58,7 +58,7 @@
                                 <b-skeleton-img no-aspect height="110px"></b-skeleton-img>
                             </template>
                             <b-card v-if="metrics" bg-variant="dark" class="shadow-sm text-white">
-                                <span>Milestones</span><br />
+                                <span>Custom</span><br />
                                 <div class="h2">{{ metrics.milestoneRewards.totalClaimPoints }}</div>
                             </b-card>
                         </b-skeleton-wrapper>
@@ -132,7 +132,7 @@
                                 <b-skeleton-img no-aspect height="110px"></b-skeleton-img>
                             </template>
                             <b-card v-if="metrics" bg-variant="dark" class="shadow-sm text-white">
-                                <span>Coin Perks</span><br />
+                                <span>Coin Rewards</span><br />
                                 <div class="h2">{{ metrics.erc20Perks.payments }}</div>
                             </b-card>
                         </b-skeleton-wrapper>
@@ -143,7 +143,7 @@
                                 <b-skeleton-img no-aspect height="110px"></b-skeleton-img>
                             </template>
                             <b-card v-if="metrics" bg-variant="dark" class="shadow-sm text-white">
-                                <span>NFT Perks</span><br />
+                                <span>NFT Rewards</span><br />
                                 <div class="h2">{{ metrics.erc721Perks.payments }}</div>
                             </b-card>
                         </b-skeleton-wrapper>
@@ -381,7 +381,7 @@ export default class TransactionsView extends Vue {
                     tension: 0.4,
                 },
                 {
-                    label: 'Conditional',
+                    label: 'Social',
                     backgroundColor: '#FFBC38',
                     data: conditionalChartPoints,
                     borderColor: '#FFBC38',
@@ -392,7 +392,7 @@ export default class TransactionsView extends Vue {
                     tension: 0.4,
                 },
                 {
-                    label: 'Milestone',
+                    label: 'Custom',
                     backgroundColor: '#0d6efd',
                     data: milestoneChartPoints,
                     borderColor: '#0d6efd',

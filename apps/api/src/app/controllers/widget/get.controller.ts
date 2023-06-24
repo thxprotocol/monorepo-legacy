@@ -97,8 +97,6 @@ const controller = async (req: Request, res: Response) => {
             this.container = this.createContainer(this.iframe, this.launcher, this.message);
             this.parseURL();
             
-            this.onWidgetToggle(!!this.widgetPath)
-            
             window.matchMedia('(max-width: 990px)').addListener(this.onMatchMedia.bind(this));
             window.onmessage = this.onMessage.bind(this);
         }

@@ -65,12 +65,8 @@ body {
                 color: $gray-500;
             }
 
-            &:hover {
+            &:not(.has-children):hover {
                 background-color: $gray-200;
-
-                // > .nav-link-icon i {
-                //     color: $black;
-                // }
             }
         }
         
@@ -81,25 +77,28 @@ body {
                 color: $primary;
             }
 
-            .nav-link-wrapper > .nav-link-icon i {
-                color: $primary;
-            }
-
-            > .nav-link-icon i {
-                color: $primary;
+            i {
+                color: $primary !important;
             }
         }
         
         .nav-link-wrapper {
             padding: 0.5rem .25rem;
             display: flex;
+            flex-flow: column;
+
+            &.has-children {
+                padding: 0rem .25rem;
+            }
         }
     
         .nav-link-icon {
             width: 40px;
             flex: 0 0 40px;
-            text-align: center;
-    
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            
             ~ div {
                 flex-grow: 1;
             }
@@ -107,7 +106,7 @@ body {
     
         .nav-link-plain {
             .nav-link {
-                padding: 0.7rem 1rem;
+                padding: 0.7rem;
             }
         }
     }

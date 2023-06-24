@@ -69,7 +69,100 @@
                     </b-dropdown>
                 </div>
                 <template v-if="selectedPool">
-                    <base-navbar-nav :routes="configRoutes" />
+                    <b-navbar-nav class="py-0">
+                        <b-nav-item
+                            :to="`/pool/${selectedPool._id}/dashboard`"
+                            link-classes="nav-link-wrapper"
+                            class="nav-link-plain"
+                        >
+                            <div class="d-flex">
+                                <div class="nav-link-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <div class="flex-grow-1 justify-content-between d-flex align-items-center">
+                                    <span>Dashboard</span>
+                                </div>
+                            </div>
+                        </b-nav-item>
+                        <b-nav-item
+                            :to="`/pool/${selectedPool._id}/quests`"
+                            link-classes="nav-link-wrapper"
+                            class="nav-link-plain"
+                        >
+                            <div class="d-flex">
+                                <div class="nav-link-icon">
+                                    <i class="fas fa-trophy"></i>
+                                </div>
+                                <div class="flex-grow-1 justify-content-between d-flex align-items-center">
+                                    <span>Quests</span>
+                                </div>
+                            </div>
+                        </b-nav-item>
+                        <b-nav-item
+                            link-classes="nav-link-wrapper has-children"
+                            class="nav-link-plain"
+                            @click="isVisible = !isVisible"
+                        >
+                            <div class="d-flex">
+                                <div class="nav-link-icon">
+                                    <i class="fas fa-store"></i>
+                                </div>
+                                <div class="flex-grow-1 justify-content-between d-flex align-items-center">
+                                    <span>Rewards</span>
+                                </div>
+                                <div class="flex-grow-1 text-right p-2">
+                                    <i :class="`fas fa-caret-${isVisible ? 'up' : 'down'} ml-0`"></i>
+                                </div>
+                            </div>
+                        </b-nav-item>
+                        <b-collapse id="collapse-rewards" v-model="isVisible">
+                            <b-nav-item
+                                :to="`/pool/${selectedPool._id}/erc20-perks`"
+                                link-classes="nav-link-wrapper flex-row pl-3"
+                                class="nav-link-plain"
+                            >
+                                <div class="nav-link-icon">
+                                    <i class="fa fa-coins"></i>
+                                </div>
+                                <div class="flex-grow-1 justify-content-between d-flex align-items-center">
+                                    <span> Coin</span>
+                                </div>
+                            </b-nav-item>
+                            <b-nav-item
+                                :to="`/pool/${selectedPool._id}/erc721-perks`"
+                                link-classes="nav-link-wrapper flex-row pl-3"
+                                class="nav-link-plain"
+                            >
+                                <div class="nav-link-icon">
+                                    <i class="fa fa-palette"></i>
+                                </div>
+                                <div class="flex-grow-1 justify-content-between d-flex align-items-center">
+                                    <span> NFT</span>
+                                </div>
+                            </b-nav-item>
+                        </b-collapse>
+                        <b-nav-item
+                            :to="`/pool/${selectedPool._id}/settings`"
+                            link-classes="nav-link-wrapper"
+                            class="nav-link-plain"
+                        >
+                            <div class="d-flex">
+                                <div class="nav-link-icon">
+                                    <i class="fas fa-cogs"></i>
+                                </div>
+                                <div class="flex-grow-1 justify-content-between d-flex align-items-center">
+                                    <span>Settings</span>
+                                    <div
+                                        v-if="selectedPool.widget ? selectedPool.widget.active : false"
+                                        variant="gray"
+                                        class="mr-3"
+                                    >
+                                        <i class="fas fa-exclamation text-danger"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </b-nav-item>
+                    </b-navbar-nav>
                     <hr />
                 </template>
                 <label class="px-3 text-muted">Smart Contracts</label>
@@ -79,21 +172,25 @@
                 <b-navbar-nav>
                     <b-nav-item to="/account" class="nav-link-plain">
                         <div class="nav-link-wrapper">
-                            <div class="nav-link-icon">
-                                <b-avatar size="sm" variant="light" :src="account.profileImg"></b-avatar>
-                            </div>
-                            <div class="flex-grow-1 align-items-center d-flex">
-                                <span>Account</span>
+                            <div class="d-flex">
+                                <div class="nav-link-icon">
+                                    <b-avatar size="sm" variant="light" :src="account.profileImg"></b-avatar>
+                                </div>
+                                <div class="flex-grow-1 align-items-center d-flex">
+                                    <span>Account</span>
+                                </div>
                             </div>
                         </div>
                     </b-nav-item>
                     <b-nav-item to="/signout" class="nav-link-plain">
                         <div class="nav-link-wrapper">
-                            <div class="nav-link-icon">
-                                <i class="fas fa-sign-out-alt"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <span>Logout</span>
+                            <div class="d-flex">
+                                <div class="nav-link-icon">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <span>Logout</span>
+                                </div>
                             </div>
                         </div>
                     </b-nav-item>
@@ -109,9 +206,9 @@ import { ERC20Type } from '@thxnetwork/dashboard/types/erc20';
 import { plans } from '@thxnetwork/dashboard/utils/plans';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { IAccount } from '../types/account';
 import BaseNavbarNav from './BaseNavbarNav.vue';
-import { TPool } from '@thxnetwork/types/interfaces';
+import { TAccount, TPool } from '@thxnetwork/types/interfaces';
+import { AccountPlanType } from '@thxnetwork/types/enums';
 
 @Component({
     components: {
@@ -123,12 +220,14 @@ import { TPool } from '@thxnetwork/types/interfaces';
     }),
 })
 export default class BaseNavbar extends Vue {
+    AccountPlanType = AccountPlanType;
     plans = plans;
     ERC20Type = ERC20Type;
     docsUrl = process.env.VUE_APP_DOCS_URL;
     walletUrl = process.env.VUE_APP_WALLET_URL;
     pools!: IPools;
-    account!: IAccount;
+    account!: TAccount;
+    isVisible = true;
 
     get tokenRoutes() {
         return [
@@ -136,52 +235,21 @@ export default class BaseNavbar extends Vue {
                 path: '/pools',
                 label: 'Campaigns',
                 iconClasses: 'fas fa-chart-pie',
+                children: [],
             },
             {
                 path: '/coins',
                 label: 'Coins',
                 iconClasses: 'fas fa-coins',
+                children: [],
             },
             {
                 path: '/nft',
                 label: 'NFT',
                 iconClasses: 'fas fa-palette',
+                children: [],
             },
         ];
-    }
-
-    get configRoutes() {
-        if (!this.selectedPool) return;
-        const routes = [
-            {
-                path: `/pool/${this.selectedPool._id}/dashboard`,
-                label: 'Dashboard',
-                iconClasses: 'fas fa-chart-line',
-            },
-            {
-                path: `/pool/${this.selectedPool._id}/quests`,
-                label: 'Quests',
-                iconClasses: 'fas fa-trophy',
-            },
-            {
-                path: `/pool/${this.selectedPool._id}/erc20-perks`,
-                label: 'Coin Rewards',
-                iconClasses: 'fas fa-coins',
-            },
-            {
-                path: `/pool/${this.selectedPool._id}/erc721-perks`,
-                label: 'NFT Rewards',
-                iconClasses: 'fas fa-award',
-            },
-            {
-                path: `/pool/${this.selectedPool._id}/settings`,
-                label: 'Settings',
-                iconClasses: 'fas fa-cog',
-                isActive: this.selectedPool.widget ? this.selectedPool.widget.active : false,
-            },
-        ];
-
-        return routes;
     }
 
     get firstPool() {
