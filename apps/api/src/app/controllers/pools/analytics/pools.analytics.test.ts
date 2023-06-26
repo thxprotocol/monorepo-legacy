@@ -82,6 +82,7 @@ describe('Pool Analytics', () => {
                         title: 'Referral Reward 1',
                         amount: 100,
                         successUrl,
+                        index: 0,
                     })
                     .expect((res: request.Response) => {
                         referralReward = res.body;
@@ -124,6 +125,7 @@ describe('Pool Analytics', () => {
                         limit: 0,
                         claimAmount: 1,
                         successUrl,
+                        index: 0,
                     })
                     .expect((res: request.Response) => {
                         referralReward = res.body;
@@ -170,6 +172,7 @@ describe('Pool Analytics', () => {
                         expiryDate,
                         limit: 1,
                         claimAmount: 1,
+                        index: 0,
                     })
                     .expect((res: request.Response) => {
                         pointReward = res.body;
@@ -202,6 +205,7 @@ describe('Pool Analytics', () => {
                         expiryDate,
                         limit: 1,
                         claimAmount: 1,
+                        index: 0,
                     })
                     .expect((res: request.Response) => {
                         pointReward = res.body;
@@ -228,6 +232,7 @@ describe('Pool Analytics', () => {
                         title: 'Expiration date is next 30 min',
                         description: 'Lorem ipsum dolor sit amet',
                         amount: 1000,
+                        index: 0,
                     })
                     .expect((res: request.Response) => {
                         milestoneReward = res.body;

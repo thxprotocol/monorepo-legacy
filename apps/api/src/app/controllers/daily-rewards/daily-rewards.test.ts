@@ -51,7 +51,8 @@ describe('Daily Rewards', () => {
             infoLinks = [
                 { label: 'Link 1', url: 'https://example1.com' },
                 { label: 'Link 2', url: 'https://example2.com' },
-            ];
+            ],
+            index = 0;
 
         user.post(`/v1/daily-rewards`)
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
@@ -61,6 +62,7 @@ describe('Daily Rewards', () => {
                 amounts: JSON.stringify(amounts),
                 infoLinks: JSON.stringify(infoLinks),
                 isEnabledWebhookQualification: false,
+                index,
             })
             .expect(({ body }: request.Response) => {
                 expect(body.uuid).toBeDefined();

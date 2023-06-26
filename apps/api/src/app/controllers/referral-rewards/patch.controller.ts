@@ -23,7 +23,6 @@ const controller = async (req: Request, res: Response) => {
     let reward = await RewardReferralService.get(req.params.id);
     if (!reward) throw new NotFoundError('Could not find the reward for this id');
     const { title, description, amount, successUrl, infoLinks, isMandatoryReview, index } = req.body;
-    console.log(req.body, successUrl);
     reward = await ReferralReward.findByIdAndUpdate(
         reward._id,
         {

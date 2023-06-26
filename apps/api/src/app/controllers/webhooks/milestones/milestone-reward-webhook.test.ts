@@ -35,6 +35,7 @@ describe('Milestone Rewards', () => {
                 description: 'Lorem ipsum dolor sit amet',
                 amount: 100,
                 limit: 1,
+                index: 0,
             })
             .expect((res: request.Response) => {
                 expect(res.body.uuid).toBeDefined();

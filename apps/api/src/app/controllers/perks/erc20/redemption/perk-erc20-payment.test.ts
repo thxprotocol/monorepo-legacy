@@ -62,6 +62,7 @@ describe('ERC20 Perk Payment', () => {
                 description: 'For your engagement',
                 amount: 1500,
                 platform: 0,
+                index: 0,
             })
             .expect((res: request.Response) => {
                 expect(res.body.uuid).toBeDefined();

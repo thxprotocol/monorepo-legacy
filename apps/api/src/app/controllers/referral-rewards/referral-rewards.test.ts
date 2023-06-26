@@ -55,6 +55,7 @@ describe('Referral Rewards', () => {
                 description: 'Lorem ipsum dolor sit amet',
                 amount: 100,
                 successUrl,
+                index: 0,
             })
             .expect((res: request.Response) => {
                 expect(res.body.uuid).toBeDefined();

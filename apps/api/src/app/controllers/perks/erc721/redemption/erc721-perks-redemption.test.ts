@@ -73,6 +73,7 @@ describe('ERC721 Perks Redemtpion', () => {
                     title,
                     description,
                     amounts: JSON.stringify(amounts),
+                    index: 0,
                 })
                 .expect(({ body }: request.Response) => {
                     expect(body.uuid).toBeDefined();

@@ -56,6 +56,7 @@ describe('Rewards', () => {
                 description: 'Lorem ipsum dolor sit amet',
                 amount: 100,
                 successUrl,
+                index: 0,
             })
             .expect((res: request.Response) => {
                 expect(res.body.uuid).toBeDefined();
@@ -70,6 +71,7 @@ describe('Rewards', () => {
         const title = 'title';
         const description = 'description';
         const amount = 160;
+        const index = 0;
         user.post('/v1/point-rewards/')
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .send({
@@ -78,6 +80,7 @@ describe('Rewards', () => {
                 amount,
                 platform: 0,
                 limit: 1,
+                index,
             })
             .expect((res: request.Response) => {
                 expect(res.body.title).toBe(title);
@@ -92,12 +95,14 @@ describe('Rewards', () => {
         const title = 'title';
         const description = 'description';
         const amount = 250;
+        const index = 0;
         user.post('/v1/milestone-rewards/')
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .send({
                 title,
                 description,
                 amount,
+                index,
             })
             .expect((res: request.Response) => {
                 expect(res.body.title).toBe(title);
