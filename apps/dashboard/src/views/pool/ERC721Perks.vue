@@ -33,7 +33,7 @@
                 :selectedItems="selectedItems"
                 :rewards="erc721Perks[pool._id]"
             />
-            <BTable hover :busy="isLoading" :items="rewardsByPage" responsive="lg" show-empty>
+            <BTable id="table-nft-perks" hover :busy="isLoading" :items="rewardsByPage" responsive="lg" show-empty>
                 <!-- Head formatting -->
                 <template #head(checkbox)>
                     <b-form-checkbox @change="onSelectAll" />
@@ -241,3 +241,26 @@ export default class ERC721PerksView extends Vue {
     }
 }
 </script>
+<style>
+#table-nft-perks th:nth-child(1) {
+    width: 50px;
+}
+#table-nft-perks th:nth-child(2) {
+    width: 100px;
+}
+#table-nft-perks th:nth-child(3) {
+    width: 100px;
+}
+#table-nft-perks th:nth-child(4) {
+    width: 100px;
+}
+#table-nft-perks th:nth-child(5) {
+    width: 100px;
+}
+#table-nft-perks th:nth-child(6) {
+    width: auto;
+}
+#table-nft-perks th:nth-child(7) {
+    width: 100px;
+}
+</style>

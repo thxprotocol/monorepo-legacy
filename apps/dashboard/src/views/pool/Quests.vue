@@ -47,7 +47,7 @@
                 @change-limit="onChangeLimit"
             />
 
-            <BTable hover :busy="isLoading" :items="rewardsByPage" responsive="lg" show-empty>
+            <BTable id="table-quests" hover :busy="isLoading" :items="rewardsByPage" responsive="lg" show-empty>
                 <!-- Head formatting -->
                 <template #head(index)> &nbsp; </template>
                 <template #head(checkbox)>
@@ -357,32 +357,32 @@ export default class AssetPoolView extends Vue {
     }
 }
 
-tr:first-child .btn-sort a:first-child,
-tr:last-child .btn-sort a:last-child {
+#table-quests tr:first-child .btn-sort a:first-child,
+#table-quests tr:last-child .btn-sort a:last-child {
     opacity: 0.5;
     cursor: not-allowed;
     color: var(--gray) !important;
 }
 
-.table th:nth-child(1) {
+#table-quests th:nth-child(1) {
     width: 20px;
 }
-.table th:nth-child(2) {
-    width: 50px;
+#table-quests th:nth-child(2) {
+    width: 40px;
 }
-.table th:nth-child(3) {
+#table-quests th:nth-child(3) {
     width: 100px;
 }
-.table th:nth-child(4) {
+#table-quests th:nth-child(4) {
     width: 100px;
 }
-.table th:nth-child(5) {
+#table-quests th:nth-child(5) {
     width: auto;
 }
-.table th:nth-child(6) {
+#table-quests th:nth-child(6) {
     width: 120px;
 }
-.table th:nth-child(7) {
+#table-quests th:nth-child(7) {
     width: 40px;
 }
 </style>

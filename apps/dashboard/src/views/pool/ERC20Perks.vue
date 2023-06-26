@@ -33,7 +33,7 @@
                 :selectedItems="selectedItems"
                 :rewards="erc20Perks[pool._id]"
             />
-            <BTable hover :busy="isLoading" :items="rewardsByPage" responsive="lg" show-empty>
+            <BTable id="table-coin-perks" hover :busy="isLoading" :items="rewardsByPage" responsive="lg" show-empty>
                 <!-- Head formatting -->
                 <template #head(checkbox)>
                     <b-form-checkbox @change="onChecked" />
@@ -220,3 +220,26 @@ export default class ERC20PerksView extends Vue {
     }
 }
 </script>
+<style>
+#table-coin-perks th:nth-child(1) {
+    width: 50px;
+}
+#table-coin-perks th:nth-child(2) {
+    width: 100px;
+}
+#table-coin-perks th:nth-child(3) {
+    width: 100px;
+}
+#table-coin-perks th:nth-child(4) {
+    width: 120px;
+}
+#table-coin-perks th:nth-child(5) {
+    width: auto;
+}
+#table-coin-perks th:nth-child(6) {
+    width: 120px;
+}
+#table-coin-perks th:nth-child(7) {
+    width: 40px;
+}
+</style>
