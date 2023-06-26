@@ -23,34 +23,45 @@
                             role="link"
                         />
                     </router-link>
-                    <b-dropdown variant="link" size="sm" no-caret right>
+                    <b-dropdown variant="link" size="sm" no-caret right toggle-class="pr-0">
                         <template #button-content>
                             <b-avatar size="sm" variant="light" :src="account.profileImg"></b-avatar>
                         </template>
                         <b-dropdown-item to="/account">Account</b-dropdown-item>
-                        <b-dropdown-item to="/signout">Signout</b-dropdown-item>
+                        <b-dropdown-item to="/signout">Sign out</b-dropdown-item>
                     </b-dropdown>
                 </div>
                 <hr class="m-0 mb-2" />
-                <b-dropdown block variant="white" class="mx-2 my-0" toggle-class="text-muted pl-3" no-caret right>
+                <b-dropdown
+                    v-b-tooltip.top.hover
+                    title="Preview campaign"
+                    split
+                    @click="onClickPreview"
+                    split-class="pr-2"
+                    size="sm"
+                    variant="light"
+                    right
+                    class="my-3 d-flex btn-toggle-campaign"
+                >
                     <template #button-content>
-                        <div class="align-items-center d-flex w-100">
+                        <div class="d-flex">
                             <template v-if="selectedPool">
-                                <img
-                                    width="20"
-                                    class="mr-2 bg-white"
-                                    :src="
-                                        selectedPool.brand && selectedPool.brand.logoImgUrl
-                                            ? selectedPool.brand.logoImgUrl
-                                            : `https://avatars.dicebear.com/api/identicon/${selectedPool._id}.svg`
-                                    "
-                                />
-                                <div class="truncate-pool-title flex-grow-1">
-                                    {{ selectedPool.settings.title }}
+                                <div class="split-button-icon">
+                                    <img
+                                        width="18"
+                                        class="bg-white"
+                                        :src="
+                                            selectedPool.brand && selectedPool.brand.logoImgUrl
+                                                ? selectedPool.brand.logoImgUrl
+                                                : `https://avatars.dicebear.com/api/identicon/${selectedPool._id}.svg`
+                                        "
+                                    />
+                                </div>
+                                <div class="truncate-pool-title text-muted">
+                                    {{ selectedPool.settings.title }} wagwaw
                                 </div>
                             </template>
                             <b-spinner v-else variant="primary" small />
-                            <div class="ml-auto"><i class="fas fa-ellipsis-v"></i></div>
                         </div>
                     </template>
                     <b-dropdown-item-btn class="small" :key="key" v-for="(p, key) of pools" @click="onPoolSelect(p)">
@@ -59,7 +70,7 @@
                                 <span class="truncate-pool-title">
                                     {{ p.settings.title }}
                                 </span>
-                                <i class="fas fa-caret-right ml-2"></i>
+                                <i class="fas fa-caret-right text-muted ml-2"></i>
                             </div>
                         </div>
                     </b-dropdown-item-btn>
@@ -192,6 +203,7 @@ import { mapGetters } from 'vuex';
 import BaseNavbarNav from './BaseNavbarNav.vue';
 import { TAccount, TPool } from '@thxnetwork/types/interfaces';
 import { AccountPlanType } from '@thxnetwork/types/enums';
+import { BASE_URL } from '../utils/secrets';
 
 @Component({
     components: {
@@ -204,6 +216,7 @@ import { AccountPlanType } from '@thxnetwork/types/enums';
 })
 export default class BaseNavbar extends Vue {
     AccountPlanType = AccountPlanType;
+    dashboardUrl = BASE_URL;
     plans = plans;
     ERC20Type = ERC20Type;
     docsUrl = process.env.VUE_APP_DOCS_URL;
@@ -261,6 +274,11 @@ export default class BaseNavbar extends Vue {
         });
     }
 
+    onClickPreview() {
+        if (!this.selectedPool) return;
+        window.open(BASE_URL + '/preview/' + this.selectedPool._id, '_blank');
+    }
+
     async onPoolSelect(pool: TPool) {
         if (!pool.address) {
             await this.$store.dispatch('pools/read', pool._id);
@@ -269,11 +287,56 @@ export default class BaseNavbar extends Vue {
     }
 }
 </script>
-<style>
+<style lang="scss">
 .truncate-pool-title {
     text-overflow: ellipsis;
-    display: block;
-    width: 135px;
     overflow: hidden;
+    display: block !important;
+    width: 145px;
+    text-align: left;
+    white-space: nowrap;
+}
+.btn-toggle-campaign {
+    margin: 0 0.5rem 1px;
+    padding: 0;
+    display: flex;
+
+    .split-button-icon {
+        width: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .btn {
+        background-color: #e9ecef;
+        padding: 0.5rem 0.25rem;
+    }
+
+    .dropdown-toggle {
+        padding-right: 1rem;
+        flex-shrink: 0;
+        width: 35px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: var(--gray);
+
+        &:hover,
+        &:focus {
+            color: var(--gray) !important;
+        }
+    }
+
+    .dropdown-toggle::after {
+        content: '\f142';
+        margin: 0 !important;
+        border: 0;
+        height: auto;
+        width: auto;
+        font-weight: 900;
+        font-family: 'Font Awesome 5 Free';
+    }
 }
 </style>
