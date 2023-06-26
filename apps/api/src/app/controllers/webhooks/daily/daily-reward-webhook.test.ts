@@ -36,6 +36,7 @@ describe('Daily Rewards WebHooks', () => {
                 amounts: JSON.stringify([100]),
                 limit: 0,
                 isEnabledWebhookQualification: true,
+                index: 0,
             })
             .expect(({ body }: request.Response) => {
                 expect(body.uuid).toBeDefined();
