@@ -1,20 +1,9 @@
 <template>
-    <div class="mn-3">
+    <div class="">
         <b-button variant="primary" v-b-modal="'modalClientCreate'" class="rounded-pill">
             <i class="fas fa-plus mr-2"></i>
             Create Client
         </b-button>
-        <BaseCardTableHeader
-            :page="page"
-            :limit="limit"
-            :pool="pool"
-            :total-rows="totals[pool._id]"
-            :selectedItems="selectedItems"
-            :actions="actions"
-            @click-action="onClickAction"
-            @change-page="onChangePage"
-            @change-limit="onChangeLimit"
-        />
         <BTable hover :busy="isLoading" :items="clientsByPage" :fields="fields" responsive="lg" show-empty>
             <!-- Head formatting -->
             <template #head(checkbox)>
@@ -90,10 +79,12 @@
 import { mapGetters } from 'vuex';
 import { Component, Vue } from 'vue-property-decorator';
 import { TClient } from '@thxnetwork/dashboard/store/modules/clients';
+import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import BaseListItemClient from '@thxnetwork/dashboard/components/list-items/BaseListItemClient.vue';
 import BaseModalClientCreate from '@thxnetwork/dashboard/components/modals/BaseModalClientCreate.vue';
-import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
+import { AccountPlanType } from '@thxnetwork/types/enums';
+import { TAccount } from '@thxnetwork/types/interfaces';
 
 @Component({
     components: {
@@ -105,6 +96,7 @@ import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCard
         totals: 'clients/totals',
         clients: 'clients/all',
         pools: 'pools/all',
+        account: 'account/profile',
     }),
 })
 export default class Clients extends Vue {
@@ -121,6 +113,7 @@ export default class Clients extends Vue {
     clients!: { [poolId: string]: { [id: string]: TClient } };
     editingClient: TClient | null = null;
     pools!: IPools;
+    account!: TAccount;
 
     selectedItems: string[] = [];
 
@@ -184,11 +177,12 @@ export default class Clients extends Vue {
         this.listClients();
     }
 
-    onClickAction(action: { variant: number; label: string }) {
+    onClickAction() {
         /** Not yet implemented bulk actions */
     }
 
     async listClients() {
+        if (this.account.plan !== AccountPlanType.Premium) return;
         this.isLoading = true;
         await this.$store.dispatch('clients/list', {
             page: this.page,

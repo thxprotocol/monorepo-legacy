@@ -117,37 +117,55 @@
                 <div class="col-md-12 text-center text-muted pt-md-5 pb-3">
                     <div>Trusted by</div>
                 </div>
-                <div class="col-6 col-md-3 text-center d-flex align-items-center justify-content-center">
-                    <b-img
-                        :src="require('../../public/assets/img/logo-toshimon.webp')"
-                        width="120"
-                        alt=""
-                        class="mx-md-5"
-                    />
+                <div class="col-6 col-md-2 text-center d-flex align-items-center justify-content-center">
+                    <b-link href="https://www.humandivergence.com" target="_blank">
+                        <b-img
+                            :src="require('../../public/assets/img/logo-hd.png')"
+                            width="120"
+                            alt=""
+                            class="mx-md-5"
+                        />
+                    </b-link>
                 </div>
-                <div class="col-6 col-md-3 text-center d-flex align-items-center justify-content-center">
-                    <b-img
-                        :src="require('../../public/assets/img/logo-forest-knight.png')"
-                        width="120"
-                        alt=""
-                        class="mx-md-5"
-                    />
+                <div class="col-6 col-md-2 text-center d-flex align-items-center justify-content-center">
+                    <b-link href="https://www.tryhards.io" target="_blank">
+                        <b-img
+                            :src="require('../../public/assets/img/logo-tryhards.png')"
+                            width="120"
+                            alt=""
+                            class="mx-md-5"
+                        />
+                    </b-link>
                 </div>
-                <div class="col-6 col-md-3 text-center d-flex align-items-center justify-content-center">
-                    <b-img
-                        :src="require('../../public/assets/img/logo-tryhards.png')"
-                        width="120"
-                        alt=""
-                        class="mx-md-5"
-                    />
+                <div class="col-6 col-md-2 text-center d-flex align-items-center justify-content-center">
+                    <b-link href="https://www.forestknight.io" target="_blank">
+                        <b-img
+                            :src="require('../../public/assets/img/logo-forest-knight.png')"
+                            width="120"
+                            alt=""
+                            class="mx-md-5"
+                        />
+                    </b-link>
                 </div>
-                <div class="col-6 col-md-3 text-center d-flex align-items-center justify-content-center">
-                    <b-img
-                        :src="require('../../public/assets/img/logo-2tokens.webp')"
-                        width="120"
-                        alt=""
-                        class="mx-md-5"
-                    />
+                <div class="col-6 col-md-2 text-center d-flex align-items-center justify-content-center">
+                    <b-link href="http://2tokens.org" target="_blank">
+                        <b-img
+                            :src="require('../../public/assets/img/logo-2tokens.webp')"
+                            width="120"
+                            alt=""
+                            class="mx-md-5"
+                        />
+                    </b-link>
+                </div>
+                <div class="col-6 col-md-2 text-center d-flex align-items-center justify-content-center">
+                    <b-link href="http://bibianmentelfoundation.nl/" target="_blank">
+                        <b-img
+                            :src="require('../../public/assets/img/logo-mf.png')"
+                            width="120"
+                            alt=""
+                            class="mx-md-5"
+                        />
+                    </b-link>
                 </div>
             </div>
             <div class="row mt-3 mt-sm-5 justify-content-center">
@@ -169,11 +187,22 @@
                                         <td>
                                             Smart Wallets<br />
                                             <span class="text-gray small">
-                                                Onboard non-crypto natives without friction
+                                                Polygon smart contract wallets ideal for non-crypto natives
                                             </span>
                                         </td>
                                         <td><i class="fas fa-check-circle"></i></td>
                                         <td><i class="fas fa-check-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Virtual Wallets<br />
+                                            <span class="text-gray small">
+                                                Qualify users for custom quests even before account sign up
+                                            </span>
+                                        </td>
+                                        <td><i class="fas fa-times-circle"></i></td>
+                                        <td><i class="fas fa-times-circle"></i></td>
                                         <td><i class="fas fa-check-circle"></i></td>
                                     </tr>
                                     <tr>

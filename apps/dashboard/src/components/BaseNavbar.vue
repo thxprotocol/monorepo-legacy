@@ -16,58 +16,55 @@
                         <img
                             :src="require('../../public/assets/logo.png')"
                             width="40"
+                            height="40"
                             alt="THX logo"
                             @click="navigate"
                             @keypress.enter="navigate"
                             role="link"
                         />
                     </router-link>
-                    <b-dropdown variant="light" class="" size="sm" no-caret right>
+                    <b-dropdown variant="link" size="sm" no-caret right>
                         <template #button-content>
-                            <div class="text-left d-flex align-items-center justify-content-between">
-                                <div class="align-items-center d-flex">
-                                    <img
-                                        v-if="selectedPool"
-                                        width="20"
-                                        class="rounded"
-                                        :src="
-                                            selectedPool.brand && selectedPool.brand.logoImgUrl
-                                                ? selectedPool.brand.logoImgUrl
-                                                : `https://avatars.dicebear.com/api/identicon/${selectedPool._id}.svg`
-                                        "
-                                    />
-                                    <b-spinner v-else variant="primary" small />
-                                </div>
-                            </div>
+                            <b-avatar size="sm" variant="light" :src="account.profileImg"></b-avatar>
                         </template>
-                        <b-dropdown-text class="text-muted small"> Campaigns </b-dropdown-text>
-                        <b-dropdown-divider />
-                        <b-dropdown-item-btn
-                            class="small"
-                            :key="key"
-                            v-for="(p, key) of pools"
-                            @click="onPoolSelect(p)"
-                        >
-                            <div class="text-left d-flex align-items-center justify-content-between">
-                                <div class="align-items-center d-flex">
-                                    <img
-                                        width="20"
-                                        class="mr-2 rounded"
-                                        :src="
-                                            p.brand && p.brand.logoImgUrl
-                                                ? p.brand.logoImgUrl
-                                                : `https://avatars.dicebear.com/api/identicon/${p._id}.svg`
-                                        "
-                                    />
-                                    <span class="truncate-pool-title">
-                                        {{ p.settings.title }}
-                                    </span>
-                                </div>
-                                <i class="fas fa-caret-right ml-2"></i>
-                            </div>
-                        </b-dropdown-item-btn>
+                        <b-dropdown-item to="/account">Account</b-dropdown-item>
+                        <b-dropdown-item to="/signout">Signout</b-dropdown-item>
                     </b-dropdown>
                 </div>
+                <hr class="m-0 mb-2" />
+                <b-dropdown block variant="white" class="mx-2 my-0" toggle-class="text-muted pl-3" no-caret right>
+                    <template #button-content>
+                        <div class="align-items-center d-flex w-100">
+                            <template v-if="selectedPool">
+                                <img
+                                    width="20"
+                                    class="mr-2 bg-white"
+                                    :src="
+                                        selectedPool.brand && selectedPool.brand.logoImgUrl
+                                            ? selectedPool.brand.logoImgUrl
+                                            : `https://avatars.dicebear.com/api/identicon/${selectedPool._id}.svg`
+                                    "
+                                />
+                                <div class="truncate-pool-title flex-grow-1">
+                                    {{ selectedPool.settings.title }}
+                                </div>
+                            </template>
+                            <b-spinner v-else variant="primary" small />
+                            <div class="ml-auto"><i class="fas fa-ellipsis-v"></i></div>
+                        </div>
+                    </template>
+                    <b-dropdown-item-btn class="small" :key="key" v-for="(p, key) of pools" @click="onPoolSelect(p)">
+                        <div class="text-left d-flex align-items-center justify-content-between">
+                            <div class="align-items-center d-flex">
+                                <span class="truncate-pool-title">
+                                    {{ p.settings.title }}
+                                </span>
+                                <i class="fas fa-caret-right ml-2"></i>
+                            </div>
+                        </div>
+                    </b-dropdown-item-btn>
+                </b-dropdown>
+                <hr class="mt-2" />
                 <template v-if="selectedPool">
                     <b-navbar-nav class="py-0">
                         <b-nav-item
@@ -142,16 +139,16 @@
                             </b-nav-item>
                         </b-collapse>
                         <b-nav-item
-                            :to="`/pool/${selectedPool._id}/settings`"
+                            :to="`/pool/${selectedPool._id}/developer`"
                             link-classes="nav-link-wrapper"
                             class="nav-link-plain"
                         >
                             <div class="d-flex">
                                 <div class="nav-link-icon">
-                                    <i class="fas fa-cogs"></i>
+                                    <i class="fas fa-code"></i>
                                 </div>
                                 <div class="flex-grow-1 justify-content-between d-flex align-items-center">
-                                    <span>Settings</span>
+                                    <span>Developer</span>
                                     <div
                                         v-if="selectedPool.widget ? !selectedPool.widget.active : false"
                                         variant="gray"
@@ -162,39 +159,25 @@
                                 </div>
                             </div>
                         </b-nav-item>
+                        <b-nav-item
+                            :to="`/pool/${selectedPool._id}/settings`"
+                            link-classes="nav-link-wrapper"
+                            class="nav-link-plain"
+                        >
+                            <div class="d-flex">
+                                <div class="nav-link-icon">
+                                    <i class="fas fa-cogs"></i>
+                                </div>
+                                <div class="flex-grow-1 justify-content-between d-flex align-items-center">
+                                    <span>Settings</span>
+                                </div>
+                            </div>
+                        </b-nav-item>
                     </b-navbar-nav>
                     <hr />
                 </template>
                 <label class="px-3 text-muted">Smart Contracts</label>
                 <base-navbar-nav :routes="tokenRoutes" />
-            </div>
-            <div class="d-flex justify-content-end flex-column flex-grow-0 w-100 border-top py-2">
-                <b-navbar-nav>
-                    <b-nav-item to="/account" class="nav-link-plain">
-                        <div class="nav-link-wrapper">
-                            <div class="d-flex">
-                                <div class="nav-link-icon">
-                                    <b-avatar size="sm" variant="light" :src="account.profileImg"></b-avatar>
-                                </div>
-                                <div class="flex-grow-1 align-items-center d-flex">
-                                    <span>Account</span>
-                                </div>
-                            </div>
-                        </div>
-                    </b-nav-item>
-                    <b-nav-item to="/signout" class="nav-link-plain">
-                        <div class="nav-link-wrapper">
-                            <div class="d-flex">
-                                <div class="nav-link-icon">
-                                    <i class="fas fa-sign-out-alt"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <span>Logout</span>
-                                </div>
-                            </div>
-                        </div>
-                    </b-nav-item>
-                </b-navbar-nav>
             </div>
         </b-navbar>
     </b-sidebar>

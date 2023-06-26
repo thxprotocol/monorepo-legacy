@@ -1,3 +1,13 @@
+.nav-pills .nav-link.active,
+.nav-pills .show > .nav-link {
+    color: var(--primary);
+    background-color: #e9ecef;
+}
+
+.nav-pills .nav-link {
+    padding: .5rem 1rem;
+}
+
 .navbar {
     z-index: 1;
     width: 100%;

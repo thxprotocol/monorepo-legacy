@@ -83,10 +83,22 @@ const routes: Array<RouteConfig> = [
                         path: 'widget',
                         component: () => import('../views/pool/settings/Widget.vue'),
                     },
+                ],
+            },
+            {
+                name: 'Developer',
+                path: 'developer',
+                component: () => import('../views/pool/Developer.vue'),
+                children: [
+                    {
+                        name: 'Webhooks',
+                        path: 'webhooks',
+                        component: () => import('../views/pool/developer/Webhooks.vue'),
+                    },
                     {
                         name: 'API',
                         path: 'api',
-                        component: () => import('../views/pool/settings/API.vue'),
+                        component: () => import('../views/pool/developer/API.vue'),
                     },
                 ],
             },

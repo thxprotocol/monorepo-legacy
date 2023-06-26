@@ -1,66 +1,8 @@
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 import { Vue } from 'vue-property-decorator';
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
-import { type TPool } from '@thxnetwork/types/index';
+import type { TPool, TClient, TClientState } from '@thxnetwork/types/interfaces';
 import { track } from '@thxnetwork/mixpanel';
-
-export type TClient = {
-    _id: string;
-    page: number;
-    name: string;
-    sub: string;
-    poolId: string;
-    grantType: string;
-    clientId: string;
-    clientSecret: string;
-    createdAt: Date;
-};
-
-export type ClientByPage = {
-    [page: number]: TClient[];
-};
-
-export type PaginationParams = Partial<{
-    page: number;
-    limit: number;
-}>;
-
-export type ClientListProps = PaginationParams & {
-    pool: TPool;
-};
-
-export type GetClientProps = {
-    client: TClient;
-    pool: TPool;
-};
-
-export type TClientResponse = AxiosResponse<
-    TClientMeta & {
-        results: TClient[];
-    }
->;
-
-export type TClientMeta = {
-    limit: number;
-    total: number;
-    next?: { page: number };
-    previous?: { page: number };
-};
-
-export type TClientCreate = {
-    name: string;
-    page: number;
-    pool: TPool;
-    grantType: string;
-    redirectUri: string;
-    requestUri: string;
-};
-
-export type TClientState = {
-    [poolId: string]: TClientMeta & {
-        byPage: ClientByPage;
-    };
-};
 
 @Module({ namespaced: true })
 class ClientModule extends VuexModule {
@@ -87,12 +29,12 @@ class ClientModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async list({ page = 1, limit, pool }: ClientListProps) {
+    async list({ page = 1, limit, pool }: { limit: number; page: number; pool: TPool }) {
         const params = new URLSearchParams();
         params.set('page', String(page));
         params.set('limit', String(limit));
 
-        const { data }: TClientResponse = await axios({
+        const { data } = await axios({
             method: 'GET',
             url: '/clients',
             headers: { 'X-PoolId': pool._id },
@@ -108,23 +50,22 @@ class ClientModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async create({ name, page, pool, grantType, redirectUri, requestUri }: TClientCreate) {
+    async create(payload: TClient) {
         const { data } = await axios({
             method: 'POST',
             url: '/clients',
-            headers: { 'X-PoolId': pool._id },
-            data: { name, grantType, redirectUri, requestUri },
+            headers: { 'X-PoolId': payload.poolId },
+            data: payload,
         });
 
         const profile = this.context.rootGetters['account/profile'];
         track('UserCreates', [profile.sub, 'client']);
 
-        data.page = page;
-        this.context.commit('set', { pool, client: data });
+        this.context.commit('set', { ...payload, ...data });
     }
 
     @Action({ rawError: true })
-    async update({ _id, name, pool }: TClientCreate & TClient) {
+    async update({ _id, name, pool }: TClient & { pool: TPool }) {
         const { data } = await axios({
             method: 'PATCH',
             url: '/clients/' + _id,
@@ -136,7 +77,7 @@ class ClientModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async get({ client, pool }: GetClientProps) {
+    async get({ client, pool }: { client: TClient; pool: TPool }) {
         const { data } = await axios({
             method: 'GET',
             url: '/clients/' + client._id,
@@ -145,7 +86,6 @@ class ClientModule extends VuexModule {
         });
 
         const existingClient = this.context.rootGetters['clients/all'][pool._id][client._id];
-        // Override existing props but keep props (like page) undefined in the new data.
         const updatedClient = { ...existingClient, ...data };
         this.context.commit('set', { pool, client: updatedClient });
     }
