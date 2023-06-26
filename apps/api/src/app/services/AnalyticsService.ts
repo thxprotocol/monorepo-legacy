@@ -251,8 +251,14 @@ export async function getLeaderboard(pool: AssetPoolDocument, dateRange?: { star
         ...topMilestonesClaimsBySub,
     ];
 
-    const leaderBoard: { sub: string; walletId: string; score: number; account: TAccount; wallet: WalletDocument }[] =
-        [];
+    const leaderBoard: {
+        sub: string;
+        questsCompleted: number;
+        walletId: string;
+        score: number;
+        account: TAccount;
+        wallet: WalletDocument;
+    }[] = [];
     const walletIds = new Set(leaderBoardQueryResultMerged.map((x) => x._id));
     const wallets = await Wallet.find({ _id: Array.from(walletIds) });
     const subs = wallets.filter((wallet) => wallet.sub).map((wallet) => wallet.sub);
@@ -271,6 +277,7 @@ export async function getLeaderboard(pool: AssetPoolDocument, dateRange?: { star
                 score: entry.total_amount,
                 account,
                 wallet,
+                questsCompleted: leaderBoardQueryResultMerged.length,
             });
         } else {
             const index = leaderBoard.findIndex((x) => x.walletId === String(wallet._id));
@@ -278,6 +285,7 @@ export async function getLeaderboard(pool: AssetPoolDocument, dateRange?: { star
                 leaderBoard[index].score += entry.total_amount;
             } else {
                 leaderBoard.push({
+                    questsCompleted: leaderBoardQueryResultMerged.length,
                     sub: wallet.sub,
                     walletId: String(wallet._id),
                     score: entry.total_amount,

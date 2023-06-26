@@ -2,7 +2,7 @@
     <base-modal
         @show="onShow"
         size="xl"
-        :title="perk ? 'Update Coin Perk' : 'Create Coin Perk'"
+        :title="perk ? 'Update Coin Reward' : 'Create Coin Reward'"
         :id="id"
         :error="error"
         :loading="isLoading"
@@ -84,7 +84,7 @@
                 variant="primary"
                 block
             >
-                {{ perk ? 'Update Coin Perk' : 'Create Coin Perk' }}
+                {{ perk ? 'Update Coin Reward' : 'Create Coin Reward' }}
             </b-button>
         </template>
     </base-modal>

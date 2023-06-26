@@ -10,6 +10,7 @@ import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import DailyRewardClaimService, { ONE_DAY_MS } from '@thxnetwork/api/services/DailyRewardClaimService';
 import WalletService from '@thxnetwork/api/services/WalletService';
+import { getLeaderboard } from '@thxnetwork/api/services/AnalyticsService';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
@@ -28,7 +29,15 @@ const controller = async (req: Request, res: Response) => {
         wallet = await WalletService.findPrimary(token.sub, pool.chainId);
     }
 
+    const leaderboard = await getLeaderboard(pool, { startDate: new Date(pool.createdAt), endDate: new Date() });
+    console.log({ leaderboard });
+
     res.json({
+        leaderboard: leaderboard.map(({ score, wallet, questsCompleted }) => ({
+            questsCompleted,
+            score,
+            address: wallet.address,
+        })),
         dailyRewards: await Promise.all(
             dailyRewards.map(async (r) => {
                 const isDisabled = wallet ? !(await DailyRewardClaimService.isClaimable(r, wallet)) : true;

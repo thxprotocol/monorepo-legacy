@@ -7,7 +7,7 @@
             <b-col class="d-flex justify-content-end">
                 <b-button v-b-modal="'modalRewardERC20Create'" class="rounded-pill" variant="primary">
                     <i class="fas fa-plus mr-2"></i>
-                    <span class="d-none d-md-inline">Coin Perk</span>
+                    <span class="d-none d-md-inline">Coin Reward</span>
                 </b-button>
                 <BaseModalRewardERC20Create @submit="listRewards" :id="'modalRewardERC20Create'" :pool="pool" />
             </b-col>
@@ -20,7 +20,7 @@
                 :total-rows="totals[pool._id]"
                 :selectedItems="selectedItems"
                 :actions="[
-                    { variant: 0, label: `Delete perks` },
+                    { variant: 0, label: `Delete rewards` },
                     { variant: 1, label: 'Export Claim URL\'s' },
                 ]"
                 @click-action="onClickAction"
