@@ -353,6 +353,10 @@ export default class AssetPoolView extends Vue {
         &:hover {
             text-decoration: none;
             color: var(--gray-dark);
+
+            &:active {
+                color: var(--gray);
+            }
         }
     }
 }
