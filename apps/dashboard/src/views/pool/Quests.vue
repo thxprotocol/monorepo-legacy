@@ -46,8 +46,10 @@
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
             />
+
             <BTable hover :busy="isLoading" :items="rewardsByPage" responsive="lg" show-empty>
                 <!-- Head formatting -->
+                <template #head(index)> &nbsp; </template>
                 <template #head(checkbox)>
                     <b-form-checkbox @change="onChecked" />
                 </template>
@@ -59,15 +61,23 @@
                 <template #head(id)> &nbsp; </template>
 
                 <!-- Cell formatting -->
+                <template #cell(index)="{ item, index }">
+                    <div class="btn btn-sort p-0">
+                        <b-link block @click="onClickUp(item, index)">
+                            <i class="fas fa-caret-up ml-0"></i>
+                        </b-link>
+                        <b-link block @click="onClickDown(item, index)">
+                            <i class="fas fa-caret-down ml-0"></i>
+                        </b-link>
+                    </div>
+                </template>
                 <template #cell(checkbox)="{ item }">
                     <b-form-checkbox :value="{ id: item.id, variant: item.variant }" v-model="selectedItems" />
                 </template>
                 <template #cell(points)="{ item }">
                     <strong class="text-primary">{{ item.points }} </strong>
                 </template>
-                <template #cell(title)="{ item }">
-                    {{ item.title }}
-                </template>
+                <template #cell(title)="{ item }"> {{ item.title }} </template>
                 <template #cell(claims)="{ item }">
                     <template v-if="item.variant === QuestVariant.Referral">
                         <b-link v-b-modal="`modalReferralQuestClaims${item.id}`">
@@ -107,7 +117,14 @@
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { QuestVariant, TDailyReward, TMilestoneReward, TPointReward, TReferralReward } from '@thxnetwork/types/index';
+import {
+    QuestVariant,
+    TBaseReward,
+    TDailyReward,
+    TMilestoneReward,
+    TPointReward,
+    TReferralReward,
+} from '@thxnetwork/types/index';
 import BaseModalRewardDailyCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardDailyCreate.vue';
 import BaseModalRewardPointsCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardPointsCreate.vue';
 import BaseModalRewardReferralCreate from '@thxnetwork/dashboard/components/modals/BaseModalReferralRewardCreate.vue';
@@ -188,22 +205,27 @@ export default class AssetPoolView extends Vue {
     get rewardsByPage() {
         return this.allQuests
             .sort((a, b) => {
-                const createdAtTime = new Date(a.createdAt as string).getTime();
-                const nextCreatedAtTime = new Date(b.createdAt as string).getTime();
-                return createdAtTime < nextCreatedAtTime ? 1 : -1;
+                return Number(a.index) - Number(b.index);
             })
             .filter(
                 (reward: TDailyReward | TPointReward | TReferralReward | TMilestoneReward) => reward.page === this.page,
             )
-            .map((r: any) => ({
-                checkbox: r._id,
-                variant: r.variant,
-                points: r.amount || `${r.amounts.length} days`,
-                title: r.title,
-                claims: r.claims,
-                id: r._id,
-            }))
+            .map((r: any) => {
+                return {
+                    index: r,
+                    checkbox: r._id,
+                    variant: r.variant,
+                    points: r.amount || `${r.amounts.length} days`,
+                    title: r.title,
+                    claims: r.claims,
+                    id: r._id,
+                };
+            })
             .slice(0, this.limit);
+    }
+
+    mounted() {
+        this.listQuests();
     }
 
     async listQuests() {
@@ -217,8 +239,52 @@ export default class AssetPoolView extends Vue {
         this.isLoading = false;
     }
 
-    mounted() {
-        this.listQuests();
+    async onClickUp({ index }: { index: TBaseReward }, i: number) {
+        const promises: any = [];
+        const { _id, poolId, variant, page, update } = index;
+        const newIndex = i > 0 ? i - 1 : 0;
+        const p = index.update({ _id, poolId, variant, page, update, index: newIndex } as any);
+        promises.push(p);
+        const other = this.allQuests.find((q) => q.index === i - 1);
+        if (!other) return;
+
+        const p2 = other.update({
+            _id: other._id,
+            poolId: other.poolId,
+            variant: other.variant,
+            page: other.page,
+            update: other.update,
+            index: i,
+        } as any);
+        promises.push(p2);
+    }
+
+    async onClickDown({ index }: { index: TBaseReward }, i: number) {
+        const promises: any = [];
+        const { _id, poolId, variant, page, update } = index;
+        const newIndex = i >= this.allQuests.length - 1 ? this.allQuests.length - 1 : i + 1;
+        const p = index.update({
+            _id,
+            poolId,
+            variant,
+            page,
+            update,
+            index: newIndex,
+        } as any);
+        promises.push(p);
+
+        const other = this.allQuests.find((q) => q.index === i + 1);
+        if (!other) return;
+        const p2 = other.update({
+            _id: other._id,
+            poolId: other.poolId,
+            variant: other.variant,
+            page: other.page,
+            update: other.update,
+            index: i,
+        } as any);
+        promises.push(p2);
+        await Promise.all(promises);
     }
 
     onChangeLimit(limit: number) {
@@ -268,23 +334,55 @@ export default class AssetPoolView extends Vue {
 }
 </script>
 
-<style>
+<style lang="scss">
+.btn-sort {
+    a {
+        line-height: 0;
+        display: flex;
+        height: 20px;
+        width: 40px;
+        padding: 0;
+        cursor: pointer;
+        color: var(--gray);
+        justify-content: center;
+
+        &:first-child {
+            align-items: end;
+        }
+
+        &:hover {
+            text-decoration: none;
+            color: var(--gray-dark);
+        }
+    }
+}
+
+tr:first-child .btn-sort a:first-child,
+tr:last-child .btn-sort a:last-child {
+    opacity: 0.5;
+    cursor: not-allowed;
+    color: var(--gray) !important;
+}
+
 .table th:nth-child(1) {
-    width: 50px;
+    width: 20px;
 }
 .table th:nth-child(2) {
-    width: 100px;
+    width: 50px;
 }
 .table th:nth-child(3) {
     width: 100px;
 }
 .table th:nth-child(4) {
-    width: auto;
+    width: 100px;
 }
 .table th:nth-child(5) {
-    width: 120px;
+    width: auto;
 }
 .table th:nth-child(6) {
+    width: 120px;
+}
+.table th:nth-child(7) {
     width: 40px;
 }
 </style>

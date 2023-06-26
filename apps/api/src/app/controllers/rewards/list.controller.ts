@@ -39,6 +39,7 @@ const controller = async (req: Request, res: Response) => {
                 const now = Date.now();
                 return {
                     _id: r._id,
+                    index: r.index,
                     title: r.title,
                     description: r.description,
                     amount: r.amounts[claims.length],
@@ -61,6 +62,7 @@ const controller = async (req: Request, res: Response) => {
                     : [];
                 return {
                     _id: r._id,
+                    index: r.index,
                     title: r.title,
                     description: r.description,
                     amount: r.amount,
@@ -72,6 +74,7 @@ const controller = async (req: Request, res: Response) => {
         referralRewards: referralRewards.map((r) => {
             return {
                 _id: r._id,
+                index: r.index,
                 title: r.title,
                 description: r.description,
                 amount: r.amount,
@@ -86,6 +89,7 @@ const controller = async (req: Request, res: Response) => {
                     : false;
                 return {
                     _id: r._id,
+                    index: r.index,
                     title: r.title,
                     description: r.description,
                     amount: r.amount,

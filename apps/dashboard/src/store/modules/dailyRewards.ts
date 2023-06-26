@@ -1,7 +1,7 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { QuestVariant, type TDailyReward } from '@thxnetwork/types/index';
+import { QuestVariant, TBaseReward, type TDailyReward } from '@thxnetwork/types/index';
 import { type TPool } from '@thxnetwork/types/index';
 import { track } from '@thxnetwork/mixpanel';
 
@@ -32,6 +32,7 @@ class DailyRewardModule extends VuexModule {
     @Mutation
     set(reward: TDailyReward) {
         if (!this._all[reward.poolId]) Vue.set(this._all, reward.poolId, {});
+        reward.variant = QuestVariant.Daily;
         Vue.set(this._all[reward.poolId], String(reward._id), reward);
     }
 
@@ -46,7 +47,7 @@ class DailyRewardModule extends VuexModule {
         this.context.commit('setTotal', { pool, total: data.total });
         data.results.forEach((reward: TDailyReward) => {
             reward.page = page;
-            reward.variant = QuestVariant.Daily;
+            reward.update = (payload: TBaseReward) => this.context.dispatch('update', payload);
             this.context.commit('set', reward);
         });
     }

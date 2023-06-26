@@ -7,11 +7,12 @@ import { body, param } from 'express-validator';
 
 const validation = [
     param('id').exists(),
-    body('title').isString(),
-    body('description').isString(),
-    body('amount').isInt({ gt: 0 }),
-    body('platform').isNumeric(),
+    body('title').optional().isString(),
+    body('description').optional().isString(),
+    body('amount').optional().isInt({ gt: 0 }),
+    body('platform').optional().isNumeric(),
     body('interaction').optional().isNumeric(),
+    body('index').optional().isInt(),
     body('content').optional().isString(),
     body('content').optional().isString(),
     body('contentMetadata').optional().isString(),
@@ -26,16 +27,23 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['RewardsNft']
     let reward = await PointReward.findById(req.params.id);
     if (!reward) throw new NotFoundError('Could not find the reward');
-    reward = await PointReward.findByIdAndUpdate(reward._id, {
-        title: req.body.title,
-        description: req.body.description,
-        amount: req.body.amount,
-        platform: req.body.platform,
-        infoLinks: req.body.infoLinks,
-        interaction: req.body.interaction,
-        content: req.body.content,
-        contentMetadata: req.body.contentMetadata,
-    });
+
+    const { title, description, amount, platform, infoLinks, interaction, content, contentMetadata, index } = req.body;
+    reward = await PointReward.findByIdAndUpdate(
+        reward._id,
+        {
+            title,
+            description,
+            amount,
+            platform,
+            infoLinks,
+            interaction,
+            content,
+            contentMetadata,
+            index,
+        },
+        { new: true },
+    );
 
     return res.json(reward);
 };

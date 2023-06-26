@@ -7,9 +7,12 @@ import { body, param } from 'express-validator';
 
 const validation = [
     param('id').exists(),
+    body('index').optional().isNumeric(),
     body('title').optional().isString(),
     body('description').optional().isString(),
+    body('index').optional().isInt(),
     body('amounts')
+        .optional()
         .custom((amounts) => {
             for (const amount of JSON.parse(amounts)) {
                 if (isNaN(amount)) {
@@ -33,7 +36,7 @@ const controller = async (req: Request, res: Response) => {
     let dailyReward = await DailyReward.findById(req.params.id);
     if (!dailyReward) throw new NotFoundError('Could not find the dailyReward');
 
-    const { title, description, amounts, infoLinks, isEnabledWebhookQualification } = req.body;
+    const { title, description, amounts, infoLinks, isEnabledWebhookQualification, index } = req.body;
     dailyReward = await DailyReward.findByIdAndUpdate(
         req.params.id,
         {
@@ -42,6 +45,7 @@ const controller = async (req: Request, res: Response) => {
             amounts,
             infoLinks,
             isEnabledWebhookQualification,
+            index,
         },
         { new: true },
     );

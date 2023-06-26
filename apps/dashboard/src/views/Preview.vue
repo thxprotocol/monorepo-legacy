@@ -228,14 +228,13 @@ export default class WidgetPreviewView extends Vue {
     }
 }
 </script>
-<style>
+<style scoped lang="scss">
 #app {
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
+    height: 100%;
 }
-</style>
-<style scoped lang="scss">
 .sidebar-sibling {
     display: block;
 }

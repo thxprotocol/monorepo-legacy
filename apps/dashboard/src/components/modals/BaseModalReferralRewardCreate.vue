@@ -167,18 +167,16 @@ export default class ModalReferralRewardCreate extends Vue {
         this.isLoading = true;
         this.$store
             .dispatch(`referralRewards/${this.reward ? 'update' : 'create'}`, {
-                pool: this.pool,
-                reward: this.reward,
-                payload: {
-                    poolId: String(this.pool._id),
-                    title: this.title,
-                    description: this.description,
-                    amount: this.amount,
-                    claimAmount: this.claimAmount,
-                    successUrl: this.successUrl && this.successUrl.length ? this.successUrl : undefined,
-                    isMandatoryReview: this.isMandatoryReview,
-                    infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
-                },
+                ...this.reward,
+                page: 1,
+                poolId: String(this.pool._id),
+                title: this.title,
+                description: this.description,
+                amount: this.amount,
+                claimAmount: this.claimAmount,
+                successUrl: this.successUrl && this.successUrl.length ? this.successUrl : undefined,
+                isMandatoryReview: this.isMandatoryReview,
+                infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
             })
             .then(() => {
                 this.$bvModal.hide(this.id);

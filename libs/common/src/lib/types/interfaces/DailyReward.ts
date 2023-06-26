@@ -5,4 +5,5 @@ export type TDailyReward = TBaseReward & {
     progress?: number;
     claims?: any[];
     isEnabledWebhookQualification: boolean;
+    update?: (payload: any) => void;
 };

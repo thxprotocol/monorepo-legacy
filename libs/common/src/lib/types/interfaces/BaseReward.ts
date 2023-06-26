@@ -1,5 +1,9 @@
 import { QuestVariant } from '../enums';
 import { TokenGatingVariant } from '../enums/TokenGatingVariant';
+import { TDailyReward } from './DailyReward';
+import { TMilestoneReward } from './MilestoneReward';
+import { TPointReward } from './PointReward';
+import { TReferralReward } from './ReferralReward';
 
 export type TInfoLink = {
     label: string;
@@ -39,4 +43,6 @@ export type TBaseReward = {
     updatedAt?: string;
     page?: number;
     variant?: QuestVariant;
+    index?: number;
+    update: (payload: TDailyReward | TReferralReward | TPointReward | TMilestoneReward) => Promise<void>;
 };

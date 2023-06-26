@@ -3,13 +3,14 @@ import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
 import RewardReferralService from '@thxnetwork/api/services/ReferralRewardService';
 import ReferralRewardClaimService from '@thxnetwork/api/services/ReferralRewardClaimService';
-import PoolService from '@thxnetwork/api/services/PoolService';
 import { TInfoLink } from '@thxnetwork/types/interfaces';
 import { isValidUrl } from '@thxnetwork/api/util/url';
+import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
 
 const validation = [
-    param('id').exists(),
+    param('id').isMongoId(),
     body('successUrl').optional().isURL({ require_tld: false }),
+    body('index').optional().isInt(),
     body('infoLinks')
         .optional()
         .customSanitizer((infoLinks) => {
@@ -21,10 +22,23 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards Referral']
     let reward = await RewardReferralService.get(req.params.id);
     if (!reward) throw new NotFoundError('Could not find the reward for this id');
-    reward = await RewardReferralService.update(reward, req.body);
-    const pool = await PoolService.getById(req.header('X-PoolId'));
+    const { title, description, amount, successUrl, infoLinks, isMandatoryReview, index } = req.body;
+    console.log(req.body, successUrl);
+    reward = await ReferralReward.findByIdAndUpdate(
+        reward._id,
+        {
+            title,
+            description,
+            amount,
+            successUrl,
+            isMandatoryReview,
+            infoLinks,
+            index,
+        },
+        { new: true },
+    );
     const claims = await ReferralRewardClaimService.findByReferralReward(reward);
-    res.json({ ...reward.toJSON(), claims, poolAddress: pool.address });
+    res.json({ ...reward.toJSON(), claims });
 };
 
 export default { controller, validation };

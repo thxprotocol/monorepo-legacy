@@ -1,8 +1,9 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { QuestVariant, RewardConditionPlatform, type TPointReward } from '@thxnetwork/types/index';
-import { type TPool } from '@thxnetwork/types/index';
+import type { TPool, TBaseReward, TPointReward } from '@thxnetwork/types/interfaces';
+import { QuestVariant, RewardConditionPlatform } from '@thxnetwork/types/enums';
+import {} from '@thxnetwork/types/index';
 import { track } from '@thxnetwork/mixpanel';
 
 export type TPointRewardState = {
@@ -33,6 +34,10 @@ class PointRewardModule extends VuexModule {
     set(reward: TPointReward) {
         if (!this._all[reward.poolId]) Vue.set(this._all, reward.poolId, {});
         if (typeof reward.platform === 'undefined') reward.platform = RewardConditionPlatform.None; // Temp fix for corrupt data
+
+        reward.variant = QuestVariant.Social;
+        reward.contentMetadata = reward.contentMetadata ? JSON.parse(reward.contentMetadata) : '';
+
         Vue.set(this._all[reward.poolId], String(reward._id), reward);
     }
 
@@ -52,8 +57,7 @@ class PointRewardModule extends VuexModule {
         this.context.commit('setTotal', { pool, total: data.total });
         data.results.forEach((reward: TPointReward) => {
             reward.page = page;
-            reward.variant = QuestVariant.Social;
-            reward.contentMetadata = reward.contentMetadata ? JSON.parse(reward.contentMetadata) : '';
+            reward.update = (payload: TBaseReward) => this.context.dispatch('update', payload);
             this.context.commit('set', reward);
         });
     }
@@ -81,7 +85,6 @@ class PointRewardModule extends VuexModule {
             headers: { 'X-PoolId': reward.poolId },
             data: reward,
         });
-
         this.context.commit('set', { ...reward, ...data });
     }
 

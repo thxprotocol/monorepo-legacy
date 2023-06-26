@@ -1,8 +1,8 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { QuestVariant, type TPool } from '@thxnetwork/types/index';
-import { type TReferralReward } from '@thxnetwork/types/index';
+import { QuestVariant, TBaseReward, type TPool } from '@thxnetwork/types/index';
+import type { TReferralReward } from '@thxnetwork/types/index';
 import { track } from '@thxnetwork/mixpanel';
 
 export type RewardByPage = {
@@ -35,9 +35,10 @@ class ReferralRewardModule extends VuexModule {
     }
 
     @Mutation
-    set({ pool, reward }: { reward: TReferralReward & { _id: string }; pool: TPool }) {
-        if (!this._all[pool._id]) Vue.set(this._all, pool._id, {});
-        Vue.set(this._all[pool._id], reward._id, reward);
+    set(reward: TReferralReward) {
+        if (!this._all[reward.poolId]) Vue.set(this._all, reward.poolId, {});
+        reward.variant = QuestVariant.Referral;
+        Vue.set(this._all[reward.poolId], String(reward._id), reward);
     }
 
     @Mutation
@@ -64,8 +65,8 @@ class ReferralRewardModule extends VuexModule {
         this.context.commit('setTotal', { pool, total: data.total });
         data.results.forEach((reward: TReferralReward) => {
             reward.page = page;
-            reward.variant = QuestVariant.Referral;
-            this.context.commit('set', { pool, reward });
+            reward.update = (payload: TBaseReward) => this.context.dispatch('update', payload);
+            this.context.commit('set', reward);
         });
     }
 
@@ -86,17 +87,15 @@ class ReferralRewardModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async update({ pool, reward, payload }: { pool: TPool; reward: TReferralReward; payload: TReferralReward }) {
+    async update(payload: TReferralReward) {
         const { data } = await axios({
             method: 'PATCH',
-            url: `/referral-rewards/${reward._id}`,
-            headers: { 'X-PoolId': pool._id },
+            url: `/referral-rewards/${payload._id}`,
+            headers: { 'X-PoolId': payload.poolId },
             data: payload,
         });
-        this.context.commit('set', {
-            pool,
-            reward: { ...reward, ...data },
-        });
+
+        this.context.commit('set', { ...payload, ...data });
     }
 
     @Action({ rawError: true })
