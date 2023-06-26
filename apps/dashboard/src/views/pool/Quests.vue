@@ -257,7 +257,7 @@ export default class AssetPoolView extends Vue {
         );
     }
 
-    async move(quest: TBaseReward, i: number, newIndex, other?: TBaseReward) {
+    async move(quest: TBaseReward, i: number, newIndex: number, other?: TBaseReward) {
         const promises: any = [];
         const { _id, poolId, variant, page, update } = quest;
         const p = quest.update({

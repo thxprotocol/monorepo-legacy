@@ -153,7 +153,7 @@
                                 <div class="flex-grow-1 justify-content-between d-flex align-items-center">
                                     <span>Settings</span>
                                     <div
-                                        v-if="selectedPool.widget ? selectedPool.widget.active : false"
+                                        v-if="selectedPool.widget ? !selectedPool.widget.active : false"
                                         variant="gray"
                                         class="mr-3"
                                     >
