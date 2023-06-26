@@ -54,14 +54,13 @@
 <script lang="ts">
 import { TInfoLink, type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { type TPointReward } from '@thxnetwork/types/interfaces/PointReward';
+import type { TPointReward, TAccount } from '@thxnetwork/types/interfaces';
+import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/enums';
 import { platformInteractionList, platformList } from '@thxnetwork/dashboard/types/rewards';
+import { mapGetters } from 'vuex';
+import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardCondition from '../cards/BaseCardRewardCondition.vue';
-import { mapGetters } from 'vuex';
-import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
-import { IAccount } from '@thxnetwork/dashboard/types/account';
-import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import BaseCardInfoLinks from '../cards/BaseCardInfoLinks.vue';
 
 @Component({
@@ -93,10 +92,11 @@ export default class ModalRewardPointsCreate extends Vue {
         interaction: platformInteractionList[0].type,
         content: '',
     };
-    profile!: IAccount;
+    profile!: TAccount;
     infoLinks: TInfoLink[] = [{ label: '', url: '' }];
 
     @Prop() id!: string;
+    @Prop() total!: number;
     @Prop() pool!: TPool;
     @Prop({ required: false }) reward!: TPointReward;
 
@@ -141,7 +141,6 @@ export default class ModalRewardPointsCreate extends Vue {
             description: this.description,
             amount: this.amount,
             infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
-            limit: this.limit,
             platform: this.rewardCondition.platform,
             interaction:
                 this.rewardCondition.platform !== RewardConditionPlatform.None
@@ -153,6 +152,7 @@ export default class ModalRewardPointsCreate extends Vue {
                     ? this.rewardCondition.contentMetadata
                     : '',
             page: this.reward ? this.reward.page : 1,
+            index: !this.reward ? this.total : this.reward.index,
         };
         this.isLoading = true;
         this.$store.dispatch(`pointRewards/${this.reward ? 'update' : 'create'}`, payload).then(() => {

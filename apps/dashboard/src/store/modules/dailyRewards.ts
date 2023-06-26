@@ -36,6 +36,11 @@ class DailyRewardModule extends VuexModule {
         Vue.set(this._all[reward.poolId], String(reward._id), reward);
     }
 
+    @Mutation
+    setTotal({ pool, total }: { pool: TPool; total: number }) {
+        this._totals[pool._id] = total;
+    }
+
     @Action({ rawError: true })
     async list({ page, pool, limit }: { page: number; pool: TPool; limit: number }) {
         const { data } = await axios({
@@ -54,7 +59,7 @@ class DailyRewardModule extends VuexModule {
 
     @Action({ rawError: true })
     async create(payload: TDailyReward) {
-        const r = await axios({
+        const { data } = await axios({
             method: 'POST',
             url: '/daily-rewards',
             headers: { 'X-PoolId': payload.poolId },
@@ -64,7 +69,7 @@ class DailyRewardModule extends VuexModule {
         const profile = this.context.rootGetters['account/profile'];
         track('UserCreates', [profile.sub, 'conditional reward']);
 
-        this.context.commit('set', { ...payload, ...r.data });
+        this.context.commit('set', { ...payload, ...data });
     }
 
     @Action({ rawError: true })

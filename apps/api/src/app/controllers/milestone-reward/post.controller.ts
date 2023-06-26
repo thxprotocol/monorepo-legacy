@@ -6,6 +6,7 @@ import { Request, Response } from 'express';
 import { body } from 'express-validator';
 
 const validation = [
+    body('index').isInt(),
     body('title').isString(),
     body('description').isString(),
     body('amount').isInt({ gt: 0 }),

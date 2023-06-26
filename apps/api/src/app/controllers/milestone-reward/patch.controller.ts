@@ -9,6 +9,7 @@ const validation = [
     body('title').optional().isString(),
     body('description').optional().isString(),
     body('amount').optional().isInt({ gt: 0 }),
+    body('limit').optional().isInt(),
     body('index').optional().isInt(),
     body('infoLinks')
         .optional()
@@ -19,7 +20,7 @@ const validation = [
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Milestone Rewards']
-    const { title, description, amount, infoLinks, index } = req.body;
+    const { title, description, amount, infoLinks, limit, index } = req.body;
     const milestoneReward = await MilestoneReward.findByIdAndUpdate(
         req.params.id,
         {
@@ -28,6 +29,7 @@ const controller = async (req: Request, res: Response) => {
             amount,
             infoLinks,
             index,
+            limit,
         },
         { new: true },
     );

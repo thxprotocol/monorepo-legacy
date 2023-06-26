@@ -71,19 +71,18 @@ class ReferralRewardModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async create({ pool, payload }: { pool: TPool; payload: TReferralReward }) {
+    async create(payload: TReferralReward) {
         const { data } = await axios({
             method: 'POST',
             url: '/referral-rewards',
-            headers: { 'X-PoolId': pool._id },
+            headers: { 'X-PoolId': payload.poolId },
             data: payload,
         });
 
         const profile = this.context.rootGetters['account/profile'];
         track('UserCreates', [profile.sub, 'referral reward']);
 
-        data.page = 1;
-        this.context.commit('set', { pool, reward: data });
+        this.context.commit('set', { ...payload, ...data });
     }
 
     @Action({ rawError: true })

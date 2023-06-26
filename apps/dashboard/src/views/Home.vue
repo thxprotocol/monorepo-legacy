@@ -17,7 +17,7 @@
                         <p class="brand-text">
                             {{ 'Hi ' + (!account.firstName ? 'Anon' : account.firstName) }}
                         </p>
-                        <div class="lead mb-3">Welcome to your Loyalty Network!</div>
+                        <div class="lead mb-3">Welcome to your campaign dashboard!</div>
                     </div>
                 </b-jumbotron>
             </div>
@@ -79,7 +79,7 @@
                     <b-col md="6">
                         <BaseCardHome
                             :loading="!firstPool"
-                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/quests`"
+                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/erc20-perks`"
                         >
                             <template #header>
                                 <i class="fas fa-trophy mr-2 text-primary"></i>
@@ -91,7 +91,7 @@
                     <b-col md="6">
                         <BaseCardHome
                             :loading="!firstPool"
-                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/quests`"
+                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/erc721-perks`"
                         >
                             <template #header>
                                 <i class="fas fa-trophy mr-2 text-primary"></i>

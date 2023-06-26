@@ -127,6 +127,7 @@ export default class ModalReferralRewardCreate extends Vue {
     infoLinks: TInfoLink[] = [{ label: '', url: '' }];
 
     @Prop() id!: string;
+    @Prop() total!: number;
     @Prop() pool!: TPool;
     @Prop({ required: false }) reward!: TReferralReward;
 
@@ -177,6 +178,7 @@ export default class ModalReferralRewardCreate extends Vue {
                 successUrl: this.successUrl && this.successUrl.length ? this.successUrl : undefined,
                 isMandatoryReview: this.isMandatoryReview,
                 infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
+                index: !this.reward ? this.total : this.reward.index,
             })
             .then(() => {
                 this.$bvModal.hide(this.id);

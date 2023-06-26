@@ -6,6 +6,7 @@ import { TInfoLink } from '@thxnetwork/types/interfaces';
 import { isValidUrl } from '@thxnetwork/api/util/url';
 
 const validation = [
+    body('index').isInt(),
     body('title').exists().isString(),
     body('successUrl').optional().isURL({ require_tld: false }),
     body('isMandatoryReview').optional().isBoolean(),

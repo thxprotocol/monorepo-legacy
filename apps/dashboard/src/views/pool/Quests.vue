@@ -28,6 +28,7 @@
                             @submit="listQuests"
                             :is="questModalComponentMap[QuestVariant[variant]]"
                             :id="questModalComponentMap[QuestVariant[variant]]"
+                            :total="allQuests.length"
                             :pool="pool"
                         />
                     </b-dropdown-item-button>
@@ -80,7 +81,7 @@
                 <template #cell(title)="{ item }"> {{ item.title }} </template>
                 <template #cell(claims)="{ item }">
                     <template v-if="item.variant === QuestVariant.Referral">
-                        <b-link v-b-modal="`modalReferralQuestClaims${item.id}`">
+                        <b-link v-b-modal="`modalReferralQuestClaims${item.id}`" v-if="item.claims">
                             {{ item.claims.length }}
                         </b-link>
                         <BaseModalReferralRewardClaims
@@ -105,6 +106,7 @@
                         :is="questModalComponentMap[item.variant]"
                         :id="questModalComponentMap[item.variant] + item.id"
                         :pool="pool"
+                        :total="allQuests.length"
                         :reward="allQuests.find((q) => q._id === item.id)"
                     />
                 </template>
@@ -210,17 +212,15 @@ export default class AssetPoolView extends Vue {
             .filter(
                 (reward: TDailyReward | TPointReward | TReferralReward | TMilestoneReward) => reward.page === this.page,
             )
-            .map((r: any) => {
-                return {
-                    index: r,
-                    checkbox: r._id,
-                    variant: r.variant,
-                    points: r.amount || `${r.amounts.length} days`,
-                    title: r.title,
-                    claims: r.claims,
-                    id: r._id,
-                };
-            })
+            .map((r: any) => ({
+                index: r,
+                checkbox: r._id,
+                variant: r.variant,
+                points: r.amount || `${r.amounts.length} days`,
+                title: r.title,
+                claims: r.claims,
+                id: r._id,
+            }))
             .slice(0, this.limit);
     }
 
@@ -239,31 +239,28 @@ export default class AssetPoolView extends Vue {
         this.isLoading = false;
     }
 
-    async onClickUp({ index }: { index: TBaseReward }, i: number) {
-        const promises: any = [];
-        const { _id, poolId, variant, page, update } = index;
-        const newIndex = i > 0 ? i - 1 : 0;
-        const p = index.update({ _id, poolId, variant, page, update, index: newIndex } as any);
-        promises.push(p);
-        const other = this.allQuests.find((q) => q.index === i - 1);
-        if (!other) return;
-
-        const p2 = other.update({
-            _id: other._id,
-            poolId: other.poolId,
-            variant: other.variant,
-            page: other.page,
-            update: other.update,
-            index: i,
-        } as any);
-        promises.push(p2);
+    onClickUp({ index }: { index: TBaseReward }, i: number) {
+        this.move(
+            index,
+            i,
+            i >= 0 ? i - 1 : 0,
+            this.allQuests.find((q) => q.index === i - 1),
+        );
     }
 
-    async onClickDown({ index }: { index: TBaseReward }, i: number) {
+    onClickDown({ index }: { index: TBaseReward }, i: number) {
+        this.move(
+            index,
+            i,
+            i >= this.allQuests.length - 1 ? this.allQuests.length - 1 : i + 1,
+            this.allQuests.find((q) => q.index === i + 1),
+        );
+    }
+
+    async move(quest: TBaseReward, i: number, newIndex, other?: TBaseReward) {
         const promises: any = [];
-        const { _id, poolId, variant, page, update } = index;
-        const newIndex = i >= this.allQuests.length - 1 ? this.allQuests.length - 1 : i + 1;
-        const p = index.update({
+        const { _id, poolId, variant, page, update } = quest;
+        const p = quest.update({
             _id,
             poolId,
             variant,
@@ -273,7 +270,6 @@ export default class AssetPoolView extends Vue {
         } as any);
         promises.push(p);
 
-        const other = this.allQuests.find((q) => q.index === i + 1);
         if (!other) return;
         const p2 = other.update({
             _id: other._id,

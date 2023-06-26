@@ -102,6 +102,7 @@ export default class ModalMilestoneRewardCreate extends Vue {
     infoLinks: TInfoLink[] = [{ label: '', url: '' }];
 
     @Prop() id!: string;
+    @Prop() total!: number;
     @Prop() pool!: TPool;
     @Prop({ required: false }) reward!: TMilestoneReward;
 
@@ -143,6 +144,7 @@ export default class ModalMilestoneRewardCreate extends Vue {
                 amount: this.amount,
                 limit: this.limit,
                 infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
+                index: !this.reward ? this.total : this.reward.index,
             })
             .then(() => {
                 this.$bvModal.hide(this.id);

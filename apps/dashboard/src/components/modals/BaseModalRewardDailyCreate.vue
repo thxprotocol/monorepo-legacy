@@ -116,6 +116,7 @@ export default class ModalRewardDailyCreate extends Vue {
     isEnabledWebhookQualification = false;
 
     @Prop() id!: string;
+    @Prop() total!: number;
     @Prop() pool!: TPool;
     @Prop({ required: false }) reward!: TDailyReward;
 
@@ -126,6 +127,7 @@ export default class ModalRewardDailyCreate extends Vue {
     }
 
     onShow() {
+        console.log(this.total);
         this.title = this.reward ? this.reward.title : this.title;
         this.description = this.reward ? this.reward.description : this.description;
         this.amounts = this.reward ? this.reward.amounts : this.amounts;
@@ -148,6 +150,8 @@ export default class ModalRewardDailyCreate extends Vue {
     }
 
     onSubmit() {
+        console.log(this.total);
+        debugger;
         const payload = {
             ...this.reward,
             _id: this.reward ? this.reward._id : undefined,
@@ -159,6 +163,7 @@ export default class ModalRewardDailyCreate extends Vue {
             page: this.reward ? this.reward.page : 1,
             infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
             isEnabledWebhookQualification: this.isEnabledWebhookQualification,
+            index: !this.reward ? this.total : this.reward.index,
         };
 
         this.isLoading = true;
