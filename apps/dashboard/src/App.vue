@@ -8,11 +8,6 @@
                     Vote on new features to directly shape THX Networks roadmap for 2023!
                 </b-link>
             </b-alert>
-            <base-dropdown-menu
-                v-if="profile"
-                class="d-flex d-md-none position-fixed justify-content-end p-2"
-                style="right: 0; z-index: 1"
-            />
             <router-view :key="$route.fullPath" />
         </div>
     </div>
@@ -22,7 +17,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { initGTM } from '@thxnetwork/dashboard/utils/ga';
 import { GTM } from '@thxnetwork/dashboard/utils/secrets';
-import type { IAccount } from './types/account';
+import type { TAccount } from '@thxnetwork/types/interfaces';
 import BaseDropdownAccount from './components/dropdowns/BaseDropdownAccount.vue';
 import BaseNavbar from './components/BaseNavbar.vue';
 import BaseDropdownMenu from './components/dropdowns/BaseDropdownMenu.vue';
@@ -38,7 +33,7 @@ import BaseDropdownMenu from './components/dropdowns/BaseDropdownMenu.vue';
     }),
 })
 export default class App extends Vue {
-    profile!: IAccount;
+    profile!: TAccount;
 
     created() {
         if (GTM) initGTM();

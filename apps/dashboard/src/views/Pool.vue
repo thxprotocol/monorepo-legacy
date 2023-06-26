@@ -1,5 +1,5 @@
 <template>
-    <div class="container-md pt-5" v-if="pool">
+    <div class="container-md container-pool" v-if="pool">
         <router-view></router-view>
     </div>
 </template>
@@ -11,7 +11,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { ERC20Type } from '@thxnetwork/dashboard/types/erc20';
 import { fromWei } from 'web3-utils';
-import { IAccount } from '../types/account';
+import type { TAccount } from '@thxnetwork/types/interfaces';
 
 @Component({
     computed: mapGetters({
@@ -21,7 +21,7 @@ import { IAccount } from '../types/account';
 })
 export default class PoolView extends Vue {
     chainId: ChainId = ChainId.Polygon;
-    account!: IAccount;
+    account!: TAccount;
     pools!: IPools;
     ERC20Type = ERC20Type;
     fromWei = fromWei;
@@ -38,3 +38,9 @@ export default class PoolView extends Vue {
     }
 }
 </script>
+
+<style>
+.container-pool {
+    padding-top: 35px !important;
+}
+</style>
