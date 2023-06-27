@@ -7,10 +7,10 @@ import { MilestoneRewardClaim } from '@thxnetwork/api/models/MilestoneRewardClai
 import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
 import { DailyReward } from '@thxnetwork/api/models/DailyReward';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
+import { getLeaderboard } from '@thxnetwork/api/services/AnalyticsService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import DailyRewardClaimService, { ONE_DAY_MS } from '@thxnetwork/api/services/DailyRewardClaimService';
 import WalletService from '@thxnetwork/api/services/WalletService';
-import { getLeaderboard } from '@thxnetwork/api/services/AnalyticsService';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
@@ -30,7 +30,6 @@ const controller = async (req: Request, res: Response) => {
     }
 
     const leaderboard = await getLeaderboard(pool, { startDate: new Date(pool.createdAt), endDate: new Date() });
-    console.log({ leaderboard });
 
     res.json({
         leaderboard: leaderboard.map(({ score, wallet, questsCompleted }) => ({

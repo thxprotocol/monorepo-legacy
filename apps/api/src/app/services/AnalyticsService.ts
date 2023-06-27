@@ -240,9 +240,9 @@ export async function getLeaderboard(pool: AssetPoolDocument, dateRange?: { star
         poolId: String(pool._id),
         dateRange,
     });
-    type leaderBoardQueryResult = { _id: string; total_amount: number };
+    type TLeaderBoardQueryResult = { _id: string; count: number; total_amount: number };
 
-    const leaderBoardQueryResultMerged: leaderBoardQueryResult[] = [
+    const leaderBoardQueryResultMerged: TLeaderBoardQueryResult[] = [
         ...topErc20PerksBySub,
         ...topErc721PerksBySub,
         ...topDailyRewardClaimsBySub,
@@ -268,16 +268,21 @@ export async function getLeaderboard(pool: AssetPoolDocument, dateRange?: { star
         const entry = leaderBoardQueryResultMerged[i];
         const wallet = wallets.find((x) => x._id == entry._id);
         if (!wallet) continue;
+
+        const walletId = String(wallet._id);
         const account = wallet && accounts.find((x) => x.sub == wallet.sub);
+        const questsCompleted: any = leaderBoardQueryResultMerged
+            .filter((entry: TLeaderBoardQueryResult) => entry._id === walletId)
+            .reduce((a: any, b: TLeaderBoardQueryResult) => a.count + b.count);
 
         if (i === 0) {
             leaderBoard.push({
                 sub: wallet?.sub,
-                walletId: String(wallet._id),
+                walletId,
                 score: entry.total_amount,
                 account,
                 wallet,
-                questsCompleted: leaderBoardQueryResultMerged.length,
+                questsCompleted,
             });
         } else {
             const index = leaderBoard.findIndex((x) => x.walletId === String(wallet._id));
@@ -285,7 +290,7 @@ export async function getLeaderboard(pool: AssetPoolDocument, dateRange?: { star
                 leaderBoard[index].score += entry.total_amount;
             } else {
                 leaderBoard.push({
-                    questsCompleted: leaderBoardQueryResultMerged.length,
+                    questsCompleted,
                     sub: wallet.sub,
                     walletId: String(wallet._id),
                     score: entry.total_amount,
