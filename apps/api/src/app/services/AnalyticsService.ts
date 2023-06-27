@@ -271,9 +271,11 @@ export async function getLeaderboard(pool: AssetPoolDocument, dateRange?: { star
 
         const walletId = String(wallet._id);
         const account = wallet && accounts.find((x) => x.sub == wallet.sub);
-        const questsCompleted: any = leaderBoardQueryResultMerged
-            .filter((entry: TLeaderBoardQueryResult) => entry._id === walletId)
-            .reduce((a: any, b: TLeaderBoardQueryResult) => a.count + b.count);
+        const results = leaderBoardQueryResultMerged.filter((entry: TLeaderBoardQueryResult) => entry._id === walletId);
+        const questsCompleted: any =
+            results.length > 1
+                ? results.reduce((a: any, b: TLeaderBoardQueryResult) => a.count + b.count)
+                : results[0].count;
 
         if (i === 0) {
             leaderBoard.push({
