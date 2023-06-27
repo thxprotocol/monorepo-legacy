@@ -121,9 +121,7 @@ const controller = async (req: Request, res: Response) => {
             const { widgetUrl, poolId, chainId, origin, theme, expired, logoUrl, backgroundUrl, title } = this.settings;
             const url = new URL(widgetUrl);
 
-            if (path) {
-                url.pathname = this.widgetPath = '/' + poolId + path;
-            }
+            url.pathname = this.widgetPath = '/' + poolId + (path || '/quests');
             
             url.searchParams.append('id', poolId);
             url.searchParams.append('origin', origin);
