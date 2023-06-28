@@ -1,13 +1,22 @@
-import { OIDC_CLIENT_ID, OIDC_CLIENT_SECRET, PKG_ENV } from './secrets';
+import { API_URL, AUTH_URL, OIDC_CLIENT_ID, OIDC_CLIENT_SECRET } from './secrets';
 import { THXClient } from '@thxnetwork/sdk/client';
+import { THXOIDCClient } from '@thxnetwork/sdk/oidc';
 
-const config = {
-    env: PKG_ENV,
+const thxOIDCClient = new THXOIDCClient({
     clientId: OIDC_CLIENT_ID,
     clientSecret: OIDC_CLIENT_SECRET,
-    scopes: 'openid account:read erc20:read erc721:read point_balances:read referral_rewards:read point_rewards:read wallets:read pools:read pool_analytics:read',
+    issuer: AUTH_URL,
+    grantType: 'client_credentials',
+    scope: 'openid account:read erc20:read erc721:read point_balances:read referral_rewards:read point_rewards:read wallets:read pools:read pool_analytics:read',
+});
+
+const thxClient = ({ poolId }) => {
+    const { access_token } = thxOIDCClient.user;
+    return new THXClient({
+        url: API_URL,
+        accessToken: access_token,
+        poolId,
+    });
 };
 
-const thxClient = new THXClient(config);
-
-export { thxClient };
+export { thxOIDCClient, thxClient };

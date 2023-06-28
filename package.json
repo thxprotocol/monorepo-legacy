@@ -186,7 +186,7 @@
         "@types/mocha": "^9.1.1",
         "@types/mongoose": "^5.5.18",
         "@types/newrelic": "^7.0.3",
-        "@types/node": "^18.6.4",
+        "@types/node": "^20.3.2",
         "@types/oidc-provider": "^7.11.1",
         "@types/qrcode": "^1.5.0",
         "@types/rimraf": "^3.0.2",

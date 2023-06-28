@@ -1,4 +1,3 @@
-import { URL_CONFIG } from '../configs';
 import { THXClient } from '../../index';
 import BaseManager from './BaseManager';
 
@@ -15,7 +14,7 @@ class RequestManager extends BaseManager {
     private waitForAuth() {
         return new Promise((resolve) => {
             const callback = () => {
-                if (this.client.session.cached.accessToken) {
+                if (this.client.options.accessToken) {
                     resolve(true);
                     clearInterval(interval);
                 }
@@ -26,48 +25,47 @@ class RequestManager extends BaseManager {
     }
 
     private getUrl(path: string) {
-        const env = this.client.credential.cached.env;
-        return URL_CONFIG[env]['API_URL'] + path;
+        return this.client.options.url + path;
     }
 
     private async getHeaders(poolId?: string) {
         const headers: { [key: string]: string } = {};
-        if (!this.client.session.isExpired) await this.silentSignin();
+        // if (!this.client.session.isExpired) await this.silentSignin();
 
-        const token = this.client.session.accessToken;
+        const token = this.client.options.accessToken;
         if (token) {
             headers['Authorization'] = `Bearer ${token}`;
         }
 
-        if (poolId || this.client.session.poolId) {
-            headers['X-PoolId'] = (poolId || this.client.session.poolId) as string;
+        if (poolId || this.client.options.poolId) {
+            headers['X-PoolId'] = (poolId || this.client.options.poolId) as string;
         }
 
         return headers;
     }
 
     private async handleStatus(r: Response) {
-        if (r.status === 401) {
-            await this.silentSignin();
-        }
+        // if (r.status === 401) {
+        //     await this.silentSignin();
+        // }
 
         if (r.status >= 400 && r.status < 600) {
             throw await r.json();
         }
     }
 
-    async silentSignin() {
-        if (this.client.credential.cached.grantType === 'authorization_code') {
-            const clientId = this.client.credential.cached.clientId;
-            const env = this.client.credential.cached.env;
-            const name = `oidc.user:${URL_CONFIG[env]['AUTH_URL']}:${clientId}`;
-            const user = await this.client.userManager.cached.signinSilent();
-            await this.client.userManager.cached.storeUser(user);
-            sessionStorage.setItem(name, JSON.stringify(user));
-        } else {
-            await this.client.credential.clientCredential();
-        }
-    }
+    // async silentSignin() {
+    //     if (this.client.credential.cached.grantType === 'authorization_code') {
+    //         const clientId = this.client.credential.cached.clientId;
+    //         const env = this.client.credential.cached.env;
+    //         const name = `oidc.user:${URL_CONFIG[env]['AUTH_URL']}:${clientId}`;
+    //         const user = await this.client.userManager.cached.signinSilent();
+    //         await this.client.userManager.cached.storeUser(user);
+    //         sessionStorage.setItem(name, JSON.stringify(user));
+    //     } else {
+    //         await this.client.credential.clientCredential();
+    //     }
+    // }
 
     async get(path: string, config?: Config) {
         if (config?.waitForAuth) await this.waitForAuth();
@@ -91,8 +89,8 @@ class RequestManager extends BaseManager {
         if (config?.waitForAuth) await this.waitForAuth();
 
         const headers = await this.getHeaders();
-        const env = this.client.credential.cached.env;
-        const r = await fetch(URL_CONFIG[env]['API_URL'] + path, {
+        const url = this.getUrl(path);
+        const r = await fetch(url, {
             ...config,
             mode: 'cors',
             method: 'POST',

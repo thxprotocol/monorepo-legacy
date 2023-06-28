@@ -6,20 +6,21 @@ export const onSubcommandMe = async (interaction: CommandInteraction) => {
     const guild = await guildService.get(interaction.guildId);
     if (!guild) return interaction.reply({ content: `Server connection not found.`, ephemeral: true });
 
-    const pool = await thxClient.pools.get(guild.poolId);
+    const thx = thxClient({ poolId: guild.poolId });
+    const pool = await thx.pools.get(guild.poolId);
     if (!pool) return interaction.reply({ content: 'Pool could not be found.', ephemeral: true });
 
     const { widget, brand } = pool;
     if (!widget) return interaction.reply({ content: 'Widget could not be found.', ephemeral: true });
 
-    const { account, wallets } = await thxClient.account.getByDiscordId(interaction.user.id);
+    const { account, wallets } = await thx.account.getByDiscordId(interaction.user.id);
     if (!account)
         return interaction.reply({
             content: `Account not found for your Discord ID. Visit [${pool.widget.domain}](${pool.widget.domain})`,
             ephemeral: true,
         });
 
-    const pointBalance = await thxClient.account.discord.pointBalance(account._id, guild.poolId);
+    const pointBalance = await thx.account.discord.pointBalance(account._id, guild.poolId);
     if (!pointBalance) return interaction.reply({ content: 'Point balance not found for account.', ephemeral: true });
 
     const theme = JSON.parse(widget.theme);
