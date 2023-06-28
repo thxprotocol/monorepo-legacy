@@ -1,10 +1,14 @@
 import { THXClient } from '../../index';
+import AccountDiscordManager from './AccountDiscordManager';
 
 import BaseManager from './BaseManager';
 
 export default class AccountManager extends BaseManager {
+    discord: AccountDiscordManager;
+
     constructor(client: THXClient) {
         super(client);
+        this.discord = new AccountDiscordManager(client);
     }
 
     async get() {
