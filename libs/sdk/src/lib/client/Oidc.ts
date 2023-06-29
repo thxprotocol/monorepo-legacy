@@ -1,3 +1,5 @@
+import * as jose from 'jose';
+
 type THXAuthOptions = {
     clientId: string;
     clientSecret: string;
@@ -46,5 +48,15 @@ export default class THXOIDCClient {
         if (!this.user?.expires_in) return;
 
         this.expiresAt = Date.now() + this.user.expires_in * 1000;
+    }
+
+    async validateToken(accessToken: string) {
+        const { exp } = jose.decodeJwt(accessToken);
+
+        if (!exp || Date.now() > exp * 1000) {
+            return false;
+        }
+
+        return true;
     }
 }
