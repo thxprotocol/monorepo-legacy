@@ -1,27 +1,109 @@
 <template>
-    <div>...</div>
+    <b-form-row>
+        <b-col md="4">
+            <strong>Virtual Wallets</strong>
+            <p class="text-muted">
+                Use virtual wallets to let your users start quests for users that don't have a THX account yet.
+            </p>
+        </b-col>
+        <b-col md="8">
+            <b-form-group>
+                <BaseCardURLWebhook
+                    :visible="true"
+                    :code="code"
+                    title="Webhook URL"
+                    :description="
+                        pool.wallets &&
+                        `This campaign has onboarded ${pool.wallets.length} wallet${
+                            pool.wallets.length > 1 ? 's' : ''
+                        }.`
+                    "
+                >
+                    <template #alerts>
+                        <b-alert show variant="info">
+                            <i class="fas fa-question-circle mr-2"></i> Take note of these development guidelines
+                            <ul class="px-3 mb-0 mt-1 small">
+                                <li>
+                                    Store the returned <code>code</code> as part of the user data in your database and
+                                    use it when executing webhooks for custom quests.
+                                </li>
+                                <li v-if="pool.widget">
+                                    Let your users connect their virtual wallet with this URL syntax:
+                                    <code>{{ pool.widget.domain }}?thx_widget_path=/w/:code</code>
+                                </li>
+                            </ul>
+                        </b-alert>
+                    </template>
+                </BaseCardURLWebhook>
+            </b-form-group>
+            <hr />
+            <p>
+                <strong>Virtual Wallets</strong>
+            </p>
+            <BTable :items="wallets">
+                <!-- Head formatting -->
+                <template #head(url)>URL</template>
+                <template #head(uuid)>Code</template>
+                <template #head(sub)> Account ID </template>
+                <template #head(createdAt)> Created </template>
+
+                <!-- Cell formatting -->
+                <template #cell(url)="{ item }">
+                    <b-button variant="light" v-clipboard:copy="item.url" size="sm" class="mr-3">
+                        <i class="fas ml-0 fa-clipboard"></i>
+                    </b-button>
+                </template>
+                <template #cell(uuid)="{ item }">
+                    <code>{{ item.uuid }}</code>
+                </template>
+                <template #cell(sub)="{ item }">
+                    <span>{{ item.sub }}</span>
+                </template>
+                <template #cell(createdAt)="{ item }">
+                    <small class="text-muted">
+                        {{ format(new Date(item.createdAt), 'dd-MM-yyyy HH:mm') }}
+                    </small>
+                </template>
+            </BTable>
+        </b-col>
+    </b-form-row>
 </template>
 <script lang="ts">
 import { mapGetters } from 'vuex';
 import { Component, Vue } from 'vue-property-decorator';
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
+import { API_URL } from '@thxnetwork/dashboard/utils/secrets';
+import { format } from 'date-fns';
+import BaseCardURLWebhook from '@thxnetwork/dashboard/components/BaseCardURLWebhook.vue';
 
 @Component({
-    components: {},
+    components: { BaseCardURLWebhook },
     computed: mapGetters({
         pools: 'pools/all',
     }),
 })
-export default class Clients extends Vue {
+export default class Wallets extends Vue {
+    format = format;
     pools!: IPools;
-    limit = 10;
 
     get pool() {
         return this.pools[this.$route.params.id];
     }
 
-    mounted() {
-        this.$store.dispatch('wallets/list', { limit: this.limit, pool: this.pool });
+    get code() {
+        if (!this.pool) return;
+        return `curl "${API_URL}/v1/webhook/wallet/${this.pool.token}" \\
+-X POST`;
+    }
+
+    get wallets() {
+        if (!this.pool || !this.pool.wallets) return [];
+        return this.pool.wallets.map((wallet) => ({
+            url: this.pool.widget.domain + '?thx_widget_path=/w/' + wallet.uuid,
+            uuid: wallet.uuid,
+            sub: wallet.sub,
+            createdAt: wallet.createdAt,
+        }));
     }
 }
 </script>

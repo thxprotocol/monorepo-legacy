@@ -186,18 +186,13 @@
             <b-col md="4">
                 <strong>Launcher</strong>
                 <p class="text-muted">
-                    This launcher will show in the bottom left or right corner for pages with the widget embed code.
+                    The launcher is used to toggle the visibility of your widget. Bring your own or adjust our default
+                    launch button and message.
                 </p>
             </b-col>
             <b-col md="8">
                 <b-form-row>
                     <b-col md="6">
-                        <b-form-group
-                            label="CSS Selector"
-                            description="This CSS selector will set an element in your HTML as the widget launcher and hide the default launcher."
-                        >
-                            <b-form-input v-model="cssSelector" @change="onChangeCSSSelector" />
-                        </b-form-group>
                         <b-form-group description="Dimensions: 40px x 40px. File types: .jpg, .png, .svg">
                             <template #label>
                                 Icon
@@ -224,7 +219,6 @@
                                 <b-form-file @change="onUploadIcon($event)" accept="image/*" />
                             </b-input-group>
                         </b-form-group>
-                        <hr />
                         <b-form-group :description="`${message ? message.length : 0}/280`" label="Message">
                             <b-textarea
                                 @change="onChangeMessage"
@@ -232,21 +226,6 @@
                                 placeholder="Hi there! Click me to earn rewards and redeem crypto perks."
                             >
                             </b-textarea>
-                        </b-form-group>
-                        <hr />
-                        <b-form-group label="Alignment">
-                            <b-form-row>
-                                <b-col>
-                                    <b-form-radio v-model="align" name="align" @change="onChangeAlign" value="left">
-                                        Left
-                                    </b-form-radio>
-                                </b-col>
-                                <b-col>
-                                    <b-form-radio v-model="align" name="align" @change="onChangeAlign" value="right">
-                                        Right
-                                    </b-form-radio>
-                                </b-col>
-                            </b-form-row>
                         </b-form-group>
                     </b-col>
                     <b-col md="6">
@@ -294,6 +273,54 @@
                         </BCard>
                     </b-col>
                 </b-form-row>
+                <hr />
+                <b-form-group
+                    label="CSS Selector"
+                    description="This CSS selector will set an element in your HTML as the widget launch button and hide the default launcher."
+                >
+                    <b-form-input v-model="cssSelector" @change="onChangeCSSSelector" />
+                </b-form-group>
+                <hr />
+                <b-form-group
+                    label="Alignment"
+                    description="Used for the positioning of both the default launcher and widget."
+                >
+                    <b-form-row>
+                        <b-col>
+                            <b-form-radio
+                                v-model="align"
+                                name="align"
+                                @change="onChangeAlign"
+                                value="left"
+                                class="mb-0"
+                            >
+                                Left
+                            </b-form-radio>
+                        </b-col>
+                        <b-col>
+                            <b-form-radio
+                                v-model="align"
+                                name="align"
+                                @change="onChangeAlign"
+                                value="center"
+                                class="mb-0"
+                            >
+                                Center
+                            </b-form-radio>
+                        </b-col>
+                        <b-col>
+                            <b-form-radio
+                                v-model="align"
+                                name="align"
+                                @change="onChangeAlign"
+                                value="right"
+                                class="mb-0"
+                            >
+                                Right
+                            </b-form-radio>
+                        </b-col>
+                    </b-form-row>
+                </b-form-group>
             </b-col>
         </b-form-row>
     </div>

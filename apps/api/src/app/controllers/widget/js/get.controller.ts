@@ -144,18 +144,59 @@ const controller = async (req: Request, res: Response) => {
             iframe.id = 'thx-iframe';
             iframe.src = url;
             iframe.setAttribute('data-hj-allow-iframe', true);
+
+            let top, bottom, left, right, marginLeft, marginTop, transformOrigin;
+          
+            if (!this.isSmallMedia) {
+                switch(align) {
+                    case 'left' :
+                        top = 'auto';
+                        bottom = !this.settings.cssSelector ? '100px' : '15px';
+                        left = '15px';
+                        right = 'auto';
+                        transformOrigin = 'bottom left';
+                        break;
+                    case 'right' :
+                        top = 'auto';
+                        bottom = !this.settings.cssSelector ? '100px' : '15px';
+                        left = 'auto';
+                        right = '15px';
+                        transformOrigin = 'bottom right';
+                        break;
+                    case 'center' :
+                        top = '50%';
+                        left = '50%';
+                        right = 'auto';
+                        bottom = 'auto';
+                        marginLeft = '-200px';
+                        marginTop = '-340px';
+                        transformOrigin = 'center center';
+                        break;
+                }
+            } else {
+                top = '0';
+                bottom = '0';
+                left = '0';
+                right = '0';
+            }
+          
+
             Object.assign(iframe.style, {
                 ...styles,
                 zIndex: 99999999,
                 display: 'flex',
-                right: !this.isSmallMedia && align === 'right' ? '15px' : 'auto',
-                left: !this.isSmallMedia && align === 'left' ? '15px' : 'auto',
+                top,
+                bottom, 
+                left, 
+                right,
+                marginLeft, 
+                marginTop,
                 position: 'fixed',
                 border: '0',
                 opacity: '0',
                 boxShadow: 'rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px',
                 transform: 'scale(0)',
-                transformOrigin: align === 'right' ? 'bottom right' : 'bottom left',
+                transformOrigin,
                 transition: '.2s opacity ease, .1s transform ease',
             });
     
@@ -180,7 +221,6 @@ const controller = async (req: Request, res: Response) => {
                 userSelect: 'none',
             });
             notifications.innerHTML = counter;
-    
             return notifications;
         }
 
@@ -268,7 +308,6 @@ const controller = async (req: Request, res: Response) => {
             messageBox.appendChild(wrapper);
             messageBox.appendChild(closeBox);
             messageBox.prepend(logoBox);
-
                 
             return messageBox;
         }
@@ -286,10 +325,7 @@ const controller = async (req: Request, res: Response) => {
                 const url = new URL(window.location.href)
                 const widgetPath = url.searchParams.get('thx_widget_path');  
                 
-                this.iframe.contentWindow.postMessage({
-                    message: "thx.iframe.show",
-                    isShown: !!widgetPath
-                }, this.settings.widgetUrl);   
+                this.onWidgetToggle(!!widgetPath);
             }, 350);
             
             return launcher;
@@ -301,6 +337,10 @@ const controller = async (req: Request, res: Response) => {
                 : '<svg id="thx-svg-icon" style="display:block; margin: auto; fill: '+this.theme.elements.launcherIcon.color+'; width: 20px; height: 20px; transform: scale(1); transition: transform .2s ease;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M32 448c0 17.7 14.3 32 32 32h160V320H32v128zm256 32h160c17.7 0 32-14.3 32-32V320H288v160zm192-320h-42.1c6.2-12.1 10.1-25.5 10.1-40 0-48.5-39.5-88-88-88-41.6 0-68.5 21.3-103 68.3-34.5-47-61.4-68.3-103-68.3-48.5 0-88 39.5-88 88 0 14.5 3.8 27.9 10.1 40H32c-17.7 0-32 14.3-32 32v80c0 8.8 7.2 16 16 16h480c8.8 0 16-7.2 16-16v-80c0-17.7-14.3-32-32-32zm-326.1 0c-22.1 0-40-17.9-40-40s17.9-40 40-40c19.9 0 34.6 3.3 86.1 80h-86.1zm206.1 0h-86.1c51.4-76.5 65.7-80 86.1-80 22.1 0 40 17.9 40 40s-17.9 40-40 40z"/></svg>';
             const launcher = document.createElement('div');
             launcher.id = 'thx-launcher';
+
+
+
+            
             Object.assign(launcher.style, {
                 zIndex: 9999999,
                 display: 'flex',
@@ -311,8 +351,8 @@ const controller = async (req: Request, res: Response) => {
                 cursor: 'pointer',
                 position: 'fixed',
                 bottom: '15px',
-                right: this.settings.align === 'right' ? '15px' : 'auto',
-                left: this.settings.align === 'left' ? '15px' : 'auto',
+                right: !this.settings.cssSelector ? this.settings.align === 'right' ? '15px' : 'auto' : 'auto',
+                left: !this.settings.cssSelector ? this.settings.align === 'left' ? '15px' : 'auto' : 'auto',
                 opacity: 0,
                 transform: 'scale(0)',
                 transition: '.2s opacity ease, .1s transform ease',
@@ -389,12 +429,12 @@ const controller = async (req: Request, res: Response) => {
                 const deeplink = 'https://metamask.app.link/dapp/';
                 const ua = navigator.userAgent.toLowerCase();
                 const isAndroid = ua.indexOf("android") > -1;
-                const url = isAndroid ? deeplink + this.createURL() : this.createURL();
-                
+                const url = isAndroid ? deeplink + this.createURL() : this.createURL();   
                 window.open(url, '_blank');
             } else {
                 this.onWidgetToggle(!Number(this.iframe.style.opacity));
             }
+            this.message.remove();
         }
     
         onWidgetReady() {      
@@ -427,7 +467,7 @@ const controller = async (req: Request, res: Response) => {
             this.iframe.style.opacity = show ? '1' : '0';
             this.iframe.style.transform = show ? 'scale(1)' : 'scale(0)';
             this.iframe.contentWindow.postMessage({ message: 'thx.iframe.show', isShown: show }, this.settings.widgetUrl);
-            this.message.remove();
+            if (show) this.message.remove();
         }
 
         onURLDetectionCallback() {

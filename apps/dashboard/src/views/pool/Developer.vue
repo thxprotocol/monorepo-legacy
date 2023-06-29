@@ -15,7 +15,7 @@
                         <i class="fas fa-wallet mr-2"></i>
                         Wallets
                     </template>
-                    ...
+                    <BaseTabSettingsWallets />
                 </b-tab>
                 <b-tab :disabled="profile && profile.plan !== 1">
                     <template #title>
@@ -64,12 +64,14 @@ import { mapGetters } from 'vuex';
 import { TAccount } from '@thxnetwork/types/interfaces';
 import BaseTabSettingsGeneral from '@thxnetwork/dashboard/views/pool/developer/General.vue';
 import BaseTabSettingsWebhooks from '@thxnetwork/dashboard/views/pool/developer/Webhooks.vue';
+import BaseTabSettingsWallets from '@thxnetwork/dashboard/views/pool/developer/Wallets.vue';
 import BaseTabSettingsApi from '@thxnetwork/dashboard/views/pool/developer/API.vue';
 
 @Component({
     components: {
         BaseTabSettingsGeneral,
         BaseTabSettingsWebhooks,
+        BaseTabSettingsWallets,
         BaseTabSettingsApi,
     },
     computed: mapGetters({
