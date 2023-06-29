@@ -28,7 +28,6 @@
                     <b-nav-item to="/contact" :title="TITLES.CONTACT">Contact</b-nav-item>
                 </b-navbar-nav>
                 <div class="navbar-nav-right">
-                    <b-button id="custom-launcher">Launch</b-button>
                     <b-button
                         class="rounded-pill"
                         :variant="isDarkJumbotron && !toggle ? 'link-light' : 'link-dark'"
