@@ -91,7 +91,7 @@ export default class Wallets extends Vue {
     }
 
     get code() {
-        if (!this.pool) return;
+        if (!this.pool) return '';
         return `curl "${API_URL}/v1/webhook/wallet/${this.pool.token}" \\
 -X POST`;
     }
