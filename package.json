@@ -228,7 +228,7 @@
         "jest-environment-jsdom": "28.1.1",
         "jest-serializer-vue": "^2.0.2",
         "jest-transform-stub": "^2.0.0",
-        "jose": "^2.0.5",
+        "jose": "^4.14.4",
         "lint-staged": "^9.5.0",
         "nock": "^13.2.2",
         "nodemon": "^2.0.15",
