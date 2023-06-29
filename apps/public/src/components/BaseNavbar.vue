@@ -28,6 +28,7 @@
                     <b-nav-item to="/contact" :title="TITLES.CONTACT">Contact</b-nav-item>
                 </b-navbar-nav>
                 <div class="navbar-nav-right">
+                    <b-button id="custom-launcher">Launch</b-button>
                     <b-button
                         class="rounded-pill"
                         :variant="isDarkJumbotron && !toggle ? 'link-light' : 'link-dark'"
@@ -54,20 +55,12 @@
 </template>
 
 <script lang="ts">
-import { BButton, BCollapse, BNavbar, BNavbarNav, BNavbarToggle, BNavItem } from 'bootstrap-vue';
 import { Component, Vue } from 'vue-property-decorator';
 import { ALT_TEXT, TITLES } from '@thxnetwork/public/utils/constants';
 import { DASHBOARD_URL, WALLET_URL, DOCS_URL } from '../config/secrets';
 
 @Component({
-    components: {
-        'b-button': BButton,
-        'b-navbar': BNavbar,
-        'b-navbar-nav': BNavbarNav,
-        'b-nav-item': BNavItem,
-        'b-navbar-toggle': BNavbarToggle,
-        'b-collapse': BCollapse,
-    },
+    components: {},
 })
 export default class BaseNavbar extends Vue {
     walletUrl = WALLET_URL;
@@ -83,8 +76,6 @@ export default class BaseNavbar extends Vue {
             this.$route.path.startsWith('/use-case')
         );
     }
-
-    //https://localhost:8081?ref=eyJzdWIiOiI2NDM2YzVkOWM5MmQ3ZDkwNDAzZTk0ZjUiLCJwb29sSWQiOiI2NDM3Y2JkZGM3YWFlYjRlNDJhYjUzOGMiLCJ1dWlkIjoiNjExMTdkYzItOGNlNC00OWMyLThlMDktMWY2NTA0ZGFlYTI5In0=
 
     get dashboardUrl() {
         const url = new URL(DASHBOARD_URL);

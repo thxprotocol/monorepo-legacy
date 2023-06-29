@@ -192,6 +192,12 @@
             <b-col md="8">
                 <b-form-row>
                     <b-col md="6">
+                        <b-form-group
+                            label="CSS Selector"
+                            description="This CSS selector will set an element in your HTML as the widget launcher and hide the default launcher."
+                        >
+                            <b-form-input v-model="cssSelector" @change="onChangeCSSSelector" />
+                        </b-form-group>
                         <b-form-group description="Dimensions: 40px x 40px. File types: .jpg, .png, .svg">
                             <template #label>
                                 Icon
@@ -298,7 +304,6 @@ import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { IWidgets } from '@thxnetwork/dashboard/store/modules/widgets';
-import BaseModalWidgetCreate from '@thxnetwork/dashboard/components/modals/BaseModalWidgetCreate.vue';
 import BaseWidgetAlertPreview from '@thxnetwork/dashboard/components/widget/BaseWidgetAlertPreview.vue';
 import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
 import Color from 'color';
@@ -307,7 +312,6 @@ import { DEFAULT_ELEMENTS, DEFAULT_COLORS } from '@thxnetwork/types/contants';
 
 @Component({
     components: {
-        BaseModalWidgetCreate,
         BaseWidgetAlertPreview,
         BaseCodeExample,
     },
@@ -324,6 +328,7 @@ export default class WidgetsView extends Vue {
     message = '';
     align = 'left';
     iconImg = '';
+    cssSelector = '';
     isSubmitting = false;
     elements = Object.assign({}, DEFAULT_ELEMENTS); // Clean object for reset behavior
     colors = Object.assign({}, DEFAULT_COLORS); // Clean object for reset behavior
@@ -344,6 +349,7 @@ export default class WidgetsView extends Vue {
             this.align = this.widget.align;
             this.message = this.widget.message;
             this.iconImg = this.widget.iconImg;
+            this.cssSelector = this.widget.cssSelector;
 
             const { elements, colors } = JSON.parse(this.widget.theme);
             for (const key in this.elements) {
@@ -369,6 +375,11 @@ export default class WidgetsView extends Vue {
 
     onClickPreview() {
         window.open(`${BASE_URL}/preview/${this.pool._id}`, '_blank');
+    }
+
+    onChangeCSSSelector(value: string) {
+        this.cssSelector = value;
+        this.onClickUpdate();
     }
 
     onChangeMessage(value: string) {
@@ -402,6 +413,7 @@ export default class WidgetsView extends Vue {
             message: this.message,
             align: this.align,
             uuid: this.widget.uuid,
+            cssSelector: this.cssSelector,
             theme: JSON.stringify({ elements: this.elements, colors: this.colors }),
         });
         this.isSubmitting = false;

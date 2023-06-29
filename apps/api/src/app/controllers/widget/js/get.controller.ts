@@ -92,7 +92,7 @@ const controller = async (req: Request, res: Response) => {
             this.iframe = this.createIframe();
             this.notifications = this.createNotifications(0);
             this.message = this.createMessage();
-            this.launcher = this.createLauncher();
+            this.launcher = this.settings.cssSelector ? this.selectLauncher() : this.createLauncher();
             this.referrals = JSON.parse(this.settings.refs).filter((r) => r.successUrl);
             this.container = this.createContainer(this.iframe, this.launcher, this.message);
             this.parseURL();
@@ -273,6 +273,28 @@ const controller = async (req: Request, res: Response) => {
             return messageBox;
         }
     
+        selectLauncher() {
+            const launcher = document.querySelector(this.settings.cssSelector);           
+            if (!launcher) {
+                console.error("THX widget can't find the launcher for selector: " + this.settings.cssSelector);
+                return;
+            }
+
+            launcher.addEventListener('click', this.onClickLauncher.bind(this));
+
+            setTimeout(() => {
+                const url = new URL(window.location.href)
+                const widgetPath = url.searchParams.get('thx_widget_path');  
+                
+                this.iframe.contentWindow.postMessage({
+                    message: "thx.iframe.show",
+                    isShown: !!widgetPath
+                }, this.settings.widgetUrl);   
+            }, 350);
+            
+            return launcher;
+        }
+
         createLauncher() {
             const svgGift = this.settings.iconImg 
                 ? '<img id="thx-svg-icon" style="display:block; margin: auto; transform: scale(1); transition: transform .2s ease;" width="40" height="40" src="' + this.settings.iconImg + '" alt="Widget launcher icon" />'
@@ -320,8 +342,11 @@ const controller = async (req: Request, res: Response) => {
             const container = document.createElement('div');
             container.id = 'thx-container';
             container.appendChild(iframe);
-            container.appendChild(launcher);
-            container.appendChild(message);
+            
+            if (!this.settings.cssSelector) {
+                container.appendChild(launcher);
+                container.appendChild(message);
+            }
     
             document.body.appendChild(container);
     
@@ -369,7 +394,6 @@ const controller = async (req: Request, res: Response) => {
                 window.open(url, '_blank');
             } else {
                 this.onWidgetToggle(!Number(this.iframe.style.opacity));
-                this.message.remove();
             }
         }
     
@@ -377,7 +401,7 @@ const controller = async (req: Request, res: Response) => {
             const parentUrl = new URL(window.location.href)
             const widgetPath = parentUrl.searchParams.get('thx_widget_path');
             const redirectStatus = parentUrl.searchParams.get('redirect_status');
-            
+
             if (widgetPath) {
                 const { widgetUrl, poolId, origin, chainId, theme } = this.settings;
                 const path = '/' + poolId + widgetPath;
@@ -403,6 +427,7 @@ const controller = async (req: Request, res: Response) => {
             this.iframe.style.opacity = show ? '1' : '0';
             this.iframe.style.transform = show ? 'scale(1)' : 'scale(0)';
             this.iframe.contentWindow.postMessage({ message: 'thx.iframe.show', isShown: show }, this.settings.widgetUrl);
+            this.message.remove();
         }
 
         onURLDetectionCallback() {
@@ -436,6 +461,7 @@ const controller = async (req: Request, res: Response) => {
         poolId: '${req.params.id}',
         chainId: '${pool.chainId}',
         title: '${pool.settings.title}',
+        cssSelector: '${widget.cssSelector || ''}',
         logoUrl: '${brand && brand.logoImgUrl ? brand.logoImgUrl : AUTH_URL + '/img/logo-padding.png'}',
         backgroundUrl: '${brand && brand.backgroundImgUrl ? brand.backgroundImgUrl : ''}',
         iconImg: '${widget.iconImg || ''}',

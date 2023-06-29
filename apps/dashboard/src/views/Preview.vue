@@ -1,5 +1,6 @@
 <template>
     <div>
+        <b-button id="custom-launcher" class="btn-launcher">Show launcher</b-button>
         <p class="text-center">
             <img
                 v-if="brand && brand.logoImgUrl"
