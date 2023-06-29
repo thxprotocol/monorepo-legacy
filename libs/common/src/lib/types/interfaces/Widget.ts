@@ -7,6 +7,7 @@ export type TWidget = {
     domain: string;
     color: string;
     bgColor: string;
+    cssSelector: string;
     theme: string;
     active: boolean;
 };

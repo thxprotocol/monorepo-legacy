@@ -2,47 +2,6 @@
     <div>
         <b-form-row>
             <b-col md="4">
-                <strong>Wallet Onboarding</strong>
-                <p class="text-muted">
-                    Use this webhook to register wallets and collect points for your users event before they start using
-                    the widget.
-                </p>
-            </b-col>
-            <b-col md="8">
-                <b-form-group>
-                    <BaseCardURLWebhook
-                        :visible="true"
-                        :code="code"
-                        title="Webhook URL"
-                        :description="
-                            pool.wallets &&
-                            `This campaign has onboarded ${pool.wallets.length} wallet${
-                                pool.wallets.length > 1 ? 's' : ''
-                            }.`
-                        "
-                    >
-                        <template #alerts>
-                            <b-alert show variant="info">
-                                <i class="fas fa-question-circle mr-2"></i> Take note of these development guidelines:
-                                <ul class="px-3 mb-0 mt-1 small">
-                                    <li>
-                                        Store the returned <code>code</code> as part of the user data in your database
-                                        and use it when running milestone reward webhooks or to transfer ownership.
-                                    </li>
-                                    <li>
-                                        The value <strong>ADDRESS</strong> could optionally be used to register wallets
-                                        for users that have known ownership over that address.
-                                    </li>
-                                </ul>
-                            </b-alert>
-                        </template>
-                    </BaseCardURLWebhook>
-                </b-form-group>
-            </b-col>
-        </b-form-row>
-        <hr />
-        <b-form-row>
-            <b-col md="4">
                 <strong>Discord Bot</strong>
                 <p class="text-muted">Install THX Bot to increase engagement in your Discord server.</p>
             </b-col>
@@ -222,13 +181,6 @@ export default class SettingsTwitterView extends Vue {
 
     get pool() {
         return this.pools[this.$route.params.id];
-    }
-
-    get code() {
-        if (!this.pool) return;
-        return `curl "${API_URL}/v1/webhook/wallet/${this.pool.token}" \\
--X POST \\
--d "address=<ADDRESS>"`;
     }
 
     mounted() {

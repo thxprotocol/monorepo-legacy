@@ -186,7 +186,8 @@
             <b-col md="4">
                 <strong>Launcher</strong>
                 <p class="text-muted">
-                    This launcher will show in the bottom left or right corner for pages with the widget embed code.
+                    The launcher is used to toggle the visibility of your widget. Bring your own or adjust our default
+                    launch button and message.
                 </p>
             </b-col>
             <b-col md="8">
@@ -218,7 +219,6 @@
                                 <b-form-file @change="onUploadIcon($event)" accept="image/*" />
                             </b-input-group>
                         </b-form-group>
-                        <hr />
                         <b-form-group :description="`${message ? message.length : 0}/280`" label="Message">
                             <b-textarea
                                 @change="onChangeMessage"
@@ -226,21 +226,6 @@
                                 placeholder="Hi there! Click me to earn rewards and redeem crypto perks."
                             >
                             </b-textarea>
-                        </b-form-group>
-                        <hr />
-                        <b-form-group label="Alignment">
-                            <b-form-row>
-                                <b-col>
-                                    <b-form-radio v-model="align" name="align" @change="onChangeAlign" value="left">
-                                        Left
-                                    </b-form-radio>
-                                </b-col>
-                                <b-col>
-                                    <b-form-radio v-model="align" name="align" @change="onChangeAlign" value="right">
-                                        Right
-                                    </b-form-radio>
-                                </b-col>
-                            </b-form-row>
                         </b-form-group>
                     </b-col>
                     <b-col md="6">
@@ -288,6 +273,54 @@
                         </BCard>
                     </b-col>
                 </b-form-row>
+                <hr />
+                <b-form-group
+                    label="CSS Selector"
+                    description="This CSS selector will set an element in your HTML as the widget launch button and hide the default launcher."
+                >
+                    <b-form-input v-model="cssSelector" @change="onChangeCSSSelector" />
+                </b-form-group>
+                <hr />
+                <b-form-group
+                    label="Alignment"
+                    description="Used for the positioning of both the default launcher and widget."
+                >
+                    <b-form-row>
+                        <b-col>
+                            <b-form-radio
+                                v-model="align"
+                                name="align"
+                                @change="onChangeAlign"
+                                value="left"
+                                class="mb-0"
+                            >
+                                Left
+                            </b-form-radio>
+                        </b-col>
+                        <b-col>
+                            <b-form-radio
+                                v-model="align"
+                                name="align"
+                                @change="onChangeAlign"
+                                value="center"
+                                class="mb-0"
+                            >
+                                Center
+                            </b-form-radio>
+                        </b-col>
+                        <b-col>
+                            <b-form-radio
+                                v-model="align"
+                                name="align"
+                                @change="onChangeAlign"
+                                value="right"
+                                class="mb-0"
+                            >
+                                Right
+                            </b-form-radio>
+                        </b-col>
+                    </b-form-row>
+                </b-form-group>
             </b-col>
         </b-form-row>
     </div>
@@ -298,7 +331,6 @@ import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { IWidgets } from '@thxnetwork/dashboard/store/modules/widgets';
-import BaseModalWidgetCreate from '@thxnetwork/dashboard/components/modals/BaseModalWidgetCreate.vue';
 import BaseWidgetAlertPreview from '@thxnetwork/dashboard/components/widget/BaseWidgetAlertPreview.vue';
 import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
 import Color from 'color';
@@ -307,7 +339,6 @@ import { DEFAULT_ELEMENTS, DEFAULT_COLORS } from '@thxnetwork/types/contants';
 
 @Component({
     components: {
-        BaseModalWidgetCreate,
         BaseWidgetAlertPreview,
         BaseCodeExample,
     },
@@ -324,6 +355,7 @@ export default class WidgetsView extends Vue {
     message = '';
     align = 'left';
     iconImg = '';
+    cssSelector = '';
     isSubmitting = false;
     elements = Object.assign({}, DEFAULT_ELEMENTS); // Clean object for reset behavior
     colors = Object.assign({}, DEFAULT_COLORS); // Clean object for reset behavior
@@ -344,6 +376,7 @@ export default class WidgetsView extends Vue {
             this.align = this.widget.align;
             this.message = this.widget.message;
             this.iconImg = this.widget.iconImg;
+            this.cssSelector = this.widget.cssSelector;
 
             const { elements, colors } = JSON.parse(this.widget.theme);
             for (const key in this.elements) {
@@ -369,6 +402,11 @@ export default class WidgetsView extends Vue {
 
     onClickPreview() {
         window.open(`${BASE_URL}/preview/${this.pool._id}`, '_blank');
+    }
+
+    onChangeCSSSelector(value: string) {
+        this.cssSelector = value;
+        this.onClickUpdate();
     }
 
     onChangeMessage(value: string) {
@@ -402,6 +440,7 @@ export default class WidgetsView extends Vue {
             message: this.message,
             align: this.align,
             uuid: this.widget.uuid,
+            cssSelector: this.cssSelector,
             theme: JSON.stringify({ elements: this.elements, colors: this.colors }),
         });
         this.isSubmitting = false;

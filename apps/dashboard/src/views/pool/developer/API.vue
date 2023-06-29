@@ -182,7 +182,7 @@ export default class Clients extends Vue {
     }
 
     async listClients() {
-        if (this.account.plan !== AccountPlanType.Premium) return;
+        if (!this.account || this.account.plan !== AccountPlanType.Premium) return;
         this.isLoading = true;
         await this.$store.dispatch('clients/list', {
             page: this.page,

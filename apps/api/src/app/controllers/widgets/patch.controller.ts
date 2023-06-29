@@ -6,6 +6,7 @@ const validation = [
     body('iconImg').optional().isString(),
     body('align').optional().isString(),
     body('theme').optional().isString(),
+    body('cssSelector').optional().isString(),
     body('domain').optional().isURL({ require_tld: false }),
     body('message').optional().isString().isLength({ max: 280 }).trim().escape(),
 ];
@@ -21,6 +22,7 @@ const controller = async (req: Request, res: Response) => {
             domain: req.body.domain,
             message: req.body.message,
             theme: req.body.theme,
+            cssSelector: req.body.cssSelector,
         },
         { new: true },
     );
