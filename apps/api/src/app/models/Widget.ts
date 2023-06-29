@@ -12,6 +12,7 @@ const widgetSchema = new mongoose.Schema(
         message: String,
         domain: String,
         theme: String,
+        cssSelector: String,
         active: { default: false, type: Boolean },
     },
     { timestamps: true },

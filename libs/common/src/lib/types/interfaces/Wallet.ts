@@ -11,4 +11,5 @@ export type TWallet = {
     contract?: Contract;
     version?: string;
     isUpgradeAvailable?: boolean;
+    createdAt?: Date;
 };
