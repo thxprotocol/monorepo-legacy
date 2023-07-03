@@ -3,9 +3,7 @@ import jwt_decode from 'jwt-decode';
 import { ERC20Perk } from '@thxnetwork/api/models/ERC20Perk';
 import { ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
 import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
-import { ShopifyPerk } from '@thxnetwork/api/models/ShopifyPerk';
 import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
-import { ShopifyPerkPayment } from '@thxnetwork/api/models/ShopifyPerkPayment';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
@@ -20,10 +18,6 @@ const controller = async (req: Request, res: Response) => {
         pointPrice: { $exists: true, $gt: 0 },
     });
     const erc721Perks = await ERC721Perk.find({
-        poolId: String(pool._id),
-        $or: [{ pointPrice: { $exists: true, $gt: 0 } }, { price: { $exists: true, $gt: 0 } }],
-    });
-    const shopifyPerks = await ShopifyPerk.find({
         poolId: String(pool._id),
         $or: [{ pointPrice: { $exists: true, $gt: 0 } }, { price: { $exists: true, $gt: 0 } }],
     });
@@ -88,29 +82,6 @@ const controller = async (req: Request, res: Response) => {
                     erc1155Amount: r.erc1155Amount,
                     expiry: await PerkService.getExpiry(r),
                     progress: await PerkService.getProgress(r, ERC721PerkPayment),
-                    isLocked: await PerkService.getIsLockedForWallet(r, wallet),
-                    tokenGatingContractAddress: r.tokenGatingContractAddress,
-                };
-            }),
-        ),
-        shopifyPerks: await Promise.all(
-            shopifyPerks.map(async (r) => {
-                const { isError } = await PerkService.validate({ perk: r, sub, pool });
-                return {
-                    _id: r._id,
-                    uuid: r.uuid,
-                    title: r.title,
-                    description: r.description,
-                    pointPrice: r.pointPrice,
-                    image: r.image,
-                    isPromoted: r.isPromoted,
-                    priceRuleId: r.priceRuleId,
-                    discountCode: r.discountCode,
-                    limit: r.limit,
-                    isDisabled: isError,
-                    isOwned: false,
-                    expiry: await PerkService.getExpiry(r),
-                    progress: await PerkService.getProgress(r, ShopifyPerkPayment),
                     isLocked: await PerkService.getIsLockedForWallet(r, wallet),
                     tokenGatingContractAddress: r.tokenGatingContractAddress,
                 };

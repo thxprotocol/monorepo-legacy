@@ -14,7 +14,9 @@ import WalletService from '@thxnetwork/api/services/WalletService';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
+    console.log(req.header('X-PoolId'));
     const pool = await PoolService.getById(req.header('X-PoolId'));
+    console.log(pool);
     const referralRewards = await ReferralReward.find({ poolId: pool._id });
     const pointRewards = await PointReward.find({ poolId: pool._id });
     const milestoneRewards = await MilestoneReward.find({ poolId: pool._id });

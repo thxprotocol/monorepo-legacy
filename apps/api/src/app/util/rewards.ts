@@ -8,8 +8,6 @@ import PointRewardService from '../services/PointRewardService';
 import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardService';
 import MilestoneRewardService from '../services/MilestoneRewardService';
 import DailyRewardService from '../services/DailyRewardService';
-import { ShopifyPerkDocument } from '../models/ShopifyPerk';
-import { ONE_DAY_MS } from '../services/DailyRewardClaimService';
 
 export async function findRewardByUuid(uuid: string) {
     const erc20Perk = await ERC20Perk.findOne({ uuid });
@@ -18,22 +16,12 @@ export async function findRewardByUuid(uuid: string) {
     return erc20Perk || erc721Perk;
 }
 
-export function isTERC20Perk(
-    perk: ERC20PerkDocument | ERC721PerkDocument | ShopifyPerkDocument,
-): perk is ERC20PerkDocument {
+export function isTERC20Perk(perk: ERC20PerkDocument | ERC721PerkDocument): perk is ERC20PerkDocument {
     return (perk as ERC20PerkDocument).erc20Id !== undefined;
 }
 
-export function isTERC721Perk(
-    perk: ERC20PerkDocument | ERC721PerkDocument | ShopifyPerkDocument,
-): perk is ERC721PerkDocument {
+export function isTERC721Perk(perk: ERC20PerkDocument | ERC721PerkDocument): perk is ERC721PerkDocument {
     return (perk as ERC721PerkDocument).erc721Id !== undefined || (perk as ERC721PerkDocument).erc1155Id !== undefined;
-}
-
-export function isTShopifyPerk(
-    perk: ERC20PerkDocument | ERC721PerkDocument | ShopifyPerkDocument,
-): perk is ERC721PerkDocument {
-    return (perk as ShopifyPerkDocument).discountCode !== undefined;
 }
 
 export function addMinutes(date: Date, minutes: number) {

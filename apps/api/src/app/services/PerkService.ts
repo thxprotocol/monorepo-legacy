@@ -4,7 +4,6 @@ import { fromWei } from 'web3-utils';
 import { WalletDocument } from '../models/Wallet';
 import { ERC20PerkDocument } from '../models/ERC20Perk';
 import { ERC721PerkDocument } from '../models/ERC721Perk';
-import { ShopifyPerkDocument } from '../models/ShopifyPerk';
 import { AssetPoolDocument } from '../models/AssetPool';
 import { ERC1155Token, ERC1155TokenDocument } from '../models/ERC1155Token';
 import { ERC721Token, ERC721TokenDocument } from '../models/ERC721Token';
@@ -13,12 +12,11 @@ import ERC1155Service from './ERC1155Service';
 import ERC721Service from './ERC721Service';
 import { ClaimDocument } from '../models/Claim';
 import { ERC20PerkPayment } from '../models/ERC20PerkPayment';
-import { ShopifyPerkPayment } from '../models/ShopifyPerkPayment';
 import { ERC721PerkPayment } from '../models/ERC721PerkPayment';
-import { isTERC20Perk, isTERC721Perk, isTShopifyPerk } from '../util/rewards';
+import { isTERC20Perk, isTERC721Perk } from '../util/rewards';
 import mongoose from 'mongoose';
 
-type TAllPerks = ERC20PerkDocument | ERC721PerkDocument | ShopifyPerkDocument;
+type TAllPerks = ERC20PerkDocument | ERC721PerkDocument;
 
 export async function verifyOwnership(
     { tokenGatingVariant, tokenGatingContractAddress, tokenGatingAmount }: TAllPerks,
@@ -102,7 +100,7 @@ async function getExpiry(r: TAllPerks) {
     };
 }
 
-type PerkDocument = ERC20PerkDocument | ERC721PerkDocument | ShopifyPerkDocument;
+type PerkDocument = ERC20PerkDocument | ERC721PerkDocument;
 
 export function getPaymentModel(perk: PerkDocument): mongoose.Model<any> {
     if (isTERC20Perk(perk)) {
@@ -110,9 +108,6 @@ export function getPaymentModel(perk: PerkDocument): mongoose.Model<any> {
     }
     if (isTERC721Perk(perk)) {
         return ERC721PerkPayment;
-    }
-    if (isTShopifyPerk(perk)) {
-        return ShopifyPerkPayment;
     }
 }
 
