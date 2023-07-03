@@ -28,7 +28,7 @@
                                     <template v-if="campaign.logoImgUrl" #aside>
                                         <b-img
                                             width="75"
-                                            height="75"
+                                            height="auto"
                                             class="rounded"
                                             style="margin-right: 1.25rem"
                                             :src="campaign.logoImgUrl"
@@ -43,7 +43,7 @@
                                     <div>
                                         <i class="fas fa-users mr-1"></i> {{ campaign.participants }} participants
                                     </div>
-                                    <div class="pb-1">
+                                    <!-- <div class="pb-1">
                                         <b-badge
                                             :key="key"
                                             v-for="(tag, key) of campaign.tags"
@@ -52,19 +52,26 @@
                                         >
                                             {{ tag }}
                                         </b-badge>
-                                    </div>
+                                    </div> -->
                                 </b-media>
                             </div>
                             <template #footer>
                                 <b-button
-                                    :to="`/campaigns/${campaign._id}`"
+                                    :href="campaign.domain"
+                                    target="_blank"
                                     class="rounded-pill pr-3"
                                     variant="darker"
                                     size="sm"
                                 >
                                     <i class="fas fa-question mr-1"></i> More info
                                 </b-button>
-                                <b-button :href="campaign.domain" class="rounded-pill pr-3" variant="darker" size="sm">
+                                <b-button
+                                    :href="`${widgetUrl}/${campaign._id}`"
+                                    target="_blank"
+                                    class="rounded-pill pr-3"
+                                    variant="darker"
+                                    size="sm"
+                                >
                                     <i class="fas fa-link mr-1"></i> Visit Campaign
                                 </b-button>
                             </template>
@@ -82,7 +89,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import BaseContact from '@thxnetwork/public/components/BaseContact.vue';
 import { INTEGRATIONS_TAGS, TWITTER_TAGS, ALT_TEXT, LINKS, TITLES } from '@thxnetwork/public/utils/constants';
 import axios from 'axios';
-import { API_URL } from '../config/secrets';
+import { API_URL, WIDGET_URL } from '../config/secrets';
 import { TWidget, TCampaign } from '@thxnetwork/types/interfaces';
 import { format } from 'date-fns';
 
@@ -112,6 +119,7 @@ import { format } from 'date-fns';
     },
 })
 export default class Home extends Vue {
+    widgetUrl = WIDGET_URL;
     ALT_TEXT = ALT_TEXT;
     TITLES = TITLES;
     format = format;

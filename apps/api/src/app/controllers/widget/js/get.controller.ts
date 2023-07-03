@@ -123,15 +123,6 @@ const controller = async (req: Request, res: Response) => {
 
             url.pathname = this.widgetPath = '/' + poolId + (path || '/quests');
             
-            url.searchParams.append('id', poolId);
-            url.searchParams.append('origin', origin);
-            url.searchParams.append('chainId', chainId);
-            url.searchParams.append('theme', theme);
-            url.searchParams.append('logoUrl', logoUrl);
-            url.searchParams.append('backgroundUrl', backgroundUrl);
-            url.searchParams.append('title', title);
-            url.searchParams.append('expired', expired);
-            
             return url;
         }
 
@@ -446,14 +437,8 @@ const controller = async (req: Request, res: Response) => {
                 const { widgetUrl, poolId, origin, chainId, theme } = this.settings;
                 const path = '/' + poolId + widgetPath;
                 const url = new URL(widgetUrl + path);
-
-                url.searchParams.append('id', poolId);
-                url.searchParams.append('origin', origin);
-                url.searchParams.append('chainId', chainId);
-                url.searchParams.append('theme', theme);
-                url.searchParams.append('status', redirectStatus);
                 
-                this.iframe.contentWindow.postMessage({ message: 'thx.iframe.navigate', path: url.pathname + url.search }, widgetUrl);
+                this.iframe.contentWindow.postMessage({ message: 'thx.iframe.navigate', path: url.pathname }, widgetUrl);
             }
 
             if (this.ref) {
