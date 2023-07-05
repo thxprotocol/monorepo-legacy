@@ -10,13 +10,13 @@ class RewardsManager extends BaseManager {
         return await this.client.request.get(`/v1/rewards`, { poolId });
     }
 
-    points = {
+    social = {
         claim: async (id: string) => {
             return await this.client.request.post(`/v1/rewards/points/${id}/claim`);
         },
     };
 
-    milestones = {
+    custom = {
         claim: async (id: string) => {
             return await this.client.request.post(`/v1/rewards/milestones/claims/${id}/collect`);
         },

@@ -57,6 +57,12 @@ async function formatAccountRes(account, accessIncluded = true) {
     return response;
 }
 
+export const getMe = async (req: Request, res: Response) => {
+    const account = await AccountService.get(req.auth.sub);
+    if (!account) throw new NotFoundError('Could not find the account for this sub');
+    res.send(await formatAccountRes(account));
+};
+
 export const getAccount = async (req: Request, res: Response) => {
     const account = await AccountService.get(req.params.sub);
     if (!account) throw new NotFoundError('Could not find the account for this sub');

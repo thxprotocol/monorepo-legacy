@@ -1,12 +1,13 @@
 import GuildService from '../../services/guild.service';
 import { client } from '../../../bootstrap';
 import { CommandInteraction, CommandInteractionOptionResolver, PermissionFlagsBits, channelLink } from 'discord.js';
-import { thxClient } from '../../config/oidc';
+import { thxClient } from '@thxnetwork/discord/config/oidc';
 
 export const onSubcommandConnect = async (interaction: CommandInteraction) => {
     const options = interaction.options as CommandInteractionOptionResolver;
     const poolId = options.getString('pool_id', true);
     const channelId = options.getString('channel_id', true);
+    const thx = thxClient({ poolId });
 
     const isAdmin = (interaction.member.permissions as any).has(PermissionFlagsBits.Administrator);
     if (!isAdmin)
@@ -15,14 +16,14 @@ export const onSubcommandConnect = async (interaction: CommandInteraction) => {
             ephemeral: true,
         });
 
-    const { account } = await thxClient.account.getByDiscordId(interaction.user.id).catch();
+    const { account } = await thx.account.getByDiscordId(interaction.user.id).catch();
     if (!account)
         return interaction.reply({
             content: 'Please connect your THX Account with Discord first.',
             ephemeral: true,
         });
 
-    const pool = await thxClient.pools.get(poolId);
+    const pool = await thx.pools.get(poolId);
     if (!pool) {
         return interaction.reply({ content: `Pool could not be found for ID ${poolId}.`, ephemeral: true });
     }

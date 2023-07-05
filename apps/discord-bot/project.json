@@ -1,4 +1,5 @@
 {
+    "name": "discord-bot",
     "$schema": "../../node_modules/nx/schemas/project-schema.json",
     "sourceRoot": "apps/discord-bot/src",
     "projectType": "application",
@@ -53,7 +54,7 @@
         },
         "test": {
             "executor": "@nrwl/jest:jest",
-            "outputs": ["coverage/apps/discord-bot"],
+            "outputs": ["{workspaceRoot}/coverage/apps/discord-bot"],
             "options": {
                 "jestConfig": "apps/discord-bot/jest.config.ts",
                 "passWithNoTests": true

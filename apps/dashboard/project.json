@@ -1,4 +1,5 @@
 {
+    "name": "dashboard",
     "$schema": "../../node_modules/nx/schemas/project-schema.json",
     "projectType": "application",
     "sourceRoot": "apps/dashboard/src",
@@ -50,7 +51,7 @@
         },
         "test": {
             "executor": "@nrwl/jest:jest",
-            "outputs": ["coverage/apps/dashboard"],
+            "outputs": ["{workspaceRoot}/coverage/apps/dashboard"],
             "options": {
                 "jestConfig": "apps/dashboard/jest.config.ts",
                 "passWithNoTests": true

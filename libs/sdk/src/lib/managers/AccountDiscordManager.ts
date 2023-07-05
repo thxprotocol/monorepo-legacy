@@ -1,7 +1,7 @@
 import { THXClient } from '../client';
 import BaseManager from './BaseManager';
 
-export default class AccountManager extends BaseManager {
+export default class AccountDiscordManager extends BaseManager {
     constructor(client: THXClient) {
         super(client);
     }

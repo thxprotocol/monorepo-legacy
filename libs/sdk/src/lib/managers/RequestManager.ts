@@ -1,9 +1,8 @@
-import { URL_CONFIG } from '../configs';
 import { THXClient } from '../../index';
 import BaseManager from './BaseManager';
+import * as jose from 'jose';
 
-interface Config extends RequestInit {
-    waitForAuth?: boolean;
+interface RequestConfig extends RequestInit {
     poolId?: string;
 }
 
@@ -12,164 +11,84 @@ class RequestManager extends BaseManager {
         super(client);
     }
 
-    private waitForAuth() {
-        return new Promise((resolve) => {
-            const callback = () => {
-                if (this.client.session.cached.accessToken) {
-                    resolve(true);
-                    clearInterval(interval);
-                }
-            };
+    async get(path: string, config?: RequestConfig) {
+        return await this.request(path, { ...config, method: 'GET' });
+    }
 
-            const interval = setInterval(callback, 100);
+    async post(path: string, config?: RequestConfig) {
+        return await this.request(path, { ...config, method: 'POST' });
+    }
+
+    async patch(path: string, config?: RequestConfig) {
+        return await this.request(path, { ...config, method: 'PATCH' });
+    }
+
+    async put(path: string, config?: RequestConfig) {
+        return await this.request(path, { ...config, method: 'PUT' });
+    }
+
+    async delete(path: string, config?: RequestConfig) {
+        return await this.request(path, { ...config, method: 'DELETE' });
+    }
+
+    private async request(path: string, config: RequestConfig) {
+        const r = await fetch(this.getUrl(path), {
+            ...config,
+            mode: 'cors',
+            credentials: 'omit',
+            headers: this.getHeaders(config),
         });
+
+        return await this.handleResponse(r);
+    }
+
+    private validateToken(accessToken: string) {
+        try {
+            if (!accessToken) {
+                throw new Error('no access token');
+            }
+
+            const { exp } = jose.decodeJwt(accessToken);
+            if (!exp || Date.now() > Number(exp) * 1000) {
+                throw new Error('token expired');
+            }
+
+            return accessToken;
+        } catch (error) {
+            console.error(error);
+            return '';
+        }
     }
 
     private getUrl(path: string) {
-        const env = this.client.credential.cached.env;
-        return URL_CONFIG[env]['API_URL'] + path;
+        return this.client.options.url + path;
     }
 
-    private async getHeaders(poolId?: string) {
-        const headers: { [key: string]: string } = {};
-        if (!this.client.session.isExpired) await this.silentSignin();
+    private getHeaders(config?: RequestConfig) {
+        const headers = new Headers({
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            ...config?.headers,
+        });
+        const { accessToken } = this.client.options;
 
-        const token = this.client.session.accessToken;
-        if (token) {
-            headers['Authorization'] = `Bearer ${token}`;
+        if (accessToken) {
+            headers.append('Authorization', `Bearer ${this.validateToken(accessToken)}`);
         }
 
-        if (poolId || this.client.session.poolId) {
-            headers['X-PoolId'] = (poolId || this.client.session.poolId) as string;
+        if ((config && config.poolId) || this.client.options.poolId) {
+            headers.append('X-PoolId', (config && config.poolId) || this.client.options.poolId);
         }
 
         return headers;
     }
 
-    private async handleStatus(r: Response) {
-        if (r.status === 401) {
-            await this.silentSignin();
-        }
-
+    private async handleResponse(r: Response) {
         if (r.status >= 400 && r.status < 600) {
             throw await r.json();
-        }
-    }
-
-    async silentSignin() {
-        if (this.client.credential.cached.grantType === 'authorization_code') {
-            const clientId = this.client.credential.cached.clientId;
-            const env = this.client.credential.cached.env;
-            const name = `oidc.user:${URL_CONFIG[env]['AUTH_URL']}:${clientId}`;
-            const user = await this.client.userManager.cached.signinSilent();
-            await this.client.userManager.cached.storeUser(user);
-            sessionStorage.setItem(name, JSON.stringify(user));
         } else {
-            await this.client.credential.clientCredential();
+            return await r.json();
         }
-    }
-
-    async get(path: string, config?: Config) {
-        if (config?.waitForAuth) await this.waitForAuth();
-
-        const headers = await this.getHeaders(config?.poolId);
-        const url = this.getUrl(path);
-        const r = await fetch(url, {
-            ...config,
-            mode: 'cors',
-            method: 'GET',
-            credentials: 'omit',
-            headers: new Headers({ ...config?.headers, ...headers }),
-        });
-
-        await this.handleStatus(r);
-
-        return await r.json();
-    }
-
-    async post(path: string, config?: Config) {
-        if (config?.waitForAuth) await this.waitForAuth();
-
-        const headers = await this.getHeaders();
-        const env = this.client.credential.cached.env;
-        const r = await fetch(URL_CONFIG[env]['API_URL'] + path, {
-            ...config,
-            mode: 'cors',
-            method: 'POST',
-            credentials: 'omit',
-            headers: new Headers({
-                ...config?.headers,
-                ...headers,
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            }),
-        });
-
-        await this.handleStatus(r);
-
-        return await r.json();
-    }
-
-    async patch(path: string, config?: Config) {
-        if (config?.waitForAuth) await this.waitForAuth();
-
-        const headers = await this.getHeaders();
-        const url = this.getUrl(path);
-        const r = await fetch(url, {
-            ...config,
-            mode: 'cors',
-            method: 'PATCH',
-            credentials: 'omit',
-            headers: new Headers({
-                ...config?.headers,
-                ...headers,
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            }),
-        });
-
-        await this.handleStatus(r);
-
-        return await r.json();
-    }
-
-    async put(path: string, config?: Config) {
-        if (config?.waitForAuth) await this.waitForAuth();
-
-        const headers = await this.getHeaders();
-        const url = this.getUrl(path);
-        const r = await fetch(url, {
-            ...config,
-            mode: 'cors',
-            method: 'PUT',
-            credentials: 'omit',
-            headers: new Headers({
-                ...config?.headers,
-                ...headers,
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            }),
-        });
-
-        await this.handleStatus(r);
-
-        return await r.json();
-    }
-
-    async delete(path: string, config?: Config) {
-        if (config?.waitForAuth) await this.waitForAuth();
-
-        const headers = await this.getHeaders();
-        const url = this.getUrl(path);
-        const r = await fetch(url, {
-            ...config,
-            mode: 'cors',
-            method: 'DELETE',
-            credentials: 'omit',
-            headers: new Headers({ ...config?.headers, ...headers }),
-        });
-
-        return await this.handleStatus(r);
     }
 }
 
