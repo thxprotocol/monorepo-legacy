@@ -1,15 +1,15 @@
 import { CommandInteraction, EmbedBuilder } from 'discord.js';
 import { thxClient } from '../../config/oidc';
-import GuildService from '../../services/guild.service';
 import { client } from '../../../bootstrap';
-import { version } from '../../../../package.json';
+import GuildService from '../../services/guild.service';
 
 export const onSubcommandInfo = async (interaction: CommandInteraction) => {
     const embed = new EmbedBuilder();
     const guild = await GuildService.get(interaction.guildId);
     if (!guild) return interaction.reply({ content: `Server connection not found.`, ephemeral: true });
 
-    const pool = await thxClient.pools.get(guild.poolId);
+    const thx = thxClient({ poolId: guild.poolId });
+    const pool = await thx.pools.get(guild.poolId);
     if (!pool) return interaction.reply({ content: 'Pool could not be found.', ephemeral: true });
 
     const { widget, brand } = pool;
@@ -18,10 +18,8 @@ export const onSubcommandInfo = async (interaction: CommandInteraction) => {
     const channel: any = await client.channels.fetch(guild.channelId);
     if (!channel) return interaction.reply({ content: 'Channel could not be found.', ephemeral: true });
 
-    const { dailyRewards, referralRewards, pointRewards, milestoneRewards } = await thxClient.rewardsManager.list(
-        guild.poolId,
-    );
-    const { erc20Perks, erc721Perks } = await thxClient.perksManager.list(guild.poolId);
+    const { dailyRewards, referralRewards, pointRewards, milestoneRewards } = await thx.rewards.list(guild.poolId);
+    const { erc20Perks, erc721Perks } = await thx.rewards.list(guild.poolId);
     const theme = JSON.parse(widget.theme);
 
     embed.setColor(theme.colors.accent.color);

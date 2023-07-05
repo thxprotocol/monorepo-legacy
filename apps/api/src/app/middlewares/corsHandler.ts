@@ -4,7 +4,16 @@ import ClientProxy from '@thxnetwork/api/proxies/ClientProxy';
 
 export const corsHandler = cors(async (req: any, callback: any) => {
     const origin = req.header('Origin');
-    const allowedOrigins = [AUTH_URL, API_URL, WALLET_URL, DASHBOARD_URL, WIDGET_URL, PUBLIC_URL];
+    const allowedOrigins = [
+        AUTH_URL,
+        API_URL,
+        WALLET_URL,
+        DASHBOARD_URL,
+        WIDGET_URL,
+        PUBLIC_URL,
+        'https://campaign.thx.network',
+        'https://dev-campaign.thx.network',
+    ];
     const isAllowedOrigin = await ClientProxy.isAllowedOrigin(origin);
 
     if (isAllowedOrigin) {

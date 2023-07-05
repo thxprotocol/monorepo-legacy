@@ -1,4 +1,6 @@
 export const BOT_TOKEN = process.env['BOT_TOKEN'];
+export const API_URL = process.env['API_URL'];
+export const AUTH_URL = process.env['AUTH_URL'];
 export const DISCORD_CLIENT_ID = process.env['DISCORD_CLIENT_ID'];
 export const OIDC_CLIENT_ID = process.env['OIDC_CLIENT_ID'];
 export const OIDC_CLIENT_SECRET = process.env['OIDC_CLIENT_SECRET'];
