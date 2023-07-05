@@ -206,10 +206,6 @@ const config: Configuration = {
         short: { signed: true, secure: true, sameSite: 'none' },
         keys,
     },
-    pkce: {
-        methods: ['S256'],
-        required: () => false,
-    },
 };
 
 if (NODE_ENV === 'test') {

@@ -2,7 +2,7 @@ import { THXClient } from '../../index';
 import BaseManager from './BaseManager';
 import * as jose from 'jose';
 
-interface Config extends RequestInit {
+interface RequestConfig extends RequestInit {
     poolId?: string;
 }
 
@@ -11,91 +11,32 @@ class RequestManager extends BaseManager {
         super(client);
     }
 
-    async get(path: string, config?: Config) {
-        const headers = this.getHeaders(config?.poolId);
-        const url = this.getUrl(path);
-        const r = await fetch(url, {
-            ...config,
-            mode: 'cors',
-            method: 'GET',
-            credentials: 'omit',
-            headers: new Headers({ ...config?.headers, ...headers }),
-        });
-
-        return await this.handleResponse(r);
+    async get(path: string, config?: RequestConfig) {
+        return await this.request(path, { ...config, method: 'GET' });
     }
 
-    async post(path: string, config?: Config) {
-        const headers = this.getHeaders();
-        const url = this.getUrl(path);
-        const r = await fetch(url, {
-            ...config,
-            mode: 'cors',
-            method: 'POST',
-            credentials: 'omit',
-            headers: new Headers({
-                ...config?.headers,
-                ...headers,
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            }),
-        });
-
-        return await this.handleResponse(r);
+    async post(path: string, config?: RequestConfig) {
+        return await this.request(path, { ...config, method: 'POST' });
     }
 
-    async patch(path: string, config?: Config) {
-        const headers = this.getHeaders();
-        const url = this.getUrl(path);
-        const r = await fetch(url, {
-            ...config,
-            mode: 'cors',
-            method: 'PATCH',
-            credentials: 'omit',
-            headers: new Headers({
-                ...config?.headers,
-                ...headers,
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            }),
-        });
-
-        return await this.handleResponse(r);
+    async patch(path: string, config?: RequestConfig) {
+        return await this.request(path, { ...config, method: 'PATCH' });
     }
 
-    async put(path: string, config?: Config) {
-        const headers = this.getHeaders();
-        const url = this.getUrl(path);
-        const r = await fetch(url, {
-            ...config,
-            mode: 'cors',
-            method: 'PUT',
-            credentials: 'omit',
-            headers: new Headers({
-                ...config?.headers,
-                ...headers,
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            }),
-        });
-
-        return await this.handleResponse(r);
+    async put(path: string, config?: RequestConfig) {
+        return await this.request(path, { ...config, method: 'PUT' });
     }
 
-    async delete(path: string, config?: Config) {
-        const headers = await this.getHeaders();
-        const url = this.getUrl(path);
-        const r = await fetch(url, {
+    async delete(path: string, config?: RequestConfig) {
+        return await this.request(path, { ...config, method: 'DELETE' });
+    }
+
+    private async request(path: string, config: RequestConfig) {
+        const r = await fetch(this.getUrl(path), {
             ...config,
             mode: 'cors',
-            method: 'DELETE',
             credentials: 'omit',
-            headers: new Headers({
-                ...config?.headers,
-                ...headers,
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            }),
+            headers: this.getHeaders(config),
         });
 
         return await this.handleResponse(r);
@@ -123,16 +64,20 @@ class RequestManager extends BaseManager {
         return this.client.options.url + path;
     }
 
-    private getHeaders(poolId?: string) {
-        const headers: { [key: string]: string } = {};
+    private getHeaders(config?: RequestConfig) {
+        const headers = new Headers({
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            ...config?.headers,
+        });
         const { accessToken } = this.client.options;
 
         if (accessToken) {
-            headers['Authorization'] = `Bearer ${this.validateToken(accessToken)}`;
+            headers.append('Authorization', `Bearer ${this.validateToken(accessToken)}`);
         }
 
-        if (poolId || this.client.options.poolId) {
-            headers['X-PoolId'] = (poolId || this.client.options.poolId) as string;
+        if ((config && config.poolId) || this.client.options.poolId) {
+            headers.append('X-PoolId', (config && config.poolId) || this.client.options.poolId);
         }
 
         return headers;

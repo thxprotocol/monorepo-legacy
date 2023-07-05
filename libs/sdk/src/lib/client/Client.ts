@@ -46,4 +46,12 @@ export default class THXClient {
         this.pools = new PoolManager(this);
         this.pointBalance = new PointBalanceManager(this);
     }
+
+    setAccessToken(accessToken: string) {
+        this.options.accessToken = accessToken;
+    }
+
+    setPoolId(poolId: string) {
+        this.options.poolId = poolId;
+    }
 }
