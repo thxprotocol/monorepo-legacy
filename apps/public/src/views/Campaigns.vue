@@ -64,3 +64,34 @@ export default class Home extends Vue {
     }
 }
 </script>
+
+<style>
+.card-header {
+    overflow: hidden;
+    position: relative;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.card-header-content {
+    z-index: 1;
+    text-align: center;
+}
+.card-header-bg {
+    top: 0;
+    left: 0;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    z-index: 0;
+    filter: blur(8px);
+    -webkit-filter: blur(8px);
+
+    * {
+        filter: blur(0px);
+        -webkit-filter: blur(0px);
+    }
+}
+</style>

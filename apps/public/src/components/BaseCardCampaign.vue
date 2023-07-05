@@ -72,7 +72,7 @@ import { WIDGET_URL } from '../config/secrets';
     name: 'BaseCardCampaign',
     components: {},
 })
-export default class BaseCardSignup extends Vue {
+export default class BaseCardCampaign extends Vue {
     format = format;
     open = window.open;
 
