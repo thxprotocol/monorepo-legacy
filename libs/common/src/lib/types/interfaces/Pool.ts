@@ -27,8 +27,8 @@ export type TCampaign = {
     tags: string[];
     logoImgUrl?: string;
     backgroundImgUrl?: string;
+    quests: { title: string; description: string; amount: number }[];
     rewards: { title: string; description: string; amount: number }[];
-    perks: { title: string; description: string; amount: number }[];
 };
 
 export type TPool = {

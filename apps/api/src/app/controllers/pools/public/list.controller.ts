@@ -17,6 +17,9 @@ const controller = async (req: Request, res: Response) => {
                 const brand = await BrandService.get(poolId);
                 const { active, domain } = await Widget.findOne({ poolId });
                 const participants = await PoolService.getParticipantCount(pool);
+                const quests = await PoolService.getQuestCount(pool);
+                const rewards = await PoolService.getRewardCount(pool);
+
                 const progress = (() => {
                     const data = {
                         start: new Date(pool.createdAt).getTime(),
@@ -39,6 +42,8 @@ const controller = async (req: Request, res: Response) => {
                     backgroundImgUrl: brand && brand.backgroundImgUrl,
                     tags: ['Gaming', 'Web3'],
                     participants,
+                    rewards,
+                    quests,
                     active,
                     progress,
                 };
