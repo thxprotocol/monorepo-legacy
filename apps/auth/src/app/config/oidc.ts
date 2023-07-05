@@ -6,25 +6,17 @@ import { Configuration, interactionPolicy } from 'oidc-provider';
 import { getJwks } from '../util/jwks';
 
 const basePolicy = interactionPolicy.base();
-const promptReset = new interactionPolicy.Prompt({ name: 'reset', requestable: true });
-const promptCreate = new interactionPolicy.Prompt({ name: 'create', requestable: true });
-const promptConfirm = new interactionPolicy.Prompt({ name: 'confirm', requestable: true });
 const promptVerifyEmail = new interactionPolicy.Prompt({ name: 'verify_email', requestable: true });
 const promptConnect = new interactionPolicy.Prompt({ name: 'connect', requestable: true });
 const promptAccount = new interactionPolicy.Prompt({ name: 'account-settings', requestable: true });
-const promtotp = new interactionPolicy.Prompt({ name: 'totp-setup', requestable: true });
-
-basePolicy.add(promptCreate);
-basePolicy.add(promptConfirm);
 basePolicy.add(promptVerifyEmail);
 basePolicy.add(promptConnect);
-basePolicy.add(promptReset);
 basePolicy.add(promptAccount);
-basePolicy.add(promtotp);
-basePolicy.remove('consent');
 
-// Configuration defaults:
-// https://github.com/panva/node-oidc-provider/blob/master/lib/helpers/defaults.js
+// Consent prompt is a requirement for refresh_token grant
+// so we only remove the checks and not the prompt
+const promptConsent = basePolicy.get('consent');
+promptConsent.checks.clear();
 
 const keys = [SECURE_KEY.split(',')[0], SECURE_KEY.split(',')[1]];
 const config: Configuration = {
@@ -57,7 +49,7 @@ const config: Configuration = {
     },
     routes: {
         authorization: '/authorize',
-        userinfo: '/userinfo',
+        userinfo: '/me',
     },
     extraParams: [
         'claim_id',
@@ -156,6 +148,7 @@ const config: Configuration = {
         Session: 24 * 60 * 60, // 24 hours in seconds
         Grant: 24 * 60 * 60, // 24 hours in seconds
         IdToken: 24 * 60 * 60, // 24 hours in seconds
+        RefreshToken: 24 * 60 * 60, // 24 hours in seconds
         AccessToken: 24 * 60 * 60, // 24 hours in seconds,
         AuthorizationCode: 10 * 60, // 10 minutes in seconds
         ClientCredentials: 1 * 60 * 60, // 10 minutes in seconds

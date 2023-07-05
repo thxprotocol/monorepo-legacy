@@ -134,7 +134,7 @@
             "client_secret_expires_at": 0,
             "client_secret": "9rfpbMSwVxEaZUpmsCWVldpO-xy7H13YT5AoMIdFNUX9pWosR3cTfoDyJgnuqFqepqRXbgMhb0PFYwOWgwQoEQ",
             "redirect_uris": ["https://localhost:8080/signin-popup.html"],
-            "scope": "openid account:read erc20:read erc721:read erc1155:read point_balances:read referral_rewards:read point_rewards:read wallets:read wallets:write"
+            "scope": "openid offline_access account:read erc20:read erc721:read erc1155:read point_balances:read referral_rewards:read point_rewards:read wallets:read wallets:write"
         }
     },
     {

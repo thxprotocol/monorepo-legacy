@@ -229,7 +229,7 @@ const controller = async (req: Request, res: Response) => {
                 zIndex: '0',
                 display: 'block',
                 backgroundColor: '#FFFFFF',
-                backgroundImage: 'url(' + logoUrl + ')',
+                backgroundImage: 'url("' + logoUrl + '")',
                 width: '40px',
                 height: '40px',
                 top: '-20px',
