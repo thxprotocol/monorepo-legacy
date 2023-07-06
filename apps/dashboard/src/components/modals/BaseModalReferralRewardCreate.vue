@@ -20,7 +20,11 @@
                         <b-form-group label="Amount">
                             <b-form-input v-model="amount" />
                         </b-form-group>
-                        <b-form-group label="URL" v-if="pool.widget">
+                        <b-form-group
+                            label="Referral URL"
+                            description="This URL will be appended with a code that identifies the user that refers a friend."
+                            v-if="pool.widget"
+                        >
                             <b-input-group :prepend="`${pool.widget.domain}/`">
                                 <b-form-input v-model="pathname" />
                             </b-input-group>
@@ -180,6 +184,7 @@ export default class ModalReferralRewardCreate extends Vue {
                 poolId: String(this.pool._id),
                 title: this.title,
                 description: this.description,
+                pathname: this.pathname,
                 amount: this.amount,
                 claimAmount: this.claimAmount,
                 successUrl: this.successUrl && this.successUrl.length ? this.successUrl : undefined,

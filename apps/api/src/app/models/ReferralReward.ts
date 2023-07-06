@@ -8,6 +8,7 @@ const schema = new mongoose.Schema(
     {
         ...rewardBaseSchema,
         amount: Number,
+        pathname: String,
         successUrl: String,
         token: String,
         isMandatoryReview: Boolean,
