@@ -62,6 +62,7 @@ export async function createDummyContents(pool: AssetPoolDocument) {
     await DailyRewardService.create(pool, {
         title: 'Daily Reward 🗓️',
         description: 'Visit our site on a daily basis to earn some points.',
+        index: 0,
         amounts: [5, 10, 20, 40, 80, 160, 360],
     });
 
@@ -70,17 +71,20 @@ export async function createDummyContents(pool: AssetPoolDocument) {
         description: 'Invite people for a signup and you will receive a point reward after qualification.',
         successUrl: '',
         amount: 500,
+        index: 1,
     });
 
     await PointRewardService.create(pool, {
         title: 'Join our Discord server 🌱',
         description: 'Join our Discord server and claim your points after you obtained verified access.',
         amount: 200,
+        index: 2,
     });
 
     await MilestoneRewardService.create(pool, {
         title: 'Reach a milestone 🏁',
         description: 'Claim points when progressing in the customer journey of external software.',
         amount: 500,
+        index: 3,
     });
 }

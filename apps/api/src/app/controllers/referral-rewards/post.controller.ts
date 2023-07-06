@@ -8,6 +8,7 @@ import { isValidUrl } from '@thxnetwork/api/util/url';
 const validation = [
     body('index').isInt(),
     body('title').exists().isString(),
+    body('pathname').optional().isString(),
     body('successUrl').optional().isURL({ require_tld: false }),
     body('isMandatoryReview').optional().isBoolean(),
     body('amount').exists().isInt({ gt: 0 }),

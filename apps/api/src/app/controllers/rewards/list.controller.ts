@@ -84,6 +84,7 @@ const controller = async (req: Request, res: Response) => {
                 _id: r._id,
                 index: r.index,
                 title: r.title,
+                pathname: r.pathname,
                 description: r.description,
                 amount: r.amount,
                 infoLinks: r.infoLinks,

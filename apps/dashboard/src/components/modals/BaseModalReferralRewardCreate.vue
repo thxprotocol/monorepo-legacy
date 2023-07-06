@@ -20,6 +20,11 @@
                         <b-form-group label="Amount">
                             <b-form-input v-model="amount" />
                         </b-form-group>
+                        <b-form-group label="URL" v-if="pool.widget">
+                            <b-input-group :prepend="`${pool.widget.domain}/`">
+                                <b-form-input v-model="pathname" />
+                            </b-input-group>
+                        </b-form-group>
                         <b-form-group label="Qualification">
                             <b-form-checkbox v-model="isMandatoryReview">
                                 Enable mandatory manual review
@@ -122,6 +127,7 @@ export default class ModalReferralRewardCreate extends Vue {
     amount = '0';
     successUrl = '';
     description = '';
+    pathname = '';
     claimAmount = 1;
     profile!: UserProfile;
     infoLinks: TInfoLink[] = [{ label: '', url: '' }];
@@ -143,8 +149,9 @@ export default class ModalReferralRewardCreate extends Vue {
 
     onShow() {
         this.title = this.reward ? this.reward.title : '';
-        this.amount = this.reward ? String(this.reward.amount) : '0';
         this.description = this.reward ? this.reward.description : '';
+        this.amount = this.reward ? String(this.reward.amount) : '0';
+        this.pathname = this.reward ? this.reward.pathname : '';
         this.infoLinks = this.reward ? this.reward.infoLinks : this.infoLinks;
         this.successUrl = this.reward ? this.reward.successUrl : '';
         this.isVisibleCardURLQualify = this.reward ? !!this.reward.successUrl : true;

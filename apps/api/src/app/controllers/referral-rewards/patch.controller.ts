@@ -9,6 +9,7 @@ import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
 
 const validation = [
     param('id').isMongoId(),
+    body('pathname').optional().isString(),
     body('successUrl').optional().isURL({ require_tld: false }),
     body('index').optional().isInt(),
     body('infoLinks')
@@ -22,13 +23,14 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards Referral']
     let reward = await RewardReferralService.get(req.params.id);
     if (!reward) throw new NotFoundError('Could not find the reward for this id');
-    const { title, description, amount, successUrl, infoLinks, isMandatoryReview, index } = req.body;
+    const { title, description, pathname, amount, successUrl, infoLinks, isMandatoryReview, index } = req.body;
     reward = await ReferralReward.findByIdAndUpdate(
         reward._id,
         {
             title,
             description,
             amount,
+            pathname,
             successUrl,
             isMandatoryReview,
             infoLinks,
