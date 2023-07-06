@@ -422,6 +422,8 @@ const controller = async (req: Request, res: Response) => {
                 const isAndroid = ua.indexOf("android") > -1;
                 const url = isAndroid ? deeplink + this.createURL() : this.createURL();   
                 window.open(url, '_blank');
+            } else if (!window.ethereum && isMobile) { 
+                window.open(this.createURL(), '_blank');
             } else {
                 this.onWidgetToggle(!Number(this.iframe.style.opacity));
             }
