@@ -38,9 +38,21 @@ export const callbackPostAuth = async (
     account: AccountDocument,
     { params, returnTo, prompt }: { params: any; returnTo: string; prompt: any },
 ) => {
+    let returnUrl = returnTo;
     // Connect prompts already have a session and will there for not continue the
     // regular auth signin flow used during SSO
-    const returnUrl = prompt && prompt.name === 'connect' ? params.return_url : returnTo;
+    if (prompt && prompt.name === 'connect' && params.state) {
+        const { uxMode } = JSON.parse(atob(params.state.split('%')[0]));
+        if (uxMode)
+            switch (uxMode) {
+                case 'redirect':
+                    returnUrl = params.return_url;
+                    break;
+                case 'popup':
+                    returnUrl = params.redirect_uri;
+                    break;
+            }
+    }
 
     // No matter the session state params.return_url will redirect to the client app
     if (params.return_url && params.return_url.startsWith(DASHBOARD_URL)) {
