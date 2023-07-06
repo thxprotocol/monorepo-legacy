@@ -33,8 +33,6 @@
                 </div>
                 <hr class="m-0 mb-2" />
                 <b-dropdown
-                    v-b-tooltip.top.hover
-                    title="Preview campaign"
                     split
                     @click="onClickPreview"
                     split-class="pr-2"
@@ -57,8 +55,11 @@
                                         "
                                     />
                                 </div>
-                                <div class="truncate-pool-title text-muted">
-                                    {{ selectedPool.settings.title }} wagwaw
+                                <div class="truncate-pool-title text-muted flex-shrink-1">
+                                    {{ selectedPool.settings.title }}
+                                </div>
+                                <div class="flex-grow-1" v-b-tooltip.top.hover title="Preview campaign">
+                                    <i class="fas fa-search text-muted" />
                                 </div>
                             </template>
                             <b-spinner v-else variant="primary" small />
@@ -283,6 +284,7 @@ export default class BaseNavbar extends Vue {
         if (!pool.address) {
             await this.$store.dispatch('pools/read', pool._id);
         }
+        if (pool._id === this.$route.params.id) return;
         this.$router.push({ path: `/pool/${pool._id}`, params: { id: pool._id } });
     }
 }
@@ -292,7 +294,7 @@ export default class BaseNavbar extends Vue {
     text-overflow: ellipsis;
     overflow: hidden;
     display: block !important;
-    width: 145px;
+    width: 125px;
     text-align: left;
     white-space: nowrap;
 }
