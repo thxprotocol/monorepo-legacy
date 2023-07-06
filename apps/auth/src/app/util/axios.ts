@@ -2,43 +2,42 @@ import axios, { AxiosRequestConfig } from 'axios';
 import {
     DISCORD_API_ENDPOINT,
     GITHUB_API_ENDPOINT,
-    SHOPIFY_API_ENDPOINT,
-    SPOTIFY_API_ENDPOINT,
     TWITCH_API_ENDPOINT,
     TWITTER_API_ENDPOINT,
 } from '../config/secrets';
-import { logger } from './logger';
 
-export function spotifyClient(config: AxiosRequestConfig) {
-    config.baseURL = SPOTIFY_API_ENDPOINT;
-    return axios(config);
-}
-
-export function twitterClient(config: AxiosRequestConfig) {
-    config.baseURL = TWITTER_API_ENDPOINT;
-    return axios(config);
-}
-
-export function githubClient(config: AxiosRequestConfig) {
-    config.baseURL = GITHUB_API_ENDPOINT;
-    return axios(config);
-}
-
-export function discordClient(config: AxiosRequestConfig) {
-    config.baseURL = DISCORD_API_ENDPOINT;
-    return axios(config);
-}
-
-export function twitchClient(config: AxiosRequestConfig) {
-    config.baseURL = TWITCH_API_ENDPOINT;
-    return axios(config);
-}
-
-export function shopifyClient(shopUrl: string, config: AxiosRequestConfig) {
-    config.baseURL = shopUrl + SHOPIFY_API_ENDPOINT;
+export async function twitterClient(config: AxiosRequestConfig) {
     try {
-        return axios(config);
+        const client = axios.create({ ...config, baseURL: TWITTER_API_ENDPOINT });
+        return await client(config);
     } catch (error) {
-        logger.error(error);
+        console.error(error);
+    }
+}
+
+export async function githubClient(config: AxiosRequestConfig) {
+    try {
+        const client = axios.create({ ...config, baseURL: GITHUB_API_ENDPOINT });
+        return await client(config);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export async function discordClient(config: AxiosRequestConfig) {
+    try {
+        const client = axios.create({ ...config, baseURL: DISCORD_API_ENDPOINT });
+        return await client(config);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export async function twitchClient(config: AxiosRequestConfig) {
+    try {
+        const client = axios.create({ ...config, baseURL: TWITCH_API_ENDPOINT });
+        return await client(config);
+    } catch (error) {
+        console.error(error);
     }
 }

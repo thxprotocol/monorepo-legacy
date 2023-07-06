@@ -84,30 +84,18 @@ export class TwitterService {
         const user = await this.getUser(accessToken);
         if (!user) throw new Error('Could not find Twitter user.');
 
-        const maxResults = 1000;
-        let result = false,
-            resultCount = maxResults,
-            params = { max_results: maxResults };
+        const { data } = await twitterClient({
+            url: `/users/${user.id}/following`,
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+            data: {
+                target_user_id: channelItem,
+            },
+        });
 
-        while (resultCount >= maxResults) {
-            const { data } = await twitterClient({
-                url: `/users/${user.id}/following`,
-                method: 'GET',
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
-                params,
-            });
-
-            resultCount = data.meta.result_count;
-            params = Object.assign(params, { pagination_token: data.meta.next_token });
-            result = !!data.data.filter((u: { id: string }) => u.id === channelItem).length;
-
-            if (result) break;
-            if (!data.meta.next_token) break;
-        }
-
-        return result;
+        return data.data.following;
     }
 
     static async getUser(accessToken: string) {
@@ -193,7 +181,7 @@ export class TwitterService {
     }
 
     static getScopes() {
-        return ['tweet.read', 'users.read', 'like.read', 'follows.read', 'offline.access'];
+        return ['tweet.read', 'users.read', 'like.read', 'follows.read', 'follows.write', 'offline.access'];
     }
 
     static getLoginURL(
