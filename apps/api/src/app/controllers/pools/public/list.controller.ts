@@ -14,11 +14,15 @@ const controller = async (req: Request, res: Response) => {
         pools.map(async (pool: AssetPoolDocument) => {
             try {
                 const poolId = String(pool._id);
-                const brand = await BrandService.get(poolId);
-                const { active, domain } = await Widget.findOne({ poolId });
-                const participants = await PoolService.getParticipantCount(pool);
-                const quests = await PoolService.getQuestCount(pool);
-                const rewards = await PoolService.getRewardCount(pool);
+                const widget = await Widget.findOne({ poolId });
+                if (!widget) return;
+
+                const [brand, participants, quests, rewards] = await Promise.all([
+                    BrandService.get(poolId),
+                    PoolService.getParticipantCount(pool),
+                    PoolService.getQuestCount(pool),
+                    PoolService.getRewardCount(pool),
+                ]);
 
                 const progress = (() => {
                     const data = {
@@ -37,14 +41,14 @@ const controller = async (req: Request, res: Response) => {
                     expiryDate: pool.settings.endDate,
                     address: pool.address,
                     chainId: pool.chainId,
-                    domain,
+                    domain: widget.domain,
                     logoImgUrl: brand && brand.logoImgUrl,
                     backgroundImgUrl: brand && brand.backgroundImgUrl,
                     tags: ['Gaming', 'Web3'],
                     participants,
                     rewards,
                     quests,
-                    active,
+                    active: widget.active,
                     progress,
                 };
             } catch (error) {

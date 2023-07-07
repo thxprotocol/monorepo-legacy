@@ -195,13 +195,11 @@ async function getQuestCount(pool: AssetPoolDocument) {
     const result = await Promise.all(
         [DailyReward, ReferralReward, PointReward, MilestoneReward].map(async (model) => await find(model, pool)),
     );
-    console.log(result);
     return Array.from(new Set(result.flat(1)));
 }
 
 async function getRewardCount(pool: AssetPoolDocument) {
     const result = await Promise.all([ERC20Perk, ERC721Perk].map(async (model) => await find(model, pool)));
-    console.log(result);
     return Array.from(new Set(result.flat(1)));
 }
 
