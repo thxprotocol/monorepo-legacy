@@ -114,7 +114,7 @@
                         >
                             <div class="d-flex">
                                 <div class="nav-link-icon">
-                                    <i class="fas fa-store"></i>
+                                    <i class="fas fa-gift"></i>
                                 </div>
                                 <div class="flex-grow-1 justify-content-between d-flex align-items-center">
                                     <span>Rewards</span>

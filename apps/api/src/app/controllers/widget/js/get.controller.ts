@@ -118,16 +118,17 @@ const controller = async (req: Request, res: Response) => {
         createURL() {
             const parentUrl = new URL(window.location.href)
             const path = parentUrl.searchParams.get('thx_widget_path');
-            const { widgetUrl, poolId, chainId, origin, theme, expired, logoUrl, backgroundUrl, title } = this.settings;
+            const { widgetUrl, poolId, chainId, theme, expired, logoUrl, backgroundUrl, title } = this.settings;
             const url = new URL(widgetUrl);
 
             url.pathname = this.widgetPath = '/c/' + poolId + (path || '/quests');
+            url.searchParams.append('origin', window.location.origin);
             
             return url;
         }
 
         createIframe() {
-            const { widgetUrl, poolId, chainId, origin, theme, align, expired } = this.settings;
+            const { widgetUrl, poolId, chainId, theme, align, expired } = this.settings;
             const iframe = document.createElement('iframe');
             const styles = this.isSmallMedia ? this.defaultStyles['sm'] : this.defaultStyles['md'];
             const url = this.createURL();
@@ -385,7 +386,7 @@ const controller = async (req: Request, res: Response) => {
         }
         
         onMessage(event) {
-            if (!this.settings.widgetUrl || event.origin !== this.settings.widgetUrl) return;
+            if (event.origin !== this.settings.widgetUrl) return;
             const { message, amount } = event.data;
             switch (message) {
                 case 'thx.widget.ready': {
@@ -436,7 +437,7 @@ const controller = async (req: Request, res: Response) => {
             const redirectStatus = parentUrl.searchParams.get('redirect_status');
 
             if (widgetPath) {
-                const { widgetUrl, poolId, origin, chainId, theme } = this.settings;
+                const { widgetUrl, poolId, chainId, theme } = this.settings;
                 const path = '/' + poolId + widgetPath;
                 const url = new URL(widgetUrl + path);
                 
@@ -495,7 +496,6 @@ const controller = async (req: Request, res: Response) => {
         message: '${widget.message || ''}',
         align: '${widget.align || 'right'}',
         theme: '${widget.theme}',
-        origin: '${origin || widget.domain}',
         refs: ${JSON.stringify(refs)},
         expired: '${expired}'
     });

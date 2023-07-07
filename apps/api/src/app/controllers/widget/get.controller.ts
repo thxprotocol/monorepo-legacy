@@ -20,7 +20,6 @@ const controller = async (req: Request, res: Response) => {
         backgroundUrl: brand ? brand.backgroundImgUrl : '',
         expired,
         theme: widget.theme,
-        origin: widget.domain,
         chainId: pool.chainId,
     });
 };
