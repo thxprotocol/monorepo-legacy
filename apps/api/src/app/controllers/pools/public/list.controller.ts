@@ -10,7 +10,8 @@ import PoolService from '@thxnetwork/api/services/PoolService';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
-    let response = cache.get(req.originalUrl);
+    const cacheString = cache.get(req.originalUrl) as string;
+    let response = cacheString && JSON.parse(cacheString);
 
     if (!response) {
         const pools = await AssetPool.find({ chainId: NODE_ENV === 'production' ? ChainId.Polygon : ChainId.Hardhat });
@@ -60,7 +61,7 @@ const controller = async (req: Request, res: Response) => {
                 }
             }),
         );
-        cache.set(req.originalUrl, response);
+        cache.set(req.originalUrl, JSON.stringify(response));
     }
 
     res.json(response);
