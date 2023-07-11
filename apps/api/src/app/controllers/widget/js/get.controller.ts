@@ -330,9 +330,6 @@ const controller = async (req: Request, res: Response) => {
             const launcher = document.createElement('div');
             launcher.id = 'thx-launcher';
 
-
-
-            
             Object.assign(launcher.style, {
                 zIndex: 9999999,
                 display: 'flex',
@@ -349,6 +346,7 @@ const controller = async (req: Request, res: Response) => {
                 transform: 'scale(0)',
                 transition: '.2s opacity ease, .1s transform ease',
             });
+
             launcher.innerHTML = svgGift;
             launcher.addEventListener('click', this.onClickLauncher.bind(this));
             launcher.addEventListener('mouseenter', this.onMouseEnterLauncher.bind(this));
@@ -438,10 +436,15 @@ const controller = async (req: Request, res: Response) => {
 
             if (widgetPath) {
                 const { widgetUrl, poolId, chainId, theme } = this.settings;
-                const path = '/' + poolId + widgetPath;
-                const url = new URL(widgetUrl + path);
-                
-                this.iframe.contentWindow.postMessage({ message: 'thx.iframe.navigate', path: url.pathname }, widgetUrl);
+                const path = '/c/' + poolId + widgetPath;
+                const isMobile = window.matchMedia('(pointer:coarse)').matches;
+
+                if (isMobile) {
+                    // Window _blank will be blocked by mobile OS so we redirect the current window
+                    window.location.href = this.settings.widgetUrl + path   
+                } else {
+                    this.iframe.contentWindow.postMessage({ message: 'thx.iframe.navigate', path }, widgetUrl);
+                }
             }
 
             if (this.ref) {
