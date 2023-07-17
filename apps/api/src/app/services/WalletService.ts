@@ -5,7 +5,7 @@ import { ChainId } from '@thxnetwork/types/enums';
 import { TWalletDeployCallbackArgs } from '../types/TTransaction';
 import { getProvider, getSelectors } from '../util/network';
 import TransactionService from './TransactionService';
-import { TransactionReceipt } from 'web3-core';
+import { TransactionReceipt } from 'web3-eth-accounts/node_modules/web3-core';
 import { FacetCutAction, updateDiamondContract } from '../util/upgrades';
 import WalletManagerService from './WalletManagerService';
 import { toChecksumAddress } from 'web3-utils';

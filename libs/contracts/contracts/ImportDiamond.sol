@@ -7,7 +7,7 @@ import 'diamond-2/contracts/facets/OwnershipFacet.sol';
 import 'diamond-2/contracts/Diamond.sol';
 
 // Get the compiler to pick up these facets
-contract Imports {
+contract ImportDiamond {
     DiamondCutFacet public diamondCutFacet;
     DiamondLoupeFacet public diamondLoupeFacet;
     OwnershipFacet public ownershipFacet;
