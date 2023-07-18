@@ -6,16 +6,19 @@ import {
     POLYGON_RPC,
     PRIVATE_KEY,
 } from '@thxnetwork/api/config/secrets';
-import { DefenderRelaySigner, DefenderRelayProvider } from 'defender-relay-client/lib/ethers';
+import Web3 from 'web3';
 import Safe, { SafeAccountConfig, EthersAdapter, SafeFactory } from '@safe-global/protocol-kit';
 import SafeApiKit from '@safe-global/api-kit';
+import { DefenderRelaySigner, DefenderRelayProvider } from 'defender-relay-client/lib/ethers';
 import { SafeTransaction, SafeTransactionDataPartial } from '@safe-global/safe-core-sdk-types';
 import { toChecksumAddress, toWei } from 'web3-utils';
 import { Relayer } from 'defender-relay-client';
-import Web3 from 'web3';
+import { contractNetworks } from '@thxnetwork/api/config/contracts';
 
 // @dev SSL node does not work here
 const HARDHAT_RPC = 'http://localhost:8545';
+const SAFE_TXS_URL = 'http://localhost:8000/txs';
+// const SAFE_TXS_URL = 'https://safe-transaction-polygon.safe.global';
 
 // Defender Relay
 const credentials = { apiKey: POLYGON_RELAYER_API_KEY, apiSecret: POLYGON_RELAYER_API_SECRET };
@@ -26,43 +29,19 @@ const hardhatProvider = new (ethers as any).providers.JsonRpcProvider(HARDHAT_RP
 const polygonProvider = new (ethers as any).providers.JsonRpcProvider(POLYGON_RPC);
 
 // Signers
-const relayerSigner = new DefenderRelaySigner(credentials, defenderRelayProvider, { speed: 'fast' });
 const ownerSigner = new Wallet(PRIVATE_KEY, hardhatProvider) as unknown as Signer;
+const relayerSigner = new DefenderRelaySigner(credentials, defenderRelayProvider, { speed: 'fast' });
+
+// Mock user
 const userSigner = new Wallet(
     '0x97093724e1748ebfa6aa2d2ec4ec68df8678423ab9a12eb2d27ddc74e35e5db9',
     hardhatProvider,
 ) as unknown as Signer;
 
-// Safe Contracts
-const SimulateTxAccessorAddress = '0xFF1eE64b8806C0891e8F73b37f8403F441b552E1';
-const GnosisSafeProxyFactoryAddress = '0x1122fD9eBB2a8E7c181Cc77705d2B4cA5D72988A';
-const DefaultCallbackHandlerAddress = '0x432422a750B7341c2c0d326fCE7A41cb3D75D3c8';
-const CompatibilityFallbackHandlerAddress = '0x5D3D550Da6678C0444F5D77Ca086678D9CdeEecA';
-const CreateCallAddress = '0x40Efd8a16485213445E6d8b9a4266Fd2dFf7C69a';
-const MultiSendAddress = '0x7E4728eFfC9376CC7C0EfBCc779cC9833D83a984';
-const MultiSendCallOnlyAddress = '0x75Cbb6C4Db4Bb4f6F8D5F56072A6cF4Bf4C5413C';
-const SignMessageLibAddress = '0x658FAD2acB6d1E615f295E566ee9a6d32Cc97b10';
-const GnosisSafeL2Address = '0xC44951780f195Ed71145e3d0d2F25726A097C348';
-const GnosisSafeAddress = '0x45008E95F951AB2109227aeD1B2B2488e60c0615';
-
-const contractNetworks = {
-    '31337': {
-        safeMasterCopyAddress: GnosisSafeL2Address,
-        safeProxyFactoryAddress: GnosisSafeProxyFactoryAddress,
-        multiSendAddress: MultiSendAddress,
-        multiSendCallOnlyAddress: MultiSendCallOnlyAddress,
-        fallbackHandlerAddress: CompatibilityFallbackHandlerAddress,
-        signMessageLibAddress: SignMessageLibAddress,
-        createCallAddress: CreateCallAddress,
-    },
-};
-
-// Initialize signers
+// Init
 const ethAdapterRelayer = new EthersAdapter({ ethers, signerOrProvider: ownerSigner });
-const hardhatServiceUrl = 'http://localhost:8000/txs';
-const polygonServiceUrl = 'https://safe-transaction-polygon.safe.global';
-
-const safeService = new SafeApiKit({ txServiceUrl: hardhatServiceUrl, ethAdapter: ethAdapterRelayer as any });
+// const ethAdapterRelayer = new EthersAdapter({ ethers, signerOrProvider: relayerSigner });
+const safeService = new SafeApiKit({ txServiceUrl: SAFE_TXS_URL, ethAdapter: ethAdapterRelayer as any });
 
 async function deploySafe(safeFactory: SafeFactory, relayerAddress: string, userWalletAddress: string) {
     const safeAccountConfig: SafeAccountConfig = {
@@ -71,11 +50,10 @@ async function deploySafe(safeFactory: SafeFactory, relayerAddress: string, user
     };
     return await safeFactory.deploySafe({
         safeAccountConfig,
-        options: { gasLimit: '30000000', nonce: await ownerSigner.getTransactionCount() },
+        options: { gasLimit: '30000000' },
     });
 }
 
-// API
 async function createTransaction(safeAddress: string, to: string, amountInWei: string) {
     const safeSdk = await Safe.create({ ethAdapter: ethAdapterRelayer as any, safeAddress, contractNetworks });
     const safeTransactionData: SafeTransactionDataPartial = {
