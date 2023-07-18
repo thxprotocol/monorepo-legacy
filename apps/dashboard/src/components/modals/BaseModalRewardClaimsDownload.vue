@@ -9,78 +9,7 @@
     >
         <template #modal-body v-if="!isLoading">
             <b-tabs>
-                <b-tab active :title="`Claim URLs (${claims.length})`">
-                    <BaseCardTableHeader
-                        :page="page"
-                        :limit="limit"
-                        :pool="pool"
-                        :total-rows="claims.length"
-                        :selectedItems="selectedItems"
-                        :actions="[
-                            { variant: 0, label: `Delete claims` },
-                            { variant: 1, label: 'Download QR Codes' },
-                            { variant: 2, label: 'Download URL\'s' },
-                        ]"
-                        @click-action="onClickAction"
-                        @change-page="onChangePage"
-                        @change-limit="onChangeLimit"
-                    />
-                    <BTable hover :busy="isLoading" :items="claimsByPage" responsive="lg" show-empty>
-                        <!-- Head formatting -->
-                        <template #head(checkbox)>
-                            <b-form-checkbox @change="onSelectAll" />
-                        </template>
-                        <template #head(url)> URL </template>
-                        <template #head(sub)> Sub </template>
-                        <template #head(claimedAt)> User </template>
-                        <template #head(createdAt)> Created </template>
-                        <template #head(id)> &nbsp; </template>
-
-                        <!-- Cell formatting -->
-                        <template #cell(checkbox)="{ item }">
-                            <b-form-checkbox :value="item.checkbox" v-model="selectedClaims" />
-                        </template>
-                        <template #cell(url)="{ item }">
-                            <b-link
-                                size="sm"
-                                variant="light"
-                                class="mr-2"
-                                v-clipboard:copy="item.url"
-                                v-clipboard:success="() => $set(isCopied, item.id, true)"
-                            >
-                                <code class="text-muted">
-                                    {{ item.url }}
-                                </code>
-                                <i
-                                    class="fas ml-0 text-gray"
-                                    :class="isCopied[item.id] ? 'fa-clipboard-check' : 'fa-clipboard'"
-                                ></i>
-                            </b-link>
-                        </template>
-                        <template #cell(claimedAt)="{ item }">
-                            <div v-if="item.claimedAt.sub" style="line-height: 1">
-                                <div class="text-primary">{{ item.claimedAt.sub }}</div>
-                                <small class="text-muted">
-                                    Claimed at: {{ format(new Date(item.claimedAt.date), 'dd-MM-yyyy HH:mm') }}
-                                </small>
-                            </div>
-                        </template>
-                        <template #cell(createdAt)="{ item }">
-                            <small class="text-muted">
-                                {{ format(new Date(item.createdAt), 'dd-MM-yyyy HH:mm') }}
-                            </small>
-                        </template>
-                        <template #cell(id)="{ item }">
-                            <b-dropdown variant="link" size="sm" right no-caret>
-                                <template #button-content>
-                                    <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
-                                </template>
-                                <b-dropdown-item @click="item" disabled> Delete </b-dropdown-item>
-                            </b-dropdown>
-                        </template>
-                    </BTable>
-                </b-tab>
-                <b-tab title="QR Code Configuration">
+                <b-tab title="Download" active>
                     <b-row class="mt-3">
                         <b-col>
                             <b-form-group label="File format">
@@ -155,6 +84,77 @@
                             </b-form-group>
                         </b-col>
                     </b-row>
+                </b-tab>
+                <b-tab :title="`Claim URLs (${claims.length})`">
+                    <BaseCardTableHeader
+                        :page="page"
+                        :limit="limit"
+                        :pool="pool"
+                        :total-rows="claims.length"
+                        :selectedItems="selectedItems"
+                        :actions="[
+                            { variant: 0, label: `Delete claims` },
+                            { variant: 1, label: 'Download QR Codes' },
+                            { variant: 2, label: 'Download URL\'s' },
+                        ]"
+                        @click-action="onClickAction"
+                        @change-page="onChangePage"
+                        @change-limit="onChangeLimit"
+                    />
+                    <BTable hover :busy="isLoading" :items="claimsByPage" responsive="lg" show-empty>
+                        <!-- Head formatting -->
+                        <template #head(checkbox)>
+                            <b-form-checkbox @change="onSelectAll" />
+                        </template>
+                        <template #head(url)> URL </template>
+                        <template #head(sub)> Sub </template>
+                        <template #head(claimedAt)> User </template>
+                        <template #head(createdAt)> Created </template>
+                        <template #head(id)> &nbsp; </template>
+
+                        <!-- Cell formatting -->
+                        <template #cell(checkbox)="{ item }">
+                            <b-form-checkbox :value="item.checkbox" v-model="selectedClaims" />
+                        </template>
+                        <template #cell(url)="{ item }">
+                            <b-link
+                                size="sm"
+                                variant="light"
+                                class="mr-2"
+                                v-clipboard:copy="item.url"
+                                v-clipboard:success="() => $set(isCopied, item.id, true)"
+                            >
+                                <code class="text-muted">
+                                    {{ item.url }}
+                                </code>
+                                <i
+                                    class="fas ml-0 text-gray"
+                                    :class="isCopied[item.id] ? 'fa-clipboard-check' : 'fa-clipboard'"
+                                ></i>
+                            </b-link>
+                        </template>
+                        <template #cell(claimedAt)="{ item }">
+                            <div v-if="item.claimedAt.sub" style="line-height: 1">
+                                <div class="text-primary">{{ item.claimedAt.sub }}</div>
+                                <small class="text-muted">
+                                    Claimed at: {{ format(new Date(item.claimedAt.date), 'dd-MM-yyyy HH:mm') }}
+                                </small>
+                            </div>
+                        </template>
+                        <template #cell(createdAt)="{ item }">
+                            <small class="text-muted">
+                                {{ format(new Date(item.createdAt), 'dd-MM-yyyy HH:mm') }}
+                            </small>
+                        </template>
+                        <template #cell(id)="{ item }">
+                            <b-dropdown variant="link" size="sm" right no-caret>
+                                <template #button-content>
+                                    <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
+                                </template>
+                                <b-dropdown-item @click="item" disabled> Delete </b-dropdown-item>
+                            </b-dropdown>
+                        </template>
+                    </BTable>
                 </b-tab>
             </b-tabs>
         </template>
