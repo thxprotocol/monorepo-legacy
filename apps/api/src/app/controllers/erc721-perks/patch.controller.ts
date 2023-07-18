@@ -18,7 +18,7 @@ const validation = [
     body('erc1155Id').optional().isMongoId(),
     body('tokenId').optional().isString(),
     body('metadataIds').optional().isString(),
-    body('claimAmount').exists().isInt({ lt: 1000 }),
+    body('claimAmount').optional().isInt({ lt: 5000 }),
     body('claimLimit').exists().isInt(),
     body('expiryDate').optional().isISO8601(),
     body('limit').optional().isInt(),

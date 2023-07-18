@@ -97,6 +97,23 @@
                                     </p>
                                 </b-form-radio>
                             </b-form-group>
+                            <b-form-group label="Download">
+                                <b-button-group class="w-100">
+                                    <b-button variant="primary" @click="onClickDownloadZipAll">
+                                        <b-spinner small variant="light" v-if="index" />
+                                        <template v-else>Zip</template>
+                                    </b-button>
+                                    <b-button variant="primary" @click="onClickDownloadCSVAll"> CSV </b-button>
+                                </b-button-group>
+                            </b-form-group>
+                            <b-progress
+                                v-if="index"
+                                :value="index"
+                                :max="selectedClaims.length"
+                                variant="primary"
+                                show-value
+                                class="mt-2"
+                            />
                         </b-col>
                         <b-col>
                             <b-form-group label="Size" description="Dimensions of the image.">
@@ -190,9 +207,9 @@ function hex2Rgb(hex: string) {
     },
 })
 export default class BaseModalRewardClaimsDownload extends Vue {
+    format = format;
     isSubmitDisabled = false;
     isLoading = false;
-    format = format;
     color = '000000';
     size = 256;
     file: File | null = null;
@@ -201,6 +218,7 @@ export default class BaseModalRewardClaimsDownload extends Vue {
     selectedClaims: string[] = [];
     limit = 500;
     page = 1;
+    index = 0;
     claims: TClaim[] = [];
     isCopied: { [id: string]: boolean } = {};
 
@@ -212,36 +230,28 @@ export default class BaseModalRewardClaimsDownload extends Vue {
     onShow() {
         if (!this.rewards) return [];
         const rewards = Object.values(this.rewards).filter((r) => this.selectedItems.includes(r._id));
-        let claims: TClaim[] = [];
         for (const r of rewards) {
-            const pagedClaims = Object.values(r.claims).map((c: TClaim) => ({ ...c, perk: r, page: this.page }));
-            claims = claims.concat(pagedClaims);
+            const claims = Object.values(r.claims).map((claim: TClaim) => ({ ...claim, perk: r }));
+            this.claims = [...this.claims, ...claims];
         }
-        this.claims = claims;
     }
 
     get units() {
-        return unitList.filter((u) => {
-            return acceptedUnits[this.selectedFormat].includes(u.value);
-        });
+        return unitList.filter((u) => acceptedUnits[this.selectedFormat].includes(u.value));
     }
 
     get claimsByPage() {
         if (!this.claims) return [];
-
         return this.claims
-            .filter((c) => c.page === this.page)
             .sort((a, b) => (a.createdAt && b.createdAt && a.createdAt < b.createdAt ? 1 : -1))
-            .map((c) => {
-                return {
-                    checkbox: c.uuid,
-                    url: this.getUrl(c),
-                    claimedAt: { sub: c.sub, date: c.claimedAt },
-                    createdAt: c.createdAt,
-                    id: c.uuid,
-                };
-            })
-            .slice(0, this.limit);
+            .map((c) => ({
+                checkbox: c.uuid,
+                url: this.getUrl(c),
+                claimedAt: { sub: c.sub, date: c.claimedAt },
+                createdAt: c.createdAt,
+                id: c.uuid,
+            }))
+            .slice(this.page * this.limit - this.limit, this.page * this.limit);
     }
 
     onSelectAll(isSelectAll: boolean) {
@@ -254,7 +264,16 @@ export default class BaseModalRewardClaimsDownload extends Vue {
 
     onChangePage(page: number) {
         this.page = page;
-        debugger;
+    }
+
+    onClickDownloadZipAll() {
+        this.selectedClaims = this.claims.map((c) => c.uuid);
+        this.onClickCreateZip();
+    }
+
+    onClickDownloadCSVAll() {
+        this.selectedClaims = this.claims.map((c) => c.uuid);
+        this.onClickCreateCSV();
     }
 
     onClickAction(action: { variant: number; label: string }) {
@@ -273,20 +292,20 @@ export default class BaseModalRewardClaimsDownload extends Vue {
         }
     }
 
-    async createQRCode(url: string) {
-        const imgSize = (this.size / 4) * 1.1;
+    async createQRCode(url: string, size: number, color: string) {
+        const imgSize = (size / 4) * 1.1;
         const canvas = document.createElement('canvas');
-        canvas.width = this.size;
-        canvas.height = this.size;
+        canvas.width = size;
+        canvas.height = size;
 
         await QRCode.toCanvas(canvas, url, {
             errorCorrectionLevel: 'H',
             margin: 0,
             color: {
-                dark: this.color,
+                dark: color,
                 light: '#ffffff',
             },
-            width: this.size,
+            width: size,
         });
 
         const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
@@ -303,26 +322,26 @@ export default class BaseModalRewardClaimsDownload extends Vue {
         return qrCode.replace(/^data:image\/png;base64,/, '');
     }
 
-    async createQRCodeSvg(url: string) {
+    async createQRCodeSvg(url: string, size: number, color: string, unit) {
         const qrcode = new QRCodeSVG({
             content: url,
             margin: 0,
             padding: 0,
             ecl: 'M',
         });
-        qrcode.options.height = this.size;
-        qrcode.options.width = this.size;
+        qrcode.options.height = size;
+        qrcode.options.width = size;
         // this.size = qrcode.options.height;
-        const imgSize = this.size / 4;
-        const positionX = this.size / 2 - imgSize / 2;
-        const positionY = this.size / 2 - imgSize / 2;
+        const imgSize = size / 4;
+        const positionX = size / 2 - imgSize / 2;
+        const positionY = size / 2 - imgSize / 2;
         const svg = qrcode.svg();
         const xml = await xml2js.parseStringPromise(svg);
 
-        const pdf = new jsPDF({ unit: this.selectedUnit.value as UnitValues, format: [this.size, this.size] });
+        const pdf = new jsPDF({ unit, format: [size, size] });
         for (let i = 1; i < xml.svg.rect.length; i++) {
             const rect = xml.svg.rect[i].$;
-            const rgb = hex2Rgb(this.color);
+            const rgb = hex2Rgb(color);
 
             pdf.setFillColor(rgb.r, rgb.g, rgb.b);
             pdf.rect(rect.x, rect.y, rect.width, rect.height, 'F');
@@ -344,6 +363,7 @@ export default class BaseModalRewardClaimsDownload extends Vue {
         const filename = `${new Date().getTime()}_${this.pool._id}_claim_qr_codes`;
         const zip = new JSZip();
         const archive = zip.folder(filename) as JSZip;
+        const format = this.selectedFormat;
 
         for (const uuid of this.selectedClaims) {
             const claim = this.claims.find((c) => c.uuid === uuid);
@@ -352,33 +372,41 @@ export default class BaseModalRewardClaimsDownload extends Vue {
             let data: string | ArrayBuffer;
             const url = this.getUrl(claim);
 
-            switch (this.selectedFormat) {
+            switch (format) {
                 case 'pdf': {
-                    data = await this.createQRCodeSvg(url);
+                    data = await this.createQRCodeSvg(
+                        url,
+                        this.size,
+                        this.color,
+                        this.selectedUnit.value as UnitValues,
+                    );
                     archive.file(`${claim.uuid}.pdf`, data, { base64: true });
                     break;
                 }
                 case 'png': {
-                    data = await this.createQRCode(url);
+                    data = await this.createQRCode(url, this.size, this.color);
                     archive.file(`${claim.uuid}.png`, data, { base64: true });
                     break;
                 }
             }
+            this.index++;
         }
 
-        zip.generateAsync({ type: 'blob' }).then((content) => saveAs(content, `${filename}.zip`));
+        await zip.generateAsync({ type: 'blob' }).then((content) => saveAs(content, `${filename}.zip`));
+        this.index = 0;
     }
 
     onClickCreateCSV() {
         const filename = `${new Date().getTime()}_${this.pool._id}_claim_urls`;
         const data: any = [];
+
         for (const uuid of this.selectedClaims) {
             const claim = this.claims.find((c) => c.uuid === uuid);
             if (!claim) continue;
             data.push([this.getUrl(claim)]);
         }
-        const csvContent = 'data:text/csv;charset=utf-8,' + data.map((e) => e.join(',')).join('\n');
 
+        const csvContent = 'data:text/csv;charset=utf-8,' + data.map((e) => e.join(',')).join('\n');
         saveAs(encodeURI(csvContent), `${filename}.csv`);
     }
 }
