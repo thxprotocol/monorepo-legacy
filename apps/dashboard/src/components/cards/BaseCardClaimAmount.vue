@@ -13,9 +13,15 @@
             <div class="px-3">
                 <b-form-group
                     label="Amount of unique claims"
-                    description="We currently support a maximum of 1000 claims per perk. Contact our support if you require more."
+                    description="We currently support a maximum of 5000 claims per perk. Contact our support if you require more."
                 >
-                    <b-form-input @input="onInputClaimAmount" type="number" :max="1000" :value="selectedClaimAmount" />
+                    <b-form-input
+                        :disabled="disabled"
+                        @input="onInputClaimAmount"
+                        type="number"
+                        :max="5000"
+                        :value="selectedClaimAmount"
+                    />
                 </b-form-group>
             </div>
         </b-collapse>
@@ -35,6 +41,7 @@ export default class BaseCardRewardLimits extends Vue {
     selectedClaimAmount = 0;
 
     @Prop() claimAmount!: number;
+    @Prop() disabled!: boolean;
 
     mounted() {
         this.selectedClaimAmount = this.claimAmount ? this.claimAmount : this.selectedClaimAmount;

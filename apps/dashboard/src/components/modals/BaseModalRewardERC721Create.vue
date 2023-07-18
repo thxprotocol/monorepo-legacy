@@ -84,6 +84,7 @@
                             @change-variant="tokenGatingVariant = $event"
                         />
                         <BaseCardClaimAmount
+                            :disabled="!!perk"
                             class="mb-3"
                             :claimAmount="claimAmount"
                             :claimLimit="claimLimit"

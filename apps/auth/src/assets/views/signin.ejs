@@ -107,6 +107,7 @@
           if (params.signup_plan == 1) {
             premium.push({
               class: 'show',
+              iconClass: 'fa-check-circle text-success',
               title: '€ 89 / month (30 day free trial)',
               description:
                   'We invite you to try out all of the above for a month, with no obligation to pay unless you\'re satisfied!',
@@ -116,6 +117,7 @@
           if (params.signup_plan == 2) {
             premium.push({
               class: 'show',
+              iconClass: 'fa-check-circle text-success',
               title: '&euro; 449 / month (30 day free trial)',
               description: 'We invite you to try out all of the above for a month, with no obligation to pay unless you\'re satisfied!',
             });
@@ -124,12 +126,14 @@
 
           premium.push({
             class: '',
+            iconClass: 'fa-check-circle text-success',
             title: '2,5% fee on rewards',
             description: 'We charge a small % transactional fee on coin rewards (ERC-20). Your end users pay no fees.',
           });
 
           premium.push({
             class: '',
+            iconClass: 'fa-times-circle text-danger',
             title: 'Transaction costs (gas fees)',
             description: 'We cover all user transaction costs (gas fees) up to the plans reward limit.',
           });
@@ -137,18 +141,21 @@
           if (params.signup_plan == 1) {
             premium.push({
               class: '',
+              iconClass: 'fa-times-circle text-danger',
               title: 'Setup fee',
-              description: 'We require no setup fee. You have the option to give a voluntary setup contribution on the left. Most people choose €250,-',
+              description: 'We require no setup fee. Sign-up and you\'re ready to go!',
             });
 
             premium.push({
               class: '',
+              iconClass: 'fa-check-circle text-success',
               title: 'Discord Bot',
               description: 'Reach your community in channels that matter most. Post reward overviews and announce new rewards, all automated.',
             });
 
             premium.push({
                 class: '',
+                iconClass: 'fa-check-circle text-success',
                 title: 'Twitter Automation',
                 description: 'You are already very busy managing campaigns... We\'ll automate your Twitter campaigns, so you can focus on growth!',
             });
@@ -157,12 +164,14 @@
           if (params.signup_plan == 2) {
             premium.push({
               class: '',
+              iconClass: 'fa-times-circle text-danger',
               title: 'Setup fee',
               description: 'We require no setup fee. Sign-up and you\'re ready to go!',
             });
              
             premium.push({
               class: '',
+              iconClass: 'fa-check-circle text-success',
               title: 'Dedicated Campaign Manager',
               description:
                   'We understand you are a busy person! That\'s why we offer you a dedicated campaign manager to during your free first month.',
@@ -170,6 +179,7 @@
 
             premium.push({
               class: '',
+              iconClass: 'fa-check-circle text-success',
               title: 'Unlimited Technical Support',
               description:
                   'Your devs are probably working on other important tasks. Let our devs talk to your devs to make engine integration a piece of cake.',
@@ -178,6 +188,7 @@
   
           premium.push({
             class: '',
+            iconClass: 'fa-check-circle text-success',
             title: 'Weekly Performance Reports',
             description:
                 'We know budgets and results are important to you. We send you weekly reports by mail and are happy to jump on a call to discuss results and potential improvements.',
@@ -191,10 +202,10 @@
               <a class="text-white d-flex premium-link py-1" data-toggle="collapse" href="#collapseExample<%= i %>"
                  role="button" aria-expanded="false" aria-controls="collapseExample<%= i %>">
                 <div>
-                  <i class="fas fa-check-circle text-success mr-1"></i>
+                  <i class="fas mr-1 <%- premium[i].iconClass %>"></i>
                   <span><%- premium[i].title %></span>
                 </div>
-                <i class="fas fa-caret-down text-muted ml-auto"></i>
+                <i class=" fas fa-caret-down text-muted ml-auto"></i>
               </a>
               <div class="collapse <%- premium[i].class %>" id="collapseExample<%= i %>">
                 <div class="card card-body bg-darker my-2">
@@ -276,36 +287,6 @@
                      :class="{
                         'is-valid': email && !isDisabled, 'is-invalid': email && isDisabled
                     }">
-            </div>
-            <% } %>
-
-            <% if (params.signup_plan == 2) { %>
-            <div class="form-group mb-4">
-              <label class="d-flex align-items-center font-weigh-bold text-muted mb-3" for="formControlRange">
-                Setup Fee - Pay what this is worth to you!
-              </label>
-              <div class="btn-group w-100" role="group" aria-label="Basic example">
-                <button @click="setupFee = 0" type="button" class="btn btn-sm"
-                        :class="setupFee == 0 ? 'btn-primary': 'btn-light' ">
-                  No fee
-                </button>
-                <button @click="setupFee = 100" type="button" class="btn btn-sm"
-                        :class="setupFee == 100 ? 'btn-primary': 'btn-light' ">&euro;
-                  100,-
-                </button>
-                <button @click="setupFee = 250" type="button" class="btn btn-sm"
-                        :class="setupFee == 250 ? 'btn-primary': 'btn-light' ">&euro;
-                  250,-
-                </button>
-                <button @click="setupFee = 500" type="button" class="btn btn-sm"
-                        :class="setupFee == 500 ? 'btn-primary': 'btn-light' ">&euro;
-                  500,-
-                </button>
-                <button @click="setupFee = 750" type="button" class="btn btn-sm"
-                        :class="setupFee == 750 ? 'btn-primary': 'btn-light' ">&euro;
-                  750,-
-                </button>
-              </div>
             </div>
             <% } %>
 

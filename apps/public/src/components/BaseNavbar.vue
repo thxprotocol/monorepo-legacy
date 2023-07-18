@@ -37,14 +37,8 @@
                         <i class="fas fa-user mr-2" style="font-size: 1.1rem"></i>
                         My Campaigns
                     </b-button>
-                    <b-button
-                        class="rounded-pill ml-3"
-                        variant="primary"
-                        to="/signup"
-                        target="_blank"
-                        :title="TITLES.HOME_LIVE_DEMO"
-                    >
-                        <span>Sign up</span>
+                    <b-button class="rounded-pill ml-3" variant="primary" to="/pricing" :title="TITLES.HOME_LIVE_DEMO">
+                        <span>Free Trial</span>
                         <i class="fas fa-chevron-right"></i>
                     </b-button>
                 </div>

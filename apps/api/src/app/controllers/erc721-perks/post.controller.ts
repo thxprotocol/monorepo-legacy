@@ -33,7 +33,7 @@ const validation = [
     body('priceCurrency').isString(),
     body('isPromoted').optional().isBoolean(),
     body('claimLimit').optional().isInt(),
-    body('claimAmount').optional().isInt({ lt: 1000 }),
+    body('claimAmount').optional().isInt({ lt: 5001 }),
     body('tokenGatingVariant').optional().isString(),
     body('tokenGatingContractAddress').optional().isString(),
     body('tokenGatingAmount').optional().isInt(),

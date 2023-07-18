@@ -45,15 +45,14 @@ export function formatDate(date: Date) {
 
 export const createERC721Perk = async (pool: AssetPoolDocument, config: TERC721Perk) => {
     const perk = await ERC721PerkService.create(pool, config);
-    const claims = await Promise.all(
-        Array.from({ length: Number(config.claimAmount) }).map(async () => {
-            return await ClaimService.create({
-                poolId: config.poolId,
-                rewardUuid: perk.uuid,
-                erc721Id: config.erc721Id ? config.erc721Id : undefined,
-                erc1155Id: config.erc1155Id ? config.erc1155Id : undefined,
-            });
-        }),
+    const claims = await ClaimService.create(
+        {
+            poolId: config.poolId,
+            rewardUuid: perk.uuid,
+            erc721Id: config.erc721Id ? config.erc721Id : undefined,
+            erc1155Id: config.erc1155Id ? config.erc1155Id : undefined,
+        },
+        config.claimAmount,
     );
     return { perk, claims };
 };
