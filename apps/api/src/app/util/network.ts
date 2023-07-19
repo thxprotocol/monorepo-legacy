@@ -16,6 +16,9 @@ import { ChainId } from '@thxnetwork/types/enums';
 import { DefenderRelayProvider } from 'defender-relay-client/lib/web3';
 import { Relayer } from 'defender-relay-client';
 import { TNetworkName } from '@thxnetwork/contracts/exports';
+import { Signer, Wallet, ethers } from 'ethers';
+import { DefenderRelaySigner } from 'defender-relay-client/lib/ethers';
+import { EthersAdapter } from '@safe-global/protocol-kit';
 
 export const MaxUint256 = '115792089237316195423570985008687907853269984665640564039457584007913129639935';
 
@@ -23,6 +26,9 @@ const web3 = new Web3();
 const networks: {
     [chainId: number]: {
         web3: Web3;
+        txServiceUrl: string;
+        signer: Signer;
+        ethAdapter: any;
         networkName: TNetworkName;
         readProvider: Web3;
         defaultAccount: string;
@@ -33,6 +39,7 @@ const networks: {
 if (HARDHAT_RPC) {
     networks[ChainId.Hardhat] = (() => {
         const web3 = new Web3(HARDHAT_RPC);
+        const hardhatProvider = new (ethers as any).providers.JsonRpcProvider(HARDHAT_RPC);
         web3.extend({
             property: 'hardhat',
             methods: [
@@ -48,8 +55,12 @@ if (HARDHAT_RPC) {
                 },
             ],
         });
+        const signer = new Wallet(PRIVATE_KEY, hardhatProvider) as unknown as Signer;
         return {
             web3,
+            txServiceUrl: 'http://localhost:8000/txs',
+            ethAdapter: new EthersAdapter({ ethers, signerOrProvider: signer }),
+            signer,
             networkName: HARDHAT_NAME as TNetworkName,
             defaultAccount: web3.eth.accounts.privateKeyToAccount(PRIVATE_KEY).address,
             readProvider: web3,
@@ -65,8 +76,17 @@ if (POLYGON_RELAYER) {
         );
         const relayer = new Relayer({ apiKey: POLYGON_RELAYER_API_KEY, apiSecret: POLYGON_RELAYER_API_SECRET });
         const readProvider = new Web3(POLYGON_RPC);
+        const signer = new DefenderRelaySigner(
+            { apiKey: POLYGON_RELAYER_API_KEY, apiSecret: POLYGON_RELAYER_API_SECRET },
+            new (ethers as any).providers.JsonRpcProvider(POLYGON_RPC),
+            { speed: 'fast' },
+        );
+
         return {
             web3: new Web3(provider),
+            txServiceUrl: 'https://safe-transaction-polygon.safe.global',
+            ethAdapter: new EthersAdapter({ ethers, signerOrProvider: signer }),
+            signer,
             networkName: POLYGON_NAME as TNetworkName,
             relayer,
             defaultAccount: POLYGON_RELAYER,

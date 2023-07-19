@@ -1,26 +1,31 @@
-import { ContractName, currentVersion, diamondFacetConfigs, DiamondVariant } from '@thxnetwork/contracts/exports';
-import { getByteCodeForContractName, getContractFromName } from '../config/contracts';
+import { currentVersion } from '@thxnetwork/contracts/exports';
+import { contractNetworks } from '../config/contracts';
 import { Wallet as WalletModel, WalletDocument } from '../models/Wallet';
 import { ChainId } from '@thxnetwork/types/enums';
-import { TWalletDeployCallbackArgs } from '../types/TTransaction';
-import { getProvider, getSelectors } from '../util/network';
-import TransactionService from './TransactionService';
-import { TransactionReceipt } from 'web3-eth-accounts/node_modules/web3-core';
-import { FacetCutAction, updateDiamondContract } from '../util/upgrades';
-import WalletManagerService from './WalletManagerService';
+import { getProvider } from '../util/network';
+import { updateDiamondContract } from '../util/upgrades';
 import { toChecksumAddress } from 'web3-utils';
-import MilestoneRewardService from './MilestoneRewardService';
 import { MilestoneRewardClaim } from '../models/MilestoneRewardClaims';
+import Safe, { SafeAccountConfig, SafeFactory } from '@safe-global/protocol-kit';
+import SafeApiKit, { SafeMultisigTransactionListResponse } from '@safe-global/api-kit';
+import { SafeTransaction, SafeTransactionDataPartial } from '@safe-global/safe-core-sdk-types';
 
 export const Wallet = WalletModel;
 
-async function create(data: { chainId: ChainId; sub: string; forceSync?: boolean; address?: string }) {
+function getSafeService(chainId: ChainId) {
+    const { txServiceUrl, ethAdapter } = getProvider(chainId);
+    return new SafeApiKit({ txServiceUrl, ethAdapter });
+}
+
+async function create(
+    data: { chainId: ChainId; sub: string; forceSync?: boolean; address?: string },
+    userWalletAddress: string,
+) {
     const { chainId, sub, address } = data;
     const wallet = await Wallet.create({ sub, chainId, address });
     if (address) return wallet;
 
-    const forceSync = data.forceSync === undefined ? true : data.forceSync;
-    return deploy(wallet, forceSync);
+    return deploy(wallet, userWalletAddress);
 }
 
 function findOneByAddress(address: string) {
@@ -39,43 +44,83 @@ async function findByQuery(query: { sub?: string; chainId?: number }) {
     return await Wallet.find(query);
 }
 
-async function deploy(wallet: WalletDocument, forceSync = true) {
-    const variant: DiamondVariant = 'sharedWallet';
-    const { networkName, defaultAccount } = getProvider(wallet.chainId);
-
-    const facetConfigs = diamondFacetConfigs(networkName, variant);
-    const diamondCut = [];
-
-    for (const contractName in facetConfigs) {
-        const config = facetConfigs[contractName];
-        const contract = getContractFromName(wallet.chainId, contractName as ContractName);
-        const functionSelectors = getSelectors(contract);
-        diamondCut.push({
-            action: FacetCutAction.Add,
-            facetAddress: config.address,
-            functionSelectors,
-        });
-    }
-
-    const contractName: ContractName = 'Diamond';
-    const contract = getContractFromName(wallet.chainId, contractName);
-    const bytecode = getByteCodeForContractName(contractName);
-    const fn = contract.deploy({
-        data: bytecode,
-        arguments: [diamondCut, [defaultAccount]],
+async function deploy(wallet: WalletDocument, userWalletAddress: string) {
+    const { defaultAccount, ethAdapter } = getProvider(wallet.chainId);
+    const safeFactory = await SafeFactory.create({
+        safeVersion: '1.3.0',
+        contractNetworks,
+        ethAdapter,
+    });
+    const safeAccountConfig: SafeAccountConfig = {
+        owners: [toChecksumAddress(defaultAccount), toChecksumAddress(userWalletAddress)],
+        threshold: 2,
+    };
+    const safe = await safeFactory.deploySafe({
+        safeAccountConfig,
+        options: { gasLimit: '30000000' },
     });
 
-    const txId = await TransactionService.sendAsync(null, fn, wallet.chainId, forceSync, {
-        type: 'walletDeployCallback',
-        args: { walletId: String(wallet._id), owner: defaultAccount, sub: wallet.sub },
-    });
-
-    return await Wallet.findByIdAndUpdate(wallet._id, { transactions: [txId], version: currentVersion }, { new: true });
+    return await Wallet.findByIdAndUpdate(
+        wallet._id,
+        { address: await safe.getAddress(), version: currentVersion },
+        { new: true },
+    );
 }
 
-async function deployCallback(args: TWalletDeployCallbackArgs, receipt: TransactionReceipt) {
-    const wallet = await Wallet.findByIdAndUpdate(args.walletId, { address: receipt.contractAddress }, { new: true });
-    await WalletManagerService.setupManagerRoleAdmin(wallet, args.owner);
+async function createTransaction(wallet: WalletDocument, safeAddress: string, to: string, amountInWei: string) {
+    const { ethAdapter } = getProvider(wallet.chainId);
+    const safeSdk = await Safe.create({ ethAdapter, safeAddress: wallet.address, contractNetworks });
+    const safeTransactionData: SafeTransactionDataPartial = {
+        to,
+        data: '0x',
+        value: amountInWei,
+        safeTxGas: 5000000,
+    };
+
+    return await safeSdk.createTransaction({ safeTransactionData });
+}
+
+async function proposeTransaction(wallet: WalletDocument, safeTransaction: SafeTransaction) {
+    const { ethAdapter, signer } = getProvider(wallet.chainId);
+    const safeSdk = await Safe.create({ ethAdapter, safeAddress: wallet.address, contractNetworks });
+    const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
+    const senderSignature = await safeSdk.signTransactionHash(safeTxHash);
+    const safeService = getSafeService(wallet.chainId);
+
+    await safeService.proposeTransaction({
+        safeAddress: wallet.address,
+        safeTxHash,
+        safeTransactionData: safeTransaction.data as any,
+        senderAddress: toChecksumAddress(await signer.getAddress()),
+        senderSignature: senderSignature.data,
+    });
+}
+
+async function confirmTransaction(wallet: WalletDocument, safeTxHash: string) {
+    const { ethAdapter } = getProvider(wallet.chainId);
+    const safeSdkOwner = await Safe.create({ ethAdapter, safeAddress: wallet.address, contractNetworks });
+    const signature = await safeSdkOwner.signTransactionHash(safeTxHash);
+    const safeService = getSafeService(wallet.chainId);
+
+    return await safeService.confirmTransaction(safeTxHash, signature.data);
+}
+
+async function executeTransactionSafe(wallet: WalletDocument, safeTxHash: string) {
+    const { ethAdapter, signer } = getProvider(wallet.chainId);
+    const safeSdk = await Safe.create({ ethAdapter, safeAddress: wallet.address, contractNetworks });
+    const safeService = getSafeService(wallet.chainId);
+    const safeTransaction = await safeService.getTransaction(safeTxHash);
+    const executeTxResponse = await safeSdk.executeTransaction(safeTransaction as any, {
+        from: await signer.getAddress(),
+    });
+
+    return await executeTxResponse.transactionResponse?.wait();
+}
+
+async function getLastPendingTransactions(wallet: WalletDocument) {
+    const safeService = getSafeService(wallet.chainId);
+    const { results }: any = await safeService.getPendingTransactions(toChecksumAddress(wallet.address));
+    return results;
 }
 
 async function upgrade(wallet: WalletDocument, version?: string) {
@@ -100,6 +145,11 @@ async function transferOwnership(wallet: WalletDocument, primaryWallet: WalletDo
 }
 
 export default {
+    createTransaction,
+    proposeTransaction,
+    confirmTransaction,
+    executeTransactionSafe,
+    getLastPendingTransactions,
     transferOwnership,
     findPrimary,
     upgrade,
@@ -107,6 +157,5 @@ export default {
     findOneByAddress,
     findByQuery,
     deploy,
-    deployCallback,
     findOneByQuery,
 };
