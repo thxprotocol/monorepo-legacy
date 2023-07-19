@@ -12,6 +12,44 @@
                 <b-tab title="Download" active>
                     <b-row class="mt-3">
                         <b-col>
+                            <b-form-group
+                                label="Redirect URL"
+                                description="Scanning the QR code will redirect the user to this page where a reward widget should be active."
+                            >
+                                <b-form-input @change="onChangeRedirectURL" v-model="redirectUrl" />
+                            </b-form-group>
+                            <b-form-group
+                                label="Download"
+                                description="Download a Zip file containing all QR codes or a spreadsheet (CSV) containing all URL's."
+                            >
+                                <b-button-group class="w-100">
+                                    <b-button
+                                        variant="primary"
+                                        @click="onClickDownloadZipAll"
+                                        :disabled="!isValidRedirectUrl"
+                                    >
+                                        <b-spinner small variant="light" v-if="index" />
+                                        <template v-else>Zip</template>
+                                    </b-button>
+                                    <b-button
+                                        variant="primary"
+                                        @click="onClickDownloadCSVAll"
+                                        :disabled="!isValidRedirectUrl"
+                                    >
+                                        CSV
+                                    </b-button>
+                                </b-button-group>
+                            </b-form-group>
+                            <b-progress
+                                v-if="index"
+                                :value="index"
+                                :max="selectedClaims.length"
+                                variant="primary"
+                                show-value
+                                class="mt-2"
+                            />
+                        </b-col>
+                        <b-col>
                             <b-form-group label="File format">
                                 <b-form-radio v-model="selectedFormat" name="fileFormat" value="png">
                                     <p>
@@ -26,25 +64,6 @@
                                     </p>
                                 </b-form-radio>
                             </b-form-group>
-                            <b-form-group label="Download">
-                                <b-button-group class="w-100">
-                                    <b-button variant="primary" @click="onClickDownloadZipAll">
-                                        <b-spinner small variant="light" v-if="index" />
-                                        <template v-else>Zip</template>
-                                    </b-button>
-                                    <b-button variant="primary" @click="onClickDownloadCSVAll"> CSV </b-button>
-                                </b-button-group>
-                            </b-form-group>
-                            <b-progress
-                                v-if="index"
-                                :value="index"
-                                :max="selectedClaims.length"
-                                variant="primary"
-                                show-value
-                                class="mt-2"
-                            />
-                        </b-col>
-                        <b-col>
                             <b-form-group label="Size" description="Dimensions of the image.">
                                 <b-input-group>
                                     <b-form-input v-model="size" type="number" />
@@ -176,6 +195,7 @@ import { TClaim } from '@thxnetwork/dashboard/store/modules/claims';
 import { saveAs } from 'file-saver';
 import { loadImage } from '@thxnetwork/dashboard/utils/loadImage';
 import { format } from 'date-fns';
+import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 
 const unitList = [
     { label: 'Pixels', value: 'px' },
@@ -213,13 +233,14 @@ export default class BaseModalRewardClaimsDownload extends Vue {
     color = '000000';
     size = 256;
     file: File | null = null;
+    redirectUrl = '';
     selectedFormat = 'png';
     selectedUnit = unitList[0];
     selectedClaims: string[] = [];
     limit = 500;
     page = 1;
     index = 0;
-    claims: TClaim[] = [];
+    claims: any[] = [];
     isCopied: { [id: string]: boolean } = {};
 
     @Prop() id!: string;
@@ -228,11 +249,21 @@ export default class BaseModalRewardClaimsDownload extends Vue {
     @Prop() pool!: TPool;
 
     onShow() {
-        if (!this.rewards) return [];
+        this.getClaimURLs();
+    }
+
+    getClaimURLs() {
         const rewards = Object.values(this.rewards).filter((r) => this.selectedItems.includes(r._id));
+        this.claims = [];
         for (const r of rewards) {
             const claims = Object.values(r.claims).map((claim: TClaim) => ({ ...claim, perk: r }));
-            this.claims = [...this.claims, ...claims];
+            this.claims = [...this.claims, ...claims].map((c) => ({
+                checkbox: c.uuid,
+                url: this.getUrl(c.uuid),
+                claimedAt: { sub: c.sub, date: c.claimedAt },
+                createdAt: c.createdAt,
+                id: c.uuid,
+            }));
         }
     }
 
@@ -244,14 +275,11 @@ export default class BaseModalRewardClaimsDownload extends Vue {
         if (!this.claims) return [];
         return this.claims
             .sort((a, b) => (a.createdAt && b.createdAt && a.createdAt < b.createdAt ? 1 : -1))
-            .map((c) => ({
-                checkbox: c.uuid,
-                url: this.getUrl(c),
-                claimedAt: { sub: c.sub, date: c.claimedAt },
-                createdAt: c.createdAt,
-                id: c.uuid,
-            }))
             .slice(this.page * this.limit - this.limit, this.page * this.limit);
+    }
+
+    onChangeRedirectURL() {
+        this.getClaimURLs();
     }
 
     onSelectAll(isSelectAll: boolean) {
@@ -267,12 +295,12 @@ export default class BaseModalRewardClaimsDownload extends Vue {
     }
 
     onClickDownloadZipAll() {
-        this.selectedClaims = this.claims.map((c) => c.uuid);
+        this.selectedClaims = this.claims.map((c) => c.id);
         this.onClickCreateZip();
     }
 
     onClickDownloadCSVAll() {
-        this.selectedClaims = this.claims.map((c) => c.uuid);
+        this.selectedClaims = this.claims.map((c) => c.id);
         this.onClickCreateCSV();
     }
 
@@ -331,7 +359,7 @@ export default class BaseModalRewardClaimsDownload extends Vue {
         });
         qrcode.options.height = size;
         qrcode.options.width = size;
-        // this.size = qrcode.options.height;
+
         const imgSize = size / 4;
         const positionX = size / 2 - imgSize / 2;
         const positionY = size / 2 - imgSize / 2;
@@ -355,8 +383,12 @@ export default class BaseModalRewardClaimsDownload extends Vue {
         return pdf.output('arraybuffer');
     }
 
-    getUrl(claim: TClaim) {
-        return `${this.pool.widget.domain}?thx_widget_path=/c/${claim.uuid}`;
+    get isValidRedirectUrl() {
+        return this.redirectUrl && isValidUrl(this.redirectUrl);
+    }
+
+    getUrl(uuid: string) {
+        return `${this.redirectUrl}?thx_widget_path=/c/${uuid}`;
     }
 
     async onClickCreateZip() {
@@ -366,11 +398,8 @@ export default class BaseModalRewardClaimsDownload extends Vue {
         const format = this.selectedFormat;
 
         for (const uuid of this.selectedClaims) {
-            const claim = this.claims.find((c) => c.uuid === uuid);
-            if (!claim) continue;
-
             let data: string | ArrayBuffer;
-            const url = this.getUrl(claim);
+            const url = this.getUrl(uuid);
 
             switch (format) {
                 case 'pdf': {
@@ -380,12 +409,12 @@ export default class BaseModalRewardClaimsDownload extends Vue {
                         this.color,
                         this.selectedUnit.value as UnitValues,
                     );
-                    archive.file(`${claim.uuid}.pdf`, data, { base64: true });
+                    archive.file(`${uuid}.pdf`, data, { base64: true });
                     break;
                 }
                 case 'png': {
                     data = await this.createQRCode(url, this.size, this.color);
-                    archive.file(`${claim.uuid}.png`, data, { base64: true });
+                    archive.file(`${uuid}.png`, data, { base64: true });
                     break;
                 }
             }
@@ -398,14 +427,7 @@ export default class BaseModalRewardClaimsDownload extends Vue {
 
     onClickCreateCSV() {
         const filename = `${new Date().getTime()}_${this.pool._id}_claim_urls`;
-        const data: any = [];
-
-        for (const uuid of this.selectedClaims) {
-            const claim = this.claims.find((c) => c.uuid === uuid);
-            if (!claim) continue;
-            data.push([this.getUrl(claim)]);
-        }
-
+        const data = this.selectedClaims.map((uuid) => [this.getUrl(uuid)]);
         const csvContent = 'data:text/csv;charset=utf-8,' + data.map((e) => e.join(',')).join('\n');
         saveAs(encodeURI(csvContent), `${filename}.csv`);
     }
