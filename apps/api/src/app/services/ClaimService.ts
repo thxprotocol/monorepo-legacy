@@ -7,11 +7,8 @@ function create(
     data: { poolId: string; rewardUuid: string; erc20Id?: string; erc721Id?: string; erc1155Id?: string },
     claimAmount: number,
 ) {
-    return Claim.create(
-        claimAmount > 0
-            ? Array.from({ length: Number(claimAmount) }).map(() => ({ uuid: db.createUUID(), ...data }))
-            : [data],
-    );
+    if (!claimAmount) return;
+    return Claim.create(Array.from({ length: Number(claimAmount) }).map(() => ({ uuid: db.createUUID(), ...data })));
 }
 function findByUuid(uuid: string) {
     return Claim.findOne({ uuid });
