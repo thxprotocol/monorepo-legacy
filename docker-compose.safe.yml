@@ -1,7 +1,12 @@
 version: '3.8'
 
+volumes:
+    nginx-shared-txs:
+    nginx-shared-cfg:
+
 services:
     nginx:
+        container_name: thx_nginx
         image: nginx:alpine
         ports:
             - "${REVERSE_PROXY_PORT}:8000"
@@ -15,6 +20,7 @@ services:
             - cgw-web
 
     txs-db:
+        container_name: thx_safe_txs_db
         image: postgres:14-alpine
         environment:
             POSTGRES_PASSWORD: postgres
@@ -22,6 +28,7 @@ services:
             - ./docker/data/txs-db:/var/lib/postgresql/data
 
     cfg-db:
+        container_name: thx_safe_cfg_db
         image: postgres:14-alpine
         environment:
             POSTGRES_PASSWORD: postgres
@@ -31,15 +38,18 @@ services:
 
     # Safe Transaction Service
     txs-redis:
+        container_name: thx_redis
         image: redis:alpine
 
     txs-rabbitmq:
+        container_name: thx_rabbitmq
         image: rabbitmq:alpine
 
     txs-web:
+        container_name: thx_safe_txs_web
         image: safeglobal/safe-transaction-service:${TXS_VERSION}
         env_file:
-            - ./docker/env/txs.env
+            - docker/env/txs.env
         environment:
             - ETHEREUM_NODE_URL=${RPC_NODE_URL}
         depends_on:
@@ -51,9 +61,10 @@ services:
         command: docker/web/run_web.sh
 
     txs-worker-indexer: &txs-worker
+        container_name: thx_safe_txs_worker_indexer
         image: safeglobal/safe-transaction-service:${TXS_VERSION}
         env_file:
-            - ./docker/env/txs.env
+            - docker/env/txs.env
         environment:
             - ETHEREUM_NODE_URL=${RPC_NODE_URL}
             - RUN_MIGRATIONS=1
@@ -63,53 +74,56 @@ services:
             - txs-redis
         command: docker/web/celery/worker/run.sh
 
-    txs-worker-contracts-tokens:
+    txs-worker-contracts-tokens: 
         <<: *txs-worker
+        container_name: thx_safe_txs_worker_contracts_tokens
         environment:
             - WORKER_QUEUES=contracts,tokens
             - ETHEREUM_NODE_URL=${RPC_NODE_URL}
 
     txs-worker-notifications-webhooks:
         <<: *txs-worker
+        container_name: thx_safe_txs_worker_notifications_webhooks
         environment:
             - WORKER_QUEUES=notifications,webhooks
             - ETHEREUM_NODE_URL=${RPC_NODE_URL}
 
     txs-scheduler:
         <<: *txs-worker
+        container_name: thx_safe_txs_scheduler
         command: docker/web/celery/scheduler/run.sh
 
     # Safe Config Service
     cfg-web:
+        container_name: thx_safe_cfg_web
         image: safeglobal/safe-config-service:${CFG_VERSION}
         tty: true
         volumes:
             - nginx-shared-cfg:/nginx
         env_file:
-            - ./docker/env/cfg.env
+            - docker/env/cfg.env
         depends_on:
             - cfg-db
 
     # Safe Client Gateway
     cgw-redis:
+        container_name: thx_safe_cgw_redis
         image: redis:alpine
 
     cgw-web:
+        container_name: thx_safe_cgw_web
         image: safeglobal/safe-client-gateway:${CGW_VERSION}
         env_file:
-            - ./docker/env/cgw.env
+            - docker/env/cgw.env
         depends_on:
             - cgw-redis
 
     ui:
+        container_name: thx_safe_ui
         image: safeglobal/safe-wallet-web:${UI_VERSION}
         env_file:
-            - ./docker/env/ui.env
+            - docker/env/ui.env
         depends_on:
             - nginx
         ports:
             - "${REVERSE_PROXY_UI_PORT}:3000"
-
-volumes:
-    nginx-shared-txs:
-    nginx-shared-cfg:
