@@ -250,6 +250,7 @@ export default class BaseModalRewardClaimsDownload extends Vue {
 
     onShow() {
         this.getClaimURLs();
+        this.redirectUrl = this.pool.widget.domain;
     }
 
     getClaimURLs() {
