@@ -1,18 +1,17 @@
 import { Request, Response } from 'express';
-import WalletService from '@thxnetwork/api/services/WalletService';
 import { body } from 'express-validator';
-import { Wallet } from '../../models/Wallet';
+import SafeService, { Wallet } from '@thxnetwork/api/services/SafeService';
+import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 
 export const validation = [
-    body('sub').optional().isMongoId(),
+    body('sub').exists().isMongoId(),
     body('chainId').exists().isNumeric(),
     body('address').optional().isString(),
-    body('forceSync').optional().isBoolean(),
 ];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Wallets']
-    const { sub, chainId, address, forceSync } = req.body;
+    const { sub, chainId, address } = req.body;
     const query = {};
     if (sub) query['sub'] = sub;
     if (chainId) query['chainId'] = Number(chainId);
@@ -20,7 +19,8 @@ const controller = async (req: Request, res: Response) => {
 
     let wallet = await Wallet.findOne(query);
     if (!wallet) {
-        wallet = await WalletService.create({ sub, chainId, address, forceSync });
+        const account = await AccountProxy.getById(sub);
+        wallet = await SafeService.create({ sub, chainId, address }, account.address);
     }
 
     return res.status(201).json(wallet);

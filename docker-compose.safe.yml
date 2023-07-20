@@ -118,12 +118,12 @@ services:
         depends_on:
             - cgw-redis
 
-    ui:
-        container_name: thx_safe_ui
-        image: safeglobal/safe-wallet-web:${UI_VERSION}
-        env_file:
-            - docker/env/ui.env
-        depends_on:
-            - nginx
-        ports:
-            - "${REVERSE_PROXY_UI_PORT}:3000"
+    # ui:
+    #     container_name: thx_safe_ui
+    #     image: safeglobal/safe-wallet-web:${UI_VERSION}
+    #     env_file:
+    #         - docker/env/ui.env
+    #     depends_on:
+    #         - nginx
+    #     ports:
+    #         - "${REVERSE_PROXY_UI_PORT}:3000"
