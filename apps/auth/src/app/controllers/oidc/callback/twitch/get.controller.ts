@@ -14,7 +14,7 @@ export async function controller(req: Request, res: Response) {
         await AccountService.isConnected(interaction.session.accountId, tokenInfo.userId, AccessTokenKind.Twitch);
     }
 
-    const account = await AccountService.findOrCreate(interaction.session, tokenInfo, AccountVariant.SSOTwitch, email);
+    const account = await AccountService.findOrCreate(interaction, tokenInfo, AccountVariant.SSOTwitch, email);
     const returnUrl = await callbackPostSSOCallback(interaction, account);
 
     return res.redirect(returnUrl);

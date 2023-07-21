@@ -14,7 +14,7 @@ export async function controller(req: Request, res: Response) {
         await AccountService.isConnected(interaction.session.accountId, tokenInfo.userId, AccessTokenKind.Google);
     }
 
-    const account = await AccountService.findOrCreate(interaction.session, tokenInfo, AccountVariant.SSOGoogle, email);
+    const account = await AccountService.findOrCreate(interaction, tokenInfo, AccountVariant.SSOGoogle, email);
     const returnUrl = await callbackPostSSOCallback(interaction, account);
 
     res.redirect(returnUrl);

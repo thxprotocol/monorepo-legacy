@@ -29,3 +29,4 @@ export * from './Claim';
 export * from './Wallet';
 export * from './Merchant';
 export * from './Client';
+export * from './Interaction';

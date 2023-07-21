@@ -18,7 +18,7 @@ export async function controller(req: Request, res: Response) {
         await AccountService.isConnected(interaction.session.accountId, tokenInfo.userId, AccessTokenKind.Discord);
     }
 
-    const account = await AccountService.findOrCreate(interaction.session, tokenInfo, AccountVariant.SSODiscord, email);
+    const account = await AccountService.findOrCreate(interaction, tokenInfo, AccountVariant.SSODiscord, email);
     const returnUrl = await callbackPostSSOCallback(interaction, account);
 
     if (isSignup) {

@@ -7,7 +7,7 @@ import {
     ERROR_VERIFY_EMAIL_EXPIRED,
 } from '../util/messages';
 import { YouTubeService } from './YouTubeService';
-import { TAccount, TWallet, AccountVariant } from '@thxnetwork/types/interfaces';
+import { TInteraction, TAccount, TWallet, AccountVariant } from '@thxnetwork/types/interfaces';
 import { AccessTokenKind, AccountPlanType, ChainId } from '@thxnetwork/types/enums';
 import bcrypt from 'bcrypt';
 import { ForbiddenError } from '../util/errors';
@@ -132,7 +132,7 @@ export class AccountService {
     static async createForWallet(wallet: TWallet) {
         const account = await Account.create({
             variant: AccountVariant.Metamask,
-            plan: AccountPlanType.Basic,
+            plan: AccountPlanType.Free,
             active: true,
         });
         wallet.sub = String(account._id);
@@ -143,7 +143,7 @@ export class AccountService {
     static async createForAddress(address: string) {
         const account = await Account.create({
             variant: AccountVariant.Metamask,
-            plan: AccountPlanType.Basic,
+            plan: AccountPlanType.Free,
             active: true,
         });
         const chainId = NODE_ENV === 'production' ? ChainId.Polygon : ChainId.Hardhat;
@@ -159,13 +159,14 @@ export class AccountService {
     }
 
     static async findOrCreate(
-        session: { accountId: string },
+        interaction: TInteraction,
         tokenInfo: IAccessToken,
         variant: AccountVariant,
         email?: string,
     ) {
-        let account: AccountDocument;
+        const { session, params } = interaction;
 
+        let account: AccountDocument;
         // Find account for active session
         if (session && session.accountId) {
             account = await Account.findById(session.accountId);
@@ -182,7 +183,7 @@ export class AccountService {
         // When no account is matched, create the account.
         if (!account) {
             const isEmailVerified = this.getIsEmailVerified(variant, email);
-            const data = { variant, plan: AccountPlanType.Basic, active: true, isEmailVerified };
+            const data = { variant, plan: params.signup_plan || AccountPlanType.Free, active: true, isEmailVerified };
             if (email) {
                 data['email'] = email;
             }
@@ -199,7 +200,6 @@ export class AccountService {
         if (!email) return undefined;
 
         const ssoVariants = [
-            AccountVariant.SSODiscord,
             AccountVariant.SSOGoogle,
             AccountVariant.SSOTwitter,
             AccountVariant.SSOGithub,
@@ -208,6 +208,7 @@ export class AccountService {
         ];
 
         if (ssoVariants.includes(accountVariant)) return true;
+
         return false;
     }
 
