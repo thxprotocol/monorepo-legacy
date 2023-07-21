@@ -72,9 +72,9 @@ async function proposeTransaction(wallet: WalletDocument, safeTransaction: SafeT
     const safeSdk = await Safe.create({ ethAdapter, safeAddress: wallet.address, contractNetworks });
     const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
     const senderSignature = await safeSdk.signTransactionHash(safeTxHash);
-    const safeService = getSafeSDK(wallet.chainId);
+    const safeSDK = getSafeSDK(wallet.chainId);
 
-    await safeService.proposeTransaction({
+    await safeSDK.proposeTransaction({
         safeAddress: wallet.address,
         safeTxHash,
         safeTransactionData: safeTransaction.data as any,
