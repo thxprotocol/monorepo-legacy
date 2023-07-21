@@ -14,7 +14,7 @@ export async function controller(req: Request, res: Response) {
         await AccountService.isConnected(interaction.session.accountId, tokenInfo.userId, AccessTokenKind.Twitter);
     }
 
-    const account = await AccountService.findOrCreate(interaction.session, tokenInfo, AccountVariant.SSOGithub, email);
+    const account = await AccountService.findOrCreate(interaction, tokenInfo, AccountVariant.SSOGithub, email);
     const returnUrl = await callbackPostSSOCallback(interaction, account);
 
     return res.redirect(returnUrl);
