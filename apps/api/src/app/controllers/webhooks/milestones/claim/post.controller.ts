@@ -57,7 +57,7 @@ const controller = async (req: Request, res: Response) => {
 };
 
 async function getWalletForCode(pool: AssetPoolDocument, code: string) {
-    // First find the wallet for the ID
+    // First find the wallet for the code
     const wallet = await Wallet.findOne({ chainId: pool.chainId, uuid: code });
     // Second, if that wallet contains no sub it has not been transfered (yet)
     if (!wallet.sub) return wallet;

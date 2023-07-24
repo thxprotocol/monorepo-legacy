@@ -206,6 +206,15 @@ export const update = (erc20: ERC20Document, updates: IERC20Updates) => {
     return ERC20.findByIdAndUpdate(erc20._id, updates, { new: true });
 };
 
+export const approve = async (erc20: ERC20Document, wallet: WalletDocument, amountInWei: string) => {
+    const { defaultAccount } = getProvider(wallet.chainId);
+    return await TransactionService.sendSafeAsync(
+        wallet,
+        erc20.address,
+        erc20.contract.methods.approve(toChecksumAddress(defaultAccount), amountInWei),
+    );
+};
+
 export const transferFrom = async (erc20: ERC20Document, wallet: WalletDocument, to: string, amountInWei: string) => {
     const erc20Transfer = await ERC20Transfer.create({
         erc20Id: erc20._id,
@@ -222,15 +231,18 @@ export const transferFrom = async (erc20: ERC20Document, wallet: WalletDocument,
         await createERC20Token(erc20, toWallet.sub);
     }
 
-    const txId = await TransactionService.sendAsync(
-        wallet.address,
-        wallet.contract.methods.transferERC20(erc20.address, to, amountInWei),
-        wallet.chainId,
-        true,
+    const tx = await TransactionService.sendSafeAsync(
+        wallet,
+        erc20.address,
+        erc20.contract.methods.transferFrom(toChecksumAddress(wallet.address), to, amountInWei),
         { type: 'transferFromCallBack', args: { erc20Id: String(erc20._id) } },
     );
-    return await ERC20Transfer.findByIdAndUpdate(erc20Transfer._id, { transactionId: txId }, { new: true });
+
+    await erc20Transfer.updateOne({ transactionId: String(tx._id) });
+
+    return tx;
 };
+
 export const transferFromCallBack = async (args: TERC20TransferFromCallBackArgs, receipt: TransactionReceipt) => {
     const erc20 = await ERC20.findById(args.erc20Id);
     const events = parseLogs(erc20.contract.options.jsonInterface, receipt.logs);
@@ -270,4 +282,5 @@ export default {
     transferFrom,
     transferFromCallBack,
     getTokensForWallet,
+    approve,
 };

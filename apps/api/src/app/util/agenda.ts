@@ -24,7 +24,7 @@ db.connection.once('open', async () => {
     agenda.mongo(db.connection.getClient().db() as any, 'jobs');
 
     await agenda.start();
-    await agenda.every('10 seconds', EVENT_UPDATE_PENDING_TRANSACTIONS);
+    await agenda.every('5 seconds', EVENT_UPDATE_PENDING_TRANSACTIONS);
     await agenda.every('15 minutes', EVENT_CREATE_CONDITIONAL_REWARDS);
     await agenda.every('0 9 * * MON', EVENT_SEND_POOL_ANALYTICS_REPORT);
 

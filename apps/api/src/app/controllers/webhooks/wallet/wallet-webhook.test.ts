@@ -1,17 +1,24 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId } from '@thxnetwork/types/enums';
-import { authAccessToken, dashboardAccessToken, sub3, widgetAccessToken3 } from '@thxnetwork/api/util/jest/constants';
+import {
+    dashboardAccessToken,
+    sub3,
+    userWalletPrivateKey3,
+    widgetAccessToken3,
+} from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { validate } from 'uuid';
 import { MilestoneRewardDocument } from '@thxnetwork/api/models/MilestoneReward';
+import { Wallet } from 'ethers';
+import { userWalletAddress3 } from '@thxnetwork/api/util/jest/constants';
 
 const user = request.agent(app);
 
 describe('Milestone Rewards', () => {
-    let pool: AssetPoolDocument, milestoneReward: MilestoneRewardDocument;
+    let safeAddress: string, pool: AssetPoolDocument, milestoneReward: MilestoneRewardDocument;
 
     beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
@@ -45,7 +52,7 @@ describe('Milestone Rewards', () => {
     });
 
     describe('Wallet onboarding', () => {
-        let wallet, code, userWalletAddress3;
+        let wallet, code, userWalletUuid;
 
         // Onboard a new wallet
         it('POST /webhook/wallet/:token', (done) => {
@@ -73,16 +80,18 @@ describe('Milestone Rewards', () => {
                 .expect(201, done);
         });
 
-        // Deploy a wallet for an authenticated user
-        it('POST /wallets', (done) => {
-            user.post(`/v1/wallets`)
-                .set({ Authorization: authAccessToken })
-                .send({ sub: sub3, chainId: ChainId.Hardhat, forceSync: true })
-                .expect((res: request.Response) => {
-                    expect(isAddress(res.body.address)).toBeTruthy();
-                    userWalletAddress3 = res.body.address;
-                })
-                .expect(201, done);
+        // Update account address with MPC wallet address
+        it('PATCH /account (address)', async () => {
+            const authRequestMessage = 'test';
+            const authRequestSignature = await (async () => {
+                const wallet = new Wallet(userWalletPrivateKey3);
+                return await wallet.signMessage(authRequestMessage);
+            })();
+            const res = await user
+                .patch(`/v1/account`)
+                .set({ Authorization: widgetAccessToken3 })
+                .send({ authRequestMessage, authRequestSignature });
+            expect(res.body.address).toBe(userWalletAddress3);
         });
 
         // Get onboarded wallet details for code
@@ -99,13 +108,25 @@ describe('Milestone Rewards', () => {
                 .expect(200, done);
         });
 
-        // Claim ownership of wallet and pending rewards
+        // Claim ownership of wallet
         it('PATCH /account/wallet', (done) => {
             user.patch(`/v1/account/wallet`)
                 .set({ Authorization: widgetAccessToken3 })
                 .send({ code })
                 .expect((res: request.Response) => {
                     expect(res.body.sub).toBe(sub3);
+                })
+                .expect(200, done);
+        });
+
+        it('GET /wallets', (done) => {
+            user.get(`/v1/wallets`)
+                .set({ Authorization: widgetAccessToken3 })
+                .expect(({ body }: request.Response) => {
+                    console.log(body);
+                    expect(body[0].sub).toBe(sub3);
+                    expect(isAddress(body[0].address)).toBeTruthy;
+                    safeAddress = body[0].address;
                 })
                 .expect(200, done);
         });
@@ -117,7 +138,7 @@ describe('Milestone Rewards', () => {
                 .expect((res: request.Response) => {
                     expect(res.body.uuid).toBeDefined();
                     expect(res.body.milestoneRewardId).toBe(milestoneReward._id);
-                    expect(res.body.wallet.address).toBe(userWalletAddress3);
+                    expect(res.body.wallet.address).toBe(safeAddress);
                 })
                 .expect(201, done);
         });

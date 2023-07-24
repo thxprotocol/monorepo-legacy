@@ -10,6 +10,7 @@ import ImportERC20 from './token/post.controller';
 import DeleteERC20 from './delete.controller';
 import UpdateERC20 from './patch.controller';
 import PreviewERC20 from './import_preview/post.controller';
+import CreateApproveERC20 from './approve/post.controller';
 import CreateTransferERC20 from './transfer/post.controller';
 import ReadTransferERC20 from './transfer/get.controller';
 import ListTransferERC20 from './transfer/list.controller';
@@ -41,6 +42,9 @@ router.get(
 );
 router.get('/transfer/:id', guard.check(['erc20:read']), ReadTransferERC20.controller);
 router.post('/transfer', assertRequestInput(CreateTransferERC20.validation), CreateTransferERC20.controller);
+
+// Approve Resource
+router.post('/approve', assertRequestInput(CreateApproveERC20.validation), CreateApproveERC20.controller);
 
 // ERC20 Resource
 router.get('/', guard.check(['erc20:read']), assertRequestInput(ListERC20.validation), ListERC20.controller);

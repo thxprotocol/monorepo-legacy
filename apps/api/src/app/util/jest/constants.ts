@@ -24,8 +24,9 @@ export const sub2 = '6074cbdd1459355fae4b6a15';
 export const sub3 = '6074cbdd1459355fae4b6a16';
 export const userWalletAddress = '0xE1ea36CC205923b3fC3b46bb747BE4Fd6bE23E6C';
 export const userWalletAddress2 = '0xaf9d56684466fcFcEA0a2B7fC137AB864d642946';
-export const userWalletAddress3 = '0x08302CF8648A961c607e3e7Bd7B7Ec3230c2A6c5';
+export const userWalletAddress3 = '0x861EFc0989DF42d793e3147214FfFcA4D124cAE8';
 export const userWalletPrivateKey2 = '0x97093724e1748ebfa6aa2d2ec4ec68df8678423ab9a12eb2d27ddc74e35e5db9';
+export const userWalletPrivateKey3 = '0x5a05e38394194379795422d2e8c1d33e90033d90defec4880174c39198f707e3';
 export const account = {
     sub,
     plan: AccountPlanType.Basic,
@@ -41,6 +42,7 @@ export const account3 = {
     sub: sub3,
     plan: AccountPlanType.Basic,
     variant: AccountVariant.Metamask,
+    address: userWalletAddress3,
 };
 
 export const rewardId = 1;

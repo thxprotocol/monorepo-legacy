@@ -1,7 +1,7 @@
 import { Transaction, TransactionDocument } from '@thxnetwork/api/models/Transaction';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { ChainId, TransactionState, TransactionType } from '@thxnetwork/types/enums';
-import { MINIMUM_GAS_LIMIT, RELAYER_SPEED } from '@thxnetwork/api/config/secrets';
+import { MINIMUM_GAS_LIMIT, POLYGON_RELAYER_API_KEY, RELAYER_SPEED } from '@thxnetwork/api/config/secrets';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import type { TTransactionCallback } from '@thxnetwork/api/types/TTransaction';
 import { TransactionReceipt } from 'web3-eth-accounts/node_modules/web3-core';
@@ -11,11 +11,17 @@ import { deployCallback as erc20DeployCallback } from './ERC20Service';
 import PoolService from './PoolService';
 import ERC721Service from './ERC721Service';
 import WithdrawalService from './WithdrawalService';
-import { RelayerTransactionPayload } from 'defender-relay-client';
+import { Relayer, RelayerTransactionPayload } from 'defender-relay-client';
 import WalletService from './WalletService';
 import WalletManagerService from './WalletManagerService';
 import { Contract } from 'web3-eth-contract';
 import ERC1155Service from './ERC1155Service';
+import SafeService from './SafeService';
+import { SafeMultisigTransactionResponse, SafeTransactionDataPartial } from '@safe-global/safe-core-sdk-types';
+import { WalletDocument } from '../models/Wallet';
+import { triggerAsyncId } from 'async_hooks';
+import Safe from '@safe-global/protocol-kit';
+import { estimateTxGas } from '@safe-global/protocol-kit/dist/src/utils';
 
 function getById(id: string) {
     return Transaction.findById(id);
@@ -141,6 +147,69 @@ async function sendAsync(
 
     // We return the id because the transaction might be out of date and the transaction is not used by callers anyway.
     return String(tx._id);
+}
+
+async function execSafeAsync(wallet: WalletDocument, tx: TransactionDocument) {
+    const { web3, defaultAccount, relayer } = getProvider(wallet.chainId);
+    const safeTransaction = await SafeService.getTransaction(wallet, tx.transactionHash);
+
+    // If there is no relayer for the network the safe executes
+    if (!relayer) {
+        const receipt = await web3.eth.sendTransaction({
+            from: defaultAccount,
+            to: safeTransaction.to,
+            data: safeTransaction.data,
+            gas: safeTransaction.safeTxGas,
+        });
+        console.log(receipt.events);
+        await transactionMined(tx, receipt);
+        return;
+    }
+
+    const defenderTx = await relayer.sendTransaction({
+        to: safeTransaction.to,
+        data: safeTransaction.data,
+        gasLimit: safeTransaction.safeTxGas || '196000',
+        speed: RELAYER_SPEED,
+    });
+
+    await tx.updateOne({
+        transactionId: defenderTx.transactionId,
+        transactionHash: defenderTx.hash,
+        state: TransactionState.Sent,
+    });
+}
+
+async function sendSafeAsync(wallet: WalletDocument, to: string | null, fn: any, callback?: TTransactionCallback) {
+    const { relayer, defaultAccount } = getProvider(wallet.chainId);
+    const data = fn.encodeABI();
+    // const estimate = await fn.estimateGas({ from: toChecksumAddress(defaultAccount) });
+    const estimate = 5000000;
+    const gas = estimate < MINIMUM_GAS_LIMIT ? MINIMUM_GAS_LIMIT : estimate;
+    const tx = await Transaction.create({
+        type: relayer ? TransactionType.Relayed : TransactionType.Default,
+        state: TransactionState.Queued,
+        chainId: wallet.chainId,
+        walletId: String(wallet._id),
+        from: defaultAccount,
+        gas: gas,
+        to,
+        callback,
+    });
+
+    const safeTxHash = await SafeService.proposeTransaction(wallet, {
+        to,
+        data,
+        value: '0',
+        safeTxGas: gas,
+    });
+    await SafeService.confirmTransaction(wallet, safeTxHash);
+
+    return await Transaction.findByIdAndUpdate(
+        tx._id,
+        { state: TransactionState.Confirmed, transactionHash: safeTxHash },
+        { new: true },
+    );
 }
 
 async function deploy(abi: any, bytecode: any, arg: any[], chainId: ChainId) {
@@ -321,6 +390,8 @@ export default {
     deploy,
     sendValue,
     findByQuery,
+    sendSafeAsync,
+    execSafeAsync,
     queryTransactionStatusDefender,
     queryTransactionStatusReceipt,
 };

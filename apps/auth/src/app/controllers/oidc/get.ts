@@ -1,7 +1,6 @@
 import { oidc } from '@thxnetwork/auth/util/oidc';
 import { AccountDocument } from '@thxnetwork/auth/models/Account';
 import { UnauthorizedError } from '@thxnetwork/auth/util/errors';
-import { createWallet } from '@thxnetwork/auth/util/wallet';
 import { Request, Response } from 'express';
 import { hubspot } from '@thxnetwork/auth/util/hubspot';
 import { DASHBOARD_URL } from '@thxnetwork/auth/config/secrets';
@@ -63,9 +62,6 @@ export const callbackPostAuth = async (
     if (params.referral_code) {
         await account.updateOne({ referralCode: params.referral_code });
     }
-
-    // Create wallet for user
-    createWallet(account);
 
     // Transfer pool ownership if there is a pool_transfer_token
     if (params.pool_id && params.pool_transfer_token) {

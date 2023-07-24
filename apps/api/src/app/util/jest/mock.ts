@@ -61,6 +61,7 @@ export function mockStart() {
 
     // Account 3
     mockAuthPath('get', `/account/${sub3}`, 200, account3);
+    mockAuthPath('patch', `/account/${sub3}`, 204, account3);
 }
 
 export function mockClear() {

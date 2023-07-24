@@ -117,6 +117,10 @@ class InsufficientBalanceError extends BadRequestError {
     message = 'Transfer amount exceeds balance';
 }
 
+class InsufficientAllowanceError extends BadRequestError {
+    message = 'Requested amount exceeds allowance';
+}
+
 class TokenPaymentFailedError extends InternalServerError {
     message = 'Transfer did not succeed';
 }
@@ -167,5 +171,6 @@ export {
     AlreadyAMemberError,
     NoDataAtAddressError,
     MaxFeePerGasExceededError,
+    InsufficientAllowanceError,
     NoFeeDataError,
 };
