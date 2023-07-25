@@ -2,11 +2,12 @@ import { ERC20TokenDocument } from '@thxnetwork/api/models/ERC20Token';
 import { Request, Response } from 'express';
 import { TERC20, TERC20Token } from '@thxnetwork/types/interfaces';
 import { fromWei } from 'web3-utils';
-import ERC20Service from '@thxnetwork/api/services/ERC20Service';
-import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
 import { query } from 'express-validator';
-import WalletService, { Wallet } from '@thxnetwork/api/services/WalletService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
+import { ChainId } from '@thxnetwork/types/enums';
+import ERC20Service from '@thxnetwork/api/services/ERC20Service';
+import WalletService from '@thxnetwork/api/services/WalletService';
+import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
 
 const validation = [query('chainId').exists().isNumeric()];
 
@@ -23,10 +24,9 @@ export const controller = async (req: Request, res: Response) => {
         }
     }
     */
-    const chainId = Number(req.query.chainId);
+    const chainId = Number(req.query.chainId) as ChainId;
     const wallet = await WalletService.findPrimary(req.auth.sub, chainId);
     if (!wallet) throw new NotFoundError('Could not find the wallet for the user');
-    console.log(wallet.address);
 
     const tokens = await ERC20Service.getTokensForWallet(wallet);
     const result = await Promise.all(

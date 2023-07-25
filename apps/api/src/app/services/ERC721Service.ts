@@ -5,7 +5,7 @@ import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { ERC721, ERC721Document, IERC721Updates } from '@thxnetwork/api/models/ERC721';
 import { ERC721Metadata, ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
 import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
-import { Transaction } from '@thxnetwork/api/models/Transaction';
+import { Transaction, TransactionDocument } from '@thxnetwork/api/models/Transaction';
 import { ChainId, TransactionState } from '@thxnetwork/types/enums';
 import {
     TERC721DeployCallbackArgs,
@@ -248,13 +248,11 @@ export async function transferFromWallet(
     erc721Token: ERC721TokenDocument,
     wallet: WalletDocument,
     to: string,
-    forceSync = true,
-): Promise<ERC721TransferDocument> {
-    const txId = await TransactionService.sendAsync(
-        wallet.contract.options.address,
-        wallet.contract.methods.transferERC721(erc721.address, to, erc721Token.tokenId),
-        wallet.chainId,
-        forceSync,
+): Promise<TransactionDocument> {
+    const tx = await TransactionService.sendSafeAsync(
+        wallet,
+        erc721.address,
+        erc721.contract.methods.transferFrom(wallet.address, to, erc721Token.tokenId),
         {
             type: 'erc721TransferFromWalletCallback',
             args: {
@@ -266,7 +264,9 @@ export async function transferFromWallet(
         },
     );
 
-    return ERC721Token.findByIdAndUpdate(erc721Token._id, { transactions: [txId] }, { new: true });
+    await erc721Token.updateOne({ transactions: [tx._id] });
+
+    return tx;
 }
 
 export async function transferFromWalletCallback(

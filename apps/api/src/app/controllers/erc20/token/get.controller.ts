@@ -4,8 +4,7 @@ import { param } from 'express-validator';
 import { fromWei } from 'web3-utils';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
-import { Wallet } from '@thxnetwork/api/services/WalletService';
+import WalletService, { Wallet } from '@thxnetwork/api/services/WalletService';
 
 const validation = [param('id').exists().isMongoId()];
 
@@ -24,27 +23,17 @@ const controller = async (req: Request, res: Response) => {
     if (!erc20) throw new NotFoundError('ERC20 not found');
 
     const account = await AccountProxy.getById(req.auth.sub);
-    const wallet = await Wallet.findOne({ sub: req.auth.sub, chainId: erc20.chainId });
-    const pendingWithdrawals = await WithdrawalService.getPendingWithdrawals(erc20, wallet);
+    const wallet = await WalletService.findPrimary(req.auth.sub, erc20.chainId);
 
-    const walletAddress = await account.getAddress(erc20.chainId);
-    const walletBalanceInWei = await erc20.contract.methods.balanceOf(walletAddress).call();
+    const walletBalanceInWei = await erc20.contract.methods.balanceOf(wallet.address).call();
     const walletBalance = Number(fromWei(walletBalanceInWei, 'ether'));
-
-    const balanceInWei = await erc20.contract.methods.balanceOf(account.address).call();
-    const balance = Number(fromWei(balanceInWei, 'ether'));
-    const balancePending = pendingWithdrawals
-        .map((item: any) => item.amount)
-        .reduce((prev: any, curr: any) => prev + curr, 0);
+    const allowanceInWei = await erc20.contract.methods.allowance(account.address).call();
 
     res.json({
         ...token.toJSON(),
-        balanceInWei,
-        balance,
-        balancePending,
+        allowanceInWei,
         walletBalanceInWei,
         walletBalance,
-        pendingWithdrawals,
         erc20,
     });
 };

@@ -207,11 +207,10 @@ export const update = (erc20: ERC20Document, updates: IERC20Updates) => {
 };
 
 export const approve = async (erc20: ERC20Document, wallet: WalletDocument, amountInWei: string) => {
-    const { defaultAccount } = getProvider(wallet.chainId);
     return await TransactionService.sendSafeAsync(
         wallet,
         erc20.address,
-        erc20.contract.methods.approve(toChecksumAddress(defaultAccount), amountInWei),
+        erc20.contract.methods.approve(toChecksumAddress(wallet.address), amountInWei),
     );
 };
 
@@ -227,14 +226,14 @@ export const transferFrom = async (erc20: ERC20Document, wallet: WalletDocument,
 
     // Check if an erc20Token exists for a known receiving wallet and create one if not
     const toWallet = await Wallet.findOne({ chainId: wallet.chainId, address: toChecksumAddress(to) });
-    if (toWallet && !(await ERC20Token.exists({ _id: toWallet._id }))) {
+    if (toWallet && !(await ERC20Token.exists({ walletId: toWallet._id }))) {
         await createERC20Token(erc20, toWallet.sub);
     }
 
     const tx = await TransactionService.sendSafeAsync(
         wallet,
         erc20.address,
-        erc20.contract.methods.transferFrom(toChecksumAddress(wallet.address), to, amountInWei),
+        erc20.contract.methods.transfer(to, amountInWei),
         { type: 'transferFromCallBack', args: { erc20Id: String(erc20._id) } },
     );
 

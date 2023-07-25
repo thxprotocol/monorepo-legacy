@@ -21,7 +21,7 @@ export const controller = async (req: Request, res: Response) => {
 
     const wallet = await WalletService.findPrimary(req.auth.sub, req.body.chainId);
     if (!wallet) throw new NotFoundError('Could not find wallet for account');
-
+    ``;
     const amountInWei = new BN(req.body.amount);
     const balanceInWei = await erc20.contract.methods.balanceOf(wallet.address).call();
     const balance = new BN(balanceInWei);
@@ -29,7 +29,6 @@ export const controller = async (req: Request, res: Response) => {
     if (amountInWei.gt(balance)) throw new InsufficientBalanceError();
 
     const tx = await ERC20Service.approve(erc20, wallet, req.body.amount);
-    console.log({ tx });
 
     // TX Hash should be confirmed by client and job will execute it
     res.json(tx);

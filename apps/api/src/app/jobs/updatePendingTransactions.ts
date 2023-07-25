@@ -9,14 +9,13 @@ export async function updatePendingTransactions() {
     const proposedTx: TransactionDocument[] = await Transaction.find({
         state: TransactionState.Confirmed,
     }).sort({ createdAt: 'asc' });
-    console.log(proposedTx);
 
     // Iterate over all tx proposed and confirmed by the relayer
     // Legacy tx will not have this state
     for (const tx of proposedTx) {
         const wallet = await Wallet.findById(tx.walletId);
         const pendingTx = await SafeService.getTransaction(wallet, tx.transactionHash);
-        console.log(pendingTx.transactionHash, pendingTx.confirmations.length >= pendingTx.confirmationsRequired);
+        logger.info(`Safe TX Found: ${tx.transactionHash}`);
 
         // Check if tx is confirmed by 2 owners
         if (pendingTx.confirmations.length >= pendingTx.confirmationsRequired) {

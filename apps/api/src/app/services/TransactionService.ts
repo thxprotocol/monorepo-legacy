@@ -17,7 +17,11 @@ import WalletManagerService from './WalletManagerService';
 import { Contract } from 'web3-eth-contract';
 import ERC1155Service from './ERC1155Service';
 import SafeService from './SafeService';
-import { SafeMultisigTransactionResponse, SafeTransactionDataPartial } from '@safe-global/safe-core-sdk-types';
+import {
+    OperationType,
+    SafeMultisigTransactionResponse,
+    SafeTransactionDataPartial,
+} from '@safe-global/safe-core-sdk-types';
 import { WalletDocument } from '../models/Wallet';
 import { triggerAsyncId } from 'async_hooks';
 import Safe from '@safe-global/protocol-kit';
@@ -150,22 +154,18 @@ async function sendAsync(
 }
 
 async function execSafeAsync(wallet: WalletDocument, tx: TransactionDocument) {
-    const { web3, defaultAccount, relayer } = getProvider(wallet.chainId);
+    const { relayer } = getProvider(wallet.chainId);
     const safeTransaction = await SafeService.getTransaction(wallet, tx.transactionHash);
 
-    // If there is no relayer for the network the safe executes
+    // If there is no relayer for the network the safe executes immediately
     if (!relayer) {
-        const receipt = await web3.eth.sendTransaction({
-            from: defaultAccount,
-            to: safeTransaction.to,
-            data: safeTransaction.data,
-            gas: safeTransaction.safeTxGas,
-        });
-        console.log(receipt.events);
-        await transactionMined(tx, receipt);
+        const receipt = await SafeService.executeTransaction(wallet, tx.transactionHash);
+        await transactionMined(tx, receipt as any);
         return;
     }
 
+    // If there is a relayer the transaction is sent to Defender and the job
+    // processor polls for the receipt and invokes callback
     const defenderTx = await relayer.sendTransaction({
         to: safeTransaction.to,
         data: safeTransaction.data,
@@ -183,16 +183,12 @@ async function execSafeAsync(wallet: WalletDocument, tx: TransactionDocument) {
 async function sendSafeAsync(wallet: WalletDocument, to: string | null, fn: any, callback?: TTransactionCallback) {
     const { relayer, defaultAccount } = getProvider(wallet.chainId);
     const data = fn.encodeABI();
-    // const estimate = await fn.estimateGas({ from: toChecksumAddress(defaultAccount) });
-    const estimate = 5000000;
-    const gas = estimate < MINIMUM_GAS_LIMIT ? MINIMUM_GAS_LIMIT : estimate;
     const tx = await Transaction.create({
         type: relayer ? TransactionType.Relayed : TransactionType.Default,
         state: TransactionState.Queued,
         chainId: wallet.chainId,
         walletId: String(wallet._id),
         from: defaultAccount,
-        gas: gas,
         to,
         callback,
     });
@@ -201,8 +197,8 @@ async function sendSafeAsync(wallet: WalletDocument, to: string | null, fn: any,
         to,
         data,
         value: '0',
-        safeTxGas: gas,
     });
+
     await SafeService.confirmTransaction(wallet, safeTxHash);
 
     return await Transaction.findByIdAndUpdate(

@@ -123,7 +123,6 @@ describe('Milestone Rewards', () => {
             user.get(`/v1/wallets`)
                 .set({ Authorization: widgetAccessToken3 })
                 .expect(({ body }: request.Response) => {
-                    console.log(body);
                     expect(body[0].sub).toBe(sub3);
                     expect(isAddress(body[0].address)).toBeTruthy;
                     safeAddress = body[0].address;

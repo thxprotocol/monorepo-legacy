@@ -91,6 +91,7 @@ async function proposeTransaction(wallet: WalletDocument, safeTransactionData: S
         senderAddress: toChecksumAddress(await signer.getAddress()),
         senderSignature: senderSignature.data,
     });
+
     logger.info(`Safe TX Proposed: ${safeTxHash}`);
 
     return safeTxHash;
@@ -100,16 +101,24 @@ async function confirmTransaction(wallet: WalletDocument, safeTxHash: string) {
     const { ethAdapter } = getProvider(wallet.chainId);
     const safe = await Safe.create({ ethAdapter, safeAddress: wallet.address, contractNetworks });
     const signature = await safe.signTransactionHash(safeTxHash);
-
     return await confirm(wallet, safeTxHash, signature.data);
 }
 
 async function confirm(wallet: WalletDocument, safeTxHash: string, signatureData: string) {
     const safeSDK = getSafeSDK(wallet.chainId);
-    const tx = await safeSDK.confirmTransaction(safeTxHash, signatureData);
-    logger.info(`Safe TX Confirmed: ${safeTxHash}`);
+    return await safeSDK.confirmTransaction(safeTxHash, signatureData);
+}
 
-    return tx;
+async function executeTransaction(wallet: WalletDocument, safeTxHash: string) {
+    const { ethAdapter, signer } = getProvider(wallet.chainId);
+    const safeService = getSafeSDK(wallet.chainId);
+    const safeSdk = await Safe.create({ ethAdapter, safeAddress: wallet.address, contractNetworks });
+    const safeTransaction = await safeService.getTransaction(safeTxHash);
+    const executeTxResponse = await safeSdk.executeTransaction(safeTransaction as any, {
+        from: await signer.getAddress(),
+    });
+
+    return await executeTxResponse.transactionResponse?.wait();
 }
 
 async function getLastPendingTransactions(wallet: WalletDocument) {
@@ -137,4 +146,5 @@ export default {
     findByQuery,
     findOneByQuery,
     getTransaction,
+    executeTransaction,
 };
