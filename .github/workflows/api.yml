@@ -25,6 +25,7 @@ jobs:
               env:
                   NODE_OPTIONS: '--max-old-space-size=8192'
               run: |
+                  yarn \
                   npx nx run contracts:serve 2>&1 > /dev/null
 
             - name: Start Safe TXS
