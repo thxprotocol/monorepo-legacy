@@ -23,10 +23,10 @@ jobs:
 
             - name: Install Node.js 16.x and packages
               uses: actions/setup-node@v1
-                env:
-                  NODE_OPTIONS: '--max-old-space-size=8192'
               with:
                   node-version: 16.x
+              env:
+                  NODE_OPTIONS: '--max-old-space-size=8192'
               run: |
                   yarn
                   npx nx run contracts:serve 2>&1 > /dev/null
