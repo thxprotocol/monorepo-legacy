@@ -35,8 +35,11 @@ jobs:
             - name: Start Hardhat RPC
               run: yarn nx run contracts:serve > /dev/null 2>&1 &
 
-            # - name: Start Safe TXS
-            #   run: docker compose --env-file .env.example -f docker-compose.safe.yml up --force-recreate -d
+            - name: Show user and group IDs
+              run: id
+
+            - name: Set Permissions on Host Directory
+              run: sudo chown -R runner:1001 /docker/data
 
             - name: Lint code and run tests
               run: |

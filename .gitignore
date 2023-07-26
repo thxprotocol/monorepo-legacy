@@ -77,4 +77,4 @@ libs/contracts/deployments/localhost
 cypress/screenshots/*
 cypress/videos/*
 
-docker/data
+docker/data/**/*
