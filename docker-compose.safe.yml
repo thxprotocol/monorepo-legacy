@@ -10,6 +10,7 @@ services:
         image: nginx:alpine
         ports:
             - "${REVERSE_PROXY_PORT}:8000"
+            - "8545:8545"
         volumes:
             - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
             - nginx-shared-txs:/nginx-txs
