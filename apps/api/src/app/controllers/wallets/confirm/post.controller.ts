@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
-import { BadRequestError, UnauthorizedError } from '@thxnetwork/api/util/errors';
+import { BadRequestError, ForbiddenError, UnauthorizedError } from '@thxnetwork/api/util/errors';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import SafeService, { Wallet } from '@thxnetwork/api/services/SafeService';
 
@@ -14,6 +14,7 @@ const controller = async (req: Request, res: Response) => {
     // Find the primary wallet for this sub (containing an address)
     const wallet = await Wallet.findById(req.params.id);
     if (!wallet) throw new BadRequestError('Primary wallet not deployed yet.');
+    if (req.auth.sub !== wallet.sub) throw new ForbiddenError('Wallet not owned by sub.');
 
     await SafeService.confirm(wallet, req.body.safeTxHash, req.body.signature);
 

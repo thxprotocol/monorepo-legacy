@@ -1,13 +1,13 @@
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { Request, Response } from 'express';
 import { body } from 'express-validator';
+import { ReferralRewardClaim } from '@thxnetwork/api/models/ReferralRewardClaim';
 import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import MailService from '@thxnetwork/api/services/MailService';
-import { ReferralRewardClaim } from '@thxnetwork/api/models/ReferralRewardClaim';
-import { Wallet } from '@thxnetwork/api/models/Wallet';
+import WalletService from '@thxnetwork/api/services/WalletService';
 
 const validation = [body('claimUuids').exists().isArray()];
 
@@ -20,7 +20,7 @@ const controller = async (req: Request, res: Response) => {
             if (!claim) throw new NotFoundError('Could not find the reward claim for this uuid');
 
             const account = await AccountProxy.getById(claim.sub);
-            const wallet = await Wallet.findOne({ sub: claim.sub, chainId: pool.chainId });
+            const wallet = await WalletService.findPrimary(claim.sub, pool.chainId);
 
             if (!claim.isApproved) {
                 claim = await ReferralRewardClaim.findByIdAndUpdate(claim._id, { isApproved: true }, { new: true });

@@ -17,7 +17,7 @@ import { userWalletAddress3 } from '@thxnetwork/api/util/jest/constants';
 
 const user = request.agent(app);
 
-describe('Milestone Rewards', () => {
+describe('Webhook: Virtual Wallets', () => {
     let safeAddress: string, pool: AssetPoolDocument, milestoneReward: MilestoneRewardDocument;
 
     beforeAll(beforeAllCallback);
@@ -51,6 +51,20 @@ describe('Milestone Rewards', () => {
             .expect(201, done);
     });
 
+    // Update account address with MPC wallet address
+    it('PATCH /account (address)', async () => {
+        const authRequestMessage = 'test';
+        const authRequestSignature = await (async () => {
+            const wallet = new Wallet(userWalletPrivateKey3);
+            return await wallet.signMessage(authRequestMessage);
+        })();
+        const res = await user
+            .patch(`/v1/account`)
+            .set({ Authorization: widgetAccessToken3 })
+            .send({ authRequestMessage, authRequestSignature });
+        expect(res.body.address).toBe(userWalletAddress3);
+    });
+
     describe('Wallet onboarding', () => {
         let wallet, code, userWalletUuid;
 
@@ -78,20 +92,6 @@ describe('Milestone Rewards', () => {
                     wallet = res.body.wallet;
                 })
                 .expect(201, done);
-        });
-
-        // Update account address with MPC wallet address
-        it('PATCH /account (address)', async () => {
-            const authRequestMessage = 'test';
-            const authRequestSignature = await (async () => {
-                const wallet = new Wallet(userWalletPrivateKey3);
-                return await wallet.signMessage(authRequestMessage);
-            })();
-            const res = await user
-                .patch(`/v1/account`)
-                .set({ Authorization: widgetAccessToken3 })
-                .send({ authRequestMessage, authRequestSignature });
-            expect(res.body.address).toBe(userWalletAddress3);
         });
 
         // Get onboarded wallet details for code

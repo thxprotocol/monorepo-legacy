@@ -1,26 +1,25 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
+import ERC20, { ERC20Document } from '@thxnetwork/api/models/ERC20';
 import { ChainId, ERC20Type } from '@thxnetwork/types/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import {
-    authAccessToken,
     dashboardAccessToken,
-    sub,
     userWalletAddress2,
+    userWalletPrivateKey,
     widgetAccessToken,
 } from '@thxnetwork/api/util/jest/constants';
 import { toWei } from 'web3-utils';
-import ERC20, { ERC20Document } from '@thxnetwork/api/models/ERC20';
-import { ERC20TransferDocument } from '@thxnetwork/api/models/ERC20Transfer';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
-import TransactionService from '@thxnetwork/api/services/TransactionService';
+import { poll } from '@thxnetwork/api/util/polling';
+import { signTxHash } from '@thxnetwork/api/util/jest/network';
 
 const user = request.agent(app);
 
 describe('ERC20Transfer', () => {
-    let erc20: ERC20Document, wallet: WalletDocument, erc20Transfer: ERC20TransferDocument;
+    let erc20: ERC20Document, wallet: WalletDocument;
 
-    beforeAll(async () => await beforeAllCallback({ skipWalletCreation: true }));
+    beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
 
     describe('POST /erc20', () => {
@@ -42,99 +41,61 @@ describe('ERC20Transfer', () => {
         });
     });
 
-    describe('POST /wallet', () => {
+    describe('GET /wallet and transfer erc20', () => {
         it('HTTP 201', (done) => {
-            user.post(`/v1/wallets`)
-                .set({ Authorization: authAccessToken })
-                .send({
-                    sub,
-                    chainId: ChainId.Hardhat,
-                    forceSync: true,
-                })
+            user.get('/v1/wallets')
+                .set({ Authorization: widgetAccessToken })
+                .send()
                 .expect(async ({ body }: request.Response) => {
-                    expect(body._id).toBeDefined();
-                    expect(body.address).toBeDefined();
-                    wallet = body;
+                    expect(body[0].address).toBeDefined();
+                    wallet = body[0];
                 })
-                .expect(201, done);
+                .expect(200, done);
         });
 
         it('Transfer ERC20', async () => {
             const { contract } = await ERC20.findById(erc20._id);
-            await TransactionService.sendAsync(
-                contract.options.address,
-                contract.methods.transfer(wallet.address, toWei('10', 'ether')),
-                ChainId.Hardhat,
-            );
+            await contract.methods.transfer(wallet.address, toWei('10', 'ether')).send();
+
             const balanceInWei = await contract.methods.balanceOf(wallet.address).call();
             expect(balanceInWei).toBe(toWei('10', 'ether'));
         });
     });
 
     describe('POST /erc20/transfer', () => {
-        it('HTTP 201', (done) => {
-            user.post('/v1/erc20/transfer')
+        it('HTTP 201', async () => {
+            const res = await user
+                .post('/v1/erc20/transfer')
                 .set({ Authorization: widgetAccessToken })
                 .send({
                     erc20Id: erc20._id,
                     to: userWalletAddress2,
                     amount: toWei('1', 'ether'),
                     chainId: ChainId.Hardhat,
-                })
-                .expect(async ({ body }: request.Response) => {
-                    expect(body._id).toBeDefined();
-                    expect(body.erc20Id).toBeDefined();
-                    expect(body.from).toEqual(wallet.address);
-                    expect(body.to).toEqual(userWalletAddress2);
-                    expect(body.chainId).toEqual(ChainId.Hardhat);
-                    expect(body.transactionId).toBeDefined();
-                    expect(body.sub).toEqual(sub);
+                });
+            expect(res.body.transactionHash).toBeDefined();
+            expect(res.status).toBe(201);
 
-                    erc20Transfer = body;
+            const signedTXHash = await signTxHash(wallet.address, res.body.transactionHash, userWalletPrivateKey);
+            const res2 = await user
+                .post(`/v1/wallets/${String(wallet._id)}/confirm`)
+                .set({ Authorization: widgetAccessToken })
+                .send(signedTXHash);
 
-                    const { contract } = await ERC20.findById(erc20._id);
-                    const balanceInWei = await contract.methods.balanceOf(userWalletAddress2).call();
-
-                    expect(balanceInWei).toEqual(toWei('1', 'ether'));
-                })
-                .expect(201, done);
+            expect(res2.status).toBe(200);
         });
     });
 
-    describe('GET /erc20/transfer/:id', () => {
-        it('HTTP 200', (done) => {
-            user.get(`/v1/erc20/transfer/${erc20Transfer._id}`)
-                .set({ Authorization: widgetAccessToken })
-                .expect(({ body }: request.Response) => {
-                    expect(body.erc20Id).toBeDefined();
-                    expect(body.from).toEqual(wallet.address);
-                    expect(body.to).toEqual(userWalletAddress2);
-                    expect(body.chainId).toEqual(ChainId.Hardhat);
-                    expect(body.transactionId).toBeDefined();
-                    expect(body.sub).toEqual(sub);
-                })
-                .expect(200, done);
-        });
-    });
-
-    describe('GET /erc20/transfer?erc20=:address&chainId=:chainId', () => {
-        it('HTTP 200', (done) => {
-            user.get(`/v1/erc20/transfer?erc20Id=${erc20._id}&chainId=${ChainId.Hardhat}`)
-                .set({ Authorization: widgetAccessToken })
-                .expect(async ({ body }: request.Response) => {
-                    expect(body.length).toEqual(1);
-                    expect(body[0].erc20Id).toBeDefined();
-                    expect(body[0].from).toEqual(wallet.address);
-                    expect(body[0].to).toEqual(userWalletAddress2);
-                    expect(body[0].chainId).toEqual(ChainId.Hardhat);
-                    expect(body[0].transactionId).toBeDefined();
-                    expect(body[0].sub).toEqual(sub);
-
-                    const { contract } = await ERC20.findById(erc20._id);
-                    const balanceInWei = await contract.methods.balanceOf(userWalletAddress2).call();
-                    expect(balanceInWei).toEqual(toWei('1', 'ether'));
-                })
-                .expect(200, done);
+    describe('Wait for balance', () => {
+        it('Poll', async () => {
+            const { contract } = await ERC20.findById(erc20._id);
+            await poll(
+                contract.methods.balanceOf(userWalletAddress2).call,
+                (result: string) => result !== toWei('1', 'ether'),
+                1000,
+            );
+            const balanceInWei = await contract.methods.balanceOf(userWalletAddress2).call();
+            expect(balanceInWei).toEqual(toWei('1', 'ether'));
         });
     });
 });

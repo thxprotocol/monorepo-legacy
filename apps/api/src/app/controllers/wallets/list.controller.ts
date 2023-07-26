@@ -9,17 +9,11 @@ import SafeService from '@thxnetwork/api/services/SafeService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
 
-const validation = [
-    query('chainId').optional().isNumeric(),
-    query('sub').optional().isString(),
-    query('chainId').optional().isString(),
-];
+const validation = [query('chainId').optional().isNumeric(), query('chainId').optional().isString()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Wallets']
-    const query = {};
-    if (req.query.sub) query['sub'] = req.query.sub;
-    if (req.query.address) query['address'] = req.query.address;
+    const query = { sub: req.auth.sub };
     if (req.query.chainId) query['chainId'] = Number(req.query.chainId);
 
     const wallets = await Wallet.find(query);

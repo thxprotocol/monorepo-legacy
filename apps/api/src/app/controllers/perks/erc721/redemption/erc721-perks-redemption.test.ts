@@ -1,9 +1,9 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId, NFTVariant } from '@thxnetwork/types/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { dashboardAccessToken, sub, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
-import { ERC721TokenState } from '@thxnetwork/types/interfaces';
+import { ERC721TokenState, TPool } from '@thxnetwork/types/interfaces';
 import { ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { alchemy } from '@thxnetwork/api/util/alchemy';
 import { deployERC721, mockGetNftsForOwner } from '@thxnetwork/api/util/jest/erc721';
@@ -14,6 +14,9 @@ import TransactionService from '@thxnetwork/api/services/TransactionService';
 import { addMinutes } from 'date-fns';
 import { createImage } from '@thxnetwork/api/util/jest/images';
 import { ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
+import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
+import WalletService from '@thxnetwork/api/services/WalletService';
+import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 
 const user = request.agent(app);
 
@@ -23,32 +26,14 @@ describe('ERC721 Perks Redemtpion', () => {
         nftContract: Contract,
         erc721Token: ERC721Document,
         perk: ERC721PerkDocument,
-        balance: string,
-        dailyReward: any,
-        walletAddress: string;
+        wallet: WalletDocument;
+
     const chainId = ChainId.Hardhat,
         nftName = 'Test Collection',
         nftSymbol = 'TST';
 
     beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
-
-    it('POST /wallets', (done) => {
-        user.post('/v1/wallets')
-            .set({ Authorization: widgetAccessToken })
-            .send({
-                chainId: ChainId.Hardhat,
-                sub,
-                forceSync: true,
-            })
-            .expect((res: request.Response) => {
-                expect(res.body.sub).toEqual(sub);
-                expect(res.body.chainId).toEqual(ChainId.Hardhat);
-                expect(res.body.address).toBeDefined();
-                walletAddress = res.body.address;
-            })
-            .expect(201, done);
-    });
 
     describe('POST /pools', () => {
         it('HTTP 201', (done) => {
@@ -59,61 +44,6 @@ describe('ERC721 Perks Redemtpion', () => {
                     pool = res.body;
                 })
                 .expect(201, done);
-        });
-    });
-
-    describe('Daily Rewards', () => {
-        it('POST /daily-rewards', (done) => {
-            const title = 'First Daily Reward';
-            const description = 'description';
-            const amounts = [1500];
-            user.post(`/v1/daily-rewards`)
-                .set({ 'X-PoolId': pool._id, 'Authorization': dashboardAccessToken })
-                .send({
-                    title,
-                    description,
-                    amounts: JSON.stringify(amounts),
-                    index: 0,
-                })
-                .expect(({ body }: request.Response) => {
-                    expect(body.uuid).toBeDefined();
-                    expect(body.title).toBe(title);
-                    expect(body.description).toBe(description);
-                    expect(body.amounts[0]).toBe(amounts[0]);
-                    dailyReward = body;
-                })
-                .expect(201, done);
-        });
-
-        it('GET /daily-rewards/:id', (done) => {
-            user.get(`/v1/daily-rewards/${dailyReward._id}`)
-                .set({ 'X-PoolId': pool._id, 'Authorization': dashboardAccessToken })
-                .expect(({ body }: request.Response) => {
-                    expect(body.uuid).toBeDefined();
-                    expect(body.title).toBe(dailyReward.title);
-                    expect(body.description).toBe(dailyReward.description);
-                    expect(body.amounts[0]).toBe(dailyReward.amounts[0]);
-                })
-                .expect(200, done);
-        });
-
-        it('POST /rewards/daily/:uuid/claim', (done) => {
-            user.post(`/v1/rewards/daily/${dailyReward._id}/claim`)
-                .set({ 'X-PoolId': pool._id, 'Authorization': widgetAccessToken })
-                .send({
-                    sub,
-                })
-                .expect(201, done);
-        });
-
-        it('GET /point-balances', (done) => {
-            user.get(`/v1/point-balances`)
-                .set({ 'X-PoolId': pool._id, 'Authorization': widgetAccessToken })
-                .expect(({ body }: request.Response) => {
-                    expect(body.balance).toBe(dailyReward.amounts[0]);
-                    balance = body.balance;
-                })
-                .expect(200, done);
         });
     });
 
@@ -222,6 +152,14 @@ describe('ERC721 Perks Redemtpion', () => {
     });
 
     describe('POST /perks/erc721/:uuid/redemption', () => {
+        const balance = 500;
+
+        beforeAll(async () => {
+            wallet = await WalletService.findPrimary(sub, ChainId.Hardhat);
+            // Add some points for the subs wallet
+            await PointBalanceService.add(pool as AssetPoolDocument, wallet._id, 500);
+        });
+
         it('POST /perks/erc721/:uuid/redemption', (done) => {
             user.post(`/v1/perks/erc721/${perk.uuid}/redemption`)
                 .set({ 'X-PoolId': pool._id, 'Authorization': widgetAccessToken })
@@ -233,7 +171,7 @@ describe('ERC721 Perks Redemtpion', () => {
                     expect(body.erc721Token.sub).toBe(sub);
                     expect(body.erc721Token.erc721Id).toBe(erc721._id);
                     expect(body.erc721Token.state).toBe(ERC721TokenState.Transferred);
-                    expect(body.erc721Token.recipient).toBe(walletAddress);
+                    expect(body.erc721Token.recipient).toBe(wallet.address);
                     expect(body.erc721Token.tokenId).toBeDefined();
                 })
                 .expect(201, done);

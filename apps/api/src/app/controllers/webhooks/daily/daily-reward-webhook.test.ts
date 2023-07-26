@@ -1,10 +1,16 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId, DailyRewardClaimState } from '@thxnetwork/types/enums';
-import { dashboardAccessToken, userWalletAddress2, widgetAccessToken2 } from '@thxnetwork/api/util/jest/constants';
+import {
+    dashboardAccessToken,
+    sub2,
+    userWalletAddress2,
+    widgetAccessToken2,
+} from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { DailyRewardDocument } from '@thxnetwork/api/models/DailyReward';
+import WalletService from '@thxnetwork/api/services/WalletService';
 
 const user = request.agent(app);
 
@@ -46,17 +52,15 @@ describe('Daily Rewards WebHooks', () => {
             .expect(201, done);
     });
 
-    it('POST /webhook/daily/:token', (done) => {
-        user.post(`/v1/webhook/daily/${dailyReward.uuid}`)
-            .send({
-                address: userWalletAddress2,
-            })
-            .expect(({ body }: request.Response) => {
-                expect(body.dailyRewardId).toBe(dailyReward._id);
-                expect(body.uuid).toBeDefined();
-                expect(body.state).toBe(DailyRewardClaimState.Pending);
-            })
-            .expect(201, done);
+    it('POST /webhook/daily/:token', async () => {
+        const wallet = await WalletService.findPrimary(sub2, ChainId.Hardhat);
+        const { body, status } = await user.post(`/v1/webhook/daily/${dailyReward.uuid}`).send({
+            address: wallet.address,
+        });
+        expect(body.dailyRewardId).toBe(dailyReward._id);
+        expect(body.uuid).toBeDefined();
+        expect(body.state).toBe(DailyRewardClaimState.Pending);
+        expect(status).toBe(201);
     });
 
     it('POST /rewards/daily/:uuid/claim', (done) => {
