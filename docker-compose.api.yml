@@ -17,5 +17,6 @@ services:
             - apps/api/.env.ci
         ports:
             - 3001:3000
+            - 8545:8545
         depends_on:
             - mongo
