@@ -33,7 +33,7 @@ jobs:
               run: npx nx run contracts:serve > /dev/null 2>&1 &
 
             - name: Start Safe TXS
-              run: sh scripts/safe-init.sh
+              run: docker compose --env-file .env.example -f docker-compose.safe.yml up --force-recreate -d
 
             - name: Lint code and run tests
               run: |
