@@ -21,11 +21,15 @@ jobs:
                   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                   aws-region: us-east-1
 
+            - name: Install packages
+              run: |
+                  yarn
+
             - name: Start Hardhat RPC
               env:
                   NODE_OPTIONS: '--max-old-space-size=8192'
               run: |
-                  yarn \
+                  yarn
                   npx nx run contracts:serve 2>&1 > /dev/null
 
             - name: Start Safe TXS
