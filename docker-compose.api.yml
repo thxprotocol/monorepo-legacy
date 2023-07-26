@@ -16,7 +16,7 @@ services:
             - apps/api/.env.example
             - apps/api/.env.ci
         environment:
-            HARDHAT_RPC: http://${{ RUNNER_IP }}:8545
+            HARDHAT_RPC: http://${ RUNNER_IP }:8545
         ports:
             - 3001:3000
         depends_on:

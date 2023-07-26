@@ -49,7 +49,7 @@ services:
         env_file:
             - docker/env/txs.env
         environment:
-            - ETHEREUM_NODE_URL=${{ RUNNER_IP }}
+            - ETHEREUM_NODE_URL=${ RUNNER_IP }
         depends_on:
             - txs-db
             - txs-redis
@@ -67,7 +67,7 @@ services:
         env_file:
             - docker/env/txs.env
         environment:
-            - ETHEREUM_NODE_URL=${{ RUNNER_IP }}
+            - ETHEREUM_NODE_URL=${ RUNNER_IP }
             - RUN_MIGRATIONS=1
             - WORKER_QUEUES=default,indexing
         depends_on:
@@ -80,7 +80,7 @@ services:
         container_name: thx_safe_txs_worker_contracts_tokens
         environment:
             - WORKER_QUEUES=contracts,tokens
-            - ETHEREUM_NODE_URL=${{ RUNNER_IP }}
+            - ETHEREUM_NODE_URL=${ RUNNER_IP }
 
     txs-worker-notifications-webhooks:
         <<: *txs-worker
@@ -90,7 +90,7 @@ services:
             - txs-redis
         environment:
             - WORKER_QUEUES=notifications,webhooks
-            - ETHEREUM_NODE_URL=${{ RUNNER_IP }}
+            - ETHEREUM_NODE_URL=${ RUNNER_IP }
 
     txs-scheduler:
         <<: *txs-worker
