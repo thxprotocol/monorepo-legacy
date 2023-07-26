@@ -22,9 +22,6 @@ services:
             - 3001:3000
         depends_on:
             - mongo
-            - nginx
-            - txs-web
-            - cgw-web
         networks:
             - thx_network
 
