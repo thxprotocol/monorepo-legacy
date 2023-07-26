@@ -21,7 +21,7 @@ jobs:
                   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                   aws-region: us-east-1
 
-            - name: Lint code and run tests
+            - name: Start Safe Transaction Service
               env:
                   NODE_OPTIONS: '--max-old-space-size=8192'
               run: |
