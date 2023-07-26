@@ -134,3 +134,7 @@ services:
     #         - nginx
     #     ports:
     #         - "${REVERSE_PROXY_UI_PORT}:3000"
+
+networks:
+    thx_network:
+        driver: bridge

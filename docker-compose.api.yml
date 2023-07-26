@@ -27,3 +27,7 @@ services:
             - cgw-web
         networks:
             - thx_network
+
+networks:
+    thx_network:
+        driver: bridge
