@@ -42,7 +42,9 @@ jobs:
               run: yarn nx run contracts:serve > /dev/null 2>&1 &
 
             - name: Start Safe TXS
-              run: RUNNER_IP=${ steps.ip.outputs.ipv4 } docker compose --env-file=.env.example -f docker-compose.safe.yml up -d
+              env:
+                  RUNNER_IP: ${ steps.ip.outputs.ipv4 }
+              run: docker compose --env-file=.env.example -f docker-compose.safe.yml up -d
 
             - name: Lint code and run tests
               run: |
