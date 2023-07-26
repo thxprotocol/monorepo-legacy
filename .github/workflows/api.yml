@@ -27,9 +27,10 @@ jobs:
                   node-version: 16.x
 
             - name: Install Packages
-              run: |
-                  yarn
-                  npx nx run contracts:serve 2>&1 > /dev/null
+              run: yarn
+
+            - name: Start Hardhat RPC
+              run: npx nx run contracts:serve > /dev/null 2>&1 &
 
             - name: Start Safe TXS
               run: sh scripts/safe-init.sh
