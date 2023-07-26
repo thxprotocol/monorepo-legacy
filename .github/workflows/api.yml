@@ -20,9 +20,6 @@ jobs:
             - name: Show User and Group IDs
               run: id
 
-            - name: Set Permissions on Host Directory
-              run: sudo chown -R runner:docker ./docker/data
-
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v1
               with:
@@ -45,6 +42,9 @@ jobs:
               env:
                   RUNNER_IP: ${ steps.ip.outputs.ipv4 }
               run: docker compose --env-file=.env.example -f docker-compose.safe.yml up -d
+
+            - name: Set Permissions on Host Directory
+              run: sudo chown -R runner:docker ./docker/data
 
             - name: Lint code and run tests
               run: |
