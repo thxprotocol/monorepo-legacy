@@ -21,7 +21,7 @@ jobs:
               run: id
 
             - name: Set Permissions on Host Directory
-              run: sudo chown -R runner:docker /docker/data
+              run: sudo chown -R runner:docker ./docker/data
 
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v1
