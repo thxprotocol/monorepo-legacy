@@ -10,7 +10,6 @@ services:
         image: nginx:alpine
         ports:
             - "${REVERSE_PROXY_PORT}:8000"
-            - "8545:8545"
         volumes:
             - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
             - nginx-shared-txs:/nginx-txs
@@ -36,8 +35,6 @@ services:
         volumes:
             - ./docker/data/cfg-db:/var/lib/postgresql/data
 
-
-    # Safe Transaction Service
     txs-redis:
         container_name: thx_redis
         image: redis:alpine
@@ -52,7 +49,7 @@ services:
         env_file:
             - docker/env/txs.env
         environment:
-            - ETHEREUM_NODE_URL=${RPC_NODE_URL}
+            - ETHEREUM_NODE_URL=${{ runner.ip }}
         depends_on:
             - txs-db
             - txs-redis
@@ -61,14 +58,16 @@ services:
             - nginx-shared-txs:/nginx
             - ./scripts/0074_insert_safe_master_copy.py:/app/safe_transaction_service/history/migrations/0074_insert_safe_master_copy.py
         command: docker/web/run_web.sh
-
+        networks:
+            - thx_network
+                    
     txs-worker-indexer: &txs-worker
         container_name: thx_safe_txs_worker_indexer
         image: safeglobal/safe-transaction-service:${TXS_VERSION}
         env_file:
             - docker/env/txs.env
         environment:
-            - ETHEREUM_NODE_URL=${RPC_NODE_URL}
+            - ETHEREUM_NODE_URL=${{ runner.ip }}
             - RUN_MIGRATIONS=1
             - WORKER_QUEUES=default,indexing
         depends_on:
@@ -81,7 +80,7 @@ services:
         container_name: thx_safe_txs_worker_contracts_tokens
         environment:
             - WORKER_QUEUES=contracts,tokens
-            - ETHEREUM_NODE_URL=${RPC_NODE_URL}
+            - ETHEREUM_NODE_URL=${{ RUNNER.IP }}
 
     txs-worker-notifications-webhooks:
         <<: *txs-worker
@@ -91,7 +90,7 @@ services:
             - txs-redis
         environment:
             - WORKER_QUEUES=notifications,webhooks
-            - ETHEREUM_NODE_URL=${RPC_NODE_URL}
+            - ETHEREUM_NODE_URL=${{ RUNNER.IP }}
 
     txs-scheduler:
         <<: *txs-worker

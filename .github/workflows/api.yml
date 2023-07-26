@@ -30,14 +30,14 @@ jobs:
               run: yarn
 
             - name: Start Hardhat RPC
-              run: npx nx run contracts:serve > /dev/null 2>&1 &
+              run: yarn nx run contracts:serve > /dev/null 2>&1 &
 
-            - name: Start Safe TXS
-              run: docker compose --env-file .env.example -f docker-compose.safe.yml up --force-recreate -d
+            # - name: Start Safe TXS
+            #   run: docker compose --env-file .env.example -f docker-compose.safe.yml up --force-recreate -d
 
             - name: Lint code and run tests
               run: |
-                  docker compose -f docker-compose.yml -f docker-compose.api.yml run \
+                  docker compose -f docker-compose.yml -f docker-compose.safe.yml -f docker-compose.api.yml run \
                   -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} -e NODE_OPTIONS='--max-old-space-size=8192' -T \
                   api sh -c "npx nx run api:test"
 
