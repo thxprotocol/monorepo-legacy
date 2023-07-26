@@ -21,23 +21,20 @@ jobs:
                   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                   aws-region: us-east-1
 
-            - name: Install Node.js 16.x and packages
+            - name: Install Node.js 16.x
               uses: actions/setup-node@v1
               with:
                   node-version: 16.x
-              env:
-                  NODE_OPTIONS: '--max-old-space-size=8192'
+
+            - name: Install Packages
               run: |
                   yarn
                   npx nx run contracts:serve 2>&1 > /dev/null
 
             - name: Start Safe TXS
-              run: |
-                  sh scripts/safe-init.sh
+              run: sh scripts/safe-init.sh
 
             - name: Lint code and run tests
-              env:
-                  NODE_OPTIONS: '--max-old-space-size=8192'
               run: |
                   docker compose -f docker-compose.yml -f docker-compose.api.yml run \
                   -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} -e NODE_OPTIONS='--max-old-space-size=8192' -T \
