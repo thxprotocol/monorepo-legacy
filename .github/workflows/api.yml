@@ -47,7 +47,9 @@ jobs:
               run: docker compose --env-file=.env.example -f docker-compose.yml  -f docker-compose.safe.yml up -d
 
             - name: Set Host Permissions
-              run: sudo chown -R runner:docker ./docker/data
+              run: |
+                  sudo chown -R runner:docker ./docker/data
+                  pwd
 
             - name: Show Docker Container
               run: docker ps
