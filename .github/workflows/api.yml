@@ -55,9 +55,7 @@ jobs:
               run: docker ps
 
             - name: Set .env
-              run: |
-                  rm ./apps/api/.env
-                  cat ./apps/api/.env.example ./apps/api/.env.ci | sort | uniq > ./apps/api/.env
+              run: cat ./apps/api/.env.example ./apps/api/.env.ci | sort | uniq > ./apps/api/.env
 
             - name: Run Tests
               env:
