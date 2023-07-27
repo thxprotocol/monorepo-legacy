@@ -52,8 +52,11 @@ jobs:
             - name: Show Docker Container
               run: docker ps
 
-            - name: Run tests
-              run: yarn nx run api:test
+            # - name: Run tests
+            #   env:
+            #       RUNNER_IP: ${ steps.ip.outputs.ipv4 }
+            #       NODE_OPTIONS: --max-old-space-size=8192
+            #   run: yarn nx run api:test
 
             - name: Lint code and run tests
               env:
