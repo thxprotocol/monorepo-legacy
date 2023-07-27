@@ -38,8 +38,7 @@ jobs:
 
             - name: Start Safe Transaction Service
               run: |
-                  rm -rf ./docker/data
-                  docker compose --env-file=.env.example -f docker-compose.yml  -f docker-compose.safe.yml down --remove-orphans
+                  docker compose --env-file=.env.example -f docker-compose.yml  -f docker-compose.safe.yml -f docker-compose.api.yml down --remove-orphans
                   docker compose --env-file=.env.example -f docker-compose.yml  -f docker-compose.safe.yml up -d
 
             - name: Set Host Permissions
@@ -55,7 +54,7 @@ jobs:
                   HARDHAT_RPC_TEST_OVERRIDE: 'http://0.0.0.0:8545'
                   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
                   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-              run: yarn nx run api:test
+              run: sudo yarn nx run api:test
 
             - name: Show Docker Logs
               if: failure()
