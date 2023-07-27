@@ -47,15 +47,13 @@ jobs:
               run: docker compose --env-file=.env.example -f docker-compose.yml  -f docker-compose.safe.yml up -d
 
             - name: Set Host Permissions
-              run: |
-                  sudo chown -R runner:docker ./docker/data
-                  pwd
+              run: sudo chown -R runner:docker ./docker/data
 
             - name: Show Docker Container
               run: docker ps
 
             - name: Set .env
-              run: cp ./apps/api/.env.example ./apps/api/.env
+              run: cat .env.example .env.ci | sort | uniq > .env
 
             - name: Run Tests
               env:
