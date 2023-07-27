@@ -47,7 +47,7 @@ jobs:
             - name: Start Safe Transaction Service
               env:
                   RUNNER_IP: ${{ steps.ip.outputs.ipv4 }}
-              run: docker compose --env-file=.env.example -f docker-compose.yml  -f docker-compose.safe.yml up -d
+              run: docker compose --env-file=.env.example -f docker-compose.yml  -f docker-compose.safe.yml up
 
             - name: Set Host Permissions
               run: sudo chown -R runner:docker ./docker/data
