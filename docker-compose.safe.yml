@@ -6,7 +6,6 @@ volumes:
 
 services:
     nginx:
-        restart: always
         container_name: thx_nginx
         image: nginx:alpine
         ports:
@@ -21,7 +20,6 @@ services:
             - cgw-web
 
     txs-db:
-        restart: always
         container_name: thx_safe_txs_db
         image: postgres:14-alpine
         environment:
@@ -30,7 +28,6 @@ services:
             - ./docker/data/txs-db:/var/lib/postgresql/data
 
     cfg-db:
-        restart: always
         container_name: thx_safe_cfg_db
         image: postgres:14-alpine
         environment:
@@ -39,17 +36,14 @@ services:
             - ./docker/data/cfg-db:/var/lib/postgresql/data
 
     txs-redis:
-        restart: always
         container_name: thx_safe_txs_redis
         image: redis:alpine
 
     txs-rabbitmq:
-        restart: always
         container_name: thx_rabbitmq
         image: rabbitmq:alpine
 
     txs-web:
-        restart: always
         container_name: thx_safe_txs_web
         image: safeglobal/safe-transaction-service:${TXS_VERSION}
         env_file:
@@ -68,7 +62,6 @@ services:
         command: docker/web/run_web.sh
                     
     txs-worker-indexer: &txs-worker
-        restart: always
         container_name: thx_safe_txs_worker_indexer
         image: safeglobal/safe-transaction-service:${TXS_VERSION}
         env_file:
@@ -86,7 +79,6 @@ services:
 
     txs-worker-contracts-tokens: 
         <<: *txs-worker
-        restart: always
         container_name: thx_safe_txs_worker_contracts_tokens
         extra_hosts:
             - "host.docker.internal:host-gateway"
@@ -96,7 +88,6 @@ services:
 
     txs-worker-notifications-webhooks:
         <<: *txs-worker
-        restart: always
         container_name: thx_safe_txs_worker_notifications_webhooks
         extra_hosts:
             - "host.docker.internal:host-gateway"
@@ -109,7 +100,6 @@ services:
 
     txs-scheduler:
         <<: *txs-worker
-        restart: always
         container_name: thx_safe_txs_scheduler
         depends_on:
             - txs-db
@@ -131,12 +121,10 @@ services:
 
     # Safe Client Gateway
     cgw-redis:
-        restart: always
         container_name: thx_safe_cgw_redis
         image: redis:alpine
 
     cgw-web:
-        restart: always
         container_name: thx_safe_cgw_web
         image: safeglobal/safe-client-gateway:${CGW_VERSION}
         env_file:

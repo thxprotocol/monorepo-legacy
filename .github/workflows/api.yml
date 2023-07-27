@@ -54,7 +54,7 @@ jobs:
                   HARDHAT_RPC_TEST_OVERRIDE: 'http://0.0.0.0:8545'
                   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
                   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-              run: sudo yarn nx run api:test
+              run: yarn nx run api:test
 
             - name: Show Docker Logs
               if: failure()
