@@ -41,8 +41,8 @@ jobs:
                   docker compose --env-file=.env.example -f docker-compose.yml  -f docker-compose.safe.yml down --remove-orphans
                   docker compose --env-file=.env.example -f docker-compose.yml  -f docker-compose.safe.yml up -d
 
-            - name: Set Host Permissions
-              run: sudo chown -R runner:docker ./docker/data
+            # - name: Set Host Permissions
+            #   run: sudo chown -R runner:docker ./docker/data
 
             - name: Set .env
               run: (cat ./apps/api/.env.example && echo "" && cat ./apps/api/.env.ci) > ./apps/api/.env
