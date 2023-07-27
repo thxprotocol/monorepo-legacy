@@ -49,11 +49,22 @@ jobs:
             - name: Set Host Permissions
               run: sudo chown -R runner:docker ./docker/data
 
+            - name: Show Docker Container
+              run: docker ps
+
+            - name: Run tests
+              run: yarn nx run api:test
+
             - name: Lint code and run tests
+              env:
+                  RUNNER_IP: ${ steps.ip.outputs.ipv4 }
               run: |
-                  docker compose -f docker-compose.api.yml run \
+                  docker compose --env-file=.env.example -f docker-compose.yml  -f docker-compose.safe.yml -f docker-compose.api.yml run \
                   -e RUNNER_IP=${{ steps.ip.outputs.ipv4 }} -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} -e NODE_OPTIONS='--max-old-space-size=8192' -T \
                   api sh -c "npx nx run api:test"
+
+            - name: Show Docker Container
+              run: docker ps
 
             - name: SonarCloud Scan
               uses: SonarSource/sonarcloud-github-action@master
