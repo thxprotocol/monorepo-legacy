@@ -39,7 +39,7 @@ jobs:
             - name: Start Safe Transaction Service
               run: |
                   docker compose --env-file=.env.example -f docker-compose.yml  -f docker-compose.safe.yml down --remove-orphans
-                  docker compose --env-file=.env.example -f docker-compose.yml  -f docker-compose.safe.yml up -d --force-recreate
+                  docker compose --env-file=.env.example -f docker-compose.yml  -f docker-compose.safe.yml up -d
 
             - name: Set Host Permissions
               run: sudo chown -R runner:docker ./docker/data
@@ -60,8 +60,9 @@ jobs:
               if: failure()
               run: |
                   docker ps
-                  docker logs txs-web
-                  docker logs cfg-web
+                  docker logs --tail=50 thx_nginx
+                  docker logs --tail=50 thx_safe_cfg_web
+                  docker logs --tail=50 thx_safe_txs_web
 
             - name: SonarCloud Scan
               uses: SonarSource/sonarcloud-github-action@master
