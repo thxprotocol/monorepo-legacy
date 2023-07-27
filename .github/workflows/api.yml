@@ -52,17 +52,14 @@ jobs:
             - name: Show Docker Container
               run: docker ps
 
-            - name: Load .env.example
-              uses: falti/dotenv-action@v1.0.4
-              id: dotenv
-              with:
-                  path: './apps/api/.env.example'
-                  log-variables: true
+            - name: Set .env
+              run: cp ./apps/api/.env.example ./apps/api/.env
 
-            - name: Run tests
+            - name: Run Tests
               env:
-                  RUNNER_IP: ${ steps.ip.outputs.ipv4 }
                   NODE_OPTIONS: --max-old-space-size=8192
+                  AWS_ACCESS_KEY_ID: ${ secrets.AWS_ACCESS_KEY_ID }
+                  AWS_SECRET_ACCESS_KEY: ${ secrets.AWS_SECRET_ACCESS_KEY }
               run: yarn nx run api:test
 
             # - name: Lint code and run tests
