@@ -61,6 +61,8 @@ jobs:
             - name: Run Tests
               env:
                   NODE_OPTIONS: --max-old-space-size=8192
+                  HARDHAT_RPC: 'http://${{ steps.ip.outputs.ipv4 }}:8545'
+                  HARDHAT_RPC_TEST_OVERRIDE: 'http://${{ steps.ip.outputs.ipv4 }}:8545'
                   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
                   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
               run: yarn nx run api:test

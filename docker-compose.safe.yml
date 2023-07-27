@@ -36,7 +36,7 @@ services:
             - ./docker/data/cfg-db:/var/lib/postgresql/data
 
     txs-redis:
-        container_name: thx_redis
+        container_name: thx_safe_txs_redis
         image: redis:alpine
 
     txs-rabbitmq:
