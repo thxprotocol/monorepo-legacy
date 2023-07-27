@@ -13,9 +13,6 @@ jobs:
               uses: actions/checkout@v3
               with:
                   fetch-depth: 0
-            - name: Show Runner IP address
-              id: ip
-              uses: haythem/public-ip@v1.2
 
             - name: Show User and Group IDs
               run: id
@@ -39,15 +36,10 @@ jobs:
               working-directory: ./libs/contracts
               run: npx hardhat node --hostname 0.0.0.0 > /dev/null 2>&1 &
 
-            - name: Remove Docker Containers
-              env:
-                  RUNNER_IP: '0.0.0.0'
-              run: docker compose --env-file=.env.example -f docker-compose.yml  -f docker-compose.safe.yml -f docker-compose.api.yml down --remove-orphans
-
             - name: Start Safe Transaction Service
-              env:
-                  RUNNER_IP: '0.0.0.0'
-              run: docker compose --env-file=.env.example -f docker-compose.yml  -f docker-compose.safe.yml up
+              run: |
+                  docker compose --env-file=.env.example -f docker-compose.yml  -f docker-compose.safe.yml -f docker-compose.api.yml down --remove-orphans
+                  docker compose --env-file=.env.example -f docker-compose.yml  -f docker-compose.safe.yml up
 
             - name: Set Host Permissions
               run: sudo chown -R runner:docker ./docker/data

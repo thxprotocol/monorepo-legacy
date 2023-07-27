@@ -48,8 +48,10 @@ services:
         image: safeglobal/safe-transaction-service:${TXS_VERSION}
         env_file:
             - docker/env/txs.env
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
         environment:
-            - "ETHEREUM_NODE_URL=http://${RUNNER_IP}:8545"
+            - ETHEREUM_NODE_URL=${RPC_NODE_URL}
         depends_on:
             - txs-db
             - txs-redis
@@ -66,8 +68,10 @@ services:
         image: safeglobal/safe-transaction-service:${TXS_VERSION}
         env_file:
             - docker/env/txs.env
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
         environment:
-            - "ETHEREUM_NODE_URL=http://${RUNNER_IP}:8545"
+            - ETHEREUM_NODE_URL=${RPC_NODE_URL}
             - RUN_MIGRATIONS=1
             - WORKER_QUEUES=default,indexing
         depends_on:
@@ -78,19 +82,23 @@ services:
     txs-worker-contracts-tokens: 
         <<: *txs-worker
         container_name: thx_safe_txs_worker_contracts_tokens
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
         environment:
             - WORKER_QUEUES=contracts,tokens
-            - "ETHEREUM_NODE_URL=http://${RUNNER_IP}:8545"
+            - ETHEREUM_NODE_URL=${RPC_NODE_URL}
 
     txs-worker-notifications-webhooks:
         <<: *txs-worker
         container_name: thx_safe_txs_worker_notifications_webhooks
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
         depends_on:
             - txs-db
             - txs-redis
         environment:
             - WORKER_QUEUES=notifications,webhooks
-            - "ETHEREUM_NODE_URL=http://${RUNNER_IP}:8545"
+            - ETHEREUM_NODE_URL=${RPC_NODE_URL}
 
     txs-scheduler:
         <<: *txs-worker
@@ -134,7 +142,3 @@ services:
     #         - nginx
     #     ports:
     #         - "${REVERSE_PROXY_UI_PORT}:3000"
-
-networks:
-    thx_network:
-        driver: bridge
