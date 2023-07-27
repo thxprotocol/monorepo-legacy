@@ -44,9 +44,6 @@ jobs:
             - name: Set Host Permissions
               run: sudo chown -R runner:docker ./docker/data
 
-            - name: Show Docker Container
-              run: docker ps
-
             - name: Set .env
               run: (cat ./apps/api/.env.example && echo "" && cat ./apps/api/.env.ci) > ./apps/api/.env
 
@@ -59,8 +56,12 @@ jobs:
                   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
               run: yarn nx run api:test
 
-            - name: Show Docker Container
-              run: docker ps
+            - name: Show Docker Logs
+              if: failure()
+              run: |
+                  docker ps
+                  docker logs txs-web
+                  docker logs cfg-web
 
             - name: SonarCloud Scan
               uses: SonarSource/sonarcloud-github-action@master
