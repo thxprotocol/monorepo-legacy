@@ -22,10 +22,3 @@ services:
             - 3001:3000
         depends_on:
             - mongo
-            - txs-web
-        networks:
-            - thx_network
-
-networks:
-    thx_network:
-        driver: bridge

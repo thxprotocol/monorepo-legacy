@@ -60,8 +60,6 @@ services:
             - nginx-shared-txs:/nginx
             - ./scripts/0074_insert_safe_master_copy.py:/app/safe_transaction_service/history/migrations/0074_insert_safe_master_copy.py
         command: docker/web/run_web.sh
-        networks:
-            - thx_network
                     
     txs-worker-indexer: &txs-worker
         container_name: thx_safe_txs_worker_indexer

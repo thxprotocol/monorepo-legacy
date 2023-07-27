@@ -16,12 +16,6 @@ services:
             - mongo-data:/data/db
             - ./fixture/db:/docker-entrypoint-initdb.d/fixture
             - ./scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
-        networks:
-            - thx_network
-    
+
 volumes:
     mongo-data:
-
-networks:
-    thx_network:
-        driver: bridge
