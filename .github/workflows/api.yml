@@ -44,8 +44,10 @@ jobs:
             - name: Start Safe Transaction Service
               run: docker compose --env-file=.env.example -f docker-compose.yml  -f docker-compose.safe.yml up -d
 
-            # - name: Set Host Permissions
-            #   run: sudo chown -R runner:docker ./docker/data
+            - name: Set Host Permissions
+              run: |
+                  sudo chown -R runner:docker ./docker/data/cfg-db
+                  sudo chown -R runner:docker ./docker/data/txs-db
 
             - name: Set .env
               run: (cat ./apps/api/.env.example && echo "" && cat ./apps/api/.env.ci) > ./apps/api/.env
