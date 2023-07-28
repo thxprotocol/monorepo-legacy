@@ -115,7 +115,6 @@ services:
             - cgw-redis
 
     ui:
-        container_name: thx_safe_ui
         image: safeglobal/safe-wallet-web:${UI_VERSION}
         env_file:
             - docker/env/ui.env
