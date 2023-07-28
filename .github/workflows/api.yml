@@ -54,19 +54,18 @@ jobs:
             - name: Set .env
               run: (cat ./apps/api/.env.example && echo "" && cat ./apps/api/.env.ci) > ./apps/api/.env
 
-            - name: Curl Safe
-              run: |
-                  curl http://0.0.0.0:8000/txs/admin -I
-                  curl http://localhost:8000/txs/admin -I
-                  curl http://0.0.0.0:8000/cfg/admin -I
-                  curl http://localhost:8000/cfg/admin -I
-
             - name: Run Tests
               env:
                   NODE_OPTIONS: --max-old-space-size=8192
                   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
                   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
               run: yarn nx run api:test
+
+            - name: Docker Logs
+              run: |
+                  docker ps
+                  docker logs nginx
+                  docker logs thx-web
 
             - name: SonarCloud Scan
               uses: SonarSource/sonarcloud-github-action@master
