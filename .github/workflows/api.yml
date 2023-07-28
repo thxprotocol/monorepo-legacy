@@ -52,6 +52,11 @@ jobs:
             - name: Set .env
               run: (cat ./apps/api/.env.example && echo "" && cat ./apps/api/.env.ci) > ./apps/api/.env
 
+            - name: Curl Safe
+              run: |
+                  curl http://0.0.0.0:8000/txs/admin -I
+                  curl http://0.0.0.0:8000/cfg/admin -I
+
             - name: Run Tests
               env:
                   NODE_OPTIONS: --max-old-space-size=8192
