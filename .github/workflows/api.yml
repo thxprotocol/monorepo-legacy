@@ -55,7 +55,9 @@ jobs:
             - name: Curl Safe
               run: |
                   curl http://0.0.0.0:8000/txs/admin -I
+                  curl http://localhost:8000/txs/admin -I
                   curl http://0.0.0.0:8000/cfg/admin -I
+                  curl http://localhost:8000/cfg/admin -I
 
             - name: Run Tests
               env:
