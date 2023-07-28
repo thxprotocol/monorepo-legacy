@@ -193,12 +193,13 @@ async function sendSafeAsync(wallet: WalletDocument, to: string | null, fn: any,
         callback,
     });
 
-    const safeTxHash = await SafeService.proposeTransaction(wallet, {
+    await SafeService.proposeTransaction(wallet, {
         to,
         data,
         value: '0',
     });
 
+    const [{ safeTxHash }] = await SafeService.getLastPendingTransactions(wallet);
     await SafeService.confirmTransaction(wallet, safeTxHash);
 
     return await Transaction.findByIdAndUpdate(
