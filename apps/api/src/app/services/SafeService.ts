@@ -6,12 +6,8 @@ import { getProvider } from '@thxnetwork/api/util/network';
 import { toChecksumAddress } from 'web3-utils';
 import Safe, { SafeAccountConfig, SafeFactory } from '@safe-global/protocol-kit';
 import SafeApiKit from '@safe-global/api-kit';
-import {
-    SafeMultisigTransactionResponse,
-    SafeTransaction,
-    SafeTransactionDataPartial,
-} from '@safe-global/safe-core-sdk-types';
-import { logger } from 'ethers';
+import { SafeMultisigTransactionResponse, SafeTransactionDataPartial } from '@safe-global/safe-core-sdk-types';
+import { logger } from '@thxnetwork/api/util/logger';
 
 export const Wallet = WalletModel;
 
@@ -84,15 +80,20 @@ async function proposeTransaction(wallet: WalletDocument, safeTransactionData: S
     const senderSignature = await safeSdk.signTransactionHash(safeTxHash);
     const safeSDK = getSafeSDK(wallet.chainId);
 
-    await safeSDK.proposeTransaction({
-        safeAddress: wallet.address,
-        safeTxHash,
-        safeTransactionData: safeTransaction.data as any,
-        senderAddress: toChecksumAddress(await signer.getAddress()),
-        senderSignature: senderSignature.data,
-    });
+    try {
+        await safeSDK.proposeTransaction({
+            safeAddress: wallet.address,
+            safeTxHash,
+            safeTransactionData: safeTransaction.data as any,
+            senderAddress: toChecksumAddress(await signer.getAddress()),
+            senderSignature: senderSignature.data,
+        });
 
-    logger.info(`Safe TX Proposed: ${safeTxHash}`);
+        logger.info(`Safe TX Proposed: ${safeTxHash}`);
+    } catch (error) {
+        console.log(error);
+        logger.info(error);
+    }
 
     return safeTxHash;
 }
