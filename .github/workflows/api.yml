@@ -61,14 +61,6 @@ jobs:
                   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
               run: yarn nx run api:test
 
-            - name: Show Docker Logs
-              if: failure()
-              run: |
-                  docker ps
-                  docker logs --tail=50 thx_nginx
-                  docker logs --tail=50 thx_safe_cfg_web
-                  docker logs --tail=50 thx_safe_txs_web
-
             - name: SonarCloud Scan
               uses: SonarSource/sonarcloud-github-action@master
               env:
