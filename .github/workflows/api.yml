@@ -42,10 +42,7 @@ jobs:
               run: npx hardhat node --hostname 0.0.0.0 > /dev/null 2>&1 &
 
             - name: Start Safe Transaction Service
-              run: |
-                  sudo rm -rf /docker/data
-                  docker compose --env-file=.env.example -f docker-compose.yml  -f docker-compose.safe.yml -f docker-compose.api.yml down --remove-orphans
-                  docker compose --env-file=.env.example -f docker-compose.yml  -f docker-compose.safe.yml up -d
+              run: docker compose --env-file=.env.example -f docker-compose.yml  -f docker-compose.safe.yml up -d
 
             # - name: Set Host Permissions
             #   run: sudo chown -R runner:docker ./docker/data
