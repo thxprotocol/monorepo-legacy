@@ -43,6 +43,7 @@ jobs:
 
             - name: Start Safe Transaction Service
               run: |
+                  sudo rm -rf /docker/data
                   docker compose --env-file=.env.example -f docker-compose.yml  -f docker-compose.safe.yml -f docker-compose.api.yml down --remove-orphans
                   docker compose --env-file=.env.example -f docker-compose.yml  -f docker-compose.safe.yml up -d
 
