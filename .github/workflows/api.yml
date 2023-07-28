@@ -42,7 +42,9 @@ jobs:
               run: npx hardhat node --hostname 0.0.0.0 > /dev/null 2>&1 &
 
             - name: Start Safe Transaction Service
-              run: docker compose --env-file=.env.example -f docker-compose.yml  -f docker-compose.safe.yml up -d
+              run: |
+                  docker compose --env-file=.env.example -f docker-compose.yml  -f docker-compose.safe.yml up -d
+                  docker compose exec txs-web python manage.py migrate
 
             - name: Set Host Permissions
               run: |
