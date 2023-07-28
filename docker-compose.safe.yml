@@ -23,14 +23,14 @@ services:
         environment:
             POSTGRES_PASSWORD: postgres
         volumes:
-            - ./data/txs-db:/var/lib/postgresql/data
+            - ./docker/data/txs-db:/var/lib/postgresql/data
 
     cfg-db:
         image: postgres:14-alpine
         environment:
             POSTGRES_PASSWORD: postgres
         volumes:
-            - ./data/cfg-db:/var/lib/postgresql/data
+            - ./docker/data/cfg-db:/var/lib/postgresql/data
 
 
     # Safe Transaction Service
@@ -43,7 +43,7 @@ services:
     txs-web:
         image: safeglobal/safe-transaction-service:${TXS_VERSION}
         env_file:
-            - container_env_files/txs.env
+            - ./docker/env/txs.env
         extra_hosts:
             - "host.docker.internal:host-gateway"
         environment:
@@ -59,7 +59,7 @@ services:
     txs-worker-indexer: &txs-worker
         image: safeglobal/safe-transaction-service:${TXS_VERSION}
         env_file:
-            - container_env_files/txs.env
+            - ./docker/env/txs.env
         extra_hosts:
             - "host.docker.internal:host-gateway"
         environment:
@@ -98,7 +98,7 @@ services:
         volumes:
             - nginx-shared-cfg:/nginx
         env_file:
-            - container_env_files/cfg.env
+            - ./docker/env/cfg.env
         depends_on:
             - cfg-db
 
@@ -109,7 +109,7 @@ services:
     cgw-web:
         image: safeglobal/safe-client-gateway:${CGW_VERSION}
         env_file:
-            - container_env_files/cgw.env
+            - ./docker/env/cgw.env
         depends_on:
             - cgw-redis
 
