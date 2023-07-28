@@ -8,6 +8,7 @@ import {
     PRIVATE_KEY,
     RELAYER_SPEED,
     POLYGON_NAME,
+    SAFE_TXS_SERVICE,
 } from '@thxnetwork/api/config/secrets';
 import Web3 from 'web3';
 import { Contract } from 'web3-eth-contract';
@@ -58,7 +59,7 @@ if (HARDHAT_RPC) {
         const signer = new Wallet(PRIVATE_KEY, hardhatProvider) as unknown as Signer;
         return {
             web3,
-            txServiceUrl: 'http://localhost:8000/txs',
+            txServiceUrl: SAFE_TXS_SERVICE,
             ethAdapter: new EthersAdapter({ ethers, signerOrProvider: signer }),
             signer,
             networkName: HARDHAT_NAME as TNetworkName,
