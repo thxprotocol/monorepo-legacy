@@ -75,6 +75,8 @@ jobs:
             - name: Docker Logs
               if: failure()
               run: |
+                  ls -l ./docker/data/cfg-db
+                  ls -l ./docker/data/txs-db
                   docker ps
                   docker logs monorepo-txs-web-1 -t --since=15m
 
