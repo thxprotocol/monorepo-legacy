@@ -3,7 +3,6 @@ import { param, query } from 'express-validator';
 import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
 import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
-import { Wallet } from '@thxnetwork/api/models/Wallet';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import ClaimService from '@thxnetwork/api/services/ClaimService';

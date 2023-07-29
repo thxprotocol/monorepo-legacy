@@ -2,13 +2,7 @@ import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId, NFTVariant } from '@thxnetwork/types/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import {
-    sub,
-    userWalletAddress,
-    userWalletAddress2,
-    userWalletPrivateKey,
-    widgetAccessToken,
-} from '@thxnetwork/api/util/jest/constants';
+import { sub, userWalletAddress2, userWalletPrivateKey, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
 import { ERC721, ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';

@@ -19,7 +19,6 @@ import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import { type TERC721, type TERC721Metadata, type TERC721Token, ERC721TokenState } from '@thxnetwork/types/interfaces';
 import { type TAccount } from '@thxnetwork/types/interfaces';
 import { WalletDocument } from '../models/Wallet';
-import { ERC721TransferDocument } from '../models/ERC721Transfer';
 import PoolService from './PoolService';
 import TransactionService from './TransactionService';
 import IPFSService from './IPFSService';

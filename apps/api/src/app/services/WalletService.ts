@@ -9,7 +9,6 @@ import { TransactionReceipt } from 'web3-eth-accounts/node_modules/web3-core';
 import { FacetCutAction, updateDiamondContract } from '../util/upgrades';
 import WalletManagerService from './WalletManagerService';
 import { toChecksumAddress } from 'web3-utils';
-import MilestoneRewardService from './MilestoneRewardService';
 import { MilestoneRewardClaim } from '../models/MilestoneRewardClaims';
 
 export const Wallet = WalletModel;

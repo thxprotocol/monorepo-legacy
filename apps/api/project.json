@@ -20,10 +20,6 @@
                     {
                         "entryPath": "apps/api/scripts/migrate-mongo.ts",
                         "entryName": "migrate-mongo"
-                    },
-                    {
-                        "entryPath": "apps/api/scripts/exec.ts",
-                        "entryName": "exec"
                     }
                 ],
                 "generatePackageJson": true
@@ -76,14 +72,6 @@
             "executor": "nx:run-commands",
             "options": {
                 "command": "node upgradeContractsToLatest.js",
-                "cwd": "dist/apps/api"
-            }
-        },
-        "exec": {
-            "dependsOn": ["^build"],
-            "executor": "nx:run-commands",
-            "options": {
-                "command": "node exec.js",
                 "cwd": "dist/apps/api"
             }
         },

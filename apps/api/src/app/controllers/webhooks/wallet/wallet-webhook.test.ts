@@ -66,7 +66,7 @@ describe('Webhook: Virtual Wallets', () => {
     });
 
     describe('Wallet onboarding', () => {
-        let wallet, code, userWalletUuid;
+        let wallet, code;
 
         // Onboard a new wallet
         it('POST /webhook/wallet/:token', (done) => {

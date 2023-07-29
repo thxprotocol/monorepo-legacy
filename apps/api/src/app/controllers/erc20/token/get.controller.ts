@@ -4,7 +4,7 @@ import { param } from 'express-validator';
 import { fromWei } from 'web3-utils';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import WalletService, { Wallet } from '@thxnetwork/api/services/WalletService';
+import WalletService from '@thxnetwork/api/services/WalletService';
 
 const validation = [param('id').exists().isMongoId()];
 
