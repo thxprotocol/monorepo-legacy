@@ -22,7 +22,7 @@ services:
             AWS_S3_PRIVATE_BUCKET_NAME: "test-thx-private-storage-bucket"
             HARDHAT_RPC: "http://host.docker.internal:8545"
             HARDHAT_RPC_TEST_OVERRIDE: "http://host.docker.internal:8545"
-            SAFE_TXS_SERVICE: "http://txs-web:8000/txs"
+            SAFE_TXS_SERVICE: "http://host.docker.internal:8000/txs"
             LOCAL_CERT: ""
             LOCAL_CERT_KEY: ""
             CWD: "/usr/src/app/apps/api/src/"
