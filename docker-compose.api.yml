@@ -11,6 +11,8 @@ services:
             target: develop
         volumes:
             - ./coverage/apps/api:/usr/src/app/coverage/apps/api
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
         env_file:
             - apps/api/.env.example
         environment:
