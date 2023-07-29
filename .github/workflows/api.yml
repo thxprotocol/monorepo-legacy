@@ -30,12 +30,23 @@ jobs:
               with:
                   node-version: 16.x
 
+            - name: Cache node_modules
+              uses: actions/cache@v2
+              with:
+                  path: node_modules
+                  key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+
+            - name: Validate Cache
+              id: check_changes
+              run: echo ::set-output name=lockfile_changed::$(git diff --name-only ${{ github.sha }}^ ${{ github.sha }} | grep -E 'yarn\.lock|package-lock\.json' || echo 'false')
+
             - name: Install Yarn
               if: ${{ env.ACT }}
               run: npm i -g yarn
 
             - name: Install Packages
               run: yarn install
+              if: ${{ needs.check_changes.outputs.lockfile_changed == 'true' }}
 
             - name: Start Hardhat RPC
               working-directory: ./libs/contracts
