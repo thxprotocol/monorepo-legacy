@@ -42,7 +42,6 @@ services:
 
     txs-web:
         image: safeglobal/safe-transaction-service:${TXS_VERSION}
-        user: runner
         env_file:
             - ./docker/env/txs.env
         extra_hosts:
@@ -96,7 +95,6 @@ services:
     # Safe Config Service
     cfg-web:
         image: safeglobal/safe-config-service:${CFG_VERSION}
-        user: runner
         tty: true
         volumes:
             - nginx-shared-cfg:/nginx
@@ -111,17 +109,7 @@ services:
 
     cgw-web:
         image: safeglobal/safe-client-gateway:${CGW_VERSION}
-        user: runner
         env_file:
             - ./docker/env/cgw.env
         depends_on:
             - cgw-redis
-
-    ui:
-        image: safeglobal/safe-wallet-web:${UI_VERSION}
-        env_file:
-            - docker/env/ui.env
-        depends_on:
-            - nginx
-        ports:
-            - "${REVERSE_PROXY_UI_PORT}:3000"
