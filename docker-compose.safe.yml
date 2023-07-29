@@ -42,6 +42,7 @@ services:
 
     txs-web:
         image: safeglobal/safe-transaction-service:${TXS_VERSION}
+        user: root
         env_file:
             - ./docker/env/txs.env
         extra_hosts:
