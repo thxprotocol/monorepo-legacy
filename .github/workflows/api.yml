@@ -65,7 +65,7 @@ jobs:
               if: failure()
               run: |
                   docker ps
-                  docker logs monorepo-txs-web-1 -t --since=10m
+                  docker logs monorepo-txs-web-1 -t --since=15m
 
             - name: SonarCloud Scan
               uses: SonarSource/sonarcloud-github-action@master
