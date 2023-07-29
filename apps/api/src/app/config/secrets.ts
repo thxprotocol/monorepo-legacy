@@ -16,7 +16,6 @@ const required = [
     'AWS_S3_PUBLIC_BUCKET_REGION',
     'AWS_S3_PRIVATE_BUCKET_NAME',
     'AWS_S3_PRIVATE_BUCKET_REGION',
-    'TWITTER_API_TOKEN',
     'SAFE_TXS_SERVICE',
 ];
 
@@ -31,10 +30,11 @@ if (process.env.NODE_ENV === 'production') {
             'POLYGON_RELAYER_API_SECRET',
             'RELAYER_SPEED',
             'MIXPANEL_TOKEN',
+            'TWITTER_API_TOKEN',
         ],
     );
-} else {
-    required.push(...['PRIVATE_KEY', 'HARDHAT_RPC', 'LOCAL_CERT', 'LOCAL_CERT_KEY']);
+} else if (process.env.NODE_ENV === 'development') {
+    required.push(...['PRIVATE_KEY', 'HARDHAT_RPC', 'LOCAL_CERT', 'LOCAL_CERT_KEY', 'TWITTER_API_TOKEN']);
 }
 
 required.forEach((value: string) => {
