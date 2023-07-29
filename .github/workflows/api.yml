@@ -34,49 +34,43 @@ jobs:
               if: ${{ env.ACT }}
               run: npm i -g yarn
 
-            - name: Cache node_modules
-              uses: actions/cache@v2
-              with:
-                  path: node_modules
-                  key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
-
-            - name: Check for changes
-              id: check_changes
-              run: echo ::set-output name=lockfile_changed::$(git diff --name-only ${{ github.sha }}^ ${{ github.sha }} | grep -E 'yarn\.lock' || echo 'false')
-
-            - name: Install dependencies
+            - name: Install Dependencies
               run: yarn install
-              # if: ${{ needs.check_changes.outputs.lockfile_changed == 'false' }}
 
             - name: Start Hardhat RPC
               working-directory: ./libs/contracts
               run: npx hardhat node --hostname 0.0.0.0 > /dev/null &
 
+            # - name: Start Safe Transaction Service
+            #   run: |
+            #       docker compose --env-file=.env.example -f docker-compose.yml  -f docker-compose.safe.yml up -d
+            #       docker compose exec txs-web python manage.py migrate
+
+            # - name: Set Host Permissions
+            #   run: sudo chmod -R a+rwx ./docker/data
+
+            # - name: Set .env
+            #   run: (cat ./apps/api/.env.example && echo "" && cat ./apps/api/.env.ci) > ./apps/api/.env
+
+            # - name: Run Tests
+            #   env:
+            #       NODE_OPTIONS: --max-old-space-size=8192
+            #       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            #       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            #   run: yarn nx run api:test --testPathPattern=erc20transfer
+
             - name: Start Safe Transaction Service
               run: |
-                  docker compose --env-file=.env.example -f docker-compose.yml  -f docker-compose.safe.yml up -d
+                  docker compose --env-file=.env.example -f docker-compose.safe.yml up -d
                   docker compose exec txs-web python manage.py migrate
-
-            - name: Set Host Permissions
-              run: sudo chmod -R a+rwx ./docker/data
-
-            - name: Set .env
-              run: (cat ./apps/api/.env.example && echo "" && cat ./apps/api/.env.ci) > ./apps/api/.env
 
             - name: Run Tests
               env:
                   NODE_OPTIONS: --max-old-space-size=8192
-                  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-              run: yarn nx run api:test --testPathPattern=erc20transfer
-
-            - name: Docker Logs
-              if: failure()
               run: |
-                  ls -l ./docker/data/cfg-db
-                  ls -l ./docker/data/txs-db
-                  docker ps
-                  docker logs monorepo-txs-web-1 -t --since=15m
+                  docker compose -f docker-compose.yml -f docker-compose.api.yml run \
+                  -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} -e NODE_OPTIONS='--max-old-space-size=8192' -T \
+                  api npx nx run api:test --testPathPattern=erc20transfer
 
             - name: SonarCloud Scan
               uses: SonarSource/sonarcloud-github-action@master

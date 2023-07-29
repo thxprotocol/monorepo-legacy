@@ -199,7 +199,6 @@ async function sendSafeAsync(wallet: WalletDocument, to: string | null, fn: any,
         value: '0',
     });
 
-    // const [{ safeTxHash }] = await SafeService.getLastPendingTransactions(wallet);
     await SafeService.confirmTransaction(wallet, safeTxHash);
 
     return await Transaction.findByIdAndUpdate(
