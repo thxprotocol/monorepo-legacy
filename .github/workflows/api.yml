@@ -46,9 +46,6 @@ jobs:
             #       docker compose --env-file=.env.example -f docker-compose.yml  -f docker-compose.safe.yml up -d
             #       docker compose exec txs-web python manage.py migrate
 
-            # - name: Set Host Permissions
-            #   run: sudo chmod -R a+rwx ./docker/data
-
             # - name: Set .env
             #   run: (cat ./apps/api/.env.example && echo "" && cat ./apps/api/.env.ci) > ./apps/api/.env
 
@@ -63,6 +60,7 @@ jobs:
               run: |
                   docker compose --env-file=.env.example -f docker-compose.safe.yml up -d
                   docker compose exec txs-web python manage.py migrate
+                  sudo chmod -R a+rwx ./docker/data
 
             - name: Run Tests
               env:
