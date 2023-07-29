@@ -5,23 +5,36 @@ const required = [
     'API_URL',
     'WALLET_URL',
     'DASHBOARD_URL',
-    'POLYGON_MUMBAI_RPC',
-    'POLYGON_MUMBAI_NAME',
-    'POLYGON_RPC',
-    'POLYGON_NAME',
     'MONGODB_URI',
-    'PRIVATE_KEY',
     'PORT',
     'AUTH_CLIENT_ID',
     'AUTH_CLIENT_SECRET',
-    'RATE_LIMIT_REWARD_GIVE',
-    'RATE_LIMIT_REWARD_GIVE_WINDOW',
     'INITIAL_ACCESS_TOKEN',
-    'MAX_FEE_PER_GAS',
+    'AWS_ACCESS_KEY_ID',
+    'AWS_SECRET_ACCESS_KEY',
+    'AWS_S3_PUBLIC_BUCKET_NAME',
+    'AWS_S3_PUBLIC_BUCKET_REGION',
+    'AWS_S3_PRIVATE_BUCKET_NAME',
+    'AWS_S3_PRIVATE_BUCKET_REGION',
+    'TWITTER_API_TOKEN',
+    'SAFE_TXS_SERVICE',
 ];
 
 if (process.env.NODE_ENV === 'production') {
-    required.push('SENDGRID_API_KEY');
+    required.push(
+        ...[
+            'SENDGRID_API_KEY',
+            'POLYGON_RPC',
+            'POLYGON_NAME',
+            'POLYGON_RELAYER',
+            'POLYGON_RELAYER_API_KEY',
+            'POLYGON_RELAYER_API_SECRET',
+            'RELAYER_SPEED',
+            'MIXPANEL_TOKEN',
+        ],
+    );
+} else {
+    required.push(...['PRIVATE_KEY', 'HARDHAT_RPC', 'LOCAL_CERT', 'LOCAL_CERT_KEY']);
 }
 
 required.forEach((value: string) => {
@@ -34,9 +47,6 @@ required.forEach((value: string) => {
 // This allows you to use a single .env file with both regular and test configuration. This allows for an
 // easy to use setup locally without having hardcoded credentials during test runs.
 if (process.env.NODE_ENV === 'test') {
-    if (process.env.PORT_TEST_OVERRIDE !== undefined) process.env.API_PORT = process.env.PORT_TEST_OVERRIDE;
-    if (process.env.MONGODB_URI_TEST_OVERRIDE !== undefined)
-        process.env.MONGODB_URI = process.env.MONGODB_URI_TEST_OVERRIDE;
     if (process.env.HARDHAT_RPC_TEST_OVERRIDE) process.env.HARDHAT_RPC = process.env.HARDHAT_RPC_TEST_OVERRIDE;
 }
 
@@ -66,13 +76,10 @@ export const RATE_LIMIT_REWARD_GIVE_WINDOW = Number(process.env.RATE_LIMIT_REWAR
 export const RATE_LIMIT_REWARD_CLAIM_WINDOW = Number(process.env.RATE_LIMIT_REWARD_CLAIM_WINDOW);
 export const INITIAL_ACCESS_TOKEN = process.env.INITIAL_ACCESS_TOKEN;
 export const CIRCULATING_SUPPLY = process.env.CIRCULATING_SUPPLY;
-export const MAX_FEE_PER_GAS = String(process.env.MAX_FEE_PER_GAS);
 export const INFURA_PROJECT_ID = process.env.INFURA_PROJECT_ID;
 export const INFURA_IPFS_PROJECT_ID = process.env.INFURA_IPFS_PROJECT_ID;
 export const INFURA_IPFS_PROJECT_SECRET = process.env.INFURA_IPFS_PROJECT_SECRET;
 export const MINIMUM_GAS_LIMIT = 54680;
-export const TESTNET_INFURA_GAS_TANK = process.env.TESTNET_INFURA_GAS_TANK;
-export const INFURA_GAS_TANK = process.env.INFURA_GAS_TANK;
 export const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
 export const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
 export const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
@@ -80,21 +87,11 @@ export const AWS_S3_PUBLIC_BUCKET_NAME = process.env.AWS_S3_PUBLIC_BUCKET_NAME;
 export const AWS_S3_PUBLIC_BUCKET_REGION = process.env.AWS_S3_PUBLIC_BUCKET_REGION;
 export const AWS_S3_PRIVATE_BUCKET_NAME = process.env.AWS_S3_PRIVATE_BUCKET_NAME;
 export const AWS_S3_PRIVATE_BUCKET_REGION = process.env.AWS_S3_PRIVATE_BUCKET_REGION;
-
-export const OZ_DEFENDER_API_KEY = process.env.OZ_DEFENDER_API_KEY;
-export const OZ_DEFENDER_API_SECRET = process.env.OZ_DEFENDER_API_SECRET;
-
-export const MUMBAI_RELAYER = process.env.MUMBAI_RELAYER;
-export const MUMBAI_RELAYER_API_KEY = process.env.MUMBAI_RELAYER_API_KEY;
-export const MUMBAI_RELAYER_API_SECRET = process.env.MUMBAI_RELAYER_API_SECRET;
-
 export const POLYGON_RELAYER = process.env.POLYGON_RELAYER;
 export const POLYGON_RELAYER_API_KEY = process.env.POLYGON_RELAYER_API_KEY;
 export const POLYGON_RELAYER_API_SECRET = process.env.POLYGON_RELAYER_API_SECRET;
-
 export const LOCAL_CERT = process.env.LOCAL_CERT;
 export const LOCAL_CERT_KEY = process.env.LOCAL_CERT_KEY;
-
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 export const RELAYER_SPEED = 'fastest';
 export const MIXPANEL_TOKEN = process.env.MIXPANEL_TOKEN;
@@ -105,7 +102,6 @@ export const STRIPE_SECRET_WEBHOOK = process.env.STRIPE_SECRET_WEBHOOK || '';
 export const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
 export const TWITTER_API_TOKEN = process.env.TWITTER_API_TOKEN;
 export const IPFS_BASE_URL = 'https://ipfs.io/ipfs/';
-
 export const WEBHOOK_REFERRAL = process.env.WEBHOOK_REFERRAL;
 export const WEBHOOK_MILESTONE = process.env.WEBHOOK_MILESTONE;
 export const SAFE_TXS_SERVICE = process.env.SAFE_TXS_SERVICE;
