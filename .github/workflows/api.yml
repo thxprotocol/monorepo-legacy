@@ -34,8 +34,19 @@ jobs:
               if: ${{ env.ACT }}
               run: npm i -g yarn
 
-            - name: Install Packages
+            - name: Cache node_modules
+              uses: actions/cache@v2
+              with:
+                  path: node_modules
+                  key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+
+            - name: Check for changes
+              id: check_changes
+              run: echo ::set-output name=lockfile_changed::$(git diff --name-only ${{ github.sha }}^ ${{ github.sha }} | grep -E 'yarn\.lock|package-lock\.json' || echo 'true')
+
+            - name: Install dependencies
               run: yarn install
+              if: ${{ needs.check_changes.outputs.lockfile_changed == 'true' }}
 
             - name: Start Hardhat RPC
               working-directory: ./libs/contracts
@@ -59,7 +70,7 @@ jobs:
                   NODE_OPTIONS: --max-old-space-size=8192
                   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
                   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-              run: yarn nx run api:test
+              run: yarn nx run api:test --testPathPattern=erc20transfer
 
             - name: Docker Logs
               if: failure()

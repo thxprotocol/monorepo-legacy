@@ -96,6 +96,7 @@ services:
     # Safe Config Service
     cfg-web:
         image: safeglobal/safe-config-service:${CFG_VERSION}
+        user: root
         tty: true
         volumes:
             - nginx-shared-cfg:/nginx
@@ -110,6 +111,7 @@ services:
 
     cgw-web:
         image: safeglobal/safe-client-gateway:${CGW_VERSION}
+        user: root
         env_file:
             - ./docker/env/cgw.env
         depends_on:
