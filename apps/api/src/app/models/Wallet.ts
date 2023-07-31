@@ -6,7 +6,15 @@ import { TWallet } from '@thxnetwork/types/interfaces';
 export type WalletDocument = mongoose.Document & TWallet;
 
 const walletSchema = new mongoose.Schema(
-    { uuid: String, poolId: String, address: String, sub: String, chainId: Number, version: String },
+    {
+        uuid: String,
+        poolId: String,
+        address: String,
+        sub: String,
+        chainId: Number,
+        version: String,
+        safeVersion: String,
+    },
     { timestamps: true },
 );
 

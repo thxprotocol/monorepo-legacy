@@ -8,6 +8,9 @@ import Safe, { SafeAccountConfig, SafeFactory } from '@safe-global/protocol-kit'
 import SafeApiKit from '@safe-global/api-kit';
 import { SafeMultisigTransactionResponse, SafeTransactionDataPartial } from '@safe-global/safe-core-sdk-types';
 import { logger } from '@thxnetwork/api/util/logger';
+import { ERC20Token } from '../models/ERC20Token';
+import ERC20 from '../models/ERC20';
+import ERC20Service from './ERC20Service';
 
 export const Wallet = WalletModel;
 
@@ -16,14 +19,18 @@ function getSafeSDK(chainId: ChainId) {
     return new SafeApiKit({ txServiceUrl, ethAdapter });
 }
 
-async function create(data: { chainId: ChainId; sub: string; address?: string }, userWalletAddress: string) {
-    const { chainId, sub, address } = data;
+async function create(
+    data: { chainId: ChainId; sub: string; safeVersion?: string; address?: string },
+    userWalletAddress?: string,
+) {
+    const { safeVersion, chainId, sub, address } = data;
     const wallet = await Wallet.create({ sub, chainId, address });
-    if (address) return wallet;
+    // Concerns a Metamask account so we do not deploy and return early
+    if (!safeVersion) return wallet;
 
     const { defaultAccount, ethAdapter } = getProvider(wallet.chainId);
     const safeFactory = await SafeFactory.create({
-        safeVersion: '1.3.0',
+        safeVersion,
         contractNetworks,
         ethAdapter,
     });
@@ -39,7 +46,22 @@ async function create(data: { chainId: ChainId; sub: string; address?: string },
         await safeFactory.deploySafe({ safeAccountConfig, options: { gasLimit: '30000000' } }).catch(console.error);
     }
 
+    console.log(`[${sub}] Deployed Safe:`, safeAddress);
+
     return await Wallet.findByIdAndUpdate(wallet._id, { address: safeAddress, version: currentVersion }, { new: true });
+}
+
+async function transferAll(fromWallet: WalletDocument, toWallet: WalletDocument) {
+    // Get all ERC20Token for existing primary walletId
+    const erc20Tokens = await ERC20Token.find({ walletId: String(fromWallet._id) });
+    erc20Tokens.map(async (token) => {
+        const erc20 = await ERC20.findById(token.erc20Id);
+        const balance = await erc20.contract.methods.balanceOf(fromWallet.address).call();
+        await ERC20Service.transferFrom(erc20, fromWallet, toWallet.address, balance);
+    });
+    // Get all ERC721Token for existing primary walletId
+    // Get all ERC1155Token for existing primary walletId
+    // Schedule transfers for tokens to wallet.address
 }
 
 function findOneByAddress(address: string) {
@@ -148,4 +170,5 @@ export default {
     findOneByQuery,
     getTransaction,
     executeTransaction,
+    transferAll,
 };
