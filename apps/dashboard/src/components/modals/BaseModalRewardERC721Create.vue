@@ -88,6 +88,7 @@
                             class="mb-3"
                             :claimAmount="claimAmount"
                             :claimLimit="claimLimit"
+                            :redirectUrl="redirectUrl"
                             @change-claim-amount="onChangeClaimAmount"
                             @change-redirect-url="onChangeRedirectURL"
                         />
