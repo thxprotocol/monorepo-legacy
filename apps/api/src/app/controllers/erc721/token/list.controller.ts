@@ -3,7 +3,6 @@ import { ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
 import type { TERC721, TERC721Token } from '@thxnetwork/types/interfaces';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import { Wallet } from '@thxnetwork/api/services/WalletService';
-import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { query } from 'express-validator';
 
 const validation = [query('chainId').exists().isNumeric(), query('recipient').optional().isString()];
@@ -12,9 +11,7 @@ export const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721']
     const chainId = Number(req.query.chainId);
     const wallet = await Wallet.findOne({ sub: req.auth.sub, chainId });
-    if (!wallet) throw new NotFoundError('Could not find the wallet for the user');
-
-    const tokens = await ERC721Service.findTokensByWallet(wallet);
+    const tokens = wallet ? await ERC721Service.findTokensByWallet(wallet) : [];
     const result = await Promise.all(
         tokens.map(async (token: ERC721TokenDocument) => {
             const erc721 = await ERC721Service.findById(token.erc721Id);

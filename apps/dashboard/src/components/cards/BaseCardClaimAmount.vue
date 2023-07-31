@@ -23,6 +23,12 @@
                         :value="selectedClaimAmount"
                     />
                 </b-form-group>
+                <b-form-group
+                    label="Redirect URL"
+                    description="Scanning the QR code will redirect the user to this page where a reward widget should be active."
+                >
+                    <b-form-input @change="onChangeRedirectURL" v-model="redirectUrl" />
+                </b-form-group>
             </div>
         </b-collapse>
     </b-card>
@@ -39,6 +45,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 export default class BaseCardRewardLimits extends Vue {
     isVisible = false;
     selectedClaimAmount = 0;
+    redirectUrl = '';
 
     @Prop() claimAmount!: number;
     @Prop() disabled!: boolean;
@@ -51,6 +58,11 @@ export default class BaseCardRewardLimits extends Vue {
     onInputClaimAmount(amount: number) {
         this.selectedClaimAmount = amount;
         this.$emit('change-claim-amount', amount);
+    }
+
+    onChangeRedirectURL(redirectUrl: string) {
+        this.redirectUrl = redirectUrl;
+        this.$emit('change-redirect-url', redirectUrl);
     }
 }
 </script>
