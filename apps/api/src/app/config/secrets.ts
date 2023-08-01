@@ -3,10 +3,7 @@ import path from 'path';
 const required = [
     'AUTH_URL',
     'API_URL',
-    'WALLET_URL',
     'DASHBOARD_URL',
-    'POLYGON_MUMBAI_RPC',
-    'POLYGON_MUMBAI_NAME',
     'POLYGON_RPC',
     'POLYGON_NAME',
     'MONGODB_URI',
@@ -14,10 +11,7 @@ const required = [
     'PORT',
     'AUTH_CLIENT_ID',
     'AUTH_CLIENT_SECRET',
-    'RATE_LIMIT_REWARD_GIVE',
-    'RATE_LIMIT_REWARD_GIVE_WINDOW',
     'INITIAL_ACCESS_TOKEN',
-    'MAX_FEE_PER_GAS',
 ];
 
 if (process.env.NODE_ENV === 'production') {
