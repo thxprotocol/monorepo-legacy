@@ -21,13 +21,6 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
-const chatCompletion = await openai.createChatCompletion({
-    model: 'gpt-3.5-turbo',
-    messages: [{ role: 'user', content: 'Hello world' }],
-});
-
-console.log(chatCompletion.data.choices[0].message);
-
 const SUB = '60a38b36bf804b033c5e3faa'; // Local
 const chainId = ChainId.Hardhat;
 // const SUB = '6074cbdd1459355fae4b6a14'; // Prod
@@ -76,6 +69,20 @@ async function createPool(title: string, gameUrl: string) {
     });
 
     return pool;
+}
+let tokens = 0;
+async function getSuggestion(content: string, length: number) {
+    if (!content) return '';
+
+    const prompt = `You are a content writer for games. Please rephrase this text in a short, engaging and active form. Apply a maximum character length of ${length} characters:`;
+    const { data } = await openai.createChatCompletion({
+        model: 'gpt-3.5-turbo',
+        messages: [{ role: 'user', content: prompt + content }],
+    });
+
+    tokens += Number(data.usage.total_tokens);
+
+    return data.choices[0].message.content;
 }
 
 async function main() {
@@ -172,23 +179,29 @@ async function main() {
 
                 switch (sql[`Q${i} - Type`]) {
                     case 'Daily': {
+                        const title = await getSuggestion(sql[`Q${i} - Title`], 40);
+                        const description = await getSuggestion(sql[`Q${i} - Description`], 100);
                         const dailyReward = {
                             poolId,
-                            title: sql[`Q${i} - Title`],
-                            description: sql[`Q${i} - Description`],
+                            title,
+                            description,
                             amounts: [5, 10, 20, 40, 80, 160, 360],
                         };
+                        console.log({ type: 'daily', title, description });
                         await DailyReward.create(dailyReward);
                         break;
                     }
                     case 'Custom': {
+                        const title = await getSuggestion(sql[`Q${i} - Title`], 40);
+                        const description = await getSuggestion(sql[`Q${i} - Description`], 100);
                         const customReward = {
                             poolId,
-                            title: sql[`Q${i} - Title`],
-                            description: sql[`Q${i} - Description`],
+                            title,
+                            description,
                             amount: Number(sql[`Q${i} - Points`]),
                             limit: 0,
                         };
+                        console.log({ type: 'custom', title, description });
                         await MilestoneReward.create(customReward);
                         break;
                     }
@@ -205,6 +218,7 @@ async function main() {
     }
     console.log('Skipped', skipped);
     console.log('End', Date.now() - start, 'seconds');
+    console.log('Tokens Spent', tokens);
 }
 
 main()

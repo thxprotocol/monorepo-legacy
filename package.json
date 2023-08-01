@@ -47,6 +47,7 @@
         "compression": "^1.7.4",
         "core-js": "^3.6.5",
         "cors": "^2.8.5",
+        "csv-parser": "^3.0.0",
         "csv-reader": "^1.0.9",
         "csv-writer": "^1.6.0",
         "date-fns": "^2.28.0",
