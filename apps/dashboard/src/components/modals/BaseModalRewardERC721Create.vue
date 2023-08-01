@@ -324,7 +324,7 @@ export default class ModalRewardERC721Create extends Vue {
             tokenGatingContractAddress: this.tokenGatingContractAddress,
             tokenGatingVariant: this.tokenGatingVariant,
             tokenGatingAmount: this.tokenGatingAmount,
-            redirectUrl: this.redirectUrl,
+            redirectUrl: this.redirectUrl ? this.redirectUrl : undefined,
         };
 
         this.$store
