@@ -1,97 +1,37 @@
-import csvParser from 'csv-parser';
-import { Configuration, OpenAIApi } from 'openai';
-import fs from 'fs';
-import path from 'path';
 import db from '@thxnetwork/api/util/database';
-import PoolService from '@thxnetwork/api/services/PoolService';
 import { AssetPool } from '@thxnetwork/api/models/AssetPool';
-import { DEFAULT_COLORS, DEFAULT_ELEMENTS } from '@thxnetwork/types/contants';
 import { ChainId, RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/enums';
 import { Widget } from '@thxnetwork/api/models/Widget';
-import { v4 } from 'uuid';
 import { DailyReward } from '@thxnetwork/api/models/DailyReward';
 import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
 import { PointReward } from '@thxnetwork/api/models/PointReward';
 import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
+import {
+    readCSV,
+    getYoutubeID,
+    getTwitterUsername,
+    createPool,
+    getSuggestion,
+    getTwitterTWeet,
+    getTwitterUser,
+} from './helpers/index';
 
 db.connect(process.env.MONGODB_URI);
 
-const configuration = new Configuration({
-    apiKey: process.env.OPENAI_API_KEY,
-});
-const openai = new OpenAIApi(configuration);
-
-const SUB = '60a38b36bf804b033c5e3faa'; // Local
+const csvFilePath = '/Users/peterpolman/Downloads/quests.csv';
+const sub = '60a38b36bf804b033c5e3faa'; // Local
+// const sub = '6074cbdd1459355fae4b6a14'; // Prod
 const chainId = ChainId.Hardhat;
-// const SUB = '6074cbdd1459355fae4b6a14'; // Prod
 // const chainId = ChainId.Polygon;
-
-async function readCSV() {
-    const csvFilePath = path.resolve(__dirname, '../../../quests.csv'); // Replace with the path to your CSV file
-    const data: any = [];
-
-    return new Promise((resolve, reject) => {
-        fs.createReadStream(csvFilePath)
-            .pipe(csvParser())
-            .on('data', (row) => {
-                data.push(row);
-            })
-            .on('end', () => {
-                console.log('CSV data read successfully:');
-                resolve(data);
-            })
-            .on('error', (err) => {
-                reject(new Error('Error while reading CSV: ' + err.message));
-            });
-    });
-}
-
-function getYoutubeID(url) {
-    if (url && url.toLowerCase().includes('shorts')) return;
-
-    const result = /^https?:\/\/(www\.)?youtu\.be/.test(url)
-        ? url.replace(/^https?:\/\/(www\.)?youtu\.be\/([\w-]{11}).*/, '$2')
-        : url.replace(/.*\?v=([\w-]{11}).*/, '$1');
-
-    return result;
-}
-
-async function createPool(title: string, gameUrl: string) {
-    const pool = await PoolService.deploy(SUB, chainId, title);
-
-    await Widget.create({
-        uuid: v4(),
-        poolId: pool._id,
-        align: 'right',
-        message: 'Hi there!👋 Click me to earn rewards with quests...',
-        domain: new URL(gameUrl).origin,
-        theme: JSON.stringify({ elements: DEFAULT_ELEMENTS, colors: DEFAULT_COLORS }),
-    });
-
-    return pool;
-}
-let tokens = 0;
-async function getSuggestion(content: string, length: number) {
-    if (!content) return '';
-
-    const prompt = `You are a content writer for games. Please rephrase this text in a short, engaging and active form. Apply a maximum character length of ${length} characters:`;
-    const { data } = await openai.createChatCompletion({
-        model: 'gpt-3.5-turbo',
-        messages: [{ role: 'user', content: prompt + content }],
-    });
-
-    tokens += Number(data.usage.total_tokens);
-
-    return data.choices[0].message.content;
-}
 
 async function main() {
     const start = Date.now();
     const skipped = [];
     console.log('Start');
 
+    let tokens = 0;
     try {
-        const data: any = await readCSV();
+        const data: any = await readCSV(csvFilePath);
 
         for (const sql of data) {
             if (sql['Campaign Preview']) continue;
@@ -102,7 +42,7 @@ async function main() {
             if (pool) {
                 await Widget.updateOne({ poolId: pool._id }, { domain: new URL(sql['Game Domain']).origin });
             } else {
-                pool = await createPool(sql['Game'], sql['Game Domain']);
+                pool = await createPool(sub, chainId, sql['Game'], sql['Game Domain']);
             }
 
             const poolId = pool ? pool._id : 'testtest';
@@ -117,6 +57,7 @@ async function main() {
 
             // Create social quest youtube like
             if (sql['Youtube Video URL']) {
+                const videoId = getYoutubeID(sql['Youtube Video URL']);
                 const socialQuestYoutubeLike = {
                     poolId,
                     title: `Watch & Like`,
@@ -124,24 +65,36 @@ async function main() {
                     amount: 75,
                     platform: RewardConditionPlatform.Google,
                     interaction: RewardConditionInteraction.YouTubeLike,
-                    content: getYoutubeID(sql['Youtube Video URL']),
+                    content: videoId,
+                    contentMetadata: JSON.stringify({ videoId }),
                 };
                 await PointReward.create(socialQuestYoutubeLike);
             }
 
             // Create social quest twitter retweet
             if (sql['Twitter Tweet URL']) {
-                // const socialQuestFollow = {
-                //     poolId,
-                //     title: `Follow ${sql['Game']}`,
-                //     description: '',
-                //     amount: 75,
-                //     platform: RewardConditionPlatform.Twitter,
-                //     interaction: RewardConditionInteraction.TwitterRetweet,
-                //     content: getTwitterUserID(sql['Twitter Tweet URL'])
-                // };
-                // await PointReward.create(socialQuestFollow);
+                const url = sql['Twitter Tweet URL'];
+                const username = getTwitterUsername(url);
+                const twitterUser = await getTwitterUser(username);
+                const socialQuestFollow = {
+                    poolId,
+                    title: `Follow ${sql['Game']}`,
+                    description: '',
+                    amount: 75,
+                    platform: RewardConditionPlatform.Twitter,
+                    interaction: RewardConditionInteraction.TwitterFollow,
+                    content: twitterUser.id,
+                    contentMetadata: JSON.stringify({
+                        id: twitterUser.id,
+                        name: twitterUser.name,
+                        username: twitterUser.username,
+                        profileImgUrl: twitterUser.profile_image_url,
+                    }),
+                };
+                await PointReward.create(socialQuestFollow);
 
+                const tweetId = url.match(/\/(\d+)(?:\?|$)/)[1];
+                const [tweet] = await getTwitterTWeet(tweetId);
                 const socialQuestRetweet = {
                     poolId,
                     title: `Boost Tweet!`,
@@ -149,60 +102,72 @@ async function main() {
                     amount: 50,
                     platform: RewardConditionPlatform.Twitter,
                     interaction: RewardConditionInteraction.TwitterRetweet,
-                    content: sql['Twitter Tweet URL'].match(/\/(\d+)(?:\?|$)/)[1],
+                    content: tweetId,
+                    contentMetadata: JSON.stringify({
+                        url,
+                        username: twitterUser.username,
+                        text: tweet.text,
+                    }),
                 };
                 await PointReward.create(socialQuestRetweet);
             }
 
             // Create social quest twitter retweet
             if (sql['Discord Server ID']) {
+                const serverId = sql['Discord Server ID'];
+                const inviteURL = sql['Discord Invite URL'];
                 const socialQuestJoin = {
                     title: `Join ${sql['Game']} Discord`,
                     description: 'Become a part of our cozy fam!',
                     amount: 75,
                     platform: RewardConditionPlatform.Discord,
                     interaction: RewardConditionInteraction.DiscordGuildJoined,
-                    content: sql['Discord Server ID'],
-                    contentMetadata: sql['Discord Invite URL']
-                        ? JSON.stringify({ inviteURL: sql['Discord Invite URL'] })
-                        : undefined,
+                    content: serverId,
+                    contentMetadata: JSON.stringify({ serverId, inviteURL: inviteURL || undefined }),
                 };
                 await PointReward.create(socialQuestJoin);
             }
 
             // Iterate over available quests and create
             for (let i = 1; i < 4; i++) {
-                if (!sql[`Q${i} - Type`] || !sql[`Q${i} - Points`] || !sql[`Q${i} - Title`]) {
+                const questType = sql[`Q${i} - Type`];
+                const points = sql[`Q${i} - Points`];
+                const title = sql[`Q${i} - Title`];
+                if (!questType || !points || !title) {
                     console.log(`Incomplete Q${i}!`);
                     continue;
                 }
 
-                switch (sql[`Q${i} - Type`]) {
+                let titleSuggestion, descriptionSuggestion;
+                if (['Daily', 'Custom'].includes(questType)) {
+                    titleSuggestion = await getSuggestion(sql[`Q${i} - Title`], 40);
+                    tokens += titleSuggestion.tokensUsed;
+                    descriptionSuggestion = await getSuggestion(sql[`Q${i} - Description`], 100);
+                    tokens += descriptionSuggestion.tokensUsed;
+                }
+
+                switch (questType) {
                     case 'Daily': {
-                        const title = await getSuggestion(sql[`Q${i} - Title`], 40);
-                        const description = await getSuggestion(sql[`Q${i} - Description`], 100);
-                        const dailyReward = {
+                        const dailyQuest = {
                             poolId,
-                            title,
-                            description,
+                            title: titleSuggestion.content,
+                            description: descriptionSuggestion.content,
                             amounts: [5, 10, 20, 40, 80, 160, 360],
                         };
-                        console.log({ type: 'daily', title, description });
-                        await DailyReward.create(dailyReward);
+                        await DailyReward.create(dailyQuest);
+                        console.log(sql[`Q${i} - Type`], titleSuggestion.content, 'quest created!');
                         break;
                     }
                     case 'Custom': {
-                        const title = await getSuggestion(sql[`Q${i} - Title`], 40);
-                        const description = await getSuggestion(sql[`Q${i} - Description`], 100);
-                        const customReward = {
+                        const customQuest = {
                             poolId,
-                            title,
-                            description,
+                            title: titleSuggestion.content,
+                            description: descriptionSuggestion.content,
                             amount: Number(sql[`Q${i} - Points`]),
                             limit: 0,
                         };
-                        console.log({ type: 'custom', title, description });
-                        await MilestoneReward.create(customReward);
+                        await MilestoneReward.create(customQuest);
+                        console.log(sql[`Q${i} - Type`], titleSuggestion.content, 'quest created!');
                         break;
                     }
                     default: {

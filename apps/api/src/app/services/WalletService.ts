@@ -3,14 +3,13 @@ import { getByteCodeForContractName, getContractFromName } from '../config/contr
 import { Wallet as WalletModel, WalletDocument } from '../models/Wallet';
 import { ChainId } from '@thxnetwork/types/enums';
 import { TWalletDeployCallbackArgs } from '../types/TTransaction';
-import { getProvider, getSelectors } from '../util/network';
-import TransactionService from './TransactionService';
 import { TransactionReceipt } from 'web3-core';
+import { getProvider, getSelectors } from '../util/network';
 import { FacetCutAction, updateDiamondContract } from '../util/upgrades';
-import WalletManagerService from './WalletManagerService';
 import { toChecksumAddress } from 'web3-utils';
-import MilestoneRewardService from './MilestoneRewardService';
 import { MilestoneRewardClaim } from '../models/MilestoneRewardClaims';
+import TransactionService from './TransactionService';
+import WalletManagerService from './WalletManagerService';
 
 export const Wallet = WalletModel;
 
