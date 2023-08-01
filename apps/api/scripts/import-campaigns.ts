@@ -1,9 +1,10 @@
-import db from '../src/app/util/database';
+import csvParser from 'csv-parser';
+import { Configuration, OpenAIApi } from 'openai';
 import fs from 'fs';
 import path from 'path';
-import csvParser from 'csv-parser';
-import { AssetPool } from '@thxnetwork/api/models/AssetPool';
+import db from '@thxnetwork/api/util/database';
 import PoolService from '@thxnetwork/api/services/PoolService';
+import { AssetPool } from '@thxnetwork/api/models/AssetPool';
 import { DEFAULT_COLORS, DEFAULT_ELEMENTS } from '@thxnetwork/types/contants';
 import { ChainId, RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/enums';
 import { Widget } from '@thxnetwork/api/models/Widget';
@@ -14,6 +15,18 @@ import { PointReward } from '@thxnetwork/api/models/PointReward';
 import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
 
 db.connect(process.env.MONGODB_URI);
+
+const configuration = new Configuration({
+    apiKey: process.env.OPENAI_API_KEY,
+});
+const openai = new OpenAIApi(configuration);
+
+const chatCompletion = await openai.createChatCompletion({
+    model: 'gpt-3.5-turbo',
+    messages: [{ role: 'user', content: 'Hello world' }],
+});
+
+console.log(chatCompletion.data.choices[0].message);
 
 const SUB = '60a38b36bf804b033c5e3faa'; // Local
 const chainId = ChainId.Hardhat;
