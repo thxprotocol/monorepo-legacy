@@ -101,7 +101,7 @@
         </template>
         <template #btn-primary>
             <b-button
-                :disabled="isSubmitDisabled || (redirectUrl && !isValidRedirectUrl)"
+                :disabled="isSubmitDisabled"
                 class="rounded-pill"
                 type="submit"
                 form="formRewardPointsCreate"
@@ -291,6 +291,7 @@ export default class ModalRewardERC721Create extends Vue {
         }
 
         this.isLoading = true;
+        this.isSubmitDisabled = true;
 
         let erc721Id, erc1155Id;
         switch (this.nft.variant) {
