@@ -101,7 +101,7 @@
         </template>
         <template #btn-primary>
             <b-button
-                :disabled="isSubmitDisabled || !isValidRedirectUrl"
+                :disabled="isSubmitDisabled || (redirectUrl && !isValidRedirectUrl)"
                 class="rounded-pill"
                 type="submit"
                 form="formRewardPointsCreate"
