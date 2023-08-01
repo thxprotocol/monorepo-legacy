@@ -132,8 +132,6 @@ const config: Configuration = {
         'referral_rewards:write',
         'referal_reward_claims:read',
         'referal_reward_claims:write',
-        'shopify_rewards:read',
-        'shopify_rewards:write',
         'pool_analytics:read',
         'pool_subscription:read',
         'pool_subscription:write',

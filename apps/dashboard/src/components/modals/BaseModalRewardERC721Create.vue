@@ -88,8 +88,9 @@
                             class="mb-3"
                             :claimAmount="claimAmount"
                             :claimLimit="claimLimit"
+                            :redirectUrl="redirectUrl"
                             @change-claim-amount="onChangeClaimAmount"
-                            @change-claim-limit="onChangeClaimLimit"
+                            @change-redirect-url="onChangeRedirectURL"
                         />
                         <b-form-group>
                             <b-form-checkbox v-model="isPromoted">Promoted</b-form-checkbox>
@@ -100,7 +101,7 @@
         </template>
         <template #btn-primary>
             <b-button
-                :disabled="isSubmitDisabled"
+                :disabled="isSubmitDisabled || !isValidRedirectUrl"
                 class="rounded-pill"
                 type="submit"
                 form="formRewardPointsCreate"
@@ -132,6 +133,7 @@ import BaseCardClaimAmount from '../cards/BaseCardClaimAmount.vue';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import { TokenGatingVariant } from '@thxnetwork/types/enums/TokenGatingVariant';
 import BaseCardTokenGating from '../cards/BaseCardTokenGating.vue';
+import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 
 @Component({
     components: {
@@ -189,6 +191,7 @@ export default class ModalRewardERC721Create extends Vue {
     tokenGatingVariant = TokenGatingVariant.ERC721;
     tokenGatingContractAddress = '';
     tokenGatingAmount = 0;
+    redirectUrl = '';
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
@@ -204,6 +207,10 @@ export default class ModalRewardERC721Create extends Vue {
         const amount = Number(this.erc1155Amount);
         const balance = Number(this.erc1155Balance);
         return amount > 0 && amount <= balance;
+    }
+
+    get isValidRedirectUrl() {
+        return this.redirectUrl && isValidUrl(this.redirectUrl);
     }
 
     onShow() {
@@ -233,6 +240,7 @@ export default class ModalRewardERC721Create extends Vue {
             : this.tokenGatingContractAddress;
         this.tokenGatingVariant = this.perk ? this.perk.tokenGatingVariant : this.tokenGatingVariant;
         this.tokenGatingAmount = this.perk ? this.perk.tokenGatingAmount : this.tokenGatingAmount;
+        this.redirectUrl = this.perk ? this.perk.redirectUrl : this.redirectUrl;
     }
 
     async onSelectNFT(nft: TERC721 | TERC1155) {
@@ -252,6 +260,10 @@ export default class ModalRewardERC721Create extends Vue {
     onSelectToken(token: TERC721Token | TERC1155Token) {
         this.tokenId = token ? token._id : '';
         this.erc1155Balance = token ? (token.balance as string) : '';
+    }
+
+    onChangeRedirectURL(redirectUrl: string) {
+        this.redirectUrl = redirectUrl;
     }
 
     onChangePointPrice(price: number) {
@@ -311,6 +323,7 @@ export default class ModalRewardERC721Create extends Vue {
             tokenGatingContractAddress: this.tokenGatingContractAddress,
             tokenGatingVariant: this.tokenGatingVariant,
             tokenGatingAmount: this.tokenGatingAmount,
+            redirectUrl: this.redirectUrl,
         };
 
         this.$store

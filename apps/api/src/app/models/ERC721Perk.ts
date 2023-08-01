@@ -14,6 +14,7 @@ const schema = new mongoose.Schema(
         tokenId: String,
         price: Number,
         priceCurrency: String,
+        redirectUrl: String,
     },
     { timestamps: true },
 );
