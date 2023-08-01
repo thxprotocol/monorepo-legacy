@@ -191,41 +191,58 @@
                 </p>
             </b-col>
             <b-col md="8">
+                <b-form-group description="Dimensions: 40px x 40px. File types: .jpg, .png, .svg">
+                    <template #label>
+                        Icon
+                        <b-link v-if="iconImg" @click="onClickRemoveIcon" class="text-danger float-right">
+                            Remove
+                        </b-link>
+                    </template>
+                    <b-input-group>
+                        <b-input-group-prepend variant="light" v-if="iconImg">
+                            <b-card
+                                bg-variant="light"
+                                body-class="p-0 d-flex align-items-center px-1"
+                                style="border-top-right-radius: 0; border-bottom-right-radius: 0"
+                            >
+                                <b-img width="40" height="40" :src="iconImg" class="rounded" id="thx-svg-icon" />
+                            </b-card>
+                        </b-input-group-prepend>
+                        <b-form-file @change="onUploadIcon($event)" accept="image/*" />
+                    </b-input-group>
+                </b-form-group>
+                <b-form-group :description="`${message ? message.length : 0}/280`" label="Message">
+                    <b-textarea
+                        @change="onChangeMessage"
+                        v-model="message"
+                        placeholder="Hi there! Click me to earn rewards and redeem crypto perks."
+                    >
+                    </b-textarea>
+                </b-form-group>
                 <b-form-row>
                     <b-col md="6">
-                        <b-form-group description="Dimensions: 40px x 40px. File types: .jpg, .png, .svg">
-                            <template #label>
-                                Icon
-                                <b-link v-if="iconImg" @click="onClickRemoveIcon" class="text-danger float-right">
-                                    Remove
-                                </b-link>
-                            </template>
-                            <b-input-group>
-                                <b-input-group-prepend variant="light" v-if="iconImg">
-                                    <b-card
-                                        bg-variant="light"
-                                        body-class="p-0 d-flex align-items-center px-1"
-                                        style="border-top-right-radius: 0; border-bottom-right-radius: 0"
-                                    >
-                                        <b-img
-                                            width="40"
-                                            height="40"
-                                            :src="iconImg"
-                                            class="rounded"
-                                            id="thx-svg-icon"
-                                        />
-                                    </b-card>
-                                </b-input-group-prepend>
-                                <b-form-file @change="onUploadIcon($event)" accept="image/*" />
-                            </b-input-group>
-                        </b-form-group>
-                        <b-form-group :description="`${message ? message.length : 0}/280`" label="Message">
-                            <b-textarea
-                                @change="onChangeMessage"
-                                v-model="message"
-                                placeholder="Hi there! Click me to earn rewards and redeem crypto perks."
-                            >
-                            </b-textarea>
+                        <b-form-group label="CSS Styles">
+                            <code>#thx-launcher</code>
+                            <prism-editor
+                                class="my-editor mb-3"
+                                v-model="stylesLauncher"
+                                :highlight="highlighter"
+                                :line-numbers="lineNumbers"
+                            ></prism-editor>
+                            <code>#thx-message</code>
+                            <prism-editor
+                                class="my-editor mb-3"
+                                v-model="stylesMessage"
+                                :highlight="highlighter"
+                                :line-numbers="lineNumbers"
+                            ></prism-editor>
+                            <code>#thx-notifications</code>
+                            <prism-editor
+                                class="my-editor mb-3"
+                                v-model="stylesNotifications"
+                                :highlight="highlighter"
+                                :line-numbers="lineNumbers"
+                            ></prism-editor>
                         </b-form-group>
                     </b-col>
                     <b-col md="6">
@@ -238,7 +255,7 @@
                             "
                             id="widget-iframe-preview"
                         >
-                            <div class="widget-message" v-if="message.length">
+                            <div class="widget-message" :style="stylesMessage" v-if="message.length">
                                 <div
                                     class="widget-message-logo"
                                     :style="`background-image: url(${
@@ -248,8 +265,8 @@
                                 <span style="z-index: 0">{{ message }}</span>
                                 <button class="widget-message-close">×</button>
                             </div>
-                            <div class="widget-launcher mt-3" :style="`background-color: ${elements.launcherBg.color}`">
-                                <div class="widget-notifications">3</div>
+                            <div class="widget-launcher mt-3" :style="stylesLauncher">
+                                <div class="widget-notifications" :style="stylesNotifications">3</div>
                                 <b-img
                                     style=""
                                     width="40"
@@ -280,8 +297,7 @@
                 >
                     <b-form-input v-model="cssSelector" @change="onChangeCSSSelector" />
                 </b-form-group>
-                <hr />
-                <b-form-group
+                <!-- <b-form-group
                     label="Alignment"
                     description="Used for the positioning of both the default launcher and widget."
                 >
@@ -320,7 +336,7 @@
                             </b-form-radio>
                         </b-col>
                     </b-form-row>
-                </b-form-group>
+                </b-form-group> -->
             </b-col>
         </b-form-row>
     </div>
@@ -336,11 +352,22 @@ import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vu
 import Color from 'color';
 import { AUTH_URL, BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { DEFAULT_ELEMENTS, DEFAULT_COLORS } from '@thxnetwork/types/contants';
+// Import the necessary components from the library and the GitHub theme CSS
+import { PrismEditor } from 'vue-prism-editor';
+import 'vue-prism-editor/dist/prismeditor.min.css';
+import 'prismjs/themes/prism-tomorrow.css'; // Import GitHub-like theme
+
+// Import the highlighting library with the necessary language components
+import { highlight, languages } from 'prismjs/components/prism-core';
+import 'prismjs/components/prism-clike';
+import 'prismjs/components/prism-javascript';
+import 'prismjs/components/prism-css'; // Import CSS syntax highlighting
 
 @Component({
     components: {
         BaseWidgetAlertPreview,
         BaseCodeExample,
+        PrismEditor,
     },
     computed: mapGetters({
         pools: 'pools/all',
@@ -359,6 +386,51 @@ export default class WidgetsView extends Vue {
     isSubmitting = false;
     elements = Object.assign({}, DEFAULT_ELEMENTS); // Clean object for reset behavior
     colors = Object.assign({}, DEFAULT_COLORS); // Clean object for reset behavior
+    lineNumbers = true;
+
+    stylesLauncher = `// z-index: 9999999;
+// width: 60px;
+// height: 60px;
+// background-color: red;
+// border-radius: 50%;
+// bottom: 15px;
+// right: 15px;
+// left: auto;`;
+
+    stylesMessage = `z-index: 9999999;
+display: 'flex';
+line-height: 1.5;
+font-size: 12px;
+font-weight: normal;
+justify-content: center;
+align-items: center;
+width: 200px;
+color: #000000;
+position: fixed;
+background-color: #FFFFFF;
+border-radius: 5px;
+user-select: none;
+padding: 15px 10px 10px;
+bottom: 90px;
+right: 15px;
+left: auto;
+box-shadow: rgb(50 50 93 / 25%) 0px 50px 100px -20px, rgb(0 0 0 / 30%) 0px 30px 60px -30px;
+opacity: 0;
+transform: scale(0);
+transition: .2s opacity ease, .1s transform ease;`;
+
+    stylesNotifications = `display: flex;
+font-family: Arial;
+font-size: 13px;
+justify-content: center;
+align-items: center;
+width: 20px;
+height: 20px;
+color: #FFFFFF;
+position: absolute;
+background-color: #CA0000;
+border-radius: 50%;
+user-select: none;`;
 
     get pool() {
         return this.pools[this.$route.params.id];
@@ -378,14 +450,18 @@ export default class WidgetsView extends Vue {
             this.iconImg = this.widget.iconImg;
             this.cssSelector = this.widget.cssSelector;
 
-            const { elements, colors } = JSON.parse(this.widget.theme);
+            const theme = JSON.parse(this.widget.theme);
             for (const key in this.elements) {
-                this.elements[key] = elements[key] ? elements[key] : this.elements[key];
+                this.elements[key] = theme.elements[key] ? theme.elements[key] : this.elements[key];
             }
             for (const key in this.colors) {
-                this.colors[key] = colors[key] ? colors[key] : this.colors[key];
+                this.colors[key] = theme.colors[key] ? theme.colors[key] : this.colors[key];
             }
         });
+    }
+
+    highlighter(code) {
+        return highlight(code, languages.js); //returns html
     }
 
     onClickResetColors() {
@@ -477,6 +553,10 @@ export default class WidgetsView extends Vue {
     background-color: #ca0000;
     border-radius: 50%;
     user-select: none;
+}
+#thx-svg-icon {
+    width: 12px;
+    height: 12px;
 }
 #widget-iframe-preview {
     display: block;
@@ -588,5 +668,22 @@ export default class WidgetsView extends Vue {
         transform: scale(0.9);
         transition: opacity 0.2s ease 0s, transform 0.1s ease 0s;
     }
+}
+</style>
+
+<style lang="scss">
+// required class
+.my-editor {
+    font-family: Fira code, Fira Mono, Consolas, Menlo, Courier, monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 5px;
+    height: 120px;
+    background: var(--light);
+}
+
+// optional
+.prism-editor__textarea:focus {
+    outline: none;
 }
 </style>
