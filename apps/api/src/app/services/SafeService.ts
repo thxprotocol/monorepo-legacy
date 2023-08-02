@@ -6,7 +6,11 @@ import { getProvider } from '@thxnetwork/api/util/network';
 import { toChecksumAddress } from 'web3-utils';
 import Safe, { SafeAccountConfig, SafeFactory } from '@safe-global/protocol-kit';
 import SafeApiKit from '@safe-global/api-kit';
-import { SafeMultisigTransactionResponse, SafeTransactionDataPartial } from '@safe-global/safe-core-sdk-types';
+import {
+    SafeMultisigTransactionResponse,
+    SafeTransactionDataPartial,
+    SafeVersion,
+} from '@safe-global/safe-core-sdk-types';
 import { logger } from '@thxnetwork/api/util/logger';
 import { ERC20Token } from '../models/ERC20Token';
 import ERC20 from '../models/ERC20';
@@ -20,7 +24,7 @@ function getSafeSDK(chainId: ChainId) {
 }
 
 async function create(
-    data: { chainId: ChainId; sub: string; safeVersion?: string; address?: string },
+    data: { chainId: ChainId; sub: string; safeVersion?: SafeVersion; address?: string },
     userWalletAddress?: string,
 ) {
     const { safeVersion, chainId, sub, address } = data;

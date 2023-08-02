@@ -7,6 +7,7 @@ import express from 'express';
 import expressEJSLayouts from 'express-ejs-layouts';
 import path from 'path';
 import db from './util/database';
+import morgan from './middlewares/morgan';
 import morganBody from 'morgan-body';
 import { xssProtection } from 'lusca';
 import { DASHBOARD_URL, GTM, MONGODB_URI, NODE_ENV, PORT, PUBLIC_URL, WALLET_URL } from './config/secrets';
@@ -29,6 +30,7 @@ app.set('views', path.join(assetsPath, 'views'));
 app.use(compression());
 app.use(helmetInstance);
 app.use(corsHandler);
+app.use(morgan);
 
 morganBody(app, {
     logRequestBody: NODE_ENV === 'development',

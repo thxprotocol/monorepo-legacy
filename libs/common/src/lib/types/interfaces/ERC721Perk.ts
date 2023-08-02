@@ -11,4 +11,5 @@ export type TERC721Perk = TBasePerk & {
     isPromoted: boolean;
     price: number;
     priceCurrency: string;
+    redirectUrl: string;
 };

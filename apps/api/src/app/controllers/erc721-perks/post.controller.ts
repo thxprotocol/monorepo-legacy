@@ -37,6 +37,7 @@ const validation = [
     body('tokenGatingVariant').optional().isString(),
     body('tokenGatingContractAddress').optional().isString(),
     body('tokenGatingAmount').optional().isInt(),
+    body('redirectUrl').optional().isURL({ require_tld: false }),
 ];
 
 type ERC721PerkResponse = ERC721PerkDocument & any;
@@ -59,6 +60,7 @@ const controller = async (req: Request, res: Response) => {
         // Check if relayer can mint
         if (metadataIdList.length) {
             const isMinter = await ERC721Service.isMinter(nft, pool.address);
+            // TODO this might fail if the contract is external
             if (!isMinter) await ERC721Service.addMinter(nft, pool.address);
         }
     }
@@ -71,6 +73,7 @@ const controller = async (req: Request, res: Response) => {
         // Check if relayer can mint
         if (metadataIdList.length) {
             const isMinter = await ERC721Service.isMinter(nft, pool.address);
+            // TODO this might fail if the contract is external
             if (!isMinter) await ERC721Service.addMinter(nft, pool.address);
         }
     }

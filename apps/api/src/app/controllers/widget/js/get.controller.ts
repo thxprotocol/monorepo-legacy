@@ -219,28 +219,12 @@ const controller = async (req: Request, res: Response) => {
         createMessage() {
             const { message, logoUrl, align } = this.settings;
             const messageBox = document.createElement('div');
-            const logoBox = document.createElement('div');
             const closeBox = document.createElement('button');
 
             messageBox.id = 'thx-message';
             
             closeBox.innerHTML = '&times;';             
             
-            Object.assign(logoBox.style, {
-                zIndex: '0',
-                display: 'block',
-                backgroundColor: '#FFFFFF',
-                backgroundImage: 'url("' + logoUrl + '")',
-                width: '40px',
-                height: '40px',
-                top: '-20px',
-                position: 'absolute',
-                borderRadius: '50%',
-                backgroundSize: '40px auto',
-                backgroundPosition: 'center center',
-                backgroundRepeat: 'no-repeat',
-            });
-
             Object.assign(closeBox.style, {
                 display: 'flex',
                 fontFamily: 'Arial',
@@ -275,7 +259,8 @@ const controller = async (req: Request, res: Response) => {
                 zIndex: 9999999,
                 display: message ? 'flex' : 'none',
                 lineHeight: 1.5,
-                fontSize: '13px',
+                fontSize: '12px',
+                fontWeight: 'normal',
                 justifyContent: 'center',
                 alignItems: 'center',
                 width: '200px',
@@ -284,7 +269,7 @@ const controller = async (req: Request, res: Response) => {
                 backgroundColor: '#FFFFFF',
                 borderRadius: '5px',
                 userSelect: 'none',
-                padding: '15px 10px 10px',
+                padding: '10px 10px 10px',
                 bottom: '90px',
                 right: align === 'right' ? '15px' : 'auto',
                 left: align === 'left' ? '15px' : 'auto',
@@ -299,7 +284,6 @@ const controller = async (req: Request, res: Response) => {
             wrapper.innerHTML = message;
             messageBox.appendChild(wrapper);
             messageBox.appendChild(closeBox);
-            messageBox.prepend(logoBox);
                 
             return messageBox;
         }
@@ -399,7 +383,6 @@ const controller = async (req: Request, res: Response) => {
                 }
             }
         }
-
 
         onClickLauncher() {
             const isMobile = window.matchMedia('(pointer:coarse)').matches;

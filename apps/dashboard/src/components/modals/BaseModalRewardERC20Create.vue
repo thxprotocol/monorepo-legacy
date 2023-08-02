@@ -55,10 +55,8 @@
                         <BaseCardRewardLimits
                             class="mb-3"
                             :limit="limit"
-                            :claimAmount="claimAmount"
                             :claimLimit="claimLimit"
                             @change-reward-limit="limit = $event"
-                            @change-claim-amount="onChangeClaimAmount"
                         />
                         <BaseCardTokenGating
                             class="mb-3"

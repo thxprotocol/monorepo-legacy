@@ -3,7 +3,6 @@ import path from 'path';
 const required = [
     'AUTH_URL',
     'API_URL',
-    'WALLET_URL',
     'DASHBOARD_URL',
     'MONGODB_URI',
     'PORT',
@@ -61,8 +60,6 @@ export const WIDGET_URL = process.env.WIDGET_URL;
 export const PUBLIC_URL = process.env.PUBLIC_URL;
 export const HARDHAT_RPC = process.env.HARDHAT_RPC;
 export const HARDHAT_NAME = process.env.HARDHAT_NAME;
-export const POLYGON_MUMBAI_RPC = process.env.POLYGON_MUMBAI_RPC;
-export const POLYGON_MUMBAI_NAME = process.env.POLYGON_MUMBAI_NAME;
 export const POLYGON_RPC = process.env.POLYGON_RPC;
 export const POLYGON_NAME = process.env.POLYGON_NAME;
 export const MONGODB_URI = String(process.env.MONGODB_URI);

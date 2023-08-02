@@ -12,44 +12,6 @@
                 <b-tab title="Download" active>
                     <b-row class="mt-3">
                         <b-col>
-                            <b-form-group
-                                label="Redirect URL"
-                                description="Scanning the QR code will redirect the user to this page where a reward widget should be active."
-                            >
-                                <b-form-input @change="onChangeRedirectURL" v-model="redirectUrl" />
-                            </b-form-group>
-                            <b-form-group
-                                label="Download"
-                                description="Download a Zip file containing all QR codes or a spreadsheet (CSV) containing all URL's."
-                            >
-                                <b-button-group class="w-100">
-                                    <b-button
-                                        variant="primary"
-                                        @click="onClickDownloadZipAll"
-                                        :disabled="!isValidRedirectUrl"
-                                    >
-                                        <b-spinner small variant="light" v-if="index" />
-                                        <template v-else>Zip</template>
-                                    </b-button>
-                                    <b-button
-                                        variant="primary"
-                                        @click="onClickDownloadCSVAll"
-                                        :disabled="!isValidRedirectUrl"
-                                    >
-                                        CSV
-                                    </b-button>
-                                </b-button-group>
-                            </b-form-group>
-                            <b-progress
-                                v-if="index"
-                                :value="index"
-                                :max="selectedClaims.length"
-                                variant="primary"
-                                show-value
-                                class="mt-2"
-                            />
-                        </b-col>
-                        <b-col>
                             <b-form-group label="File format">
                                 <b-form-radio v-model="selectedFormat" name="fileFormat" value="png">
                                     <p>
@@ -101,6 +63,28 @@
                                     </b-input-group-append>
                                 </b-input-group>
                             </b-form-group>
+                        </b-col>
+                        <b-col>
+                            <b-form-group
+                                label="Download"
+                                description="Download a Zip file containing all QR codes or a spreadsheet (CSV) containing all URL's."
+                            >
+                                <b-button-group class="w-100">
+                                    <b-button variant="primary" @click="onClickDownloadZipAll">
+                                        <b-spinner small variant="light" v-if="index" />
+                                        <template v-else>Zip</template>
+                                    </b-button>
+                                    <b-button variant="primary" @click="onClickDownloadCSVAll"> CSV </b-button>
+                                </b-button-group>
+                            </b-form-group>
+                            <b-progress
+                                v-if="index"
+                                :value="index"
+                                :max="selectedClaims.length"
+                                variant="primary"
+                                show-value
+                                class="mt-2"
+                            />
                         </b-col>
                     </b-row>
                 </b-tab>
@@ -190,7 +174,7 @@ import { jsPDF } from 'jspdf';
 import { type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { TBaseReward } from '@thxnetwork/types/index';
-import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
+import { API_URL, BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { TClaim } from '@thxnetwork/dashboard/store/modules/claims';
 import { saveAs } from 'file-saver';
 import { loadImage } from '@thxnetwork/dashboard/utils/loadImage';
@@ -384,12 +368,10 @@ export default class BaseModalRewardClaimsDownload extends Vue {
         return pdf.output('arraybuffer');
     }
 
-    get isValidRedirectUrl() {
-        return this.redirectUrl && isValidUrl(this.redirectUrl);
-    }
-
     getUrl(uuid: string) {
-        return `${this.redirectUrl}?thx_widget_path=/c/${uuid}`;
+        const url = new URL(API_URL);
+        url.pathname = `v1/claims/r/${uuid}`;
+        return url.toString();
     }
 
     async onClickCreateZip() {

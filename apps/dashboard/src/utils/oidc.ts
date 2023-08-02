@@ -2,7 +2,7 @@ import { UserManagerSettings, WebStorageStateStore } from 'oidc-client-ts';
 import { API_URL, AUTH_URL, BASE_URL, OIDC_CLIENT_ID, OIDC_CLIENT_SECRET } from './secrets';
 
 export const ADMIN_SCOPE =
-    'openid account:read account:write rewards:read members:read members:write withdrawals:write swap:read swap:write erc20_rewards:read erc721_rewards:read referral_rewards:read, shopify_rewards:read';
+    'openid account:read account:write rewards:read members:read members:write withdrawals:write swap:read swap:write erc20_rewards:read erc721_rewards:read referral_rewards:read';
 
 export const config: UserManagerSettings = {
     authority: AUTH_URL,

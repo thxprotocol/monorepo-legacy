@@ -1,94 +1,213 @@
 <template>
     <div>
         <p class="text-center">
-            <img
-                v-if="brand && brand.logoImgUrl"
-                :src="brand.logoImgUrl"
-                width="100"
-                alt="Example logo image"
-                class="mb-3"
-            />
+            <img v-if="logoImgUrl" :src="logoImgUrl" width="100" alt="Example logo image" class="mb-3" />
         </p>
         <b-card
-            v-if="$route.query.token"
             :overlay="true"
             :img-src="require('../../public/assets/thx_nft.webp')"
             style="max-width: 620px"
             img-alt="Image"
             img-top
-            class="bg-dark text-white shadow-lg"
+            class="bg-dark text-white shadow-lg mb-10 mb-md-0"
         >
-            <b-badge
-                v-if="poolTransfer"
-                v-b-tooltip.hover.right
-                :title="`Expires at: ${format(new Date(poolTransfer.expiry), 'MMMM do yyyy hh:mm:ss')}`"
-                :variant="isExpired ? 'danger' : 'primary'"
-                style="font-size: 1rem"
-                class="p-2"
-            >
-                <i v-if="!isExpired" class="fas fa-clock mr-2"></i>
-                <span :class="{ 'text-danger': isExpired, 'text-muted': isExpired }">{{ expiryDate }}</span>
-            </b-badge>
-
             <template #footer>
-                <b-alert variant="danger" show v-if="error" class="mt-2">
-                    <i class="fas fa-exclamation-circle mr-2"></i>
-                    {{ error }}
+                <b-alert show variant="warning" class="mb-4">
+                    <i class="fas fa-search mr-2"></i>This page is used only for demo purposes
                 </b-alert>
                 <b-card-title>Hi there👋</b-card-title>
-                <p>A loyalty widget has been configured for you to reduce your time spent on the integration.</p>
-                <b-list-group class="mb-3">
-                    <b-list-group-item
-                        class="bg-darker d-flex justify-content-between align-items-center text-white"
-                        href="https://docs.thx.network/user-guides/rewards"
-                        target="_blank"
-                    >
-                        <div>
-                            <i class="fas fa-check-circle text-success mr-1"></i>
-                            Configure <strong>point rewards</strong> for users to earn
-                        </div>
-                        <b-badge variant="dark" pill>5 minutes</b-badge>
-                    </b-list-group-item>
-                    <b-list-group-item
-                        class="bg-darker d-flex justify-content-between align-items-center text-white"
-                        href="https://docs.thx.network/user-guides/perks"
-                        target="_blank"
-                    >
-                        <div>
-                            <i class="fas fa-check-circle text-success mr-1"></i>
-                            Configure <strong>crypto perks</strong> for users to redeem
-                        </div>
-                        <b-badge variant="dark" pill>10 minutes</b-badge>
-                    </b-list-group-item>
-                    <b-list-group-item
-                        class="bg-darker d-flex justify-content-between align-items-center text-white"
-                        size="sm"
-                    >
-                        <div>
-                            <i class="fas fa-check-circle text-success mr-1"></i> Embed the
-                            <strong>widget script</strong> in HTML pages
-                        </div>
-                        <b-badge variant="dark" pill>10 minutes</b-badge>
-                    </b-list-group-item>
-                </b-list-group>
-                <p class="small text-muted">Ask your dev to add this to the &lt;head&gt; of your website 👇</p>
+                <p>
+                    We have prepared a quest campaign for <strong>{{ title }} ❤️</strong>
+                </p>
+                <p>
+                    Explore our features, play with the suggested Quests &amp; Rewards in your campaign, and feel free
+                    to reach out if you have any questions!
+                </p>
+                <b-row>
+                    <b-col md="6">
+                        <strong class="py-3 d-block text-gray">Infrastructure</strong>
+                        <b-list-group class="mb-3">
+                            <b-list-group-item
+                                :key="key"
+                                v-for="(item, key) of [
+                                    {
+                                        icon: 'fas fa-wallet',
+                                        color: '#666',
+                                        label: 'Smart Wallets',
+                                        description: 'Polygon smart contract wallets ideal for non-crypto natives',
+                                    },
+                                    {
+                                        icon: 'fas fa-save',
+                                        color: '#666',
+                                        label: 'Virtual Wallets',
+                                        description: 'Qualify users for custom quests even before account sign up',
+                                    },
+                                    {
+                                        icon: 'fas fa-tags',
+                                        color: '#666',
+                                        label: 'Free Transactions',
+                                        description: 'Let us worry about transactions costs and delivery',
+                                    },
+                                    {
+                                        icon: 'fas fa-chart-line',
+                                        color: '#666',
+                                        label: 'Analytics &amp; Monitoring',
+                                        description: 'Keep an eye on the performance of your quests',
+                                    },
+                                ]"
+                                class="bg-darker d-flex justify-content-between align-items-center text-white"
+                            >
+                                <div style="width: 30px">
+                                    <i :class="item.icon" :style="{ color: item.color }" class="mr-1"></i>
+                                </div>
+                                {{ item.label }}
+                                <b-link v-b-tooltip :title="item.description" class="ml-auto">
+                                    <i class="fas fa-question-circle text-dark mr-1"></i>
+                                </b-link>
+                            </b-list-group-item>
+                        </b-list-group>
+                    </b-col>
+                    <b-col md="6">
+                        <strong class="py-3 d-block text-gray">Quests</strong>
+                        <b-list-group-item
+                            :key="key"
+                            v-for="(item, key) of [
+                                {
+                                    icon: 'fas fa-calendar',
+                                    color: '#666',
+                                    label: 'Daily',
+                                    description: 'Provide daily incentives for player behavior',
+                                },
+                                {
+                                    icon: 'fas fa-comments',
+                                    color: '#666',
+                                    label: 'Referral',
+                                    description: 'Empower your players to invite their friends and earn points',
+                                },
+                                {
+                                    icon: 'fas fa-trophy',
+                                    color: '#666',
+                                    label: 'Social',
+                                    description:
+                                        'Stimulate social enagement with Twitter, Discord, YouTube, Github and Twitch validations',
+                                },
+                                {
+                                    icon: 'fas fa-flag',
+                                    color: '#666',
+                                    label: 'Custom',
+                                    description:
+                                        'Use outbound webhooks to reward important achievements in your application',
+                                },
+                            ]"
+                            class="bg-darker d-flex justify-content-start align-items-center text-white"
+                        >
+                            <div style="width: 30px">
+                                <i :class="item.icon" :style="{ color: item.color }" class="mr-1"></i>
+                            </div>
+                            {{ item.label }}
+                            <b-link v-b-tooltip :title="item.description" class="ml-auto">
+                                <i class="fas fa-question-circle text-dark mr-1"></i>
+                            </b-link>
+                        </b-list-group-item>
+                    </b-col>
+                    <b-col md="6">
+                        <strong class="py-3 d-block text-gray">Rewards</strong>
+                        <b-list-group-item
+                            :key="key"
+                            v-for="(item, key) of [
+                                {
+                                    icon: 'fas fa-coins',
+                                    color: '#666',
+                                    label: 'Coin',
+                                    description: 'Create rewards for ERC20 contracts',
+                                },
 
+                                {
+                                    icon: 'fas fa-palette',
+                                    color: '#666',
+                                    label: 'NFT',
+                                    description: 'Create rewards for ERC721 or ERC1155 contracts',
+                                },
+
+                                {
+                                    icon: 'fas fa-gift',
+                                    color: '#666',
+                                    label: 'Custom',
+                                    description: 'Use inbound webhooks to reward with custom code running in your game',
+                                },
+
+                                {
+                                    icon: 'fas fa-qrcode',
+                                    color: '#666',
+                                    label: 'QR Codes',
+                                    description: 'Use QR codes to give rewards in an offline environment',
+                                },
+                            ]"
+                            class="bg-darker d-flex justify-content-start align-items-center text-white"
+                        >
+                            <div style="width: 30px">
+                                <i :class="item.icon" :style="{ color: item.color }" class="mr-1"></i>
+                            </div>
+                            {{ item.label }}
+                            <b-link v-b-tooltip :title="item.description" class="ml-auto">
+                                <i class="fas fa-question-circle text-dark mr-1"></i>
+                            </b-link>
+                        </b-list-group-item>
+                    </b-col>
+                    <b-col md="6">
+                        <strong class="py-3 d-block text-gray">Integrations</strong>
+                        <b-list-group-item
+                            :key="key"
+                            v-for="(item, key) of [
+                                {
+                                    icon: 'fab fa-discord',
+                                    color: '#7289da',
+                                    label: 'Discord',
+                                    description: 'Create quests for Discord server activity	',
+                                },
+                                {
+                                    icon: 'fab fa-twitter',
+                                    color: '#1DA1F2',
+                                    label: 'Twitter',
+                                    description: 'Automate social quest creation with hashtag filters',
+                                },
+                                {
+                                    icon: 'fab fa-youtube',
+                                    color: '#FF0000',
+                                    label: 'Youtube',
+                                    description: 'Create quests for Youtube channel activity',
+                                },
+                                {
+                                    icon: 'fas fa-shopping-cart',
+                                    color: '#F2F2F2 !important',
+                                    label: 'Payment Methods',
+                                    description: 'Sell rewards with crypto, credit Card & local payment providers	',
+                                },
+                            ]"
+                            class="bg-darker d-flex justify-content-between align-items-center text-white"
+                        >
+                            <div style="width: 30px">
+                                <i :class="item.icon" :style="{ color: item.color }" class="mr-1"></i>
+                            </div>
+                            {{ item.label }}
+                            <b-link v-b-tooltip :title="item.description" class="ml-auto">
+                                <i class="fas fa-question-circle text-dark mr-1"></i>
+                            </b-link>
+                        </b-list-group-item>
+                    </b-col>
+                </b-row>
+                <hr />
+                <p class="small text-muted">Ask a dev to add this to your website 👇</p>
                 <BaseCodeExample :pool="{ _id: $route.params.poolId }" />
-
+                <hr />
                 <b-button
                     variant="success"
-                    class="rounded-pill"
+                    class="rounded-pill mt-3"
                     block
-                    @click="onClickTransfer"
-                    :disabled="!poolTransfer"
+                    href="/signup?signup_plan=2&signup_offer=true"
                 >
-                    <span v-if="isTransferLoading"><b-spinner small variant="white" /> Transfering... </span>
-                    <strong v-else>Start now!</strong>
+                    <strong>Start free trial!</strong>
                 </b-button>
-                <p class="text-center mt-2 small text-muted" v-if="poolTransfer">
-                    For security reasons this URL expires at
-                    <strong>{{ format(new Date(poolTransfer.expiry), 'MMMM do yyyy hh:mm:ss') }}</strong>
-                </p>
             </template>
         </b-card>
     </div>
@@ -143,13 +262,7 @@ export default class WidgetPreviewView extends Vue {
             : 'expired';
     }
 
-    get brand() {
-        let brand = this.brands[this.$route.params.poolId];
-        if (!brand) {
-            brand = { logoImgUrl: this.defaultLogoImgUrl, backgroundImgUrl: this.defaultBackgroundImgUrl };
-        }
-        return brand;
-    }
+    title = '';
 
     async mounted() {
         // Ping mixpanel that the page is visited
@@ -160,35 +273,21 @@ export default class WidgetPreviewView extends Vue {
         // Inject the widget
         initWidget(this.$route.params.poolId);
 
-        // Get brand elements for the pool
-        await this.$store.dispatch('brands/getForPool', this.$route.params.poolId);
-        this.setBackground(this.brand);
-
-        // Load pool transfer if required
-        if (this.$route.query.token) {
-            this.getPoolTransfer();
-        }
+        const { data } = await axios.get(API_URL + '/v1/widget/' + this.$route.params.poolId);
+        this.title = data.title;
+        this.logoImgUrl = data.logoUrl || this.defaultLogoImgUrl;
+        this.setBackground(data.backgroundUrl || this.defaultBackgroundImgUrl);
     }
 
-    async getPoolTransfer() {
-        try {
-            const r = await axios({
-                method: 'GET',
-                url: `${API_URL}/v1/pools/${this.$route.params.poolId}/transfers/${this.$route.query.token}`,
-                withCredentials: false,
-            });
-
-            this.poolTransfer = r.data;
-        } catch (error) {
-            this.setError(error as AxiosError);
-        }
-    }
-
-    setBackground(brand: TBrand) {
+    setBackground(src: string) {
         const app = document.getElementById('app');
         if (!app) return;
         app.style.opacity = '1';
-        app.style.backgroundImage = brand.backgroundImgUrl ? `url('${brand.backgroundImgUrl}')` : '';
+        document.body.style.height = 'auto';
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.backgroundAttachment = 'fixed';
+        document.body.style.backgroundPosition = 'center center';
+        document.body.style.backgroundImage = src ? `url('${src}')` : '';
     }
 
     async onClickTransfer() {
@@ -259,5 +358,12 @@ export default class WidgetPreviewView extends Vue {
     box-shadow: rgba(113, 63, 205, 0.5) 0 0px 15px;
     background-color: darken(#98d80d, 5%);
     text-shadow: 1px 1px rgba(89, 66, 193, 0.5);
+}
+.card-img-overlay {
+    display: flex;
+    align-items: center;
+}
+.mb-10 {
+    margin-bottom: 12rem;
 }
 </style>

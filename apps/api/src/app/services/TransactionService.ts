@@ -12,7 +12,6 @@ import PoolService from './PoolService';
 import ERC721Service from './ERC721Service';
 import WithdrawalService from './WithdrawalService';
 import { RelayerTransactionPayload } from 'defender-relay-client';
-import WalletService from './WalletService';
 import WalletManagerService from './WalletManagerService';
 import { Contract } from 'web3-eth-contract';
 import ERC1155Service from './ERC1155Service';
@@ -287,9 +286,6 @@ async function executeCallback(tx: TransactionDocument, receipt: TransactionRece
             break;
         case 'withdrawForCallback':
             await WithdrawalService.withdrawForCallback(tx.callback.args, receipt);
-            break;
-        case 'walletDeployCallback':
-            await WalletService.deployCallback(tx.callback.args, receipt);
             break;
         case 'grantRoleCallBack':
             await WalletManagerService.grantRoleCallBack(tx.callback.args, receipt);
