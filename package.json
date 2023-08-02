@@ -10,6 +10,7 @@
         "serve:api": "NODE_TLS_REJECT_UNAUTHORIZED='0' nx serve api",
         "serve:auth": "NODE_TLS_REJECT_UNAUTHORIZED='0' nx serve auth",
         "serve:discord": "NODE_TLS_REJECT_UNAUTHORIZED='0' nx serve discord-bot",
+        "import-quests": "yarn build api; cp -R ./dist/libs ./dist/apps/api/libs; yarn nx run api:import-quests",
         "build": "nx build",
         "test": "NODE_OPTIONS='--max-old-space-size=8192' nx test",
         "test:e2e": "yarn cypress run --headed --no-exit",

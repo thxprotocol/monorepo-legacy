@@ -57,11 +57,17 @@ function getByAddress(address: string) {
     return AssetPool.findOne({ address });
 }
 
-async function deploy(sub: string, chainId: ChainId, title: string, endDate?: Date): Promise<AssetPoolDocument> {
+async function deploy(
+    sub: string,
+    chainId: ChainId,
+    title: string,
+    forceSync = true,
+    dummyContent = true,
+    endDate?: Date,
+): Promise<AssetPoolDocument> {
     const factory = getContract(chainId, 'Factory', currentVersion);
     const variant = 'defaultDiamond';
     const poolFacetContracts = diamondContracts(chainId, variant);
-
     const pool = await AssetPool.create({
         sub,
         chainId,
@@ -81,11 +87,16 @@ async function deploy(sub: string, chainId: ChainId, title: string, endDate?: Da
                 .map((x) => Number(x)),
         },
     });
+
+    if (dummyContent) {
+        await createDummyContents(pool);
+    }
+
     const txId = await TransactionService.sendAsync(
         factory.options.address,
         factory.methods.deploy(getDiamondCutForContractFacets(poolFacetContracts, [])),
         pool.chainId,
-        true,
+        forceSync,
         {
             type: 'assetPoolDeployCallback',
             args: { chainId, assetPoolId: String(pool._id) },
@@ -103,8 +114,6 @@ async function deployCallback(args: TAssetPoolDeployCallbackArgs, receipt: Trans
     const event = assertEvent('DiamondDeployed', events);
     pool.address = event.args.diamond;
     await pool.save();
-
-    await createDummyContents(pool);
 }
 
 async function getAllBySub(sub: string, archived = false) {
