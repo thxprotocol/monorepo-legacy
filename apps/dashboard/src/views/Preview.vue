@@ -13,11 +13,15 @@
         >
             <template #footer>
                 <b-alert show variant="warning" class="mb-4">
-                    <i class="fas fa-search mr-2"></i>This page is only used for demo purposes
+                    <i class="fas fa-search mr-2"></i>This page is used only for demo purposes
                 </b-alert>
                 <b-card-title>Hi there👋</b-card-title>
                 <p>
-                    We have prepared a quest campaign for<br /><strong>{{ title }} ❤️</strong>
+                    We have prepared a quest campaign for <strong>{{ title }} ❤️</strong>
+                </p>
+                <p>
+                    Explore our features, play with the suggested Quests &amp; Rewards in your campaign, and feel free
+                    to reach out if you have any questions!
                 </p>
                 <b-row>
                     <b-col md="6">
