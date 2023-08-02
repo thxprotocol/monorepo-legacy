@@ -10,10 +10,7 @@ const user = request.agent(app);
 describe('Referral Rewards', () => {
     let poolId: string, referralRewardId: string, token: string;
 
-    beforeAll(async () => {
-        await beforeAllCallback();
-    });
-
+    beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
 
     it('POST /pools', (done) => {

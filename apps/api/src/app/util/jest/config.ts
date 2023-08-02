@@ -27,9 +27,10 @@ export async function beforeAllCallback(options = { skipWalletCreation: false })
     await factory.methods.initialize(defaultAccount, registryAddress).send({ from: defaultAccount });
 
     if (!options.skipWalletCreation) {
-        await SafeService.create({ sub, chainId: ChainId.Hardhat }, userWalletAddress);
-        await SafeService.create({ sub: sub2, chainId: ChainId.Hardhat }, userWalletAddress2);
-        await SafeService.create({ sub: sub3, chainId: ChainId.Hardhat }, userWalletAddress3);
+        const safeVersion = '1.3.0';
+        await SafeService.create({ sub, safeVersion, chainId: ChainId.Hardhat }, userWalletAddress);
+        await SafeService.create({ sub: sub2, safeVersion, chainId: ChainId.Hardhat }, userWalletAddress2);
+        await SafeService.create({ sub: sub3, safeVersion, chainId: ChainId.Hardhat }, userWalletAddress3);
     }
 }
 
