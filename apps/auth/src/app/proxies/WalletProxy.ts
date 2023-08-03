@@ -29,12 +29,7 @@ export default {
         return r.data;
     },
 
-    update: async (
-        data: TWallet & {
-            skipDeploy?: boolean;
-            forceSync?: boolean;
-        },
-    ) => {
+    update: async (data: TWallet) => {
         const r = await apiClient({
             method: 'PATCH',
             url: `/v1/wallets/${data._id}`,
@@ -44,12 +39,7 @@ export default {
         return r.data;
     },
 
-    create: async (
-        data: TWallet & {
-            skipDeploy?: boolean;
-            forceSync?: boolean;
-        },
-    ) => {
+    create: async (data: TWallet) => {
         const r = await apiClient({
             method: 'POST',
             url: `/v1/wallets`,

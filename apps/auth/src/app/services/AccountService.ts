@@ -7,12 +7,10 @@ import {
     ERROR_VERIFY_EMAIL_EXPIRED,
 } from '../util/messages';
 import { YouTubeService } from './YouTubeService';
-import { TInteraction, TAccount, TWallet, AccountVariant } from '@thxnetwork/types/interfaces';
-import { AccessTokenKind, AccountPlanType, ChainId } from '@thxnetwork/types/enums';
+import { TInteraction, TAccount, AccountVariant } from '@thxnetwork/types/interfaces';
+import { AccessTokenKind, AccountPlanType } from '@thxnetwork/types/enums';
 import bcrypt from 'bcrypt';
 import { ForbiddenError } from '../util/errors';
-import { NODE_ENV } from '../config/secrets';
-import WalletProxy from '../proxies/WalletProxy';
 
 export class AccountService {
     static async get(sub: string) {
@@ -115,47 +113,15 @@ export class AccountService {
 
     static async signinWithAddress(addr: string) {
         const address = toChecksumAddress(addr);
-        const chainId = NODE_ENV === 'production' ? ChainId.Polygon : ChainId.Hardhat;
-        const [wallet] = await WalletProxy.get('', chainId, address);
+        const account = await Account.findOne({ address });
+        if (account) return account;
 
-        if (wallet) {
-            return wallet.sub
-                ? // Wallet exists and is owned by an account, return account
-                  await Account.findById(wallet.sub)
-                : // Wallet exists but is not owned, create account, update wallet.sub and return account
-                  await this.createForWallet(wallet);
-        }
-        // Create a new wallet for the address
-        return await this.createForAddress(address);
-    }
-
-    static async createForWallet(wallet: TWallet) {
-        const account = await Account.create({
+        return await Account.create({
             variant: AccountVariant.Metamask,
             plan: AccountPlanType.Free,
             active: true,
-        });
-        wallet.sub = String(account._id);
-        await WalletProxy.update(wallet);
-        return account;
-    }
-
-    static async createForAddress(address: string) {
-        const account = await Account.create({
-            variant: AccountVariant.Metamask,
-            plan: AccountPlanType.Free,
-            active: true,
-        });
-        const chainId = NODE_ENV === 'production' ? ChainId.Polygon : ChainId.Hardhat;
-
-        await WalletProxy.create({
-            sub: String(account._id),
             address,
-            skipDeploy: true,
-            chainId,
         });
-
-        return account;
     }
 
     static async findOrCreate(
@@ -267,16 +233,8 @@ export class AccountService {
         return { result: SUCCESS_SIGNUP_COMPLETED, account };
     }
 
-    static remove(id: string) {
-        Account.remove({ _id: id });
-    }
-
-    static async count() {
-        try {
-            return await Account.countDocuments();
-        } catch (error) {
-            return { error };
-        }
+    static async remove(id: string) {
+        await Account.remove({ _id: id });
     }
 
     static isConnected = async (sub: string, userId: string, tokenKind: AccessTokenKind) => {

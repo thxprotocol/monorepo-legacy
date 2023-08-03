@@ -44,11 +44,6 @@ async function controller(req: Request, res: Response) {
         ];
     }
 
-    if (params.shopify_params) {
-        const { shop } = JSON.parse(params.shopify_params);
-        shopifyStoreUrl = shop;
-    }
-
     if (params.wallet_transfer_token) {
         const { pointBalance } = await WalletProxy.getWalletTransfer(params.wallet_transfer_token);
         alert['variant'] = 'success';

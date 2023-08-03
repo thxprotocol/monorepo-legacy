@@ -8,6 +8,7 @@ import { INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
 import { accountEmail } from '../../../util/jest';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { AccountPlanType, AccessTokenKind } from '@thxnetwork/types/enums';
+import { mockUrl } from '@thxnetwork/auth/util/jest/mock';
 
 const http = request.agent(app);
 
@@ -16,6 +17,7 @@ describe('Account Controller', () => {
 
     beforeAll(async () => {
         await db.truncate();
+        await mockUrl('post', 'https://discord.com', '/api/oauth2/token', 201);
 
         async function requestToken() {
             const res = await http

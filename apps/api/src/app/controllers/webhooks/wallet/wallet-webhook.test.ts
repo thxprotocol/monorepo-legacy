@@ -110,7 +110,7 @@ describe('Webhook: Virtual Wallets', () => {
 
         // Claim ownership of wallet
         it('PATCH /account/wallet', (done) => {
-            user.patch(`/v1/account/wallet`)
+            user.post(`/v1/account/wallet/connect`)
                 .set({ Authorization: widgetAccessToken3 })
                 .send({ code })
                 .expect((res: request.Response) => {

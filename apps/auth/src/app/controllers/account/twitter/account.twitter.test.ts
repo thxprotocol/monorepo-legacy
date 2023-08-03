@@ -7,6 +7,7 @@ import { TWITTER_API_ENDPOINT, INITIAL_ACCESS_TOKEN } from '../../../config/secr
 import { AccessTokenKind, AccountPlanType } from '@thxnetwork/types/enums';
 import { accountEmail } from '@thxnetwork/auth/util/jest';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
+import { mockUrl } from '@thxnetwork/auth/util/jest/mock';
 
 const http = request.agent(app);
 
@@ -15,6 +16,7 @@ describe('Account Controller', () => {
 
     beforeAll(async () => {
         await db.truncate();
+        await mockUrl('post', 'https://api.twitter.com', '/2/oauth2/token', 201);
 
         async function requestToken() {
             const res = await http
