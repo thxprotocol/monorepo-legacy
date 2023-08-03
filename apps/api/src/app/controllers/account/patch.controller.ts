@@ -25,6 +25,7 @@ export default {
             const newPrimaryWallet = await SafeService.create({ sub: account.sub, chainId, address }, address);
             console.log(`[${req.auth.sub}] Metamask Wallet:`, newPrimaryWallet.address);
         }
+
         // Attempt to recover address for not metamask user
         if (!isMetamask && authRequestMessage && authRequestSignature) {
             address = recoverSigner(authRequestMessage, authRequestSignature);
@@ -33,9 +34,13 @@ export default {
             const isAddressNew = !account.address && address; // Should deploy new safe
             const isAddressChanged = account.address && address !== account.address; // Should change owner for existing safe
 
-            // No wallet + address changed = Deploy new safe
-            // No wallet + address new = Deploy new safe
-            if (!existingPrimaryWallet && (isAddressNew || isAddressChanged)) {
+            if (
+                // No wallet + address changed = Deploy new safe
+                // No wallet + address new = Deploy new safe
+                (!existingPrimaryWallet && (isAddressNew || isAddressChanged)) ||
+                // No wallet + no new address + no new changed address = Deploy new safe
+                (!existingPrimaryWallet && !isAddressNew && !isAddressChanged)
+            ) {
                 await SafeService.create({ sub: account.sub, chainId, safeVersion }, address);
             }
             // Existing Wallet + address changed = Deploy new safe + migrate assets
