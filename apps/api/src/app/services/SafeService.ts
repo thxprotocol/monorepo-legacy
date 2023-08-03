@@ -28,7 +28,6 @@ async function create(
     userWalletAddress?: string,
 ) {
     const { safeVersion, chainId, sub, address } = data;
-    console.log({ sub, chainId, address, safeVersion });
     const wallet = await Wallet.create({ sub, chainId, address, safeVersion });
     // Concerns a Metamask account so we do not deploy and return early
     if (!safeVersion) return wallet;
