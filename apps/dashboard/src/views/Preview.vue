@@ -304,7 +304,7 @@ export default class WidgetPreviewView extends Vue {
         if (!app) return;
         app.style.opacity = '1';
         document.body.style.height = 'auto';
-        document.body.style.backgroundColor = '#F2F2F2';
+        document.body.style.backgroundColor = '#212529';
         // document.body.style.backgroundSize = 'cover';
         // document.body.style.backgroundAttachment = 'fixed';
         // document.body.style.backgroundPosition = 'center center';
