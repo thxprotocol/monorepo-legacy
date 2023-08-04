@@ -1,8 +1,5 @@
 <template>
     <div>
-        <p class="text-center">
-            <img v-if="logoImgUrl" :src="logoImgUrl" width="100" alt="Example logo image" class="mb-3" />
-        </p>
         <b-card
             :overlay="true"
             :img-src="require('../../public/assets/thx_nft.webp')"
@@ -11,6 +8,10 @@
             img-top
             class="bg-dark text-white shadow-lg mb-10 mb-md-0"
         >
+            <p class="text-center">
+                <img v-if="logoImgUrl" :src="logoImgUrl" width="100" alt="Example logo image" class="mb-3" />
+            </p>
+
             <template #footer>
                 <b-alert show variant="warning" class="mb-4">
                     <i class="fas fa-search mr-2"></i>This page is used only for demo purposes
@@ -24,8 +25,11 @@
                     to reach out if you have any questions!
                 </p>
                 <b-row>
-                    <b-col md="6">
-                        <strong class="py-3 d-block text-gray">Infrastructure</strong>
+                    <b-button variant="link" block v-b-toggle.collapse1 class="py-3 d-block text-gray text-left">
+                        Infrastructure
+                        <i class="fas fa-question-circle ml-2"></i>
+                    </b-button>
+                    <b-collapse id="collapse1" class="w-100">
                         <b-list-group class="mb-3">
                             <b-list-group-item
                                 :key="key"
@@ -34,41 +38,48 @@
                                         icon: 'fas fa-wallet',
                                         color: '#666',
                                         label: 'Smart Wallets',
-                                        description: 'Polygon smart contract wallets ideal for non-crypto natives',
+                                        description: 'Polygon smart contract wallets ideal for non-crypto natives.',
                                     },
                                     {
                                         icon: 'fas fa-save',
                                         color: '#666',
                                         label: 'Virtual Wallets',
-                                        description: 'Qualify users for custom quests even before account sign up',
+                                        description: 'Qualify users for custom quests even before account sign up.',
                                     },
                                     {
                                         icon: 'fas fa-tags',
                                         color: '#666',
                                         label: 'Free Transactions',
-                                        description: 'Let us worry about transactions costs and delivery',
+                                        description: 'Let us worry about transactions costs and delivery.',
                                     },
                                     {
                                         icon: 'fas fa-chart-line',
                                         color: '#666',
                                         label: 'Analytics &amp; Monitoring',
-                                        description: 'Keep an eye on the performance of your quests',
+                                        description: 'Keep an eye on the performance of your quests.',
                                     },
                                 ]"
-                                class="bg-darker d-flex justify-content-between align-items-center text-white"
+                                class="bg-darker text-white flex-column"
                             >
-                                <div style="width: 30px">
-                                    <i :class="item.icon" :style="{ color: item.color }" class="mr-1"></i>
+                                <div class="d-flex justify-content-start align-items-center">
+                                    <div style="width: 30px">
+                                        <i :class="item.icon" :style="{ color: item.color }" class="mr-1"></i>
+                                    </div>
+                                    {{ item.label }}
                                 </div>
-                                {{ item.label }}
-                                <b-link v-b-tooltip :title="item.description" class="ml-auto">
+                                <p class="text-muted">
+                                    {{ item.description }}
+                                </p>
+                                <!-- <b-link v-b-tooltip :title="item.description" class="ml-auto">
                                     <i class="fas fa-question-circle text-dark mr-1"></i>
-                                </b-link>
+                                </b-link> -->
                             </b-list-group-item>
                         </b-list-group>
-                    </b-col>
-                    <b-col md="6">
-                        <strong class="py-3 d-block text-gray">Quests</strong>
+                    </b-collapse>
+                    <b-button variant="link" block v-b-toggle.collapse2 class="py-3 d-block text-gray text-left">
+                        Quests <i class="fas fa-question-circle ml-2"></i>
+                    </b-button>
+                    <b-collapse id="collapse2">
                         <b-list-group-item
                             :key="key"
                             v-for="(item, key) of [
@@ -109,9 +120,11 @@
                                 <i class="fas fa-question-circle text-dark mr-1"></i>
                             </b-link>
                         </b-list-group-item>
-                    </b-col>
-                    <b-col md="6">
-                        <strong class="py-3 d-block text-gray">Rewards</strong>
+                    </b-collapse>
+                    <b-button variant="link" block v-b-toggle.collapse3 class="py-3 d-block text-gray text-left">
+                        Rewards <i class="fas fa-question-circle ml-2"></i>
+                    </b-button>
+                    <b-collapse id="collapse3">
                         <b-list-group-item
                             :key="key"
                             v-for="(item, key) of [
@@ -153,9 +166,11 @@
                                 <i class="fas fa-question-circle text-dark mr-1"></i>
                             </b-link>
                         </b-list-group-item>
-                    </b-col>
-                    <b-col md="6">
-                        <strong class="py-3 d-block text-gray">Integrations</strong>
+                    </b-collapse>
+                    <b-button variant="link" block v-b-toggle.collapse4 class="py-3 d-block text-gray text-left">
+                        Integrations <i class="fas fa-question-circle ml-2"></i>
+                    </b-button>
+                    <b-collapse id="collapse4">
                         <b-list-group-item
                             :key="key"
                             v-for="(item, key) of [
@@ -194,7 +209,7 @@
                                 <i class="fas fa-question-circle text-dark mr-1"></i>
                             </b-link>
                         </b-list-group-item>
-                    </b-col>
+                    </b-collapse>
                 </b-row>
                 <hr />
                 <p class="small text-muted">Ask a dev to add this to your website 👇</p>
@@ -284,10 +299,11 @@ export default class WidgetPreviewView extends Vue {
         if (!app) return;
         app.style.opacity = '1';
         document.body.style.height = 'auto';
-        document.body.style.backgroundSize = 'cover';
-        document.body.style.backgroundAttachment = 'fixed';
-        document.body.style.backgroundPosition = 'center center';
-        document.body.style.backgroundImage = src ? `url('${src}')` : '';
+        document.body.style.backgroundColor = '#F2F2F2';
+        // document.body.style.backgroundSize = 'cover';
+        // document.body.style.backgroundAttachment = 'fixed';
+        // document.body.style.backgroundPosition = 'center center';
+        // document.body.style.backgroundImage = src ? `url('${src}')` : '';
     }
 
     async onClickTransfer() {
