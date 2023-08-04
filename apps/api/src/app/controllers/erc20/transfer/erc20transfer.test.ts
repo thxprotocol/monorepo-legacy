@@ -76,11 +76,15 @@ describe('ERC20Transfer', () => {
             expect(res.body.transactionHash).toBeDefined();
             expect(res.status).toBe(201);
 
-            const signedTXHash = await signTxHash(wallet.address, res.body.transactionHash, userWalletPrivateKey);
+            const { safeTxHash, signature } = await signTxHash(
+                wallet.address,
+                res.body.transactionHash,
+                userWalletPrivateKey,
+            );
             const res2 = await user
-                .post(`/v1/wallets/${String(wallet._id)}/confirm`)
+                .post(`/v1/account/wallet/confirm`)
                 .set({ Authorization: widgetAccessToken })
-                .send(signedTXHash);
+                .send({ chainId: ChainId.Hardhat, safeTxHash, signature });
 
             expect(res2.status).toBe(200);
         });
