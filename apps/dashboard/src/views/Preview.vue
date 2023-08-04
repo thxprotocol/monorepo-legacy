@@ -1,32 +1,34 @@
 <template>
     <div>
-        <b-card
-            :overlay="true"
-            :img-src="require('../../public/assets/thx_nft.webp')"
-            style="max-width: 620px"
-            img-alt="Image"
-            img-top
-            class="bg-dark text-white shadow-lg mb-10 mb-md-0"
-        >
-            <p class="text-center">
-                <img v-if="logoImgUrl" :src="logoImgUrl" width="100" alt="Example logo image" class="mb-3" />
-            </p>
+        <p class="text-center">
+            <img v-if="logoImgUrl" :src="logoImgUrl" width="100" alt="Example logo image" class="mb-3" />
+        </p>
 
+        <b-card style="max-width: 620px" class="bg-dark text-white shadow-lg mb-10 mb-md-0">
+            <iframe
+                width="100%"
+                height="315"
+                src="https://www.youtube-nocookie.com/embed/6XvN2SfswvI?controls=0"
+                title="YouTube video player"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+            ></iframe>
             <template #footer>
-                <b-alert show variant="warning" class="mb-4">
-                    <i class="fas fa-search mr-2"></i>This page is used only for demo purposes
+                <b-alert show variant="info" class="mb-4">
+                    <i class="fas fa-exclamation-circle mr-2"> </i>
+                    <strong>This page is used only for demo purposes.</strong>
+                    <p class="m-0">Watch the video to see how the campaign widget runs in your website.</p>
                 </b-alert>
-                <b-card-title>Hi there👋</b-card-title>
+                <b-card-title>Hi👋</b-card-title>
+                <p class="font-weight-bold">We have prepared a Quest &amp; Reward campaign for {{ title }}!❤️</p>
                 <p>
-                    We have prepared a quest campaign for <strong>{{ title }} ❤️</strong>
-                </p>
-                <p>
-                    Explore our features, play with the suggested Quests &amp; Rewards in your campaign, and feel free
-                    to reach out if you have any questions!
+                    Read more about its features below, play with the suggested Quests &amp; Rewards, and please reach
+                    out if you have any questions!
                 </p>
                 <b-row>
                     <b-button variant="link" block v-b-toggle.collapse1 class="py-3 d-block text-gray text-left">
-                        Infrastructure
+                        Learn about <strong>infrastructure</strong>
                         <i class="fas fa-question-circle ml-2"></i>
                     </b-button>
                     <b-collapse id="collapse1" class="w-100">
@@ -59,7 +61,7 @@
                                         description: 'Keep an eye on the performance of your quests.',
                                     },
                                 ]"
-                                class="bg-darker text-white flex-column"
+                                class="bg-darker"
                             >
                                 <div class="d-flex justify-content-start align-items-center">
                                     <div style="width: 30px">
@@ -77,75 +79,80 @@
                         </b-list-group>
                     </b-collapse>
                     <b-button variant="link" block v-b-toggle.collapse2 class="py-3 d-block text-gray text-left">
-                        Quests <i class="fas fa-question-circle ml-2"></i>
+                        Learn about <strong>quests</strong> <i class="fas fa-question-circle ml-2"></i>
                     </b-button>
-                    <b-collapse id="collapse2">
+                    <b-collapse id="collapse2" class="w-100">
                         <b-list-group-item
                             :key="key"
                             v-for="(item, key) of [
                                 {
                                     icon: 'fas fa-calendar',
                                     color: '#666',
-                                    label: 'Daily',
+                                    label: 'Daily Quests',
                                     description: 'Provide daily incentives for player behavior',
                                 },
                                 {
                                     icon: 'fas fa-comments',
                                     color: '#666',
-                                    label: 'Referral',
+                                    label: 'Referral Quests',
                                     description: 'Empower your players to invite their friends and earn points',
                                 },
                                 {
                                     icon: 'fas fa-trophy',
                                     color: '#666',
-                                    label: 'Social',
+                                    label: 'Social Quests',
                                     description:
                                         'Stimulate social enagement with Twitter, Discord, YouTube, Github and Twitch validations',
                                 },
                                 {
                                     icon: 'fas fa-flag',
                                     color: '#666',
-                                    label: 'Custom',
+                                    label: 'Custom Quests',
                                     description:
                                         'Use outbound webhooks to reward important achievements in your application',
                                 },
                             ]"
-                            class="bg-darker d-flex justify-content-start align-items-center text-white"
+                            class="bg-darker text-white"
                         >
-                            <div style="width: 30px">
-                                <i :class="item.icon" :style="{ color: item.color }" class="mr-1"></i>
+                            <div class="d-flex justify-content-start align-items-center">
+                                <div style="width: 30px">
+                                    <i :class="item.icon" :style="{ color: item.color }" class="mr-1"></i>
+                                </div>
+                                {{ item.label }}
                             </div>
-                            {{ item.label }}
-                            <b-link v-b-tooltip :title="item.description" class="ml-auto">
-                                <i class="fas fa-question-circle text-dark mr-1"></i>
-                            </b-link>
+                            <p class="text-muted">
+                                {{ item.description }}
+                            </p>
+                            <!-- <b-link v-b-tooltip :title="item.description" class="ml-auto">
+                                    <i class="fas fa-question-circle text-dark mr-1"></i>
+                                </b-link> -->
                         </b-list-group-item>
                     </b-collapse>
                     <b-button variant="link" block v-b-toggle.collapse3 class="py-3 d-block text-gray text-left">
-                        Rewards <i class="fas fa-question-circle ml-2"></i>
+                        Learn about <strong>rewards</strong> <i class="fas fa-question-circle ml-2"></i>
                     </b-button>
-                    <b-collapse id="collapse3">
+                    <b-collapse id="collapse3" class="w-100">
                         <b-list-group-item
                             :key="key"
                             v-for="(item, key) of [
                                 {
                                     icon: 'fas fa-coins',
                                     color: '#666',
-                                    label: 'Coin',
+                                    label: 'Coin Rewards',
                                     description: 'Create rewards for ERC20 contracts',
                                 },
 
                                 {
                                     icon: 'fas fa-palette',
                                     color: '#666',
-                                    label: 'NFT',
+                                    label: 'NFT Rewards',
                                     description: 'Create rewards for ERC721 or ERC1155 contracts',
                                 },
 
                                 {
                                     icon: 'fas fa-gift',
                                     color: '#666',
-                                    label: 'Custom',
+                                    label: 'Custom Rewards',
                                     description: 'Use inbound webhooks to reward with custom code running in your game',
                                 },
 
@@ -156,21 +163,26 @@
                                     description: 'Use QR codes to give rewards in an offline environment',
                                 },
                             ]"
-                            class="bg-darker d-flex justify-content-start align-items-center text-white"
+                            class="bg-darker"
                         >
-                            <div style="width: 30px">
-                                <i :class="item.icon" :style="{ color: item.color }" class="mr-1"></i>
+                            <div class="d-flex justify-content-start align-items-center">
+                                <div style="width: 30px">
+                                    <i :class="item.icon" :style="{ color: item.color }" class="mr-1"></i>
+                                </div>
+                                {{ item.label }}
                             </div>
-                            {{ item.label }}
-                            <b-link v-b-tooltip :title="item.description" class="ml-auto">
-                                <i class="fas fa-question-circle text-dark mr-1"></i>
-                            </b-link>
+                            <p class="text-muted">
+                                {{ item.description }}
+                            </p>
+                            <!-- <b-link v-b-tooltip :title="item.description" class="ml-auto">
+                                    <i class="fas fa-question-circle text-dark mr-1"></i>
+                                </b-link> -->
                         </b-list-group-item>
                     </b-collapse>
                     <b-button variant="link" block v-b-toggle.collapse4 class="py-3 d-block text-gray text-left">
-                        Integrations <i class="fas fa-question-circle ml-2"></i>
+                        Learn about <strong>integrations</strong> <i class="fas fa-question-circle ml-2"></i>
                     </b-button>
-                    <b-collapse id="collapse4">
+                    <b-collapse id="collapse4" class="w-100">
                         <b-list-group-item
                             :key="key"
                             v-for="(item, key) of [
@@ -199,30 +211,23 @@
                                     description: 'Sell rewards with crypto, credit Card & local payment providers	',
                                 },
                             ]"
-                            class="bg-darker d-flex justify-content-between align-items-center text-white"
+                            class="bg-darker"
                         >
-                            <div style="width: 30px">
-                                <i :class="item.icon" :style="{ color: item.color }" class="mr-1"></i>
+                            <div class="d-flex justify-content-start align-items-center">
+                                <div style="width: 30px">
+                                    <i :class="item.icon" :style="{ color: item.color }" class="mr-1"></i>
+                                </div>
+                                {{ item.label }}
                             </div>
-                            {{ item.label }}
-                            <b-link v-b-tooltip :title="item.description" class="ml-auto">
-                                <i class="fas fa-question-circle text-dark mr-1"></i>
-                            </b-link>
+                            <p class="text-muted">
+                                {{ item.description }}
+                            </p>
+                            <!-- <b-link v-b-tooltip :title="item.description" class="ml-auto">
+                                    <i class="fas fa-question-circle text-dark mr-1"></i>
+                                </b-link> -->
                         </b-list-group-item>
                     </b-collapse>
                 </b-row>
-                <hr />
-                <p class="small text-muted">Ask a dev to add this to your website 👇</p>
-                <BaseCodeExample :pool="{ _id: $route.params.poolId }" />
-                <hr />
-                <b-button
-                    variant="success"
-                    class="rounded-pill mt-3"
-                    block
-                    href="/signup?signup_plan=2&signup_offer=true"
-                >
-                    <strong>Start free trial!</strong>
-                </b-button>
             </template>
         </b-card>
     </div>
