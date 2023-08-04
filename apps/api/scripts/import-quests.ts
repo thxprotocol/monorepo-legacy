@@ -42,16 +42,17 @@ async function main() {
             const videoUrl = sql['Youtube Video URL'];
             const tweetUrl = sql['Twitter Tweet URL'];
             const serverId = sql['Discord Server ID'];
-            const isScheduled = sql['Contacted'] !== 'Scheduled';
+            const isScheduled = sql['Contacted'] === 'Scheduled';
+            const isContacted = sql['Contacted'] === 'Contacted';
             const hasPreview = sql['Campaign Preview'];
             const gameName = sql['Game'];
             const gameDomain = sql['Game Domain'];
-            if (isScheduled || hasPreview || !gameName || !gameDomain) continue;
 
-            console.log('===============');
-            console.log('Import: ', gameName, gameDomain);
+            if ((!isScheduled && !isContacted) || hasPreview || !gameName || !gameDomain) continue;
 
             let pool = await AssetPool.findOne({ 'settings.title': gameName });
+            console.log('===============');
+            console.log('Import: ', gameName, gameDomain);
             if (pool) {
                 await Widget.updateOne({ poolId: pool._id }, { domain: new URL(gameDomain).origin });
             } else {
