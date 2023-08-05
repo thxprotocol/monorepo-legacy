@@ -26,7 +26,7 @@ export default {
             console.log(`[${req.auth.sub}] Metamask Wallet:`, newPrimaryWallet.address);
         }
 
-        // Attempt to recover address for not metamask user
+        // Recover address for not metamask user
         if (!isMetamask && authRequestMessage && authRequestSignature) {
             address = recoverSigner(authRequestMessage, authRequestSignature);
 

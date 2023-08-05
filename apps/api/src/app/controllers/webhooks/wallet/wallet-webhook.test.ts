@@ -20,7 +20,7 @@ const user = request.agent(app);
 describe('Webhook: Virtual Wallets', () => {
     let safeAddress: string, pool: AssetPoolDocument, milestoneReward: MilestoneRewardDocument;
 
-    beforeAll(beforeAllCallback);
+    beforeAll(() => beforeAllCallback({ skipWalletCreation: true }));
     afterAll(afterAllCallback);
 
     it('POST /pools', (done) => {
@@ -109,7 +109,7 @@ describe('Webhook: Virtual Wallets', () => {
         });
 
         // Claim ownership of wallet
-        it('PATCH /account/wallet', (done) => {
+        it('POST /account/wallet/connect', (done) => {
             user.post(`/v1/account/wallet/connect`)
                 .set({ Authorization: widgetAccessToken3 })
                 .send({ code })
@@ -120,12 +120,14 @@ describe('Webhook: Virtual Wallets', () => {
         });
 
         it('GET /wallets', (done) => {
-            user.get(`/v1/wallets`)
+            user.get(`/v1/account/wallet`)
                 .set({ Authorization: widgetAccessToken3 })
                 .expect(({ body }: request.Response) => {
-                    expect(body[0].sub).toBe(sub3);
-                    expect(isAddress(body[0].address)).toBeTruthy;
-                    safeAddress = body[0].address;
+                    expect(body.length).toBe(2);
+                    const safe = body.find((wallet) => wallet.safeVersion);
+                    expect(safe.sub).toBe(sub3);
+                    expect(isAddress(safe.address)).toBeTruthy;
+                    safeAddress = safe.address;
                 })
                 .expect(200, done);
         });

@@ -3,6 +3,7 @@ import { ChainId } from '@thxnetwork/types/enums';
 import { updateDiamondContract } from '../util/upgrades';
 import { toChecksumAddress } from 'web3-utils';
 import { MilestoneRewardClaim } from '../models/MilestoneRewardClaims';
+import SafeService from '../services/SafeService';
 
 export const Wallet = WalletModel;
 
@@ -11,7 +12,7 @@ function findOneByAddress(address: string) {
 }
 
 async function findPrimary(sub: string, chainId: ChainId) {
-    return await Wallet.findOne({ sub, chainId, address: { $exists: true, $ne: '' } });
+    return await SafeService.findPrimary(sub, chainId);
 }
 
 async function findOneByQuery(query: { sub?: string; chainId?: number }) {

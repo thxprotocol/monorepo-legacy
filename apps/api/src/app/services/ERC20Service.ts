@@ -214,6 +214,23 @@ export const approve = async (erc20: ERC20Document, wallet: WalletDocument, amou
     );
 };
 
+export async function migrateAll(fromWallet: WalletDocument, toWallet: WalletDocument) {
+    const erc20Tokens = await ERC20Token.find({ walletId: String(fromWallet._id) });
+
+    for (const token of erc20Tokens) {
+        const erc20 = await ERC20.findById(token.erc20Id);
+        const balance = await erc20.contract.methods.balanceOf(fromWallet.address).call();
+
+        await TransactionService.sendAsync(
+            fromWallet.contract.options.address,
+            fromWallet.contract.methods.transferERC20(erc20.address, toWallet.address, balance),
+            fromWallet.chainId,
+            false,
+            { type: 'transferFromCallBack', args: { erc20Id: String(erc20._id) } },
+        );
+    }
+}
+
 export const transferFrom = async (erc20: ERC20Document, wallet: WalletDocument, to: string, amountInWei: string) => {
     const erc20Transfer = await ERC20Transfer.create({
         erc20Id: erc20._id,
@@ -263,6 +280,7 @@ async function createERC20Token(erc20: ERC20Document, sub: string) {
 }
 
 export default {
+    migrateAll,
     deploy,
     getAll,
     findBy,

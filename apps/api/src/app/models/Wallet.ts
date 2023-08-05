@@ -19,7 +19,7 @@ const walletSchema = new mongoose.Schema(
 );
 
 walletSchema.virtual('contract').get(function () {
-    if (!this.address) return;
+    if (!this.address || this.safeVersion) return;
     const { readProvider, defaultAccount } = getProvider(this.chainId);
     const abi = getDiamondAbi(this.chainId, 'sharedWallet');
     return new readProvider.eth.Contract(abi, this.address, { from: defaultAccount });

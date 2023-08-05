@@ -12,9 +12,10 @@ import {
     SafeVersion,
 } from '@safe-global/safe-core-sdk-types';
 import { logger } from '@thxnetwork/api/util/logger';
-import { ERC20Token } from '../models/ERC20Token';
-import ERC20 from '../models/ERC20';
 import ERC20Service from './ERC20Service';
+import ERC721Service from './ERC721Service';
+import AccountProxy from '../proxies/AccountProxy';
+import { AccountVariant } from '@thxnetwork/types/interfaces';
 
 export const Wallet = WalletModel;
 
@@ -55,17 +56,9 @@ async function create(
     return await Wallet.findByIdAndUpdate(wallet._id, { address: safeAddress, version: currentVersion }, { new: true });
 }
 
-async function transferAll(fromWallet: WalletDocument, toWallet: WalletDocument) {
-    // Get all ERC20Token for existing primary walletId
-    const erc20Tokens = await ERC20Token.find({ walletId: String(fromWallet._id) });
-    erc20Tokens.map(async (token) => {
-        const erc20 = await ERC20.findById(token.erc20Id);
-        const balance = await erc20.contract.methods.balanceOf(fromWallet.address).call();
-        await ERC20Service.transferFrom(erc20, fromWallet, toWallet.address, balance);
-    });
-    // Get all ERC721Token for existing primary walletId
-    // Get all ERC1155Token for existing primary walletId
-    // Schedule transfers for tokens to wallet.address
+function transferAll(fromWallet: WalletDocument, toWallet: WalletDocument) {
+    ERC20Service.migrateAll(fromWallet, toWallet);
+    ERC721Service.migrateAll(fromWallet, toWallet);
 }
 
 function findOneByAddress(address: string) {
@@ -73,7 +66,16 @@ function findOneByAddress(address: string) {
 }
 
 async function findPrimary(sub: string, chainId: ChainId) {
-    return await Wallet.findOne({ sub, chainId, address: { $exists: true, $ne: '' } });
+    const account = await AccountProxy.getById(sub);
+    const isMetamask = account.variant === AccountVariant.Metamask;
+    return await Wallet.findOne({
+        sub,
+        chainId,
+        address: { $exists: true, $ne: '' },
+        ...(isMetamask
+            ? { version: { $exists: false }, safeVersion: { $exists: false } }
+            : { address: { $exists: true, $ne: '' }, safeVersion: '1.3.0' }),
+    });
 }
 
 async function findOneByQuery(query: { sub?: string; chainId?: number }) {

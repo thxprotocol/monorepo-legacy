@@ -45,7 +45,7 @@ export const account2 = {
 export const account3 = {
     sub: sub3,
     plan: AccountPlanType.Basic,
-    variant: AccountVariant.Metamask,
+    variant: AccountVariant.EmailPassword,
     address: userWalletAddress3,
 };
 
