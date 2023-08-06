@@ -19,7 +19,12 @@ export async function updatePendingTransactions() {
 
         // Check if tx is confirmed by 2 owners
         if (pendingTx.confirmations.length >= pendingTx.confirmationsRequired) {
-            await TransactionService.execSafeAsync(wallet, tx);
+            try {
+                await TransactionService.execSafeAsync(wallet, tx);
+            } catch (error) {
+                await tx.updateOne({ state: TransactionState.Failed });
+                logger.error(error);
+            }
         }
     }
 

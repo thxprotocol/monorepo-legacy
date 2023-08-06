@@ -16,6 +16,7 @@ import ERC20Transfer from '../models/ERC20Transfer';
 import { WalletDocument } from '../models/Wallet';
 import WalletService, { Wallet } from './WalletService';
 import { ContractName } from '@thxnetwork/contracts/exports';
+import BN from 'bn.js';
 
 function getDeployArgs(erc20: ERC20Document, totalSupply?: string) {
     const { defaultAccount } = getProvider(erc20.chainId);
@@ -220,9 +221,9 @@ export async function migrateAll(fromWallet: WalletDocument, toWallet: WalletDoc
     for (const token of erc20Tokens) {
         const erc20 = await ERC20.findById(token.erc20Id);
         const balance = await erc20.contract.methods.balanceOf(fromWallet.address).call();
-
-        // Create token if it does not exist for the receiving wallet
+        if (!new BN(balance).gt(new BN(0))) continue;
         if (!(await ERC20Token.exists({ walletId: toWallet._id }))) {
+            // Create token if it does not exist for the receiving wallet
             await createERC20Token(erc20, toWallet.sub);
         }
 
