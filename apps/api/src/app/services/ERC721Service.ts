@@ -23,7 +23,6 @@ import PoolService from './PoolService';
 import TransactionService from './TransactionService';
 import IPFSService from './IPFSService';
 import WalletService from './WalletService';
-import ERC20 from '../models/ERC20';
 
 const contractName = 'NonFungibleToken';
 
@@ -350,7 +349,6 @@ export async function migrateAll(fromWallet: WalletDocument, toWallet: WalletDoc
     const erc721Tokens = await ERC721Token.find({ walletId: String(fromWallet._id) });
     const erc721Transfers = erc721Tokens.map(async (token) => {
         const erc721 = await ERC721.findById(token.erc721Id);
-
         await TransactionService.sendAsync(
             fromWallet.contract.options.address,
             fromWallet.contract.methods.transferERC721(erc721.address, toWallet.address, token.tokenId),

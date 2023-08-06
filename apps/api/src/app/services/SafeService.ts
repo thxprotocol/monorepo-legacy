@@ -31,7 +31,7 @@ async function create(
     const { safeVersion, chainId, sub, address } = data;
     const wallet = await Wallet.create({ sub, chainId, address, safeVersion });
     // Concerns a Metamask account so we do not deploy and return early
-    if (!safeVersion) return wallet;
+    if (!safeVersion && address) return wallet;
 
     const { defaultAccount, ethAdapter } = getProvider(wallet.chainId);
     const safeFactory = await SafeFactory.create({
@@ -51,7 +51,7 @@ async function create(
         await safeFactory.deploySafe({ safeAccountConfig, options: { gasLimit: '30000000' } }).catch(console.error);
     }
 
-    console.log(`[${sub}] Deployed Safe:`, safeAddress);
+    logger.debug(`[${sub}] Deployed Safe:`, safeAddress);
 
     return await Wallet.findByIdAndUpdate(wallet._id, { address: safeAddress, version: currentVersion }, { new: true });
 }

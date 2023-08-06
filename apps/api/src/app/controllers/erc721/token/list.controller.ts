@@ -1,16 +1,16 @@
 import { Request, Response } from 'express';
 import { ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
+import { query } from 'express-validator';
 import type { TERC721, TERC721Token } from '@thxnetwork/types/interfaces';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
-import { Wallet } from '@thxnetwork/api/services/WalletService';
-import { query } from 'express-validator';
+import SafeService from '@thxnetwork/api/services/SafeService';
 
 const validation = [query('chainId').exists().isNumeric(), query('recipient').optional().isString()];
 
 export const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721']
     const chainId = Number(req.query.chainId);
-    const wallet = await Wallet.findOne({ sub: req.auth.sub, chainId });
+    const wallet = await SafeService.findPrimary(req.auth.sub, chainId);
     const tokens = wallet ? await ERC721Service.findTokensByWallet(wallet) : [];
     const result = await Promise.all(
         tokens.map(async (token: ERC721TokenDocument) => {

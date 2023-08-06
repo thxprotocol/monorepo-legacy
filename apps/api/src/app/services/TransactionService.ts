@@ -17,6 +17,7 @@ import { Contract } from 'web3-eth-contract';
 import ERC1155Service from './ERC1155Service';
 import SafeService from './SafeService';
 import { WalletDocument } from '../models/Wallet';
+import WalletService from './WalletService';
 
 function getById(id: string) {
     return Transaction.findById(id);
@@ -295,6 +296,10 @@ async function executeCallback(tx: TransactionDocument, receipt: TransactionRece
             break;
         case 'erc721nTransferFromCallback':
             await ERC721Service.transferFromCallback(tx.callback.args, receipt);
+            break;
+        case 'walletDeployCallback':
+            // Will deprecate after Safe migration
+            await WalletService.deployCallback(tx.callback.args, receipt);
             break;
         case 'erc1155TransferFromCallback':
             await ERC1155Service.transferFromCallback(tx.callback.args, receipt);

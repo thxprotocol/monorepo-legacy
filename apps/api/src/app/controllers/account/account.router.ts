@@ -19,8 +19,9 @@ import CreateTwitterUserByUsername from './twitter/user/by/username/post.control
 // Wallet
 import ReadAccountWallet from './wallet/list.controller';
 import ConnectAccountWallet from './wallet/connect/post.controller';
-import CreateWalletUpgrade from './wallet/upgrade/post.controller';
+import CreateWalletMigrate from './wallet/migrate/post.controller';
 import CreateWalletConfirm from './wallet/confirm/post.controller';
+import ReadWalletMigrate from './wallet/migrate/get.controller';
 
 const router = express.Router();
 
@@ -46,10 +47,16 @@ router.post(
     CreateWalletConfirm.controller,
 );
 router.post(
-    '/wallet/upgrade',
+    '/wallet/migrate',
     guard.check(['account:read', 'account:write']),
-    assertRequestInput(CreateWalletUpgrade.validation),
-    CreateWalletUpgrade.controller,
+    assertRequestInput(CreateWalletMigrate.validation),
+    CreateWalletMigrate.controller,
+);
+router.get(
+    '/wallet/migrate',
+    guard.check(['account:read']),
+    assertRequestInput(ReadWalletMigrate.validation),
+    ReadWalletMigrate.controller,
 );
 
 // router.post('/youtube/video', guard.check(['account:read']), CreateTwitterTweet.controller);

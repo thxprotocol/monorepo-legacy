@@ -221,6 +221,11 @@ export async function migrateAll(fromWallet: WalletDocument, toWallet: WalletDoc
         const erc20 = await ERC20.findById(token.erc20Id);
         const balance = await erc20.contract.methods.balanceOf(fromWallet.address).call();
 
+        // Create token if it does not exist for the receiving wallet
+        if (!(await ERC20Token.exists({ walletId: toWallet._id }))) {
+            await createERC20Token(erc20, toWallet.sub);
+        }
+
         await TransactionService.sendAsync(
             fromWallet.contract.options.address,
             fromWallet.contract.methods.transferERC20(erc20.address, toWallet.address, balance),
@@ -280,6 +285,7 @@ async function createERC20Token(erc20: ERC20Document, sub: string) {
 }
 
 export default {
+    createERC20Token,
     migrateAll,
     deploy,
     getAll,
