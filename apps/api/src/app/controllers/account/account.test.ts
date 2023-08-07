@@ -127,6 +127,20 @@ describe('Account Wallet', () => {
             .expect(200, done);
     });
 
+    it('GET /account/wallet/migrate', (done) => {
+        user.get(`/v1/account/wallet/migrate`)
+            .set({ Authorization: widgetAccessToken })
+            .expect((res: request.Response) => {
+                expect(res.body.wallet).toBeDefined();
+                expect(res.body.erc20Tokens.length).toBe(1);
+                expect(res.body.erc721Tokens.length).toBe(1);
+            })
+            .expect(200, done);
+    });
+    it('POST /account/wallet/migrate', (done) => {
+        user.post(`/v1/account/wallet/migrate`).set({ Authorization: widgetAccessToken }).expect(200, done);
+    });
+
     it('GET /erc20/token', (done) => {
         user.get(`/v1/erc20/token?chainId=${ChainId.Hardhat}`)
             .set({ Authorization: widgetAccessToken })

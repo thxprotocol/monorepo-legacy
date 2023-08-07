@@ -33,19 +33,6 @@ export default {
             if (!safeWallet) {
                 safeWallet = await SafeService.create({ sub: account.sub, chainId, safeVersion }, address);
             }
-
-            // Find existing THX Smart Wallet so we can migrate assets
-            const thxWallet = await Wallet.findOne({
-                sub: account.sub,
-                chainId,
-                version: '4.0.12',
-                address: { $exists: true, $ne: '' },
-                safeVersion: { $exists: false },
-            });
-
-            if (thxWallet) {
-                SafeService.transferAll(thxWallet, safeWallet);
-            }
         }
 
         // Store address and other account updates

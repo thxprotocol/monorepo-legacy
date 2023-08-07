@@ -22,7 +22,7 @@ describe('Wallets', () => {
                     expect(res.body[0].sub).toEqual(sub);
                     expect(res.body[0].chainId).toEqual(ChainId.Hardhat);
                     expect(res.body[0].address).toBeDefined();
-                    expect(res.body[0].version).toBe(currentVersion);
+                    expect(res.body[0].safeVersion).toBe('1.3.0');
                     walletId = res.body[0]._id;
                 })
                 .expect(200, done);
