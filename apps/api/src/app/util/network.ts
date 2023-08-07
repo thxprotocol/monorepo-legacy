@@ -85,7 +85,7 @@ if (POLYGON_RELAYER) {
 
         return {
             web3: new Web3(provider),
-            txServiceUrl: 'https://safe-transaction-polygon.safe.global',
+            txServiceUrl: SAFE_TXS_SERVICE,
             ethAdapter: new EthersAdapter({ ethers, signerOrProvider: signer }),
             signer,
             networkName: POLYGON_NAME as TNetworkName,
