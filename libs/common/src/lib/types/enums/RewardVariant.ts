@@ -1,8 +1,7 @@
 export enum RewardVariant {
-    Default = 0,
-    Referral = 1,
-    ERC20 = 2,
-    ERC721 = 3,
+    Coin = 0,
+    NFT = 1,
+    Custom = 2,
 }
 
 export enum QuestVariant {

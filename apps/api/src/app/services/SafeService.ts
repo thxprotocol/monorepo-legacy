@@ -51,7 +51,7 @@ async function create(
         await safeFactory.deploySafe({ safeAccountConfig, options: { gasLimit: '30000000' } }).catch(console.error);
     }
 
-    logger.debug(`[${sub}] Deployed Safe:`, safeAddress);
+    console.debug(`[${sub}] Deployed Safe:`, safeAddress);
 
     return await Wallet.findByIdAndUpdate(wallet._id, { address: safeAddress, version: currentVersion }, { new: true });
 }

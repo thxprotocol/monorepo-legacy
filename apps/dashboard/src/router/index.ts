@@ -49,6 +49,11 @@ const routes: Array<RouteConfig> = [
                 component: () => import('../views/pool/Quests.vue'),
             },
             {
+                name: 'rewards',
+                path: 'rewards',
+                component: () => import('../views/pool/Rewards.vue'),
+            },
+            {
                 name: 'coin perks',
                 path: 'erc20-perks',
                 component: () => import('../views/pool/ERC20Perks.vue'),

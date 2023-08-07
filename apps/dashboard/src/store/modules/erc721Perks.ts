@@ -10,7 +10,7 @@ export type RewardByPage = {
     [page: number]: TERC721Perk[];
 };
 
-export type TRewardState = {
+export type TERC721RewardState = {
     [poolId: string]: {
         [id: string]: TERC721Perk;
     };
@@ -28,7 +28,7 @@ type TERC721PerkInputData = TERC721Perk & {
 
 @Module({ namespaced: true })
 class ERC721PerkModule extends VuexModule {
-    _all: TRewardState = {};
+    _all: TERC721RewardState = {};
     _totals: { [poolId: string]: number } = {};
 
     get all() {

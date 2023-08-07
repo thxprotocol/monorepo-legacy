@@ -156,7 +156,7 @@ import { TMilestoneRewardState } from '@thxnetwork/dashboard/store/modules/miles
         referralRewards: 'referralRewards/all',
     }),
 })
-export default class AssetPoolView extends Vue {
+export default class QuestsView extends Vue {
     isLoading = true;
     limit = 50;
     page = 1;
@@ -210,7 +210,7 @@ export default class AssetPoolView extends Vue {
                 return Number(a.index) - Number(b.index);
             })
             .filter(
-                (reward: TDailyReward | TPointReward | TReferralReward | TMilestoneReward) => reward.page === this.page,
+                (quest: TDailyReward | TPointReward | TReferralReward | TMilestoneReward) => quest.page === this.page,
             )
             .map((r: any) => ({
                 index: r,
