@@ -23,14 +23,13 @@ if (process.env.NODE_ENV === 'production') {
     required.push(
         ...[
             'SENDGRID_API_KEY',
+            'TWITTER_API_TOKEN',
             'POLYGON_RPC',
             'POLYGON_NAME',
             'POLYGON_RELAYER',
             'POLYGON_RELAYER_API_KEY',
             'POLYGON_RELAYER_API_SECRET',
             // 'RELAYER_SPEED',
-            'MIXPANEL_TOKEN',
-            'TWITTER_API_TOKEN',
         ],
     );
 } else if (process.env.NODE_ENV === 'development') {
