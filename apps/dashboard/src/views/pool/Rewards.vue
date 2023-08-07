@@ -58,47 +58,59 @@
                 :selectedItems="selectedItems"
                 :rewards="coinRewards[pool._id]"
             />
-            <BTable id="table-coin-perks" hover :busy="isLoading" :items="rewardsByPage" responsive="lg" show-empty>
+            <BTable id="table-rewards" hover :busy="isLoading" :items="rewardsByPage" responsive="lg" show-empty>
                 <!-- Head formatting -->
+                <template #head(index)> &nbsp; </template>
                 <template #head(checkbox)>
                     <b-form-checkbox @change="onChecked" />
                 </template>
+                <template #head(variant)> Variant </template>
+                <template #head(pointPrice)> Price </template>
                 <template #head(title)> Title </template>
-                <template #head(progress)> Progress </template>
-                <template #head(rewardCondition)> Condition </template>
-                <template #head(claims)> Claim URL's </template>
-                <template #head(limit)> Reward Limit </template>
+                <template #head(supply)> Supply </template>
+                <template #head(expiry)> Expiry </template>
+                <template #head(claims)> QR Codes </template>
                 <template #head(id)> &nbsp; </template>
 
                 <!-- Cell formatting -->
+                <template #cell(index)="{ item, index }">
+                    <div class="btn btn-sort p-0">
+                        <b-link block @click="onClickUp(item, index)">
+                            <i class="fas fa-caret-up ml-0"></i>
+                        </b-link>
+                        <b-link block @click="onClickDown(item, index)">
+                            <i class="fas fa-caret-down ml-0"></i>
+                        </b-link>
+                    </div>
+                </template>
                 <template #cell(checkbox)="{ item }">
-                    <b-form-checkbox :value="item.checkbox" v-model="selectedItems" />
+                    <b-form-checkbox :value="{ id: item.id, variant: item.variant }" v-model="selectedItems" />
+                </template>
+                <template #cell(pointPrice)="{ item }">
+                    <strong class="text-primary">{{ item.pointPrice }} </strong>
+                </template>
+                <template #cell(variant)="{ item }">
+                    <b-badge variant="light" class="p-2">{{ RewardVariant[item.variant] }} </b-badge>
                 </template>
                 <template #cell(amount)="{ item }">
                     <strong class="text-primary">{{ item.amount.amount }} {{ item.amount.symbol }}</strong>
                 </template>
-                <template #cell(progress)="{ item }">
+                <template #cell(supply)="{ item }">
                     <b-progress style="border-radius: 0.3rem">
                         <b-progress-bar
                             :label="
-                                item.progress.limit
-                                    ? `${item.progress.progress}/${item.progress.limit}`
-                                    : String(item.progress.progress)
+                                item.supply.limit
+                                    ? `${item.supply.progress}/${item.supply.limit}`
+                                    : String(item.supply.progress)
                             "
-                            :value="item.progress.progress"
+                            :value="item.supply.progress"
                             :min="0"
-                            :max="item.progress.limit || item.progress.progress"
+                            :max="item.supply.limit || item.supply.progress"
                         />
                     </b-progress>
                 </template>
-                <template #cell(rewardCondition)="{ item }">
-                    <BaseBadgeRewardConditionPreview
-                        v-if="item.rewardCondition.platform.type !== RewardConditionPlatform.None"
-                        :rewardCondition="item.rewardCondition"
-                    />
-                </template>
                 <template #cell(claims)="{ item }">
-                    <b-link v-b-modal="`modalRewardClaimsDownload${item.id}`" v-if="item.claims.length">
+                    <b-link v-b-modal="`modalRewardClaimsDownload${item.id}`" v-if="item.claims && item.claims.length">
                         <b-progress
                             :value="item.claims.filter((c) => c.sub).length"
                             :max="item.claims.length"
@@ -109,8 +121,11 @@
                         :id="`modalRewardClaimsDownload${item.id}`"
                         :pool="pool"
                         :selectedItems="[item.id]"
-                        :rewards="coinRewards[pool._id]"
+                        :rewards="allRewards.filter((r) => r.variant == RewardVariant.NFT)"
                     />
+                </template>
+                <template #cell(title)="{ item }">
+                    {{ item.title }}
                 </template>
                 <template #cell(id)="{ item }">
                     <b-dropdown variant="link" size="sm" no-caret right>
@@ -148,6 +163,7 @@ import {
     TERC20Perk,
     RewardVariant,
     TERC721Perk,
+    TBasePerk,
 } from '@thxnetwork/types/index';
 import type { IERC721s } from '@thxnetwork/dashboard/types/erc721';
 import BaseModalRewardERC20Create from '@thxnetwork/dashboard/components/modals/BaseModalRewardERC20Create.vue';
@@ -219,20 +235,29 @@ export default class RewardsView extends Vue {
             .filter((reward: TERC20Perk | TERC721Perk | any) => reward.page === this.page)
             .sort((a: any, b: any) => (a.createdAt && b.createdAt && a.createdAt < b.createdAt ? 1 : -1))
             .map((r: any) => ({
+                index: 0,
                 checkbox: r._id,
+                variant: r.variant,
+                pointPrice: r.pointPrice,
                 title: r.title,
+                expiry: r.expiry,
+                supply: { progress: r.payments ? r.payments.length : 0, limit: r.limit },
+                claims: r.claims,
                 id: r._id,
-                // amount: {
-                //     amount: r.amount,
-                //     symbol: r.erc20.symbol,
-                // },
-                // limit: r.limit,
             }))
             .slice(0, this.limit);
     }
 
     mounted() {
         this.listRewards();
+    }
+
+    onClickUp({ index }: { index: TBasePerk }, i: number) {
+        //
+    }
+
+    onClickDown({ index }: { index: TBasePerk }, i: number) {
+        //
     }
 
     async listRewards() {
@@ -278,26 +303,32 @@ export default class RewardsView extends Vue {
     }
 }
 </script>
-<style>
-#table-coin-perks th:nth-child(1) {
-    width: 50px;
+<style lang="scss">
+#table-rewards tr:first-child .btn-sort a:first-child,
+#table-rewards tr:last-child .btn-sort a:last-child {
+    opacity: 0.5;
+    cursor: not-allowed;
+    color: var(--gray) !important;
 }
-#table-coin-perks th:nth-child(2) {
+#table-rewards th:nth-child(1) {
+    width: 20px;
+}
+#table-rewards th:nth-child(2) {
+    width: 40px;
+}
+#table-rewards th:nth-child(3) {
     width: 100px;
 }
-#table-coin-perks th:nth-child(3) {
+#table-rewards th:nth-child(4) {
     width: 100px;
 }
-#table-coin-perks th:nth-child(4) {
-    width: 120px;
-}
-#table-coin-perks th:nth-child(5) {
+#table-rewards th:nth-child(5) {
     width: auto;
 }
-#table-coin-perks th:nth-child(6) {
+#table-rewards th:nth-child(6) {
     width: 120px;
 }
-#table-coin-perks th:nth-child(7) {
+#table-rewards th:nth-child(7) {
     width: 40px;
 }
 </style>

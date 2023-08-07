@@ -1,7 +1,7 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { type TPool } from '@thxnetwork/types/index';
+import { RewardVariant, type TPool } from '@thxnetwork/types/index';
 import { type TERC721Perk } from '@thxnetwork/types/index';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 import { track } from '@thxnetwork/mixpanel';
@@ -42,6 +42,7 @@ class ERC721PerkModule extends VuexModule {
     @Mutation
     set({ pool, reward }: { reward: TERC721Perk & { _id: string }; pool: TPool }) {
         if (!this._all[pool._id]) Vue.set(this._all, pool._id, {});
+        reward.variant = RewardVariant.NFT;
         Vue.set(this._all[pool._id], reward._id, reward);
     }
 

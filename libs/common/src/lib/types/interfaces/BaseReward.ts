@@ -1,4 +1,4 @@
-import { QuestVariant } from '../enums';
+import { QuestVariant, RewardVariant } from '../enums';
 import { TokenGatingVariant } from '../enums/TokenGatingVariant';
 import { TDailyReward } from './DailyReward';
 import { TMilestoneReward } from './MilestoneReward';
@@ -27,6 +27,7 @@ export type TBasePerk = {
     image: string;
     isPromoted: boolean;
     page?: number;
+    variant?: RewardVariant;
     createdAt?: string;
     updatedAt?: string;
     claims: [];

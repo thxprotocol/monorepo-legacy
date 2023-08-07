@@ -54,10 +54,9 @@
                 <template #head(checkbox)>
                     <b-form-checkbox @change="onChecked" />
                 </template>
-                <template #cell(variant)="{ item }">
-                    <b-badge variant="light" class="p-2">{{ QuestVariant[item.variant] }} </b-badge>
-                </template>
+                <template #head(variant)> Variant </template>
                 <template #head(title)> Title </template>
+                <template #head(points)> Points </template>
                 <template #head(claims)> Completed </template>
                 <template #head(id)> &nbsp; </template>
 
@@ -74,6 +73,9 @@
                 </template>
                 <template #cell(checkbox)="{ item }">
                     <b-form-checkbox :value="{ id: item.id, variant: item.variant }" v-model="selectedItems" />
+                </template>
+                <template #cell(variant)="{ item }">
+                    <b-badge variant="light" class="p-2">{{ QuestVariant[item.variant] }} </b-badge>
                 </template>
                 <template #cell(points)="{ item }">
                     <strong class="text-primary">{{ item.points }} </strong>
