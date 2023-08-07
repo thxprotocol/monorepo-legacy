@@ -28,7 +28,7 @@ if (process.env.NODE_ENV === 'production') {
             'POLYGON_RELAYER',
             'POLYGON_RELAYER_API_KEY',
             'POLYGON_RELAYER_API_SECRET',
-            'RELAYER_SPEED',
+            // 'RELAYER_SPEED',
             'MIXPANEL_TOKEN',
             'TWITTER_API_TOKEN',
         ],
