@@ -42,7 +42,7 @@ const controller = async (req: Request, res: Response) => {
                     }
                 }),
             )
-        ).filter(({ balance }) => balance && new BN(balance).gt(new BN(0))),
+        ).filter((token) => token.balance && new BN(token.balance).gt(new BN(0))),
         erc721Tokens: (
             await Promise.all(
                 erc721Tokens.map(async (token) => {
@@ -55,7 +55,7 @@ const controller = async (req: Request, res: Response) => {
                     }
                 }),
             )
-        ).filter(({ owner }) => owner && owner === thxWallet.address),
+        ).filter((token) => token && token.owner === thxWallet.address),
     });
 };
 
