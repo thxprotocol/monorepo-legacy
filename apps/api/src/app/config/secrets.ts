@@ -1,3 +1,4 @@
+import { Speed } from 'defender-relay-client';
 import path from 'path';
 
 const required = [
@@ -90,7 +91,7 @@ export const POLYGON_RELAYER_API_SECRET = process.env.POLYGON_RELAYER_API_SECRET
 export const LOCAL_CERT = process.env.LOCAL_CERT;
 export const LOCAL_CERT_KEY = process.env.LOCAL_CERT_KEY;
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
-export const RELAYER_SPEED = process.env.RELAYER_SPEED || 'fastest';
+export const RELAYER_SPEED = (process.env.RELAYER_SPEED || 'fastest') as Speed;
 export const MIXPANEL_TOKEN = process.env.MIXPANEL_TOKEN;
 export const MIXPANEL_API_URL = 'https://api.mixpanel.com';
 export const CYPRESS_EMAIL = process.env.CYPRESS_EMAIL || 'cypress@thx.network';
