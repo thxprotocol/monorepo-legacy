@@ -18,16 +18,13 @@ import {
 import { HARDHAT_NAME, POLYGON_NAME } from './secrets';
 
 // Safe Contracts
-// const SimulateTxAccessorAddress = '0xFF1eE64b8806C0891e8F73b37f8403F441b552E1';
 const GnosisSafeProxyFactoryAddress = '0x1122fD9eBB2a8E7c181Cc77705d2B4cA5D72988A';
-// const DefaultCallbackHandlerAddress = '0x432422a750B7341c2c0d326fCE7A41cb3D75D3c8';
 const CompatibilityFallbackHandlerAddress = '0x5D3D550Da6678C0444F5D77Ca086678D9CdeEecA';
 const CreateCallAddress = '0x40Efd8a16485213445E6d8b9a4266Fd2dFf7C69a';
 const MultiSendAddress = '0x7E4728eFfC9376CC7C0EfBCc779cC9833D83a984';
 const MultiSendCallOnlyAddress = '0x75Cbb6C4Db4Bb4f6F8D5F56072A6cF4Bf4C5413C';
 const SignMessageLibAddress = '0x658FAD2acB6d1E615f295E566ee9a6d32Cc97b10';
 const GnosisSafeL2Address = '0xC44951780f195Ed71145e3d0d2F25726A097C348';
-// const GnosisSafeAddress = '0x45008E95F951AB2109227aeD1B2B2488e60c0615';
 
 export const contractNetworks = {
     '31337': {

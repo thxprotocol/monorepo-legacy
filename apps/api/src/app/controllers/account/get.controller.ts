@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { query } from 'express-validator';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { NODE_ENV } from '@thxnetwork/api/config/secrets';
 import { ChainId } from '@thxnetwork/types/enums';
@@ -7,7 +6,7 @@ import { logger } from '@thxnetwork/api/util/logger';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import SafeService from '@thxnetwork/api/services/SafeService';
 
-const validation = [query('chainId').optional().isNumeric()];
+const validation = [];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Account']
