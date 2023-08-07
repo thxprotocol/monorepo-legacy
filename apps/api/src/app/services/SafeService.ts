@@ -51,12 +51,10 @@ async function create(
             contractNetworks: wallet.chainId === ChainId.Hardhat ? contractNetworks : undefined,
         });
     } catch (error) {
-        try {
-            await safeFactory.deploySafe({ safeAccountConfig, options: { gasLimit: '3000000' } });
-            logger.debug(`[${sub}] Deployed Safe:`, safeAddress);
-        } catch (error) {
-            console.error(error);
-        }
+        safeFactory
+            .deploySafe({ safeAccountConfig, options: { gasLimit: '3000000' } })
+            .then(() => logger.debug(`[${sub}] Deployed Safe:`, safeAddress))
+            .catch(console.error);
     }
 
     return await Wallet.findByIdAndUpdate(wallet._id, { address: safeAddress }, { new: true });
