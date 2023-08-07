@@ -14,6 +14,8 @@ import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
 import { ERC721TokenState } from '@thxnetwork/types/interfaces';
 import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
 import { IPFS_BASE_URL } from '@thxnetwork/api/config/secrets';
+import { poll } from '@thxnetwork/api/util/polling';
+import ERC20 from '@thxnetwork/api/models/ERC20';
 
 const user = request.agent(app);
 
@@ -139,6 +141,15 @@ describe('Account Wallet', () => {
     });
     it('POST /account/wallet/migrate', (done) => {
         user.post(`/v1/account/wallet/migrate`).set({ Authorization: widgetAccessToken }).expect(200, done);
+    });
+
+    it('Poll', async () => {
+        await poll(
+            erc20.contract.methods.balanceOf(safeAddress).call,
+            (result: string) => result !== toWei('10'),
+            1000,
+        );
+        expect(await erc20.contract.methods.balanceOf(safeAddress).call()).toBe(toWei('10'));
     });
 
     it('GET /erc20/token', (done) => {
