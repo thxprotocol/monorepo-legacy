@@ -10,6 +10,7 @@ export type TWallet = {
     uuid?: string;
     contract?: Contract;
     version?: string;
+    safeVersion?: string;
     isUpgradeAvailable?: boolean;
     createdAt?: Date;
 };

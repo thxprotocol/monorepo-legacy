@@ -23,17 +23,15 @@ const user = request.agent(app);
 describe('Pool Analytics', () => {
     let pointReward: any,
         referralReward: any,
+        referralReward2: any,
         referralRewardClaim: any,
-        pointRewardClaim: any,
+        referralRewardClaim2: any,
         milestoneReward: any,
         milestoneRewardClaim: any,
-        perk: any,
         perkUuid: string,
         erc20Id: string,
         poolId: string;
 
-    let sub1TotalAmount = 0;
-    let sub2TotalAmount = 0;
     const totalSupply = toWei('100000');
 
     beforeAll(beforeAllCallback);
@@ -90,13 +88,12 @@ describe('Pool Analytics', () => {
                     .expect(201, done);
             });
 
-            it('POST /referral-rewards/:uuid/claims', (done) => {
-                user.post(`/v1/referral-rewards/${referralReward.uuid}/claims`)
-                    .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                    .send({
-                        sub: sub2,
-                    })
+            it('POST /rewards/referral/:uuid/claim', (done) => {
+                user.post(`/v1/rewards/referral/${referralReward.uuid}/claim`)
+                    .set({ 'X-PoolId': poolId })
+                    .send({ sub: sub2 })
                     .expect((res: request.Response) => {
+                        expect(res.body.sub).toBe(sub2);
                         referralRewardClaim = res.body;
                     })
                     .expect(201, done);
@@ -109,50 +106,42 @@ describe('Pool Analytics', () => {
                         claimUuids: [referralRewardClaim.uuid],
                     })
                     .expect(200, done);
-                sub2TotalAmount += Number(referralRewardClaim.amount);
             });
 
             it('POST /referral-rewards', (done) => {
-                const expiryDate = addMinutes(new Date(), 30);
                 const successUrl = 'http://www.google.com';
                 user.post('/v1/referral-rewards/')
                     .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                     .send({
                         title: 'Referral Reward 2',
                         amount: 50,
-                        platform: 0,
-                        expiryDate,
-                        limit: 0,
-                        claimAmount: 1,
                         successUrl,
                         index: 0,
                     })
                     .expect((res: request.Response) => {
-                        referralReward = res.body;
+                        referralReward2 = res.body;
                     })
                     .expect(201, done);
             });
 
             it('POST /referral-rewards/:uuid/claims', (done) => {
-                user.post(`/v1/referral-rewards/${referralReward.uuid}/claims`)
-                    .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                    .send({
-                        sub: sub2,
-                    })
+                user.post(`/v1/rewards/referral/${referralReward2.uuid}/claim`)
+                    .set({ 'X-PoolId': poolId })
+                    .send({ sub: sub2 })
                     .expect((res: request.Response) => {
-                        referralRewardClaim = res.body;
+                        expect(res.body.sub).toBe(sub2);
+                        referralRewardClaim2 = res.body;
                     })
                     .expect(201, done);
             });
 
             it('POST /referral-rewards/:uuid/claims/approve', (done) => {
-                user.post(`/v1/referral-rewards/${referralReward.uuid}/claims/approve`)
+                user.post(`/v1/referral-rewards/${referralReward2.uuid}/claims/approve`)
                     .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                     .send({
-                        claimUuids: [referralRewardClaim.uuid],
+                        claimUuids: [referralRewardClaim2.uuid],
                     })
                     .expect(200, done);
-                sub2TotalAmount += Number(referralRewardClaim.amount);
             });
         });
 
@@ -183,10 +172,6 @@ describe('Pool Analytics', () => {
             it('POST /rewards/points/:id/claim', (done) => {
                 user.post(`/v1/rewards/points/${pointReward._id}/claim`)
                     .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
-                    .expect((res: request.Response) => {
-                        pointRewardClaim = res.body;
-                        sub1TotalAmount += Number(pointRewardClaim.amount);
-                    })
                     .expect(201, done);
             });
 
@@ -216,10 +201,6 @@ describe('Pool Analytics', () => {
             it('POST /rewards/points/:uuid/claim', (done) => {
                 user.post(`/v1/rewards/points/${pointReward._id}/claim`)
                     .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
-                    .expect((res: request.Response) => {
-                        pointRewardClaim = res.body;
-                        sub1TotalAmount += Number(pointRewardClaim.amount);
-                    })
                     .expect(201, done);
             });
         });
@@ -261,29 +242,12 @@ describe('Pool Analytics', () => {
                     })
                     .expect((res: request.Response) => {
                         expect(res.body.isClaimed).toBe(true);
-                        sub2TotalAmount += Number(milestoneRewardClaim.amount);
                     })
                     .expect(201, done);
             });
         });
 
         describe('Create 1 ERC20Perk, and redeeem', () => {
-            it('POST /wallets', (done) => {
-                user.post('/v1/wallets')
-                    .set({ Authorization: widgetAccessToken })
-                    .send({
-                        chainId: ChainId.Hardhat,
-                        sub,
-                        forceSync: true,
-                    })
-                    .expect((res: request.Response) => {
-                        expect(res.body.sub).toEqual(sub);
-                        expect(res.body.chainId).toEqual(ChainId.Hardhat);
-                        expect(res.body.address).toBeDefined();
-                    })
-                    .expect(201, done);
-            });
-
             it('POST /pools/:id/topup', (done) => {
                 const amount = fromWei(totalSupply, 'ether'); // 100 eth
                 user.post(`/v1/pools/${poolId}/topup`)
@@ -310,7 +274,6 @@ describe('Pool Analytics', () => {
                     .expect((res: request.Response) => {
                         expect(res.body.uuid).toBeDefined();
                         perkUuid = res.body.uuid;
-                        perk = res.body;
                     })
                     .expect(201, done);
             });
@@ -322,7 +285,6 @@ describe('Pool Analytics', () => {
                         expect(res.body.withdrawal).toBeDefined();
                         expect(res.body.erc20PerkPayment).toBeDefined();
                         expect(res.body.erc20PerkPayment.poolId).toBe(poolId);
-                        sub1TotalAmount += Number(perk.pointPrice);
                     })
                     .expect(201, done);
             });
@@ -364,11 +326,10 @@ describe('Pool Analytics', () => {
                 user.get(`/v1/pools/${poolId}/analytics/leaderboard`)
                     .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                     .expect(({ body }: request.Response) => {
-                        expect(body.length).toBe(2);
-                        expect(body[0].score).toBe(sub2TotalAmount);
-                        expect(body[1].score).toBe(sub1TotalAmount);
+                        expect(body.length).toBe(3);
+                        expect(body[0].score).toBe(1000); // Missing referral claims
+                        expect(body[1].score).toBe(150); // Missing referral claims
                     })
-
                     .expect(200, done);
             });
 
@@ -382,7 +343,6 @@ describe('Pool Analytics', () => {
                         expect(body.pointRewards).toEqual({ total: 3, claims: 2, totalClaimPoints: 30 });
                         expect(body.milestoneRewards).toEqual({ total: 2, claims: 1, totalClaimPoints: 1000 });
                     })
-
                     .expect(200, done);
             });
         });

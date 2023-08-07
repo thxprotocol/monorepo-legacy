@@ -4,7 +4,7 @@ import WalletManager, { WalletManagerDocument } from '../models/WalletManager';
 import { Wallet } from '../models/Wallet';
 import { assertEvent, parseLogs } from '../util/events';
 import TransactionService from './TransactionService';
-import { TransactionReceipt } from 'web3-core';
+import { TransactionReceipt } from 'web3-eth-accounts/node_modules/web3-core';
 import { TWalletGrantRoleCallBackArgs, TWalletRevokeRoleCallBackArgs } from '../types/TTransaction';
 export default class WalletManagerService {
     public static MANAGER_ROLE = keccak256(toUtf8Bytes('MANAGER_ROLE'));

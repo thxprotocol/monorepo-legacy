@@ -127,7 +127,6 @@ export default class ModalRewardDailyCreate extends Vue {
     }
 
     onShow() {
-        console.log(this.total);
         this.title = this.reward ? this.reward.title : this.title;
         this.description = this.reward ? this.reward.description : this.description;
         this.amounts = this.reward ? this.reward.amounts : this.amounts;
@@ -150,8 +149,6 @@ export default class ModalRewardDailyCreate extends Vue {
     }
 
     onSubmit() {
-        console.log(this.total);
-        debugger;
         const payload = {
             ...this.reward,
             _id: this.reward ? this.reward._id : undefined,

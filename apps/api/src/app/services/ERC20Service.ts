@@ -9,13 +9,14 @@ import { getByteCodeForContractName, getContractFromName } from '@thxnetwork/api
 import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
 import { ERC20Token } from '@thxnetwork/api/models/ERC20Token';
 import { getProvider } from '@thxnetwork/api/util/network';
-import { TransactionReceipt } from 'web3-core';
+import { TransactionReceipt } from 'web3-eth-accounts/node_modules/web3-core';
 import { TERC20DeployCallbackArgs, TERC20TransferFromCallBackArgs } from '@thxnetwork/api/types/TTransaction';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
 import ERC20Transfer from '../models/ERC20Transfer';
 import { WalletDocument } from '../models/Wallet';
 import WalletService, { Wallet } from './WalletService';
 import { ContractName } from '@thxnetwork/contracts/exports';
+import BN from 'bn.js';
 
 function getDeployArgs(erc20: ERC20Document, totalSupply?: string) {
     const { defaultAccount } = getProvider(erc20.chainId);
@@ -206,6 +207,36 @@ export const update = (erc20: ERC20Document, updates: IERC20Updates) => {
     return ERC20.findByIdAndUpdate(erc20._id, updates, { new: true });
 };
 
+export const approve = async (erc20: ERC20Document, wallet: WalletDocument, amountInWei: string) => {
+    return await TransactionService.sendSafeAsync(
+        wallet,
+        erc20.address,
+        erc20.contract.methods.approve(toChecksumAddress(wallet.address), amountInWei),
+    );
+};
+
+export async function migrateAll(fromWallet: WalletDocument, toWallet: WalletDocument) {
+    const erc20Tokens = await ERC20Token.find({ walletId: String(fromWallet._id) });
+
+    for (const token of erc20Tokens) {
+        const erc20 = await ERC20.findById(token.erc20Id);
+        const balance = await erc20.contract.methods.balanceOf(fromWallet.address).call();
+        if (!new BN(balance).gt(new BN(0))) continue;
+        if (!(await ERC20Token.exists({ walletId: toWallet._id }))) {
+            // Create token if it does not exist for the receiving wallet
+            await createERC20Token(erc20, toWallet.sub);
+        }
+
+        await TransactionService.sendAsync(
+            fromWallet.contract.options.address,
+            fromWallet.contract.methods.transferERC20(erc20.address, toWallet.address, balance),
+            fromWallet.chainId,
+            false,
+            { type: 'transferFromCallBack', args: { erc20Id: String(erc20._id) } },
+        );
+    }
+}
+
 export const transferFrom = async (erc20: ERC20Document, wallet: WalletDocument, to: string, amountInWei: string) => {
     const erc20Transfer = await ERC20Transfer.create({
         erc20Id: erc20._id,
@@ -218,19 +249,22 @@ export const transferFrom = async (erc20: ERC20Document, wallet: WalletDocument,
 
     // Check if an erc20Token exists for a known receiving wallet and create one if not
     const toWallet = await Wallet.findOne({ chainId: wallet.chainId, address: toChecksumAddress(to) });
-    if (toWallet && !(await ERC20Token.exists({ _id: toWallet._id }))) {
+    if (toWallet && !(await ERC20Token.exists({ walletId: toWallet._id }))) {
         await createERC20Token(erc20, toWallet.sub);
     }
 
-    const txId = await TransactionService.sendAsync(
-        wallet.address,
-        wallet.contract.methods.transferERC20(erc20.address, to, amountInWei),
-        wallet.chainId,
-        true,
+    const tx = await TransactionService.sendSafeAsync(
+        wallet,
+        erc20.address,
+        erc20.contract.methods.transfer(to, amountInWei),
         { type: 'transferFromCallBack', args: { erc20Id: String(erc20._id) } },
     );
-    return await ERC20Transfer.findByIdAndUpdate(erc20Transfer._id, { transactionId: txId }, { new: true });
+
+    await erc20Transfer.updateOne({ transactionId: String(tx._id) });
+
+    return tx;
 };
+
 export const transferFromCallBack = async (args: TERC20TransferFromCallBackArgs, receipt: TransactionReceipt) => {
     const erc20 = await ERC20.findById(args.erc20Id);
     const events = parseLogs(erc20.contract.options.jsonInterface, receipt.logs);
@@ -252,6 +286,8 @@ async function createERC20Token(erc20: ERC20Document, sub: string) {
 }
 
 export default {
+    createERC20Token,
+    migrateAll,
     deploy,
     getAll,
     findBy,
@@ -270,4 +306,5 @@ export default {
     transferFrom,
     transferFromCallBack,
     getTokensForWallet,
+    approve,
 };

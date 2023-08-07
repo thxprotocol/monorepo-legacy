@@ -1,33 +1,26 @@
 import { ContractName, currentVersion, diamondFacetConfigs, DiamondVariant } from '@thxnetwork/contracts/exports';
-import { getByteCodeForContractName, getContractFromName } from '../config/contracts';
+import { getByteCodeForContractName, getContractFromName } from '@thxnetwork/api/config/contracts';
+import { TWalletDeployCallbackArgs } from '@thxnetwork/api/types/TTransaction';
+import { TransactionReceipt } from 'web3-eth-accounts/node_modules/web3-core';
+import { getProvider, getSelectors } from '@thxnetwork/api/util/network';
+import { FacetCutAction } from '@thxnetwork/api/util/upgrades';
+import TransactionService from '@thxnetwork/api/services/TransactionService';
+import WalletManagerService from '@thxnetwork/api/services/WalletManagerService';
 import { Wallet as WalletModel, WalletDocument } from '../models/Wallet';
 import { ChainId } from '@thxnetwork/types/enums';
-import { TWalletDeployCallbackArgs } from '../types/TTransaction';
-import { TransactionReceipt } from 'web3-core';
-import { getProvider, getSelectors } from '../util/network';
-import { FacetCutAction, updateDiamondContract } from '../util/upgrades';
+import { updateDiamondContract } from '../util/upgrades';
 import { toChecksumAddress } from 'web3-utils';
 import { MilestoneRewardClaim } from '../models/MilestoneRewardClaims';
-import TransactionService from './TransactionService';
-import WalletManagerService from './WalletManagerService';
+import SafeService from '../services/SafeService';
 
 export const Wallet = WalletModel;
-
-async function create(data: { chainId: ChainId; sub: string; forceSync?: boolean; address?: string }) {
-    const { chainId, sub, address } = data;
-    const wallet = await Wallet.create({ sub, chainId, address });
-    if (address) return wallet;
-
-    const forceSync = data.forceSync === undefined ? true : data.forceSync;
-    return deploy(wallet, forceSync);
-}
 
 function findOneByAddress(address: string) {
     return Wallet.findOne({ address: toChecksumAddress(address) });
 }
 
 async function findPrimary(sub: string, chainId: ChainId) {
-    return await Wallet.findOne({ sub, chainId, address: { $exists: true, $ne: '' } });
+    return await SafeService.findPrimary(sub, chainId);
 }
 
 async function findOneByQuery(query: { sub?: string; chainId?: number }) {
@@ -36,6 +29,36 @@ async function findOneByQuery(query: { sub?: string; chainId?: number }) {
 
 async function findByQuery(query: { sub?: string; chainId?: number }) {
     return await Wallet.find(query);
+}
+
+async function upgrade(wallet: WalletDocument, version?: string) {
+    const tx = await updateDiamondContract(wallet.chainId, wallet.contract, 'sharedWallet', version);
+
+    if (tx) {
+        wallet.version = version;
+        await wallet.save();
+    }
+
+    return tx;
+}
+
+async function transferOwnership(wallet: WalletDocument, primaryWallet: WalletDocument) {
+    // If found update all milestone reward claims for that walletId
+    await MilestoneRewardClaim.updateMany(
+        { walletId: String(wallet._id), isClaimed: false },
+        { walletId: String(primaryWallet._id) },
+    );
+
+    return await Wallet.findByIdAndUpdate(wallet._id, { sub: primaryWallet.sub }, { new: true });
+}
+
+async function create(data: { chainId: ChainId; sub: string; forceSync?: boolean; address?: string }) {
+    const { chainId, sub, address } = data;
+    const wallet = await Wallet.create({ sub, chainId, address });
+    if (address) return wallet;
+
+    const forceSync = data.forceSync === undefined ? true : data.forceSync;
+    return deploy(wallet, forceSync);
 }
 
 async function deploy(wallet: WalletDocument, forceSync = true) {
@@ -77,35 +100,14 @@ async function deployCallback(args: TWalletDeployCallbackArgs, receipt: Transact
     await WalletManagerService.setupManagerRoleAdmin(wallet, args.owner);
 }
 
-async function upgrade(wallet: WalletDocument, version?: string) {
-    const tx = await updateDiamondContract(wallet.chainId, wallet.contract, 'sharedWallet', version);
-
-    if (tx) {
-        wallet.version = version;
-        await wallet.save();
-    }
-
-    return tx;
-}
-
-async function transferOwnership(wallet: WalletDocument, primaryWallet: WalletDocument) {
-    // If found update all milestone reward claims for that walletId
-    await MilestoneRewardClaim.updateMany(
-        { walletId: String(wallet._id), isClaimed: false },
-        { walletId: String(primaryWallet._id) },
-    );
-
-    return await Wallet.findByIdAndUpdate(wallet._id, { sub: primaryWallet.sub }, { new: true });
-}
-
 export default {
+    create,
+    deploy,
+    deployCallback,
     transferOwnership,
     findPrimary,
     upgrade,
-    create,
     findOneByAddress,
     findByQuery,
-    deploy,
-    deployCallback,
     findOneByQuery,
 };

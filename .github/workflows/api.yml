@@ -21,13 +21,31 @@ jobs:
                   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                   aws-region: us-east-1
 
-            - name: Lint code and run tests
+            - name: Install Node.js 16.x
+              uses: actions/setup-node@v1
+              with:
+                  node-version: 16.x
+
+            - name: Install Dependencies
+              run: yarn install
+
+            - name: Start Hardhat RPC
+              working-directory: ./libs/contracts
+              run: npx hardhat node --hostname 0.0.0.0 > /dev/null &
+
+            - name: Start Safe Transaction Service
+              run: |
+                  docker compose --env-file=.env.example -f docker-compose.safe.yml up -d
+                  docker compose exec txs-web python manage.py migrate
+                  sudo chmod -R a+rwx ./docker/data
+
+            - name: Run Tests
               env:
-                  NODE_OPTIONS: '--max-old-space-size=8192'
+                  NODE_OPTIONS: --max-old-space-size=8192
               run: |
                   docker compose -f docker-compose.yml -f docker-compose.api.yml run \
                   -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} -e NODE_OPTIONS='--max-old-space-size=8192' -T \
-                  api sh -c "npx nx run contracts:serve 2>&1 > /dev/null & npx nx run api:test"
+                  api npx nx run api:test
 
             - name: SonarCloud Scan
               uses: SonarSource/sonarcloud-github-action@master

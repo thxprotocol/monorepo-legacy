@@ -1,11 +1,11 @@
 import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
-import { TransactionReceipt } from 'web3-core';
+import { TransactionReceipt } from 'web3-eth-accounts/node_modules/web3-core';
 import { getByteCodeForContractName, getContractFromName } from '@thxnetwork/api/config/contracts';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { ERC721, ERC721Document, IERC721Updates } from '@thxnetwork/api/models/ERC721';
 import { ERC721Metadata, ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
 import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
-import { Transaction } from '@thxnetwork/api/models/Transaction';
+import { Transaction, TransactionDocument } from '@thxnetwork/api/models/Transaction';
 import { ChainId, TransactionState } from '@thxnetwork/types/enums';
 import {
     TERC721DeployCallbackArgs,
@@ -19,7 +19,6 @@ import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import { type TERC721, type TERC721Metadata, type TERC721Token, ERC721TokenState } from '@thxnetwork/types/interfaces';
 import { type TAccount } from '@thxnetwork/types/interfaces';
 import { WalletDocument } from '../models/Wallet';
-import { ERC721TransferDocument } from '../models/ERC721Transfer';
 import PoolService from './PoolService';
 import TransactionService from './TransactionService';
 import IPFSService from './IPFSService';
@@ -248,13 +247,11 @@ export async function transferFromWallet(
     erc721Token: ERC721TokenDocument,
     wallet: WalletDocument,
     to: string,
-    forceSync = true,
-): Promise<ERC721TransferDocument> {
-    const txId = await TransactionService.sendAsync(
-        wallet.contract.options.address,
-        wallet.contract.methods.transferERC721(erc721.address, to, erc721Token.tokenId),
-        wallet.chainId,
-        forceSync,
+): Promise<TransactionDocument> {
+    const tx = await TransactionService.sendSafeAsync(
+        wallet,
+        erc721.address,
+        erc721.contract.methods.transferFrom(wallet.address, to, erc721Token.tokenId),
         {
             type: 'erc721TransferFromWalletCallback',
             args: {
@@ -266,7 +263,9 @@ export async function transferFromWallet(
         },
     );
 
-    return ERC721Token.findByIdAndUpdate(erc721Token._id, { transactions: [txId] }, { new: true });
+    await erc721Token.updateOne({ transactions: [tx._id] });
+
+    return tx;
 }
 
 export async function transferFromWalletCallback(
@@ -346,7 +345,31 @@ export async function queryTransferFromTransaction(erc721Token: ERC721TokenDocum
     return erc721Token;
 }
 
+export async function migrateAll(fromWallet: WalletDocument, toWallet: WalletDocument) {
+    const erc721Tokens = await ERC721Token.find({ walletId: String(fromWallet._id) });
+    const erc721Transfers = erc721Tokens.map(async (token) => {
+        const erc721 = await ERC721.findById(token.erc721Id);
+        await TransactionService.sendAsync(
+            fromWallet.contract.options.address,
+            fromWallet.contract.methods.transferERC721(erc721.address, toWallet.address, token.tokenId),
+            fromWallet.chainId,
+            false,
+            {
+                type: 'erc721TransferFromWalletCallback',
+                args: {
+                    erc721Id: String(erc721._id),
+                    erc721TokenId: String(token._id),
+                    walletId: String(fromWallet._id),
+                    to: toWallet.address,
+                },
+            },
+        );
+    });
+    await Promise.all(erc721Transfers);
+}
+
 export default {
+    migrateAll,
     deploy,
     deployCallback,
     findById,

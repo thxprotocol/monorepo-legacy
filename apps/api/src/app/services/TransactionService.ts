@@ -4,7 +4,7 @@ import { ChainId, TransactionState, TransactionType } from '@thxnetwork/types/en
 import { MINIMUM_GAS_LIMIT, RELAYER_SPEED } from '@thxnetwork/api/config/secrets';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import type { TTransactionCallback } from '@thxnetwork/api/types/TTransaction';
-import { TransactionReceipt } from 'web3-core';
+import { TransactionReceipt } from 'web3-eth-accounts/node_modules/web3-core';
 import { toChecksumAddress } from 'web3-utils';
 import { poll } from '@thxnetwork/api/util/polling';
 import { deployCallback as erc20DeployCallback } from './ERC20Service';
@@ -12,10 +12,12 @@ import PoolService from './PoolService';
 import ERC721Service from './ERC721Service';
 import WithdrawalService from './WithdrawalService';
 import { RelayerTransactionPayload } from 'defender-relay-client';
-import WalletService from './WalletService';
 import WalletManagerService from './WalletManagerService';
 import { Contract } from 'web3-eth-contract';
 import ERC1155Service from './ERC1155Service';
+import SafeService from './SafeService';
+import { WalletDocument } from '../models/Wallet';
+import WalletService from './WalletService';
 
 function getById(id: string) {
     return Transaction.findById(id);
@@ -143,6 +145,61 @@ async function sendAsync(
     return String(tx._id);
 }
 
+async function execSafeAsync(wallet: WalletDocument, tx: TransactionDocument) {
+    const { relayer } = getProvider(wallet.chainId);
+    const safeTransaction = await SafeService.getTransaction(wallet, tx.transactionHash);
+
+    // If there is no relayer for the network the safe executes immediately
+    if (!relayer) {
+        const receipt = await SafeService.executeTransaction(wallet, tx.transactionHash);
+        await transactionMined(tx, receipt as any);
+        return;
+    }
+
+    // If there is a relayer the transaction is sent to Defender and the job
+    // processor polls for the receipt and invokes callback
+    const defenderTx = await relayer.sendTransaction({
+        to: safeTransaction.to,
+        data: safeTransaction.data,
+        gasLimit: safeTransaction.safeTxGas || '196000',
+        speed: RELAYER_SPEED,
+    });
+
+    await tx.updateOne({
+        transactionId: defenderTx.transactionId,
+        transactionHash: defenderTx.hash,
+        state: TransactionState.Sent,
+    });
+}
+
+async function sendSafeAsync(wallet: WalletDocument, to: string | null, fn: any, callback?: TTransactionCallback) {
+    const { relayer, defaultAccount } = getProvider(wallet.chainId);
+    const data = fn.encodeABI();
+    const tx = await Transaction.create({
+        type: relayer ? TransactionType.Relayed : TransactionType.Default,
+        state: TransactionState.Queued,
+        chainId: wallet.chainId,
+        walletId: String(wallet._id),
+        from: defaultAccount,
+        to,
+        callback,
+    });
+
+    const safeTxHash = await SafeService.proposeTransaction(wallet, {
+        to,
+        data,
+        value: '0',
+    });
+
+    await SafeService.confirmTransaction(wallet, safeTxHash);
+
+    return await Transaction.findByIdAndUpdate(
+        tx._id,
+        { state: TransactionState.Confirmed, transactionHash: safeTxHash },
+        { new: true },
+    );
+}
+
 async function deploy(abi: any, bytecode: any, arg: any[], chainId: ChainId) {
     const { web3, defaultAccount } = getProvider(chainId);
     const contract = new web3.eth.Contract(abi) as unknown as Contract;
@@ -231,9 +288,6 @@ async function executeCallback(tx: TransactionDocument, receipt: TransactionRece
         case 'withdrawForCallback':
             await WithdrawalService.withdrawForCallback(tx.callback.args, receipt);
             break;
-        case 'walletDeployCallback':
-            await WalletService.deployCallback(tx.callback.args, receipt);
-            break;
         case 'grantRoleCallBack':
             await WalletManagerService.grantRoleCallBack(tx.callback.args, receipt);
             break;
@@ -242,6 +296,10 @@ async function executeCallback(tx: TransactionDocument, receipt: TransactionRece
             break;
         case 'erc721nTransferFromCallback':
             await ERC721Service.transferFromCallback(tx.callback.args, receipt);
+            break;
+        case 'walletDeployCallback':
+            // Will deprecate after Safe migration
+            await WalletService.deployCallback(tx.callback.args, receipt);
             break;
         case 'erc1155TransferFromCallback':
             await ERC1155Service.transferFromCallback(tx.callback.args, receipt);
@@ -321,6 +379,8 @@ export default {
     deploy,
     sendValue,
     findByQuery,
+    sendSafeAsync,
+    execSafeAsync,
     queryTransactionStatusDefender,
     queryTransactionStatusReceipt,
 };

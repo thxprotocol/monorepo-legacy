@@ -15,8 +15,7 @@ basePolicy.add(promptAccount);
 
 // Consent prompt is a requirement for refresh_token grant
 // so we only remove the checks and not the prompt
-const promptConsent = basePolicy.get('consent');
-promptConsent.checks.clear();
+basePolicy.get('consent').checks.clear();
 
 const keys = [SECURE_KEY.split(',')[0], SECURE_KEY.split(',')[1]];
 const config: Configuration = {

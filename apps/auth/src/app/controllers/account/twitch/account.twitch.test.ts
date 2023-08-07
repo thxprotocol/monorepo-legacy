@@ -9,6 +9,7 @@ import { accountEmail } from '../../../util/jest';
 import { AccessTokenKind, AccountPlanType } from '@thxnetwork/types/enums';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { AccountDocument } from '@thxnetwork/auth/models/Account';
+import { mockUrl } from '@thxnetwork/auth/util/jest/mock';
 
 const http = request.agent(app);
 
@@ -17,6 +18,7 @@ describe('Account Controller', () => {
 
     beforeAll(async () => {
         await db.truncate();
+        await mockUrl('post', 'https://id.twitch.tv', '/oauth2/token', 201);
 
         async function requestToken() {
             const res = await http

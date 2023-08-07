@@ -7,7 +7,7 @@ import { diamondContracts, getContract, poolFacetAdressesPermutations } from '@t
 import { pick, sleep } from '@thxnetwork/api/util';
 import { diamondSelectors, getDiamondCutForContractFacets, updateDiamondContract } from '@thxnetwork/api/util/upgrades';
 import { currentVersion } from '@thxnetwork/contracts/exports';
-import { TransactionReceipt } from 'web3-core';
+import { TransactionReceipt } from 'web3-eth-accounts/node_modules/web3-core';
 import { TAssetPoolDeployCallbackArgs } from '@thxnetwork/api/types/TTransaction';
 import { createDummyContents } from '../util/rewards';
 import AccountProxy from '../proxies/AccountProxy';

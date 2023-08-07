@@ -6,13 +6,14 @@ import CreatePointRewardClaim from './points/claim/post.controller';
 import MilestoneRewardClaim from './milestones/claim/post.controller';
 import CreateDailyRewardClaim from './daily/claim/post.controller';
 import rateLimit from 'express-rate-limit';
+import { NODE_ENV } from '@thxnetwork/api/config/secrets';
 
 const router = express.Router();
 
 router.get('/', ListRewards.controller);
 router.post(
     '/referral/:uuid/claim',
-    rateLimit({ windowMs: 1 * 1000, max: 1 }),
+    rateLimit((() => (NODE_ENV !== 'test' ? { windowMs: 1 * 1000, max: 1 } : {}))()),
     assertRequestInput(CreateReferralRewardClaim.validation),
     CreateReferralRewardClaim.controller,
 );

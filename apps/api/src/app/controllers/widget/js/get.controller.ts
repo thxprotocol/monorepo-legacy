@@ -327,7 +327,6 @@ const controller = async (req: Request, res: Response) => {
                 right: !this.settings.cssSelector ? this.settings.align === 'right' ? '15px' : 'auto' : 'auto',
                 left: !this.settings.cssSelector ? this.settings.align === 'left' ? '15px' : 'auto' : 'auto',
                 opacity: 0,
-                transform: 'scale(0)',
                 transition: '.2s opacity ease, .1s transform ease',
             });
 

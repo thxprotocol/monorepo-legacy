@@ -4,7 +4,7 @@ import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { Withdrawal, WithdrawalDocument } from '@thxnetwork/api/models/Withdrawal';
 import { assertEvent, parseLogs } from '@thxnetwork/api/util/events';
 import { TWithdrawForCallbackArgs } from '@thxnetwork/api/types/TTransaction';
-import { TransactionReceipt } from 'web3-core';
+import { TransactionReceipt } from 'web3-eth-accounts/node_modules/web3-core';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
 import { ERC20Document } from '@thxnetwork/api/models/ERC20';

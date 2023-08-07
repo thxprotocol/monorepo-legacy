@@ -34,7 +34,7 @@ describe('Widgets', () => {
             .expect(({ body }: Response) => {
                 expect(body[0].uuid).toBeDefined();
                 expect(body[0].theme).toBeDefined();
-                expect(body[0].message).toEqual('Hi there!👋 Click me to earn points with quests and redeem rewards');
+                expect(body[0].message).toEqual('Hi there!👋 Click me to complete quests and earn rewards...');
                 widget = body[0];
             })
             .expect(200, done);

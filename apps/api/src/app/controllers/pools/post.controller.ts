@@ -20,7 +20,7 @@ const controller = async (req: Request, res: Response) => {
         uuid: v4(),
         poolId: pool._id,
         align: 'right',
-        message: 'Hi there!👋 Click me to earn points with quests and redeem rewards',
+        message: 'Hi there!👋 Click me to complete quests and earn rewards...',
         domain: 'https://www.example.com',
         theme: JSON.stringify({ elements: DEFAULT_ELEMENTS, colors: DEFAULT_COLORS }),
     });

@@ -223,7 +223,7 @@
                             <b-textarea
                                 @change="onChangeMessage"
                                 v-model="message"
-                                placeholder="Hi there! Click me to earn rewards and redeem crypto perks."
+                                placeholder="Hi there! Click me to complete quests and earn rewards..."
                             >
                             </b-textarea>
                         </b-form-group>

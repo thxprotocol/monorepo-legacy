@@ -7,8 +7,8 @@ import { ChainId } from '@thxnetwork/types/enums';
 import { getContract, getContractConfig } from '@thxnetwork/api/config/contracts';
 import { poll } from '../polling';
 import { currentVersion } from '@thxnetwork/contracts/exports';
-import { Wallet } from '@thxnetwork/api/models/Wallet';
-import { sub, sub2, userWalletAddress, userWalletAddress2 } from './constants';
+import { sub, sub2, sub3, userWalletAddress, userWalletAddress2, userWalletAddress3 } from './constants';
+import SafeService from '@thxnetwork/api/services/SafeService';
 
 export async function beforeAllCallback(options = { skipWalletCreation: false }) {
     await db.truncate();
@@ -27,8 +27,10 @@ export async function beforeAllCallback(options = { skipWalletCreation: false })
     await factory.methods.initialize(defaultAccount, registryAddress).send({ from: defaultAccount });
 
     if (!options.skipWalletCreation) {
-        await Wallet.create({ sub, address: userWalletAddress, chainId: ChainId.Hardhat });
-        await Wallet.create({ sub: sub2, address: userWalletAddress2, chainId: ChainId.Hardhat });
+        const safeVersion = '1.3.0';
+        await SafeService.create({ sub, safeVersion, chainId: ChainId.Hardhat }, userWalletAddress);
+        await SafeService.create({ sub: sub2, safeVersion, chainId: ChainId.Hardhat }, userWalletAddress2);
+        await SafeService.create({ sub: sub3, safeVersion, chainId: ChainId.Hardhat }, userWalletAddress3);
     }
 }
 
