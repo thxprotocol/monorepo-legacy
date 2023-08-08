@@ -70,7 +70,6 @@ const config: Configuration = {
         'pool_transfer_token',
         'wallet_transfer_token',
         'referral_code',
-        'shopify_params',
     ],
     scopes: [
         'openid',

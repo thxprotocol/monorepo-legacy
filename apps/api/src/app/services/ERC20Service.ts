@@ -215,26 +215,21 @@ export const approve = async (erc20: ERC20Document, wallet: WalletDocument, amou
     );
 };
 
-export async function migrateAll(fromWallet: WalletDocument, toWallet: WalletDocument) {
-    const erc20Tokens = await ERC20Token.find({ walletId: String(fromWallet._id) });
-
-    for (const token of erc20Tokens) {
-        const erc20 = await ERC20.findById(token.erc20Id);
-        const balance = await erc20.contract.methods.balanceOf(fromWallet.address).call();
-        if (!new BN(balance).gt(new BN(0))) continue;
-        if (!(await ERC20Token.exists({ walletId: toWallet._id }))) {
-            // Create token if it does not exist for the receiving wallet
-            await createERC20Token(erc20, toWallet.sub);
-        }
-
-        await TransactionService.sendAsync(
-            fromWallet.contract.options.address,
-            fromWallet.contract.methods.transferERC20(erc20.address, toWallet.address, balance),
-            fromWallet.chainId,
-            false,
-            { type: 'transferFromCallBack', args: { erc20Id: String(erc20._id) } },
-        );
+async function migrate(fromWallet: WalletDocument, toWallet: WalletDocument, erc20Id: string) {
+    const erc20 = await ERC20.findById(erc20Id);
+    const balance = await erc20.contract.methods.balanceOf(fromWallet.address).call();
+    if (!(await ERC20Token.exists({ walletId: toWallet._id }))) {
+        // Create token if it does not exist for the receiving wallet
+        await createERC20Token(erc20, toWallet.sub);
     }
+
+    await TransactionService.sendAsync(
+        fromWallet.contract.options.address,
+        fromWallet.contract.methods.transferERC20(erc20.address, toWallet.address, balance),
+        fromWallet.chainId,
+        true,
+        { type: 'transferFromCallBack', args: { erc20Id: String(erc20._id) } },
+    );
 }
 
 export const transferFrom = async (erc20: ERC20Document, wallet: WalletDocument, to: string, amountInWei: string) => {
@@ -286,8 +281,8 @@ async function createERC20Token(erc20: ERC20Document, sub: string) {
 }
 
 export default {
+    migrate,
     createERC20Token,
-    migrateAll,
     deploy,
     getAll,
     findBy,

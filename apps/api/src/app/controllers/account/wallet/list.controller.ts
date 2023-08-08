@@ -1,11 +1,9 @@
 import { Request, Response } from 'express';
 import { query } from 'express-validator';
 import { Wallet } from '@thxnetwork/api/services/WalletService';
-import { currentVersion } from '@thxnetwork/contracts/exports';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { TransactionState } from '@thxnetwork/types/enums';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
-import SafeService from '@thxnetwork/api/services/SafeService';
 
 const validation = [query('chainId').optional().isNumeric()];
 
@@ -19,7 +17,6 @@ const controller = async (req: Request, res: Response) => {
     res.json(
         await Promise.all(
             wallets.map(async (wallet: WalletDocument) => {
-                const owners = wallet.safeVersion ? await SafeService.getOwners(wallet) : [];
                 const pendingTransactions = await Transaction.find({
                     walletId: String(wallet._id),
                     state: TransactionState.Confirmed,
@@ -27,9 +24,7 @@ const controller = async (req: Request, res: Response) => {
 
                 return {
                     ...wallet.toJSON(),
-                    owners,
                     pendingTransactions,
-                    latestVersion: currentVersion,
                 };
             }),
         ),

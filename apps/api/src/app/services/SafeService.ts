@@ -11,10 +11,8 @@ import {
     SafeVersion,
 } from '@safe-global/safe-core-sdk-types';
 import { logger } from '@thxnetwork/api/util/logger';
-import ERC20Service from './ERC20Service';
-import ERC721Service from './ERC721Service';
-import AccountProxy from '../proxies/AccountProxy';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
+import AccountProxy from '../proxies/AccountProxy';
 
 export const Wallet = WalletModel;
 
@@ -58,11 +56,6 @@ async function create(
     }
 
     return await Wallet.findByIdAndUpdate(wallet._id, { address: safeAddress }, { new: true });
-}
-
-function transferAll(fromWallet: WalletDocument, toWallet: WalletDocument) {
-    ERC20Service.migrateAll(fromWallet, toWallet);
-    ERC721Service.migrateAll(fromWallet, toWallet);
 }
 
 function findOneByAddress(address: string) {
@@ -200,5 +193,4 @@ export default {
     findOneByQuery,
     getTransaction,
     executeTransaction,
-    transferAll,
 };

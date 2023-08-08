@@ -345,31 +345,30 @@ export async function queryTransferFromTransaction(erc721Token: ERC721TokenDocum
     return erc721Token;
 }
 
-export async function migrateAll(fromWallet: WalletDocument, toWallet: WalletDocument) {
-    const erc721Tokens = await ERC721Token.find({ walletId: String(fromWallet._id) });
-    const erc721Transfers = erc721Tokens.map(async (token) => {
-        const erc721 = await ERC721.findById(token.erc721Id);
-        await TransactionService.sendAsync(
-            fromWallet.contract.options.address,
-            fromWallet.contract.methods.transferERC721(erc721.address, toWallet.address, token.tokenId),
-            fromWallet.chainId,
-            false,
-            {
-                type: 'erc721TransferFromWalletCallback',
-                args: {
-                    erc721Id: String(erc721._id),
-                    erc721TokenId: String(token._id),
-                    walletId: String(fromWallet._id),
-                    to: toWallet.address,
-                },
+async function migrate(fromWallet: WalletDocument, toWallet: WalletDocument, erc721TokenId: string) {
+    const token = await ERC721Token.findById(erc721TokenId);
+    const erc721 = await ERC721.findById(token.erc721Id);
+    if (!erc721) return;
+
+    await TransactionService.sendAsync(
+        fromWallet.contract.options.address,
+        fromWallet.contract.methods.transferERC721(erc721.address, toWallet.address, token.tokenId),
+        fromWallet.chainId,
+        true,
+        {
+            type: 'erc721TransferFromWalletCallback',
+            args: {
+                erc721Id: String(erc721._id),
+                erc721TokenId,
+                walletId: String(fromWallet._id),
+                to: toWallet.address,
             },
-        );
-    });
-    await Promise.all(erc721Transfers);
+        },
+    );
 }
 
 export default {
-    migrateAll,
+    migrate,
     deploy,
     deployCallback,
     findById,
