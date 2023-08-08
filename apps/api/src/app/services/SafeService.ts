@@ -91,6 +91,7 @@ async function migrate(safeWallet: WalletDocument) {
         address: { $exists: true, $ne: '' },
         safeVersion: { $exists: false },
     });
+    if (!thxWallet || !safeWallet) return;
     for (const model of [
         Claim,
         DailyRewardClaim,
