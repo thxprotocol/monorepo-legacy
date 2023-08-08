@@ -80,7 +80,7 @@ if (POLYGON_RELAYER) {
         const signer = new DefenderRelaySigner(
             { apiKey: POLYGON_RELAYER_API_KEY, apiSecret: POLYGON_RELAYER_API_SECRET },
             new (ethers as any).providers.JsonRpcProvider(POLYGON_RPC),
-            { speed: 'fast' },
+            { speed: RELAYER_SPEED },
         );
 
         return {

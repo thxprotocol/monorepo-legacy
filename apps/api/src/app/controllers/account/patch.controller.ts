@@ -4,7 +4,7 @@ import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { ChainId } from '@thxnetwork/types/enums';
 import { NODE_ENV } from '@thxnetwork/api/config/secrets';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import SafeService, { Wallet } from '@thxnetwork/api/services/SafeService';
+import SafeService from '@thxnetwork/api/services/SafeService';
 
 export default {
     controller: async (req: Request, res: Response) => {
@@ -32,6 +32,7 @@ export default {
             // Deploy Safe if none exists
             if (!safeWallet) {
                 safeWallet = await SafeService.create({ sub: account.sub, chainId, safeVersion }, address);
+                await SafeService.migrate(safeWallet);
             }
         }
 

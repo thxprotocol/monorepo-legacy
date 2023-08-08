@@ -28,24 +28,6 @@ export async function redirectReferralCode(to: Route) {
     });
 }
 
-export async function redirectShopifyCode(to: Route) {
-    const params = {
-        hmac: to.query.hmac,
-        host: to.query.host,
-        shop: to.query.shop,
-        state: to.query.state,
-        timestamp: to.query.timestamp,
-    };
-    return await store.dispatch('account/signin', {
-        state: {
-            shopify_params: params,
-        },
-        extraQueryParams: {
-            shopify_params: JSON.stringify(params),
-        },
-    });
-}
-
 export function redirectPoolTransfer(to: Route) {
     return store.dispatch('account/signinRedirect', { poolId: to.params.poolId, poolTransferToken: to.params.token });
 }

@@ -15,7 +15,6 @@ import { ERC721TokenState } from '@thxnetwork/types/interfaces';
 import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
 import { IPFS_BASE_URL } from '@thxnetwork/api/config/secrets';
 import { poll } from '@thxnetwork/api/util/polling';
-import ERC20 from '@thxnetwork/api/models/ERC20';
 
 const user = request.agent(app);
 
@@ -23,7 +22,7 @@ describe('Account Wallet', () => {
     beforeAll(() => beforeAllCallback({ skipWalletCreation: true }));
     afterAll(afterAllCallback);
 
-    let safeAddress, thxWallet, erc20, erc721;
+    let safeAddress, thxWallet, erc20, erc721, erc721Token;
 
     it('Create wallet', async () => {
         thxWallet = await WalletService.create({ sub, chainId: ChainId.Hardhat, forceSync: true });
@@ -83,7 +82,7 @@ describe('Account Wallet', () => {
             { type: 'transferFromCallBack', args: { erc20Id: String(erc20._id) } },
         );
 
-        await ERC721Token.create({
+        erc721Token = await ERC721Token.create({
             sub,
             walletId: thxWallet._id,
             erc721Id: erc721._id,
@@ -129,18 +128,33 @@ describe('Account Wallet', () => {
             .expect(200, done);
     });
 
-    it('GET /account/wallet/migrate', (done) => {
-        user.get(`/v1/account/wallet/migrate`)
+    it('GET /erc20/token', (done) => {
+        user.get(`/v1/erc20/token?chainId=${ChainId.Hardhat}`)
             .set({ Authorization: widgetAccessToken })
             .expect((res: request.Response) => {
-                expect(res.body.wallet).toBeDefined();
-                expect(res.body.erc20Tokens.length).toBe(1);
-                expect(res.body.erc721Tokens.length).toBe(1);
+                expect(res.body.length).toBe(1);
+                expect(res.body[0].migrationBalance).toBe(toWei('10'));
             })
             .expect(200, done);
     });
-    it('POST /account/wallet/migrate', (done) => {
-        user.post(`/v1/account/wallet/migrate`).set({ Authorization: widgetAccessToken }).expect(200, done);
+
+    it('GET /erc721/token', (done) => {
+        user.get(`/v1/erc721/token?chainId=${ChainId.Hardhat}`)
+            .set({ Authorization: widgetAccessToken })
+            .expect((res: request.Response) => {
+                expect(res.body.length).toBe(1);
+                expect(res.body[0].recipient).toBe(thxWallet.address);
+            })
+            .expect(200, done);
+    });
+
+    it('POST /account/wallet/migrate (erc20Id)', (done) => {
+        user.post(`/v1/account/wallet/migrate`)
+            .set({ Authorization: widgetAccessToken })
+            .send({
+                erc20Id: erc20._id,
+            })
+            .expect(200, done);
     });
 
     it('Poll', async () => {
@@ -150,6 +164,19 @@ describe('Account Wallet', () => {
             1000,
         );
         expect(await erc20.contract.methods.balanceOf(safeAddress).call()).toBe(toWei('10'));
+    });
+    it('POST /account/wallet/migrate (erc721Id)', (done) => {
+        user.post(`/v1/account/wallet/migrate`)
+            .set({ Authorization: widgetAccessToken })
+            .send({
+                erc721TokenId: erc721Token._id,
+            })
+            .expect(200, done);
+    });
+
+    it('Poll', async () => {
+        await poll(erc721.contract.methods.ownerOf(1).call, (result: string) => result !== safeAddress, 1000);
+        expect(await erc721.contract.methods.ownerOf(1).call()).toBe(safeAddress);
     });
 
     it('GET /erc20/token', (done) => {
