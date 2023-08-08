@@ -347,6 +347,8 @@ export async function queryTransferFromTransaction(erc721Token: ERC721TokenDocum
 
 async function migrate(fromWallet: WalletDocument, toWallet: WalletDocument, erc721TokenId: string) {
     const token = await ERC721Token.findById(erc721TokenId);
+    if (token.recipient == toWallet.address) return;
+
     const erc721 = await ERC721.findById(token.erc721Id);
     if (!erc721) return;
 

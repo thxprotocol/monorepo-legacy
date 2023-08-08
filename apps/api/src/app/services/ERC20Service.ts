@@ -218,6 +218,8 @@ export const approve = async (erc20: ERC20Document, wallet: WalletDocument, amou
 async function migrate(fromWallet: WalletDocument, toWallet: WalletDocument, erc20Id: string) {
     const erc20 = await ERC20.findById(erc20Id);
     const balance = await erc20.contract.methods.balanceOf(fromWallet.address).call();
+    if (new BN(balance).eq(new BN(0))) return;
+
     if (!(await ERC20Token.exists({ walletId: toWallet._id }))) {
         // Create token if it does not exist for the receiving wallet
         await createERC20Token(erc20, toWallet.sub);
