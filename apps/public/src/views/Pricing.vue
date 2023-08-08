@@ -138,6 +138,16 @@
                     </b-link>
                 </div>
                 <div class="col-6 col-md-2 text-center d-flex align-items-center justify-content-center">
+                    <b-link href="https://apeswap.finance/liquidity-health" target="_blank">
+                        <b-img
+                            :src="require('../../public/assets/img/logo-apeswap.png')"
+                            width="120"
+                            alt=""
+                            class="mx-md-5"
+                        />
+                    </b-link>
+                </div>
+                <div class="col-6 col-md-2 text-center d-flex align-items-center justify-content-center">
                     <b-link href="https://www.forestknight.io" target="_blank">
                         <b-img
                             :src="require('../../public/assets/img/logo-forest-knight.png')"
@@ -148,19 +158,9 @@
                     </b-link>
                 </div>
                 <div class="col-6 col-md-2 text-center d-flex align-items-center justify-content-center">
-                    <b-link href="http://2tokens.org" target="_blank">
+                    <b-link href="https://2tokens.org" target="_blank">
                         <b-img
                             :src="require('../../public/assets/img/logo-2tokens.webp')"
-                            width="120"
-                            alt=""
-                            class="mx-md-5"
-                        />
-                    </b-link>
-                </div>
-                <div class="col-6 col-md-2 text-center d-flex align-items-center justify-content-center">
-                    <b-link href="http://bibianmentelfoundation.nl/" target="_blank">
-                        <b-img
-                            :src="require('../../public/assets/img/logo-mf.png')"
                             width="120"
                             alt=""
                             class="mx-md-5"
