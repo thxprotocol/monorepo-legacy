@@ -6,7 +6,7 @@ export enum RewardVariant {
 
 export enum QuestVariant {
     Daily = 0,
-    Referral = 1,
+    Invite = 1,
     Social = 2,
     Custom = 3,
 }
