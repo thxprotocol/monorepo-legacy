@@ -128,16 +128,26 @@ describe('Account Wallet', () => {
             .expect(200, done);
     });
 
-    it('GET /account/wallet/migrate', (done) => {
-        user.get(`/v1/account/wallet/migrate`)
+    it('GET /erc20/token', (done) => {
+        user.get(`/v1/erc20/token?chainId=${ChainId.Hardhat}`)
             .set({ Authorization: widgetAccessToken })
             .expect((res: request.Response) => {
-                expect(res.body.wallet).toBeDefined();
-                expect(res.body.erc20Tokens.length).toBe(1);
-                expect(res.body.erc721Tokens.length).toBe(1);
+                expect(res.body.length).toBe(1);
+                expect(res.body[0].migrationBalance).toBe(toWei('10'));
             })
             .expect(200, done);
     });
+
+    it('GET /erc721/token', (done) => {
+        user.get(`/v1/erc721/token?chainId=${ChainId.Hardhat}`)
+            .set({ Authorization: widgetAccessToken })
+            .expect((res: request.Response) => {
+                expect(res.body.length).toBe(1);
+                expect(res.body[0].recipient).toBe(thxWallet.address);
+            })
+            .expect(200, done);
+    });
+
     it('POST /account/wallet/migrate (erc20Id)', (done) => {
         user.post(`/v1/account/wallet/migrate`)
             .set({ Authorization: widgetAccessToken })

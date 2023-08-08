@@ -8,6 +8,7 @@ import { ChainId } from '@thxnetwork/types/enums';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import WalletService from '@thxnetwork/api/services/WalletService';
 import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
+import SafeService from '@thxnetwork/api/services/SafeService';
 
 const validation = [query('chainId').exists().isNumeric()];
 
@@ -28,6 +29,7 @@ export const controller = async (req: Request, res: Response) => {
     const wallet = await WalletService.findPrimary(req.auth.sub, chainId);
     if (!wallet) throw new NotFoundError('Could not find the wallet for the user');
 
+    const thxWallet = await SafeService.getWalletMigration(req.auth.sub, chainId);
     const tokens = await ERC20Service.getTokensForWallet(wallet);
     const result = await Promise.all(
         tokens.map(async (token: ERC20TokenDocument) => {
@@ -38,8 +40,12 @@ export const controller = async (req: Request, res: Response) => {
                 const pendingWithdrawals = await WithdrawalService.getPendingWithdrawals(erc20, wallet);
                 const walletBalanceInWei = await erc20.contract.methods.balanceOf(wallet.address).call();
                 const walletBalance = fromWei(walletBalanceInWei, 'ether');
+                const migrationBalance = thxWallet
+                    ? await erc20.contract.methods.balanceOf(thxWallet.address).call()
+                    : 0;
 
                 return Object.assign(token.toJSON() as TERC20Token, {
+                    migrationBalance,
                     walletBalance,
                     pendingWithdrawals,
                     erc20,

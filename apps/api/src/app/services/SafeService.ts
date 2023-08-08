@@ -13,6 +13,21 @@ import {
 import { logger } from '@thxnetwork/api/util/logger';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 import AccountProxy from '../proxies/AccountProxy';
+import { PointBalance } from '@thxnetwork/api/models/PointBalance';
+import { Claim } from '@thxnetwork/api/models/Claim';
+import { DailyRewardClaim } from '@thxnetwork/api/models/DailyRewardClaims';
+import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
+import { ERC20Token } from '@thxnetwork/api/models/ERC20Token';
+import ERC20Transfer from '@thxnetwork/api/models/ERC20Transfer';
+import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
+import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
+import ERC721Transfer from '@thxnetwork/api/models/ERC721Transfer';
+import { ERC1155Token } from '@thxnetwork/api/models/ERC1155Token';
+import { MilestoneRewardClaim } from '@thxnetwork/api/models/MilestoneRewardClaims';
+import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
+import { PoolSubscription } from '@thxnetwork/api/models/PoolSubscription';
+import { ReferralRewardClaim } from '@thxnetwork/api/models/ReferralRewardClaim';
+import { Withdrawal } from '@thxnetwork/api/models/Withdrawal';
 
 export const Wallet = WalletModel;
 
@@ -56,6 +71,45 @@ async function create(
     }
 
     return await Wallet.findByIdAndUpdate(wallet._id, { address: safeAddress }, { new: true });
+}
+
+async function getWalletMigration(sub: string, chainId: ChainId) {
+    return await Wallet.findOne({
+        sub,
+        chainId,
+        version: '4.0.12',
+        address: { $exists: true, $ne: '' },
+        safeVersion: { $exists: false },
+    });
+}
+
+async function migrate(safeWallet: WalletDocument) {
+    const thxWallet = await Wallet.findOne({
+        sub: safeWallet.sub,
+        chainId: safeWallet.chainId,
+        version: '4.0.12',
+        address: { $exists: true, $ne: '' },
+        safeVersion: { $exists: false },
+    });
+    for (const model of [
+        Claim,
+        DailyRewardClaim,
+        ERC20PerkPayment,
+        ERC20Token,
+        ERC20Transfer,
+        ERC721PerkPayment,
+        ERC721Token,
+        ERC721Transfer,
+        ERC1155Token,
+        MilestoneRewardClaim,
+        PointBalance,
+        PointRewardClaim,
+        PoolSubscription,
+        ReferralRewardClaim,
+        Withdrawal,
+    ]) {
+        await model.updateMany({ walletId: String(thxWallet._id) }, { walletId: String(safeWallet._id) });
+    }
 }
 
 function findOneByAddress(address: string) {
@@ -180,6 +234,8 @@ async function getTransaction(wallet: WalletDocument, safeTxHash: string): Promi
 }
 
 export default {
+    getWalletMigration,
+    migrate,
     createSwapOwnerTransaction,
     proposeTransaction,
     confirmTransaction,
