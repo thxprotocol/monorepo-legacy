@@ -26,6 +26,7 @@ const csvFilePath = path.join(__dirname, '../../../', 'quests.csv');
 const sub = '6074cbdd1459355fae4b6a14'; // Prod
 // const chainId = ChainId.Hardhat;
 const chainId = ChainId.Polygon;
+// const erc20Id = '64d3a4149f7e6d78c9366982'; // Local
 const erc20Id = '6464c665633c1cf385d8cc2b'; // THX Network (POS) on Prod
 
 async function main() {
@@ -42,13 +43,12 @@ async function main() {
             const videoUrl = sql['Youtube Video URL'];
             const tweetUrl = sql['Twitter Tweet URL'];
             const serverId = sql['Discord Server ID'];
-            const isScheduled = sql['Contacted'] === 'Scheduled';
-            const isContacted = sql['Contacted'] === 'Contacted';
+            const isReachout = sql['Contacted'] === 'Reach out';
             const hasPreview = sql['Campaign Preview'];
             const gameName = sql['Game'];
             const gameDomain = sql['Game Domain'];
 
-            if ((!isScheduled && !isContacted) || hasPreview || !gameName || !gameDomain) continue;
+            if (!isReachout || hasPreview || !gameName || !gameDomain) continue;
 
             let pool = await AssetPool.findOne({ 'settings.title': gameName });
             console.log('===============');
