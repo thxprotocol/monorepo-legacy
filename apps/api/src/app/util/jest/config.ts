@@ -2,6 +2,7 @@ import db from '@thxnetwork/api/util/database';
 import { mockStart, mockClear } from './mock';
 import { agenda } from '@thxnetwork/api/util/agenda';
 import { logger } from '@thxnetwork/api/util/logger';
+import { safeVersion } from '@thxnetwork/api/config/contracts';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { ChainId } from '@thxnetwork/types/enums';
 import { getContract, getContractConfig } from '@thxnetwork/api/config/contracts';
@@ -27,7 +28,6 @@ export async function beforeAllCallback(options = { skipWalletCreation: false })
     await factory.methods.initialize(defaultAccount, registryAddress).send({ from: defaultAccount });
 
     if (!options.skipWalletCreation) {
-        const safeVersion = '1.3.0';
         await SafeService.create({ sub, safeVersion, chainId: ChainId.Hardhat }, userWalletAddress);
         await SafeService.create({ sub: sub2, safeVersion, chainId: ChainId.Hardhat }, userWalletAddress2);
         await SafeService.create({ sub: sub3, safeVersion, chainId: ChainId.Hardhat }, userWalletAddress3);
