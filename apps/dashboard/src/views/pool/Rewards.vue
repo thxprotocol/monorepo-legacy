@@ -15,6 +15,7 @@
                         :key="key"
                         v-b-modal="rewardModalComponentMap[RewardVariant[variant]]"
                         button-class="d-flex"
+                        :disabled="variant === 'Custom'"
                     >
                         <div style="width: 30px">
                             <i
@@ -203,7 +204,7 @@ export default class RewardsView extends Vue {
     rewardIconClassMap = {
         [RewardVariant.Coin]: 'fas fa-coins',
         [RewardVariant.NFT]: 'fas fa-palette',
-        // [RewardVariant.Custom]: 'fas fa-gift',
+        [RewardVariant.Custom]: 'fas fa-gift',
     };
 
     pools!: IPools;
