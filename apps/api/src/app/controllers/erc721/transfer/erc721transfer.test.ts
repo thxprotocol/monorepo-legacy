@@ -2,7 +2,13 @@ import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId, NFTVariant } from '@thxnetwork/types/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { sub, userWalletAddress2, userWalletPrivateKey, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
+import {
+    sub,
+    sub2,
+    userWalletAddress2,
+    userWalletPrivateKey,
+    widgetAccessToken,
+} from '@thxnetwork/api/util/jest/constants';
 import { ERC721, ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
@@ -11,7 +17,8 @@ import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { poll } from '@thxnetwork/api/util/polling';
 import { signTxHash } from '@thxnetwork/api/util/jest/network';
-import WalletService from '@thxnetwork/api/services/WalletService';
+import WalletService, { Wallet } from '@thxnetwork/api/services/WalletService';
+import { safeVersion } from '@thxnetwork/api/config/contracts';
 
 const user = request.agent(app);
 
@@ -27,8 +34,8 @@ describe('ERC721Transfer', () => {
         metadataImageUrl = '',
         metadataIPFSImageUrl = '',
         metadataDescription = '',
-        metadataExternalUrl = '',
-        to = userWalletAddress2;
+        metadataExternalUrl = '';
+    let to = '';
 
     beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
@@ -67,6 +74,8 @@ describe('ERC721Transfer', () => {
         });
 
         it('HTTP 201', async () => {
+            const safe2 = await Wallet.findOne({ sub: sub2, safeVersion });
+            to = safe2.address;
             const res = await user.post('/v1/erc721/transfer').set({ Authorization: widgetAccessToken }).send({
                 erc721Id: erc721._id,
                 erc721TokenId: erc721Token._id,
@@ -92,14 +101,9 @@ describe('ERC721Transfer', () => {
     describe('Wait for ownerOf', () => {
         it('Poll', async () => {
             const { contract } = await ERC721.findById(erc721._id);
-            await poll(
-                contract.methods.ownerOf(erc721Token.tokenId).call,
-                (result: string) => result !== userWalletAddress2,
-                1000,
-            );
-
+            await poll(contract.methods.ownerOf(erc721Token.tokenId).call, (result: string) => result !== to, 1000);
             const owner = await contract.methods.ownerOf(erc721Token.tokenId).call();
-            expect(owner).toEqual(userWalletAddress2);
+            expect(owner).toEqual(to);
         });
     });
 });

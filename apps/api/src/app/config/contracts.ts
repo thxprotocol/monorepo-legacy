@@ -16,47 +16,10 @@ import {
     TokenContractName,
 } from '@thxnetwork/contracts/exports';
 import { HARDHAT_NAME, POLYGON_NAME } from './secrets';
-import {
-    getSafeL2SingletonDeployment,
-    getProxyFactoryDeployment,
-    getMultiSendDeployment,
-    getMultiSendCallOnlyDeployment,
-    getCreateCallDeployment,
-    getSignMessageLibDeployment,
-    getCompatibilityFallbackHandlerDeployment,
-} from '@safe-global/safe-deployments';
 import { ContractNetworksConfig } from '@safe-global/protocol-kit';
 import { SafeVersion } from '@safe-global/safe-core-sdk-types';
 
 export const safeVersion: SafeVersion = '1.3.0';
-
-function getSafeDeployment(chainId: ChainId) {
-    const config = { version: safeVersion, network: String(chainId) };
-    const safeMasterCopy = getSafeL2SingletonDeployment(config);
-    const safeProxyFactory = getProxyFactoryDeployment(config);
-    const multiSend = getMultiSendDeployment(config);
-    const multiSendCallOnly = getMultiSendCallOnlyDeployment(config);
-    const fallbackHandler = getCompatibilityFallbackHandlerDeployment(config);
-    const signMessageLib = getSignMessageLibDeployment(config);
-    const createCall = getCreateCallDeployment(config);
-
-    return {
-        safeMasterCopyAddress: safeMasterCopy.defaultAddress,
-        safeProxyFactoryAddress: safeProxyFactory.defaultAddress,
-        multiSendAddress: multiSend.defaultAddress,
-        multiSendCallOnlyAddress: multiSendCallOnly.defaultAddress,
-        fallbackHandlerAddress: fallbackHandler.defaultAddress,
-        signMessageLibAddress: signMessageLib.defaultAddress,
-        createCallAddress: createCall.defaultAddress,
-        safeMasterCopyAbi: safeMasterCopy.abi,
-        safeProxyFactoryAbi: safeProxyFactory.abi,
-        multiSendAbi: multiSend.abi,
-        multiSendCallOnlyAbi: multiSendCallOnly.abi,
-        fallbackHandlerAbi: fallbackHandler.abi,
-        signMessageLibAbi: signMessageLib.abi,
-        createCallAbi: createCall.abi,
-    };
-}
 
 export const contractNetworks = {
     '31337': {
@@ -68,7 +31,6 @@ export const contractNetworks = {
         signMessageLibAddress: '0x658FAD2acB6d1E615f295E566ee9a6d32Cc97b10',
         createCallAddress: '0x40Efd8a16485213445E6d8b9a4266Fd2dFf7C69a',
     },
-    '137': getSafeDeployment(ChainId.Polygon),
 } as ContractNetworksConfig;
 
 export const getContractConfig = (
