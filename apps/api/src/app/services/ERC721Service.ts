@@ -23,6 +23,7 @@ import PoolService from './PoolService';
 import TransactionService from './TransactionService';
 import IPFSService from './IPFSService';
 import WalletService from './WalletService';
+import { toChecksumAddress } from 'web3-utils';
 
 const contractName = 'NonFungibleToken';
 
@@ -280,12 +281,11 @@ export async function transferFromWalletCallback(
     if (receipt) {
         // TODO Parse events and assert instead of manual assertion
     }
-    if (ownerOfToken !== to) throw new Error('ERC721Transfer tx failed.');
 
     const toWallet = await WalletService.findOneByAddress(to);
     await ERC721Token.findByIdAndUpdate(erc721TokenId, {
         state: ERC721TokenState.Transferred,
-        recipient: to,
+        recipient: toChecksumAddress(ownerOfToken),
         sub: toWallet ? toWallet.sub : '',
         walletId: toWallet ? String(toWallet._id) : '',
     });

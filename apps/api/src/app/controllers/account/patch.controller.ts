@@ -5,6 +5,7 @@ import { ChainId } from '@thxnetwork/types/enums';
 import { NODE_ENV } from '@thxnetwork/api/config/secrets';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import SafeService from '@thxnetwork/api/services/SafeService';
+import { safeVersion } from '@thxnetwork/api/config/contracts';
 
 export default {
     controller: async (req: Request, res: Response) => {
@@ -18,8 +19,6 @@ export default {
         let safeWallet = await SafeService.findPrimary(req.auth.sub, chainId);
 
         if (!isMetamask && authRequestMessage && authRequestSignature) {
-            const safeVersion = '1.3.0';
-
             // Recover address for not metamask user
             address = recoverSigner(authRequestMessage, authRequestSignature);
 

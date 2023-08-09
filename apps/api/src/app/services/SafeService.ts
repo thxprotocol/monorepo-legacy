@@ -1,7 +1,7 @@
-import { contractNetworks } from '@thxnetwork/api/config/contracts';
 import { Wallet as WalletModel, WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { ChainId } from '@thxnetwork/types/enums';
 import { getProvider } from '@thxnetwork/api/util/network';
+import { contractNetworks } from '@thxnetwork/api/config/contracts';
 import { toChecksumAddress } from 'web3-utils';
 import Safe, { SafeAccountConfig, SafeFactory } from '@safe-global/protocol-kit';
 import SafeApiKit from '@safe-global/api-kit';
@@ -49,7 +49,7 @@ async function create(
     const safeFactory = await SafeFactory.create({
         safeVersion,
         ethAdapter,
-        contractNetworks: wallet.chainId === ChainId.Hardhat ? contractNetworks : undefined,
+        contractNetworks,
     });
     const safeAccountConfig: SafeAccountConfig = {
         owners: [toChecksumAddress(defaultAccount), toChecksumAddress(userWalletAddress)],
@@ -61,7 +61,7 @@ async function create(
         await Safe.create({
             ethAdapter,
             safeAddress,
-            contractNetworks: wallet.chainId === ChainId.Hardhat ? contractNetworks : undefined,
+            contractNetworks,
         });
     } catch (error) {
         safeFactory
@@ -84,14 +84,8 @@ async function getWalletMigration(sub: string, chainId: ChainId) {
 }
 
 async function migrate(safeWallet: WalletDocument) {
-    const thxWallet = await Wallet.findOne({
-        sub: safeWallet.sub,
-        chainId: safeWallet.chainId,
-        version: '4.0.12',
-        address: { $exists: true, $ne: '' },
-        safeVersion: { $exists: false },
-    });
-    if (!thxWallet || !safeWallet) return;
+    const wallets = await Wallet.find({ sub: safeWallet.sub });
+    const walletIds = wallets.map((wallet) => wallet._id);
     for (const model of [
         Claim,
         DailyRewardClaim,
@@ -109,7 +103,7 @@ async function migrate(safeWallet: WalletDocument) {
         ReferralRewardClaim,
         Withdrawal,
     ]) {
-        await model.updateMany({ walletId: String(thxWallet._id) }, { walletId: String(safeWallet._id) });
+        await model.updateMany({ walletId: { $in: walletIds } }, { walletId: String(safeWallet._id) });
     }
 }
 
@@ -143,7 +137,7 @@ async function getOwners(wallet: WalletDocument) {
     const safeSdk = await Safe.create({
         ethAdapter,
         safeAddress: wallet.address,
-        contractNetworks: wallet.chainId === ChainId.Hardhat ? contractNetworks : undefined,
+        contractNetworks,
     });
 
     return await safeSdk.getOwners();
@@ -154,7 +148,7 @@ async function createSwapOwnerTransaction(wallet: WalletDocument, oldOwnerAddres
     const safeSdk = await Safe.create({
         ethAdapter,
         safeAddress: wallet.address,
-        contractNetworks: wallet.chainId === ChainId.Hardhat ? contractNetworks : undefined,
+        contractNetworks,
     });
 
     return await safeSdk.createSwapOwnerTx({ oldOwnerAddress, newOwnerAddress });
@@ -165,7 +159,7 @@ async function proposeTransaction(wallet: WalletDocument, safeTransactionData: S
     const safeSdk = await Safe.create({
         ethAdapter,
         safeAddress: wallet.address,
-        contractNetworks: wallet.chainId === ChainId.Hardhat ? contractNetworks : undefined,
+        contractNetworks,
     });
     const safeTransaction = await safeSdk.createTransaction({ safeTransactionData });
     const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
@@ -195,7 +189,7 @@ async function confirmTransaction(wallet: WalletDocument, safeTxHash: string) {
     const safe = await Safe.create({
         ethAdapter,
         safeAddress: wallet.address,
-        contractNetworks: wallet.chainId === ChainId.Hardhat ? contractNetworks : undefined,
+        contractNetworks,
     });
     const signature = await safe.signTransactionHash(safeTxHash);
     return await confirm(wallet, safeTxHash, signature.data);
@@ -212,7 +206,7 @@ async function executeTransaction(wallet: WalletDocument, safeTxHash: string) {
     const safeSdk = await Safe.create({
         ethAdapter,
         safeAddress: wallet.address,
-        contractNetworks: wallet.chainId === ChainId.Hardhat ? contractNetworks : undefined,
+        contractNetworks,
     });
     const safeTransaction = await safeService.getTransaction(safeTxHash);
     const executeTxResponse = await safeSdk.executeTransaction(safeTransaction as any, {

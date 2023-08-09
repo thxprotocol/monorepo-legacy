@@ -7,7 +7,7 @@ import { DailyReward } from '@thxnetwork/api/services/DailyRewardService';
 import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { DailyRewardClaim } from '@thxnetwork/api/models/DailyRewardClaims';
 import { DailyRewardClaimState } from '@thxnetwork/types/enums/DailyRewardClaimState';
-import { Wallet } from '@thxnetwork/api/models/Wallet';
+import SafeService from '@thxnetwork/api/services/SafeService';
 
 const validation = [param('id').isMongoId()];
 
@@ -19,7 +19,7 @@ const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(reward.poolId);
     if (!pool) throw new NotFoundError('Could not find the campaign for this reward');
 
-    const wallet = await Wallet.findOne({ sub: req.auth.sub, chainId: pool.chainId });
+    const wallet = await SafeService.findPrimary(req.auth.sub, pool.chainId);
     const isClaimable = await DailyRewardClaimService.isClaimable(reward, wallet);
     if (!isClaimable) throw new ForbiddenError('This reward is not claimable yet');
 
