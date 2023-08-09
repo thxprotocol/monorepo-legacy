@@ -1,7 +1,7 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { type TPool } from '@thxnetwork/types/index';
+import { RewardVariant, type TPool } from '@thxnetwork/types/index';
 import { type TERC721Perk } from '@thxnetwork/types/index';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 import { track } from '@thxnetwork/mixpanel';
@@ -10,7 +10,7 @@ export type RewardByPage = {
     [page: number]: TERC721Perk[];
 };
 
-export type TRewardState = {
+export type TERC721RewardState = {
     [poolId: string]: {
         [id: string]: TERC721Perk;
     };
@@ -28,7 +28,7 @@ type TERC721PerkInputData = TERC721Perk & {
 
 @Module({ namespaced: true })
 class ERC721PerkModule extends VuexModule {
-    _all: TRewardState = {};
+    _all: TERC721RewardState = {};
     _totals: { [poolId: string]: number } = {};
 
     get all() {
@@ -42,6 +42,7 @@ class ERC721PerkModule extends VuexModule {
     @Mutation
     set({ pool, reward }: { reward: TERC721Perk & { _id: string }; pool: TPool }) {
         if (!this._all[pool._id]) Vue.set(this._all, pool._id, {});
+        reward.variant = RewardVariant.NFT;
         Vue.set(this._all[pool._id], reward._id, reward);
     }
 

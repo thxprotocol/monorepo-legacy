@@ -1,7 +1,7 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { type TPool } from '@thxnetwork/types/index';
+import { RewardVariant, type TPool } from '@thxnetwork/types/index';
 import { type TERC20Perk } from '@thxnetwork/types/index';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
@@ -43,6 +43,7 @@ class ERC20PerkModule extends VuexModule {
     @Mutation
     set({ pool, reward }: { reward: TERC20Perk & { _id: string }; pool: TPool }) {
         if (!this._all[pool._id]) Vue.set(this._all, pool._id, {});
+        reward.variant = RewardVariant.Coin;
         Vue.set(this._all[pool._id], reward._id, reward);
     }
 

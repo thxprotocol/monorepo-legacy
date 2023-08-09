@@ -75,7 +75,6 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { type TPool } from '@thxnetwork/types/interfaces';
 import { mapGetters } from 'vuex';
-import BaseModalReferralRewardCreate from '@thxnetwork/dashboard/components/modals/BaseModalReferralRewardCreate.vue';
 import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
 import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/badges/BaseBadgeRewardConditionPreview.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
@@ -92,7 +91,6 @@ import { format } from 'date-fns';
     components: {
         BaseModal,
         BaseNothingHere,
-        BaseModalReferralRewardCreate,
         BaseBadgeRewardConditionPreview,
         BaseCardTableHeader,
     },

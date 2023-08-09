@@ -54,10 +54,9 @@
                 <template #head(checkbox)>
                     <b-form-checkbox @change="onChecked" />
                 </template>
-                <template #cell(variant)="{ item }">
-                    <b-badge variant="light" class="p-2">{{ QuestVariant[item.variant] }} </b-badge>
-                </template>
+                <template #head(variant)> Variant </template>
                 <template #head(title)> Title </template>
+                <template #head(points)> Points </template>
                 <template #head(claims)> Completed </template>
                 <template #head(id)> &nbsp; </template>
 
@@ -74,6 +73,9 @@
                 </template>
                 <template #cell(checkbox)="{ item }">
                     <b-form-checkbox :value="{ id: item.id, variant: item.variant }" v-model="selectedItems" />
+                </template>
+                <template #cell(variant)="{ item }">
+                    <b-badge variant="light" class="p-2">{{ QuestVariant[item.variant] }} </b-badge>
                 </template>
                 <template #cell(points)="{ item }">
                     <strong class="text-primary">{{ item.points }} </strong>
@@ -127,11 +129,11 @@ import {
     TPointReward,
     TReferralReward,
 } from '@thxnetwork/types/index';
-import BaseModalRewardDailyCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardDailyCreate.vue';
-import BaseModalRewardPointsCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardPointsCreate.vue';
-import BaseModalRewardReferralCreate from '@thxnetwork/dashboard/components/modals/BaseModalReferralRewardCreate.vue';
-import BaseModalRewardMilestoneCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardMilestonesCreate.vue';
-import BaseModalReferralRewardClaims from '@thxnetwork/dashboard/components/modals/BaseModalReferralRewardClaims.vue';
+import BaseModalQuestDailyCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestDailyCreate.vue';
+import BaseModalQuestSocialCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestSocialCreate.vue';
+import BaseModalQuestInviteCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestInviteCreate.vue';
+import BaseModalQuestCustomCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestCustomCreate.vue';
+import BaseModalQuestInviteClaims from '@thxnetwork/dashboard/components/modals/BaseModalQuestInviteClaims.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import { TDailyRewardState } from '@thxnetwork/dashboard/store/modules/dailyRewards';
 import { TPointRewardState } from '@thxnetwork/dashboard/store/modules/pointRewards';
@@ -141,36 +143,36 @@ import { TMilestoneRewardState } from '@thxnetwork/dashboard/store/modules/miles
 @Component({
     components: {
         BaseCardTableHeader,
-        BaseModalRewardDailyCreate,
-        BaseModalRewardPointsCreate,
-        BaseModalRewardReferralCreate,
-        BaseModalRewardMilestoneCreate,
-        BaseModalReferralRewardClaims,
+        BaseModalQuestDailyCreate,
+        BaseModalQuestSocialCreate,
+        BaseModalQuestCustomCreate,
+        BaseModalQuestInviteCreate,
+        BaseModalQuestInviteClaims,
     },
     computed: mapGetters({
         pools: 'pools/all',
         totals: 'dailyRewards/totals',
-        dailyRewards: 'dailyRewards/all',
-        pointRewards: 'pointRewards/all',
-        milestoneRewards: 'milestoneRewards/all',
-        referralRewards: 'referralRewards/all',
+        dailyQuests: 'dailyRewards/all',
+        socialQuests: 'pointRewards/all',
+        customQuests: 'milestoneRewards/all',
+        inviteQuests: 'referralRewards/all',
     }),
 })
-export default class AssetPoolView extends Vue {
+export default class QuestsView extends Vue {
     isLoading = true;
     limit = 50;
     page = 1;
     selectedItems: { variant: QuestVariant; id: string }[] = [];
     QuestVariant = QuestVariant;
     questModalComponentMap = {
-        [QuestVariant.Daily]: 'BaseModalRewardDailyCreate',
-        [QuestVariant.Referral]: 'BaseModalRewardReferralCreate',
-        [QuestVariant.Social]: 'BaseModalRewardPointsCreate',
-        [QuestVariant.Custom]: 'BaseModalRewardMilestoneCreate',
+        [QuestVariant.Daily]: 'BaseModalQuestDailyCreate',
+        [QuestVariant.Invite]: 'BaseModalQuestInviteCreate',
+        [QuestVariant.Social]: 'BaseModalQuestSocialCreate',
+        [QuestVariant.Custom]: 'BaseModalQuestCustomCreate',
     };
     questIconClassMap = {
         [QuestVariant.Daily]: 'fas fa-calendar',
-        [QuestVariant.Referral]: 'fas fa-comments',
+        [QuestVariant.Invite]: 'fas fa-comments',
         [QuestVariant.Social]: 'fas fa-trophy',
         [QuestVariant.Custom]: 'fas fa-flag',
     };
@@ -178,10 +180,10 @@ export default class AssetPoolView extends Vue {
     pools!: IPools;
     totals!: { [poolId: string]: number };
 
-    dailyRewards!: TDailyRewardState;
-    referralRewards!: TReferralRewardState;
-    pointRewards!: TPointRewardState;
-    milestoneRewards!: TMilestoneRewardState;
+    dailyQuests!: TDailyRewardState;
+    inviteQuests!: TReferralRewardState;
+    socialQuests!: TPointRewardState;
+    customQuests!: TMilestoneRewardState;
 
     get pool() {
         return this.pools[this.$route.params.id];
@@ -189,17 +191,15 @@ export default class AssetPoolView extends Vue {
 
     get allQuests() {
         return [
-            ...(this.dailyRewards[this.$route.params.id]
-                ? Object.values(this.dailyRewards[this.$route.params.id])
+            ...(this.dailyQuests[this.$route.params.id] ? Object.values(this.dailyQuests[this.$route.params.id]) : []),
+            ...(this.inviteQuests[this.$route.params.id]
+                ? Object.values(this.inviteQuests[this.$route.params.id])
                 : []),
-            ...(this.referralRewards[this.$route.params.id]
-                ? Object.values(this.referralRewards[this.$route.params.id])
+            ...(this.socialQuests[this.$route.params.id]
+                ? Object.values(this.socialQuests[this.$route.params.id])
                 : []),
-            ...(this.pointRewards[this.$route.params.id]
-                ? Object.values(this.pointRewards[this.$route.params.id])
-                : []),
-            ...(this.milestoneRewards[this.$route.params.id]
-                ? Object.values(this.milestoneRewards[this.$route.params.id])
+            ...(this.customQuests[this.$route.params.id]
+                ? Object.values(this.customQuests[this.$route.params.id])
                 : []),
         ];
     }
@@ -210,7 +210,7 @@ export default class AssetPoolView extends Vue {
                 return Number(a.index) - Number(b.index);
             })
             .filter(
-                (reward: TDailyReward | TPointReward | TReferralReward | TMilestoneReward) => reward.page === this.page,
+                (quest: TDailyReward | TPointReward | TReferralReward | TMilestoneReward) => quest.page === this.page,
             )
             .map((r: any) => ({
                 index: r,

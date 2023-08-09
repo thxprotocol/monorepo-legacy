@@ -48,7 +48,8 @@ import {
     getInteraction,
     getInteractionComponent,
 } from '@thxnetwork/dashboard/types/rewards';
-import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
+import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/enums';
+import { TAccount } from '@thxnetwork/types/interfaces';
 import BaseDropdownChannelTypes from '../dropdowns/BaseDropdownChannelTypes.vue';
 import BaseDropdownChannelActions from '../dropdowns/BaseDropdownChannelActions.vue';
 import BaseDropdownYoutubeChannels from '../dropdowns/BaseDropdownYoutubeChannels.vue';
@@ -56,7 +57,7 @@ import BaseDropdownYoutubeVideo from '../dropdowns/BaseDropdownYoutubeVideo.vue'
 import BaseDropdownTwitterTweets from '../dropdowns/BaseDropdownTwitterTweets.vue';
 import BaseDropdownTwitterUsers from '../dropdowns/BaseDropdownTwitterUsers.vue';
 import BaseDropdownDiscordGuilds from '../dropdowns/BaseDropdownDiscordGuilds.vue';
-import { IAccount } from '@thxnetwork/dashboard/types/account';
+import BaseDropdownTwitterMessage from '../dropdowns/BaseDropdownTwitterMessage.vue';
 
 @Component({
     components: {
@@ -67,6 +68,7 @@ import { IAccount } from '@thxnetwork/dashboard/types/account';
         BaseDropdownYoutubeVideo,
         BaseDropdownTwitterTweets,
         BaseDropdownTwitterUsers,
+        BaseDropdownTwitterMessage,
     },
     computed: mapGetters({
         profile: 'account/profile',
@@ -88,7 +90,7 @@ export default class BaseCardRewardCondition extends Vue {
     content = '';
     contentMetadata: any;
     isVisible = false;
-    profile!: IAccount;
+    profile!: TAccount;
 
     @Prop({ required: false }) rewardCondition!: {
         platform: RewardConditionPlatform;

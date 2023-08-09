@@ -50,6 +50,17 @@ export default class TwitterDataProxy {
         return data;
     }
 
+    static async validateMessage(account: TAccount, message: string) {
+        const now = Date.now();
+        const start = new Date(now - 24 * 60 * 60 * 1000);
+        const end = new Date(now);
+        const [latestTweet] = await this.getLatestTweets(account.sub, start, end);
+        if (!latestTweet) return false;
+        if (latestTweet.text.includes(message)) return true;
+
+        return false;
+    }
+
     static async validateLike(account: TAccount, channelItem: string) {
         const r = await authClient({
             method: 'GET',

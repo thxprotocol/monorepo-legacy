@@ -37,7 +37,7 @@ class ReferralRewardModule extends VuexModule {
     @Mutation
     set(reward: TReferralReward) {
         if (!this._all[reward.poolId]) Vue.set(this._all, reward.poolId, {});
-        reward.variant = QuestVariant.Referral;
+        reward.variant = QuestVariant.Invite;
         Vue.set(this._all[reward.poolId], String(reward._id), reward);
     }
 

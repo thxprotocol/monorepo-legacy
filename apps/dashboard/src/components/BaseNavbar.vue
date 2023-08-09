@@ -108,9 +108,9 @@
                             </div>
                         </b-nav-item>
                         <b-nav-item
-                            link-classes="nav-link-wrapper has-children"
+                            :to="`/pool/${selectedPool._id}/rewards`"
+                            link-classes="nav-link-wrapper"
                             class="nav-link-plain"
-                            @click="isVisible = !isVisible"
                         >
                             <div class="d-flex">
                                 <div class="nav-link-icon">
@@ -119,37 +119,8 @@
                                 <div class="flex-grow-1 justify-content-between d-flex align-items-center">
                                     <span>Rewards</span>
                                 </div>
-                                <div class="flex-grow-1 text-right p-2">
-                                    <i :class="`fas fa-caret-${isVisible ? 'up' : 'down'} ml-0`"></i>
-                                </div>
                             </div>
                         </b-nav-item>
-                        <b-collapse id="collapse-rewards" v-model="isVisible">
-                            <b-nav-item
-                                :to="`/pool/${selectedPool._id}/erc20-perks`"
-                                link-classes="nav-link-wrapper flex-row pl-3"
-                                class="nav-link-plain"
-                            >
-                                <div class="nav-link-icon">
-                                    <i class="fa fa-coins"></i>
-                                </div>
-                                <div class="flex-grow-1 justify-content-between d-flex align-items-center">
-                                    <span> Coin</span>
-                                </div>
-                            </b-nav-item>
-                            <b-nav-item
-                                :to="`/pool/${selectedPool._id}/erc721-perks`"
-                                link-classes="nav-link-wrapper flex-row pl-3"
-                                class="nav-link-plain"
-                            >
-                                <div class="nav-link-icon">
-                                    <i class="fa fa-palette"></i>
-                                </div>
-                                <div class="flex-grow-1 justify-content-between d-flex align-items-center">
-                                    <span> NFT</span>
-                                </div>
-                            </b-nav-item>
-                        </b-collapse>
                         <b-nav-item
                             :to="`/pool/${selectedPool._id}/developer`"
                             link-classes="nav-link-wrapper"

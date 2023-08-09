@@ -34,6 +34,11 @@ export const validateCondition = async (account: TAccount, reward: TPointReward)
                 if (!result) return 'Twitter: Account is not followed.';
                 break;
             }
+            case RewardConditionInteraction.TwitterMessage: {
+                const result = await TwitterDataProxy.validateMessage(account, reward.content);
+                if (!result) return 'Twitter: Message is not found.';
+                break;
+            }
             case RewardConditionInteraction.DiscordGuildJoined: {
                 const result = await DiscordDataProxy.validateGuildJoined(account, reward.content);
                 if (!result) return 'Discord: Server is not joined.';

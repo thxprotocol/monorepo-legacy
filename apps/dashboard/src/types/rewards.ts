@@ -11,6 +11,8 @@ export function getInteractionComponent(interactionType: RewardConditionInteract
             return 'BaseDropdownTwitterTweets';
         case RewardConditionInteraction.TwitterFollow:
             return 'BaseDropdownTwitterUsers';
+        case RewardConditionInteraction.TwitterMessage:
+            return 'BaseDropdownTwitterMessage';
         case RewardConditionInteraction.DiscordGuildJoined:
             return 'BaseDropdownDiscordGuilds';
         default:
@@ -47,6 +49,7 @@ export const platformList: IChannel[] = [
             RewardConditionInteraction.TwitterLike,
             RewardConditionInteraction.TwitterRetweet,
             RewardConditionInteraction.TwitterFollow,
+            RewardConditionInteraction.TwitterMessage,
         ],
     },
     {
@@ -80,6 +83,11 @@ export const platformInteractionList = [
     {
         type: RewardConditionInteraction.TwitterRetweet,
         name: 'Retweet',
+        items: [],
+    },
+    {
+        type: RewardConditionInteraction.TwitterMessage,
+        name: 'Message',
         items: [],
     },
     {
