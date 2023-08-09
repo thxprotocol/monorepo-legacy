@@ -84,14 +84,8 @@ async function getWalletMigration(sub: string, chainId: ChainId) {
 }
 
 async function migrate(safeWallet: WalletDocument) {
-    const thxWallet = await Wallet.findOne({
-        sub: safeWallet.sub,
-        chainId: safeWallet.chainId,
-        version: '4.0.12',
-        address: { $exists: true, $ne: '' },
-        safeVersion: { $exists: false },
-    });
-    if (!thxWallet || !safeWallet) return;
+    const wallets = await Wallet.find({ sub: safeWallet.sub });
+    const walletIds = wallets.map((wallet) => wallet._id);
     for (const model of [
         Claim,
         DailyRewardClaim,
@@ -109,7 +103,7 @@ async function migrate(safeWallet: WalletDocument) {
         ReferralRewardClaim,
         Withdrawal,
     ]) {
-        await model.updateMany({ walletId: String(thxWallet._id) }, { walletId: String(safeWallet._id) });
+        await model.updateMany({ walletId: { $in: walletIds } }, { walletId: String(safeWallet._id) });
     }
 }
 
