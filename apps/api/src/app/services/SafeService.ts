@@ -13,6 +13,7 @@ import {
 import { logger } from '@thxnetwork/api/util/logger';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 import AccountProxy from '../proxies/AccountProxy';
+
 import { PointBalance } from '@thxnetwork/api/models/PointBalance';
 import { Claim } from '@thxnetwork/api/models/Claim';
 import { DailyRewardClaim } from '@thxnetwork/api/models/DailyRewardClaims';
@@ -83,7 +84,11 @@ async function getWalletMigration(sub: string, chainId: ChainId) {
 }
 
 async function migrate(safeWallet: WalletDocument) {
+    if (!safeWallet) return;
+
     const wallets = await Wallet.find({ sub: safeWallet.sub });
+    if (wallets.length < 2) return;
+
     const walletIds = wallets.map((wallet) => wallet._id);
     for (const model of [
         Claim,
@@ -100,7 +105,7 @@ async function migrate(safeWallet: WalletDocument) {
         PointRewardClaim,
         PoolSubscription,
         ReferralRewardClaim,
-        Withdrawal,
+        // Withdrawal,
     ]) {
         await model.updateMany({ walletId: { $in: walletIds } }, { walletId: String(safeWallet._id) });
     }
