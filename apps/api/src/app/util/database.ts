@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 (mongoose as any).Promise = bluebird;
 
-const connect = async (url: string) => {
+const connect = (url: string) => {
     mongoose.connection.on('error', (err) => {
         logger.error(`MongoDB connection error. Please make sure MongoDB is running. ${err}`);
     });
@@ -20,7 +20,7 @@ const connect = async (url: string) => {
     });
 
     if (mongoose.connection.readyState === 0) {
-        await mongoose.connect(url);
+        mongoose.connect(url);
     }
 };
 
