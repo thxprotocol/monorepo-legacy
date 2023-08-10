@@ -31,9 +31,10 @@ export default {
             // Deploy Safe if none exists
             if (!safeWallet) {
                 safeWallet = await SafeService.create({ sub: account.sub, chainId, safeVersion }, address);
-                await SafeService.migrate(safeWallet);
             }
         }
+
+        await SafeService.migrate(safeWallet);
 
         // Store address and other account updates
         account = await AccountProxy.update(req.auth.sub, { ...req.body, address });
