@@ -28,7 +28,7 @@ const controller = async (req: Request, res: Response) => {
 
     // Find wallet for the authenticated user
     const wallet = await WalletService.findPrimary(req.auth.sub, pool.chainId);
-    if (!wallet) throw new NotFoundError('No wallet found for this claim URL');
+    if (!wallet) throw new NotFoundError('No wallet found for this user');
 
     // Mint an NFT token if the erc721 and metadata for the claim exists.
     const metadata = await ERC721Service.findMetadataById(perk.metadataId);

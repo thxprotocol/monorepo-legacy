@@ -455,6 +455,10 @@ const controller = async (req: Request, res: Response) => {
                 Object.assign(iframe.style, this.defaultStyles['md']);
             }
         }
+
+        debug() {
+            this.iframe.contentWindow.postMessage({ message: 'thx.iframe.debug' },  this.settings.widgetUrl);
+        }
     }
     
     window.THXWidget = new THXWidget({

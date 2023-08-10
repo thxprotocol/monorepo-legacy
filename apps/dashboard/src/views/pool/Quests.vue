@@ -82,11 +82,11 @@
                 </template>
                 <template #cell(title)="{ item }"> {{ item.title }} </template>
                 <template #cell(claims)="{ item }">
-                    <template v-if="item.variant === QuestVariant.Referral">
+                    <template v-if="item.variant === QuestVariant.Invite">
                         <b-link v-b-modal="`modalReferralQuestClaims${item.id}`" v-if="item.claims">
                             {{ item.claims.length }}
                         </b-link>
-                        <BaseModalReferralRewardClaims
+                        <BaseModalQuestInviteClaims
                             :id="`modalReferralQuestClaims${item.id}`"
                             :pool="pool"
                             :reward="allQuests.find((q) => q._id === item.id)"
@@ -303,19 +303,19 @@ export default class QuestsView extends Vue {
 
     onDelete(items: string[]) {
         for (const id of Object.values(items)) {
-            this.$store.dispatch('dailyRewards/delete', this.dailyRewards[this.pool._id][id]);
+            this.$store.dispatch('dailyRewards/delete', this.dailyQuests[this.pool._id][id]);
         }
     }
     onClickDelete(item: { variant: QuestVariant; id: string }) {
         switch (item.variant) {
             case QuestVariant.Daily:
-                return this.$store.dispatch('dailyRewards/delete', this.dailyRewards[this.pool._id][item.id]);
-            case QuestVariant.Referral:
-                return this.$store.dispatch('referralRewards/delete', this.referralRewards[this.pool._id][item.id]);
+                return this.$store.dispatch('dailyRewards/delete', this.dailyQuests[this.pool._id][item.id]);
+            case QuestVariant.Invite:
+                return this.$store.dispatch('referralRewards/delete', this.inviteQuests[this.pool._id][item.id]);
             case QuestVariant.Social:
-                return this.$store.dispatch('pointRewards/delete', this.pointRewards[this.pool._id][item.id]);
+                return this.$store.dispatch('pointRewards/delete', this.socialQuests[this.pool._id][item.id]);
             case QuestVariant.Custom:
-                return this.$store.dispatch('milestoneRewards/delete', this.milestoneRewards[this.pool._id][item.id]);
+                return this.$store.dispatch('milestoneRewards/delete', this.customQuests[this.pool._id][item.id]);
         }
     }
 

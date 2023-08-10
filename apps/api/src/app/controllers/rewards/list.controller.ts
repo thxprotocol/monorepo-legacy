@@ -21,12 +21,13 @@ const controller = async (req: Request, res: Response) => {
     const dailyRewards = await DailyReward.find({ poolId: pool._id });
     const authHeader = req.header('authorization');
 
-    let wallet: WalletDocument;
+    let wallet: WalletDocument, sub: string;
     // This endpoint is public so we do not get req.auth populated and decode the token ourselves
     // when the request is made with an authorization header to obtain the sub.
     if (authHeader && authHeader.startsWith('Bearer ')) {
         const token: { sub: string } = jwt_decode(authHeader.split(' ')[1]);
-        wallet = await WalletService.findPrimary(token.sub, pool.chainId);
+        sub = token.sub;
+        wallet = await WalletService.findPrimary(sub, pool.chainId);
     }
 
     const leaderboard = await getLeaderboard(pool, { startDate: new Date(pool.createdAt), endDate: new Date() });
@@ -94,7 +95,10 @@ const controller = async (req: Request, res: Response) => {
         pointRewards: await Promise.all(
             pointRewards.map(async (r) => {
                 const isClaimed = wallet
-                    ? await PointRewardClaim.exists({ walletId: wallet._id, pointRewardId: String(r._id) })
+                    ? await PointRewardClaim.exists({
+                          $or: [{ walletId: wallet._id }, { sub }],
+                          pointRewardId: String(r._id),
+                      }) // TODO SHould move to service since its also used in the claim controller
                     : false;
                 return {
                     _id: r._id,

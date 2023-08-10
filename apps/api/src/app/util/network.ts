@@ -41,22 +41,12 @@ if (HARDHAT_RPC) {
     networks[ChainId.Hardhat] = (() => {
         const web3 = new Web3(HARDHAT_RPC);
         const hardhatProvider = new (ethers as any).providers.JsonRpcProvider(HARDHAT_RPC);
-        web3.extend({
-            property: 'hardhat',
-            methods: [
-                {
-                    name: 'setAutomine',
-                    call: 'evm_setAutomine',
-                    params: 1,
-                },
-                {
-                    name: 'setIntervalMining',
-                    call: 'evm_setIntervalMining',
-                    params: 1,
-                },
-            ],
-        });
         const signer = new Wallet(PRIVATE_KEY, hardhatProvider) as unknown as Signer;
+        const methods = [
+            { name: 'setAutomine', call: 'evm_setAutomine', params: 1 },
+            { name: 'setIntervalMining', call: 'evm_setIntervalMining', params: 1 },
+        ];
+        web3.extend({ property: 'hardhat', methods });
         return {
             web3,
             txServiceUrl: SAFE_TXS_SERVICE,
