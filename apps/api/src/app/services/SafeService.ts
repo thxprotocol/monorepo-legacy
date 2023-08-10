@@ -66,7 +66,7 @@ async function create(
     } catch (error) {
         safeFactory
             .deploySafe({ safeAccountConfig, options: { gasLimit: '3000000' } })
-            .then(() => logger.debug(`[${sub}] Deployed Safe:`, safeAddress))
+            .then(() => logger.debug(`[${sub}] Deployed Safe: ${safeAddress}`))
             .catch(console.error);
     }
 
