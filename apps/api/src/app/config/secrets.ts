@@ -101,4 +101,4 @@ export const TWITTER_API_TOKEN = process.env.TWITTER_API_TOKEN;
 export const IPFS_BASE_URL = 'https://ipfs.io/ipfs/';
 export const WEBHOOK_REFERRAL = process.env.WEBHOOK_REFERRAL;
 export const WEBHOOK_MILESTONE = process.env.WEBHOOK_MILESTONE;
-export const SAFE_TXS_SERVICE = process.env.SAFE_TXS_SERVICE;
+export const SAFE_TXS_SERVICE = process.env.SAFE_TXS_SERVICE || 'https://safe-transaction-polygon.safe.global';

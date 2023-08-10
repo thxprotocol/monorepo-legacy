@@ -280,7 +280,6 @@ async function executeCallback(tx: TransactionDocument, receipt: TransactionRece
             await PoolService.deployCallback(tx.callback.args, receipt);
             break;
         case 'erc721TokenMintCallback':
-            console.log(tx.callback.args, receipt);
             await ERC721Service.mintCallback(tx.callback.args, receipt);
             break;
         case 'erc1155TokenMintCallback':

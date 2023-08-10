@@ -26,7 +26,7 @@ const controller = async (req: Request, res: Response) => {
         address: account.address,
     });
 
-    logger.debug(`[${req.auth.sub}] Metamask Wallet:`, wallet.address);
+    logger.debug(`[${req.auth.sub}] Metamask Wallet: ${wallet.address}`);
 
     res.json(account);
 };

@@ -64,10 +64,9 @@ async function create(
             contractNetworks,
         });
     } catch (error) {
-        safeFactory
-            .deploySafe({ safeAccountConfig, options: { gasLimit: '3000000' } })
-            .then(() => logger.debug(`[${sub}] Deployed Safe: ${safeAddress}`))
-            .catch(console.error);
+        await safeFactory.deploySafe({ safeAccountConfig, options: { gasLimit: '3000000' } });
+        logger.debug(`[${sub}] Deployed Safe: ${safeAddress}`);
+        console.error(error);
     }
 
     return await Wallet.findByIdAndUpdate(wallet._id, { address: safeAddress }, { new: true });
