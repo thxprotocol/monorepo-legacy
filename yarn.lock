@@ -19077,7 +19077,7 @@ mongoose-to-swagger@^1.4.0:
   resolved "https://registry.npmjs.org/mongoose-to-swagger/-/mongoose-to-swagger-1.4.0.tgz"
   integrity sha512-7O5f2bSVT7euXgMMhlxe4gz6sJW8E3GWHties2FR3B+W41yhW5dpG4RuC7rGL3tKi9nyDN/nkorkbs5v0AHLyg==
 
-mongoose@*, mongoose@6.6.5:
+mongoose@*, mongoose@^6.4.6:
   version "6.6.5"
   resolved "https://registry.npmjs.org/mongoose/-/mongoose-6.6.5.tgz"
   integrity sha512-iA/oDpWOc+K2QYzA4Eq7Z1oUBQOz9FGDmUwPLgw872Bfs/qizA5Db+gJorAn+TnnGu3VoCK8iP4Y+TECUelwjA==
