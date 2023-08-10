@@ -3,6 +3,7 @@ import { ChainId } from '@thxnetwork/types/enums';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { contractNetworks } from '@thxnetwork/api/config/contracts';
 import { toChecksumAddress } from 'web3-utils';
+import { MONGODB_URI } from '@thxnetwork/api/config/secrets';
 import Safe, { SafeAccountConfig, SafeFactory } from '@safe-global/protocol-kit';
 import SafeApiKit from '@safe-global/api-kit';
 import {
@@ -13,22 +14,7 @@ import {
 import { logger } from '@thxnetwork/api/util/logger';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 import AccountProxy from '../proxies/AccountProxy';
-
-import { PointBalance } from '@thxnetwork/api/models/PointBalance';
-import { Claim } from '@thxnetwork/api/models/Claim';
-import { DailyRewardClaim } from '@thxnetwork/api/models/DailyRewardClaims';
-import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
-import { ERC20Token } from '@thxnetwork/api/models/ERC20Token';
-import ERC20Transfer from '@thxnetwork/api/models/ERC20Transfer';
-import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
-import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
-import ERC721Transfer from '@thxnetwork/api/models/ERC721Transfer';
-import { ERC1155Token } from '@thxnetwork/api/models/ERC1155Token';
-import { MilestoneRewardClaim } from '@thxnetwork/api/models/MilestoneRewardClaims';
-import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
-import { PoolSubscription } from '@thxnetwork/api/models/PoolSubscription';
-import { ReferralRewardClaim } from '@thxnetwork/api/models/ReferralRewardClaim';
-import { Withdrawal } from '@thxnetwork/api/models/Withdrawal';
+import { MongoClient } from 'mongodb';
 
 export const Wallet = WalletModel;
 
@@ -86,28 +72,48 @@ async function getWalletMigration(sub: string, chainId: ChainId) {
 async function migrate(safeWallet: WalletDocument) {
     if (!safeWallet) return;
 
-    const wallets = await Wallet.find({ sub: safeWallet.sub });
-    if (wallets.length < 2) return;
+    const client = new MongoClient(MONGODB_URI);
 
-    const walletIds = wallets.map((wallet) => wallet._id);
-    for (const model of [
-        Claim,
-        DailyRewardClaim,
-        ERC20PerkPayment,
-        ERC20Token,
-        ERC20Transfer,
-        ERC721PerkPayment,
-        ERC721Token,
-        ERC721Transfer,
-        ERC1155Token,
-        MilestoneRewardClaim,
-        PointBalance,
-        PointRewardClaim,
-        PoolSubscription,
-        ReferralRewardClaim,
-        // Withdrawal,
-    ]) {
-        await model.updateMany({ walletId: { $in: walletIds } }, { walletId: String(safeWallet._id) });
+    try {
+        await client.connect();
+
+        const db = client.db();
+        const walletsCollection = db.collection('wallets');
+
+        const wallets = await walletsCollection.find({ sub: safeWallet.sub }).toArray();
+        const walletIds = wallets.map((wallet) => String(wallet._id));
+        console.log(walletIds);
+        const models = [
+            'claims',
+            'dailyrewardclaims',
+            'erc20perkpayments',
+            'erc20token',
+            'erc20transfers',
+            'erc721perkpayments',
+            'erc721token',
+            'erc721transfers',
+            'erc1155token',
+            'milestonerewardclaims',
+            'pointbalances',
+            'pointrewardclaims',
+            'poolsubscriptions',
+            'referralrewardclaims',
+            'withdrawals',
+        ];
+
+        for (const modelName of models) {
+            const modelCollection = db.collection(modelName);
+            await modelCollection.updateMany(
+                { walletId: { $in: walletIds } },
+                { $set: { walletId: String(safeWallet._id) } },
+            );
+        }
+
+        console.log('Migration completed.');
+    } catch (error) {
+        console.error('Error:', error);
+    } finally {
+        await client.close();
     }
 }
 
