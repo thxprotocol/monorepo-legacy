@@ -13,7 +13,7 @@ const ERC1155TokenSchema = new mongoose.Schema(
         tokenUri: String,
         recipient: String,
         transactions: [String],
-        walletId: String,
+        walletId: { type: String, index: 'hashed' },
     },
     { timestamps: true },
 );

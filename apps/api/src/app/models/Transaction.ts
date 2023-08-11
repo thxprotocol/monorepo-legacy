@@ -9,7 +9,7 @@ const transactionSchema = new mongoose.Schema(
         from: String,
         to: String,
         nonce: Number,
-        walletId: String,
+        walletId: { type: String, index: 'hashed' },
         transactionId: String,
         transactionHash: String,
         gas: String,

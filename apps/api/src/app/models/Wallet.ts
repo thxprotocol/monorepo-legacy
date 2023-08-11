@@ -10,7 +10,7 @@ const walletSchema = new mongoose.Schema(
         uuid: String,
         poolId: String,
         address: String,
-        sub: String,
+        sub: { type: String, index: 'hashed' },
         chainId: Number,
         version: String,
         safeVersion: String,

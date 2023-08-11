@@ -14,7 +14,7 @@ const ERC721TokenSchema = new mongoose.Schema(
         recipient: String,
         failReason: String,
         transactions: [String],
-        walletId: String,
+        walletId: { type: String, index: 'hashed' },
     },
     { timestamps: true },
 );

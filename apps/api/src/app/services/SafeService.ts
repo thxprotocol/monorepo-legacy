@@ -53,7 +53,6 @@ async function create(
     } catch (error) {
         await safeFactory.deploySafe({ safeAccountConfig, options: { gasLimit: '3000000' } });
         logger.debug(`[${sub}] Deployed Safe: ${safeAddress}`);
-        console.error(error);
     }
 
     return await Wallet.findByIdAndUpdate(wallet._id, { address: safeAddress }, { new: true });
@@ -82,9 +81,9 @@ async function migrate(safeWallet: WalletDocument) {
 
         const wallets = await walletsCollection.find({ sub: safeWallet.sub }).toArray();
         const walletIds = wallets.map((wallet) => String(wallet._id));
-        console.log(walletIds);
+        if (walletIds.length < 2) return;
+
         const models = [
-            'claims',
             'dailyrewardclaims',
             'erc20perkpayments',
             'erc20token',

@@ -7,7 +7,7 @@ const erc20TokenSchema = new mongoose.Schema(
     {
         sub: String,
         erc20Id: String,
-        walletId: String,
+        walletId: { type: String, index: 'hashed' },
     },
     { timestamps: true },
 );

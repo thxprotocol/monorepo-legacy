@@ -14,7 +14,7 @@ const pointBalanceSchema = new mongoose.Schema(
         poolId: String,
         balance: Number,
         sub: String,
-        walletId: String,
+        walletId: { type: String, index: 'hashed' },
     },
     { timestamps: true },
 );
