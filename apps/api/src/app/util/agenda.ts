@@ -4,6 +4,7 @@ import { logger } from './logger';
 import { updatePendingTransactions } from '@thxnetwork/api/jobs/updatePendingTransactions';
 import { createConditionalRewards } from '@thxnetwork/api/jobs/createConditionalRewards';
 import { sendPoolAnalyticsReport } from '@thxnetwork/api/jobs/sendPoolAnalyticsReport';
+import SafeService from '@thxnetwork/api/services/SafeService';
 
 const agenda = new Agenda({
     name: 'jobs',
@@ -12,23 +13,30 @@ const agenda = new Agenda({
     processEvery: '1 second',
 });
 
-const EVENT_UPDATE_PENDING_TRANSACTIONS = 'updatePendingTransactions';
-const EVENT_CREATE_CONDITIONAL_REWARDS = 'createConditionalRewards';
-const EVENT_SEND_POOL_ANALYTICS_REPORT = 'sendPoolAnalyticsReport';
-
-agenda.define(EVENT_UPDATE_PENDING_TRANSACTIONS, updatePendingTransactions);
-agenda.define(EVENT_CREATE_CONDITIONAL_REWARDS, createConditionalRewards);
-agenda.define(EVENT_SEND_POOL_ANALYTICS_REPORT, sendPoolAnalyticsReport);
+enum JobType {
+    UpdatePendingTransactions = 'updatePendingTransactions',
+    CreateConditionalRewards = 'createConditionalRewards',
+    SendCampaignReport = 'sendPoolAnalyticsReport',
+    MigrateWallets = 'migrateWallets',
+    DeploySafe = 'deploySafe',
+}
 
 db.connection.once('open', async () => {
     agenda.mongo(db.connection.getClient().db() as any, 'jobs');
 
+    agenda.define(JobType.UpdatePendingTransactions, updatePendingTransactions);
+    agenda.define(JobType.CreateConditionalRewards, createConditionalRewards);
+    agenda.define(JobType.SendCampaignReport, sendPoolAnalyticsReport);
+    agenda.define(JobType.DeploySafe, SafeService.createJob);
+    agenda.define(JobType.MigrateWallets, SafeService.migrateJob);
+
     await agenda.start();
-    await agenda.every('5 seconds', EVENT_UPDATE_PENDING_TRANSACTIONS);
-    await agenda.every('15 minutes', EVENT_CREATE_CONDITIONAL_REWARDS);
-    await agenda.every('0 9 * * MON', EVENT_SEND_POOL_ANALYTICS_REPORT);
+
+    await agenda.every('10 seconds', JobType.UpdatePendingTransactions);
+    await agenda.every('15 minutes', JobType.CreateConditionalRewards);
+    await agenda.every('0 9 * * MON', JobType.SendCampaignReport);
 
     logger.info('AgendaJS successfully started job processor');
 });
 
-export { agenda, EVENT_UPDATE_PENDING_TRANSACTIONS };
+export { agenda, JobType };

@@ -1,7 +1,14 @@
 module.exports = {
     async up(db) {
+        const findIndex = async (name) => {
+            const indexes = await walletsColl.indexInformation();
+            console.log(indexes, indexes.length);
+            return indexes.length && indexes.find({ name });
+        };
+
         const walletsColl = db.collection('wallets');
-        await walletsColl.dropIndex({ sub: 'hashed' });
+        console.log('wallets');
+        if (await findIndex('sub_hashed')) await walletsColl.dropIndex({ sub: 'hashed' });
         await walletsColl.createIndex({ sub: 'hashed' }, { unique: false, sparse: true });
 
         const collectionNames = [
@@ -26,8 +33,9 @@ module.exports = {
         for (const name of collectionNames) {
             console.log(name);
             const collection = db.collection(name);
-            await collection.dropIndex({ walletId: 'hashed' });
-            await collection.createIndex({ walletId: 'hashed' }, { unique: false, sparse: true });
+            if (await findIndex('walletId_1')) await collection.dropIndex({ walletId: 1 });
+            await collection.createIndex({ walletId: 1 }, { unique: false, sparse: true });
+            console.log(await collection.indexInformation());
         }
     },
 

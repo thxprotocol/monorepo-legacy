@@ -17,7 +17,7 @@ const transactionSchema = new mongoose.Schema(
         maxFeePerGas: String,
         maxPriorityFeePerGas: String,
         type: Number,
-        state: Number,
+        state: { type: Number, index: { sparse: true } },
         call: { fn: String, args: String },
         chainId: Number,
         failReason: String,

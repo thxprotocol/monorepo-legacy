@@ -6,7 +6,7 @@ export type ERC20PerkPaymentDocument = mongoose.Document & TERC20PerkPayment;
 const schema = new mongoose.Schema(
     {
         perkId: String,
-        sub: { type: String, index: 'hashed' },
+        sub: String,
         walletId: { type: String, index: 'hashed' },
         poolId: String,
         amount: Number,

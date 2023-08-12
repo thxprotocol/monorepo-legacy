@@ -14,7 +14,9 @@ import {
 import { logger } from '@thxnetwork/api/util/logger';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 import AccountProxy from '../proxies/AccountProxy';
+import { agenda, JobType } from '@thxnetwork/api/util/agenda';
 import { MongoClient } from 'mongodb';
+import { Job } from 'agenda';
 
 export const Wallet = WalletModel;
 
@@ -51,11 +53,31 @@ async function create(
             contractNetworks,
         });
     } catch (error) {
-        await safeFactory.deploySafe({ safeAccountConfig, options: { gasLimit: '3000000' } });
-        logger.debug(`[${sub}] Deployed Safe: ${safeAddress}`);
+        await agenda.now(JobType.DeploySafe, {
+            safeAccountConfig,
+            safeVersion,
+            safeAddress,
+            safeWalletId: String(wallet._id),
+        });
     }
 
     return await Wallet.findByIdAndUpdate(wallet._id, { address: safeAddress }, { new: true });
+}
+
+async function createJob(job: Job) {
+    const { safeAccountConfig, safeVersion, safeAddress, safeWalletId } = job.attrs.data;
+    if (!safeAccountConfig || !safeVersion || !safeAddress || !safeWalletId) return;
+
+    const wallet = await Wallet.findById(safeWalletId);
+    const { ethAdapter } = getProvider(wallet.chainId);
+    const safeFactory = await SafeFactory.create({
+        safeVersion,
+        ethAdapter,
+        contractNetworks,
+    });
+
+    await safeFactory.deploySafe({ safeAccountConfig, options: { gasLimit: '3000000' } });
+    logger.debug(`[${wallet.sub}] Deployed Safe: ${safeAddress}`);
 }
 
 async function getWalletMigration(sub: string, chainId: ChainId) {
@@ -68,9 +90,11 @@ async function getWalletMigration(sub: string, chainId: ChainId) {
     });
 }
 
-async function migrate(safeWallet: WalletDocument) {
-    if (!safeWallet) return;
+async function migrateJob(job: Job) {
+    const { safeWalletId } = job.attrs.data;
+    if (!safeWalletId) return;
 
+    const safeWallet = await Wallet.findById(safeWalletId);
     const client = new MongoClient(MONGODB_URI);
 
     try {
@@ -78,9 +102,10 @@ async function migrate(safeWallet: WalletDocument) {
 
         const db = client.db();
         const walletsCollection = db.collection('wallets');
-
         const wallets = await walletsCollection.find({ sub: safeWallet.sub }).toArray();
         const walletIds = wallets.map((wallet) => String(wallet._id));
+
+        // No virtual wallet or old wallet exists so migration not required
         if (walletIds.length < 2) return;
 
         const models = [
@@ -114,6 +139,10 @@ async function migrate(safeWallet: WalletDocument) {
     } finally {
         await client.close();
     }
+}
+async function migrate(safeWallet: WalletDocument) {
+    if (!safeWallet) return;
+    await agenda.now(JobType.MigrateWallets, { safeWalletId: String(safeWallet._id) });
 }
 
 function findOneByAddress(address: string) {
@@ -240,6 +269,7 @@ async function getTransaction(wallet: WalletDocument, safeTxHash: string): Promi
 export default {
     getWalletMigration,
     migrate,
+    migrateJob,
     createSwapOwnerTransaction,
     proposeTransaction,
     confirmTransaction,
@@ -248,6 +278,7 @@ export default {
     getOwners,
     findPrimary,
     create,
+    createJob,
     findOneByAddress,
     findByQuery,
     findOneByQuery,
