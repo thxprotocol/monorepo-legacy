@@ -7,6 +7,25 @@ export const DailyRewardClaimDocument = DailyRewardClaim;
 
 export const ONE_DAY_MS = 86400 * 1000; // 24 hours in milliseconds
 
+async function getLastClaim(wallet: WalletDocument, dailyReward: DailyRewardDocument, start: number, end: number) {
+    let lastClaim = await DailyRewardClaim.findOne({
+        dailyRewardId: dailyReward._id,
+        walletId: wallet._id,
+        state: DailyRewardClaimState.Claimed,
+        createdAt: { $gt: new Date(start), $lt: new Date(end) },
+    });
+
+    if (!lastClaim) {
+        lastClaim = await DailyRewardClaim.findOne({
+            dailyRewardId: dailyReward._id,
+            walletId: wallet._id,
+            state: DailyRewardClaimState.Claimed,
+            createdAt: { $gt: new Date(start - ONE_DAY_MS), $lt: new Date(end - ONE_DAY_MS) },
+        });
+    }
+    return lastClaim;
+}
+
 export default {
     create: (data: {
         dailyRewardId: string;
@@ -30,21 +49,7 @@ export default {
             start = now - ONE_DAY_MS,
             end = now;
 
-        let lastClaim = await DailyRewardClaim.findOne({
-            dailyRewardId: dailyReward._id,
-            walletId: wallet._id,
-            state: DailyRewardClaimState.Claimed,
-            createdAt: { $gt: new Date(start), $lt: new Date(end) },
-        });
-
-        if (!lastClaim) {
-            lastClaim = await DailyRewardClaim.findOne({
-                dailyRewardId: dailyReward._id,
-                walletId: wallet._id,
-                state: DailyRewardClaimState.Claimed,
-                createdAt: { $gt: new Date(start - ONE_DAY_MS), $lt: new Date(end - ONE_DAY_MS) },
-            });
-        }
+        let lastClaim = await getLastClaim(wallet, dailyReward, start, end);
         if (!lastClaim) return [];
         claims.push(lastClaim);
 
@@ -66,11 +71,15 @@ export default {
         return claims;
     },
     isClaimable: async (dailyReward: DailyRewardDocument, wallet: WalletDocument) => {
+        const now = Date.now(),
+            start = now - ONE_DAY_MS,
+            end = now;
+
         const claim = await DailyRewardClaim.findOne({
-            walletId: wallet._id,
-            poolId: dailyReward.poolId,
             dailyRewardId: dailyReward._id,
-            createdAt: { $gt: new Date(Date.now() - ONE_DAY_MS) }, // Greater than now - 24h
+            walletId: wallet._id,
+            // state: DailyRewardClaimState.Claimed,
+            createdAt: { $gt: new Date(start), $lt: new Date(end) },
         });
         if (!dailyReward.isEnabledWebhookQualification) return !claim;
 

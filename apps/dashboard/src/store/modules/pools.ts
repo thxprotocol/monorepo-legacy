@@ -52,14 +52,20 @@ export interface IPoolAnalyticLeaderBoard {
     account: TAccount;
 }
 
+export type PoolMetric = {
+    totalCreated: number;
+    totalCompleted: number;
+    totalAmount: number;
+};
+
 export interface IPoolAnalyticMetrics {
     _id: string;
-    dailyRewards: { totalClaimPoints: number };
-    pointRewards: { totalClaimPoints: number };
-    referralRewards: { totalClaimPoints: number };
-    milestoneRewards: { totalClaimPoints: number };
-    erc20Perks: { payments: number };
-    erc721Perks: { payments: number };
+    dailyQuest: PoolMetric;
+    socialQuest: PoolMetric;
+    inviteQuest: PoolMetric;
+    customQuest: PoolMetric;
+    coinReward: PoolMetric;
+    nftReward: PoolMetric;
 }
 export interface IPools {
     [id: string]: TPool;

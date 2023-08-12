@@ -23,14 +23,12 @@ export async function sendPoolAnalyticsReport() {
             if (!account || account.sub != pool.sub) account = await AccountProxy.getById(pool.sub);
             if (!account.email) continue;
 
-            const metrics = await AnalyticsService.getPoolMetrics(pool, dateRange);
+            const { dailyQuest, inviteQuest, socialQuest, customQuest, coinReward, nftReward } =
+                await AnalyticsService.getPoolMetrics(pool, dateRange);
             const leaderBoard = await AnalyticsService.getLeaderboard(pool);
             const totalPointsClaimed =
-                metrics.dailyRewards.totalClaimPoints +
-                metrics.referralRewards.totalClaimPoints +
-                metrics.pointRewards.totalClaimPoints +
-                metrics.milestoneRewards.totalClaimPoints;
-            const totalPointsSpent = metrics.erc20Perks.totalAmount + metrics.erc721Perks.totalAmount;
+                dailyQuest.totalAmount + inviteQuest.totalAmount + socialQuest.totalAmount + customQuest.totalAmount;
+            const totalPointsSpent = coinReward.totalAmount + nftReward.totalAmount;
 
             // Skip if nothing happened.
             if (!totalPointsClaimed && !totalPointsSpent) continue;
@@ -39,46 +37,46 @@ export async function sendPoolAnalyticsReport() {
             html += `<p>We're pleased to bring you the <strong>Weekly Digest</strong> for "${pool.settings.title}".</p>`;
             html += `<hr />`;
 
-            html += `<p><strong>🏆 Rewards: </strong> ${totalPointsClaimed} points claimed</p>`;
+            html += `<p><strong>🏆 Quests: </strong> ${totalPointsClaimed} points claimed</p>`;
             html += `<table width="100%" role="presentation" border="0" cellpadding="0" cellspacing="0">`;
-            if (metrics.dailyRewards.total) {
+            if (dailyQuest.total) {
                 html += `<tr>
-                <td><strong>${metrics.dailyRewards.claims}x</strong> Daily - ${metrics.dailyRewards.totalClaimPoints} pts</td>
+                <td><strong>${dailyQuest.claims}x</strong> Daily - ${dailyQuest.totalClaimPoints} pts</td>
                 <td align="right"><a href="${DASHBOARD_URL}/pool/${pool._id}/daily">Manage</a></td>
                 `;
             }
-            if (metrics.referralRewards.total) {
+            if (inviteQuest.total) {
                 html += `<tr>
-                <td><strong>${metrics.referralRewards.claims}x</strong> Referral - ${metrics.referralRewards.totalClaimPoints} pts)</td>
+                <td><strong>${inviteQuest.claims}x</strong> Invite - ${inviteQuest.totalClaimPoints} pts)</td>
                 <td align="right"><a href="${DASHBOARD_URL}/pool/${pool._id}/referrals">Manage</a></td>
                 </tr>`;
             }
-            if (metrics.pointRewards.total) {
+            if (socialQuest.total) {
                 html += `<tr>
-                <td><strong>${metrics.pointRewards.claims}x</strong> Conditional - ${metrics.pointRewards.totalClaimPoints} pts</td>
+                <td><strong>${socialQuest.claims}x</strong> Social - ${socialQuest.totalClaimPoints} pts</td>
                 <td align="right"><a href="${DASHBOARD_URL}/pool/${pool._id}/conditionals">Manage</a></td>
                 </tr>`;
             }
-            if (metrics.milestoneRewards.total) {
+            if (customQuest.total) {
                 html += `<tr>
-                <td><strong>${metrics.milestoneRewards.claims}x</strong> Milestone - ${metrics.milestoneRewards.totalClaimPoints} pts</td>
+                <td><strong>${customQuest.claims}x</strong> Custom - ${customQuest.totalClaimPoints} pts</td>
                 <td align="right"><a href="${DASHBOARD_URL}/pool/${pool._id}/milestone-rewards">Manage</a></td>
                 </tr>`;
             }
             html += `</table>`;
             html += `<hr />`;
 
-            html += `<p><strong>🎁 Perks: </strong> ${totalPointsSpent} points spent</p>`;
+            html += `<p><strong>🎁 Rewards: </strong> ${totalPointsSpent} points spent</p>`;
             html += `<table width="100%" role="presentation" border="0" cellpadding="0" cellspacing="0">`;
-            if (metrics.erc20Perks.total) {
+            if (coinReward.total) {
                 html += `<tr>
-                <td><strong>${metrics.erc20Perks.payments}x</strong> Coin Perks (${metrics.erc20Perks.totalAmount} points)</td>
+                <td><strong>${coinReward.payments}x</strong> Coin Rewards (${coinReward.totalAmount} points)</td>
                 <td align="right" ><a href="${DASHBOARD_URL}/pool/${pool._id}/erc20-perks">Manage</a></td>
                 </tr>`;
             }
-            if (metrics.erc721Perks.total) {
+            if (nftReward.total) {
                 html += `<tr>
-                <td><strong>${metrics.erc721Perks.total}x</strong> NFT Perks (${metrics.erc721Perks.totalAmount} points)</td>
+                <td><strong>${nftReward.total}x</strong> NFT Rewards (${nftReward.totalAmount} points)</td>
                 <td align="right"><a href="${DASHBOARD_URL}/pool/${pool._id}/erc721-perks">Manage</a></td>
                 </tr>`;
             }
@@ -90,10 +88,9 @@ export async function sendPoolAnalyticsReport() {
 
             for (const index in leaderBoard) {
                 const entry = leaderBoard[index];
-                const address = await entry.account.getAddress(pool.chainId);
                 html += `<tr>
                 <td width="5%">${emojiMap[index]}</td>
-                <td><strong>${entry.account.firstName || '...'}</strong> ${address.substring(0, 8)}...</td>
+                <td><strong>${entry.account.firstName || '...'}</strong> ${entry.wallet.address.substring(0, 8)}...</td>
                 <td align="right" width="25%"><strong>${entry.score} Points</strong></td>
                 </tr>`;
             }

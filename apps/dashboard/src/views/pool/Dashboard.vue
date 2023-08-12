@@ -5,17 +5,19 @@
             <b-col md="8">
                 <b-row class="mt-5">
                     <b-col>
-                        <b-skeleton-wrapper :loading="!poolAnalytics">
-                            <template #loading>
-                                <b-skeleton-img no-aspect height="250px"></b-skeleton-img>
-                            </template>
-                            <line-chart
-                                :chartData="lineChartData"
-                                :chart-options="chartOptions"
-                                :height="250"
-                                style="position: relative; width: 100%"
-                            />
-                        </b-skeleton-wrapper>
+                        <b-card>
+                            <b-skeleton-wrapper :loading="!poolAnalytics">
+                                <template #loading>
+                                    <b-skeleton-img no-aspect height="250px"></b-skeleton-img>
+                                </template>
+                                <line-chart
+                                    :chartData="lineChartData"
+                                    :chart-options="chartOptions"
+                                    :height="250"
+                                    style="position: relative; width: 100%"
+                                />
+                            </b-skeleton-wrapper>
+                        </b-card>
                     </b-col>
                 </b-row>
                 <b-row class="mt-5">
@@ -26,7 +28,7 @@
                             </template>
                             <b-card v-if="metrics" bg-variant="dark" class="shadow-sm text-white">
                                 <span>Daily</span><br />
-                                <div class="h2">{{ metrics.dailyRewards.totalClaimPoints }}</div>
+                                <div class="h2">{{ metrics.dailyQuest.totalCreated }}</div>
                             </b-card>
                         </b-skeleton-wrapper>
                     </b-col>
@@ -36,8 +38,8 @@
                                 <b-skeleton-img no-aspect height="110px"></b-skeleton-img>
                             </template>
                             <b-card v-if="metrics" bg-variant="dark" class="shadow-sm text-white">
-                                <span>Referral</span><br />
-                                <div class="h2">{{ metrics.referralRewards.totalClaimPoints }}</div>
+                                <span>Invite</span><br />
+                                <div class="h2">{{ metrics.inviteQuest.totalCreated }}</div>
                             </b-card>
                         </b-skeleton-wrapper>
                     </b-col>
@@ -48,7 +50,7 @@
                             </template>
                             <b-card v-if="metrics" bg-variant="dark" class="shadow-sm text-white">
                                 <span>Social</span><br />
-                                <div class="h2">{{ metrics.pointRewards.totalClaimPoints }}</div>
+                                <div class="h2">{{ metrics.socialQuest.totalCreated }}</div>
                             </b-card>
                         </b-skeleton-wrapper>
                     </b-col>
@@ -59,7 +61,7 @@
                             </template>
                             <b-card v-if="metrics" bg-variant="dark" class="shadow-sm text-white">
                                 <span>Custom</span><br />
-                                <div class="h2">{{ metrics.milestoneRewards.totalClaimPoints }}</div>
+                                <div class="h2">{{ metrics.customQuest.totalCreated }}</div>
                             </b-card>
                         </b-skeleton-wrapper>
                     </b-col>
@@ -112,17 +114,19 @@
             <b-col md="4">
                 <b-row class="mt-5">
                     <b-col>
-                        <b-skeleton-wrapper :loading="!poolAnalytics">
-                            <template #loading>
-                                <b-skeleton-img no-aspect height="250px"></b-skeleton-img>
-                            </template>
-                            <bar-chart
-                                :chartData="barChartData"
-                                :chart-options="chartOptions"
-                                :height="250"
-                                style="position: relative; width: 100%"
-                            />
-                        </b-skeleton-wrapper>
+                        <b-card>
+                            <b-skeleton-wrapper :loading="!poolAnalytics">
+                                <template #loading>
+                                    <b-skeleton-img no-aspect height="250px"></b-skeleton-img>
+                                </template>
+                                <bar-chart
+                                    :chartData="barChartData"
+                                    :chart-options="chartOptions"
+                                    :height="250"
+                                    style="position: relative; width: 100%"
+                                />
+                            </b-skeleton-wrapper>
+                        </b-card>
                     </b-col>
                 </b-row>
                 <b-row class="mt-5">
@@ -133,7 +137,7 @@
                             </template>
                             <b-card v-if="metrics" bg-variant="dark" class="shadow-sm text-white">
                                 <span>Coin Rewards</span><br />
-                                <div class="h2">{{ metrics.erc20Perks.payments }}</div>
+                                <div class="h2">{{ metrics.coinReward.totalCreated }}</div>
                             </b-card>
                         </b-skeleton-wrapper>
                     </b-col>
@@ -144,7 +148,7 @@
                             </template>
                             <b-card v-if="metrics" bg-variant="dark" class="shadow-sm text-white">
                                 <span>NFT Rewards</span><br />
-                                <div class="h2">{{ metrics.erc721Perks.payments }}</div>
+                                <div class="h2">{{ metrics.nftReward.totalCreated }}</div>
                             </b-card>
                         </b-skeleton-wrapper>
                     </b-col>
@@ -370,7 +374,7 @@ export default class TransactionsView extends Vue {
                     tension: 0.4,
                 },
                 {
-                    label: 'Referral',
+                    label: 'Invite',
                     backgroundColor: 'rgb(152, 216, 13)',
                     data: referralChartPoints,
                     borderColor: 'rgb(152, 216, 13)',
@@ -429,14 +433,14 @@ export default class TransactionsView extends Vue {
             labels: this.chartDates.map((x) => format(new Date(x), 'MM-dd')),
             datasets: [
                 {
-                    label: 'Coin Perks',
+                    label: 'Coin Rewards',
                     data: erc20Payments,
                     backgroundColor: '#0CC6F9',
                     borderColor: '#0CC6F9',
                     pointRadius: 0,
                 },
                 {
-                    label: 'NFT Perks',
+                    label: 'NFT Rewards',
                     data: erc721Payments,
                     backgroundColor: '#023B77',
                     borderColor: '#023B77',

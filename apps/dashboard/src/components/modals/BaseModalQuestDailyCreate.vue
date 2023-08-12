@@ -71,7 +71,7 @@
         </template>
         <template #btn-primary>
             <b-button
-                :disabled="isSubmitDisabled"
+                :disabled="isSubmitDisabled || !title || !amounts.length"
                 class="rounded-pill"
                 type="submit"
                 form="formRewardDailyCreate"

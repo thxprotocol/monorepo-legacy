@@ -21,16 +21,17 @@ enum JobType {
     DeploySafe = 'deploySafe',
 }
 
+agenda.define(JobType.UpdatePendingTransactions, updatePendingTransactions);
+agenda.define(JobType.CreateConditionalRewards, createConditionalRewards);
+agenda.define(JobType.SendCampaignReport, sendPoolAnalyticsReport);
+
 db.connection.once('open', async () => {
     agenda.mongo(db.connection.getClient().db() as any, 'jobs');
 
-    await agenda.start();
-
-    agenda.define(JobType.UpdatePendingTransactions, updatePendingTransactions);
-    agenda.define(JobType.CreateConditionalRewards, createConditionalRewards);
-    agenda.define(JobType.SendCampaignReport, sendPoolAnalyticsReport);
     agenda.define(JobType.DeploySafe, SafeService.createJob);
     agenda.define(JobType.MigrateWallets, SafeService.migrateJob);
+
+    await agenda.start();
 
     await agenda.every('10 seconds', JobType.UpdatePendingTransactions);
     await agenda.every('15 minutes', JobType.CreateConditionalRewards);
