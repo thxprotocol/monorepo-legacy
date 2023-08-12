@@ -11,6 +11,7 @@ services:
             target: develop
         volumes:
             - ./coverage/apps/api:/usr/src/app/coverage/apps/api
+            - ./node_modules/:/usr/src/app/node_modules
         extra_hosts:
             - "host.docker.internal:host-gateway"
         env_file:
@@ -28,7 +29,5 @@ services:
             CWD: "/usr/src/app/apps/api/src/"
         ports:
             - 3001:3000
-        volume:
-            - ./node_modules/:/usr/src/app/node_modules
         depends_on:
             - mongo
