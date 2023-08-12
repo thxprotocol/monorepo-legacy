@@ -133,9 +133,9 @@ async function migrateJob(job: Job) {
             );
         }
 
-        console.log('Migration completed.');
+        logger.debug('Migration completed.');
     } catch (error) {
-        console.error('Error:', error);
+        logger.error(`Error: ${String(error)}`);
     } finally {
         await client.close();
     }
@@ -215,8 +215,7 @@ async function proposeTransaction(wallet: WalletDocument, safeTransactionData: S
 
         logger.info(`Safe TX Proposed: ${safeTxHash}`);
     } catch (error) {
-        console.log(error);
-        logger.info(error);
+        logger.error(error);
     }
 
     return safeTxHash;

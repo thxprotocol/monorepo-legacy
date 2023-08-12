@@ -4,7 +4,7 @@ import { ChainId } from '@thxnetwork/types/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { dashboardAccessToken, sub, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
 import { ERC721TokenState } from '@thxnetwork/types/interfaces';
-import { ERC721Document } from '@thxnetwork/api/models/ERC721';
+import { ERC721, ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { alchemy } from '@thxnetwork/api/util/alchemy';
 import { deployERC721, mockGetNftsForOwner } from '@thxnetwork/api/util/jest/erc721';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
@@ -17,6 +17,8 @@ import { ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
 import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 import WalletService from '@thxnetwork/api/services/WalletService';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
+import { poll } from '@thxnetwork/api/util/polling';
+import SafeService from '@thxnetwork/api/services/SafeService';
 
 const user = request.agent(app);
 
@@ -184,6 +186,15 @@ describe('ERC721 Perks Redemtpion', () => {
                     expect(body.balance).toBe(Number(balance) - perk.pointPrice);
                 })
                 .expect(200, done);
+        });
+
+        it('Wait for ownerOf', async () => {
+            const { contract } = await ERC721.findById(perk.erc721Id);
+            const safe = await SafeService.findPrimary(sub, ChainId.Hardhat);
+            await poll(contract.methods.ownerOf(1).call, (result: string) => result !== safe.address, 1000);
+
+            const owner = await contract.methods.ownerOf(1).call();
+            expect(owner).toEqual(safe.address);
         });
     });
 });
