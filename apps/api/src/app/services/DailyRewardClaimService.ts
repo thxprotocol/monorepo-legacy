@@ -25,11 +25,45 @@ export default {
         return await DailyRewardClaim.find({ dailyRewardId: dailyReward._id });
     },
     findByWallet: async (dailyReward: DailyRewardDocument, wallet: WalletDocument) => {
-        return await DailyRewardClaim.find({
+        const claims = [];
+        const now = Date.now(),
+            start = now - ONE_DAY_MS,
+            end = now;
+
+        let lastClaim = await DailyRewardClaim.findOne({
             dailyRewardId: dailyReward._id,
             walletId: wallet._id,
             state: DailyRewardClaimState.Claimed,
+            createdAt: { $gt: new Date(start), $lt: new Date(end) },
         });
+
+        if (!lastClaim) {
+            lastClaim = await DailyRewardClaim.findOne({
+                dailyRewardId: dailyReward._id,
+                walletId: wallet._id,
+                state: DailyRewardClaimState.Claimed,
+                createdAt: { $gt: new Date(start - ONE_DAY_MS), $lt: new Date(end - ONE_DAY_MS) },
+            });
+        }
+        if (!lastClaim) return [];
+        claims.push(lastClaim);
+
+        while (lastClaim) {
+            const timestamp = new Date(lastClaim.createdAt).getTime();
+            lastClaim = await DailyRewardClaim.findOne({
+                dailyRewardId: dailyReward._id,
+                walletId: wallet._id,
+                state: DailyRewardClaimState.Claimed,
+                createdAt: {
+                    $gt: new Date(timestamp - ONE_DAY_MS * 2),
+                    $lt: new Date(timestamp - ONE_DAY_MS),
+                },
+            });
+            if (!lastClaim) break;
+            claims.push(lastClaim);
+        }
+
+        return claims;
     },
     isClaimable: async (dailyReward: DailyRewardDocument, wallet: WalletDocument) => {
         const claim = await DailyRewardClaim.findOne({

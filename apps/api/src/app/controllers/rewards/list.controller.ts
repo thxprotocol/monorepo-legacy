@@ -41,9 +41,9 @@ const controller = async (req: Request, res: Response) => {
         dailyRewards: await Promise.all(
             dailyRewards.map(async (r) => {
                 const isDisabled = wallet ? !(await DailyRewardClaimService.isClaimable(r, wallet)) : true;
-                const claims = wallet ? await DailyRewardClaimService.findByWallet(r, wallet) : [];
-                const claimAgainTime = claims.length
-                    ? new Date(claims[claims.length - 1].createdAt).getTime() + ONE_DAY_MS
+                const validClaims = wallet ? await DailyRewardClaimService.findByWallet(r, wallet) : [];
+                const claimAgainTime = validClaims.length
+                    ? new Date(validClaims[0].createdAt).getTime() + ONE_DAY_MS
                     : null;
                 const now = Date.now();
                 return {
@@ -51,11 +51,11 @@ const controller = async (req: Request, res: Response) => {
                     index: r.index,
                     title: r.title,
                     description: r.description,
-                    amount: r.amounts[claims.length],
+                    amount: r.amounts[validClaims.length],
                     amounts: r.amounts,
                     infoLinks: r.infoLinks,
                     isDisabled,
-                    claims,
+                    claims: validClaims,
                     claimAgainDuration:
                         claimAgainTime && claimAgainTime - now > 0 ? Math.floor((claimAgainTime - now) / 1000) : null, // Convert and floor to S,
                 };
