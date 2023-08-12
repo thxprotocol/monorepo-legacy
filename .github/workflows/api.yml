@@ -29,16 +29,23 @@ jobs:
               with:
                   node-version: ${{ matrix.node-version }}
 
-            - name: Cache Node.js dependencies
-              uses: actions/cache@v2
+            - name: Restore Node.js dependencies
+              uses: actions/cache@v3
               with:
                   path: ./node_modules
                   key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
                   restore-keys: |
                       ${{ runner.os }}-node-
 
-            - name: Install Dependencies
+            - name: Install Node.js dependencies
               run: yarn install
+
+            - name: Cache Node.js dependencies
+              uses: actions/cache/save@v3
+              if: always()
+              with:
+                  path: ./node_modules
+                  key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
 
             - name: Start Hardhat RPC
               working-directory: ./libs/contracts
