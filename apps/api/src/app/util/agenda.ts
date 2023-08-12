@@ -21,7 +21,7 @@ enum JobType {
     DeploySafe = 'deploySafe',
 }
 
-db.connection.once('open', async () => {
+db.connection.on('open', async () => {
     agenda.mongo(db.connection.getClient().db() as any, 'jobs');
 
     await agenda.start();
@@ -36,7 +36,14 @@ db.connection.once('open', async () => {
     await agenda.every('15 minutes', JobType.CreateConditionalRewards);
     await agenda.every('0 9 * * MON', JobType.SendCampaignReport);
 
-    logger.info('AgendaJS successfully started job processor');
+    logger.info('AgendaJS started job processor');
+});
+
+db.connection.on('disconnecting', async () => {
+    await agenda.stop();
+    await agenda.close();
+
+    logger.info('AgendaJS stopped and closed job processor');
 });
 
 export { agenda, JobType };
