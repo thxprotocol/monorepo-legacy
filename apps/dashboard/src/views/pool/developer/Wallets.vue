@@ -21,7 +21,7 @@
                 </b-button>
                 <code class="language-shell" v-html="codeExample"></code>
             </pre>
-                <b-alert show variant="info">
+                <b-alert show variant="gray">
                     <i class="fas fa-question-circle mr-2"></i> Take note of these development guidelines
                     <ul class="px-3 mb-0 mt-1 small">
                         <li>
@@ -37,8 +37,7 @@
             </b-form-group>
             <hr />
             <b-form-group label="Virtual Wallets">
-                <b-alert variant="gray" v-if="!wallets.length" show>No virtual wallets are found.</b-alert>
-                <BTable :items="wallets">
+                <BTable :items="wallets" show-empty responsive="lg">
                     <!-- Head formatting -->
                     <template #head(url)>URL</template>
                     <template #head(uuid)>Code</template>

@@ -45,49 +45,48 @@
                         </b-button>
                         <BaseModalWebhookCreate id="modalWebhookCreate" :pool="pool" />
                     </template>
-                    <div class="table-responsive">
-                        <BTable :items="webhooksList" id="table-webhooks">
-                            <!-- Head formatting -->
-                            <template #head(url)>URL</template>
-                            <template #head(_id)>ID</template>
-                            <template #head(requestCreated)> Requests </template>
-                            <template #head(status)> Status </template>
-                            <template #head(id)> &nbsp;</template>
 
-                            <!-- Cell formatting -->
-                            <template #cell(url)="{ item }">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas ml-0 mr-2 text-muted fa-globe"></i>
-                                    {{ item.url }}
-                                </div>
-                            </template>
-                            <template #cell(_id)="{ item }">
-                                <code>{{ item.id }}</code>
-                            </template>
-                            <template #cell(requestCreated)="{ item }">
-                                {{ item.requestCreated || '0' }}
-                            </template>
-                            <template #cell(status)="{ item }">
-                                <b-badge :variant="item.status ? 'success' : 'light'" class="p-2">
-                                    {{ item.status || 'Inactive' }}</b-badge
-                                >
-                            </template>
-                            <template #cell(id)="{ item }">
-                                <b-dropdown variant="link" size="sm" no-caret right>
-                                    <template #button-content>
-                                        <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
-                                    </template>
-                                    <b-dropdown-item v-b-modal="`modalWebhookCreate${item.id}`"> Edit </b-dropdown-item>
-                                    <b-dropdown-item @click="onClickDelete(item)"> Delete </b-dropdown-item>
-                                </b-dropdown>
-                                <BaseModalWebhookCreate
-                                    :id="`modalWebhookCreate${item._id}`"
-                                    :pool="pool"
-                                    :webhook="item"
-                                />
-                            </template>
-                        </BTable>
-                    </div>
+                    <BTable :items="webhooksList" id="table-webhooks" responsive="lg" show-empty>
+                        <!-- Head formatting -->
+                        <template #head(url)>URL</template>
+                        <template #head(_id)>ID</template>
+                        <template #head(requestCreated)> Requests </template>
+                        <template #head(status)> Status </template>
+                        <template #head(id)> &nbsp;</template>
+
+                        <!-- Cell formatting -->
+                        <template #cell(url)="{ item }">
+                            <div class="d-flex align-items-center">
+                                <i class="fas ml-0 mr-2 text-muted fa-globe"></i>
+                                {{ item.url }}
+                            </div>
+                        </template>
+                        <template #cell(_id)="{ item }">
+                            <code>{{ item.id }}</code>
+                        </template>
+                        <template #cell(requestCreated)="{ item }">
+                            {{ item.requestCreated || '0' }}
+                        </template>
+                        <template #cell(status)="{ item }">
+                            <b-badge :variant="item.status ? 'success' : 'light'" class="p-2">
+                                {{ item.status || 'Inactive' }}</b-badge
+                            >
+                        </template>
+                        <template #cell(id)="{ item }">
+                            <b-dropdown variant="link" size="sm" no-caret right>
+                                <template #button-content>
+                                    <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
+                                </template>
+                                <b-dropdown-item v-b-modal="`modalWebhookCreate${item.id}`"> Edit </b-dropdown-item>
+                                <b-dropdown-item @click="onClickDelete(item)"> Delete </b-dropdown-item>
+                            </b-dropdown>
+                            <BaseModalWebhookCreate
+                                :id="`modalWebhookCreate${item._id}`"
+                                :pool="pool"
+                                :webhook="item"
+                            />
+                        </template>
+                    </BTable>
                 </b-form-group>
             </b-col>
         </b-form-row>

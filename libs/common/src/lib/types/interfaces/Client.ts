@@ -1,15 +1,17 @@
+import { GrantVariant } from '../enums';
+
 export type TClient = {
     _id: string;
     page: number;
     name: string;
     sub: string;
     poolId: string;
-    grantType: string;
+    grantType: GrantVariant;
     clientId: string;
     clientSecret: string;
-    createdAt: Date;
-    redirectUri?: string;
-    requestUri?: string;
+    redirectUri: string;
+    requestUri: string;
+    createdAt?: Date;
 };
 
 export type TClientState = {
