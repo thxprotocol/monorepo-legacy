@@ -34,6 +34,7 @@ export type TCampaign = {
 export type TPool = {
     _id: string;
     token: string;
+    signingSecret: string;
     address: string;
     contract: Contract;
     chainId: ChainId;

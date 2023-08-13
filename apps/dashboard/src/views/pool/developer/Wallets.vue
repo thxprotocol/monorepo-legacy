@@ -7,64 +7,63 @@
             </p>
         </b-col>
         <b-col md="8">
-            <b-form-group>
-                <BaseCardURLWebhook
-                    :visible="true"
-                    :code="code"
-                    title="Webhook URL"
-                    :description="
-                        pool.wallets &&
-                        `This campaign has onboarded ${pool.wallets.length} wallet${
-                            pool.wallets.length > 1 ? 's' : ''
-                        }.`
-                    "
-                >
-                    <template #alerts>
-                        <b-alert show variant="info">
-                            <i class="fas fa-question-circle mr-2"></i> Take note of these development guidelines
-                            <ul class="px-3 mb-0 mt-1 small">
-                                <li>
-                                    Store the returned <code>code</code> as part of the user data in your database and
-                                    use it when executing webhooks for custom quests.
-                                </li>
-                                <li v-if="pool.widget">
-                                    Let your users connect their virtual wallet with this URL syntax:
-                                    <code>{{ pool.widget.domain }}?thx_widget_path=/w/:code</code>
-                                </li>
-                            </ul>
-                        </b-alert>
-                    </template>
-                </BaseCardURLWebhook>
+            <b-form-group label="Virtual Wallets Webhook"
+                > 
+                <pre class="rounded text-white p-3 d-flex align-items-center bg-dark" style="white-space: pre">
+                    <b-button 
+                    variant="light" 
+                    v-clipboard:copy="code"
+                    v-clipboard:success="() => isCopied = true" 
+                    style="white-space: normal"
+                    size="sm" 
+                    class="mr-3">
+                    <i class="fas  ml-0" :class="isCopied ? 'fa-clipboard-check' : 'fa-clipboard'"></i>
+                </b-button>
+                <code class="language-shell" v-html="codeExample"></code>
+            </pre>
+                <b-alert show variant="info">
+                    <i class="fas fa-question-circle mr-2"></i> Take note of these development guidelines
+                    <ul class="px-3 mb-0 mt-1 small">
+                        <li>
+                            Store the returned <code>code</code> as part of the user data in your database and use it
+                            when executing webhooks for custom quests.
+                        </li>
+                        <li v-if="pool.widget">
+                            Let your users connect their virtual wallet with this URL syntax:
+                            <code>{{ pool.widget.domain }}?thx_widget_path=/w/:code</code>
+                        </li>
+                    </ul>
+                </b-alert>
             </b-form-group>
             <hr />
-            <p>
-                <strong>Virtual Wallets</strong>
-            </p>
-            <BTable :items="wallets">
-                <!-- Head formatting -->
-                <template #head(url)>URL</template>
-                <template #head(uuid)>Code</template>
-                <template #head(sub)> Account ID </template>
-                <template #head(createdAt)> Created </template>
+            <b-form-group label="Virtual Wallets">
+                <b-alert variant="gray" v-if="!wallets.length" show>No virtual wallets are found.</b-alert>
+                <BTable :items="wallets">
+                    <!-- Head formatting -->
+                    <template #head(url)>URL</template>
+                    <template #head(uuid)>Code</template>
+                    <template #head(sub)> Account ID </template>
+                    <template #head(createdAt)> Created </template>
 
-                <!-- Cell formatting -->
-                <template #cell(url)="{ item }">
-                    <b-button variant="light" v-clipboard:copy="item.url" size="sm" class="mr-3">
-                        <i class="fas ml-0 fa-clipboard"></i>
-                    </b-button>
-                </template>
-                <template #cell(uuid)="{ item }">
-                    <code>{{ item.uuid }}</code>
-                </template>
-                <template #cell(sub)="{ item }">
-                    <span>{{ item.sub }}</span>
-                </template>
-                <template #cell(createdAt)="{ item }">
-                    <small class="text-muted">
-                        {{ format(new Date(item.createdAt), 'dd-MM-yyyy HH:mm') }}
-                    </small>
-                </template>
-            </BTable>
+                    <!-- Cell formatting -->
+                    <template #cell(url)="{ item }">
+                        <b-button variant="light" v-clipboard:copy="item.url" size="sm" class="mr-3">
+                            <i class="fas ml-0 fa-clipboard"></i>
+                        </b-button>
+                    </template>
+                    <template #cell(uuid)="{ item }">
+                        <code>{{ item.uuid }}</code>
+                    </template>
+                    <template #cell(sub)="{ item }">
+                        <span>{{ item.sub }}</span>
+                    </template>
+                    <template #cell(createdAt)="{ item }">
+                        <small class="text-muted">
+                            {{ format(new Date(item.createdAt), 'dd-MM-yyyy HH:mm') }}
+                        </small>
+                    </template>
+                </BTable>
+            </b-form-group>
         </b-col>
     </b-form-row>
 </template>
@@ -75,6 +74,10 @@ import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { API_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { format } from 'date-fns';
 import BaseCardURLWebhook from '@thxnetwork/dashboard/components/BaseCardURLWebhook.vue';
+import hljs from 'highlight.js/lib/core';
+import Shell from 'highlight.js/lib/languages/shell';
+
+hljs.registerLanguage('shell', Shell);
 
 @Component({
     components: { BaseCardURLWebhook },
@@ -85,6 +88,7 @@ import BaseCardURLWebhook from '@thxnetwork/dashboard/components/BaseCardURLWebh
 export default class Wallets extends Vue {
     format = format;
     pools!: IPools;
+    isCopied = false;
 
     get pool() {
         return this.pools[this.$route.params.id];
@@ -94,6 +98,10 @@ export default class Wallets extends Vue {
         if (!this.pool) return '';
         return `curl "${API_URL}/v1/webhook/wallet/${this.pool.token}" \\
 -X POST`;
+    }
+
+    get codeExample() {
+        return hljs.highlight(this.code || '', { language: 'shell' }).value;
     }
 
     get wallets() {

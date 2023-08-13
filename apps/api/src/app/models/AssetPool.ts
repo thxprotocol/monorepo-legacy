@@ -13,6 +13,7 @@ const assetPoolSchema = new mongoose.Schema(
         transactions: [String],
         version: String,
         token: String,
+        signinSecret: String,
         settings: {
             endDate: Date,
             title: String,

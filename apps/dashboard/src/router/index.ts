@@ -53,16 +53,6 @@ const routes: Array<RouteConfig> = [
                 component: () => import('../views/pool/Rewards.vue'),
             },
             {
-                name: 'coin perks',
-                path: 'erc20-perks',
-                component: () => import('../views/pool/ERC20Perks.vue'),
-            },
-            {
-                name: 'nft perks',
-                path: 'erc721-perks',
-                component: () => import('../views/pool/ERC721Perks.vue'),
-            },
-            {
                 name: 'Settings',
                 path: 'settings',
                 component: () => import('../views/pool/Settings.vue'),

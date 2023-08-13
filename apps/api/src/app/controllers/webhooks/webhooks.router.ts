@@ -1,17 +1,39 @@
 import express from 'express';
-import { assertRequestInput } from '@thxnetwork/api/middlewares';
-import QualifyReward from './referral/qualify/post.controller';
-import MilestoneReward from './milestones/claim/post.controller';
-import DailyReward from './daily/post.controller';
-import Wallet from './wallet/post.controller';
-import ReadWallet from './wallet/get.controller';
+import { assertAssetPoolOwnership, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
+import ListWebhook from './list.controller';
+import PatchWebhook from './patch.controller';
+import CreateWebhook from './post.controller';
+import DeleteWebhook from './delete.controller';
 
 const router = express.Router();
 
-router.post('/referral/:token/qualify', assertRequestInput(QualifyReward.validation), QualifyReward.controller);
-router.post('/milestone/:token/claim', assertRequestInput(MilestoneReward.validation), MilestoneReward.controller);
-router.post('/daily/:token', assertRequestInput(DailyReward.validation), DailyReward.controller);
-router.post('/wallet/:token', assertRequestInput(Wallet.validation), Wallet.controller);
-router.get('/wallet/:code', assertRequestInput(ReadWallet.validation), ReadWallet.controller);
+router.get(
+    '/',
+    guard.check(['webhooks:read']),
+    assertAssetPoolOwnership,
+    assertRequestInput(ListWebhook.validation),
+    ListWebhook.controller,
+);
+router.patch(
+    '/:id',
+    guard.check(['webhooks:read']),
+    assertAssetPoolOwnership,
+    assertRequestInput(PatchWebhook.validation),
+    PatchWebhook.controller,
+);
+router.post(
+    '/',
+    guard.check(['webhooks:write', 'webhooks:read']),
+    assertAssetPoolOwnership,
+    assertRequestInput(CreateWebhook.validation),
+    CreateWebhook.controller,
+);
+router.delete(
+    '/:id',
+    guard.check(['webhooks:write', 'webhooks:read']),
+    assertAssetPoolOwnership,
+    assertRequestInput(DeleteWebhook.validation),
+    DeleteWebhook.controller,
+);
 
 export default router;

@@ -10,21 +10,21 @@
                     </template>
                     <BaseTabSettingsGeneral />
                 </b-tab>
-                <b-tab :disabled="profile && profile.plan !== 1">
+                <b-tab :disabled="profile && !profile.plan">
                     <template #title>
                         <i class="fas fa-wallet mr-2"></i>
                         Wallets
                     </template>
                     <BaseTabSettingsWallets />
                 </b-tab>
-                <b-tab :disabled="profile && profile.plan !== 1">
+                <b-tab active :disabled="profile && !profile.plan">
                     <template #title>
                         <i class="fas fa-wifi mr-2"></i>
                         Webhooks
                     </template>
                     <BaseTabSettingsWebhooks />
                 </b-tab>
-                <b-tab :disabled="profile && profile.plan !== 2">
+                <b-tab :disabled="profile && !profile.plan">
                     <template #title>
                         <div class="d-flex align-items-center">
                             <i class="fas fa-key mr-2"></i>
@@ -33,16 +33,16 @@
                     </template>
                     <BaseTabSettingsApi />
                 </b-tab>
-                <b-tab :disabled="profile && profile.plan !== 2">
+                <b-tab :disabled="profile && !profile.plan">
                     <template #title>
                         <div class="d-flex align-items-center">
                             <i class="fas fa-bullhorn mr-2"></i>
                             Events
                         </div>
                     </template>
-                    ...
+                    <BaseTabSettingsEvents />
                 </b-tab>
-                <b-tab :disabled="profile && profile.plan !== 2">
+                <b-tab :disabled="profile && !profile.plan">
                     <template #title>
                         <div class="d-flex align-items-center">
                             <i class="fas fa-file-alt mr-2"></i>
@@ -64,11 +64,13 @@ import { mapGetters } from 'vuex';
 import { TAccount } from '@thxnetwork/types/interfaces';
 import BaseTabSettingsGeneral from '@thxnetwork/dashboard/views/pool/developer/General.vue';
 import BaseTabSettingsWebhooks from '@thxnetwork/dashboard/views/pool/developer/Webhooks.vue';
+import BaseTabSettingsEvents from '@thxnetwork/dashboard/views/pool/developer/Events.vue';
 import BaseTabSettingsWallets from '@thxnetwork/dashboard/views/pool/developer/Wallets.vue';
 import BaseTabSettingsApi from '@thxnetwork/dashboard/views/pool/developer/API.vue';
 
 @Component({
     components: {
+        BaseTabSettingsEvents,
         BaseTabSettingsGeneral,
         BaseTabSettingsWebhooks,
         BaseTabSettingsWallets,

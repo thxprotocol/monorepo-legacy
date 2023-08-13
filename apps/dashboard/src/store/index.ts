@@ -15,6 +15,7 @@ import ReferralRewardRewardsStore from './modules/referralRewards';
 import ReferralRewardRewardClaimsStore from './modules/referralRewardClaims';
 import ClientStore from './modules/clients';
 import BrandStore from './modules/brands';
+import WebhookStore from './modules/webhooks';
 import ImageStore from './modules/images';
 import MilestoneRewardStore from './modules/milestoneRewards';
 import DailyRewardStore from './modules/dailyRewards';
@@ -40,6 +41,7 @@ const modules = {
     referralRewardClaims: ReferralRewardRewardClaimsStore,
     clients: ClientStore,
     brands: BrandStore,
+    webhooks: WebhookStore,
     images: ImageStore,
     milestoneRewards: MilestoneRewardStore,
     dailyRewards: DailyRewardStore,

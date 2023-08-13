@@ -28,6 +28,7 @@ import { PointReward } from '../models/PointReward';
 import { MilestoneReward } from '../models/MilestoneReward';
 import { ERC20Perk } from '../models/ERC20Perk';
 import { ERC721Perk } from '../models/ERC721Perk';
+import { getSigninSecret } from '../util/signingsecret';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -73,6 +74,7 @@ async function deploy(
         chainId,
         version: currentVersion,
         token: v4(),
+        signinSecret: getSigninSecret(64),
         settings: {
             title,
             endDate,
