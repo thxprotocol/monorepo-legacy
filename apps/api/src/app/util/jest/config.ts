@@ -35,6 +35,13 @@ export async function beforeAllCallback(options = { skipWalletCreation: false })
 }
 
 export async function afterAllCallback() {
+    const waitForAgendaReady = () =>
+        new Promise((resolve) => {
+            agenda.on('ready', () => resolve('done'));
+            setTimeout(() => resolve('done'), 1000);
+        });
+
+    await waitForAgendaReady();
     await agenda.stop();
     await agenda.purge();
     await agenda.close();
