@@ -9,7 +9,7 @@ module.exports = {
         const walletsColl = db.collection('wallets');
         console.log('wallets');
         if (await findIndex('sub_hashed')) await walletsColl.dropIndex({ sub: 'hashed' });
-        await walletsColl.createIndex({ sub: 'hashed' }, { unique: false, sparse: true });
+        await walletsColl.createIndex({ sub: 1 }, { unique: false, sparse: true });
 
         const collectionNames = [
             // 'claims',

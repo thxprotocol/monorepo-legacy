@@ -38,7 +38,7 @@
         </template>
         <template #btn-primary>
             <b-button
-                :disabled="isSubmitDisabled"
+                :disabled="isSubmitDisabled || !amount || !title"
                 class="rounded-pill"
                 type="submit"
                 form="formRewardPointsCreate"

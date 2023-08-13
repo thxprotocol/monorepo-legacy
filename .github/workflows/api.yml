@@ -7,6 +7,9 @@ jobs:
     buildAndTest:
         name: CI Pipeline
         runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node-version: [16.x] # Add other versions if needed
 
         steps:
             - name: Checkout repository
@@ -21,13 +24,28 @@ jobs:
                   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                   aws-region: us-east-1
 
-            - name: Install Node.js 16.x
-              uses: actions/setup-node@v1
+            - name: Install Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v2
               with:
-                  node-version: 16.x
+                  node-version: ${{ matrix.node-version }}
 
-            - name: Install Dependencies
-              run: yarn install
+            - name: Restore Node.js dependencies
+              uses: actions/cache@v3
+              with:
+                  path: ./node_modules
+                  key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+                  restore-keys: |
+                      ${{ runner.os }}-node-
+
+            - name: Install Node.js dependencies
+              run: yarn install --frozen-lockfile --verbose
+
+            - name: Cache Node.js dependencies
+              uses: actions/cache/save@v3
+              if: always()
+              with:
+                  path: ./node_modules
+                  key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
 
             - name: Start Hardhat RPC
               working-directory: ./libs/contracts
@@ -35,7 +53,7 @@ jobs:
 
             - name: Start Safe Transaction Service
               run: |
-                  docker compose --env-file=.env.example -f docker-compose.safe.yml up -d
+                  docker compose --env-file=.env.example -f docker-compose.safe.yml up -d --remove-orphans
                   docker compose exec txs-web python manage.py migrate
                   sudo chmod -R a+rwx ./docker/data
 

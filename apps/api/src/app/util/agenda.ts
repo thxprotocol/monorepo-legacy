@@ -1,5 +1,5 @@
 import db from './database';
-import { Agenda } from 'agenda';
+import { Agenda, Job } from 'agenda';
 import { logger } from './logger';
 import { updatePendingTransactions } from '@thxnetwork/api/jobs/updatePendingTransactions';
 import { createConditionalRewards } from '@thxnetwork/api/jobs/createConditionalRewards';
@@ -21,16 +21,16 @@ enum JobType {
     DeploySafe = 'deploySafe',
 }
 
+agenda.define(JobType.UpdatePendingTransactions, updatePendingTransactions);
+agenda.define(JobType.CreateConditionalRewards, createConditionalRewards);
+agenda.define(JobType.SendCampaignReport, sendPoolAnalyticsReport);
+agenda.define(JobType.DeploySafe, (job: Job) => SafeService.createJob(job));
+agenda.define(JobType.MigrateWallets, (job: Job) => SafeService.migrateJob(job));
+
 db.connection.on('open', async () => {
     agenda.mongo(db.connection.getClient().db() as any, 'jobs');
 
     await agenda.start();
-
-    agenda.define(JobType.UpdatePendingTransactions, updatePendingTransactions);
-    agenda.define(JobType.CreateConditionalRewards, createConditionalRewards);
-    agenda.define(JobType.SendCampaignReport, sendPoolAnalyticsReport);
-    agenda.define(JobType.DeploySafe, SafeService.createJob);
-    agenda.define(JobType.MigrateWallets, SafeService.migrateJob);
 
     await agenda.every('10 seconds', JobType.UpdatePendingTransactions);
     await agenda.every('15 minutes', JobType.CreateConditionalRewards);

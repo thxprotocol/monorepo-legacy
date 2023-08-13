@@ -37,8 +37,8 @@ app.use(
 app.use(morgan);
 
 morganBody(app, {
-    logRequestBody: NODE_ENV === 'development',
-    logResponseBody: NODE_ENV === 'development',
+    logRequestBody: false,
+    logResponseBody: false,
     skip: () => ['test', 'production'].includes(NODE_ENV),
 });
 

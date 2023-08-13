@@ -15,7 +15,7 @@ export const controller = async (req: Request, res: Response) => {
 
     const metrics = await getPoolMetrics(pool);
 
-    res.json(metrics);
+    res.json({ _id: pool._id, ...metrics });
 };
 
 export default { controller, validation };
