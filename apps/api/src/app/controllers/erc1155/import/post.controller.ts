@@ -9,14 +9,12 @@ import { ChainId, NFTVariant } from '@thxnetwork/types/enums';
 import { logger } from '@thxnetwork/api/util/logger';
 import { ERC1155Metadata } from '@thxnetwork/api/models/ERC1155Metadata';
 import PoolService from '@thxnetwork/api/services/PoolService';
-import WalletService from '@thxnetwork/api/services/WalletService';
 
 const validation = [body('contractAddress').exists().isString(), body('chainId').exists().isNumeric()];
 
 const controller = async (req: Request, res: Response) => {
     const chainId = Number(req.body.chainId) as ChainId;
     const contractAddress = req.body.contractAddress;
-    const wallet = await WalletService.findPrimary(req.auth.sub, chainId);
     const pool = await PoolService.getById(req.header('X-PoolId'));
 
     const ownedNfts = await getNFTsForOwner(pool.address, contractAddress);
@@ -88,7 +86,6 @@ const controller = async (req: Request, res: Response) => {
                             recipient: pool.address,
                             state: ERC1155TokenState.Minted,
                             metadataId: String(metadata._id),
-                            walletId: String(wallet._id),
                         },
                         { upsert: true, new: true },
                     );
