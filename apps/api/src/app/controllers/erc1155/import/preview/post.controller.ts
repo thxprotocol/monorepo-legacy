@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { body } from 'express-validator';
-import { getNFTsForOwner } from '@thxnetwork/api/util/alchemy';
+import { getNFTsForOwner, parseIPFSImageUrl } from '@thxnetwork/api/util/alchemy';
 
 export const validation = [body('address').exists().isString(), body('contractAddress').exists().isString()];
 
@@ -20,7 +20,7 @@ export const controller = async (req: Request, res: Response) => {
                 description: nft.rawMetadata.description,
                 tokenId: nft.tokenId,
                 tokenUri: nft.tokenUri.raw,
-                image: nft.media[0].thumbnail,
+                image: parseIPFSImageUrl(nft.media[0].thumbnail),
             };
         }),
     );

@@ -1,6 +1,7 @@
 import { Network, Alchemy, OwnedNft } from 'alchemy-sdk';
 import { ALCHEMY_API_KEY } from '../config/secrets';
 import { logger } from './logger';
+import { IPFS_BASE_URL } from '@thxnetwork/api/config/secrets';
 
 export const alchemy = new Alchemy({
     apiKey: ALCHEMY_API_KEY,
@@ -35,4 +36,13 @@ export async function getNFTsForOwner(owner: string, contractAddress: string) {
     }
 
     return ownedNfts;
+}
+
+export function parseIPFSImageUrl(url = 'ipfs://QmdnhWN8VjX45BfX7sJuUnwcr7HU9YcDPPLCPQhSuuyjZ3/0.png') {
+    const ipfsPrefix = 'ipfs://';
+    if (url.startsWith(ipfsPrefix)) {
+        const ipfsPath = url.substring(ipfsPrefix.length);
+        return IPFS_BASE_URL + ipfsPath;
+    }
+    return url;
 }
