@@ -1,7 +1,7 @@
 <template>
     <base-modal
         @show="onShow"
-        size="md"
+        size="lg"
         :title="(webhook ? 'Update' : 'Create') + ' Webhook'"
         :id="id"
         :error="error"
@@ -23,7 +23,7 @@
                 variant="primary"
                 block
             >
-                {{ (reward ? 'Update' : 'Create') + ' Webhook' }}
+                {{ (webhook ? 'Update' : 'Create') + ' Webhook' }}
             </b-button>
         </template>
     </base-modal>
@@ -47,7 +47,7 @@ import { TWebhook } from '@thxnetwork/types/interfaces';
         BaseCardInfoLinks,
     },
 })
-export default class ModalMilestoneRewardCreate extends Vue {
+export default class ModalWebhookCreate extends Vue {
     isSubmitDisabled = false;
     isLoading = false;
     isVisible = true;
@@ -72,6 +72,7 @@ export default class ModalMilestoneRewardCreate extends Vue {
         this.$store
             .dispatch(`webhooks/${this.webhook ? 'update' : 'create'}`, {
                 ...this.webhook,
+                poolId: this.pool._id,
                 url: this.url,
             })
             .then(() => {

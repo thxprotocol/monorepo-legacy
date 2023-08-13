@@ -10,8 +10,12 @@
                     <b-input-group>
                         <b-form-input :value="signingSecret" />
                         <b-input-group-append>
-                            <b-button size="sm" variant="primary" @click="isSigninSecretHidden = !isSigninSecretHidden">
-                                <i v-if="isSigninSecretHidden" class="fas fa-eye px-2"></i>
+                            <b-button
+                                size="sm"
+                                variant="primary"
+                                @click="issigningSecretHidden = !issigningSecretHidden"
+                            >
+                                <i v-if="issigningSecretHidden" class="fas fa-eye px-2"></i>
                                 <i v-else class="fas fa-eye-slash px-2"></i>
                             </b-button>
                             <b-button
@@ -36,35 +40,54 @@
                             variant="primary"
                             class="rounded-pill float-right"
                         >
+                            <i class="fas fa-plus mr-2"></i>
                             Add Endpoint
                         </b-button>
-                        <BaseModalWebhookCreate id="modalWebhookCreate" />
+                        <BaseModalWebhookCreate id="modalWebhookCreate" :pool="pool" />
                     </template>
-                    <BTable :items="webhooksList">
-                        <!-- Head formatting -->
-                        <template #head(url)>URL</template>
-                        <template #head(variant)>Variant</template>
-                        <template #head(requestCreated)> Requests </template>
-                        <template #head(id)>ID</template>
-                        <template #head(status)> Status </template>
+                    <div class="table-responsive">
+                        <BTable :items="webhooksList" id="table-webhooks">
+                            <!-- Head formatting -->
+                            <template #head(url)>URL</template>
+                            <template #head(_id)>ID</template>
+                            <template #head(requestCreated)> Requests </template>
+                            <template #head(status)> Status </template>
+                            <template #head(id)> &nbsp;</template>
 
-                        <!-- Cell formatting -->
-                        <template #cell(url)="{ item }">
-                            <i class="fas ml-0 mr-2 text-muted fa-globe"></i>
-                            <code>{{ item.url }}</code>
-                        </template>
-                        <template #cell(variant)="{ item }"> {{ item.variant }} </template>
-                        <template #cell(requestCreated)="{ item }">
-                            {{ item.requestCreated }}
-                        </template>
-                        <template #cell(id)="{ item }">
-                            {{ item.id }}
-                            <BaseModalWebhookCreate :id="`modalWebhookCreate${item.id}`" />
-                        </template>
-                        <template #cell(status)="{ item }">
-                            <b-badge variant="success"> {{ item.status }}</b-badge>
-                        </template>
-                    </BTable>
+                            <!-- Cell formatting -->
+                            <template #cell(url)="{ item }">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas ml-0 mr-2 text-muted fa-globe"></i>
+                                    {{ item.url }}
+                                </div>
+                            </template>
+                            <template #cell(_id)="{ item }">
+                                <code>{{ item.id }}</code>
+                            </template>
+                            <template #cell(requestCreated)="{ item }">
+                                {{ item.requestCreated || '0' }}
+                            </template>
+                            <template #cell(status)="{ item }">
+                                <b-badge :variant="item.status ? 'success' : 'light'" class="p-2">
+                                    {{ item.status || 'Inactive' }}</b-badge
+                                >
+                            </template>
+                            <template #cell(id)="{ item }">
+                                <b-dropdown variant="link" size="sm" no-caret right>
+                                    <template #button-content>
+                                        <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
+                                    </template>
+                                    <b-dropdown-item v-b-modal="`modalWebhookCreate${item.id}`"> Edit </b-dropdown-item>
+                                    <b-dropdown-item @click="onClickDelete(item)"> Delete </b-dropdown-item>
+                                </b-dropdown>
+                                <BaseModalWebhookCreate
+                                    :id="`modalWebhookCreate${item._id}`"
+                                    :pool="pool"
+                                    :webhook="item"
+                                />
+                            </template>
+                        </BTable>
+                    </div>
                 </b-form-group>
             </b-col>
         </b-form-row>
@@ -89,7 +112,7 @@ export default class CampaignConfigWebhooks extends Vue {
     profile!: TAccount;
     pools!: IPools;
     webhooks!: TWebhookState;
-    isSigninSecretHidden = true;
+    issigningSecretHidden = true;
     isCopied = false;
 
     get pool() {
@@ -98,13 +121,21 @@ export default class CampaignConfigWebhooks extends Vue {
 
     get signingSecret() {
         if (!this.pool.signingSecret) return '';
-        if (this.isSigninSecretHidden) return this.pool.signingSecret.replace(/./g, '•');
+        if (this.issigningSecretHidden) return this.pool.signingSecret.replace(/./g, '•');
         return this.pool.signingSecret;
     }
 
     get webhooksList() {
-        if (!this.webhooks) return [];
-        return Object.values(this.webhooks).map((w) => ({ ...w, id: w._id }));
+        if (!this.webhooks[this.pool._id]) return [];
+        return Object.values(this.webhooks[this.pool._id]).map((w) => {
+            return {
+                url: w.url,
+                _id: w._id,
+                requestCreated: w.requestCreated,
+                status: w.status,
+                id: w._id,
+            };
+        });
     }
 
     mounted() {
@@ -114,6 +145,24 @@ export default class CampaignConfigWebhooks extends Vue {
     onCopySuccess() {
         this.isCopied = true;
     }
+
+    async onClickDelete(item: any) {
+        const webhook = Object.values(this.webhooks[this.pool._id]).find((webhook) => webhook._id === item._id);
+        await this.$store.dispatch('webhooks/delete', webhook);
+    }
 }
 </script>
-<style></style>
+<style lang="scss">
+#table-webhooks th:nth-child(1) {
+    width: auto;
+}
+#table-webhooks th:nth-child(2) {
+    width: auto;
+}
+#table-webhooks th:nth-child(3) {
+    width: 100px;
+}
+#table-webhooks th:nth-child(4) {
+    width: 50px;
+}
+</style>

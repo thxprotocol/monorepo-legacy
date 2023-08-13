@@ -89,7 +89,7 @@ import BaseCardInfoLinks from '../cards/BaseCardInfoLinks.vue';
         BaseCardInfoLinks,
     },
 })
-export default class ModalMilestoneRewardCreate extends Vue {
+export default class ModalQuestCustomCreate extends Vue {
     isSubmitDisabled = false;
     isLoading = false;
     isVisible = true;

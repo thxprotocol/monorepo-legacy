@@ -1,8 +1,8 @@
-import { body } from 'express-validator';
+import { param } from 'express-validator';
 import { Request, Response } from 'express';
 import { Webhook } from '@thxnetwork/api/models/Webhook';
 
-const validation = [body('url').isURL({ require_tld: false })];
+const validation = [param('id').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Webhooks']

@@ -19,7 +19,7 @@
                 </b-tab>
                 <b-tab active :disabled="profile && !profile.plan">
                     <template #title>
-                        <i class="fas fa-wifi mr-2"></i>
+                        <i class="fas fa-globe mr-2"></i>
                         Webhooks
                     </template>
                     <BaseTabSettingsWebhooks />

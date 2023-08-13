@@ -5,6 +5,7 @@ export type TWebhook = {
     url: string;
     poolId: string;
     status: WebhookStatus;
+    requestCreated?: number;
     createdAt?: Date;
 };
 export type TWebhookRequest = {

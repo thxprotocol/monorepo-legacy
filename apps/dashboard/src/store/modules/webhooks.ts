@@ -23,6 +23,11 @@ class WebhooksModule extends VuexModule {
         Vue.set(this._all[webhook.poolId], String(webhook._id), webhook);
     }
 
+    @Mutation
+    unset(webhook: TWebhook) {
+        Vue.delete(this._all[webhook.poolId], String(webhook._id));
+    }
+
     @Action({ rawError: true })
     async list(pool: TPool) {
         const { data } = await axios({
@@ -39,39 +44,41 @@ class WebhooksModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    create(pool: TPool) {
-        return axios({
-            method: 'POST',
-            url: '/webhooks',
-            headers: {
-                'X-PoolId': pool._id,
-            },
-        });
-    }
-
-    @Action({ rawError: true })
-    update(webhook: TWebhook) {
-        return axios({
+    async create(webhook: TWebhook) {
+        const { data } = await axios({
             method: 'POST',
             url: '/webhooks',
             headers: {
                 'X-PoolId': webhook.poolId,
             },
-            data: {
-                ...webhook,
-            },
+            data: webhook,
         });
+        this.context.commit('set', data);
     }
 
     @Action({ rawError: true })
-    delete(webhook: TWebhook) {
-        return axios({
+    async update(webhook: TWebhook) {
+        await axios({
+            method: 'POST',
+            url: '/webhooks',
+            headers: {
+                'X-PoolId': webhook.poolId,
+            },
+            data: webhook,
+        });
+        this.context.commit('set', webhook);
+    }
+
+    @Action({ rawError: true })
+    async delete(webhook: TWebhook) {
+        await axios({
             method: 'DELETE',
             url: '/webhooks/' + webhook._id,
             headers: {
                 'X-PoolId': webhook.poolId,
             },
         });
+        this.context.commit('unset', webhook);
     }
 }
 
