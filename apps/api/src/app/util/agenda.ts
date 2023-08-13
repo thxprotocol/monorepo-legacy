@@ -4,7 +4,9 @@ import { logger } from './logger';
 import { updatePendingTransactions } from '@thxnetwork/api/jobs/updatePendingTransactions';
 import { createConditionalRewards } from '@thxnetwork/api/jobs/createConditionalRewards';
 import { sendPoolAnalyticsReport } from '@thxnetwork/api/jobs/sendPoolAnalyticsReport';
+import { JobType } from '@thxnetwork/types/enums';
 import SafeService from '@thxnetwork/api/services/SafeService';
+import WebhookService from '../services/WebhookService';
 
 const agenda = new Agenda({
     name: 'jobs',
@@ -13,19 +15,12 @@ const agenda = new Agenda({
     processEvery: '1 second',
 });
 
-enum JobType {
-    UpdatePendingTransactions = 'updatePendingTransactions',
-    CreateConditionalRewards = 'createConditionalRewards',
-    SendCampaignReport = 'sendPoolAnalyticsReport',
-    MigrateWallets = 'migrateWallets',
-    DeploySafe = 'deploySafe',
-}
-
 agenda.define(JobType.UpdatePendingTransactions, updatePendingTransactions);
 agenda.define(JobType.CreateConditionalRewards, createConditionalRewards);
 agenda.define(JobType.SendCampaignReport, sendPoolAnalyticsReport);
 agenda.define(JobType.DeploySafe, (job: Job) => SafeService.createJob(job));
 agenda.define(JobType.MigrateWallets, (job: Job) => SafeService.migrateJob(job));
+agenda.define(JobType.RequestAttemp, (job: Job) => WebhookService.requestAttemptJob(job));
 
 db.connection.on('open', async () => {
     agenda.mongo(db.connection.getClient().db() as any, 'jobs');

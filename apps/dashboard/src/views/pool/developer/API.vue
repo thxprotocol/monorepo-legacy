@@ -2,7 +2,7 @@
     <b-form-row>
         <b-col md="4">
             <strong>API Keys</strong>
-            <p class="text-muted">...</p>
+            <p class="text-muted">Register OAuth2 clients and build your own frontend against THX API's.</p>
         </b-col>
         <b-col md="8">
             <b-form-group>
@@ -19,14 +19,7 @@
                     </b-button>
                     <BaseModalClientCreate :pool="pool" @submit="onSubmit" />
                 </template>
-                <BTable
-                    hover
-                    :busy="isLoading"
-                    :items="clientsByPage"
-                    :fields="['Label', 'Grant Type', 'Key', 'Secret']"
-                    responsive="lg"
-                    show-empty
-                >
+                <BTable hover :busy="isLoading" :items="clientsByPage" responsive="lg" show-empty>
                     <!-- Head formatting -->
                     <template #head(name)> Client Name </template>
                     <template #head(type)> Grant Type </template>

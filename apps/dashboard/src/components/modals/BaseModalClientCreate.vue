@@ -58,7 +58,8 @@ export default class BaseModalClientCreate extends Vue {
     @Prop() client!: TClient;
 
     get isValid() {
-        return this.grantType === 'authorization_code' ? this.redirectUri !== '' && this.requestUri !== '' : true;
+        if (this.grantType === GrantVariant.ClientCredentials) return;
+        return !this.redirectUri.length && !this.requestUri.length;
     }
 
     onShow() {
@@ -69,7 +70,7 @@ export default class BaseModalClientCreate extends Vue {
     }
 
     async submit() {
-        debugger;
+        console.log(this.client);
         await this.$store.dispatch('clients/' + this.client ? 'update' : 'create', {
             poolId: this.pool._id,
             name: this.name,

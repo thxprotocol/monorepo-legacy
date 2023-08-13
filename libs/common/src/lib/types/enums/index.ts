@@ -18,3 +18,5 @@ export * from './NFTVariant';
 export * from './Signup';
 export * from './TokenGatingVariant';
 export * from './Webhook';
+export * from './Event';
+export * from './Job';

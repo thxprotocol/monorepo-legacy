@@ -51,14 +51,13 @@ class ClientModule extends VuexModule {
 
     @Action({ rawError: true })
     async create(payload: TClient) {
-        debugger;
         const { data } = await axios({
             method: 'POST',
             url: '/clients',
             headers: { 'X-PoolId': payload.poolId },
             data: payload,
         });
-        debugger;
+
         const profile = this.context.rootGetters['account/profile'];
         track('UserCreates', [profile.sub, 'client']);
 

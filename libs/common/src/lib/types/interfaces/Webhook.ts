@@ -1,4 +1,4 @@
-import { WebhookStatus, WebhookRequestStatus } from '../enums/Webhook';
+import { WebhookStatus, WebhookRequestState } from '../enums/Webhook';
 
 export type TWebhook = {
     _id?: string;
@@ -8,12 +8,13 @@ export type TWebhook = {
     requestCreated?: number;
     createdAt?: Date;
 };
+
 export type TWebhookRequest = {
     _id?: string;
     webhookId: string;
     payload: string;
     attempts: number;
-    status: WebhookRequestStatus;
+    state: WebhookRequestState;
     failReason: string;
     createdAt?: Date;
 };

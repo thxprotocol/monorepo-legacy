@@ -1,17 +1,21 @@
 import mongoose from 'mongoose';
 import { TWebhookRequest } from '@thxnetwork/types/interfaces';
 
-export type WebhookDocument = mongoose.Document & TWebhookRequest;
+export type WebhookRequestDocument = mongoose.Document & TWebhookRequest;
 
-const webhookSchema = new mongoose.Schema(
+const webhookRequestSchema = new mongoose.Schema(
     {
         webhookId: String,
         payload: String,
         attempts: Number,
-        status: Number,
+        state: Number,
         failReason: String,
     },
     { timestamps: true },
 );
 
-export const Webhook = mongoose.model<WebhookDocument>('Webhook', webhookSchema, 'wehbooks');
+export const WebhookRequest = mongoose.model<WebhookRequestDocument>(
+    'WebhookRequest',
+    webhookRequestSchema,
+    'webhookrequests',
+);

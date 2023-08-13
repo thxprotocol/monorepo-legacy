@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { GrantType } from '@thxnetwork/types/enums/GrantType';
+import { GrantVariant } from '@thxnetwork/types/enums';
 import ClientProxy from '@thxnetwork/api/proxies/ClientProxy';
 
 export default {
@@ -15,7 +15,7 @@ export default {
         const { grantType, redirectUri, requestUri, name } = req.body;
         let payload;
         switch (grantType) {
-            case GrantType.AuthorizationCode:
+            case GrantVariant.AuthorizationCode:
                 payload = {
                     application_type: 'web',
                     grant_types: [grantType],
@@ -26,7 +26,7 @@ export default {
                     scope: 'openid offline_access',
                 };
                 break;
-            case GrantType.ClientCredentials:
+            case GrantVariant.ClientCredentials:
                 payload = {
                     application_type: 'web',
                     grant_types: [grantType],

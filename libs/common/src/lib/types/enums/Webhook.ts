@@ -8,7 +8,7 @@ export enum WebhookStatus {
     Active = 1,
 }
 
-export enum WebhookRequestStatus {
+export enum WebhookRequestState {
     Pending = 0,
     Sent = 1,
     Received = 2,

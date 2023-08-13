@@ -199,6 +199,7 @@ export async function getLeaderboard(pool: AssetPoolDocument, dateRange?: { star
     const walletTotals = {};
     for (const collectionResults of result) {
         for (const r of collectionResults) {
+            if (!r) continue;
             if (walletTotals[r._id]) {
                 walletTotals[r._id].totalCompleted += r.totalCompleted;
                 walletTotals[r._id].totalAmount += r.totalAmount;
@@ -220,12 +221,11 @@ export async function getLeaderboard(pool: AssetPoolDocument, dateRange?: { star
         .map((account: TAccount) => {
             const wallet = wallets.find((w) => w.sub === account.sub);
             const walletId = String(wallet._id);
-
             return {
-                questsCompleted: walletTotals[walletId].totalCompleted,
+                questsCompleted: walletTotals[walletId]?.totalCompleted,
                 sub: wallet.sub,
                 walletId,
-                score: walletTotals[walletId].totalAmount,
+                score: walletTotals[walletId]?.totalAmount,
                 wallet,
                 account: { ...account, address: wallet.address },
             };
