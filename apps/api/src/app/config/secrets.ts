@@ -29,7 +29,9 @@ if (process.env.NODE_ENV === 'production') {
             'POLYGON_RELAYER',
             'POLYGON_RELAYER_API_KEY',
             'POLYGON_RELAYER_API_SECRET',
-            // 'RELAYER_SPEED',
+            'INFURA_IPFS_PROJECT_ID',
+            'INFURA_IPFS_PROJECT_SECRET',
+            'RELAYER_SPEED',
         ],
     );
 } else if (process.env.NODE_ENV === 'development') {
