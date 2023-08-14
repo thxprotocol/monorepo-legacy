@@ -2,6 +2,7 @@ import { WebhookStatus, WebhookRequestState } from '../enums/Webhook';
 
 export type TWebhook = {
     _id?: string;
+    sub: string;
     url: string;
     poolId: string;
     status: WebhookStatus;

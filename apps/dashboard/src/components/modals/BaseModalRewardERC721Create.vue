@@ -2,7 +2,7 @@
     <base-modal
         @show="onShow"
         size="xl"
-        :title="(perk ? 'Update' : 'Create') + ' NFT Reward'"
+        :title="(reward ? 'Update' : 'Create') + ' NFT Reward'"
         :id="id"
         :error="error"
         :loading="isLoading"
@@ -78,13 +78,13 @@
                         <BaseCardTokenGating
                             class="mb-3"
                             :pool="pool"
-                            :perk="perk"
+                            :reward="reward"
                             @change-contract-address="tokenGatingContractAddress = $event"
                             @change-amount="tokenGatingAmount = $event"
                             @change-variant="tokenGatingVariant = $event"
                         />
                         <BaseCardClaimAmount
-                            :disabled="!!perk"
+                            :disabled="!!reward"
                             class="mb-3"
                             :claimAmount="claimAmount"
                             :claimLimit="claimLimit"
@@ -108,7 +108,7 @@
                 variant="primary"
                 block
             >
-                {{ (perk ? 'Update' : 'Create') + ' NFT Reward' }}
+                {{ (reward ? 'Update' : 'Create') + ' NFT Reward' }}
             </b-button>
         </template>
     </base-modal>
@@ -195,7 +195,7 @@ export default class ModalRewardERC721Create extends Vue {
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
-    @Prop({ required: false }) perk!: TERC721Perk;
+    @Prop({ required: false }) reward!: TERC721Perk;
     @Prop({ required: false, default: () => [] }) selectedMetadataIds!: string[];
 
     get chainId() {
@@ -214,33 +214,33 @@ export default class ModalRewardERC721Create extends Vue {
     }
 
     onShow() {
-        this.title = this.perk ? this.perk.title : '';
-        this.description = this.perk ? this.perk.description : '';
-        this.pointPrice = this.perk ? this.perk.pointPrice : 0;
-        this.expiryDate = this.perk ? this.perk.expiryDate : null;
-        this.limit = this.perk ? this.perk.limit : 0;
-        this.claimAmount = this.perk ? this.perk.claimAmount : this.claimAmount;
-        this.claimLimit = this.perk ? this.perk.claimLimit : this.claimLimit;
-        this.price = this.perk && this.perk.price ? this.perk.price : this.price;
-        this.priceCurrency = this.perk ? this.perk.priceCurrency : this.priceCurrency;
-        this.image = this.perk ? this.perk.image : '';
-        this.isPromoted = this.perk ? this.perk.isPromoted : false;
-        if (this.perk && this.perk.erc721Id) {
-            this.nft = this.perk ? this.erc721s[this.perk.erc721Id] : this.nft;
+        this.title = this.reward ? this.reward.title : '';
+        this.description = this.reward ? this.reward.description : '';
+        this.pointPrice = this.reward ? this.reward.pointPrice : 0;
+        this.expiryDate = this.reward ? this.reward.expiryDate : null;
+        this.limit = this.reward ? this.reward.limit : 0;
+        this.claimAmount = this.reward ? this.reward.claimAmount : this.claimAmount;
+        this.claimLimit = this.reward ? this.reward.claimLimit : this.claimLimit;
+        this.price = this.reward && this.reward.price ? this.reward.price : this.price;
+        this.priceCurrency = this.reward ? this.reward.priceCurrency : this.priceCurrency;
+        this.image = this.reward ? this.reward.image : '';
+        this.isPromoted = this.reward ? this.reward.isPromoted : false;
+        if (this.reward && this.reward.erc721Id) {
+            this.nft = this.reward ? this.erc721s[this.reward.erc721Id] : this.nft;
         }
-        if (this.perk && this.perk.erc1155Id) {
-            this.nft = this.perk ? this.erc1155s[this.perk.erc1155Id] : this.nft;
+        if (this.reward && this.reward.erc1155Id) {
+            this.nft = this.reward ? this.erc1155s[this.reward.erc1155Id] : this.nft;
         }
-        this.metadataId = this.perk && this.perk.metadataId ? this.perk.metadataId : this.metadataId;
-        this.tokenId = this.perk && this.perk.tokenId ? this.perk.tokenId : this.tokenId;
+        this.metadataId = this.reward && this.reward.metadataId ? this.reward.metadataId : this.metadataId;
+        this.tokenId = this.reward && this.reward.tokenId ? this.reward.tokenId : this.tokenId;
         this.erc1155Amount =
-            this.perk && this.perk.erc1155Amount ? Number(this.perk.erc1155Amount) : this.erc1155Amount;
-        this.tokenGatingContractAddress = this.perk
-            ? this.perk.tokenGatingContractAddress
+            this.reward && this.reward.erc1155Amount ? Number(this.reward.erc1155Amount) : this.erc1155Amount;
+        this.tokenGatingContractAddress = this.reward
+            ? this.reward.tokenGatingContractAddress
             : this.tokenGatingContractAddress;
-        this.tokenGatingVariant = this.perk ? this.perk.tokenGatingVariant : this.tokenGatingVariant;
-        this.tokenGatingAmount = this.perk ? this.perk.tokenGatingAmount : this.tokenGatingAmount;
-        this.redirectUrl = this.perk ? this.perk.redirectUrl : this.redirectUrl;
+        this.tokenGatingVariant = this.reward ? this.reward.tokenGatingVariant : this.tokenGatingVariant;
+        this.tokenGatingAmount = this.reward ? this.reward.tokenGatingAmount : this.tokenGatingAmount;
+        this.redirectUrl = this.reward ? this.reward.redirectUrl : this.redirectUrl;
     }
 
     async onSelectNFT(nft: TERC721 | TERC1155) {
@@ -286,7 +286,7 @@ export default class ModalRewardERC721Create extends Vue {
 
     onSubmit() {
         if (!this.nft || (!this.metadataId && !this.selectedMetadataIds.length && !this.tokenId)) {
-            this.error = 'Select a token or metadata for this perk.';
+            this.error = 'Select a token or metadata for this reward.';
             return;
         }
 
@@ -328,9 +328,9 @@ export default class ModalRewardERC721Create extends Vue {
         };
 
         this.$store
-            .dispatch(`erc721Perks/${this.perk ? 'update' : 'create'}`, {
+            .dispatch(`erc721Perks/${this.reward ? 'update' : 'create'}`, {
                 pool: this.pool || Object.values(this.pools)[0],
-                reward: this.perk,
+                reward: this.reward,
                 payload,
             })
             .then(() => {

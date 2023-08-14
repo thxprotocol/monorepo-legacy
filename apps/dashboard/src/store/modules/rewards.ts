@@ -1,11 +1,11 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { RewardVariant, TWebhook, type TPool } from '@thxnetwork/types/index';
-import { type TERC20Perk } from '@thxnetwork/types/index';
+import { RewardVariant } from '@thxnetwork/types/enums';
+import type { TCustomReward, TWebhook, TPool } from '@thxnetwork/types/interfaces';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 import { track } from '@thxnetwork/mixpanel';
-import { TCustomReward } from '@thxnetwork/types/interfaces/CustomReward';
+import {} from '@thxnetwork/types/interfaces/CustomReward';
 
 export type TCustomRewardState = {
     [poolId: string]: {
@@ -43,7 +43,7 @@ class RewardModule extends VuexModule {
     async list({ pool, page, limit }) {
         const { data } = await axios({
             method: 'GET',
-            url: '/rewards/custom',
+            url: '/custom-rewards',
             headers: { 'X-PoolId': pool._id },
             params: {
                 page: String(page),
@@ -53,9 +53,9 @@ class RewardModule extends VuexModule {
 
         this.context.commit('setTotal', { pool, total: data.total });
 
-        data.results.forEach((reward: TERC20Perk) => {
+        data.results.forEach((reward: TCustomReward) => {
             reward.page = page;
-            this.context.commit('set', { pool, reward });
+            this.context.commit('set', reward);
         });
     }
 
@@ -64,7 +64,7 @@ class RewardModule extends VuexModule {
         const formData = prepareFormDataForUpload(reward);
         const { data } = await axios({
             method: 'POST',
-            url: '/rewards/custom',
+            url: '/custom-rewards',
             headers: { 'X-PoolId': reward.poolId },
             data: formData,
         });
@@ -80,7 +80,7 @@ class RewardModule extends VuexModule {
         const formData = prepareFormDataForUpload(reward);
         const { data } = await axios({
             method: 'PATCH',
-            url: `/rewards/custom/${reward._id}`,
+            url: `/custom-rewards/${reward._id}`,
             headers: { 'X-PoolId': reward.poolId },
             data: formData,
         });
@@ -92,7 +92,7 @@ class RewardModule extends VuexModule {
     async delete(reward: TCustomReward) {
         await axios({
             method: 'DELETE',
-            url: `/rewards/custom/${reward._id}`,
+            url: `/custom-rewards/${reward._id}`,
             headers: { 'X-PoolId': reward.poolId },
         });
         this.context.commit('unset', reward);

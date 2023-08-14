@@ -5,6 +5,7 @@ export type WebhookDocument = mongoose.Document & TWebhook;
 
 const webhookSchema = new mongoose.Schema(
     {
+        sub: String,
         poolId: String,
         url: String,
         requestAmount: Number,

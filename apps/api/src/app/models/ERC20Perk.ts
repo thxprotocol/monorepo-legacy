@@ -21,10 +21,7 @@ export const perkBaseSchema = {
     claimAmount: Number,
     claimLimit: Number,
     limit: Number,
-    isPromoted: {
-        type: Boolean,
-        default: false,
-    },
+    isPromoted: { type: Boolean, default: false },
     tokenGatingVariant: Number,
     tokenGatingContractAddress: String,
     tokenGatingAmount: Number,

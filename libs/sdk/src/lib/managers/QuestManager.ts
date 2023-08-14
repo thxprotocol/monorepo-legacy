@@ -1,7 +1,7 @@
 import { THXClient } from '../../index';
 import BaseManager from './BaseManager';
 
-class RewardsManager extends BaseManager {
+class QuestManager extends BaseManager {
     constructor(client: THXClient) {
         super(client);
     }
@@ -37,4 +37,4 @@ class RewardsManager extends BaseManager {
     };
 }
 
-export default RewardsManager;
+export default QuestManager;

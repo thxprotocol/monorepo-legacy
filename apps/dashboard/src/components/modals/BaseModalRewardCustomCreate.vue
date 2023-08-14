@@ -119,6 +119,7 @@ export default class ModalRewardCustomCreate extends Vue {
     webhooks!: TWebhookState;
 
     webhook: TWebhook | null = null;
+    webhookId = '';
     error = '';
     title = '';
     description = '';
@@ -143,13 +144,8 @@ export default class ModalRewardCustomCreate extends Vue {
         return Object.values(this.webhooks[this.pool._id]);
     }
 
-    get chainId() {
-        return (this.pool && this.pool.chainId) || ChainId.Hardhat;
-    }
-
     onShow() {
-        this.$store.dispatch('webhooks/list', this.pool);
-
+        this.webhookId = this.reward ? this.reward.webhookId : '';
         this.title = this.reward ? this.reward.title : '';
         this.description = this.reward ? this.reward.description : '';
         this.pointPrice = this.reward ? this.reward.pointPrice : 0;
@@ -164,6 +160,10 @@ export default class ModalRewardCustomCreate extends Vue {
             : this.tokenGatingContractAddress;
         this.tokenGatingVariant = this.reward ? this.reward.tokenGatingVariant : this.tokenGatingVariant;
         this.tokenGatingAmount = this.reward ? this.reward.tokenGatingAmount : this.tokenGatingAmount;
+
+        this.$store.dispatch('webhooks/list', this.pool).then(() => {
+            this.webhook = this.webhooks[this.pool._id][this.webhookId];
+        });
     }
 
     onChangePointPrice(price: number) {
@@ -200,8 +200,6 @@ export default class ModalRewardCustomCreate extends Vue {
             limit: this.limit,
             pointPrice: this.pointPrice,
             isPromoted: this.isPromoted,
-            claimAmount: this.claimAmount,
-            claimLimit: this.claimLimit,
             tokenGatingContractAddress: this.tokenGatingContractAddress,
             tokenGatingVariant: this.tokenGatingVariant,
             tokenGatingAmount: this.tokenGatingAmount,
@@ -211,6 +209,7 @@ export default class ModalRewardCustomCreate extends Vue {
             this.isSubmitDisabled = false;
             this.isLoading = false;
             this.$bvModal.hide(this.id);
+            this.$emit('submit');
         });
     }
 

@@ -38,7 +38,7 @@
                 <BaseModalRewardCustomCreate @submit="listRewards" :id="'modalRewardCustomCreate'" :pool="pool" />
             </b-col>
         </b-row>
-        <BCard variant="white" body-class="p-0 shadow-sm">
+        <BCard variant="white" fields="'index', 'checkbox'" body-class="p-0 shadow-sm">
             <BaseCardTableHeader
                 :page="page"
                 :limit="limit"
@@ -70,7 +70,6 @@
                 <template #head(title)> Title </template>
                 <template #head(supply)> Supply </template>
                 <template #head(expiry)> Expiry </template>
-                <template #head(claims)> QR Codes </template>
                 <template #head(id)> &nbsp; </template>
 
                 <!-- Cell formatting -->
@@ -110,21 +109,6 @@
                         />
                     </b-progress>
                 </template>
-                <template #cell(claims)="{ item }">
-                    <b-link v-b-modal="`modalRewardClaimsDownload${item.id}`" v-if="item.claims && item.claims.length">
-                        <b-progress
-                            :value="item.claims.filter((c) => c.sub).length"
-                            :max="item.claims.length"
-                            show-value
-                        />
-                    </b-link>
-                    <BaseModalRewardClaimsDownload
-                        :id="`modalRewardClaimsDownload${item.id}`"
-                        :pool="pool"
-                        :selectedItems="[item.id]"
-                        :rewards="allRewards.filter((r) => r.variant == RewardVariant.NFT)"
-                    />
-                </template>
                 <template #cell(title)="{ item }">
                     {{ item.title }}
                 </template>
@@ -133,18 +117,30 @@
                         <template #button-content>
                             <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
                         </template>
+                        <b-dropdown-item
+                            :disabled="item.variant !== RewardVariant.NFT"
+                            v-b-modal="`modalRewardClaimsDownload${item.id}`"
+                        >
+                            QR Codes
+                        </b-dropdown-item>
                         <b-dropdown-item v-b-modal="rewardModalComponentMap[item.variant] + item.id">
                             Edit
                         </b-dropdown-item>
                         <b-dropdown-item @click="onClickDelete(item)"> Delete </b-dropdown-item>
                     </b-dropdown>
+                    <BaseModalRewardClaimsDownload
+                        :id="`modalRewardClaimsDownload${item.id}`"
+                        :pool="pool"
+                        :selectedItems="[item.id]"
+                        :rewards="allRewards.filter((r) => r.variant == RewardVariant.NFT)"
+                    />
                     <component
                         @submit="listRewards"
                         :is="rewardModalComponentMap[item.variant]"
                         :id="rewardModalComponentMap[item.variant] + item.id"
+                        :reward="allRewards.find((q) => q._id === item.id)"
                         :pool="pool"
                         :total="allRewards.length"
-                        :perk="allRewards.find((q) => q._id === item.id)"
                     />
                 </template>
             </BTable>
@@ -165,6 +161,7 @@ import {
     RewardVariant,
     TERC721Perk,
     TBasePerk,
+    TCustomReward,
 } from '@thxnetwork/types/index';
 import type { IERC721s } from '@thxnetwork/dashboard/types/erc721';
 import BaseModalRewardERC20Create from '@thxnetwork/dashboard/components/modals/BaseModalRewardERC20Create.vue';
@@ -173,6 +170,7 @@ import BaseModalRewardCustomCreate from '@thxnetwork/dashboard/components/modals
 import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/badges/BaseBadgeRewardConditionPreview.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseModalRewardClaimsDownload from '@thxnetwork/dashboard/components/modals/BaseModalRewardClaimsDownload.vue';
+import { TCustomRewardState } from '@thxnetwork/dashboard/store/modules/rewards';
 
 @Component({
     components: {
@@ -188,6 +186,7 @@ import BaseModalRewardClaimsDownload from '@thxnetwork/dashboard/components/moda
         totals: 'erc20Perks/totals',
         coinRewards: 'erc20Perks/all',
         nftRewards: 'erc721Perks/all',
+        customRewards: 'rewards/all',
     }),
 })
 export default class RewardsView extends Vue {
@@ -214,7 +213,7 @@ export default class RewardsView extends Vue {
 
     coinRewards!: TERC20PerkState;
     nftRewards!: TERC721RewardState;
-    // customRewards!: TCustomRewardState;
+    customRewards!: TCustomRewardState;
 
     erc721s!: IERC721s;
 
@@ -230,12 +229,15 @@ export default class RewardsView extends Vue {
         return [
             ...(this.coinRewards[this.$route.params.id] ? Object.values(this.coinRewards[this.$route.params.id]) : []),
             ...(this.nftRewards[this.$route.params.id] ? Object.values(this.nftRewards[this.$route.params.id]) : []),
+            ...(this.customRewards[this.$route.params.id]
+                ? Object.values(this.customRewards[this.$route.params.id])
+                : []),
         ];
     }
 
     get rewardsByPage() {
         return this.allRewards
-            .filter((reward: TERC20Perk | TERC721Perk | any) => reward.page === this.page)
+            .filter((reward: TERC20Perk | TERC721Perk | TCustomReward | any) => reward.page === this.page)
             .sort((a: any, b: any) => (a.createdAt && b.createdAt && a.createdAt < b.createdAt ? 1 : -1))
             .map((r: any) => ({
                 index: 0,
@@ -245,7 +247,6 @@ export default class RewardsView extends Vue {
                 title: r.title,
                 expiry: r.expiry,
                 supply: { progress: r.payments ? r.payments.length : 0, limit: r.limit },
-                claims: r.claims,
                 id: r._id,
             }))
             .slice(0, this.limit);
@@ -268,6 +269,7 @@ export default class RewardsView extends Vue {
         await Promise.all([
             this.$store.dispatch('erc20Perks/list', { page: this.page, pool: this.pool, limit: this.limit }),
             this.$store.dispatch('erc721Perks/list', { page: this.page, pool: this.pool, limit: this.limit }),
+            this.$store.dispatch('rewards/list', { page: this.page, pool: this.pool, limit: this.limit }),
         ]);
         this.isLoading = false;
     }
@@ -289,9 +291,11 @@ export default class RewardsView extends Vue {
     onClickDelete(item: { variant: RewardVariant; id: string }) {
         switch (item.variant) {
             case RewardVariant.Coin:
-                return this.$store.dispatch('erc20Rewards/delete', this.coinRewards[this.pool._id][item.id]);
+                return this.$store.dispatch('erc20Perks/delete', this.coinRewards[this.pool._id][item.id]);
             case RewardVariant.NFT:
-                return this.$store.dispatch('erc721Rewards/delete', this.nftRewards[this.pool._id][item.id]);
+                return this.$store.dispatch('erc721Perks/delete', this.nftRewards[this.pool._id][item.id]);
+            case RewardVariant.Custom:
+                return this.$store.dispatch('rewards/delete', this.customRewards[this.pool._id][item.id]);
         }
     }
 
@@ -329,9 +333,9 @@ export default class RewardsView extends Vue {
     width: auto;
 }
 #table-rewards th:nth-child(6) {
-    width: 120px;
+    width: 100px;
 }
-#table-rewards th:nth-child(7) {
-    width: 40px;
+#table-rewards th:nth-child(8) {
+    width: 100px;
 }
 </style>

@@ -2,7 +2,7 @@
     <base-modal
         @show="onShow"
         size="xl"
-        :title="perk ? 'Update Coin Reward' : 'Create Coin Reward'"
+        :title="reward ? 'Update Coin Reward' : 'Create Coin Reward'"
         :id="id"
         :error="error"
         :loading="isLoading"
@@ -61,7 +61,7 @@
                         <BaseCardTokenGating
                             class="mb-3"
                             :pool="pool"
-                            :perk="perk"
+                            :reward="reward"
                             @change-contract-address="tokenGatingContractAddress = $event"
                             @change-amount="tokenGatingAmount = $event"
                             @change-variant="tokenGatingVariant = $event"
@@ -82,7 +82,7 @@
                 variant="primary"
                 block
             >
-                {{ perk ? 'Update Coin Reward' : 'Create Coin Reward' }}
+                {{ reward ? 'Update Coin Reward' : 'Create Coin Reward' }}
             </b-button>
         </template>
     </base-modal>
@@ -129,33 +129,33 @@ export default class ModalRewardERC20Create extends Vue {
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
-    @Prop({ required: false }) perk!: TERC20Perk;
+    @Prop({ required: false }) reward!: TERC20Perk;
 
     onShow() {
-        this.erc20Id = this.perk ? this.perk.erc20Id : this.erc20Id;
-        this.title = this.perk ? this.perk.title : this.title;
-        this.description = this.perk ? this.perk.description : this.description;
-        this.amount = this.perk ? String(this.perk.amount) : this.amount;
-        this.pointPrice = this.perk ? this.perk.pointPrice : this.pointPrice;
-        this.expiryDate = this.perk ? this.perk.expiryDate : this.expiryDate;
-        this.limit = this.perk ? this.perk.limit : 0;
-        this.claimLimit = this.perk ? this.perk.claimLimit : 1;
-        this.claimAmount = this.perk ? this.perk.claimAmount : 0;
-        this.image = this.perk && this.perk.image ? this.perk.image : '';
-        this.isPromoted = this.perk ? this.perk.isPromoted : this.isPromoted;
-        this.tokenGatingContractAddress = this.perk
-            ? this.perk.tokenGatingContractAddress
+        this.erc20Id = this.reward ? this.reward.erc20Id : this.erc20Id;
+        this.title = this.reward ? this.reward.title : this.title;
+        this.description = this.reward ? this.reward.description : this.description;
+        this.amount = this.reward ? String(this.reward.amount) : this.amount;
+        this.pointPrice = this.reward ? this.reward.pointPrice : this.pointPrice;
+        this.expiryDate = this.reward ? this.reward.expiryDate : this.expiryDate;
+        this.limit = this.reward ? this.reward.limit : 0;
+        this.claimLimit = this.reward ? this.reward.claimLimit : 1;
+        this.claimAmount = this.reward ? this.reward.claimAmount : 0;
+        this.image = this.reward && this.reward.image ? this.reward.image : '';
+        this.isPromoted = this.reward ? this.reward.isPromoted : this.isPromoted;
+        this.tokenGatingContractAddress = this.reward
+            ? this.reward.tokenGatingContractAddress
             : this.tokenGatingContractAddress;
-        this.tokenGatingVariant = this.perk ? this.perk.tokenGatingVariant : this.tokenGatingVariant;
-        this.tokenGatingAmount = this.perk ? this.perk.tokenGatingAmount : this.tokenGatingAmount;
+        this.tokenGatingVariant = this.reward ? this.reward.tokenGatingVariant : this.tokenGatingVariant;
+        this.tokenGatingAmount = this.reward ? this.reward.tokenGatingAmount : this.tokenGatingAmount;
     }
 
     onSubmit() {
         this.isLoading = true;
         this.$store
-            .dispatch(`erc20Perks/${this.perk ? 'update' : 'create'}`, {
+            .dispatch(`erc20Perks/${this.reward ? 'update' : 'create'}`, {
                 pool: this.pool,
-                reward: this.perk,
+                reward: this.reward,
                 payload: {
                     page: 1,
                     poolId: String(this.pool._id),

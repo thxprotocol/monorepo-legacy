@@ -9,18 +9,25 @@ import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import WalletService from '@thxnetwork/api/services/WalletService';
 import PerkService from '@thxnetwork/api/services/PerkService';
+import { CustomReward } from '@thxnetwork/api/models/CustomReward';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Perks']
     const pool = await PoolService.getById(req.header('X-PoolId'));
-    const erc20Perks = await ERC20Perk.find({
-        poolId: String(pool._id),
-        pointPrice: { $exists: true, $gt: 0 },
-    });
-    const erc721Perks = await ERC721Perk.find({
-        poolId: String(pool._id),
-        $or: [{ pointPrice: { $exists: true, $gt: 0 } }, { price: { $exists: true, $gt: 0 } }],
-    });
+    const [erc20Perks, erc721Perks, customRewards] = await Promise.all([
+        ERC20Perk.find({
+            poolId: String(pool._id),
+            pointPrice: { $exists: true, $gt: 0 },
+        }),
+        ERC721Perk.find({
+            poolId: String(pool._id),
+            $or: [{ pointPrice: { $exists: true, $gt: 0 } }, { price: { $exists: true, $gt: 0 } }],
+        }),
+        CustomReward.find({
+            poolId: String(pool._id),
+            $or: [{ pointPrice: { $exists: true, $gt: 0 } }, { price: { $exists: true, $gt: 0 } }],
+        }),
+    ]);
 
     let wallet: WalletDocument, sub: string;
 
@@ -34,27 +41,32 @@ const controller = async (req: Request, res: Response) => {
         wallet = await WalletService.findPrimary(sub, pool.chainId);
     }
 
+    const getRewardDefeaults = async (r, Model) => {
+        return {
+            _id: r._id,
+            uuid: r.uuid,
+            title: r.title,
+            description: r.description,
+            image: r.image,
+            pointPrice: r.pointPrice,
+            isPromoted: r.isPromoted,
+            expiry: await PerkService.getExpiry(r),
+            progress: await PerkService.getProgress(r, Model),
+            isLocked: await PerkService.getIsLockedForWallet(r, wallet),
+            tokenGatingContractAddress: r.tokenGatingContractAddress,
+        };
+    };
+
     res.json({
         erc20Perks: await Promise.all(
             erc20Perks.map(async (r) => {
                 const { isError } = await PerkService.validate({ perk: r, sub, pool });
+                const defaults = await getRewardDefeaults(r, ERC20PerkPayment);
                 return {
-                    _id: r._id,
-                    uuid: r.uuid,
-                    title: r.title,
-                    description: r.description,
-                    amount: r.amount,
-                    pointPrice: r.pointPrice,
-                    image: r.image,
-                    isPromoted: r.isPromoted,
-                    limit: r.limit,
+                    ...defaults,
                     isDisabled: isError,
                     isOwned: false,
                     erc20: await ERC20Service.getById(r.erc20Id),
-                    expiry: await PerkService.getExpiry(r),
-                    progress: await PerkService.getProgress(r, ERC20PerkPayment),
-                    isLocked: await PerkService.getIsLockedForWallet(r, wallet),
-                    tokenGatingContractAddress: r.tokenGatingContractAddress,
                 };
             }),
         ),
@@ -64,26 +76,29 @@ const controller = async (req: Request, res: Response) => {
                 const nft = await PerkService.getNFT(r);
                 const token = !r.metadataId && r.tokenId ? await PerkService.getToken(r) : null;
                 const metadata = await PerkService.getMetadata(r, token);
+                const defaults = await getRewardDefeaults(r, ERC721PerkPayment);
 
                 return {
-                    _id: r._id,
-                    uuid: r.uuid,
-                    title: r.title,
-                    description: r.description,
-                    pointPrice: r.pointPrice,
-                    price: r.price,
-                    priceCurrency: r.priceCurrency,
-                    image: r.image,
-                    isPromoted: r.isPromoted,
-                    isDisabled: isError,
-                    isOwned: false,
+                    ...defaults,
                     nft,
                     metadata,
                     erc1155Amount: r.erc1155Amount,
-                    expiry: await PerkService.getExpiry(r),
-                    progress: await PerkService.getProgress(r, ERC721PerkPayment),
-                    isLocked: await PerkService.getIsLockedForWallet(r, wallet),
-                    tokenGatingContractAddress: r.tokenGatingContractAddress,
+                    price: r.price,
+                    priceCurrency: r.priceCurrency,
+                    isDisabled: isError,
+                    isOwned: false,
+                };
+            }),
+        ),
+        customRewards: await Promise.all(
+            customRewards.map(async (r) => {
+                const { isError } = await PerkService.validate({ perk: r, sub, pool });
+                const defaults = await getRewardDefeaults(r, ERC721PerkPayment); // TOOD Implement CustomRewardPayment
+
+                return {
+                    ...defaults,
+                    isDisabled: isError,
+                    isOwned: false,
                 };
             }),
         ),

@@ -89,6 +89,9 @@
                     </b-row>
                 </b-tab>
                 <b-tab :title="`Claim URLs (${claims.length})`">
+                    <b-card class="bg-light m-3" title="Supply">
+                        <b-progress :value="claims.filter((c) => c.sub).length" :max="claims.length" show-value />
+                    </b-card>
                     <BaseCardTableHeader
                         :page="page"
                         :limit="limit"
