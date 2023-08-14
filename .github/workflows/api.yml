@@ -38,7 +38,7 @@ jobs:
                       ${{ runner.os }}-node-
 
             - name: Install Node.js dependencies
-              run: yarn install --frozen-lockfile --verbose
+              run: yarn install --frozen-lockfile
 
             - name: Cache Node.js dependencies
               uses: actions/cache/save@v3
