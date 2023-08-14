@@ -29,6 +29,7 @@ export function mockUrl(method: string, baseUrl: string, path: string, status: n
 }
 
 export function mockStart() {
+    mockClear();
     mockAuthPath('get', '/jwks', 200, jwksResponse);
     mockAuthPath('post', '/token', 200, async () => {
         return {

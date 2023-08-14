@@ -12,7 +12,7 @@ const controller = async (req: Request, res: Response) => {
     // Remove product for price
     // Remove payment link
 
-    await merchant.delete();
+    await merchant.deleteOne();
 
     res.status(204).end();
 };

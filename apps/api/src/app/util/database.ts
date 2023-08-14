@@ -1,11 +1,8 @@
 import mongoose from 'mongoose';
-import bluebird from 'bluebird';
 import { logger } from './logger';
-import { v4 as uuidv4 } from 'uuid';
+import { v4 } from 'uuid';
 
-(mongoose as any).Promise = bluebird;
-
-const connect = (url: string) => {
+const connect = async (url: string) => {
     mongoose.connection.on('error', (err) => {
         logger.error(`MongoDB connection error. Please make sure MongoDB is running. ${err}`);
     });
@@ -19,15 +16,21 @@ const connect = (url: string) => {
         logger.info(`MongoDB successfully connected to ${url.split('@')[1]}`);
     });
 
+    mongoose.connection.on('close', () => {
+        logger.info(`MongoDB successfully closed connection`);
+    });
+
     if (mongoose.connection.readyState === 0) {
-        mongoose.connect(url);
+        await mongoose.connect(url);
     }
 };
 
 const truncate = async () => {
     if (mongoose.connection.readyState !== 0) {
         const { collections } = mongoose.connection;
-        const promises = Object.keys(collections).map((collection) => {
+        const collectionNames = Object.keys(collections);
+        collectionNames.push('jobs');
+        const promises = collectionNames.map((collection) => {
             return mongoose.connection.collection(collection).deleteMany({});
         });
 
@@ -46,7 +49,7 @@ const disconnect = async () => {
 };
 
 const createUUID = () => {
-    return uuidv4();
+    return v4();
 };
 
 export default {
