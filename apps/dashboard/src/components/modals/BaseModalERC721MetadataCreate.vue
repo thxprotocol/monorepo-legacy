@@ -62,6 +62,7 @@ export default class ModalRewardCreate extends Vue {
     isSubmitDisabled = false;
     isSubmitImage = false;
 
+    error = '';
     name = '';
     description = '';
     externalUrl = '';
@@ -86,27 +87,32 @@ export default class ModalRewardCreate extends Vue {
         this.imageUrl = this.metadata ? this.metadata.imageUrl : this.imageUrl;
         this.description = this.metadata ? this.metadata.description : this.description;
         this.externalUrl = this.metadata ? this.metadata.externalUrl : this.externalUrl;
+        this.error = '';
     }
 
     async submit() {
-        this.isSubmitDisabled = true;
-        await this.$store.dispatch(
-            `${this.$route.params.variant}/${this.metadata ? 'updateMetadata' : 'createMetadata'}`,
-            {
-                erc721: this.nft,
-                erc1155: this.nft,
-                metadata: {
-                    ...this.metadata,
-                    name: this.name,
-                    description: this.description,
-                    externalUrl: this.externalUrl,
-                    imageUrl: this.imageUrl,
+        try {
+            this.isSubmitDisabled = true;
+            await this.$store.dispatch(
+                `${this.$route.params.variant}/${this.metadata ? 'updateMetadata' : 'createMetadata'}`,
+                {
+                    erc721: this.nft,
+                    erc1155: this.nft,
+                    metadata: {
+                        ...this.metadata,
+                        name: this.name,
+                        description: this.description,
+                        externalUrl: this.externalUrl,
+                        imageUrl: this.imageUrl,
+                    },
                 },
-            },
-        );
-        this.$emit('update');
-        this.$bvModal.hide(this.id);
-        this.isSubmitDisabled = false;
+            );
+            this.$emit('update');
+            this.$bvModal.hide(this.id);
+        } catch (error) {
+            this.error = String(error);
+            this.isSubmitDisabled = false;
+        }
     }
 }
 </script>

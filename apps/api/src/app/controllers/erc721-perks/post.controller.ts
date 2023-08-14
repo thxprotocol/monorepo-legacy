@@ -44,7 +44,7 @@ type ERC721PerkResponse = ERC721PerkDocument & any;
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721 Rewards']
-    let perks: ERC721PerkResponse[], nft, image: string;
+    let perks: ERC721PerkResponse[], nft;
     const { metadataIds, tokenId, erc721Id, erc1155Id } = req.body;
 
     const pool = await PoolService.getById(req.header('X-PoolId'));
@@ -79,10 +79,7 @@ const controller = async (req: Request, res: Response) => {
     }
 
     // Handle uploaded image file
-    if (req.file) {
-        const { key } = await ImageService.upload(req.file);
-        image = ImageService.getPublicUrl(key);
-    }
+    const image = req.file ? await ImageService.upload(req.file) : '';
 
     // Create perks for provided metadataIds
     if (metadataIdList.length) {

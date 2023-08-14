@@ -1,4 +1,4 @@
-import { GrantVariant } from '../enums';
+import { GrantVariant } from '../enums/GrantVariant';
 
 export type TClient = {
     _id: string;
