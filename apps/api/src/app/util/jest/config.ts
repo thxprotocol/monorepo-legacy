@@ -7,10 +7,9 @@ import { getContract, getContractConfig } from '@thxnetwork/api/config/contracts
 import { poll } from '../polling';
 import { currentVersion } from '@thxnetwork/contracts/exports';
 import { sub, sub2, sub3, userWalletAddress, userWalletAddress2, userWalletAddress3 } from './constants';
-import SafeService, { Wallet } from '@thxnetwork/api/services/SafeService';
+import { Wallet } from '@thxnetwork/api/services/SafeService';
 import Safe, { SafeFactory } from '@safe-global/protocol-kit';
 import { contractNetworks } from '@thxnetwork/api/config/contracts';
-import { Job } from 'agenda';
 
 export async function beforeAllCallback(options = { skipWalletCreation: false }) {
     await db.truncate();
@@ -37,7 +36,7 @@ export async function beforeAllCallback(options = { skipWalletCreation: false })
         });
         for (const entry of [
             { sub, userWalletAddress },
-            { sub: sub, userWalletAddress: userWalletAddress2 },
+            { sub: sub2, userWalletAddress: userWalletAddress2 },
             { sub: sub3, userWalletAddress: userWalletAddress3 },
         ]) {
             const safeAccountConfig = {
@@ -52,6 +51,7 @@ export async function beforeAllCallback(options = { skipWalletCreation: false })
                 address: safeAddress,
                 chainId,
             });
+
             try {
                 await Safe.create({
                     ethAdapter,
@@ -66,5 +66,5 @@ export async function beforeAllCallback(options = { skipWalletCreation: false })
 }
 
 export async function afterAllCallback() {
-    // mockClear();
+    await db.connection.collection('jobs').deleteMany({});
 }

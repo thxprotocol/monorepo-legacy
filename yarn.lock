@@ -3263,6 +3263,18 @@
   dependencies:
     highlight.js "^10.7.2"
 
+"@hokify/agenda@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/@hokify/agenda/-/agenda-6.3.0.tgz#ecc4efd0dab43983c4b74d8d4e3c046fe00a370b"
+  integrity sha512-fWrKMDe/8QHJXLOdEsMogb6cb213Z82iNsnU7nFrSIMFifEXSkXNTyCZ99FV3KLf+Du1gS/M9/8uTC6FHyWRZQ==
+  dependencies:
+    cron-parser "^4"
+    date.js "~0.3.3"
+    debug "~4"
+    human-interval "~2"
+    luxon "^3"
+    mongodb "^4"
+
 "@hubspot/api-client@^8.4.2":
   version "8.4.2"
   resolved "https://registry.npmjs.org/@hubspot/api-client/-/api-client-8.4.2.tgz"
@@ -7976,18 +7988,6 @@ aes-js@3.0.0:
   resolved "https://registry.npmjs.org/aes-js/-/aes-js-3.0.0.tgz"
   integrity sha512-H7wUZRn8WpTq9jocdxQ2c8x2sKo9ZVmzfRE13GiNJXfp7NcKYEdvl3vspKjXox6RIG2VtaRe4JFvxG4rqp2Zuw==
 
-agenda@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/agenda/-/agenda-5.0.0.tgz#1b22b8c7710e5d973498f354713665bfd5e51c33"
-  integrity sha512-jOoa7PvARpst/y2PI8h0wph4NmcjYJ/4wzFhQcHUbNgN+Hte/9h/MzKE0ZmHfIwdsSlnv3rhbBQ3Zd/gwFkThg==
-  dependencies:
-    cron-parser "^3.5.0"
-    date.js "~0.3.3"
-    debug "~4.3.4"
-    human-interval "~2.0.1"
-    moment-timezone "~0.5.37"
-    mongodb "^4.11.0"
-
 agent-base@6:
   version "6.0.2"
   resolved "https://registry.npmjs.org/agent-base/-/agent-base-6.0.2.tgz"
@@ -10915,13 +10915,12 @@ create-require@^1.1.0:
   resolved "https://registry.npmjs.org/create-require/-/create-require-1.1.1.tgz"
   integrity sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==
 
-cron-parser@^3.5.0:
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/cron-parser/-/cron-parser-3.5.0.tgz#b1a9da9514c0310aa7ef99c2f3f1d0f8c235257c"
-  integrity sha512-wyVZtbRs6qDfFd8ap457w3XVntdvqcwBGxBoTvJQH9KGVKL/fB+h2k3C8AqiVxvUQKN1Ps/Ns46CNViOpVDhfQ==
+cron-parser@^4:
+  version "4.8.1"
+  resolved "https://registry.yarnpkg.com/cron-parser/-/cron-parser-4.8.1.tgz#47062ea63d21d78c10ddedb08ea4c5b6fc2750fb"
+  integrity sha512-jbokKWGcyU4gl6jAfX97E1gDpY12DJ1cLJZmoDzaAln/shZ+S3KBFBuA2Q6WeUN4gJf/8klnV1EfvhA2lK5IRQ==
   dependencies:
-    is-nan "^1.3.2"
-    luxon "^1.26.0"
+    luxon "^3.2.1"
 
 cross-fetch@^3.1.4:
   version "3.1.5"
@@ -11475,7 +11474,7 @@ date-fns@^2.28.0, date-fns@^2.29.1:
 
 date.js@~0.3.3:
   version "0.3.3"
-  resolved "https://registry.npmjs.org/date.js/-/date.js-0.3.3.tgz"
+  resolved "https://registry.yarnpkg.com/date.js/-/date.js-0.3.3.tgz#ef1e92332f507a638795dbb985e951882e50bbda"
   integrity sha512-HgigOS3h3k6HnW011nAb43c5xx5rBXk8P2v/WIT9Zv4koIaVXiH2BURguI78VVp+5Qc076T7OR378JViCnZtBw==
   dependencies:
     debug "~3.1.0"
@@ -11531,7 +11530,7 @@ debug@3.2.6:
   dependencies:
     ms "^2.1.1"
 
-debug@4, debug@4.3.4, debug@4.x, debug@^4.0.1, debug@^4.1.0, debug@^4.1.1, debug@^4.3.1, debug@^4.3.2, debug@^4.3.3, debug@^4.3.4, debug@~4.3.1, debug@~4.3.2, debug@~4.3.4:
+debug@4, debug@4.3.4, debug@4.x, debug@^4.0.1, debug@^4.1.0, debug@^4.1.1, debug@^4.3.1, debug@^4.3.2, debug@^4.3.3, debug@^4.3.4, debug@~4, debug@~4.3.1, debug@~4.3.2:
   version "4.3.4"
   resolved "https://registry.npmjs.org/debug/-/debug-4.3.4.tgz"
   integrity sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==
@@ -15400,7 +15399,7 @@ https@^1.0.0:
   resolved "https://registry.npmjs.org/https/-/https-1.0.0.tgz"
   integrity sha512-4EC57ddXrkaF0x83Oj8sM6SLQHAWXw90Skqu2M4AEWENZ3F02dFJE/GARA8igO79tcgYqGrD7ae4f5L3um2lgg==
 
-human-interval@~2.0.1:
+human-interval@~2:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/human-interval/-/human-interval-2.0.1.tgz#655baf606c7067bb26042dcae14ec777b099af15"
   integrity sha512-r4Aotzf+OtKIGQCB3odUowy4GfUDTy3aTWTfLd7ZF2gBCy3XW3v/dJLRefZnOFFnjqs5B1TypvS8WarpBkYUNQ==
@@ -16133,14 +16132,6 @@ is-module@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/is-module/-/is-module-1.0.0.tgz"
   integrity sha512-51ypPSPCoTEIN9dy5Oy+h4pShgJmPCygKfyRCISBI+JoWT/2oJvK8QPxmwv7b/p239jXrm9M1mlQbyKJ5A152g==
-
-is-nan@^1.3.2:
-  version "1.3.2"
-  resolved "https://registry.npmjs.org/is-nan/-/is-nan-1.3.2.tgz"
-  integrity sha512-E+zBKpQ2t6MEo1VsonYmluk9NxGrbzpeeLC2xIViuO2EjU2xsXsBPwTr3Ykv9l08UYEVEdWeRZNouaZqF6RN0w==
-  dependencies:
-    call-bind "^1.0.0"
-    define-properties "^1.1.3"
 
 is-negative-zero@^2.0.2:
   version "2.0.2"
@@ -19174,10 +19165,10 @@ lusca@^1.6.1:
   dependencies:
     tsscmp "^1.0.5"
 
-luxon@^1.26.0:
-  version "1.28.0"
-  resolved "https://registry.npmjs.org/luxon/-/luxon-1.28.0.tgz"
-  integrity sha512-TfTiyvZhwBYM/7QdAVDh+7dBTBA29v4ik0Ce9zda3Mnf8on1S5KJI8P2jKFZ8+5C0jhmr0KwJEO/Wdpm0VeWJQ==
+luxon@^3, luxon@^3.2.1:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/luxon/-/luxon-3.4.0.tgz#17cb754efecbf76994f05b2a3f1f91fad7ddfde7"
+  integrity sha512-7eDo4Pt7aGhoCheGFIuq4Xa2fJm4ZpmldpGhjTYBNUYNCN6TIEP6v7chwwwt3KRp7YR+rghbfvjyo3V5y9hgBw==
 
 magic-string@^0.25.7:
   version "0.25.9"
@@ -19817,13 +19808,6 @@ moment-timezone@^0.5.13:
   dependencies:
     moment ">= 2.9.0"
 
-moment-timezone@~0.5.37:
-  version "0.5.43"
-  resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.43.tgz#3dd7f3d0c67f78c23cd1906b9b2137a09b3c4790"
-  integrity sha512-72j3aNyuIsDxdF1i7CEgV2FfxM1r6aaqJyLB2vwb33mXYyoyLly+F1zbWqhA3/bVIoJ4szlUoMbUnVdid32NUQ==
-  dependencies:
-    moment "^2.29.4"
-
 moment@2.24.0:
   version "2.24.0"
   resolved "https://registry.npmjs.org/moment/-/moment-2.24.0.tgz"
@@ -19873,6 +19857,18 @@ mongodb@5.7.0, mongodb@^5.7.0:
   optionalDependencies:
     saslprep "^1.0.3"
 
+mongodb@^4:
+  version "4.16.0"
+  resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-4.16.0.tgz#8b0043de7b577c6a7e0ce44a2ca7315b9c0a7927"
+  integrity sha512-0EB113Fsucaq1wsY0dOhi1fmZOwFtLOtteQkiqOXGklvWMnSH3g2QS53f0KTP+/6qOkuoXE2JksubSZNmxeI+g==
+  dependencies:
+    bson "^4.7.2"
+    mongodb-connection-string-url "^2.5.4"
+    socks "^2.7.1"
+  optionalDependencies:
+    "@aws-sdk/credential-providers" "^3.186.0"
+    saslprep "^1.0.3"
+
 mongodb@^4.0.1, mongodb@^4.4.1:
   version "4.10.0"
   resolved "https://registry.npmjs.org/mongodb/-/mongodb-4.10.0.tgz"
@@ -19883,18 +19879,6 @@ mongodb@^4.0.1, mongodb@^4.4.1:
     mongodb-connection-string-url "^2.5.3"
     socks "^2.7.0"
   optionalDependencies:
-    saslprep "^1.0.3"
-
-mongodb@^4.11.0:
-  version "4.16.0"
-  resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-4.16.0.tgz#8b0043de7b577c6a7e0ce44a2ca7315b9c0a7927"
-  integrity sha512-0EB113Fsucaq1wsY0dOhi1fmZOwFtLOtteQkiqOXGklvWMnSH3g2QS53f0KTP+/6qOkuoXE2JksubSZNmxeI+g==
-  dependencies:
-    bson "^4.7.2"
-    mongodb-connection-string-url "^2.5.4"
-    socks "^2.7.1"
-  optionalDependencies:
-    "@aws-sdk/credential-providers" "^3.186.0"
     saslprep "^1.0.3"
 
 mongoose-to-swagger@^1.4.0:
@@ -20619,7 +20603,7 @@ number-to-bn@1.7.0:
 
 numbered@^1.1.0:
   version "1.1.0"
-  resolved "https://registry.npmjs.org/numbered/-/numbered-1.1.0.tgz"
+  resolved "https://registry.yarnpkg.com/numbered/-/numbered-1.1.0.tgz#9fcd79564c73a84b9574e8370c3d8e58fe3c133c"
   integrity sha512-pv/ue2Odr7IfYOO0byC1KgBI10wo5YDauLhxY6/saNzAdAs0r1SotGCPzzCLNPL0xtrAwWRialLu23AAu9xO1g==
 
 nwsapi@^2.0.7, nwsapi@^2.2.0:
