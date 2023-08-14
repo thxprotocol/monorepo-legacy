@@ -145,7 +145,7 @@ export default class CampaignConfigWebhooks extends Vue {
         this.isCopied = true;
     }
 
-    async onClickDelete(item: any) {
+    async onClickDelete(item: { _id: string }) {
         const webhook = Object.values(this.webhooks[this.pool._id]).find((webhook) => webhook._id === item._id);
         await this.$store.dispatch('webhooks/delete', webhook);
     }

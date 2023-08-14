@@ -35,10 +35,9 @@ export async function beforeAllCallback(options = { skipWalletCreation: false })
 }
 
 export async function afterAllCallback() {
-    await agenda.disable();
-    await agenda.stop();
-    await agenda.cancel({});
+    await db.connection.collection('jobs').deleteMany({});
     await agenda.close({ force: true });
+    await db.truncate();
     await db.disconnect();
     logger.info('Truncated and disconnected mongo');
 
