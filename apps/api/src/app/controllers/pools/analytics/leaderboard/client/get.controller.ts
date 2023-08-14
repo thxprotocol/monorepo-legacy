@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { query, param } from 'express-validator';
 import PoolService from '@thxnetwork/api/services/PoolService';
-import { getLeaderboard } from '@thxnetwork/api/services/AnalyticsService';
+import AnalyticsService from '@thxnetwork/api/services/AnalyticsService';
 import DiscordDataProxy from '@thxnetwork/api/proxies/DiscordDataProxy';
 import { TAccount } from '@thxnetwork/types/interfaces';
 
@@ -11,7 +11,7 @@ export const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
     const pool = await PoolService.getById(req.params.id);
 
-    const leaderBoard = await getLeaderboard(pool);
+    const leaderBoard = await AnalyticsService.getLeaderboard(pool);
     if (req.query.platform === 'discord') {
         const promises = leaderBoard
             .filter((x) => (x.account as TAccount).discordAccess === true)

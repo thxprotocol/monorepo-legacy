@@ -1,9 +1,9 @@
 <template>
     <div>
-        <h2>Dashboard</h2>
+        <h2 class="mb-3">Dashboard</h2>
         <b-row v-if="pool">
             <b-col md="8">
-                <b-row class="mt-5">
+                <b-row>
                     <b-col>
                         <b-card>
                             <b-skeleton-wrapper :loading="!poolAnalytics">
@@ -20,54 +20,34 @@
                         </b-card>
                     </b-col>
                 </b-row>
-                <b-row class="mt-5">
-                    <b-col md="3">
-                        <b-skeleton-wrapper :loading="!metrics">
-                            <template #loading>
-                                <b-skeleton-img no-aspect height="110px"></b-skeleton-img>
-                            </template>
-                            <b-card v-if="metrics" bg-variant="dark" class="shadow-sm text-white">
-                                <span>Daily</span><br />
-                                <div class="h2">{{ metrics.dailyQuest.totalCreated }}</div>
-                            </b-card>
-                        </b-skeleton-wrapper>
-                    </b-col>
-                    <b-col md="3">
-                        <b-skeleton-wrapper :loading="!metrics">
-                            <template #loading>
-                                <b-skeleton-img no-aspect height="110px"></b-skeleton-img>
-                            </template>
-                            <b-card v-if="metrics" bg-variant="dark" class="shadow-sm text-white">
-                                <span>Invite</span><br />
-                                <div class="h2">{{ metrics.inviteQuest.totalCreated }}</div>
-                            </b-card>
-                        </b-skeleton-wrapper>
-                    </b-col>
-                    <b-col md="3">
-                        <b-skeleton-wrapper :loading="!metrics">
-                            <template #loading>
-                                <b-skeleton-img no-aspect height="110px"></b-skeleton-img>
-                            </template>
-                            <b-card v-if="metrics" bg-variant="dark" class="shadow-sm text-white">
-                                <span>Social</span><br />
-                                <div class="h2">{{ metrics.socialQuest.totalCreated }}</div>
-                            </b-card>
-                        </b-skeleton-wrapper>
-                    </b-col>
-                    <b-col md="3">
-                        <b-skeleton-wrapper :loading="!metrics">
-                            <template #loading>
-                                <b-skeleton-img no-aspect height="110px"></b-skeleton-img>
-                            </template>
-                            <b-card v-if="metrics" bg-variant="dark" class="shadow-sm text-white">
-                                <span>Custom</span><br />
-                                <div class="h2">{{ metrics.customQuest.totalCreated }}</div>
-                            </b-card>
-                        </b-skeleton-wrapper>
+
+                <b-row class="mt-3" v-if="metrics">
+                    <b-col
+                        md="3"
+                        :key="key"
+                        v-for="(metric, key) of [
+                            metrics.dailyQuest,
+                            metrics.inviteQuest,
+                            metrics.socialQuest,
+                            metrics.customQuest,
+                        ]"
+                    >
+                        <b-card v-if="metrics" bg-variant="white" class="shadow-sm text-dark" body-class="py-2 px-3">
+                            <div class="text-gray d-flex align-content-between">
+                                {{ metricQuestsLabelMap[key] }}
+                                <b-link v-b-tooltip :title="metricQuestsInfoMap[key]" class="ml-auto">
+                                    <i class="fas fa-question-circle"></i>
+                                </b-link>
+                            </div>
+                            <div class="h2 mb-0">
+                                {{ metric.totalCreated }} {{ key === 3 ? `/${metric.totalCompleted}` : '' }}
+                            </div>
+                            <small>{{ metric.totalAmount }} points</small>
+                        </b-card>
                     </b-col>
                 </b-row>
 
-                <b-row class="mt-5">
+                <b-row class="mt-3">
                     <b-col>
                         <div class="card-header block">Leaderboard</div>
                         <b-skeleton-wrapper :loading="!leaderBoard">
@@ -111,8 +91,9 @@
                     </b-col>
                 </b-row>
             </b-col>
+
             <b-col md="4">
-                <b-row class="mt-5">
+                <b-row>
                     <b-col>
                         <b-card>
                             <b-skeleton-wrapper :loading="!poolAnalytics">
@@ -129,38 +110,26 @@
                         </b-card>
                     </b-col>
                 </b-row>
-                <b-row class="mt-5">
-                    <b-col md="6">
-                        <b-skeleton-wrapper :loading="!metrics">
-                            <template #loading>
-                                <b-skeleton-img no-aspect height="110px"></b-skeleton-img>
-                            </template>
-                            <b-card v-if="metrics" bg-variant="dark" class="shadow-sm text-white">
-                                <span>Coin Rewards</span><br />
-                                <div class="h2">{{ metrics.coinReward.totalCreated }}</div>
-                            </b-card>
-                        </b-skeleton-wrapper>
-                    </b-col>
-                    <b-col md="6">
-                        <b-skeleton-wrapper :loading="!metrics">
-                            <template #loading>
-                                <b-skeleton-img no-aspect height="110px"></b-skeleton-img>
-                            </template>
-                            <b-card v-if="metrics" bg-variant="dark" class="shadow-sm text-white">
-                                <span>NFT Rewards</span><br />
-                                <div class="h2">{{ metrics.nftReward.totalCreated }}</div>
-                            </b-card>
-                        </b-skeleton-wrapper>
+                <b-row class="mt-3" v-if="metrics">
+                    <b-col md="6" :key="key" v-for="(metric, key) of [metrics.coinReward, metrics.nftReward]">
+                        <b-card v-if="metrics" bg-variant="white" class="shadow-sm text-dark" body-class="py-2 px-3">
+                            <span class="text-gray">{{ metricRewardLabelMap[key] }}</span>
+                            <br />
+                            <div class="h2 mb-0">
+                                {{ metric.totalCreated }}
+                            </div>
+                            <small>{{ metric.totalAmount }} points</small>
+                        </b-card>
                     </b-col>
                 </b-row>
-                <b-row class="mt-5" v-if="!erc20s">
+                <b-row class="mt-3" v-if="!erc20s">
                     <b-col>
                         <div class="py-5 w-100 center-center">
                             <b-spinner variant="primary" />
                         </div>
                     </b-col>
                 </b-row>
-                <b-row class="mt-5" v-else>
+                <b-row class="mt-3" v-else>
                     <b-col>
                         <b-list-group>
                             <b-list-group-item
@@ -247,6 +216,14 @@ import { IPoolAnalytics, IPoolAnalyticsLeaderBoard, IPoolAnalyticsMetrics, IPool
     }),
 })
 export default class TransactionsView extends Vue {
+    metricQuestsLabelMap = ['Daily', 'Invite', 'Social', 'Custom'];
+    metricQuestsInfoMap = [
+        'Daily Quest completed and the total amount of points earned.',
+        'Invite Quest leads qualified and the total amount of points earned.',
+        'Social Quests completed and the total amount of points earned.',
+        'Custom Quest webhook requests versus quest completions and the total amount of points earned.',
+    ];
+    metricRewardLabelMap = ['Coin', 'NFT', 'Custom'];
     fromWei = fromWei;
     pools!: IPools;
     erc20s!: IERC20s;

@@ -2,7 +2,7 @@ import { TAccount } from '@thxnetwork/types/interfaces';
 import { AssetPool } from '../models/AssetPool';
 import AccountProxy from '../proxies/AccountProxy';
 import MailService from '../services/MailService';
-import * as AnalyticsService from '../services/AnalyticsService';
+import AnalyticsService from '../services/AnalyticsService';
 import { DASHBOARD_URL } from '../config/secrets';
 import { logger } from '../util/logger';
 
@@ -39,27 +39,27 @@ export async function sendPoolAnalyticsReport() {
 
             html += `<p><strong>🏆 Quests: </strong> ${totalPointsClaimed} points claimed</p>`;
             html += `<table width="100%" role="presentation" border="0" cellpadding="0" cellspacing="0">`;
-            if (dailyQuest.total) {
+            if (dailyQuest.totalCreated) {
                 html += `<tr>
-                <td><strong>${dailyQuest.claims}x</strong> Daily - ${dailyQuest.totalClaimPoints} pts</td>
+                <td><strong>${dailyQuest.totalCreated}x</strong> Daily - ${dailyQuest.totalAmount} pts</td>
                 <td align="right"><a href="${DASHBOARD_URL}/pool/${pool._id}/daily">Manage</a></td>
                 `;
             }
-            if (inviteQuest.total) {
+            if (inviteQuest.totalCreated) {
                 html += `<tr>
-                <td><strong>${inviteQuest.claims}x</strong> Invite - ${inviteQuest.totalClaimPoints} pts)</td>
+                <td><strong>${inviteQuest.totalCreated}x</strong> Invite - ${inviteQuest.totalAmount} pts)</td>
                 <td align="right"><a href="${DASHBOARD_URL}/pool/${pool._id}/referrals">Manage</a></td>
                 </tr>`;
             }
-            if (socialQuest.total) {
+            if (socialQuest.totalCreated) {
                 html += `<tr>
-                <td><strong>${socialQuest.claims}x</strong> Social - ${socialQuest.totalClaimPoints} pts</td>
+                <td><strong>${socialQuest.totalCreated}x</strong> Social - ${socialQuest.totalAmount} pts</td>
                 <td align="right"><a href="${DASHBOARD_URL}/pool/${pool._id}/conditionals">Manage</a></td>
                 </tr>`;
             }
-            if (customQuest.total) {
+            if (customQuest.totalCreated) {
                 html += `<tr>
-                <td><strong>${customQuest.claims}x</strong> Custom - ${customQuest.totalClaimPoints} pts</td>
+                <td><strong>${customQuest.totalCreated}x</strong> Custom - ${customQuest.totalAmount} pts</td>
                 <td align="right"><a href="${DASHBOARD_URL}/pool/${pool._id}/milestone-rewards">Manage</a></td>
                 </tr>`;
             }
@@ -68,15 +68,15 @@ export async function sendPoolAnalyticsReport() {
 
             html += `<p><strong>🎁 Rewards: </strong> ${totalPointsSpent} points spent</p>`;
             html += `<table width="100%" role="presentation" border="0" cellpadding="0" cellspacing="0">`;
-            if (coinReward.total) {
+            if (coinReward.totalCreated) {
                 html += `<tr>
-                <td><strong>${coinReward.payments}x</strong> Coin Rewards (${coinReward.totalAmount} points)</td>
+                <td><strong>${coinReward.totalCreated}x</strong> Coin Rewards (${coinReward.totalAmount} points)</td>
                 <td align="right" ><a href="${DASHBOARD_URL}/pool/${pool._id}/erc20-perks">Manage</a></td>
                 </tr>`;
             }
-            if (nftReward.total) {
+            if (nftReward.totalCreated) {
                 html += `<tr>
-                <td><strong>${nftReward.total}x</strong> NFT Rewards (${nftReward.totalAmount} points)</td>
+                <td><strong>${nftReward.totalCreated}x</strong> NFT Rewards (${nftReward.totalAmount} points)</td>
                 <td align="right"><a href="${DASHBOARD_URL}/pool/${pool._id}/erc721-perks">Manage</a></td>
                 </tr>`;
             }
