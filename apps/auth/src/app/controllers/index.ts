@@ -8,8 +8,9 @@ import { getAction } from './get.action';
 export const mainRouter = express.Router();
 
 mainRouter.get('/', getAction);
-mainRouter.get('/testhook', (req, res) => {
+mainRouter.post('/testhook', json(), urlencoded({ extended: true }), (req, res) => {
     console.log(req.body);
+    res.end();
 });
 mainRouter.use('/oidc', oidcRouter);
 mainRouter.use('/account', json(), urlencoded({ extended: true }), accountRouter);

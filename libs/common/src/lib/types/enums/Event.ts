@@ -3,6 +3,7 @@ export enum Event {
     QuestInviteComplete = 'quest_invite.complete',
     QuestSocialComplete = 'quest_social.complete',
     QuestCustomComplete = 'quest_custom.complete',
-    RewardCoinRedeem = 'reward_coin.redeem',
-    RewardNFTRedeem = 'reward_nft.redeem',
+    RewardCoinPayment = 'reward_coin.paid',
+    RewardNFTPayment = 'reward_nft.paid',
+    RewardCustomPayment = 'reward_custom.paid',
 }
