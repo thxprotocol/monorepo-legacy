@@ -31,3 +31,4 @@ export * from './Merchant';
 export * from './Client';
 export * from './Interaction';
 export * from './Webhook';
+export * from './CustomReward';

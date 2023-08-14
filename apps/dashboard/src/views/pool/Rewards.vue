@@ -15,7 +15,6 @@
                         :key="key"
                         v-b-modal="rewardModalComponentMap[RewardVariant[variant]]"
                         button-class="d-flex"
-                        :disabled="variant === 'Custom'"
                     >
                         <div style="width: 30px">
                             <i
@@ -36,6 +35,7 @@
                 </b-dropdown>
                 <BaseModalRewardERC20Create @submit="listRewards" :id="'modalRewardERC20Create'" :pool="pool" />
                 <BaseModalRewardERC721Create @submit="listRewards" :id="'modalRewardERC721Create'" :pool="pool" />
+                <BaseModalRewardCustomCreate @submit="listRewards" :id="'modalRewardCustomCreate'" :pool="pool" />
             </b-col>
         </b-row>
         <BCard variant="white" body-class="p-0 shadow-sm">
@@ -169,6 +169,7 @@ import {
 import type { IERC721s } from '@thxnetwork/dashboard/types/erc721';
 import BaseModalRewardERC20Create from '@thxnetwork/dashboard/components/modals/BaseModalRewardERC20Create.vue';
 import BaseModalRewardERC721Create from '@thxnetwork/dashboard/components/modals/BaseModalRewardERC721Create.vue';
+import BaseModalRewardCustomCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardCustomCreate.vue';
 import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/badges/BaseBadgeRewardConditionPreview.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseModalRewardClaimsDownload from '@thxnetwork/dashboard/components/modals/BaseModalRewardClaimsDownload.vue';
@@ -177,6 +178,7 @@ import BaseModalRewardClaimsDownload from '@thxnetwork/dashboard/components/moda
     components: {
         BaseModalRewardERC20Create,
         BaseModalRewardERC721Create,
+        BaseModalRewardCustomCreate,
         BaseBadgeRewardConditionPreview,
         BaseCardTableHeader,
         BaseModalRewardClaimsDownload,
@@ -199,7 +201,7 @@ export default class RewardsView extends Vue {
     rewardModalComponentMap = {
         [RewardVariant.Coin]: 'BaseModalRewardERC20Create',
         [RewardVariant.NFT]: 'BaseModalRewardERC721Create',
-        // [RewardVariant.Custom]: 'BaseModalRewardCustomCreate',
+        [RewardVariant.Custom]: 'BaseModalRewardCustomCreate',
     };
     rewardIconClassMap = {
         [RewardVariant.Coin]: 'fas fa-coins',

@@ -154,8 +154,13 @@ async function getPoolMetrics(pool: AssetPoolDocument, dateRange?: { startDate: 
                     },
                 },
             ]);
-            const totalCreated = await Model.countDocuments($match as any);
-            console.log(result);
+
+            const query = { poolId: String(pool._id) };
+            if (dateRange) {
+                query['createdAt'] = { $gte: dateRange.startDate, $lte: dateRange.endDate };
+            }
+            const totalCreated = await Model.countDocuments(query as any);
+
             return {
                 totalCompleted: result && result.totalCompleted ? result.totalCompleted : 0,
                 totalAmount: result && result.totalAmount ? result.totalAmount : 0,
@@ -163,7 +168,6 @@ async function getPoolMetrics(pool: AssetPoolDocument, dateRange?: { startDate: 
             };
         }),
     );
-    console.log({ dailyQuest, socialQuest, inviteQuest, customQuest, coinReward, nftReward });
     return { dailyQuest, socialQuest, inviteQuest, customQuest, coinReward, nftReward };
 }
 
