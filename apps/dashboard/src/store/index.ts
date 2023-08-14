@@ -20,6 +20,7 @@ import ImageStore from './modules/images';
 import MilestoneRewardStore from './modules/milestoneRewards';
 import DailyRewardStore from './modules/dailyRewards';
 import MerchantStore from './modules/merchants';
+import RewardsStore from './modules/rewards';
 
 Vue.use(Vuex);
 
@@ -33,6 +34,7 @@ const modules = {
     widgets: WidgetStore,
     erc20: ERC20Store,
     erc20Perks: ERC20PerksStore,
+    rewards: RewardsStore,
     erc721: ERC721Store,
     erc1155: ERC1155Store,
     erc721Perks: ERC721PerksStore,
