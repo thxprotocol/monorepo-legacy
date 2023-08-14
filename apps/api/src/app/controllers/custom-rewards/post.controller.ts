@@ -4,6 +4,7 @@ import { CustomReward } from '@thxnetwork/api/models/CustomReward';
 import { Webhook } from '@thxnetwork/api/models/Webhook';
 import { body } from 'express-validator';
 import { ForbiddenError } from '@thxnetwork/api/util/errors';
+import { v4 } from 'uuid';
 
 const validation = [body('webhookId').isMongoId()];
 
@@ -13,7 +14,7 @@ const controller = async (req: Request, res: Response) => {
     const webhook = await Webhook.findById(req.body.webhookId);
     if (webhook.poolId !== poolId) throw new ForbiddenError('Not your webhook');
 
-    const reward = await CustomReward.create({ ...req.body, poolId, image });
+    const reward = await CustomReward.create({ ...req.body, uuid: v4(), poolId, image });
 
     res.status(201).json(reward);
 };

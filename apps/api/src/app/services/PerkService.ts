@@ -15,8 +15,9 @@ import { ERC20PerkPayment } from '../models/ERC20PerkPayment';
 import { ERC721PerkPayment } from '../models/ERC721PerkPayment';
 import { isTERC20Perk, isTERC721Perk } from '../util/rewards';
 import mongoose from 'mongoose';
+import { CustomRewardDocument } from '../models/CustomReward';
 
-type TAllPerks = ERC20PerkDocument | ERC721PerkDocument;
+type TAllPerks = ERC20PerkDocument | ERC721PerkDocument | CustomRewardDocument;
 
 export async function verifyOwnership(
     { tokenGatingVariant, tokenGatingContractAddress, tokenGatingAmount }: TAllPerks,
@@ -100,7 +101,7 @@ async function getExpiry(r: TAllPerks) {
     };
 }
 
-type PerkDocument = ERC20PerkDocument | ERC721PerkDocument;
+export type PerkDocument = ERC20PerkDocument | ERC721PerkDocument | CustomRewardDocument;
 
 export function getPaymentModel(perk: PerkDocument): mongoose.Model<any> {
     if (isTERC20Perk(perk)) {

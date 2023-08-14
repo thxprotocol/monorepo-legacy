@@ -8,20 +8,25 @@ import PointRewardService from '../services/PointRewardService';
 import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardService';
 import MilestoneRewardService from '../services/MilestoneRewardService';
 import DailyRewardService from '../services/DailyRewardService';
+import { PerkDocument } from '../services/PerkService';
+import { CustomRewardDocument } from '../models/CustomReward';
 
 export async function findRewardByUuid(uuid: string) {
     const erc20Perk = await ERC20Perk.findOne({ uuid });
     const erc721Perk = await ERC721Perk.findOne({ uuid });
-
     return erc20Perk || erc721Perk;
 }
 
-export function isTERC20Perk(perk: ERC20PerkDocument | ERC721PerkDocument): perk is ERC20PerkDocument {
+export function isTERC20Perk(perk: PerkDocument): perk is ERC20PerkDocument {
     return (perk as ERC20PerkDocument).erc20Id !== undefined;
 }
 
-export function isTERC721Perk(perk: ERC20PerkDocument | ERC721PerkDocument): perk is ERC721PerkDocument {
+export function isTERC721Perk(perk: PerkDocument): perk is ERC721PerkDocument {
     return (perk as ERC721PerkDocument).erc721Id !== undefined || (perk as ERC721PerkDocument).erc1155Id !== undefined;
+}
+
+export function isCustomReward(reward: PerkDocument): reward is CustomRewardDocument {
+    return (reward as CustomRewardDocument).webhookId !== undefined;
 }
 
 export function addMinutes(date: Date, minutes: number) {
