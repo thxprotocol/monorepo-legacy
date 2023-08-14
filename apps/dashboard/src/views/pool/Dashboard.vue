@@ -20,7 +20,6 @@
                         </b-card>
                     </b-col>
                 </b-row>
-
                 <b-row class="mt-3" v-if="metrics">
                     <b-col
                         md="3"
@@ -40,7 +39,7 @@
                                 </b-link>
                             </div>
                             <div class="h2 mb-0">
-                                {{ metric.totalCreated }} {{ key === 3 ? `/${metric.totalCompleted}` : '' }}
+                                {{ metric.totalCreated }} {{ [0, 3].includes(key) ? `/${metric.totalCompleted}` : '' }}
                             </div>
                             <small>{{ metric.totalAmount }} points</small>
                         </b-card>
@@ -218,10 +217,10 @@ import { IPoolAnalytics, IPoolAnalyticsLeaderBoard, IPoolAnalyticsMetrics, IPool
 export default class TransactionsView extends Vue {
     metricQuestsLabelMap = ['Daily', 'Invite', 'Social', 'Custom'];
     metricQuestsInfoMap = [
-        'Daily Quest completed and the total amount of points earned.',
+        'Daily Quest qualifications versus completed and the total amount of points earned.',
         'Invite Quest leads qualified and the total amount of points earned.',
         'Social Quests completed and the total amount of points earned.',
-        'Custom Quest webhook requests versus quest completions and the total amount of points earned.',
+        'Custom Quest qualifications versus completions and the total amount of points earned.',
     ];
     metricRewardLabelMap = ['Coin', 'NFT', 'Custom'];
     fromWei = fromWei;
