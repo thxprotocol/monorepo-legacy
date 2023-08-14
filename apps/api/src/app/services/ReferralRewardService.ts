@@ -18,10 +18,7 @@ async function findByPool(assetPool: AssetPoolDocument, page: number, limit: num
 }
 
 async function removeAllForPool(pool: AssetPoolDocument) {
-    const rewards = await ReferralReward.find({ poolId: pool._id });
-    for (const r of rewards) {
-        await r.remove();
-    }
+    await ReferralReward.deleteMany({ poolId: pool._id });
 }
 
 async function create(pool: AssetPoolDocument, payload: Partial<TReferralReward>) {

@@ -1,7 +1,5 @@
 import db from '@thxnetwork/api/util/database';
 import { mockStart, mockClear } from './mock';
-import { agenda } from '@thxnetwork/api/util/agenda';
-import { logger } from '@thxnetwork/api/util/logger';
 import { safeVersion } from '@thxnetwork/api/config/contracts';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { ChainId } from '@thxnetwork/types/enums';
@@ -9,13 +7,15 @@ import { getContract, getContractConfig } from '@thxnetwork/api/config/contracts
 import { poll } from '../polling';
 import { currentVersion } from '@thxnetwork/contracts/exports';
 import { sub, sub2, sub3, userWalletAddress, userWalletAddress2, userWalletAddress3 } from './constants';
-import SafeService from '@thxnetwork/api/services/SafeService';
+import { Wallet } from '@thxnetwork/api/services/SafeService';
+import Safe, { SafeFactory } from '@safe-global/protocol-kit';
+import { contractNetworks } from '@thxnetwork/api/config/contracts';
 
 export async function beforeAllCallback(options = { skipWalletCreation: false }) {
     await db.truncate();
     mockStart();
 
-    const { web3, defaultAccount } = getProvider(ChainId.Hardhat);
+    const { web3, defaultAccount, ethAdapter } = getProvider(ChainId.Hardhat);
     const fn = () => web3.eth.getCode(getContractConfig(ChainId.Hardhat, 'OwnershipFacet').address);
     const fnCondition = (result: string) => result === '0x';
 
@@ -28,19 +28,43 @@ export async function beforeAllCallback(options = { skipWalletCreation: false })
     await factory.methods.initialize(defaultAccount, registryAddress).send({ from: defaultAccount });
 
     if (!options.skipWalletCreation) {
-        await SafeService.create({ sub, safeVersion, chainId: ChainId.Hardhat }, userWalletAddress);
-        await SafeService.create({ sub: sub2, safeVersion, chainId: ChainId.Hardhat }, userWalletAddress2);
-        await SafeService.create({ sub: sub3, safeVersion, chainId: ChainId.Hardhat }, userWalletAddress3);
+        const chainId = ChainId.Hardhat;
+        const safeFactory = await SafeFactory.create({
+            safeVersion,
+            ethAdapter,
+            contractNetworks,
+        });
+        for (const entry of [
+            { sub, userWalletAddress },
+            { sub: sub2, userWalletAddress: userWalletAddress2 },
+            { sub: sub3, userWalletAddress: userWalletAddress3 },
+        ]) {
+            const safeAccountConfig = {
+                owners: [defaultAccount, entry.userWalletAddress],
+                threshold: 2,
+            };
+            const safeAddress = await safeFactory.predictSafeAddress(safeAccountConfig);
+
+            await Wallet.create({
+                sub: entry.sub,
+                safeVersion,
+                address: safeAddress,
+                chainId,
+            });
+
+            try {
+                await Safe.create({
+                    ethAdapter,
+                    safeAddress,
+                    contractNetworks,
+                });
+            } catch (error) {
+                await safeFactory.deploySafe({ safeAccountConfig, options: { gasLimit: '3000000' } });
+            }
+        }
     }
 }
 
 export async function afterAllCallback() {
     await db.connection.collection('jobs').deleteMany({});
-    await agenda.close({ force: true });
-    await db.truncate();
-    await db.disconnect();
-    logger.info('Truncated and disconnected mongo');
-
-    mockClear();
-    logger.info('Cleared mocks');
 }

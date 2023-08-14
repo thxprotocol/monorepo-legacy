@@ -16,7 +16,7 @@ import { AccountVariant } from '@thxnetwork/types/interfaces';
 import AccountProxy from '../proxies/AccountProxy';
 import { agenda, JobType } from '@thxnetwork/api/util/agenda';
 import { MongoClient } from 'mongodb';
-import { Job } from 'agenda';
+import { Job } from '@hokify/agenda';
 
 export const Wallet = WalletModel;
 
@@ -65,7 +65,7 @@ async function create(
 }
 
 async function createJob(job: Job) {
-    const { safeAccountConfig, safeVersion, safeAddress, safeWalletId } = job.attrs.data;
+    const { safeAccountConfig, safeVersion, safeAddress, safeWalletId } = job.attrs.data as any;
     if (!safeAccountConfig || !safeVersion || !safeAddress || !safeWalletId) return;
 
     const wallet = await Wallet.findById(safeWalletId);
@@ -91,7 +91,7 @@ async function getWalletMigration(sub: string, chainId: ChainId) {
 }
 
 async function migrateJob(job: Job) {
-    const { safeWalletId } = job.attrs.data;
+    const { safeWalletId } = job.attrs.data as any;
     if (!safeWalletId) return;
 
     const safeWallet = await Wallet.findById(safeWalletId);

@@ -131,11 +131,7 @@ export default class WithdrawalService {
     }
 
     static async removeAllForPool(pool: AssetPoolDocument) {
-        const withdrawals = await Withdrawal.find({ poolId: String(pool._id) });
-
-        for (const w of withdrawals) {
-            await w.remove();
-        }
+        await Withdrawal.deleteMany({ poolId: String(pool._id) });
     }
 
     static async hasClaimedOnce(poolId: string, sub: string, rewardId: string) {

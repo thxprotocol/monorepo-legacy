@@ -38,7 +38,7 @@ jobs:
                       ${{ runner.os }}-node-
 
             - name: Install Node.js dependencies
-              run: yarn install --frozen-lockfile --verbose
+              run: yarn install --frozen-lockfile
 
             - name: Cache Node.js dependencies
               uses: actions/cache/save@v3
@@ -107,10 +107,10 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v2
 
-            - name: Install Node.js 16.x
-              uses: actions/setup-node@v1
+            - name: Install Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v2
               with:
-                  node-version: 16.x
+                  node-version: ${{ matrix.node-version }}
 
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v1
@@ -159,10 +159,10 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v2
 
-            - name: Install Node.js 16.x
-              uses: actions/setup-node@v1
+            - name: Install Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v2
               with:
-                  node-version: 16.x
+                  node-version: ${{ matrix.node-version }}
 
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v1
@@ -201,10 +201,10 @@ jobs:
         if: github.ref == 'refs/heads/develop'
         needs: [buildAndPushImage, bumpVersion]
         steps:
-            - name: Install Node.js 16.x
-              uses: actions/setup-node@v1
+            - name: Install Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v2
               with:
-                  node-version: 16.x
+                  node-version: ${{ matrix.node-version }}
 
             - name: Install deploy-scripts
               run: npm install -g thxprotocol/deploy-scripts

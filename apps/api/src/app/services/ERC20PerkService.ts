@@ -17,10 +17,7 @@ export async function findByPool(assetPool: AssetPoolDocument, page: number, lim
 }
 
 export async function removeAllForPool(assetPool: AssetPoolDocument) {
-    const rewards = await ERC20Perk.find({ poolId: assetPool._id });
-    for (const r of rewards) {
-        await r.remove();
-    }
+    await ERC20Perk.deleteMany({ poolId: assetPool._id });
 }
 
 export async function create(pool: AssetPoolDocument, payload: TERC20Perk) {
