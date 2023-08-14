@@ -73,7 +73,7 @@ export default class ClientProxy {
             url: `/reg/${client.clientId}?access_token=${client.registrationAccessToken}`,
         });
 
-        return client.remove();
+        return client.deleteOne();
     }
 
     static async update(clientId: string, updates: TClientUpdatePayload) {

@@ -1,6 +1,5 @@
+import mongoose from 'mongoose';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import mongoose, { Model } from 'mongoose';
-import { Claim } from '@thxnetwork/api/models/Claim';
 import { DailyRewardDocument } from '@thxnetwork/api/models/DailyReward';
 import { ERC20PerkDocument, ERC20Perk } from '@thxnetwork/api/models/ERC20Perk';
 import { ERC721PerkDocument, ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
@@ -19,7 +18,7 @@ import { ReferralRewardClaim } from '@thxnetwork/api/models/ReferralRewardClaim'
 import { Wallet, WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { TAccount } from '@thxnetwork/types/interfaces';
 
-export async function getPoolAnalyticsForChart(pool: AssetPoolDocument, startDate: Date, endDate: Date) {
+async function getPoolAnalyticsForChart(pool: AssetPoolDocument, startDate: Date, endDate: Date) {
     const erc20PerksQueryResult = await runPoolChartQuery<ERC20PerkDocument>({
         joinTable: 'erc20perkpayments',
         key: 'perkId',
@@ -119,7 +118,7 @@ export async function getPoolAnalyticsForChart(pool: AssetPoolDocument, startDat
     return result;
 }
 
-export async function getPoolMetrics(pool: AssetPoolDocument, dateRange?: { startDate: Date; endDate: Date }) {
+async function getPoolMetrics(pool: AssetPoolDocument, dateRange?: { startDate: Date; endDate: Date }) {
     const collections = [
         DailyRewardClaim,
         PointRewardClaim,
@@ -156,15 +155,19 @@ export async function getPoolMetrics(pool: AssetPoolDocument, dateRange?: { star
                 },
             ]);
             const totalCreated = await Model.countDocuments($match as any);
-
-            return { ...result, totalCreated };
+            console.log(result);
+            return {
+                totalCompleted: result && result.totalCompleted ? result.totalCompleted : 0,
+                totalAmount: result && result.totalAmount ? result.totalAmount : 0,
+                totalCreated,
+            };
         }),
     );
-
+    console.log({ dailyQuest, socialQuest, inviteQuest, customQuest, coinReward, nftReward });
     return { dailyQuest, socialQuest, inviteQuest, customQuest, coinReward, nftReward };
 }
 
-export async function getLeaderboard(pool: AssetPoolDocument, dateRange?: { startDate: Date; endDate: Date }) {
+async function getLeaderboard(pool: AssetPoolDocument, dateRange?: { startDate: Date; endDate: Date }) {
     const collections = [DailyRewardClaim, PointRewardClaim, ReferralRewardClaim, MilestoneRewardClaim];
     const result = await Promise.all(
         collections.map(async (Model) => {
@@ -321,3 +324,4 @@ async function runPoolChartQuery<T>(args: {
 
     return queryResult;
 }
+export default { getPoolMetrics, getLeaderboard, getPoolAnalyticsForChart };

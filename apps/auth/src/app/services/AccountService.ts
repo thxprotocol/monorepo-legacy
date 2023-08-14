@@ -234,7 +234,7 @@ export class AccountService {
     }
 
     static async remove(id: string) {
-        await Account.remove({ _id: id });
+        await Account.deleteOne({ _id: id });
     }
 
     static isConnected = async (sub: string, userId: string, tokenKind: AccessTokenKind) => {

@@ -2,7 +2,7 @@ import axios from 'axios';
 import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { Webhook } from '@thxnetwork/api/models/Webhook';
 import { WebhookRequest } from '@thxnetwork/api/models/WebhookRequest';
-import { Job } from 'agenda';
+import { Job } from '@hokify/agenda';
 import { agenda } from '@thxnetwork/api/util/agenda';
 import { JobType } from '@thxnetwork/types/enums';
 import { signPayload } from '@thxnetwork/api/util/signingsecret';
@@ -23,7 +23,7 @@ async function create(pool: AssetPoolDocument, payload: { name: Event; data: any
 }
 
 async function requestAttemptJob(job: Job) {
-    const { webhookRequestId, poolId } = job.attrs.data;
+    const { webhookRequestId, poolId } = job.attrs.data as any;
     const { signingSecret } = await AssetPool.findById(poolId);
     if (!signingSecret) return;
 

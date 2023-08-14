@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { param, query } from 'express-validator';
 import { ForbiddenError } from '@thxnetwork/api/util/errors';
 import PoolService from '@thxnetwork/api/services/PoolService';
-import { getPoolAnalyticsForChart } from '@thxnetwork/api/services/AnalyticsService';
+import AnalyticsService from '@thxnetwork/api/services/AnalyticsService';
 
 export const validation = [param('id').isMongoId(), query('startDate').exists(), query('endDate').exists()];
 
@@ -16,8 +16,7 @@ export const controller = async (req: Request, res: Response) => {
     // CHART QUERY
     const startDate = new Date(String(req.query.startDate));
     const endDate = new Date(String(req.query.endDate));
-
-    const result = await getPoolAnalyticsForChart(pool, startDate, endDate);
+    const result = await AnalyticsService.getPoolAnalyticsForChart(pool, startDate, endDate);
 
     res.json(result);
 };
