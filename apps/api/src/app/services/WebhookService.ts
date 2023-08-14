@@ -29,10 +29,13 @@ async function requestAttemptJob(job: Job) {
 
     const webhookRequest = await WebhookRequest.findById(webhookRequestId);
     if (!webhookRequest) return;
+    const webhook = await Webhook.findById(webhookRequest.webhookId);
+    if (!webhook) return;
 
     try {
         await axios({
             method: 'POST',
+            url: webhook.url,
             data: signPayload(webhookRequest.payload, signingSecret),
         });
     } catch (error) {

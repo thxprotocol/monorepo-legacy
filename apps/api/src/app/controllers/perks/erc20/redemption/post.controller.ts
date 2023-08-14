@@ -73,10 +73,10 @@ const controller = async (req: Request, res: Response) => {
 
     await MailService.send(account.email, `🎁 Coin Drop! ${erc20Perk.amount} ${erc20.symbol}"`, html);
 
-    // await WebhookService.create(pool, {
-    //     name: Event.RewardCoinRedeem,
-    //     data: { walletId: wallet._id, coinRewardId: erc20Perk._id },
-    // });
+    await WebhookService.create(pool, {
+        name: Event.RewardCoinRedeem,
+        data: { walletId: wallet._id, coinRewardId: erc20Perk._id },
+    });
 
     res.status(201).json({ withdrawal, erc20PerkPayment });
 };
