@@ -222,15 +222,15 @@ export async function getLeaderboard(pool: AssetPoolDocument, dateRange?: { star
             const wallet = wallets.find((w) => w.sub === account.sub);
             const walletId = String(wallet._id);
             return {
-                questsCompleted: walletTotals[walletId]?.totalCompleted,
+                questsCompleted: walletTotals[walletId].totalCompleted,
                 sub: wallet.sub,
                 walletId,
-                score: walletTotals[walletId]?.totalAmount,
+                score: walletTotals[walletId].totalAmount || 0,
                 wallet,
                 account: { ...account, address: wallet.address },
             };
         })
-        .sort((a: any, b: any) => b[1].totalAmount - a[1].totalAmount)
+        .sort((a: any, b: any) => b.score - a.score)
         .slice(0, 10);
 }
 
