@@ -32,6 +32,7 @@ const controller = async (req: Request, res: Response) => {
     const account = await AccountProxy.getById(req.auth.sub);
     const wallet = await SafeService.findPrimary(account.sub, pool.chainId);
     const pointBalance = await PointBalance.findOne({ walletId: wallet._id, poolId: pool._id });
+    console.log(wallet, pointBalance);
 
     if (!pointBalance || Number(pointBalance.balance) < Number(customReward.pointPrice)) {
         throw new BadRequestError('Not enough points on this account for this payment');
@@ -42,9 +43,9 @@ const controller = async (req: Request, res: Response) => {
         throw new ForbiddenError(redeemValidationResult.errorMessage);
     }
 
-    await WebhookService.create(pool, {
+    await WebhookService.create(pool, req.auth.sub, {
         event: Event.RewardCustomPayment,
-        data: { walletId: wallet._id, customRewardId: customReward._id },
+        data: { customRewardId: customReward._id },
     });
 
     const customRewardPayment = await CustomRewardPayment.create({

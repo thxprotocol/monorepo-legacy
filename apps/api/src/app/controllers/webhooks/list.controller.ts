@@ -10,7 +10,11 @@ const controller = async (req: Request, res: Response) => {
     const webhooks = await Webhook.find({ poolId });
     const response = await Promise.all(
         webhooks.map(async (webhook: WebhookDocument) => {
-            const webhookRequests = await WebhookRequest.find({ poolId, webhookId: webhook._id });
+            console.log(webhook);
+            const webhookRequests = await WebhookRequest.find({ webhookId: String(webhook._id) })
+                .sort({ createdAt: -1 })
+                .limit(50);
+            console.log(webhookRequests);
             return {
                 ...webhook.toJSON(),
                 webhookRequests,

@@ -27,7 +27,7 @@ const validation = [
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['RewardsToken']
-    const image = req.file ? await ImageService.upload(req.file) : '';
+    const image = req.file && (await ImageService.upload(req.file));
     const pool = await PoolService.getById(req.header('X-PoolId'));
     const erc20 = await ERC20Service.getById(req.body.erc20Id);
 

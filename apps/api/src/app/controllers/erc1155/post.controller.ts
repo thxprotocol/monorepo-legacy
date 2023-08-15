@@ -18,7 +18,7 @@ const validation = [
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC1155']
-    const logoImgUrl = req.file ? await ImageService.upload(req.file) : '';
+    const logoImgUrl = req.file && (await ImageService.upload(req.file));
     const forceSync = req.query.forceSync !== undefined ? req.query.forceSync === 'true' : false;
     const erc1155 = await ERC1155Service.deploy(
         {

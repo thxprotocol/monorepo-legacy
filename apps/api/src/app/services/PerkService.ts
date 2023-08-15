@@ -15,8 +15,8 @@ import { ERC20PerkPayment } from '../models/ERC20PerkPayment';
 import { ERC721PerkPayment } from '../models/ERC721PerkPayment';
 import { isCustomReward, isTERC20Perk, isTERC721Perk } from '../util/rewards';
 import mongoose from 'mongoose';
-import { CustomRewardDocument } from '../models/CustomReward';
-import { CustomRewardPayment } from '../models/CustomRewardPayment';
+import { CustomRewardDocument } from '@thxnetwork/api/models/CustomReward';
+import { CustomRewardPayment } from '@thxnetwork/api/models/CustomRewardPayment';
 
 type TAllPerks = ERC20PerkDocument | ERC721PerkDocument | CustomRewardDocument;
 

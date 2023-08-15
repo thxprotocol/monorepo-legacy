@@ -64,7 +64,7 @@ const controller = async (req: Request, res: Response) => {
                 }),
             );
 
-            const imageUrl = req.file ? await ImageService.upload(req.file) : '';
+            const imageUrl = req.file && (await ImageService.upload(req.file));
 
             let image = imageUrl;
             if (account.plan === AccountPlanType.Premium) {

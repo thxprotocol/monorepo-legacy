@@ -10,7 +10,7 @@ const validation = [body('webhookId').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     const poolId = req.header('X-PoolId');
-    const image = req.file ? await ImageService.upload(req.file) : '';
+    const image = req.file && (await ImageService.upload(req.file));
     const webhook = await Webhook.findById(req.body.webhookId);
     if (webhook.poolId !== poolId) throw new ForbiddenError('Not your webhook');
 

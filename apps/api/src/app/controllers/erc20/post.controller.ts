@@ -25,7 +25,7 @@ export const controller = async (req: Request, res: Response) => {
             schema: { $ref: '#/definitions/ERC20' } 
     }
     */
-    const logoImgUrl = req.file ? await ImageService.upload(req.file) : '';
+    const logoImgUrl = req.file && (await ImageService.upload(req.file));
     const forceSync = req.query.forceSync !== undefined ? req.query.forceSync === 'true' : false;
 
     const erc20 = await ERC20Service.deploy(

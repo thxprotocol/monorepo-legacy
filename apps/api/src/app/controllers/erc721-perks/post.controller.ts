@@ -79,7 +79,7 @@ const controller = async (req: Request, res: Response) => {
     }
 
     // Handle uploaded image file
-    const image = req.file ? await ImageService.upload(req.file) : '';
+    const image = req.file && (await ImageService.upload(req.file));
 
     // Create perks for provided metadataIds
     if (metadataIdList.length) {

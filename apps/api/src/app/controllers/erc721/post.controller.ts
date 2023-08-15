@@ -22,7 +22,7 @@ const validation = [
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721']
 
-    const logoImgUrl = req.file ? await ImageService.upload(req.file) : '';
+    const logoImgUrl = req.file && (await ImageService.upload(req.file));
     const forceSync = req.query.forceSync !== undefined ? req.query.forceSync === 'true' : false;
     const account = await AccountProxy.getById(req.auth.sub);
     const baseURL = account.plan === AccountPlanType.Premium ? IPFS_BASE_URL : `${API_URL}/${VERSION}/metadata/`;

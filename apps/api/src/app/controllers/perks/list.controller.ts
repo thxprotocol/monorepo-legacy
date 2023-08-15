@@ -10,6 +10,7 @@ import PoolService from '@thxnetwork/api/services/PoolService';
 import WalletService from '@thxnetwork/api/services/WalletService';
 import PerkService from '@thxnetwork/api/services/PerkService';
 import { CustomReward } from '@thxnetwork/api/models/CustomReward';
+import { Wallet } from '@thxnetwork/api/models/Wallet';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Perks']
@@ -94,10 +95,10 @@ const controller = async (req: Request, res: Response) => {
             customRewards.map(async (r) => {
                 const { isError } = await PerkService.validate({ perk: r, sub, pool });
                 const defaults = await getRewardDefeaults(r, ERC721PerkPayment); // TOOD Implement CustomRewardPayment
-
+                const wallets = sub ? await Wallet.find({ poolId: pool._id, sub, uuid: { $exists: true } }) : [];
                 return {
                     ...defaults,
-                    isDisabled: isError,
+                    isDisabled: isError || !wallets.length,
                     isOwned: false,
                 };
             }),

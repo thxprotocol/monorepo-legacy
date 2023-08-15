@@ -2,6 +2,7 @@ import Vue from 'vue';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import type { TPool, TWebhook } from '@thxnetwork/types/interfaces';
+import { wrap } from 'module';
 
 export type TWebhookState = {
     [poolId: string]: {
@@ -39,6 +40,12 @@ class WebhooksModule extends VuexModule {
         });
 
         for (const wehbook of data) {
+            wehbook.webhookRequests.map((wr) => {
+                return {
+                    event: wr.event,
+                    payload: JSON.parse(wr.payload),
+                };
+            });
             this.context.commit('set', wehbook);
         }
     }

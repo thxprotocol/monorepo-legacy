@@ -26,7 +26,7 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['RewardsToken']
     let reward = await ERC20PerkService.get(req.params.id);
     if (!reward) throw new NotFoundError('Could not find the reward');
-    const image = req.file ? await ImageService.upload(req.file) : '';
+    const image = req.file && (await ImageService.upload(req.file));
     reward = await ERC20PerkService.update(reward, { ...req.body, image });
     return res.json(reward.toJSON());
 };

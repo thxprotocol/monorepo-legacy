@@ -50,7 +50,7 @@
                         <!-- Head formatting -->
                         <template #head(url)>URL</template>
                         <template #head(_id)>ID</template>
-                        <template #head(requestCreated)> Requests </template>
+                        <template #head(webhookRequests)> Requests </template>
                         <template #head(status)> Status </template>
                         <template #head(id)> &nbsp;</template>
 
@@ -64,13 +64,21 @@
                         <template #cell(_id)="{ item }">
                             <code>{{ item.id }}</code>
                         </template>
-                        <template #cell(requestCreated)="{ item }">
-                            {{ item.requestCreated || '0' }}
+                        <template #cell(webhookRequests)="{ item }">
+                            <BaseModalWebhookRequests
+                                :id="`modalWebhookRequest${item.id}`"
+                                :webhook="Object.values(webhooks[pool._id]).find((w) => w._id === item.id)"
+                                :webhook-requests="item.webhookRequests"
+                            />
+                            <b-link v-if="item.webhookRequests.length" v-b-modal="`modalWebhookRequest${item.id}`">
+                                {{ item.webhookRequests.length }}
+                            </b-link>
+                            <template v-else>0</template>
                         </template>
                         <template #cell(status)="{ item }">
-                            <b-badge :variant="item.status ? 'success' : 'light'" class="p-2">
-                                {{ item.status || 'Inactive' }}</b-badge
-                            >
+                            <b-badge :variant="item.webhookRequests.length ? 'success' : 'light'" class="p-2">
+                                {{ item.webhookRequests.length ? 'Active' : 'Inactive' }}
+                            </b-badge>
                         </template>
                         <template #cell(id)="{ item }">
                             <b-dropdown variant="link" size="sm" no-caret right>
@@ -98,10 +106,11 @@ import { Component, Vue } from 'vue-property-decorator';
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { TAccount } from '@thxnetwork/types/interfaces';
 import BaseModalWebhookCreate from '@thxnetwork/dashboard/components/modals/BaseModalWebhookCreate.vue';
+import BaseModalWebhookRequests from '@thxnetwork/dashboard/components/modals/BaseModalWebhookRequests.vue';
 import { TWebhookState } from '@thxnetwork/dashboard/store/modules/webhooks';
 
 @Component({
-    components: { BaseModalWebhookCreate },
+    components: { BaseModalWebhookCreate, BaseModalWebhookRequests },
     computed: mapGetters({
         webhooks: 'webhooks/all',
         pools: 'pools/all',
@@ -130,7 +139,7 @@ export default class CampaignConfigWebhooks extends Vue {
             return {
                 url: w.url,
                 _id: w._id,
-                requestCreated: w.requestCreated,
+                webhookRequests: w.webhookRequests,
                 status: w.status,
                 id: w._id,
             };
@@ -143,6 +152,10 @@ export default class CampaignConfigWebhooks extends Vue {
 
     onCopySuccess() {
         this.isCopied = true;
+    }
+
+    onClickWebhookRequests() {
+        //
     }
 
     async onClickDelete(item: { _id: string }) {

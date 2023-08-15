@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { Webhook } from '@thxnetwork/api/models/Webhook';
+import { Wallet } from '@thxnetwork/api/models/Wallet';
 import { WebhookRequest } from '@thxnetwork/api/models/WebhookRequest';
 import { Job } from '@hokify/agenda';
 import { agenda } from '@thxnetwork/api/util/agenda';
@@ -8,14 +9,16 @@ import { JobType } from '@thxnetwork/types/enums';
 import { signPayload } from '@thxnetwork/api/util/signingsecret';
 import { Event, WebhookRequestState } from '@thxnetwork/types/enums';
 
-async function create(pool: AssetPoolDocument, payload: { event: Event; data: any }) {
+async function create(pool: AssetPoolDocument, sub: string, payload: { event: Event; data: any }) {
     // TODO replace with CustomReward webhookId
-    const webhook = await Webhook.findOne({ poolId: pool._id });
+    const poolId = String(pool._id);
+    const webhook = await Webhook.findOne({ poolId });
     if (!webhook) return;
 
+    const wallets = (await Wallet.find({ poolId, sub })).map((w) => w.uuid);
     const webhookRequest = await WebhookRequest.create({
         webhookId: webhook._id,
-        payload: JSON.stringify(payload),
+        payload: JSON.stringify({ ...payload, wallets }),
         state: WebhookRequestState.Pending,
     });
 

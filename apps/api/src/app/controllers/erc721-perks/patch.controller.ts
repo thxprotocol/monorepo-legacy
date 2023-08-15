@@ -35,7 +35,7 @@ const controller = async (req: Request, res: Response) => {
     let perk = await ERC721PerkService.get(req.params.id);
     if (!perk) throw new NotFoundError('Could not find the perk');
 
-    const image = req.file ? await ImageService.upload(req.file) : '';
+    const image = req.file && (await ImageService.upload(req.file));
     const metadataIdList = req.body.metadataIds ? JSON.parse(req.body.metadataIds) : [];
     const config = {
         ...req.body,
