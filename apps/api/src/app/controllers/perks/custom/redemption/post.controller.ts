@@ -26,14 +26,9 @@ const controller = async (req: Request, res: Response) => {
     if (!customReward) throw new NotFoundError('Could not find this reward');
     if (!customReward.pointPrice) throw new NotFoundError('No point price for this reward has been set.');
 
-    const webhook = await Webhook.findById(customReward.webhookId);
-    if (!webhook) throw new NotFoundError('Could not find the webhook for this reward');
-
     const account = await AccountProxy.getById(req.auth.sub);
     const wallet = await SafeService.findPrimary(account.sub, pool.chainId);
     const pointBalance = await PointBalance.findOne({ walletId: wallet._id, poolId: pool._id });
-    console.log(wallet, pointBalance);
-
     if (!pointBalance || Number(pointBalance.balance) < Number(customReward.pointPrice)) {
         throw new BadRequestError('Not enough points on this account for this payment');
     }
@@ -43,7 +38,10 @@ const controller = async (req: Request, res: Response) => {
         throw new ForbiddenError(redeemValidationResult.errorMessage);
     }
 
-    await WebhookService.create(pool, req.auth.sub, {
+    const webhook = await Webhook.findById(customReward.webhookId);
+    if (!webhook) throw new NotFoundError('Could not find the webhook for this reward');
+
+    await WebhookService.create(webhook, req.auth.sub, {
         event: Event.RewardCustomPayment,
         data: { customRewardId: customReward._id },
     });

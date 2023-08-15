@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { Webhook } from '@thxnetwork/api/models/Webhook';
+import { AssetPool } from '@thxnetwork/api/models/AssetPool';
+import { Webhook, WebhookDocument } from '@thxnetwork/api/models/Webhook';
 import { Wallet } from '@thxnetwork/api/models/Wallet';
 import { WebhookRequest } from '@thxnetwork/api/models/WebhookRequest';
 import { Job } from '@hokify/agenda';
@@ -9,20 +9,15 @@ import { JobType } from '@thxnetwork/types/enums';
 import { signPayload } from '@thxnetwork/api/util/signingsecret';
 import { Event, WebhookRequestState } from '@thxnetwork/types/enums';
 
-async function create(pool: AssetPoolDocument, sub: string, payload: { event: Event; data: any }) {
-    // TODO replace with CustomReward webhookId
-    const poolId = String(pool._id);
-    const webhook = await Webhook.findOne({ poolId });
-    if (!webhook) return;
-
-    const wallets = (await Wallet.find({ poolId, sub })).map((w) => w.uuid);
+async function create(webhook: WebhookDocument, sub: string, payload: { event: Event; data: any }) {
+    const wallets = (await Wallet.find({ poolId: webhook.poolId, sub })).map((w) => w.uuid);
     const webhookRequest = await WebhookRequest.create({
         webhookId: webhook._id,
         payload: JSON.stringify({ ...payload, wallets }),
         state: WebhookRequestState.Pending,
     });
 
-    await agenda.now(JobType.RequestAttemp, { webhookRequestId: webhookRequest._id, poolId: pool._id });
+    await agenda.now(JobType.RequestAttemp, { webhookRequestId: webhookRequest._id, poolId: webhook.poolId });
 }
 
 async function requestAttemptJob(job: Job) {
@@ -37,7 +32,7 @@ async function requestAttemptJob(job: Job) {
 
     try {
         const signature = signPayload(webhookRequest.payload, signingSecret);
-        await axios({
+        const res = await axios({
             method: 'POST',
             url: webhook.url,
             data: { signature, payload: webhookRequest.payload },
@@ -45,6 +40,9 @@ async function requestAttemptJob(job: Job) {
                 'Content-Type': 'application/json',
             },
         });
+
+        // Handle status in order to set status for webhook
+        console.log(res, res.status);
     } catch (error) {
         console.error(error);
         await webhookRequest.updateOne({ status: WebhookRequestState.Failed });

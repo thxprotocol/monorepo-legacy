@@ -259,6 +259,7 @@ const controller = async (req: Request, res: Response) => {
                 zIndex: 9999999,
                 display: message ? 'flex' : 'none',
                 lineHeight: 1.5,
+                fontFamily: 'inherit, sans-serif',
                 fontSize: '12px',
                 fontWeight: 'normal',
                 justifyContent: 'center',

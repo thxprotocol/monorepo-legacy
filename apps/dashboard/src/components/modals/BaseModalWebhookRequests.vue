@@ -2,8 +2,13 @@
     <base-modal size="xl" title="Recent Webhook Requests (50)" :id="id" :error="error">
         <template #modal-body>
             <b-list-group>
-                <b-list-group-item :key="key" v-for="(webhookRequest, key) of webhookRequestList">
-                    <p class="text-muted">POST {{ webhook.url }}</p>
+                <b-list-group-item :key="key" v-for="(webhookRequest, key) of webhookRequestList" class="bg-light">
+                    <div class="d-flex justify-content-between mb-2">
+                        <code>POST {{ webhook.url }}</code>
+                        <small class="text-muted">
+                            {{ format(webhookRequest.createdAt, 'dd-MM-yyyy HH:mm') }}
+                        </small>
+                    </div>
                     <pre
                         v-if="webhookRequest.payloadFormatted"
                         class="rounded p-3 mb-2 w-100 text-white"
@@ -25,7 +30,7 @@ import BaseModal from './BaseModal.vue';
 import hljs from 'highlight.js/lib/core';
 import JavaScript from 'highlight.js/lib/languages/javascript';
 import 'highlight.js/styles/atom-one-dark.css';
-
+import { format } from 'date-fns';
 hljs.registerLanguage('javascript', JavaScript);
 
 @Component({
@@ -34,8 +39,8 @@ hljs.registerLanguage('javascript', JavaScript);
     },
 })
 export default class ModalWebhookRequests extends Vue {
+    format = format;
     error = '';
-    url = '';
 
     @Prop() id!: string;
     @Prop() webhook!: TWebhook;

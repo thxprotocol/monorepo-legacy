@@ -66,8 +66,8 @@ class WebhooksModule extends VuexModule {
     @Action({ rawError: true })
     async update(webhook: TWebhook) {
         await axios({
-            method: 'POST',
-            url: '/webhooks',
+            method: 'PATCH',
+            url: '/webhooks/' + webhook._id,
             headers: {
                 'X-PoolId': webhook.poolId,
             },
