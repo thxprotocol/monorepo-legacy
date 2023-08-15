@@ -66,6 +66,7 @@ const controller = async (req: Request, res: Response) => {
                 const defaults = await getRewardDefeaults(r, ERC20PerkPayment);
                 return {
                     ...defaults,
+                    amount: r.amount,
                     isDisabled: isError,
                     isOwned: false,
                     erc20: await ERC20Service.getById(r.erc20Id),
