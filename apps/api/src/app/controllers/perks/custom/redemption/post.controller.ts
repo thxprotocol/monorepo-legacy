@@ -42,7 +42,7 @@ const controller = async (req: Request, res: Response) => {
     if (!webhook) throw new NotFoundError('Could not find the webhook for this reward');
 
     await WebhookService.create(webhook, req.auth.sub, {
-        event: Event.RewardCustomPayment,
+        type: Event.RewardCustomPayment,
         data: { customRewardId: customReward._id },
     });
 
