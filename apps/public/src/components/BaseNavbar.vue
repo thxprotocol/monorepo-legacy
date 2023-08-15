@@ -18,6 +18,7 @@
                 </router-link>
                 <b-navbar-nav>
                     <b-nav-item to="/pricing" :title="TITLES.PRICING">Pricing</b-nav-item>
+                    <b-nav-item to="/campaigns" :title="TITLES.CAMPAIGNS">Campaigns</b-nav-item>
                     <b-nav-item to="/use-cases" :title="TITLES.USECASES">Use Cases</b-nav-item>
                     <b-nav-item to="/integrations" :title="TITLES.INTEGRATIONS">Integrations</b-nav-item>
                     <!-- <b-nav-item to="/campaigns" :title="TITLES.INTEGRATIONS">Campaigns</b-nav-item> -->
@@ -35,7 +36,7 @@
                         :title="TITLES.HOME_SIGN_IN"
                     >
                         <i class="fas fa-user mr-2" style="font-size: 1.1rem"></i>
-                        My Campaigns
+                        Dashboard
                     </b-button>
                     <b-button class="rounded-pill ml-3" variant="primary" to="/pricing" :title="TITLES.HOME_LIVE_DEMO">
                         <span>Free Trial</span>

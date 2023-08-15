@@ -70,6 +70,7 @@ export const TITLES = Object.freeze({
     PRICING_SIGN_UP: 'Pricing plans for our Web3 API - Sign up',
     CONTACT_US: 'Contact us to know more about how you can benefit from Web3',
     CONTACT: 'Contact',
+    CAMPAIGNS: 'Campaigns',
     SCHEDULE_A_DEMO: 'Tokenization API Demo',
     INTEGRATIONS: 'Blockchain API Integrations',
     INTEGRATIONS_OR_REACH_OUT_ON_SLACK: 'Contact us directly via Slack - THX Network',

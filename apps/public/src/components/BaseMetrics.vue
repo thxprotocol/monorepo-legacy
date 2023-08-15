@@ -19,15 +19,15 @@
                     <div>
                         <div class="card-logo mb-3 mr-md-3 w-100">
                             <span>Users</span>
-                            <strong>13103</strong>
+                            <strong>13858</strong>
                         </div>
                         <div class="card-logo mb-3 mr-md-3 w-100">
                             <span>Quests Completed</span>
-                            <strong>2439</strong>
+                            <strong>11013</strong>
                         </div>
                         <div class="card-logo mb-3 mr-md-3 w-100">
                             <span>Rewards Earned</span>
-                            <strong>818</strong>
+                            <strong>875</strong>
                         </div>
                     </div>
                 </div>
