@@ -40,7 +40,6 @@ class WebhooksModule extends VuexModule {
         });
 
         for (const webhook of data) {
-            debugger;
             this.context.commit('set', webhook);
         }
     }
