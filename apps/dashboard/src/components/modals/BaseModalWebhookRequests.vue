@@ -6,7 +6,7 @@
                     <div class="d-flex justify-content-between mb-2">
                         <code>POST {{ webhook.url }}</code>
                         <small class="text-muted">
-                            {{ format(webhookRequest.createdAt, 'dd-MM-yyyy HH:mm') }}
+                            {{ format(new Date(webhookRequest.createdAt), 'dd-MM-yyyy HH:mm') }}
                         </small>
                     </div>
                     <pre

@@ -39,14 +39,9 @@ class WebhooksModule extends VuexModule {
             },
         });
 
-        for (const wehbook of data) {
-            wehbook.webhookRequests.map((wr) => {
-                return {
-                    event: wr.event,
-                    payload: JSON.parse(wr.payload),
-                };
-            });
-            this.context.commit('set', wehbook);
+        for (const webhook of data) {
+            debugger;
+            this.context.commit('set', webhook);
         }
     }
 
