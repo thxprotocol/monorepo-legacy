@@ -1,16 +1,13 @@
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
-import { toWei } from 'web3-utils';
 import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
-import { getContractFromName } from '@thxnetwork/api/config/contracts';
-import { BigNumber } from 'ethers';
 import { Event } from '@thxnetwork/types/enums';
+import { Widget } from '@thxnetwork/api/models/Widget';
 import PointBalanceService, { PointBalance } from '@thxnetwork/api/services/PointBalanceService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import { Widget } from '@thxnetwork/api/models/Widget';
 import MailService from '@thxnetwork/api/services/MailService';
-import { Wallet } from '@thxnetwork/api/services/WalletService';
+import SafeService from '@thxnetwork/api/services/SafeService';
 import PerkService from '@thxnetwork/api/services/PerkService';
 import WebhookService from '@thxnetwork/api/services/WebhookService';
 import { Webhook } from '@thxnetwork/api/models/Webhook';
@@ -33,7 +30,7 @@ const controller = async (req: Request, res: Response) => {
     if (!webhook) throw new NotFoundError('Could not find the webhook for this reward');
 
     const account = await AccountProxy.getById(req.auth.sub);
-    const wallet = await Wallet.findOne({ sub: account.sub, chainId: pool.chainId });
+    const wallet = await SafeService.findPrimary(account.sub, pool.chainId);
     const pointBalance = await PointBalance.findOne({ walletId: wallet._id, poolId: pool._id });
 
     if (!pointBalance || Number(pointBalance.balance) < Number(customReward.pointPrice)) {

@@ -14,7 +14,7 @@ import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { Widget } from '@thxnetwork/api/models/Widget';
 import MailService from '@thxnetwork/api/services/MailService';
-import { Wallet } from '@thxnetwork/api/services/WalletService';
+import SafeService from '@thxnetwork/api/services/SafeService';
 import PerkService from '@thxnetwork/api/services/PerkService';
 import WebhookService from '@thxnetwork/api/services/WebhookService';
 
@@ -34,7 +34,7 @@ const controller = async (req: Request, res: Response) => {
     if (!erc20) throw new NotFoundError('Could not find the erc20 for this perk');
 
     const account = await AccountProxy.getById(req.auth.sub);
-    const wallet = await Wallet.findOne({ sub: account.sub, chainId: pool.chainId });
+    const wallet = await SafeService.findPrimary(account.sub, pool.chainId);
     const pointBalance = await PointBalance.findOne({ walletId: wallet._id, poolId: pool._id });
 
     if (!pointBalance || Number(pointBalance.balance) < Number(erc20Perk.pointPrice)) {
