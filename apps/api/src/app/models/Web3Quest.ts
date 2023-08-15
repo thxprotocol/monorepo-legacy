@@ -1,0 +1,19 @@
+import mongoose from 'mongoose';
+import { TWeb3Quest } from '@thxnetwork/types/interfaces';
+import { rewardBaseSchema } from '@thxnetwork/api/models/ERC20Perk';
+
+export type Web3QuestDocument = mongoose.Document & TWeb3Quest;
+
+const schema = new mongoose.Schema(
+    {
+        ...rewardBaseSchema,
+        amount: Number,
+        contractAddress: String,
+        methodName: String,
+        threshold: Number,
+    },
+    { timestamps: true },
+);
+schema.index({ createdAt: 1 });
+
+export const Web3Quest = mongoose.model<Web3QuestDocument>('Web3Quests', schema, 'web3quests');

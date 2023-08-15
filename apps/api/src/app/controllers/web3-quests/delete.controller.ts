@@ -7,8 +7,8 @@ const validation = [param('id').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     const poolId = req.header('X-PoolId');
-    const reward = await CustomReward.findByIdAndDelete(req.params.id);
-    if (reward.poolId !== poolId) throw new ForbiddenError('Not your custom reward.');
+    const quest = await CustomReward.findByIdAndDelete(req.params.id);
+    if (quest.poolId !== poolId) throw new ForbiddenError('Not your custom reward.');
 
     res.status(204).end();
 };

@@ -122,23 +122,26 @@ import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import {
-    QuestVariant,
     TBaseReward,
     TDailyReward,
     TMilestoneReward,
     TPointReward,
     TReferralReward,
-} from '@thxnetwork/types/index';
+    TWeb3Quest,
+} from '@thxnetwork/types/interfaces';
+import { QuestVariant } from '@thxnetwork/types/enums';
 import BaseModalQuestDailyCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestDailyCreate.vue';
 import BaseModalQuestSocialCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestSocialCreate.vue';
 import BaseModalQuestInviteCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestInviteCreate.vue';
 import BaseModalQuestCustomCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestCustomCreate.vue';
+import BaseModalQuestWeb3Create from '@thxnetwork/dashboard/components/modals/BaseModalQuestWeb3Create.vue';
 import BaseModalQuestInviteClaims from '@thxnetwork/dashboard/components/modals/BaseModalQuestInviteClaims.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import { TDailyRewardState } from '@thxnetwork/dashboard/store/modules/dailyRewards';
 import { TPointRewardState } from '@thxnetwork/dashboard/store/modules/pointRewards';
 import { TReferralRewardState } from '@thxnetwork/dashboard/store/modules/referralRewards';
 import { TMilestoneRewardState } from '@thxnetwork/dashboard/store/modules/milestoneRewards';
+import { TWeb3QuestState } from '@thxnetwork/dashboard/store/modules/web3Quests';
 
 @Component({
     components: {
@@ -146,6 +149,7 @@ import { TMilestoneRewardState } from '@thxnetwork/dashboard/store/modules/miles
         BaseModalQuestDailyCreate,
         BaseModalQuestSocialCreate,
         BaseModalQuestCustomCreate,
+        BaseModalQuestWeb3Create,
         BaseModalQuestInviteCreate,
         BaseModalQuestInviteClaims,
     },
@@ -156,6 +160,7 @@ import { TMilestoneRewardState } from '@thxnetwork/dashboard/store/modules/miles
         socialQuests: 'pointRewards/all',
         customQuests: 'milestoneRewards/all',
         inviteQuests: 'referralRewards/all',
+        web3Quests: 'web3Quests/all',
     }),
 })
 export default class QuestsView extends Vue {
@@ -169,12 +174,14 @@ export default class QuestsView extends Vue {
         [QuestVariant.Invite]: 'BaseModalQuestInviteCreate',
         [QuestVariant.Social]: 'BaseModalQuestSocialCreate',
         [QuestVariant.Custom]: 'BaseModalQuestCustomCreate',
+        [QuestVariant.Web3]: 'BaseModalQuestWeb3Create',
     };
     questIconClassMap = {
         [QuestVariant.Daily]: 'fas fa-calendar',
         [QuestVariant.Invite]: 'fas fa-comments',
         [QuestVariant.Social]: 'fas fa-trophy',
         [QuestVariant.Custom]: 'fas fa-flag',
+        [QuestVariant.Web3]: 'fab fa-ethereum',
     };
 
     pools!: IPools;
@@ -184,6 +191,7 @@ export default class QuestsView extends Vue {
     inviteQuests!: TReferralRewardState;
     socialQuests!: TPointRewardState;
     customQuests!: TMilestoneRewardState;
+    web3Quests!: TWeb3QuestState;
 
     get pool() {
         return this.pools[this.$route.params.id];
@@ -201,17 +209,14 @@ export default class QuestsView extends Vue {
             ...(this.customQuests[this.$route.params.id]
                 ? Object.values(this.customQuests[this.$route.params.id])
                 : []),
+            ...(this.web3Quests[this.$route.params.id] ? Object.values(this.web3Quests[this.$route.params.id]) : []),
         ];
     }
 
     get rewardsByPage() {
         return this.allQuests
-            .sort((a, b) => {
-                return Number(a.index) - Number(b.index);
-            })
-            .filter(
-                (quest: TDailyReward | TPointReward | TReferralReward | TMilestoneReward) => quest.page === this.page,
-            )
+            .sort((a: any, b: any) => Number(a.index) - Number(b.index))
+            .filter((quest: TBaseReward) => quest.page === this.page)
             .map((r: any) => ({
                 index: r,
                 checkbox: r._id,
@@ -235,6 +240,7 @@ export default class QuestsView extends Vue {
             this.$store.dispatch('pointRewards/list', { page: this.page, pool: this.pool, limit: this.limit }),
             this.$store.dispatch('milestoneRewards/list', { page: this.page, pool: this.pool, limit: this.limit }),
             this.$store.dispatch('referralRewards/list', { page: this.page, pool: this.pool, limit: this.limit }),
+            this.$store.dispatch('web3Quests/list', { page: this.page, pool: this.pool, limit: this.limit }),
         ]);
         this.isLoading = false;
     }
@@ -301,11 +307,6 @@ export default class QuestsView extends Vue {
         this.listQuests();
     }
 
-    onDelete(items: string[]) {
-        for (const id of Object.values(items)) {
-            this.$store.dispatch('dailyRewards/delete', this.dailyQuests[this.pool._id][id]);
-        }
-    }
     onClickDelete(item: { variant: QuestVariant; id: string }) {
         switch (item.variant) {
             case QuestVariant.Daily:
@@ -316,6 +317,8 @@ export default class QuestsView extends Vue {
                 return this.$store.dispatch('pointRewards/delete', this.socialQuests[this.pool._id][item.id]);
             case QuestVariant.Custom:
                 return this.$store.dispatch('milestoneRewards/delete', this.customQuests[this.pool._id][item.id]);
+            case QuestVariant.Web3:
+                return this.$store.dispatch('web3Rewards/delete', this.web3Quests[this.pool._id][item.id]);
         }
     }
 

@@ -28,6 +28,7 @@ import merchantsRouter from './merchants/merchants.router';
 import webhookRouter from './webhook/webhook.router';
 import webhooksRouter from './webhooks/webhooks.router';
 import widgetsRouter from './widgets/widgets.router';
+import web3QuestsRouter from './web3-quests/web3-quests.router';
 import dataRouter from './data/data.router';
 import { checkJwt, corsHandler } from '@thxnetwork/api/middlewares';
 
@@ -54,6 +55,7 @@ router.use('/point-rewards', pointRewardsRouter);
 router.use('/milestone-rewards', milestonesRewardRouter);
 router.use('/daily-rewards', dailyRewardsRouter);
 router.use('/point-balances', pointBalancesRouter);
+router.use('/web3-quests', web3QuestsRouter);
 router.use('/account', accountRouter);
 router.use('/widgets', widgetsRouter);
 router.use('/erc20', erc20Router);
