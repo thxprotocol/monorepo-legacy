@@ -3,7 +3,7 @@
         <h2 class="mb-3">Developer</h2>
         <b-card class="shadow-sm mb-5" no-body v-if="pool">
             <b-tabs card pills active-nav-item-class="rounded-pill">
-                <b-tab>
+                <b-tab active>
                     <template #title>
                         <i class="fas fa-cog mr-2"></i>
                         General
@@ -17,7 +17,7 @@
                     </template>
                     <BaseTabSettingsWallets />
                 </b-tab>
-                <b-tab active :disabled="profile && !profile.plan">
+                <b-tab :disabled="profile && !profile.plan">
                     <template #title>
                         <i class="fas fa-globe mr-2"></i>
                         Webhooks
