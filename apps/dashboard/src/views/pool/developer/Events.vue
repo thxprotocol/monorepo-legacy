@@ -3,11 +3,11 @@
         <b-form-row>
             <b-col md="4">
                 <strong>Events</strong>
-                <p class="text-muted">...</p>
+                <p class="text-muted">Will be available soon!</p>
             </b-col>
             <b-col md="8">
                 <b-list-group>
-                    <b-list-group-item class="py-1 d-flex" :key="key" v-for="(event, key) of [1, 2, 3, 4]">
+                    <b-list-group-item class="py-1 d-flex" :key="key" v-for="(event, key) of []">
                         <div>EventName</div>
                         <div class="ml-auto">{{ Date.now() }}</div>
                     </b-list-group-item>

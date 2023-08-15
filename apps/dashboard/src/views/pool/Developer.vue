@@ -24,7 +24,7 @@
                     </template>
                     <BaseTabSettingsWebhooks />
                 </b-tab>
-                <b-tab :disabled="profile && !profile.plan">
+                <b-tab disabled>
                     <template #title>
                         <div class="d-flex align-items-center">
                             <i class="fas fa-key mr-2"></i>
@@ -33,7 +33,7 @@
                     </template>
                     <BaseTabSettingsApi />
                 </b-tab>
-                <b-tab :disabled="profile && !profile.plan">
+                <b-tab disabled>
                     <template #title>
                         <div class="d-flex align-items-center">
                             <i class="fas fa-bullhorn mr-2"></i>
@@ -42,14 +42,13 @@
                     </template>
                     <BaseTabSettingsEvents />
                 </b-tab>
-                <b-tab :disabled="profile && !profile.plan">
+                <b-tab disabled>
                     <template #title>
                         <div class="d-flex align-items-center">
                             <i class="fas fa-file-alt mr-2"></i>
                             Logs
                         </div>
                     </template>
-                    ...
                 </b-tab>
             </b-tabs>
             <router-view :key="$route.fullPath" />
