@@ -21,6 +21,10 @@ class WebhooksModule extends VuexModule {
     @Mutation
     set(webhook: TWebhook) {
         if (!this._all[webhook.poolId]) Vue.set(this._all, webhook.poolId, {});
+        webhook.webhookRequests.map((wr) => {
+            const payload = JSON.parse(wr.payload);
+            return { ...wr, payload };
+        });
         Vue.set(this._all[webhook.poolId], String(webhook._id), webhook);
     }
 
@@ -65,7 +69,7 @@ class WebhooksModule extends VuexModule {
             headers: {
                 'X-PoolId': webhook.poolId,
             },
-            data: webhook,
+            data: { url: webhook.url },
         });
         this.context.commit('set', webhook);
     }
