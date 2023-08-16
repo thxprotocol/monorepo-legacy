@@ -1,4 +1,5 @@
 import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
+import ImageService from '@thxnetwork/api/services/ImageService';
 import { isValidUrl } from '@thxnetwork/api/util/url';
 import { TInfoLink } from '@thxnetwork/types/interfaces';
 import { Request, Response } from 'express';
@@ -26,11 +27,13 @@ const validation = [
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Milestone Rewards']
     const { title, description, amount, infoLinks, limit, index } = req.body;
+    const image = req.file && (await ImageService.upload(req.file));
     const milestoneReward = await MilestoneReward.findByIdAndUpdate(
         req.params.id,
         {
             title,
             description,
+            image,
             amount,
             infoLinks,
             index,

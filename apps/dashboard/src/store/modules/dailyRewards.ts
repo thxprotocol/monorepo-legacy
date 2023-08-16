@@ -4,6 +4,7 @@ import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { QuestVariant, TBaseReward, type TDailyReward } from '@thxnetwork/types/index';
 import { type TPool } from '@thxnetwork/types/index';
 import { track } from '@thxnetwork/mixpanel';
+import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 
 export type TDailyRewardState = {
     [poolId: string]: {
@@ -58,30 +59,30 @@ class DailyRewardModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async create(payload: TDailyReward) {
+    async create(quest: TDailyReward) {
         const { data } = await axios({
             method: 'POST',
             url: '/daily-rewards',
-            headers: { 'X-PoolId': payload.poolId },
-            data: payload,
+            headers: { 'X-PoolId': quest.poolId },
+            data: prepareFormDataForUpload(quest),
         });
 
         const profile = this.context.rootGetters['account/profile'];
         track('UserCreates', [profile.sub, 'conditional reward']);
 
-        this.context.commit('set', { ...payload, ...data });
+        this.context.commit('set', { ...quest, ...data });
     }
 
     @Action({ rawError: true })
-    async update(reward: TDailyReward) {
+    async update(quest: TDailyReward) {
         const { data } = await axios({
             method: 'PATCH',
-            url: `/daily-rewards/${reward._id}`,
-            headers: { 'X-PoolId': reward.poolId },
-            data: reward,
+            url: `/daily-rewards/${quest._id}`,
+            headers: { 'X-PoolId': quest.poolId },
+            data: prepareFormDataForUpload(quest),
         });
 
-        this.context.commit('set', { ...reward, ...data });
+        this.context.commit('set', { ...quest, ...data });
     }
 
     @Action({ rawError: true })

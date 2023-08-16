@@ -318,7 +318,7 @@ export default class QuestsView extends Vue {
             case QuestVariant.Custom:
                 return this.$store.dispatch('milestoneRewards/delete', this.customQuests[this.pool._id][item.id]);
             case QuestVariant.Web3:
-                return this.$store.dispatch('web3Rewards/delete', this.web3Quests[this.pool._id][item.id]);
+                return this.$store.dispatch('web3Quests/delete', this.web3Quests[this.pool._id][item.id]);
         }
     }
 

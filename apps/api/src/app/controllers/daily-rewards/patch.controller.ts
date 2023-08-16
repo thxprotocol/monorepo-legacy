@@ -1,4 +1,5 @@
 import { DailyReward } from '@thxnetwork/api/services/DailyRewardService';
+import ImageService from '@thxnetwork/api/services/ImageService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { isValidUrl } from '@thxnetwork/api/util/url';
 import { TInfoLink } from '@thxnetwork/types/interfaces';
@@ -39,7 +40,7 @@ const controller = async (req: Request, res: Response) => {
 
     let dailyReward = await DailyReward.findById(req.params.id);
     if (!dailyReward) throw new NotFoundError('Could not find the dailyReward');
-
+    const image = req.file && (await ImageService.upload(req.file));
     const { title, description, amounts, infoLinks, isEnabledWebhookQualification, index } = req.body;
     dailyReward = await DailyReward.findByIdAndUpdate(
         req.params.id,
@@ -47,6 +48,7 @@ const controller = async (req: Request, res: Response) => {
             title,
             description,
             amounts,
+            image,
             infoLinks,
             isEnabledWebhookQualification,
             index,

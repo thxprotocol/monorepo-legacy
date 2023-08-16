@@ -4,6 +4,7 @@ import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardServic
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { TInfoLink } from '@thxnetwork/types/interfaces';
 import { isValidUrl } from '@thxnetwork/api/util/url';
+import ImageService from '@thxnetwork/api/services/ImageService';
 
 const validation = [
     body('index').isInt(),
@@ -27,7 +28,8 @@ const validation = [
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards Referral']
     const pool = await PoolService.getById(req.header('X-PoolId'));
-    const reward = await ReferralRewardService.create(pool, req.body);
+    const image = req.file && (await ImageService.upload(req.file));
+    const reward = await ReferralRewardService.create(pool, { ...req.body, image, poolId: pool._id });
     res.status(201).json(reward);
 };
 

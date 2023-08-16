@@ -4,6 +4,7 @@ import { body, check } from 'express-validator';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { isValidUrl } from '@thxnetwork/api/util/url';
 import { TInfoLink } from '@thxnetwork/types/interfaces';
+import ImageService from '@thxnetwork/api/services/ImageService';
 
 const validation = [
     body('index').isInt(),
@@ -28,11 +29,13 @@ const validation = [
 
 const controller = async (req: Request, res: Response) => {
     const { title, description, amount, infoLinks, platform, interaction, content, contentMetadata } = req.body;
+    const image = req.file && (await ImageService.upload(req.file));
     const pool = await PoolService.getById(req.header('X-PoolId'));
     const reward = await PointRewardService.create(pool, {
         title,
         description,
         amount,
+        image,
         platform,
         interaction,
         content,

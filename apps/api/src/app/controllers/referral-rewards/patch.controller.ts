@@ -6,6 +6,7 @@ import ReferralRewardClaimService from '@thxnetwork/api/services/ReferralRewardC
 import { TInfoLink } from '@thxnetwork/types/interfaces';
 import { isValidUrl } from '@thxnetwork/api/util/url';
 import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
+import ImageService from '@thxnetwork/api/services/ImageService';
 
 const validation = [
     param('id').isMongoId(),
@@ -29,11 +30,13 @@ const controller = async (req: Request, res: Response) => {
     let reward = await RewardReferralService.get(req.params.id);
     if (!reward) throw new NotFoundError('Could not find the reward for this id');
     const { title, description, pathname, amount, successUrl, infoLinks, isMandatoryReview, index } = req.body;
+    const image = req.file && (await ImageService.upload(req.file));
     reward = await ReferralReward.findByIdAndUpdate(
         reward._id,
         {
             title,
             description,
+            image,
             amount,
             pathname,
             successUrl,

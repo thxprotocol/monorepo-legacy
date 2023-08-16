@@ -1,3 +1,4 @@
+import ImageService from '@thxnetwork/api/services/ImageService';
 import MilestoneRewardService from '@thxnetwork/api/services/MilestoneRewardService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { isValidUrl } from '@thxnetwork/api/util/url';
@@ -26,10 +27,12 @@ const validation = [
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['RewardsToken']
     const { title, description, amount, limit, infoLinks } = req.body;
+    const image = req.file && (await ImageService.upload(req.file));
     const pool = await PoolService.getById(req.header('X-PoolId'));
     const milestoneReward = await MilestoneRewardService.create(pool, {
         title,
         description,
+        image,
         amount,
         infoLinks,
         limit,

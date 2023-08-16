@@ -3,6 +3,7 @@ import { QuestVariant, TBaseReward, type TMilestoneReward } from '@thxnetwork/ty
 import { Vue } from 'vue-property-decorator';
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
 import { type TPool } from '@thxnetwork/types/index';
+import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 
 export type TMilestoneRewardState = {
     [poolId: string]: {
@@ -57,27 +58,27 @@ class MilestoneRewardModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async create(reward: TMilestoneReward) {
+    async create(quest: TMilestoneReward) {
         const { data } = await axios({
             method: 'POST',
             url: '/milestone-rewards',
-            headers: { 'X-PoolId': reward.poolId },
-            data: reward,
+            headers: { 'X-PoolId': quest.poolId },
+            data: prepareFormDataForUpload(quest),
         });
 
-        this.context.commit('set', { ...reward, ...data });
+        this.context.commit('set', { ...quest, ...data });
     }
 
     @Action({ rawError: true })
-    async update(reward: TMilestoneReward) {
+    async update(quest: TMilestoneReward) {
         const { data } = await axios({
             method: 'PATCH',
-            url: `/milestone-rewards/${reward._id}`,
-            headers: { 'X-PoolId': reward.poolId },
-            data: reward,
+            url: `/milestone-rewards/${quest._id}`,
+            headers: { 'X-PoolId': quest.poolId },
+            data: prepareFormDataForUpload(quest),
         });
 
-        this.context.commit('set', { ...reward, ...data });
+        this.context.commit('set', { ...quest, ...data });
     }
 
     @Action({ rawError: true })

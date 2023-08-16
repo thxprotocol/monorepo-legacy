@@ -1,3 +1,4 @@
+import ImageService from '@thxnetwork/api/services/ImageService';
 import { PointReward } from '@thxnetwork/api/services/PointRewardService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { isValidUrl } from '@thxnetwork/api/util/url';
@@ -32,7 +33,7 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['RewardsNft']
     let reward = await PointReward.findById(req.params.id);
     if (!reward) throw new NotFoundError('Could not find the reward');
-
+    const image = req.file && (await ImageService.upload(req.file));
     const { title, description, amount, platform, infoLinks, interaction, content, contentMetadata, index } = req.body;
     reward = await PointReward.findByIdAndUpdate(
         reward._id,
@@ -40,6 +41,7 @@ const controller = async (req: Request, res: Response) => {
             title,
             description,
             amount,
+            image,
             platform,
             infoLinks,
             interaction,
