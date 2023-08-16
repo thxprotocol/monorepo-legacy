@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { BigNumber, ethers } from 'ethers';
-import { HARDHAT_RPC } from '@thxnetwork/api/config/secrets';
 import { body, param } from 'express-validator';
 import { validate } from 'uuid';
 import { Web3Quest } from '@thxnetwork/api/models/Web3Quest';

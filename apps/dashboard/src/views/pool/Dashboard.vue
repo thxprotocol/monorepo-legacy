@@ -1,184 +1,234 @@
 <template>
     <div>
-        <h2 class="mb-3">Dashboard</h2>
-        <b-row v-if="pool">
-            <b-col md="8">
-                <b-row>
-                    <b-col>
-                        <b-card>
-                            <b-skeleton-wrapper :loading="!poolAnalytics">
-                                <template #loading>
-                                    <b-skeleton-img no-aspect height="250px"></b-skeleton-img>
-                                </template>
-                                <line-chart
-                                    :chartData="lineChartData"
-                                    :chart-options="chartOptions"
-                                    :height="250"
-                                    style="position: relative; width: 100%"
-                                />
-                            </b-skeleton-wrapper>
-                        </b-card>
-                    </b-col>
-                </b-row>
-                <b-row class="mt-3" v-if="metrics">
-                    <b-col
-                        md="3"
-                        :key="key"
-                        v-for="(metric, key) of [
-                            metrics.dailyQuest,
-                            metrics.inviteQuest,
-                            metrics.socialQuest,
-                            metrics.customQuest,
-                        ]"
-                    >
-                        <b-card v-if="metrics" bg-variant="white" class="shadow-sm text-dark" body-class="py-2 px-3">
-                            <div class="text-gray d-flex align-content-between">
-                                {{ metricQuestsLabelMap[key] }}
-                                <b-link v-b-tooltip :title="metricQuestsInfoMap[key]" class="ml-auto">
-                                    <i class="fas fa-question-circle"></i>
-                                </b-link>
-                            </div>
-                            <div class="h2 mb-0">
-                                {{ metric.totalCreated }} {{ [0, 3].includes(key) ? `/${metric.totalCompleted}` : '' }}
-                            </div>
-                            <small>{{ metric.totalAmount }} points</small>
-                        </b-card>
-                    </b-col>
-                </b-row>
-
-                <b-row class="mt-3">
-                    <b-col>
-                        <div class="card-header block">Leaderboard</div>
-                        <b-skeleton-wrapper :loading="!leaderBoard">
-                            <template #loading>
-                                <b-skeleton-table
-                                    :rows="2"
-                                    :columns="1"
-                                    :table-props="{ bordered: false, striped: false }"
-                                ></b-skeleton-table>
-                            </template>
-                            <b-list-group v-if="leaderBoard">
-                                <b-list-group-item
-                                    v-for="(result, key) of leaderBoard"
-                                    :key="key"
-                                    class="d-flex justify-content-between align-items-center"
-                                >
-                                    <div class="d-flex center-center">
-                                        <b-avatar
-                                            :height="30"
-                                            :width="30"
-                                            variant="light"
-                                            :src="result.account.profileImg"
-                                            class="mr-2"
+        <h2 class="mb-3">Analytics</h2>
+        <b-tabs class="w-100" nav-class="w-100">
+            <b-tab active class="mt-3">
+                <template #title>
+                    <i class="fas fa-columns mr-1"></i>
+                    Dashboard
+                </template>
+                <b-row v-if="pool">
+                    <b-col md="8">
+                        <b-row>
+                            <b-col>
+                                <b-card>
+                                    <b-skeleton-wrapper :loading="!poolAnalytics">
+                                        <template #loading>
+                                            <b-skeleton-img no-aspect height="250px"></b-skeleton-img>
+                                        </template>
+                                        <line-chart
+                                            :chartData="lineChartData"
+                                            :chart-options="chartOptions"
+                                            :height="250"
+                                            style="position: relative; width: 100%"
                                         />
-                                        <div style="line-height: 1.2">
-                                            <strong>
-                                                {{ result.account.firstName }} {{ result.account.lastName }}
-                                            </strong>
-                                            <span>{{ result.account.email }}</span>
-                                            <br />
-                                            <small class="text-muted">{{ result.account.address }}</small>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <i class="fas fa-trophy m-1" style="font-size: 1.1rem; color: silver"></i>
-                                        <strong class="text-primary"> {{ result.score }} </strong>
-                                    </div>
-                                </b-list-group-item>
-                            </b-list-group>
-                        </b-skeleton-wrapper>
-                    </b-col>
-                </b-row>
-            </b-col>
-
-            <b-col md="4">
-                <b-row>
-                    <b-col>
-                        <b-card>
-                            <b-skeleton-wrapper :loading="!poolAnalytics">
-                                <template #loading>
-                                    <b-skeleton-img no-aspect height="250px"></b-skeleton-img>
-                                </template>
-                                <bar-chart
-                                    :chartData="barChartData"
-                                    :chart-options="chartOptions"
-                                    :height="250"
-                                    style="position: relative; width: 100%"
-                                />
-                            </b-skeleton-wrapper>
-                        </b-card>
-                    </b-col>
-                </b-row>
-                <b-row class="mt-3" v-if="metrics">
-                    <b-col md="6" :key="key" v-for="(metric, key) of [metrics.coinReward, metrics.nftReward]">
-                        <b-card v-if="metrics" bg-variant="white" class="shadow-sm text-dark" body-class="py-2 px-3">
-                            <span class="text-gray">{{ metricRewardLabelMap[key] }}</span>
-                            <br />
-                            <div class="h2 mb-0">
-                                {{ metric.totalCreated }}
-                            </div>
-                            <small>{{ metric.totalAmount }} points</small>
-                        </b-card>
-                    </b-col>
-                </b-row>
-                <b-row class="mt-3" v-if="!erc20s">
-                    <b-col>
-                        <div class="py-5 w-100 center-center">
-                            <b-spinner variant="primary" />
-                        </div>
-                    </b-col>
-                </b-row>
-                <b-row class="mt-3" v-else>
-                    <b-col>
-                        <b-list-group>
-                            <b-list-group-item
-                                :key="erc20._id"
-                                v-for="erc20 of Object.values(erc20s).filter((e) => e.chainId === pool.chainId)"
-                                class="d-flex justify-content-between align-items-center"
+                                    </b-skeleton-wrapper>
+                                </b-card>
+                            </b-col>
+                        </b-row>
+                        <b-row class="mt-3" v-if="metrics">
+                            <b-col
+                                md="4"
+                                :key="key"
+                                v-for="(metric, key) of [
+                                    metrics.dailyQuest,
+                                    metrics.inviteQuest,
+                                    metrics.socialQuest,
+                                    metrics.customQuest,
+                                    metrics.web3Quest,
+                                ]"
                             >
-                                <div class="d-flex center-center">
-                                    <base-identicon
-                                        class="mr-2"
-                                        size="40"
-                                        :rounded="true"
-                                        variant="darker"
-                                        :uri="erc20.logoImgUrl"
-                                    />
-                                    <div style="line-height: 1.2">
-                                        <strong>{{ erc20.name }}</strong>
-                                        <div class="text-muted" v-if="erc20.poolBalance">
-                                            {{ fromWei(String(erc20.poolBalance), 'ether') }} {{ erc20.symbol }}
-                                        </div>
+                                <b-card v-if="metrics" bg-variant="white" class="text-dark mb-2" body-class="py-2 px-3">
+                                    <div class="text-gray d-flex align-content-between">
+                                        {{ metricQuestsLabelMap[key] }}
+                                        <b-link v-b-tooltip :title="metricQuestsInfoMap[key]" class="ml-auto">
+                                            <i class="fas fa-question-circle"></i>
+                                        </b-link>
                                     </div>
+                                    <div class="h2 mb-0">
+                                        {{ metric.totalCreated }}
+                                        {{ [0, 3].includes(key) ? `/${metric.totalCompleted}` : '' }}
+                                    </div>
+                                    <small>{{ metric.totalAmount }} points</small>
+                                </b-card>
+                            </b-col>
+                        </b-row>
+                        <b-row class="mt-3">
+                            <b-col>
+                                <b-card>
+                                    <b-skeleton-wrapper :loading="!poolAnalytics">
+                                        <template #loading>
+                                            <b-skeleton-img no-aspect height="250px"></b-skeleton-img>
+                                        </template>
+                                        <bar-chart
+                                            :chartData="barChartData"
+                                            :chart-options="chartOptions"
+                                            :height="250"
+                                            style="position: relative; width: 100%"
+                                        />
+                                    </b-skeleton-wrapper>
+                                </b-card>
+                            </b-col>
+                        </b-row>
+                        <b-row class="mt-3" v-if="metrics">
+                            <b-col
+                                md="4"
+                                :key="key"
+                                v-for="(metric, key) of [metrics.coinReward, metrics.nftReward, metrics.customReward]"
+                            >
+                                <b-card v-if="metrics" bg-variant="white" class="text-dark" body-class="py-2 px-3">
+                                    <span class="text-gray">{{ metricRewardLabelMap[key] }}</span>
+                                    <br />
+                                    <div class="h2 mb-0">
+                                        {{ metric.totalCreated }}
+                                    </div>
+                                    <small>{{ metric.totalAmount }} points</small>
+                                </b-card>
+                            </b-col>
+                        </b-row>
+                    </b-col>
+
+                    <b-col md="4">
+                        <b-row>
+                            <b-col>
+                                <div class="card-header block">Leaderboard</div>
+                                <b-skeleton-wrapper :loading="!leaderBoard">
+                                    <template #loading>
+                                        <b-skeleton-table
+                                            :rows="2"
+                                            :columns="1"
+                                            :table-props="{ bordered: false, striped: false }"
+                                        ></b-skeleton-table>
+                                    </template>
+                                    <b-list-group v-if="leaderBoard">
+                                        <b-list-group-item
+                                            v-for="(result, key) of leaderBoard"
+                                            :key="key"
+                                            class="d-flex justify-content-between align-items-center"
+                                        >
+                                            <div class="d-flex center-center">
+                                                <b-avatar
+                                                    :height="30"
+                                                    :width="30"
+                                                    variant="light"
+                                                    :src="result.account.profileImg"
+                                                    class="mr-2"
+                                                />
+                                                <div style="line-height: 1.2">
+                                                    <strong>
+                                                        {{ result.account.firstName }} {{ result.account.lastName }}
+                                                    </strong>
+                                                    <span>{{ result.account.email }}</span>
+                                                    <br />
+                                                    <small class="text-muted">{{ result.account.address }}</small>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <i
+                                                    class="fas fa-trophy m-1"
+                                                    style="font-size: 1.1rem; color: silver"
+                                                ></i>
+                                                <strong class="text-primary"> {{ result.score }} </strong>
+                                            </div>
+                                        </b-list-group-item>
+                                    </b-list-group>
+                                </b-skeleton-wrapper>
+                            </b-col>
+                        </b-row>
+                        <b-row class="mt-3" v-if="!erc20s">
+                            <b-col>
+                                <div class="py-5 w-100 center-center">
+                                    <b-spinner variant="primary" />
                                 </div>
-                                <b-button v-b-modal="`modalDepositCreate-${erc20._id}`" variant="light">
-                                    <i class="fas fa-download m-0" style="font-size: 1.1rem"></i>
-                                </b-button>
-                                <BaseModalDepositCreate @submit="onTopup(erc20)" :erc20="erc20" :pool="pool" />
-                            </b-list-group-item>
-                            <b-list-group-item
-                                v-if="!Object.values(erc20s).filter((e) => e.chainId === pool.chainId).length"
-                            >
-                                <span class="text-muted">No coins found for your account.</span>
-                            </b-list-group-item>
-                            <b-list-group-item>
-                                <b-button v-b-modal="'modalERC20Import'" block variant="primary" class="rounded-pill">
-                                    Import coin
-                                    <i class="fas fa-chevron-right"></i>
-                                </b-button>
-                                <b-button v-b-modal="'modalERC20Create'" block variant="link" class="rounded-pill">
-                                    Create coin
-                                    <i class="fas fa-chevron-right"></i>
-                                </b-button>
-                            </b-list-group-item>
-                        </b-list-group>
+                            </b-col>
+                        </b-row>
+                        <b-row class="mt-3" v-else>
+                            <b-col>
+                                <b-list-group>
+                                    <b-list-group-item
+                                        :key="erc20._id"
+                                        v-for="erc20 of Object.values(erc20s).filter((e) => e.chainId === pool.chainId)"
+                                        class="d-flex justify-content-between align-items-center"
+                                    >
+                                        <div class="d-flex center-center">
+                                            <base-identicon
+                                                class="mr-2"
+                                                size="40"
+                                                :rounded="true"
+                                                variant="darker"
+                                                :uri="erc20.logoImgUrl"
+                                            />
+                                            <div style="line-height: 1.2">
+                                                <strong>{{ erc20.name }}</strong>
+                                                <div class="text-muted" v-if="erc20.poolBalance">
+                                                    {{ fromWei(String(erc20.poolBalance), 'ether') }} {{ erc20.symbol }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <b-button v-b-modal="`modalDepositCreate-${erc20._id}`" variant="light">
+                                            <i class="fas fa-download m-0" style="font-size: 1.1rem"></i>
+                                        </b-button>
+                                        <BaseModalDepositCreate @submit="onTopup(erc20)" :erc20="erc20" :pool="pool" />
+                                    </b-list-group-item>
+                                    <b-list-group-item
+                                        v-if="!Object.values(erc20s).filter((e) => e.chainId === pool.chainId).length"
+                                    >
+                                        <span class="text-muted">No coins found for your account.</span>
+                                    </b-list-group-item>
+                                    <b-list-group-item>
+                                        <b-button
+                                            v-b-modal="'modalERC20Import'"
+                                            block
+                                            variant="primary"
+                                            class="rounded-pill"
+                                        >
+                                            Import coin
+                                            <i class="fas fa-chevron-right"></i>
+                                        </b-button>
+                                        <b-button
+                                            v-b-modal="'modalERC20Create'"
+                                            block
+                                            variant="link"
+                                            class="rounded-pill"
+                                        >
+                                            Create coin
+                                            <i class="fas fa-chevron-right"></i>
+                                        </b-button>
+                                    </b-list-group-item>
+                                </b-list-group>
+                            </b-col>
+                        </b-row>
                     </b-col>
                 </b-row>
-            </b-col>
-        </b-row>
 
-        <BaseModalErc20Create :chainId="pool.chainId" />
-        <BaseModalErc20Import :chainId="pool.chainId" />
+                <BaseModalErc20Create :chainId="pool.chainId" />
+                <BaseModalErc20Import :chainId="pool.chainId" />
+            </b-tab>
+            <b-tab active disabled>
+                <template #title>
+                    <i class="fas fa-trophy mr-1"></i>
+                    Quests
+                </template>
+            </b-tab>
+            <b-tab active disabled>
+                <template #title>
+                    <i class="fas fa-gift mr-1"></i>
+                    Rewards
+                </template>
+            </b-tab>
+            <b-tab active disabled>
+                <template #title>
+                    <i class="fas fa-users mr-1"></i>
+                    Participants
+                </template>
+            </b-tab>
+            <b-tab active disabled>
+                <template #title>
+                    <i class="fas fa-bell mr-1"></i>
+                    Subscribers
+                </template>
+            </b-tab>
+        </b-tabs>
     </div>
 </template>
 
@@ -215,12 +265,13 @@ import { IPoolAnalytics, IPoolAnalyticsLeaderBoard, IPoolAnalyticsMetrics, IPool
     }),
 })
 export default class TransactionsView extends Vue {
-    metricQuestsLabelMap = ['Daily', 'Invite', 'Social', 'Custom'];
+    metricQuestsLabelMap = ['Daily', 'Invite', 'Social', 'Custom', 'Web3'];
     metricQuestsInfoMap = [
         'Daily Quest qualifications versus completed and the total amount of points earned.',
         'Invite Quest leads qualified and the total amount of points earned.',
         'Social Quests completed and the total amount of points earned.',
         'Custom Quest qualifications versus completions and the total amount of points earned.',
+        'Web3 Quests completed and the total amount of points earned.',
     ];
     metricRewardLabelMap = ['Coin', 'NFT', 'Custom'];
     fromWei = fromWei;
@@ -274,6 +325,7 @@ export default class TransactionsView extends Vue {
         let conditionalChartPoints: number[] = [];
         let milestoneChartPoints: number[] = [];
         let dailyChartPoints: number[] = [];
+        let web3ChartPoints: number[] = [];
 
         if (this.poolAnalytics) {
             // REFERRALS
@@ -333,6 +385,20 @@ export default class TransactionsView extends Vue {
                 }
                 milestoneChartPoints.push(x + milestoneChartPoints[index - 1]);
             });
+
+            // Web3
+            points = this.chartDates.map((data) => {
+                const dayData = this.poolAnalytics.web3Quests.find((x) => x.day == data);
+                return dayData ? dayData.totalClaimPoints : 0;
+            });
+
+            points.forEach((x, index) => {
+                if (index === 0) {
+                    web3ChartPoints.push(x);
+                    return;
+                }
+                web3ChartPoints.push(x + web3ChartPoints[index - 1]);
+            });
         }
 
         const result = {
@@ -373,8 +439,19 @@ export default class TransactionsView extends Vue {
                 },
                 {
                     label: 'Custom',
-                    backgroundColor: '#0d6efd',
+                    backgroundColor: '#A52A2A',
                     data: milestoneChartPoints,
+                    borderColor: '#A52A2A',
+                    borderJoinStyle: 'round',
+                    pointRadius: 3,
+                    pointHoverRadius: 8,
+                    hoverBorderJoinStyle: 'round',
+                    tension: 0.4,
+                },
+                {
+                    label: 'Web3',
+                    backgroundColor: '#0d6efd',
+                    data: web3ChartPoints,
                     borderColor: '#0d6efd',
                     borderJoinStyle: 'round',
                     pointRadius: 3,
@@ -388,19 +465,23 @@ export default class TransactionsView extends Vue {
     }
 
     get barChartData() {
-        let erc20Payments: number[] = [];
-        let erc721Payments: number[] = [];
+        let coinRewardPayments: number[] = [];
+        let nftRewardPayments: number[] = [];
+        let customRewardPayments: number[] = [];
+
         if (this.poolAnalytics) {
-            // COIN PERKS
-            // assigns for each day of the chart, the related total amount, or 0 if there are no data for that day
-            erc20Payments = this.chartDates.map((data) => {
-                const dayData = this.poolAnalytics.erc20Perks.find((x) => x.day == data);
+            coinRewardPayments = this.chartDates.map((data) => {
+                const dayData = this.poolAnalytics.erc721Perks.find((x) => x.day == data);
                 return dayData ? dayData.totalAmount : 0;
             });
 
-            // NFT PERKS
-            erc721Payments = this.chartDates.map((data) => {
+            nftRewardPayments = this.chartDates.map((data) => {
                 const dayData = this.poolAnalytics.erc721Perks.find((x) => x.day == data);
+                return dayData ? dayData.totalAmount : 0;
+            });
+
+            customRewardPayments = this.chartDates.map((data) => {
+                const dayData = this.poolAnalytics.customRewards.find((x) => x.day == data);
                 return dayData ? dayData.totalAmount : 0;
             });
         }
@@ -410,16 +491,23 @@ export default class TransactionsView extends Vue {
             datasets: [
                 {
                     label: 'Coin Rewards',
-                    data: erc20Payments,
+                    data: coinRewardPayments,
                     backgroundColor: '#0CC6F9',
                     borderColor: '#0CC6F9',
                     pointRadius: 0,
                 },
                 {
                     label: 'NFT Rewards',
-                    data: erc721Payments,
+                    data: nftRewardPayments,
                     backgroundColor: '#023B77',
                     borderColor: '#023B77',
+                    pointRadius: 0,
+                },
+                {
+                    label: 'Custom Rewards',
+                    data: customRewardPayments,
+                    backgroundColor: '#A52A2A',
+                    borderColor: '#A52A2A',
                     pointRadius: 0,
                 },
             ],
