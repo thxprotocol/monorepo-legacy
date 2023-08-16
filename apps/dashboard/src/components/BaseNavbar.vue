@@ -89,7 +89,7 @@
                                     <i class="fas fa-chart-line"></i>
                                 </div>
                                 <div class="flex-grow-1 justify-content-between d-flex align-items-center">
-                                    <span>Dashboard</span>
+                                    <span>Analytics</span>
                                 </div>
                             </div>
                         </b-nav-item>

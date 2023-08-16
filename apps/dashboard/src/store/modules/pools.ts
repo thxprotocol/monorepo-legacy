@@ -20,6 +20,13 @@ export interface IPoolAnalytic {
             totalAmount: number;
         },
     ];
+    customRewards: [
+        {
+            day: string;
+            totalAmount: number;
+        },
+    ];
+    //
     dailyRewards: [
         {
             day: string;
@@ -39,6 +46,12 @@ export interface IPoolAnalytic {
         },
     ];
     milestoneRewards: [
+        {
+            day: string;
+            totalClaimPoints: number;
+        },
+    ];
+    web3Quests: [
         {
             day: string;
             totalClaimPoints: number;
@@ -64,8 +77,10 @@ export interface IPoolAnalyticMetrics {
     socialQuest: PoolMetric;
     inviteQuest: PoolMetric;
     customQuest: PoolMetric;
+    web3Quest: PoolMetric;
     coinReward: PoolMetric;
     nftReward: PoolMetric;
+    customReward: PoolMetric;
 }
 export interface IPools {
     [id: string]: TPool;

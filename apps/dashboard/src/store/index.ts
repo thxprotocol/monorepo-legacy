@@ -10,7 +10,7 @@ import ERC20PerksStore from './modules/erc20Perks';
 import ERC721Store from './modules/erc721';
 import ERC1155Store from './modules/erc1155';
 import ERC721PerksStore from './modules/erc721Perks';
-import ShopifyPerksStore from './modules/shopifyPerks';
+import Web3QuestStore from './modules/web3Quests';
 import ReferralRewardRewardsStore from './modules/referralRewards';
 import ReferralRewardRewardClaimsStore from './modules/referralRewardClaims';
 import ClientStore from './modules/clients';
@@ -38,7 +38,7 @@ const modules = {
     erc721: ERC721Store,
     erc1155: ERC1155Store,
     erc721Perks: ERC721PerksStore,
-    shopifyPerks: ShopifyPerksStore,
+    web3Quests: Web3QuestStore,
     referralRewards: ReferralRewardRewardsStore,
     referralRewardClaims: ReferralRewardRewardClaimsStore,
     clients: ClientStore,

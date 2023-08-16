@@ -62,7 +62,7 @@ const controller = async (req: Request, res: Response) => {
             md: {
                 top: 'auto',
                 bottom: '100px',
-                maxHeight: '680px',
+                maxHeight: '703px',
                 width: '400px',
                 borderRadius: '10px',
                 height: 'calc(100% - 115px)',

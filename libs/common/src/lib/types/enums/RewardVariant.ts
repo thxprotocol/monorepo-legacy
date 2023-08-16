@@ -9,4 +9,5 @@ export enum QuestVariant {
     Invite = 1,
     Social = 2,
     Custom = 3,
+    Web3 = 4,
 }

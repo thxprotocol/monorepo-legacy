@@ -124,6 +124,8 @@ const config: Configuration = {
         'wallets:write',
         'webhooks:read',
         'webhooks:write',
+        'web3_quests:read',
+        'web3_quests:write',
         'custom_rewards:read',
         'custom_rewards:write',
         'erc20_rewards:read',
