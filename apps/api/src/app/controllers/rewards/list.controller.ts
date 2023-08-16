@@ -7,12 +7,13 @@ import { MilestoneRewardClaim } from '@thxnetwork/api/models/MilestoneRewardClai
 import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
 import { DailyReward } from '@thxnetwork/api/models/DailyReward';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
+import { Web3Quest } from '@thxnetwork/api/models/Web3Quest';
+import { Web3QuestClaim } from '@thxnetwork/api/models/Web3QuestClaim';
+import { TBaseReward } from '@thxnetwork/types/interfaces';
 import AnalyticsService from '@thxnetwork/api/services/AnalyticsService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import DailyRewardClaimService, { ONE_DAY_MS } from '@thxnetwork/api/services/DailyRewardClaimService';
 import WalletService from '@thxnetwork/api/services/WalletService';
-import { Web3Quest } from '@thxnetwork/api/models/Web3Quest';
-import { Web3QuestClaim } from '@thxnetwork/api/models/Web3QuestClaim';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
@@ -38,6 +39,16 @@ const controller = async (req: Request, res: Response) => {
         endDate: new Date(),
     });
 
+    const getDefaults = ({ _id, index, title, description, infoLinks, uuid, image }: TBaseReward) => ({
+        _id,
+        index,
+        title,
+        description,
+        infoLinks,
+        image,
+        uuid,
+    });
+
     res.json({
         leaderboard: leaderboard.map(({ score, wallet, questsCompleted }) => ({
             questsCompleted,
@@ -52,14 +63,11 @@ const controller = async (req: Request, res: Response) => {
                     ? new Date(validClaims[0].createdAt).getTime() + ONE_DAY_MS
                     : null;
                 const now = Date.now();
+                const defaults = getDefaults(r);
                 return {
-                    _id: r._id,
-                    index: r.index,
-                    title: r.title,
-                    description: r.description,
+                    ...defaults,
                     amount: r.amounts[validClaims.length],
                     amounts: r.amounts,
-                    infoLinks: r.infoLinks,
                     isDisabled,
                     claims: validClaims,
                     claimAgainDuration:
@@ -75,26 +83,20 @@ const controller = async (req: Request, res: Response) => {
                           milestoneRewardId: String(r._id),
                       })
                     : [];
+                const defaults = getDefaults(r);
                 return {
-                    _id: r._id,
-                    index: r.index,
-                    title: r.title,
-                    description: r.description,
+                    ...defaults,
                     amount: r.amount,
-                    infoLinks: r.infoLinks,
                     claims,
                 };
             }),
         ),
         referralRewards: referralRewards.map((r) => {
+            const defaults = getDefaults(r);
             return {
-                _id: r._id,
-                index: r.index,
-                title: r.title,
-                pathname: r.pathname,
-                description: r.description,
+                ...defaults,
                 amount: r.amount,
-                infoLinks: r.infoLinks,
+                pathname: r.pathname,
                 successUrl: r.successUrl,
             };
         }),
@@ -106,13 +108,10 @@ const controller = async (req: Request, res: Response) => {
                           pointRewardId: String(r._id),
                       }) // TODO SHould move to service since its also used in the claim controller
                     : false;
+                const defaults = getDefaults(r);
                 return {
-                    _id: r._id,
-                    index: r.index,
-                    title: r.title,
-                    description: r.description,
+                    ...defaults,
                     amount: r.amount,
-                    infoLinks: r.infoLinks,
                     isClaimed,
                     platform: r.platform,
                     interaction: r.interaction,
@@ -129,15 +128,10 @@ const controller = async (req: Request, res: Response) => {
                           $or: [{ sub }, { walletId: wallet._id }],
                       })
                     : false;
-
+                const defaults = getDefaults(r);
                 return {
-                    _id: r._id,
-                    uuid: r.uuid,
-                    index: r.index,
-                    title: r.title,
-                    description: r.description,
+                    ...defaults,
                     amount: r.amount,
-                    infoLinks: r.infoLinks,
                     contracts: r.contracts,
                     methodName: r.methodName,
                     threshold: r.threshold,

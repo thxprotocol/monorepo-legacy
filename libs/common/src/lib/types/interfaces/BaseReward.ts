@@ -35,6 +35,7 @@ export type TBaseReward = {
     poolId: string;
     title: string;
     description: string;
+    image: string;
     infoLinks: TInfoLink[];
     createdAt?: string;
     updatedAt?: string;

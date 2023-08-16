@@ -1,16 +1,22 @@
 import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
+import ImageService from '@thxnetwork/api/services/ImageService';
 import { isValidUrl } from '@thxnetwork/api/util/url';
 import { TInfoLink } from '@thxnetwork/types/interfaces';
 import { Request, Response } from 'express';
-import { body, param } from 'express-validator';
+import { body, check, param } from 'express-validator';
 
 const validation = [
     param('id').isMongoId(),
+    body('index').optional().isInt(),
     body('title').optional().isString(),
     body('description').optional().isString(),
+    check('file')
+        .optional()
+        .custom((value, { req }) => {
+            return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
+        }),
     body('amount').optional().isInt({ gt: 0 }),
     body('limit').optional().isInt(),
-    body('index').optional().isInt(),
     body('infoLinks')
         .optional()
         .customSanitizer((infoLinks) => {
@@ -21,11 +27,13 @@ const validation = [
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Milestone Rewards']
     const { title, description, amount, infoLinks, limit, index } = req.body;
+    const image = req.file && (await ImageService.upload(req.file));
     const milestoneReward = await MilestoneReward.findByIdAndUpdate(
         req.params.id,
         {
             title,
             description,
+            image,
             amount,
             infoLinks,
             index,

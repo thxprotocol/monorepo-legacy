@@ -1,109 +1,79 @@
 <template>
-    <base-modal
+    <BaseModalQuestCreate
+        variant="Invite Quest"
         @show="onShow"
-        size="xl"
-        :title="(reward ? 'Update' : 'Create') + ' Referral Quest'"
+        @submit="onSubmit"
+        @change-info-links="infoLinks = $event"
+        @change-title="title = $event"
+        @change-description="description = $event"
+        @change-file="file = $event"
         :id="id"
         :error="error"
         :loading="isLoading"
+        :disabled="isSubmitDisabled || !amount || !title"
+        :quest="reward"
     >
-        <template #modal-body v-if="!isLoading">
-            <form v-on:submit.prevent="onSubmit" id="formRewardPointsCreate">
-                <b-row>
-                    <b-col md="6">
-                        <b-form-group label="Title">
-                            <b-form-input v-model="title" />
-                        </b-form-group>
-                        <b-form-group label="Description">
-                            <b-textarea v-model="description" />
-                        </b-form-group>
-                        <b-form-group label="Amount">
-                            <b-form-input v-model="amount" />
-                        </b-form-group>
-                        <b-form-group
-                            label="Referral URL"
-                            description="This URL will be appended with a code that identifies the user that refers a friend."
-                            v-if="pool.widget"
-                        >
-                            <b-input-group :prepend="`${pool.widget.domain}/`">
-                                <b-form-input v-model="pathname" />
-                            </b-input-group>
-                        </b-form-group>
-                        <b-form-group label="Qualification">
-                            <b-form-checkbox v-model="isMandatoryReview">
-                                Enable mandatory manual review
-                            </b-form-checkbox>
-                        </b-form-group>
-                    </b-col>
-                    <b-col md="6">
-                        <BaseCardURLQualify
-                            :visible="isVisibleCardURLQualify"
-                            :url="successUrl"
-                            @input="successUrl = $event"
-                        />
-                        <BaseCardURLWebhook
-                            :visible="isVisibleCardWebhookQualify"
-                            :code="code"
-                            title="Webhook Qualification"
-                            description="You can also choose to run this webhook to qualify the referral and trigger a point transfer."
-                        >
-                            <template #alerts>
-                                <b-alert show variant="info">
-                                    <i class="fas fa-question-circle mr-2"></i> Take note of these development
-                                    guidelines:
-                                    <ul class="px-3 mb-0 mt-1 small">
-                                        <li v-if="!reward">
-                                            <strong>REFERRAL_TOKEN</strong> will be populated after creating this
-                                            referral reward.
-                                        </li>
-                                        <li>
-                                            <strong>REFERRAL_CODE</strong> should be derived from the
-                                            <code>$_GET['ref']</code>
-                                            value in the referral URL used on your site.
-                                        </li>
-                                    </ul>
-                                </b-alert>
-                            </template>
-                        </BaseCardURLWebhook>
-                        <BaseCardInfoLinks :info-links="infoLinks" @change-link="onChangeLink">
-                            <p class="text-muted">
-                                Add info links to your cards to provide more information to your audience.
-                            </p>
-                        </BaseCardInfoLinks>
-                    </b-col>
-                </b-row>
-            </form>
-        </template>
-        <template #btn-primary>
-            <b-button
-                :disabled="isSubmitDisabled || !amount || !title"
-                class="rounded-pill"
-                type="submit"
-                form="formRewardPointsCreate"
-                variant="primary"
-                block
+        <template #col-left>
+            <b-form-group label="Amount">
+                <b-form-input v-model="amount" />
+            </b-form-group>
+            <b-form-group
+                label="Invite URL"
+                description="This URL will be appended with a code that identifies the user that refers a friend."
+                v-if="pool.widget"
             >
-                {{ (reward ? 'Update' : 'Create') + ' Referral Quest' }}
-            </b-button>
+                <b-input-group :prepend="`${pool.widget.domain}/`">
+                    <b-form-input v-model="pathname" />
+                </b-input-group>
+            </b-form-group>
+            <b-form-group label="Qualification">
+                <b-form-checkbox v-model="isMandatoryReview"> Enable mandatory manual review </b-form-checkbox>
+            </b-form-group>
         </template>
-    </base-modal>
+
+        <template #col-right>
+            <BaseCardURLQualify :visible="isVisibleCardURLQualify" :url="successUrl" @input="successUrl = $event" />
+            <BaseCardURLWebhook
+                :visible="isVisibleCardWebhookQualify"
+                :code="code"
+                title="Webhook Qualification"
+                description="You can also choose to run this webhook to qualify the referral and trigger a point transfer."
+            >
+                <template #alerts>
+                    <b-alert show variant="info">
+                        <i class="fas fa-question-circle mr-2"></i> Take note of these development guidelines:
+                        <ul class="px-3 mb-0 mt-1 small">
+                            <li v-if="!reward">
+                                <strong>REFERRAL_TOKEN</strong> will be populated after creating this referral reward.
+                            </li>
+                            <li>
+                                <strong>REFERRAL_CODE</strong> should be derived from the
+                                <code>$_GET['ref']</code>
+                                value in the referral URL used on your site.
+                            </li>
+                        </ul>
+                    </b-alert>
+                </template>
+            </BaseCardURLWebhook>
+        </template>
+    </BaseModalQuestCreate>
 </template>
 
 <script lang="ts">
 import hljs from 'highlight.js/lib/core';
 import Shell from 'highlight.js/lib/languages/shell';
+import { type TReferralReward } from '@thxnetwork/types/index';
 import { mapGetters } from 'vuex';
 import { UserProfile } from 'oidc-client-ts';
 import { TInfoLink, type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { type TReferralReward } from '@thxnetwork/types/index';
+import { API_URL } from '../../../../dashboard/src/utils/secrets';
+import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
-import { API_URL } from '../../../../dashboard/src/utils/secrets';
-import BaseCardURLQualify from '@thxnetwork/dashboard/components/BaseCardURLQualify.vue';
-import BaseCardURLWebhook from '@thxnetwork/dashboard/components/BaseCardURLWebhook.vue';
-import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
-import BaseCardInfoLinks from '../cards/BaseCardInfoLinks.vue';
+import BaseCardURLQualify from '@thxnetwork/dashboard/components/cards/BaseCardURLQualify.vue';
+import BaseCardURLWebhook from '@thxnetwork/dashboard/components/cards/BaseCardURLWebhook.vue';
+import BaseModalQuestCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestCreate.vue';
 
 hljs.registerLanguage('shell', Shell);
 
@@ -113,7 +83,7 @@ hljs.registerLanguage('shell', Shell);
         BaseCardRewardExpiry,
         BaseCardURLQualify,
         BaseCardURLWebhook,
-        BaseCardInfoLinks,
+        BaseModalQuestCreate,
     },
     computed: mapGetters({
         profile: 'account/profile',

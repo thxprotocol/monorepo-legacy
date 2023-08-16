@@ -1,96 +1,67 @@
 <template>
-    <base-modal
+    <BaseModalQuestCreate
+        variant="Web3 Quest"
         @show="onShow"
-        size="xl"
-        :title="(reward ? 'Update' : 'Create') + ' Web3 Quest'"
+        @submit="onSubmit"
+        @change-info-links="infoLinks = $event"
+        @change-title="title = $event"
+        @change-description="description = $event"
+        @change-file="file = $event"
         :id="id"
         :error="error"
         :loading="isLoading"
+        :disabled="isSubmitDisabled"
+        :quest="reward"
     >
-        <template #modal-body v-if="!isLoading">
-            <form v-on:submit.prevent="onSubmit" id="formQuestWeb3Create">
-                <b-row>
-                    <b-col md="6">
-                        <b-form-group label="Title">
-                            <b-form-input v-model="title" />
-                        </b-form-group>
-                        <b-form-group label="Description">
-                            <b-textarea v-model="description" />
-                        </b-form-group>
-                        <b-form-group label="Amount">
-                            <b-form-input type="number" v-model="amount" />
-                        </b-form-group>
-                        <b-form-group label="Smart Contract">
-                            <b-row :key="key" v-for="(contract, key) of contracts">
-                                <b-col md="3" class="mb-2">
-                                    <b-form-select v-model="contract.chainId">
-                                        <b-form-select-option
-                                            :key="key"
-                                            :value="chain.chainId"
-                                            v-for="(chain, key) of chainInfo"
-                                        >
-                                            {{ chain.name }}
-                                        </b-form-select-option>
-                                    </b-form-select>
-                                </b-col>
-                                <b-col md="9">
-                                    <b-input-group>
-                                        <b-form-input
-                                            v-model="contract.address"
-                                            :state="contract.address ? isAddress(contract.address) : null"
-                                            placeholder="Contract Address"
-                                        />
-                                        <b-input-group-append>
-                                            <b-button @click="$delete(contracts, key)" variant="gray">
-                                                <i class="fas fa-times ml-0"></i>
-                                            </b-button>
-                                        </b-input-group-append>
-                                    </b-input-group>
-                                </b-col>
-                            </b-row>
-                            <b-link @click="contracts.push({ chainId: ChainId.Polygon, address: '' })">
-                                Add another contract
-                            </b-link>
-                        </b-form-group>
-                        <b-row>
-                            <b-col md="6">
-                                <b-form-group
-                                    label="Method Name"
-                                    description="This method will be called with an address and should return an integer."
-                                >
-                                    <b-form-input v-model="methodName" />
-                                </b-form-group>
-                            </b-col>
-                            <b-col md="6">
-                                <b-form-group label="Threshold">
-                                    <b-form-input type="number" v-model="threshold" />
-                                </b-form-group>
-                            </b-col>
-                        </b-row>
+        <template #col-left>
+            <b-form-group label="Amount">
+                <b-form-input type="number" v-model="amount" />
+            </b-form-group>
+            <b-form-group label="Smart Contract">
+                <b-row :key="key" v-for="(contract, key) of contracts">
+                    <b-col md="3" class="mb-2">
+                        <b-form-select v-model="contract.chainId">
+                            <b-form-select-option :key="key" :value="chain.chainId" v-for="(chain, key) of chainInfo">
+                                {{ chain.name }}
+                            </b-form-select-option>
+                        </b-form-select>
                     </b-col>
-                    <b-col md="6">
-                        <BaseCardInfoLinks :info-links="infoLinks" @change-link="onChangeLink">
-                            <p class="text-muted">
-                                Add info links to your cards to provide more information to your audience.
-                            </p>
-                        </BaseCardInfoLinks>
+                    <b-col md="9">
+                        <b-input-group>
+                            <b-form-input
+                                v-model="contract.address"
+                                :state="contract.address ? isAddress(contract.address) : null"
+                                placeholder="Contract Address"
+                            />
+                            <b-input-group-append>
+                                <b-button @click="$delete(contracts, key)" variant="gray">
+                                    <i class="fas fa-times ml-0"></i>
+                                </b-button>
+                            </b-input-group-append>
+                        </b-input-group>
                     </b-col>
                 </b-row>
-            </form>
+                <b-link @click="contracts.push({ chainId: ChainId.Polygon, address: '' })">
+                    Add another contract
+                </b-link>
+            </b-form-group>
+            <b-row>
+                <b-col md="6">
+                    <b-form-group
+                        label="Method Name"
+                        description="This method will be called with an address and should return an integer."
+                    >
+                        <b-form-input v-model="methodName" />
+                    </b-form-group>
+                </b-col>
+                <b-col md="6">
+                    <b-form-group label="Threshold">
+                        <b-form-input type="number" v-model="threshold" />
+                    </b-form-group>
+                </b-col>
+            </b-row>
         </template>
-        <template #btn-primary>
-            <b-button
-                :disabled="isSubmitDisabled"
-                class="rounded-pill"
-                type="submit"
-                form="formQuestWeb3Create"
-                variant="primary"
-                block
-            >
-                {{ (reward ? 'Update' : 'Create') + ' Web3 Quest' }}
-            </b-button>
-        </template>
-    </base-modal>
+    </BaseModalQuestCreate>
 </template>
 
 <script lang="ts">
@@ -101,13 +72,13 @@ import { isAddress } from 'web3-utils';
 import { ChainId } from '@thxnetwork/types/enums';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { NODE_ENV } from '@thxnetwork/dashboard/utils/secrets';
-import BaseModal from './BaseModal.vue';
-import BaseCardInfoLinks from '../cards/BaseCardInfoLinks.vue';
+import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
+import BaseModalQuestCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestCreate.vue';
 
 @Component({
     components: {
         BaseModal,
-        BaseCardInfoLinks,
+        BaseModalQuestCreate,
     },
 })
 export default class ModalQuestWeb3Create extends Vue {
@@ -121,6 +92,8 @@ export default class ModalQuestWeb3Create extends Vue {
     isVisible = true;
     error = '';
     title = '';
+    image = '';
+    file: File | null = null;
     description = '';
     amount = 0;
     methodName = '';
@@ -143,18 +116,6 @@ export default class ModalQuestWeb3Create extends Vue {
         this.infoLinks = this.reward ? this.reward.infoLinks : this.infoLinks;
     }
 
-    onChangeLink({ key, label, url }: TInfoLink & { key: number }) {
-        let update = {};
-
-        if (label || label === '') update = { ...this.infoLinks[key], label };
-        if (url || url === '') update = { ...this.infoLinks[key], url };
-        if (typeof label === 'undefined' && typeof url === 'undefined') {
-            Vue.delete(this.infoLinks, key);
-        } else {
-            Vue.set(this.infoLinks, key, update);
-        }
-    }
-
     onSubmit() {
         this.isLoading = true;
         this.$store
@@ -163,6 +124,7 @@ export default class ModalQuestWeb3Create extends Vue {
                 page: 1,
                 index: this.reward ? this.reward.index : this.total,
                 poolId: String(this.pool._id),
+                file: this.file,
                 title: this.title,
                 description: this.description,
                 amount: this.amount,

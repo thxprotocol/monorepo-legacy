@@ -1,16 +1,21 @@
 import { DailyReward } from '@thxnetwork/api/services/DailyRewardService';
+import ImageService from '@thxnetwork/api/services/ImageService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { isValidUrl } from '@thxnetwork/api/util/url';
 import { TInfoLink } from '@thxnetwork/types/interfaces';
 import { Request, Response } from 'express';
-import { body, param } from 'express-validator';
+import { body, check, param } from 'express-validator';
 
 const validation = [
     param('id').exists(),
-    body('index').optional().isNumeric(),
+    body('index').optional().isInt(),
     body('title').optional().isString(),
     body('description').optional().isString(),
-    body('index').optional().isInt(),
+    check('file')
+        .optional()
+        .custom((value, { req }) => {
+            return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
+        }),
     body('amounts')
         .optional()
         .custom((amounts) => {
@@ -35,7 +40,7 @@ const controller = async (req: Request, res: Response) => {
 
     let dailyReward = await DailyReward.findById(req.params.id);
     if (!dailyReward) throw new NotFoundError('Could not find the dailyReward');
-
+    const image = req.file && (await ImageService.upload(req.file));
     const { title, description, amounts, infoLinks, isEnabledWebhookQualification, index } = req.body;
     dailyReward = await DailyReward.findByIdAndUpdate(
         req.params.id,
@@ -43,6 +48,7 @@ const controller = async (req: Request, res: Response) => {
             title,
             description,
             amounts,
+            image,
             infoLinks,
             isEnabledWebhookQualification,
             index,

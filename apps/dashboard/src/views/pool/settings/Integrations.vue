@@ -141,7 +141,7 @@ import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { IAccount } from '@thxnetwork/dashboard/types/account';
 import { AccessTokenKind, RewardConditionInteraction, TPoolSettings } from '@thxnetwork/types/index';
 import { BASE_URL, DISCORD_CLIENT_ID } from '@thxnetwork/dashboard/utils/secrets';
-import BaseCardURLWebhook from '@thxnetwork/dashboard/components/BaseCardURLWebhook.vue';
+import BaseCardURLWebhook from '@thxnetwork/dashboard/components/cards/BaseCardURLWebhook.vue';
 
 @Component({
     components: {

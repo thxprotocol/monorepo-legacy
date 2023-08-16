@@ -5,6 +5,7 @@ import ReadPointRewards from './get.controller';
 import CreatePointRewards from './post.controller';
 import DeletePointRewards from './delete.controller';
 import UpdatePointRewards from './patch.controller';
+import { upload } from '@thxnetwork/api/util/multer';
 
 const router = express.Router();
 
@@ -17,20 +18,22 @@ router.get(
 );
 router.post(
     '/',
+    upload.single('file'),
     assertRequestInput(CreatePointRewards.validation),
     assertAssetPoolOwnership,
     CreatePointRewards.controller,
 );
 router.patch(
     '/:id',
-    assertRequestInput(UpdatePointRewards.validation),
+    upload.single('file'),
     assertAssetPoolOwnership,
+    assertRequestInput(UpdatePointRewards.validation),
     UpdatePointRewards.controller,
 );
 router.delete(
     '/:id',
-    assertRequestInput(DeletePointRewards.validation),
     assertAssetPoolOwnership,
+    assertRequestInput(DeletePointRewards.validation),
     DeletePointRewards.controller,
 );
 

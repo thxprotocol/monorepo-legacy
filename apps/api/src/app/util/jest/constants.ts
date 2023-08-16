@@ -59,7 +59,7 @@ export const registrationAccessToken = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
 
 export const authScopes = 'wallets:read wallets:write';
 export const dashboardScopes =
-    'openid pools:read pools:write erc20:write erc20:read erc721:write erc721:read erc1155:write erc1155:read rewards:read rewards:write deposits:read deposits:write promotions:read promotions:write widgets:write widgets:read transactions:read swaprule:read swaprule:write claims:read  erc20_rewards:read erc20_rewards:write erc721_rewards:read erc721_rewards:write referral_rewards:read referral_rewards:write pool_subscription:read';
+    'openid pools:read pools:write erc20:write erc20:read erc721:write erc721:read erc1155:write erc1155:read rewards:read rewards:write deposits:read deposits:write promotions:read promotions:write widgets:write widgets:read transactions:read swaprule:read swaprule:write claims:read  erc20_rewards:read erc20_rewards:write erc721_rewards:read erc721_rewards:write referral_rewards:read referral_rewards:write pool_subscription:read custom_rewards:write custom_rewards:read';
 export const dashboardAccessToken = getToken(dashboardScopes);
 export const dashboardAccessToken2 = getToken(dashboardScopes, sub2);
 export const walletScopes =

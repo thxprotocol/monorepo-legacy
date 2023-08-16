@@ -43,6 +43,7 @@ const controller = async (req: Request, res: Response) => {
     }
 
     const contract = quest.contracts.find((c) => c.chainId === req.body.chainId);
+    if (!contract) res.json({ error: 'Smart contract not found.' });
     const contractInstance = new ethers.Contract(
         contract.address,
         ['function ' + quest.methodName + '(address) view returns (uint256)'],

@@ -5,6 +5,7 @@ import type { TPool, TBaseReward, TPointReward } from '@thxnetwork/types/interfa
 import { QuestVariant, RewardConditionPlatform } from '@thxnetwork/types/enums';
 import {} from '@thxnetwork/types/index';
 import { track } from '@thxnetwork/mixpanel';
+import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 
 export type TPointRewardState = {
     [poolId: string]: {
@@ -63,29 +64,29 @@ class PointRewardModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async create(payload: TPointReward) {
+    async create(quest: TPointReward) {
         const r = await axios({
             method: 'POST',
             url: '/point-rewards',
-            headers: { 'X-PoolId': payload.poolId },
-            data: payload,
+            headers: { 'X-PoolId': quest.poolId },
+            data: prepareFormDataForUpload(quest),
         });
 
         const profile = this.context.rootGetters['account/profile'];
         track('UserCreates', [profile.sub, 'conditional reward']);
 
-        this.context.commit('set', { ...payload, ...r.data });
+        this.context.commit('set', { ...quest, ...r.data });
     }
 
     @Action({ rawError: true })
-    async update(reward: TPointReward) {
+    async update(quest: TPointReward) {
         const { data } = await axios({
             method: 'PATCH',
-            url: `/point-rewards/${reward._id}`,
-            headers: { 'X-PoolId': reward.poolId },
-            data: reward,
+            url: `/point-rewards/${quest._id}`,
+            headers: { 'X-PoolId': quest.poolId },
+            data: prepareFormDataForUpload(quest),
         });
-        this.context.commit('set', { ...reward, ...data });
+        this.context.commit('set', { ...quest, ...data });
     }
 
     @Action({ rawError: true })

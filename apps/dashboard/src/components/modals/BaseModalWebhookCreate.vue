@@ -32,11 +32,11 @@
 <script lang="ts">
 import type { TPool, TWebhook } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
-import BaseCardURLWebhook from '../BaseCardURLWebhook.vue';
-import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
-import BaseCardInfoLinks from '../cards/BaseCardInfoLinks.vue';
+import BaseCardURLWebhook from '../cards/BaseCardURLWebhook.vue';
+import BaseCardInfoLinks from '@thxnetwork/dashboard/components/cards/BaseCardInfoLinks.vue';
 
 @Component({
     components: {

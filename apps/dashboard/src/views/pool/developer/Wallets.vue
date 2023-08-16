@@ -72,7 +72,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { API_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { format } from 'date-fns';
-import BaseCardURLWebhook from '@thxnetwork/dashboard/components/BaseCardURLWebhook.vue';
+import BaseCardURLWebhook from '@thxnetwork/dashboard/components/cards/BaseCardURLWebhook.vue';
 import hljs from 'highlight.js/lib/core';
 import Shell from 'highlight.js/lib/languages/shell';
 

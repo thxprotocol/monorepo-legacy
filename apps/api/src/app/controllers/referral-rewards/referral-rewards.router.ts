@@ -9,6 +9,7 @@ import CreateReferralRewardClaim from './claims/post.controller';
 import UpdateReferralRewardClaim from './claims/patch.controller';
 import ApproveReferralRewardClaims from './claims/approve/post.controller';
 import DeleteReferralReward from './delete.controller';
+import { upload } from '@thxnetwork/api/util/multer';
 
 const router = express.Router();
 
@@ -28,6 +29,7 @@ router.get(
 );
 router.patch(
     '/:id',
+    upload.single('file'),
     guard.check(['referral_rewards:write', 'referral_rewards:read']),
     assertAssetPoolOwnership,
     assertRequestInput(UpdateReferralReward.validation),
@@ -35,6 +37,7 @@ router.patch(
 );
 router.post(
     '/',
+    upload.single('file'),
     guard.check(['referral_rewards:write', 'referral_rewards:read']),
     assertAssetPoolOwnership,
     assertRequestInput(CreateReferralReward.validation),

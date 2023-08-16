@@ -4,6 +4,7 @@ import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { QuestVariant, TBaseReward, type TPool } from '@thxnetwork/types/index';
 import type { TReferralReward } from '@thxnetwork/types/index';
 import { track } from '@thxnetwork/mixpanel';
+import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 
 export type RewardByPage = {
     [page: number]: TReferralReward[];
@@ -71,30 +72,30 @@ class ReferralRewardModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async create(payload: TReferralReward) {
+    async create(quest: TReferralReward) {
         const { data } = await axios({
             method: 'POST',
             url: '/referral-rewards',
-            headers: { 'X-PoolId': payload.poolId },
-            data: payload,
+            headers: { 'X-PoolId': quest.poolId },
+            data: prepareFormDataForUpload(quest),
         });
 
         const profile = this.context.rootGetters['account/profile'];
         track('UserCreates', [profile.sub, 'referral reward']);
 
-        this.context.commit('set', { ...payload, ...data });
+        this.context.commit('set', { ...quest, ...data });
     }
 
     @Action({ rawError: true })
-    async update(payload: TReferralReward) {
+    async update(quest: TReferralReward) {
         const { data } = await axios({
             method: 'PATCH',
-            url: `/referral-rewards/${payload._id}`,
-            headers: { 'X-PoolId': payload.poolId },
-            data: payload,
+            url: `/referral-rewards/${quest._id}`,
+            headers: { 'X-PoolId': quest.poolId },
+            data: prepareFormDataForUpload(quest),
         });
 
-        this.context.commit('set', { ...payload, ...data });
+        this.context.commit('set', { ...quest, ...data });
     }
 
     @Action({ rawError: true })

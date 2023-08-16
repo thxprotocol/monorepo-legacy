@@ -1,9 +1,10 @@
-import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
-import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { QuestVariant, TBaseReward, type TWeb3Quest } from '@thxnetwork/types/index';
-import { type TPool } from '@thxnetwork/types/index';
+import { Vue } from 'vue-property-decorator';
 import { track } from '@thxnetwork/mixpanel';
+import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
+import { QuestVariant } from '@thxnetwork/types/enums';
+import type { TPool, TBaseReward, TWeb3Quest } from '@thxnetwork/types/interfaces';
+import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 
 export type TWeb3QuestState = {
     [poolId: string]: {
@@ -63,10 +64,10 @@ class Web3QuestModule extends VuexModule {
             method: 'POST',
             url: '/web3-quests',
             headers: { 'X-PoolId': quest.poolId },
-            data: quest,
+            data: prepareFormDataForUpload(quest),
         });
-
         const profile = this.context.rootGetters['account/profile'];
+
         track('UserCreates', [profile.sub, 'conditional quest']);
 
         this.context.commit('set', { ...quest, ...data });
@@ -74,11 +75,12 @@ class Web3QuestModule extends VuexModule {
 
     @Action({ rawError: true })
     async update(quest: TWeb3Quest) {
+        console.log(quest);
         const { data } = await axios({
             method: 'PATCH',
             url: `/web3-quests/${quest._id}`,
             headers: { 'X-PoolId': quest.poolId },
-            data: quest,
+            data: prepareFormDataForUpload(quest),
         });
 
         this.context.commit('set', { ...quest, ...data });

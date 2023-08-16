@@ -1,54 +1,31 @@
 <template>
-    <base-modal
-        size="xl"
-        :title="(reward ? 'Update' : 'Create') + ' Social Quest'"
+    <BaseModalQuestCreate
+        variant="Social Quest"
+        @show="onShow"
+        @submit="onSubmit"
+        @change-info-links="infoLinks = $event"
+        @change-title="title = $event"
+        @change-description="description = $event"
+        @change-file="file = $event"
         :id="id"
         :error="error"
         :loading="isLoading"
-        @show="onShow"
+        :disabled="isSubmitDisabled || !amount || !title"
+        :quest="reward"
     >
-        <template #modal-body v-if="!isLoading">
-            <form v-on:submit.prevent="onSubmit()" id="formRewardPointsCreate">
-                <b-row>
-                    <b-col md="6">
-                        <b-form-group label="Title">
-                            <b-form-input v-model="title" />
-                        </b-form-group>
-                        <b-form-group label="Description">
-                            <b-textarea v-model="description" />
-                        </b-form-group>
-                        <b-form-group label="Amount">
-                            <b-form-input v-model="amount" />
-                        </b-form-group>
-                    </b-col>
-                    <b-col md="6">
-                        <BaseCardRewardCondition
-                            class="mb-3"
-                            :rewardCondition="rewardCondition"
-                            @change="rewardCondition = $event"
-                        />
-                        <BaseCardInfoLinks :info-links="infoLinks" @change-link="onChangeLink">
-                            <p class="text-muted">
-                                Add info links to your cards to provide more information to your audience.
-                            </p>
-                        </BaseCardInfoLinks>
-                    </b-col>
-                </b-row>
-            </form>
+        <template #col-left>
+            <b-form-group label="Amount">
+                <b-form-input v-model="amount" />
+            </b-form-group>
         </template>
-        <template #btn-primary>
-            <b-button
-                :disabled="isSubmitDisabled || !amount || !title"
-                class="rounded-pill"
-                type="submit"
-                form="formRewardPointsCreate"
-                variant="primary"
-                block
-            >
-                {{ (reward ? 'Update' : 'Create') + ' Social Quest' }}
-            </b-button>
+        <template #col-right>
+            <BaseCardRewardCondition
+                class="mb-3"
+                :rewardCondition="rewardCondition"
+                @change="rewardCondition = $event"
+            />
         </template>
-    </base-modal>
+    </BaseModalQuestCreate>
 </template>
 
 <script lang="ts">
@@ -60,12 +37,14 @@ import { platformInteractionList, platformList } from '@thxnetwork/dashboard/typ
 import { mapGetters } from 'vuex';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import BaseModal from './BaseModal.vue';
+import BaseModalQuestCreate from './BaseModalQuestCreate.vue';
 import BaseCardRewardCondition from '../cards/BaseCardRewardCondition.vue';
 import BaseCardInfoLinks from '../cards/BaseCardInfoLinks.vue';
 
 @Component({
     components: {
         BaseModal,
+        BaseModalQuestCreate,
         BaseCardRewardCondition,
         BaseCardInfoLinks,
     },
@@ -94,6 +73,7 @@ export default class ModalRewardPointsCreate extends Vue {
     };
     profile!: TAccount;
     infoLinks: TInfoLink[] = [{ label: '', url: '' }];
+    file: File | null = null;
 
     @Prop() id!: string;
     @Prop() total!: number;
@@ -120,50 +100,38 @@ export default class ModalRewardPointsCreate extends Vue {
               };
     }
 
-    onChangeLink({ key, label, url }: TInfoLink & { key: number }) {
-        let update = {};
-
-        if (label || label === '') update = { ...this.infoLinks[key], label };
-        if (url || url === '') update = { ...this.infoLinks[key], url };
-        if (typeof label === 'undefined' && typeof url === 'undefined') {
-            Vue.delete(this.infoLinks, key);
-        } else {
-            Vue.set(this.infoLinks, key, update);
-        }
-    }
-
     onSubmit() {
-        const payload = {
-            ...this.reward,
-            _id: this.reward ? this.reward._id : undefined,
-            poolId: this.pool._id,
-            title: this.title,
-            description: this.description,
-            amount: this.amount,
-            infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
-            platform: this.rewardCondition.platform,
-            interaction:
-                this.rewardCondition.platform !== RewardConditionPlatform.None
-                    ? this.rewardCondition.interaction
-                    : RewardConditionInteraction.None,
-            content: this.rewardCondition.platform !== RewardConditionPlatform.None ? this.rewardCondition.content : '',
-            contentMetadata:
-                this.rewardCondition.contentMetadata && this.rewardCondition.platform !== RewardConditionPlatform.None
-                    ? this.rewardCondition.contentMetadata
-                    : '',
-            page: this.reward ? this.reward.page : 1,
-            index: !this.reward ? this.total : this.reward.index,
-        };
         this.isLoading = true;
-        this.$store.dispatch(`pointRewards/${this.reward ? 'update' : 'create'}`, payload).then(() => {
-            this.$bvModal.hide(this.id);
-            this.$emit('submit');
-            this.isLoading = false;
-        });
-    }
-
-    onRewardConditionChange(rewardCondition: any) {
-        this.rewardCondition = rewardCondition;
+        this.$store
+            .dispatch(`pointRewards/${this.reward ? 'update' : 'create'}`, {
+                ...this.reward,
+                _id: this.reward ? this.reward._id : undefined,
+                poolId: this.pool._id,
+                title: this.title,
+                file: this.file,
+                description: this.description,
+                amount: this.amount,
+                infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
+                platform: this.rewardCondition.platform,
+                interaction:
+                    this.rewardCondition.platform !== RewardConditionPlatform.None
+                        ? this.rewardCondition.interaction
+                        : RewardConditionInteraction.None,
+                content:
+                    this.rewardCondition.platform !== RewardConditionPlatform.None ? this.rewardCondition.content : '',
+                contentMetadata:
+                    this.rewardCondition.contentMetadata &&
+                    this.rewardCondition.platform !== RewardConditionPlatform.None
+                        ? this.rewardCondition.contentMetadata
+                        : '',
+                page: this.reward ? this.reward.page : 1,
+                index: !this.reward ? this.total : this.reward.index,
+            })
+            .then(() => {
+                this.$bvModal.hide(this.id);
+                this.$emit('submit');
+                this.isLoading = false;
+            });
     }
 }
 </script>
