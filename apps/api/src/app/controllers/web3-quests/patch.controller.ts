@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { body, param } from 'express-validator';
+import { body, check, param } from 'express-validator';
 import { ForbiddenError } from '@thxnetwork/api/util/errors';
 import { Web3Quest } from '@thxnetwork/api/models/Web3Quest';
 import { isAddress } from 'web3-utils';
@@ -13,6 +13,11 @@ const validation = [
     body('title').optional().isString(),
     body('description').optional().isString(),
     body('amount').optional().isInt({ gt: 0 }),
+    check('file')
+        .optional()
+        .custom((value, { req }) => {
+            return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
+        }),
     body('contracts').customSanitizer((contracts) => {
         return JSON.parse(contracts).filter((contract: { address: string; chainId: ChainId }) =>
             isAddress(contract.address),

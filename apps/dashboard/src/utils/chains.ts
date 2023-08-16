@@ -18,7 +18,7 @@ const chainInfo: { [chainId: number]: ChainInfo } = {
     },
     56: {
         disabled: true,
-        chainId: ChainId.BinanceSmartChain,
+        chainId: ChainId.BNBChain,
         name: 'Binance Smart Chain',
         logo: require('@thxnetwork/dashboard/../public/assets/thx_logo_bsc.svg'),
         blockExplorer: 'https://mumbai.polygonscan.com',

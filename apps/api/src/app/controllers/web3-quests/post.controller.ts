@@ -1,6 +1,6 @@
 import { v4 } from 'uuid';
 import { Request, Response } from 'express';
-import { body } from 'express-validator';
+import { body, check } from 'express-validator';
 import { Web3Quest } from '@thxnetwork/api/models/Web3Quest';
 import { isAddress } from 'web3-utils';
 import { TInfoLink } from '@thxnetwork/types/interfaces';
@@ -12,6 +12,11 @@ const validation = [
     body('title').isString(),
     body('description').isString(),
     body('amount').isInt({ gt: 0 }),
+    check('file')
+        .optional()
+        .custom((value, { req }) => {
+            return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
+        }),
     body('contracts').customSanitizer((contracts) => {
         return JSON.parse(contracts).filter((contract: { address: string; chainId: ChainId }) =>
             isAddress(contract.address),

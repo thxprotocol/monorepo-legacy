@@ -1,32 +1,31 @@
-import { arbitrum, mainnet, bsc, polygon, hardhat, Chain } from '@wagmi/core/chains';
 import { ChainId } from './types/enums';
 
-type ChainInfo = { name: string; chainId: number; blockExplorer: string; chain: Chain };
+type ChainInfo = { name: string; chainId: number; blockExplorer: string; rpc: string };
 
 const chainList: { [chainId: number]: ChainInfo } = {
     [ChainId.Ethereum]: {
         chainId: ChainId.Ethereum,
         name: 'Ethereum',
         blockExplorer: 'https://etherscan.com',
-        chain: mainnet,
+        rpc: 'https://cloudflare-eth.com',
     },
-    [ChainId.BinanceSmartChain]: {
-        chainId: ChainId.BinanceSmartChain,
+    [ChainId.BNBChain]: {
+        chainId: ChainId.BNBChain,
         name: 'BNB Chain',
         blockExplorer: 'https://bscscan.com',
-        chain: bsc,
+        rpc: 'https://rpc.ankr.com/bsc',
     },
     [ChainId.Arbitrum]: {
         chainId: ChainId.Arbitrum,
         name: 'Arbitrum',
         blockExplorer: 'https://arbiscan.io',
-        chain: arbitrum,
+        rpc: 'https://arb1.arbitrum.io/rpc',
     },
     [ChainId.Polygon]: {
         chainId: ChainId.Polygon,
         name: 'Polygon',
         blockExplorer: 'https://polygonscan.com',
-        chain: polygon,
+        rpc: 'https://polygon-rpc.com',
     },
 };
 
@@ -35,7 +34,7 @@ if (process.env['NODE_ENV'] !== 'production') {
         chainId: ChainId.Hardhat,
         name: 'Hardhat',
         blockExplorer: 'https://hardhatscan.com',
-        chain: hardhat,
+        rpc: 'http://127.0.0.1:8545',
     };
 }
 
