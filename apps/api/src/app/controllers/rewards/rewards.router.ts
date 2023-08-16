@@ -5,6 +5,7 @@ import CreateReferralRewardClaim from './referral/claim/post.controller';
 import CreatePointRewardClaim from './points/claim/post.controller';
 import MilestoneRewardClaim from './milestones/claim/post.controller';
 import CreateDailyRewardClaim from './daily/claim/post.controller';
+import CreateWeb3QuestClaim from './web3/complete/post.controller';
 import rateLimit from 'express-rate-limit';
 import { NODE_ENV } from '@thxnetwork/api/config/secrets';
 
@@ -20,5 +21,6 @@ router.post(
 router.use(checkJwt).use(corsHandler).post('/points/:id/claim', CreatePointRewardClaim.controller);
 router.use(checkJwt).use(corsHandler).post('/daily/:id/claim', CreateDailyRewardClaim.controller);
 router.use(checkJwt).use(corsHandler).post('/milestones/claims/:uuid/collect', MilestoneRewardClaim.controller);
+router.use(checkJwt).use(corsHandler).post('/web3/:uuid/claim', CreateWeb3QuestClaim.controller);
 
 export default router;

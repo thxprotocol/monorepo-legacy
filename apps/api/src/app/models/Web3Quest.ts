@@ -8,7 +8,11 @@ const schema = new mongoose.Schema(
     {
         ...rewardBaseSchema,
         amount: Number,
-        contractAddress: String,
+        chainId: Number,
+        contracts: Array({
+            chainId: Number,
+            address: String,
+        }),
         methodName: String,
         threshold: Number,
     },

@@ -11,6 +11,8 @@ import AnalyticsService from '@thxnetwork/api/services/AnalyticsService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import DailyRewardClaimService, { ONE_DAY_MS } from '@thxnetwork/api/services/DailyRewardClaimService';
 import WalletService from '@thxnetwork/api/services/WalletService';
+import { Web3Quest } from '@thxnetwork/api/models/Web3Quest';
+import { Web3QuestClaim } from '@thxnetwork/api/models/Web3QuestClaim';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
@@ -19,6 +21,7 @@ const controller = async (req: Request, res: Response) => {
     const pointRewards = await PointReward.find({ poolId: pool._id });
     const milestoneRewards = await MilestoneReward.find({ poolId: pool._id });
     const dailyRewards = await DailyReward.find({ poolId: pool._id });
+    const web3Quests = await Web3Quest.find({ poolId: pool._id });
     const authHeader = req.header('authorization');
 
     let wallet: WalletDocument, sub: string;
@@ -115,6 +118,30 @@ const controller = async (req: Request, res: Response) => {
                     interaction: r.interaction,
                     content: r.content,
                     contentMetadata: r.contentMetadata,
+                };
+            }),
+        ),
+        web3Quests: await Promise.all(
+            web3Quests.map(async (r) => {
+                const isClaimed = wallet
+                    ? await Web3QuestClaim.exists({
+                          web3QuestId: r._id,
+                          $or: [{ sub }, { walletId: wallet._id }],
+                      })
+                    : false;
+
+                return {
+                    _id: r._id,
+                    uuid: r.uuid,
+                    index: r.index,
+                    title: r.title,
+                    description: r.description,
+                    amount: r.amount,
+                    infoLinks: r.infoLinks,
+                    contracts: r.contracts,
+                    methodName: r.methodName,
+                    threshold: r.threshold,
+                    isClaimed,
                 };
             }),
         ),

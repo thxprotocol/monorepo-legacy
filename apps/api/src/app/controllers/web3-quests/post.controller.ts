@@ -5,13 +5,18 @@ import { Web3Quest } from '@thxnetwork/api/models/Web3Quest';
 import { isAddress } from 'web3-utils';
 import { TInfoLink } from '@thxnetwork/types/interfaces';
 import { isValidUrl } from '@thxnetwork/api/util/url';
+import { ChainId } from '@thxnetwork/types/enums';
 
 const validation = [
     body('index').isInt(),
     body('title').isString(),
     body('description').isString(),
     body('amount').isInt({ gt: 0 }),
-    body('contractAddress').custom((value: string) => isAddress(value)),
+    body('contracts').customSanitizer((contracts) => {
+        return JSON.parse(contracts).filter((contract: { address: string; chainId: ChainId }) =>
+            isAddress(contract.address),
+        );
+    }),
     body('methodName').isString(),
     body('threshold').isInt(),
     body('infoLinks').customSanitizer((infoLinks) => {

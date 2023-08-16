@@ -20,8 +20,37 @@
                         <b-form-group label="Amount">
                             <b-form-input type="number" v-model="amount" />
                         </b-form-group>
-                        <b-form-group label="Contract Address" :state="isValidContractAddress">
-                            <b-form-input v-model="contractAddress" :state="isValidContractAddress" />
+                        <b-form-group label="Smart Contract">
+                            <b-row :key="key" v-for="(contract, key) of contracts">
+                                <b-col md="3" class="mb-2">
+                                    <b-form-select v-model="contract.chainId">
+                                        <b-form-select-option
+                                            :key="key"
+                                            :value="chain.chainId"
+                                            v-for="(chain, key) of chainInfo"
+                                        >
+                                            {{ chain.name }}
+                                        </b-form-select-option>
+                                    </b-form-select>
+                                </b-col>
+                                <b-col md="9">
+                                    <b-input-group>
+                                        <b-form-input
+                                            v-model="contract.address"
+                                            :state="contract.address ? isAddress(contract.address) : null"
+                                            placeholder="Contract Address"
+                                        />
+                                        <b-input-group-append>
+                                            <b-button @click="$delete(contracts, key)" variant="gray">
+                                                <i class="fas fa-times ml-0"></i>
+                                            </b-button>
+                                        </b-input-group-append>
+                                    </b-input-group>
+                                </b-col>
+                            </b-row>
+                            <b-link @click="contracts.push({ chainId: ChainId.Polygon, address: '' })">
+                                Add another contract
+                            </b-link>
                         </b-form-group>
                         <b-row>
                             <b-col md="6">
@@ -51,7 +80,7 @@
         </template>
         <template #btn-primary>
             <b-button
-                :disabled="isSubmitDisabled || !isValidContractAddress"
+                :disabled="isSubmitDisabled"
                 class="rounded-pill"
                 type="submit"
                 form="formQuestWeb3Create"
@@ -69,6 +98,9 @@ import type { TInfoLink, TPool, TWeb3Quest } from '@thxnetwork/types/interfaces'
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import { isAddress } from 'web3-utils';
+import { ChainId } from '@thxnetwork/types/enums';
+import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
+import { NODE_ENV } from '@thxnetwork/dashboard/utils/secrets';
 import BaseModal from './BaseModal.vue';
 import BaseCardInfoLinks from '../cards/BaseCardInfoLinks.vue';
 
@@ -79,6 +111,11 @@ import BaseCardInfoLinks from '../cards/BaseCardInfoLinks.vue';
     },
 })
 export default class ModalQuestWeb3Create extends Vue {
+    ChainId = ChainId;
+    chainInfo = Object.values(chainInfo).filter((x) =>
+        x.chainId === ChainId.Hardhat && NODE_ENV === 'production' ? false : true,
+    );
+    isAddress = isAddress;
     isSubmitDisabled = false;
     isLoading = false;
     isVisible = true;
@@ -86,26 +123,21 @@ export default class ModalQuestWeb3Create extends Vue {
     title = '';
     description = '';
     amount = 0;
-    contractAddress = '';
     methodName = '';
     threshold = 0;
     infoLinks: TInfoLink[] = [{ label: '', url: '' }];
+    contracts: { chainId: ChainId; address: string }[] = [{ chainId: ChainId.Polygon, address: '' }];
 
     @Prop() id!: string;
     @Prop() total!: number;
     @Prop() pool!: TPool;
     @Prop({ required: false }) reward!: TWeb3Quest;
 
-    get isValidContractAddress() {
-        if (!this.contractAddress) return;
-        return isAddress(this.contractAddress);
-    }
-
     onShow() {
         this.title = this.reward ? this.reward.title : '';
         this.description = this.reward ? this.reward.description : '';
         this.amount = this.reward ? this.reward.amount : this.amount;
-        this.contractAddress = this.reward ? this.reward.contractAddress : this.contractAddress;
+        this.contracts = this.reward ? this.reward.contracts : this.contracts;
         this.methodName = this.reward ? this.reward.methodName : this.methodName;
         this.threshold = this.reward ? this.reward.threshold : this.threshold;
         this.infoLinks = this.reward ? this.reward.infoLinks : this.infoLinks;
@@ -134,9 +166,9 @@ export default class ModalQuestWeb3Create extends Vue {
                 title: this.title,
                 description: this.description,
                 amount: this.amount,
-                contractAddress: this.contractAddress,
                 methodName: this.methodName,
                 threshold: this.threshold,
+                contracts: JSON.stringify(this.contracts),
                 infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
             })
             .then(() => {
