@@ -8,6 +8,7 @@ import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { recoverSigner } from '@thxnetwork/api/util/network';
 import { Web3QuestClaim } from '@thxnetwork/api/models/Web3QuestClaim';
 import { AssetPool } from '@thxnetwork/api/models/AssetPool';
+import { chainList } from '@thxnetwork/common';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 
@@ -28,16 +29,17 @@ const controller = async (req: Request, res: Response) => {
     const wallet = await SafeService.findPrimary(req.auth.sub, pool.chainId);
     if (!wallet) throw new NotFoundError('Could not find primary wallet');
 
-    // TODO implement other chains from chainList
-    const provider = new ethers.providers.JsonRpcProvider(HARDHAT_RPC);
+    const rpc = chainList[req.body.chainId].chain.rpcUrls.default;
+    if (!rpc) throw new NotFoundError('Could not find RPC');
+
+    const provider = new ethers.providers.JsonRpcProvider(rpc.http[0]);
     const address = recoverSigner(req.body.message, req.body.signature);
     const isClaimed = await Web3QuestClaim.exists({
         web3QuestId: quest._id,
         $or: [{ sub: req.auth.sub }, { walletId: wallet._id }, { address }],
     });
-
     if (isClaimed) {
-        return res.json({ error: 'You have claimed this reward already.' });
+        return res.json({ error: 'You have claimed this reward already' });
     }
 
     const contract = quest.contracts.find((c) => c.chainId === req.body.chainId);
@@ -47,25 +49,26 @@ const controller = async (req: Request, res: Response) => {
         provider,
     );
 
-    const result: BigNumber = await contractInstance[quest.methodName](address);
+    let result: BigNumber;
+    try {
+        result = await contractInstance[quest.methodName](address);
+    } catch (error) {
+        return res.json({ error: 'Smart contract call failed' });
+    }
+
     const threshold = BigNumber.from(quest.threshold);
-
-    console.log(address, quest.methodName, quest.threshold);
-
-    console.log(result, threshold);
-
     if (result.lt(threshold)) {
-        return res.json({ error: 'Result does not meet the threshold.' });
+        return res.json({ error: 'Result does not meet the threshold' });
     }
 
     const claim = await Web3QuestClaim.create({
         web3QuestId: quest._id,
         poolId,
+        chainId: req.body.chainId,
+        address,
         sub: req.auth.sub,
         walletId: wallet._id,
         amount: quest.amount,
-        chainId: req.body.chainId,
-        address,
     });
 
     await PointBalanceService.add(pool, wallet._id, quest.amount);

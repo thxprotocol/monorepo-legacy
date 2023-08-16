@@ -23,13 +23,6 @@ const chainInfo: { [chainId: number]: ChainInfo } = {
         logo: require('@thxnetwork/dashboard/../public/assets/thx_logo_bsc.svg'),
         blockExplorer: 'https://mumbai.polygonscan.com',
     },
-    // 80001: {
-    //     disabled: false,
-    //     chainId: ChainId.PolygonMumbai,
-    //     name: 'Polygon Mumbai',
-    //     logo: require('@thxnetwork/dashboard/../public/assets/thx_logo_polygon.svg'),
-    //     blockExplorer: 'https://mumbai.polygonscan.com',
-    // },
     137: {
         disabled: false,
         chainId: ChainId.Polygon,
