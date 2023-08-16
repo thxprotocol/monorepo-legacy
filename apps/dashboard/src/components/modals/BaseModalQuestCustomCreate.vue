@@ -93,18 +93,6 @@ export default class ModalQuestCustomCreate extends Vue {
         this.limit = this.reward && this.reward.limit ? this.reward.limit : this.limit;
     }
 
-    onChangeLink({ key, label, url }: TInfoLink & { key: number }) {
-        let update = {};
-
-        if (label || label === '') update = { ...this.infoLinks[key], label };
-        if (url || url === '') update = { ...this.infoLinks[key], url };
-        if (typeof label === 'undefined' && typeof url === 'undefined') {
-            Vue.delete(this.infoLinks, key);
-        } else {
-            Vue.set(this.infoLinks, key, update);
-        }
-    }
-
     onSubmit() {
         this.isLoading = true;
         this.$store

@@ -60,7 +60,6 @@ class Web3QuestModule extends VuexModule {
 
     @Action({ rawError: true })
     async create(quest: TWeb3Quest) {
-        console.log(quest);
         const { data } = await axios({
             method: 'POST',
             url: '/web3-quests',

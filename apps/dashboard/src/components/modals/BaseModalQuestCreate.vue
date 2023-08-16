@@ -98,7 +98,6 @@ export default class ModalQuestCreate extends Vue {
         } else {
             Vue.set(this.infoLinks, key, update);
         }
-
         this.$emit('change-info-links', this.infoLinks);
     }
 

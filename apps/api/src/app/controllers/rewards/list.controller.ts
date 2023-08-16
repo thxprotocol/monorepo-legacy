@@ -39,13 +39,14 @@ const controller = async (req: Request, res: Response) => {
         endDate: new Date(),
     });
 
-    const getDefaults = ({ _id, index, title, description, infoLinks, image }: TBaseReward) => ({
+    const getDefaults = ({ _id, index, title, description, infoLinks, uuid, image }: TBaseReward) => ({
         _id,
         index,
         title,
         description,
         infoLinks,
         image,
+        uuid,
     });
 
     res.json({
