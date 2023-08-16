@@ -35,7 +35,7 @@ const validation = [
 const controller = async (req: Request, res: Response) => {
     const poolId = req.header('X-PoolId');
     let quest = await Web3Quest.findById(req.params.id);
-    if (poolId === quest.poolId) new ForbiddenError('Not your web3 quest.');
+    if (poolId === quest.poolId) new ForbiddenError('Not your Web3 Quest');
 
     quest = await Web3Quest.findByIdAndUpdate(req.params.id, { ...req.body, poolId }, { new: true });
 

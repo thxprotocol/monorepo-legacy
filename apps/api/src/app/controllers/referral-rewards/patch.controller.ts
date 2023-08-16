@@ -1,6 +1,6 @@
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { Request, Response } from 'express';
-import { body, param } from 'express-validator';
+import { body, param, check } from 'express-validator';
 import RewardReferralService from '@thxnetwork/api/services/ReferralRewardService';
 import ReferralRewardClaimService from '@thxnetwork/api/services/ReferralRewardClaimService';
 import { TInfoLink } from '@thxnetwork/types/interfaces';
@@ -10,6 +10,11 @@ import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
 const validation = [
     param('id').isMongoId(),
     body('pathname').optional().isString(),
+    check('file')
+        .optional()
+        .custom((value, { req }) => {
+            return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
+        }),
     body('successUrl').optional().isURL({ require_tld: false }),
     body('index').optional().isInt(),
     body('infoLinks')

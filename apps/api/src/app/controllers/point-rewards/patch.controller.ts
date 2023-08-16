@@ -3,13 +3,18 @@ import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { isValidUrl } from '@thxnetwork/api/util/url';
 import { TInfoLink } from '@thxnetwork/types/interfaces';
 import { Request, Response } from 'express';
-import { body, param } from 'express-validator';
+import { body, param, check } from 'express-validator';
 
 const validation = [
     param('id').exists(),
     body('title').optional().isString(),
     body('description').optional().isString(),
     body('amount').optional().isInt({ gt: 0 }),
+    check('file')
+        .optional()
+        .custom((value, { req }) => {
+            return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
+        }),
     body('platform').optional().isNumeric(),
     body('interaction').optional().isNumeric(),
     body('index').optional().isInt(),

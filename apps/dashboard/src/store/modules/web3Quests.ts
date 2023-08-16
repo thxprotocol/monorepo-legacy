@@ -1,9 +1,9 @@
-import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
-import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { QuestVariant, TBaseReward, type TWeb3Quest } from '@thxnetwork/types/index';
-import { type TPool } from '@thxnetwork/types/index';
+import { Vue } from 'vue-property-decorator';
 import { track } from '@thxnetwork/mixpanel';
+import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
+import { QuestVariant } from '@thxnetwork/types/enums';
+import type { TPool, TBaseReward, TWeb3Quest } from '@thxnetwork/types/interfaces';
 
 export type TWeb3QuestState = {
     [poolId: string]: {
