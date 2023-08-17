@@ -35,10 +35,13 @@
                     <b-col md="6">
                         <BaseCardInfoLinks
                             class="mb-3"
-                            :info-links="quest ? quest.infoLinks : []"
-                            @change-link="onChangeLink"
+                            :info-links="infoLinks"
+                            @change-info-links="$emit('change-info-links', $event)"
                         >
-                            <p class="text-muted">Add info links to your cards to provide more information.</p>
+                            <p class="text-muted">
+                                Add info links to your cards to provide your users with more information about this
+                                quest.
+                            </p>
                         </BaseCardInfoLinks>
                         <slot name="col-right" />
                     </b-col>
@@ -80,26 +83,13 @@ export default class ModalQuestCreate extends Vue {
     imageFile: File | null = null;
     error = '';
     image = '';
-    infoLinks: TInfoLink[] = [{ label: '', url: '' }];
 
     @Prop() id!: string;
     @Prop() variant!: string;
     @Prop() loading!: boolean;
     @Prop() disabled!: boolean;
     @Prop({ required: false }) quest!: TBaseReward;
-
-    onChangeLink({ key, label, url }: TInfoLink & { key: number }) {
-        let update = {};
-
-        if (label || label === '') update = { ...this.infoLinks[key], label };
-        if (url || url === '') update = { ...this.infoLinks[key], url };
-        if (typeof label === 'undefined' && typeof url === 'undefined') {
-            Vue.delete(this.infoLinks, key);
-        } else {
-            Vue.set(this.infoLinks, key, update);
-        }
-        this.$emit('change-info-links', this.infoLinks);
-    }
+    @Prop() infoLinks!: TInfoLink[];
 
     onInputFile(file: File) {
         this.image = '';

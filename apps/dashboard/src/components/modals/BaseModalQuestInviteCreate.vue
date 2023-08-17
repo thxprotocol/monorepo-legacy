@@ -3,10 +3,11 @@
         variant="Invite Quest"
         @show="onShow"
         @submit="onSubmit"
-        @change-info-links="infoLinks = $event"
         @change-title="title = $event"
         @change-description="description = $event"
         @change-file="file = $event"
+        @change-info-links="infoLinks = Object.values($event)"
+        :info-links="infoLinks"
         :id="id"
         :error="error"
         :loading="isLoading"
@@ -105,6 +106,7 @@ export default class ModalReferralRewardCreate extends Vue {
     claimAmount = 1;
     profile!: UserProfile;
     infoLinks: TInfoLink[] = [{ label: '', url: '' }];
+    file: File | null = null;
 
     @Prop() id!: string;
     @Prop() total!: number;

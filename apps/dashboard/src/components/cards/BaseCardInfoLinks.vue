@@ -5,13 +5,14 @@
             variant="light"
             v-b-toggle.collapse-token-gating
         >
-            <strong>Info URL's</strong>
+            <strong>Info Links</strong>
             <i :class="`fa-chevron-${isVisible ? 'up' : 'down'}`" class="fas m-0"></i>
         </b-button>
         <b-collapse id="collapse-token-gating" v-model="isVisible">
             <hr class="mt-0" />
             <div class="px-3">
                 <slot></slot>
+
                 <b-form-group :key="key" v-for="(link, key) of infoLinks">
                     <b-row>
                         <b-col md="3">
@@ -19,7 +20,7 @@
                                 <b-form-input
                                     placeholder="Label"
                                     :value="infoLinks[key].label"
-                                    @change="$emit('change-link', { key, label: $event })"
+                                    @change="onChangeLink({ key, label: $event })"
                                 />
                             </b-input-group>
                         </b-col>
@@ -28,10 +29,10 @@
                                 <b-form-input
                                     placeholder="https://example.com"
                                     :value="infoLinks[key].url"
-                                    @change="$emit('change-link', { key, url: $event })"
+                                    @change="onChangeLink({ key, url: $event })"
                                 />
                                 <b-input-group-append>
-                                    <b-button variant="gray" @click="$emit('change-link', { key })">
+                                    <b-button variant="gray" @click="onClickRemoveLink(key)">
                                         <i class="fas fa-times ml-0"></i>
                                     </b-button>
                                 </b-input-group-append>
@@ -58,14 +59,30 @@ export default class BaseCardInfoLinks extends Vue {
     isValidUrl = isValidUrl;
 
     @Prop() pool!: TPool;
-    @Prop() infoLinks!: TInfoLink[];
+    @Prop({ default: () => [{ key: 0, label: '', url: '' }] }) infoLinks!: TInfoLink[];
 
     mounted() {
         this.isVisible = !!this.infoLinks.length;
     }
 
+    onChangeLink({ key, label, url }: { key: number; label?: string; url?: string }) {
+        const infoLinks = Object.assign(this.infoLinks);
+        infoLinks[key] = {
+            label: label ? label : this.infoLinks[key].label,
+            url: url ? url : this.infoLinks[key].url,
+        };
+        this.$emit('change-info-links', infoLinks);
+    }
+
+    onClickRemoveLink(key) {
+        const infoLinks = Object.assign(this.infoLinks);
+        delete infoLinks[key];
+        this.$emit('change-info-links', infoLinks);
+    }
     onClickAddLink() {
-        this.$emit('change-link', { key: this.infoLinks.length, label: '', url: '' });
+        const infoLinks = Object.assign(this.infoLinks);
+        infoLinks[infoLinks.length] = { label: '', url: '' };
+        this.$emit('change-info-links', infoLinks);
     }
 }
 </script>
