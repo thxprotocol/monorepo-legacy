@@ -1,5 +1,4 @@
 import { QuestVariant, RewardVariant, TokenGatingVariant } from '../enums';
-import { TWeb3Quest, TDailyReward, TMilestoneReward, TPointReward, TReferralReward } from './';
 
 export type TInfoLink = {
     label: string;
@@ -42,5 +41,5 @@ export type TBaseReward = {
     page?: number;
     variant?: QuestVariant;
     index?: number;
-    update: (payload: TDailyReward | TReferralReward | TPointReward | TMilestoneReward | TWeb3Quest) => Promise<void>;
+    update: (payload: TBaseReward) => Promise<void>;
 };
