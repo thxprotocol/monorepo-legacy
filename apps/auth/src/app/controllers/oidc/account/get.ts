@@ -13,7 +13,7 @@ async function controller(req: Request, res: Response) {
 
     params.githubLoginUrl = GithubService.getLoginURL(uid, {});
     params.googleLoginUrl = YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getBasicScopes());
-    params.twitterLoginUrl = TwitterService.getLoginURL(uid, {});
+    params.twitterLoginUrl = TwitterService.getLoginURL(uid, req.header('cookie'), {});
     params.discordLoginUrl = DiscordService.getLoginURL(uid, {});
     params.twitchLoginUrl = TwitchService.getLoginURL(uid, {});
 

@@ -92,7 +92,7 @@ describe('SSO Sign In', () => {
         it('GET /oidc/callback/google', async () => {
             const params = new URLSearchParams({
                 code: 'thisnotgonnawork',
-                state: uid,
+                state: Buffer.from(JSON.stringify({ uid })).toString('base64'),
             });
             const res = await http.get('/oidc/callback/google?' + params.toString());
 
@@ -121,7 +121,7 @@ describe('SSO Sign In', () => {
         it('GET /oidc/callback/twitter', async () => {
             const params = new URLSearchParams({
                 code: 'thisnotgonnawork',
-                state: uid,
+                state: Buffer.from(JSON.stringify({ uid })).toString('base64'),
             });
             const res = await http.get('/oidc/callback/twitter?' + params.toString());
 
@@ -144,7 +144,7 @@ describe('SSO Sign In', () => {
         it('GET /oidc/callback/github', async () => {
             const params = new URLSearchParams({
                 code: 'thisnotgonnawork',
-                state: uid,
+                state: Buffer.from(JSON.stringify({ uid })).toString('base64'),
             });
             const res = await http.get('/oidc/callback/github?' + params.toString());
 

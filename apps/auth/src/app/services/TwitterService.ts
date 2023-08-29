@@ -186,10 +186,12 @@ export class TwitterService {
 
     static getLoginURL(
         uid: string,
+        cookie: string,
         { scope = this.getScopes(), redirectUrl = AUTH_URL + '/oidc/callback/twitter' }: CommonOauthLoginOptions,
     ) {
+        const state = Buffer.from(JSON.stringify({ uid, cookie })).toString('base64');
         return `https://twitter.com/i/oauth2/authorize?response_type=code&client_id=${TWITTER_CLIENT_ID}&redirect_uri=${redirectUrl}&scope=${scope.join(
             '%20',
-        )}&code_challenge=challenge&code_challenge_method=plain&state=${uid}`;
+        )}&code_challenge=challenge&code_challenge_method=plain&state=${state}`;
     }
 }

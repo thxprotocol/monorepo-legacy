@@ -33,12 +33,13 @@ class DiscordService {
     }
 
     static getLoginURL(
-        state: string,
+        uid: string,
         { scope = scopes, redirectUrl = AUTH_URL + '/oidc/callback/discord' }: CommonOauthLoginOptions,
     ) {
+        const state = Buffer.from(JSON.stringify({ uid })).toString('base64');
         const body = new URLSearchParams();
 
-        if (state) body.append('state', state);
+        if (uid) body.append('state', state);
         body.append('response_type', 'code');
         body.append('client_id', DISCORD_CLIENT_ID);
         body.append('redirect_uri', redirectUrl);

@@ -60,11 +60,12 @@ export class GithubService {
     }
 
     static getLoginURL(
-        state: string,
+        uid: string,
         { scope = GITHUB_API_SCOPE, redirectUrl = AUTH_URL + '/oidc/callback/github' }: CommonOauthLoginOptions,
     ) {
+        const state = Buffer.from(JSON.stringify({ uid })).toString('base64');
         const body = new URLSearchParams();
-        if (state) body.append('state', state);
+        if (uid) body.append('state', state);
         body.append('allow_signup', 'true');
         body.append('client_id', GITHUB_CLIENT_ID);
         body.append('redirect_uri', redirectUrl);

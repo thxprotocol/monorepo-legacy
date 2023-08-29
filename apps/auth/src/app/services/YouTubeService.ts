@@ -227,8 +227,9 @@ export class YouTubeService {
     }
 
     static getLoginUrl(uid: string, scope: string[]) {
+        const state = Buffer.from(JSON.stringify({ uid })).toString('base64');
         return client.generateAuthUrl({
-            state: uid,
+            state,
             access_type: 'offline',
             scope,
         });

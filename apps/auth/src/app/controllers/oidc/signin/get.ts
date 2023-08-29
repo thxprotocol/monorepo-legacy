@@ -97,7 +97,7 @@ async function controller(req: Request, res: Response) {
         ? TwitchService.getLoginURL(uid, {})
         : null;
     params.twitterLoginUrl = authenticationMethods.includes(AccountVariant.SSOTwitter)
-        ? TwitterService.getLoginURL(uid, {})
+        ? TwitterService.getLoginURL(uid, req.header('cookie'), {})
         : null;
     params.authRequestMessage = createTypedMessage(AUTH_REQUEST_TYPED_MESSAGE, AUTH_URL, uid);
 

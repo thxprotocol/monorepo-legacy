@@ -12,9 +12,12 @@ export const callbackPreAuth = async (req: Request) => {
     // Throw error if not exists
     if (!code) throw new UnauthorizedError('Could not find code in query');
 
+    // Decode and parse base64 state
+    const { uid, cookie } = JSON.parse(Buffer.from(req.query.state as string, 'base64').toString());
     // Get interaction for state first
-    const uid = req.query.state as string;
     if (!uid) throw new UnauthorizedError('Could not find state in query');
+    // Set cookie for Twitter redirected OAuth requests
+    if (cookie) req.headers['cookie'] = cookie;
 
     // See if interaction still exists and throw error if not
     const interaction = await oidc.Interaction.find(uid);
