@@ -1,12 +1,14 @@
-import { oidc } from '@thxnetwork/auth/util/oidc';
+import oidcConfig from '@thxnetwork/auth/config/oidc';
 import { AccountDocument } from '@thxnetwork/auth/models/Account';
 import { UnauthorizedError } from '@thxnetwork/auth/util/errors';
 import { Request, Response } from 'express';
 import { hubspot } from '@thxnetwork/auth/util/hubspot';
 import { DASHBOARD_URL } from '@thxnetwork/auth/config/secrets';
 import PoolProxy from '@thxnetwork/auth/proxies/PoolProxy';
+import { oidc } from '@thxnetwork/auth/util/oidc';
+import Cookies from 'cookies';
 
-export const callbackPreAuth = async (req: Request) => {
+export const callbackPreAuth = async (req: Request, res: Response) => {
     // Get code from url
     const code = req.query.code as string;
     // Throw error if not exists
@@ -14,12 +16,16 @@ export const callbackPreAuth = async (req: Request) => {
 
     const stateBase64String = req.query.state as string;
     const stateSerialized = Buffer.from(stateBase64String, 'base64').toString();
-    const { uid, cookie } = JSON.parse(stateSerialized);
+    const { uid } = JSON.parse(stateSerialized);
 
     // Get interaction for state first
     if (!uid) throw new UnauthorizedError('Could not find state in query');
     // Set cookie for Twitter redirected OAuth requests
-    if (cookie) req.headers['cookie'] = cookie;
+    if (req.path === '/callback/twitter') {
+        const cookies = new Cookies(req, res, { keys: oidcConfig.cookies.keys as string[] });
+        cookies.set('_interaction', uid, oidcConfig.cookies.short);
+        cookies.set('_interaction_resume', uid, oidcConfig.cookies.short);
+    }
 
     // See if interaction still exists and throw error if not
     const interaction = await oidc.Interaction.find(uid);

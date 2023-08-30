@@ -6,7 +6,7 @@ import { callbackPostSSOCallback, callbackPreAuth } from '../../get';
 import { AccessTokenKind } from '@thxnetwork/types/enums';
 
 export async function controller(req: Request, res: Response) {
-    const { code, interaction } = await callbackPreAuth(req);
+    const { code, interaction } = await callbackPreAuth(req, res);
     const { tokenInfo, email } = await YouTubeService.getTokens(code);
 
     // if there is a session we need to check for dups before we store the token

@@ -9,7 +9,7 @@ const DISCORD_GUILD_ID_THX = '836147176270856243'; // THX Network
 const DISCORD_SUPPORT_CHANNEL_ID_THX = '871853680163446794'; // #support
 
 export async function controller(req: Request, res: Response) {
-    const { code, interaction } = await callbackPreAuth(req);
+    const { code, interaction } = await callbackPreAuth(req, res);
     const { tokenInfo, email } = await DiscordService.getTokens(code);
     const isSignup = ['1', '2'].includes(interaction.params.signup_plan as string);
 

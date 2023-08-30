@@ -41,7 +41,7 @@ async function controller(req: Request, res: Response) {
         case AccessTokenKind.Twitter: {
             redirect = (await TwitterService.isAuthorized(account))
                 ? params.redirect_uri
-                : TwitterService.getLoginURL(uid, req.header('cookie'), {});
+                : TwitterService.getLoginURL(uid, {});
             break;
         }
         case AccessTokenKind.Github: {
