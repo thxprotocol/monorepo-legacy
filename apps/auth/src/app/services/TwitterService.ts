@@ -10,6 +10,9 @@ const ERROR_NO_DATA = 'Could not find an youtube data for this accesstoken';
 const ERROR_NOT_AUTHORIZED = 'Not authorized for Twitter API';
 const ERROR_TOKEN_REQUEST_FAILED = 'Failed to request access token';
 
+const sigRegex = /_interaction\.sig=([^;]+);/g;
+const legacySigRegex = /_interaction\.legacy\.sig=([^;]+);/;
+
 export class TwitterService {
     static async isAuthorized(account: AccountDocument) {
         const token = account.getToken(AccessTokenKind.Twitter);
@@ -189,7 +192,13 @@ export class TwitterService {
         cookie: string,
         { scope = this.getScopes(), redirectUrl = AUTH_URL + '/oidc/callback/twitter' }: CommonOauthLoginOptions,
     ) {
-        const state = Buffer.from(JSON.stringify({ uid, cookie })).toString('base64');
+        // We reconstruct to save size, but loose other cookie information like hjSession here
+        const reconstructedCookie = `_interaction=${uid}; _interaction.sig=${cookie.match(
+            sigRegex,
+        )}; _interaction.legacy=${uid}; _interaction.legacy.sig=${cookie.match(legacySigRegex)};`;
+        const stateSerialized = JSON.stringify({ uid, cookie: reconstructedCookie });
+        const state = Buffer.from(stateSerialized).toString('base64');
+
         return `https://twitter.com/i/oauth2/authorize?response_type=code&client_id=${TWITTER_CLIENT_ID}&redirect_uri=${redirectUrl}&scope=${scope.join(
             '%20',
         )}&code_challenge=challenge&code_challenge_method=plain&state=${state}`;
