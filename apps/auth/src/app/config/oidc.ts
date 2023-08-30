@@ -48,7 +48,6 @@ const config: Configuration = {
     },
     routes: {
         authorization: '/authorize',
-        userinfo: '/me',
     },
     extraParams: [
         'claim_id',
@@ -162,6 +161,7 @@ const config: Configuration = {
         },
     },
     features: {
+        userinfo: { enabled: false },
         devInteractions: { enabled: false },
         clientCredentials: { enabled: true },
         encryption: { enabled: true },

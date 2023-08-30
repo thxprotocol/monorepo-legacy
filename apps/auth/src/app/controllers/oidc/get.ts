@@ -18,18 +18,19 @@ export const callbackPreAuth = async (req: Request, res: Response) => {
     const stateSerialized = Buffer.from(stateBase64String, 'base64').toString();
     const { uid } = JSON.parse(stateSerialized);
 
-    // Get interaction for state first
-    if (!uid) throw new UnauthorizedError('Could not find state in query');
+    // Throw if no uid is present in state object
+    if (!uid) throw new UnauthorizedError('Could not find uid in state object');
+
+    // See if interaction still exists and throw if not
+    const interaction = await oidc.Interaction.find(uid);
+    if (!interaction) throw new UnauthorizedError('Your session has expired.');
+
     // Set cookie for Twitter redirected OAuth requests
     if (req.path === '/callback/twitter') {
         const cookies = new Cookies(req, res, { keys: oidcConfig.cookies.keys as string[] });
         cookies.set('_interaction', uid, oidcConfig.cookies.short);
         cookies.set('_interaction_resume', uid, oidcConfig.cookies.short);
     }
-
-    // See if interaction still exists and throw error if not
-    const interaction = await oidc.Interaction.find(uid);
-    if (!interaction) throw new UnauthorizedError('Your session has expired.');
 
     return { interaction, code };
 };
