@@ -35,6 +35,6 @@ export const errorOutput = (error: any, req: Request, res: Response, next: NextF
     if (isJsonPath(req.path)) {
         res.json(response);
     } else {
-        res.render('error', { rewardUrl: '', alert: { variant: 'danger', message: response.error.message } });
+        res.render('error', { returnUrl: '', alert: { variant: 'danger', message: response.error.message } });
     }
 };

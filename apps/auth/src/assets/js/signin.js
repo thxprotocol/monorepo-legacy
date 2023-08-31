@@ -9,6 +9,7 @@ createApp({
     isMounted: false,
     alert: { variant: 'warning', message: '' },
     email: '',
+    isMobile: window.matchMedia('(pointer:coarse)').matches,
     isLoading: false,
     isDisabledMetamask: false,
     get isDisabled() {
@@ -30,10 +31,10 @@ createApp({
         this.isMounted = true;
     },
     onClickReturn() {
-        if (this.isWidget) {
-            window.close();
-        } else {
+        if (this.isMobile) {
             window.open(this.returnUrl, '_self');
+        } else {
+            window.close();
         }
     },
     onClickSubmit() {
@@ -72,13 +73,12 @@ createApp({
             });
     },
     async onClickSigninMetamask() {
-        const isMobile = window.matchMedia('(pointer:coarse)').matches;
         if (this.isDisabledMetamask) return;
         this.isDisabledMetamask = true;
 
         if (window.ethereum) {
             this.requestAccounts();
-        } else if (isMobile && !window.ethereum) {
+        } else if (this.isMobile && !window.ethereum) {
             const url = new URL(this.returnUrl);
             const link = url.href.replace(/.*?:\/\//g, '');
 
