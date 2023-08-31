@@ -1,6 +1,6 @@
 import { Provider } from 'oidc-provider';
 import configuration from '../config/oidc';
-import { AUTH_URL, DASHBOARD_URL, NODE_ENV } from '../config/secrets';
+import { AUTH_URL, NODE_ENV } from '../config/secrets';
 import { logger } from './logger';
 
 const oidc = new Provider(AUTH_URL, configuration);
@@ -16,7 +16,12 @@ if (NODE_ENV !== 'production') {
 }
 
 function isBase64(str: string) {
-    return str.startsWith('ey');
+    try {
+        const object = JSON.parse(Buffer.from(str, 'base64').toString());
+        return typeof object === 'object';
+    } catch {
+        return false;
+    }
 }
 
 // In order to provide a return_url to stateless browsers (eg Twitter webview after authentication)
