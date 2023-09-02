@@ -8,6 +8,7 @@ import Safe, { SafeAccountConfig, SafeFactory } from '@safe-global/protocol-kit'
 import SafeApiKit from '@safe-global/api-kit';
 import {
     SafeMultisigTransactionResponse,
+    SafeTransaction,
     SafeTransactionDataPartial,
     SafeVersion,
 } from '@safe-global/safe-core-sdk-types';
@@ -238,7 +239,7 @@ async function confirm(wallet: WalletDocument, safeTxHash: string, signatureData
 }
 
 async function executeTransaction(wallet: WalletDocument, safeTxHash: string) {
-    const { ethAdapter, signer } = getProvider(wallet.chainId);
+    const { ethAdapter } = getProvider(wallet.chainId);
     const safeService = getSafeSDK(wallet.chainId);
     const safeSdk = await Safe.create({
         ethAdapter,
@@ -246,9 +247,7 @@ async function executeTransaction(wallet: WalletDocument, safeTxHash: string) {
         contractNetworks,
     });
     const safeTransaction = await safeService.getTransaction(safeTxHash);
-    const executeTxResponse = await safeSdk.executeTransaction(safeTransaction as any, {
-        from: await signer.getAddress(),
-    });
+    const executeTxResponse = await safeSdk.executeTransaction(safeTransaction as any);
 
     return await executeTxResponse.transactionResponse?.wait();
 }

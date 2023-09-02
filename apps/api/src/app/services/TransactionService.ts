@@ -12,13 +12,13 @@ import PoolService from './PoolService';
 import ERC721Service from './ERC721Service';
 import WithdrawalService from './WithdrawalService';
 import { RelayerTransactionPayload } from 'defender-relay-client';
-import WalletManagerService from './WalletManagerService';
 import { Contract } from 'web3-eth-contract';
+import { WalletDocument } from '../models/Wallet';
+import WalletManagerService from './WalletManagerService';
 import ERC1155Service from './ERC1155Service';
 import SafeService from './SafeService';
-import { WalletDocument } from '../models/Wallet';
 import WalletService from './WalletService';
-import { logger } from '../util/logger';
+import { OperationType } from '@safe-global/safe-core-sdk-types';
 
 function getById(id: string) {
     return Transaction.findById(id);
@@ -176,6 +176,8 @@ async function execSafeAsync(wallet: WalletDocument, tx: TransactionDocument) {
 async function sendSafeAsync(wallet: WalletDocument, to: string | null, fn: any, callback?: TTransactionCallback) {
     const { relayer, defaultAccount } = getProvider(wallet.chainId);
     const data = fn.encodeABI();
+    // const estimate = await fn.estimateGas({ from: defaultAccount });
+    // const gas = estimate < MINIMUM_GAS_LIMIT ? MINIMUM_GAS_LIMIT : estimate;
     const tx = await Transaction.create({
         type: relayer ? TransactionType.Relayed : TransactionType.Default,
         state: TransactionState.Queued,
@@ -190,6 +192,7 @@ async function sendSafeAsync(wallet: WalletDocument, to: string | null, fn: any,
         to,
         data,
         value: '0',
+        // safeTxGas: gas,
     });
 
     await SafeService.confirmTransaction(wallet, safeTxHash);
