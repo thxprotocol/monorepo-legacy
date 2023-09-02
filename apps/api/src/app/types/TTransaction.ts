@@ -12,6 +12,7 @@ export type TTransaction = {
     walletId: string;
     transactionId: string;
     transactionHash?: string;
+    safeTxHash?: string;
     call?: { fn: string; args: string };
     baseFee?: string;
     maxFeeForGas?: string;

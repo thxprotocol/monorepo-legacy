@@ -18,6 +18,7 @@ import ERC1155Service from './ERC1155Service';
 import SafeService from './SafeService';
 import { WalletDocument } from '../models/Wallet';
 import WalletService from './WalletService';
+import { logger } from '../util/logger';
 
 function getById(id: string) {
     return Transaction.findById(id);
@@ -165,6 +166,8 @@ async function execSafeAsync(wallet: WalletDocument, tx: TransactionDocument) {
         speed: RELAYER_SPEED,
     });
 
+    logger.debug(`Safe TX Sent: ${tx.transactionHash} (Defender: ${defenderTx.hash})`);
+
     await tx.updateOne({
         transactionId: defenderTx.transactionId,
         transactionHash: defenderTx.hash,
@@ -195,7 +198,7 @@ async function sendSafeAsync(wallet: WalletDocument, to: string | null, fn: any,
 
     return await Transaction.findByIdAndUpdate(
         tx._id,
-        { state: TransactionState.Confirmed, transactionHash: safeTxHash },
+        { state: TransactionState.Confirmed, safeTxHash },
         { new: true },
     );
 }

@@ -19,13 +19,23 @@ export async function updatePendingTransactions() {
                 if (!tx.walletId) continue;
 
                 const wallet = await Wallet.findById(tx.walletId);
-                const pendingTx = await SafeService.getTransaction(wallet, tx.transactionHash);
-                logger.debug(`Safe TX Found: ${tx.transactionHash}`);
+
+                let pendingTx;
+                try {
+                    pendingTx = await SafeService.getTransaction(wallet, tx.safeTxHash);
+                    logger.debug(`Safe TX Found: ${tx.safeTxHash}`);
+                } catch (error) {
+                    logger.error(error);
+                }
 
                 // Check if tx is confirmed by 2 owners
-                if (pendingTx.confirmations.length >= pendingTx.confirmationsRequired) {
+                const threshold = 2;
+                if (pendingTx && pendingTx.confirmations.length >= threshold) {
+                    logger.debug(`Safe TX Confirmed: ${tx.safeTxHash}`);
+
                     try {
                         await TransactionService.execSafeAsync(wallet, tx);
+                        logger.debug(`Safe TX Executed: ${tx.safeTxHash}`);
                     } catch (error) {
                         await tx.updateOne({ state: TransactionState.Failed });
                         logger.error(error);

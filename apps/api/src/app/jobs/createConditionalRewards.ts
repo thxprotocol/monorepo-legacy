@@ -24,10 +24,7 @@ export async function createConditionalRewards() {
         const filteredTweets = await Promise.all(
             latestTweetsForPoolOwner.filter(async (tweet: any) => {
                 const isExistingReward = await PointReward.exists({ poolId: String(pool._id), content: tweet.id });
-                return (
-                    (!isExistingReward && !hashtag) ||
-                    (!isExistingReward && hashtag && containsValue(tweet.text, hashtag))
-                );
+                return !isExistingReward && hashtag && containsValue(tweet.text, hashtag);
             }),
         );
         if (!filteredTweets.length) continue;

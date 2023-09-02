@@ -12,6 +12,7 @@ const transactionSchema = new mongoose.Schema(
         walletId: { type: String, index: 'hashed' },
         transactionId: String,
         transactionHash: String,
+        safeTxHash: String,
         gas: String,
         baseFee: String,
         maxFeePerGas: String,

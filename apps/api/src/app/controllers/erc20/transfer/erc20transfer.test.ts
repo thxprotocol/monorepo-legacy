@@ -55,10 +55,10 @@ describe('ERC20Transfer', () => {
 
         it('Transfer ERC20', async () => {
             const { contract } = await ERC20.findById(erc20._id);
-            await contract.methods.transfer(wallet.address, toWei('10', 'ether')).send();
+            await contract.methods.transfer(wallet.address, toWei('100', 'ether')).send();
 
             const balanceInWei = await contract.methods.balanceOf(wallet.address).call();
-            expect(balanceInWei).toBe(toWei('10', 'ether'));
+            expect(balanceInWei).toBe(toWei('100', 'ether'));
         });
     });
 
