@@ -10,7 +10,6 @@ import { YouTubeService } from './YouTubeService';
 import { TInteraction, TAccount, AccountVariant } from '@thxnetwork/types/interfaces';
 import { AccessTokenKind, AccountPlanType } from '@thxnetwork/types/enums';
 import bcrypt from 'bcrypt';
-import { Response } from 'express';
 
 export class AccountService {
     static async get(sub: string) {
@@ -237,17 +236,11 @@ export class AccountService {
         await Account.deleteOne({ _id: id });
     }
 
-    static isConnected = async (res: Response, interaction: any, userId: string, tokenKind: AccessTokenKind) => {
-        const isConnected = await Account.exists({
+    static isConnected = async (interaction: any, userId: string, tokenKind: AccessTokenKind) => {
+        return await Account.exists({
             'tokens.kind': tokenKind,
             'tokens.userId': userId,
             '_id': { $ne: interaction.session.accountId },
         });
-        if (isConnected) {
-            return res.render('error', {
-                returnUrl: interaction.params.return_url,
-                alert: { variant: 'danger', message: 'This account is already connected to another account.' },
-            });
-        }
     };
 }

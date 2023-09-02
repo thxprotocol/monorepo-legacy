@@ -9,9 +9,15 @@ export async function controller(req: Request, res: Response) {
     const { code, interaction } = await callbackPreAuth(req, res);
     const { tokenInfo, email } = await TwitterService.getTokens(code);
 
-    // If there is a session we need to check for dups before we store the token
+    // if there is a session we need to check for dups before we store the token
     if (interaction.session) {
-        await AccountService.isConnected(res, interaction, tokenInfo.userId, AccessTokenKind.Twitter);
+        const isConnected = await AccountService.isConnected(interaction, tokenInfo.userId, AccessTokenKind.Twitter);
+        if (isConnected) {
+            return res.render('error', {
+                returnUrl: interaction.params.return_url,
+                alert: { variant: 'danger', message: 'This account is already connected to another account.' },
+            });
+        }
     }
 
     const account = await AccountService.findOrCreate(interaction, tokenInfo, AccountVariant.SSOTwitter, email);
