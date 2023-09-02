@@ -35,7 +35,7 @@ export async function updatePendingTransactions() {
 
                     try {
                         await TransactionService.execSafeAsync(wallet, tx);
-                        logger.debug(`Safe TX Executed: ${tx.safeTxHash}`);
+                        logger.debug(`Safe TX Executed: ${tx.safeTxHash} (Defender: ${tx.transactionHash})`);
                     } catch (error) {
                         await tx.updateOne({ state: TransactionState.Failed });
                         logger.error(error);

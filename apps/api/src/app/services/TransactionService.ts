@@ -148,11 +148,11 @@ async function sendAsync(
 
 async function execSafeAsync(wallet: WalletDocument, tx: TransactionDocument) {
     const { relayer } = getProvider(wallet.chainId);
-    const safeTransaction = await SafeService.getTransaction(wallet, tx.transactionHash);
+    const safeTransaction = await SafeService.getTransaction(wallet, tx.safeTxHash);
 
     // If there is no relayer for the network the safe executes immediately
     if (!relayer) {
-        const receipt = await SafeService.executeTransaction(wallet, tx.transactionHash);
+        const receipt = await SafeService.executeTransaction(wallet, tx.safeTxHash);
         await transactionMined(tx, receipt as any);
         return;
     }
@@ -165,8 +165,6 @@ async function execSafeAsync(wallet: WalletDocument, tx: TransactionDocument) {
         gasLimit: safeTransaction.safeTxGas || '196000',
         speed: RELAYER_SPEED,
     });
-
-    logger.debug(`Safe TX Sent: ${tx.transactionHash} (Defender: ${defenderTx.hash})`);
 
     await tx.updateOne({
         transactionId: defenderTx.transactionId,
