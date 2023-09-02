@@ -73,7 +73,7 @@ describe('ERC20Transfer', () => {
                     amount: toWei('1', 'ether'),
                     chainId: ChainId.Hardhat,
                 });
-            expect(res.body.transactionHash).toBeDefined();
+            expect(res.body.safeTxHash).toBeDefined();
             expect(res.status).toBe(201);
 
             const { safeTxHash, signature } = await signTxHash(
