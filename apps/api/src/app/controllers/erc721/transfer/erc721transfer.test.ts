@@ -81,7 +81,7 @@ describe('ERC721Transfer', () => {
                 erc721TokenId: erc721Token._id,
                 to,
             });
-            expect(res.body.transactionHash).toBeDefined();
+            expect(res.body.safeTxHash).toBeDefined();
             expect(res.status).toBe(201);
 
             const { safeTxHash, signature } = await signTxHash(
