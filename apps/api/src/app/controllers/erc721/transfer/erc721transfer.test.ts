@@ -86,7 +86,7 @@ describe('ERC721Transfer', () => {
 
             const { safeTxHash, signature } = await signTxHash(
                 wallet.address,
-                res.body.transactionHash,
+                res.body.safeTxHash,
                 userWalletPrivateKey,
             );
             const res2 = await user
