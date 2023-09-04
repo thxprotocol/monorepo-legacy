@@ -45,7 +45,7 @@ async function create(
         owners: [toChecksumAddress(defaultAccount), toChecksumAddress(userWalletAddress)],
         threshold: 2,
     };
-    const safeAddress = await safeFactory.predictSafeAddress(safeAccountConfig);
+    const safeAddress = toChecksumAddress(await safeFactory.predictSafeAddress(safeAccountConfig));
 
     try {
         await Safe.create({
@@ -215,11 +215,10 @@ async function proposeTransaction(wallet: WalletDocument, safeTransactionData: S
         });
 
         logger.info(`Safe TX Proposed: ${safeTxHash}`);
+        return safeTxHash;
     } catch (error) {
         logger.error(error);
     }
-
-    return safeTxHash;
 }
 
 async function confirmTransaction(wallet: WalletDocument, safeTxHash: string) {
@@ -254,7 +253,7 @@ async function executeTransaction(wallet: WalletDocument, safeTxHash: string) {
 
 async function getLastPendingTransactions(wallet: WalletDocument) {
     const safeService = getSafeSDK(wallet.chainId);
-    const { results }: any = await safeService.getPendingTransactions(toChecksumAddress(wallet.address));
+    const { results }: any = await safeService.getPendingTransactions(wallet.address);
 
     return results as unknown as SafeMultisigTransactionResponse[];
 }

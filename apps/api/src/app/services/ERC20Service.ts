@@ -211,7 +211,7 @@ export const approve = async (erc20: ERC20Document, wallet: WalletDocument, amou
     return await TransactionService.sendSafeAsync(
         wallet,
         erc20.address,
-        erc20.contract.methods.approve(toChecksumAddress(wallet.address), amountInWei),
+        erc20.contract.methods.approve(wallet.address, amountInWei),
     );
 };
 
