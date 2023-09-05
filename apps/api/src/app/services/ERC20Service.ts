@@ -178,7 +178,7 @@ export const importToken = async (chainId: number, address: string, sub: string,
     const erc20 = await ERC20.create({
         name,
         symbol,
-        address,
+        address: toChecksumAddress(address),
         chainId,
         type: ERC20Type.Unknown,
         sub,
