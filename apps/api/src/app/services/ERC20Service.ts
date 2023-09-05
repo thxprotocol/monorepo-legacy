@@ -246,7 +246,7 @@ export const transferFrom = async (erc20: ERC20Document, wallet: WalletDocument,
 
     // Check if an erc20Token exists for a known receiving wallet and create one if not
     const toWallet = await Wallet.findOne({ chainId: wallet.chainId, address: toChecksumAddress(to) });
-    if (toWallet && !(await ERC20Token.exists({ walletId: toWallet._id }))) {
+    if (toWallet && !(await ERC20Token.exists({ walletId: toWallet._id, erc20Id: erc20._id }))) {
         await createERC20Token(erc20, toWallet.sub);
     }
 
