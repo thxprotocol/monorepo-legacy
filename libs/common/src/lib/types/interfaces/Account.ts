@@ -53,4 +53,5 @@ export interface IAccessToken {
     refreshToken?: string;
     expiry?: number;
     userId?: string;
+    metadata?: any;
 }
