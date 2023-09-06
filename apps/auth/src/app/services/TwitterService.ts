@@ -179,6 +179,10 @@ export class TwitterService {
                 refreshToken: data.refresh_token,
                 expiry,
                 userId: user.id,
+                metadata: {
+                    name: user.name,
+                    username: user.username,
+                },
             },
         };
     }

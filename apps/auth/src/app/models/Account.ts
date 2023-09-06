@@ -29,7 +29,16 @@ const accountSchema = new mongoose.Schema(
         discordId: String,
         role: String,
         goal: [String],
-        tokens: [{ kind: String, accessToken: String, refreshToken: String, expiry: Number, userId: String }],
+        tokens: [
+            {
+                kind: String,
+                accessToken: String,
+                refreshToken: String,
+                expiry: Number,
+                userId: String,
+                metadata: Object,
+            },
+        ],
         shopifyStoreUrl: String,
         referralCode: String,
     },

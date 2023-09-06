@@ -155,7 +155,7 @@ export class AccountService {
             account = await Account.create(data);
         }
 
-        // Always udpate latest tokenInfo for account
+        // Always update latest tokenInfo for account
         account.setToken(tokenInfo);
 
         return await account.save();
