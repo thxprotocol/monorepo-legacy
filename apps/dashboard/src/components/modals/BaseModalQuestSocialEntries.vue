@@ -28,10 +28,10 @@
                     </template>
                     <template #cell(connectedAccounts)="{ item }">
                         <span :key="key" v-for="(a, key) in item.connectedAccounts">
-                            <b-link v-if="a.url" :href="a.url" target="_blank">
-                                <i :class="a.platform.icon" v-b-tooltip :title="a.userName" />
+                            <b-link v-if="a.url" :href="a.url" target="_blank" class="mr-1">
+                                <i :class="a.platform.icon" class="text-muted" v-b-tooltip :title="a.userName" />
                             </b-link>
-                            <i v-else :class="a.platform.icon" v-b-tooltip :title="a.userId" />
+                            <i v-else :class="a.platform.icon" class="text-muted" v-b-tooltip :title="a.userId" />
                         </span>
                     </template>
                     <template #cell(wallet)="{ item }">

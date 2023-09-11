@@ -19,7 +19,6 @@
                 <b-form-group
                     label="My website is"
                     description="URL of the project you are creating your campaign for"
-                    v-if="!account.website"
                     :state="isValidWebsite"
                 >
                     <b-input-group prepend="https://">
@@ -95,8 +94,11 @@
         </b-row>
 
         <b-button block @click="onClickSubmit" :disabled="isSubmitDisabled" class="rounded-pill mt-3" variant="primary">
-            Continue
-            <i class="fas fa-chevron-right ml-2"></i>
+            <b-spinner small variant="white" v-if="isLoadingSubmit" />
+            <template v-else>
+                Continue
+                <i class="fas fa-chevron-right ml-2"></i>
+            </template>
         </b-button>
     </b-modal>
 </template>
@@ -146,13 +148,13 @@ export default class BaseModalRequestAccountEmailUpdate extends Vue {
         }, 2000);
         this.email = this.account.email;
         this.website = this.account.website;
-        this.role = this.account.role;
+        this.role = this.account.role || Role.None;
         this.goal = this.account.goal;
     }
 
     get isSubmitDisabled() {
         return (
-            (!this.isValidWebsite || this.role === Role.None || !this.goal.length) &&
+            (!this.isValidWebsite || this.role === Role.None || !this.goal.length || this.isLoadingSubmit) &&
             (this.progress < 100 || !this.deploying)
         );
     }
@@ -163,7 +165,6 @@ export default class BaseModalRequestAccountEmailUpdate extends Vue {
 
     get isValidWebsite() {
         if (!this.website) return;
-        console.log(this.website);
         return isValidUrl('https://' + this.website);
     }
 
@@ -171,7 +172,7 @@ export default class BaseModalRequestAccountEmailUpdate extends Vue {
         if (this.isSubmitDisabled || this.isLoadingSubmit || !this.isValidWebsite) return;
         this.isLoadingSubmit = true;
         await this.$store.dispatch('account/update', {
-            website: this.website,
+            website: 'https://' + this.website,
             role: this.role,
             goal: this.goal,
             email: this.email,

@@ -18,6 +18,7 @@ async function formatAccountRes(account, accessIncluded = true) {
         address: account.address,
         firstName: account.firstName,
         lastName: account.lastName,
+        website: account.website,
         company: account.company,
         plan: account.plan,
         email: account.email,
@@ -30,6 +31,7 @@ async function formatAccountRes(account, accessIncluded = true) {
         connectedAccounts: account.tokens.map((token: IAccessToken) => ({
             id: token.userId,
             kind: token.kind,
+            userId: token.userId,
             metadata: token.metadata,
         })),
     };
