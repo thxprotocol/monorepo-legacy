@@ -1,5 +1,5 @@
 import { TBaseReward } from './BaseReward';
-import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/';
+import { RewardConditionInteraction, RewardConditionPlatform, TPointRewardClaim } from '@thxnetwork/types/';
 
 export type TPointReward = TBaseReward & {
     amount: number;
@@ -7,4 +7,5 @@ export type TPointReward = TBaseReward & {
     interaction: RewardConditionInteraction;
     content: string;
     contentMetadata: any;
+    entries?: TPointRewardClaim[];
 };

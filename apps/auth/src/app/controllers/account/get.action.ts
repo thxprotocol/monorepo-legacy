@@ -8,8 +8,11 @@ import { DiscordService } from '@thxnetwork/auth/services/DiscordService';
 import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { logger } from '@thxnetwork/auth/util/logger';
+import { IAccessToken } from '@thxnetwork/types/index';
 
 async function formatAccountRes(account, accessIncluded = true) {
+    const twitterToken = account.getToken(AccessTokenKind.Twitter);
+    const twitterUsername = twitterToken ? twitterToken.metadata?.username : 'Unknown';
     const response = {
         sub: String(account._id),
         address: account.address,
@@ -20,10 +23,15 @@ async function formatAccountRes(account, accessIncluded = true) {
         email: account.email,
         profileImg: account.profileImg,
         variant: account.variant,
-        shopifyStoreUrl: account.shopifyStoreUrl,
         referralCode: account.referralCode,
+        twitterUsername,
         role: account.role,
         goal: account.goal,
+        connectedAccounts: account.tokens.map((token: IAccessToken) => ({
+            id: token.userId,
+            kind: token.kind,
+            metadata: token.metadata,
+        })),
     };
     if (accessIncluded) {
         const [

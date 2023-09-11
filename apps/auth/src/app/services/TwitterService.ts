@@ -10,9 +10,6 @@ const ERROR_NO_DATA = 'Could not find an youtube data for this accesstoken';
 const ERROR_NOT_AUTHORIZED = 'Not authorized for Twitter API';
 const ERROR_TOKEN_REQUEST_FAILED = 'Failed to request access token';
 
-const sigRegex = /_interaction\.sig=([^;]+)/;
-const legacySigRegex = /_interaction\.legacy\.sig=([^;]+)/;
-
 export class TwitterService {
     static async isAuthorized(account: AccountDocument) {
         const token = account.getToken(AccessTokenKind.Twitter);

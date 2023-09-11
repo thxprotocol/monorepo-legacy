@@ -1,8 +1,6 @@
 import type { TAccount } from '@thxnetwork/types/interfaces';
 import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
 import { THXError } from '@thxnetwork/api/util/errors';
-import { Wallet } from '../models/Wallet';
-import { ChainId } from '@thxnetwork/types/enums';
 
 class NoAccountError extends THXError {
     message = 'Could not find an account for this address';
@@ -12,12 +10,6 @@ class AccountApiError extends THXError {}
 
 function formatAccountData(data: any) {
     data.profileImg = data.profileImg || `https://avatars.dicebear.com/api/identicon/${data.sub}.svg`;
-    data.getAddress = async (chainId: ChainId) => {
-        const wallet = await Wallet.findOne({ sub: data.sub, chainId });
-        if (!wallet) return;
-        return wallet.address;
-    };
-
     return data;
 }
 

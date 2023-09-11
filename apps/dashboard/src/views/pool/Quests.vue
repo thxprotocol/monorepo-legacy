@@ -57,7 +57,7 @@
                 <template #head(variant)> Variant </template>
                 <template #head(title)> Title </template>
                 <template #head(points)> Points </template>
-                <template #head(claims)> Completed </template>
+                <template #head(entries)> Entries </template>
                 <template #head(id)> &nbsp; </template>
 
                 <!-- Cell formatting -->
@@ -81,15 +81,27 @@
                     <strong class="text-primary">{{ item.points }} </strong>
                 </template>
                 <template #cell(title)="{ item }"> {{ item.title }} </template>
-                <template #cell(claims)="{ item }">
+                <template #cell(entries)="{ item }">
                     <template v-if="item.variant === QuestVariant.Invite">
-                        <b-link v-b-modal="`modalReferralQuestClaims${item.id}`" v-if="item.claims">
-                            {{ item.claims.length }}
+                        <b-link v-b-modal="`modalReferralQuestClaims${item.id}`" v-if="item.entries">
+                            <small><i class="fas text-muted fa-users mr-1" /></small>
+                            {{ item.entries.length }}
                         </b-link>
                         <BaseModalQuestInviteClaims
                             :id="`modalReferralQuestClaims${item.id}`"
                             :pool="pool"
                             :reward="allQuests.find((q) => q._id === item.id)"
+                        />
+                    </template>
+                    <template v-else>
+                        <b-link v-b-modal="`modalQuestSocialEntries${item.id}`" v-if="item.entries">
+                            <small><i class="fas text-muted fa-users mr-1" /></small>
+                            {{ item.entries.length }}
+                        </b-link>
+                        <BaseModalQuestSocialEntries
+                            :id="`modalQuestSocialEntries${item.id}`"
+                            :pool="pool"
+                            :quest="allQuests.find((q) => q._id === item.id)"
                         />
                     </template>
                 </template>
@@ -121,14 +133,7 @@
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import {
-    TBaseReward,
-    TDailyReward,
-    TMilestoneReward,
-    TPointReward,
-    TReferralReward,
-    TWeb3Quest,
-} from '@thxnetwork/types/interfaces';
+import { TBaseReward } from '@thxnetwork/types/interfaces';
 import { QuestVariant } from '@thxnetwork/types/enums';
 import BaseModalQuestDailyCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestDailyCreate.vue';
 import BaseModalQuestSocialCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestSocialCreate.vue';
@@ -136,6 +141,7 @@ import BaseModalQuestInviteCreate from '@thxnetwork/dashboard/components/modals/
 import BaseModalQuestCustomCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestCustomCreate.vue';
 import BaseModalQuestWeb3Create from '@thxnetwork/dashboard/components/modals/BaseModalQuestWeb3Create.vue';
 import BaseModalQuestInviteClaims from '@thxnetwork/dashboard/components/modals/BaseModalQuestInviteClaims.vue';
+import BaseModalQuestSocialEntries from '@thxnetwork/dashboard/components/modals/BaseModalQuestSocialEntries.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import { TDailyRewardState } from '@thxnetwork/dashboard/store/modules/dailyRewards';
 import { TPointRewardState } from '@thxnetwork/dashboard/store/modules/pointRewards';
@@ -152,6 +158,7 @@ import { TWeb3QuestState } from '@thxnetwork/dashboard/store/modules/web3Quests'
         BaseModalQuestWeb3Create,
         BaseModalQuestInviteCreate,
         BaseModalQuestInviteClaims,
+        BaseModalQuestSocialEntries,
     },
     computed: mapGetters({
         pools: 'pools/all',
@@ -223,7 +230,7 @@ export default class QuestsView extends Vue {
                 variant: r.variant,
                 points: r.amount || `${r.amounts.length} days`,
                 title: r.title,
-                claims: r.claims,
+                entries: r.entries,
                 id: r._id,
             }))
             .slice(0, this.limit);

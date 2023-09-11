@@ -1,4 +1,5 @@
-import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/enums';
+import { AccessTokenKind, RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/enums';
+import { AccountVariant } from '@thxnetwork/types/interfaces';
 
 export function getInteractionComponent(interactionType: RewardConditionInteraction) {
     switch (interactionType) {
@@ -101,6 +102,40 @@ export const platformInteractionList = [
         items: [],
     },
 ];
+
+export const platformIconMap: any = {
+    [RewardConditionPlatform.None]: '',
+    [RewardConditionPlatform.Google]: 'fab fa-youtube',
+    [RewardConditionPlatform.Twitter]: 'fab fa-twitter',
+    [RewardConditionPlatform.Discord]: 'fab fa-discord',
+    [RewardConditionPlatform.Twitch]: 'fab fa-twitch',
+    [RewardConditionPlatform.Github]: 'fab fa-github',
+};
+
+export const platformAccessKeyMap: any = {
+    [RewardConditionPlatform.None]: '',
+    [RewardConditionPlatform.Google]: 'youtubeManageAccess',
+    [RewardConditionPlatform.Twitter]: 'twitterAccess',
+    [RewardConditionPlatform.Discord]: 'discordAccess',
+    [RewardConditionPlatform.Github]: 'githubAccess',
+    [RewardConditionPlatform.Twitch]: 'twitchAccess',
+};
+
+export const accountVariantPlatformMap: any = {
+    [AccountVariant.SSOTwitter]: RewardConditionPlatform.Twitter,
+    [AccountVariant.SSODiscord]: RewardConditionPlatform.Discord,
+    [AccountVariant.SSOGoogle]: RewardConditionPlatform.Google,
+    [AccountVariant.SSOTwitch]: RewardConditionPlatform.Twitch,
+    [AccountVariant.SSOGithub]: RewardConditionPlatform.Github,
+};
+
+export const tokenKindPlatformMap: any = {
+    [AccessTokenKind.Twitter]: RewardConditionPlatform.Twitter,
+    [AccessTokenKind.Discord]: RewardConditionPlatform.Discord,
+    [AccessTokenKind.YoutubeManage]: RewardConditionPlatform.Google,
+    [AccessTokenKind.Twitch]: RewardConditionPlatform.Twitch,
+    [AccessTokenKind.Github]: RewardConditionPlatform.Github,
+};
 
 export interface IRewardCondition {
     platform: RewardConditionPlatform;
