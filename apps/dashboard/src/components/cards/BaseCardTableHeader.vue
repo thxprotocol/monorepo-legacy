@@ -29,7 +29,6 @@
             <span class="text-muted mr-2">Sort</span>
             <b-form-select
                 @change="$emit('change-sort', $event)"
-                style="max-width: 75px"
                 size="sm"
                 v-model="sort"
                 :options="sorts"
@@ -70,14 +69,14 @@ export type TTableBulkAction = { variant: number; label: string };
     },
 })
 export default class BaseCardTableHeader extends Vue {
-    sort = '';
+    sort = 'createdAt';
 
     @Prop() totals!: { [poolId: string]: number };
     @Prop() selectedItems!: string[];
     @Prop() actions!: TTableBulkAction[];
     @Prop() page!: number;
     @Prop() limit!: number;
-    @Prop() sorts!: { key: string; label: string }[];
+    @Prop() sorts!: { value: string; text: string }[];
     @Prop() pool!: TPool;
     @Prop() totalRows!: number;
     @Prop() search!: boolean;

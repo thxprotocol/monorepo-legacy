@@ -7,21 +7,7 @@
             :total-rows="result.total"
             :selectedItems="[]"
             :actions="[]"
-            :sorts="[
-                {
-                    value: '',
-                    text: 'None',
-                },
-                {
-                    value: 'email',
-                    text: 'E-mail',
-                },
-                {
-                    value: 'walletAddress',
-                    text: 'Wallet',
-                },
-                { value: 'pointBalance', text: 'Point Balance' },
-            ]"
+            :sorts="sorts"
             @change-sort="onChangeSort"
             @change-page="onChangePage"
             @change-limit="onChangeLimit"
@@ -83,6 +69,21 @@ export default class ViewAnalyticsParticipants extends Vue {
     sort = '';
     page = 1;
     limit = 10;
+    sorts = [
+        {
+            value: 'createdAt',
+            text: 'Created',
+        },
+        {
+            value: 'email',
+            text: 'E-mail',
+        },
+        {
+            value: 'walletAddress',
+            text: 'Wallet',
+        },
+        { value: 'pointBalance', text: 'Point Balance' },
+    ];
     result = {
         results: [],
         total: 1,
