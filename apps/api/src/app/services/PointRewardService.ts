@@ -42,12 +42,12 @@ export async function create(pool: AssetPoolDocument, payload: Partial<TPointRew
 }
 
 async function findEntries(quest: PointRewardDocument) {
-    const allEntries = await PointRewardClaim.find({ pointRewardId: quest._id });
-    const subs = allEntries.map((entry) => entry.sub);
+    const entries = await PointRewardClaim.find({ pointRewardId: quest._id });
+    const subs = entries.map((entry) => entry.sub);
     const accounts = await AccountProxy.getMany(subs);
 
     return await Promise.all(
-        allEntries.map(async (entry) => {
+        entries.map(async (entry) => {
             const wallet = await Wallet.findById(entry.walletId);
             const account = accounts.find((a) => a.sub === wallet.sub);
             const pointBalance = await PointBalance.findOne({
