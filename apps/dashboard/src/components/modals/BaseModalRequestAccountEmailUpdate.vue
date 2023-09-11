@@ -16,6 +16,15 @@
                     Please tell us a bit about yourself. We are preparing your campaign while you fill this in!
                 </p>
 
+                <b-form-group
+                    label="My website is"
+                    description="The URL where you want to run the campaign"
+                    v-if="!account.website"
+                    :state="isValidWebsite"
+                >
+                    <b-form-input v-model="website" type="url" :state="isValidWebsite" />
+                </b-form-group>
+
                 <b-form-group label="My email is" v-if="!account.email" :state="isValidEmail">
                     <b-form-input v-model="email" type="email" :state="isValidEmail" />
                 </b-form-group>
@@ -116,6 +125,7 @@ export default class BaseModalRequestAccountEmailUpdate extends Vue {
     roleLabelMap = roleLabelMap;
     goalLabelMap = goalLabelMap;
     email = '';
+    website = '';
     role: Role = Role.None;
     goal: Goal[] = [];
     isLoadingSubmit = false;
@@ -132,22 +142,42 @@ export default class BaseModalRequestAccountEmailUpdate extends Vue {
             if (this.progress > 100) this.reset();
         }, 2000);
         this.email = this.account.email;
+        this.website = this.account.website;
         this.role = this.account.role;
         this.goal = this.account.goal;
     }
 
     get isSubmitDisabled() {
-        return (this.role === Role.None || !this.goal.length) && (this.progress < 100 || !this.deploying);
+        return (
+            (!this.isValidWebsite || this.role === Role.None || !this.goal.length) &&
+            (this.progress < 100 || !this.deploying)
+        );
     }
 
     get isValidEmail() {
         return !!validateEmail(this.email);
     }
 
+    get isValidWebsite() {
+        if (!this.website) return;
+
+        try {
+            new URL(this.website);
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
     async onClickSubmit() {
-        if (this.isSubmitDisabled || this.isLoadingSubmit) return;
+        if (this.isSubmitDisabled || this.isLoadingSubmit || !this.isValidWebsite) return;
         this.isLoadingSubmit = true;
-        await this.$store.dispatch('account/update', { role: this.role, goal: this.goal, email: this.email });
+        await this.$store.dispatch('account/update', {
+            website: this.website,
+            role: this.role,
+            goal: this.goal,
+            email: this.email,
+        });
         this.isLoadingSubmit = false;
         this.$bvModal.hide('modalRequestAccountEmailUpdate');
     }
