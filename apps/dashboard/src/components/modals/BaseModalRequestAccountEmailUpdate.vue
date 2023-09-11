@@ -18,11 +18,13 @@
 
                 <b-form-group
                     label="My website is"
-                    description="The URL where you want to run the campaign"
+                    description="URL of the project you are creating your campaign for"
                     v-if="!account.website"
                     :state="isValidWebsite"
                 >
-                    <b-form-input v-model="website" type="url" :state="isValidWebsite" />
+                    <b-input-group prepend="https://">
+                        <b-form-input v-model="website" type="url" :state="isValidWebsite" />
+                    </b-input-group>
                 </b-form-group>
 
                 <b-form-group label="My email is" v-if="!account.email" :state="isValidEmail">
@@ -105,6 +107,7 @@ import { Goal, Role } from '@thxnetwork/types/enums';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { goalLabelMap, roleLabelMap } from '@thxnetwork/types/contants';
+import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 
 export function validateEmail(email: string) {
     return String(email)
@@ -160,13 +163,8 @@ export default class BaseModalRequestAccountEmailUpdate extends Vue {
 
     get isValidWebsite() {
         if (!this.website) return;
-
-        try {
-            new URL(this.website);
-            return true;
-        } catch {
-            return false;
-        }
+        console.log(this.website);
+        return isValidUrl('https://' + this.website);
     }
 
     async onClickSubmit() {

@@ -231,7 +231,7 @@ export default class HomeView extends Vue {
             });
         }
 
-        if (!this.account.email || !this.account.role || !this.account.goal.length) {
+        if (!this.account.website || !this.account.email || !this.account.role || !this.account.goal.length) {
             this.$bvModal.show('modalRequestAccountEmailUpdate');
         }
     }
