@@ -26,6 +26,15 @@
                 </template>
                 <b-form-input size="sm" placeholder="Search..." @input="$emit('input-query', $event)" />
             </b-input-group>
+            <span class="text-muted mr-2">Sort</span>
+            <b-form-select
+                @change="$emit('change-sort', $event)"
+                style="max-width: 75px"
+                size="sm"
+                v-model="sort"
+                :options="sorts"
+                class="mr-5"
+            />
             <span class="text-muted mr-2">Limit</span>
             <b-form-select
                 @change="$emit('change-limit', $event)"
@@ -61,11 +70,14 @@ export type TTableBulkAction = { variant: number; label: string };
     },
 })
 export default class BaseCardTableHeader extends Vue {
+    sort = '';
+
     @Prop() totals!: { [poolId: string]: number };
     @Prop() selectedItems!: string[];
     @Prop() actions!: TTableBulkAction[];
     @Prop() page!: number;
     @Prop() limit!: number;
+    @Prop() sorts!: { key: string; label: string }[];
     @Prop() pool!: TPool;
     @Prop() totalRows!: number;
     @Prop() search!: boolean;

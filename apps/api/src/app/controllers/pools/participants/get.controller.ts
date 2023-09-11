@@ -15,8 +15,8 @@ export const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(req.params.id);
     if (pool.sub !== req.auth.sub) throw new ForbiddenError('Only the pool owner can access this pool info');
 
-    const { page, limit } = req.query;
-    const participants = await PoolService.findParticipants(pool, Number(page), Number(limit));
+    const { page, limit, sort } = req.query;
+    const participants = await PoolService.findParticipants(pool, Number(page), Number(limit), String(sort));
 
     res.json(participants);
 };

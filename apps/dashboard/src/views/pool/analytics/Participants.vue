@@ -7,6 +7,22 @@
             :total-rows="result.total"
             :selectedItems="[]"
             :actions="[]"
+            :sorts="[
+                {
+                    value: '',
+                    text: 'None',
+                },
+                {
+                    value: 'email',
+                    text: 'E-mail',
+                },
+                {
+                    value: 'walletAddress',
+                    text: 'Wallet',
+                },
+                { value: 'pointBalance', text: 'Point Balance' },
+            ]"
+            @change-sort="onChangeSort"
             @change-page="onChangePage"
             @change-limit="onChangeLimit"
         />
@@ -64,6 +80,7 @@ import { format } from 'date-fns';
 export default class ViewAnalyticsParticipants extends Vue {
     isLoading = false;
     format = format;
+    sort = '';
     page = 1;
     limit = 10;
     result = {
@@ -93,6 +110,7 @@ export default class ViewAnalyticsParticipants extends Vue {
             pool: this.pool,
             page: this.page,
             limit: this.limit,
+            sort: this.sort,
         });
         this.isLoading = false;
     }
@@ -104,6 +122,10 @@ export default class ViewAnalyticsParticipants extends Vue {
 
     onChangeLimit(limit: number) {
         this.limit = limit;
+        this.getParticipants();
+    }
+    onChangeSort(sort: string) {
+        this.sort = sort;
         this.getParticipants();
     }
 }
