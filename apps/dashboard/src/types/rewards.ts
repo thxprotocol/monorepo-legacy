@@ -29,6 +29,11 @@ export const getPlatform = (platformType: RewardConditionPlatform) => {
     return platformList.find((c) => c.type === platformType) as IChannel;
 };
 
+export function getUserUrl(a) {
+    if (!a || a.kind !== AccessTokenKind.Twitter || !a.metadata) return;
+    return `https://www.twitter.com/${a.metadata.username}`;
+}
+
 export const platformList: IChannel[] = [
     {
         type: RewardConditionPlatform.None,

@@ -1,7 +1,7 @@
 <template>
     <div class="p-3 d-flex align-items-center justify-content-between">
         <div class="d-flex align-items-center">
-            <span class="text-muted mr-2">
+            <span class="text-muted mr-2" v-if="selectedItems.length">
                 Selected <strong>{{ selectedItems.length }}</strong> item{{ selectedItems.length === 1 ? '' : 's' }}
             </span>
             <b-dropdown
@@ -20,6 +20,12 @@
             </b-dropdown>
         </div>
         <div class="d-flex align-items-center">
+            <b-input-group size="sm" class="mr-5" v-if="search">
+                <template #prepend>
+                    <b-input-group-text><i class="fas fa-search"></i></b-input-group-text>
+                </template>
+                <b-form-input size="sm" placeholder="Search..." @input="$emit('input-query', $event)" />
+            </b-input-group>
             <span class="text-muted mr-2">Limit</span>
             <b-form-select
                 @change="$emit('change-limit', $event)"
@@ -62,6 +68,7 @@ export default class BaseCardTableHeader extends Vue {
     @Prop() limit!: number;
     @Prop() pool!: TPool;
     @Prop() totalRows!: number;
+    @Prop() search!: boolean;
 
     selectedBulkAction: TTableBulkAction | null = null;
 

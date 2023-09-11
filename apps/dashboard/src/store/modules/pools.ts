@@ -266,6 +266,19 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
+    async participants({ pool, page, limit, query }: { pool: TPool; page: string; limit: string; query?: string }) {
+        const { data } = await axios({
+            method: 'GET',
+            url: `/pools/${pool._id}/participants`,
+            params: {
+                page,
+                limit,
+                query,
+            },
+        });
+        return data;
+    }
+    @Action({ rawError: true })
     async create(payload: {
         network: number;
         token: string;

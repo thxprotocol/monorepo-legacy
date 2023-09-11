@@ -19,33 +19,17 @@
 
                     <!-- Cell formatting -->
                     <template #cell(account)="{ item }">
-                        <b-media v-b-tooltip :title="`${item.account.id} (${item.account.variant})`">
-                            <template #aside>
-                                <b-avatar :src="item.account.profileImg" size="sm" variant="light" />
-                            </template>
-                            {{ item.account.email }}
-                        </b-media>
+                        <BaseParticipantAccount :account="item.account" />
                     </template>
                     <template #cell(connectedAccounts)="{ item }">
-                        <span :key="key" v-for="(a, key) in item.connectedAccounts">
-                            <b-link v-if="a.url" :href="a.url" target="_blank" class="mr-1">
-                                <i :class="a.platform.icon" class="text-gray" v-b-tooltip :title="a.userName" />
-                            </b-link>
-                            <i v-else :class="a.platform.icon" class="text-gray mr-1" v-b-tooltip :title="a.userId" />
-                        </span>
+                        <BaseParticipantConnectedAccount
+                            :account="a"
+                            :key="key"
+                            v-for="(a, key) in item.connectedAccounts"
+                        />
                     </template>
                     <template #cell(wallet)="{ item }">
-                        <div class="d-flex align-items-center">
-                            <b-img
-                                :src="item.wallet.chain.logoUrl"
-                                alt=""
-                                class="mr-2"
-                                v-b-tooltip
-                                :title="item.wallet.chain.name"
-                                height="12"
-                            />
-                            <b-link :href="item.wallet.url" target="link">{{ item.wallet.shortAddress }}</b-link>
-                        </div>
+                        <BaseParticipantWallet :wallet="item.wallet" />
                     </template>
                     <template #cell(pointBalance)="{ item }">
                         <strong class="text-primary">{{ item.pointBalance }}</strong>
@@ -61,25 +45,26 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { AccountVariant, TPointReward, TPointRewardClaim, type TPool } from '@thxnetwork/types/interfaces';
+import { TPointReward, TPointRewardClaim, type TPool } from '@thxnetwork/types/interfaces';
 import { mapGetters } from 'vuex';
 import { format } from 'date-fns';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseModal from './BaseModal.vue';
-import { getAddressURL, chainInfo } from '../../utils/chains';
-import { shortenAddress } from '../../utils/wallet';
-import { platformList, tokenKindPlatformMap, platformIconMap } from '@thxnetwork/dashboard/types/rewards';
-import { AccessTokenKind, PlatformVariant } from '@thxnetwork/types/enums';
-
-function getUserUrl(a) {
-    if (!a || a.kind !== AccessTokenKind.Twitter || !a.metadata) return;
-    return `https://www.twitter.com/${a.metadata.username}`;
-}
+import { getAddressURL } from '../../utils/chains';
+import { platformList } from '@thxnetwork/dashboard/types/rewards';
+import BaseParticipantAccount, { parseAccount } from '@thxnetwork/dashboard/components/BaseParticipantAccount.vue';
+import BaseParticipantWallet, { parseWallet } from '@thxnetwork/dashboard/components/BaseParticipantWallet.vue';
+import BaseParticipantConnectedAccount, {
+    parseConnectedAccounts,
+} from '@thxnetwork/dashboard/components/BaseParticipantConnectedAccount.vue';
 
 @Component({
     components: {
         BaseModal,
         BaseCardTableHeader,
+        BaseParticipantAccount,
+        BaseParticipantWallet,
+        BaseParticipantConnectedAccount,
     },
     computed: mapGetters({
         totals: 'referralRewardClaims/totals',
@@ -110,38 +95,9 @@ export default class BaseModalQuestSocialEntries extends Vue {
         return Object.values(this.quest.entries)
             .sort((a: TPointRewardClaim, b: TPointRewardClaim) => (a.createdAt < b.createdAt ? 1 : -1))
             .map((entry: any) => ({
-                account: {
-                    id: entry._id,
-                    email: (entry.account && entry.account.email) || 'None',
-                    profileImg: entry.account && entry.account.profileImg,
-                    twitterUsername: entry.account && entry.account.twitterUsername,
-                    variant: entry.account && AccountVariant[entry.account.variant],
-                },
-                connectedAccounts: entry.account.connectedAccounts
-                    .map((a) => {
-                        const platformId = tokenKindPlatformMap[a.kind];
-                        return (
-                            platformId && {
-                                platform: {
-                                    name: PlatformVariant[platformId],
-                                    icon: platformIconMap[platformId],
-                                },
-                                userName: a.metadata ? a.metadata.username : '',
-                                userId: a.userId,
-                                url: getUserUrl(a),
-                            }
-                        );
-                    })
-                    .filter((a) => a),
-                wallet: {
-                    address: entry.wallet.address,
-                    shortAddress: shortenAddress(entry.wallet.address),
-                    url: getAddressURL(entry.wallet.chainId, entry.wallet.address),
-                    chain: {
-                        name: chainInfo[entry.wallet.chainId].name,
-                        logoUrl: chainInfo[entry.wallet.chainId].logo,
-                    },
-                },
+                account: parseAccount({ id: entry._id, account: entry.account }),
+                connectedAccounts: parseConnectedAccounts(entry.account.connectedAccounts),
+                wallet: parseWallet(entry.wallet),
                 pointBalance: entry.pointBalance,
                 createdAt: entry.createdAt,
             }));

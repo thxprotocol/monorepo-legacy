@@ -1,7 +1,6 @@
 import { assertEvent, parseLogs } from '@thxnetwork/api/util/events';
 import { ChainId } from '@thxnetwork/types/enums';
 import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { Membership } from '@thxnetwork/api/models/Membership';
 import TransactionService from './TransactionService';
 import { diamondContracts, getContract, poolFacetAdressesPermutations } from '@thxnetwork/api/config/contracts';
 import { pick, sleep } from '@thxnetwork/api/util';
@@ -29,18 +28,19 @@ import { MilestoneReward } from '../models/MilestoneReward';
 import { ERC20Perk } from '../models/ERC20Perk';
 import { ERC721Perk } from '../models/ERC721Perk';
 import { getsigningSecret } from '../util/signingsecret';
+import { Web3Quest } from '../models/Web3Quest';
+import { Web3QuestClaim } from '../models/Web3QuestClaim';
+import { CustomReward } from '../models/CustomReward';
+import { Participant } from '../models/Participant';
+import { paginatedResults } from '../util/pagination';
+import { Wallet } from '../models/Wallet';
+import { PointBalance } from './PointBalanceService';
+import SafeService from './SafeService';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
 function isPoolClient(clientId: string, poolId: string) {
     return AssetPool.exists({ _id: poolId, clientId });
-}
-
-function isPoolMember(sub: string, poolId: string) {
-    return Membership.exists({
-        sub,
-        poolId,
-    });
 }
 
 function isPoolOwner(sub: string, poolId: string) {
@@ -204,19 +204,50 @@ async function countBySub(model: any, pool: AssetPoolDocument) {
 
 async function getQuestCount(pool: AssetPoolDocument) {
     const result = await Promise.all(
-        [DailyReward, ReferralReward, PointReward, MilestoneReward].map(async (model) => await find(model, pool)),
+        [DailyReward, ReferralReward, PointReward, MilestoneReward, Web3Quest].map(
+            async (model) => await find(model, pool),
+        ),
     );
     return Array.from(new Set(result.flat(1)));
 }
 
 async function getRewardCount(pool: AssetPoolDocument) {
-    const result = await Promise.all([ERC20Perk, ERC721Perk].map(async (model) => await find(model, pool)));
+    const result = await Promise.all(
+        [ERC20Perk, ERC721Perk, CustomReward].map(async (model) => await find(model, pool)),
+    );
     return Array.from(new Set(result.flat(1)));
+}
+
+async function findParticipants(pool: AssetPoolDocument, page: number, limit: number) {
+    const participants = await paginatedResults(Participant, page, limit, {
+        poolId: pool._id,
+    });
+    const subs = participants.results.map((p) => p.sub);
+    const accounts = await AccountProxy.getMany(subs);
+
+    participants.results = await Promise.all(
+        participants.results.map(async (participant) => {
+            const wallet = await SafeService.findPrimary(participant.sub, pool.chainId);
+            const account = accounts.find((a) => a.sub === wallet.sub);
+            const pointBalance = await PointBalance.findOne({
+                poolId: participant.poolId,
+                walletId: wallet._id,
+            });
+            return {
+                ...participant.toJSON(),
+                account,
+                wallet,
+                pointBalance: pointBalance ? pointBalance.balance : 0,
+            };
+        }),
+    );
+
+    return participants;
 }
 
 async function getParticipantCount(pool: AssetPoolDocument) {
     const result = await Promise.all(
-        [DailyRewardClaim, ReferralRewardClaim, PointRewardClaim, MilestoneRewardClaim].map(
+        [DailyRewardClaim, ReferralRewardClaim, PointRewardClaim, MilestoneRewardClaim, Web3QuestClaim].map(
             async (model) => await countBySub(model, pool),
         ),
     );
@@ -228,7 +259,6 @@ async function getParticipantCount(pool: AssetPoolDocument) {
 
 export default {
     isPoolClient,
-    isPoolMember,
     isPoolOwner,
     getById,
     getByAddress,
@@ -244,4 +274,5 @@ export default {
     getParticipantCount,
     getQuestCount,
     getRewardCount,
+    findParticipants,
 };

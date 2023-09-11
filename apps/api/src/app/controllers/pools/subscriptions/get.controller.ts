@@ -7,7 +7,6 @@ const validation = [param('id').isMongoId()];
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
     const poolsubscription = await PoolSubscription.findOne({ poolId: req.params.id, sub: req.auth.sub });
-
     const result = poolsubscription ? poolsubscription.toJSON() : null;
     return res.json(result);
 };

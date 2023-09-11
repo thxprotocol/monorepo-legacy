@@ -22,6 +22,7 @@ import CreatePoolTransfer from './transfers/post.controller';
 import DeletePoolTransfer from './transfers/delete.controller';
 import CreatePoolSubscription from './subscriptions/post.controller';
 import ReadPoolSubscription from './subscriptions/get.controller';
+import ReadPoolParticipants from './participants/get.controller';
 import DeletePoolSubscription from './subscriptions/delete.controller';
 import CreatePoolTransferRefresh from './transfers/refresh/post.controller';
 import ListPoolTransfer from './transfers/list.controller';
@@ -146,6 +147,14 @@ router.get(
     guard.check(['pool_subscription:read']),
     assertRequestInput(ReadPoolSubscription.validation),
     ReadPoolSubscription.controller,
+);
+router.get(
+    '/:id/participants',
+    checkJwt,
+    corsHandler,
+    guard.check(['pools:read']), // TODO Should become pool_participants:read
+    assertRequestInput(ReadPoolParticipants.validation),
+    ReadPoolParticipants.controller,
 );
 router.delete(
     '/:id',

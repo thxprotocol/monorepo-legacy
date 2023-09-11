@@ -40,7 +40,7 @@ const routes: Array<RouteConfig> = [
             {
                 name: 'dashboard',
                 path: 'dashboard',
-                component: () => import('../views/pool/Dashboard.vue'),
+                component: () => import('../views/pool/Analytics.vue'),
             },
             {
                 name: 'quests',
