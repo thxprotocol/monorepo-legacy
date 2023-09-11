@@ -112,10 +112,10 @@ export default class BaseModalQuestSocialEntries extends Vue {
             .map((entry: any) => ({
                 account: {
                     id: entry._id,
-                    email: entry.account.email || 'None',
-                    profileImg: entry.account.profileImg,
-                    twitterUsername: entry.account.twitterUsername,
-                    variant: AccountVariant[entry.account.variant],
+                    email: (entry.account && entry.account.email) || 'None',
+                    profileImg: entry.account && entry.account.profileImg,
+                    twitterUsername: entry.account && entry.account.twitterUsername,
+                    variant: entry.account && AccountVariant[entry.account.variant],
                 },
                 connectedAccounts: entry.account.connectedAccounts
                     .map((a) => {
