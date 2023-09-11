@@ -72,7 +72,7 @@ import { platformList, tokenKindPlatformMap, platformIconMap } from '@thxnetwork
 import { AccessTokenKind, PlatformVariant } from '@thxnetwork/types/enums';
 
 function getUserUrl(a) {
-    if (!a || a.kind !== AccessTokenKind.Twitter) return;
+    if (!a || a.kind !== AccessTokenKind.Twitter || !a.metadata) return;
     return `https://www.twitter.com/${a.metadata.username}`;
 }
 
