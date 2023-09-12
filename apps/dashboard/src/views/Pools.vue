@@ -56,7 +56,7 @@
 import BaseCardPool from '@thxnetwork/dashboard/components/cards/BaseCardPool.vue';
 import BaseModalPoolCreate from '@thxnetwork/dashboard/components/modals/BaseModalPoolCreate.vue';
 import BaseListStateEmpty from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
-import { IAccount } from '@thxnetwork/dashboard/types/account';
+import type { TAccount } from '@thxnetwork/types/interfaces';
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
@@ -75,7 +75,7 @@ import BaseBtnToggleArchive from '@thxnetwork/dashboard/components/buttons/BaseB
     }),
 })
 export default class Home extends Vue {
-    profile!: IAccount;
+    profile!: TAccount;
     pools!: IPools;
     docsUrl = process.env.VUE_APP_DOCS_URL;
     showAll = false;

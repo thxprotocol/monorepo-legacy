@@ -1,5 +1,5 @@
 import { assertEvent, parseLogs } from '@thxnetwork/api/util/events';
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId, CollaboratorInviteState } from '@thxnetwork/types/enums';
 import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import TransactionService from './TransactionService';
 import { diamondContracts, getContract, poolFacetAdressesPermutations } from '@thxnetwork/api/config/contracts';
@@ -33,9 +33,10 @@ import { Web3QuestClaim } from '../models/Web3QuestClaim';
 import { CustomReward } from '../models/CustomReward';
 import { Participant } from '../models/Participant';
 import { paginatedResults } from '../util/pagination';
-import { Wallet } from '../models/Wallet';
 import { PointBalance } from './PointBalanceService';
 import SafeService from './SafeService';
+import { Collaborator } from '../models/Collaborator';
+import { DASHBOARD_URL } from '../config/secrets';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -259,6 +260,28 @@ async function getParticipantCount(pool: AssetPoolDocument) {
     return Array.from(new Set(result.flat(1))).length;
 }
 
+async function inviteCollaborator(pool: AssetPoolDocument, email: string) {
+    //check if one exists already
+    let collaborator = await Collaborator.findOne({ email, poolId: pool._id });
+
+    // TODO Should also check for expiry of uuid
+    if (collaborator) return collaborator;
+
+    collaborator = await Collaborator.create({
+        poolId: pool._id,
+        email,
+        uuid: v4(),
+        state: CollaboratorInviteState.Pending,
+    });
+
+    const url = new URL(DASHBOARD_URL);
+    url.searchParams.append('collaborationRequest', collaborator.uuid);
+
+    await MailService.send(email, 'Campaign Invite', 'Visit ' + url.toString());
+
+    return collaborator;
+}
+
 export default {
     isPoolClient,
     isPoolOwner,
@@ -277,4 +300,5 @@ export default {
     getQuestCount,
     getRewardCount,
     findParticipants,
+    inviteCollaborator,
 };

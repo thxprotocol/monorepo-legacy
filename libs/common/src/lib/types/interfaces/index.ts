@@ -30,3 +30,4 @@ export * from './Interaction';
 export * from './Webhook';
 export * from './Web3Quest';
 export * from './CustomReward';
+export * from './Collaborator';

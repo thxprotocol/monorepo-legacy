@@ -1,7 +1,7 @@
 import { TPointReward } from './PointReward';
 import { Contract } from 'web3-eth-contract';
 import { ChainId } from '../enums';
-import { TBrand, TWallet } from '@thxnetwork/types/interfaces';
+import { TBrand, TCollaborator, TWallet } from '@thxnetwork/types/interfaces';
 
 export enum AccountVariant {
     EmailPassword = 0,
@@ -46,6 +46,7 @@ export type TPool = {
     wallets: TWallet[];
     settings: TPoolSettings;
     widget: { domain: string; active: boolean };
+    collaborators: TCollaborator[];
     createdAt?: Date;
 };
 

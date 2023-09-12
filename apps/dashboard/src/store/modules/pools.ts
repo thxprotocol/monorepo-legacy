@@ -342,6 +342,17 @@ class PoolModule extends VuexModule {
             headers: { 'X-PoolId': poolId },
         });
     }
+
+    @Action({ rawError: true })
+    async inviteCollaborator({ pool, email }: { pool: TPool; email: string }) {
+        const { data } = await axios({
+            method: 'POST',
+            url: '/pools/' + pool._id + '/collaborators',
+            data: { email },
+        });
+        pool.collaborators.push(data);
+        this.context.commit('set', pool);
+    }
 }
 
 export default PoolModule;

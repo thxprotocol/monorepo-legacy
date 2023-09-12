@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts">
-import { IAccount } from '@thxnetwork/dashboard/types/account';
+import type { TAccount } from '@thxnetwork/types/interfaces';
 import { track } from '@thxnetwork/mixpanel';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
@@ -41,7 +41,7 @@ import { mapGetters } from 'vuex';
 export default class BaseModal extends Vue {
     interval: any = null;
     info = '';
-    profile!: IAccount;
+    profile!: TAccount;
 
     @Prop() id!: string;
     @Prop() size!: string;

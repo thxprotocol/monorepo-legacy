@@ -1,7 +1,7 @@
 <template>
     <div>
         <div v-if="account">
-            <BaseModalRequestAccountEmailUpdate :deploying="!firstPool" />
+            <BaseModalRequestAccountEmailUpdate :pool="firstPool" :deploying="!firstPool" />
             <div class="container-xl">
                 <b-jumbotron
                     class="text-left mt-3 jumbotron-header"

@@ -9,7 +9,7 @@ import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import { mapGetters } from 'vuex';
 import { TBrand } from '@thxnetwork/dashboard/store/modules/brands';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
-import { IAccount } from '@thxnetwork/dashboard/types/account';
+import type { TAccount } from '@thxnetwork/types/interfaces';
 import { DISCORD_CLIENT_ID } from '@thxnetwork/dashboard/utils/secrets';
 
 @Component({
@@ -25,7 +25,7 @@ export default class SettingsView extends Vue {
     ChainId = ChainId;
     loading = true;
     chainInfo = chainInfo;
-    profile!: IAccount;
+    profile!: TAccount;
     chainId: ChainId = ChainId.PolygonMumbai;
     pools!: IPools;
     brands!: { [poolId: string]: TBrand };

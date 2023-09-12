@@ -21,7 +21,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseFormSelectNetwork from '@thxnetwork/dashboard/components/form-select/BaseFormSelectNetwork.vue';
 import BaseModal from './BaseModal.vue';
-import type { IAccount } from '@thxnetwork/dashboard/types/account';
+import type { TAccount } from '@thxnetwork/dashboard/types/account';
 import BaseIdenticon from '../BaseIdenticon.vue';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import BaseCardPoolExpiry from '../cards/BaseCardPoolExpiry.vue';
@@ -43,7 +43,7 @@ export default class ModalAssetPoolCreate extends Vue {
     error = '';
     chainId: ChainId = ChainId.Polygon;
     poolVariant = 'defaultPool';
-    profile!: IAccount;
+    profile!: TAccount;
     chainInfo = chainInfo;
     title = '';
     endDate: Date | null = null;

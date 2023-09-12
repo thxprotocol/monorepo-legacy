@@ -123,6 +123,48 @@
         </b-form-row>
         <hr />
         <b-form-row>
+            <b-col md="4">
+                <strong>Collaborators</strong>
+                <p class="text-muted">Invite people from your team to collaborate on this campaign.</p>
+            </b-col>
+            <b-col md="8">
+                <b-form-group label="E-mail" :state="isValidCollaboratorEmail">
+                    <b-input-group>
+                        <b-form-input
+                            :state="isValidCollaboratorEmail"
+                            v-model="emailCollaborator"
+                            type="email"
+                            placeholder="john@doe.com"
+                        />
+                        <b-input-group-append>
+                            <b-button
+                                :disabled="!isValidCollaboratorEmail"
+                                @click="onClickCollaboratorInvite"
+                                variant="dark"
+                            >
+                                Send Invite
+                            </b-button>
+                        </b-input-group-append>
+                    </b-input-group>
+                </b-form-group>
+                <b-list-group>
+                    <b-list-group-item class="d-flex justify-content-between align-items-center">
+                        {{ profile.email }}
+                        <b-badge variant="dark" class="p-2">Owner</b-badge>
+                    </b-list-group-item>
+                    <b-list-group-item
+                        :key="key"
+                        v-for="(c, key) of pool.collaborators"
+                        class="d-flex justify-content-between align-items-center"
+                    >
+                        {{ c.email }}
+                        <b-badge variant="light" class="p-2">{{ CollaboratorInviteState[c.state] }}</b-badge>
+                    </b-list-group-item>
+                </b-list-group>
+            </b-col>
+        </b-form-row>
+        <hr />
+        <b-form-row>
             <b-col md="4"> </b-col>
             <b-col md="8">
                 <b-form-group>
@@ -153,14 +195,11 @@ import { mapGetters } from 'vuex';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import { TBrand } from '@thxnetwork/dashboard/store/modules/brands';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
-import { IAccount } from '@thxnetwork/dashboard/types/account';
-import { TPoolSettings } from '@thxnetwork/types/interfaces';
-import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
+import { TAccount, TPoolSettings } from '@thxnetwork/types/interfaces';
+import { validateEmail } from '@thxnetwork/dashboard/components/modals/BaseModalRequestAccountEmailUpdate.vue';
+import { CollaboratorInviteState } from '@thxnetwork/types/enums';
 
 @Component({
-    components: {
-        BaseCodeExample,
-    },
     computed: {
         ...mapGetters({
             brands: 'brands/all',
@@ -170,9 +209,10 @@ import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vu
     },
 })
 export default class SettingsView extends Vue {
+    CollaboratorInviteState = CollaboratorInviteState;
     loading = true;
     chainInfo = chainInfo;
-    profile!: IAccount;
+    profile!: TAccount;
     pools!: IPools;
     brands!: { [poolId: string]: TBrand };
     error: string | null = null;
@@ -184,9 +224,14 @@ export default class SettingsView extends Vue {
     minDate: Date | null = null;
     expirationDate: Date | null = null;
     expirationTime = '00:00:00';
-
+    emailCollaborator = '';
     get pool() {
         return this.pools[this.$route.params.id];
+    }
+
+    get isValidCollaboratorEmail() {
+        if (!this.emailCollaborator) return;
+        return !!validateEmail(this.emailCollaborator);
     }
 
     get isBrandUpdateInvalid() {
@@ -281,6 +326,18 @@ export default class SettingsView extends Vue {
         await this.$store.dispatch('brands/update', {
             pool: this.pool,
             brand: { backgroundImgUrl: this.backgroundImgUrl, logoImgUrl: this.logoImgUrl },
+        });
+        this.loading = false;
+    }
+
+    async onClickCollaboratorInvite() {
+        if (!this.isValidCollaboratorEmail) return;
+
+        this.loading = true;
+
+        await this.$store.dispatch('pools/inviteCollaborator', {
+            pool: this.pool,
+            email: this.emailCollaborator,
         });
         this.loading = false;
     }

@@ -22,7 +22,9 @@ import CreatePoolTransfer from './transfers/post.controller';
 import DeletePoolTransfer from './transfers/delete.controller';
 import CreatePoolSubscription from './subscriptions/post.controller';
 import ReadPoolSubscription from './subscriptions/get.controller';
-import ReadPoolParticipants from './participants/get.controller';
+import ListPoolParticipants from './participants/list.controller';
+import CreatePoolCollaborator from './collaborators/post.controller';
+import DeletePoolCollaborator from './collaborators/delete.controller';
 import DeletePoolSubscription from './subscriptions/delete.controller';
 import CreatePoolTransferRefresh from './transfers/refresh/post.controller';
 import ListPoolTransfer from './transfers/list.controller';
@@ -153,8 +155,24 @@ router.get(
     checkJwt,
     corsHandler,
     guard.check(['pools:read']), // TODO Should become pool_participants:read
-    assertRequestInput(ReadPoolParticipants.validation),
-    ReadPoolParticipants.controller,
+    assertRequestInput(ListPoolParticipants.validation),
+    ListPoolParticipants.controller,
+);
+router.post(
+    '/:id/collaborators',
+    checkJwt,
+    corsHandler,
+    guard.check(['pools:read', 'pools:write']),
+    assertRequestInput(CreatePoolCollaborator.validation),
+    CreatePoolCollaborator.controller,
+);
+router.delete(
+    '/:id/collaborators/:sub',
+    checkJwt,
+    corsHandler,
+    guard.check(['pools:read', 'pools:write']),
+    assertRequestInput(DeletePoolCollaborator.validation),
+    DeletePoolCollaborator.controller,
 );
 router.delete(
     '/:id',
