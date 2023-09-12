@@ -121,6 +121,7 @@ class AccountModule extends VuexModule {
         passwordResetToken: string;
         verifyEmailToken: string;
         poolTransferToken: string;
+        collaboratorRequestToken: string;
         poolId: string;
         referralCode: string;
         shopifyParams: string;
@@ -147,6 +148,11 @@ class AccountModule extends VuexModule {
             extraQueryParams['pool_transfer_token'] = payload.poolTransferToken;
         }
 
+        debugger;
+        if (payload.collaboratorRequestToken) {
+            extraQueryParams['collaborator_request_token'] = payload.collaboratorRequestToken;
+        }
+
         if (payload.signupEmail) {
             extraQueryParams['signup_email'] = payload.signupEmail;
         }
@@ -157,16 +163,6 @@ class AccountModule extends VuexModule {
 
         if (payload.signupOffer) {
             extraQueryParams['signup_offer'] = payload.signupOffer;
-        }
-
-        if (payload.signupToken) {
-            extraQueryParams['prompt'] = 'confirm';
-            extraQueryParams['signup_token'] = payload.signupToken;
-        }
-
-        if (payload.passwordResetToken) {
-            extraQueryParams['prompt'] = 'reset';
-            extraQueryParams['password_reset_token'] = payload.passwordResetToken;
         }
 
         if (payload.verifyEmailToken) {

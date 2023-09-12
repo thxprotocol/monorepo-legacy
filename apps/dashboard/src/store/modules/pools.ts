@@ -270,6 +270,7 @@ class PoolModule extends VuexModule {
         const { data } = await axios({
             method: 'GET',
             url: `/pools/${pool._id}/participants`,
+            headers: { 'X-PoolId': pool._id },
             params: {
                 page,
                 limit,
@@ -345,12 +346,36 @@ class PoolModule extends VuexModule {
 
     @Action({ rawError: true })
     async inviteCollaborator({ pool, email }: { pool: TPool; email: string }) {
-        const { data } = await axios({
+        const { data, status } = await axios({
             method: 'POST',
             url: '/pools/' + pool._id + '/collaborators',
             data: { email },
+            headers: { 'X-PoolId': pool._id },
         });
-        pool.collaborators.push(data);
+
+        if (status === 403) {
+            throw new Error(data.error.message);
+        }
+
+        const index = pool.collaborators.findIndex((c) => c.email === email);
+        index > -1 ? (pool.collaborators[index] = data) : pool.collaborators.push(data);
+        this.context.commit('set', pool);
+    }
+
+    @Action({ rawError: true })
+    async removeCollaborator({ pool, uuid }: { pool: TPool; uuid: string }) {
+        const { data, status } = await axios({
+            method: 'DELETE',
+            url: '/pools/' + pool._id + '/collaborators/' + uuid,
+            headers: { 'X-PoolId': pool._id },
+        });
+
+        if (status === 403) {
+            throw new Error(data.error.message);
+        }
+
+        const index = pool.collaborators.findIndex((c) => c.uuid === uuid);
+        pool.collaborators.splice(index, 1);
         this.context.commit('set', pool);
     }
 }

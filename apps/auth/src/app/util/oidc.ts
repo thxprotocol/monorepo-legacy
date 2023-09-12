@@ -1,6 +1,6 @@
 import { Provider } from 'oidc-provider';
 import configuration from '../config/oidc';
-import { AUTH_URL, NODE_ENV } from '../config/secrets';
+import { AUTH_URL, NODE_ENV, WIDGET_URL } from '../config/secrets';
 import { logger } from './logger';
 
 const oidc = new Provider(AUTH_URL, configuration);
@@ -29,9 +29,9 @@ function isBase64(str: string) {
 // Important to return after first save of base64 string as the hook will loop if not
 oidc.on('interaction.saved', async (interaction) => {
     try {
-        const { state, return_url, pool_id } = interaction.params;
+        const { state, return_url, pool_id, redirect_uri } = interaction.params;
         // Check if state is base64 or no pool ID and return early
-        if (isBase64(state as string) || !pool_id) return;
+        if (isBase64(state as string) || (redirect_uri && !(redirect_uri as string).startsWith(WIDGET_URL))) return;
 
         const returnUrl = new URL(return_url as string);
         returnUrl.pathname = `/c/${pool_id}/signin`;

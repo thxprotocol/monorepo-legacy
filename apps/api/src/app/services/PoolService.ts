@@ -44,11 +44,15 @@ function isPoolClient(clientId: string, poolId: string) {
     return AssetPool.exists({ _id: poolId, clientId });
 }
 
-function isPoolOwner(sub: string, poolId: string) {
-    return AssetPool.exists({
+async function isPoolOwner(sub: string, poolId: string) {
+    console.log(sub, poolId);
+    const isOwner = await AssetPool.exists({
         _id: poolId,
         sub,
     });
+    const isCollaborator = await Collaborator.exists({ sub, poolId, state: CollaboratorInviteState.Accepted });
+    console.log(isOwner, isCollaborator);
+    return isOwner || isCollaborator;
 }
 
 function getById(id: string) {
@@ -121,7 +125,12 @@ async function deployCallback(args: TAssetPoolDeployCallbackArgs, receipt: Trans
 
 async function getAllBySub(sub: string, archived = false) {
     if (archived) return await AssetPool.find({ sub });
-    return await AssetPool.find({ sub, 'settings.isArchived': archived });
+    const pools = await AssetPool.find({ sub, 'settings.isArchived': archived });
+    const collaborations = await Collaborator.find({ sub });
+    const poolIds = collaborations.map((c) => c.poolId);
+    const collaborationPools = await AssetPool.find({ _id: poolIds });
+
+    return pools.concat(collaborationPools);
 }
 
 function getAll() {
@@ -276,7 +285,9 @@ async function inviteCollaborator(pool: AssetPoolDocument, email: string) {
     }
 
     const url = new URL(DASHBOARD_URL);
-    url.searchParams.append('collaborationRequest', collaborator.uuid);
+    url.pathname = 'collaborator';
+    url.searchParams.append('poolId', pool._id);
+    url.searchParams.append('collaboratorRequestToken', collaborator.uuid);
 
     await MailService.send(
         email,

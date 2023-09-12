@@ -71,6 +71,11 @@ export const callbackPostAuth = async (
         await PoolProxy.transferOwnership(account, params.pool_id, params.pool_transfer_token);
     }
 
+    // Add collaborator if there is a collaborator_request_token
+    if (params.pool_id && params.collaborator_request_token) {
+        await PoolProxy.addCollaborator(account, params.pool_id, params.collaborator_request_token);
+    }
+
     return returnUrl;
 };
 

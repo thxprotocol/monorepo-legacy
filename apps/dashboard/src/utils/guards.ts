@@ -1,15 +1,10 @@
 import store from '@thxnetwork/dashboard/store';
 import { Route } from 'vue-router';
 
-export function redirectPasswordResetLink(to: Route) {
+export function redirectCollaborationRequest(to: Route) {
     return store.dispatch('account/signinRedirect', {
-        passwordResetToken: to.query.passwordResetToken || null,
-    });
-}
-
-export function redirectConfirmationLink(to: Route) {
-    return store.dispatch('account/signinRedirect', {
-        signupToken: to.query.signup_token,
+        collaboratorRequestToken: to.query.collaboratorRequestToken || null,
+        poolId: to.query.poolId,
     });
 }
 

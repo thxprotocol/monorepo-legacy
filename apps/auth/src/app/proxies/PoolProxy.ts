@@ -18,4 +18,13 @@ export default {
         });
         return data;
     },
+
+    addCollaborator: async (account: AccountDocument, poolId: string, uuid: string) => {
+        const { data } = await apiClient({
+            method: 'PATCH',
+            url: `/v1/pools/${poolId}/collaborators/${uuid}`,
+            data: { sub: String(account._id) },
+        });
+        return data;
+    },
 };

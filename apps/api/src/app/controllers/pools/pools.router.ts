@@ -25,6 +25,7 @@ import ReadPoolSubscription from './subscriptions/get.controller';
 import ListPoolParticipants from './participants/list.controller';
 import CreatePoolCollaborator from './collaborators/post.controller';
 import DeletePoolCollaborator from './collaborators/delete.controller';
+import UpdatePoolCollaborator from './collaborators/patch.controller';
 import DeletePoolSubscription from './subscriptions/delete.controller';
 import CreatePoolTransferRefresh from './transfers/refresh/post.controller';
 import ListPoolTransfer from './transfers/list.controller';
@@ -155,22 +156,34 @@ router.get(
     checkJwt,
     corsHandler,
     guard.check(['pools:read']), // TODO Should become pool_participants:read
+    assertAssetPoolOwnership,
     assertRequestInput(ListPoolParticipants.validation),
     ListPoolParticipants.controller,
+);
+router.patch(
+    '/:id/collaborators/:uuid',
+    checkJwt,
+    corsHandler,
+    guard.check(['pools:read', 'pools:write']),
+    assertAssetPoolOwnership,
+    assertRequestInput(UpdatePoolCollaborator.validation),
+    UpdatePoolCollaborator.controller,
 );
 router.post(
     '/:id/collaborators',
     checkJwt,
     corsHandler,
     guard.check(['pools:read', 'pools:write']),
+    assertAssetPoolOwnership,
     assertRequestInput(CreatePoolCollaborator.validation),
     CreatePoolCollaborator.controller,
 );
 router.delete(
-    '/:id/collaborators/:sub',
+    '/:id/collaborators/:uuid',
     checkJwt,
     corsHandler,
     guard.check(['pools:read', 'pools:write']),
+    assertAssetPoolOwnership,
     assertRequestInput(DeletePoolCollaborator.validation),
     DeletePoolCollaborator.controller,
 );
@@ -179,6 +192,7 @@ router.delete(
     checkJwt,
     corsHandler,
     guard.check(['pools:write']),
+    assertAssetPoolOwnership,
     assertRequestInput(DeletePool.validation),
     DeletePool.controller,
 );
@@ -187,6 +201,7 @@ router.delete(
     checkJwt,
     corsHandler,
     guard.check(['pool_subscription:write']),
+    assertAssetPoolOwnership,
     assertRequestInput(DeletePoolSubscription.validation),
     DeletePoolSubscription.controller,
 );
@@ -204,6 +219,7 @@ router.patch(
     checkJwt,
     corsHandler,
     guard.check(['pools:read', 'pools:write']),
+    assertAssetPoolOwnership,
     assertRequestInput(UpdatePool.validation),
     UpdatePool.controller,
 );
