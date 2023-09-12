@@ -261,23 +261,29 @@ async function getParticipantCount(pool: AssetPoolDocument) {
 }
 
 async function inviteCollaborator(pool: AssetPoolDocument, email: string) {
-    //check if one exists already
+    const uuid = v4();
     let collaborator = await Collaborator.findOne({ email, poolId: pool._id });
 
-    // TODO Should also check for expiry of uuid
-    if (collaborator) return collaborator;
-
-    collaborator = await Collaborator.create({
-        poolId: pool._id,
-        email,
-        uuid: v4(),
-        state: CollaboratorInviteState.Pending,
-    });
+    if (collaborator) {
+        collaborator = await Collaborator.findByIdAndUpdate(collaborator._id, { uuid }, { new: true });
+    } else {
+        collaborator = await Collaborator.create({
+            email,
+            uuid,
+            poolId: pool._id,
+            state: CollaboratorInviteState.Pending,
+        });
+    }
 
     const url = new URL(DASHBOARD_URL);
     url.searchParams.append('collaborationRequest', collaborator.uuid);
 
-    await MailService.send(email, 'Campaign Invite', 'Visit ' + url.toString());
+    await MailService.send(
+        email,
+        `👋 Collaboration Request: ${pool.settings.title}`,
+        `<p>Hi!👋</p><p>You have received a collaboration request for Quest &amp; Reward campaign: <strong>${pool.settings.title}</strong></p>`,
+        { src: url.href, text: 'Accept Request' },
+    );
 
     return collaborator;
 }

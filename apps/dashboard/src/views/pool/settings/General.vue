@@ -148,9 +148,8 @@
                     </b-input-group>
                 </b-form-group>
                 <b-list-group>
-                    <b-list-group-item class="d-flex justify-content-between align-items-center">
-                        {{ profile.email }}
-                        <b-badge variant="dark" class="p-2">Owner</b-badge>
+                    <b-list-group-item class="d-flex justify-content-between align-items-center bg-light" disabled>
+                        {{ profile ? profile.email + ' (Owner)' : '' }}
                     </b-list-group-item>
                     <b-list-group-item
                         :key="key"
