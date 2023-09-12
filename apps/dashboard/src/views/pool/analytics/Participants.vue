@@ -22,6 +22,9 @@
             <template #head(pointBalance)>
                 <BaseBtnSort @click="onClickSort('pointBalance', $event)">Point Balance</BaseBtnSort>
             </template>
+            <template #head(subscription)>
+                <BaseBtnSort @click="onClickSort('subscription', $event)">Subscribed</BaseBtnSort>
+            </template>
             <template #head(createdAt)>
                 <BaseBtnSort @click="onClickSort('createdAt', $event)">Created</BaseBtnSort>
             </template>
@@ -36,6 +39,11 @@
             </template>
             <template #cell(pointBalance)="{ item }">
                 <strong class="text-primary">{{ item.pointBalance }}</strong>
+            </template>
+            <template #cell(subscription)="{ item }">
+                <small class="text-muted">
+                    {{ item.subscription ? format(new Date(item.subscription.createdAt), 'dd-MM-yyyy HH:mm') : '' }}
+                </small>
             </template>
             <template #cell(createdAt)="{ item }">
                 <small class="text-muted">{{ format(new Date(item.createdAt), 'dd-MM-yyyy HH:mm') }}</small>
@@ -92,6 +100,11 @@ export default class ViewAnalyticsParticipants extends Vue {
             return 0;
         },
         pointBalance: (a, b) => b.pointBalance - a.pointBalance,
+        subscription: (a, b) => {
+            const dateA: any = a.subscription && new Date(a.subscription.createdAt);
+            const dateB: any = b.subscription && new Date(b.subscription.createdAt);
+            return dateB - dateA;
+        },
         createdAt: (a, b) => {
             const dateA: any = new Date(a.createdAt);
             const dateB: any = new Date(b.createdAt);
@@ -111,6 +124,7 @@ export default class ViewAnalyticsParticipants extends Vue {
             connectedAccounts: parseConnectedAccounts(p.account.connectedAccounts),
             wallet: parseWallet(p.wallet),
             pointBalance: p.pointBalance,
+            subscription: p.subscription,
             createdAt: p.createdAt,
         }));
     }

@@ -23,12 +23,6 @@
                 </template>
                 <BaseTabAnalyticsParticipants :pool="pool" />
             </b-tab>
-            <b-tab active disabled>
-                <template #title>
-                    <i class="fas fa-bell mr-1"></i>
-                    Subscribers
-                </template>
-            </b-tab>
         </b-tabs>
     </div>
 </template>

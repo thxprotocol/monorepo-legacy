@@ -7,7 +7,7 @@
                     <template #loading>
                         <b-skeleton-img no-aspect height="250px"></b-skeleton-img>
                     </template>
-                    <line-chart styles="height: 250px" :chartData="lineChartData" :chart-options="chartOptions" />
+                    <line-chart :chartData="lineChartData" :chart-options="chartOptions" />
                 </b-skeleton-wrapper>
             </b-card>
             <hr />
@@ -17,7 +17,7 @@
                     <template #loading>
                         <b-skeleton-img no-aspect height="250px"></b-skeleton-img>
                     </template>
-                    <bar-chart styles="height: 250px" :chartData="barChartData" :chart-options="chartOptions" />
+                    <bar-chart :chartData="barChartData" :chart-options="chartOptions" />
                 </b-skeleton-wrapper>
             </b-card>
             <hr />

@@ -210,7 +210,7 @@ async function getPoolMetrics(pool: AssetPoolDocument, dateRange?: { startDate: 
 }
 
 async function getLeaderboard(pool: AssetPoolDocument, dateRange?: { startDate: Date; endDate: Date }) {
-    const collections = [DailyRewardClaim, PointRewardClaim, ReferralRewardClaim, MilestoneRewardClaim];
+    const collections = [DailyRewardClaim, PointRewardClaim, ReferralRewardClaim, MilestoneRewardClaim, Web3QuestClaim];
     const result = await Promise.all(
         collections.map(async (Model) => {
             const $match = { poolId: String(pool._id) };

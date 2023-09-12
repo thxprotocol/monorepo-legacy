@@ -233,11 +233,13 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
                 poolId: participant.poolId,
                 walletId: wallet._id,
             });
+            const subscription = await PoolSubscription.findOne({ poolId: pool._id, sub: account.sub });
             return {
                 ...participant.toJSON(),
                 account,
                 wallet,
                 pointBalance: pointBalance ? pointBalance.balance : 0,
+                subscription,
             };
         }),
     );

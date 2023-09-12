@@ -29,7 +29,7 @@ module.exports = {
                 const payload = { poolId: entry.poolId, sub: wallet.sub };
                 const exists = await collParticipants.findOne(payload);
                 if (exists) continue;
-                await collParticipants.insert(payload);
+                await collParticipants.insert({ ...payload, createdAt: entry.createdAt });
             } catch (error) {
                 console.log(entry, error);
             }

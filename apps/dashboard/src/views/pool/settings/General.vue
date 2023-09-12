@@ -156,8 +156,6 @@ import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { IAccount } from '@thxnetwork/dashboard/types/account';
 import { TPoolSettings } from '@thxnetwork/types/interfaces';
 import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
-import { IWidgets } from '@thxnetwork/dashboard/store/modules/widgets';
-import { AccountVariant } from '@thxnetwork/dashboard/types/enums/AccountVariant';
 
 @Component({
     components: {

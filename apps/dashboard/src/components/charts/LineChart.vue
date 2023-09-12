@@ -66,9 +66,9 @@ export default {
         },
         styles: {
             type: Object,
-            default: () => {
-                // function here
-            },
+            default: () => ({
+                height: '250px',
+            }),
         },
         plugins: {
             type: Array,
