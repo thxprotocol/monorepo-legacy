@@ -201,7 +201,6 @@ router.delete(
     checkJwt,
     corsHandler,
     guard.check(['pool_subscription:write']),
-    assertAssetPoolOwnership,
     assertRequestInput(DeletePoolSubscription.validation),
     DeletePoolSubscription.controller,
 );
