@@ -1,10 +1,10 @@
 <template>
-    <div>
-        <b-link v-if="account.url" :href="account.url" target="_blank" class="mr-1">
+    <span class="mr-1">
+        <b-link v-if="account.url" :href="account.url" target="_blank">
             <i :class="account.platform.icon" class="text-gray" v-b-tooltip :title="account.userName" />
         </b-link>
-        <i v-else :class="account.platform.icon" class="text-gray mr-1" v-b-tooltip :title="account.userId" />
-    </div>
+        <i v-else :class="account.platform.icon" class="text-gray" v-b-tooltip :title="account.userId" />
+    </span>
 </template>
 
 <script lang="ts">
