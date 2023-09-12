@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 export type TParticipant = mongoose.Document & {
-    sub?: string;
+    sub: string;
     poolId: string;
 };
 

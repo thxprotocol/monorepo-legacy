@@ -1,14 +1,38 @@
-module.exports = {
-    async up(db, client) {
-        // TODO write your migration here.
-        // See https://github.com/seppevs/migrate-mongo/#creating-a-new-migration-script
-        // Example:
-        // await db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: true}});
-    },
+const { ObjectId } = require('mongodb');
 
-    async down(db, client) {
-        // TODO write the statements to rollback your migration (if possible)
-        // Example:
-        // await db.collection('albums').updateOne({artist: 'The Beatles'}, {$set: {blacklisted: false}});
+module.exports = {
+    async up(db) {
+        const collParticipants = db.collection('participants');
+        const collWallets = db.collection('wallets');
+        const collectionNames = [
+            'dailyrewardclaims',
+            'referralrewardclaims',
+            'pointrewardclaims',
+            'milestonerewardclaims',
+            'web3questclaims',
+        ];
+        const results = await Promise.all(
+            collectionNames.map(async (name) => {
+                try {
+                    return (await db.collection(name).find({})).toArray();
+                } catch (error) {
+                    console.log(name, error);
+                }
+            }),
+        );
+        const entries = Array.from(new Set(results.flat(1)));
+        for (const entry of entries) {
+            try {
+                if (!entry.walletId) continue;
+                const wallet = await collWallets.findOne({ _id: new ObjectId(entry.walletId) });
+                if (!wallet || !wallet.sub) continue;
+                const payload = { poolId: entry.poolId, sub: wallet.sub };
+                const exists = await collParticipants.findOne(payload);
+                if (exists) continue;
+                await collParticipants.insert(payload);
+            } catch (error) {
+                console.log(entry, error);
+            }
+        }
     },
 };
