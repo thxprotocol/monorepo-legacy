@@ -218,16 +218,10 @@ async function getRewardCount(pool: AssetPoolDocument) {
     return Array.from(new Set(result.flat(1)));
 }
 
-async function findParticipants(pool: AssetPoolDocument, page: number, limit: number, sort: string) {
-    const participants = await paginatedResults(
-        Participant,
-        page,
-        limit,
-        {
-            poolId: pool._id,
-        },
-        sort,
-    );
+async function findParticipants(pool: AssetPoolDocument, page: number, limit: number) {
+    const participants = await paginatedResults(Participant, page, limit, {
+        poolId: pool._id,
+    });
     const subs = participants.results.map((p) => p.sub);
     const accounts = await AccountProxy.getMany(subs);
 

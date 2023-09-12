@@ -11,7 +11,6 @@ export const paginatedResults = async (
     page: number,
     limit: number,
     query: any,
-    sort = 'createdAt',
 ): Promise<PaginationResult> => {
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
@@ -35,7 +34,7 @@ export const paginatedResults = async (
 
     const results = await model
         .find(query)
-        .sort([[sort, -1]])
+        .sort([['createdAt', -1]])
         .limit(limit)
         .skip(startIndex)
         .exec();

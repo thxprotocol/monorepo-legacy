@@ -162,17 +162,11 @@ import BaseModalDepositCreate from '@thxnetwork/dashboard/components/modals/Base
 import { fromWei } from 'web3-utils';
 import { format } from 'date-fns';
 import { IPoolAnalyticsLeaderBoard, IPoolAnalyticsMetrics, IPools } from '@thxnetwork/dashboard/store/modules/pools';
-import BaseTabAnalyticsQuests from '@thxnetwork/dashboard/views/pool/analytics/Quests.vue';
-import BaseTabAnalyticsRewards from '@thxnetwork/dashboard/views/pool/analytics/Rewards.vue';
-import BaseTabAnalyticsParticipants from '@thxnetwork/dashboard/views/pool/analytics/Participants.vue';
 import { TPool } from '@thxnetwork/types/interfaces';
 
 @Component({
     components: {
         BaseIdenticon,
-        BaseTabAnalyticsQuests,
-        BaseTabAnalyticsRewards,
-        BaseTabAnalyticsParticipants,
         BaseModalDepositCreate,
         BaseModalErc20Create,
         BaseModalErc20Import,

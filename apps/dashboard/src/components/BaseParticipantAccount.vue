@@ -1,7 +1,13 @@
 <template>
-    <b-media v-b-tooltip :title="`${account.id} (${account.variant})`">
+    <b-media>
         <template #aside>
-            <b-avatar :src="account.profileImg" size="sm" variant="light" />
+            <b-avatar
+                v-b-tooltip
+                :title="`${account.id} (${account.variant})`"
+                :src="account.profileImg"
+                size="sm"
+                variant="light"
+            />
         </template>
         {{ account.email }}
     </b-media>
@@ -15,7 +21,7 @@ import { AccountVariant } from '../types/enums/AccountVariant';
 export function parseAccount({ id, account }) {
     return {
         id,
-        email: (account && account.email) || 'None',
+        email: account && account.email,
         profileImg: account && account.profileImg,
         twitterUsername: account && account.twitterUsername,
         variant: account && AccountVariant[account.variant],

@@ -34,9 +34,5 @@ export function parseConnectedAccounts(accounts: any) {
 @Component({})
 export default class BaseParticipantConnectedAccount extends Vue {
     @Prop() account!: { url: string; platform: { icon: string }; userName: string; userId: string };
-
-    mounted() {
-        console.log(this.account);
-    }
 }
 </script>

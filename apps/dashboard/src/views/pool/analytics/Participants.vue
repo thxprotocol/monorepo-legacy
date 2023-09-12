@@ -7,18 +7,24 @@
             :total-rows="result.total"
             :selectedItems="[]"
             :actions="[]"
-            :sorts="sorts"
-            @change-sort="onChangeSort"
             @change-page="onChangePage"
             @change-limit="onChangeLimit"
         />
         <BTable id="table-participants" hover :busy="isLoading" :items="participantsByPage" responsive="lg" show-empty>
             <!-- Head formatting -->
-            <template #head(account)> &nbsp;</template>
+            <template #head(account)>
+                <BaseBtnSort @click="onClickSort('email', $event)">Account</BaseBtnSort>
+            </template>
             <template #head(connectedAccounts)> Connected </template>
-            <template #head(walletAddress)> Wallet </template>
-            <template #head(pointBalance)> Point Balance </template>
-            <template #head(createdAt)> Created </template>
+            <template #head(wallet)>
+                <BaseBtnSort @click="onClickSort('wallet', $event)">Wallet</BaseBtnSort>
+            </template>
+            <template #head(pointBalance)>
+                <BaseBtnSort @click="onClickSort('pointBalance', $event)">Point Balance</BaseBtnSort>
+            </template>
+            <template #head(createdAt)>
+                <BaseBtnSort @click="onClickSort('createdAt', $event)">Created</BaseBtnSort>
+            </template>
 
             <!-- Cell formatting -->
             <template #cell(account)="{ item }"> <BaseParticipantAccount :account="item.account" /> </template>
@@ -42,6 +48,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { TPool } from '@thxnetwork/types/interfaces';
+import BaseBtnSort from '@thxnetwork/dashboard/components/buttons/BaseBtnSort.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseParticipantAccount, { parseAccount } from '@thxnetwork/dashboard/components/BaseParticipantAccount.vue';
 import BaseParticipantWallet, { parseWallet } from '@thxnetwork/dashboard/components/BaseParticipantWallet.vue';
@@ -52,6 +59,7 @@ import { format } from 'date-fns';
 
 @Component({
     components: {
+        BaseBtnSort,
         BaseCardTableHeader,
         BaseParticipantAccount,
         BaseParticipantWallet,
@@ -66,24 +74,30 @@ import { format } from 'date-fns';
 export default class ViewAnalyticsParticipants extends Vue {
     isLoading = false;
     format = format;
-    sort = '';
     page = 1;
     limit = 10;
-    sorts = [
-        {
-            value: 'createdAt',
-            text: 'Created',
+    sorts = {
+        email: (a, b) => {
+            const emailA = a.account.email ? a.account.email.toLowerCase() : '';
+            const emailB = b.account.email ? b.account.email.toLowerCase() : '';
+            if (emailA < emailB) return -1;
+            if (emailA > emailB) return 1;
+            return 0;
         },
-        {
-            value: 'email',
-            text: 'E-mail',
+        wallet: (a, b) => {
+            const addressA = a.wallet.address.toLowerCase();
+            const addressB = b.wallet.address.toLowerCase();
+            if (addressA < addressB) return -1;
+            if (addressA > addressB) return 1;
+            return 0;
         },
-        {
-            value: 'walletAddress',
-            text: 'Wallet',
+        pointBalance: (a, b) => b.pointBalance - a.pointBalance,
+        createdAt: (a, b) => {
+            const dateA: any = new Date(a.createdAt);
+            const dateB: any = new Date(b.createdAt);
+            return dateB - dateA;
         },
-        { value: 'pointBalance', text: 'Point Balance' },
-    ];
+    };
     result = {
         results: [],
         total: 1,
@@ -111,9 +125,18 @@ export default class ViewAnalyticsParticipants extends Vue {
             pool: this.pool,
             page: this.page,
             limit: this.limit,
-            sort: this.sort,
         });
         this.isLoading = false;
+    }
+
+    onClickSort(variant: string, direction: string) {
+        this.result.results.sort((a, b) => {
+            if (direction === 'asc') {
+                return this.sorts[variant](a, b);
+            } else if (direction === 'desc') {
+                return this.sorts[variant](b, a);
+            }
+        });
     }
 
     onChangePage(page: number) {
@@ -123,10 +146,6 @@ export default class ViewAnalyticsParticipants extends Vue {
 
     onChangeLimit(limit: number) {
         this.limit = limit;
-        this.getParticipants();
-    }
-    onChangeSort(sort: string) {
-        this.sort = sort;
         this.getParticipants();
     }
 }

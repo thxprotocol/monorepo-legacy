@@ -4,24 +4,17 @@
         <b-tabs class="w-100" nav-class="w-100">
             <b-tab active class="mt-3">
                 <template #title>
-                    <i class="fas fa-columns mr-1"></i>
+                    <i class="fas fa-tachometer-alt mr-1"></i>
                     Metrics
                 </template>
                 <BaseTabAnalyticsMetrics :pool="pool" />
             </b-tab>
             <b-tab>
                 <template #title>
-                    <i class="fas fa-trophy mr-1"></i>
-                    Quests
+                    <i class="fas fa-chart-line mr-1"></i>
+                    Charts
                 </template>
-                <BaseTabAnalyticsQuests :pool="pool" />
-            </b-tab>
-            <b-tab>
-                <template #title>
-                    <i class="fas fa-gift mr-1"></i>
-                    Rewards
-                </template>
-                <BaseTabAnalyticsRewards :pool="pool" />
+                <BaseTabAnalyticsCharts :pool="pool" />
             </b-tab>
             <b-tab>
                 <template #title>
@@ -45,15 +38,13 @@ import { mapGetters } from 'vuex';
 import { Component, Vue } from 'vue-property-decorator';
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import BaseTabAnalyticsMetrics from '@thxnetwork/dashboard/views/pool/analytics/Metrics.vue';
-import BaseTabAnalyticsQuests from '@thxnetwork/dashboard/views/pool/analytics/Quests.vue';
-import BaseTabAnalyticsRewards from '@thxnetwork/dashboard/views/pool/analytics/Rewards.vue';
+import BaseTabAnalyticsCharts from '@thxnetwork/dashboard/views/pool/analytics/Charts.vue';
 import BaseTabAnalyticsParticipants from '@thxnetwork/dashboard/views/pool/analytics/Participants.vue';
 
 @Component({
     components: {
         BaseTabAnalyticsMetrics,
-        BaseTabAnalyticsQuests,
-        BaseTabAnalyticsRewards,
+        BaseTabAnalyticsCharts,
         BaseTabAnalyticsParticipants,
     },
     computed: mapGetters({

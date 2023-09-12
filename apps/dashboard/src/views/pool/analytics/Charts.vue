@@ -1,27 +1,54 @@
 <template>
-    <b-card class="mt-3">
-        <b-skeleton-wrapper :loading="!poolAnalytics">
-            <template #loading>
-                <b-skeleton-img no-aspect height="250px"></b-skeleton-img>
-            </template>
-            <line-chart
-                :chartData="lineChartData"
-                :chart-options="chartOptions"
-                :height="250"
-                style="position: relative; width: 100%"
-            />
-        </b-skeleton-wrapper>
-    </b-card>
+    <b-row class="mt-3">
+        <b-col md="8">
+            <strong class="text-muted">Quests</strong>
+            <b-card class="mt-3">
+                <b-skeleton-wrapper :loading="!poolAnalytics">
+                    <template #loading>
+                        <b-skeleton-img no-aspect height="250px"></b-skeleton-img>
+                    </template>
+                    <line-chart styles="height: 250px" :chartData="lineChartData" :chart-options="chartOptions" />
+                </b-skeleton-wrapper>
+            </b-card>
+            <hr />
+            <strong class="text-muted">Rewards</strong>
+            <b-card class="mt-3">
+                <b-skeleton-wrapper :loading="!poolAnalytics">
+                    <template #loading>
+                        <b-skeleton-img no-aspect height="250px"></b-skeleton-img>
+                    </template>
+                    <bar-chart styles="height: 250px" :chartData="barChartData" :chart-options="chartOptions" />
+                </b-skeleton-wrapper>
+            </b-card>
+            <hr />
+        </b-col>
+        <b-col md="4">
+            <strong class="text-muted">Chart Settings</strong>
+            <b-card class="mt-3">
+                <b-form-group label="Last">
+                    <b-input-group append="days">
+                        <b-form-input min="1" max="1000" :value="daysRange" @change="onChangeDaysRange" type="number" />
+                    </b-input-group>
+                </b-form-group>
+                <b-button block :disabled="isLoading" variant="primary" class="rounded-pill" @click="onClickUpdate">
+                    <b-spinner v-if="isLoading" small />
+                    <template v-else>Update</template>
+                </b-button>
+            </b-card>
+        </b-col>
+    </b-row>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import BarChart from '@thxnetwork/dashboard/components/charts/BarChart.vue';
-import LineChart from '@thxnetwork/dashboard/components/charts/LineChart.vue';
 import { IPoolAnalytics } from '@thxnetwork/dashboard/store/modules/pools';
 import { format } from 'date-fns';
 import { TPool } from '@thxnetwork/types/interfaces';
+import BarChart from '@thxnetwork/dashboard/components/charts/BarChart.vue';
+import LineChart from '@thxnetwork/dashboard/components/charts/LineChart.vue';
+
+const ONE_DAY = 86400000; // one day in milliseconds
 
 @Component({
     components: {
@@ -35,8 +62,8 @@ import { TPool } from '@thxnetwork/types/interfaces';
         }),
     },
 })
-export default class ViewAnalyticsQuests extends Vue {
-    loading = false;
+export default class ViewAnalyticsCharts extends Vue {
+    isLoading = false;
     analytics!: IPoolAnalytics;
     chartOptions = {
         scales: {
@@ -215,19 +242,80 @@ export default class ViewAnalyticsQuests extends Vue {
         return result;
     }
 
-    async mounted() {
-        this.loading = true;
+    get barChartData() {
+        let coinRewardPayments: number[] = [];
+        let nftRewardPayments: number[] = [];
+        let customRewardPayments: number[] = [];
 
-        // CREATE THE DATE RANGES FOR THE QUERY
-        const oneDay = 86400000; // one day in milliseconds
+        if (this.poolAnalytics) {
+            coinRewardPayments = this.chartDates.map((data) => {
+                const dayData = this.poolAnalytics.erc20Perks.find((x) => x.day == data);
+                return dayData ? dayData.totalAmount : 0;
+            });
+
+            nftRewardPayments = this.chartDates.map((data) => {
+                const dayData = this.poolAnalytics.erc721Perks.find((x) => x.day == data);
+                return dayData ? dayData.totalAmount : 0;
+            });
+
+            customRewardPayments = this.chartDates.map((data) => {
+                const dayData = this.poolAnalytics.customRewards.find((x) => x.day == data);
+                return dayData ? dayData.totalAmount : 0;
+            });
+        }
+
+        const result = {
+            labels: this.chartDates.map((x) => format(new Date(x), 'MM-dd')),
+            datasets: [
+                {
+                    label: 'Coin Rewards',
+                    data: coinRewardPayments,
+                    backgroundColor: '#0CC6F9',
+                    borderColor: '#0CC6F9',
+                    pointRadius: 0,
+                },
+                {
+                    label: 'NFT Rewards',
+                    data: nftRewardPayments,
+                    backgroundColor: '#023B77',
+                    borderColor: '#023B77',
+                    pointRadius: 0,
+                },
+                {
+                    label: 'Custom Rewards',
+                    data: customRewardPayments,
+                    backgroundColor: '#A52A2A',
+                    borderColor: '#A52A2A',
+                    pointRadius: 0,
+                },
+            ],
+        };
+        return result;
+    }
+
+    mounted() {
+        this.readAnalytics();
+    }
+
+    async readAnalytics() {
+        this.isLoading = true;
+
         const endDate = new Date();
 
         endDate.setHours(0, 0, 0, 0);
-        const startDate = new Date(new Date(endDate).getTime() - oneDay * this.daysRange);
+        const startDate = new Date(new Date(endDate).getTime() - ONE_DAY * this.daysRange);
         endDate.setHours(23, 59, 59, 0);
 
-        this.$store.dispatch('pools/readAnalytics', { poolId: this.pool._id, startDate, endDate });
-        this.loading = false;
+        await this.$store.dispatch('pools/readAnalytics', { poolId: this.pool._id, startDate, endDate });
+        this.isLoading = false;
+    }
+
+    onChangeDaysRange(daysRange: number) {
+        this.daysRange = daysRange;
+    }
+
+    onClickUpdate() {
+        this.readAnalytics();
     }
 }
 </script>
