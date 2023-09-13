@@ -1,11 +1,11 @@
 <template>
-    <base-modal size="xl" title="Recent Webhook Requests (50)" :id="id" :error="error">
+    <base-modal size="xl" title="Recent Webhook Requests (Last 50)" :id="id" :error="error">
         <template #modal-body>
             <b-row>
                 <b-col md="6">
                     <p class="text-muted">Set up your webhook endpoint to receive live events from THX API.</p>
                     <pre
-                        class="rounded p-3 mb-2 text-white w-auto"
+                        class="rounded p-3 mb-2 text-white w-auto small"
                         style="background-color: #282c34; overflow: scroll; white-space: pre; tab-size: 2"
                     >
                         <code class="language-html" v-html="exampleController"></code>
@@ -16,7 +16,7 @@
                         <b-list-group-item
                             :key="key"
                             v-for="(webhookRequest, key) of webhookRequestList"
-                            class="bg-light"
+                            class="bg-light p-2"
                         >
                             <div class="d-flex justify-content-between mb-2">
                                 <b-badge
@@ -36,7 +36,7 @@
                             </div>
                             <pre
                                 v-if="webhookRequest.payloadFormatted"
-                                class="rounded p-3 mb-2 w-100 text-white"
+                                class="rounded p-3 mb-0 w-100 text-white small"
                                 style="background-color: #282c34; white-space: pre-line"
                             >
                         <code class="language-html" v-html="webhookRequest.payloadFormatted.value"></code>

@@ -49,7 +49,6 @@
                     <BTable :items="webhooksList" id="table-webhooks" responsive="lg" show-empty>
                         <!-- Head formatting -->
                         <template #head(url)>URL</template>
-                        <template #head(_id)>ID</template>
                         <template #head(webhookRequests)> Requests </template>
                         <template #head(status)> Status </template>
                         <template #head(id)> &nbsp;</template>
@@ -58,11 +57,8 @@
                         <template #cell(url)="{ item }">
                             <div class="d-flex align-items-center">
                                 <i class="fas ml-0 mr-2 text-muted fa-globe"></i>
-                                {{ item.url }}
+                                <code>{{ item.url }}</code>
                             </div>
-                        </template>
-                        <template #cell(_id)="{ item }">
-                            <code>{{ item.id }}</code>
                         </template>
                         <template #cell(webhookRequests)="{ item }">
                             <BaseModalWebhookRequests
@@ -71,6 +67,7 @@
                                 :webhook-requests="item.webhookRequests"
                             />
                             <b-link v-if="item.webhookRequests.length" v-b-modal="`modalWebhookRequest${item.id}`">
+                                <i class="fas fa-exchange-alt mr-1 text-muted" />
                                 {{ item.webhookRequests.length }}
                             </b-link>
                             <template v-else>0</template>
@@ -138,7 +135,7 @@ export default class CampaignConfigWebhooks extends Vue {
         return Object.values(this.webhooks[this.pool._id]).map((w) => {
             return {
                 url: w.url,
-                _id: w._id,
+                // _id: w._id,
                 webhookRequests: w.webhookRequests,
                 status: w.status,
                 id: w._id,

@@ -51,7 +51,7 @@ async function requestAttemptJob(job: Job) {
             webhookRequest.httpStatus = error.response.status;
         }
 
-        console.error(error);
+        console.error(error, error.response.status);
     } finally {
         webhookRequest.attempts = webhookRequest.attempts++;
         await webhookRequest.save();
