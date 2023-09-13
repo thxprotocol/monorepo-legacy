@@ -10,16 +10,19 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { IPools } from '../store/modules/pools';
 import { TAccount } from '@thxnetwork/types/interfaces';
+import { User } from 'oidc-client-ts';
 
 @Component({
     computed: mapGetters({
         pools: 'pools/all',
         profile: 'account/profile',
+        user: 'account/user',
     }),
 })
 export default class Redirect extends Vue {
     pools!: IPools;
     profile!: TAccount;
+    user!: User;
 
     async mounted() {
         await this.$store.dispatch('account/signinRedirectCallback');
@@ -27,7 +30,32 @@ export default class Redirect extends Vue {
 
         track('UserSignsIn', [this.profile]);
 
+        if (this.user && this.user.state) {
+            // This handles a collaborator request while being signed in
+            const { poolId, collaboratorRequestToken } = this.user.state as any;
+            if (poolId && collaboratorRequestToken) {
+                this.updateCollaborator(poolId, collaboratorRequestToken);
+                return this.$router.push('/pools');
+            }
+        }
+
         this.$router.push('/');
+    }
+
+    async updateCollaborator(poolId: string, uuid: string) {
+        try {
+            await this.$store.dispatch('pools/updateCollaborator', { poolId, uuid });
+            this.$bvToast.toast('Accepted collaboration request!', {
+                variant: 'info',
+                title: 'Info',
+                noFade: true,
+                noAutoHide: true,
+                appendToast: true,
+                solid: true,
+            });
+        } catch (error) {
+            throw error;
+        }
     }
 }
 </script>

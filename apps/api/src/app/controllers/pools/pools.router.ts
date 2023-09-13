@@ -159,7 +159,7 @@ router.patch(
     checkJwt,
     corsHandler,
     guard.check(['pools:read', 'pools:write']),
-    assertPoolAccess,
+    // assertPoolAccess, // No access check because user needs to be able to update using obtained uuid
     assertRequestInput(UpdatePoolCollaborator.validation),
     UpdatePoolCollaborator.controller,
 );

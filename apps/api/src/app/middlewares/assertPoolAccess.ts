@@ -11,7 +11,7 @@ export async function assertPoolAccess(
     if (req.auth.sub === req.auth.aud) return next();
 
     // If there is a sub check the account for pool ownership
-    const isOwner = await PoolService.hasAccess(req.auth.sub, poolId);
-    if (!isOwner) throw new SubjectUnauthorizedError();
+    const hasAccess = await PoolService.hasAccess(req.auth.sub, poolId);
+    if (!hasAccess) throw new SubjectUnauthorizedError();
     return next();
 }

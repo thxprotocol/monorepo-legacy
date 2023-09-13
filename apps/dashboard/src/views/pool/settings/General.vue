@@ -150,11 +150,17 @@
                 </b-form-group>
                 <b-list-group>
                     <b-list-group-item
-                        v-if="profile.sub === pool.sub"
+                        v-if="profile && profile.sub === pool.sub"
                         class="d-flex justify-content-between align-items-center bg-light"
                     >
-                        {{ profile ? profile.email + ' (Owner)' : '' }}
-                        <b-button v-b-modal="`modalPoolTransfer${pool._id}`" variant="link" size="sm" class="ml-3">
+                        {{ profile.email }} (Owner)
+                        <b-button
+                            disabled
+                            v-b-modal="`modalPoolTransfer${pool._id}`"
+                            variant="link"
+                            size="sm"
+                            class="ml-3"
+                        >
                             Transfer Ownership
                         </b-button>
                         <BaseModalPoolTransfer :pool="pool" />

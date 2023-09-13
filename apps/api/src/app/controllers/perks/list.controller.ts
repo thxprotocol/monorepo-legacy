@@ -97,6 +97,7 @@ const controller = async (req: Request, res: Response) => {
             customRewards.map(async (r) => {
                 const { isError } = await PerkService.validate({ perk: r, sub, pool });
                 const defaults = await getRewardDefeaults(r, CustomRewardPayment);
+                // @dev Having a Virtual Wallet for this pool is required in order for the external system to target the right user
                 const wallets = sub ? await Wallet.find({ poolId: pool._id, sub, uuid: { $exists: true } }) : [];
                 return {
                     ...defaults,

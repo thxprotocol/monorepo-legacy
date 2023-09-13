@@ -48,7 +48,7 @@ async function controller(req: Request, res: Response) {
         alert['variant'] = 'success';
         alert[
             'message'
-        ] = `<i class="fas fa-info-circle mr-2" aria-hidden="true"></i> Invite for <strong>${pool.settings.title}</strong>!`;
+        ] = `<i class="fas fa-info-circle mr-2" aria-hidden="true"></i> Accept invite for <strong>${pool.settings.title}</strong>!`;
     }
 
     if (params.wallet_transfer_token) {

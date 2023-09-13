@@ -131,6 +131,7 @@ class AccountModule extends VuexModule {
             return_url: BASE_URL,
             distinct_id: client && client.get_distinct_id(),
         };
+        const state = {};
 
         if (payload.shopifyParams) {
             extraQueryParams['shopify_params'] = payload.shopifyParams;
@@ -142,15 +143,16 @@ class AccountModule extends VuexModule {
 
         if (payload.poolId) {
             extraQueryParams['pool_id'] = payload.poolId;
+            state['poolId'] = payload.poolId;
         }
 
         if (payload.poolTransferToken) {
             extraQueryParams['pool_transfer_token'] = payload.poolTransferToken;
         }
 
-        debugger;
         if (payload.collaboratorRequestToken) {
             extraQueryParams['collaborator_request_token'] = payload.collaboratorRequestToken;
+            state['collaboratorRequestToken'] = payload.collaboratorRequestToken;
         }
 
         if (payload.signupEmail) {
@@ -170,9 +172,8 @@ class AccountModule extends VuexModule {
             extraQueryParams['verifyEmailToken'] = payload.verifyEmailToken;
         }
 
-        await this.userManager.clearStaleState();
-
         return await this.userManager.signinRedirect({
+            state,
             extraQueryParams,
         });
     }

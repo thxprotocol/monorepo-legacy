@@ -2,6 +2,8 @@ import store from '@thxnetwork/dashboard/store';
 import { Route } from 'vue-router';
 
 export function redirectCollaborationRequest(to: Route) {
+    // Store data in state
+    // Check when passing redirect
     return store.dispatch('account/signinRedirect', {
         collaboratorRequestToken: to.query.collaboratorRequestToken || null,
         poolId: to.query.poolId,

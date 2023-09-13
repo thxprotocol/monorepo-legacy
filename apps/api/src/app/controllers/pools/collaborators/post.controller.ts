@@ -9,7 +9,6 @@ export const validation = [param('id').isMongoId(), body('email').isEmail()];
 export const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
     const pool = await PoolService.getById(req.params.id);
-    if (pool.sub !== req.auth.sub) throw new ForbiddenError('Only the pool owner can access this');
     const owner = await AccountProxy.getById(pool.sub);
     if (owner.email == req.body.email) throw new ForbiddenError('Can not invite the campaign owner');
     const account = await AccountProxy.getById(pool.sub);
