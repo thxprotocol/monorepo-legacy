@@ -103,7 +103,7 @@ describe('Default Pool', () => {
     describe('PATCH /pools/:id', () => {
         it('HTTP 200', (done) => {
             user.patch('/v1/pools/' + poolId)
-                .set({ Authorization: dashboardAccessToken })
+                .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .send({
                     settings: {
                         title: 'My Pool 2',
