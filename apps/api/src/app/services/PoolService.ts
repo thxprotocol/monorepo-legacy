@@ -235,7 +235,10 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
     participants.results = await Promise.all(
         participants.results.map(async (participant) => {
             const wallet = await SafeService.findPrimary(participant.sub, pool.chainId);
-            const account = accounts.find((a) => a.sub === wallet.sub);
+            const account = wallet ? accounts.find((a) => a.sub === wallet.sub) : null;
+            const subscription = account
+                ? await PoolSubscription.findOne({ poolId: pool._id, sub: account.sub })
+                : null;
             const pointBalance = await PointBalance.findOne({
                 poolId: participant.poolId,
                 walletId: wallet._id,
@@ -246,7 +249,7 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
                 account,
                 wallet,
                 pointBalance: pointBalance ? pointBalance.balance : 0,
-                subscription: account && (await PoolSubscription.findOne({ poolId: pool._id, sub: account.sub })),
+                subscription,
             };
         }),
     );
