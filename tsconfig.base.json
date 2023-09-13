@@ -19,7 +19,7 @@
         "paths": {
             "@thxnetwork/api*": ["apps/api/src/app*"],
             "@thxnetwork/auth*": ["apps/auth/src/app*"],
-            "@thxnetwork/common": ["libs/common/src/index.ts"],
+            "@thxnetwork/common": ["libs/common/src/lib/common.ts"],
             "@thxnetwork/contracts*": ["libs/contracts*"],
             "@thxnetwork/dashboard*": ["apps/dashboard/src*"],
             "@thxnetwork/discord*": ["apps/discord-bot/src/app*"],

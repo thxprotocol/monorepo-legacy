@@ -15,6 +15,7 @@
                         :key="key"
                         v-b-modal="questModalComponentMap[QuestVariant[variant]]"
                         button-class="d-flex"
+                        :disabled="QuestVariant[variant] === QuestVariant.Custom && !hasPremiumAccess(pool.owner)"
                     >
                         <div style="width: 30px">
                             <i
@@ -148,6 +149,7 @@ import { TPointRewardState } from '@thxnetwork/dashboard/store/modules/pointRewa
 import { TReferralRewardState } from '@thxnetwork/dashboard/store/modules/referralRewards';
 import { TMilestoneRewardState } from '@thxnetwork/dashboard/store/modules/milestoneRewards';
 import { TWeb3QuestState } from '@thxnetwork/dashboard/store/modules/web3Quests';
+import { hasPremiumAccess } from '@thxnetwork/common';
 
 @Component({
     components: {
@@ -171,6 +173,7 @@ import { TWeb3QuestState } from '@thxnetwork/dashboard/store/modules/web3Quests'
     }),
 })
 export default class QuestsView extends Vue {
+    hasPremiumAccess = hasPremiumAccess;
     isLoading = true;
     limit = 50;
     page = 1;

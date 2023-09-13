@@ -19,6 +19,16 @@
                             class="bg-light"
                         >
                             <div class="d-flex justify-content-between mb-2">
+                                <b-badge
+                                    class="p-1"
+                                    :variant="
+                                        webhookRequest.httpStatus > 400 && webhookRequest.httpStatus < 600
+                                            ? 'danger'
+                                            : 'success'
+                                    "
+                                >
+                                    {{ webhookRequest.httpStatus }}
+                                </b-badge>
                                 <code>POST {{ webhook.url }}</code>
                                 <small class="text-muted" v-if="webhookRequest.createdAt">
                                     {{ format(new Date(webhookRequest.createdAt), 'dd-MM-yyyy HH:mm') }}

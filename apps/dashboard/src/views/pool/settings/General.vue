@@ -125,11 +125,13 @@
         <b-form-row>
             <b-col md="4">
                 <strong>Collaborators</strong>
+                <b-badge variant="dark" class="ml-2">Beta</b-badge>
+                <b-badge v-if="!hasBasicAccess(pool.owner)" variant="primary" class="ml-2">Premium</b-badge>
                 <p class="text-muted">Invite people from your team to collaborate on this campaign.</p>
             </b-col>
             <b-col md="8">
                 <b-alert variant="danger" show v-if="errorCollaborator">{{ errorCollaborator }} </b-alert>
-                <b-form-group label="E-mail" :state="isValidCollaboratorEmail">
+                <b-form-group label="E-mail" :state="isValidCollaboratorEmail" :disabled="!hasBasicAccess(pool.owner)">
                     <b-input-group>
                         <b-form-input
                             :state="isValidCollaboratorEmail"
@@ -209,6 +211,7 @@ import { TAccount, TPoolSettings } from '@thxnetwork/types/interfaces';
 import { validateEmail } from '@thxnetwork/dashboard/components/modals/BaseModalRequestAccountEmailUpdate.vue';
 import BaseListItemCollaborator from '@thxnetwork/dashboard/components/list-items/BaseListItemCollaborator.vue';
 import BaseModalPoolTransfer from '@thxnetwork/dashboard/components/modals/BaseModalPoolTransfer.vue';
+import { hasBasicAccess } from '@thxnetwork/common';
 
 @Component({
     components: {
@@ -241,6 +244,7 @@ export default class SettingsView extends Vue {
     expirationTime = '00:00:00';
     emailCollaborator = '';
     isSubmittingCollaborator = false;
+    hasBasicAccess = hasBasicAccess;
 
     get pool() {
         return this.pools[this.$route.params.id];

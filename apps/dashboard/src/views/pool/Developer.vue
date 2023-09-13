@@ -10,14 +10,14 @@
                     </template>
                     <BaseTabSettingsGeneral />
                 </b-tab>
-                <b-tab :disabled="profile && !profile.plan">
+                <b-tab :disabled="!hasPremiumAccess(pool.owner)">
                     <template #title>
                         <i class="fas fa-wallet mr-2"></i>
                         Wallets
                     </template>
                     <BaseTabSettingsWallets />
                 </b-tab>
-                <b-tab :disabled="profile && !profile.plan">
+                <b-tab :disabled="!hasPremiumAccess(pool.owner)">
                     <template #title>
                         <i class="fas fa-globe mr-2"></i>
                         Webhooks
@@ -60,12 +60,14 @@
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
+import { AccountPlanType } from '@thxnetwork/types/enums';
 import { TAccount } from '@thxnetwork/types/interfaces';
 import BaseTabSettingsGeneral from '@thxnetwork/dashboard/views/pool/developer/General.vue';
 import BaseTabSettingsWebhooks from '@thxnetwork/dashboard/views/pool/developer/Webhooks.vue';
 import BaseTabSettingsEvents from '@thxnetwork/dashboard/views/pool/developer/Events.vue';
 import BaseTabSettingsWallets from '@thxnetwork/dashboard/views/pool/developer/Wallets.vue';
 import BaseTabSettingsApi from '@thxnetwork/dashboard/views/pool/developer/API.vue';
+import { hasPremiumAccess } from '@thxnetwork/common';
 
 @Component({
     components: {
@@ -81,6 +83,8 @@ import BaseTabSettingsApi from '@thxnetwork/dashboard/views/pool/developer/API.v
     }),
 })
 export default class AssetPoolView extends Vue {
+    hasPremiumAccess = hasPremiumAccess;
+    AccountPlanType = AccountPlanType;
     profile!: TAccount;
     pools!: IPools;
 
