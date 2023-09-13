@@ -19,15 +19,15 @@ async function controller(req: Request, res: Response) {
     const isDashboard = params.return_url ? params.return_url.startsWith(DASHBOARD_URL) : false;
     const isSignup = ['1', '2'].includes(params.signup_plan);
 
-    let claim,
+    let pool,
+        claim,
         brand,
         shopifyStoreUrl,
         authenticationMethods = Object.values(AccountVariant);
 
     if (params.pool_id) {
         brand = await BrandProxy.get(params.pool_id);
-
-        const pool = await PoolProxy.getPool(params.pool_id);
+        pool = await PoolProxy.getPool(params.pool_id);
         if (pool.settings && pool.settings.authenticationMethods) {
             authenticationMethods = pool.settings.authenticationMethods;
         }
@@ -42,6 +42,13 @@ async function controller(req: Request, res: Response) {
             AccountVariant.SSOTwitch,
             AccountVariant.SSOGithub,
         ];
+    }
+
+    if (pool && params.collaborator_request_token) {
+        alert['variant'] = 'success';
+        alert[
+            'message'
+        ] = `<i class="fas fa-info-circle mr-2" aria-hidden="true"></i> Accept invite for <strong>${pool.settings.title}</strong>!`;
     }
 
     if (params.wallet_transfer_token) {

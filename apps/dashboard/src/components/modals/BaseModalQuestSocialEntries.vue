@@ -45,7 +45,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { TPointReward, TPointRewardClaim, type TPool } from '@thxnetwork/types/interfaces';
+import type { TPointReward, TPointRewardClaim, TPool } from '@thxnetwork/types/interfaces';
 import { mapGetters } from 'vuex';
 import { format } from 'date-fns';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';

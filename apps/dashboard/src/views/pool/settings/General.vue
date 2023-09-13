@@ -2,7 +2,7 @@
     <div>
         <b-form-row v-if="error">
             <b-col md="4"></b-col>
-            <b-col md="4">
+            <b-col md="8">
                 <b-alert variant="danger" show>
                     {{ error }}
                 </b-alert>
@@ -123,6 +123,60 @@
         </b-form-row>
         <hr />
         <b-form-row>
+            <b-col md="4">
+                <strong>Collaborators</strong>
+                <b-badge variant="dark" class="ml-2">Beta</b-badge>
+                <b-badge v-if="!hasBasicAccess(pool.owner)" variant="primary" class="ml-2">Premium</b-badge>
+                <p class="text-muted">Invite people from your team to collaborate on this campaign.</p>
+            </b-col>
+            <b-col md="8">
+                <b-alert variant="danger" show v-if="errorCollaborator">{{ errorCollaborator }} </b-alert>
+                <b-form-group label="E-mail" :state="isValidCollaboratorEmail" :disabled="!hasBasicAccess(pool.owner)">
+                    <b-input-group>
+                        <b-form-input
+                            :state="isValidCollaboratorEmail"
+                            v-model="emailCollaborator"
+                            type="email"
+                            placeholder="john@doe.com"
+                        />
+                        <b-input-group-append>
+                            <b-button
+                                :disabled="!isValidCollaboratorEmail"
+                                @click="onClickCollaboratorInvite"
+                                variant="dark"
+                            >
+                                <b-spinner small v-if="isSubmittingCollaborator" />
+                                <template v-else>Send Invite</template>
+                            </b-button>
+                        </b-input-group-append>
+                    </b-input-group>
+                </b-form-group>
+                <b-list-group v-if="pool.owner">
+                    <b-list-group-item class="d-flex justify-content-between align-items-center bg-light">
+                        {{ pool.owner.email }} (Owner)
+                        <b-button
+                            disabled
+                            v-b-modal="`modalPoolTransfer${pool._id}`"
+                            variant="link"
+                            size="sm"
+                            class="ml-3"
+                        >
+                            Transfer Ownership
+                        </b-button>
+                        <BaseModalPoolTransfer :pool="pool" />
+                    </b-list-group-item>
+                    <BaseListItemCollaborator
+                        @error="errorCollaborator = $event"
+                        :pool="pool"
+                        :collaborator="collaborator"
+                        :key="key"
+                        v-for="(collaborator, key) of pool.collaborators"
+                    />
+                </b-list-group>
+            </b-col>
+        </b-form-row>
+        <hr />
+        <b-form-row>
             <b-col md="4"> </b-col>
             <b-col md="8">
                 <b-form-group>
@@ -153,12 +207,16 @@ import { mapGetters } from 'vuex';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import { TBrand } from '@thxnetwork/dashboard/store/modules/brands';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
+import { validateEmail } from '@thxnetwork/dashboard/components/modals/BaseModalRequestAccountEmailUpdate.vue';
+import { hasBasicAccess } from '@thxnetwork/common';
 import type { TAccount, TPoolSettings } from '@thxnetwork/types/interfaces';
-import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
+import BaseListItemCollaborator from '@thxnetwork/dashboard/components/list-items/BaseListItemCollaborator.vue';
+import BaseModalPoolTransfer from '@thxnetwork/dashboard/components/modals/BaseModalPoolTransfer.vue';
 
 @Component({
     components: {
-        BaseCodeExample,
+        BaseListItemCollaborator,
+        BaseModalPoolTransfer,
     },
     computed: {
         ...mapGetters({
@@ -170,11 +228,12 @@ import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vu
 })
 export default class SettingsView extends Vue {
     loading = true;
+    error = '';
     chainInfo = chainInfo;
     profile!: TAccount;
     pools!: IPools;
     brands!: { [poolId: string]: TBrand };
-    error: string | null = null;
+    errorCollaborator = '';
     title = '';
     logoImgUrl = '';
     backgroundImgUrl = '';
@@ -183,9 +242,17 @@ export default class SettingsView extends Vue {
     minDate: Date | null = null;
     expirationDate: Date | null = null;
     expirationTime = '00:00:00';
+    emailCollaborator = '';
+    isSubmittingCollaborator = false;
+    hasBasicAccess = hasBasicAccess;
 
     get pool() {
         return this.pools[this.$route.params.id];
+    }
+
+    get isValidCollaboratorEmail() {
+        if (!this.emailCollaborator) return null;
+        return !!validateEmail(this.emailCollaborator);
     }
 
     get isBrandUpdateInvalid() {
@@ -282,6 +349,22 @@ export default class SettingsView extends Vue {
             brand: { backgroundImgUrl: this.backgroundImgUrl, logoImgUrl: this.logoImgUrl },
         });
         this.loading = false;
+    }
+
+    async sendInvite(email: string) {
+        this.isSubmittingCollaborator = true;
+        try {
+            await this.$store.dispatch('pools/inviteCollaborator', { pool: this.pool, email });
+        } catch (error) {
+            this.errorCollaborator = (error as any).response.data.error.message;
+        } finally {
+            this.isSubmittingCollaborator = false;
+        }
+    }
+
+    onClickCollaboratorInvite() {
+        if (!this.isValidCollaboratorEmail) return;
+        this.sendInvite(this.emailCollaborator);
     }
 
     onClickExpirationDateReset() {

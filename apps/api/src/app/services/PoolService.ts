@@ -1,5 +1,5 @@
 import { assertEvent, parseLogs } from '@thxnetwork/api/util/events';
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId, CollaboratorInviteState } from '@thxnetwork/types/enums';
 import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import TransactionService from './TransactionService';
 import { diamondContracts, getContract, poolFacetAdressesPermutations } from '@thxnetwork/api/config/contracts';
@@ -33,9 +33,10 @@ import { Web3QuestClaim } from '../models/Web3QuestClaim';
 import { CustomReward } from '../models/CustomReward';
 import { Participant } from '../models/Participant';
 import { paginatedResults } from '../util/pagination';
-import { Wallet } from '../models/Wallet';
 import { PointBalance } from './PointBalanceService';
 import SafeService from './SafeService';
+import { Collaborator } from '../models/Collaborator';
+import { DASHBOARD_URL } from '../config/secrets';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -43,11 +44,13 @@ function isPoolClient(clientId: string, poolId: string) {
     return AssetPool.exists({ _id: poolId, clientId });
 }
 
-function isPoolOwner(sub: string, poolId: string) {
-    return AssetPool.exists({
+async function hasAccess(sub: string, poolId: string) {
+    const isOwner = await AssetPool.exists({
         _id: poolId,
         sub,
     });
+    const isCollaborator = await Collaborator.exists({ sub, poolId, state: CollaboratorInviteState.Accepted });
+    return isOwner || isCollaborator;
 }
 
 function getById(id: string) {
@@ -119,8 +122,12 @@ async function deployCallback(args: TAssetPoolDeployCallbackArgs, receipt: Trans
 }
 
 async function getAllBySub(sub: string, archived = false) {
-    if (archived) return await AssetPool.find({ sub });
-    return await AssetPool.find({ sub, 'settings.isArchived': archived });
+    const pools = await AssetPool.find({ sub, 'settings.isArchived': archived });
+    const collaborations = await Collaborator.find({ sub });
+    const poolIds = collaborations.map((c) => c.poolId);
+    const collaborationPools = await AssetPool.find({ _id: poolIds });
+
+    return pools.concat(collaborationPools);
 }
 
 function getAll() {
@@ -259,9 +266,39 @@ async function getParticipantCount(pool: AssetPoolDocument) {
     return Array.from(new Set(result.flat(1))).length;
 }
 
+async function inviteCollaborator(pool: AssetPoolDocument, email: string) {
+    const uuid = v4();
+    let collaborator = await Collaborator.findOne({ email, poolId: pool._id });
+
+    if (collaborator) {
+        collaborator = await Collaborator.findByIdAndUpdate(collaborator._id, { uuid }, { new: true });
+    } else {
+        collaborator = await Collaborator.create({
+            email,
+            uuid,
+            poolId: pool._id,
+            state: CollaboratorInviteState.Pending,
+        });
+    }
+
+    const url = new URL(DASHBOARD_URL);
+    url.pathname = 'collaborator';
+    url.searchParams.append('poolId', pool._id);
+    url.searchParams.append('collaboratorRequestToken', collaborator.uuid);
+
+    await MailService.send(
+        email,
+        `👋 Collaboration Request: ${pool.settings.title}`,
+        `<p>Hi!👋</p><p>You have received a collaboration request for Quest &amp; Reward campaign: <strong>${pool.settings.title}</strong></p>`,
+        { src: url.href, text: 'Accept Request' },
+    );
+
+    return collaborator;
+}
+
 export default {
     isPoolClient,
-    isPoolOwner,
+    hasAccess,
     getById,
     getByAddress,
     deploy,
@@ -277,4 +314,5 @@ export default {
     getQuestCount,
     getRewardCount,
     findParticipants,
+    inviteCollaborator,
 };

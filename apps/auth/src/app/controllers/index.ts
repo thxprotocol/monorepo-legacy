@@ -10,6 +10,7 @@ export const mainRouter = express.Router();
 mainRouter.get('/', getAction);
 mainRouter.post('/testhook', json(), urlencoded({ extended: true }), (req, res) => {
     console.log(req.body);
+    // res.status(403).json({ error: 'Do not do this!' });
     res.end();
 });
 mainRouter.use('/oidc', oidcRouter);

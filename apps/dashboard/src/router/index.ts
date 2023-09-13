@@ -2,8 +2,7 @@ import store from '@thxnetwork/dashboard/store';
 import {
     assertAuthorization,
     redirectAccount,
-    redirectConfirmationLink,
-    redirectPasswordResetLink,
+    redirectCollaborationRequest,
     redirectPoolTransfer,
     redirectSignin,
     redirectSigninSilent,
@@ -138,14 +137,14 @@ const routes: Array<RouteConfig> = [
         beforeEnter: redirectVerifyEmail,
     },
     {
+        name: 'collaboration request',
+        path: '/collaborator',
+        beforeEnter: redirectCollaborationRequest,
+    },
+    {
         name: 'pool transfer',
         path: '/pools/:poolId/transfer/:token',
         beforeEnter: redirectPoolTransfer,
-    },
-    {
-        name: 'reset password',
-        path: '/reset',
-        beforeEnter: redirectPasswordResetLink,
     },
     {
         name: 'account',
@@ -162,11 +161,6 @@ const routes: Array<RouteConfig> = [
         name: 'sign out',
         path: '/signout',
         beforeEnter: redirectSignout,
-    },
-    {
-        name: 'confirm email',
-        path: '/verify',
-        beforeEnter: redirectConfirmationLink,
     },
     {
         name: 'sign in',

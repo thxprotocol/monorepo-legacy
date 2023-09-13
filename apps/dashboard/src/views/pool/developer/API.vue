@@ -129,7 +129,7 @@ export default class Clients extends Vue {
         if (!this.clients[this.$route.params.id]) return [];
         return Object.values(this.clients[this.$route.params.id])
             .filter((client: TClient) => client.page === this.page)
-            .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
+            .sort((a: any, b: any) => (a.createdAt < b.createdAt ? 1 : -1))
             .map((r: TClient) => ({
                 id: r._id,
                 ...r,

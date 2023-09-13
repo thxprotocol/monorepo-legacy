@@ -6,6 +6,8 @@ import { Widget } from '@thxnetwork/api/services/WidgetService';
 import BrandService from '@thxnetwork/api/services/BrandService';
 import { PoolSubscription } from '@thxnetwork/api/models/PoolSubscription';
 import { Wallet } from '@thxnetwork/api/models/Wallet';
+import { Collaborator, CollaboratorDocument } from '@thxnetwork/api/models/Collaborator';
+import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 
 export const validation = [param('id').isMongoId()];
 
@@ -18,8 +20,28 @@ export const controller = async (req: Request, res: Response) => {
     const brand = await BrandService.get(req.params.id);
     const subscriberCount = await PoolSubscription.countDocuments({ poolId: req.params.id });
     const wallets = await Wallet.find({ poolId: req.params.id, sub: { $exists: false } });
+    const collabs = await Collaborator.find({ poolId: req.params.id });
+    const collaborators = await Promise.all(
+        collabs.map(async (collaborator: CollaboratorDocument) => {
+            if (collaborator.sub) {
+                const account = await AccountProxy.getById(collaborator.sub);
+                return { ...collaborator.toJSON(), account };
+            }
+            return collaborator;
+        }),
+    );
+    const owner = await AccountProxy.getById(pool.sub);
 
-    res.json({ ...pool.toJSON(), wallets, widget, brand, latestVersion: currentVersion, subscriberCount });
+    res.json({
+        ...pool.toJSON(),
+        wallets,
+        widget,
+        brand,
+        latestVersion: currentVersion,
+        subscriberCount,
+        owner,
+        collaborators,
+    });
 };
 
 export default { controller, validation };

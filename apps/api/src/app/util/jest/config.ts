@@ -1,5 +1,5 @@
 import db from '@thxnetwork/api/util/database';
-import { mockStart, mockClear } from './mock';
+import { mockStart } from './mock';
 import { safeVersion } from '@thxnetwork/api/config/contracts';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { ChainId } from '@thxnetwork/types/enums';

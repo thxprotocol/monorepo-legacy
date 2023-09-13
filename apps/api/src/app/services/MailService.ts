@@ -11,12 +11,12 @@ if (SENDGRID_API_KEY) {
 
 const mailTemplatePath = path.join(assetsPath, 'views', 'email');
 
-const send = async (to: string, subject: string, htmlContent: string, link = '') => {
+const send = async (to: string, subject: string, htmlContent: string, link = { src: '', text: '' }) => {
     if (!to) return;
 
     const html = await ejs.renderFile(
         path.join(mailTemplatePath, 'base-template.ejs'),
-        { subject, htmlContent, baseUrl: AUTH_URL },
+        { link, subject, htmlContent, baseUrl: AUTH_URL },
         { async: true },
     );
 
@@ -25,12 +25,16 @@ const send = async (to: string, subject: string, htmlContent: string, link = '')
         return;
     }
 
-    return sgMail.send({
-        to,
-        from: { email: 'noreply@thx.network', name: 'THX Network' },
-        subject,
-        html,
-    });
+    try {
+        return sgMail.send({
+            to,
+            from: { email: 'noreply@thx.network', name: 'THX Network' },
+            subject,
+            html,
+        });
+    } catch (error) {
+        console.error(error);
+    }
 };
 
 export default { send };

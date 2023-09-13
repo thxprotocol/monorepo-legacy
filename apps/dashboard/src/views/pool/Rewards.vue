@@ -15,6 +15,7 @@
                         :key="key"
                         v-b-modal="rewardModalComponentMap[RewardVariant[variant]]"
                         button-class="d-flex"
+                        :disabled="RewardVariant[variant] == RewardVariant.Custom && !hasPremiumAccess(pool.owner)"
                     >
                         <div style="width: 30px">
                             <i
@@ -171,6 +172,7 @@ import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/ba
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseModalRewardClaimsDownload from '@thxnetwork/dashboard/components/modals/BaseModalRewardClaimsDownload.vue';
 import { TCustomRewardState } from '@thxnetwork/dashboard/store/modules/rewards';
+import { hasPremiumAccess } from '@thxnetwork/common';
 
 @Component({
     components: {
@@ -192,6 +194,7 @@ import { TCustomRewardState } from '@thxnetwork/dashboard/store/modules/rewards'
 export default class RewardsView extends Vue {
     RewardConditionPlatform = RewardConditionPlatform;
     RewardConditionInteraction = RewardConditionInteraction;
+    hasPremiumAccess = hasPremiumAccess;
     isLoading = true;
     limit = 10;
     page = 1;

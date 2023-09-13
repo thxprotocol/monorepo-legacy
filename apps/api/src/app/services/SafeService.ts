@@ -8,7 +8,6 @@ import Safe, { SafeAccountConfig, SafeFactory } from '@safe-global/protocol-kit'
 import SafeApiKit from '@safe-global/api-kit';
 import {
     SafeMultisigTransactionResponse,
-    SafeTransaction,
     SafeTransactionDataPartial,
     SafeVersion,
 } from '@safe-global/safe-core-sdk-types';

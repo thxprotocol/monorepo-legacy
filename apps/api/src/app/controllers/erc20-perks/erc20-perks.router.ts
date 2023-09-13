@@ -1,5 +1,5 @@
 import express from 'express';
-import { assertAssetPoolOwnership, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
+import { assertPoolAccess, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
 import CreateERC20Perk from './post.controller';
 import ReadERC20Perk from './get.controller';
 import UpdateERC20Perk from './patch.controller';
@@ -9,11 +9,11 @@ import { upload } from '@thxnetwork/api/util/multer';
 
 const router = express.Router();
 
-router.get('/', guard.check(['erc20_rewards:read']), assertAssetPoolOwnership, ListERC20Perk.controller);
+router.get('/', guard.check(['erc20_rewards:read']), assertPoolAccess, ListERC20Perk.controller);
 router.get(
     '/:id',
     guard.check(['erc20_rewards:read']),
-    assertAssetPoolOwnership,
+    assertPoolAccess,
     assertRequestInput(ReadERC20Perk.validation),
     ReadERC20Perk.controller,
 );
@@ -21,7 +21,7 @@ router.post(
     '/',
     upload.single('file'),
     guard.check(['erc20_rewards:write', 'erc20_rewards:read']),
-    assertAssetPoolOwnership,
+    assertPoolAccess,
     assertRequestInput(CreateERC20Perk.validation),
     CreateERC20Perk.controller,
 );
@@ -30,7 +30,7 @@ router.patch(
     '/:id',
     upload.single('file'),
     guard.check(['erc20_rewards:write', 'erc20_rewards:read']),
-    assertAssetPoolOwnership,
+    assertPoolAccess,
     assertRequestInput(UpdateERC20Perk.validation),
     UpdateERC20Perk.controller,
 );
@@ -38,7 +38,7 @@ router.patch(
 router.delete(
     '/:id',
     guard.check(['erc20_rewards:write', 'erc20_rewards:read']),
-    assertAssetPoolOwnership,
+    assertPoolAccess,
     assertRequestInput(DeleteERC20Perk.validation),
     DeleteERC20Perk.controller,
 );

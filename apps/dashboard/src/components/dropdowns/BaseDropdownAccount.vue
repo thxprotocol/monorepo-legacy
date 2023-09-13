@@ -4,7 +4,7 @@
             <base-identicon
                 class="mr-md-2"
                 size="32"
-                :uri="`https://avatars.dicebear.com/api/identicon/${profile.id}.svg`"
+                :uri="`https://avatars.dicebear.com/api/identicon/${profile.sub}.svg`"
             />
             <span class="d-none d-md-block text-muted text-overflow-75">
                 {{ profile.address }}
@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts">
-import type { IAccount } from '@thxnetwork/dashboard/types/account';
+import { TAccount } from '@thxnetwork/types/interfaces';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseIdenticon from '../BaseIdenticon.vue';
@@ -31,6 +31,6 @@ import BaseIdenticon from '../BaseIdenticon.vue';
     }),
 })
 export default class BaseDropdownAccount extends Vue {
-    profile!: IAccount;
+    profile!: TAccount;
 }
 </script>

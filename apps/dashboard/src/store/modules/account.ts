@@ -121,6 +121,7 @@ class AccountModule extends VuexModule {
         passwordResetToken: string;
         verifyEmailToken: string;
         poolTransferToken: string;
+        collaboratorRequestToken: string;
         poolId: string;
         referralCode: string;
         shopifyParams: string;
@@ -130,6 +131,7 @@ class AccountModule extends VuexModule {
             return_url: BASE_URL,
             distinct_id: client && client.get_distinct_id(),
         };
+        const state = {};
 
         if (payload.shopifyParams) {
             extraQueryParams['shopify_params'] = payload.shopifyParams;
@@ -141,10 +143,16 @@ class AccountModule extends VuexModule {
 
         if (payload.poolId) {
             extraQueryParams['pool_id'] = payload.poolId;
+            state['poolId'] = payload.poolId;
         }
 
         if (payload.poolTransferToken) {
             extraQueryParams['pool_transfer_token'] = payload.poolTransferToken;
+        }
+
+        if (payload.collaboratorRequestToken) {
+            extraQueryParams['collaborator_request_token'] = payload.collaboratorRequestToken;
+            state['collaboratorRequestToken'] = payload.collaboratorRequestToken;
         }
 
         if (payload.signupEmail) {
@@ -159,24 +167,13 @@ class AccountModule extends VuexModule {
             extraQueryParams['signup_offer'] = payload.signupOffer;
         }
 
-        if (payload.signupToken) {
-            extraQueryParams['prompt'] = 'confirm';
-            extraQueryParams['signup_token'] = payload.signupToken;
-        }
-
-        if (payload.passwordResetToken) {
-            extraQueryParams['prompt'] = 'reset';
-            extraQueryParams['password_reset_token'] = payload.passwordResetToken;
-        }
-
         if (payload.verifyEmailToken) {
             extraQueryParams['prompt'] = 'verify_email';
             extraQueryParams['verifyEmailToken'] = payload.verifyEmailToken;
         }
 
-        await this.userManager.clearStaleState();
-
         return await this.userManager.signinRedirect({
+            state,
             extraQueryParams,
         });
     }

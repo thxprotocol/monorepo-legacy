@@ -108,7 +108,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import { mapGetters } from 'vuex';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
-import { IAccount } from '@thxnetwork/dashboard/types/account';
+import type { TAccount } from '@thxnetwork/types/interfaces';
 import { TMerchant } from '@thxnetwork/types/merchant';
 
 @Component({
@@ -124,7 +124,7 @@ export default class SettingsView extends Vue {
     ChainId = ChainId;
     loading = true;
     chainInfo = chainInfo;
-    profile!: IAccount;
+    profile!: TAccount;
     chainId: ChainId = ChainId.PolygonMumbai;
     pools!: IPools;
     merchant!: TMerchant;

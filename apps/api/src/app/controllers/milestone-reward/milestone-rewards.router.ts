@@ -1,4 +1,4 @@
-import { assertRequestInput, assertAssetPoolOwnership, guard } from '@thxnetwork/api/middlewares';
+import { assertRequestInput, assertPoolAccess, guard } from '@thxnetwork/api/middlewares';
 import express from 'express';
 import ListMilestoneRewards from './list.controller';
 import ReadMilestoneRewards from './get.controller';
@@ -9,32 +9,32 @@ import { upload } from '@thxnetwork/api/util/multer';
 
 const router = express.Router();
 
-router.get('/', assertAssetPoolOwnership, ListMilestoneRewards.controller);
+router.get('/', assertPoolAccess, ListMilestoneRewards.controller);
 router.get(
     '/:id',
     guard.check(['custom_rewards:write', 'custom_rewards:read']),
     assertRequestInput(ReadMilestoneRewards.validation),
-    assertAssetPoolOwnership,
+    assertPoolAccess,
     ReadMilestoneRewards.controller,
 );
 router.post(
     '/',
     upload.single('file'),
     assertRequestInput(CreateMilestoneRewards.validation),
-    assertAssetPoolOwnership,
+    assertPoolAccess,
     CreateMilestoneRewards.controller,
 );
 router.patch(
     '/:id',
     upload.single('file'),
     assertRequestInput(UpdateMilestoneRewards.validation),
-    assertAssetPoolOwnership,
+    assertPoolAccess,
     UpdateMilestoneRewards.controller,
 );
 router.delete(
     '/:id',
     assertRequestInput(DeleteMilestoneRewards.validation),
-    assertAssetPoolOwnership,
+    assertPoolAccess,
     DeleteMilestoneRewards.controller,
 );
 

@@ -20,3 +20,4 @@ export * from './TokenGatingVariant';
 export * from './Webhook';
 export * from './Event';
 export * from './Job';
+export * from './Collaborator';

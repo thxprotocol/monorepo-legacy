@@ -2,12 +2,6 @@
     <div id="app" :class="{ 'is-authenticated': profile }">
         <base-navbar v-if="profile" />
         <div class="sidebar-sibling">
-            <b-alert v-if="profile" show variant="primary" class="alert-top">
-                <b-link href="https://roadmap.thx.network" target="_blank">
-                    <i class="fas fa-calendar mr-2"></i>
-                    Vote on new features to directly shape THX Networks roadmap for 2023!
-                </b-link>
-            </b-alert>
             <router-view :key="$route.fullPath" />
         </div>
     </div>

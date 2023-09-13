@@ -56,10 +56,8 @@ const config: Configuration = {
         'signup_plan',
         'signup_offer',
         'return_url',
-        'signup_token',
         'authentication_token',
         'secure_key',
-        'password_reset_token',
         'prompt',
         'channel',
         'verifyEmailToken',
@@ -68,6 +66,7 @@ const config: Configuration = {
         'pool_id',
         'pool_transfer_token',
         'wallet_transfer_token',
+        'collaborator_request_token',
         'referral_code',
     ],
     scopes: [

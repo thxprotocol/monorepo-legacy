@@ -371,6 +371,11 @@
                   <tr>
                     <td>
                       <%- htmlContent %>
+                      <% if (link.src && link.text) { %>
+                      <div class="btn">
+                        <a href="<%= link.src %>" target="_blank"><%= link.text %></a>
+                      </div>
+                      <% } %>
                     </td>
                   </tr>
                 </table>

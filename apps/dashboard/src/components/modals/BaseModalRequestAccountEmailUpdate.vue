@@ -51,7 +51,11 @@
                 <b-card bg-variant="darker">
                     <b-alert variant="info" show v-if="deploying">
                         <i class="fas fa-hourglass-half mr-2"></i>
-                        Preparing your campaign takes ~20 seconds..
+                        <strong>Preparing your campaign takes ~20 seconds..</strong>
+                        <p>
+                            Campaign Contracts hold your <strong>Coin</strong> and <strong>NFT Rewards</strong> that are
+                            redeemable for points earned with Quests.
+                        </p>
                         <b-progress class="mt-2">
                             <b-progress-bar
                                 :animated="progress < 100"
@@ -61,32 +65,41 @@
                         </b-progress>
                     </b-alert>
 
-                    <p class="text-muted">
-                        Campaign Contracts hold your <strong>Coin</strong> and <strong>NFT Rewards</strong> that are
-                        redeemable for points earned with Quests.
-                    </p>
+                    <b-alert variant="success" show v-if="pool && pool.widget && !pool.widget.active">
+                        <i class="fas fa-check mr-2"></i> <strong>Your campaign has been created!</strong><br />
+                        <p>
+                            Now please add this script to your website and view your
+                            <strong>Quest &amp; Reward</strong> campaign.
+                        </p>
+                        <BaseCodeExample v-if="pool" :pool="pool" />
+                    </b-alert>
+
                     <hr class="border-dark" />
-                    <p class="text-muted font-weight-bold">TO DO:</p>
+
                     <ul class="text-muted list-unstyled">
                         <li class="my-1">
                             <i class="fas fa-check-circle text-success mr-2"></i>
-                            Find <strong>growth hacking tools</strong> for rewarding users
+                            Find <strong>Quest &amp; Campaign</strong> tools
                         </li>
                         <li class="my-1">
                             <i class="fas fa-check-circle text-success mr-2"></i>
-                            Create an <strong>Account</strong> with THX Network
+                            Sign up with THX Network
                         </li>
                         <li class="my-1">
                             <i class="fas fa-check-circle text-muted mr-2"></i>
-                            Add the <strong>Widget Script</strong> to your HTML page
+                            Add <strong>script</strong> to your website
                         </li>
                         <li class="my-1">
                             <i class="fas fa-check-circle text-muted mr-2"></i>
-                            Set a <strong>Quest</strong> for your users to earn points
+                            Create a <strong>Quest</strong>
                         </li>
                         <li class="my-1">
                             <i class="fas fa-check-circle text-muted mr-2"></i>
-                            Set a <strong>Reward</strong> for your users to redeem their points
+                            Create a <strong>Reward</strong>
+                        </li>
+                        <li class="my-1">
+                            <i class="fas fa-check-circle text-muted mr-2"></i>
+                            Monitor <strong>performance</strong>
                         </li>
                     </ul>
                 </b-card>
@@ -104,12 +117,13 @@
 </template>
 
 <script lang="ts">
-import type { TAccount } from '@thxnetwork/types/interfaces';
+import type { TAccount, TPool } from '@thxnetwork/types/interfaces';
 import { Goal, Role } from '@thxnetwork/types/enums';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { goalLabelMap, roleLabelMap } from '@thxnetwork/types/contants';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
+import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
 
 export function validateEmail(email: string) {
     return String(email)
@@ -120,6 +134,9 @@ export function validateEmail(email: string) {
 }
 
 @Component({
+    components: {
+        BaseCodeExample,
+    },
     computed: mapGetters({
         account: 'account/profile',
     }),
@@ -140,6 +157,7 @@ export default class BaseModalRequestAccountEmailUpdate extends Vue {
     account!: TAccount;
 
     @Prop() deploying!: boolean;
+    @Prop() pool!: TPool;
 
     mounted() {
         this.timer = setInterval(() => {

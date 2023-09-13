@@ -1,5 +1,5 @@
 import express from 'express';
-import { assertAssetPoolOwnership, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
+import { assertPoolAccess, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
 import ListWebhook from './list.controller';
 import PatchWebhook from './patch.controller';
 import CreateWebhook from './post.controller';
@@ -10,28 +10,28 @@ const router = express.Router();
 router.get(
     '/',
     guard.check(['webhooks:read']),
-    assertAssetPoolOwnership,
+    assertPoolAccess,
     assertRequestInput(ListWebhook.validation),
     ListWebhook.controller,
 );
 router.patch(
     '/:id',
     guard.check(['webhooks:read']),
-    assertAssetPoolOwnership,
+    assertPoolAccess,
     assertRequestInput(PatchWebhook.validation),
     PatchWebhook.controller,
 );
 router.post(
     '/',
     guard.check(['webhooks:write', 'webhooks:read']),
-    assertAssetPoolOwnership,
+    assertPoolAccess,
     assertRequestInput(CreateWebhook.validation),
     CreateWebhook.controller,
 );
 router.delete(
     '/:id',
     guard.check(['webhooks:write', 'webhooks:read']),
-    assertAssetPoolOwnership,
+    assertPoolAccess,
     assertRequestInput(DeleteWebhook.validation),
     DeleteWebhook.controller,
 );

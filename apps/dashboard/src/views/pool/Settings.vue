@@ -19,14 +19,14 @@
                     </template>
                     <BaseTabSettingsWidget />
                 </b-tab>
-                <b-tab>
+                <b-tab :disabled="!hasBasicAccess(pool.owner)">
                     <template #title>
                         <i class="fas fa-exchange-alt mr-1"></i>
                         Integrations
                     </template>
                     <BaseTabSettingsIntegrations />
                 </b-tab>
-                <b-tab :disabled="profile && profile.plan !== 2">
+                <b-tab disabled>
                     <template #title>
                         <i class="fas fa-tags mr-1"></i>
                         Commerce
@@ -50,6 +50,7 @@ import BaseTabSettingsWidget from '@thxnetwork/dashboard/views/pool/settings/Wid
 import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { TAccount } from '@thxnetwork/types/interfaces';
+import { hasBasicAccess } from '@thxnetwork/common';
 
 @Component({
     components: {
@@ -69,6 +70,7 @@ export default class SettingsView extends Vue {
     profile!: TAccount;
     dashboardUrl = BASE_URL;
     pools!: IPools;
+    hasBasicAccess = hasBasicAccess;
 
     get pool() {
         return this.pools[this.$route.params.id];

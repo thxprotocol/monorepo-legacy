@@ -55,7 +55,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { TPool } from '@thxnetwork/types/interfaces';
+import type { TPool } from '@thxnetwork/types/interfaces';
 import BaseBtnSort from '@thxnetwork/dashboard/components/buttons/BaseBtnSort.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseParticipantAccount, { parseAccount } from '@thxnetwork/dashboard/components/BaseParticipantAccount.vue';

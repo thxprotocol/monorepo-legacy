@@ -138,7 +138,7 @@ import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
-import { IAccount } from '@thxnetwork/dashboard/types/account';
+import type { TAccount } from '@thxnetwork/types/interfaces';
 import { AccessTokenKind, RewardConditionInteraction, TPoolSettings } from '@thxnetwork/types/index';
 import { BASE_URL, DISCORD_CLIENT_ID } from '@thxnetwork/dashboard/utils/secrets';
 import BaseCardURLWebhook from '@thxnetwork/dashboard/components/cards/BaseCardURLWebhook.vue';
@@ -163,7 +163,7 @@ export default class SettingsTwitterView extends Vue {
         DISCORD_CLIENT_ID &&
         `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&permissions=133120&scope=bot`;
     chainInfo = chainInfo;
-    profile!: IAccount;
+    profile!: TAccount;
     pools!: IPools;
     settings: TPoolSettings | null = null;
     isTwitterSyncEnabled = false;

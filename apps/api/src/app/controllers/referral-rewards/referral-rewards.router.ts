@@ -1,5 +1,5 @@
 import express from 'express';
-import { assertAssetPoolOwnership, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
+import { assertPoolAccess, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
 import CreateReferralReward from './post.controller';
 import ReadReferralReward from './get.controller';
 import UpdateReferralReward from './patch.controller';
@@ -16,14 +16,14 @@ const router = express.Router();
 router.get(
     '/',
     guard.check(['referral_rewards:read']),
-    assertAssetPoolOwnership,
+    assertPoolAccess,
     assertRequestInput(ListReferralReward.validation),
     ListReferralReward.controller,
 );
 router.get(
     '/:id',
     guard.check(['referral_rewards:read']),
-    assertAssetPoolOwnership,
+    assertPoolAccess,
     assertRequestInput(ReadReferralReward.validation),
     ReadReferralReward.controller,
 );
@@ -31,7 +31,7 @@ router.patch(
     '/:id',
     upload.single('file'),
     guard.check(['referral_rewards:write', 'referral_rewards:read']),
-    assertAssetPoolOwnership,
+    assertPoolAccess,
     assertRequestInput(UpdateReferralReward.validation),
     UpdateReferralReward.controller,
 );
@@ -39,14 +39,14 @@ router.post(
     '/',
     upload.single('file'),
     guard.check(['referral_rewards:write', 'referral_rewards:read']),
-    assertAssetPoolOwnership,
+    assertPoolAccess,
     assertRequestInput(CreateReferralReward.validation),
     CreateReferralReward.controller,
 );
 router.delete(
     '/:id',
     guard.check(['referral_rewards:write', 'referral_rewards:read']),
-    assertAssetPoolOwnership,
+    assertPoolAccess,
     assertRequestInput(DeleteReferralReward.validation),
     DeleteReferralReward.controller,
 );
@@ -54,28 +54,28 @@ router.delete(
 router.get(
     '/:uuid/claims',
     guard.check(['referral_rewards:read']),
-    assertAssetPoolOwnership,
+    assertPoolAccess,
     assertRequestInput(ListReferralRewardClaims.validation),
     ListReferralRewardClaims.controller,
 );
 router.post(
     '/:uuid/claims',
     guard.check(['referral_rewards:read', 'referral_rewards:write']),
-    assertAssetPoolOwnership,
+    assertPoolAccess,
     assertRequestInput(CreateReferralRewardClaim.validation),
     CreateReferralRewardClaim.controller,
 );
 router.patch(
     '/:uuid/claims/:id',
     guard.check(['referral_rewards:read', 'referral_rewards:write']),
-    assertAssetPoolOwnership,
+    assertPoolAccess,
     assertRequestInput(UpdateReferralRewardClaim.validation),
     UpdateReferralRewardClaim.controller,
 );
 router.post(
     '/:uuid/claims/approve',
     guard.check(['referral_rewards:read', 'referral_rewards:write']),
-    assertAssetPoolOwnership,
+    assertPoolAccess,
     assertRequestInput(ApproveReferralRewardClaims.validation),
     ApproveReferralRewardClaims.controller,
 );

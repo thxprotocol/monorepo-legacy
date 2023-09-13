@@ -25,7 +25,7 @@
 
 <script lang="ts">
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
-import type { IAccount } from '@thxnetwork/dashboard/types/account';
+import type { TAccount } from '@thxnetwork/types/interfaces';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { PUBLIC_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { Component, Prop, Vue } from 'vue-property-decorator';
@@ -43,7 +43,7 @@ export default class BaseFormSelectNetwork extends Vue {
     ChainId = ChainId;
     publicUrl = PUBLIC_URL;
     chainInfo = chainInfo;
-    profile!: IAccount;
+    profile!: TAccount;
     currentChainId = ChainId.Polygon;
 
     created() {

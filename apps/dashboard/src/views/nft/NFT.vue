@@ -7,7 +7,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { IAccount } from '../../types/account';
+import { TAccount } from '../../types/account';
 import { IERC721s } from '@thxnetwork/dashboard/types/erc721';
 import { NFTVariant } from '@thxnetwork/types/enums';
 import { IERC1155s } from '@thxnetwork/dashboard/types/erc1155';
@@ -20,7 +20,7 @@ import { IERC1155s } from '@thxnetwork/dashboard/types/erc1155';
     }),
 })
 export default class PoolView extends Vue {
-    account!: IAccount;
+    account!: TAccount;
     erc721s!: IERC721s;
     erc1155s!: IERC1155s;
 
