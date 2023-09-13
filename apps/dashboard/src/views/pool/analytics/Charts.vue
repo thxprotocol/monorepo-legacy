@@ -44,7 +44,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { IPoolAnalytics } from '@thxnetwork/dashboard/store/modules/pools';
 import { format } from 'date-fns';
-import { TPool } from '@thxnetwork/types/interfaces';
+import type { TPool } from '@thxnetwork/types/interfaces';
 import BarChart from '@thxnetwork/dashboard/components/charts/BarChart.vue';
 import LineChart from '@thxnetwork/dashboard/components/charts/LineChart.vue';
 

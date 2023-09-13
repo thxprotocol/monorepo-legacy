@@ -162,7 +162,7 @@ import BaseModalDepositCreate from '@thxnetwork/dashboard/components/modals/Base
 import { fromWei } from 'web3-utils';
 import { format } from 'date-fns';
 import { IPoolAnalyticsLeaderBoard, IPoolAnalyticsMetrics, IPools } from '@thxnetwork/dashboard/store/modules/pools';
-import { TPool } from '@thxnetwork/types/interfaces';
+import type { TPool } from '@thxnetwork/types/interfaces';
 
 @Component({
     components: {
