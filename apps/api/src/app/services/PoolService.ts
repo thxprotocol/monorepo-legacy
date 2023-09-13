@@ -239,10 +239,12 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
             const subscription = account
                 ? await PoolSubscription.findOne({ poolId: pool._id, sub: account.sub })
                 : null;
-            const pointBalance = await PointBalance.findOne({
-                poolId: participant.poolId,
-                walletId: wallet._id,
-            });
+            const pointBalance = wallet
+                ? await PointBalance.findOne({
+                      poolId: participant.poolId,
+                      walletId: wallet._id,
+                  })
+                : null;
 
             return {
                 ...participant.toJSON(),
