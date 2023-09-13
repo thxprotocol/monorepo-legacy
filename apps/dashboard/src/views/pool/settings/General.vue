@@ -230,7 +230,6 @@ export default class SettingsView extends Vue {
     profile!: TAccount;
     pools!: IPools;
     brands!: { [poolId: string]: TBrand };
-    error: string | null = null;
     errorCollaborator = '';
     title = '';
     logoImgUrl = '';
@@ -248,7 +247,7 @@ export default class SettingsView extends Vue {
     }
 
     get isValidCollaboratorEmail() {
-        if (!this.emailCollaborator) return;
+        if (!this.emailCollaborator) return null;
         return !!validateEmail(this.emailCollaborator);
     }
 
