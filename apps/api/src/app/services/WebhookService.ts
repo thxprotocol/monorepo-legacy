@@ -55,9 +55,6 @@ async function requestAttemptJob(job: Job) {
     } finally {
         webhookRequest.attempts = webhookRequest.attempts++;
         await webhookRequest.save();
-        console.log('Finished finally');
-        console.log(webhookRequest);
-        console.log(await WebhookRequest.findById(webhookRequestId));
     }
 }
 
