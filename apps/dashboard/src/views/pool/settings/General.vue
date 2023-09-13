@@ -143,17 +143,15 @@
                                 @click="onClickCollaboratorInvite"
                                 variant="dark"
                             >
-                                Send Invite
+                                <b-spinner small v-if="isSubmittingCollaborator" />
+                                <template v-else>Send Invite</template>
                             </b-button>
                         </b-input-group-append>
                     </b-input-group>
                 </b-form-group>
-                <b-list-group>
-                    <b-list-group-item
-                        v-if="profile && profile.sub === pool.sub"
-                        class="d-flex justify-content-between align-items-center bg-light"
-                    >
-                        {{ profile.email }} (Owner)
+                <b-list-group v-if="pool.owner">
+                    <b-list-group-item class="d-flex justify-content-between align-items-center bg-light">
+                        {{ pool.owner.email }} (Owner)
                         <b-button
                             disabled
                             v-b-modal="`modalPoolTransfer${pool._id}`"
