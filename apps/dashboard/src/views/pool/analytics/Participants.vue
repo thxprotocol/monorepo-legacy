@@ -120,9 +120,9 @@ export default class ViewAnalyticsParticipants extends Vue {
 
     get participantsByPage() {
         return Object.values(this.result.results).map((p: any) => ({
-            account: parseAccount({ id: p._id, account: p.account }),
-            connectedAccounts: parseConnectedAccounts(p.account.connectedAccounts),
-            wallet: parseWallet(p.wallet),
+            account: p.account && parseAccount({ id: p._id, account: p.account }),
+            connectedAccounts: p.account && parseConnectedAccounts(p.account.connectedAccounts),
+            wallet: p.wallet && parseWallet(p.wallet),
             pointBalance: p.pointBalance,
             subscription: p.subscription,
             createdAt: p.createdAt,
