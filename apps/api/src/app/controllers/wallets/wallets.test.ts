@@ -3,7 +3,6 @@ import app from '@thxnetwork/api/';
 import { widgetAccessToken, sub, widgetAccessToken2 } from '@thxnetwork/api/util/jest/constants';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { ChainId } from '@thxnetwork/types/enums';
-import { currentVersion } from '@thxnetwork/contracts/exports';
 
 const user = request.agent(app);
 

@@ -1,4 +1,4 @@
-import { assertAssetPoolOwnership, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
+import { assertPoolAccess, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
 import express from 'express';
 import ListWeb3Quest from './list.controller';
 import CreateWeb3Quest from './post.controller';
@@ -11,7 +11,7 @@ const router = express.Router();
 router.get(
     '/',
     guard.check(['web3_quests:read']),
-    assertAssetPoolOwnership,
+    assertPoolAccess,
     assertRequestInput(ListWeb3Quest.validation),
     ListWeb3Quest.controller,
 );
@@ -19,7 +19,7 @@ router.patch(
     '/:id',
     upload.single('file'),
     guard.check(['web3_quests:write', 'web3_quests:read']),
-    assertAssetPoolOwnership,
+    assertPoolAccess,
     assertRequestInput(UpdateWeb3Quest.validation),
     UpdateWeb3Quest.controller,
 );
@@ -27,14 +27,14 @@ router.post(
     '/',
     upload.single('file'),
     guard.check(['web3_quests:write', 'web3_quests:read']),
-    assertAssetPoolOwnership,
+    assertPoolAccess,
     assertRequestInput(CreateWeb3Quest.validation),
     CreateWeb3Quest.controller,
 );
 router.delete(
     '/:id',
     guard.check(['web3_quests:write']),
-    assertAssetPoolOwnership,
+    assertPoolAccess,
     assertRequestInput(RemoveWeb3Quest.validation),
     RemoveWeb3Quest.controller,
 );

@@ -18,7 +18,6 @@ import WalletManagerService from './WalletManagerService';
 import ERC1155Service from './ERC1155Service';
 import SafeService from './SafeService';
 import WalletService from './WalletService';
-import { OperationType } from '@safe-global/safe-core-sdk-types';
 
 function getById(id: string) {
     return Transaction.findById(id);

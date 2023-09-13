@@ -13,8 +13,6 @@ export const controller = async (req: Request, res: Response) => {
     const collaborator = await Collaborator.findOne({ uuid: req.params.uuid });
     if (!collaborator) throw new NotFoundError('Could not find collaboration invite');
 
-    // TODO check for expiry
-
     if (pool.sub !== req.body.sub) {
         await collaborator.updateOne({
             sub: req.body.sub,

@@ -6,7 +6,7 @@ import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/
 import { getContractFromName } from '@thxnetwork/api/config/contracts';
 import { BigNumber } from 'ethers';
 import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
-import { ERC20Type, Event } from '@thxnetwork/types/enums';
+import { ERC20Type } from '@thxnetwork/types/enums';
 import PointBalanceService, { PointBalance } from '@thxnetwork/api/services/PointBalanceService';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
@@ -16,7 +16,6 @@ import { Widget } from '@thxnetwork/api/models/Widget';
 import MailService from '@thxnetwork/api/services/MailService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import PerkService from '@thxnetwork/api/services/PerkService';
-import WebhookService from '@thxnetwork/api/services/WebhookService';
 
 const validation = [param('uuid').exists()];
 

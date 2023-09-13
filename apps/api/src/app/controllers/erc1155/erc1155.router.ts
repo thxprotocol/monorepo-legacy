@@ -1,5 +1,5 @@
 import express from 'express';
-import { assertAssetPoolOwnership, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
+import { assertPoolAccess, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
 import ReadERC1155 from './get.controller';
 import ListERC1155 from './list.controller';
 import ListERC1155Metadata from './metadata/list.controller';
@@ -38,7 +38,7 @@ router.post(
 router.post(
     '/import',
     ImportERC1155Contract.controller,
-    assertAssetPoolOwnership,
+    assertPoolAccess,
     assertRequestInput(ImportERC1155Contract.validation),
 );
 router.post('/preview', assertRequestInput(PreviewERC1155Contract.validation), PreviewERC1155Contract.controller);

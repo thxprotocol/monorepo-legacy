@@ -1,4 +1,4 @@
-import { assertAssetPoolOwnership, assertRequestInput } from '@thxnetwork/api/middlewares';
+import { assertPoolAccess, assertRequestInput } from '@thxnetwork/api/middlewares';
 import express from 'express';
 import ListPointRewards from './list.controller';
 import ReadPointRewards from './get.controller';
@@ -9,30 +9,30 @@ import { upload } from '@thxnetwork/api/util/multer';
 
 const router = express.Router();
 
-router.get('/', assertAssetPoolOwnership, ListPointRewards.controller);
+router.get('/', assertPoolAccess, ListPointRewards.controller);
 router.get(
     '/:id',
     assertRequestInput(ReadPointRewards.validation),
-    // assertAssetPoolOwnership,
+    // assertPoolAccess,
     ReadPointRewards.controller,
 );
 router.post(
     '/',
     upload.single('file'),
     assertRequestInput(CreatePointRewards.validation),
-    assertAssetPoolOwnership,
+    assertPoolAccess,
     CreatePointRewards.controller,
 );
 router.patch(
     '/:id',
     upload.single('file'),
-    assertAssetPoolOwnership,
+    assertPoolAccess,
     assertRequestInput(UpdatePointRewards.validation),
     UpdatePointRewards.controller,
 );
 router.delete(
     '/:id',
-    assertAssetPoolOwnership,
+    assertPoolAccess,
     assertRequestInput(DeletePointRewards.validation),
     DeletePointRewards.controller,
 );

@@ -44,14 +44,12 @@ function isPoolClient(clientId: string, poolId: string) {
     return AssetPool.exists({ _id: poolId, clientId });
 }
 
-async function isPoolOwner(sub: string, poolId: string) {
-    console.log(sub, poolId);
+async function hasAccess(sub: string, poolId: string) {
     const isOwner = await AssetPool.exists({
         _id: poolId,
         sub,
     });
     const isCollaborator = await Collaborator.exists({ sub, poolId, state: CollaboratorInviteState.Accepted });
-    console.log(isOwner, isCollaborator);
     return isOwner || isCollaborator;
 }
 
@@ -301,7 +299,7 @@ async function inviteCollaborator(pool: AssetPoolDocument, email: string) {
 
 export default {
     isPoolClient,
-    isPoolOwner,
+    hasAccess,
     getById,
     getByAddress,
     deploy,
