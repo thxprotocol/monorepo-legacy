@@ -153,8 +153,7 @@ import { mapGetters } from 'vuex';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import { TBrand } from '@thxnetwork/dashboard/store/modules/brands';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
-import { IAccount } from '@thxnetwork/dashboard/types/account';
-import { TPoolSettings } from '@thxnetwork/types/interfaces';
+import type { TAccount, TPoolSettings } from '@thxnetwork/types/interfaces';
 import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
 
 @Component({
@@ -172,7 +171,7 @@ import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vu
 export default class SettingsView extends Vue {
     loading = true;
     chainInfo = chainInfo;
-    profile!: IAccount;
+    profile!: TAccount;
     pools!: IPools;
     brands!: { [poolId: string]: TBrand };
     error: string | null = null;

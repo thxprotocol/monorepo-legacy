@@ -32,6 +32,7 @@ async function requestAttemptJob(job: Job) {
 
     try {
         const signature = signPayload(webhookRequest.payload, signingSecret);
+        webhookRequest.state = WebhookRequestState.Sent;
         const res = await axios({
             method: 'POST',
             url: webhook.url,
@@ -40,14 +41,23 @@ async function requestAttemptJob(job: Job) {
                 'Content-Type': 'application/json',
             },
         });
+        webhookRequest.state = WebhookRequestState.Received;
+        webhookRequest.httpStatus = res.status;
 
-        // Handle status in order to set status for webhook
-        console.log(res, res.status);
+        console.debug(`[${res.status}], ${JSON.stringify(res.data)}`);
     } catch (error) {
+        webhookRequest.state = WebhookRequestState.Failed;
+        if (error && error.response) {
+            webhookRequest.httpStatus = error.response.status;
+        }
+
         console.error(error);
-        await webhookRequest.updateOne({ status: WebhookRequestState.Failed });
     } finally {
-        await webhookRequest.updateOne({ attempt: webhookRequest.attempts++ });
+        webhookRequest.attempts = webhookRequest.attempts++;
+        await webhookRequest.save();
+        console.log('Finished finally');
+        console.log(webhookRequest);
+        console.log(await WebhookRequest.findById(webhookRequestId));
     }
 }
 

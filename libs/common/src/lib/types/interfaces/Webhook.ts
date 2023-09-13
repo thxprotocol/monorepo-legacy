@@ -17,6 +17,7 @@ export type TWebhookRequest = {
     payload: string;
     payloadFormatted?: HighlightResult;
     attempts: number;
+    httpStatus: number;
     state: WebhookRequestState;
     failReason: string;
     createdAt?: Date;
