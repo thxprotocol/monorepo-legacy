@@ -7,8 +7,9 @@ const webhookRequestSchema = new mongoose.Schema(
     {
         webhookId: String,
         payload: String,
-        attempts: Number,
+        attempts: { type: Number, default: 0 },
         state: Number,
+        httpStatus: Number,
         failReason: String,
     },
     { timestamps: true },

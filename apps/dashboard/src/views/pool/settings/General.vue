@@ -207,11 +207,11 @@ import { mapGetters } from 'vuex';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import { TBrand } from '@thxnetwork/dashboard/store/modules/brands';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
-import { TAccount, TPoolSettings } from '@thxnetwork/types/interfaces';
 import { validateEmail } from '@thxnetwork/dashboard/components/modals/BaseModalRequestAccountEmailUpdate.vue';
+import { hasBasicAccess } from '@thxnetwork/common';
+import type { TAccount, TPoolSettings } from '@thxnetwork/types/interfaces';
 import BaseListItemCollaborator from '@thxnetwork/dashboard/components/list-items/BaseListItemCollaborator.vue';
 import BaseModalPoolTransfer from '@thxnetwork/dashboard/components/modals/BaseModalPoolTransfer.vue';
-import { hasBasicAccess } from '@thxnetwork/common';
 
 @Component({
     components: {
