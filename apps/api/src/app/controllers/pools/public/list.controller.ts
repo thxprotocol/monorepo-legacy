@@ -4,67 +4,71 @@ import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { Widget } from '@thxnetwork/api/models/Widget';
 import { logger } from '@thxnetwork/api/util/logger';
 import { ChainId } from '@thxnetwork/types/enums';
-import { cache } from '@thxnetwork/api/util/cache';
 import BrandService from '@thxnetwork/api/services/BrandService';
 import PoolService from '@thxnetwork/api/services/PoolService';
+import { paginatedResults } from '@thxnetwork/api/util/pagination';
+import { query } from 'express-validator';
+
+const validation = [query('page').isInt(), query('search').optional().isString()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
-    const cacheString = cache.get(req.originalUrl) as string;
-    let response = cacheString && JSON.parse(cacheString);
+    const { page, search } = req.query;
 
-    if (!response) {
-        const pools = await AssetPool.find({ chainId: NODE_ENV === 'production' ? ChainId.Polygon : ChainId.Hardhat });
-        response = await Promise.all(
-            pools.map(async (pool: AssetPoolDocument) => {
-                try {
-                    const poolId = String(pool._id);
-                    const widget = await Widget.findOne({ poolId });
-                    if (!widget) return;
+    const query = {
+        chainId: NODE_ENV === 'production' ? ChainId.Polygon : ChainId.Hardhat,
+    };
+    if (search) query['settings.title'] = { $regex: search, $options: 'i' };
 
-                    const [brand, participants, quests, rewards] = await Promise.all([
-                        BrandService.get(poolId),
-                        PoolService.getParticipantCount(pool),
-                        PoolService.getQuestCount(pool),
-                        PoolService.getRewardCount(pool),
-                    ]);
+    const result = await paginatedResults(AssetPool, Number(page), 25, query);
+    result.results = await Promise.all(
+        result.results.map(async (pool: AssetPoolDocument) => {
+            try {
+                const poolId = String(pool._id);
+                const widget = await Widget.findOne({ poolId });
+                if (!widget) return;
 
-                    const progress = (() => {
-                        const data = {
-                            start: new Date(pool.createdAt).getTime(),
-                            now: Date.now(),
-                            end: new Date(pool.settings.endDate).getTime(),
-                        };
-                        const period = data.end - data.start;
-                        const progress = data.now - data.start;
-                        return (progress / period) * 100;
-                    })();
+                const [brand, participants, quests, rewards] = await Promise.all([
+                    BrandService.get(poolId),
+                    PoolService.getParticipantCount(pool),
+                    PoolService.getQuestCount(pool),
+                    PoolService.getRewardCount(pool),
+                ]);
 
-                    return {
-                        _id: pool._id,
-                        title: pool.settings.title,
-                        expiryDate: pool.settings.endDate,
-                        address: pool.address,
-                        chainId: pool.chainId,
-                        domain: widget.domain,
-                        logoImgUrl: brand && brand.logoImgUrl,
-                        backgroundImgUrl: brand && brand.backgroundImgUrl,
-                        tags: ['Gaming', 'Web3'],
-                        participants,
-                        rewards,
-                        quests,
-                        active: widget.active,
-                        progress,
+                const progress = (() => {
+                    const data = {
+                        start: new Date(pool.createdAt).getTime(),
+                        now: Date.now(),
+                        end: new Date(pool.settings.endDate).getTime(),
                     };
-                } catch (error) {
-                    logger.error(error);
-                }
-            }),
-        );
-        cache.set(req.originalUrl, JSON.stringify(response));
-    }
+                    const period = data.end - data.start;
+                    const progress = data.now - data.start;
+                    return (progress / period) * 100;
+                })();
 
-    res.json(response);
+                return {
+                    _id: pool._id,
+                    title: pool.settings.title,
+                    expiryDate: pool.settings.endDate,
+                    address: pool.address,
+                    chainId: pool.chainId,
+                    domain: widget.domain,
+                    logoImgUrl: brand && brand.logoImgUrl,
+                    backgroundImgUrl: brand && brand.backgroundImgUrl,
+                    tags: ['Gaming', 'Web3'],
+                    participants,
+                    rewards,
+                    quests,
+                    active: widget.active,
+                    progress,
+                };
+            } catch (error) {
+                logger.error(error);
+            }
+        }),
+    );
+
+    res.json(result);
 };
 
-export default { controller };
+export default { controller, validation };
