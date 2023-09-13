@@ -16,5 +16,5 @@
         "types": ["node"]
     },
     "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
-    "include": ["src/**/*.ts", "../../package.json", "./package.json"]
+    "include": ["src/**/*.ts", "../../libs/common/**/*", "../../package.json", "./package.json"]
 }
