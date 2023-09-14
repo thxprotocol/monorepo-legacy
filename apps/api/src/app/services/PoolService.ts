@@ -12,9 +12,9 @@ import { createDummyContents } from '../util/rewards';
 import AccountProxy from '../proxies/AccountProxy';
 import MailService from './MailService';
 import { Widget } from './WidgetService';
-import { PoolSubscription } from '../models/PoolSubscription';
+import { PoolSubscription, PoolSubscriptionDocument } from '../models/PoolSubscription';
 import { logger } from '../util/logger';
-import { TPointReward } from '@thxnetwork/types/interfaces';
+import { TAccount, TPointReward } from '@thxnetwork/types/interfaces';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { DailyRewardClaim } from '../models/DailyRewardClaims';
 import { ReferralRewardClaim } from '../models/ReferralRewardClaim';
@@ -37,6 +37,8 @@ import { PointBalance } from './PointBalanceService';
 import SafeService from './SafeService';
 import { Collaborator } from '../models/Collaborator';
 import { DASHBOARD_URL } from '../config/secrets';
+import { WalletDocument } from '../models/Wallet';
+import { PointBalanceDocument } from '../models/PointBalance';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -234,24 +236,29 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
 
     participants.results = await Promise.all(
         participants.results.map(async (participant) => {
-            const wallet = await SafeService.findPrimary(participant.sub, pool.chainId);
-            const account = wallet ? accounts.find((a) => a.sub === wallet.sub) : null;
-            const subscription = account
-                ? await PoolSubscription.findOne({ poolId: pool._id, sub: account.sub })
-                : null;
-            const pointBalance = wallet
-                ? await PointBalance.findOne({
-                      poolId: participant.poolId,
-                      walletId: wallet._id,
-                  })
-                : null;
+            let wallet: WalletDocument,
+                account: TAccount,
+                subscription: PoolSubscriptionDocument,
+                pointBalance: PointBalanceDocument;
+
+            try {
+                wallet = await SafeService.findPrimary(participant.sub, pool.chainId);
+                account = accounts.find((a) => a.sub === wallet.sub);
+                subscription = await PoolSubscription.findOne({ poolId: pool._id, sub: account.sub });
+                pointBalance = await PointBalance.findOne({
+                    poolId: participant.poolId,
+                    walletId: wallet._id,
+                });
+            } catch (error) {
+                logger.error(error);
+            }
 
             return {
                 ...participant.toJSON(),
                 account,
                 wallet,
-                pointBalance: pointBalance ? pointBalance.balance : 0,
                 subscription,
+                pointBalance: pointBalance ? pointBalance.balance : 0,
             };
         }),
     );

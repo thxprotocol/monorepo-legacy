@@ -95,9 +95,9 @@ export default class BaseModalQuestSocialEntries extends Vue {
         return Object.values(this.quest.entries)
             .sort((a: TPointRewardClaim, b: TPointRewardClaim) => (a.createdAt < b.createdAt ? 1 : -1))
             .map((entry: any) => ({
-                account: parseAccount({ id: entry._id, account: entry.account }),
-                connectedAccounts: parseConnectedAccounts(entry.account.connectedAccounts),
-                wallet: parseWallet(entry.wallet),
+                account: entry.account && parseAccount({ id: entry._id, account: entry.account }),
+                connectedAccounts: entry.account && parseConnectedAccounts(entry.account.connectedAccounts),
+                wallet: entry.wallet && parseWallet(entry.wallet),
                 pointBalance: entry.pointBalance,
                 createdAt: entry.createdAt,
             }));
