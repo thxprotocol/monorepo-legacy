@@ -9,6 +9,7 @@ export const rewardBaseSchema = {
     image: String,
     index: Number,
     infoLinks: [{ label: String, url: String }],
+    isPublished: { type: Boolean, default: false },
 };
 
 export const perkBaseSchema = {
@@ -26,6 +27,7 @@ export const perkBaseSchema = {
     tokenGatingVariant: Number,
     tokenGatingContractAddress: String,
     tokenGatingAmount: Number,
+    isPublished: { type: Boolean, default: false },
 };
 
 export type ERC20PerkDocument = mongoose.Document & TERC20Perk;

@@ -10,6 +10,7 @@ const validation = [
     param('id').exists(),
     body('index').optional().isInt(),
     body('title').optional().isString(),
+    body('isPublished').optional().isBoolean(),
     body('description').optional().isString(),
     check('file')
         .optional()
@@ -41,7 +42,7 @@ const controller = async (req: Request, res: Response) => {
     let dailyReward = await DailyReward.findById(req.params.id);
     if (!dailyReward) throw new NotFoundError('Could not find the dailyReward');
     const image = req.file && (await ImageService.upload(req.file));
-    const { title, description, amounts, infoLinks, isEnabledWebhookQualification, index } = req.body;
+    const { title, description, amounts, infoLinks, isEnabledWebhookQualification, index, isPublished } = req.body;
     dailyReward = await DailyReward.findByIdAndUpdate(
         req.params.id,
         {
@@ -52,6 +53,7 @@ const controller = async (req: Request, res: Response) => {
             infoLinks,
             isEnabledWebhookQualification,
             index,
+            isPublished,
         },
         { new: true },
     );

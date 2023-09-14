@@ -1,12 +1,14 @@
 <template>
     <BaseModalQuestCreate
-        variant="Daily Quest"
+        variant="Custom Quest"
         @show="onShow"
         @submit="onSubmit"
         @change-info-links="infoLinks = Object.values($event)"
         @change-title="title = $event"
         @change-description="description = $event"
         @change-file="file = $event"
+        @change-published="isPublished = $event"
+        :published="isPublished"
         :id="id"
         :error="error"
         :info-links="infoLinks"
@@ -24,6 +26,7 @@
         </template>
         <template #col-right>
             <BaseCardURLWebhook
+                class="mb-3"
                 :code="code"
                 title="Webhook Qualification"
                 description="Run this webhook to qualify an account wallet address for the claim of this reward."
@@ -69,6 +72,7 @@ export default class ModalQuestCustomCreate extends Vue {
     error = '';
     title = '';
     description = '';
+    isPublished = false;
     amount = 0;
     limit = 0;
     isCopied = false;
@@ -87,7 +91,8 @@ export default class ModalQuestCustomCreate extends Vue {
     }
 
     onShow() {
-        this.title = this.reward ? this.reward.title : '';
+        this.isPublished = this.reward ? this.reward.isPublished : this.isPublished;
+        this.title = this.reward ? this.reward.title : this.title;
         this.description = this.reward ? this.reward.description : '';
         this.amount = this.reward ? this.reward.amount : this.amount;
         this.infoLinks = this.reward ? this.reward.infoLinks : this.infoLinks;
@@ -103,6 +108,7 @@ export default class ModalQuestCustomCreate extends Vue {
                 poolId: String(this.pool._id),
                 title: this.title,
                 description: this.description,
+                isPublished: this.isPublished,
                 file: this.file,
                 amount: this.amount,
                 limit: this.limit,

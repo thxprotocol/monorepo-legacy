@@ -26,6 +26,7 @@ export type TBasePerk = {
     createdAt?: string;
     updatedAt?: string;
     claims: [];
+    isPublished: boolean;
 };
 
 export type TBaseReward = {
@@ -41,5 +42,6 @@ export type TBaseReward = {
     page?: number;
     variant?: QuestVariant;
     index?: number;
+    isPublished: boolean;
     update: (payload: TBaseReward) => Promise<void>;
 };

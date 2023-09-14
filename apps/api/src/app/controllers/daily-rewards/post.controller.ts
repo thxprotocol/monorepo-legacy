@@ -10,6 +10,7 @@ const validation = [
     body('index').isInt(),
     body('title').isString(),
     body('description').isString(),
+    body('isPublished').optional().isBoolean(),
     check('file')
         .optional()
         .custom((value, { req }) => {
@@ -34,7 +35,7 @@ const validation = [
 ];
 
 const controller = async (req: Request, res: Response) => {
-    const { title, description, amounts, infoLinks, isEnabledWebhookQualification } = req.body;
+    const { title, description, amounts, infoLinks, isEnabledWebhookQualification, isPublished } = req.body;
     const image = req.file && (await ImageService.upload(req.file));
     const pool = await PoolService.getById(req.header('X-PoolId'));
     const dailyReward = await DailyRewardService.create(pool, {
@@ -44,6 +45,7 @@ const controller = async (req: Request, res: Response) => {
         amounts,
         infoLinks,
         isEnabledWebhookQualification,
+        isPublished,
     });
 
     res.status(201).json(dailyReward);

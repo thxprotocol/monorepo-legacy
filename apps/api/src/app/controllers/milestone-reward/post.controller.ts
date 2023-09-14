@@ -10,6 +10,7 @@ const validation = [
     body('index').isInt(),
     body('title').isString(),
     body('description').isString(),
+    body('isPublished').optional().isBoolean(),
     check('file')
         .optional()
         .custom((value, { req }) => {
@@ -26,7 +27,7 @@ const validation = [
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['RewardsToken']
-    const { title, description, amount, limit, infoLinks } = req.body;
+    const { title, description, amount, limit, infoLinks, isPublished } = req.body;
     const image = req.file && (await ImageService.upload(req.file));
     const pool = await PoolService.getById(req.header('X-PoolId'));
     const milestoneReward = await MilestoneRewardService.create(pool, {
@@ -36,6 +37,7 @@ const controller = async (req: Request, res: Response) => {
         amount,
         infoLinks,
         limit,
+        isPublished,
     });
 
     res.status(201).json(milestoneReward);

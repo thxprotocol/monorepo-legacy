@@ -10,6 +10,7 @@ const validation = [
     body('index').isInt(),
     body('title').exists().isString(),
     body('pathname').optional().isString(),
+    body('isPublished').optional().isBoolean(),
     check('file')
         .optional()
         .custom((value, { req }) => {

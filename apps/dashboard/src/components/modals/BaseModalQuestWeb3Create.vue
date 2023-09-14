@@ -7,6 +7,8 @@
         @change-title="title = $event"
         @change-description="description = $event"
         @change-file="file = $event"
+        @change-published="isPublished = $event"
+        :published="isPublished"
         :id="id"
         :error="error"
         :info-links="infoLinks"
@@ -91,6 +93,7 @@ export default class ModalQuestWeb3Create extends Vue {
     isSubmitDisabled = false;
     isLoading = false;
     isVisible = true;
+    isPublished = false;
     error = '';
     title = '';
     image = '';
@@ -108,8 +111,9 @@ export default class ModalQuestWeb3Create extends Vue {
     @Prop({ required: false }) reward!: TWeb3Quest;
 
     onShow() {
-        this.title = this.reward ? this.reward.title : '';
-        this.description = this.reward ? this.reward.description : '';
+        this.title = this.reward ? this.reward.title : this.title;
+        this.isPublished = this.reward ? this.reward.isPublished : this.isPublished;
+        this.description = this.reward ? this.reward.description : this.description;
         this.amount = this.reward ? this.reward.amount : this.amount;
         this.contracts = this.reward ? this.reward.contracts : this.contracts;
         this.methodName = this.reward ? this.reward.methodName : this.methodName;
@@ -124,6 +128,7 @@ export default class ModalQuestWeb3Create extends Vue {
                 ...this.reward,
                 page: 1,
                 index: this.reward ? this.reward.index : this.total,
+                isPublished: this.isPublished,
                 poolId: String(this.pool._id),
                 file: this.file,
                 title: this.title,

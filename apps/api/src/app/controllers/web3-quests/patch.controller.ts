@@ -13,6 +13,7 @@ const validation = [
     body('index').optional().isInt(),
     body('title').optional().isString(),
     body('description').optional().isString(),
+    body('isPublished').optional().isBoolean(),
     body('amount').optional().isInt({ gt: 0 }),
     check('file')
         .optional()

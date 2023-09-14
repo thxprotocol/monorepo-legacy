@@ -11,6 +11,7 @@ import ImageService from '@thxnetwork/api/services/ImageService';
 const validation = [
     param('id').isMongoId(),
     body('pathname').optional().isString(),
+    body('isPublished').optional().isBoolean(),
     check('file')
         .optional()
         .custom((value, { req }) => {
@@ -29,7 +30,8 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards Referral']
     let reward = await RewardReferralService.get(req.params.id);
     if (!reward) throw new NotFoundError('Could not find the reward for this id');
-    const { title, description, pathname, amount, successUrl, infoLinks, isMandatoryReview, index } = req.body;
+    const { title, description, pathname, amount, successUrl, infoLinks, isMandatoryReview, index, isPublished } =
+        req.body;
     const image = req.file && (await ImageService.upload(req.file));
     reward = await ReferralReward.findByIdAndUpdate(
         reward._id,
@@ -43,6 +45,7 @@ const controller = async (req: Request, res: Response) => {
             isMandatoryReview,
             infoLinks,
             index,
+            isPublished,
         },
         { new: true },
     );

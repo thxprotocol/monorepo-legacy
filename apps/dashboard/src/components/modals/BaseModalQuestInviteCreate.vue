@@ -7,10 +7,12 @@
         @change-description="description = $event"
         @change-file="file = $event"
         @change-info-links="infoLinks = Object.values($event)"
+        @change-published="isPublished = $event"
         :info-links="infoLinks"
         :id="id"
         :error="error"
         :loading="isLoading"
+        :published="isPublished"
         :disabled="isSubmitDisabled || !amount || !title"
         :quest="reward"
     >
@@ -35,6 +37,7 @@
         <template #col-right>
             <BaseCardURLQualify :visible="isVisibleCardURLQualify" :url="successUrl" @input="successUrl = $event" />
             <BaseCardURLWebhook
+                class="mb-3"
                 :visible="isVisibleCardWebhookQualify"
                 :code="code"
                 title="Webhook Qualification"
@@ -100,6 +103,7 @@ export default class ModalReferralRewardCreate extends Vue {
     error = '';
     title = '';
     amount = '0';
+    isPublished = false;
     successUrl = '';
     description = '';
     pathname = '';
@@ -125,6 +129,7 @@ export default class ModalReferralRewardCreate extends Vue {
 
     onShow() {
         this.title = this.reward ? this.reward.title : '';
+        this.isPublished = this.reward ? this.reward.isPublished : this.isPublished;
         this.description = this.reward ? this.reward.description : '';
         this.amount = this.reward ? String(this.reward.amount) : '0';
         this.pathname = this.reward ? this.reward.pathname : '';
@@ -158,6 +163,7 @@ export default class ModalReferralRewardCreate extends Vue {
                 description: this.description,
                 pathname: this.pathname,
                 amount: this.amount,
+                isPublished: this.isPublished,
                 claimAmount: this.claimAmount,
                 successUrl: this.successUrl && this.successUrl.length ? this.successUrl : undefined,
                 isMandatoryReview: this.isMandatoryReview,
