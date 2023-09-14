@@ -6,21 +6,121 @@ import { logger } from '@thxnetwork/api/util/logger';
 import { ChainId } from '@thxnetwork/types/enums';
 import BrandService from '@thxnetwork/api/services/BrandService';
 import PoolService from '@thxnetwork/api/services/PoolService';
-import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import { query } from 'express-validator';
+import { PaginationResult } from '@thxnetwork/api/util/pagination';
 
-const validation = [query('page').isInt(), query('search').optional().isString()];
+export const paginatedResults = async (
+    model: any,
+    page: number,
+    limit: number,
+    search: string,
+): Promise<PaginationResult> => {
+    const startIndex = (page - 1) * limit;
+    const $match = {
+        chainId: NODE_ENV === 'production' ? ChainId.Polygon : ChainId.Hardhat,
+        totalRewardsCount: { $gt: 0 },
+    };
+
+    if (search) {
+        const $regex = new RegExp(
+            search
+                .split(/\s+/)
+                .map((word) => `(?=.*${word})`)
+                .join(''),
+            'i',
+        );
+        $match['settings.title'] = { $regex };
+    }
+    const [result] = await model
+        .aggregate([
+            {
+                $addFields: {
+                    id: { $toString: '$_id' },
+                },
+            },
+            {
+                $lookup: {
+                    from: 'participants',
+                    localField: 'id',
+                    foreignField: 'poolId',
+                    as: 'participants',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'erc20perks',
+                    localField: 'id',
+                    foreignField: 'poolId',
+                    as: 'erc20Perks',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'erc721perks',
+                    localField: 'id',
+                    foreignField: 'poolId',
+                    as: 'erc721Perks',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'customrewards',
+                    localField: 'id',
+                    foreignField: 'poolId',
+                    as: 'customRewards',
+                },
+            },
+            {
+                $addFields: {
+                    totalRewardsCount: {
+                        $size: {
+                            $concatArrays: ['$erc20Perks', '$erc721Perks', '$customRewards'],
+                        },
+                    },
+                    participantCount: { $size: '$participants' },
+                },
+            },
+            {
+                $facet: {
+                    total: [{ $match }, { $count: 'count' }],
+                    results: [
+                        { $match },
+                        {
+                            $sort: { participantCount: -1 },
+                        },
+                        {
+                            $skip: startIndex,
+                        },
+                        {
+                            $limit: limit,
+                        },
+                    ],
+                },
+            },
+            {
+                $unwind: '$total',
+            },
+            {
+                $project: {
+                    total: '$total.count',
+                    results: 1,
+                },
+            },
+        ])
+        .exec();
+    return {
+        limit,
+        ...result,
+    };
+};
+
+const validation = [query('page').isInt(), query('limit').isInt(), query('search').optional().isString()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
-    const { page, search } = req.query;
+    const { page, limit, search } = req.query;
+    const result = await paginatedResults(AssetPool, Number(page), Number(limit), search ? String(search) : '');
 
-    const query = {
-        chainId: NODE_ENV === 'production' ? ChainId.Polygon : ChainId.Hardhat,
-    };
-    if (search) query['settings.title'] = { $regex: search, $options: 'i' };
-
-    const result = await paginatedResults(AssetPool, Number(page), 25, query);
     result.results = await Promise.all(
         result.results.map(async (pool: AssetPoolDocument) => {
             try {
@@ -55,10 +155,10 @@ const controller = async (req: Request, res: Response) => {
                     domain: widget.domain,
                     logoImgUrl: brand && brand.logoImgUrl,
                     backgroundImgUrl: brand && brand.backgroundImgUrl,
-                    tags: ['Gaming', 'Web3'],
+                    // tags: ['Gaming', 'Web3'],
                     participants,
-                    rewards,
-                    quests,
+                    rewards: rewards.length,
+                    quests: quests.length,
                     active: widget.active,
                     progress,
                 };

@@ -267,15 +267,7 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
 }
 
 async function getParticipantCount(pool: AssetPoolDocument) {
-    const result = await Promise.all(
-        [DailyRewardClaim, ReferralRewardClaim, PointRewardClaim, MilestoneRewardClaim, Web3QuestClaim].map(
-            async (model) => await countBySub(model, pool),
-        ),
-    );
-
-    // This flattens the arrays of unique subs per reward type, create a Set to filter out uniques
-    // and create an array again to count length.
-    return Array.from(new Set(result.flat(1))).length;
+    return await Participant.count({ poolId: pool._id });
 }
 
 async function inviteCollaborator(pool: AssetPoolDocument, email: string) {

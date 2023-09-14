@@ -23,81 +23,85 @@ import { Web3QuestClaim } from '../models/Web3QuestClaim';
 import { CustomRewardPayment } from '../models/CustomRewardPayment';
 
 async function getPoolAnalyticsForChart(pool: AssetPoolDocument, startDate: Date, endDate: Date) {
-    const erc20PerksQueryResult = await runPoolChartQuery<ERC20PerkDocument>({
-        joinTable: 'erc20perkpayments',
-        key: 'perkId',
-        model: ERC20Perk,
-        poolId: String(pool._id),
-        amountField: 'pointPrice',
-        startDate,
-        endDate,
-    });
-    const erc721PerksQueryResult = await runPoolChartQuery<ERC721PerkDocument>({
-        joinTable: 'erc721perkpayments',
-        key: 'perkId',
-        model: ERC721Perk,
-        poolId: String(pool._id),
-        amountField: 'pointPrice',
-        startDate,
-        endDate,
-    });
-    const customRewardsQueryResult = await runPoolChartQuery<CustomRewardDocument>({
-        joinTable: 'customrewardpayments',
-        key: 'perkId',
-        model: CustomReward,
-        poolId: String(pool._id),
-        amountField: 'pointPrice',
-        startDate,
-        endDate,
-    });
+    // Rewards
+    const [erc20PerksQueryResult, erc721PerksQueryResult, customRewardsQueryResult] = await Promise.all([
+        queryRewardRedemptions<ERC20PerkDocument>({
+            collectionName: 'erc20perkpayments',
+            key: 'perkId',
+            model: ERC20Perk,
+            poolId: String(pool._id),
+            startDate,
+            endDate,
+        }),
+        queryRewardRedemptions<ERC721PerkDocument>({
+            collectionName: 'erc721perkpayments',
+            key: 'perkId',
+            model: ERC721Perk,
+            poolId: String(pool._id),
+            startDate,
+            endDate,
+        }),
+        queryRewardRedemptions<CustomRewardDocument>({
+            collectionName: 'customrewardpayments',
+            key: 'perkId',
+            model: CustomReward,
+            poolId: String(pool._id),
+            startDate,
+            endDate,
+        }),
+    ]);
 
-    const milestoneRewardsQueryResult = await runPoolChartQuery<MilestoneRewardDocument>({
-        joinTable: 'milestonerewardclaims',
-        key: 'milestoneRewardId',
-        model: MilestoneReward,
-        poolId: String(pool._id),
-        amountField: 'amount',
-        startDate,
-        endDate,
-        extraFilter: { isClaimed: true },
-    });
-    const referralRewardsQueryResult = await runPoolChartQuery<ReferralRewardDocument>({
-        joinTable: 'referralrewardclaims',
-        key: 'referralRewardId',
-        model: ReferralReward,
-        poolId: String(pool._id),
-        amountField: 'amount',
-        startDate,
-        endDate,
-        extraFilter: { isApproved: true },
-    });
-    const pointRewardsQueryResult = await runPoolChartQuery<PointRewardDocument>({
-        joinTable: 'pointrewardclaims',
-        key: 'pointRewardId',
-        model: PointReward,
-        poolId: String(pool._id),
-        amountField: 'amount',
-        startDate,
-        endDate,
-    });
-    const dailyRewardsQueryResult = await runPoolChartQuery<DailyRewardDocument>({
-        joinTable: 'dailyrewardclaims',
-        key: 'dailyRewardId',
-        model: DailyReward,
-        poolId: String(pool._id),
-        amountField: 'amount',
-        startDate,
-        endDate,
-    });
-    const web3QuestsQueryResult = await runPoolChartQuery<Web3QuestDocument>({
-        joinTable: 'web3questclaims',
-        key: 'web3QuestId',
-        model: Web3Quest,
-        poolId: String(pool._id),
-        amountField: 'amount',
-        startDate,
-        endDate,
-    });
+    // Quests
+    const [
+        milestoneRewardsQueryResult,
+        referralRewardsQueryResult,
+        pointRewardsQueryResult,
+        dailyRewardsQueryResult,
+        web3QuestsQueryResult,
+    ] = await Promise.all([
+        queryQuestEntries<MilestoneRewardDocument>({
+            collectionName: 'milestonerewardclaims',
+            key: 'milestoneRewardId',
+            model: MilestoneReward,
+            poolId: String(pool._id),
+            startDate,
+            endDate,
+            extraFilter: { isClaimed: true },
+        }),
+        queryQuestEntries<ReferralRewardDocument>({
+            collectionName: 'referralrewardclaims',
+            key: 'referralRewardId',
+            model: ReferralReward,
+            poolId: String(pool._id),
+            startDate,
+            endDate,
+            extraFilter: { isApproved: true },
+        }),
+        queryQuestEntries<PointRewardDocument>({
+            collectionName: 'pointrewardclaims',
+            key: 'pointRewardId',
+            model: PointReward,
+            poolId: String(pool._id),
+            startDate,
+            endDate,
+        }),
+        queryQuestEntries<DailyRewardDocument>({
+            collectionName: 'dailyrewardclaims',
+            key: 'dailyRewardId',
+            model: DailyReward,
+            poolId: String(pool._id),
+            startDate,
+            endDate,
+        }),
+        queryQuestEntries<Web3QuestDocument>({
+            collectionName: 'web3questclaims',
+            key: 'web3QuestId',
+            model: Web3Quest,
+            poolId: String(pool._id),
+            startDate,
+            endDate,
+        }),
+    ]);
 
     const result: any = {
         _id: pool._id,
@@ -279,20 +283,11 @@ async function getLeaderboard(pool: AssetPoolDocument, dateRange?: { startDate: 
         .slice(0, 10);
 }
 
-/**
- *
- * @returns the rewards per poolId, with the claims for each reward,
- * filtered by a time range,
- * grouped by day of claim creation
- * with the total claims per reward
- * and the sum of the reward amount * total claims per reward per day
- */
-async function runPoolChartQuery<T>(args: {
+async function queryQuestEntries<T>(args: {
     model: mongoose.Model<T>;
     poolId: string;
-    joinTable: string;
+    collectionName: string;
     key: string;
-    amountField: string;
     startDate: Date;
     endDate: Date;
     extraFilter?: object;
@@ -306,7 +301,7 @@ async function runPoolChartQuery<T>(args: {
         },
         {
             $lookup: {
-                from: args.joinTable,
+                from: args.collectionName,
                 let: {
                     id: {
                         $convert: {
@@ -335,18 +330,18 @@ async function runPoolChartQuery<T>(args: {
                         },
                     },
                 ],
-                as: 'claims',
+                as: 'entries',
             },
         },
         {
-            $unwind: '$claims',
+            $unwind: '$entries',
         },
         {
             $group: {
                 _id: {
                     $dateToString: {
                         format: '%Y-%m-%d',
-                        date: { $toDate: '$claims.createdAt' },
+                        date: { $toDate: '$entries.createdAt' },
                     },
                 },
                 paymentsCount: {
@@ -355,7 +350,86 @@ async function runPoolChartQuery<T>(args: {
                 total_amount: {
                     $sum: {
                         $convert: {
-                            input: `$${args.amountField}`,
+                            input: '$entries.amount',
+                            to: 'int',
+                        },
+                    },
+                },
+            },
+        },
+    ]);
+
+    return queryResult;
+}
+
+async function queryRewardRedemptions<T>(args: {
+    model: mongoose.Model<T>;
+    poolId: string;
+    collectionName: string;
+    key: string;
+    startDate: Date;
+    endDate: Date;
+    extraFilter?: object;
+}) {
+    const extraFilter = args.extraFilter ? { ...args.extraFilter } : {};
+    const queryResult = await args.model.aggregate([
+        {
+            $match: {
+                poolId: args.poolId,
+            },
+        },
+        {
+            $lookup: {
+                from: args.collectionName,
+                let: {
+                    id: {
+                        $convert: {
+                            input: '$_id',
+                            to: 'string',
+                        },
+                    },
+                },
+                pipeline: [
+                    {
+                        $match: {
+                            $and: [
+                                {
+                                    $expr: {
+                                        $eq: ['$$id', `$${args.key}`],
+                                    },
+                                },
+                                {
+                                    createdAt: {
+                                        $gte: args.startDate,
+                                        $lte: args.endDate,
+                                    },
+                                },
+                                extraFilter,
+                            ],
+                        },
+                    },
+                ],
+                as: 'entries',
+            },
+        },
+        {
+            $unwind: '$entries',
+        },
+        {
+            $group: {
+                _id: {
+                    $dateToString: {
+                        format: '%Y-%m-%d',
+                        date: { $toDate: '$entries.createdAt' },
+                    },
+                },
+                paymentsCount: {
+                    $count: {},
+                },
+                total_amount: {
+                    $sum: {
+                        $convert: {
+                            input: '$entries.amount',
                             to: 'int',
                         },
                     },
