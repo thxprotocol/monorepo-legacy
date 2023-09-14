@@ -7,6 +7,8 @@
         @change-description="description = $event"
         @change-file="file = $event"
         @change-info-links="infoLinks = Object.values($event)"
+        @change-published="isPublished = $event"
+        :published="isPublished"
         :info-links="infoLinks"
         :id="id"
         :error="error"
@@ -62,6 +64,7 @@ export default class ModalRewardPointsCreate extends Vue {
     amount = 0;
     description = '';
     limit = 0;
+    isPublished = false;
     rewardCondition: {
         platform: RewardConditionPlatform;
         interaction: RewardConditionInteraction;
@@ -83,6 +86,7 @@ export default class ModalRewardPointsCreate extends Vue {
 
     onShow() {
         this.title = this.reward ? this.reward.title : this.title;
+        this.isPublished = this.reward ? this.reward.isPublished : this.isPublished;
         this.description = this.reward ? this.reward.description : this.description;
         this.amount = this.reward ? this.reward.amount : this.amount;
         this.infoLinks = this.reward ? this.reward.infoLinks : this.infoLinks;
@@ -112,6 +116,7 @@ export default class ModalRewardPointsCreate extends Vue {
                 file: this.file,
                 description: this.description,
                 amount: this.amount,
+                isPublished: this.isPublished,
                 infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
                 platform: this.rewardCondition.platform,
                 interaction:

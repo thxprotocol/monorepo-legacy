@@ -9,6 +9,7 @@ const validation = [
     param('id').isMongoId(),
     body('index').optional().isInt(),
     body('title').optional().isString(),
+    body('isPublished').optional().isBoolean(),
     body('description').optional().isString(),
     check('file')
         .optional()
@@ -26,7 +27,7 @@ const validation = [
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Milestone Rewards']
-    const { title, description, amount, infoLinks, limit, index } = req.body;
+    const { title, description, amount, infoLinks, limit, index, isPublished } = req.body;
     const image = req.file && (await ImageService.upload(req.file));
     const milestoneReward = await MilestoneReward.findByIdAndUpdate(
         req.params.id,
@@ -38,6 +39,7 @@ const controller = async (req: Request, res: Response) => {
             infoLinks,
             index,
             limit,
+            isPublished,
         },
         { new: true },
     );

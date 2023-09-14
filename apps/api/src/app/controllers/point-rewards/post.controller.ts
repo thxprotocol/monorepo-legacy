@@ -10,6 +10,7 @@ const validation = [
     body('index').isInt(),
     body('title').isString(),
     body('description').isString(),
+    body('isPublished').optional().isBoolean(),
     body('amount').isInt({ gt: 0 }),
     check('file')
         .optional()
@@ -28,7 +29,8 @@ const validation = [
 ];
 
 const controller = async (req: Request, res: Response) => {
-    const { title, description, amount, infoLinks, platform, interaction, content, contentMetadata } = req.body;
+    const { title, description, amount, infoLinks, platform, interaction, content, contentMetadata, isPublished } =
+        req.body;
     const image = req.file && (await ImageService.upload(req.file));
     const pool = await PoolService.getById(req.header('X-PoolId'));
     const reward = await PointRewardService.create(pool, {
@@ -41,6 +43,7 @@ const controller = async (req: Request, res: Response) => {
         content,
         contentMetadata,
         infoLinks,
+        isPublished,
     });
     res.status(201).json(reward);
 };

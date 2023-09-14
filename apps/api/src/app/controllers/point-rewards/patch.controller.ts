@@ -10,6 +10,7 @@ const validation = [
     param('id').exists(),
     body('title').optional().isString(),
     body('description').optional().isString(),
+    body('isPublished').optional().isBoolean(),
     body('amount').optional().isInt({ gt: 0 }),
     check('file')
         .optional()
@@ -34,7 +35,18 @@ const controller = async (req: Request, res: Response) => {
     let reward = await PointReward.findById(req.params.id);
     if (!reward) throw new NotFoundError('Could not find the reward');
     const image = req.file && (await ImageService.upload(req.file));
-    const { title, description, amount, platform, infoLinks, interaction, content, contentMetadata, index } = req.body;
+    const {
+        title,
+        description,
+        amount,
+        platform,
+        infoLinks,
+        interaction,
+        content,
+        contentMetadata,
+        index,
+        isPublished,
+    } = req.body;
     reward = await PointReward.findByIdAndUpdate(
         reward._id,
         {
@@ -48,6 +60,7 @@ const controller = async (req: Request, res: Response) => {
             content,
             contentMetadata,
             index,
+            isPublished,
         },
         { new: true },
     );

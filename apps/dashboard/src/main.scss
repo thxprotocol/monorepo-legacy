@@ -129,6 +129,11 @@ widgetbot {
             vertical-align: middle;
         }
     }
+}
+
+.table-header,
+thead,
+tbody {
     .custom-checkbox {
         margin: 0;
         .custom-control-label {
@@ -142,4 +147,8 @@ widgetbot {
             }
         }
     }
+}
+
+.text-opaque {
+    opacity: .6;
 }

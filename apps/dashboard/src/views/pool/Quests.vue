@@ -44,12 +44,22 @@
                 :total-rows="totals[pool._id]"
                 :selectedItems="selectedItems"
                 :actions="[{ variant: 0, label: `Delete quests` }]"
+                toggle-label="Show all"
+                @toggle="isUnpublishedShown = $event"
                 @click-action="onClickAction"
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
             />
 
-            <BTable id="table-quests" hover :busy="isLoading" :items="rewardsByPage" responsive="lg" show-empty>
+            <BTable
+                id="table-quests"
+                hover
+                :busy="isLoading"
+                :items="rewardsByPage"
+                responsive="lg"
+                show-empty
+                :tbody-tr-class="rowClass"
+            >
                 <!-- Head formatting -->
                 <template #head(index)> &nbsp; </template>
                 <template #head(checkbox)>
@@ -59,7 +69,7 @@
                 <template #head(title)> Title </template>
                 <template #head(points)> Points </template>
                 <template #head(entries)> Entries </template>
-                <template #head(id)> &nbsp; </template>
+                <template #head(quest)> &nbsp; </template>
 
                 <!-- Cell formatting -->
                 <template #cell(index)="{ item, index }">
@@ -73,7 +83,7 @@
                     </div>
                 </template>
                 <template #cell(checkbox)="{ item }">
-                    <b-form-checkbox :value="{ id: item.id, variant: item.variant }" v-model="selectedItems" />
+                    <b-form-checkbox :value="{ id: item.quest._id, variant: item.variant }" v-model="selectedItems" />
                 </template>
                 <template #cell(variant)="{ item }">
                     <b-badge variant="light" class="p-2">{{ QuestVariant[item.variant] }} </b-badge>
@@ -84,34 +94,34 @@
                 <template #cell(title)="{ item }"> {{ item.title }} </template>
                 <template #cell(entries)="{ item }">
                     <template v-if="item.variant === QuestVariant.Invite">
-                        <b-link v-b-modal="`modalReferralQuestClaims${item.id}`" v-if="item.entries">
+                        <b-link v-b-modal="`modalReferralQuestClaims${item.quest._id}`" v-if="item.entries">
                             <small><i class="fas text-muted fa-users mr-1" /></small>
                             {{ item.entries.length }}
                         </b-link>
                         <BaseModalQuestInviteClaims
-                            :id="`modalReferralQuestClaims${item.id}`"
+                            :id="`modalReferralQuestClaims${item.quest._id}`"
                             :pool="pool"
-                            :reward="allQuests.find((q) => q._id === item.id)"
+                            :reward="allQuests.find((q) => q._id === item.quest._id)"
                         />
                     </template>
                     <template v-else>
-                        <b-link v-b-modal="`modalQuestSocialEntries${item.id}`" v-if="item.entries">
+                        <b-link v-b-modal="`modalQuestSocialEntries${item.quest._id}`" v-if="item.entries">
                             <small><i class="fas text-muted fa-users mr-1" /></small>
                             {{ item.entries.length }}
                         </b-link>
                         <BaseModalQuestSocialEntries
-                            :id="`modalQuestSocialEntries${item.id}`"
+                            :id="`modalQuestSocialEntries${item.quest._id}`"
                             :pool="pool"
-                            :quest="allQuests.find((q) => q._id === item.id)"
+                            :quest="allQuests.find((q) => q._id === item.quest._id)"
                         />
                     </template>
                 </template>
-                <template #cell(id)="{ item }">
+                <template #cell(quest)="{ item }">
                     <b-dropdown variant="link" size="sm" right no-caret>
                         <template #button-content>
                             <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
                         </template>
-                        <b-dropdown-item v-b-modal="questModalComponentMap[item.variant] + item.id">
+                        <b-dropdown-item v-b-modal="questModalComponentMap[item.variant] + item.quest._id">
                             Edit
                         </b-dropdown-item>
                         <b-dropdown-item @click="onClickDelete(item)"> Delete </b-dropdown-item>
@@ -119,10 +129,10 @@
                     <component
                         @submit="listQuests"
                         :is="questModalComponentMap[item.variant]"
-                        :id="questModalComponentMap[item.variant] + item.id"
+                        :id="questModalComponentMap[item.variant] + item.quest._id"
                         :pool="pool"
                         :total="allQuests.length"
-                        :reward="allQuests.find((q) => q._id === item.id)"
+                        :reward="allQuests.find((q) => q._id === item.quest._id)"
                     />
                 </template>
             </BTable>
@@ -193,6 +203,7 @@ export default class QuestsView extends Vue {
         [QuestVariant.Custom]: 'fas fa-flag',
         [QuestVariant.Web3]: 'fab fa-ethereum',
     };
+    isUnpublishedShown = false;
 
     pools!: IPools;
     totals!: { [poolId: string]: number };
@@ -220,27 +231,32 @@ export default class QuestsView extends Vue {
                 ? Object.values(this.customQuests[this.$route.params.id])
                 : []),
             ...(this.web3Quests[this.$route.params.id] ? Object.values(this.web3Quests[this.$route.params.id]) : []),
-        ];
+        ].filter((q) => (this.isUnpublishedShown ? true : q.isPublished));
     }
 
     get rewardsByPage() {
         return this.allQuests
             .sort((a: any, b: any) => Number(a.index) - Number(b.index))
             .filter((quest: TBaseReward) => quest.page === this.page)
-            .map((r: any) => ({
-                index: r,
-                checkbox: r._id,
-                variant: r.variant,
-                points: r.amount || `${r.amounts.length} days`,
-                title: r.title,
-                entries: r.entries,
-                id: r._id,
+            .map((quest: any) => ({
+                index: quest,
+                checkbox: quest._id,
+                variant: quest.variant,
+                points: quest.amount || `${quest.amounts.length} days`,
+                title: quest.title,
+                entries: quest.entries,
+                quest: quest,
             }))
             .slice(0, this.limit);
     }
 
     mounted() {
         this.listQuests();
+    }
+
+    rowClass(item, type) {
+        if (!item || type !== 'row') return;
+        if (!item.quest.isPublished) return 'bg-light text-opaque';
     }
 
     async listQuests() {

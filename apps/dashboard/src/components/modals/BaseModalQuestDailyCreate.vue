@@ -7,10 +7,12 @@
         @change-title="title = $event"
         @change-description="description = $event"
         @change-file="file = $event"
+        @change-published="isPublished = $event"
         :info-links="infoLinks"
         :id="id"
         :error="error"
         :loading="isLoading"
+        :published="isPublished"
         :disabled="isSubmitDisabled || !title"
         :quest="reward"
     >
@@ -84,6 +86,7 @@ import BaseModalQuestCreate from '@thxnetwork/dashboard/components/modals/BaseMo
 export default class ModalRewardDailyCreate extends Vue {
     isSubmitDisabled = false;
     isLoading = false;
+    isPublished = false;
     error = '';
     title = '';
     amounts = [5, 10, 20, 40, 80, 160, 360];
@@ -105,6 +108,7 @@ export default class ModalRewardDailyCreate extends Vue {
     }
 
     onShow() {
+        this.isPublished = this.reward ? this.reward.isPublished : this.isPublished;
         this.title = this.reward ? this.reward.title : this.title;
         this.description = this.reward ? this.reward.description : this.description;
         this.amounts = this.reward ? this.reward.amounts : this.amounts;
@@ -126,6 +130,7 @@ export default class ModalRewardDailyCreate extends Vue {
                 amounts: JSON.stringify(this.amounts),
                 limit: this.limit,
                 file: this.file,
+                isPublished: this.isPublished,
                 page: this.reward ? this.reward.page : 1,
                 infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
                 isEnabledWebhookQualification: this.isEnabledWebhookQualification,

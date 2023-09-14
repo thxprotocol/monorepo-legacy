@@ -44,6 +44,11 @@
                             </p>
                         </BaseCardInfoLinks>
                         <slot name="col-right" />
+                        <b-form-group>
+                            <b-checkbox :checked="published" @change="$emit('change-published', $event)">
+                                Published
+                            </b-checkbox>
+                        </b-form-group>
                     </b-col>
                 </b-row>
             </form>
@@ -88,6 +93,7 @@ export default class ModalQuestCreate extends Vue {
     @Prop() variant!: string;
     @Prop() loading!: boolean;
     @Prop() disabled!: boolean;
+    @Prop() published!: boolean;
     @Prop({ required: false }) quest!: TBaseReward;
     @Prop() infoLinks!: TInfoLink[];
 

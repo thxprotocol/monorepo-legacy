@@ -1,5 +1,5 @@
 <template>
-    <div class="p-3 d-flex align-items-center justify-content-between">
+    <div class="table-header p-3 d-flex align-items-center justify-content-between">
         <div class="d-flex align-items-center">
             <span class="text-muted mr-2" v-if="selectedItems.length">
                 Selected <strong>{{ selectedItems.length }}</strong> item{{ selectedItems.length === 1 ? '' : 's' }}
@@ -26,6 +26,10 @@
                 </template>
                 <b-form-input size="sm" placeholder="Search..." @input="$emit('input-query', $event)" />
             </b-input-group>
+            <div class="d-flex align-items-center mr-5">
+                <span class="text-muted mr-2">{{ toggleLabel }}</span>
+                <b-form-checkbox @change="$emit('toggle', $event)" />
+            </div>
             <span class="text-muted mr-2">Limit</span>
             <b-form-select
                 @change="$emit('change-limit', $event)"
@@ -70,6 +74,7 @@ export default class BaseCardTableHeader extends Vue {
     @Prop() pool!: TPool;
     @Prop() totalRows!: number;
     @Prop() search!: boolean;
+    @Prop() toggleLabel!: string;
 
     selectedBulkAction: TTableBulkAction | null = null;
 
