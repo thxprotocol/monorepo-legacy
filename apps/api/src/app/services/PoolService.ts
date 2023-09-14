@@ -234,6 +234,14 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
     const subs = participants.results.map((p) => p.sub);
     const accounts = await AccountProxy.getMany(subs);
 
+    async function attempt(fn: any) {
+        try {
+            await fn();
+        } catch (error) {
+            logger.error(error);
+        }
+    }
+
     participants.results = await Promise.all(
         participants.results.map(async (participant) => {
             let wallet: WalletDocument,
@@ -241,17 +249,15 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
                 subscription: PoolSubscriptionDocument,
                 pointBalance: PointBalanceDocument;
 
-            try {
-                wallet = await SafeService.findPrimary(participant.sub, pool.chainId);
-                account = accounts.find((a) => a.sub === wallet.sub);
-                subscription = await PoolSubscription.findOne({ poolId: pool._id, sub: account.sub });
-                pointBalance = await PointBalance.findOne({
+            attempt((wallet = await SafeService.findPrimary(participant.sub, pool.chainId)));
+            attempt((account = accounts.find((a) => a.sub === wallet.sub)));
+            attempt((subscription = await PoolSubscription.findOne({ poolId: pool._id, sub: account.sub })));
+            attempt(
+                (pointBalance = await PointBalance.findOne({
                     poolId: participant.poolId,
                     walletId: wallet._id,
-                });
-            } catch (error) {
-                logger.error(error);
-            }
+                })),
+            );
 
             return {
                 ...participant.toJSON(),
