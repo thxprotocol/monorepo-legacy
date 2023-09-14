@@ -6,7 +6,9 @@ import { AssetPool } from '@thxnetwork/api/models/AssetPool';
 
 export const validation = [
     param('id').exists(),
-    body('settings.title').optional().isString().trim().escape(),
+    body('settings.title').optional().isString().trim().escape().isLength({ max: 50 }),
+    body('settings.description').optional().isString().trim().escape().isLength({ max: 255 }),
+    body('settings.startDate').optional({ nullable: true }).isString(),
     body('settings.endDate').optional({ nullable: true }).isString(),
     body('settings.discordWebhookUrl').optional({ checkFalsy: true }).isURL(),
     body('settings.isArchived').optional().isBoolean(),
@@ -24,6 +26,7 @@ export const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(req.params.id);
     if (!pool) throw new NotFoundError('Could not find the Asset Pool for this id');
 
+    console.log(req.body);
     const result = await AssetPool.findByIdAndUpdate(
         pool._id,
         { settings: Object.assign(pool.settings, req.body.settings) },

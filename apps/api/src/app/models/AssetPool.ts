@@ -15,8 +15,10 @@ const assetPoolSchema = new mongoose.Schema(
         token: String,
         signingSecret: String,
         settings: {
-            endDate: Date,
             title: String,
+            description: String,
+            startDate: Date,
+            endDate: Date,
             isArchived: Boolean,
             isWeeklyDigestEnabled: { type: Boolean, default: true },
             isTwitterSyncEnabled: { type: Boolean, default: false },

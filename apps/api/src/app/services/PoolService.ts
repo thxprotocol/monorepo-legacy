@@ -69,6 +69,7 @@ async function deploy(
     title: string,
     forceSync = true,
     dummyContent = true,
+    startDate: Date,
     endDate?: Date,
 ): Promise<AssetPoolDocument> {
     const factory = getContract(chainId, 'Factory', currentVersion);
@@ -82,6 +83,8 @@ async function deploy(
         signingSecret: getsigningSecret(64),
         settings: {
             title,
+            description: '',
+            startDate,
             endDate,
             isArchived: false,
             isWeeklyDigestEnabled: true,
@@ -89,9 +92,12 @@ async function deploy(
             defaults: {
                 conditionalRewards: { title: 'Retweet this tweet', description: '', amount: 50 },
             },
-            authenticationMethods: Object.keys(AccountVariant)
-                .filter((x) => x != AccountVariant.SSOSpotify.toString() && !isNaN(Number(x)))
-                .map((x) => Number(x)),
+            authenticationMethods: [
+                AccountVariant.EmailPassword,
+                AccountVariant.Metamask,
+                AccountVariant.SSOGoogle,
+                AccountVariant.SSODiscord,
+            ],
         },
     });
 

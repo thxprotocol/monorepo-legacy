@@ -53,6 +53,8 @@ export type TPool = {
 
 export type TPoolSettings = {
     title: string;
+    description: string;
+    startDate: Date;
     endDate?: Date;
     isArchived: boolean;
     isWeeklyDigestEnabled: boolean;

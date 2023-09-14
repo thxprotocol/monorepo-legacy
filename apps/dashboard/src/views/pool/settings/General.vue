@@ -10,51 +10,36 @@
         </b-form-row>
         <b-form-row>
             <b-col md="4">
-                <strong>Title</strong>
-                <div class="text-muted">Used in e-mail notifications towards your audience.</div>
+                <strong>Information</strong>
+                <div class="text-muted">Used to explain your campaign to users.</div>
             </b-col>
             <b-col md="8">
-                <b-form-input @change="onChangeSettings" v-model="title" class="mr-3 mb-0" />
+                <b-form-group description="Max 50 characters.">
+                    <b-form-input
+                        @change="onChangeSettings"
+                        v-model="title"
+                        placeholder="Short campaign title..."
+                        :state="title ? title.length < 50 : null"
+                    />
+                </b-form-group>
+                <b-form-group description="Max 255 characters." class="mb-0">
+                    <b-textarea
+                        v-model="description"
+                        @change="onChangeSettings"
+                        :state="description ? description.length < 255 : null"
+                        placeholder="Some words about your campaign.."
+                    ></b-textarea>
+                </b-form-group>
             </b-col>
         </b-form-row>
         <hr />
         <b-form-row>
             <b-col md="4">
-                <strong>End date</strong>
-                <div class="text-muted">Configure an optional end date for this campaign.</div>
+                <strong>Duration</strong>
+                <div class="text-muted">Configure start and end dates for this campaign.</div>
             </b-col>
             <b-col md="8">
-                <b-row>
-                    <b-col md="6">
-                        <b-input-group>
-                            <b-datepicker
-                                value-as-date
-                                :min="minDate"
-                                v-model="expirationDate"
-                                @input="onChangeSettings()"
-                            />
-                            <b-input-group-append>
-                                <b-button @click="onClickExpirationDateReset" variant="dark">
-                                    <i class="fas fa-trash ml-0"></i>
-                                </b-button>
-                            </b-input-group-append>
-                        </b-input-group>
-                    </b-col>
-                    <b-col md="6">
-                        <b-input-group>
-                            <b-timepicker
-                                :disabled="!expirationDate"
-                                v-model="expirationTime"
-                                @input="onChangeSettings()"
-                            />
-                            <b-input-group-append>
-                                <b-button @click="onClickExpirationTimeReset" variant="dark">
-                                    <i class="fas fa-trash ml-0"></i>
-                                </b-button>
-                            </b-input-group-append>
-                        </b-input-group>
-                    </b-col>
-                </b-row>
+                <BaseCampaignDuration class="mb-0" :settings="pool.settings" @update="onUpdateDuration" />
             </b-col>
         </b-form-row>
         <hr />
@@ -212,11 +197,13 @@ import { hasBasicAccess } from '@thxnetwork/common';
 import type { TAccount, TPoolSettings } from '@thxnetwork/types/interfaces';
 import BaseListItemCollaborator from '@thxnetwork/dashboard/components/list-items/BaseListItemCollaborator.vue';
 import BaseModalPoolTransfer from '@thxnetwork/dashboard/components/modals/BaseModalPoolTransfer.vue';
+import BaseCampaignDuration, { parseDateTime } from '@thxnetwork/dashboard/components/cards/BaseCampaignDuration.vue';
 
 @Component({
     components: {
         BaseListItemCollaborator,
         BaseModalPoolTransfer,
+        BaseCampaignDuration,
     },
     computed: {
         ...mapGetters({
@@ -235,13 +222,13 @@ export default class SettingsView extends Vue {
     brands!: { [poolId: string]: TBrand };
     errorCollaborator = '';
     title = '';
+    description = '';
     logoImgUrl = '';
     backgroundImgUrl = '';
     isWeeklyDigestEnabled = false;
     isArchived = false;
-    minDate: Date | null = null;
-    expirationDate: Date | null = null;
-    expirationTime = '00:00:00';
+    startDate: Date | null = null;
+    endDate: Date | null = null;
     emailCollaborator = '';
     isSubmittingCollaborator = false;
     hasBasicAccess = hasBasicAccess;
@@ -275,32 +262,11 @@ export default class SettingsView extends Vue {
         });
 
         this.title = this.pool.settings.title;
+        this.description = this.pool.settings.description;
         this.isArchived = this.pool.settings.isArchived;
         this.isWeeklyDigestEnabled = this.pool.settings.isWeeklyDigestEnabled;
-        this.minDate = this.getMinDate();
-
-        if (this.pool.settings.endDate) {
-            this.expirationDate = new Date(this.pool.settings.endDate);
-            this.expirationTime = `${this.expirationDate.getHours()}:${this.expirationDate.getMinutes()}:${this.expirationDate.getSeconds()}`;
-        }
 
         this.loading = false;
-    }
-
-    getMinDate() {
-        const date = new Date();
-        date.setDate(date.getDate() + 1);
-        return date;
-    }
-
-    getEndDate() {
-        if (!this.expirationDate) return null;
-        const endDate = new Date(this.expirationDate);
-        const parts = this.expirationTime.split(':');
-        endDate.setHours(Number(parts[0]));
-        endDate.setMinutes(Number(parts[1]));
-        endDate.setSeconds(Number(parts[2]));
-        return endDate;
     }
 
     async upload(file: File) {
@@ -323,11 +289,20 @@ export default class SettingsView extends Vue {
         await this.updateBrand();
     }
 
+    onUpdateDuration({ startDate, startTime, endDate, endTime }) {
+        this.onChangeSettings({
+            startDate: parseDateTime(startDate, startTime),
+            endDate: parseDateTime(endDate, endTime),
+        } as any);
+    }
+
     async onChangeSettings(setting?: TPoolSettings) {
         const settings = Object.assign(
             {
                 title: this.title,
-                endDate: this.getEndDate(),
+                description: this.description,
+                startDate: this.startDate,
+                endDate: this.endDate,
                 isArchived: this.isArchived,
                 isWeeklyDigestEnabled: this.isWeeklyDigestEnabled,
             },
@@ -365,17 +340,6 @@ export default class SettingsView extends Vue {
     onClickCollaboratorInvite() {
         if (!this.isValidCollaboratorEmail) return;
         this.sendInvite(this.emailCollaborator);
-    }
-
-    onClickExpirationDateReset() {
-        this.expirationDate = null;
-        this.expirationTime = '00:00:00';
-        this.onChangeSettings();
-    }
-
-    onClickExpirationTimeReset() {
-        this.expirationTime = '00:00:00';
-        this.onChangeSettings();
     }
 }
 </script>

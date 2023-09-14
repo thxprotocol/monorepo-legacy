@@ -7,14 +7,23 @@ import { DEFAULT_COLORS, DEFAULT_ELEMENTS } from '@thxnetwork/types/contants';
 
 const validation = [
     body('chainId').exists().isNumeric(),
-    body('title').optional().isString(),
+    body('settings.title').optional().isString().trim().escape().isLength({ max: 50 }),
+    body('startDate').optional({ nullable: true }).isString(),
     body('endDate').optional({ nullable: true }).isString(),
 ];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
-    const title = req.body.title || 'My Loyalty Campaign';
-    const pool = await PoolService.deploy(req.auth.sub, req.body.chainId, title, true, true, req.body.endDate);
+    const { chainId, title, startDate, endDate } = req.body;
+    const pool = await PoolService.deploy(
+        req.auth.sub,
+        chainId,
+        title || 'My Loyalty Campaign',
+        true,
+        true,
+        startDate,
+        endDate,
+    );
 
     await Widget.create({
         uuid: v4(),

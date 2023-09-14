@@ -5,7 +5,7 @@
                 <b-form-input v-model="title" placeholder="My Loyalty Campaign" class="mr-3" />
             </b-form-group>
             <base-form-select-network v-if="!loading" :chainId="chainId" @selected="onSelectChain" />
-            <BaseCardPoolExpiry class="mb-3" :expiryDate="endDate" @change-date="endDate = $event" />
+            <BaseCampaignDuration :settings="{}" @update="onUpdateDuration" />
         </template>
         <template #btn-primary>
             <b-button :disabled="loading" class="rounded-pill" @click="submit()" variant="primary" block>
@@ -21,10 +21,10 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseFormSelectNetwork from '@thxnetwork/dashboard/components/form-select/BaseFormSelectNetwork.vue';
 import BaseModal from './BaseModal.vue';
-import type { TAccount } from '@thxnetwork/dashboard/types/account';
 import BaseIdenticon from '../BaseIdenticon.vue';
+import BaseCampaignDuration, { parseDateTime } from '@thxnetwork/dashboard/components/cards/BaseCampaignDuration.vue';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
-import BaseCardPoolExpiry from '../cards/BaseCardPoolExpiry.vue';
+import type { TAccount } from '@thxnetwork/common/lib/types';
 
 @Component({
     components: {
@@ -32,7 +32,7 @@ import BaseCardPoolExpiry from '../cards/BaseCardPoolExpiry.vue';
         BaseFormSelectNetwork,
         BaseIdenticon,
         chainInfo,
-        BaseCardPoolExpiry,
+        BaseCampaignDuration,
     },
     computed: mapGetters({
         profile: 'account/profile',
@@ -46,6 +46,7 @@ export default class ModalAssetPoolCreate extends Vue {
     profile!: TAccount;
     chainInfo = chainInfo;
     title = '';
+    startDate: Date | null = null;
     endDate: Date | null = null;
 
     @Prop() id!: string;
@@ -54,10 +55,20 @@ export default class ModalAssetPoolCreate extends Vue {
         this.chainId = chainId;
     }
 
+    onUpdateDuration({ startDate, startTime, endDate, endTime }) {
+        this.startDate = parseDateTime(startDate, startTime);
+        this.endDate = parseDateTime(endDate, endTime);
+    }
+
     async submit() {
         this.loading = true;
 
-        await this.$store.dispatch('pools/create', { chainId: this.chainId, title: this.title, endDate: this.endDate });
+        await this.$store.dispatch('pools/create', {
+            chainId: this.chainId,
+            title: this.title,
+            startDate: this.startDate,
+            endDate: this.endDate,
+        });
 
         this.$bvModal.hide(this.id);
         this.loading = false;

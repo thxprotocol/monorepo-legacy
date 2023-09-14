@@ -54,6 +54,7 @@
             </b-col>
             <b-col md="8">
                 <b-form-checkbox-group
+                    disabled
                     v-model="selectedAuthenticationMethods"
                     :options="authenticationMethods"
                     value-field="key"
