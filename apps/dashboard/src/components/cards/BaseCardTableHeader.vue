@@ -26,7 +26,7 @@
                 </template>
                 <b-form-input size="sm" placeholder="Search..." @input="$emit('input-query', $event)" />
             </b-input-group>
-            <div class="d-flex align-items-center mr-5">
+            <div class="d-flex align-items-center mr-5" v-if="toggleLabel">
                 <span class="text-muted mr-2">{{ toggleLabel }}</span>
                 <b-form-checkbox @change="$emit('toggle', $event)" />
             </div>
