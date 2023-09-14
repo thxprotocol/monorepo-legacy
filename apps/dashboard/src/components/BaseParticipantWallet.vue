@@ -1,5 +1,5 @@
 <template>
-    <div class="d-flex align-items-center">
+    <div v-if="wallet" class="d-flex align-items-center">
         <b-img :src="wallet.chain.logoUrl" alt="" class="mr-2" v-b-tooltip :title="wallet.chain.name" height="12" />
         <b-link :href="wallet.url" target="link">{{ wallet.shortAddress }}</b-link>
     </div>
@@ -11,6 +11,7 @@ import { chainInfo, getAddressURL } from '../utils/chains';
 import { shortenAddress } from '../utils/wallet';
 
 export function parseWallet(wallet: any) {
+    if (!wallet) return;
     return {
         address: wallet.address,
         shortAddress: shortenAddress(wallet.address),

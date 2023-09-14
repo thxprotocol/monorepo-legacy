@@ -1,7 +1,7 @@
 import { TPointReward } from './PointReward';
 import { Contract } from 'web3-eth-contract';
 import { ChainId } from '../enums';
-import { TAccount, TBrand, TCollaborator, TWallet } from '@thxnetwork/types/interfaces';
+import { TCollaborator, TAccount, TBrand, TWallet } from '@thxnetwork/types/interfaces';
 
 export enum AccountVariant {
     EmailPassword = 0,

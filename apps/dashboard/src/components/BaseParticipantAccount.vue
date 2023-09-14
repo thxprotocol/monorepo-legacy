@@ -1,5 +1,5 @@
 <template>
-    <b-media>
+    <b-media v-if="account">
         <template #aside>
             <b-avatar
                 v-b-tooltip
@@ -19,6 +19,7 @@ import { AccessTokenKind } from '@thxnetwork/types/enums';
 import { AccountVariant } from '../types/enums/AccountVariant';
 
 export function parseAccount({ id, account }) {
+    if (!account) return;
     return {
         id,
         email: account && account.email,

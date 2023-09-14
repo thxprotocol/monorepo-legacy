@@ -1,5 +1,5 @@
 <template>
-    <span class="mr-1">
+    <span v-if="account" class="mr-1">
         <b-link v-if="account.url" :href="account.url" target="_blank">
             <i :class="account.platform.icon" class="text-gray" v-b-tooltip :title="account.userName" />
         </b-link>
@@ -13,6 +13,7 @@ import { getUserUrl, platformIconMap, tokenKindPlatformMap } from '../types/rewa
 import { PlatformVariant } from '@thxnetwork/types/enums';
 
 export function parseConnectedAccounts(accounts: any) {
+    if (!accounts.length) return [];
     return accounts
         .map((a) => {
             const platformId = tokenKindPlatformMap[a.kind];
