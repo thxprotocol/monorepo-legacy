@@ -88,6 +88,30 @@ const controller = async (req: Request, res: Response) => {
             waitForBody().then(this.onLoad.bind(this));
         }
 
+        public debug() {
+            this.iframe.contentWindow.postMessage({ message: 'thx.iframe.debug' },  this.settings.widgetUrl);
+        }
+
+        public open(widgetPath) {
+            if (!widgetPath) return;
+
+            const { widgetUrl, poolId, chainId, theme } = this.settings;
+            const path = '/c/' + poolId + widgetPath;
+            const isMobile = window.matchMedia('(pointer:coarse)').matches;
+
+            if (isMobile) {
+                // Window _blank will be blocked by mobile OS so we redirect the current window
+                window.location.href = this.settings.widgetUrl + path   
+            } else {
+                this.iframe.contentWindow.postMessage({ message: 'thx.iframe.navigate', path }, widgetUrl);
+                this.show(true);
+            }
+        }
+    
+        public connect(uuid) {
+            this.open('/w/' + uuid);
+        }
+
         onLoad() {
             this.iframe = this.createIframe();
             this.notifications = this.createNotifications(0);
@@ -302,7 +326,7 @@ const controller = async (req: Request, res: Response) => {
                 const url = new URL(window.location.href)
                 const widgetPath = url.searchParams.get('thx_widget_path');  
                 
-                this.onWidgetToggle(!!widgetPath);
+                this.show(!!widgetPath);
             }, 350);
             
             return launcher;
@@ -344,7 +368,7 @@ const controller = async (req: Request, res: Response) => {
 
                 const url = new URL(window.location.href)
                 const widgetPath = url.searchParams.get('thx_widget_path');
-                this.onWidgetToggle(!!widgetPath)
+                this.show(!!widgetPath)
             }, 350);
     
             return launcher;
@@ -364,6 +388,14 @@ const controller = async (req: Request, res: Response) => {
     
             return container;
         }
+
+        storeRef(ref) {
+            if (!ref) return;
+            
+            window.localStorage.setItem('thx:widget:' + this.settings.poolId + ':ref', ref);
+            this.iframe.contentWindow.postMessage({ message: 'thx.config.ref', ref }, this.settings.widgetUrl);
+            this.timer = window.setInterval(this.onURLDetectionCallback.bind(this), 500);
+        }
         
         onMessage(event) {
             if (event.origin !== this.settings.widgetUrl) return;
@@ -379,7 +411,7 @@ const controller = async (req: Request, res: Response) => {
                     break;
                 }
                 case 'thx.widget.toggle': {
-                    this.onWidgetToggle(!Number(this.iframe.style.opacity));
+                    this.show(!Number(this.iframe.style.opacity));
                     break;
                 }
             }
@@ -396,41 +428,24 @@ const controller = async (req: Request, res: Response) => {
             } else if (!window.ethereum && isMobile) { 
                 window.open(this.createURL(), '_blank');
             } else {
-                this.onWidgetToggle(!Number(this.iframe.style.opacity));
+                this.show(!Number(this.iframe.style.opacity));
             }
             this.message.remove();
         }
-    
+
         onWidgetReady() {      
             const parentUrl = new URL(window.location.href)
             const widgetPath = parentUrl.searchParams.get('thx_widget_path');
-            const redirectStatus = parentUrl.searchParams.get('redirect_status');
 
-            if (widgetPath) {
-                const { widgetUrl, poolId, chainId, theme } = this.settings;
-                const path = '/c/' + poolId + widgetPath;
-                const isMobile = window.matchMedia('(pointer:coarse)').matches;
-
-                if (isMobile) {
-                    // Window _blank will be blocked by mobile OS so we redirect the current window
-                    window.location.href = this.settings.widgetUrl + path   
-                } else {
-                    this.iframe.contentWindow.postMessage({ message: 'thx.iframe.navigate', path }, widgetUrl);
-                }
-            }
-
-            if (this.ref) {
-                window.localStorage.setItem('thx:widget:' + this.settings.poolId + ':ref', this.ref);
-                this.iframe.contentWindow.postMessage({ message: 'thx.config.ref', ref: this.ref }, this.settings.widgetUrl);
-                this.timer = window.setInterval(this.onURLDetectionCallback.bind(this), 500);
-            }
+            this.open(widgetPath);
+            this.storeRef(this.ref);
         }
 
-        onWidgetToggle(show) {
-            this.iframe.style.opacity = show ? '1' : '0';
-            this.iframe.style.transform = show ? 'scale(1)' : 'scale(0)';
-            this.iframe.contentWindow.postMessage({ message: 'thx.iframe.show', isShown: show }, this.settings.widgetUrl);
-            if (show) this.message.remove();
+        show(isShown) {
+            this.iframe.style.opacity = isShown ? '1' : '0';
+            this.iframe.style.transform = isShown ? 'scale(1)' : 'scale(0)';
+            this.iframe.contentWindow.postMessage({ message: 'thx.iframe.show', isShown }, this.settings.widgetUrl);
+            if (isShown) this.message.remove();
         }
 
         onURLDetectionCallback() {
@@ -455,10 +470,6 @@ const controller = async (req: Request, res: Response) => {
                 const iframe = document.getElementById('thx-iframe');
                 Object.assign(iframe.style, this.defaultStyles['md']);
             }
-        }
-
-        debug() {
-            this.iframe.contentWindow.postMessage({ message: 'thx.iframe.debug' },  this.settings.widgetUrl);
         }
     }
     
