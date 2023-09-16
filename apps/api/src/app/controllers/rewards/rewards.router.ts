@@ -1,6 +1,7 @@
 import { assertRequestInput, checkJwt, corsHandler } from '@thxnetwork/api/middlewares';
 import express from 'express';
 import ListRewards from './list.controller';
+import ListRewardsPublic from './public/list.controller';
 import CreateReferralRewardClaim from './referral/claim/post.controller';
 import CreatePointRewardClaim from './points/claim/post.controller';
 import MilestoneRewardClaim from './milestones/claim/post.controller';
@@ -12,6 +13,7 @@ import { NODE_ENV } from '@thxnetwork/api/config/secrets';
 const router = express.Router();
 
 router.get('/', ListRewards.controller);
+router.get('/public', ListRewardsPublic.controller);
 router.post(
     '/referral/:uuid/claim',
     rateLimit((() => (NODE_ENV !== 'test' ? { windowMs: 1 * 1000, max: 1 } : {}))()),
