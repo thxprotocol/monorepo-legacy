@@ -5,7 +5,6 @@ import { Widget } from '@thxnetwork/api/models/Widget';
 import { logger } from '@thxnetwork/api/util/logger';
 import { ChainId } from '@thxnetwork/types/enums';
 import BrandService from '@thxnetwork/api/services/BrandService';
-import PoolService from '@thxnetwork/api/services/PoolService';
 import { query } from 'express-validator';
 
 export const paginatedResults = async (model: any, page: number, limit: number, search: string) => {

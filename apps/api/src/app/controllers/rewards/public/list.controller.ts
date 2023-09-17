@@ -19,6 +19,14 @@ export const paginatedResults = async (model: any, limit: number) => {
             },
             {
                 $lookup: {
+                    from: 'brands',
+                    localField: 'poolId',
+                    foreignField: 'poolId',
+                    as: 'brands',
+                },
+            },
+            {
+                $lookup: {
                     from: 'erc20perks',
                     localField: 'poolId',
                     foreignField: 'poolId',
@@ -79,6 +87,7 @@ const controller = async (req: Request, res: Response) => {
             widget: q.widget,
             amount: q.amounts ? q.amounts[q.amounts.length - 1] : q.amount,
             domain: q.widgets[0].domain,
+            brand: q.brands[0],
         }));
         results.push(quests);
     }
