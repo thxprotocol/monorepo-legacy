@@ -16,8 +16,8 @@ export default {
     ],
     controller: async (req: Request, res: Response) => {
         const poolId = req.header('X-PoolId');
-        const pool = await PoolService.getById(poolId);
-        if (pool.sub !== req.auth.sub) throw new ForbiddenError('Not your pool');
+        const hasAccess = await PoolService.hasAccess(req.auth.sub, poolId);
+        if (!hasAccess) throw new ForbiddenError('Not your pool');
 
         const brand = await BrandService.update({ poolId }, req.body);
         res.json(brand);
