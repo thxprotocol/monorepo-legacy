@@ -18,11 +18,11 @@ import WalletService from '@thxnetwork/api/services/WalletService';
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
     const pool = await PoolService.getById(req.header('X-PoolId'));
-    const referralRewards = await ReferralReward.find({ poolId: pool._id });
-    const pointRewards = await PointReward.find({ poolId: pool._id });
-    const milestoneRewards = await MilestoneReward.find({ poolId: pool._id });
-    const dailyRewards = await DailyReward.find({ poolId: pool._id });
-    const web3Quests = await Web3Quest.find({ poolId: pool._id });
+    const referralRewards = await ReferralReward.find({ poolId: pool._id, isPublished: true });
+    const pointRewards = await PointReward.find({ poolId: pool._id, isPublished: true });
+    const milestoneRewards = await MilestoneReward.find({ poolId: pool._id, isPublished: true });
+    const dailyRewards = await DailyReward.find({ poolId: pool._id, isPublished: true });
+    const web3Quests = await Web3Quest.find({ poolId: pool._id, isPublished: true });
     const authHeader = req.header('authorization');
 
     let wallet: WalletDocument, sub: string;

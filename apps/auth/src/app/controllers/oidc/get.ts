@@ -25,7 +25,7 @@ export const callbackPreAuth = async (req: Request, res: Response) => {
     const interaction = await oidc.Interaction.find(uid);
     if (!interaction) throw new UnauthorizedError('Your session has expired.');
 
-    // Set cookie for Twitter redirected OAuth requests
+    // Set cookie for Twitter redirected OAuth requests so it can continu in its webview
     if (req.path === '/callback/twitter') {
         const cookies = new Cookies(req, res, { keys: oidcConfig.cookies.keys as string[] });
         cookies.set('_interaction', uid, oidcConfig.cookies.short);
