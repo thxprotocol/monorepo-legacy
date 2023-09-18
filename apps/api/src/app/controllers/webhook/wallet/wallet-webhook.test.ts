@@ -42,6 +42,7 @@ describe('Webhook: Virtual Wallets', () => {
                 description: 'Lorem ipsum dolor sit amet',
                 amount: 100,
                 index: 0,
+                isPublished: true,
             })
             .expect((res: request.Response) => {
                 expect(res.body.uuid).toBeDefined();

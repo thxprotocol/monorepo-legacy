@@ -49,6 +49,7 @@ describe('Rewards', () => {
 
     it('POST /referral-rewards', (done) => {
         const successUrl = 'http://www.google.com';
+        const isPublished = true;
         user.post('/v1/referral-rewards/')
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .send({
@@ -56,12 +57,14 @@ describe('Rewards', () => {
                 description: 'Lorem ipsum dolor sit amet',
                 amount: 100,
                 successUrl,
+                isPublished,
                 index: 0,
             })
             .expect((res: request.Response) => {
                 expect(res.body.uuid).toBeDefined();
                 expect(res.body.successUrl).toBe(successUrl);
                 expect(res.body.amount).toBe(100);
+                expect(res.body.isPublished).toBe(isPublished);
                 referralReward = res.body;
             })
             .expect(201, done);
@@ -72,6 +75,8 @@ describe('Rewards', () => {
         const description = 'description';
         const amount = 160;
         const index = 0;
+        const isPublished = true;
+
         user.post('/v1/point-rewards/')
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .send({
@@ -80,12 +85,14 @@ describe('Rewards', () => {
                 amount,
                 platform: 0,
                 limit: 1,
+                isPublished,
                 index,
             })
             .expect((res: request.Response) => {
                 expect(res.body.title).toBe(title);
                 expect(res.body.description).toBe(description);
                 expect(res.body.amount).toBe(amount);
+                expect(res.body.isPublished).toBe(isPublished);
                 pointReward = res.body;
             })
             .expect(201, done);
@@ -96,6 +103,7 @@ describe('Rewards', () => {
         const description = 'description';
         const amount = 250;
         const index = 0;
+        const isPublished = true;
         user.post('/v1/milestone-rewards/')
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .send({
@@ -103,11 +111,13 @@ describe('Rewards', () => {
                 description,
                 amount,
                 index,
+                isPublished,
             })
             .expect((res: request.Response) => {
                 expect(res.body.title).toBe(title);
                 expect(res.body.description).toBe(description);
                 expect(res.body.amount).toBe(amount);
+                expect(res.body.isPublished).toBe(isPublished);
                 milestoneReward = res.body;
             })
             .expect(201, done);
