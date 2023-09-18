@@ -296,10 +296,11 @@ export default class WidgetPreviewView extends Vue {
         const { data } = await axios.get(API_URL + '/v1/widget/' + this.$route.params.poolId);
         this.title = data.title;
         this.logoImgUrl = data.logoUrl || this.defaultLogoImgUrl;
-        this.setBackground(data.backgroundUrl || this.defaultBackgroundImgUrl);
+
+        this.setBackground();
     }
 
-    setBackground(src: string) {
+    setBackground() {
         const app = document.getElementById('app');
         if (!app) return;
         app.style.opacity = '1';

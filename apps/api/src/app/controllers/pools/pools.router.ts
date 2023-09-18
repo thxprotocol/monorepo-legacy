@@ -2,6 +2,7 @@ import express from 'express';
 import { assertRequestInput, assertPoolAccess, guard, checkJwt, corsHandler } from '@thxnetwork/api/middlewares';
 import CreatePool from './post.controller';
 import ReadPool from './get.controller';
+import ReadPoolPreview from './preview/get.controller';
 import PoolsAnalytics from './analytics/get.controller';
 import PoolsAnalyticsLeaderBoard from './analytics/leaderboard/get.controller';
 import PoolsAnalyticsLeaderBoardClient from './analytics/leaderboard/client/get.controller';
@@ -88,6 +89,7 @@ router.post(
     assertRequestInput(CreatePoolTransferRefresh.validation),
     CreatePoolTransferRefresh.controller,
 );
+router.get('/:id/preview', ReadPoolPreview.controller);
 router.get('/', checkJwt, guard.check(['pools:read']), assertRequestInput(ListPools.validation), ListPools.controller);
 router.get('/public', assertRequestInput(ListPoolsPublic.validation), ListPoolsPublic.controller);
 router.get(

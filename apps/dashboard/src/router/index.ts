@@ -1,6 +1,7 @@
 import store from '@thxnetwork/dashboard/store';
 import {
     assertAuthorization,
+    downloadScreenshot,
     redirectAccount,
     redirectCollaborationRequest,
     redirectPoolTransfer,
@@ -36,6 +37,11 @@ const routes: Array<RouteConfig> = [
         component: () => import('../views/Pool.vue'),
         beforeEnter: assertAuthorization,
         children: [
+            {
+                name: 'download',
+                path: 'download',
+                beforeEnter: downloadScreenshot,
+            },
             {
                 name: 'dashboard',
                 path: 'dashboard',
