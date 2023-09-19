@@ -8,10 +8,8 @@ WORKDIR /usr/src/app
 ENV NODE_OPTIONS="--max_old_space_size=4096"
 
 RUN apk add g++ make py3-pip
-# node canvas build deps
-RUN apk add build-base cairo-dev jpeg-dev pango-dev giflib-dev
-# node canvas runtime deps
-RUN apk add cairo jpeg pango giflib
+# node canvas deps
+RUN apk add build-base cairo jpeg pango giflib
 
 COPY package.json yarn.lock ./
 RUN yarn
