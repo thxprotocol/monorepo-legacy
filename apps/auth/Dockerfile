@@ -7,7 +7,7 @@ WORKDIR /usr/src/app
 
 ENV NODE_OPTIONS="--max_old_space_size=4096"
 
-RUN apk --no-cache add g++ make py3-pip 
+RUN apk --no-cache add g++ make py3-pip build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
 COPY package.json yarn.lock ./
 RUN yarn
 COPY . .
