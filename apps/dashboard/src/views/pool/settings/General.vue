@@ -53,8 +53,8 @@
             <b-col md="8">
                 <b-form-row>
                     <b-col md="8">
-                        <b-form-group>
-                            <b-form-file class="mb-3" @change="onUpload($event, 'logoImgUrl')" accept="image/*" />
+                        <b-form-group description="Only .jpg, .jpeg and .png files are allowed">
+                            <b-form-file @change="onUpload($event, 'logoImgUrl')" accept=".jpg, .jpeg, .png" />
                         </b-form-group>
                     </b-col>
                     <b-col md="4">
@@ -84,8 +84,8 @@
             <b-col md="8">
                 <b-form-row>
                     <b-col md="8">
-                        <b-form-group>
-                            <b-form-file @change="onUpload($event, 'backgroundImgUrl')" accept="image/*" />
+                        <b-form-group description="Only .jpg, .jpeg and .png files are allowed">
+                            <b-form-file @change="onUpload($event, 'backgroundImgUrl')" accept=".jpg, .jpeg, .png" />
                         </b-form-group>
                     </b-col>
                     <b-col md="4">

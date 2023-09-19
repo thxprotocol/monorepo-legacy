@@ -7,12 +7,17 @@ async function upload(file: Express.Multer.File) {
     const [originalname, extension] = file.originalname.split('.');
     const filename =
         originalname.toLowerCase().split(' ').join('-').split('.') + '-' + short.generate() + `.${extension}`;
+    const type = extension === 'svg' ? 'image/svg+xml' : 'image/*';
+    return this.uploadToS3(file.buffer, filename, type);
+}
+
+async function uploadToS3(fileBuffer: Buffer, filename, type) {
     const uploadParams = {
         Key: filename,
         Bucket: AWS_S3_PUBLIC_BUCKET_NAME,
         ACL: 'public-read',
-        Body: file.buffer,
-        ContentType: extension === 'svg' ? 'image/svg+xml' : 'image/*',
+        Body: fileBuffer,
+        ContentType: type,
         ContentDisposition: 'inline',
     };
 
@@ -21,4 +26,4 @@ async function upload(file: Express.Multer.File) {
     return `https://${AWS_S3_PUBLIC_BUCKET_NAME}.s3.${AWS_S3_PUBLIC_BUCKET_REGION}.amazonaws.com/${filename}`;
 }
 
-export default { upload };
+export default { upload, uploadToS3 };
