@@ -9,7 +9,7 @@ ENV NODE_OPTIONS="--max_old_space_size=8192"
 
 RUN apk add g++ make py3-pip
 # node canvas deps
-RUN apk --no-cache add build-base cairo-dev jpeg-dev pango-dev giflib-dev
+RUN apk --no-cache add build-essential cairo-dev jpeg-dev pango pango-dev giflib-dev imagemagick freetype fontconfig
 
 COPY package.json yarn.lock ./
 RUN yarn
