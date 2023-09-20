@@ -5,12 +5,13 @@ import fs from 'fs';
 import { createCanvas, loadImage, registerFont } from 'canvas';
 import { Widget } from '@thxnetwork/api/models/Widget';
 import { TBrand } from '@thxnetwork/common/lib/types';
+import { assetsPath } from '../util/path';
 
 // Load on boot as registration on runtime results in font not being loaded in time
-const fontPath = path.resolve(__dirname, 'assets', 'fa-solid-900.ttf');
+const fontPath = path.resolve(assetsPath, 'fa-solid-900.ttf');
 const family = 'Font Awesome 5 Pro Solid';
-const defaultBackgroundImgPath = path.resolve(__dirname, 'assets', 'bg.png');
-const defaultLogoImgPath = path.resolve(__dirname, 'assets', 'logo.png');
+const defaultBackgroundImgPath = path.resolve(assetsPath, 'bg.png');
+const defaultLogoImgPath = path.resolve(assetsPath, 'logo.png');
 
 registerFont(fontPath, { family, style: 'normal', weight: '900' });
 
@@ -29,7 +30,7 @@ function drawImageBg(canvas, ctx, image) {
         scaleFactorHeight = canvas.height / image.height;
     }
 
-    const scaledWidth = image.width * scaleFactorWidth;
+    const scaledWidth = canvas.width; //image.width * scaleFactorWidth;
     const scaledHeight = image.height * scaleFactorHeight;
     const offsetX = (canvas.width - scaledWidth) / 2;
     const offsetY = (canvas.height - scaledHeight) / 2;
