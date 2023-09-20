@@ -19,7 +19,6 @@ const required = [
     'AWS_S3_PRIVATE_BUCKET_NAME',
     'AWS_S3_PRIVATE_BUCKET_REGION',
     'SAFE_TXS_SERVICE',
-    'TWITTER_API_TOKEN',
     'CWD',
 ];
 
@@ -35,10 +34,11 @@ if (process.env.NODE_ENV === 'production') {
             'INFURA_IPFS_PROJECT_ID',
             'INFURA_IPFS_PROJECT_SECRET',
             'RELAYER_SPEED',
+            'TWITTER_API_TOKEN',
         ],
     );
 } else if (process.env.NODE_ENV === 'development') {
-    required.push(...['PRIVATE_KEY', 'HARDHAT_RPC', 'LOCAL_CERT', 'LOCAL_CERT_KEY']);
+    required.push(...['PRIVATE_KEY', 'HARDHAT_RPC', 'LOCAL_CERT', 'LOCAL_CERT_KEY', 'TWITTER_API_TOKEN']);
 }
 
 required.forEach((value: string) => {
