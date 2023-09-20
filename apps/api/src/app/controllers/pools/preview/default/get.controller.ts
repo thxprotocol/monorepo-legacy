@@ -9,9 +9,10 @@ export const validation = [param('id').isMongoId()];
 export const controller = async (req: Request, res: Response) => {
     // Get brand background
     const brand = await BrandService.get(req.params.id);
-    const url = new URL(brand.previewImgUrl);
+    if (!brand.previewImgUrl) return res.status(404).end();
 
     // Retrieve the image from S3 and stream it directly to the response
+    const url = new URL(brand.previewImgUrl);
     const s3Object = await s3Public.getObject({
         Bucket: AWS_S3_PUBLIC_BUCKET_NAME,
         Key: url.pathname.split('/')[1],

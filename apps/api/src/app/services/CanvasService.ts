@@ -16,24 +16,11 @@ const defaultLogoImgPath = path.resolve(assetsPath, 'logo.png');
 registerFont(fontPath, { family, style: 'normal', weight: '900' });
 
 function drawImageBg(canvas, ctx, image) {
-    const imageAspectRatio = image.width / image.height; // 1200 / 600 = 2
-    const canvasAspectRatio = canvas.width / canvas.height; // 1440 / 810 = 1,77777778
-
-    let scaleFactorWidth = 1,
-        scaleFactorHeight = 1;
-
-    if (imageAspectRatio > canvasAspectRatio) {
-        scaleFactorWidth = canvas.width / image.width;
-        scaleFactorHeight = canvas.height / image.height;
-    } else {
-        scaleFactorWidth = canvas.width / image.width;
-        scaleFactorHeight = canvas.height / image.height;
-    }
-
-    const scaledWidth = canvas.width; //image.width * scaleFactorWidth;
-    const scaledHeight = image.height * scaleFactorHeight;
-    const offsetX = (canvas.width - scaledWidth) / 2;
-    const offsetY = (canvas.height - scaledHeight) / 2;
+    const imageAspectRatio = image.width / image.height;
+    const scaledWidth = canvas.width + 1;
+    const scaledHeight = canvas.width / imageAspectRatio;
+    const offsetX = Math.floor((canvas.width - scaledWidth) / 2);
+    const offsetY = Math.floor((canvas.height - scaledHeight) / 2);
 
     // Draw mask
     ctx.beginPath();
@@ -200,4 +187,10 @@ async function dataUrlToFile(dataUrl: string) {
     return await loadImage(dataUrl);
 }
 
-export default { dataUrlToFile, createCampaignWidgetPreviewImage, createPreviewImage };
+export default {
+    dataUrlToFile,
+    createCampaignWidgetPreviewImage,
+    createPreviewImage,
+    defaultBackgroundImgPath,
+    defaultLogoImgPath,
+};
