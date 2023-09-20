@@ -67,7 +67,7 @@ jobs:
                   -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
                   -e NODE_OPTIONS='--max-old-space-size=8192' \
                   -T api \
-                  npx nx run api:test --verbose
+                  npx nx reset && npx nx run api:test --verbose
 
             - name: SonarCloud Scan
               uses: SonarSource/sonarcloud-github-action@master

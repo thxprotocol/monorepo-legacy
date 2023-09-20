@@ -8,14 +8,16 @@ import { TBrand } from '@thxnetwork/common/lib/types';
 import { assetsPath } from '@thxnetwork/api/util/path';
 
 // Load on boot as registration on runtime results in font not being loaded in time
+console.log(assetsPath);
 const fontPath = path.resolve(assetsPath, 'fa-solid-900.ttf');
+console.log(fontPath);
 const family = 'Font Awesome 5 Pro Solid';
 const defaultBackgroundImgPath = path.resolve(assetsPath, 'bg.png');
+console.log(defaultBackgroundImgPath);
 const defaultLogoImgPath = path.resolve(assetsPath, 'logo.png');
+console.log(defaultLogoImgPath);
 
 registerFont(fontPath, { family, style: 'normal', weight: '900' });
-
-console.log(assetsPath);
 
 function drawImageBg(canvas, ctx, image) {
     const imageAspectRatio = image.width / image.height;
