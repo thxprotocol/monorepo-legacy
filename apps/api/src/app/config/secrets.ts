@@ -40,8 +40,6 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 required.forEach((value: string) => {
-    console.log(value, !!process.env[value]);
-    if (value === 'CWD') console.log(value, process.env[value]);
     if (!process.env[value]) {
         console.log(`Set ${value} environment variable.`);
         process.exit(1);
