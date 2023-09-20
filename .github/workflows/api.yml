@@ -63,8 +63,11 @@ jobs:
                   NODE_OPTIONS: --max-old-space-size=8192
               run: |
                   docker compose -f docker-compose.yml -f docker-compose.api.yml run \
-                  -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} -e NODE_OPTIONS='--max-old-space-size=8192' -T \
-                  api npx nx reset && npx nx run api:test
+                  -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
+                  -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+                  -e NODE_OPTIONS='--max-old-space-size=8192' \
+                  -T api \
+                  npx nx run api:test --verbose
 
             - name: SonarCloud Scan
               uses: SonarSource/sonarcloud-github-action@master

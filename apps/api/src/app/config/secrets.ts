@@ -1,6 +1,8 @@
 import { Speed } from 'defender-relay-client';
 import path from 'path';
 
+console.log(process.env.NODE_ENV);
+
 const required = [
     'AUTH_URL',
     'API_URL',
@@ -17,13 +19,14 @@ const required = [
     'AWS_S3_PRIVATE_BUCKET_NAME',
     'AWS_S3_PRIVATE_BUCKET_REGION',
     'SAFE_TXS_SERVICE',
+    'TWITTER_API_TOKEN',
+    'CWD',
 ];
 
 if (process.env.NODE_ENV === 'production') {
     required.push(
         ...[
             'SENDGRID_API_KEY',
-            'TWITTER_API_TOKEN',
             'POLYGON_RPC',
             'POLYGON_NAME',
             'POLYGON_RELAYER',
@@ -35,10 +38,11 @@ if (process.env.NODE_ENV === 'production') {
         ],
     );
 } else if (process.env.NODE_ENV === 'development') {
-    required.push(...['PRIVATE_KEY', 'HARDHAT_RPC', 'LOCAL_CERT', 'LOCAL_CERT_KEY', 'TWITTER_API_TOKEN']);
+    required.push(...['PRIVATE_KEY', 'HARDHAT_RPC', 'LOCAL_CERT', 'LOCAL_CERT_KEY']);
 }
 
 required.forEach((value: string) => {
+    console.log(value);
     if (!process.env[value]) {
         console.log(`Set ${value} environment variable.`);
         process.exit(1);
