@@ -1,8 +1,6 @@
 import { Speed } from 'defender-relay-client';
 import path from 'path';
 
-console.log(process.env.NODE_ENV);
-
 const required = [
     'AUTH_URL',
     'API_URL',
@@ -42,7 +40,8 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 required.forEach((value: string) => {
-    console.log(value);
+    console.log(value, !!process.env[value]);
+    if (value === 'CWD') console.log(value, process.env[value]);
     if (!process.env[value]) {
         console.log(`Set ${value} environment variable.`);
         process.exit(1);

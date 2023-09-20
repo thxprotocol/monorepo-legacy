@@ -15,6 +15,8 @@ const defaultLogoImgPath = path.resolve(assetsPath, 'logo.png');
 
 registerFont(fontPath, { family, style: 'normal', weight: '900' });
 
+console.log(assetsPath);
+
 function drawImageBg(canvas, ctx, image) {
     const imageAspectRatio = image.width / image.height;
     const scaledWidth = canvas.width + 1;
