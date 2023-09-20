@@ -53,6 +53,7 @@ jobs:
 
             - name: Start Safe Transaction Service
               run: |
+                  docker compose down --remove-orphans
                   docker compose --env-file=.env.example -f docker-compose.safe.yml up -d --remove-orphans
                   docker compose exec txs-web python manage.py migrate
                   sudo chmod -R a+rwx ./docker/data
@@ -63,7 +64,7 @@ jobs:
               run: |
                   docker compose -f docker-compose.yml -f docker-compose.api.yml run \
                   -e AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} -e AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} -e NODE_OPTIONS='--max-old-space-size=8192' -T \
-                  api npx nx run api:test --verbose
+                  api npx nx reset && npx nx run api:test
 
             - name: SonarCloud Scan
               uses: SonarSource/sonarcloud-github-action@master
