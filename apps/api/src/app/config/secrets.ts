@@ -1,6 +1,8 @@
 import { Speed } from 'defender-relay-client';
 import path from 'path';
 
+console.log(process.env['AUTH_URL'], process.env['CWD']);
+
 const required = [
     'AUTH_URL',
     'API_URL',

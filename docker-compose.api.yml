@@ -15,7 +15,7 @@ services:
         extra_hosts:
             - "host.docker.internal:host-gateway"
         env_file:
-            - apps/api/.env.example
+            - ./apps/api/.env.example
         environment:
             MONGODB_URI: "mongodb://root:root@mongo:27017/api?authSource=admin&ssl=false"
             MONGODB_URI_TEST_OVERRIDE: "mongodb://root:root@mongo:27017/api_test?authSource=admin&ssl=false"

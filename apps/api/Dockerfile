@@ -7,10 +7,10 @@ WORKDIR /usr/src/app
 
 ENV NODE_OPTIONS="--max_old_space_size=8192"
 
-RUN apk --no-cache add g++ make py3-pip build-base cairo-dev jpeg-dev pango pango-dev giflib-dev gcompat
+RUN apk --no-cache add g++ make py3-pip gcompat build-base cairo-dev jpeg-dev pango pango-dev giflib-dev
 
 COPY package.json yarn.lock ./
-RUN yarn install --build-from-source
+RUN yarn
 COPY . .
 
 CMD [ "npx", "nx", "serve", "api" ]
@@ -38,8 +38,8 @@ ENV NODE_ENV=production
 WORKDIR /usr/src/app
 COPY --from=build ./usr/src/app/dist/apps/api/package.json ./usr/src/app/dist/apps/api/yarn.lock  ./
 
-RUN apk add --no-cache --virtual .build g++ make py3-pip build-base cairo-dev jpeg-dev pango pango-dev giflib-dev gcompat && \
-    yarn install --build-from-source && \
+RUN apk add --no-cache --virtual .build g++ make py3-pip gcompat build-base cairo-dev jpeg-dev pango pango-dev giflib-dev && \
+    yarn && \
     apk del .build
 COPY --from=build ./usr/src/app/dist/apps/api ./
 
