@@ -28,7 +28,7 @@
             </b-input-group>
             <div class="d-flex align-items-center mr-5" v-if="toggleLabel">
                 <span class="text-muted mr-2">{{ toggleLabel }}</span>
-                <b-form-checkbox @change="$emit('toggle', $event)" />
+                <b-form-checkbox :checked="true" @change="$emit('toggle', $event)" />
             </div>
             <span class="text-muted mr-2">Limit</span>
             <b-form-select

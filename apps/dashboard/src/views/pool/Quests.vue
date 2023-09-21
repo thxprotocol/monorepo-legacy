@@ -124,7 +124,7 @@
                         <b-dropdown-item v-b-modal="questModalComponentMap[item.variant] + item.quest._id">
                             Edit
                         </b-dropdown-item>
-                        <b-dropdown-item @click="onClickDelete(item)"> Delete </b-dropdown-item>
+                        <b-dropdown-item @click="onClickDelete(item.quest)"> Delete </b-dropdown-item>
                     </b-dropdown>
                     <component
                         @submit="listQuests"
@@ -203,7 +203,7 @@ export default class QuestsView extends Vue {
         [QuestVariant.Custom]: 'fas fa-flag',
         [QuestVariant.Web3]: 'fab fa-ethereum',
     };
-    isUnpublishedShown = false;
+    isUnpublishedShown = true;
 
     pools!: IPools;
     totals!: { [poolId: string]: number };
@@ -256,7 +256,7 @@ export default class QuestsView extends Vue {
 
     rowClass(item, type) {
         if (!item || type !== 'row') return;
-        if (!item.quest.isPublished) return 'bg-light text-opaque';
+        if (!item.quest.isPublished) return 'bg-light text-gray';
     }
 
     async listQuests() {
@@ -333,18 +333,21 @@ export default class QuestsView extends Vue {
         this.listQuests();
     }
 
-    onClickDelete(item: { variant: QuestVariant; id: string }) {
-        switch (item.variant) {
+    onClickDelete(quest: TBaseReward) {
+        if (!quest || !quest._id) return;
+        const { id } = this.$route.params;
+
+        switch (quest.variant) {
             case QuestVariant.Daily:
-                return this.$store.dispatch('dailyRewards/delete', this.dailyQuests[this.pool._id][item.id]);
+                return this.$store.dispatch('dailyRewards/delete', this.dailyQuests[id][quest._id]);
             case QuestVariant.Invite:
-                return this.$store.dispatch('referralRewards/delete', this.inviteQuests[this.pool._id][item.id]);
+                return this.$store.dispatch('referralRewards/delete', this.inviteQuests[id][quest._id]);
             case QuestVariant.Social:
-                return this.$store.dispatch('pointRewards/delete', this.socialQuests[this.pool._id][item.id]);
+                return this.$store.dispatch('pointRewards/delete', this.socialQuests[id][quest._id]);
             case QuestVariant.Custom:
-                return this.$store.dispatch('milestoneRewards/delete', this.customQuests[this.pool._id][item.id]);
+                return this.$store.dispatch('milestoneRewards/delete', this.customQuests[id][quest._id]);
             case QuestVariant.Web3:
-                return this.$store.dispatch('web3Quests/delete', this.web3Quests[this.pool._id][item.id]);
+                return this.$store.dispatch('web3Quests/delete', this.web3Quests[id][quest._id]);
         }
     }
 
