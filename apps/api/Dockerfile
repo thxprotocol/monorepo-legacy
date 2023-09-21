@@ -49,11 +49,6 @@ COPY --from=build ./usr/src/app/dist/apps/api/package.json  ./usr/src/app/dist/a
 # Install your application dependencies (assuming it uses Node.js)
 RUN yarn
 
-# Clean up unnecessary packages and files
-RUN apt-get purge -y --auto-remove build-essential && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
 COPY --from=build ./usr/src/app/dist/apps/api ./
 
 CMD [ "main.js" ]
