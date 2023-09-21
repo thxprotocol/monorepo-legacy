@@ -1,4 +1,4 @@
-import { WIDGET_URL } from '@thxnetwork/api/config/secrets';
+import { NODE_ENV, WIDGET_URL } from '@thxnetwork/api/config/secrets';
 import puppeteer from 'puppeteer';
 import path from 'path';
 import fs from 'fs';
@@ -39,7 +39,10 @@ function drawImageBg(canvas, ctx, image) {
 async function captureScreenshot(url, outputFileName, width, height) {
     const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
-    const browser = await puppeteer.launch({ executablePath: 'google-chrome-stable', headless: 'new' });
+    const browser = await puppeteer.launch({
+        executablePath: NODE_ENV === 'production' && '/usr/bin/google-chrome-stable',
+        headless: 'new',
+    });
     const page = await browser.newPage();
 
     await page.setViewport({ width, height });
