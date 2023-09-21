@@ -9,7 +9,7 @@ ENV NODE_OPTIONS="--max_old_space_size=8192"
 
 RUN apt-get update && apt-get install -y g++ make python3-pip build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
 
-COPY package.json yarn.lock ./
+COPY package.json yarn.lock ./puppeteer.config.cjs ./
 RUN yarn
 COPY . .
 
@@ -25,7 +25,7 @@ ENV NODE_ENV=production
 WORKDIR /usr/src/app
 COPY --from=develop ./usr/src/app/ ./
 RUN npx nx build api --prod
-COPY ./newrelic.js ./yarn.lock ./puppeteer.config.cjs ./dist/apps/api/
+COPY ./newrelic.js ./yarn.lock ./puppeteer.config.cjs  ./dist/apps/api/
 COPY ./libs/contracts/exports ./dist/apps/api/libs/contracts/exports
 
 #####################################################################################################
