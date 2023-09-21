@@ -1,7 +1,7 @@
-import { NODE_ENV, WIDGET_URL } from '@thxnetwork/api/config/secrets';
 import puppeteer from 'puppeteer';
 import path from 'path';
 import fs from 'fs';
+import { WIDGET_URL } from '@thxnetwork/api/config/secrets';
 import { createCanvas, loadImage, registerFont } from 'canvas';
 import { Widget } from '@thxnetwork/api/models/Widget';
 import { TBrand } from '@thxnetwork/common/lib/types';
@@ -36,18 +36,17 @@ function drawImageBg(canvas, ctx, image) {
     ctx.restore();
 }
 
-async function captureScreenshot(url, outputFileName, width, height) {
+export async function captureScreenshot(url, outputFileName, width, height) {
     const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
-    const browser = await puppeteer.launch({
-        executablePath: NODE_ENV === 'production' && '/usr/bin/google-chrome-stable',
-        headless: 'new',
-    });
+    const browser = await puppeteer.launch({ headless: 'new' });
     const page = await browser.newPage();
 
     await page.setViewport({ width, height });
     await page.goto(url);
-    await delay(1000); // Collapse CSS animation needs to finish
+
+    // Collapse CSS animation needs to finish
+    await delay(1000);
 
     await page.screenshot({ path: outputFileName });
 
