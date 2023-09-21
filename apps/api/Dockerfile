@@ -36,7 +36,7 @@ FROM node:16-slim AS production
 ENV NODE_ENV=production
 
 WORKDIR /usr/src/app
-COPY --from=build ./usr/src/app/dist/apps/api/package.json ./usr/src/app/dist/apps/api/yarn.lock  ./
+COPY --from=build ./usr/src/app/dist/apps/api/package.json ./usr/src/app/dist/apps/api/puppeteer.config.cjs ./usr/src/app/dist/apps/api/yarn.lock  ./
 
 
 # Install dependencies and packages
