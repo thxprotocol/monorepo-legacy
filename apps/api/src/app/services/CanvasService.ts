@@ -45,11 +45,10 @@ async function captureScreenshot(url, outputFileName, width, height) {
     await page.setViewport({ width, height });
     await page.goto(url);
     await delay(1000); // Collapse CSS animation needs to finish
+
     await page.screenshot({ path: outputFileName });
 
     await browser.close();
-
-    return outputFileName;
 }
 
 function drawImageRounded(ctx, x, y, width, height, radius) {
@@ -78,13 +77,19 @@ async function createCampaignWidgetPreviewImage({ poolId, logoImgUrl, background
     // Get screenshot image
     const widgetUrl = WIDGET_URL + `/c/${poolId}/quests`;
     const fileName = `${poolId}.jpg`;
-    const outputPath = await captureScreenshot(widgetUrl, path.resolve(__dirname, fileName), widgetWidth, widgetHeight);
-    const file = fs.readFileSync(outputPath) as unknown as Express.Multer.File;
+
+    // Can not use asset path here on runtime
+    const outputPath = path.resolve(__dirname, fileName);
+    await captureScreenshot(widgetUrl, outputPath, widgetWidth, widgetHeight);
+
+    // Read screenshot from disk
+    const file = fs.readFileSync(outputPath);
+    if (!file) throw new Error('Screenshot failed');
 
     // Load the base64 image data into an Image object
     const bg = await loadImage(backgroundImgUrl || defaultBackgroundImgPath);
     const logo = await loadImage(logoImgUrl || defaultLogoImgPath);
-    const fg = await loadImage(Buffer.from(file.buffer));
+    const screenshot = await loadImage(Buffer.from(file.buffer));
 
     // Create a canvas with the desired dimensions
     const canvasHeight = widgetHeight + bottomOffset + rightOffset; // 810
@@ -145,7 +150,7 @@ async function createCampaignWidgetPreviewImage({ poolId, logoImgUrl, background
     // Round the borders by clipping
     drawImageRounded(ctx, widgetX, widgetY, widgetWidth, widgetHeight, borderRadius);
     ctx.clip();
-    ctx.drawImage(fg, widgetX, widgetY, widgetWidth, widgetHeight);
+    ctx.drawImage(screenshot, widgetX, widgetY, widgetWidth, widgetHeight);
 
     // Convert the canvas content to a buffer
     // const dataUrl = canvas.toDataURL('image/png');

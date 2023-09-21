@@ -21,19 +21,9 @@ export default {
         const hasAccess = await PoolService.hasAccess(req.auth.sub, poolId);
         if (!hasAccess) throw new ForbiddenError('Not your pool');
 
+        // Update logo and bg changes
         const { logoImgUrl, backgroundImgUrl } = req.body;
-        const brand = await BrandService.get(poolId);
-
-        brand.logoImgUrl = logoImgUrl;
-        brand.backgroundImgUrl = backgroundImgUrl;
-
-        // Create campaign widget preview
-        const widgetPreviewFile = await CanvasService.createCampaignWidgetPreviewImage(brand);
-        brand.widgetPreviewImgUrl = await ImageService.uploadToS3(
-            widgetPreviewFile,
-            `${poolId}_widget_preview.png`,
-            'image/*',
-        );
+        const brand = await BrandService.update({ poolId }, { logoImgUrl, backgroundImgUrl });
 
         // Create campaign preview
         const previewFile = await CanvasService.createPreviewImage(brand);
