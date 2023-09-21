@@ -8,8 +8,11 @@ WORKDIR /usr/src/app
 ENV NODE_OPTIONS="--max_old_space_size=8192"
 
 RUN apt-get update \
-    && apt-get install -y g++ make python3-pip build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 libgobject-2.0 --no-install-recommends \
+    && apt-get install -y g++ make python3-pip build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 \
     && rm -rf /var/lib/apt/lists/*
+
+# Rebuild links
+RUN /sbin/ldconfig -v
 
 COPY package.json yarn.lock  ./
 RUN yarn
