@@ -442,6 +442,15 @@
                                     </tr>
                                     <tr>
                                         <td>
+                                            Collaborators<br />
+                                            <span class="text-gray small"> Invite team members for collaboration </span>
+                                        </td>
+                                        <td>0</td>
+                                        <td>0</td>
+                                        <td>3</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
                                             Reward Limit
                                             <br />
                                             <span class="text-gray small">
