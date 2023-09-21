@@ -5,7 +5,7 @@
                 <validation-provider name="email" :rules="{ required: true, email: true }" v-slot="validationContext">
                     <b-input-group>
                         <b-form-input
-                            :class="`bg-white border-light`"
+                            :class="inputClass"
                             v-model="email"
                             type="email"
                             label="email"
@@ -31,7 +31,7 @@
     </div>
 </template>
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { DASHBOARD_URL } from '../config/secrets';
 
 @Component({
@@ -43,6 +43,8 @@ export default class BaseCardSignup extends Vue {
     isSuccess = false;
     error = '';
     email = '';
+
+    @Prop({ default: `bg-white border-light` }) inputClass!: string;
 
     getValidationState({ dirty, validated, valid = null }: any) {
         return dirty || validated ? valid : null;

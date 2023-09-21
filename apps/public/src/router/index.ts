@@ -31,28 +31,9 @@ const routes: Array<RouteConfig> = [
         component: () => import(/* webpackChunkName: "events-playinbusiness" */ '../views/events/PlayInBusiness.vue'),
     },
     {
-        path: '/use-cases/onboard-new-players-with-referrals',
-        name: 'Onboard new players with referrals',
-        component: () =>
-            import(
-                /* webpackChunkName: "usecases-boostengagementinyourcommunity" */ '../views/usecases/OnboardNewPlayersWithReferrals.vue'
-            ),
-    },
-    {
-        path: '/use-cases/next-generation-growth-hack-for-web3-companies',
-        name: 'Next Generation Growth Hack for Web3 companies',
-        component: () =>
-            import(
-                /* webpackChunkName: "usecases-nextgenerationgrowthhackforweb3companies" */ '../views/usecases/NextGenerationGrowthHackForWeb3Companies.vue'
-            ),
-    },
-    {
-        path: '/use-cases/boost-your-sales-and-turn-customers-into-community-members',
-        name: 'Boost your sales and turn cusotmers into community members',
-        component: () =>
-            import(
-                /* webpackChunkName: "usecases-boostyoursales" */ '../views/usecases/BoostYourSalesAndTurnCustomersIntoCommunityMembers.vue'
-            ),
+        path: '/use-cases/:title',
+        name: 'Use Case Detail',
+        component: () => import(/* webpackChunkName: "usecases-usecase-detail" */ '../views/UseCaseDetail.vue'),
     },
     {
         path: '/integrations',

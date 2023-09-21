@@ -238,7 +238,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { initWidget } from '../utils/widget';
 import { TBrand } from '../store/modules/brands';
-import { API_URL } from '@thxnetwork/dashboard/utils/secrets';
+import { API_URL, PUBLIC_URL, WIDGET_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { format, formatDistance } from 'date-fns';
 import axios, { AxiosError } from 'axios';
 import { TPoolTransferResponse } from '@thxnetwork/types/interfaces';
@@ -249,6 +249,32 @@ import { track } from '@thxnetwork/mixpanel';
 import BaseCodeExample from '../components/BaseCodeExample.vue';
 
 @Component({
+    metaInfo() {
+        const { $store, $route } = this as WidgetPreviewView;
+        const { poolId } = $route.params;
+
+        return {
+            title: 'preview',
+            meta: [
+                { name: 'title', content: 'Title' },
+                { vmid: 'description', name: 'description', content: 'description' },
+                { name: 'keywords', content: 'test test' },
+                { name: 'twitter:card', content: 'card' },
+                { name: 'twitter:site', content: PUBLIC_URL },
+                { name: 'twitter:creator', content: '@thxnetwork' },
+                { name: 'twitter:title', content: 'Titlte' },
+                { name: 'twitter:description', content: 'description' },
+                { name: 'twitter:image:alt', content: 'image alt' },
+                { name: 'og:title', content: 'title' },
+                { name: 'og:description', content: 'lorem ipsum' },
+                { name: 'og:type', content: 'type' },
+                { name: 'og:site_name', content: 'Campaign' },
+                { name: 'og:url', content: `${WIDGET_URL}/c/${poolId}/quests` },
+                { name: 'og:image', content: `${API_URL}/pools/preview/default/${poolId}.png` },
+            ],
+            link: [{ rel: 'canonical', href: this.$route.fullPath }],
+        };
+    },
     components: {
         BaseCodeExample,
     },

@@ -17,8 +17,6 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { BButton } from 'bootstrap-vue';
-
 import BaseJumbotron from '@thxnetwork/public/components/BaseJumbotron.vue';
 import BaseContact from '@thxnetwork/public/components/BaseContact.vue';
 import BaseTeam from '@thxnetwork/public/components/BaseTeam.vue';
@@ -55,19 +53,18 @@ import { HOME_TAGS, TWITTER_TAGS, LINKS } from '@thxnetwork/public/utils/constan
         link: [{ rel: 'canonical', href: LINKS.HOME }],
     },
     components: {
-        'b-button': BButton,
-        'base-jumbotron': BaseJumbotron,
-        'base-code-example': BaseCodeExample,
-        'base-no-code': BaseNoCode,
-        'base-partners': BasePartners,
-        'base-features': BaseFeatures,
-        'base-technologies': BaseTechnologies,
-        'base-testimonials': BaseTestimonials,
-        'base-metrics': BaseMetrics,
-        'base-use-cases': BaseUseCases,
-        'base-about-us': BaseAboutUs,
-        'base-team': BaseTeam,
-        'base-contact': BaseContact,
+        BaseJumbotron,
+        BaseCodeExample,
+        BaseNoCode,
+        BasePartners,
+        BaseFeatures,
+        BaseTechnologies,
+        BaseTestimonials,
+        BaseMetrics,
+        BaseUseCases,
+        BaseAboutUs,
+        BaseTeam,
+        BaseContact,
     },
 })
 export default class Home extends Vue {}

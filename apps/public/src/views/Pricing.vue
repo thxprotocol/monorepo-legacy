@@ -252,12 +252,12 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            Referral<br />
+                                            Invite<br />
                                             <span class="text-gray small">
-                                                Empower your players to invite others and earn points
+                                                Empower your players to earn points for referrals
                                             </span>
                                         </td>
-                                        <td><i class="fas fa-check-circle"></i></td>
+                                        <td><i class="fas fa-times-circle"></i></td>
                                         <td><i class="fas fa-check-circle"></i></td>
                                         <td><i class="fas fa-check-circle"></i></td>
                                     </tr>
@@ -275,7 +275,18 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            Custom Webhooks<br />
+                                            Web3<br />
+                                            <span class="text-gray small">
+                                                Use smart contracts to reward a wallet's coin balance or NFT ownership.
+                                            </span>
+                                        </td>
+                                        <td><i class="fas fa-times-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Custom<br />
                                             <span class="text-gray small">
                                                 Use outbound webhooks to reward important achievements in your
                                                 application
