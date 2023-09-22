@@ -9,10 +9,16 @@ ENV NODE_OPTIONS="--max_old_space_size=8192"
 
 RUN apt-get update \
     && apt-get install -y g++ make python3-pip build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev \
-    && apt-get install -yq gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libnss3 lsb-release xdg-utils wget \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get install -y wget gnupg \
+    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/googlechrome-linux-keyring.gpg \
+    && sh -c 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/googlechrome-linux-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
+    && apt-get update \
+    && apt-get install -y google-chrome-stable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-khmeros fonts-kacst fonts-freefont-ttf libxss1 \
+    --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd -r pptruser && useradd -rm -g pptruser -G audio,video pptruser
 
-COPY package.json yarn.lock  ./
+COPY package.json yarn.lock puppeteer.config.cjs ./
 RUN yarn
 COPY . .
 
@@ -28,7 +34,7 @@ ENV NODE_ENV=production
 WORKDIR /usr/src/app
 COPY --from=develop ./usr/src/app/ ./
 RUN npx nx build api --prod
-COPY ./newrelic.js ./yarn.lock ./dist/apps/api/
+COPY ./newrelic.js ./yarn.lock puppeteer.config.cjs ./dist/apps/api/
 COPY ./libs/contracts/exports ./dist/apps/api/libs/contracts/exports
 
 #####################################################################################################
@@ -39,12 +45,17 @@ FROM node:16-slim AS production
 ENV NODE_ENV=production
 
 WORKDIR /usr/src/app
-COPY --from=build ./usr/src/app/dist/apps/api/package.json  ./usr/src/app/dist/apps/api/yarn.lock  ./
+COPY --from=build ./usr/src/app/dist/apps/api/package.json puppeteer.config.cjs ./usr/src/app/dist/apps/api/yarn.lock  ./
 
 # Install dependencies and packages
 RUN apt-get update \
     && apt-get install -y g++ make python3-pip build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev \
-    && gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libnss3 lsb-release xdg-utils wget \
+    && apt-get install -y wget gnupg \
+    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/googlechrome-linux-keyring.gpg \
+    && sh -c 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/googlechrome-linux-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
+    && apt-get update \
+    && apt-get install -y google-chrome-stable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-khmeros fonts-kacst fonts-freefont-ttf libxss1 \
+    --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Install your application dependencies (assuming it uses Node.js)
