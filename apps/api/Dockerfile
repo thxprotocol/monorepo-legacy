@@ -41,8 +41,19 @@ ENV NODE_ENV=production
 WORKDIR /usr/src/app
 COPY --from=build ./usr/src/app/dist/apps/api/package.json  ./usr/src/app/dist/apps/api/yarn.lock  ./
 
+# Install dependencies and packages
+RUN apt-get update \
+    && apt-get install -y g++ make python3-pip build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev \
+    && gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libnss3 lsb-release xdg-utils wget \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install your application dependencies (assuming it uses Node.js)
 RUN yarn
+
+# Clean up unnecessary packages and files
+RUN apt-get purge -y --auto-remove build-essential && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 COPY --from=build ./usr/src/app/dist/apps/api ./
 
