@@ -39,7 +39,7 @@ function drawImageBg(canvas, ctx, image) {
 export async function captureScreenshot(url, outputFileName, width, height) {
     const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
-    const browser = await puppeteer.launch({ headless: 'new' });
+    const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
     const page = await browser.newPage();
 
     await page.setViewport({ width, height });
