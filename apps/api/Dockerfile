@@ -9,7 +9,7 @@ ENV NODE_OPTIONS="--max_old_space_size=8192"
 
 RUN apt-get update \
     && apt-get install -y g++ make python3-pip build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev \
-    && apt-get install libasound2=1.1.8-1 libatk-bridge2.0-0=2.30.0-5 libatk1.0-0=2.30.0-2 libatspi2.0-0=2.30.0-7 libc6=2.28-10+deb10u1 libcairo2=1.16.0-4+deb10u1 libcups2=2.2.10-6+deb10u5 libdbus-1-3=1.12.20-0+deb10u1 libdrm2=2.4.97-1 libexpat1=2.2.6-2+deb10u4 libgbm1=18.3.6-2+deb10u1 libgcc1=1:8.3.0-6 libglib2.0-0=2.58.3-2+deb10u3 libnspr4=2:4.20-1 libnss3=2:3.42.1-1+deb10u5 libpango-1.0-0=1.42.4-7~deb10u1 libpangocairo-1.0-0=1.42.4-7~deb10u1 libstdc++6=8.3.0-6 libuuid1=2.33.1-0.1 libx11-6=2:1.6.7-1+deb10u2 libx11-xcb1=2:1.6.7-1+deb10u2 libxcb-dri3-0=1.13.1-2 libxcb1=1.13.1-2 libxcomposite1=1:0.4.4-2 libxcursor1=1:1.1.15-2 libxdamage1=1:1.1.4-3+b3 libxext6=2:1.3.3-1+b2 libxfixes3=1:5.0.3-1 libxi6=2:1.7.9-1 libxkbcommon0=0.8.2-1 libxrandr2=2:1.5.1-1 libxrender1=1:0.9.10-1 libxshmfence1=1.3-1 libxss1=1:1.2.3-1 libxtst6=2:1.2.3-1 \
+    && apt-get install gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libnss3 lsb-release xdg-utils wget \
     && rm -rf /var/lib/apt/lists/*
 
 COPY package.json yarn.lock  ./
