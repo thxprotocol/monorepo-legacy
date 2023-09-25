@@ -1,37 +1,208 @@
 
 .dark-mode {
-    .main-container {
-        background-color: $darker;
+    background-color: $darkest !important;
+    
+    body {
+        background-color: $darkest !important;
+        color: $light !important;
     }
 
-    .card,
-    .list-group-item {
-        background-color: $dark;
-        color: white;
+    .sidebar {
+        background-color: $darker;
+        
+        .nav-link-plain .nav-link {
+            color: $light;
+        }
 
-        .bg-dark {
-            background-color: $light !important;
+        .nav-link-plain {
+            .router-link-active,
+            .nav-link:not(.has-children):hover {
+                background-color: $primary;
+                
+                .nav-link-icon i,
+                span {
+                    color: $light !important;
+                }
+            }
+        }
+    }
+    
+    // Tabs
+    .nav-tabs {
+        border-color: $dark;
+        .nav-link {
+            color: $gray;
+        }
+    }
+    .nav-tabs .nav-link:hover, .nav-tabs .nav-link:focus,
+    .nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
+        background-color: $dark;
+        color: $white;
+        border-color: $dark;
+    }
+
+    // Cards
+    .card,
+    .card.bg-white,
+    .card-body.bg-light,
+    .list-group-item {
+        background-color: $darker !important;
+        color: $gray-500 !important;
+        border-color: $dark;
+
+        .bg-dark,
+        .bg-darker {
+            background-color: $darkest !important;
         }
     }
 
-    .form-control {
+    .card-header.bg-light {
+        background-color: $darkest !important;
+        color: $gray;
+
+        .badge-dark {
+            background-color: $dark !important;
+        }
+    }
+
+    // Pagination 
+    .page-item.disabled .page-link {
         background-color: $darker;
+        border-color: $dark;
+    }
+
+    // Dropdown
+    .dropdown-select .dropdown-toggle,
+    .show > .dropdown-toggle,
+    .show > .dropdown-toggle.btn-light,
+    .show > .dropdown-toggle.btn-light:active {
+        background-color: $dark;
+        border-color: $dark;
+        color: $gray;
+    }
+    .dropdown-menu  {
+        background-color: $darker;
+        color: $gray;
+        border-color: $dark;
+    }
+    .dropdown-divider {
+        border-color: $dark;
+    }
+    .dropdown-item {
+        color: $gray;
+
+        &:hover, 
+        &:focus {
+            background-color: $dark;
+        }
+    }
+
+    // Table
+    .table {
+        color: $gray;
+    
+        .custom-checkbox .custom-control-label {
+            background-color: $darker;
+        }
+    }
+
+    .table th, .table td {
+        border-color: $dark !important;
+        background-color: $darker !important;
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: $darker !important;
+        color: $gray;
+    }
+
+    tr.bg-light.text-gray {
+        color: $gray-800 !important;
+    }
+
+    // Nav
+    .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+        background-color: $primary;
+        color: $white;
+    }
+
+    // Badge 
+    .badge-light {
+        background-color: $dark;
+        color: $gray;
+    }
+
+    // Forms
+    .b-form-btn-label-control.form-control > .form-control,
+    .b-form-btn-label-control.form-control[aria-disabled=true], .b-form-btn-label-control.form-control[aria-readonly=true] {
+        border-color: $darker;
+        background-color: $darkest;
+    }
+    .col-form-label {
+        color: $gray;
+    }
+
+    .custom-checkbox {
+        .custom-control-label {
+            background-color: $darkest;
+        }
+        
+        .custom-control-label::before {
+            background-color: $darkest;
+            border-color: $dark;
+        }
+        
+        .custom-control-input:checked ~ .custom-control-label::before {
+            background-color: $primary !important;
+        }
+    }
+    
+    .custom-select,
+    .custom-file-label,
+    .custom-control-label {
+        border-color: $darker;
+        background-color: $darkest;
+    }
+    
+    .custom-file-label,
+    .custom-file-label::after {
+        border-color: $darker;
+        background-color: $darkest;
+        color: $gray;
+    }
+
+    .input-group-append button,
+    .input-group-text {
+        border-color: $darkest;
+        background-color: $primary;
+        color: $white;
+    }
+
+    .form-control {
+        border-color: $darkest;
+        background-color: $darkest;
         color: white;
     }
 
+    // Buttons
+    .btn .b-icon.bi, .nav-link .b-icon.bi, .dropdown-toggle .b-icon.bi, .dropdown-item .b-icon.bi, .input-group-text .b-icon.bi {
+        color: $gray;
+    }
     .btn-light,
     .btn-light:focus:active {
-        border-color: $darker;
-        background-color: $darker;
-        color: $light;
+        border-color: $dark;
+        background-color: $dark;
+        color: $gray-500;
     }
-
-    ~ * .modal {
+    
+    // Modals
+    .modal {
         .modal-header {
             color: white;
             border-color: $dark;
         }
-        .modal-content {
+        .modal-content,
+        .modal-body {
             background-color: $darker !important;
             border-color: $dark;
         }
@@ -41,12 +212,6 @@
 
         p {
             color: white;
-        }
-
-        .form-control {
-            background-color: $darker;
-            color: white;
-            border-color: $dark;
         }
 
         .close {

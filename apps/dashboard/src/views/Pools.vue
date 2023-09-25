@@ -17,7 +17,7 @@
                         <i class="fas fa-plus mr-2"></i>
                         <span>Create Campaign</span>
                     </b-button>
-                    <b-button to="/tokens" variant="link" class="text-light">
+                    <b-button to="/coins" variant="link" class="text-light">
                         <i class="fas fa-coins mr-2"></i>
                         <span>Create Coin</span>
                     </b-button>

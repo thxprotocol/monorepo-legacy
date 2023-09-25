@@ -235,14 +235,6 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
     const subs = participants.results.map((p) => p.sub);
     const accounts = await AccountProxy.getMany(subs);
 
-    const attempt = async (fn: any) => {
-        try {
-            await fn();
-        } catch (error) {
-            logger.error(error);
-        }
-    };
-
     participants.results = await Promise.all(
         participants.results.map(async (participant) => {
             let wallet: WalletDocument,

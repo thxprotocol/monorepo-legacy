@@ -88,3 +88,8 @@ export default class BaseCardTableHeader extends Vue {
     }
 }
 </script>
+<style>
+.table thead th {
+    border-width: 1px;
+}
+</style>

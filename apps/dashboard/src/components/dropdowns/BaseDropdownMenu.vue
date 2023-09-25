@@ -3,7 +3,7 @@
         <template #button-content>
             <i class="fas fa-bars m-0 p-1 px-2" aria-hidden="true" style="font-size: 1.5rem"></i>
         </template>
-        <b-dropdown-item to="/tokens"> Tokens </b-dropdown-item>
+        <b-dropdown-item to="/coins"> Tokens </b-dropdown-item>
         <b-dropdown-item to="/nft"> NFT </b-dropdown-item>
         <b-dropdown-item to="/pools"> Campaigns </b-dropdown-item>
         <b-dropdown-item to="/integrations"> Integrations </b-dropdown-item>

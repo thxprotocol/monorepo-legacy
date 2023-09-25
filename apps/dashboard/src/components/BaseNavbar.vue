@@ -27,6 +27,9 @@
                         <template #button-content>
                             <b-avatar size="sm" variant="light" :src="account.profileImg"></b-avatar>
                         </template>
+                        <b-dropdown-item @click="onClickDarkModeToggle">
+                            {{ isDarkModeEnabled ? 'Light' : 'Dark' }} mode
+                        </b-dropdown-item>
                         <b-dropdown-item to="/account">Account</b-dropdown-item>
                         <b-dropdown-item to="/signout">Sign out</b-dropdown-item>
                     </b-dropdown>
@@ -196,6 +199,7 @@ export default class BaseNavbar extends Vue {
     pools!: IPools;
     account!: TAccount;
     isVisible = true;
+    isDarkModeEnabled = false;
 
     get tokenRoutes() {
         return [
@@ -244,6 +248,23 @@ export default class BaseNavbar extends Vue {
                 await this.$store.dispatch('pools/read', this.firstPool._id);
             }
         });
+
+        this.isDarkModeEnabled = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        this.setDarkMode(this.isDarkModeEnabled);
+
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ({ matches }) => {
+            this.isDarkModeEnabled = matches;
+            this.setDarkMode(this.isDarkModeEnabled);
+        });
+    }
+
+    setDarkMode(state: boolean) {
+        document.documentElement.classList[state ? 'add' : 'remove']('dark-mode');
+    }
+
+    onClickDarkModeToggle() {
+        this.isDarkModeEnabled = !this.isDarkModeEnabled;
+        this.setDarkMode(this.isDarkModeEnabled);
     }
 
     onClickPreview() {
