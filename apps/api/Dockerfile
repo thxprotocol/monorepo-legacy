@@ -13,7 +13,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     && groupadd -r pptruser && useradd -rm -g pptruser -G audio,video pptruser
 
-COPY package.json yarn.lock puppeteer.config.cjs ./
+COPY package.json yarn.lock ./
 RUN yarn
 COPY . .
 
@@ -29,7 +29,7 @@ ENV NODE_ENV=production
 WORKDIR /usr/src/app
 COPY --from=develop ./usr/src/app/ ./
 RUN npx nx build api --prod
-COPY ./newrelic.js ./yarn.lock puppeteer.config.cjs ./dist/apps/api/
+COPY ./newrelic.js ./yarn.lock ./dist/apps/api/
 COPY ./libs/contracts/exports ./dist/apps/api/libs/contracts/exports
 
 #####################################################################################################
@@ -40,7 +40,7 @@ FROM node:16-slim AS production
 ENV NODE_ENV=production
 
 WORKDIR /usr/src/app
-COPY --from=build ./usr/src/app/dist/apps/api/package.json puppeteer.config.cjs ./usr/src/app/dist/apps/api/yarn.lock  ./
+COPY --from=build ./usr/src/app/dist/apps/api/package.json  ./usr/src/app/dist/apps/api/yarn.lock  ./
 
 # Install dependencies and packages
 RUN apt-get update \

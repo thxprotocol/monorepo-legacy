@@ -1,6 +1,5 @@
 import Brand from '@thxnetwork/api/models/Brand';
 import db from '@thxnetwork/api/util/database';
-import { WIDGET_URL } from '@thxnetwork/api/config/secrets';
 import puppeteer from 'puppeteer';
 import fs from 'fs';
 import { Widget } from '@thxnetwork/api/models/Widget';
@@ -9,7 +8,8 @@ import { TBrand } from '@thxnetwork/common/lib/types';
 import { assetsPath } from '@thxnetwork/api/util/path';
 import path from 'path';
 import CanvasService from '@thxnetwork/api/services/CanvasService';
-import ImageService from '@thxnetwork/api/services/ImageService';
+import { s3Client } from '@thxnetwork/api/util/s3';
+import { PutObjectCommand } from '@aws-sdk/client-s3';
 
 // Load on boot as registration on runtime results in font not being loaded in time
 const fontPath = path.resolve(assetsPath, 'fa-solid-900.ttf');
@@ -17,9 +17,14 @@ const family = 'Font Awesome 5 Pro Solid';
 const defaultBackgroundImgPath = path.resolve(assetsPath, 'bg.png');
 const defaultLogoImgPath = path.resolve(assetsPath, 'logo.png');
 
+// ENV
+const Bucket = 'dev-thx-storage-bucket';
+// const Bucket = 'thx-storage-bucket';
+
 registerFont(fontPath, { family, style: 'normal', weight: '900' });
 
-db.connect(process.env.MONGODB_URI);
+// db.connect(process.env.MONGODB_URI);
+db.connect(process.env.MONGODB_URI_DEV);
 // db.connect(process.env.MONGODB_URI_PROD);
 
 async function createCampaignWidgetPreviewImage({ poolId, logoImgUrl, backgroundImgUrl }: TBrand) {
@@ -32,7 +37,7 @@ async function createCampaignWidgetPreviewImage({ poolId, logoImgUrl, background
     const widgetWidth = 400;
 
     // Get screenshot image
-    const widgetUrl = WIDGET_URL + `/c/${poolId}/quests`;
+    const widgetUrl = `https://campaign.thx.network/c/${poolId}/quests`;
     const fileName = `${poolId}.jpg`;
 
     // Can not use asset path here on runtime
@@ -156,11 +161,16 @@ async function main() {
     for (const index in brands) {
         const brand = brands[index];
         const previewFile = await createCampaignWidgetPreviewImage(brand);
-        brand.previewImgUrl = await ImageService.uploadToS3(
-            previewFile,
-            `${brand.poolId}_widget_preview.png`,
-            'image/*',
-        );
+        const uploadParams = {
+            Key: `${brand.poolId}_widget_preview.png`,
+            Bucket,
+            ACL: 'public-read',
+            Body: previewFile,
+            ContentType: 'image/*',
+            ContentDisposition: 'inline',
+        };
+
+        await s3Client.send(new PutObjectCommand(uploadParams));
 
         console.log(`${index + 1}/${brands.length} ${brand.poolId}`);
     }
