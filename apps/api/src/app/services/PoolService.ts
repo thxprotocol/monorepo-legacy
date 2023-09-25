@@ -16,10 +16,6 @@ import { PoolSubscription, PoolSubscriptionDocument } from '../models/PoolSubscr
 import { logger } from '../util/logger';
 import { TAccount, TPointReward } from '@thxnetwork/types/interfaces';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
-import { DailyRewardClaim } from '../models/DailyRewardClaims';
-import { ReferralRewardClaim } from '../models/ReferralRewardClaim';
-import { PointRewardClaim } from '../models/PointRewardClaim';
-import { MilestoneRewardClaim } from '../models/MilestoneRewardClaims';
 import { v4 } from 'uuid';
 import { DailyReward } from '../models/DailyReward';
 import { ReferralReward } from '../models/ReferralReward';
@@ -29,7 +25,6 @@ import { ERC20Perk } from '../models/ERC20Perk';
 import { ERC721Perk } from '../models/ERC721Perk';
 import { getsigningSecret } from '../util/signingsecret';
 import { Web3Quest } from '../models/Web3Quest';
-import { Web3QuestClaim } from '../models/Web3QuestClaim';
 import { CustomReward } from '../models/CustomReward';
 import { Participant } from '../models/Participant';
 import { paginatedResults } from '../util/pagination';
@@ -240,13 +235,13 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
     const subs = participants.results.map((p) => p.sub);
     const accounts = await AccountProxy.getMany(subs);
 
-    async function attempt(fn: any) {
+    const attempt = async (fn: any) => {
         try {
             await fn();
         } catch (error) {
             logger.error(error);
         }
-    }
+    };
 
     participants.results = await Promise.all(
         participants.results.map(async (participant) => {
@@ -255,19 +250,29 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
                 subscription: PoolSubscriptionDocument,
                 pointBalance: PointBalanceDocument;
 
-            attempt(async () => (wallet = await SafeService.findPrimary(participant.sub, pool.chainId)));
-            attempt(async () => (account = accounts.find((a) => a.sub === wallet.sub)));
-            attempt(
-                async () => (subscription = await PoolSubscription.findOne({ poolId: pool._id, sub: account.sub })),
-            );
-            attempt(
-                async () =>
-                    (pointBalance = await PointBalance.findOne({
-                        poolId: participant.poolId,
-                        walletId: wallet._id,
-                    })),
-            );
-
+            try {
+                wallet = await SafeService.findPrimary(participant.sub, pool.chainId);
+            } catch (error) {
+                logger.error(error);
+            }
+            try {
+                account = accounts.find((a) => a.sub === wallet.sub);
+            } catch (error) {
+                logger.error(error);
+            }
+            try {
+                subscription = await PoolSubscription.findOne({ poolId: pool._id, sub: account.sub });
+            } catch (error) {
+                logger.error(error);
+            }
+            try {
+                pointBalance = await PointBalance.findOne({
+                    poolId: participant.poolId,
+                    walletId: wallet._id,
+                });
+            } catch (error) {
+                logger.error(error);
+            }
             return {
                 ...participant.toJSON(),
                 account,
