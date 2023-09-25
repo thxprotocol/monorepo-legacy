@@ -249,30 +249,30 @@ import { track } from '@thxnetwork/mixpanel';
 import BaseCodeExample from '../components/BaseCodeExample.vue';
 
 @Component({
-    metaInfo: async function () {
+    metaInfo() {
         const { $route } = this as WidgetPreviewView;
         const { poolId } = $route.params;
-        const { data } = await axios.get(API_URL + '/v1/widget/' + poolId);
         const previewImage = `${API_URL}/pools/preview/default/${poolId}.png`;
-        const title = data.title;
-        const logoImgUrl = data.logoUrl || this.defaultLogoImgUrl;
+        const title = this.title + ' | THX Network';
+        const description = 'Web preview of your Quest & Reward campaign.';
 
         return {
-            title: this.title,
+            title,
             meta: [
                 { name: 'title', content: title },
-                { vmid: 'description', name: 'description', content: 'description' },
-                { name: 'keywords', content: 'test test' },
-                { name: 'twitter:card', content: logoImgUrl },
+                { vmid: 'description', name: 'description', content: description },
+                { name: 'keywords', content: '' },
+                { name: 'twitter:card', content: this.logoImgUrl },
                 { name: 'twitter:site', content: PUBLIC_URL },
-                { name: 'twitter:creator', content: '@thxnetwork' },
+                { name: 'twitter:creator', content: '@thxprotocol' },
                 { name: 'twitter:title', content: title },
                 { name: 'twitter:description', content: '' },
+                { name: 'twitter:image', content: previewImage },
                 { name: 'twitter:image:alt', content: title },
-                { name: 'og:title', content: this.title },
-                { name: 'og:description', content: '' },
+                { name: 'og:title', content: title },
+                { name: 'og:description', content: description },
                 { name: 'og:type', content: 'website' },
-                { name: 'og:site_name', content: this.title },
+                { name: 'og:site_name', content: title },
                 { name: 'og:url', content: this.$route.fullPath },
                 { name: 'og:image', content: previewImage },
             ],
