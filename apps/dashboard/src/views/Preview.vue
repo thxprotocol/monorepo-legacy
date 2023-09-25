@@ -238,7 +238,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { initWidget } from '../utils/widget';
 import { TBrand } from '../store/modules/brands';
-import { API_URL, PUBLIC_URL, WIDGET_URL } from '@thxnetwork/dashboard/utils/secrets';
+import { API_URL, PUBLIC_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { format, formatDistance } from 'date-fns';
 import axios, { AxiosError } from 'axios';
 import { TPoolTransferResponse } from '@thxnetwork/types/interfaces';
@@ -249,28 +249,32 @@ import { track } from '@thxnetwork/mixpanel';
 import BaseCodeExample from '../components/BaseCodeExample.vue';
 
 @Component({
-    metaInfo() {
-        const { $store, $route } = this as WidgetPreviewView;
+    metaInfo: async function () {
+        const { $route } = this as WidgetPreviewView;
         const { poolId } = $route.params;
+        const { data } = await axios.get(API_URL + '/v1/widget/' + poolId);
+        const previewImage = `${API_URL}/pools/preview/default/${poolId}.png`;
+        const title = data.title;
+        const logoImgUrl = data.logoUrl || this.defaultLogoImgUrl;
 
         return {
-            title: 'preview',
+            title: this.title,
             meta: [
-                { name: 'title', content: 'Title' },
+                { name: 'title', content: title },
                 { vmid: 'description', name: 'description', content: 'description' },
                 { name: 'keywords', content: 'test test' },
-                { name: 'twitter:card', content: 'card' },
+                { name: 'twitter:card', content: logoImgUrl },
                 { name: 'twitter:site', content: PUBLIC_URL },
                 { name: 'twitter:creator', content: '@thxnetwork' },
-                { name: 'twitter:title', content: 'Titlte' },
-                { name: 'twitter:description', content: 'description' },
-                { name: 'twitter:image:alt', content: 'image alt' },
-                { name: 'og:title', content: 'title' },
-                { name: 'og:description', content: 'lorem ipsum' },
-                { name: 'og:type', content: 'type' },
-                { name: 'og:site_name', content: 'Campaign' },
-                { name: 'og:url', content: `${WIDGET_URL}/c/${poolId}/quests` },
-                { name: 'og:image', content: `${API_URL}/pools/preview/default/${poolId}.png` },
+                { name: 'twitter:title', content: title },
+                { name: 'twitter:description', content: '' },
+                { name: 'twitter:image:alt', content: title },
+                { name: 'og:title', content: this.title },
+                { name: 'og:description', content: '' },
+                { name: 'og:type', content: 'website' },
+                { name: 'og:site_name', content: this.title },
+                { name: 'og:url', content: this.$route.fullPath },
+                { name: 'og:image', content: previewImage },
             ],
             link: [{ rel: 'canonical', href: this.$route.fullPath }],
         };
@@ -281,7 +285,7 @@ import BaseCodeExample from '../components/BaseCodeExample.vue';
     computed: mapGetters({
         brands: 'brands/all',
     }),
-})
+} as any)
 export default class WidgetPreviewView extends Vue {
     format = format;
     isTransferLoading = false;
