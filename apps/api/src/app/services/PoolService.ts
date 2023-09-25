@@ -255,14 +255,17 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
                 subscription: PoolSubscriptionDocument,
                 pointBalance: PointBalanceDocument;
 
-            attempt((wallet = await SafeService.findPrimary(participant.sub, pool.chainId)));
-            attempt((account = accounts.find((a) => a.sub === wallet.sub)));
-            attempt((subscription = await PoolSubscription.findOne({ poolId: pool._id, sub: account.sub })));
+            attempt(async () => (wallet = await SafeService.findPrimary(participant.sub, pool.chainId)));
+            attempt(async () => (account = accounts.find((a) => a.sub === wallet.sub)));
             attempt(
-                (pointBalance = await PointBalance.findOne({
-                    poolId: participant.poolId,
-                    walletId: wallet._id,
-                })),
+                async () => (subscription = await PoolSubscription.findOne({ poolId: pool._id, sub: account.sub })),
+            );
+            attempt(
+                async () =>
+                    (pointBalance = await PointBalance.findOne({
+                        poolId: participant.poolId,
+                        walletId: wallet._id,
+                    })),
             );
 
             return {

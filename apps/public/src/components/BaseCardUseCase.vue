@@ -1,10 +1,8 @@
 <template>
     <b-card bg-variant="darker" text-variant="white" class="border-0 mt-5">
-        <div class="mb-2">
-            <b-badge variant="dark" class="p-2 text-gray mr-2" :key="key" v-for="({ tag }, key) of content.features">
-                {{ tag }}
-            </b-badge>
-        </div>
+        <b-badge variant="dark" class="p-2 text-gray mb-2 mr-2" :key="key" v-for="({ tag }, key) of content.features">
+            {{ tag }}
+        </b-badge>
         <b-card bg-variant="dark">
             <b-embed type="iframe" aspect="16by9" :src="`${content.video}&controls=0 `" allowfullscreen />
         </b-card>
@@ -36,6 +34,11 @@ export default class Home extends Vue {
             tag: string;
         }[];
     };
+
+    mounted() {
+        console.log(this.content.title, this.content.features);
+        // debugger;
+    }
 }
 </script>
 

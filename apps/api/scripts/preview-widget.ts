@@ -8,8 +8,6 @@ import { TBrand } from '@thxnetwork/common/lib/types';
 import { assetsPath } from '@thxnetwork/api/util/path';
 import path from 'path';
 import CanvasService from '@thxnetwork/api/services/CanvasService';
-import { s3Client } from '@thxnetwork/api/util/s3';
-import { PutObjectCommand } from '@aws-sdk/client-s3';
 
 // Load on boot as registration on runtime results in font not being loaded in time
 const fontPath = path.resolve(assetsPath, 'fa-solid-900.ttf');
@@ -18,17 +16,18 @@ const defaultBackgroundImgPath = path.resolve(assetsPath, 'bg.png');
 const defaultLogoImgPath = path.resolve(assetsPath, 'logo.png');
 
 // ENV
-const Bucket = 'dev-thx-storage-bucket';
-// const Bucket = 'thx-storage-bucket';
+// const widgetBaseUrl = 'https://dev-campaign.thx.network';
+const widgetBaseUrl = 'https://campaign.thx.network';
 
 registerFont(fontPath, { family, style: 'normal', weight: '900' });
 
 // db.connect(process.env.MONGODB_URI);
-db.connect(process.env.MONGODB_URI_DEV);
-// db.connect(process.env.MONGODB_URI_PROD);
+// db.connect(process.env.MONGODB_URI_DEV);
+db.connect(process.env.MONGODB_URI_PROD);
 
 async function createCampaignWidgetPreviewImage({ poolId, logoImgUrl, backgroundImgUrl }: TBrand) {
     const widget = await Widget.findOne({ poolId });
+    if (!widget) return;
     const theme = JSON.parse(widget.theme);
 
     const rightOffset = 20;
@@ -37,7 +36,7 @@ async function createCampaignWidgetPreviewImage({ poolId, logoImgUrl, background
     const widgetWidth = 400;
 
     // Get screenshot image
-    const widgetUrl = `https://campaign.thx.network/c/${poolId}/quests`;
+    const widgetUrl = `${widgetBaseUrl}/c/${poolId}/quests`;
     const fileName = `${poolId}.jpg`;
 
     // Can not use asset path here on runtime
@@ -51,7 +50,7 @@ async function createCampaignWidgetPreviewImage({ poolId, logoImgUrl, background
     // Load the base64 image data into an Image object
     const bg = await loadImage(backgroundImgUrl || defaultBackgroundImgPath);
     const logo = await loadImage(logoImgUrl || defaultLogoImgPath);
-    const screenshot = await loadImage(Buffer.from(file.buffer));
+    const screenshot = await loadImage(file);
 
     // Create a canvas with the desired dimensions
     const canvasHeight = widgetHeight + bottomOffset + rightOffset; // 810
@@ -159,20 +158,18 @@ async function main() {
 
     const brands = await Brand.find({});
     for (const index in brands) {
-        const brand = brands[index];
-        const previewFile = await createCampaignWidgetPreviewImage(brand);
-        const uploadParams = {
-            Key: `${brand.poolId}_widget_preview.png`,
-            Bucket,
-            ACL: 'public-read',
-            Body: previewFile,
-            ContentType: 'image/*',
-            ContentDisposition: 'inline',
-        };
+        try {
+            const brand = brands[index];
+            const previewFile = await createCampaignWidgetPreviewImage(brand);
+            if (!previewFile) continue;
+            // Write the image buffer data to the file
+            const output = path.join('/Users/peterpolman/Desktop/previews', `${brand.poolId}.png`);
+            fs.writeFileSync(output, previewFile);
 
-        await s3Client.send(new PutObjectCommand(uploadParams));
-
-        console.log(`${index + 1}/${brands.length} ${brand.poolId}`);
+            console.log(`${Number(index) + 1}/${brands.length} ${brand.poolId}`);
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     console.log('End', new Date());
