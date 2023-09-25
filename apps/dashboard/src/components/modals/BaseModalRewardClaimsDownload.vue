@@ -131,7 +131,7 @@
                                 v-clipboard:success="() => $set(isCopied, item.id, true)"
                             >
                                 <code class="text-muted">
-                                    {{ item.url }}
+                                    {{ item.id }}
                                 </code>
                                 <i
                                     class="fas ml-0 text-gray"
