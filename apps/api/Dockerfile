@@ -10,8 +10,7 @@ ENV NODE_OPTIONS="--max_old_space_size=8192"
 RUN apt-get update \
     && apt-get install -y g++ make python3-pip build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev \
     --no-install-recommends \
-    && rm -rf /var/lib/apt/lists/* \
-    && groupadd -r pptruser && useradd -rm -g pptruser -G audio,video pptruser
+    && rm -rf /var/lib/apt/lists/*
 
 COPY package.json yarn.lock ./
 RUN yarn
@@ -40,7 +39,7 @@ FROM node:16-slim AS production
 ENV NODE_ENV=production
 
 WORKDIR /usr/src/app
-COPY --from=build ./usr/src/app/dist/apps/api/package.json  ./usr/src/app/dist/apps/api/yarn.lock  ./
+COPY --from=build ./usr/src/app/dist/apps/api/package.json ./usr/src/app/dist/apps/api/yarn.lock  ./
 
 # Install dependencies and packages
 RUN apt-get update \
