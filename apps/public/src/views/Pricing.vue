@@ -429,16 +429,29 @@
                                             </b-link>
                                         </td>
                                     </tr>
-                                    <tr>
+                                    <!-- <tr>
                                         <td>
-                                            Transactions<br />
+                                            Quest Completions
+                                            <br />
                                             <span class="text-gray small">
-                                                We cover all required campaign transactions!
+                                                Increase participation thresholds to never reach these limits.
                                             </span>
                                         </td>
-                                        <td>Free</td>
-                                        <td>Free</td>
-                                        <td>Free</td>
+                                        <td>250</td>
+                                        <td>Unlimited</td>
+                                        <td>Unlimited</td>
+                                    </tr> -->
+                                    <tr>
+                                        <td>
+                                            Reward Redemptions
+                                            <br />
+                                            <span class="text-gray small">
+                                                Accurate point pricing will help never reach these limits
+                                            </span>
+                                        </td>
+                                        <td>50</td>
+                                        <td>500</td>
+                                        <td>5000</td>
                                     </tr>
                                     <tr>
                                         <td>
@@ -451,15 +464,14 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            Reward Limit
-                                            <br />
+                                            Transactions<br />
                                             <span class="text-gray small">
-                                                Accurate point pricing will help never reach these limits
+                                                We cover all costs for required web3 transactions!
                                             </span>
                                         </td>
-                                        <td>50</td>
-                                        <td>500</td>
-                                        <td>5000</td>
+                                        <td>Free</td>
+                                        <td>Free</td>
+                                        <td>Free</td>
                                     </tr>
                                     <tr>
                                         <td>
