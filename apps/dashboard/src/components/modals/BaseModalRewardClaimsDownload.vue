@@ -140,12 +140,16 @@
                             </b-link>
                         </template>
                         <template #cell(claimedAt)="{ item }">
-                            <div v-if="item.claimedAt.sub" style="line-height: 1">
+                            <BaseParticipantAccount v-if="item.claimedAt.account" :account="item.claimedAt.account" />
+                            <small v-if="item.claimedAt.date" class="text-muted">
+                                Claimed at: {{ format(new Date(item.claimedAt.date), 'dd-MM-yyyy HH:mm') }}
+                            </small>
+                            <!-- <div v-if="item.claimedAt.sub" style="line-height: 1">
                                 <div class="text-primary">{{ item.claimedAt.sub }}</div>
                                 <small class="text-muted">
                                     Claimed at: {{ format(new Date(item.claimedAt.date), 'dd-MM-yyyy HH:mm') }}
                                 </small>
-                            </div>
+                            </div> -->
                         </template>
                         <template #cell(createdAt)="{ item }">
                             <small class="text-muted">
@@ -182,7 +186,7 @@ import { TClaim } from '@thxnetwork/dashboard/store/modules/claims';
 import { saveAs } from 'file-saver';
 import { loadImage } from '@thxnetwork/dashboard/utils/loadImage';
 import { format } from 'date-fns';
-import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
+import BaseParticipantAccount, { parseAccount } from '../BaseParticipantAccount.vue';
 
 const unitList = [
     { label: 'Pixels', value: 'px' },
@@ -209,6 +213,7 @@ function hex2Rgb(hex: string) {
 @Component({
     name: 'BaseModalRewardClaimsDownload',
     components: {
+        BaseParticipantAccount,
         BaseCardTableHeader: () => import('@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue'),
         BaseModal,
     },
@@ -248,7 +253,10 @@ export default class BaseModalRewardClaimsDownload extends Vue {
             this.claims = [...this.claims, ...claims].map((c) => ({
                 checkbox: c.uuid,
                 url: this.getUrl(c.uuid),
-                claimedAt: { sub: c.sub, date: c.claimedAt },
+                claimedAt: {
+                    account: parseAccount({ id: c.sub, account: c.account }),
+                    date: c.claimedAt,
+                },
                 createdAt: c.createdAt,
                 id: c.uuid,
             }));
