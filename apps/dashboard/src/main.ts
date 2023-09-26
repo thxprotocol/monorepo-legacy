@@ -16,8 +16,9 @@ import { Sentry } from '@thxnetwork/common';
 
 if (NODE_ENV === 'production') {
     Sentry.init(Vue, router, [BASE_URL, API_URL, AUTH_URL]);
-    Mixpanel.init(MIXPANEL_TOKEN, API_URL);
 }
+
+Mixpanel.init(MIXPANEL_TOKEN, API_URL);
 
 // Install VeeValidate rules and localization
 Object.keys(rules).forEach((rule) => {
