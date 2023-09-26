@@ -99,7 +99,7 @@
 
     // Table
     .table {
-        color: $gray;
+        color: $gray-400;
     
         .custom-checkbox .custom-control-label {
             background-color: $darker;
@@ -113,7 +113,7 @@
     
     .table-hover tbody tr:hover {
         background-color: $darker !important;
-        color: $gray;
+        color: $gray-400;
     }
 
     tr.bg-light.text-gray {
