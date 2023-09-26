@@ -33,7 +33,7 @@ Vue.component('ValidationProvider', ValidationProvider);
 
 // Set Axios default config
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = API_URL;
+axios.defaults.baseURL = `${process.env.VUE_APP_API_ROOT}/v1`;
 axios.defaults.maxRedirects = 0;
 
 // Add a request interceptor
