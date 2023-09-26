@@ -130,7 +130,7 @@ export async function captureScreenshot(url, outputFileName, width, height) {
     await page.goto(url);
 
     // Collapse CSS animation needs to finish
-    await delay(1000);
+    await delay(3000);
 
     await page.screenshot({ path: outputFileName });
 
@@ -163,12 +163,12 @@ async function main() {
             const previewFile = await createCampaignWidgetPreviewImage(brand);
             if (!previewFile) continue;
             // Write the image buffer data to the file
-            const output = path.join('/Users/peterpolman/Desktop/previews', `${brand.poolId}.png`);
+            const output = path.join('/Users/peterpolman/Desktop/previews/final', `${brand.poolId}.png`);
             fs.writeFileSync(output, previewFile);
 
             console.log(`${Number(index) + 1}/${brands.length} ${brand.poolId}`);
         } catch (error) {
-            console.error(error);
+            console.error(brands[index].poolId, error);
         }
     }
 

@@ -110,6 +110,7 @@ import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCard
 import BaseModalRewardERC721Create from '@thxnetwork/dashboard/components/modals/BaseModalRewardERC721Create.vue';
 import { IERC1155Metadatas, IERC1155s } from '@thxnetwork/dashboard/types/erc1155';
 import { NFTVariant } from '@thxnetwork/types/enums';
+import { API_URL } from '@thxnetwork/dashboard/utils/secrets';
 
 @Component({
     components: {
@@ -137,7 +138,7 @@ export default class MetadataView extends Vue {
     format = format;
     totals!: { [erc721Id: string]: number };
     docsUrl = process.env.VUE_APP_DOCS_URL;
-    apiUrl = process.env.VUE_APP_API_ROOT;
+    apiUrl = API_URL;
     widgetUrl = process.env.VUE_APP_WIDGET_URL;
     qrURL = '';
     selectedItems: any[] = [];
@@ -194,9 +195,9 @@ export default class MetadataView extends Vue {
     getMetadataURL(metadata: TNFTMetadata) {
         switch (this.$route.params.variant) {
             case NFTVariant.ERC721:
-                return `${this.apiUrl}/v1/metadata/${metadata._id}`;
+                return `${this.apiUrl}/metadata/${metadata._id}`;
             case NFTVariant.ERC1155:
-                return `${this.apiUrl}/v1/metadata/erc1155/${this.nft?._id}/${metadata.tokenId}`;
+                return `${this.apiUrl}/metadata/erc1155/${this.nft?._id}/${metadata.tokenId}`;
         }
     }
     onChangePage(page: number) {

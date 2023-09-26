@@ -32,6 +32,7 @@
         "@safe-global/protocol-kit": "^1.2.0",
         "@safe-global/safe-core-sdk-types": "^2.2.0",
         "@sendgrid/mail": "^7.4.2",
+        "@sentry/vue": "^7.71.0",
         "@toruslabs/customauth": "^11.4.3",
         "@types/bcrypt": "^5.0.0",
         "@types/express-formidable": "^1.2.0",

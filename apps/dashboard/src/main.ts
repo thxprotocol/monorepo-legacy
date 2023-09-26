@@ -9,11 +9,15 @@ import VueClipboard from 'vue-clipboard2';
 import * as rules from 'vee-validate/dist/rules';
 import * as en from 'vee-validate/dist/locale/en.json';
 import { ValidationObserver, ValidationProvider, extend, localize } from 'vee-validate';
-import { API_URL, MIXPANEL_TOKEN } from '@thxnetwork/dashboard/utils/secrets';
+import { NODE_ENV, API_URL, AUTH_URL, BASE_URL, MIXPANEL_TOKEN } from '@thxnetwork/dashboard/utils/secrets';
 import Mixpanel from '@thxnetwork/mixpanel';
 import VueMeta from 'vue-meta';
+import { Sentry } from '@thxnetwork/common';
 
-Mixpanel.init(MIXPANEL_TOKEN, API_URL);
+if (NODE_ENV === 'production') {
+    Sentry.init(Vue, router, [BASE_URL, API_URL, AUTH_URL]);
+    Mixpanel.init(MIXPANEL_TOKEN, API_URL);
+}
 
 // Install VeeValidate rules and localization
 Object.keys(rules).forEach((rule) => {
@@ -28,7 +32,7 @@ Vue.component('ValidationProvider', ValidationProvider);
 
 // Set Axios default config
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = `${process.env.VUE_APP_API_ROOT}/v1`;
+axios.defaults.baseURL = API_URL;
 axios.defaults.maxRedirects = 0;
 
 // Add a request interceptor

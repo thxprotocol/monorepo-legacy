@@ -13,8 +13,14 @@ registerFont(fontPath, { family, style: 'normal', weight: '900' });
 
 function drawImageBg(canvas, ctx, image) {
     const imageAspectRatio = image.width / image.height;
-    const scaledWidth = canvas.width + 1;
-    const scaledHeight = canvas.width / imageAspectRatio;
+    let scaledWidth = canvas.width + 1,
+        scaledHeight = canvas.width / imageAspectRatio;
+
+    if (scaledHeight < canvas.height) {
+        scaledHeight = canvas.height;
+        scaledWidth = canvas.height * imageAspectRatio;
+    }
+
     const offsetX = Math.floor((canvas.width - scaledWidth) / 2);
     const offsetY = Math.floor((canvas.height - scaledHeight) / 2);
 
