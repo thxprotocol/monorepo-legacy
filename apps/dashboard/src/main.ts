@@ -22,7 +22,7 @@ Mixpanel.init(MIXPANEL_TOKEN, API_URL);
 
 // Install VeeValidate rules and localization
 Object.keys(rules).forEach((rule) => {
-    extend(rule, (rules as any)[rule]);
+    extend(rule, rules[rule]);
 });
 
 localize('en', en);

@@ -60,7 +60,7 @@
 </template>
 
 <script lang="ts">
-import { TPoolSettings } from '@thxnetwork/common/lib/types/interfaces';
+import type { TPoolSettings } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 export function parseDateTime(dateString: Date | null, timeString: string) {
