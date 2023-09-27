@@ -97,86 +97,104 @@ import BaseMetrics from '@thxnetwork/public/components/BaseMetrics.vue';
 import BaseRowContent from '../components/BaseRowContent.vue';
 import { USE_CASES_BOOST_TAGS, TWITTER_TAGS, LINKS } from '@thxnetwork/public/utils/constants';
 
-const features = {
-    'daily-quest': {
-        tag: 'Daily Quest',
-        image: require('../../public/assets/img/thx_widget_rewards.png'),
-        title: 'Boost User Engagement',
-        description: 'Provide daily incentives for returning to your website.',
-        list: ['Encourage regular visits', 'Enhance user loyalty', 'Foster community growth'],
-    },
-    'invite-quest': {
-        tag: 'Invite Quest',
-        image: require('../../public/assets/img/thx_widget_referral.png'),
-        title: 'Drive User Acquisition',
-        description: 'Empower your players to earn rewards for referrals.',
-        list: ['Expand your user base', 'Lower acquisition costs', 'Strengthen player networks'],
+export const features = {
+    'steam-quest': {
+        tag: 'Steam Quest',
+        image: require('../../public/assets/img/quest-steam.png'),
+        title: 'Unlock Steam Engagement',
+        description: 'Embark on a gaming journey by purchasing, wishlisting games, and earning Steam achievements.',
+        list: ['Buy a game on Steam', 'Wishlist a game on Steam', 'Earn a Steam achievement'],
+        docsUrl: 'https://docs.thx.network/user-guides/quests/daily-quests',
     },
     'twitter-quest': {
         tag: 'Twitter Quest',
-        image: require('../../public/assets/img/thx_widget_rewards.png'),
+        image: require('../../public/assets/img/quest-twitter.png'),
         title: 'Boost Your Twitter Presence',
-        description:
-            'Engage your audience on Twitter by creating exciting quests that encourage interactions and interactions.',
+        description: 'Engage your audience on Twitter by creating exciting quests that encourage retweets and likes.',
         list: ['Increase followers', 'Enhance brand recognition', 'Foster community engagement'],
+        docsUrl: 'https://docs.thx.network/user-guides/quests/social-quests',
     },
-    'discord-quest': {
-        tag: 'Discord Quest',
-        image: require('../../public/assets/img/thx_widget_rewards.png'),
-        title: 'Strengthen Your Discord Community',
-        description:
-            'Create quests on Discord to promote community interactions and build a strong, engaged user base.',
-        list: ['Grow your Discord server', 'Enhance community participation', 'Boost server activity'],
+    'daily-quest': {
+        tag: 'Daily Quest',
+        image: require('../../public/assets/img/quest-daily.png'),
+        title: 'Boost User Engagement',
+        description: 'Provide daily incentives for returning to your website.',
+        list: ['Encourage regular visits', 'Enhance user loyalty', 'Foster community growth'],
+        docsUrl: 'https://docs.thx.network/user-guides/quests/daily-quests',
+    },
+    'custom-quest': {
+        tag: 'Custom Quest',
+        image: require('../../public/assets/img/quest-custom.png'),
+        title: 'Seamless Integration',
+        description: 'Integrate quests with ease using webhooks to reward important achievements in your application.',
+        list: ['Tailor rewards to your app', 'Streamline integration', 'Enhance user experience'],
+        docsUrl: 'https://docs.thx.network/user-guides/quests/custom-quests',
     },
     'youtube-quest': {
         tag: 'Youtube Quest',
-        image: require('../../public/assets/img/thx_widget_rewards.png'),
+        image: require('../../public/assets/img/quest-youtube.png'),
         title: 'Expand Your YouTube Presence',
         description:
             'Amplify your presence on YouTube by creating quests that encourage likes, shares, and subscriptions.',
         list: ['Increase video views', 'Boost channel subscribers', 'Enhance YouTube community engagement'],
+        docsUrl: 'https://docs.thx.network/user-guides/quests/social-quests',
+    },
+    'invite-quest': {
+        tag: 'Invite Quest',
+        image: require('../../public/assets/img/quest-invite.png'),
+        title: 'Drive User Acquisition',
+        description: 'Empower your players to earn rewards for referrals.',
+        list: ['Expand your user base', 'Lower acquisition costs', 'Strengthen player networks'],
+        docsUrl: 'https://docs.thx.network/user-guides/quests/referral-quests',
+    },
+    'discord-quest': {
+        tag: 'Discord Quest',
+        image: require('../../public/assets/img/quest-discord.png'),
+        title: 'Strengthen Your Discord Community',
+        description:
+            'Create quests on Discord to promote community interactions and build a strong, engaged user base.',
+        list: ['Grow your Discord server', 'Enhance community participation', 'Boost server activity'],
+        docsUrl: 'https://docs.thx.network/user-guides/quests',
     },
     'web3-quest': {
         tag: 'Web3 Quest',
-        image: require('../../public/assets/img/thx_widget_rewards.png'),
+        image: require('../../public/assets/img/quest-web3.png'),
         title: 'Empower with Web3 Rewards',
         description: "Reward users' coin balance or NFT ownership using smart contracts.",
         list: ['Leverage blockchain technology', 'Enhance user ownership', 'Facilitate decentralized rewards'],
-    },
-    'custom-quest': {
-        tag: 'Custom Quest',
-        image: require('../../public/assets/img/thx_widget_rewards.png'),
-        title: 'Seamless Integration',
-        description: 'Integrate quests with ease using webhooks to reward important achievements in your application.',
-        list: ['Tailor rewards to your app', 'Streamline integration', 'Enhance user experience'],
+        docsUrl: 'https://docs.thx.network/user-guides/quests',
     },
     'coin-reward': {
         tag: 'Coin Reward',
-        image: require('../../public/assets/img/thx_widget_perks.png'),
+        image: require('../../public/assets/img/reward-coin.png'),
         title: 'Cashbacks with Coins',
         description: 'Import your own ERC20 smart contract and let users redeem points for coins.',
         list: ['Provide tangible value', 'Boost user retention', 'Incentivize spending'],
+        docsUrl: 'https://docs.thx.network/rewards/coins',
     },
     'nft-reward': {
         tag: 'NFT Reward',
-        image: require('../../public/assets/img/thx_widget_perks.png'),
+        image: require('../../public/assets/img/reward-nft.png'),
         title: 'Exclusive NFTs',
         description: 'Import your own ERC721 or ERC1155 smart contract and let users redeem points for exclusive NFTs.',
         list: ['Offer unique collectibles', 'Enhance user engagement', 'Drive interest in NFTs'],
+        docsUrl: 'https://docs.thx.network/rewards/nft',
     },
     'custom-reward': {
         tag: 'Custom Reward',
-        image: require('../../public/assets/img/thx_widget_rewards.png'),
+        image: require('../../public/assets/img/quest-custom.png'),
         title: 'Flexible Rewards',
         description: 'Use inbound webhooks to reward users with custom features in your application.',
         list: ['Tailor rewards to user needs', 'Enhance user satisfaction', 'Drive app adoption'],
+        docsUrl: 'https://docs.thx.network/rewards',
     },
     'qr-codes': {
         tag: 'QR Codes',
-        image: require('../../public/assets/img/thx_widget_rewards.png'),
+        image: '',
         title: 'Offline Reward Distribution',
         description: 'Use QR codes to distribute rewards in offline environments.',
         list: ['Expand reach to offline users', 'Facilitate in-person engagement', 'Enhance brand recognition'],
+        docsUrl: 'https://docs.thx.network',
     },
 };
 

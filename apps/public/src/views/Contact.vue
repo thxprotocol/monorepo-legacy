@@ -15,7 +15,7 @@
                             <b-button
                                 variant="outline-secondary"
                                 class="rounded-pill float-md-right mt-5 mt-md-0"
-                                href="https://calendly.com/steffenboode/demo"
+                                href="https://calendly.com/mieszko/demo"
                                 target="_blank"
                                 :title="TITLES.SCHEDULE_A_DEMO"
                             >
@@ -27,9 +27,13 @@
                             <b-spinner variant="dark"></b-spinner>
                         </div>
                         <validation-observer v-else ref="observer" v-slot="{ handleSubmit }">
-                            <b-alert show variant="danger" v-if="error"> {{ error }} </b-alert>
                             <b-alert show variant="success" v-if="success"> {{ success }} </b-alert>
                             <b-form @submit.stop.prevent="handleSubmit(submit)" id="formContact">
+                                <b-alert show variant="danger" class="mt-5" v-if="error">
+                                    {{ error }}
+                                    Try reaching us on
+                                    <a href="https://discord.gg/TzbbSmkE7Y" target="_blank">Discord</a>!
+                                </b-alert>
                                 <label class="text-light font-weight-bold mt-5">Name</label>
                                 <div class="form-group row">
                                     <div class="col-sm-6">
@@ -277,8 +281,7 @@ export default class Contact extends Vue {
 
             this.success = 'THX! We will respond to your message as soon as possible.';
         } catch (e) {
-            this.error =
-                'Oops! Something went wrong... Try reaching us on <a href="https://discord.gg/TzbbSmkE7Y" target="_blank">Discord</a>!';
+            this.error = 'Oops! Something went wrong...';
         } finally {
             this.loading = false;
         }

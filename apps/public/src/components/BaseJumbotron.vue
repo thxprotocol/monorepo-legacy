@@ -9,7 +9,7 @@
                                 <em>Rewards</em><br />
                                 in any app
                             </h1>
-                            <p class="lead mb-4">Drive growth and revenue with our token-powered Loyalty Engine.</p>
+                            <p class="lead mb-4">Drive growth and revenue with plug &amp; play Reward Campaigns</p>
                             <b-form id="formSignupRedirect" class="row" v-on:submit.prevent="submit">
                                 <div class="col-12">
                                     <b-form-input

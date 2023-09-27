@@ -3,7 +3,42 @@
         <div class="container pb-5 pt-5 mt-5">
             <div class="row">
                 <div class="col-12 text-center">
-                    <div class="lead">Providing Community</div>
+                    <div class="lead">Pick your flavour</div>
+                    <h1 class="h1 font-size-xl mt-3 mb-3">Solutions</h1>
+                </div>
+            </div>
+        </div>
+        <b-tabs align="center" active-nav-item-class="btn-primary rounded-pill" nav-class="bg-light py-3" pills>
+            <b-tab>
+                <template #title>
+                    <i class="fas fa-trophy mr-2"></i>
+                    Quests
+                </template>
+                <BaseRowContent
+                    v-for="(feature, key) of quests"
+                    :key="key"
+                    :content="feature"
+                    :img-align="key % 2 === 0 ? 'right' : 'left'"
+                />
+            </b-tab>
+            <b-tab>
+                <template #title>
+                    <i class="fas fa-gift mr-2"></i>
+                    Rewards
+                </template>
+                <BaseRowContent
+                    v-for="(feature, key) of rewards"
+                    :key="key"
+                    :content="feature"
+                    :img-align="key % 2 === 0 ? 'right' : 'left'"
+                />
+            </b-tab>
+        </b-tabs>
+
+        <div class="container pb-5 pt-5 mt-5">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <div class="lead">Many Platform</div>
                     <h1 class="h1 font-size-xl mt-3 mb-3">Integrations</h1>
                 </div>
             </div>
@@ -176,6 +211,8 @@
 import { Component, Vue } from 'vue-property-decorator';
 import BaseContact from '@thxnetwork/public/components/BaseContact.vue';
 import { INTEGRATIONS_TAGS, TWITTER_TAGS, ALT_TEXT, LINKS, TITLES } from '@thxnetwork/public/utils/constants';
+import { features } from './UseCaseDetail.vue';
+import BaseRowContent from '../components/BaseRowContent.vue';
 
 @Component({
     metaInfo: {
@@ -199,11 +236,23 @@ import { INTEGRATIONS_TAGS, TWITTER_TAGS, ALT_TEXT, LINKS, TITLES } from '@thxne
         link: [{ rel: 'canonical', href: LINKS.INTEGRATIONS }],
     },
     components: {
-        'base-contact': BaseContact,
+        BaseContact,
+        BaseRowContent,
     },
 })
 export default class Home extends Vue {
     ALT_TEXT = ALT_TEXT;
     TITLES = TITLES;
+    features: any = features;
+
+    get quests() {
+        const keys = Object.keys(this.features).filter((key) => key.includes('quest'));
+        return keys.map((key) => features[key]);
+    }
+
+    get rewards() {
+        const keys = Object.keys(this.features).filter((key) => key.includes('reward'));
+        return keys.map((key) => features[key]);
+    }
 }
 </script>

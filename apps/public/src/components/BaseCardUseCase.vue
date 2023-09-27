@@ -34,11 +34,6 @@ export default class Home extends Vue {
             tag: string;
         }[];
     };
-
-    mounted() {
-        console.log(this.content.title, this.content.features);
-        // debugger;
-    }
 }
 </script>
 

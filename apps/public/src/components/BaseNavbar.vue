@@ -18,17 +18,26 @@
                 </router-link>
                 <b-navbar-nav>
                     <b-nav-item to="/pricing" :title="TITLES.PRICING">Pricing</b-nav-item>
-                    <b-nav-item to="/campaigns" :title="TITLES.CAMPAIGNS">Campaigns</b-nav-item>
                     <b-nav-item to="/use-cases" :title="TITLES.USECASES">Use Cases</b-nav-item>
-                    <b-nav-item to="/integrations" :title="TITLES.INTEGRATIONS">Integrations</b-nav-item>
-                    <!-- <b-nav-item to="/campaigns" :title="TITLES.INTEGRATIONS">Campaigns</b-nav-item> -->
-                    <b-nav-item to="/token" :title="TITLES.TOKEN">Token</b-nav-item>
-                    <b-nav-item href="https://offsetra.com/profile/THX_Network" target="_blank">
-                        Carbon Offset
-                    </b-nav-item>
+                    <b-nav-item to="/solutions" :title="TITLES.SOLUTIONS">Solutions</b-nav-item>
                     <b-nav-item to="/contact" :title="TITLES.CONTACT">Contact</b-nav-item>
+
+                    <b-nav-item-dropdown no-caret right>
+                        <template #button-content>
+                            More
+                            <i class="fas fa-caret-down" />
+                        </template>
+                        <b-dropdown-item :title="TITLES.TOKEN" to="/token">Token</b-dropdown-item>
+                        <b-dropdown-item target="_blank" href="https://offsetra.com/profile/THX_Network">
+                            Carbon Offset
+                        </b-dropdown-item>
+                    </b-nav-item-dropdown>
                 </b-navbar-nav>
+
                 <div class="navbar-nav-right">
+                    <b-button variant="outline-primary" class="rounded-pill" to="/campaigns" :title="TITLES.CAMPAIGNS">
+                        Campaigns
+                    </b-button>
                     <b-button
                         class="rounded-pill"
                         :variant="isDarkJumbotron && !toggle ? 'link-light' : 'link-dark'"

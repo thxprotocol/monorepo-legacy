@@ -14,8 +14,11 @@
                 <b-spinner variant="dark"></b-spinner>
             </div>
             <validation-observer v-else ref="observer" v-slot="{ handleSubmit }">
+                <b-alert show variant="danger" v-if="error">
+                    {{ error }}
+                    Try reaching us on <a href="https://discord.gg/TzbbSmkE7Y" target="_blank">Discord</a>
+                </b-alert>
                 <div class="text-left">
-                    <b-alert show variant="danger" v-if="error" v-html="error"></b-alert>
                     <b-alert show variant="success" v-if="success"> {{ success }} </b-alert>
 
                     <b-form @submit.stop.prevent="handleSubmit(submit)" id="formContact">
@@ -163,8 +166,7 @@ export default class Contact extends Vue {
             this.success = 'THX! We will respond to your message as soon as possible.';
         } catch (error) {
             console.error(error);
-            this.error =
-                'Oops! Something went wrong... Try reaching us on <a href="https://discord.gg/TzbbSmkE7Y" target="_blank">Discord</a>!';
+            this.error = 'Oops! Something went wrong...';
         } finally {
             this.loading = false;
         }

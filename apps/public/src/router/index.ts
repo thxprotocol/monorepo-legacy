@@ -36,9 +36,9 @@ const routes: Array<RouteConfig> = [
         component: () => import(/* webpackChunkName: "usecases-usecase-detail" */ '../views/UseCaseDetail.vue'),
     },
     {
-        path: '/integrations',
-        name: 'Integrations',
-        component: () => import(/* webpackChunkName: "integrations" */ '../views/Integrations.vue'),
+        path: '/solutions',
+        name: 'Solutions',
+        component: () => import(/* webpackChunkName: "integrations" */ '../views/Solutions.vue'),
     },
     {
         path: '/contact',
