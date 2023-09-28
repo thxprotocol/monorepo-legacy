@@ -7,6 +7,7 @@ import { TInfoLink } from '@thxnetwork/types/interfaces';
 import { isValidUrl } from '@thxnetwork/api/util/url';
 import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
 import ImageService from '@thxnetwork/api/services/ImageService';
+import PoolService from '@thxnetwork/api/services/PoolService';
 
 const validation = [
     param('id').isMongoId(),
@@ -50,6 +51,9 @@ const controller = async (req: Request, res: Response) => {
         { new: true },
     );
     const claims = await ReferralRewardClaimService.findByReferralReward(reward);
+
+    PoolService.sendNotification(reward);
+
     res.json({ ...reward.toJSON(), claims });
 };
 

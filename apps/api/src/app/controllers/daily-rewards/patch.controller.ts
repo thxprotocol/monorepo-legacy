@@ -1,5 +1,6 @@
 import { DailyReward } from '@thxnetwork/api/services/DailyRewardService';
 import ImageService from '@thxnetwork/api/services/ImageService';
+import PoolService from '@thxnetwork/api/services/PoolService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { isValidUrl } from '@thxnetwork/api/util/url';
 import { TInfoLink } from '@thxnetwork/types/interfaces';
@@ -39,11 +40,13 @@ const validation = [
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Daily Rewards']
 
-    let dailyReward = await DailyReward.findById(req.params.id);
-    if (!dailyReward) throw new NotFoundError('Could not find the dailyReward');
+    let reward = await DailyReward.findById(req.params.id);
+    if (!reward) throw new NotFoundError('Could not find the dailyReward');
+
     const image = req.file && (await ImageService.upload(req.file));
     const { title, description, amounts, infoLinks, isEnabledWebhookQualification, index, isPublished } = req.body;
-    dailyReward = await DailyReward.findByIdAndUpdate(
+
+    reward = await DailyReward.findByIdAndUpdate(
         req.params.id,
         {
             title,
@@ -58,7 +61,9 @@ const controller = async (req: Request, res: Response) => {
         { new: true },
     );
 
-    return res.json(dailyReward);
+    PoolService.sendNotification(reward);
+
+    return res.json(reward);
 };
 
 export default { controller, validation };

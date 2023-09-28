@@ -7,6 +7,7 @@ import { TInfoLink } from '@thxnetwork/types/interfaces';
 import { isValidUrl } from '@thxnetwork/api/util/url';
 import { ChainId } from '@thxnetwork/types/enums';
 import ImageService from '@thxnetwork/api/services/ImageService';
+import PoolService from '@thxnetwork/api/services/PoolService';
 
 const validation = [
     body('index').isInt(),
@@ -35,7 +36,7 @@ const controller = async (req: Request, res: Response) => {
     const poolId = req.header('X-PoolId');
     const image = req.file && (await ImageService.upload(req.file));
     const quest = await Web3Quest.create({ ...req.body, uuid: v4(), image, poolId });
-
+    PoolService.sendNotification(quest);
     res.status(201).json(quest);
 };
 

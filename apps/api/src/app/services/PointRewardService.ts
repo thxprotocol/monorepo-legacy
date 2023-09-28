@@ -5,7 +5,6 @@ import db from '@thxnetwork/api/util/database';
 import { TPointReward } from '@thxnetwork/types/interfaces/PointReward';
 import axios from 'axios';
 import { Widget } from './WidgetService';
-import PoolService from './PoolService';
 import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
 import { Wallet } from '@thxnetwork/api/models/Wallet';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
@@ -35,8 +34,6 @@ export async function create(pool: AssetPoolDocument, payload: Partial<TPointRew
             ],
         });
     }
-
-    PoolService.sendNotification(pool, reward);
 
     return reward;
 }

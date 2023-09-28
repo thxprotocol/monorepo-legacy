@@ -45,6 +45,9 @@ const controller = async (req: Request, res: Response) => {
         infoLinks,
         isPublished,
     });
+
+    PoolService.sendNotification(reward);
+
     res.status(201).json(reward);
 };
 

@@ -14,7 +14,14 @@ import MailService from './MailService';
 import { Widget } from './WidgetService';
 import { PoolSubscription, PoolSubscriptionDocument } from '../models/PoolSubscription';
 import { logger } from '../util/logger';
-import { TAccount, TPointReward } from '@thxnetwork/types/interfaces';
+import {
+    TAccount,
+    TDailyReward,
+    TMilestoneReward,
+    TPointReward,
+    TReferralReward,
+    TWeb3Quest,
+} from '@thxnetwork/types/interfaces';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { v4 } from 'uuid';
 import { DailyReward } from '../models/DailyReward';
@@ -171,7 +178,10 @@ async function updateAssetPool(pool: AssetPoolDocument, version?: string) {
     return tx;
 }
 
-async function sendNotification(pool: AssetPoolDocument, reward: TPointReward) {
+async function sendNotification(reward: TWeb3Quest | TPointReward | TMilestoneReward | TReferralReward | TDailyReward) {
+    if (!reward.isPublished) return;
+
+    const pool = await getById(reward.poolId);
     const sleepTime = 60; // seconds
     const chunkSize = 600;
 
@@ -181,9 +191,12 @@ async function sendNotification(pool: AssetPoolDocument, reward: TPointReward) {
 
     for (let i = 0; i < subs.length; i += chunkSize) {
         const subsChunk = subs.slice(i, i + chunkSize);
+        const { amount, amounts } = reward as any;
 
         let html = `<p style="font-size: 18px">New reward!🔔</p>`;
-        html += `You can earn <strong>${reward.amount} points ✨</strong> at <a href="${widget.domain}">${pool.settings.title}</a>.`;
+        html += `You can earn <strong>${amount || amounts[0]} points ✨</strong> at <a href="${widget.domain}">${
+            pool.settings.title
+        }</a>.`;
         html += `<hr />`;
         html += `<strong>${reward.title}</strong><br />`;
         html += `<i>${reward.description}</i>`;

@@ -1,5 +1,6 @@
 import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
 import ImageService from '@thxnetwork/api/services/ImageService';
+import PoolService from '@thxnetwork/api/services/PoolService';
 import { isValidUrl } from '@thxnetwork/api/util/url';
 import { TInfoLink } from '@thxnetwork/types/interfaces';
 import { Request, Response } from 'express';
@@ -29,7 +30,7 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Milestone Rewards']
     const { title, description, amount, infoLinks, limit, index, isPublished } = req.body;
     const image = req.file && (await ImageService.upload(req.file));
-    const milestoneReward = await MilestoneReward.findByIdAndUpdate(
+    const reward = await MilestoneReward.findByIdAndUpdate(
         req.params.id,
         {
             title,
@@ -44,7 +45,9 @@ const controller = async (req: Request, res: Response) => {
         { new: true },
     );
 
-    res.status(201).json(milestoneReward);
+    PoolService.sendNotification(reward);
+
+    res.status(201).json(reward);
 };
 
 export default { controller, validation };

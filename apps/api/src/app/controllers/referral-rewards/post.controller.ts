@@ -31,6 +31,9 @@ const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(req.header('X-PoolId'));
     const image = req.file && (await ImageService.upload(req.file));
     const reward = await ReferralRewardService.create(pool, { ...req.body, image, poolId: pool._id });
+
+    PoolService.sendNotification(reward);
+
     res.status(201).json(reward);
 };
 
