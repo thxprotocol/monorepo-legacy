@@ -1,12 +1,29 @@
-import type { TAccount } from '@thxnetwork/types/interfaces';
+import type { TAccount, TPoolSettings, TPoolTransfer } from '@thxnetwork/types/interfaces';
 import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
 import { THXError } from '@thxnetwork/api/util/errors';
+import axios from 'axios';
 
 class NoDataError extends THXError {
     message = 'Could not find discord data for this account';
 }
 
 export default class DiscordDataProxy {
+    static async sendChannelMessage(
+        settings: TPoolSettings,
+        message: {
+            title: string;
+            description: string;
+            url: string;
+        },
+    ) {
+        if (!settings.discordWebhookUrl) return;
+
+        await axios.post(settings.discordWebhookUrl, {
+            content: '@here ' + settings.defaults.discordMessage,
+            embeds: [message],
+        });
+    }
+
     static async getUserId(account: TAccount) {
         const { data } = await authClient({
             method: 'GET',

@@ -41,7 +41,8 @@ import { Collaborator } from '../models/Collaborator';
 import { DASHBOARD_URL } from '../config/secrets';
 import { WalletDocument } from '../models/Wallet';
 import { PointBalanceDocument } from '../models/PointBalance';
-import axios from 'axios';
+import DiscordDataProxy from '../proxies/DiscordDataProxy';
+import NotificationService from './NotificationService';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -179,63 +180,31 @@ async function updateAssetPool(pool: AssetPoolDocument, version?: string) {
     return tx;
 }
 
-async function sendNotification(reward: TWeb3Quest | TPointReward | TMilestoneReward | TReferralReward | TDailyReward) {
-    if (!reward.isPublished) return;
+async function sendNotification(quest: TWeb3Quest | TPointReward | TMilestoneReward | TReferralReward | TDailyReward) {
+    if (!quest.isPublished) return;
 
-    const pool = await getById(reward.poolId);
-    const sleepTime = 60; // seconds
-    const chunkSize = 600;
-
+    const pool = await getById(quest.poolId);
     const widget = await Widget.findOne({ poolId: pool._id });
-    const subscriptions = await PoolSubscription.find({ poolId: pool._id }, { sub: 1, _id: 0 });
-    const subs = subscriptions.map((x) => x.sub);
+    const { amount, amounts } = quest as any;
 
-    for (let i = 0; i < subs.length; i += chunkSize) {
-        const subsChunk = subs.slice(i, i + chunkSize);
-        const { amount, amounts } = reward as any;
+    await NotificationService.send(pool, {
+        subjectId: quest.uuid,
+        subject: `🎁 New Quest: "${quest.title}"`,
+        message: `<p style="font-size: 18px">New Quest!🔔</p>
+        <p>Earn <strong>${amount || amounts[0]} points ✨</strong> at 
+        <a href="${widget.domain}">${pool.settings.title}</a>
+        .</p>`,
+    });
 
-        let html = `<p style="font-size: 18px">New Quest!🔔</p>`;
-        html += `Earn <strong>${amount || amounts[0]} points ✨</strong> at <a href="${widget.domain}">${
-            pool.settings.title
-        }</a>.`;
-
-        const promises = subsChunk.map(async (sub) => {
-            try {
-                const account = await AccountProxy.getById(sub);
-                if (!account.email) return;
-
-                await MailService.send(account.email, `🎁 New Quest: "${reward.title}"`, html);
-            } catch (error) {
-                logger.error(error);
-            }
-        });
-
-        await Promise.all(promises);
-        await sleep(sleepTime);
-    }
-
-    if (pool.settings.discordWebhookUrl) {
-        const widget = await Widget.findOne({ poolId: pool._id });
-
-        await axios.post(pool.settings.discordWebhookUrl, {
-            content: '@here ' + pool.settings.defaults.discordMessage,
-            embeds: [
-                {
-                    title: `${reward.title}`,
-                    description: reward.description,
-                    url: widget.domain,
-                },
-            ],
-        });
-    }
+    await DiscordDataProxy.sendChannelMessage(pool.settings, {
+        title: `${quest.title}`,
+        description: quest.description,
+        url: widget.domain,
+    });
 }
 
 async function find(model: any, pool: AssetPoolDocument) {
     return await model.find({ poolId: String(pool._id) });
-}
-
-async function countBySub(model: any, pool: AssetPoolDocument) {
-    return await model.count({ poolId: String(pool._id) }).distinct('sub');
 }
 
 async function getQuestCount(pool: AssetPoolDocument) {

@@ -31,3 +31,4 @@ export * from './Webhook';
 export * from './Web3Quest';
 export * from './Collaborator';
 export * from './CustomReward';
+export * from './Notification';
