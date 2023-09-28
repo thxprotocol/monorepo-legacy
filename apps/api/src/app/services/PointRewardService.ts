@@ -3,8 +3,6 @@ import { PointRewardDocument, PointReward as PointRewardSchema } from '@thxnetwo
 import { paginatedResults } from '../util/pagination';
 import db from '@thxnetwork/api/util/database';
 import { TPointReward } from '@thxnetwork/types/interfaces/PointReward';
-import axios from 'axios';
-import { Widget } from './WidgetService';
 import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
 import { Wallet } from '@thxnetwork/api/models/Wallet';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
@@ -20,20 +18,6 @@ export async function create(pool: AssetPoolDocument, payload: Partial<TPointRew
         poolId: pool._id,
         ...payload,
     });
-
-    if (pool.settings.discordWebhookUrl) {
-        const widget = await Widget.findOne({ poolId: pool._id });
-        await axios.post(pool.settings.discordWebhookUrl, {
-            content: '@here ' + pool.settings.defaults.discordMessage,
-            embeds: [
-                {
-                    title: `${reward.title}`,
-                    description: reward.description,
-                    url: widget.domain,
-                },
-            ],
-        });
-    }
 
     return reward;
 }

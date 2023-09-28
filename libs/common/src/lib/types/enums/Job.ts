@@ -1,6 +1,6 @@
 export enum JobType {
     UpdatePendingTransactions = 'updatePendingTransactions',
-    CreateConditionalRewards = 'createConditionalRewards',
+    CreateTwitterQuests = 'createTwitterQuests',
     SendCampaignReport = 'sendPoolAnalyticsReport',
     MigrateWallets = 'migrateWallets',
     DeploySafe = 'deploySafe',

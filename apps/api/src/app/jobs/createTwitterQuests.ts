@@ -9,7 +9,7 @@ import AccountProxy from '../proxies/AccountProxy';
 import MailService from '../services/MailService';
 import { twitterClient } from '../util/twitter';
 
-export async function createConditionalRewards() {
+export async function createTwitterQuests() {
     const endDate = new Date();
     const startDate = subMinutes(endDate, 15);
 
@@ -21,21 +21,29 @@ export async function createConditionalRewards() {
         if (!latestTweetsForPoolOwner.length) continue;
 
         const { hashtag, title, description, amount } = pool.settings.defaults.conditionalRewards;
-        const filteredTweets = await Promise.all(
-            latestTweetsForPoolOwner.filter(async (tweet: any) => {
-                const isExistingReward = await PointReward.exists({ poolId: String(pool._id), content: tweet.id });
-                return !isExistingReward && hashtag && containsValue(tweet.text, hashtag);
-            }),
-        );
+        const filteredTweets = (
+            await Promise.all(
+                latestTweetsForPoolOwner.map(async (tweet: any) => {
+                    const isExistingReward = await PointReward.exists({
+                        poolId: String(pool._id),
+                        content: tweet.id,
+                    });
+                    return { isExistingReward, tweet };
+                }),
+            )
+        ).filter(({ isExistingReward, tweet }) => {
+            return !isExistingReward && hashtag && containsValue(tweet.text, hashtag);
+        });
         if (!filteredTweets.length) continue;
 
-        const rewards = await Promise.all(
+        const quests = await Promise.all(
             filteredTweets.map(async (tweet) => {
                 const contentMetadata = await getContentMetadata(filteredTweets[0].id);
                 return await PointRewardService.create(pool, {
                     title,
                     description,
                     amount,
+                    isPublished: false,
                     platform: RewardConditionPlatform.Twitter,
                     interaction: RewardConditionInteraction.TwitterRetweet,
                     content: tweet.id,
@@ -48,11 +56,11 @@ export async function createConditionalRewards() {
         if (account.email) {
             await MailService.send(
                 account.email,
-                `Published ${rewards.length} reward${rewards.length && 's'}!`,
-                `We discovered ${rewards.length} new tweet${
-                    rewards.length && 's'
+                `Published ${quests.length} quest${quests.length && 's'}!`,
+                `We discovered ${quests.length} new tweet${
+                    quests.length && 's'
                 } in your connected Twitter account! A conditional reward ${
-                    rewards.length && 'for each'
+                    quests.length && 'for each'
                 } has been published for your widget.`,
             );
         }

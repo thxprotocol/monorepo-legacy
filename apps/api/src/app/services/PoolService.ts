@@ -41,6 +41,7 @@ import { Collaborator } from '../models/Collaborator';
 import { DASHBOARD_URL } from '../config/secrets';
 import { WalletDocument } from '../models/Wallet';
 import { PointBalanceDocument } from '../models/PointBalance';
+import axios from 'axios';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -193,13 +194,10 @@ async function sendNotification(reward: TWeb3Quest | TPointReward | TMilestoneRe
         const subsChunk = subs.slice(i, i + chunkSize);
         const { amount, amounts } = reward as any;
 
-        let html = `<p style="font-size: 18px">New reward!🔔</p>`;
-        html += `You can earn <strong>${amount || amounts[0]} points ✨</strong> at <a href="${widget.domain}">${
+        let html = `<p style="font-size: 18px">New Quest!🔔</p>`;
+        html += `Earn <strong>${amount || amounts[0]} points ✨</strong> at <a href="${widget.domain}">${
             pool.settings.title
         }</a>.`;
-        html += `<hr />`;
-        html += `<strong>${reward.title}</strong><br />`;
-        html += `<i>${reward.description}</i>`;
 
         const promises = subsChunk.map(async (sub) => {
             try {
@@ -214,6 +212,21 @@ async function sendNotification(reward: TWeb3Quest | TPointReward | TMilestoneRe
 
         await Promise.all(promises);
         await sleep(sleepTime);
+    }
+
+    if (pool.settings.discordWebhookUrl) {
+        const widget = await Widget.findOne({ poolId: pool._id });
+
+        await axios.post(pool.settings.discordWebhookUrl, {
+            content: '@here ' + pool.settings.defaults.discordMessage,
+            embeds: [
+                {
+                    title: `${reward.title}`,
+                    description: reward.description,
+                    url: widget.domain,
+                },
+            ],
+        });
     }
 }
 

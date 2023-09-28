@@ -171,7 +171,7 @@ import BaseModalRewardCustomCreate from '@thxnetwork/dashboard/components/modals
 import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/badges/BaseBadgeRewardConditionPreview.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseModalRewardClaimsDownload from '@thxnetwork/dashboard/components/modals/BaseModalRewardClaimsDownload.vue';
-import { TCustomRewardState } from '@thxnetwork/dashboard/store/modules/rewards';
+import type { TCustomRewardState } from '@thxnetwork/dashboard/store/modules/rewards';
 import { hasPremiumAccess } from '@thxnetwork/common';
 
 @Component({
