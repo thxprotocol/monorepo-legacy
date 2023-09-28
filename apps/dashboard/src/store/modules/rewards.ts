@@ -6,6 +6,9 @@ import type { TCustomReward, TWebhook, TPool } from '@thxnetwork/types/interface
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 import { track } from '@thxnetwork/mixpanel';
 import {} from '@thxnetwork/types/interfaces/CustomReward';
+import { TCouponReward } from '@thxnetwork/common/lib/types/interfaces/CouponReward';
+
+type TReward = TCustomReward | TCouponReward;
 
 export type TCustomRewardState = {
     [poolId: string]: {
@@ -23,14 +26,14 @@ class RewardModule extends VuexModule {
     }
 
     @Mutation
-    set(reward: TCustomReward) {
+    set(reward: TReward) {
         if (!this._customRewards[reward.poolId]) Vue.set(this._customRewards, reward.poolId, {});
         reward.variant = RewardVariant.Custom;
         Vue.set(this._customRewards[reward.poolId], String(reward._id), reward);
     }
 
     @Mutation
-    unset(reward: TCustomReward) {
+    unset(reward: TReward) {
         Vue.delete(this._customRewards[reward.poolId], reward._id as string);
     }
 
@@ -53,14 +56,14 @@ class RewardModule extends VuexModule {
 
         this.context.commit('setTotal', { pool, total: data.total });
 
-        data.results.forEach((reward: TCustomReward) => {
+        data.results.forEach((reward: TReward) => {
             reward.page = page;
             this.context.commit('set', reward);
         });
     }
 
     @Action({ rawError: true })
-    async create(reward: TCustomReward) {
+    async create(reward: TReward) {
         const formData = prepareFormDataForUpload(reward);
         const { data } = await axios({
             method: 'POST',
@@ -76,7 +79,7 @@ class RewardModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async update(reward: TCustomReward) {
+    async update(reward: TReward) {
         const formData = prepareFormDataForUpload(reward);
         const { data } = await axios({
             method: 'PATCH',
@@ -89,7 +92,7 @@ class RewardModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async delete(reward: TCustomReward) {
+    async delete(reward: TReward) {
         await axios({
             method: 'DELETE',
             url: `/custom-rewards/${reward._id}`,

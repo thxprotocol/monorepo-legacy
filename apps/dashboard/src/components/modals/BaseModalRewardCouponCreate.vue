@@ -2,13 +2,13 @@
     <base-modal
         @show="onShow"
         size="xl"
-        :title="(reward ? 'Update' : 'Create') + ' Custom Reward'"
+        :title="(reward ? 'Update' : 'Create') + ' Coupon Reward'"
         :id="id"
         :error="error"
         :loading="isLoading"
     >
         <template #modal-body v-if="!isLoading">
-            <form v-on:submit.prevent="onSubmit()" id="formRewardCustomCreate">
+            <form v-on:submit.prevent="onSubmit()" id="formRewardCouponCreate">
                 <b-row>
                     <b-col md="6">
                         <b-form-group label="Title">
@@ -17,20 +17,16 @@
                         <b-form-group label="Description">
                             <b-textarea v-model="description" />
                         </b-form-group>
-                        <b-form-group label="Webhook">
-                            <b-dropdown variant="link" class="dropdown-select" v-if="webhookList.length">
-                                <template #button-content>
-                                    <div class="d-flex align-items-center" v-if="webhook">
-                                        <i class="fas fa-globe text-muted mr-2"></i>
-                                        <span class="mr-1">{{ webhook.url }}</span>
-                                    </div>
-                                    <div v-else>Select a Webhook</div>
-                                </template>
-                                <b-dropdown-item-button :key="key" v-for="(w, key) of webhookList" @click="webhook = w">
-                                    {{ w.url }}
-                                </b-dropdown-item-button>
-                                <b-dropdown-divider />
-                            </b-dropdown>
+                        <b-form-group label="Coupon Codes">
+                            <b-form-file
+                                v-model="fileCoupons"
+                                :state="fileCoupons"
+                                placeholder="Choose a file or drop it here..."
+                                drop-placeholder="Drop file here..."
+                            ></b-form-file>
+                            <small class="mt-3 text-muted">
+                                Selected file: {{ fileCoupons ? fileCoupons.name : '' }}
+                            </small>
                         </b-form-group>
                         <b-form-group label="Point Price">
                             <b-form-input type="number" :value="pointPrice" @input="onChangePointPrice" />
@@ -91,9 +87,8 @@ import BaseModal from './BaseModal.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
 import BaseCardTokenGating from '../cards/BaseCardTokenGating.vue';
-import type { TCustomReward, TAccount, TPool, TWebhook } from '@thxnetwork/types/interfaces';
 import { TokenGatingVariant, RewardVariant } from '@thxnetwork/types/enums';
-import { TWebhookState } from '@thxnetwork/dashboard/store/modules/webhooks';
+import type { TCustomReward, TAccount, TPool } from '@thxnetwork/types/interfaces';
 
 @Component({
     components: {
@@ -105,7 +100,6 @@ import { TWebhookState } from '@thxnetwork/dashboard/store/modules/webhooks';
     computed: mapGetters({
         pools: 'pools/all',
         profile: 'account/profile',
-        webhooks: 'webhooks/all',
     }),
 })
 export default class ModalRewardCustomCreate extends Vue {
@@ -114,10 +108,8 @@ export default class ModalRewardCustomCreate extends Vue {
 
     pools!: IPools;
     profile!: TAccount;
-    webhooks!: TWebhookState;
 
-    webhook: TWebhook | null = null;
-    webhookId = '';
+    fileCoupons: File | null = null;
     error = '';
     title = '';
     description = '';
@@ -137,13 +129,7 @@ export default class ModalRewardCustomCreate extends Vue {
     @Prop() pool!: TPool;
     @Prop({ required: false }) reward!: TCustomReward;
 
-    get webhookList() {
-        if (!this.webhooks[this.pool._id]) return [];
-        return Object.values(this.webhooks[this.pool._id]);
-    }
-
     onShow() {
-        this.webhookId = this.reward ? this.reward.webhookId : '';
         this.title = this.reward ? this.reward.title : '';
         this.description = this.reward ? this.reward.description : '';
         this.pointPrice = this.reward ? this.reward.pointPrice : 0;
@@ -158,10 +144,6 @@ export default class ModalRewardCustomCreate extends Vue {
             : this.tokenGatingContractAddress;
         this.tokenGatingVariant = this.reward ? this.reward.tokenGatingVariant : this.tokenGatingVariant;
         this.tokenGatingAmount = this.reward ? this.reward.tokenGatingAmount : this.tokenGatingAmount;
-
-        this.$store.dispatch('webhooks/list', this.pool).then(() => {
-            this.webhook = this.webhooks[this.pool._id][this.webhookId];
-        });
     }
 
     onChangePointPrice(price: number) {
@@ -179,17 +161,12 @@ export default class ModalRewardCustomCreate extends Vue {
     }
 
     onSubmit() {
-        if (!this.webhook) {
-            this.error = 'Choose a webhook';
-            return;
-        }
         this.isLoading = true;
         this.isSubmitDisabled = true;
 
         const payload = {
             ...this.reward,
-            variant: RewardVariant.Custom,
-            webhookId: this.webhook._id,
+            variant: RewardVariant.Coupon,
             poolId: this.pool._id,
             title: this.title,
             description: this.description,

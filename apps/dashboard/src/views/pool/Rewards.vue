@@ -168,10 +168,11 @@ import type { IERC721s } from '@thxnetwork/dashboard/types/erc721';
 import BaseModalRewardERC20Create from '@thxnetwork/dashboard/components/modals/BaseModalRewardERC20Create.vue';
 import BaseModalRewardERC721Create from '@thxnetwork/dashboard/components/modals/BaseModalRewardERC721Create.vue';
 import BaseModalRewardCustomCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardCustomCreate.vue';
+import BaseModalRewardCouponCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardCouponCreate.vue';
 import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/badges/BaseBadgeRewardConditionPreview.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseModalRewardClaimsDownload from '@thxnetwork/dashboard/components/modals/BaseModalRewardClaimsDownload.vue';
-import { TCustomRewardState } from '@thxnetwork/dashboard/store/modules/rewards';
+import { TRewardState } from '@thxnetwork/dashboard/store/modules/rewards';
 import { hasPremiumAccess } from '@thxnetwork/common';
 
 @Component({
@@ -179,6 +180,7 @@ import { hasPremiumAccess } from '@thxnetwork/common';
         BaseModalRewardERC20Create,
         BaseModalRewardERC721Create,
         BaseModalRewardCustomCreate,
+        BaseModalRewardCouponCreate,
         BaseBadgeRewardConditionPreview,
         BaseCardTableHeader,
         BaseModalRewardClaimsDownload,
@@ -204,11 +206,13 @@ export default class RewardsView extends Vue {
         [RewardVariant.Coin]: 'BaseModalRewardERC20Create',
         [RewardVariant.NFT]: 'BaseModalRewardERC721Create',
         [RewardVariant.Custom]: 'BaseModalRewardCustomCreate',
+        [RewardVariant.Coupon]: 'BaseModalRewardCouponCreate',
     };
     rewardIconClassMap = {
         [RewardVariant.Coin]: 'fas fa-coins',
         [RewardVariant.NFT]: 'fas fa-palette',
         [RewardVariant.Custom]: 'fas fa-gift',
+        [RewardVariant.Coupon]: 'fas fa-tags',
     };
 
     pools!: IPools;
@@ -216,7 +220,7 @@ export default class RewardsView extends Vue {
 
     coinRewards!: TERC20PerkState;
     nftRewards!: TERC721RewardState;
-    customRewards!: TCustomRewardState;
+    customRewards!: TRewardState;
 
     erc721s!: IERC721s;
 
