@@ -1,22 +1,28 @@
 import ImageService from '@thxnetwork/api/services/ImageService';
 import { Request, Response } from 'express';
-import { CustomReward } from '@thxnetwork/api/models/CustomReward';
-import { Webhook } from '@thxnetwork/api/models/Webhook';
+import { CouponReward } from '@thxnetwork/api/models/CouponReward';
 import { body } from 'express-validator';
 import { ForbiddenError } from '@thxnetwork/api/util/errors';
 import { v4 } from 'uuid';
+import { CouponCode } from '@thxnetwork/api/models/CouponCode';
 
-const validation = [body('webhookId').isMongoId()];
+const validation = [body('couponCodes').custom((value: string) => value && JSON.parse(value).length > 0)];
 
 const controller = async (req: Request, res: Response) => {
     const poolId = req.header('X-PoolId');
     const image = req.file && (await ImageService.upload(req.file));
-    const webhook = await Webhook.findById(req.body.webhookId);
-    if (webhook.poolId !== poolId) throw new ForbiddenError('Not your webhook');
 
-    const reward = await CustomReward.create({ ...req.body, uuid: v4(), poolId, image });
+    if (!req.body.couponCodes || !req.body.couponCodes.length) {
+        throw new ForbiddenError('Could not find coupon codes');
+    }
 
-    res.status(201).json(reward);
+    const codes = JSON.parse(req.body.couponCodes);
+    const reward = await CouponReward.create({ ...req.body, uuid: v4(), poolId, image });
+    const couponCodes = await Promise.all(
+        codes.map(async (code) => await CouponCode.create({ code, couponRewardId: reward._id })),
+    );
+
+    res.status(201).json({ ...reward.toJSON(), couponCodes: couponCodes.map(({ code }) => code) });
 };
 
 export default { controller, validation };

@@ -173,7 +173,7 @@ class ERC721Module extends VuexModule {
             ...data,
             metadata: {},
             loading: false,
-            logoURI: data.logoImgUrl || `https://avatars.dicebear.com/api/identicon/${data.address}.svg`,
+            logoURI: data.logoImgUrl || `https://api.dicebear.com/7.x/identicon/svg?seed=${data.address}`,
         });
     }
 

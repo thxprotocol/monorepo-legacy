@@ -1,5 +1,6 @@
 import ImageService from '@thxnetwork/api/services/ImageService';
 import { PointReward } from '@thxnetwork/api/services/PointRewardService';
+import PoolService from '@thxnetwork/api/services/PoolService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { isValidUrl } from '@thxnetwork/api/util/url';
 import { TInfoLink } from '@thxnetwork/types/interfaces';
@@ -64,6 +65,8 @@ const controller = async (req: Request, res: Response) => {
         },
         { new: true },
     );
+
+    PoolService.sendNotification(reward);
 
     return res.json(reward);
 };

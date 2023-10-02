@@ -7,6 +7,7 @@ import { isValidUrl } from '@thxnetwork/api/util/url';
 import { TInfoLink } from '@thxnetwork/types/interfaces';
 import { ChainId } from '@thxnetwork/types/enums';
 import ImageService from '@thxnetwork/api/services/ImageService';
+import PoolService from '@thxnetwork/api/services/PoolService';
 
 const validation = [
     param('id').optional().isMongoId(),
@@ -40,8 +41,9 @@ const controller = async (req: Request, res: Response) => {
     if (poolId === quest.poolId) new ForbiddenError('Not your Web3 Quest');
 
     const image = req.file && (await ImageService.upload(req.file));
-
     quest = await Web3Quest.findByIdAndUpdate(req.params.id, { ...req.body, image, poolId }, { new: true });
+
+    PoolService.sendNotification(quest);
 
     res.status(201).json(quest);
 };

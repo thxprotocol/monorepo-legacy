@@ -2,36 +2,35 @@ import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { RewardVariant } from '@thxnetwork/types/enums';
-import type { TCustomReward, TWebhook, TPool } from '@thxnetwork/types/interfaces';
+import type { TCouponReward, TPool } from '@thxnetwork/types/interfaces';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 import { track } from '@thxnetwork/mixpanel';
-import {} from '@thxnetwork/types/interfaces/CustomReward';
 
-export type TCustomRewardState = {
+export type TCouponRewardState = {
     [poolId: string]: {
-        [id: string]: TCustomReward & { webhook: TWebhook };
+        [id: string]: TCouponReward;
     };
 };
 
 @Module({ namespaced: true })
-class RewardModule extends VuexModule {
-    _customRewards: TCustomRewardState = {};
+class CouponRewardModule extends VuexModule {
+    _couponRewards: TCouponRewardState = {};
     _totals: { [poolId: string]: number } = {};
 
     get all() {
-        return this._customRewards;
+        return this._couponRewards;
     }
 
     @Mutation
-    set(reward: TCustomReward) {
-        if (!this._customRewards[reward.poolId]) Vue.set(this._customRewards, reward.poolId, {});
-        reward.variant = RewardVariant.Custom;
-        Vue.set(this._customRewards[reward.poolId], String(reward._id), reward);
+    set(reward: TCouponReward) {
+        if (!this._couponRewards[reward.poolId]) Vue.set(this._couponRewards, reward.poolId, {});
+        reward.variant = RewardVariant.Coupon;
+        Vue.set(this._couponRewards[reward.poolId], String(reward._id), reward);
     }
 
     @Mutation
-    unset(reward: TCustomReward) {
-        Vue.delete(this._customRewards[reward.poolId], reward._id as string);
+    unset(reward: TCouponReward) {
+        Vue.delete(this._couponRewards[reward.poolId], reward._id as string);
     }
 
     @Mutation
@@ -43,7 +42,7 @@ class RewardModule extends VuexModule {
     async list({ pool, page, limit }) {
         const { data } = await axios({
             method: 'GET',
-            url: '/custom-rewards',
+            url: '/coupon-rewards',
             headers: { 'X-PoolId': pool._id },
             params: {
                 page: String(page),
@@ -53,34 +52,34 @@ class RewardModule extends VuexModule {
 
         this.context.commit('setTotal', { pool, total: data.total });
 
-        data.results.forEach((reward: TCustomReward) => {
+        data.results.forEach((reward: TCouponReward) => {
             reward.page = page;
             this.context.commit('set', reward);
         });
     }
 
     @Action({ rawError: true })
-    async create(reward: TCustomReward) {
+    async create(reward: Partial<TCouponReward>) {
         const formData = prepareFormDataForUpload(reward);
         const { data } = await axios({
             method: 'POST',
-            url: '/custom-rewards',
+            url: '/coupon-rewards',
             headers: { 'X-PoolId': reward.poolId },
             data: formData,
         });
 
         const profile = this.context.rootGetters['account/profile'];
-        track('UserCreates', [profile.sub, 'custom reward']);
+        track('UserCreates', [profile.sub, 'coupon reward']);
 
         this.context.commit('set', { ...reward, ...data });
     }
 
     @Action({ rawError: true })
-    async update(reward: TCustomReward) {
+    async update(reward: Partial<TCouponReward>) {
         const formData = prepareFormDataForUpload(reward);
         const { data } = await axios({
             method: 'PATCH',
-            url: `/custom-rewards/${reward._id}`,
+            url: `/coupon-rewards/${reward._id}`,
             headers: { 'X-PoolId': reward.poolId },
             data: formData,
         });
@@ -89,14 +88,14 @@ class RewardModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async delete(reward: TCustomReward) {
+    async delete(reward: Partial<TCouponReward>) {
         await axios({
             method: 'DELETE',
-            url: `/custom-rewards/${reward._id}`,
+            url: `/coupon-rewards/${reward._id}`,
             headers: { 'X-PoolId': reward.poolId },
         });
         this.context.commit('unset', reward);
     }
 }
 
-export default RewardModule;
+export default CouponRewardModule;

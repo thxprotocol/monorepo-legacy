@@ -28,7 +28,7 @@
             </p>
             <b-input-group size="sm">
                 <b-input-group-prepend class="px-2">
-                    <img width="20" :src="`https://avatars.dicebear.com/api/identicon/${pool._id}.svg`" />
+                    <img width="20" :src="`https://api.dicebear.com/7.x/identicon/svg?seed=${pool._id}`" />
                 </b-input-group-prepend>
                 <b-form-input size="sm" readonly :value="pool.address" />
                 <b-input-group-append>

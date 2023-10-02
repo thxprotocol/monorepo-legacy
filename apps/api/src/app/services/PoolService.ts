@@ -14,7 +14,14 @@ import MailService from './MailService';
 import { Widget } from './WidgetService';
 import { PoolSubscription, PoolSubscriptionDocument } from '../models/PoolSubscription';
 import { logger } from '../util/logger';
-import { TAccount, TPointReward } from '@thxnetwork/types/interfaces';
+import {
+    TAccount,
+    TDailyReward,
+    TMilestoneReward,
+    TPointReward,
+    TReferralReward,
+    TWeb3Quest,
+} from '@thxnetwork/types/interfaces';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { v4 } from 'uuid';
 import { DailyReward } from '../models/DailyReward';
@@ -34,6 +41,8 @@ import { Collaborator } from '../models/Collaborator';
 import { DASHBOARD_URL } from '../config/secrets';
 import { WalletDocument } from '../models/Wallet';
 import { PointBalanceDocument } from '../models/PointBalance';
+import DiscordDataProxy from '../proxies/DiscordDataProxy';
+import NotificationService from './NotificationService';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -171,45 +180,31 @@ async function updateAssetPool(pool: AssetPoolDocument, version?: string) {
     return tx;
 }
 
-async function sendNotification(pool: AssetPoolDocument, reward: TPointReward) {
-    const sleepTime = 60; // seconds
-    const chunkSize = 600;
+async function sendNotification(quest: TWeb3Quest | TPointReward | TMilestoneReward | TReferralReward | TDailyReward) {
+    if (!quest.isPublished) return;
 
+    const pool = await getById(quest.poolId);
     const widget = await Widget.findOne({ poolId: pool._id });
-    const subscriptions = await PoolSubscription.find({ poolId: pool._id }, { sub: 1, _id: 0 });
-    const subs = subscriptions.map((x) => x.sub);
+    const { amount, amounts } = quest as any;
 
-    for (let i = 0; i < subs.length; i += chunkSize) {
-        const subsChunk = subs.slice(i, i + chunkSize);
+    await NotificationService.send(pool, {
+        subjectId: quest.uuid,
+        subject: `🎁 New Quest: "${quest.title}"`,
+        message: `<p style="font-size: 18px">New Quest!🔔</p>
+        <p>Earn <strong>${amount || amounts[0]} points ✨</strong> at 
+        <a href="${widget.domain}">${pool.settings.title}</a>
+        .</p>`,
+    });
 
-        let html = `<p style="font-size: 18px">New reward!🔔</p>`;
-        html += `You can earn <strong>${reward.amount} points ✨</strong> at <a href="${widget.domain}">${pool.settings.title}</a>.`;
-        html += `<hr />`;
-        html += `<strong>${reward.title}</strong><br />`;
-        html += `<i>${reward.description}</i>`;
-
-        const promises = subsChunk.map(async (sub) => {
-            try {
-                const account = await AccountProxy.getById(sub);
-                if (!account.email) return;
-
-                await MailService.send(account.email, `🎁 New Quest: "${reward.title}"`, html);
-            } catch (error) {
-                logger.error(error);
-            }
-        });
-
-        await Promise.all(promises);
-        await sleep(sleepTime);
-    }
+    await DiscordDataProxy.sendChannelMessage(pool.settings, {
+        title: `${quest.title}`,
+        description: quest.description,
+        url: widget.domain,
+    });
 }
 
 async function find(model: any, pool: AssetPoolDocument) {
     return await model.find({ poolId: String(pool._id) });
-}
-
-async function countBySub(model: any, pool: AssetPoolDocument) {
-    return await model.count({ poolId: String(pool._id) }).distinct('sub');
 }
 
 async function getQuestCount(pool: AssetPoolDocument) {

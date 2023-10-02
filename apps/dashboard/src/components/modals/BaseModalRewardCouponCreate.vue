@@ -8,7 +8,7 @@
         :loading="isLoading"
     >
         <template #modal-body v-if="!isLoading">
-            <form v-on:submit.prevent="onSubmit()" id="formRewardCouponCreate">
+            <form v-on:submit.prevent="onSubmit" id="formRewardCouponCreate">
                 <b-row>
                     <b-col md="6">
                         <b-form-group label="Title">
@@ -20,12 +20,16 @@
                         <b-form-group label="Coupon Codes">
                             <b-form-file
                                 v-model="fileCoupons"
-                                :state="fileCoupons"
+                                @input="onChangeFileCoupons"
                                 placeholder="Choose a file or drop it here..."
                                 drop-placeholder="Drop file here..."
+                                accept=".csv"
                             ></b-form-file>
-                            <small class="mt-3 text-muted">
+                            <small class="mt-3 text-muted" v-if="fileCoupons">
                                 Selected file: {{ fileCoupons ? fileCoupons.name : '' }}
+                                <code v-if="couponCodes.length">
+                                    ({{ couponCodes.length }} codes: {{ couponCodes[0] }} and more...)
+                                </code>
                             </small>
                         </b-form-group>
                         <b-form-group label="Point Price">
@@ -48,7 +52,6 @@
                             :expiryDate="expiryDate"
                             @change-date="expiryDate = $event"
                         />
-                        <BaseCardRewardLimits class="mb-3" :limit="limit" @change-reward-limit="limit = $event" />
                         <BaseCardTokenGating
                             class="mb-3"
                             :pool="pool"
@@ -69,11 +72,11 @@
                 :disabled="isSubmitDisabled"
                 class="rounded-pill"
                 type="submit"
-                form="formRewardCustomCreate"
+                form="formRewardCouponCreate"
                 variant="primary"
                 block
             >
-                {{ (reward ? 'Update' : 'Create') + ' Custom Reward' }}
+                {{ (reward ? 'Update' : 'Create') + ' Coupon Reward' }}
             </b-button>
         </template>
     </base-modal>
@@ -88,7 +91,8 @@ import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
 import BaseCardTokenGating from '../cards/BaseCardTokenGating.vue';
 import { TokenGatingVariant, RewardVariant } from '@thxnetwork/types/enums';
-import type { TCustomReward, TAccount, TPool } from '@thxnetwork/types/interfaces';
+import type { TAccount, TPool, TCouponReward } from '@thxnetwork/types/interfaces';
+import { CSVParser } from '../../utils/csv';
 
 @Component({
     components: {
@@ -103,7 +107,6 @@ import type { TCustomReward, TAccount, TPool } from '@thxnetwork/types/interface
     }),
 })
 export default class ModalRewardCustomCreate extends Vue {
-    isSubmitDisabled = false;
     isLoading = false;
 
     pools!: IPools;
@@ -114,8 +117,7 @@ export default class ModalRewardCustomCreate extends Vue {
     title = '';
     description = '';
     expiryDate: Date | null = null;
-    claimAmount = 0;
-    claimLimit = 0;
+    couponCodes: string[] = [];
     limit = 0;
     pointPrice = 0;
     imageFile: File | null = null;
@@ -127,16 +129,18 @@ export default class ModalRewardCustomCreate extends Vue {
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
-    @Prop({ required: false }) reward!: TCustomReward;
+    @Prop({ required: false }) reward!: TCouponReward;
+
+    get isSubmitDisabled() {
+        return this.isLoading;
+    }
 
     onShow() {
         this.title = this.reward ? this.reward.title : '';
         this.description = this.reward ? this.reward.description : '';
         this.pointPrice = this.reward ? this.reward.pointPrice : 0;
         this.expiryDate = this.reward ? this.reward.expiryDate : null;
-        this.limit = this.reward ? this.reward.limit : 0;
-        this.claimAmount = this.reward ? this.reward.claimAmount : this.claimAmount;
-        this.claimLimit = this.reward ? this.reward.claimLimit : this.claimLimit;
+        this.couponCodes = this.couponCodes ? this.reward.couponCodes : this.couponCodes;
         this.image = this.reward ? this.reward.image : '';
         this.isPromoted = this.reward ? this.reward.isPromoted : false;
         this.tokenGatingContractAddress = this.reward
@@ -148,21 +152,10 @@ export default class ModalRewardCustomCreate extends Vue {
 
     onChangePointPrice(price: number) {
         this.pointPrice = price;
-        if (price > 0) this.claimAmount = 0;
-    }
-
-    onChangeClaimAmount(amount: number) {
-        this.claimAmount = amount;
-        if (amount > 0) this.pointPrice = 0;
-    }
-
-    onChangeClaimLimit(limit: number) {
-        this.claimLimit = limit;
     }
 
     onSubmit() {
         this.isLoading = true;
-        this.isSubmitDisabled = true;
 
         const payload = {
             ...this.reward,
@@ -172,7 +165,7 @@ export default class ModalRewardCustomCreate extends Vue {
             description: this.description,
             file: this.imageFile,
             expiryDate: this.expiryDate ? new Date(this.expiryDate).toISOString() : undefined,
-            limit: this.limit,
+            couponCodes: this.couponCodes,
             pointPrice: this.pointPrice,
             isPromoted: this.isPromoted,
             tokenGatingContractAddress: this.tokenGatingContractAddress,
@@ -180,12 +173,24 @@ export default class ModalRewardCustomCreate extends Vue {
             tokenGatingAmount: this.tokenGatingAmount,
         };
 
-        this.$store.dispatch(`rewards/${this.reward ? 'update' : 'create'}`, payload).then(() => {
-            this.isSubmitDisabled = false;
+        this.$store.dispatch(`couponRewards/${this.reward ? 'update' : 'create'}`, payload).then(() => {
             this.isLoading = false;
             this.$bvModal.hide(this.id);
             this.$emit('submit');
         });
+    }
+
+    onChangeFileCoupons(file: File) {
+        CSVParser.parse(file, { complete: this.onComplete, error: this.onError });
+    }
+
+    onComplete({ data, errors }: { data: string[]; errors: any[] }) {
+        this.couponCodes = data.map((code) => code[0]);
+        if (errors.length) console.error(errors);
+    }
+
+    onError(error) {
+        console.error(error);
     }
 
     onImgChange() {

@@ -7,7 +7,7 @@ import erc721PerksRouter from './erc721-perks/erc721-perks.router';
 import referralRewardsRouter from './referral-rewards/referral-rewards.router';
 import erc20PerksRouter from './erc20-perks/erc20-perks.router';
 import customRewardsRouter from './custom-rewards/custom-rewards.router';
-import couponRewardsRouter from './custom-rewards/custom-rewards.router';
+import couponRewardsRouter from './coupon-rewards/coupon-rewards.router';
 import tokenRouter from './token/token.router';
 import pointRewardsRouter from './point-rewards/point-rewards.router';
 import pointBalancesRouter from './point-balances/point-balances.router';

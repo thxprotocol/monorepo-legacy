@@ -1,10 +1,10 @@
 import { assertPoolAccess, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
-import express from 'express';
-import ListCustomReward from './list.controller';
-import CreateCustomReward from './post.controller';
-import UpdateCustomReward from './patch.controller';
-import RemoveCustomReward from './delete.controller';
 import { upload } from '@thxnetwork/api/util/multer';
+import express from 'express';
+import ListCouponReward from './list.controller';
+import CreateCouponReward from './post.controller';
+import UpdateCouponReward from './patch.controller';
+import RemoveCouponReward from './delete.controller';
 
 const router = express.Router();
 
@@ -12,31 +12,31 @@ router.get(
     '/',
     guard.check(['coupon_rewards:read']),
     assertPoolAccess,
-    assertRequestInput(ListCustomReward.validation),
-    ListCustomReward.controller,
+    assertRequestInput(ListCouponReward.validation),
+    ListCouponReward.controller,
 );
 router.patch(
     '/:id',
     upload.single('file'),
     guard.check(['coupon_rewards:write', 'coupon_rewards:read']),
     assertPoolAccess,
-    assertRequestInput(UpdateCustomReward.validation),
-    UpdateCustomReward.controller,
+    assertRequestInput(UpdateCouponReward.validation),
+    UpdateCouponReward.controller,
 );
 router.post(
     '/',
     upload.single('file'),
     guard.check(['coupon_rewards:write', 'coupon_rewards:read']),
     assertPoolAccess,
-    assertRequestInput(CreateCustomReward.validation),
-    CreateCustomReward.controller,
+    assertRequestInput(CreateCouponReward.validation),
+    CreateCouponReward.controller,
 );
 router.delete(
     '/:id',
     guard.check(['coupon_rewards:write']),
     assertPoolAccess,
-    assertRequestInput(RemoveCustomReward.validation),
-    RemoveCustomReward.controller,
+    assertRequestInput(RemoveCouponReward.validation),
+    RemoveCouponReward.controller,
 );
 
 export default router;

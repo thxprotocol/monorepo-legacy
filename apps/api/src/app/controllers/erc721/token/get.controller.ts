@@ -21,7 +21,7 @@ const controller = async (req: Request, res: Response) => {
     const balance = Number(fromWei(balanceInWei, 'ether'));
 
     const tokenUri = token.tokenId ? await erc721.contract.methods.tokenURI(token.tokenId).call() : '';
-    erc721.logoImgUrl = erc721.logoImgUrl || `https://avatars.dicebear.com/api/identicon/${erc721.address}.svg`;
+    erc721.logoImgUrl = erc721.logoImgUrl || `https://api.dicebear.com/7.x/identicon/svg?seed=${erc721.address}`;
 
     res.status(200).json({
         ...token.toJSON(),

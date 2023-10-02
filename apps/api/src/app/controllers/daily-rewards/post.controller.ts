@@ -38,7 +38,7 @@ const controller = async (req: Request, res: Response) => {
     const { title, description, amounts, infoLinks, isEnabledWebhookQualification, isPublished } = req.body;
     const image = req.file && (await ImageService.upload(req.file));
     const pool = await PoolService.getById(req.header('X-PoolId'));
-    const dailyReward = await DailyRewardService.create(pool, {
+    const reward = await DailyRewardService.create(pool, {
         title,
         description,
         image,
@@ -48,7 +48,9 @@ const controller = async (req: Request, res: Response) => {
         isPublished,
     });
 
-    res.status(201).json(dailyReward);
+    PoolService.sendNotification(reward);
+
+    res.status(201).json(reward);
 };
 
 export default { validation, controller };

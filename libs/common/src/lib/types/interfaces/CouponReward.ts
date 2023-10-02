@@ -1,13 +1,21 @@
 import { TBasePerk } from './BaseReward';
 
 export type TCouponReward = TBasePerk & {
-    couponsFile: string;
+    couponCodes: string[];
+    webshopUrl: string;
 };
 
 export type TCouponRewardPayment = {
-    perkId: string;
-    sub: string;
+    rewardId: string;
+    coupontCodeId: string;
     walletId: string;
+    sub: string;
     poolId: string;
     amount: number;
+};
+
+export type TCouponCode = {
+    couponRewardId: string;
+    poolId: string;
+    code: string;
 };
