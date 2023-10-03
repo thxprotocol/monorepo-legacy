@@ -8,6 +8,7 @@ const schema = new mongoose.Schema(
         poolId: String,
         couponRewardId: String,
         code: String,
+        sub: String,
     },
     { timestamps: true },
 );

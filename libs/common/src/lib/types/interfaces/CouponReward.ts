@@ -20,5 +20,6 @@ export type TCouponCode = {
     couponRewardId: string;
     poolId: string;
     code: string;
+    sub: string;
     createdAt: Date;
 };

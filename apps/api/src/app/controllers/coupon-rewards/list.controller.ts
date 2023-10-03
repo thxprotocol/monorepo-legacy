@@ -15,7 +15,7 @@ const controller = async (req: Request, res: Response) => {
     rewards.results = await Promise.all(
         rewards.results.map(async (r: CouponRewardDocument) => {
             const couponCodes = await CouponCode.find({ couponRewardId: r._id });
-            const payments = await CouponRewardPayment.find({ poolId, rewardId: String(r._id) });
+            const payments = await CouponRewardPayment.find({ poolId, perkId: String(r._id) });
             return { ...r.toJSON(), couponCodes, payments, limit: couponCodes.length };
         }),
     );

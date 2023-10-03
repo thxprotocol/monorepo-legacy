@@ -36,7 +36,7 @@ const controller = async (req: Request, res: Response) => {
         throw new ForbiddenError(redeemValidationResult.errorMessage);
     }
 
-    const couponCode = await CouponCode.findOne({ couponRewardId: String(couponReward._id) });
+    const couponCode = await CouponCode.findOne({ couponRewardId: String(couponReward._id), sub: { $exists: false } });
     if (!couponCode) throw new BadRequestError('Not enough coupon codes left.');
 
     const couponRewardPayment = await CouponRewardPayment.create({
@@ -47,6 +47,8 @@ const controller = async (req: Request, res: Response) => {
         poolId: couponReward.poolId,
         amount: couponReward.pointPrice,
     });
+
+    await couponCode.updateOne({ sub: req.auth.sub });
 
     await PointBalanceService.subtract(pool, wallet._id, couponReward.pointPrice);
 
