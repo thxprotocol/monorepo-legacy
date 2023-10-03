@@ -2,6 +2,7 @@ import { assertPoolAccess, assertRequestInput, guard } from '@thxnetwork/api/mid
 import { upload } from '@thxnetwork/api/util/multer';
 import express from 'express';
 import ListCouponReward from './list.controller';
+import ListCouponCodePayments from './payments/list.controller';
 import CreateCouponReward from './post.controller';
 import UpdateCouponReward from './patch.controller';
 import RemoveCouponReward from './delete.controller';
@@ -16,6 +17,9 @@ router.get(
     assertRequestInput(ListCouponReward.validation),
     ListCouponReward.controller,
 );
+
+router.get('/payments', ListCouponCodePayments.controller);
+
 router.patch(
     '/:id',
     upload.single('file'),
