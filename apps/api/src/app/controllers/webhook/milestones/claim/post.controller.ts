@@ -11,7 +11,7 @@ import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { v4, validate } from 'uuid';
 
 const validation = [
-    param('token').exists(),
+    param('token').isUUID('4'),
     body('code')
         .optional()
         .custom((code) => validate(code)),
@@ -56,7 +56,7 @@ const controller = async (req: Request, res: Response) => {
     res.status(201).json({ ...claim.toJSON(), wallet });
 };
 
-async function getWalletForCode(pool: AssetPoolDocument, code: string) {
+export async function getWalletForCode(pool: AssetPoolDocument, code: string) {
     // First find the wallet for the code
     const wallet = await Wallet.findOne({ chainId: pool.chainId, uuid: code });
     // Second, if that wallet contains no sub it has not been transfered (yet)
@@ -67,7 +67,8 @@ async function getWalletForCode(pool: AssetPoolDocument, code: string) {
 }
 
 // @peterpolman This function should deprecate as soon as clients implement the wallet onboarding webhook
-async function getWalletForAddress(pool: AssetPoolDocument, address: string) {
+// Forest knight still depends on this
+export async function getWalletForAddress(pool: AssetPoolDocument, address: string) {
     // First find the wallet for this address
     const wallet = await Wallet.findOne({ chainId: pool.chainId, address });
 
