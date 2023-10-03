@@ -44,7 +44,7 @@
                                     <b-input-group>
                                         <template #prepend v-if="image">
                                             <div class="mr-2 bg-light p-2 border-radius-1">
-                                                <img :src="image" height="35" width="auto" />
+                                                <img :src="image" height="35" width="auto" alt="Reward image" />
                                             </div>
                                         </template>
                                         <b-form-file v-model="imageFile" accept="image/*" @change="onImgChange" />
