@@ -8,6 +8,7 @@ const schema = new mongoose.Schema(
     {
         ...perkBaseSchema,
         limit: Number,
+        metadata: String,
         webhookId: String,
     },
     { timestamps: true },

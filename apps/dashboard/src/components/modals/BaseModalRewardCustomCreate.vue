@@ -32,6 +32,9 @@
                                 <b-dropdown-divider />
                             </b-dropdown>
                         </b-form-group>
+                        <b-form-group label="Metadata" description="Provide metadata for your system to use.">
+                            <b-textarea v-model="metadata" />
+                        </b-form-group>
                         <b-form-group label="Point Price">
                             <b-form-input type="number" :value="pointPrice" @input="onChangePointPrice" />
                         </b-form-group>
@@ -118,6 +121,7 @@ export default class ModalRewardCustomCreate extends Vue {
 
     webhook: TWebhook | null = null;
     webhookId = '';
+    metadata = '';
     error = '';
     title = '';
     description = '';
@@ -143,6 +147,7 @@ export default class ModalRewardCustomCreate extends Vue {
     }
 
     onShow() {
+        this.metadata = this.reward ? this.reward.metadata : this.metadata;
         this.webhookId = this.reward ? this.reward.webhookId : '';
         this.title = this.reward ? this.reward.title : '';
         this.description = this.reward ? this.reward.description : '';
@@ -192,6 +197,7 @@ export default class ModalRewardCustomCreate extends Vue {
             webhookId: this.webhook._id,
             poolId: this.pool._id,
             title: this.title,
+            metadata: this.metadata,
             description: this.description,
             file: this.imageFile,
             expiryDate: this.expiryDate ? new Date(this.expiryDate).toISOString() : undefined,

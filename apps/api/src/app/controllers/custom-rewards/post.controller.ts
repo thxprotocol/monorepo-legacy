@@ -6,7 +6,7 @@ import { body } from 'express-validator';
 import { ForbiddenError } from '@thxnetwork/api/util/errors';
 import { v4 } from 'uuid';
 
-const validation = [body('webhookId').isMongoId()];
+const validation = [body('webhookId').isMongoId(), body('metadata').optional().isString()];
 
 const controller = async (req: Request, res: Response) => {
     const poolId = req.header('X-PoolId');

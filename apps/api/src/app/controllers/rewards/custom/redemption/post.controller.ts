@@ -43,7 +43,7 @@ const controller = async (req: Request, res: Response) => {
 
     await WebhookService.create(webhook, req.auth.sub, {
         type: Event.RewardCustomPayment,
-        data: { customRewardId: customReward._id },
+        data: { customRewardId: customReward._id, metadata: customReward.metadata },
     });
 
     const customRewardPayment = await CustomRewardPayment.create({

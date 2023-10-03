@@ -9,7 +9,7 @@ import { JobType } from '@thxnetwork/types/enums';
 import { signPayload } from '@thxnetwork/api/util/signingsecret';
 import { Event, WebhookRequestState } from '@thxnetwork/types/enums';
 
-async function create(webhook: WebhookDocument, sub: string, payload: { type: Event; data: any }) {
+async function create(webhook: WebhookDocument, sub: string, payload: { type: Event; data: any & { metadata: any } }) {
     const wallets = (await Wallet.find({ poolId: webhook.poolId, sub })).map((w) => w.uuid);
     const webhookRequest = await WebhookRequest.create({
         webhookId: webhook._id,
