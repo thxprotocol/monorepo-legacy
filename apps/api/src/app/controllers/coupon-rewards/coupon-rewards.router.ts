@@ -5,6 +5,7 @@ import ListCouponReward from './list.controller';
 import CreateCouponReward from './post.controller';
 import UpdateCouponReward from './patch.controller';
 import RemoveCouponReward from './delete.controller';
+import RemoveCouponCode from './codes/delete.controller';
 
 const router = express.Router();
 
@@ -37,6 +38,13 @@ router.delete(
     assertPoolAccess,
     assertRequestInput(RemoveCouponReward.validation),
     RemoveCouponReward.controller,
+);
+router.delete(
+    '/:id/codes/:couponCodeId',
+    guard.check(['coupon_rewards:write']),
+    assertPoolAccess,
+    assertRequestInput(RemoveCouponCode.validation),
+    RemoveCouponCode.controller,
 );
 
 export default router;

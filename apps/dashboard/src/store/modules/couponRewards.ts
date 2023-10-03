@@ -96,6 +96,18 @@ class CouponRewardModule extends VuexModule {
         });
         this.context.commit('unset', reward);
     }
+
+    @Action({ rawError: true })
+    async deleteCode({ pool, reward, couponCodeId }: { pool: TPool; reward: TCouponReward; couponCodeId: string }) {
+        await axios({
+            method: 'DELETE',
+            url: `/coupon-rewards/${reward._id}/codes/${couponCodeId}`,
+            headers: { 'X-PoolId': pool._id },
+        });
+        const index = reward.couponCodes.findIndex((c) => c._id === couponCodeId);
+        reward.couponCodes.splice(index, 1);
+        this.context.commit('set', reward);
+    }
 }
 
 export default CouponRewardModule;

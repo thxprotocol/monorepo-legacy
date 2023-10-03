@@ -12,11 +12,13 @@ import PerkService from '@thxnetwork/api/services/PerkService';
 import { CustomReward } from '@thxnetwork/api/models/CustomReward';
 import { Wallet } from '@thxnetwork/api/models/Wallet';
 import { CustomRewardPayment } from '@thxnetwork/api/models/CustomRewardPayment';
+import { CouponReward } from '@thxnetwork/api/models/CouponReward';
+import { CouponRewardPayment } from '@thxnetwork/api/models/CouponRewardPayment';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Perks']
     const pool = await PoolService.getById(req.header('X-PoolId'));
-    const [erc20Perks, erc721Perks, customRewards] = await Promise.all([
+    const [erc20Perks, erc721Perks, customRewards, couponRewards] = await Promise.all([
         ERC20Perk.find({
             poolId: String(pool._id),
             pointPrice: { $exists: true, $gt: 0 },
@@ -26,6 +28,10 @@ const controller = async (req: Request, res: Response) => {
             $or: [{ pointPrice: { $exists: true, $gt: 0 } }, { price: { $exists: true, $gt: 0 } }],
         }),
         CustomReward.find({
+            poolId: String(pool._id),
+            $or: [{ pointPrice: { $exists: true, $gt: 0 } }, { price: { $exists: true, $gt: 0 } }],
+        }),
+        CouponReward.find({
             poolId: String(pool._id),
             $or: [{ pointPrice: { $exists: true, $gt: 0 } }, { price: { $exists: true, $gt: 0 } }],
         }),
@@ -43,7 +49,7 @@ const controller = async (req: Request, res: Response) => {
         wallet = await WalletService.findPrimary(sub, pool.chainId);
     }
 
-    const getRewardDefeaults = async (r, Model) => {
+    const getRewardDefaults = async (r, Model) => {
         return {
             _id: r._id,
             uuid: r.uuid,
@@ -63,7 +69,7 @@ const controller = async (req: Request, res: Response) => {
         erc20Perks: await Promise.all(
             erc20Perks.map(async (r) => {
                 const { isError } = await PerkService.validate({ perk: r, sub, pool });
-                const defaults = await getRewardDefeaults(r, ERC20PerkPayment);
+                const defaults = await getRewardDefaults(r, ERC20PerkPayment);
                 return {
                     ...defaults,
                     amount: r.amount,
@@ -79,7 +85,7 @@ const controller = async (req: Request, res: Response) => {
                 const nft = await PerkService.getNFT(r);
                 const token = !r.metadataId && r.tokenId ? await PerkService.getToken(r) : null;
                 const metadata = await PerkService.getMetadata(r, token);
-                const defaults = await getRewardDefeaults(r, ERC721PerkPayment);
+                const defaults = await getRewardDefaults(r, ERC721PerkPayment);
 
                 return {
                     ...defaults,
@@ -96,7 +102,7 @@ const controller = async (req: Request, res: Response) => {
         customRewards: await Promise.all(
             customRewards.map(async (r) => {
                 const { isError } = await PerkService.validate({ perk: r, sub, pool });
-                const defaults = await getRewardDefeaults(r, CustomRewardPayment);
+                const defaults = await getRewardDefaults(r, CustomRewardPayment);
                 // @dev Having a Virtual Wallet for this pool is required in order for the external system to target the right user
                 const wallets = sub ? await Wallet.find({ poolId: pool._id, sub, uuid: { $exists: true } }) : [];
                 return {
@@ -104,6 +110,14 @@ const controller = async (req: Request, res: Response) => {
                     isDisabled: isError || !wallets.length,
                     isOwned: false,
                 };
+            }),
+        ),
+        couponRewards: await Promise.all(
+            couponRewards.map(async (r) => {
+                const isDisabled = true;
+                const defaults = await getRewardDefaults(r, CouponRewardPayment);
+
+                return { ...defaults, isDisabled };
             }),
         ),
     });

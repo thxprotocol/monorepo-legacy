@@ -1,7 +1,8 @@
 import { TBasePerk } from './BaseReward';
 
 export type TCouponReward = TBasePerk & {
-    couponCodes: string[];
+    codes: string[];
+    couponCodes: TCouponCode[];
     webshopUrl: string;
 };
 
@@ -15,7 +16,9 @@ export type TCouponRewardPayment = {
 };
 
 export type TCouponCode = {
+    _id: string;
     couponRewardId: string;
     poolId: string;
     code: string;
+    createdAt: Date;
 };
