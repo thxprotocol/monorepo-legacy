@@ -68,6 +68,7 @@ const controller = async (req: Request, res: Response) => {
                 height: 'calc(100% - 115px)',
             },
         };
+        public isAuthenticated = false;
     
         constructor(settings) {
             this.settings = settings;
@@ -88,8 +89,12 @@ const controller = async (req: Request, res: Response) => {
             waitForBody().then(this.onLoad.bind(this));
         }
 
-        public debug() {
-            this.iframe.contentWindow.postMessage({ message: 'thx.iframe.debug' },  this.settings.widgetUrl);
+        public signin() {
+            this.iframe.contentWindow.postMessage({ message: 'thx.auth.signin' },  this.settings.widgetUrl);
+        }
+
+        public signout() {
+            this.iframe.contentWindow.postMessage({ message: 'thx.auth.signout' },  this.settings.widgetUrl);
         }
 
         public open(widgetPath) {
@@ -399,7 +404,7 @@ const controller = async (req: Request, res: Response) => {
         
         onMessage(event) {
             if (event.origin !== this.settings.widgetUrl) return;
-            const { message, amount } = event.data;
+            const { message, amount, isAuthenticated } = event.data;
             switch (message) {
                 case 'thx.widget.ready': {
                     this.onWidgetReady();
@@ -412,6 +417,10 @@ const controller = async (req: Request, res: Response) => {
                 }
                 case 'thx.widget.toggle': {
                     this.show(!Number(this.iframe.style.opacity));
+                    break;
+                }
+                case 'thx.auth.status': {
+                    this.isAuthenticated = isAuthenticated;
                     break;
                 }
             }
