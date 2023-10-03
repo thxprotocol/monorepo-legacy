@@ -158,12 +158,12 @@ describe('Webhook: Virtual Wallets', () => {
         });
 
         // Show the correct amount of reward claims when listing perks for sub3
-        it('GET /perks', (done) => {
-            user.get(`/v1/rewards`)
+        it('GET /quests', (done) => {
+            user.get(`/v1/quests`)
                 .set({ 'Authorization': widgetAccessToken3, 'X-PoolId': pool._id })
                 .send()
                 .expect((res: request.Response) => {
-                    expect(res.body.milestoneRewards.find((r) => r._id === milestoneReward._id).claims).toHaveLength(2);
+                    expect(res.body.custom.find((r) => r._id === milestoneReward._id).claims).toHaveLength(2);
                 })
                 .expect(200, done);
         });

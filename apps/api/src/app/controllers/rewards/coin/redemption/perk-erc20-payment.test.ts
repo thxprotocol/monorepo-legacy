@@ -96,16 +96,16 @@ describe('ERC20 Perk Payment', () => {
             .expect(201, done);
     });
 
-    it('GET /perks should return isDisabled = true, because the Perk is expired', (done) => {
-        user.get(`/v1/perks`)
+    it('GET /rewards should return isDisabled = true, because the Perk is expired', (done) => {
+        user.get(`/v1/rewards`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
             .expect(({ body }: request.Response) => {
-                expect(body.erc20Perks.length).toBe(1);
-                expect(body.erc20Perks[0].isDisabled).toBe(true);
-                expect(body.erc20Perks[0].expiry.now).toBeDefined();
-                expect(body.erc20Perks[0].expiry.date).toBeDefined();
-                expect(body.erc20Perks[0].progress.limit).toBe(1);
-                expect(body.erc20Perks[0].progress.count).toBe(0);
+                expect(body.coin.length).toBe(1);
+                expect(body.coin[0].isDisabled).toBe(true);
+                expect(body.coin[0].expiry.now).toBeDefined();
+                expect(body.coin[0].expiry.date).toBeDefined();
+                expect(body.coin[0].progress.limit).toBe(1);
+                expect(body.coin[0].progress.count).toBe(0);
             })
             .expect(200, done);
     });
@@ -123,14 +123,14 @@ describe('ERC20 Perk Payment', () => {
             .expect(200, done);
     });
 
-    it('POST /rewards/points/:uuid/claim', (done) => {
-        user.post(`/v1/rewards/points/${rewardId}/claim`)
+    it('POST /quests/social/:uuid/claim', (done) => {
+        user.post(`/v1/quests/social/${rewardId}/claim`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
             .expect(201, done);
     });
 
-    it('POST /perks/erc20/:uuid/redemption', (done) => {
-        user.post(`/v1/perks/erc20/${perkUuid}/redemption`)
+    it('POST /rewards/coin/:uuid/redemption', (done) => {
+        user.post(`/v1/rewards/coin/${perkUuid}/redemption`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
             .expect((res: request.Response) => {
                 expect(res.body.withdrawal).toBeDefined();
@@ -140,14 +140,13 @@ describe('ERC20 Perk Payment', () => {
             .expect(201, done);
     });
 
-    it('GET /perks should return isDisabled = true, because the supply is gone', (done) => {
-        user.get(`/v1/perks`)
+    it('GET /rewards should return isDisabled = true, because the supply is gone', (done) => {
+        user.get(`/v1/rewards`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
             .expect(({ body }: request.Response) => {
-                expect(body.erc20Perks.length).toBe(1);
-                expect(body.erc20Perks[0].isDisabled).toBe(true);
-                expect(body.erc20Perks[0].progress.limit).toBe(1);
-                expect(body.erc20Perks[0].progress.count).toBe(1);
+                expect(body.coin[0].isDisabled).toBe(true);
+                expect(body.coin[0].progress.limit).toBe(1);
+                expect(body.coin[0].progress.count).toBe(1);
             })
             .expect(200, done);
     });

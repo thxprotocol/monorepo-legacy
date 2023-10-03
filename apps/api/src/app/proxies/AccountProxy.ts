@@ -9,7 +9,7 @@ class NoAccountError extends THXError {
 class AccountApiError extends THXError {}
 
 function formatAccountData(data: any) {
-    data.profileImg = data.profileImg || `https://avatars.dicebear.com/api/identicon/${data.sub}.svg`;
+    data.profileImg = data.profileImg || `https://api.dicebear.com/7.x/identicon/svg?seed=${data.sub}`;
     return data;
 }
 

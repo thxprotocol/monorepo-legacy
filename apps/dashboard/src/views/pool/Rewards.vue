@@ -34,9 +34,6 @@
                         />
                     </b-dropdown-item-button>
                 </b-dropdown>
-                <BaseModalRewardERC20Create @submit="listRewards" :id="'modalRewardERC20Create'" :pool="pool" />
-                <BaseModalRewardERC721Create @submit="listRewards" :id="'modalRewardERC721Create'" :pool="pool" />
-                <BaseModalRewardCustomCreate @submit="listRewards" :id="'modalRewardCustomCreate'" :pool="pool" />
             </b-col>
         </b-row>
         <BCard variant="white" fields="'index', 'checkbox'" body-class="p-0 shadow-sm">
@@ -168,17 +165,20 @@ import type { IERC721s } from '@thxnetwork/dashboard/types/erc721';
 import BaseModalRewardERC20Create from '@thxnetwork/dashboard/components/modals/BaseModalRewardERC20Create.vue';
 import BaseModalRewardERC721Create from '@thxnetwork/dashboard/components/modals/BaseModalRewardERC721Create.vue';
 import BaseModalRewardCustomCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardCustomCreate.vue';
+import BaseModalRewardCouponCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardCouponCreate.vue';
 import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/badges/BaseBadgeRewardConditionPreview.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseModalRewardClaimsDownload from '@thxnetwork/dashboard/components/modals/BaseModalRewardClaimsDownload.vue';
-import type { TCustomRewardState } from '@thxnetwork/dashboard/store/modules/rewards';
 import { hasPremiumAccess } from '@thxnetwork/common';
+import { type TCouponRewardState } from '@thxnetwork/dashboard/store/modules/couponRewards';
+import { type TCustomRewardState } from '@thxnetwork/dashboard/store/modules/rewards';
 
 @Component({
     components: {
         BaseModalRewardERC20Create,
         BaseModalRewardERC721Create,
         BaseModalRewardCustomCreate,
+        BaseModalRewardCouponCreate,
         BaseBadgeRewardConditionPreview,
         BaseCardTableHeader,
         BaseModalRewardClaimsDownload,
@@ -189,6 +189,7 @@ import { hasPremiumAccess } from '@thxnetwork/common';
         coinRewards: 'erc20Perks/all',
         nftRewards: 'erc721Perks/all',
         customRewards: 'rewards/all',
+        couponRewards: 'couponRewards/all',
     }),
 })
 export default class RewardsView extends Vue {
@@ -204,11 +205,13 @@ export default class RewardsView extends Vue {
         [RewardVariant.Coin]: 'BaseModalRewardERC20Create',
         [RewardVariant.NFT]: 'BaseModalRewardERC721Create',
         [RewardVariant.Custom]: 'BaseModalRewardCustomCreate',
+        [RewardVariant.Coupon]: 'BaseModalRewardCouponCreate',
     };
     rewardIconClassMap = {
         [RewardVariant.Coin]: 'fas fa-coins',
         [RewardVariant.NFT]: 'fas fa-palette',
         [RewardVariant.Custom]: 'fas fa-gift',
+        [RewardVariant.Coupon]: 'fas fa-tags',
     };
 
     pools!: IPools;
@@ -217,6 +220,7 @@ export default class RewardsView extends Vue {
     coinRewards!: TERC20PerkState;
     nftRewards!: TERC721RewardState;
     customRewards!: TCustomRewardState;
+    couponRewards!: TCouponRewardState;
 
     erc721s!: IERC721s;
 
@@ -232,6 +236,9 @@ export default class RewardsView extends Vue {
         return [
             ...(this.coinRewards[this.$route.params.id] ? Object.values(this.coinRewards[this.$route.params.id]) : []),
             ...(this.nftRewards[this.$route.params.id] ? Object.values(this.nftRewards[this.$route.params.id]) : []),
+            ...(this.couponRewards[this.$route.params.id]
+                ? Object.values(this.couponRewards[this.$route.params.id])
+                : []),
             ...(this.customRewards[this.$route.params.id]
                 ? Object.values(this.customRewards[this.$route.params.id])
                 : []),
@@ -269,10 +276,12 @@ export default class RewardsView extends Vue {
 
     async listRewards() {
         this.isLoading = true;
+        // Call new API endpoint that returns all reward including the variant enum
         await Promise.all([
             this.$store.dispatch('erc20Perks/list', { page: this.page, pool: this.pool, limit: this.limit }),
             this.$store.dispatch('erc721Perks/list', { page: this.page, pool: this.pool, limit: this.limit }),
             this.$store.dispatch('rewards/list', { page: this.page, pool: this.pool, limit: this.limit }),
+            this.$store.dispatch('couponRewards/list', { page: this.page, pool: this.pool, limit: this.limit }),
         ]);
         this.isLoading = false;
     }
@@ -299,6 +308,8 @@ export default class RewardsView extends Vue {
                 return this.$store.dispatch('erc721Perks/delete', this.nftRewards[this.pool._id][item.id]);
             case RewardVariant.Custom:
                 return this.$store.dispatch('rewards/delete', this.customRewards[this.pool._id][item.id]);
+            case RewardVariant.Coupon:
+                return this.$store.dispatch('couponRewards/delete', this.couponRewards[this.pool._id][item.id]);
         }
     }
 

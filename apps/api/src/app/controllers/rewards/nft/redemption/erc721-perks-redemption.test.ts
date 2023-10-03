@@ -153,7 +153,7 @@ describe('ERC721 Perks Redemtpion', () => {
         });
     });
 
-    describe('POST /perks/erc721/:uuid/redemption', () => {
+    describe('POST /rewards/nft/:uuid/redemption', () => {
         const balance = 500;
 
         beforeAll(async () => {
@@ -162,8 +162,8 @@ describe('ERC721 Perks Redemtpion', () => {
             await PointBalanceService.add(pool as AssetPoolDocument, wallet._id, 500);
         });
 
-        it('POST /perks/erc721/:uuid/redemption', (done) => {
-            user.post(`/v1/perks/erc721/${perk.uuid}/redemption`)
+        it('POST /rewards/nft/:uuid/redemption', (done) => {
+            user.post(`/v1/rewards/nft/${perk.uuid}/redemption`)
                 .set({ 'X-PoolId': pool._id, 'Authorization': widgetAccessToken })
                 .expect(({ body }: request.Response) => {
                     expect(body.erc721PerkPayment).toBeDefined();

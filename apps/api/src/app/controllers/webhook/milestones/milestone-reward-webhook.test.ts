@@ -71,8 +71,8 @@ describe('Milestone Rewards', () => {
                 .expect(403, done);
         });
 
-        it('POST /milestones/claims/:uuid/collect', (done) => {
-            user.post(`/v1/rewards/milestones/claims/${claim.uuid}/collect`)
+        it('POST /quests/custom/claims/:uuid/collect', (done) => {
+            user.post(`/v1/quests/custom/claims/${claim.uuid}/collect`)
                 .set({ 'X-PoolId': pool._id, 'Authorization': widgetAccessToken })
                 .send({
                     address: userWalletAddress2,

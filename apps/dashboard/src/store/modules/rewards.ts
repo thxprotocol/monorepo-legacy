@@ -2,7 +2,7 @@ import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { RewardVariant } from '@thxnetwork/types/enums';
-import type { TCustomReward, TWebhook, TPool } from '@thxnetwork/types/interfaces';
+import type { TCustomReward, TWebhook, TPool, TCouponReward } from '@thxnetwork/types/interfaces';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 import { track } from '@thxnetwork/mixpanel';
 import {} from '@thxnetwork/types/interfaces/CustomReward';
@@ -14,7 +14,7 @@ export type TCustomRewardState = {
 };
 
 @Module({ namespaced: true })
-class RewardModule extends VuexModule {
+class CustomRewardModule extends VuexModule {
     _customRewards: TCustomRewardState = {};
     _totals: { [poolId: string]: number } = {};
 
@@ -99,4 +99,4 @@ class RewardModule extends VuexModule {
     }
 }
 
-export default RewardModule;
+export default CustomRewardModule;

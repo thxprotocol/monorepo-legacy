@@ -125,8 +125,8 @@ describe('Daily Rewards', () => {
             .expect(200, done);
     });
 
-    it('POST /rewards/daily/:uuid/claim', (done) => {
-        user.post(`/v1/rewards/daily/${dailyReward._id}/claim`)
+    it('POST /quests/daily/:uuid/claim', (done) => {
+        user.post(`/v1/quests/daily/${dailyReward._id}/claim`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
             .send()
             .expect(({ body }: request.Response) => {
@@ -144,8 +144,8 @@ describe('Daily Rewards', () => {
             .expect(200, done);
     });
 
-    it('POST /rewards/daily/:uuid/claim should throw an error', (done) => {
-        user.post(`/v1/rewards/daily/${dailyReward._id}/claim`)
+    it('POST /quests/daily/:uuid/claim should throw an error', (done) => {
+        user.post(`/v1/quests/daily/${dailyReward._id}/claim`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
             .send()
             .expect(({ body }: request.Response) => {

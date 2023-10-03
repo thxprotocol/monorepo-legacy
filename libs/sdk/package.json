@@ -1,5 +1,5 @@
 {
     "name": "@thxnetwork/sdk",
     "description": "This SDK contains a client class that simplifies interactions with THX Network API's.",
-    "version": "1.1.18"
+    "version": "1.1.21"
 }

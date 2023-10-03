@@ -90,10 +90,9 @@ import { mapGetters } from 'vuex';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
-import BaseCardClaimAmount from '../cards/BaseCardClaimAmount.vue';
 import BaseCardTokenGating from '../cards/BaseCardTokenGating.vue';
 import type { TCustomReward, TAccount, TPool, TWebhook } from '@thxnetwork/types/interfaces';
-import { TokenGatingVariant, RewardVariant, ChainId } from '@thxnetwork/types/enums';
+import { TokenGatingVariant, RewardVariant } from '@thxnetwork/types/enums';
 import { TWebhookState } from '@thxnetwork/dashboard/store/modules/webhooks';
 
 @Component({
@@ -101,7 +100,6 @@ import { TWebhookState } from '@thxnetwork/dashboard/store/modules/webhooks';
         BaseModal,
         BaseCardRewardExpiry,
         BaseCardRewardLimits,
-        BaseCardClaimAmount,
         BaseCardTokenGating,
     },
     computed: mapGetters({

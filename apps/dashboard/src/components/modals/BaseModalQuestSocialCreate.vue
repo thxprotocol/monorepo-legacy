@@ -57,7 +57,6 @@ import BaseCardInfoLinks from '../cards/BaseCardInfoLinks.vue';
     }),
 })
 export default class ModalRewardPointsCreate extends Vue {
-    isSubmitDisabled = false;
     isLoading = false;
     error = '';
     title = '';
@@ -83,6 +82,14 @@ export default class ModalRewardPointsCreate extends Vue {
     @Prop() total!: number;
     @Prop() pool!: TPool;
     @Prop({ required: false }) reward!: TPointReward;
+
+    get isSubmitDisabled() {
+        return (
+            this.rewardCondition.interaction &&
+            this.rewardCondition.interaction !== RewardConditionInteraction.None &&
+            !this.rewardCondition.content
+        );
+    }
 
     onShow() {
         this.title = this.reward ? this.reward.title : this.title;

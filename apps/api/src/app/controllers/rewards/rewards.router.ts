@@ -1,28 +1,55 @@
 import { assertRequestInput, checkJwt, corsHandler } from '@thxnetwork/api/middlewares';
 import express from 'express';
 import ListRewards from './list.controller';
-import ListRewardsPublic from './public/list.controller';
-import CreateReferralRewardClaim from './referral/claim/post.controller';
-import CreatePointRewardClaim from './points/claim/post.controller';
-import MilestoneRewardClaim from './milestones/claim/post.controller';
-import CreateDailyRewardClaim from './daily/claim/post.controller';
-import CreateWeb3QuestClaim from './web3/complete/post.controller';
-import rateLimit from 'express-rate-limit';
-import { NODE_ENV } from '@thxnetwork/api/config/secrets';
+import CreateCoinRewardRedemption from './coin/redemption/post.controller';
+import CreateNFTRewardPayment from './nft/payment/post.controller';
+import CreateNFTRewardRedemption from './nft/redemption/post.controller';
+import CreateRewardCustomRedemption from './custom/redemption/post.controller';
+import CreateRewardCouponRedemption from './coupon/redemption/post.controller';
 
 const router = express.Router();
 
 router.get('/', ListRewards.controller);
-router.get('/public', ListRewardsPublic.controller);
-router.post(
-    '/referral/:uuid/claim',
-    rateLimit((() => (NODE_ENV !== 'test' ? { windowMs: 1 * 1000, max: 1 } : {}))()),
-    assertRequestInput(CreateReferralRewardClaim.validation),
-    CreateReferralRewardClaim.controller,
-);
-router.use(checkJwt).use(corsHandler).post('/points/:id/claim', CreatePointRewardClaim.controller);
-router.use(checkJwt).use(corsHandler).post('/daily/:id/claim', CreateDailyRewardClaim.controller);
-router.use(checkJwt).use(corsHandler).post('/milestones/claims/:uuid/collect', MilestoneRewardClaim.controller);
-router.use(checkJwt).use(corsHandler).post('/web3/:uuid/claim', CreateWeb3QuestClaim.controller);
+
+router
+    .use(checkJwt)
+    .use(corsHandler)
+    .post(
+        '/coin/:uuid/redemption',
+        assertRequestInput(CreateCoinRewardRedemption.validation),
+        CreateCoinRewardRedemption.controller,
+    );
+router
+    .use(checkJwt)
+    .use(corsHandler)
+    .post(
+        '/nft/:uuid/redemption',
+        assertRequestInput(CreateNFTRewardRedemption.validation),
+        CreateNFTRewardRedemption.controller,
+    );
+router
+    .use(checkJwt)
+    .use(corsHandler)
+    .post(
+        '/nft/:uuid/payment',
+        assertRequestInput(CreateNFTRewardPayment.validation),
+        CreateNFTRewardPayment.controller,
+    );
+router
+    .use(checkJwt)
+    .use(corsHandler)
+    .post(
+        '/custom/:uuid/redemption',
+        assertRequestInput(CreateRewardCustomRedemption.validation),
+        CreateRewardCustomRedemption.controller,
+    );
+router
+    .use(checkJwt)
+    .use(corsHandler)
+    .post(
+        '/coupon/:uuid/redemption',
+        assertRequestInput(CreateRewardCouponRedemption.validation),
+        CreateRewardCouponRedemption.controller,
+    );
 
 export default router;

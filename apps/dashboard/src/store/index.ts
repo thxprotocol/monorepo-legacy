@@ -21,6 +21,7 @@ import MilestoneRewardStore from './modules/milestoneRewards';
 import DailyRewardStore from './modules/dailyRewards';
 import MerchantStore from './modules/merchants';
 import RewardsStore from './modules/rewards';
+import CouponRewardsStore from './modules/couponRewards';
 
 Vue.use(Vuex);
 
@@ -35,6 +36,7 @@ const modules = {
     erc20: ERC20Store,
     erc20Perks: ERC20PerksStore,
     rewards: RewardsStore,
+    couponRewards: CouponRewardsStore,
     erc721: ERC721Store,
     erc1155: ERC1155Store,
     erc721Perks: ERC721PerksStore,

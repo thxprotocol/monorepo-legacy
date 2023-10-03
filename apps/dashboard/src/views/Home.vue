@@ -24,80 +24,104 @@
             <div class="container container-md">
                 <strong class="text-muted">Quests</strong>
                 <b-row>
-                    <b-col md="3">
+                    <b-col md="4">
                         <BaseCardHome
                             :loading="!firstPool"
                             :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/quests`"
                         >
                             <template #header>
                                 <i class="fas fa-calendar mr-2 text-primary"></i>
-                                <strong>Daily</strong>
+                                <strong>Daily Quest</strong>
                             </template>
-                            Users visit to your website every day
+                            Challenge your users to visit to your website or app on a daily basis
                         </BaseCardHome>
                     </b-col>
-                    <b-col md="3">
+                    <b-col md="4">
                         <BaseCardHome
                             :loading="!firstPool"
                             :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/quests`"
                         >
                             <template #header>
                                 <i class="fas fa-comments mr-2 text-primary"></i>
-                                <strong>Referral</strong>
+                                <strong>Invite Quest</strong>
                             </template>
-                            Users invite others to your application
+                            Enable your users to invite others to your app
                         </BaseCardHome>
                     </b-col>
-                    <b-col md="3">
+                    <b-col md="4">
                         <BaseCardHome
                             :loading="!firstPool"
                             :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/quests`"
                         >
                             <template #header>
                                 <i class="fas fa-trophy mr-2 text-primary"></i>
-                                <strong>Conditional</strong>
+                                <strong>Social Quest</strong>
                             </template>
-                            Users engage in your social channels
+                            Amplify engagement in your social channels
                         </BaseCardHome>
                     </b-col>
-                    <b-col md="3">
+                    <b-col md="4">
                         <BaseCardHome
                             :loading="!firstPool"
                             :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/quests`"
                         >
                             <template #header>
                                 <i class="fas fa-trophy mr-2 text-primary"></i>
-                                <strong>Custom</strong>
+                                <strong>Custom Quest</strong>
                             </template>
-                            Users achieve milestones in your application
+                            Drive your users to achieve more things in your app
+                        </BaseCardHome>
+                    </b-col>
+                    <b-col md="4">
+                        <BaseCardHome
+                            :loading="!firstPool"
+                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/quests`"
+                        >
+                            <template #header>
+                                <i class="fab fa-ethereum mr-2 text-primary"></i>
+                                <strong>Web3 Quest</strong>
+                            </template>
+                            Let users reach certain values in your smart contracts
                         </BaseCardHome>
                     </b-col>
                 </b-row>
                 <hr />
                 <strong class="text-muted">Rewards</strong>
                 <b-row>
-                    <b-col md="6">
+                    <b-col md="4">
                         <BaseCardHome
                             :loading="!firstPool"
-                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/erc20-perks`"
+                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/rewards`"
                         >
                             <template #header>
-                                <i class="fas fa-trophy mr-2 text-primary"></i>
+                                <i class="fas fa-coins mr-2 text-primary"></i>
                                 <strong>Coin</strong>
                             </template>
-                            Create rewards for ERC20 contracts
+                            Create rewards for new or existing ERC20 contracts
                         </BaseCardHome>
                     </b-col>
-                    <b-col md="6">
+                    <b-col md="4">
                         <BaseCardHome
                             :loading="!firstPool"
-                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/erc721-perks`"
+                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/rewards`"
                         >
                             <template #header>
-                                <i class="fas fa-trophy mr-2 text-primary"></i>
+                                <i class="fas fa-palette mr-2 text-primary"></i>
                                 <strong>NFT</strong>
                             </template>
                             Create rewards for ERC721 or ERC1155 contracts
+                        </BaseCardHome>
+                    </b-col>
+                    <b-col md="4">
+                        <BaseCardHome
+                            :loading="!firstPool"
+                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/rewards`"
+                        >
+                            <template #header>
+                                <i class="fas fa-gift mr-2 text-primary"></i>
+                                <strong>Custom</strong>
+                            </template>
+                            Create rewards that trigger custom code in your app
                         </BaseCardHome>
                     </b-col>
                 </b-row>

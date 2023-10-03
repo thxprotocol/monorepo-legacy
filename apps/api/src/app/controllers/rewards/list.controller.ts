@@ -1,142 +1,129 @@
-import jwt_decode from 'jwt-decode';
 import { Request, Response } from 'express';
-import { PointReward } from '@thxnetwork/api/models/PointReward';
-import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
-import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
-import { MilestoneRewardClaim } from '@thxnetwork/api/models/MilestoneRewardClaims';
-import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
-import { DailyReward } from '@thxnetwork/api/models/DailyReward';
+import jwt_decode from 'jwt-decode';
+import { ERC20Perk } from '@thxnetwork/api/models/ERC20Perk';
+import { ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
+import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
+import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
-import { Web3Quest } from '@thxnetwork/api/models/Web3Quest';
-import { Web3QuestClaim } from '@thxnetwork/api/models/Web3QuestClaim';
-import { TBaseReward } from '@thxnetwork/types/interfaces';
-import AnalyticsService from '@thxnetwork/api/services/AnalyticsService';
+import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
-import DailyRewardClaimService, { ONE_DAY_MS } from '@thxnetwork/api/services/DailyRewardClaimService';
 import WalletService from '@thxnetwork/api/services/WalletService';
+import PerkService from '@thxnetwork/api/services/PerkService';
+import { CustomReward } from '@thxnetwork/api/models/CustomReward';
+import { Wallet } from '@thxnetwork/api/models/Wallet';
+import { CustomRewardPayment } from '@thxnetwork/api/models/CustomRewardPayment';
+import { CouponReward } from '@thxnetwork/api/models/CouponReward';
+import { CouponRewardPayment } from '@thxnetwork/api/models/CouponRewardPayment';
+import { CouponCode } from '@thxnetwork/api/models/CouponCode';
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Rewards']
+    // #swagger.tags = ['Perks']
     const pool = await PoolService.getById(req.header('X-PoolId'));
-    const referralRewards = await ReferralReward.find({ poolId: pool._id, isPublished: true });
-    const pointRewards = await PointReward.find({ poolId: pool._id, isPublished: true });
-    const milestoneRewards = await MilestoneReward.find({ poolId: pool._id, isPublished: true });
-    const dailyRewards = await DailyReward.find({ poolId: pool._id, isPublished: true });
-    const web3Quests = await Web3Quest.find({ poolId: pool._id, isPublished: true });
-    const authHeader = req.header('authorization');
+    const [erc20Perks, erc721Perks, customRewards, couponRewards] = await Promise.all([
+        ERC20Perk.find({
+            poolId: String(pool._id),
+            pointPrice: { $exists: true, $gt: 0 },
+        }),
+        ERC721Perk.find({
+            poolId: String(pool._id),
+            $or: [{ pointPrice: { $exists: true, $gt: 0 } }, { price: { $exists: true, $gt: 0 } }],
+        }),
+        CustomReward.find({
+            poolId: String(pool._id),
+            $or: [{ pointPrice: { $exists: true, $gt: 0 } }, { price: { $exists: true, $gt: 0 } }],
+        }),
+        CouponReward.find({
+            poolId: String(pool._id),
+            $or: [{ pointPrice: { $exists: true, $gt: 0 } }, { price: { $exists: true, $gt: 0 } }],
+        }),
+    ]);
 
     let wallet: WalletDocument, sub: string;
+
     // This endpoint is public so we do not get req.auth populated and decode the token ourselves
     // when the request is made with an authorization header to obtain the sub.
+    const authHeader = req.header('authorization');
     if (authHeader && authHeader.startsWith('Bearer ')) {
         const token: { sub: string } = jwt_decode(authHeader.split(' ')[1]);
         sub = token.sub;
+
         wallet = await WalletService.findPrimary(sub, pool.chainId);
     }
 
-    const leaderboard = await AnalyticsService.getLeaderboard(pool, {
-        startDate: new Date(pool.createdAt),
-        endDate: new Date(),
-    });
-
-    const getDefaults = ({ _id, index, title, description, infoLinks, uuid, image }: TBaseReward) => ({
-        _id,
-        index,
-        title,
-        description,
-        infoLinks,
-        image,
-        uuid,
-    });
+    const getRewardDefaults = async (r, Model) => {
+        return {
+            _id: r._id,
+            uuid: r.uuid,
+            title: r.title,
+            description: r.description,
+            image: r.image,
+            pointPrice: r.pointPrice,
+            isPromoted: r.isPromoted,
+            expiry: await PerkService.getExpiry(r),
+            progress: await PerkService.getProgress(r, Model),
+            isLocked: await PerkService.getIsLockedForWallet(r, wallet),
+            tokenGatingContractAddress: r.tokenGatingContractAddress,
+        };
+    };
 
     res.json({
-        leaderboard: leaderboard.map(({ score, wallet, questsCompleted }) => ({
-            questsCompleted,
-            score,
-            address: wallet.address,
-        })),
-        dailyRewards: await Promise.all(
-            dailyRewards.map(async (r) => {
-                const isDisabled = wallet ? !(await DailyRewardClaimService.isClaimable(r, wallet)) : true;
-                const validClaims = wallet ? await DailyRewardClaimService.findByWallet(r, wallet) : [];
-                const claimAgainTime = validClaims.length
-                    ? new Date(validClaims[0].createdAt).getTime() + ONE_DAY_MS
-                    : null;
-                const now = Date.now();
-                const defaults = getDefaults(r);
-                return {
-                    ...defaults,
-                    amount: r.amounts[validClaims.length],
-                    amounts: r.amounts,
-                    isDisabled,
-                    claims: validClaims,
-                    claimAgainDuration:
-                        claimAgainTime && claimAgainTime - now > 0 ? Math.floor((claimAgainTime - now) / 1000) : null, // Convert and floor to S,
-                };
-            }),
-        ),
-        milestoneRewards: await Promise.all(
-            milestoneRewards.map(async (r) => {
-                const claims = wallet
-                    ? await MilestoneRewardClaim.find({
-                          walletId: String(wallet._id),
-                          milestoneRewardId: String(r._id),
-                      })
-                    : [];
-                const defaults = getDefaults(r);
+        coin: await Promise.all(
+            erc20Perks.map(async (r) => {
+                const { isError } = await PerkService.validate({ perk: r, sub, pool });
+                const defaults = await getRewardDefaults(r, ERC20PerkPayment);
                 return {
                     ...defaults,
                     amount: r.amount,
-                    claims,
+                    isDisabled: isError,
+                    isOwned: false,
+                    erc20: await ERC20Service.getById(r.erc20Id),
                 };
             }),
         ),
-        referralRewards: referralRewards.map((r) => {
-            const defaults = getDefaults(r);
-            return {
-                ...defaults,
-                amount: r.amount,
-                pathname: r.pathname,
-                successUrl: r.successUrl,
-            };
-        }),
-        pointRewards: await Promise.all(
-            pointRewards.map(async (r) => {
-                const isClaimed = wallet
-                    ? await PointRewardClaim.exists({
-                          $or: [{ walletId: wallet._id }, { sub }],
-                          pointRewardId: String(r._id),
-                      }) // TODO SHould move to service since its also used in the claim controller
-                    : false;
-                const defaults = getDefaults(r);
+        nft: await Promise.all(
+            erc721Perks.map(async (r) => {
+                const { isError } = await PerkService.validate({ perk: r, sub, pool });
+                const nft = await PerkService.getNFT(r);
+                const token = !r.metadataId && r.tokenId ? await PerkService.getToken(r) : null;
+                const metadata = await PerkService.getMetadata(r, token);
+                const defaults = await getRewardDefaults(r, ERC721PerkPayment);
+
                 return {
                     ...defaults,
-                    amount: r.amount,
-                    isClaimed,
-                    platform: r.platform,
-                    interaction: r.interaction,
-                    content: r.content,
-                    contentMetadata: r.contentMetadata,
+                    nft,
+                    metadata,
+                    erc1155Amount: r.erc1155Amount,
+                    price: r.price,
+                    priceCurrency: r.priceCurrency,
+                    isDisabled: isError,
+                    isOwned: false,
                 };
             }),
         ),
-        web3Quests: await Promise.all(
-            web3Quests.map(async (r) => {
-                const isClaimed = wallet
-                    ? await Web3QuestClaim.exists({
-                          web3QuestId: r._id,
-                          $or: [{ sub }, { walletId: wallet._id }],
-                      })
-                    : false;
-                const defaults = getDefaults(r);
+        custom: await Promise.all(
+            customRewards.map(async (r) => {
+                const { isError } = await PerkService.validate({ perk: r, sub, pool });
+                const defaults = await getRewardDefaults(r, CustomRewardPayment);
+                // @dev Having a Virtual Wallet for this pool is required in order for the external system to target the right user
+                const wallets = sub ? await Wallet.find({ poolId: pool._id, sub, uuid: { $exists: true } }) : [];
                 return {
                     ...defaults,
-                    amount: r.amount,
-                    contracts: r.contracts,
-                    methodName: r.methodName,
-                    threshold: r.threshold,
-                    isClaimed,
+                    isDisabled: isError || !wallets.length,
+                    isOwned: false,
                 };
+            }),
+        ),
+        coupon: await Promise.all(
+            couponRewards.map(async (r) => {
+                // Set limit here since it is not stored in the reward but obtained
+                // from the amount of coupon codes instead
+                const codes = await CouponCode.find({ couponRewardId: String(r._id) });
+                r.limit = codes.length;
+
+                const { isError, errorMessage } = await PerkService.validate({ perk: r, sub, pool });
+                const defaults = await getRewardDefaults(r, CouponRewardPayment);
+
+                return { ...defaults, isDisabled: isError, errorMessage, isOwned: false };
             }),
         ),
     });

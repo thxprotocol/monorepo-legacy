@@ -13,15 +13,17 @@ import ERC721Service from './ERC721Service';
 import { ClaimDocument } from '../models/Claim';
 import { ERC20PerkPayment } from '../models/ERC20PerkPayment';
 import { ERC721PerkPayment } from '../models/ERC721PerkPayment';
-import { isCustomReward, isTERC20Perk, isTERC721Perk } from '../util/rewards';
+import { isCouponReward, isCustomReward, isTERC20Perk, isTERC721Perk } from '../util/rewards';
 import mongoose from 'mongoose';
 import { CustomRewardDocument } from '@thxnetwork/api/models/CustomReward';
 import { CustomRewardPayment } from '@thxnetwork/api/models/CustomRewardPayment';
+import { CouponRewardDocument } from '../models/CouponReward';
+import { CouponRewardPayment } from '../models/CouponRewardPayment';
 
-type TAllPerks = ERC20PerkDocument | ERC721PerkDocument | CustomRewardDocument;
+export type PerkDocument = ERC20PerkDocument | ERC721PerkDocument | CustomRewardDocument | CouponRewardDocument;
 
 export async function verifyOwnership(
-    { tokenGatingVariant, tokenGatingContractAddress, tokenGatingAmount }: TAllPerks,
+    { tokenGatingVariant, tokenGatingContractAddress, tokenGatingAmount }: PerkDocument,
     wallet: WalletDocument,
 ): Promise<boolean> {
     switch (tokenGatingVariant) {
@@ -73,13 +75,13 @@ export async function getNFT(perk: ERC721PerkDocument) {
     }
 }
 
-export async function getIsLockedForWallet(perk: TAllPerks, wallet: WalletDocument) {
+export async function getIsLockedForWallet(perk: PerkDocument, wallet: WalletDocument) {
     if (!perk.tokenGatingContractAddress || !wallet) return;
     const isOwned = await verifyOwnership(perk, wallet);
     return !isOwned;
 }
 
-export async function getIsLockedForSub(perk: TAllPerks, sub: string, pool: AssetPoolDocument) {
+export async function getIsLockedForSub(perk: PerkDocument, sub: string, pool: AssetPoolDocument) {
     if (!perk.tokenGatingContractAddress) return;
     const wallet = await WalletService.findPrimary(sub, pool.chainId);
     if (!wallet) return true;
@@ -88,21 +90,19 @@ export async function getIsLockedForSub(perk: TAllPerks, sub: string, pool: Asse
     return !isOwned;
 }
 
-async function getProgress(r: TAllPerks, model: any) {
+async function getProgress(r: PerkDocument, model: any) {
     return {
         count: await model.countDocuments({ perkId: r._id }),
         limit: r.limit,
     };
 }
 
-async function getExpiry(r: TAllPerks) {
+async function getExpiry(r: PerkDocument) {
     return {
         now: Date.now(),
         date: new Date(r.expiryDate).getTime(),
     };
 }
-
-export type PerkDocument = ERC20PerkDocument | ERC721PerkDocument | CustomRewardDocument;
 
 export function getPaymentModel(perk: PerkDocument): mongoose.Model<any> {
     if (isTERC20Perk(perk)) {
@@ -113,6 +113,9 @@ export function getPaymentModel(perk: PerkDocument): mongoose.Model<any> {
     }
     if (isCustomReward(perk)) {
         return CustomRewardPayment;
+    }
+    if (isCouponReward(perk)) {
+        return CouponRewardPayment;
     }
 }
 

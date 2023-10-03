@@ -54,7 +54,7 @@
                                         :src="
                                             selectedPool.brand && selectedPool.brand.logoImgUrl
                                                 ? selectedPool.brand.logoImgUrl
-                                                : `https://avatars.dicebear.com/api/identicon/${selectedPool._id}.svg`
+                                                : `https://api.dicebear.com/7.x/identicon/svg?seed=${selectedPool._id}`
                                         "
                                     />
                                 </div>

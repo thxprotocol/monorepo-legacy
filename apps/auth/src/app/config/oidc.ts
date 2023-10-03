@@ -126,6 +126,8 @@ const config: Configuration = {
         'web3_quests:write',
         'custom_rewards:read',
         'custom_rewards:write',
+        'coupon_rewards:read',
+        'coupon_rewards:write',
         'erc20_rewards:read',
         'erc20_rewards:write',
         'erc721_rewards:read',
