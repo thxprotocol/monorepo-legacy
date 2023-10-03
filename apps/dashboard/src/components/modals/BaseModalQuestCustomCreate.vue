@@ -87,7 +87,7 @@ export default class ModalQuestCustomCreate extends Vue {
     get code() {
         return `curl "${API_URL}/v1/webhook/milestone/${this.reward ? this.reward.uuid : '<TOKEN>'}/claim" \\
 -X POST \\
--d "address=<ADDRESS>"`;
+-d "code=<CODE>"`;
     }
 
     onShow() {

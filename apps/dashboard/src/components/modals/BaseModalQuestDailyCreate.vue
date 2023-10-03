@@ -104,7 +104,7 @@ export default class ModalRewardDailyCreate extends Vue {
     get code() {
         return `curl "${API_URL}/v1/webhook/daily/${this.reward ? this.reward.uuid : '<TOKEN>'}" \\
 -X POST \\
--d "address=<ADDRESS>"`;
+-d "code=<CODE>"`;
     }
 
     onShow() {
