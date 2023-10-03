@@ -58,8 +58,8 @@ describe('Daily Rewards WebHooks', () => {
         expect(status).toBe(201);
     });
 
-    it('POST /rewards/daily/:uuid/claim', (done) => {
-        user.post(`/v1/rewards/daily/${dailyReward._id}/claim`)
+    it('POST /quests/daily/:uuid/claim', (done) => {
+        user.post(`/v1/quests/daily/${dailyReward._id}/claim`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken2 })
             .send()
             .expect(({ body }: request.Response) => {
@@ -68,8 +68,8 @@ describe('Daily Rewards WebHooks', () => {
             .expect(201, done);
     });
 
-    it('POST /rewards/daily/:uuid/claim should throw an error', (done) => {
-        user.post(`/v1/rewards/daily/${dailyReward._id}/claim`)
+    it('POST /quests/daily/:uuid/claim should throw an error', (done) => {
+        user.post(`/v1/quests/daily/${dailyReward._id}/claim`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken2 })
             .send()
             .expect(({ body }: request.Response) => {

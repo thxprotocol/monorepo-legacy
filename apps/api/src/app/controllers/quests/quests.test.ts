@@ -123,14 +123,14 @@ describe('Quests', () => {
             .expect(201, done);
     });
 
-    it('GET /rewards', (done) => {
+    it('GET /quests', (done) => {
         user.get(`/v1/quests`)
             .set({ 'X-PoolId': poolId })
             .expect((res: request.Response) => {
-                // expect(res.body.dailyRewards[res.body.dailyRewards.length - 1].uuid).toBe(dailyReward._id);
-                expect(res.body.referralRewards[res.body.referralRewards.length - 1]._id).toBe(referralReward._id);
-                expect(res.body.pointRewards[res.body.pointRewards.length - 1]._id).toBe(pointReward._id);
-                expect(res.body.milestoneRewards[res.body.milestoneRewards.length - 1]._id).toBe(milestoneReward._id);
+                // expect(res.body.daily[res.body.daily.length - 1].uuid).toBe(dailyReward._id);
+                expect(res.body.invite[res.body.invite.length - 1]._id).toBe(referralReward._id);
+                expect(res.body.social[res.body.social.length - 1]._id).toBe(pointReward._id);
+                expect(res.body.custom[res.body.custom.length - 1]._id).toBe(milestoneReward._id);
             })
             .expect(200, done);
     });
