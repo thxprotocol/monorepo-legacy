@@ -10,6 +10,7 @@ import MilestoneRewardService from '../services/MilestoneRewardService';
 import DailyRewardService from '../services/DailyRewardService';
 import { PerkDocument } from '../services/PerkService';
 import { CustomRewardDocument } from '../models/CustomReward';
+import { CouponRewardDocument } from '../models/CouponReward';
 
 export async function findRewardByUuid(uuid: string) {
     const erc20Perk = await ERC20Perk.findOne({ uuid });
@@ -27,6 +28,10 @@ export function isTERC721Perk(perk: PerkDocument): perk is ERC721PerkDocument {
 
 export function isCustomReward(reward: PerkDocument): reward is CustomRewardDocument {
     return (reward as CustomRewardDocument).webhookId !== undefined;
+}
+
+export function isCouponReward(reward: PerkDocument): reward is CouponRewardDocument {
+    return (reward as CouponRewardDocument).webshopURL !== undefined;
 }
 
 export function addMinutes(date: Date, minutes: number) {

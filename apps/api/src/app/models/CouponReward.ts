@@ -7,7 +7,7 @@ export type CouponRewardDocument = mongoose.Document & TCouponReward;
 const schema = new mongoose.Schema(
     {
         ...perkBaseSchema,
-        webshopUrl: String,
+        webshopURL: String,
     },
     { timestamps: true },
 );

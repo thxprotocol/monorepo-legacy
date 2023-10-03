@@ -19,6 +19,9 @@
                                 <b-form-group label="Description">
                                     <b-textarea v-model="description" />
                                 </b-form-group>
+                                <b-form-group label="Webshop URL">
+                                    <b-form-input v-model="webshopURL" />
+                                </b-form-group>
                                 <b-form-group label="Coupon Codes">
                                     <b-form-file
                                         v-model="fileCoupons"
@@ -149,6 +152,7 @@ export default class ModalRewardCustomCreate extends Vue {
     pointPrice = 0;
     imageFile: File | null = null;
     image = '';
+    webshopURL = '';
     isPromoted = false;
     tokenGatingVariant = TokenGatingVariant.ERC721;
     tokenGatingContractAddress = '';
@@ -178,6 +182,7 @@ export default class ModalRewardCustomCreate extends Vue {
         this.title = this.reward ? this.reward.title : this.title;
         this.description = this.reward ? this.reward.description : this.description;
         this.pointPrice = this.reward ? this.reward.pointPrice : this.pointPrice;
+        this.webshopURL = this.reward ? this.reward.webshopURL : this.webshopURL;
         this.expiryDate = this.reward ? this.reward.expiryDate : this.expiryDate;
         this.image = this.reward ? this.reward.image : this.image;
         this.isPromoted = this.reward ? this.reward.isPromoted : this.isPromoted;
@@ -204,6 +209,7 @@ export default class ModalRewardCustomCreate extends Vue {
             file: this.imageFile,
             expiryDate: this.expiryDate ? new Date(this.expiryDate).toISOString() : undefined,
             codes: this.codes,
+            webshopURL: this.webshopURL,
             pointPrice: this.pointPrice,
             isPromoted: this.isPromoted,
             tokenGatingContractAddress: this.tokenGatingContractAddress,

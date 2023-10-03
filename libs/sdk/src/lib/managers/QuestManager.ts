@@ -7,18 +7,18 @@ class QuestManager extends BaseManager {
     }
 
     async list(poolId?: string) {
-        return await this.client.request.get(`/v1/rewards`, { poolId });
+        return await this.client.request.get(`/v1/quests`, { poolId });
     }
 
     daily = {
         complete: async (id: string) => {
-            return await this.client.request.post(`/v1/rewards/daily/${id}/claim`);
+            return await this.client.request.post(`/v1/quests/daily/${id}/claim`);
         },
     };
 
     invite = {
         complete: async (uuid: string, payload: { sub: string }) => {
-            return await this.client.request.post(`/v1/rewards/referral/${uuid}/claim`, {
+            return await this.client.request.post(`/v1/quests/referral/${uuid}/claim`, {
                 body: JSON.stringify(payload),
             });
         },
@@ -26,19 +26,19 @@ class QuestManager extends BaseManager {
 
     social = {
         complete: async (id: string) => {
-            return await this.client.request.post(`/v1/rewards/points/${id}/claim`);
+            return await this.client.request.post(`/v1/quests/points/${id}/claim`);
         },
     };
 
     custom = {
         complete: async (id: string) => {
-            return await this.client.request.post(`/v1/rewards/milestones/claims/${id}/collect`);
+            return await this.client.request.post(`/v1/quests/milestones/claims/${id}/collect`);
         },
     };
 
     web3 = {
         complete: async (uuid: string, payload: { signature: string; message: string }) => {
-            return await this.client.request.post(`/v1/rewards/web3/${uuid}/claim`, {
+            return await this.client.request.post(`/v1/quests/web3/${uuid}/claim`, {
                 body: JSON.stringify(payload),
             });
         },

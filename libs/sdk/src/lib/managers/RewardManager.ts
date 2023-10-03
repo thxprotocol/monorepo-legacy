@@ -7,48 +7,64 @@ class RewardManager extends BaseManager {
     }
 
     async list(poolId?: string) {
-        return await this.client.request.get(`/v1/perks`, { poolId });
+        return await this.client.request.get(`/v1/rewards`, { poolId });
     }
 
-    erc20 = {
+    coin = {
         get: async (uuid: string) => {
-            return await this.client.request.get(`/v1/perks/erc20/${uuid}`);
+            return await this.client.request.get(`/v1/rewards/coin/${uuid}`);
         },
         redemption: {
             post: async (uuid: string) => {
-                return await this.client.request.post(`/v1/perks/erc20/${uuid}/redemption`);
+                return await this.client.request.post(`/v1/rewards/coin/${uuid}/redemption`);
             },
         },
     };
 
-    erc721 = {
+    nft = {
         get: async (uuid: string) => {
-            return await this.client.request.get(`/v1/perks/erc721/${uuid}`);
+            return await this.client.request.get(`/v1/rewards/nft/${uuid}`);
         },
         redemption: {
             post: async (uuid: string) => {
-                return await this.client.request.post(`/v1/perks/erc721/${uuid}/redemption`);
+                return await this.client.request.post(`/v1/rewards/nft/${uuid}/redemption`);
             },
         },
         payment: {
             post: async (uuid: string) => {
-                return await this.client.request.post(`/v1/perks/erc721/${uuid}/payment`);
+                return await this.client.request.post(`/v1/rewards/nft/${uuid}/payment`);
             },
         },
     };
 
     custom = {
         get: async (uuid: string) => {
-            return await this.client.request.get(`/v1/perks/custom/${uuid}`);
+            return await this.client.request.get(`/v1/rewards/custom/${uuid}`);
         },
         redemption: {
             post: async (uuid: string) => {
-                return await this.client.request.post(`/v1/perks/custom/${uuid}/redemption`);
+                return await this.client.request.post(`/v1/rewards/custom/${uuid}/redemption`);
             },
         },
         payment: {
             post: async (uuid: string) => {
-                return await this.client.request.post(`/v1/perks/custom/${uuid}/payment`);
+                return await this.client.request.post(`/v1/rewards/custom/${uuid}/payment`);
+            },
+        },
+    };
+
+    coupon = {
+        get: async (uuid: string) => {
+            return await this.client.request.get(`/v1/rewards/coupon/${uuid}`);
+        },
+        redemption: {
+            post: async (uuid: string) => {
+                return await this.client.request.post(`/v1/rewards/coupon/${uuid}/redemption`);
+            },
+        },
+        payment: {
+            post: async (uuid: string) => {
+                return await this.client.request.post(`/v1/rewards/coupon/${uuid}/payment`);
             },
         },
     };

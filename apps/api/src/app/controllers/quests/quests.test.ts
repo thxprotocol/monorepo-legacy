@@ -7,7 +7,7 @@ import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/c
 
 const user = request.agent(app);
 
-describe('Rewards', () => {
+describe('Quests', () => {
     let poolId: string, tokenAddress: string, referralReward: any, pointReward: any, milestoneReward: any;
 
     beforeAll(async () => {
@@ -124,7 +124,7 @@ describe('Rewards', () => {
     });
 
     it('GET /rewards', (done) => {
-        user.get(`/v1/rewards`)
+        user.get(`/v1/quests`)
             .set({ 'X-PoolId': poolId })
             .expect((res: request.Response) => {
                 // expect(res.body.dailyRewards[res.body.dailyRewards.length - 1].uuid).toBe(dailyReward._id);

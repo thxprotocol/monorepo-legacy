@@ -3,12 +3,12 @@ import { TBasePerk } from './BaseReward';
 export type TCouponReward = TBasePerk & {
     codes: string[];
     couponCodes: TCouponCode[];
-    webshopUrl: string;
+    webshopURL: string;
 };
 
 export type TCouponRewardPayment = {
-    rewardId: string;
-    coupontCodeId: string;
+    perkId: string;
+    couponCodeId: string;
     walletId: string;
     sub: string;
     poolId: string;

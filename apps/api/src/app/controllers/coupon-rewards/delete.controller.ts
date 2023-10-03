@@ -12,7 +12,7 @@ const controller = async (req: Request, res: Response) => {
 
     const ids = codes
         // Only return codes that are not part of a payment
-        .filter((code: CouponCodeDocument) => !payments.find((p) => p.coupontCodeId === String(code._id)))
+        .filter((code: CouponCodeDocument) => !payments.find((p) => p.couponCodeId === String(code._id)))
         .map((code) => code._id);
 
     await CouponCode.deleteMany({ _id: ids });

@@ -6,7 +6,10 @@ import { ForbiddenError } from '@thxnetwork/api/util/errors';
 import { v4 } from 'uuid';
 import { CouponCode } from '@thxnetwork/api/models/CouponCode';
 
-const validation = [body('codes').custom((value: string) => value && JSON.parse(value).length > 0)];
+const validation = [
+    body('webshopURL').isURL({ require_tld: false }),
+    body('codes').custom((value: string) => value && JSON.parse(value).length > 0),
+];
 
 const controller = async (req: Request, res: Response) => {
     const poolId = req.header('X-PoolId');

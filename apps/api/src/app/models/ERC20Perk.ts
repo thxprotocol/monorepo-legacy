@@ -22,7 +22,6 @@ export const perkBaseSchema = {
     expiryDate: Date,
     claimAmount: Number,
     claimLimit: Number,
-    limit: Number,
     isPromoted: { type: Boolean, default: false },
     tokenGatingVariant: Number,
     tokenGatingContractAddress: String,
@@ -35,6 +34,7 @@ export type ERC20PerkDocument = mongoose.Document & TERC20Perk;
 const schema = new mongoose.Schema(
     {
         ...perkBaseSchema,
+        limit: Number,
         erc20Id: String,
         amount: String,
         pointPrice: Number,

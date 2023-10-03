@@ -7,6 +7,7 @@ import { CouponCode } from '@thxnetwork/api/models/CouponCode';
 
 const validation = [
     param('id').isMongoId(),
+    body('webshopURL').optional().isURL({ require_tld: false }),
     body('codes')
         .optional()
         .custom((value: string) => {
