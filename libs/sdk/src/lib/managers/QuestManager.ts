@@ -18,7 +18,7 @@ class QuestManager extends BaseManager {
 
     invite = {
         complete: async (uuid: string, payload: { sub: string }) => {
-            return await this.client.request.post(`/v1/quests/referral/${uuid}/claim`, {
+            return await this.client.request.post(`/v1/quests/invite/${uuid}/claim`, {
                 body: JSON.stringify(payload),
             });
         },
@@ -26,13 +26,13 @@ class QuestManager extends BaseManager {
 
     social = {
         complete: async (id: string) => {
-            return await this.client.request.post(`/v1/quests/points/${id}/claim`);
+            return await this.client.request.post(`/v1/quests/social/${id}/claim`);
         },
     };
 
     custom = {
         complete: async (id: string) => {
-            return await this.client.request.post(`/v1/quests/milestones/claims/${id}/collect`);
+            return await this.client.request.post(`/v1/quests/custom/claims/${id}/collect`);
         },
     };
 

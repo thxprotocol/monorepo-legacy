@@ -52,8 +52,8 @@
                                 <strong>TOKEN</strong> will be populated after creating this daily reward.
                             </li>
                             <li>
-                                <strong>ADDRESS</strong> should be provided by your app and owned by the targeted user
-                                in our system.
+                                <strong>CODE</strong> should be the virtual wallet code obtained for the user after
+                                running the virtual wallet webhook
                             </li>
                         </ul>
                     </b-alert>

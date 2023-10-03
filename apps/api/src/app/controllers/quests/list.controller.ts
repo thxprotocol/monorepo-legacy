@@ -55,7 +55,7 @@ const controller = async (req: Request, res: Response) => {
             score,
             address: wallet.address,
         })),
-        dailyRewards: await Promise.all(
+        daily: await Promise.all(
             dailyRewards.map(async (r) => {
                 const isDisabled = wallet ? !(await DailyRewardClaimService.isClaimable(r, wallet)) : true;
                 const validClaims = wallet ? await DailyRewardClaimService.findByWallet(r, wallet) : [];
@@ -75,7 +75,7 @@ const controller = async (req: Request, res: Response) => {
                 };
             }),
         ),
-        milestoneRewards: await Promise.all(
+        custom: await Promise.all(
             milestoneRewards.map(async (r) => {
                 const claims = wallet
                     ? await MilestoneRewardClaim.find({
@@ -91,7 +91,7 @@ const controller = async (req: Request, res: Response) => {
                 };
             }),
         ),
-        referralRewards: referralRewards.map((r) => {
+        invite: referralRewards.map((r) => {
             const defaults = getDefaults(r);
             return {
                 ...defaults,
@@ -100,7 +100,7 @@ const controller = async (req: Request, res: Response) => {
                 successUrl: r.successUrl,
             };
         }),
-        pointRewards: await Promise.all(
+        social: await Promise.all(
             pointRewards.map(async (r) => {
                 const isClaimed = wallet
                     ? await PointRewardClaim.exists({
@@ -120,7 +120,7 @@ const controller = async (req: Request, res: Response) => {
                 };
             }),
         ),
-        web3Quests: await Promise.all(
+        web3: await Promise.all(
             web3Quests.map(async (r) => {
                 const isClaimed = wallet
                     ? await Web3QuestClaim.exists({

@@ -8,7 +8,7 @@ const schema = new mongoose.Schema(
         walletId: String,
         sub: String,
         perkId: String,
-        coupontCodeId: String,
+        couponCodeId: String,
         poolId: String,
         amount: Number,
     },

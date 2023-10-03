@@ -67,7 +67,7 @@ const controller = async (req: Request, res: Response) => {
     };
 
     res.json({
-        erc20Perks: await Promise.all(
+        coin: await Promise.all(
             erc20Perks.map(async (r) => {
                 const { isError } = await PerkService.validate({ perk: r, sub, pool });
                 const defaults = await getRewardDefaults(r, ERC20PerkPayment);
@@ -80,7 +80,7 @@ const controller = async (req: Request, res: Response) => {
                 };
             }),
         ),
-        erc721Perks: await Promise.all(
+        nft: await Promise.all(
             erc721Perks.map(async (r) => {
                 const { isError } = await PerkService.validate({ perk: r, sub, pool });
                 const nft = await PerkService.getNFT(r);
@@ -100,7 +100,7 @@ const controller = async (req: Request, res: Response) => {
                 };
             }),
         ),
-        customRewards: await Promise.all(
+        custom: await Promise.all(
             customRewards.map(async (r) => {
                 const { isError } = await PerkService.validate({ perk: r, sub, pool });
                 const defaults = await getRewardDefaults(r, CustomRewardPayment);
@@ -113,7 +113,7 @@ const controller = async (req: Request, res: Response) => {
                 };
             }),
         ),
-        couponRewards: await Promise.all(
+        coupon: await Promise.all(
             couponRewards.map(async (r) => {
                 // Set limit here since it is not stored in the reward but obtained
                 // from the amount of coupon codes instead
