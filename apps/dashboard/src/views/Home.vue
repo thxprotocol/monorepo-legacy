@@ -124,6 +124,18 @@
                             Create rewards that trigger custom code in your app
                         </BaseCardHome>
                     </b-col>
+                    <b-col md="4">
+                        <BaseCardHome
+                            :loading="!firstPool"
+                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/rewards`"
+                        >
+                            <template #header>
+                                <i class="fas fa-gift mr-2 text-primary"></i>
+                                <strong>Coupon</strong>
+                            </template>
+                            Create rewards that give your users a coupon code
+                        </BaseCardHome>
+                    </b-col>
                 </b-row>
                 <hr />
                 <strong class="text-muted">Smart Contracts</strong>
@@ -157,7 +169,7 @@
                 <b-row>
                     <b-col md="3">
                         <b-card
-                            @click="$router.push(`/pool/${firstPool ? firstPool._id : 'unknown'}/widget`)"
+                            @click="$router.push(`/pool/${firstPool ? firstPool._id : 'unknown'}/settings`)"
                             class="mt-3 mb-3 cursor-pointer"
                             :img-src="require('../../public/assets/thx-home-widget.png')"
                             img-alt="Image"
