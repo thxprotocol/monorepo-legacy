@@ -140,14 +140,13 @@ describe('ERC20 Perk Payment', () => {
             .expect(201, done);
     });
 
-    it('GET /quests should return isDisabled = true, because the supply is gone', (done) => {
-        user.get(`/v1/quests`)
+    it('GET /rewards should return isDisabled = true, because the supply is gone', (done) => {
+        user.get(`/v1/rewards`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
             .expect(({ body }: request.Response) => {
-                expect(body.erc20Perks.length).toBe(1);
-                expect(body.erc20Perks[0].isDisabled).toBe(true);
-                expect(body.erc20Perks[0].progress.limit).toBe(1);
-                expect(body.erc20Perks[0].progress.count).toBe(1);
+                expect(body.coin[0].isDisabled).toBe(true);
+                expect(body.coin[0].progress.limit).toBe(1);
+                expect(body.coin[0].progress.count).toBe(1);
             })
             .expect(200, done);
     });
