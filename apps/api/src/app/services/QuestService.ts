@@ -50,10 +50,14 @@ function getNotificationVariant(questVariant, interaction?: RewardConditionInter
 }
 
 async function notify(variant: NotificationVariant, quest: Partial<TQuest>) {
+    // @dev Quests that dont have an interaction might not get a notificationVariant
+    if (typeof variant === 'undefined') return;
+
     const pool = await PoolService.getById(quest.poolId);
     const brand = await BrandService.get(quest.poolId);
     const widget = await Widget.findOne({ poolId: pool._id });
     const { amount, amounts } = quest as any;
+
     const { content, questVariant, actionLabel } = notificationVariantMap[variant];
     const subject = `🎁 ${questVariant}: Earn ${amount || amounts[0]} pts!"`;
     const message = `<p style="font-size: 18px">New ${questVariant}!🔔</p>
@@ -69,7 +73,7 @@ async function notify(variant: NotificationVariant, quest: Partial<TQuest>) {
 
     await DiscordDataProxy.sendChannelMessage(
         variant,
-        { ...pool.settings, ...brand.toJSON(), ...widget.toJSON() },
+        { ...pool.settings, ...widget.toJSON(), logoImgUrl: brand && brand.logoImgUrl },
         {
             image: quest.image,
             title: `Earn ${amount || amounts[0]} pts!`,

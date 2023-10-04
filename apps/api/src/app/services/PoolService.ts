@@ -30,6 +30,8 @@ import { Collaborator } from '../models/Collaborator';
 import { DASHBOARD_URL } from '../config/secrets';
 import { WalletDocument } from '../models/Wallet';
 import { PointBalanceDocument } from '../models/PointBalance';
+import { Widget } from '../models/Widget';
+import { DEFAULT_COLORS, DEFAULT_ELEMENTS } from '@thxnetwork/types/contants';
 import AccountProxy from '../proxies/AccountProxy';
 import MailService from './MailService';
 import SafeService from './SafeService';
@@ -93,6 +95,15 @@ async function deploy(
                 AccountVariant.SSODiscord,
             ],
         },
+    });
+
+    await Widget.create({
+        uuid: v4(),
+        poolId: pool._id,
+        align: 'right',
+        message: 'Hi there!👋 Click me to complete quests and earn rewards...',
+        domain: 'https://www.example.com',
+        theme: JSON.stringify({ elements: DEFAULT_ELEMENTS, colors: DEFAULT_COLORS }),
     });
 
     if (dummyContent) {

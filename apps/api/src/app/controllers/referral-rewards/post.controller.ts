@@ -1,7 +1,5 @@
 import { body, check } from 'express-validator';
 import { Request, Response } from 'express';
-import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardService';
-import PoolService from '@thxnetwork/api/services/PoolService';
 import { TInfoLink } from '@thxnetwork/types/interfaces';
 import { isValidUrl } from '@thxnetwork/api/util/url';
 import { QuestVariant } from '@thxnetwork/types/enums';
@@ -32,7 +30,7 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards Referral']
     const poolId = req.header('X-PoolId');
     const image = req.file && (await ImageService.upload(req.file));
-    const quest = QuestService.create(QuestVariant.Invite, poolId, { ...req.body, image });
+    const quest = await QuestService.create(QuestVariant.Invite, poolId, { ...req.body, image });
 
     res.status(201).json(quest);
 };
