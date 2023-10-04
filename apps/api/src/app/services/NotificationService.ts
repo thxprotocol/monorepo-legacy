@@ -9,7 +9,10 @@ import MailService from './MailService';
 
 const SENDGRID_CHUNK_SIZE = 600;
 
-async function send(pool: AssetPoolDocument, { subjectId, subject, message }: Partial<TNotification>) {
+async function send(
+    pool: AssetPoolDocument,
+    { subjectId, subject, message, link }: Partial<TNotification> & { link?: { src: string; text: string } },
+) {
     const poolSubs = await PoolSubscription.find({ poolId: pool._id });
     const subs = poolSubs.map((x) => x.sub);
     const accounts = (await AccountProxy.getMany(subs)).filter((a) => a.email);
@@ -26,7 +29,7 @@ async function send(pool: AssetPoolDocument, { subjectId, subject, message }: Pa
                     if (isNotifiedAlready) return;
 
                     const account = accounts.find((a) => a.sub === sub);
-                    await MailService.send(account.email, subject, message);
+                    await MailService.send(account.email, subject, message, link);
 
                     await Notification.create({ sub, poolId: pool._id, subjectId, subject, message });
                 } catch (error) {

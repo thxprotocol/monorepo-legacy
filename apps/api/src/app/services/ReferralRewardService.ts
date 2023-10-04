@@ -5,10 +5,6 @@ import { TReferralReward } from '@thxnetwork/types/index';
 import { ReferralReward, ReferralRewardDocument } from '@thxnetwork/api/models/ReferralReward';
 import { ReferralRewardClaim } from '../models/ReferralRewardClaim';
 
-async function get(id: string): Promise<ReferralRewardDocument> {
-    return await ReferralReward.findById(id);
-}
-
 async function findByPool(assetPool: AssetPoolDocument, page: number, limit: number): Promise<PaginationResult> {
     const result = await paginatedResults(ReferralReward, page, limit, {
         poolId: assetPool._id,
@@ -40,4 +36,4 @@ async function remove(reward: ReferralRewardDocument) {
     return deleteResult;
 }
 
-export default { get, findByPool, removeAllForPool, create, update, remove };
+export default { findByPool, removeAllForPool, create, update, remove };

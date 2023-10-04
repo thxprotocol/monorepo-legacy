@@ -1,5 +1,5 @@
 import express from 'express';
-import { assertPoolAccess, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
+import { assertPoolAccess, assertQuestAccess, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
 import CreateReferralReward from './post.controller';
 import ReadReferralReward from './get.controller';
 import UpdateReferralReward from './patch.controller';
@@ -10,6 +10,7 @@ import UpdateReferralRewardClaim from './claims/patch.controller';
 import ApproveReferralRewardClaims from './claims/approve/post.controller';
 import DeleteReferralReward from './delete.controller';
 import { upload } from '@thxnetwork/api/util/multer';
+import { QuestVariant } from '@thxnetwork/types/enums';
 
 const router = express.Router();
 
@@ -24,6 +25,7 @@ router.get(
     '/:id',
     guard.check(['referral_rewards:read']),
     assertPoolAccess,
+    assertQuestAccess(QuestVariant.Invite),
     assertRequestInput(ReadReferralReward.validation),
     ReadReferralReward.controller,
 );
@@ -32,6 +34,7 @@ router.patch(
     upload.single('file'),
     guard.check(['referral_rewards:write', 'referral_rewards:read']),
     assertPoolAccess,
+    assertQuestAccess(QuestVariant.Invite),
     assertRequestInput(UpdateReferralReward.validation),
     UpdateReferralReward.controller,
 );
@@ -47,6 +50,7 @@ router.delete(
     '/:id',
     guard.check(['referral_rewards:write', 'referral_rewards:read']),
     assertPoolAccess,
+    assertQuestAccess(QuestVariant.Invite),
     assertRequestInput(DeleteReferralReward.validation),
     DeleteReferralReward.controller,
 );

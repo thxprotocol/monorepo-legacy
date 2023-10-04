@@ -1,10 +1,10 @@
-import PointRewardService from '@thxnetwork/api/services/PointRewardService';
 import { Request, Response } from 'express';
 import { body, check } from 'express-validator';
-import PoolService from '@thxnetwork/api/services/PoolService';
 import { isValidUrl } from '@thxnetwork/api/util/url';
 import { TInfoLink } from '@thxnetwork/types/interfaces';
+import { QuestVariant } from '@thxnetwork/common/lib/types';
 import ImageService from '@thxnetwork/api/services/ImageService';
+import QuestService from '@thxnetwork/api/services/QuestService';
 
 const validation = [
     body('index').isInt(),
@@ -29,11 +29,12 @@ const validation = [
 ];
 
 const controller = async (req: Request, res: Response) => {
+    // #swagger.tags = ['Quest Social']
+    const poolId = req.header('X-PoolId');
     const { title, description, amount, infoLinks, platform, interaction, content, contentMetadata, isPublished } =
         req.body;
     const image = req.file && (await ImageService.upload(req.file));
-    const pool = await PoolService.getById(req.header('X-PoolId'));
-    const reward = await PointRewardService.create(pool, {
+    const quest = await QuestService.create(QuestVariant.Social, poolId, {
         title,
         description,
         amount,
@@ -46,9 +47,7 @@ const controller = async (req: Request, res: Response) => {
         isPublished,
     });
 
-    PoolService.sendNotification(reward);
-
-    res.status(201).json(reward);
+    res.status(201).json(quest);
 };
 
 export default { validation, controller };

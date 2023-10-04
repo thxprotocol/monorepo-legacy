@@ -1,25 +1,13 @@
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { PointRewardDocument, PointReward as PointRewardSchema } from '@thxnetwork/api/models/PointReward';
 import { paginatedResults } from '../util/pagination';
-import db from '@thxnetwork/api/util/database';
-import { TPointReward } from '@thxnetwork/types/interfaces/PointReward';
 import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
 import { Wallet } from '@thxnetwork/api/models/Wallet';
-import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { PointBalance } from './PointBalanceService';
+import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 
 export function findByPool(pool: AssetPoolDocument, page = 1, limit = 5) {
     return paginatedResults(PointReward, page, limit, { poolId: pool._id });
-}
-
-export async function create(pool: AssetPoolDocument, payload: Partial<TPointReward>) {
-    const reward = await PointReward.create({
-        uuid: db.createUUID(),
-        poolId: pool._id,
-        ...payload,
-    });
-
-    return reward;
 }
 
 async function findEntries(quest: PointRewardDocument) {
@@ -42,4 +30,4 @@ async function findEntries(quest: PointRewardDocument) {
 
 export const PointReward = PointRewardSchema;
 
-export default { findByPool, findEntries, create };
+export default { findByPool, findEntries };

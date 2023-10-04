@@ -1,13 +1,13 @@
 import { subMinutes } from 'date-fns';
-import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/enums';
+import { QuestVariant, RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/enums';
 import { TAccount } from '@thxnetwork/types/interfaces';
 import { AssetPool } from '../models/AssetPool';
 import { PointReward } from '../models/PointReward';
+import { twitterClient } from '../util/twitter';
 import TwitterDataProxy from '../proxies/TwitterDataProxy';
-import PointRewardService from '../services/PointRewardService';
 import AccountProxy from '../proxies/AccountProxy';
 import MailService from '../services/MailService';
-import { twitterClient } from '../util/twitter';
+import QuestService from '../services/QuestService';
 
 export async function createTwitterQuests() {
     const endDate = new Date();
@@ -39,15 +39,16 @@ export async function createTwitterQuests() {
         const quests = await Promise.all(
             filteredTweets.map(async (tweet) => {
                 const contentMetadata = await getContentMetadata(filteredTweets[0].id);
-                return await PointRewardService.create(pool, {
+                // TODO Should also create Like quest and flatten the array
+                return await QuestService.create(QuestVariant.Social, pool._id, {
                     title,
                     description,
                     amount,
-                    isPublished: false,
                     platform: RewardConditionPlatform.Twitter,
                     interaction: RewardConditionInteraction.TwitterRetweet,
                     content: tweet.id,
                     contentMetadata,
+                    isPublished: false,
                 });
             }),
         );

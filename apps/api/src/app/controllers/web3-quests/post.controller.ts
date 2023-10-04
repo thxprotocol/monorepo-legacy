@@ -36,7 +36,9 @@ const controller = async (req: Request, res: Response) => {
     const poolId = req.header('X-PoolId');
     const image = req.file && (await ImageService.upload(req.file));
     const quest = await Web3Quest.create({ ...req.body, uuid: v4(), image, poolId });
-    PoolService.sendNotification(quest);
+
+    // PoolService.sendNotification(NoticficationVariant.Web3, quest);
+
     res.status(201).json(quest);
 };
 

@@ -14,7 +14,6 @@ export function findByUUID(uuid: string) {
 
 export async function create(pool: AssetPoolDocument, payload: Partial<TDailyReward>) {
     return await DailyReward.create({
-        uuid: db.createUUID(),
         poolId: pool._id,
         ...payload,
     });
