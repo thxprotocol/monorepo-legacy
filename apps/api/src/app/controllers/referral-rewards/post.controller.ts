@@ -5,6 +5,7 @@ import { isValidUrl } from '@thxnetwork/api/util/url';
 import { QuestVariant } from '@thxnetwork/types/enums';
 import ImageService from '@thxnetwork/api/services/ImageService';
 import QuestService from '@thxnetwork/api/services/QuestService';
+import { v4 } from 'uuid';
 
 const validation = [
     body('index').isInt(),
@@ -30,7 +31,20 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards Referral']
     const poolId = req.header('X-PoolId');
     const image = req.file && (await ImageService.upload(req.file));
-    const quest = await QuestService.create(QuestVariant.Invite, poolId, { ...req.body, image });
+    const { title, description, pathname, amount, successUrl, infoLinks, isMandatoryReview, index, isPublished } =
+        req.body;
+    const quest = await QuestService.create(QuestVariant.Invite, poolId, {
+        index,
+        title,
+        description,
+        pathname,
+        isPublished,
+        successUrl,
+        isMandatoryReview,
+        amount,
+        infoLinks,
+        image,
+    });
 
     res.status(201).json(quest);
 };
