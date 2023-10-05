@@ -37,6 +37,7 @@ const controller = async (req: Request, res: Response) => {
         index,
         title,
         description,
+        token: v4(), // Webhook token
         pathname,
         isPublished,
         successUrl,
