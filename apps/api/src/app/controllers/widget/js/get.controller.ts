@@ -117,6 +117,12 @@ const controller = async (req: Request, res: Response) => {
             this.open('/w/' + uuid);
         }
 
+        public quests = {
+            list: () => {
+                this.iframe.contentWindow.postMessage({ message: 'thx.quests.list' }, this.settings.widgetUrl);
+            }
+        }
+
         onLoad() {
             this.iframe = this.createIframe();
             this.notifications = this.createNotifications(0);
