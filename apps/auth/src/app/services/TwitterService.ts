@@ -120,6 +120,7 @@ export class TwitterService {
             params: {
                 start_time: startDate.toISOString(),
                 end_time: endDate.toISOString(),
+                expansions: 'author_id',
             },
         });
         return data.data;

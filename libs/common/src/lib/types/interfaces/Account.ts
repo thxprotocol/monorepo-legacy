@@ -20,6 +20,7 @@ export type TAccount = {
     privateKey: string;
     otpSecret: string;
     twitterId?: string;
+    twitterUsername?: string;
     lastLoginAt: number;
     acceptTermsPrivacy: boolean;
     acceptUpdates: boolean;

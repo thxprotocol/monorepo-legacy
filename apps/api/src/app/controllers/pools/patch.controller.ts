@@ -18,6 +18,7 @@ export const validation = [
     body('settings.defaults.conditionalRewards.description').optional().isString(),
     body('settings.defaults.conditionalRewards.amount').optional().isInt(),
     body('settings.defaults.conditionalRewards.hashtag').optional().isString(),
+    body('settings.defaults.conditionalRewards.isPublished').optional().isBoolean(),
     body('settings.authenticationMethods').optional().isArray(),
 ];
 

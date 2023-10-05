@@ -30,6 +30,7 @@ const assetPoolSchema = new mongoose.Schema(
                     description: String,
                     amount: Number,
                     hashtag: String,
+                    isPublished: { type: Boolean, default: false },
                 },
             },
             authenticationMethods: [Number],
