@@ -9,7 +9,7 @@ export function assertQuestAccess(variant: QuestVariant) {
         const model = QuestService.getModel(variant);
         const quest = await model.findById(req.params.id);
         if (poolId === quest.poolId) {
-            new ForbiddenError(`Not your quest!`);
+            throw new ForbiddenError(`Not your quest!`);
         }
         next();
     };
