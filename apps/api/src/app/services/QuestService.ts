@@ -1,5 +1,12 @@
 import { DailyRewardClaimState, QuestVariant } from '@thxnetwork/types/enums';
-import { TAccount, TDailyReward, TQuest, TQuestEntry, TWallet } from '@thxnetwork/types/interfaces';
+import {
+    TAccount,
+    TDailyReward,
+    TMilestoneRewardClaim,
+    TQuest,
+    TQuestEntry,
+    TWallet,
+} from '@thxnetwork/types/interfaces';
 import { DailyReward } from './DailyRewardService';
 import { ReferralReward } from '../models/ReferralReward';
 import { PointReward } from './PointRewardService';
@@ -70,7 +77,7 @@ async function notify(variant: QuestVariant, quest: TQuest) {
     const embed = DiscordDataProxy.createEmbedQuest(variant, quest as TQuest, pool, widget, brand);
     await DiscordDataProxy.sendChannelMessage(
         pool.settings.discordWebhookUrl,
-        `Hi all! **${pool.settings.title}** just published a ${QuestVariant[variant]} Quest.`,
+        `Hi all! **${pool.settings.title}** just published a **${QuestVariant[variant]} Quest**.`,
         [embed],
     );
 }
@@ -120,7 +127,7 @@ async function complete(
 
     let entry: TQuestEntry;
     const { isEnabledWebhookQualification } = quest as TDailyReward;
-    if (isEnabledWebhookQualification) {
+    if (variant === QuestVariant.Daily && isEnabledWebhookQualification) {
         entry = await model.findOneAndUpdate(
             {
                 dailyRewardId: String(quest._id),
@@ -132,6 +139,10 @@ async function complete(
             { state: DailyRewardClaimState.Claimed },
             { new: true },
         );
+    } else if (variant === QuestVariant.Custom) {
+        const { uuid } = data as TMilestoneRewardClaim;
+        console.log(model, uuid);
+        entry = await model.findOneAndUpdate({ uuid }, { isClaimed: true }, { new: true });
     } else {
         entry = await model.create({
             sub: account.sub,
