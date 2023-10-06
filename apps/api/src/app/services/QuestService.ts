@@ -116,7 +116,7 @@ async function complete(
     const model = getEntryModel(variant);
     const widget = await Widget.findOne({ poolId: pool._id });
     const index = Math.floor(Math.random() * celebratoryWords.length);
-    const discord = account.connectedAccounts.find((a) => a.kind === 'discord');
+    const discord = account.connectedAccounts && account.connectedAccounts.find((a) => a.kind === 'discord');
 
     await DiscordDataProxy.sendChannelMessage(
         pool.settings.discordWebhookUrl,

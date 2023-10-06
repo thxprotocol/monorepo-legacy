@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId, ERC20Type } from '@thxnetwork/types/enums';
+import { ChainId, ERC20Type, RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/enums';
 import { dashboardAccessToken, tokenName, tokenSymbol, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
 import { fromWei, isAddress, toWei } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
@@ -61,7 +61,9 @@ describe('ERC20 Perk Payment', () => {
                 title: 'Earn points!',
                 description: 'For your engagement',
                 amount: 1500,
-                platform: 0,
+                platform: RewardConditionPlatform.Twitter,
+                interaction: RewardConditionInteraction.TwitterFollow,
+                content: '123123',
                 index: 0,
             })
             .expect((res: request.Response) => {
