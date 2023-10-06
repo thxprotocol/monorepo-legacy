@@ -13,7 +13,7 @@
                     <b-dropdown-item-button
                         v-for="(variant, key) of Object.keys(QuestVariant).filter((v) => isNaN(Number(v)))"
                         :key="key"
-                        v-b-modal="questModalComponentMap[QuestVariant[variant]]"
+                        v-b-modal="`${questModalComponentMap[QuestVariant[variant]]}-${variant}`"
                         button-class="d-flex"
                         :disabled="QuestVariant[variant] === QuestVariant.Custom && !hasPremiumAccess(pool.owner)"
                     >
@@ -27,8 +27,9 @@
                         {{ variant }}
                         <component
                             @submit="listQuests"
+                            :variant="variant"
                             :is="questModalComponentMap[QuestVariant[variant]]"
-                            :id="questModalComponentMap[QuestVariant[variant]]"
+                            :id="`${questModalComponentMap[QuestVariant[variant]]}-${variant}`"
                             :total="allQuests.length"
                             :pool="pool"
                         />
@@ -192,14 +193,18 @@ export default class QuestsView extends Vue {
     questModalComponentMap = {
         [QuestVariant.Daily]: 'BaseModalQuestDailyCreate',
         [QuestVariant.Invite]: 'BaseModalQuestInviteCreate',
-        [QuestVariant.Social]: 'BaseModalQuestSocialCreate',
+        [QuestVariant.Twitter]: 'BaseModalQuestSocialCreate',
+        [QuestVariant.YouTube]: 'BaseModalQuestSocialCreate',
+        [QuestVariant.Discord]: 'BaseModalQuestSocialCreate',
         [QuestVariant.Custom]: 'BaseModalQuestCustomCreate',
         [QuestVariant.Web3]: 'BaseModalQuestWeb3Create',
     };
     questIconClassMap = {
         [QuestVariant.Daily]: 'fas fa-calendar',
         [QuestVariant.Invite]: 'fas fa-comments',
-        [QuestVariant.Social]: 'fas fa-trophy',
+        [QuestVariant.Twitter]: 'fab fa-twitter',
+        [QuestVariant.Discord]: 'fab fa-discord',
+        [QuestVariant.YouTube]: 'fab fa-youtube',
         [QuestVariant.Custom]: 'fas fa-flag',
         [QuestVariant.Web3]: 'fab fa-ethereum',
     };

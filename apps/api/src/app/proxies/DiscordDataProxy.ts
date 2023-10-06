@@ -1,8 +1,9 @@
-import type { TAccount } from '@thxnetwork/types/interfaces';
+import axios from 'axios';
+import type { TAccount, TBrand, TPool, TQuest, TQuestEmbed, TWidget } from '@thxnetwork/types/interfaces';
 import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
 import { THXError } from '@thxnetwork/api/util/errors';
 import { format } from 'date-fns';
-import axios from 'axios';
+import { QuestVariant } from '@thxnetwork/common/lib/types';
 
 class NoDataError extends THXError {
     message = 'Could not find discord data for this account';
@@ -11,96 +12,50 @@ class NoDataError extends THXError {
 export enum NotificationVariant {
     QuestDaily = 0,
     QuestInvite = 1,
-    QuestYouTube = 2,
-    QuestTwitter = 3,
-    QuestDiscord = 4,
-    QuestCustom = 5,
-    QuestWeb3 = 6,
+    QuestYouTube = 3,
+    QuestTwitter = 4,
+    QuestDiscord = 5,
+    QuestCustom = 6,
+    QuestWeb3 = 7,
 }
 
-export const notificationVariantMap = {
-    [NotificationVariant.QuestDaily]: {
-        actionLabel: 'Complete Quest',
-        content: 'just published a quest',
-        questVariant: 'Daily Quest',
-    },
-    [NotificationVariant.QuestInvite]: {
-        actionLabel: 'Complete Invite Quest',
-        content: 'just published a Invite quest',
-        questVariant: 'Invite Quest',
-    },
-    [NotificationVariant.QuestTwitter]: {
-        actionLabel: 'Complete Quest',
-        content: 'just published a quest',
-        questVariant: 'Twitter Quest',
-    },
-    [NotificationVariant.QuestDiscord]: {
-        actionLabel: 'Complete Discord Quest',
-        content: 'just published a Discord quest',
-        questVariant: 'Discord Quest',
-    },
-    [NotificationVariant.QuestYouTube]: {
-        actionLabel: 'Complete YouTube Quest',
-        content: 'just published a YouTube quest',
-        questVariant: 'YouTube Quest',
-    },
-    [NotificationVariant.QuestCustom]: {
-        actionLabel: 'Complete Custom Quest',
-        content: 'just published a custom quest',
-        questVariant: 'Custom Quest',
-    },
-    [NotificationVariant.QuestWeb3]: {
-        actionLabel: 'Complete Web3 Quest',
-        content: 'just published a web3 quest',
-        questVariant: 'Web3 Quest',
-    },
-};
-
 export default class DiscordDataProxy {
-    static async sendChannelMessage(
-        variant: NotificationVariant,
-        settings: {
-            title: string;
-            description: string;
-            logoImgUrl: string;
-            backgroundImgUrl: string;
-            discordWebhookUrl: string;
-            defaults: { discordMessage: string };
-            domain: string;
-            theme: string;
-        },
-        message: {
-            image: string;
-            title: string;
-            description: string;
-        },
-    ) {
-        if (!settings.discordWebhookUrl) return;
+    static async sendChannelMessage(webhookUrl: string, content: string, embeds: TQuestEmbed[] = []) {
+        if (!webhookUrl) return;
+        await axios.post(webhookUrl, { content, embeds });
+    }
 
-        const { content, questVariant } = notificationVariantMap[variant];
-        const theme = JSON.parse(settings.theme);
+    static createEmbedQuest(variant: QuestVariant, quest: TQuest, pool: TPool, widget: TWidget, brand: TBrand) {
+        const theme = JSON.parse(widget.theme);
+        const { amount, amounts } = quest as any;
 
-        await axios.post(settings.discordWebhookUrl, {
-            content: `Hi all! **${settings.title}** ${content}.`,
-            embeds: [
+        return {
+            title: quest.title,
+            description: quest.description,
+            author: {
+                name: pool.settings.title,
+                icon_url: brand.logoImgUrl,
+                url: widget.domain,
+            },
+            thumbnail: { url: quest.image },
+            footer: {
+                text: `THX Network • ${format(new Date(), 'cccc MMM d - HH:mm')}`,
+                icon_url: 'https://auth.thx.network/img/logo.png',
+            },
+            color: parseInt(theme.elements.btnBg.color.replace(/^#/, ''), 16),
+            fields: [
                 {
-                    title: `${questVariant}: ${message.title}`,
-                    description: message.description,
-                    url: settings.domain,
-                    author: {
-                        name: settings.title,
-                        icon_url: settings.logoImgUrl,
-                        url: settings.domain,
-                    },
-                    thumbnail: { url: message.image },
-                    footer: {
-                        text: `THX Network • ${format(new Date(), 'cccc MMM d - HH:mm')}`,
-                        icon_url: 'https://auth.thx.network/img/logo.png',
-                    },
-                    color: parseInt(theme.elements.btnBg.color.replace(/^#/, ''), 16),
+                    name: ' ',
+                    value: `Points: **${amount || amounts[0]}** ✨`,
+                    inline: true,
+                },
+                {
+                    name: ' ',
+                    value: `[Complete ${QuestVariant[variant]} Quest ▸](${widget.domain})`,
+                    inline: true,
                 },
             ],
-        });
+        };
     }
 
     static async getUserId(account: TAccount) {
@@ -113,6 +68,7 @@ export default class DiscordDataProxy {
         });
         return data.userId;
     }
+
     static async get(sub: string) {
         const r = await authClient({
             method: 'GET',
@@ -127,6 +83,7 @@ export default class DiscordDataProxy {
 
         return { isAuthorized: r.data.isAuthorized, guilds: r.data.guilds };
     }
+
     static async validateGuildJoined(account: TAccount, channelItem: string) {
         const { data } = await authClient({
             method: 'GET',

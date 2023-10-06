@@ -45,7 +45,7 @@ export async function createTwitterQuests() {
                 const contentMetadata = await getContentMetadata(filteredTweets[0]);
                 console.log({ contentMetadata });
                 // TODO Could also create Like quest and flatten the array
-                return await QuestService.create(QuestVariant.Social, pool._id, {
+                return await QuestService.create(QuestVariant.Twitter, pool._id, {
                     index: 0,
                     title,
                     description,

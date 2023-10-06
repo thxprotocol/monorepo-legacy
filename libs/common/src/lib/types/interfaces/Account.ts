@@ -30,6 +30,7 @@ export type TAccount = {
     shopifyStoreUrl?: string;
     role: Role;
     goal: Goal[];
+    connectedAccounts: any[];
     googleAccess?: boolean;
     youtubeViewAccess?: boolean;
     youtubeManageAccess?: boolean;

@@ -1,5 +1,5 @@
-import { QuestVariant, RewardConditionInteraction } from '@thxnetwork/types/enums';
-import { TPointReward, TQuest } from '@thxnetwork/types/interfaces';
+import { QuestVariant } from '@thxnetwork/types/enums';
+import { TAccount, TQuest, TQuestEntry, TWallet } from '@thxnetwork/types/interfaces';
 import { DailyReward } from './DailyRewardService';
 import { ReferralReward } from '../models/ReferralReward';
 import { PointReward } from './PointRewardService';
@@ -7,107 +7,127 @@ import { Web3Quest } from '../models/Web3Quest';
 import { MilestoneReward } from '../models/MilestoneReward';
 import { v4 } from 'uuid';
 import { Widget } from '../models/Widget';
-import DiscordDataProxy, { NotificationVariant, notificationVariantMap } from '../proxies/DiscordDataProxy';
+import DiscordDataProxy from '../proxies/DiscordDataProxy';
 import PoolService from './PoolService';
 import BrandService from './BrandService';
 import NotificationService from './NotificationService';
+import { DailyRewardClaim } from '../models/DailyRewardClaims';
+import { ReferralRewardClaim } from '../models/ReferralRewardClaim';
+import { PointRewardClaim } from '../models/PointRewardClaim';
+import { MilestoneRewardClaim } from '../models/MilestoneRewardClaims';
+import { Web3QuestClaim } from '../models/Web3QuestClaim';
+import PointBalanceService from './PointBalanceService';
+import { AssetPoolDocument } from '../models/AssetPool';
+import { celebratoryWords } from '../util/dictionaries';
 
-const questInteractionNotificationVariantMap = {
-    [RewardConditionInteraction.TwitterFollow]: NotificationVariant.QuestTwitter,
-    [RewardConditionInteraction.TwitterLike]: NotificationVariant.QuestTwitter,
-    [RewardConditionInteraction.TwitterMessage]: NotificationVariant.QuestTwitter,
-    [RewardConditionInteraction.TwitterRetweet]: NotificationVariant.QuestTwitter,
-    [RewardConditionInteraction.YouTubeLike]: NotificationVariant.QuestYouTube,
-    [RewardConditionInteraction.YouTubeSubscribe]: NotificationVariant.QuestYouTube,
-    [RewardConditionInteraction.DiscordGuildJoined]: NotificationVariant.QuestDiscord,
+const getEntryModel = (variant: QuestVariant) => {
+    const map = {
+        [QuestVariant.Daily]: DailyRewardClaim,
+        [QuestVariant.Invite]: ReferralRewardClaim,
+        [QuestVariant.Twitter]: PointRewardClaim,
+        [QuestVariant.Discord]: PointRewardClaim,
+        [QuestVariant.YouTube]: PointRewardClaim,
+        [QuestVariant.Custom]: MilestoneRewardClaim,
+        [QuestVariant.Web3]: Web3QuestClaim,
+    };
+
+    return map[variant] as any;
 };
 
 const getModel = (variant: QuestVariant) => {
-    const questModelMap = {
+    const map = {
         [QuestVariant.Daily]: DailyReward,
         [QuestVariant.Invite]: ReferralReward,
-        [QuestVariant.Social]: PointReward,
+        [QuestVariant.Twitter]: PointReward,
+        [QuestVariant.Discord]: PointReward,
+        [QuestVariant.YouTube]: PointReward,
         [QuestVariant.Custom]: MilestoneReward,
         [QuestVariant.Web3]: Web3Quest,
     };
 
-    return questModelMap[variant] as any;
+    return map[variant] as any;
 };
 
-function getNotificationVariant(questVariant, interaction?: RewardConditionInteraction) {
-    switch (questVariant) {
-        case QuestVariant.Daily:
-            return NotificationVariant.QuestDaily;
-        case QuestVariant.Invite:
-            return NotificationVariant.QuestDaily;
-        case QuestVariant.Social:
-            return questInteractionNotificationVariantMap[interaction];
-        case QuestVariant.Custom:
-            return NotificationVariant.QuestCustom;
-        case QuestVariant.Web3:
-            return NotificationVariant.QuestWeb3;
-    }
-}
-
-async function notify(variant: NotificationVariant, quest: Partial<TQuest>) {
-    // @dev Quests that dont have an interaction might not get a notificationVariant
-    if (typeof variant === 'undefined') return;
-
+async function notify(variant: QuestVariant, quest: TQuest) {
     const pool = await PoolService.getById(quest.poolId);
     const brand = await BrandService.get(quest.poolId);
     const widget = await Widget.findOne({ poolId: pool._id });
     const { amount, amounts } = quest as any;
 
-    const { content, questVariant, actionLabel } = notificationVariantMap[variant];
-    const subject = `🎁 ${questVariant}: Earn ${amount || amounts[0]} pts!"`;
-    const message = `<p style="font-size: 18px">New ${questVariant}!🔔</p>
-    <p>Hi! <strong>${pool.settings.title}</strong> ${content}.
+    const subject = `🎁 New ${QuestVariant[variant]} Quest: Earn ${amount || amounts[0]} pts!"`;
+    const message = `<p style="font-size: 18px">Earn ${amount || amounts[0]} points!🔔</p>
+    <p>Hi! <strong>${pool.settings.title}</strong> just published a new ${QuestVariant[variant]} Quest.
     <p><strong>${quest.title}</strong><br />${quest.description}.</p>`;
 
-    await NotificationService.send(pool, {
+    NotificationService.send(pool, {
         subjectId: quest.uuid,
         subject,
         message,
-        link: { text: actionLabel, src: widget.domain },
+        link: { text: `Complete ${QuestVariant[variant]} Quest`, src: widget.domain },
     });
 
+    const embed = DiscordDataProxy.createEmbedQuest(variant, quest as TQuest, pool, widget, brand);
     await DiscordDataProxy.sendChannelMessage(
-        variant,
-        { ...pool.settings, ...widget.toJSON(), logoImgUrl: brand && brand.logoImgUrl },
-        {
-            image: quest.image,
-            title: `Earn ${amount || amounts[0]} pts!`,
-            description: `**${quest.title}**\n${quest.description}`,
-        },
+        pool.settings.discordWebhookUrl,
+        `Hi all! **${pool.settings.title}** just published a ${QuestVariant[variant]} Quest.`,
+        [embed],
     );
 }
 
-async function update(questVariant: QuestVariant, questId: string, data: Partial<TQuest>) {
-    const model = getModel(questVariant);
+async function update(variant: QuestVariant, questId: string, data: Partial<TQuest>) {
+    const model = getModel(variant);
     const quest = await model.findById(questId);
 
     if (data.isPublished && Boolean(data.isPublished) !== quest.isPublished) {
-        const { interaction } = data as TPointReward;
-        const notificationVariant = getNotificationVariant(questVariant, interaction);
-
-        notify(notificationVariant, { ...quest.toJSON(), ...data, image: data.image || quest.image });
+        await notify(variant, { ...quest.toJSON(), ...data, image: data.image || quest.image });
     }
 
     return await model.findByIdAndUpdate(questId, data, { new: true });
 }
 
-async function create(questVariant: QuestVariant, poolId: string, data: Partial<TQuest>) {
-    const model = getModel(questVariant);
+async function create(variant: QuestVariant, poolId: string, data: Partial<TQuest>) {
+    const model = getModel(variant);
     const quest = await model.create({ ...data, poolId, uuid: v4() });
 
     if (data.isPublished) {
-        const { interaction } = data as TPointReward;
-        const notificationVariant = getNotificationVariant(questVariant, interaction);
-
-        notify(notificationVariant, quest);
+        await notify(variant, quest);
     }
 
     return quest;
 }
 
-export default { getModel, create, update };
+async function complete(
+    variant: QuestVariant,
+    amount: number,
+    pool: AssetPoolDocument,
+    quest: TQuest,
+    account: TAccount,
+    wallet: TWallet,
+    data: Partial<TQuestEntry>,
+) {
+    const model = getEntryModel(variant);
+    const widget = await Widget.findOne({ poolId: pool._id });
+    const index = Math.floor(Math.random() * celebratoryWords.length);
+    const discord = account.connectedAccounts.find((a) => a.kind === 'discord');
+
+    await DiscordDataProxy.sendChannelMessage(
+        pool.settings.discordWebhookUrl,
+        `${celebratoryWords[index]}✨ ${discord ? `<@${discord.userId}>` : `**${account.sub}**`} completed the [**${
+            quest.title
+        }**](${widget.domain}) quest and earned **${amount} pts**!`,
+    );
+
+    const entry = await model.create({
+        sub: account.sub,
+        walletId: wallet._id,
+        ...data,
+        poolId: pool._id,
+        uuid: v4(),
+    });
+
+    await PointBalanceService.add(pool, wallet._id, amount);
+
+    return entry;
+}
+
+export default { getModel, create, update, complete };

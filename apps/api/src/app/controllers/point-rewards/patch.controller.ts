@@ -1,7 +1,7 @@
 import ImageService from '@thxnetwork/api/services/ImageService';
 import QuestService from '@thxnetwork/api/services/QuestService';
 import { isValidUrl } from '@thxnetwork/api/util/url';
-import { QuestVariant } from '@thxnetwork/common/lib/types';
+import { QuestVariant, questInteractionVariantMap } from '@thxnetwork/common/lib/types';
 import { TInfoLink } from '@thxnetwork/types/interfaces';
 import { Request, Response } from 'express';
 import { body, param, check } from 'express-validator';
@@ -46,7 +46,8 @@ const controller = async (req: Request, res: Response) => {
         contentMetadata,
     } = req.body;
     const image = req.file && (await ImageService.upload(req.file));
-    const quest = await QuestService.update(QuestVariant.Social, req.params.id, {
+    const variant = questInteractionVariantMap[interaction];
+    const quest = await QuestService.update(variant, req.params.id, {
         title,
         description,
         amount,

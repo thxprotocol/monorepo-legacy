@@ -14,7 +14,7 @@ router.get('/', assertPoolAccess, ListPointRewards.controller);
 router.get(
     '/:id',
     assertPoolAccess,
-    assertQuestAccess(QuestVariant.Social),
+    assertQuestAccess(QuestVariant.Twitter),
     assertRequestInput(ReadPointRewards.validation),
     ReadPointRewards.controller,
 );
@@ -29,14 +29,14 @@ router.patch(
     '/:id',
     upload.single('file'),
     assertPoolAccess,
-    assertQuestAccess(QuestVariant.Social),
+    assertQuestAccess(QuestVariant.Twitter),
     assertRequestInput(UpdatePointRewards.validation),
     UpdatePointRewards.controller,
 );
 router.delete(
     '/:id',
     assertPoolAccess,
-    assertQuestAccess(QuestVariant.Social),
+    assertQuestAccess(QuestVariant.Twitter),
     assertRequestInput(DeletePointRewards.validation),
     DeletePointRewards.controller,
 );

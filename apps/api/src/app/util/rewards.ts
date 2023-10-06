@@ -1,5 +1,5 @@
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { QuestVariant } from '@thxnetwork/types/enums';
+import { QuestVariant, RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/enums';
 import { TERC721Perk } from '@thxnetwork/types/interfaces';
 import { ERC20Perk, ERC20PerkDocument } from '@thxnetwork/api/models/ERC20Perk';
 import { ERC721Perk, ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
@@ -83,11 +83,26 @@ export async function createDummyContents(pool: AssetPoolDocument) {
         isPublished: true,
     });
 
-    await QuestService.create(QuestVariant.Social, pool._id, {
-        title: 'Join our Discord server 🌱',
+    await QuestService.create(QuestVariant.Twitter, pool._id, {
+        title: 'Retweet and like this tweet 🐦',
         description: 'Join our Discord server and claim your points after you obtained verified access.',
         amount: 200,
         index: 2,
+        platform: RewardConditionPlatform.Twitter,
+        interaction: RewardConditionInteraction.TwitterFollow,
+        content: '',
+        isPublished: true,
+    });
+
+    await QuestService.create(QuestVariant.Discord, pool._id, {
+        title: 'Join our Discord server 🌱',
+        description: 'Join our Discord server and claim your points after you obtained verified access.',
+        amount: 200,
+        index: 3,
+        platform: RewardConditionPlatform.Discord,
+        interaction: RewardConditionInteraction.DiscordGuildJoined,
+        content: '836147176270856243',
+        contentMetadata: JSON.stringify({ inviteURL: 'https://discord.com/invite/TzbbSmkE7Y' }),
         isPublished: true,
     });
 
@@ -95,7 +110,7 @@ export async function createDummyContents(pool: AssetPoolDocument) {
         title: 'Reach a milestone 🏁',
         description: 'Claim points when progressing in the customer journey of external software.',
         amount: 500,
-        index: 3,
+        index: 4,
         isPublished: true,
     });
 }

@@ -2,7 +2,8 @@ import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import type { TPool, TBaseReward, TPointReward } from '@thxnetwork/types/interfaces';
-import { QuestVariant, RewardConditionPlatform } from '@thxnetwork/types/enums';
+import { RewardConditionPlatform } from '@thxnetwork/types/enums';
+import { questInteractionVariantMap } from '@thxnetwork/types/maps';
 import {} from '@thxnetwork/types/index';
 import { track } from '@thxnetwork/mixpanel';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
@@ -36,7 +37,7 @@ class PointRewardModule extends VuexModule {
         if (!this._all[reward.poolId]) Vue.set(this._all, reward.poolId, {});
         if (typeof reward.platform === 'undefined') reward.platform = RewardConditionPlatform.None; // Temp fix for corrupt data
 
-        reward.variant = QuestVariant.Social;
+        reward.variant = questInteractionVariantMap[reward.interaction];
         reward.contentMetadata = reward.contentMetadata ? JSON.parse(reward.contentMetadata) : '';
 
         Vue.set(this._all[reward.poolId], String(reward._id), reward);

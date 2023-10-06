@@ -3,10 +3,11 @@ import { PointReward } from '@thxnetwork/api/models/PointReward';
 import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
 import { getPlatformUserId, validateCondition } from '@thxnetwork/api/util/condition';
 import { param } from 'express-validator';
-import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
+import { questInteractionVariantMap } from '@thxnetwork/common/lib/types';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import WalletService from '@thxnetwork/api/services/WalletService';
+import QuestService from '@thxnetwork/api/services/QuestService';
 
 const validation = [param('id').isMongoId()];
 
@@ -23,30 +24,22 @@ const controller = async (req: Request, res: Response) => {
     const platformUserId = await getPlatformUserId(account, reward);
     if (platformUserId) ids = [...ids, { platformUserId }];
 
-    if (
-        await PointRewardClaim.exists({
-            pointRewardId: reward._id,
-            $or: ids,
-        })
-    ) {
-        return res.json({ error: 'You have claimed this reward already.' });
-    }
+    const isCompletedAlready = await PointRewardClaim.exists({
+        pointRewardId: reward._id,
+        $or: ids,
+    });
+    if (isCompletedAlready) return res.json({ error: 'You have completed this quest already.' });
 
     const failReason = await validateCondition(account, reward);
     if (failReason) return res.json({ error: failReason });
 
-    const claim = await PointRewardClaim.create({
+    const variant = questInteractionVariantMap[reward.interaction];
+    const entry = await QuestService.complete(variant, reward.amount, pool, reward, account, wallet, {
         pointRewardId: reward._id,
-        poolId: pool._id,
-        sub: req.auth.sub,
-        walletId: wallet._id,
         platformUserId,
-        amount: reward.amount,
     });
 
-    await PointBalanceService.add(pool, wallet._id, reward.amount);
-
-    res.status(201).json(claim);
+    res.status(201).json(entry);
 };
 
 export default { controller, validation };
