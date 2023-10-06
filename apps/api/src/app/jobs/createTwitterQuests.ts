@@ -7,16 +7,17 @@ import TwitterDataProxy from '../proxies/TwitterDataProxy';
 import AccountProxy from '../proxies/AccountProxy';
 import MailService from '../services/MailService';
 import QuestService from '../services/QuestService';
+import { logger } from '../util/logger';
 
 export async function createTwitterQuests() {
     const endDate = new Date();
     const startDate = subMinutes(endDate, 15);
-    console.log('Job started');
 
     for await (const pool of AssetPool.find({ 'settings.isTwitterSyncEnabled': true })) {
         const { isAuthorized } = await TwitterDataProxy.getTwitter(pool.sub);
         console.log(isAuthorized);
         if (!isAuthorized) continue;
+        logger.info(`[${pool.sub}] Attempt to create Twitter Quests`);
 
         const latestTweetsForPoolOwner = await TwitterDataProxy.getLatestTweets(pool.sub, startDate, endDate);
         console.log(latestTweetsForPoolOwner);

@@ -15,7 +15,7 @@ const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.deploy(
         req.auth.sub,
         chainId,
-        title || 'My Loyalty Campaign',
+        title || 'My Quest Campaign',
         true,
         true,
         startDate,

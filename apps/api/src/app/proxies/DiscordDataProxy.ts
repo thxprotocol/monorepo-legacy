@@ -25,7 +25,7 @@ export default class DiscordDataProxy {
         await axios.post(webhookUrl, { content, embeds });
     }
 
-    static createEmbedQuest(variant: QuestVariant, quest: TQuest, pool: TPool, widget: TWidget, brand: TBrand) {
+    static createEmbedQuest(variant: QuestVariant, quest: TQuest, pool: TPool, widget: TWidget, brand?: TBrand) {
         const theme = JSON.parse(widget.theme);
         const { amount, amounts } = quest as any;
 
@@ -34,7 +34,7 @@ export default class DiscordDataProxy {
             description: quest.description,
             author: {
                 name: pool.settings.title,
-                icon_url: brand.logoImgUrl,
+                icon_url: brand && brand.logoImgUrl,
                 url: widget.domain,
             },
             thumbnail: { url: quest.image },
