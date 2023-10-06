@@ -1,5 +1,5 @@
-import { QuestVariant } from '@thxnetwork/types/enums';
-import { TAccount, TQuest, TQuestEntry, TWallet } from '@thxnetwork/types/interfaces';
+import { DailyRewardClaimState, QuestVariant } from '@thxnetwork/types/enums';
+import { TAccount, TDailyReward, TQuest, TQuestEntry, TWallet } from '@thxnetwork/types/interfaces';
 import { DailyReward } from './DailyRewardService';
 import { ReferralReward } from '../models/ReferralReward';
 import { PointReward } from './PointRewardService';
@@ -19,6 +19,7 @@ import { Web3QuestClaim } from '../models/Web3QuestClaim';
 import PointBalanceService from './PointBalanceService';
 import { AssetPoolDocument } from '../models/AssetPool';
 import { celebratoryWords } from '../util/dictionaries';
+import { ONE_DAY_MS } from './DailyRewardClaimService';
 
 const getEntryModel = (variant: QuestVariant) => {
     const map = {
@@ -117,13 +118,30 @@ async function complete(
         }**](${widget.domain}) quest and earned **${amount} pts**!`,
     );
 
-    const entry = await model.create({
-        sub: account.sub,
-        walletId: wallet._id,
-        ...data,
-        poolId: pool._id,
-        uuid: v4(),
-    });
+    let entry: TQuestEntry;
+    const { isEnabledWebhookQualification } = quest as TDailyReward;
+    if (isEnabledWebhookQualification) {
+        entry = await model.findOneAndUpdate(
+            {
+                dailyRewardId: String(quest._id),
+                sub: account.sub,
+                walletId: wallet._id,
+                state: DailyRewardClaimState.Pending,
+                createdAt: { $gt: new Date(Date.now() - ONE_DAY_MS) }, // Greater than now - 24h
+            },
+            { state: DailyRewardClaimState.Claimed },
+            { new: true },
+        );
+    } else {
+        entry = await model.create({
+            sub: account.sub,
+            walletId: wallet._id,
+            amount,
+            ...data,
+            poolId: pool._id,
+            uuid: v4(),
+        });
+    }
 
     await PointBalanceService.add(pool, wallet._id, amount);
 
