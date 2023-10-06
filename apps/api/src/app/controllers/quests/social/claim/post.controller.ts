@@ -13,7 +13,7 @@ const validation = [param('id').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
-    const reward = await PointReward.findById(req.params.id);
+    const quest = await PointReward.findById(req.params.id);
     const account = await AccountProxy.getById(req.auth.sub);
     const pool = await PoolService.getById(req.header('X-PoolId'));
     const wallet = await WalletService.findPrimary(req.auth.sub, pool.chainId);
@@ -21,21 +21,21 @@ const controller = async (req: Request, res: Response) => {
     let ids: any[] = [{ sub: req.auth.sub }, { walletId: wallet._id }];
 
     // We validate for both here since there are claims that only contain a sub and should not be claimed again
-    const platformUserId = await getPlatformUserId(account, reward);
+    const platformUserId = await getPlatformUserId(account, quest);
     if (platformUserId) ids = [...ids, { platformUserId }];
 
     const isCompletedAlready = await PointRewardClaim.exists({
-        pointRewardId: reward._id,
+        pointRewardId: quest._id,
         $or: ids,
     });
     if (isCompletedAlready) return res.json({ error: 'You have completed this quest already.' });
 
-    const failReason = await validateCondition(account, reward);
+    const failReason = await validateCondition(account, quest);
     if (failReason) return res.json({ error: failReason });
 
-    const variant = questInteractionVariantMap[reward.interaction];
-    const entry = await QuestService.complete(variant, reward.amount, pool, reward, account, wallet, {
-        pointRewardId: reward._id,
+    const variant = questInteractionVariantMap[quest.interaction];
+    const entry = await QuestService.complete(variant, quest.amount, pool, quest, account, wallet, {
+        pointRewardId: quest._id,
         platformUserId,
     });
 
