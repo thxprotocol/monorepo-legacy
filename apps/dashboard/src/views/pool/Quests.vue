@@ -347,7 +347,9 @@ export default class QuestsView extends Vue {
                 return this.$store.dispatch('dailyRewards/delete', this.dailyQuests[id][quest._id]);
             case QuestVariant.Invite:
                 return this.$store.dispatch('referralRewards/delete', this.inviteQuests[id][quest._id]);
-            case QuestVariant.Social:
+            case QuestVariant.Discord:
+            case QuestVariant.YouTube:
+            case QuestVariant.Twitter:
                 return this.$store.dispatch('pointRewards/delete', this.socialQuests[id][quest._id]);
             case QuestVariant.Custom:
                 return this.$store.dispatch('milestoneRewards/delete', this.customQuests[id][quest._id]);
