@@ -118,9 +118,10 @@ export class TwitterService {
                 Authorization: `Bearer ${token.accessToken}`,
             },
             params: {
-                start_time: startDate.toISOString(),
-                end_time: endDate.toISOString(),
-                expansions: 'author_id',
+                'start_time': startDate.toISOString(),
+                'end_time': endDate.toISOString(),
+                'expansions': 'author_id',
+                'user.fields': 'username',
             },
         });
         return data.data;

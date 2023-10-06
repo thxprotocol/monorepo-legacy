@@ -9,82 +9,69 @@ import MailService from '../services/MailService';
 import QuestService from '../services/QuestService';
 import { logger } from '../util/logger';
 
+function containsValue(text: string, hashtag: string) {
+    return text.toLowerCase().includes('#' + hashtag.toLowerCase());
+}
+
 export async function createTwitterQuests() {
     const endDate = new Date();
     const startDate = subMinutes(endDate, 15);
 
     for await (const pool of AssetPool.find({ 'settings.isTwitterSyncEnabled': true })) {
         const { isAuthorized } = await TwitterDataProxy.getTwitter(pool.sub);
-        console.log(isAuthorized);
         if (!isAuthorized) continue;
-        logger.info(`[${pool.sub}] Attempt to create Twitter Quests`);
 
         const latestTweetsForPoolOwner = await TwitterDataProxy.getLatestTweets(pool.sub, startDate, endDate);
-        console.log(latestTweetsForPoolOwner);
         if (!latestTweetsForPoolOwner.length) continue;
 
         const { hashtag, title, description, amount, isPublished } = pool.settings.defaults.conditionalRewards;
         const latestTweets = await Promise.all(
             latestTweetsForPoolOwner.map(async (tweet: any) => {
-                const isExistingReward = await PointReward.exists({
+                const isExistingQuest = await PointReward.exists({
                     poolId: String(pool._id),
                     content: tweet.id,
                 });
-                return { isExistingReward, tweet };
+                return { ...tweet, isExistingQuest };
             }),
         );
-        const filteredTweets = latestTweets.filter(({ isExistingReward, tweet }) => {
-            console.log(isExistingReward, hashtag, tweet.text, containsValue(tweet.text, hashtag));
-            return !isExistingReward && hashtag && containsValue(tweet.text, hashtag);
+        const filteredTweets = latestTweets.filter((tweet) => {
+            return !tweet.isExistingQuest && hashtag && containsValue(tweet.text, hashtag);
         });
-
-        console.log(filteredTweets);
         if (!filteredTweets.length) continue;
 
+        const account: TAccount = await AccountProxy.getById(pool.sub);
         const quests = await Promise.all(
             filteredTweets.map(async (tweet) => {
-                const contentMetadata = await getContentMetadata(filteredTweets[0]);
-                console.log({ contentMetadata });
-                // TODO Could also create Like quest and flatten the array
-                return await QuestService.create(QuestVariant.Twitter, pool._id, {
-                    index: 0,
-                    title,
-                    description,
-                    amount,
-                    platform: RewardConditionPlatform.Twitter,
-                    interaction: RewardConditionInteraction.TwitterRetweet,
-                    content: tweet.id,
-                    contentMetadata,
-                    isPublished,
-                });
+                try {
+                    // TODO Could also create Like quest and flatten the array
+                    const contentMetadata = JSON.stringify({
+                        url: `https://twitter.com/${account.twitterUsername}/status/${tweet.id}`,
+                        username: account.twitterUsername,
+                        text: tweet.text,
+                    });
+                    return await QuestService.create(QuestVariant.Twitter, pool._id, {
+                        index: 0,
+                        title,
+                        description,
+                        amount,
+                        platform: RewardConditionPlatform.Twitter,
+                        interaction: RewardConditionInteraction.TwitterRetweet,
+                        content: tweet.id,
+                        contentMetadata,
+                        isPublished,
+                    });
+                } catch (error) {
+                    logger.error(error);
+                }
             }),
         );
-        console.log(quests);
+        const subject = `Published ${quests.length} quest${quests.length && 's'}!`;
+        const message = `We have detected ${quests.length} new tweet${quests.length && 's'}. A Twitter Quest ${
+            quests.length && 'for each'
+        } has been ${isPublished ? 'published' : 'prepared'} for you.`;
 
-        const account: TAccount = await AccountProxy.getById(pool.sub);
-        if (account.email) {
-            await MailService.send(
-                account.email,
-                `Published ${quests.length} quest${quests.length && 's'}!`,
-                `We discovered ${quests.length} new tweet${
-                    quests.length && 's'
-                } in your connected Twitter account! A conditional reward ${
-                    quests.length && 'for each'
-                } has been published for your widget.`,
-            );
-        }
+        await MailService.send(account.email, subject, message);
+
+        logger.info(`[${pool.sub}] Created ${filteredTweets.length} Twitter Quests`);
     }
-}
-
-function containsValue(text: string, hashtag: string) {
-    return text.toLowerCase().includes('#' + hashtag.toLowerCase());
-}
-
-async function getContentMetadata(tweet: { id: string; text: string; includes: any }) {
-    const username = tweet.includes.users[0].username;
-    return JSON.stringify({
-        url: `https://twitter.com/${username}/status/${tweet.id}`,
-        username,
-        text: tweet.text,
-    });
 }
