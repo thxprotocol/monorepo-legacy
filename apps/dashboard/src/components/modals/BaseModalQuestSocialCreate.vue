@@ -35,7 +35,7 @@
 import { TInfoLink, type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import type { TPointReward, TAccount } from '@thxnetwork/types/interfaces';
-import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/enums';
+import { QuestVariant, RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/enums';
 import { platformInteractionList, platformList } from '@thxnetwork/dashboard/types/rewards';
 import { mapGetters } from 'vuex';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
@@ -79,6 +79,7 @@ export default class ModalRewardPointsCreate extends Vue {
     file: File | null = null;
 
     @Prop() id!: string;
+    @Prop() variant!: string;
     @Prop() total!: number;
     @Prop() pool!: TPool;
     @Prop({ required: false }) reward!: TPointReward;
@@ -105,11 +106,36 @@ export default class ModalRewardPointsCreate extends Vue {
                   contentMetadata: this.reward.contentMetadata,
               }
             : {
-                  platform: RewardConditionPlatform.None,
-                  interaction: RewardConditionInteraction.None,
+                  ...this.getConditionDefaults(this.variant),
                   content: '',
                   contentMetadata: {},
               };
+    }
+
+    getConditionDefaults(questVariant: string) {
+        const variant = QuestVariant[questVariant];
+        switch (variant) {
+            case QuestVariant.Twitter:
+                return {
+                    platform: RewardConditionPlatform.Twitter,
+                    interaction: RewardConditionInteraction.TwitterFollow,
+                };
+            case QuestVariant.Discord:
+                return {
+                    platform: RewardConditionPlatform.Discord,
+                    interaction: RewardConditionInteraction.DiscordGuildJoined,
+                };
+            case QuestVariant.YouTube:
+                return {
+                    platform: RewardConditionPlatform.Google,
+                    interaction: RewardConditionInteraction.YouTubeSubscribe,
+                };
+            default:
+                return {
+                    platform: RewardConditionPlatform.None,
+                    interaction: RewardConditionInteraction.None,
+                };
+        }
     }
 
     onSubmit() {

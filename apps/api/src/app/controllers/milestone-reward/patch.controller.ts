@@ -1,7 +1,7 @@
-import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
 import ImageService from '@thxnetwork/api/services/ImageService';
-import PoolService from '@thxnetwork/api/services/PoolService';
+import QuestService from '@thxnetwork/api/services/QuestService';
 import { isValidUrl } from '@thxnetwork/api/util/url';
+import { QuestVariant } from '@thxnetwork/common/lib/types';
 import { TInfoLink } from '@thxnetwork/types/interfaces';
 import { Request, Response } from 'express';
 import { body, check, param } from 'express-validator';
@@ -10,7 +10,10 @@ const validation = [
     param('id').isMongoId(),
     body('index').optional().isInt(),
     body('title').optional().isString(),
-    body('isPublished').optional().isBoolean(),
+    body('isPublished')
+        .optional()
+        .isBoolean()
+        .customSanitizer((value) => JSON.parse(value)),
     body('description').optional().isString(),
     check('file')
         .optional()
@@ -30,24 +33,18 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Milestone Rewards']
     const { title, description, amount, infoLinks, limit, index, isPublished } = req.body;
     const image = req.file && (await ImageService.upload(req.file));
-    const reward = await MilestoneReward.findByIdAndUpdate(
-        req.params.id,
-        {
-            title,
-            description,
-            image,
-            amount,
-            infoLinks,
-            index,
-            limit,
-            isPublished,
-        },
-        { new: true },
-    );
+    const quest = await QuestService.update(QuestVariant.Custom, req.params.id, {
+        title,
+        description,
+        image,
+        amount,
+        infoLinks,
+        index,
+        limit,
+        isPublished,
+    });
 
-    PoolService.sendNotification(reward);
-
-    res.status(201).json(reward);
+    res.status(201).json(quest);
 };
 
 export default { controller, validation };

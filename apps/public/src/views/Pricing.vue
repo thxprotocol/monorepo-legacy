@@ -443,7 +443,7 @@
                                     </tr> -->
                                     <tr>
                                         <td>
-                                            Reward Redemptions
+                                            Rewards
                                             <br />
                                             <span class="text-gray small">
                                                 Accurate point pricing will help never reach these limits
@@ -456,11 +456,40 @@
                                     <tr>
                                         <td>
                                             Collaborators<br />
-                                            <span class="text-gray small"> Invite team members for collaboration </span>
+                                            <span class="text-gray small">
+                                                Add a team members to help manage your campaign.
+                                            </span>
                                         </td>
-                                        <td>0</td>
-                                        <td>0</td>
-                                        <td>3</td>
+                                        <td>
+                                            0
+                                            <b-link
+                                                class="ml-1"
+                                                v-b-tooltip
+                                                title="Add more for €19,- per collaborator per month"
+                                            >
+                                                <sup class="fas fa-question-circle text-gray"> </sup>
+                                            </b-link>
+                                        </td>
+                                        <td>
+                                            0
+                                            <b-link
+                                                class="ml-1"
+                                                v-b-tooltip
+                                                title="Add more for €19,- per collaborator per month"
+                                            >
+                                                <sup class="fas fa-question-circle text-gray"> </sup>
+                                            </b-link>
+                                        </td>
+                                        <td>
+                                            3
+                                            <b-link
+                                                class="ml-1"
+                                                v-b-tooltip
+                                                title="Add more for €19,- per collaborator per month"
+                                            >
+                                                <sup class="fas fa-question-circle text-gray"> </sup>
+                                            </b-link>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>

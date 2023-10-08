@@ -20,6 +20,7 @@ export type TAccount = {
     privateKey: string;
     otpSecret: string;
     twitterId?: string;
+    twitterUsername?: string;
     lastLoginAt: number;
     acceptTermsPrivacy: boolean;
     acceptUpdates: boolean;
@@ -29,6 +30,7 @@ export type TAccount = {
     shopifyStoreUrl?: string;
     role: Role;
     goal: Goal[];
+    connectedAccounts: any[];
     googleAccess?: boolean;
     youtubeViewAccess?: boolean;
     youtubeManageAccess?: boolean;

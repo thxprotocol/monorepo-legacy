@@ -1,18 +1,19 @@
-import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { Request, Response } from 'express';
 import { body, param, check } from 'express-validator';
-import RewardReferralService from '@thxnetwork/api/services/ReferralRewardService';
-import ReferralRewardClaimService from '@thxnetwork/api/services/ReferralRewardClaimService';
 import { TInfoLink } from '@thxnetwork/types/interfaces';
 import { isValidUrl } from '@thxnetwork/api/util/url';
-import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
+import { QuestVariant } from '@thxnetwork/common/lib/types';
+import ReferralRewardClaimService from '@thxnetwork/api/services/ReferralRewardClaimService';
 import ImageService from '@thxnetwork/api/services/ImageService';
-import PoolService from '@thxnetwork/api/services/PoolService';
+import QuestService from '@thxnetwork/api/services/QuestService';
 
 const validation = [
     param('id').isMongoId(),
     body('pathname').optional().isString(),
-    body('isPublished').optional().isBoolean(),
+    body('isPublished')
+        .optional()
+        .isBoolean()
+        .customSanitizer((value) => JSON.parse(value)),
     check('file')
         .optional()
         .custom((value, { req }) => {
@@ -29,32 +30,24 @@ const validation = [
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards Referral']
-    let reward = await RewardReferralService.get(req.params.id);
-    if (!reward) throw new NotFoundError('Could not find the reward for this id');
     const { title, description, pathname, amount, successUrl, infoLinks, isMandatoryReview, index, isPublished } =
         req.body;
     const image = req.file && (await ImageService.upload(req.file));
-    reward = await ReferralReward.findByIdAndUpdate(
-        reward._id,
-        {
-            title,
-            description,
-            image,
-            amount,
-            pathname,
-            successUrl,
-            isMandatoryReview,
-            infoLinks,
-            index,
-            isPublished,
-        },
-        { new: true },
-    );
-    const claims = await ReferralRewardClaimService.findByReferralReward(reward);
+    const quest = await QuestService.update(QuestVariant.Invite, req.params.id, {
+        title,
+        description,
+        image,
+        amount,
+        pathname,
+        successUrl,
+        isMandatoryReview,
+        infoLinks,
+        index,
+        isPublished,
+    });
+    const claims = await ReferralRewardClaimService.findByReferralReward(quest);
 
-    PoolService.sendNotification(reward);
-
-    res.json({ ...reward.toJSON(), claims });
+    res.json({ ...quest.toJSON(), claims });
 };
 
 export default { controller, validation };

@@ -1,7 +1,7 @@
 import ImageService from '@thxnetwork/api/services/ImageService';
-import MilestoneRewardService from '@thxnetwork/api/services/MilestoneRewardService';
-import PoolService from '@thxnetwork/api/services/PoolService';
+import QuestService from '@thxnetwork/api/services/QuestService';
 import { isValidUrl } from '@thxnetwork/api/util/url';
+import { QuestVariant } from '@thxnetwork/types/enums';
 import { TInfoLink } from '@thxnetwork/types/interfaces';
 import { Request, Response } from 'express';
 import { body, check } from 'express-validator';
@@ -10,7 +10,10 @@ const validation = [
     body('index').isInt(),
     body('title').isString(),
     body('description').isString(),
-    body('isPublished').optional().isBoolean(),
+    body('isPublished')
+        .optional()
+        .isBoolean()
+        .customSanitizer((value) => JSON.parse(value)),
     check('file')
         .optional()
         .custom((value, { req }) => {
@@ -27,10 +30,10 @@ const validation = [
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['RewardsToken']
+    const poolId = req.header('X-PoolId');
     const { title, description, amount, limit, infoLinks, isPublished } = req.body;
     const image = req.file && (await ImageService.upload(req.file));
-    const pool = await PoolService.getById(req.header('X-PoolId'));
-    const reward = await MilestoneRewardService.create(pool, {
+    const quest = await QuestService.create(QuestVariant.Custom, poolId, {
         title,
         description,
         image,
@@ -40,9 +43,7 @@ const controller = async (req: Request, res: Response) => {
         isPublished,
     });
 
-    PoolService.sendNotification(reward);
-
-    res.status(201).json(reward);
+    res.status(201).json(quest);
 };
 
 export default { controller, validation };

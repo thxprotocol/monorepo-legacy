@@ -11,6 +11,9 @@ import { chainList } from '@thxnetwork/common';
 import { logger } from '@thxnetwork/api/util/logger';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
+import QuestService from '@thxnetwork/api/services/QuestService';
+import { QuestVariant } from '@thxnetwork/common/lib/types';
+import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 
 const validation = [
     param('uuid').custom((uuid) => validate(uuid)),
@@ -39,7 +42,7 @@ const controller = async (req: Request, res: Response) => {
         $or: [{ sub: req.auth.sub }, { walletId: wallet._id }, { address }],
     });
     if (isClaimed) {
-        return res.json({ error: 'You have claimed this reward already' });
+        return res.json({ error: 'You have claimed this quest already' });
     }
 
     const contract = quest.contracts.find((c) => c.chainId === req.body.chainId);
@@ -63,19 +66,14 @@ const controller = async (req: Request, res: Response) => {
         return res.json({ error: 'Result does not meet the threshold' });
     }
 
-    const claim = await Web3QuestClaim.create({
+    const account = await AccountProxy.getById(req.auth.sub);
+    const entry = await QuestService.complete(QuestVariant.Web3, quest.amount, pool, quest, account, wallet, {
         web3QuestId: quest._id,
-        poolId,
         chainId: req.body.chainId,
         address,
-        sub: req.auth.sub,
-        walletId: wallet._id,
-        amount: quest.amount,
     });
 
-    await PointBalanceService.add(pool, wallet._id, quest.amount);
-
-    res.json(claim);
+    res.json(entry);
 };
 
 export default { controller, validation };

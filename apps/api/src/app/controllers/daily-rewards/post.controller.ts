@@ -2,15 +2,18 @@ import { Request, Response } from 'express';
 import { body, check } from 'express-validator';
 import { isValidUrl } from '@thxnetwork/api/util/url';
 import { TInfoLink } from '@thxnetwork/types/interfaces';
-import PoolService from '@thxnetwork/api/services/PoolService';
-import DailyRewardService from '@thxnetwork/api/services/DailyRewardService';
 import ImageService from '@thxnetwork/api/services/ImageService';
+import QuestService from '@thxnetwork/api/services/QuestService';
+import { QuestVariant } from '@thxnetwork/common/lib/types';
 
 const validation = [
     body('index').isInt(),
     body('title').isString(),
     body('description').isString(),
-    body('isPublished').optional().isBoolean(),
+    body('isPublished')
+        .optional()
+        .isBoolean()
+        .customSanitizer((value) => JSON.parse(value)),
     check('file')
         .optional()
         .custom((value, { req }) => {
@@ -35,10 +38,10 @@ const validation = [
 ];
 
 const controller = async (req: Request, res: Response) => {
+    const poolId = req.header('X-PoolId');
     const { title, description, amounts, infoLinks, isEnabledWebhookQualification, isPublished } = req.body;
     const image = req.file && (await ImageService.upload(req.file));
-    const pool = await PoolService.getById(req.header('X-PoolId'));
-    const reward = await DailyRewardService.create(pool, {
+    const quest = await QuestService.create(QuestVariant.Daily, poolId, {
         title,
         description,
         image,
@@ -48,9 +51,7 @@ const controller = async (req: Request, res: Response) => {
         isPublished,
     });
 
-    PoolService.sendNotification(reward);
-
-    res.status(201).json(reward);
+    res.status(201).json(quest);
 };
 
 export default { validation, controller };

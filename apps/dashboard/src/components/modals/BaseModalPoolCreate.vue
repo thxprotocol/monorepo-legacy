@@ -2,7 +2,7 @@
     <base-modal :loading="loading" :error="error" title="Create Campaign" :id="id">
         <template #modal-body v-if="!loading">
             <b-form-group label="Title">
-                <b-form-input v-model="title" placeholder="My Loyalty Campaign" class="mr-3" />
+                <b-form-input v-model="title" placeholder="My Reward Campaign" class="mr-3" />
             </b-form-group>
             <base-form-select-network v-if="!loading" :chainId="chainId" @selected="onSelectChain" />
             <BaseCampaignDuration :settings="{}" @update="onUpdateDuration" />

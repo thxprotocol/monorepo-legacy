@@ -3,25 +3,15 @@ import { ChainId, CollaboratorInviteState } from '@thxnetwork/types/enums';
 import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import TransactionService from './TransactionService';
 import { diamondContracts, getContract, poolFacetAdressesPermutations } from '@thxnetwork/api/config/contracts';
-import { pick, sleep } from '@thxnetwork/api/util';
+import { pick } from '@thxnetwork/api/util';
 import { diamondSelectors, getDiamondCutForContractFacets, updateDiamondContract } from '@thxnetwork/api/util/upgrades';
 import { currentVersion } from '@thxnetwork/contracts/exports';
 import { TransactionReceipt } from 'web3-eth-accounts/node_modules/web3-core';
 import { TAssetPoolDeployCallbackArgs } from '@thxnetwork/api/types/TTransaction';
 import { createDummyContents } from '../util/rewards';
-import AccountProxy from '../proxies/AccountProxy';
-import MailService from './MailService';
-import { Widget } from './WidgetService';
 import { PoolSubscription, PoolSubscriptionDocument } from '../models/PoolSubscription';
 import { logger } from '../util/logger';
-import {
-    TAccount,
-    TDailyReward,
-    TMilestoneReward,
-    TPointReward,
-    TReferralReward,
-    TWeb3Quest,
-} from '@thxnetwork/types/interfaces';
+import { TAccount } from '@thxnetwork/types/interfaces';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { v4 } from 'uuid';
 import { DailyReward } from '../models/DailyReward';
@@ -36,13 +26,15 @@ import { CustomReward } from '../models/CustomReward';
 import { Participant } from '../models/Participant';
 import { paginatedResults } from '../util/pagination';
 import { PointBalance } from './PointBalanceService';
-import SafeService from './SafeService';
 import { Collaborator } from '../models/Collaborator';
 import { DASHBOARD_URL } from '../config/secrets';
 import { WalletDocument } from '../models/Wallet';
 import { PointBalanceDocument } from '../models/PointBalance';
-import DiscordDataProxy from '../proxies/DiscordDataProxy';
-import NotificationService from './NotificationService';
+import { Widget } from '../models/Widget';
+import { DEFAULT_COLORS, DEFAULT_ELEMENTS } from '@thxnetwork/types/contants';
+import AccountProxy from '../proxies/AccountProxy';
+import MailService from './MailService';
+import SafeService from './SafeService';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -103,6 +95,15 @@ async function deploy(
                 AccountVariant.SSODiscord,
             ],
         },
+    });
+
+    await Widget.create({
+        uuid: v4(),
+        poolId: pool._id,
+        align: 'right',
+        message: 'Hi there!👋 Click me to complete quests and earn rewards...',
+        domain: 'https://www.example.com',
+        theme: JSON.stringify({ elements: DEFAULT_ELEMENTS, colors: DEFAULT_COLORS }),
     });
 
     if (dummyContent) {
@@ -178,29 +179,6 @@ async function updateAssetPool(pool: AssetPoolDocument, version?: string) {
     await pool.save();
 
     return tx;
-}
-
-async function sendNotification(quest: TWeb3Quest | TPointReward | TMilestoneReward | TReferralReward | TDailyReward) {
-    if (!quest.isPublished) return;
-
-    const pool = await getById(quest.poolId);
-    const widget = await Widget.findOne({ poolId: pool._id });
-    const { amount, amounts } = quest as any;
-
-    await NotificationService.send(pool, {
-        subjectId: quest.uuid,
-        subject: `🎁 New Quest: "${quest.title}"`,
-        message: `<p style="font-size: 18px">New Quest!🔔</p>
-        <p>Earn <strong>${amount || amounts[0]} points ✨</strong> at 
-        <a href="${widget.domain}">${pool.settings.title}</a>
-        .</p>`,
-    });
-
-    await DiscordDataProxy.sendChannelMessage(pool.settings, {
-        title: `${quest.title}`,
-        description: quest.description,
-        url: widget.domain,
-    });
 }
 
 async function find(model: any, pool: AssetPoolDocument) {
@@ -320,7 +298,6 @@ export default {
     countByNetwork,
     contractVersionVariant,
     updateAssetPool,
-    sendNotification,
     getParticipantCount,
     getQuestCount,
     getRewardCount,

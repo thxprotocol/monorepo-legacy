@@ -59,7 +59,6 @@ describe('Referral Rewards', () => {
             })
             .expect((res: request.Response) => {
                 expect(res.body.uuid).toBeDefined();
-                expect(res.body.token).toBeDefined();
                 expect(res.body.successUrl).toBe(successUrl);
                 expect(res.body.amount).toBe(100);
                 referralRewardId = res.body._id;

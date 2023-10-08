@@ -1,8 +1,7 @@
 import ImageService from '@thxnetwork/api/services/ImageService';
-import { PointReward } from '@thxnetwork/api/services/PointRewardService';
-import PoolService from '@thxnetwork/api/services/PoolService';
-import { NotFoundError } from '@thxnetwork/api/util/errors';
+import QuestService from '@thxnetwork/api/services/QuestService';
 import { isValidUrl } from '@thxnetwork/api/util/url';
+import { questInteractionVariantMap } from '@thxnetwork/common/lib/types';
 import { TInfoLink } from '@thxnetwork/types/interfaces';
 import { Request, Response } from 'express';
 import { body, param, check } from 'express-validator';
@@ -11,7 +10,10 @@ const validation = [
     param('id').exists(),
     body('title').optional().isString(),
     body('description').optional().isString(),
-    body('isPublished').optional().isBoolean(),
+    body('isPublished')
+        .optional()
+        .isBoolean()
+        .customSanitizer((value) => JSON.parse(value)),
     body('amount').optional().isInt({ gt: 0 }),
     check('file')
         .optional()
@@ -32,43 +34,38 @@ const validation = [
 ];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['RewardsNft']
-    let reward = await PointReward.findById(req.params.id);
-    if (!reward) throw new NotFoundError('Could not find the reward');
-    const image = req.file && (await ImageService.upload(req.file));
+    // #swagger.tags = ['Quest Social']
     const {
         title,
         description,
         amount,
-        platform,
         infoLinks,
+        limit,
+        index,
+        isPublished,
+        platform,
         interaction,
         content,
         contentMetadata,
+    } = req.body;
+    const image = req.file && (await ImageService.upload(req.file));
+    const variant = questInteractionVariantMap[interaction];
+    const quest = await QuestService.update(variant, req.params.id, {
+        title,
+        description,
+        amount,
+        infoLinks,
+        limit,
         index,
         isPublished,
-    } = req.body;
-    reward = await PointReward.findByIdAndUpdate(
-        reward._id,
-        {
-            title,
-            description,
-            amount,
-            image,
-            platform,
-            infoLinks,
-            interaction,
-            content,
-            contentMetadata,
-            index,
-            isPublished,
-        },
-        { new: true },
-    );
+        platform,
+        interaction,
+        content,
+        contentMetadata,
+        image,
+    });
 
-    PoolService.sendNotification(reward);
-
-    return res.json(reward);
+    res.json(quest);
 };
 
 export default { controller, validation };

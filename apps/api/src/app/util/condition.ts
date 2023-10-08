@@ -26,27 +26,30 @@ export const validateCondition = async (account: TAccount, reward: TPointReward)
             }
             case RewardConditionInteraction.TwitterRetweet: {
                 const result = await TwitterDataProxy.validateRetweet(account, reward.content);
-                if (!result) return 'Twitter: Tweet is not retweeted.';
+                if (!result) return 'X: Post is not reposted.';
                 break;
             }
             case RewardConditionInteraction.TwitterFollow: {
                 const result = await TwitterDataProxy.validateFollow(account, reward.content);
-                if (!result) return 'Twitter: Account is not followed.';
+                if (!result) return 'X: Account is not followed.';
                 break;
             }
             case RewardConditionInteraction.TwitterMessage: {
                 const result = await TwitterDataProxy.validateMessage(account, reward.content);
-                if (!result) return 'Twitter: Message is not found.';
+                if (!result) return `X: Your last post does not contain exactly "${reward.content}".`;
                 break;
             }
             case RewardConditionInteraction.DiscordGuildJoined: {
                 const result = await DiscordDataProxy.validateGuildJoined(account, reward.content);
-                if (!result) return 'Discord: Server is not joined.';
+                if (!result) {
+                    const userId = await getPlatformUserId(account, reward);
+                    return `Discord: User #${userId} has not joined Discord server #${reward.content}.`;
+                }
                 break;
             }
         }
     } catch (error) {
-        return 'Could not validate the platform condition for this claim.';
+        return 'We were unable to confirm the requirements for this quest.';
     }
 };
 

@@ -1,8 +1,9 @@
 import { DailyReward } from '@thxnetwork/api/services/DailyRewardService';
 import ImageService from '@thxnetwork/api/services/ImageService';
-import PoolService from '@thxnetwork/api/services/PoolService';
+import QuestService from '@thxnetwork/api/services/QuestService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { isValidUrl } from '@thxnetwork/api/util/url';
+import { QuestVariant } from '@thxnetwork/common/lib/types';
 import { TInfoLink } from '@thxnetwork/types/interfaces';
 import { Request, Response } from 'express';
 import { body, check, param } from 'express-validator';
@@ -11,7 +12,10 @@ const validation = [
     param('id').exists(),
     body('index').optional().isInt(),
     body('title').optional().isString(),
-    body('isPublished').optional().isBoolean(),
+    body('isPublished')
+        .optional()
+        .isBoolean()
+        .customSanitizer((value) => JSON.parse(value)),
     body('description').optional().isString(),
     check('file')
         .optional()
@@ -40,30 +44,24 @@ const validation = [
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Daily Rewards']
 
-    let reward = await DailyReward.findById(req.params.id);
-    if (!reward) throw new NotFoundError('Could not find the dailyReward');
+    let quest = await DailyReward.findById(req.params.id);
+    if (!quest) throw new NotFoundError('Could not find the dailyReward');
 
     const image = req.file && (await ImageService.upload(req.file));
     const { title, description, amounts, infoLinks, isEnabledWebhookQualification, index, isPublished } = req.body;
 
-    reward = await DailyReward.findByIdAndUpdate(
-        req.params.id,
-        {
-            title,
-            description,
-            amounts,
-            image,
-            infoLinks,
-            isEnabledWebhookQualification,
-            index,
-            isPublished,
-        },
-        { new: true },
-    );
+    quest = await QuestService.update(QuestVariant.Daily, req.params.id, {
+        title,
+        description,
+        amounts,
+        image,
+        infoLinks,
+        isEnabledWebhookQualification,
+        index,
+        isPublished,
+    });
 
-    PoolService.sendNotification(reward);
-
-    return res.json(reward);
+    return res.json(quest);
 };
 
 export default { controller, validation };

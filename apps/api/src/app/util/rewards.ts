@@ -1,16 +1,14 @@
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { TERC721Perk } from '@thxnetwork/types/';
-import { ERC20Perk, ERC20PerkDocument } from '../models/ERC20Perk';
-import { ERC721Perk, ERC721PerkDocument } from '../models/ERC721Perk';
+import { QuestVariant, RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/enums';
+import { TERC721Perk } from '@thxnetwork/types/interfaces';
+import { ERC20Perk, ERC20PerkDocument } from '@thxnetwork/api/models/ERC20Perk';
+import { ERC721Perk, ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
+import { PerkDocument } from '@thxnetwork/api/services/PerkService';
+import { CustomRewardDocument } from '@thxnetwork/api/models/CustomReward';
+import { CouponRewardDocument } from '@thxnetwork/api/models/CouponReward';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
 import ERC721PerkService from '@thxnetwork/api/services/ERC721PerkService';
-import PointRewardService from '../services/PointRewardService';
-import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardService';
-import MilestoneRewardService from '../services/MilestoneRewardService';
-import DailyRewardService from '../services/DailyRewardService';
-import { PerkDocument } from '../services/PerkService';
-import { CustomRewardDocument } from '../models/CustomReward';
-import { CouponRewardDocument } from '../models/CouponReward';
+import QuestService from '@thxnetwork/api/services/QuestService';
 
 export async function findRewardByUuid(uuid: string) {
     const erc20Perk = await ERC20Perk.findOne({ uuid });
@@ -68,32 +66,51 @@ export const createERC721Perk = async (pool: AssetPoolDocument, config: TERC721P
 };
 
 export async function createDummyContents(pool: AssetPoolDocument) {
-    await DailyRewardService.create(pool, {
+    await QuestService.create(QuestVariant.Daily, pool._id, {
         title: 'Daily Reward 🗓️',
         description: 'Visit our site on a daily basis to earn some points.',
         index: 0,
         amounts: [5, 10, 20, 40, 80, 160, 360],
+        isPublished: true,
     });
 
-    await ReferralRewardService.create(pool, {
+    await QuestService.create(QuestVariant.Invite, pool._id, {
         title: 'Tell people about us ❤️',
         description: 'Invite people for a signup and you will receive a point reward after qualification.',
         successUrl: '',
         amount: 500,
         index: 1,
+        isPublished: true,
     });
 
-    await PointRewardService.create(pool, {
-        title: 'Join our Discord server 🌱',
+    await QuestService.create(QuestVariant.Twitter, pool._id, {
+        title: 'Retweet and like this tweet 🐦',
         description: 'Join our Discord server and claim your points after you obtained verified access.',
         amount: 200,
         index: 2,
+        platform: RewardConditionPlatform.Twitter,
+        interaction: RewardConditionInteraction.TwitterFollow,
+        content: '',
+        isPublished: true,
     });
 
-    await MilestoneRewardService.create(pool, {
+    await QuestService.create(QuestVariant.Discord, pool._id, {
+        title: 'Join our Discord server 🌱',
+        description: 'Join our Discord server and claim your points after you obtained verified access.',
+        amount: 200,
+        index: 3,
+        platform: RewardConditionPlatform.Discord,
+        interaction: RewardConditionInteraction.DiscordGuildJoined,
+        content: '836147176270856243',
+        contentMetadata: JSON.stringify({ inviteURL: 'https://discord.com/invite/TzbbSmkE7Y' }),
+        isPublished: true,
+    });
+
+    await QuestService.create(QuestVariant.Custom, pool._id, {
         title: 'Reach a milestone 🏁',
         description: 'Claim points when progressing in the customer journey of external software.',
         amount: 500,
-        index: 3,
+        index: 4,
+        isPublished: true,
     });
 }

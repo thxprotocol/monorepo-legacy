@@ -1,6 +1,6 @@
 <template>
     <BaseModalQuestCreate
-        variant="Social Quest"
+        variant="Daily Quest"
         @show="onShow"
         @submit="onSubmit"
         @change-info-links="infoLinks = Object.values($event)"

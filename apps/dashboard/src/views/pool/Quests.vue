@@ -5,7 +5,7 @@
                 <h2 class="mb-0">Quests</h2>
             </b-col>
             <b-col class="d-flex justify-content-end">
-                <b-dropdown no-caret variant="primary" toggle-class="rounded-pill">
+                <b-dropdown no-caret variant="primary" toggle-class="rounded-pill" right>
                     <template #button-content>
                         <i class="fas fa-plus mr-2 ml-0"></i>
                         New Quest
@@ -13,25 +13,40 @@
                     <b-dropdown-item-button
                         v-for="(variant, key) of Object.keys(QuestVariant).filter((v) => isNaN(Number(v)))"
                         :key="key"
-                        v-b-modal="questModalComponentMap[QuestVariant[variant]]"
-                        button-class="d-flex"
+                        v-b-modal="`${questModalComponentMap[QuestVariant[variant]]}-${variant}`"
                         :disabled="QuestVariant[variant] === QuestVariant.Custom && !hasPremiumAccess(pool.owner)"
+                        button-class="d-flex px-2"
                     >
-                        <div style="width: 30px">
-                            <i
-                                class="text-muted mr-2"
-                                :class="questIconClassMap[QuestVariant[variant]]"
-                                aria-hidden="true"
-                            ></i>
-                        </div>
-                        {{ variant }}
-                        <component
-                            @submit="listQuests"
-                            :is="questModalComponentMap[QuestVariant[variant]]"
-                            :id="questModalComponentMap[QuestVariant[variant]]"
-                            :total="allQuests.length"
-                            :pool="pool"
-                        />
+                        <b-media>
+                            <template #aside>
+                                <div
+                                    class="p-3 rounded d-flex align-items-center justify-content-center"
+                                    style="width: 50px"
+                                    :style="{
+                                        'background-color': contentQuests[`${variant.toLowerCase()}-quest`].color,
+                                    }"
+                                    v-b-tooltip.hover.bottom
+                                    :title="contentQuests[`${variant.toLowerCase()}-quest`].description"
+                                >
+                                    <i
+                                        :class="contentQuests[`${variant.toLowerCase()}-quest`].icon"
+                                        class="text-white"
+                                    />
+                                </div>
+                            </template>
+                            {{ contentQuests[`${variant.toLowerCase()}-quest`].tag }}
+                            <p class="text-muted small mb-0">
+                                {{ contentQuests[`${variant.toLowerCase()}-quest`].title }}
+                            </p>
+                            <component
+                                @submit="listQuests"
+                                :variant="variant"
+                                :is="questModalComponentMap[QuestVariant[variant]]"
+                                :id="`${questModalComponentMap[QuestVariant[variant]]}-${variant}`"
+                                :total="allQuests.length"
+                                :pool="pool"
+                            />
+                        </b-media>
                     </b-dropdown-item-button>
                 </b-dropdown>
             </b-col>
@@ -160,7 +175,82 @@ import { TReferralRewardState } from '@thxnetwork/dashboard/store/modules/referr
 import { TMilestoneRewardState } from '@thxnetwork/dashboard/store/modules/milestoneRewards';
 import { TWeb3QuestState } from '@thxnetwork/dashboard/store/modules/web3Quests';
 import { hasPremiumAccess } from '@thxnetwork/common';
-
+export const contentQuests = {
+    'steam-quest': {
+        tag: 'Steam Quest',
+        icon: 'fab fa-steam',
+        title: 'Unlock Steam engagement',
+        description: 'Embark on a gaming journey by purchasing, wishlisting games, and earning Steam achievements.',
+        list: ['Buy a game on Steam', 'Wishlist a game on Steam', 'Earn a Steam achievement'],
+        docsUrl: 'https://docs.thx.network/user-guides/quests/daily-quests',
+        color: '#171d25',
+    },
+    'twitter-quest': {
+        tag: 'Twitter Quest',
+        icon: 'fab fa-twitter',
+        title: 'Boost your Twitter presence',
+        description: 'Engage your audience on Twitter by creating exciting quests that encourage retweets and likes.',
+        list: ['Increase followers', 'Enhance brand recognition', 'Foster community engagement'],
+        docsUrl: 'https://docs.thx.network/user-guides/quests/social-quests',
+        color: '#1B95E0',
+    },
+    'daily-quest': {
+        tag: 'Daily Quest',
+        title: 'Boost user engagement',
+        icon: 'fas fa-calendar',
+        description: 'Provide daily incentives for returning to your website.',
+        list: ['Encourage regular visits', 'Enhance user loyalty', 'Foster community growth'],
+        docsUrl: 'https://docs.thx.network/user-guides/quests/daily-quests',
+        color: '#4CAF50',
+    },
+    'custom-quest': {
+        tag: 'Custom Quest',
+        icon: 'fas fa-trophy',
+        title: 'Seamless integration',
+        description: 'Integrate quests with ease using webhooks to reward important achievements in your application.',
+        list: ['Tailor rewards to your app', 'Streamline integration', 'Enhance user experience'],
+        docsUrl: 'https://docs.thx.network/user-guides/quests/custom-quests',
+        color: '#9370DB',
+    },
+    'youtube-quest': {
+        tag: 'Youtube Quest',
+        icon: 'fab fa-youtube',
+        title: 'Expand your YouTube presence',
+        description:
+            'Amplify your presence on YouTube by creating quests that encourage likes, shares, and subscriptions.',
+        list: ['Increase video views', 'Boost channel subscribers', 'Enhance YouTube community engagement'],
+        docsUrl: 'https://docs.thx.network/user-guides/quests/social-quests',
+        color: '#FF0000',
+    },
+    'invite-quest': {
+        tag: 'Invite Quest',
+        icon: 'fas fa-comments',
+        title: 'Drive user acquisition',
+        description: 'Empower your players to earn rewards for referrals.',
+        list: ['Expand your user base', 'Lower acquisition costs', 'Strengthen player networks'],
+        docsUrl: 'https://docs.thx.network/user-guides/quests/referral-quests',
+        color: '#FFA500',
+    },
+    'discord-quest': {
+        tag: 'Discord Quest',
+        icon: 'fab fa-discord',
+        title: 'Strengthen your Discord community',
+        description:
+            'Create quests on Discord to promote community interactions and build a strong, engaged user base.',
+        list: ['Grow your Discord server', 'Enhance community participation', 'Boost server activity'],
+        docsUrl: 'https://docs.thx.network/user-guides/quests',
+        color: '#5865F2',
+    },
+    'web3-quest': {
+        tag: 'Web3 Quest',
+        icon: 'fab fa-ethereum',
+        title: 'Empower with Web3 rewards',
+        description: "Reward users' coin balance or NFT ownership using smart contracts.",
+        list: ['Leverage blockchain technology', 'Enhance user ownership', 'Facilitate decentralized rewards'],
+        docsUrl: 'https://docs.thx.network/user-guides/quests',
+        color: '#3C3C3D',
+    },
+};
 @Component({
     components: {
         BaseCardTableHeader,
@@ -184,6 +274,7 @@ import { hasPremiumAccess } from '@thxnetwork/common';
 })
 export default class QuestsView extends Vue {
     hasPremiumAccess = hasPremiumAccess;
+    contentQuests = contentQuests;
     isLoading = true;
     limit = 50;
     page = 1;
@@ -192,14 +283,18 @@ export default class QuestsView extends Vue {
     questModalComponentMap = {
         [QuestVariant.Daily]: 'BaseModalQuestDailyCreate',
         [QuestVariant.Invite]: 'BaseModalQuestInviteCreate',
-        [QuestVariant.Social]: 'BaseModalQuestSocialCreate',
+        [QuestVariant.Twitter]: 'BaseModalQuestSocialCreate',
+        [QuestVariant.YouTube]: 'BaseModalQuestSocialCreate',
+        [QuestVariant.Discord]: 'BaseModalQuestSocialCreate',
         [QuestVariant.Custom]: 'BaseModalQuestCustomCreate',
         [QuestVariant.Web3]: 'BaseModalQuestWeb3Create',
     };
     questIconClassMap = {
         [QuestVariant.Daily]: 'fas fa-calendar',
         [QuestVariant.Invite]: 'fas fa-comments',
-        [QuestVariant.Social]: 'fas fa-trophy',
+        [QuestVariant.Twitter]: 'fab fa-twitter',
+        [QuestVariant.Discord]: 'fab fa-discord',
+        [QuestVariant.YouTube]: 'fab fa-youtube',
         [QuestVariant.Custom]: 'fas fa-flag',
         [QuestVariant.Web3]: 'fab fa-ethereum',
     };
@@ -342,7 +437,9 @@ export default class QuestsView extends Vue {
                 return this.$store.dispatch('dailyRewards/delete', this.dailyQuests[id][quest._id]);
             case QuestVariant.Invite:
                 return this.$store.dispatch('referralRewards/delete', this.inviteQuests[id][quest._id]);
-            case QuestVariant.Social:
+            case QuestVariant.Discord:
+            case QuestVariant.YouTube:
+            case QuestVariant.Twitter:
                 return this.$store.dispatch('pointRewards/delete', this.socialQuests[id][quest._id]);
             case QuestVariant.Custom:
                 return this.$store.dispatch('milestoneRewards/delete', this.customQuests[id][quest._id]);

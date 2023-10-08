@@ -2,8 +2,8 @@ import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { Request, Response } from 'express';
 import { body } from 'express-validator';
 import { ReferralRewardClaim } from '@thxnetwork/api/models/ReferralRewardClaim';
+import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
 import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
-import ReferralRewardService from '@thxnetwork/api/services/ReferralRewardService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import MailService from '@thxnetwork/api/services/MailService';
@@ -24,16 +24,16 @@ const controller = async (req: Request, res: Response) => {
 
             if (!claim.isApproved) {
                 claim = await ReferralRewardClaim.findByIdAndUpdate(claim._id, { isApproved: true }, { new: true });
-                const reward = await ReferralRewardService.get(claim.referralRewardId);
-                const pool = await PoolService.getById(reward.poolId);
+                const quest = await ReferralReward.findById(claim.referralRewardId);
+                const pool = await PoolService.getById(quest.poolId);
 
                 // Transfer ReferralReward.amount points to the ReferralRewardClaim.sub
-                await PointBalanceService.add(pool, wallet._id, reward.amount);
+                await PointBalanceService.add(pool, wallet._id, quest.amount);
 
                 await MailService.send(
                     account.email,
                     'Status: Referral Approved',
-                    `Congratulations! Your referral has been approved and your balance has been increased with <strong>${reward.amount} points</strong>.`,
+                    `Congratulations! Your referral has been approved and your balance has been increased with <strong>${quest.amount} points</strong>.`,
                 );
             }
 

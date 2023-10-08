@@ -33,6 +33,7 @@
                         <slot name="col-left" />
                     </b-col>
                     <b-col md="6">
+                        <slot name="col-right" />
                         <BaseCardInfoLinks
                             class="mb-3"
                             :info-links="infoLinks"
@@ -43,7 +44,6 @@
                                 quest.
                             </p>
                         </BaseCardInfoLinks>
-                        <slot name="col-right" />
                         <b-form-group>
                             <b-checkbox :checked="published" @change="$emit('change-published', $event)">
                                 Published

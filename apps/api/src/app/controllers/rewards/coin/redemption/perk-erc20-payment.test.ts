@@ -1,11 +1,19 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId, ERC20Type } from '@thxnetwork/types/enums';
-import { dashboardAccessToken, tokenName, tokenSymbol, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
+import { ChainId, ERC20Type, RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/enums';
+import {
+    dashboardAccessToken,
+    sub,
+    tokenName,
+    tokenSymbol,
+    widgetAccessToken,
+} from '@thxnetwork/api/util/jest/constants';
 import { fromWei, isAddress, toWei } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { addMinutes, subMinutes } from '@thxnetwork/api/util/rewards';
 import { ERC20Document } from '@thxnetwork/api/models/ERC20';
+import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
+import SafeService from '@thxnetwork/api/services/SafeService';
 
 const user = request.agent(app);
 
@@ -39,9 +47,11 @@ describe('ERC20 Perk Payment', () => {
             .send({
                 chainId: ChainId.Hardhat,
             })
-            .expect((res: request.Response) => {
+            .expect(async (res: request.Response) => {
                 expect(res.body.settings.isArchived).toBe(false);
                 poolId = res.body._id;
+                const wallet = await SafeService.findPrimary(sub, ChainId.Hardhat);
+                await PointBalanceService.add(res.body, wallet._id, 5000);
             })
             .expect(201, done);
     });
@@ -52,23 +62,6 @@ describe('ERC20 Perk Payment', () => {
             .set({ 'Authorization': dashboardAccessToken, 'X-PoolId': poolId })
             .send({ erc20Id: erc20._id, amount })
             .expect(200, done);
-    });
-
-    it('POST /point-rewards', (done) => {
-        user.post(`/v1/point-rewards`)
-            .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-            .send({
-                title: 'Earn points!',
-                description: 'For your engagement',
-                amount: 1500,
-                platform: 0,
-                index: 0,
-            })
-            .expect((res: request.Response) => {
-                expect(res.body.uuid).toBeDefined();
-                rewardId = res.body._id;
-            })
-            .expect(201, done);
     });
 
     it('POST /erc20-perks', (done) => {
@@ -121,12 +114,6 @@ describe('ERC20 Perk Payment', () => {
                 perk = body;
             })
             .expect(200, done);
-    });
-
-    it('POST /quests/social/:uuid/claim', (done) => {
-        user.post(`/v1/quests/social/${rewardId}/claim`)
-            .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
-            .expect(201, done);
     });
 
     it('POST /rewards/coin/:uuid/redemption', (done) => {

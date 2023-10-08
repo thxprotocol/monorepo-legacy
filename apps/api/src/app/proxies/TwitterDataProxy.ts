@@ -46,7 +46,6 @@ export default class TwitterDataProxy {
             },
             params,
         });
-
         return data;
     }
 
