@@ -127,6 +127,7 @@ async function complete(
 
     let entry: TQuestEntry;
     const { isEnabledWebhookQualification } = quest as TDailyReward;
+    // Handle Daily Quest entry update after webhook is invoked (if webhook qualification is enabled)
     if (variant === QuestVariant.Daily && isEnabledWebhookQualification) {
         entry = await model.findOneAndUpdate(
             {
@@ -139,9 +140,10 @@ async function complete(
             { state: DailyRewardClaimState.Claimed },
             { new: true },
         );
-    } else if (variant === QuestVariant.Custom) {
+    }
+    // Handle Custom Quest entry update after webhook is invoked
+    else if (variant === QuestVariant.Custom) {
         const { uuid } = data as TMilestoneRewardClaim;
-        console.log(model, uuid);
         entry = await model.findOneAndUpdate({ uuid }, { isClaimed: true }, { new: true });
     } else {
         entry = await model.create({

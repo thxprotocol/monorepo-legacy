@@ -62,6 +62,18 @@
 @import '@thxnetwork/scss/_popover.scss';
 @import '@thxnetwork/scss/_dark-mode.scss';
 
+.b-tooltip {
+    .arrow {
+        border-bottom-color: $purple !important;
+    }
+    .tooltip-inner {
+        max-width: 280px;
+        background-color: $purple;
+        text-align: left;
+        padding: 1rem;
+    }
+}
+
 html,
 body {
     background: $light;

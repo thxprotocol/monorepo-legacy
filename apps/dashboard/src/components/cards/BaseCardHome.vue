@@ -12,15 +12,11 @@
             @click="$router.push(url)"
             @mouseover="hover = true"
             @mouseleave="hover = false"
-            class="mt-3 mb-3 cursor-pointer"
-            :class="{ 'shadow-sm': hover }"
+            body-class="p-2"
+            class="mb-3 cursor-pointer bg-light"
+            :class="{ 'shadow-sm': hover, 'bg-white': hover }"
         >
-            <template #header>
-                <slot name="header"></slot>
-            </template>
-            <p class="m-0" :class="hover ? 'text-dark' : 'text-muted'">
-                <slot></slot>
-            </p>
+            <slot></slot>
         </b-card>
     </b-skeleton-wrapper>
 </template>

@@ -173,6 +173,45 @@ import { hasPremiumAccess } from '@thxnetwork/common';
 import { type TCouponRewardState } from '@thxnetwork/dashboard/store/modules/couponRewards';
 import { type TCustomRewardState } from '@thxnetwork/dashboard/store/modules/rewards';
 
+export const contentRewards = {
+    'coin-reward': {
+        tag: 'Coin Reward',
+        title: 'Cashbacks with Coins',
+        description: 'Import your own ERC20 smart contract and let users redeem points for coins.',
+        list: ['Provide tangible value', 'Boost user retention', 'Incentivize spending'],
+        docsUrl: 'https://docs.thx.network/rewards/coins',
+        icon: 'fas fa-coins', // Suggested icon for coins
+        color: '#FFD700', // Suggested color for coins (Gold)
+    },
+    'nft-reward': {
+        tag: 'NFT Reward',
+        title: 'Exclusive NFTs',
+        description: 'Import your own ERC721 or ERC1155 smart contract and let users redeem points for exclusive NFTs.',
+        list: ['Offer unique collectibles', 'Enhance user engagement', 'Drive interest in NFTs'],
+        docsUrl: 'https://docs.thx.network/rewards/nft',
+        icon: 'fas fa-gem', // Suggested icon for gems or precious items
+        color: '#9370DB', // Suggested color for NFTs (Light Purple)
+    },
+    'custom-reward': {
+        tag: 'Custom Reward',
+        title: 'Flexible Rewards',
+        description: 'Use inbound webhooks to reward users with custom features in your application.',
+        list: ['Tailor rewards to user needs', 'Enhance user satisfaction', 'Drive app adoption'],
+        docsUrl: 'https://docs.thx.network/rewards',
+        icon: 'fas fa-cogs', // Suggested icon for customization or settings
+        color: '#808080', // Suggested color for customization (Gray)
+    },
+    'qr-codes': {
+        tag: 'QR Codes',
+        title: 'Offline Reward Distribution',
+        description: 'Use QR codes to distribute rewards in offline environments.',
+        list: ['Expand reach to offline users', 'Facilitate in-person engagement', 'Enhance brand recognition'],
+        docsUrl: 'https://docs.thx.network',
+        icon: 'fas fa-qrcode', // Suggested icon for QR codes
+        color: '#000000', // Suggested color for QR codes (Black)
+    },
+};
+
 @Component({
     components: {
         BaseModalRewardERC20Create,

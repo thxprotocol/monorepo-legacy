@@ -22,123 +22,78 @@
                 </b-jumbotron>
             </div>
             <div class="container container-md">
-                <strong class="text-muted">Quests</strong>
                 <b-row>
-                    <b-col md="4">
-                        <BaseCardHome
-                            :loading="!firstPool"
-                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/quests`"
-                        >
-                            <template #header>
-                                <i class="fas fa-calendar mr-2 text-primary"></i>
-                                <strong>Daily Quest</strong>
-                            </template>
-                            Challenge your users to visit to your website or app on a daily basis
-                        </BaseCardHome>
+                    <b-col md="8">
+                        <div class="text-muted mb-3">
+                            Quests
+                            <i
+                                class="fas fa-info-circle text-gray ml-1"
+                                v-b-tooltip
+                                title="Your users earn points with quests."
+                            />
+                        </div>
+                        <b-row>
+                            <b-col md="6" :key="key" v-for="(q, key) of contentQuests">
+                                <BaseCardHome
+                                    :loading="!firstPool"
+                                    :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/quests`"
+                                    v-b-tooltip.hover.bottom
+                                    :title="q.description"
+                                >
+                                    <b-media>
+                                        <template #aside>
+                                            <div
+                                                class="p-3 rounded d-flex align-items-center justify-content-center"
+                                                style="width: 50px"
+                                                :style="{ 'background-color': q.color }"
+                                                v-b-tooltip.hover.bottom
+                                                :title="q.description"
+                                            >
+                                                <i :class="q.icon" class="text-white" />
+                                            </div>
+                                        </template>
+                                        {{ q.tag }}
+                                        <p class="text-muted small mb-0">{{ q.title }}</p>
+                                    </b-media>
+                                </BaseCardHome>
+                            </b-col>
+                        </b-row>
                     </b-col>
                     <b-col md="4">
+                        <div class="text-muted mb-3 content-justified-between d-flex">
+                            Rewards
+                            <i
+                                class="fas fa-info-circle text-gray ml-1"
+                                v-b-tooltip
+                                title="Your users can redeem points for rewards."
+                            />
+                        </div>
                         <BaseCardHome
+                            :key="key"
+                            v-for="(q, key) of contentRewards"
                             :loading="!firstPool"
-                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/quests`"
+                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/rewards`"
+                            v-b-tooltip.hover.bottom
+                            :title="q.description"
                         >
-                            <template #header>
-                                <i class="fas fa-comments mr-2 text-primary"></i>
-                                <strong>Invite Quest</strong>
-                            </template>
-                            Enable your users to invite others to your app
-                        </BaseCardHome>
-                    </b-col>
-                    <b-col md="4">
-                        <BaseCardHome
-                            :loading="!firstPool"
-                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/quests`"
-                        >
-                            <template #header>
-                                <i class="fas fa-trophy mr-2 text-primary"></i>
-                                <strong>Social Quest</strong>
-                            </template>
-                            Amplify engagement in your social channels
-                        </BaseCardHome>
-                    </b-col>
-                    <b-col md="4">
-                        <BaseCardHome
-                            :loading="!firstPool"
-                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/quests`"
-                        >
-                            <template #header>
-                                <i class="fas fa-trophy mr-2 text-primary"></i>
-                                <strong>Custom Quest</strong>
-                            </template>
-                            Drive your users to achieve more things in your app
-                        </BaseCardHome>
-                    </b-col>
-                    <b-col md="4">
-                        <BaseCardHome
-                            :loading="!firstPool"
-                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/quests`"
-                        >
-                            <template #header>
-                                <i class="fab fa-ethereum mr-2 text-primary"></i>
-                                <strong>Web3 Quest</strong>
-                            </template>
-                            Let users reach certain values in your smart contracts
+                            <b-media>
+                                <template #aside>
+                                    <div
+                                        class="p-3 rounded d-flex align-items-center justify-content-center"
+                                        style="width: 50px"
+                                        :style="{ 'background-color': q.color }"
+                                        v-b-tooltip.hover.bottom
+                                        :title="q.description"
+                                    >
+                                        <i :class="q.icon" class="text-white" />
+                                    </div>
+                                </template>
+                                {{ q.tag }}
+                                <p class="text-muted small mb-0">{{ q.title }}</p>
+                            </b-media>
                         </BaseCardHome>
                     </b-col>
                 </b-row>
-                <hr />
-                <strong class="text-muted">Rewards</strong>
-                <b-row>
-                    <b-col md="4">
-                        <BaseCardHome
-                            :loading="!firstPool"
-                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/rewards`"
-                        >
-                            <template #header>
-                                <i class="fas fa-coins mr-2 text-primary"></i>
-                                <strong>Coin</strong>
-                            </template>
-                            Create rewards for new or existing ERC20 contracts
-                        </BaseCardHome>
-                    </b-col>
-                    <b-col md="4">
-                        <BaseCardHome
-                            :loading="!firstPool"
-                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/rewards`"
-                        >
-                            <template #header>
-                                <i class="fas fa-palette mr-2 text-primary"></i>
-                                <strong>NFT</strong>
-                            </template>
-                            Create rewards for ERC721 or ERC1155 contracts
-                        </BaseCardHome>
-                    </b-col>
-                    <b-col md="4">
-                        <BaseCardHome
-                            :loading="!firstPool"
-                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/rewards`"
-                        >
-                            <template #header>
-                                <i class="fas fa-gift mr-2 text-primary"></i>
-                                <strong>Custom</strong>
-                            </template>
-                            Create rewards that trigger custom code in your app
-                        </BaseCardHome>
-                    </b-col>
-                    <b-col md="4">
-                        <BaseCardHome
-                            :loading="!firstPool"
-                            :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/rewards`"
-                        >
-                            <template #header>
-                                <i class="fas fa-gift mr-2 text-primary"></i>
-                                <strong>Coupon</strong>
-                            </template>
-                            Create rewards that give your users a coupon code
-                        </BaseCardHome>
-                    </b-col>
-                </b-row>
-                <hr />
-                <strong class="text-muted">Smart Contracts</strong>
                 <b-row>
                     <b-col md="6">
                         <b-card
@@ -165,7 +120,6 @@
                         </b-card>
                     </b-col>
                 </b-row>
-                <hr />
                 <b-row>
                     <b-col md="3">
                         <b-card
@@ -231,7 +185,9 @@ import BaseCardHome from '@thxnetwork/dashboard/components/cards/BaseCardHome.vu
 import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
 import { IPools } from '../store/modules/pools';
 import { NODE_ENV } from '../utils/secrets';
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId, QuestVariant } from '@thxnetwork/types/enums';
+import { contentQuests } from './pool/Quests.vue';
+import { contentRewards } from './pool/Rewards.vue';
 
 @Component({
     components: {
@@ -250,6 +206,9 @@ export default class HomeView extends Vue {
     account!: TAccount;
     docsUrl = process.env.VUE_APP_DOCS_URL;
     AccountPlanType = AccountPlanType;
+    QuestVariant = QuestVariant;
+    contentQuests = contentQuests;
+    contentRewards = contentRewards;
 
     get firstPool() {
         const pools = Object.values(this.pools);
