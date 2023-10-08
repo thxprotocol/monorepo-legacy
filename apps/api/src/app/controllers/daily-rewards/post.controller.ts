@@ -10,7 +10,10 @@ const validation = [
     body('index').isInt(),
     body('title').isString(),
     body('description').isString(),
-    body('isPublished').optional().isBoolean(),
+    body('isPublished')
+        .optional()
+        .isBoolean()
+        .customSanitizer((value) => JSON.parse(value)),
     check('file')
         .optional()
         .custom((value, { req }) => {

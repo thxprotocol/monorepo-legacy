@@ -24,7 +24,7 @@
             <div class="container container-md">
                 <b-row>
                     <b-col md="8">
-                        <div class="text-muted mb-3">
+                        <div class="text-muted mb-3 justify-content-between d-flex">
                             Quests
                             <i
                                 class="fas fa-info-circle text-gray ml-1"
@@ -46,8 +46,6 @@
                                                 class="p-3 rounded d-flex align-items-center justify-content-center"
                                                 style="width: 50px"
                                                 :style="{ 'background-color': q.color }"
-                                                v-b-tooltip.hover.bottom
-                                                :title="q.description"
                                             >
                                                 <i :class="q.icon" class="text-white" />
                                             </div>
@@ -59,8 +57,8 @@
                             </b-col>
                         </b-row>
                     </b-col>
-                    <b-col md="4">
-                        <div class="text-muted mb-3 content-justified-between d-flex">
+                    <b-col md="4" style="border-left: 1px solid var(--dark)">
+                        <div class="text-muted mb-3 justify-content-between d-flex">
                             Rewards
                             <i
                                 class="fas fa-info-circle text-gray ml-1"

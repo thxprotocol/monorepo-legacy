@@ -1,7 +1,7 @@
 import ImageService from '@thxnetwork/api/services/ImageService';
 import QuestService from '@thxnetwork/api/services/QuestService';
 import { isValidUrl } from '@thxnetwork/api/util/url';
-import { QuestVariant, questInteractionVariantMap } from '@thxnetwork/common/lib/types';
+import { questInteractionVariantMap } from '@thxnetwork/common/lib/types';
 import { TInfoLink } from '@thxnetwork/types/interfaces';
 import { Request, Response } from 'express';
 import { body, param, check } from 'express-validator';
@@ -10,7 +10,10 @@ const validation = [
     param('id').exists(),
     body('title').optional().isString(),
     body('description').optional().isString(),
-    body('isPublished').optional().isBoolean(),
+    body('isPublished')
+        .optional()
+        .isBoolean()
+        .customSanitizer((value) => JSON.parse(value)),
     body('amount').optional().isInt({ gt: 0 }),
     check('file')
         .optional()

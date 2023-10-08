@@ -10,7 +10,10 @@ const validation = [
     param('id').isMongoId(),
     body('index').optional().isInt(),
     body('title').optional().isString(),
-    body('isPublished').optional().isBoolean(),
+    body('isPublished')
+        .optional()
+        .isBoolean()
+        .customSanitizer((value) => JSON.parse(value)),
     body('description').optional().isString(),
     check('file')
         .optional()

@@ -1,18 +1,19 @@
 import ImageService from '@thxnetwork/api/services/ImageService';
-import PoolService from '@thxnetwork/api/services/PoolService';
 import QuestService from '@thxnetwork/api/services/QuestService';
 import { isValidUrl } from '@thxnetwork/api/util/url';
 import { QuestVariant } from '@thxnetwork/types/enums';
 import { TInfoLink } from '@thxnetwork/types/interfaces';
 import { Request, Response } from 'express';
 import { body, check } from 'express-validator';
-import { v4 } from 'uuid';
 
 const validation = [
     body('index').isInt(),
     body('title').isString(),
     body('description').isString(),
-    body('isPublished').optional().isBoolean(),
+    body('isPublished')
+        .optional()
+        .isBoolean()
+        .customSanitizer((value) => JSON.parse(value)),
     check('file')
         .optional()
         .custom((value, { req }) => {

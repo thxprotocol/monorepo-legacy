@@ -1,6 +1,5 @@
 import { DailyReward } from '@thxnetwork/api/services/DailyRewardService';
 import ImageService from '@thxnetwork/api/services/ImageService';
-import PoolService from '@thxnetwork/api/services/PoolService';
 import QuestService from '@thxnetwork/api/services/QuestService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { isValidUrl } from '@thxnetwork/api/util/url';
@@ -13,7 +12,10 @@ const validation = [
     param('id').exists(),
     body('index').optional().isInt(),
     body('title').optional().isString(),
-    body('isPublished').optional().isBoolean(),
+    body('isPublished')
+        .optional()
+        .isBoolean()
+        .customSanitizer((value) => JSON.parse(value)),
     body('description').optional().isString(),
     check('file')
         .optional()

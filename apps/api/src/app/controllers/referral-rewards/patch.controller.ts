@@ -1,4 +1,3 @@
-import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { Request, Response } from 'express';
 import { body, param, check } from 'express-validator';
 import { TInfoLink } from '@thxnetwork/types/interfaces';
@@ -11,7 +10,10 @@ import QuestService from '@thxnetwork/api/services/QuestService';
 const validation = [
     param('id').isMongoId(),
     body('pathname').optional().isString(),
-    body('isPublished').optional().isBoolean(),
+    body('isPublished')
+        .optional()
+        .isBoolean()
+        .customSanitizer((value) => JSON.parse(value)),
     check('file')
         .optional()
         .custom((value, { req }) => {

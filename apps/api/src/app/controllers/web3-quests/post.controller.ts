@@ -7,13 +7,15 @@ import { TInfoLink } from '@thxnetwork/types/interfaces';
 import { isValidUrl } from '@thxnetwork/api/util/url';
 import { ChainId } from '@thxnetwork/types/enums';
 import ImageService from '@thxnetwork/api/services/ImageService';
-import PoolService from '@thxnetwork/api/services/PoolService';
 
 const validation = [
     body('index').isInt(),
     body('title').isString(),
     body('description').isString(),
-    body('isPublished').optional().isBoolean(),
+    body('isPublished')
+        .optional()
+        .isBoolean()
+        .customSanitizer((value) => JSON.parse(value)),
     body('amount').isInt({ gt: 0 }),
     check('file')
         .optional()
