@@ -1,52 +1,11 @@
 <template>
     <div>
-        <!-- <b-form-row>
-            <b-col md="4">
-                <strong>Discord Bot</strong>
-                <p class="text-muted">Install THX Bot to increase engagement in your Discord server.</p>
-            </b-col>
-            <b-col md="8">
-                <b-alert show variant="info" class="d-flex align-items-center py-2">
-                    <i class="fab fa-discord mr-2"></i>
-                    Install THX Bot to increase engagement in your Discord server.
-                    <b-button class="rounded-pill ml-auto" size="sm" variant="primary" :href="urlDiscordBotInstall">
-                        Install
-                        <i class="fas fa-chevron-right"></i>
-                    </b-button>
-                </b-alert>
-                <b-row>
-                    <b-col md="3">
-                        <span class="mr-2">
-                            <i class="fas fa-check-circle mr-1 text-success"></i>
-                            Unlocks Discord reward conditions!
-                        </span>
-                    </b-col>
-                    <b-col md="3">
-                        <span class="mr-2">
-                            <i class="fas fa-check-circle mr-1 text-success"></i>
-                            Personal & Balance<br /><code>/thx me</code>
-                        </span>
-                    </b-col>
-                    <b-col md="3">
-                        <span class="mr-2">
-                            <i class="fas fa-check-circle mr-1 text-success"></i>
-                            Rewards & Perks<br /><code>/thx info</code>
-                        </span>
-                    </b-col>
-                    <b-col md="3">
-                        <span class="mr-2">
-                            <i class="fas fa-check-circle mr-1 text-success"></i>
-                            Leaderboard<br /><code>/thx leaderboard</code>
-                        </span>
-                    </b-col>
-                </b-row>
-            </b-col>
-        </b-form-row>
-        <hr /> -->
         <b-form-row>
             <b-col md="4">
                 <strong>Discord Notifications</strong>
-                <p class="text-muted">Sends a notification message for all quests you publish.</p>
+                <p class="text-muted">
+                    Sends a notification message for these events: "Quests Publish", "Quest Complete".
+                </p>
             </b-col>
             <b-col md="8">
                 <b-form-group label="Webhook URL" description="">
@@ -56,11 +15,6 @@
                         @change="onChangeDiscordWebhookUrl"
                     ></b-form-input>
                 </b-form-group>
-                <b-card v-if="isValidDiscordWebhookUrl" body-class="bg-light">
-                    <b-form-group label="Message" class="mb-0">
-                        <b-form-textarea v-model="defaultDiscordMessage" @change="updateSettings()" />
-                    </b-form-group>
-                </b-card>
             </b-col>
         </b-form-row>
         <hr />
