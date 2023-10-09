@@ -1,21 +1,17 @@
 import { Request, Response } from 'express';
-import { twitterClient } from '@thxnetwork/api/util/twitter';
 import { body } from 'express-validator';
+import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
 
 const validation = [body('tweetId').isString()];
 
 const controller = async (req: Request, res: Response) => {
-    const { data } = await twitterClient({
-        method: 'GET',
-        url: `/tweets`,
-        params: {
-            ids: req.body.tweetId,
-            expansions: 'author_id',
-        },
+    const { data } = await authClient({
+        method: 'POST',
+        url: `/account/${req.auth.sub}/twitter/tweet`,
+        data: { tweetId: req.body.tweetId },
+        headers: { Authorization: await getAuthAccessToken() },
     });
-
-    if (!data.data) return res.end();
-
+    if (data.error) return res.json(data);
     res.json({ tweet: data.data[0], user: data.includes.users[0] });
 };
 

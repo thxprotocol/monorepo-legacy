@@ -33,18 +33,22 @@ export default class BaseDropdownTwitterUsers extends Vue {
     @Prop({ required: false }) contentMetadata!: any;
 
     async mounted() {
-        if (this.content) {
+        if (this.content && this.contentMetadata) {
+            const { profileImgUrl, name, id, username } = JSON.parse(this.contentMetadata);
+            this.preview = {
+                profile_image_url: profileImgUrl,
+                name,
+                id,
+                username,
+            };
+            this.username = username;
+        } else if (this.content && !this.contentMetadata) {
             const { data } = await axios({
                 method: 'POST',
                 url: '/account/twitter/user',
                 data: { userId: this.content },
             });
-            this.preview = {
-                profile_image_url: this.contentMetadata.profileImgUrl,
-                name: this.contentMetadata.name,
-                id: this.contentMetadata.id,
-                username: this.contentMetadata.username,
-            };
+            this.preview = data;
             this.username = data.username;
         }
     }

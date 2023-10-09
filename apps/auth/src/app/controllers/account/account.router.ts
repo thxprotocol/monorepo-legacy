@@ -18,8 +18,12 @@ import getByDiscordIdAction from './discord/getByDiscordId.action';
 import { getTwitch } from './twitch/get.action';
 import { getGithub } from './github/get.controller';
 
+import GetTwitterMe from './twitter/user/get.controller';
+import FetchTwitterUser from './twitter/user/post.controller';
+import FetchTwitterUserByUsername from './twitter/user/by/username/post.controller';
+import FetchTwitterTweet from './twitter/tweet/post.controller';
+
 import GetGoogleUser from './google/user/get.controller';
-import GetTwitterUser from './twitter/user/get.controller';
 import GetDiscordUser from './discord/user/get.controller';
 
 const router = express.Router();
@@ -31,10 +35,28 @@ router.get('/:sub', guard.check(['accounts:read']), getAccount);
 
 router.get('/:sub/twitter', guard.check(['accounts:read']), getTwitter);
 router.get('/:sub/twitter/tweets/latest', guard.check(['accounts:read']), getLatestTweets);
-router.get('/:sub/twitter/user', guard.check(['accounts:read']), GetTwitterUser.controller);
+router.get('/:sub/twitter/user', guard.check(['accounts:read']), GetTwitterMe.controller);
 router.get('/:sub/twitter/like/:item', guard.check(['accounts:read']), getTwitterLike);
 router.get('/:sub/twitter/retweet/:item', guard.check(['accounts:read']), getTwitterRetweet);
 router.get('/:sub/twitter/follow/:item', guard.check(['accounts:read']), getTwitterFollow);
+router.post(
+    '/:sub/twitter/user/by/username',
+    guard.check(['accounts:read']),
+    validate(FetchTwitterUserByUsername.validation),
+    FetchTwitterUserByUsername.controller,
+);
+router.post(
+    '/:sub/twitter/user',
+    guard.check(['accounts:read']),
+    validate(FetchTwitterUser.validation),
+    FetchTwitterUser.controller,
+);
+router.post(
+    '/:sub/twitter/tweet',
+    guard.check(['accounts:read']),
+    validate(FetchTwitterTweet.validation),
+    FetchTwitterTweet.controller,
+);
 
 router.get('/:sub/google/youtube', guard.check(['accounts:read']), getYoutube);
 router.get('/:sub/google/user', guard.check(['accounts:read']), GetGoogleUser.controller);

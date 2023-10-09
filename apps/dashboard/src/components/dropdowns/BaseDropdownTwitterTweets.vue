@@ -22,12 +22,9 @@
             </template>
             <div v-html="preview.tweet.text"></div>
         </b-card>
-        <b-alert show class="mt-3 mb-0" variant="warning" v-if="isTweetNotFound">
-            Sorry! We could not find this tweet.
-        </b-alert>
-        <b-alert show class="mt-3 mb-0" variant="dark" v-if="error">
-            Twitter API preview requests have reached their limit for this 15 minute window. Please try again in 15
-            minutes!
+        <b-alert show class="mt-3 mb-0" variant="warning" v-if="error">
+            <i class="fas fa-info-circle mr-1" />
+            {{ error }}
         </b-alert>
     </b-form-group>
 </template>
@@ -45,9 +42,9 @@ export default class BaseDropdownTwitterTweets extends Vue {
     preview: { tweet: { text: string }; user: { username: string; name: string } } | null = null;
     error = '';
     isLoading = false;
-    isTweetNotFound = false;
 
     @Prop({ required: false }) content!: string;
+    @Prop({ required: false }) contentMetadata!: any;
 
     // https://twitter.com/twitter/status/1603121182101970945
     mounted() {
@@ -73,7 +70,6 @@ export default class BaseDropdownTwitterTweets extends Vue {
             this.preview = null;
             this.error = '';
             this.isLoading = false;
-            this.isTweetNotFound = false;
         }
 
         if (!this.isValidTweetUrl) return;
@@ -84,6 +80,7 @@ export default class BaseDropdownTwitterTweets extends Vue {
         if (!tweetId) return;
 
         this.isLoading = true;
+        this.error = '';
 
         try {
             const { data } = await axios({
@@ -92,7 +89,11 @@ export default class BaseDropdownTwitterTweets extends Vue {
                 data: { tweetId },
             });
 
-            if (data) {
+            // Display rate limit error info if available
+            if (data.error) {
+                this.error = data.error;
+                this.preview = null;
+            } else if (data) {
                 this.preview = data;
                 this.$emit('selected', {
                     content: tweetId,
@@ -103,9 +104,9 @@ export default class BaseDropdownTwitterTweets extends Vue {
                     },
                 });
             }
-            this.isTweetNotFound = !!data;
         } catch (error) {
-            this.error = error as string;
+            console.error(error);
+            this.error = 'We did not succeed to retrieve the requested Twitter data...';
             this.preview = null;
         } finally {
             this.isLoading = false;
