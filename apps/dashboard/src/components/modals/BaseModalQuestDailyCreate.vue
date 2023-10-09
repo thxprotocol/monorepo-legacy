@@ -120,6 +120,8 @@ export default class ModalRewardDailyCreate extends Vue {
 
     onSubmit() {
         this.isLoading = true;
+        console.log(this.total);
+        debugger;
         this.$store
             .dispatch(`dailyRewards/${this.reward ? 'update' : 'create'}`, {
                 ...this.reward,

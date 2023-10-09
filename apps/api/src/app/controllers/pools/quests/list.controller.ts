@@ -17,16 +17,21 @@ const controller = async (req: Request, res: Response) => {
     if (req.query.isPublished) {
         $match['isPublished'] = JSON.parse(req.query.isPublished as string);
     }
-    const query = [
+    const pipeline = [
         { $unionWith: { coll: ReferralReward.collection.name } },
         { $unionWith: { coll: PointReward.collection.name } },
         { $unionWith: { coll: MilestoneReward.collection.name } },
         { $unionWith: { coll: Web3Quest.collection.name } },
         { $match },
     ];
-    const total = await DailyReward.countDocuments(query);
+    const arr = await Promise.all(
+        [DailyReward, ReferralReward, PointReward, MilestoneReward, Web3Quest].map(
+            async (model) => await model.countDocuments($match),
+        ),
+    );
+    const total = arr.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
     const results = await DailyReward.aggregate([
-        ...query,
+        ...pipeline,
         { $sort: { index: 1 } },
         { $skip: (page - 1) * limit },
         { $limit: limit },

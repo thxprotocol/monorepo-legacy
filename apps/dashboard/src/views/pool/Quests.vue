@@ -43,7 +43,7 @@
                                 :variant="variant"
                                 :is="questModalComponentMap[QuestVariant[variant]]"
                                 :id="`${questModalComponentMap[QuestVariant[variant]]}-${variant}`"
-                                :total="quests[pool._id] && quests[pool._id].total"
+                                :total="allQuests.length"
                                 :pool="pool"
                             />
                         </b-media>
@@ -60,7 +60,7 @@
                 :selectedItems="selectedItems"
                 :actions="actions"
                 toggle-label="Show all"
-                @toggle="isUnpublishedShown = $event"
+                @toggle="onClickToggle"
                 @click-action="onClickAction"
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
@@ -78,7 +78,7 @@
                 <!-- Head formatting -->
                 <template #head(index)> &nbsp; </template>
                 <template #head(checkbox)>
-                    <b-form-checkbox @change="onChecked" />
+                    <b-form-checkbox :checked="isCheckedAll" @change="onChecked" />
                 </template>
                 <template #head(variant)> Variant </template>
                 <template #head(title)> Title </template>
@@ -89,10 +89,10 @@
                 <!-- Cell formatting -->
                 <template #cell(index)="{ item, index }">
                     <div class="btn btn-sort p-0">
-                        <b-link block @click="onClickUp(item, index)">
+                        <b-link block @click="onClickUp(item.quest, index)">
                             <i class="fas fa-caret-up ml-0"></i>
                         </b-link>
-                        <b-link block @click="onClickDown(item, index)">
+                        <b-link block @click="onClickDown(item.quest, index)">
                             <i class="fas fa-caret-down ml-0"></i>
                         </b-link>
                     </div>
@@ -153,7 +153,7 @@
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { TBaseReward, TQuest } from '@thxnetwork/types/interfaces';
+import { TQuest } from '@thxnetwork/types/interfaces';
 import { QuestVariant } from '@thxnetwork/types/enums';
 import BaseModalQuestDailyCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestDailyCreate.vue';
 import BaseModalQuestSocialCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestSocialCreate.vue';
@@ -262,10 +262,15 @@ export const contentQuests = {
 export default class QuestsView extends Vue {
     hasPremiumAccess = hasPremiumAccess;
     contentQuests = contentQuests;
-    actions = [{ label: 'Delete all', variant: 0 }];
+    actions = [
+        { label: 'Publish all', variant: 0 },
+        { label: 'Unpublish all', variant: 1 },
+        { label: 'Delete all', variant: 2 },
+    ];
     isLoading = true;
-    limit = 20;
+    limit = 25;
     page = 1;
+    isCheckedAll = false;
     selectedItems: TQuest[] = [];
     QuestVariant = QuestVariant;
     questModalComponentMap = {
@@ -341,33 +346,33 @@ export default class QuestsView extends Vue {
         this.isLoading = false;
     }
 
-    onClickUp({ index }: { index: TQuest }, i: number) {
-        this.move(
-            index,
-            i,
-            i >= 0 ? i - 1 : 0,
-            this.quests[this.$route.params.id].results.find((q) => q.index === i - 1),
-        );
+    onClickUp(quest: TQuest, i: number) {
+        const min = 0;
+        const targetIndex = i - 1;
+        const newIndex = targetIndex < min ? min : targetIndex;
+        const otherQuest = this.quests[this.$route.params.id].results[newIndex];
+
+        this.move(quest, i, newIndex, otherQuest);
     }
 
-    onClickDown({ index }: { index: TQuest }, i: number) {
-        this.move(
-            index,
-            i,
-            i >= this.allQuests.length - 1 ? this.allQuests.length - 1 : i + 1,
-            this.quests[this.$route.params.id].results.find((q) => q.index === i + 1),
-        );
+    onClickDown(quest: TQuest, i: number) {
+        const maxIndex = this.allQuests.length - 1;
+        const targetIndex = i + 1;
+        const newIndex = targetIndex > maxIndex ? maxIndex : targetIndex;
+        const otherQuest = this.quests[this.$route.params.id].results[newIndex];
+
+        this.move(quest, i, newIndex, otherQuest);
     }
 
-    async move(quest: TQuest, i: number, newIndex: number, other?: TQuest) {
-        const promises: any = [];
-        const p = quest.update({ ...quest, index: newIndex });
-        promises.push(p);
+    async move(quest: TQuest, currentIndex: number, newIndex: number, other: TQuest) {
+        const p = [quest.update({ ...quest, index: newIndex })];
+        if (other) p.push(other.update({ ...other, index: currentIndex }));
+        await Promise.all(p);
+        this.listQuests();
+    }
 
-        if (!other) return;
-        const p2 = other.update({ ...other, index: i });
-        promises.push(p2);
-        await Promise.all(promises);
+    onClickToggle(toggle: boolean) {
+        this.isUnpublishedShown = toggle;
         this.listQuests();
     }
 
@@ -378,6 +383,7 @@ export default class QuestsView extends Vue {
 
     onChecked(checked: boolean) {
         this.selectedItems = checked ? this.quests[this.$route.params.id].results : [];
+        this.isCheckedAll = checked;
     }
 
     onChangePage(page: number) {
@@ -389,16 +395,16 @@ export default class QuestsView extends Vue {
         quest.delete(quest);
     }
 
-    onClickAction(action: { variant: number }) {
-        switch (action.variant) {
-            // Delete
-            case 0: {
-                for (const quest of this.selectedItems) {
-                    this.onClickDelete(quest);
-                }
-                this.listQuests();
-            }
-        }
+    async onClickAction(action: { variant: number }) {
+        // 1. Publish, 2. Unpublish, 3. Delete
+        const mappers = {
+            0: (quest) => quest.update({ ...quest, isPublished: true }),
+            1: (quest) => quest.update({ ...quest, isPublished: false }),
+            2: (quest) => quest.delete(quest),
+        };
+        await Promise.all(this.selectedItems.map(mappers[action.variant]));
+        this.isCheckedAll = false;
+        this.listQuests();
     }
 }
 </script>
