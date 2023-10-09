@@ -206,6 +206,13 @@ class PoolModule extends VuexModule {
     }
 
     @Mutation
+    unsetQuest(quest: TQuest) {
+        const quests = this._quests[quest.poolId].results;
+        const index = quests.findIndex((q) => q._id === quest._id);
+        Vue.delete(this._quests[quest.poolId].results, index);
+    }
+
+    @Mutation
     setQuestEntries({ entries, quest }: { entries: TQuestEntry[]; quest: TQuest }) {
         if (!this._entries[quest.poolId]) Vue.set(this._entries, quest.poolId, {});
         Vue.set(this._entries[quest.poolId], String(quest._id), entries);

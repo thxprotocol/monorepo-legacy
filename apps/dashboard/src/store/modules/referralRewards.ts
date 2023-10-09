@@ -105,7 +105,7 @@ class ReferralRewardModule extends VuexModule {
             url: `/referral-rewards/${reward._id}`,
             headers: { 'X-PoolId': reward.poolId },
         });
-        this.context.commit('unset', reward);
+        this.context.commit('pools/unsetQuest', reward, { root: true });
     }
 }
 

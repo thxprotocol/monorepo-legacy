@@ -1,10 +1,12 @@
 <template>
     <b-dropdown variant="link" class="dropdown-select bg-white">
         <template #button-content>
-            <div v-if="platform">
-                <img :src="platform.logoURI" v-if="platform.logoURI" width="20" class="mr-2" :alt="platform.name" />
-                {{ platform.name }}
-            </div>
+            <template v-if="platform">
+                <div class="d-flex align-items-center justify-content-start">
+                    <img :src="platform.logoURI" v-if="platform.logoURI" width="20" class="mr-2" :alt="platform.name" />
+                    {{ platform.name }}
+                </div>
+            </template>
         </template>
         <b-dropdown-item-button :key="p.type" v-for="p of platformList" @click="$emit('selected', p)">
             <img :src="p.logoURI" v-if="p.logoURI" width="20" class="mr-3" :alt="p.name" />

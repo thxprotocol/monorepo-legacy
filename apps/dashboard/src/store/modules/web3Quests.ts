@@ -93,7 +93,7 @@ class Web3QuestModule extends VuexModule {
             url: `/web3-quests/${quest._id}`,
             headers: { 'X-PoolId': quest.poolId },
         });
-        this.context.commit('unset', quest);
+        this.context.commit('pools/unsetQuest', quest, { root: true });
     }
 }
 

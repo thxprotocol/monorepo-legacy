@@ -75,9 +75,9 @@ export default class BaseDropdownTwitterUsers extends Vue {
             this.$emit('selected', {
                 content: data.id,
                 contentMetadata: {
-                    id: this.preview?.id,
-                    name: this.preview?.name,
-                    profileImgUrl: this.preview?.profile_image_url,
+                    id: data.id,
+                    name: data.name,
+                    profileImgUrl: data.profile_image_url,
                     username,
                 },
             });

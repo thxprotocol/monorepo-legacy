@@ -92,7 +92,7 @@ class DailyRewardModule extends VuexModule {
             url: `/daily-rewards/${reward._id}`,
             headers: { 'X-PoolId': reward.poolId },
         });
-        this.context.commit('unset', reward);
+        this.context.commit('pools/unsetQuest', reward, { root: true });
     }
 }
 

@@ -29,7 +29,7 @@ class PointRewardModule extends VuexModule {
 
     @Action({ rawError: true })
     async create(quest: TPointReward) {
-        const r = await axios({
+        await axios({
             method: 'POST',
             url: '/point-rewards',
             headers: { 'X-PoolId': quest.poolId },
@@ -57,6 +57,7 @@ class PointRewardModule extends VuexModule {
             url: `/point-rewards/${reward._id}`,
             headers: { 'X-PoolId': reward.poolId },
         });
+        this.context.commit('pools/unsetQuest', reward, { root: true });
     }
 }
 
