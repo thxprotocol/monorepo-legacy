@@ -4,7 +4,9 @@ module.exports = {
         const contentMetadata = JSON.stringify({ inviteURL: 'https://discord.com/invite/TzbbSmkE7Y' });
 
         await questColl.updateMany(
-            { interaction: { $exists: false } },
+            {
+                $or: [{ interaction: -1 }, { interaction: { $exists: false } }],
+            },
             {
                 $set: {
                     platform: 5,
