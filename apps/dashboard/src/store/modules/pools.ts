@@ -1,10 +1,18 @@
-import type { TAccount, TPool, TPoolSettings, TPoolTransferResponse } from '@thxnetwork/types/interfaces';
+import type {
+    TAccount,
+    TPool,
+    TPoolSettings,
+    TPoolTransferResponse,
+    TQuest,
+    TQuestEntry,
+} from '@thxnetwork/types/interfaces';
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import { track } from '@thxnetwork/mixpanel';
 import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
+import { QuestVariant } from '@thxnetwork/common/lib/types';
 
 export interface IPoolAnalytic {
     _id: string;
@@ -98,15 +106,41 @@ export interface IPoolAnalyticsMetrics {
     [id: string]: IPoolAnalyticMetrics;
 }
 
+export type TQuestState = {
+    [poolId: string]: {
+        total: number;
+        limit: number;
+        page: number;
+        results: TQuest[];
+    };
+};
+
+export type TQuestEntryState = {
+    [poolId: string]: {
+        [questId: string]: TQuestEntry[];
+    };
+};
+
 @Module({ namespaced: true })
 class PoolModule extends VuexModule {
     _all: IPools = {};
+    _quests: TQuestState = {};
+    _entries: TQuestEntryState = {};
+
     _analytics: IPoolAnalytics = {};
     _analyticsLeaderBoard: IPoolAnalyticsLeaderBoard = {};
     _analyticsMetrics: IPoolAnalyticsLeaderBoard = {};
 
     get all() {
         return this._all;
+    }
+
+    get quests() {
+        return this._quests;
+    }
+
+    get entries() {
+        return this._entries;
     }
 
     get analytics() {
@@ -164,6 +198,102 @@ class PoolModule extends VuexModule {
     @Mutation
     clear() {
         Vue.set(this, '_all', {});
+    }
+
+    @Mutation
+    setQuests(result: { results: TQuest[]; limit: number; page: number }) {
+        if (!result.results.length) return;
+
+        const quest = result.results[0];
+        Vue.set(this._quests, quest.poolId, result);
+    }
+
+    @Mutation
+    setQuest(quest: TQuest) {
+        if (!this._quests[quest.poolId]) return;
+
+        const quests = this._quests[quest.poolId].results;
+        const index = quests.findIndex((q) => q._id === quest._id);
+        Vue.set(this._quests[quest.poolId].results, index, quest);
+    }
+
+    @Mutation
+    unsetQuest(quest: TQuest) {
+        const quests = this._quests[quest.poolId].results;
+        const index = quests.findIndex((q) => q._id === quest._id);
+        Vue.delete(this._quests[quest.poolId].results, index);
+    }
+
+    @Mutation
+    setQuestEntries({ entries, quest }: { entries: TQuestEntry[]; quest: TQuest }) {
+        if (!this._entries[quest.poolId]) Vue.set(this._entries, quest.poolId, {});
+        Vue.set(this._entries[quest.poolId], String(quest._id), entries);
+    }
+
+    @Action({ rawError: true })
+    async listQuests({ pool, page, limit, isPublished }) {
+        const { data } = await axios({
+            method: 'GET',
+            url: `/pools/${pool._id}/quests`,
+            headers: { 'X-PoolId': pool._id },
+            params: {
+                page: String(page),
+                limit: String(limit),
+                isPublished,
+            },
+        });
+        data.results = data.results.map((q) => {
+            q.delete = (payload: TQuest) => this.context.dispatch('deleteQuest', payload);
+            q.update = (payload: TQuest) => this.context.dispatch('updateQuest', payload);
+            return q;
+        });
+        this.context.commit('setQuests', data);
+    }
+
+    @Action
+    async deleteQuest(quest: TQuest) {
+        switch (quest.variant) {
+            case QuestVariant.Daily:
+                return this.context.dispatch('dailyRewards/delete', quest, { root: true });
+            case QuestVariant.Invite:
+                return this.context.dispatch('referralRewards/delete', quest, { root: true });
+            case QuestVariant.Discord:
+            case QuestVariant.YouTube:
+            case QuestVariant.Twitter:
+                return this.context.dispatch('pointRewards/delete', quest, { root: true });
+            case QuestVariant.Custom:
+                return this.context.dispatch('milestoneRewards/delete', quest, { root: true });
+            case QuestVariant.Web3:
+                return this.context.dispatch('web3Quests/delete', quest, { root: true });
+        }
+    }
+
+    @Action
+    async updateQuest(quest: TQuest) {
+        switch (quest.variant) {
+            case QuestVariant.Daily:
+                return this.context.dispatch('dailyRewards/update', quest, { root: true });
+            case QuestVariant.Invite:
+                return this.context.dispatch('referralRewards/update', quest, { root: true });
+            case QuestVariant.Discord:
+            case QuestVariant.YouTube:
+            case QuestVariant.Twitter:
+                return this.context.dispatch('pointRewards/update', quest, { root: true });
+            case QuestVariant.Custom:
+                return this.context.dispatch('milestoneRewards/update', quest, { root: true });
+            case QuestVariant.Web3:
+                return this.context.dispatch('web3Quests/update', quest, { root: true });
+        }
+    }
+
+    @Action({ rawError: true })
+    async listEntries(quest: TQuest) {
+        const { data } = await axios({
+            method: 'GET',
+            url: `/pools/${quest.poolId}/quests/${quest._id}/entries`,
+            headers: { 'X-PoolId': quest.poolId },
+        });
+        this.context.commit('setQuestEntries', { quest, entries: data });
     }
 
     @Action({ rawError: true })

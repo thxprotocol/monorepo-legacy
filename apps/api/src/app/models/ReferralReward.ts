@@ -1,12 +1,12 @@
 import mongoose from 'mongoose';
 import { TReferralReward } from '@thxnetwork/types/';
-import { rewardBaseSchema } from '@thxnetwork/api/models/ERC20Perk';
+import { questBaseSchema } from '@thxnetwork/api/models/ERC20Perk';
 
 export type ReferralRewardDocument = mongoose.Document & TReferralReward;
 
 const schema = new mongoose.Schema(
     {
-        ...rewardBaseSchema,
+        ...questBaseSchema,
         amount: Number,
         pathname: String,
         successUrl: String,

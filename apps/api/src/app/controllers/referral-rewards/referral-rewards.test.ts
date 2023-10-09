@@ -47,7 +47,7 @@ describe('Referral Rewards', () => {
     });
 
     it('POST /referral-rewards', (done) => {
-        const successUrl = 'http://www.google.com';
+        const successUrl = 'https://www.google.com';
         user.post('/v1/referral-rewards/')
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .send({
@@ -90,9 +90,9 @@ describe('Referral Rewards', () => {
     });
 
     it('PATCH /referral-rewards/:id', (done) => {
-        const title = 'Expiration date is next 60 min';
-        const description = 'new description';
-        const successUrl = 'http://thx.network';
+        const title = 'Invite quest title';
+        const description = 'Invite quest description';
+        const successUrl = 'https://thx.network';
         user.patch(`/v1/referral-rewards/${referralRewardId}`)
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .send({
@@ -101,6 +101,7 @@ describe('Referral Rewards', () => {
                 successUrl,
             })
             .expect((res: request.Response) => {
+                console.log(res.body);
                 expect(res.body.title).toEqual(title);
                 expect(res.body.description).toEqual(description);
                 expect(res.body.successUrl).toEqual(successUrl);

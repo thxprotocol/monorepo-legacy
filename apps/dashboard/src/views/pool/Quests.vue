@@ -56,11 +56,11 @@
                 :page="page"
                 :limit="limit"
                 :pool="pool"
-                :total-rows="totals[pool._id]"
+                :total-rows="total"
                 :selectedItems="selectedItems"
-                :actions="[{ variant: 0, label: `Delete quests` }]"
+                :actions="actions"
                 toggle-label="Show all"
-                @toggle="isUnpublishedShown = $event"
+                @toggle="onClickToggle"
                 @click-action="onClickAction"
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
@@ -70,7 +70,7 @@
                 id="table-quests"
                 hover
                 :busy="isLoading"
-                :items="rewardsByPage"
+                :items="allQuests"
                 responsive="lg"
                 show-empty
                 :tbody-tr-class="rowClass"
@@ -78,7 +78,7 @@
                 <!-- Head formatting -->
                 <template #head(index)> &nbsp; </template>
                 <template #head(checkbox)>
-                    <b-form-checkbox @change="onChecked" />
+                    <b-form-checkbox :checked="isCheckedAll" @change="onChecked" />
                 </template>
                 <template #head(variant)> Variant </template>
                 <template #head(title)> Title </template>
@@ -89,16 +89,16 @@
                 <!-- Cell formatting -->
                 <template #cell(index)="{ item, index }">
                     <div class="btn btn-sort p-0">
-                        <b-link block @click="onClickUp(item, index)">
+                        <b-link block @click="onClickUp(item.quest, index)">
                             <i class="fas fa-caret-up ml-0"></i>
                         </b-link>
-                        <b-link block @click="onClickDown(item, index)">
+                        <b-link block @click="onClickDown(item.quest, index)">
                             <i class="fas fa-caret-down ml-0"></i>
                         </b-link>
                     </div>
                 </template>
                 <template #cell(checkbox)="{ item }">
-                    <b-form-checkbox :value="{ id: item.quest._id, variant: item.variant }" v-model="selectedItems" />
+                    <b-form-checkbox :value="item.quest" v-model="selectedItems" />
                 </template>
                 <template #cell(variant)="{ item }">
                     <b-badge variant="light" class="p-2">{{ QuestVariant[item.variant] }} </b-badge>
@@ -116,20 +116,14 @@
                         <BaseModalQuestInviteClaims
                             :id="`modalReferralQuestClaims${item.quest._id}`"
                             :pool="pool"
-                            :reward="allQuests.find((q) => q._id === item.quest._id)"
+                            :reward="quests[$route.params.id].results.find((q) => q._id === item.quest._id)"
                         />
                     </template>
-                    <template v-else>
-                        <b-link v-b-modal="`modalQuestSocialEntries${item.quest._id}`" v-if="item.entries">
-                            <small><i class="fas text-muted fa-users mr-1" /></small>
-                            {{ item.entries.length }}
-                        </b-link>
-                        <BaseModalQuestSocialEntries
-                            :id="`modalQuestSocialEntries${item.quest._id}`"
-                            :pool="pool"
-                            :quest="allQuests.find((q) => q._id === item.quest._id)"
-                        />
-                    </template>
+                    <BaseBtnQuestEntries
+                        v-if="[QuestVariant.Twitter, QuestVariant.YouTube, QuestVariant.Discord].includes(item.variant)"
+                        :pool="pool"
+                        :quest="item.quest"
+                    />
                 </template>
                 <template #cell(quest)="{ item }">
                     <b-dropdown variant="link" size="sm" right no-caret>
@@ -147,7 +141,7 @@
                         :id="questModalComponentMap[item.variant] + item.quest._id"
                         :pool="pool"
                         :total="allQuests.length"
-                        :reward="allQuests.find((q) => q._id === item.quest._id)"
+                        :reward="quests[$route.params.id].results.find((q) => q._id === item.quest._id)"
                     />
                 </template>
             </BTable>
@@ -159,7 +153,7 @@
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { TBaseReward } from '@thxnetwork/types/interfaces';
+import { TQuest } from '@thxnetwork/types/interfaces';
 import { QuestVariant } from '@thxnetwork/types/enums';
 import BaseModalQuestDailyCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestDailyCreate.vue';
 import BaseModalQuestSocialCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestSocialCreate.vue';
@@ -167,14 +161,11 @@ import BaseModalQuestInviteCreate from '@thxnetwork/dashboard/components/modals/
 import BaseModalQuestCustomCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestCustomCreate.vue';
 import BaseModalQuestWeb3Create from '@thxnetwork/dashboard/components/modals/BaseModalQuestWeb3Create.vue';
 import BaseModalQuestInviteClaims from '@thxnetwork/dashboard/components/modals/BaseModalQuestInviteClaims.vue';
-import BaseModalQuestSocialEntries from '@thxnetwork/dashboard/components/modals/BaseModalQuestSocialEntries.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
-import { TDailyRewardState } from '@thxnetwork/dashboard/store/modules/dailyRewards';
-import { TPointRewardState } from '@thxnetwork/dashboard/store/modules/pointRewards';
-import { TReferralRewardState } from '@thxnetwork/dashboard/store/modules/referralRewards';
-import { TMilestoneRewardState } from '@thxnetwork/dashboard/store/modules/milestoneRewards';
-import { TWeb3QuestState } from '@thxnetwork/dashboard/store/modules/web3Quests';
+import BaseBtnQuestEntries from '@thxnetwork/dashboard/components/buttons/BaseBtnQuestEntries.vue';
 import { hasPremiumAccess } from '@thxnetwork/common';
+import { TQuestState } from '@thxnetwork/dashboard/store/modules/pools';
+
 export const contentQuests = {
     'steam-quest': {
         tag: 'Steam Quest',
@@ -254,31 +245,33 @@ export const contentQuests = {
 @Component({
     components: {
         BaseCardTableHeader,
+        BaseBtnQuestEntries,
         BaseModalQuestDailyCreate,
         BaseModalQuestSocialCreate,
         BaseModalQuestCustomCreate,
         BaseModalQuestWeb3Create,
         BaseModalQuestInviteCreate,
         BaseModalQuestInviteClaims,
-        BaseModalQuestSocialEntries,
     },
     computed: mapGetters({
         pools: 'pools/all',
+        quests: 'pools/quests',
         totals: 'dailyRewards/totals',
-        dailyQuests: 'dailyRewards/all',
-        socialQuests: 'pointRewards/all',
-        customQuests: 'milestoneRewards/all',
-        inviteQuests: 'referralRewards/all',
-        web3Quests: 'web3Quests/all',
     }),
 })
 export default class QuestsView extends Vue {
     hasPremiumAccess = hasPremiumAccess;
     contentQuests = contentQuests;
+    actions = [
+        { label: 'Publish all', variant: 0 },
+        { label: 'Unpublish all', variant: 1 },
+        { label: 'Delete all', variant: 2 },
+    ];
     isLoading = true;
-    limit = 50;
+    limit = 25;
     page = 1;
-    selectedItems: { variant: QuestVariant; id: string }[] = [];
+    isCheckedAll = false;
+    selectedItems: TQuest[] = [];
     QuestVariant = QuestVariant;
     questModalComponentMap = {
         [QuestVariant.Daily]: 'BaseModalQuestDailyCreate',
@@ -301,48 +294,33 @@ export default class QuestsView extends Vue {
     isUnpublishedShown = true;
 
     pools!: IPools;
-    totals!: { [poolId: string]: number };
-
-    dailyQuests!: TDailyRewardState;
-    inviteQuests!: TReferralRewardState;
-    socialQuests!: TPointRewardState;
-    customQuests!: TMilestoneRewardState;
-    web3Quests!: TWeb3QuestState;
+    quests!: TQuestState;
 
     get pool() {
         return this.pools[this.$route.params.id];
     }
 
-    get allQuests() {
-        return [
-            ...(this.dailyQuests[this.$route.params.id] ? Object.values(this.dailyQuests[this.$route.params.id]) : []),
-            ...(this.inviteQuests[this.$route.params.id]
-                ? Object.values(this.inviteQuests[this.$route.params.id])
-                : []),
-            ...(this.socialQuests[this.$route.params.id]
-                ? Object.values(this.socialQuests[this.$route.params.id])
-                : []),
-            ...(this.customQuests[this.$route.params.id]
-                ? Object.values(this.customQuests[this.$route.params.id])
-                : []),
-            ...(this.web3Quests[this.$route.params.id] ? Object.values(this.web3Quests[this.$route.params.id]) : []),
-        ].filter((q) => (this.isUnpublishedShown ? true : q.isPublished));
+    get total() {
+        if (!this.quests[this.$route.params.id]) return 0;
+        return this.quests[this.$route.params.id].total;
     }
 
-    get rewardsByPage() {
-        return this.allQuests
-            .sort((a: any, b: any) => Number(a.index) - Number(b.index))
-            .filter((quest: TBaseReward) => quest.page === this.page)
-            .map((quest: any) => ({
-                index: quest,
-                checkbox: quest._id,
-                variant: quest.variant,
-                points: quest.amount || `${quest.amounts.length} days`,
-                title: quest.title,
-                entries: quest.entries,
-                quest: quest,
-            }))
-            .slice(0, this.limit);
+    get currentPage() {
+        if (!this.quests[this.$route.params.id]) return 1;
+        return this.quests[this.$route.params.id].page;
+    }
+
+    get allQuests() {
+        if (!this.quests[this.$route.params.id]) return [];
+        return this.quests[this.$route.params.id].results.map((quest: any) => ({
+            index: quest,
+            checkbox: quest._id,
+            variant: quest.variant,
+            points: quest.amount || `${quest.amounts.length} days`,
+            title: quest.title,
+            entries: quest.entryCount,
+            quest: quest,
+        }));
     }
 
     mounted() {
@@ -356,58 +334,46 @@ export default class QuestsView extends Vue {
 
     async listQuests() {
         this.isLoading = true;
-        await Promise.all([
-            this.$store.dispatch('dailyRewards/list', { page: this.page, pool: this.pool, limit: this.limit }),
-            this.$store.dispatch('pointRewards/list', { page: this.page, pool: this.pool, limit: this.limit }),
-            this.$store.dispatch('milestoneRewards/list', { page: this.page, pool: this.pool, limit: this.limit }),
-            this.$store.dispatch('referralRewards/list', { page: this.page, pool: this.pool, limit: this.limit }),
-            this.$store.dispatch('web3Quests/list', { page: this.page, pool: this.pool, limit: this.limit }),
-        ]);
+        const query = {
+            page: this.page,
+            pool: this.pool,
+            limit: this.limit,
+        };
+        if (!this.isUnpublishedShown) {
+            query['isPublished'] = true;
+        }
+        this.$store.dispatch('pools/listQuests', query);
         this.isLoading = false;
     }
 
-    onClickUp({ index }: { index: TBaseReward }, i: number) {
-        this.move(
-            index,
-            i,
-            i >= 0 ? i - 1 : 0,
-            this.allQuests.find((q) => q.index === i - 1),
-        );
+    onClickUp(quest: TQuest, i: number) {
+        const min = 0;
+        const targetIndex = i - 1;
+        const newIndex = targetIndex < min ? min : targetIndex;
+        const otherQuest = this.quests[this.$route.params.id].results[newIndex];
+
+        this.move(quest, i, newIndex, otherQuest);
     }
 
-    onClickDown({ index }: { index: TBaseReward }, i: number) {
-        this.move(
-            index,
-            i,
-            i >= this.allQuests.length - 1 ? this.allQuests.length - 1 : i + 1,
-            this.allQuests.find((q) => q.index === i + 1),
-        );
+    onClickDown(quest: TQuest, i: number) {
+        const maxIndex = this.allQuests.length - 1;
+        const targetIndex = i + 1;
+        const newIndex = targetIndex > maxIndex ? maxIndex : targetIndex;
+        const otherQuest = this.quests[this.$route.params.id].results[newIndex];
+
+        this.move(quest, i, newIndex, otherQuest);
     }
 
-    async move(quest: TBaseReward, i: number, newIndex: number, other?: TBaseReward) {
-        const promises: any = [];
-        const { _id, poolId, variant, page, update } = quest;
-        const p = quest.update({
-            _id,
-            poolId,
-            variant,
-            page,
-            update,
-            index: newIndex,
-        } as any);
-        promises.push(p);
+    async move(quest: TQuest, currentIndex: number, newIndex: number, other: TQuest) {
+        const p = [quest.update({ ...quest, index: newIndex })];
+        if (other) p.push(other.update({ ...other, index: currentIndex }));
+        await Promise.all(p);
+        this.listQuests();
+    }
 
-        if (!other) return;
-        const p2 = other.update({
-            _id: other._id,
-            poolId: other.poolId,
-            variant: other.variant,
-            page: other.page,
-            update: other.update,
-            index: i,
-        } as any);
-        promises.push(p2);
-        await Promise.all(promises);
+    onClickToggle(toggle: boolean) {
+        this.isUnpublishedShown = toggle;
+        this.listQuests();
     }
 
     onChangeLimit(limit: number) {
@@ -416,11 +382,8 @@ export default class QuestsView extends Vue {
     }
 
     onChecked(checked: boolean) {
-        this.selectedItems = checked
-            ? (this.rewardsByPage.map((r) => {
-                  return { id: r.id, variant: r.variant };
-              }) as { variant: QuestVariant; id: string }[])
-            : [];
+        this.selectedItems = checked ? this.quests[this.$route.params.id].results : [];
+        this.isCheckedAll = checked;
     }
 
     onChangePage(page: number) {
@@ -428,33 +391,20 @@ export default class QuestsView extends Vue {
         this.listQuests();
     }
 
-    onClickDelete(quest: TBaseReward) {
-        if (!quest || !quest._id) return;
-        const { id } = this.$route.params;
-
-        switch (quest.variant) {
-            case QuestVariant.Daily:
-                return this.$store.dispatch('dailyRewards/delete', this.dailyQuests[id][quest._id]);
-            case QuestVariant.Invite:
-                return this.$store.dispatch('referralRewards/delete', this.inviteQuests[id][quest._id]);
-            case QuestVariant.Discord:
-            case QuestVariant.YouTube:
-            case QuestVariant.Twitter:
-                return this.$store.dispatch('pointRewards/delete', this.socialQuests[id][quest._id]);
-            case QuestVariant.Custom:
-                return this.$store.dispatch('milestoneRewards/delete', this.customQuests[id][quest._id]);
-            case QuestVariant.Web3:
-                return this.$store.dispatch('web3Quests/delete', this.web3Quests[id][quest._id]);
-        }
+    onClickDelete(quest: TQuest) {
+        quest.delete(quest);
     }
 
-    onClickAction(action: { variant: number; label: string }) {
-        switch (action.variant) {
-            case 0:
-                for (const item of Object.values(this.selectedItems)) {
-                    this.onClickDelete(item);
-                }
-        }
+    async onClickAction(action: { variant: number }) {
+        // 1. Publish, 2. Unpublish, 3. Delete
+        const mappers = {
+            0: (quest) => quest.update({ ...quest, isPublished: true }),
+            1: (quest) => quest.update({ ...quest, isPublished: false }),
+            2: (quest) => quest.delete(quest),
+        };
+        await Promise.all(this.selectedItems.map(mappers[action.variant]));
+        this.isCheckedAll = false;
+        this.listQuests();
     }
 }
 </script>

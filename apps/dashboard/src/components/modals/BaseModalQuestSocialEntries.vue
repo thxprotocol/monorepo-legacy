@@ -45,7 +45,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import type { TPointReward, TPointRewardClaim, TPool } from '@thxnetwork/types/interfaces';
+import type { TPointReward, TPointRewardClaim, TPool, TQuestEntry } from '@thxnetwork/types/interfaces';
 import { mapGetters } from 'vuex';
 import { format } from 'date-fns';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
@@ -85,14 +85,15 @@ export default class BaseModalQuestSocialEntries extends Vue {
     @Prop() id!: string;
     @Prop() pool!: TPool;
     @Prop() quest!: TPointReward;
+    @Prop() entries!: TQuestEntry[];
 
     get total() {
         return this.totals[this.pool._id];
     }
 
     get entriesByPage() {
-        if (!this.quest.entries) return [];
-        return Object.values(this.quest.entries)
+        if (!this.entries) return [];
+        return this.entries
             .sort((a: TPointRewardClaim, b: TPointRewardClaim) => (a.createdAt < b.createdAt ? 1 : -1))
             .map((entry: any) => ({
                 account: parseAccount({ id: entry._id, account: entry.account }),

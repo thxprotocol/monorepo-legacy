@@ -4,6 +4,7 @@ import ReadPointRewards from './get.controller';
 import CreatePointRewards from './post.controller';
 import DeletePointRewards from './delete.controller';
 import UpdatePointRewards from './patch.controller';
+import ListPointRewardEntries from './entries/list.controller';
 import { upload } from '@thxnetwork/api/util/multer';
 import { QuestVariant } from '@thxnetwork/common/lib/types';
 import { assertPoolAccess, assertQuestAccess, assertRequestInput } from '@thxnetwork/api/middlewares';
@@ -39,6 +40,14 @@ router.delete(
     assertQuestAccess(QuestVariant.Twitter),
     assertRequestInput(DeletePointRewards.validation),
     DeletePointRewards.controller,
+);
+
+router.get(
+    '/:id/entries',
+    assertPoolAccess,
+    assertQuestAccess(QuestVariant.Twitter),
+    assertRequestInput(ListPointRewardEntries.validation),
+    ListPointRewardEntries.controller,
 );
 
 export default router;

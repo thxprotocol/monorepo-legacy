@@ -1,12 +1,11 @@
-import { v4 } from 'uuid';
 import { Request, Response } from 'express';
 import { body, check } from 'express-validator';
-import { Web3Quest } from '@thxnetwork/api/models/Web3Quest';
 import { isAddress } from 'web3-utils';
 import { TInfoLink } from '@thxnetwork/types/interfaces';
 import { isValidUrl } from '@thxnetwork/api/util/url';
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId, QuestVariant } from '@thxnetwork/types/enums';
 import ImageService from '@thxnetwork/api/services/ImageService';
+import QuestService from '@thxnetwork/api/services/QuestService';
 
 const validation = [
     body('index').isInt(),
@@ -37,9 +36,7 @@ const validation = [
 const controller = async (req: Request, res: Response) => {
     const poolId = req.header('X-PoolId');
     const image = req.file && (await ImageService.upload(req.file));
-    const quest = await Web3Quest.create({ ...req.body, uuid: v4(), image, poolId });
-
-    // PoolService.sendNotification(NoticficationVariant.Web3, quest);
+    const quest = await QuestService.create(QuestVariant.Web3, poolId, { ...req.body, image });
 
     res.status(201).json(quest);
 };

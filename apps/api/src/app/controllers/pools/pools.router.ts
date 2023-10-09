@@ -17,6 +17,8 @@ import CreatePoolTransfer from './transfers/post.controller';
 import DeletePoolTransfer from './transfers/delete.controller';
 import CreatePoolSubscription from './subscriptions/post.controller';
 import ReadPoolSubscription from './subscriptions/get.controller';
+import ListPoolQuests from './quests/list.controller';
+import ListPoolQuestEntries from './quests/entries/list.controller';
 import ListPoolParticipants from './participants/list.controller';
 import CreatePoolCollaborator from './collaborators/post.controller';
 import DeletePoolCollaborator from './collaborators/delete.controller';
@@ -104,6 +106,23 @@ router.get(
     assertPoolAccess,
     assertRequestInput(ReadPool.validation),
     ReadPool.controller,
+);
+router.get(
+    '/:id/quests',
+    checkJwt,
+    corsHandler,
+    guard.check(['pools:read']),
+    assertPoolAccess,
+    ListPoolQuests.controller,
+);
+
+router.get(
+    '/:id/quests/:questId/entries',
+    checkJwt,
+    corsHandler,
+    guard.check(['pools:read']),
+    assertPoolAccess,
+    ListPoolQuestEntries.controller,
 );
 router.get(
     '/:id/analytics',

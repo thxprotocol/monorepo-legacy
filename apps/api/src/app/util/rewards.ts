@@ -90,7 +90,13 @@ export async function createDummyContents(pool: AssetPoolDocument) {
         index: 2,
         platform: RewardConditionPlatform.Twitter,
         interaction: RewardConditionInteraction.TwitterFollow,
-        content: '',
+        content: '1035182963330306049',
+        contentMetadata: JSON.stringify({
+            id: '1035182963330306049',
+            name: "THX Network - Rewards in Any App 🎁 Techstars '22",
+            profileImgUrl: 'https://pbs.twimg.com/profile_images/1640708099177877505/4U-ya--t_normal.jpg',
+            username: 'thxprotocol',
+        }),
         isPublished: true,
     });
 

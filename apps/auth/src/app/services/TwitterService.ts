@@ -5,6 +5,7 @@ import { AUTH_URL, TWITTER_CLIENT_ID, TWITTER_CLIENT_SECRET } from '../config/se
 import { AccountDocument } from '../models/Account';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IAccessToken } from '@thxnetwork/types/interfaces';
+import { formatDistance } from 'date-fns';
 
 const ERROR_NO_DATA = 'Could not find an youtube data for this accesstoken';
 const ERROR_NOT_AUTHORIZED = 'Not authorized for Twitter API';
@@ -32,8 +33,67 @@ export class TwitterService {
         }
         return true;
     }
+
+    static async getUserByUsername(account: AccountDocument, username: string) {
+        const { accessToken } = account.getToken(AccessTokenKind.Twitter);
+        const { data } = await twitterClient({
+            method: 'GET',
+            url: `/users/by/username/${username}`,
+            headers: { Authorization: `Bearer ${accessToken}` },
+            params: {
+                'user.fields': 'profile_image_url',
+            },
+        });
+        return data;
+    }
+
+    static async getUser(account: AccountDocument, userId: string) {
+        const { accessToken } = account.getToken(AccessTokenKind.Twitter);
+        const { data } = await twitterClient({
+            method: 'GET',
+            url: `/users/${userId}`,
+            headers: { Authorization: `Bearer ${accessToken}` },
+            params: {
+                'user.fields': 'profile_image_url',
+            },
+        });
+        return data;
+    }
+
+    // @dev Added rate limit logic here as the tweet endpoint rate limit is rather low
+    static async getTweet(account: AccountDocument, tweetId: string) {
+        const { accessToken } = account.getToken(AccessTokenKind.Twitter);
+        try {
+            const res = await twitterClient({
+                method: 'GET',
+                url: `/tweets`,
+                headers: { Authorization: `Bearer ${accessToken}` },
+                params: {
+                    ids: tweetId,
+                    expansions: 'author_id',
+                },
+            });
+            return res.data;
+        } catch (res) {
+            // Indicates rate limit has been hit
+            if (res.status === 429) {
+                const limit = res.headers['x-rate-limit-limit'];
+                const resetTime = Number(res.headers['x-rate-limit-reset']);
+                const seconds = resetTime - Math.ceil(Date.now() / 1000);
+
+                return {
+                    error: `X API allows for a max of ${limit} requests within a 15 minute window. Try again in ${formatDistance(
+                        0,
+                        seconds * 1000,
+                        { includeSeconds: true },
+                    )}.`,
+                };
+            }
+        }
+    }
+
     static async validateLike(accessToken: string, channelItem: string) {
-        const user = await this.getUser(accessToken); // Should pass IAccessToken so we dont have to request the user here
+        const user = await this.getMe(accessToken); // Should pass IAccessToken so we dont have to request the user here
         if (!user) throw new Error('Could not find Twitter user.');
 
         const maxResults = 100;
@@ -45,9 +105,7 @@ export class TwitterService {
             const { data } = await twitterClient({
                 url: `/tweets/${channelItem}/liking_users`,
                 method: 'GET',
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
+                headers: { Authorization: `Bearer ${accessToken}` },
                 params,
             });
 
@@ -63,7 +121,7 @@ export class TwitterService {
     }
 
     static async validateRetweet(accessToken: string, channelItem: string) {
-        const user = await this.getUser(accessToken);
+        const user = await this.getMe(accessToken);
         if (!user) throw new Error('Could not find Twitter user.');
 
         const r = await twitterClient({
@@ -81,7 +139,7 @@ export class TwitterService {
     }
 
     static async validateFollow(accessToken: string, channelItem: string) {
-        const user = await this.getUser(accessToken);
+        const user = await this.getMe(accessToken);
         if (!user) throw new Error('Could not find Twitter user.');
 
         const { data } = await twitterClient({
@@ -98,7 +156,7 @@ export class TwitterService {
         return data.data.following;
     }
 
-    static async getUser(accessToken: string) {
+    static async getMe(accessToken: string) {
         const { data } = await twitterClient({
             url: '/users/me',
             method: 'GET',
@@ -167,7 +225,7 @@ export class TwitterService {
             },
             data: body,
         });
-        const user = await this.getUser(data.access_token);
+        const user = await this.getMe(data.access_token);
         const expiry = data.expires_in ? Date.now() + Number(data.expires_in) * 1000 : undefined;
 
         return {

@@ -16,18 +16,15 @@
         <b-spinner v-if="isLoading" small variant="primary" />
         <b-card class="mt-3" v-if="isValidTweetUrl && preview">
             <template #header>
-                <b-link class="text-dark" target="_blank" :href="`https://twitter.com/${preview.user.username}`">
-                    {{ preview.user.name }}
+                <b-link class="text-dark" target="_blank" :href="`https://twitter.com/${preview.username}`">
+                    {{ preview.name }}
                 </b-link>
             </template>
-            <div v-html="preview.tweet.text"></div>
+            <div v-html="preview.text"></div>
         </b-card>
-        <b-alert show class="mt-3 mb-0" variant="warning" v-if="isTweetNotFound">
-            Sorry! We could not find this tweet.
-        </b-alert>
-        <b-alert show class="mt-3 mb-0" variant="dark" v-if="error">
-            Twitter API preview requests have reached their limit for this 15 minute window. Please try again in 15
-            minutes!
+        <b-alert show class="mt-3 mb-0" variant="warning" v-if="error">
+            <i class="fas fa-info-circle mr-1" />
+            {{ error }}
         </b-alert>
     </b-form-group>
 </template>
@@ -42,17 +39,21 @@ import { mapGetters } from 'vuex';
 })
 export default class BaseDropdownTwitterTweets extends Vue {
     url = '';
-    preview: { tweet: { text: string }; user: { username: string; name: string } } | null = null;
+    preview: { url: string; text: string; username: string; name: string } | null = null;
     error = '';
     isLoading = false;
-    isTweetNotFound = false;
 
     @Prop({ required: false }) content!: string;
+    @Prop({ required: false }) contentMetadata!: any;
 
     // https://twitter.com/twitter/status/1603121182101970945
     mounted() {
         this.url = this.content ? 'https://twitter.com/twitter/status/' + this.content : '';
-        if (this.url && this.isValidTweetUrl) this.getTweet();
+        if (this.url && this.isValidTweetUrl && !this.contentMetadata) {
+            this.getTweet();
+        } else if (this.url && this.isValidTweetUrl && this.contentMetadata) {
+            this.preview = JSON.parse(this.contentMetadata);
+        }
     }
 
     get isValidTweetUrl() {
@@ -73,7 +74,6 @@ export default class BaseDropdownTwitterTweets extends Vue {
             this.preview = null;
             this.error = '';
             this.isLoading = false;
-            this.isTweetNotFound = false;
         }
 
         if (!this.isValidTweetUrl) return;
@@ -84,6 +84,7 @@ export default class BaseDropdownTwitterTweets extends Vue {
         if (!tweetId) return;
 
         this.isLoading = true;
+        this.error = '';
 
         try {
             const { data } = await axios({
@@ -92,20 +93,25 @@ export default class BaseDropdownTwitterTweets extends Vue {
                 data: { tweetId },
             });
 
-            if (data) {
-                this.preview = data;
+            // Display rate limit error info if available
+            if (data.error) {
+                this.error = data.error;
+                this.preview = null;
+            } else if (data) {
+                this.preview = {
+                    url: this.url,
+                    username: data.user.username,
+                    name: data.user.name,
+                    text: data.tweet.text,
+                };
                 this.$emit('selected', {
                     content: tweetId,
-                    contentMetadata: {
-                        url,
-                        username: data.user.username,
-                        text: data.tweet.text,
-                    },
+                    contentMetadata: this.preview,
                 });
             }
-            this.isTweetNotFound = !!data;
         } catch (error) {
-            this.error = error as string;
+            console.error(error);
+            this.error = 'We did not succeed to retrieve the requested Twitter data...';
             this.preview = null;
         } finally {
             this.isLoading = false;

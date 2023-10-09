@@ -140,7 +140,8 @@ export default class BaseCardRewardCondition extends Vue {
             platform: this.platform.type,
             interaction: this.interaction.type,
             content: this.content,
-            contentMetadata: Object.keys(this.contentMetadata).length ? JSON.stringify(this.contentMetadata) : '',
+            contentMetadata:
+                typeof this.contentMetadata === 'object' ? JSON.stringify(this.contentMetadata) : this.contentMetadata,
         });
     }
 }

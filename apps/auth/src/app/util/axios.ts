@@ -11,7 +11,7 @@ export async function twitterClient(config: AxiosRequestConfig) {
         const client = axios.create({ ...config, baseURL: TWITTER_API_ENDPOINT });
         return await client(config);
     } catch (error) {
-        console.error(error);
+        throw error.response;
     }
 }
 

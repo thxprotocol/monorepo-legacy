@@ -1,12 +1,12 @@
 import { TDailyReward } from '@thxnetwork/types/interfaces/DailyReward';
 import mongoose from 'mongoose';
-import { rewardBaseSchema } from './ERC20Perk';
+import { questBaseSchema } from './ERC20Perk';
 
 export type DailyRewardDocument = mongoose.Document & TDailyReward;
 
 const schema = new mongoose.Schema(
     {
-        ...rewardBaseSchema,
+        ...questBaseSchema,
         amounts: [Number],
         isEnabledWebhookQualification: Boolean,
     },

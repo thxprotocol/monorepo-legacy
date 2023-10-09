@@ -19,7 +19,12 @@ const validation = [
         .custom((value, { req }) => {
             return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
         }),
-    body('successUrl').optional().isURL({ require_tld: false }),
+    body('successUrl')
+        .optional()
+        .custom((value) => {
+            if (value === '' || isValidUrl(value)) return true;
+            return false;
+        }),
     body('index').optional().isInt(),
     body('infoLinks')
         .optional()
