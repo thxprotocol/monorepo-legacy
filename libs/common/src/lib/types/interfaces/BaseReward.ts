@@ -44,4 +44,5 @@ export type TBaseReward = {
     index?: number;
     isPublished: boolean;
     update: (payload: TBaseReward) => Promise<void>;
+    delete: (payload: TBaseReward) => Promise<void>;
 };

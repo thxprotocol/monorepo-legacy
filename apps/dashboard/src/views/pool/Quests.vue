@@ -43,7 +43,7 @@
                                 :variant="variant"
                                 :is="questModalComponentMap[QuestVariant[variant]]"
                                 :id="`${questModalComponentMap[QuestVariant[variant]]}-${variant}`"
-                                :total="allQuests.length"
+                                :total="quests[pool._id] && quests[pool._id].total"
                                 :pool="pool"
                             />
                         </b-media>
@@ -341,7 +341,7 @@ export default class QuestsView extends Vue {
         this.isLoading = false;
     }
 
-    onClickUp({ index }: { index: TBaseReward }, i: number) {
+    onClickUp({ index }: { index: TQuest }, i: number) {
         this.move(
             index,
             i,
@@ -350,7 +350,7 @@ export default class QuestsView extends Vue {
         );
     }
 
-    onClickDown({ index }: { index: TBaseReward }, i: number) {
+    onClickDown({ index }: { index: TQuest }, i: number) {
         this.move(
             index,
             i,
@@ -359,30 +359,16 @@ export default class QuestsView extends Vue {
         );
     }
 
-    async move(quest: TBaseReward, i: number, newIndex: number, other?: TBaseReward) {
+    async move(quest: TQuest, i: number, newIndex: number, other?: TQuest) {
         const promises: any = [];
-        const { _id, poolId, variant, page, update } = quest;
-        const p = quest.update({
-            _id,
-            poolId,
-            variant,
-            page,
-            update,
-            index: newIndex,
-        } as any);
+        const p = quest.update({ ...quest, index: newIndex });
         promises.push(p);
 
         if (!other) return;
-        const p2 = other.update({
-            _id: other._id,
-            poolId: other.poolId,
-            variant: other.variant,
-            page: other.page,
-            update: other.update,
-            index: i,
-        } as any);
+        const p2 = other.update({ ...other, index: i });
         promises.push(p2);
         await Promise.all(promises);
+        this.listQuests();
     }
 
     onChangeLimit(limit: number) {
@@ -399,30 +385,19 @@ export default class QuestsView extends Vue {
         this.listQuests();
     }
 
-    onClickDelete(quest: TBaseReward) {
-        switch (quest.variant) {
-            case QuestVariant.Daily:
-                return this.$store.dispatch('dailyRewards/delete', quest);
-            case QuestVariant.Invite:
-                return this.$store.dispatch('referralRewards/delete', quest);
-            case QuestVariant.Discord:
-            case QuestVariant.YouTube:
-            case QuestVariant.Twitter:
-                return this.$store.dispatch('pointRewards/delete', quest);
-            case QuestVariant.Custom:
-                return this.$store.dispatch('milestoneRewards/delete', quest);
-            case QuestVariant.Web3:
-                return this.$store.dispatch('web3Quests/delete', quest);
-        }
-        this.listQuests();
+    onClickDelete(quest: TQuest) {
+        quest.delete(quest);
     }
 
     onClickAction(action: { variant: number }) {
         switch (action.variant) {
-            case 0: // Delete
-                for (const quest of Object.values(this.selectedItems)) {
+            // Delete
+            case 0: {
+                for (const quest of this.selectedItems) {
                     this.onClickDelete(quest);
                 }
+                this.listQuests();
+            }
         }
     }
 }
