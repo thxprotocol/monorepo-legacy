@@ -56,9 +56,9 @@
                 :page="page"
                 :limit="limit"
                 :pool="pool"
-                :total-rows="totals[pool._id]"
+                :total-rows="total"
                 :selectedItems="selectedItems"
-                :actions="[{ variant: 0, label: `Delete quests` }]"
+                :actions="actions"
                 toggle-label="Show all"
                 @toggle="isUnpublishedShown = $event"
                 @click-action="onClickAction"
@@ -70,7 +70,7 @@
                 id="table-quests"
                 hover
                 :busy="isLoading"
-                :items="rewardsByPage"
+                :items="allQuests"
                 responsive="lg"
                 show-empty
                 :tbody-tr-class="rowClass"
@@ -98,7 +98,7 @@
                     </div>
                 </template>
                 <template #cell(checkbox)="{ item }">
-                    <b-form-checkbox :value="{ id: item.quest._id, variant: item.variant }" v-model="selectedItems" />
+                    <b-form-checkbox :value="item.quest" v-model="selectedItems" />
                 </template>
                 <template #cell(variant)="{ item }">
                     <b-badge variant="light" class="p-2">{{ QuestVariant[item.variant] }} </b-badge>
@@ -116,20 +116,14 @@
                         <BaseModalQuestInviteClaims
                             :id="`modalReferralQuestClaims${item.quest._id}`"
                             :pool="pool"
-                            :reward="allQuests.find((q) => q._id === item.quest._id)"
+                            :reward="quests[$route.params.id].results.find((q) => q._id === item.quest._id)"
                         />
                     </template>
-                    <template v-else>
-                        <b-link v-b-modal="`modalQuestSocialEntries${item.quest._id}`" v-if="item.entries">
-                            <small><i class="fas text-muted fa-users mr-1" /></small>
-                            {{ item.entries.length }}
-                        </b-link>
-                        <BaseModalQuestSocialEntries
-                            :id="`modalQuestSocialEntries${item.quest._id}`"
-                            :pool="pool"
-                            :quest="allQuests.find((q) => q._id === item.quest._id)"
-                        />
-                    </template>
+                    <BaseBtnQuestEntries
+                        v-if="[QuestVariant.Twitter, QuestVariant.YouTube, QuestVariant.Discord].includes(item.variant)"
+                        :pool="pool"
+                        :quest="item.quest"
+                    />
                 </template>
                 <template #cell(quest)="{ item }">
                     <b-dropdown variant="link" size="sm" right no-caret>
@@ -147,7 +141,7 @@
                         :id="questModalComponentMap[item.variant] + item.quest._id"
                         :pool="pool"
                         :total="allQuests.length"
-                        :reward="allQuests.find((q) => q._id === item.quest._id)"
+                        :reward="quests[$route.params.id].results.find((q) => q._id === item.quest._id)"
                     />
                 </template>
             </BTable>
@@ -159,7 +153,7 @@
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { TBaseReward } from '@thxnetwork/types/interfaces';
+import { TBaseReward, TQuest } from '@thxnetwork/types/interfaces';
 import { QuestVariant } from '@thxnetwork/types/enums';
 import BaseModalQuestDailyCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestDailyCreate.vue';
 import BaseModalQuestSocialCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestSocialCreate.vue';
@@ -167,14 +161,11 @@ import BaseModalQuestInviteCreate from '@thxnetwork/dashboard/components/modals/
 import BaseModalQuestCustomCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestCustomCreate.vue';
 import BaseModalQuestWeb3Create from '@thxnetwork/dashboard/components/modals/BaseModalQuestWeb3Create.vue';
 import BaseModalQuestInviteClaims from '@thxnetwork/dashboard/components/modals/BaseModalQuestInviteClaims.vue';
-import BaseModalQuestSocialEntries from '@thxnetwork/dashboard/components/modals/BaseModalQuestSocialEntries.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
-import { TDailyRewardState } from '@thxnetwork/dashboard/store/modules/dailyRewards';
-import { TPointRewardState } from '@thxnetwork/dashboard/store/modules/pointRewards';
-import { TReferralRewardState } from '@thxnetwork/dashboard/store/modules/referralRewards';
-import { TMilestoneRewardState } from '@thxnetwork/dashboard/store/modules/milestoneRewards';
-import { TWeb3QuestState } from '@thxnetwork/dashboard/store/modules/web3Quests';
+import BaseBtnQuestEntries from '@thxnetwork/dashboard/components/buttons/BaseBtnQuestEntries.vue';
 import { hasPremiumAccess } from '@thxnetwork/common';
+import { TQuestState } from '@thxnetwork/dashboard/store/modules/pools';
+
 export const contentQuests = {
     'steam-quest': {
         tag: 'Steam Quest',
@@ -254,31 +245,28 @@ export const contentQuests = {
 @Component({
     components: {
         BaseCardTableHeader,
+        BaseBtnQuestEntries,
         BaseModalQuestDailyCreate,
         BaseModalQuestSocialCreate,
         BaseModalQuestCustomCreate,
         BaseModalQuestWeb3Create,
         BaseModalQuestInviteCreate,
         BaseModalQuestInviteClaims,
-        BaseModalQuestSocialEntries,
     },
     computed: mapGetters({
         pools: 'pools/all',
+        quests: 'pools/quests',
         totals: 'dailyRewards/totals',
-        dailyQuests: 'dailyRewards/all',
-        socialQuests: 'pointRewards/all',
-        customQuests: 'milestoneRewards/all',
-        inviteQuests: 'referralRewards/all',
-        web3Quests: 'web3Quests/all',
     }),
 })
 export default class QuestsView extends Vue {
     hasPremiumAccess = hasPremiumAccess;
     contentQuests = contentQuests;
+    actions = [{ label: 'Delete all', variant: 0 }];
     isLoading = true;
-    limit = 50;
+    limit = 20;
     page = 1;
-    selectedItems: { variant: QuestVariant; id: string }[] = [];
+    selectedItems: TQuest[] = [];
     QuestVariant = QuestVariant;
     questModalComponentMap = {
         [QuestVariant.Daily]: 'BaseModalQuestDailyCreate',
@@ -301,48 +289,33 @@ export default class QuestsView extends Vue {
     isUnpublishedShown = true;
 
     pools!: IPools;
-    totals!: { [poolId: string]: number };
-
-    dailyQuests!: TDailyRewardState;
-    inviteQuests!: TReferralRewardState;
-    socialQuests!: TPointRewardState;
-    customQuests!: TMilestoneRewardState;
-    web3Quests!: TWeb3QuestState;
+    quests!: TQuestState;
 
     get pool() {
         return this.pools[this.$route.params.id];
     }
 
-    get allQuests() {
-        return [
-            ...(this.dailyQuests[this.$route.params.id] ? Object.values(this.dailyQuests[this.$route.params.id]) : []),
-            ...(this.inviteQuests[this.$route.params.id]
-                ? Object.values(this.inviteQuests[this.$route.params.id])
-                : []),
-            ...(this.socialQuests[this.$route.params.id]
-                ? Object.values(this.socialQuests[this.$route.params.id])
-                : []),
-            ...(this.customQuests[this.$route.params.id]
-                ? Object.values(this.customQuests[this.$route.params.id])
-                : []),
-            ...(this.web3Quests[this.$route.params.id] ? Object.values(this.web3Quests[this.$route.params.id]) : []),
-        ].filter((q) => (this.isUnpublishedShown ? true : q.isPublished));
+    get total() {
+        if (!this.quests[this.$route.params.id]) return 0;
+        return this.quests[this.$route.params.id].total;
     }
 
-    get rewardsByPage() {
-        return this.allQuests
-            .sort((a: any, b: any) => Number(a.index) - Number(b.index))
-            .filter((quest: TBaseReward) => quest.page === this.page)
-            .map((quest: any) => ({
-                index: quest,
-                checkbox: quest._id,
-                variant: quest.variant,
-                points: quest.amount || `${quest.amounts.length} days`,
-                title: quest.title,
-                entries: quest.entries,
-                quest: quest,
-            }))
-            .slice(0, this.limit);
+    get currentPage() {
+        if (!this.quests[this.$route.params.id]) return 1;
+        return this.quests[this.$route.params.id].page;
+    }
+
+    get allQuests() {
+        if (!this.quests[this.$route.params.id]) return [];
+        return this.quests[this.$route.params.id].results.map((quest: any) => ({
+            index: quest,
+            checkbox: quest._id,
+            variant: quest.variant,
+            points: quest.amount || `${quest.amounts.length} days`,
+            title: quest.title,
+            entries: quest.entryCount,
+            quest: quest,
+        }));
     }
 
     mounted() {
@@ -356,13 +329,15 @@ export default class QuestsView extends Vue {
 
     async listQuests() {
         this.isLoading = true;
-        await Promise.all([
-            this.$store.dispatch('dailyRewards/list', { page: this.page, pool: this.pool, limit: this.limit }),
-            this.$store.dispatch('pointRewards/list', { page: this.page, pool: this.pool, limit: this.limit }),
-            this.$store.dispatch('milestoneRewards/list', { page: this.page, pool: this.pool, limit: this.limit }),
-            this.$store.dispatch('referralRewards/list', { page: this.page, pool: this.pool, limit: this.limit }),
-            this.$store.dispatch('web3Quests/list', { page: this.page, pool: this.pool, limit: this.limit }),
-        ]);
+        const query = {
+            page: this.page,
+            pool: this.pool,
+            limit: this.limit,
+        };
+        if (!this.isUnpublishedShown) {
+            query['isPublished'] = true;
+        }
+        this.$store.dispatch('pools/listQuests', query);
         this.isLoading = false;
     }
 
@@ -371,7 +346,7 @@ export default class QuestsView extends Vue {
             index,
             i,
             i >= 0 ? i - 1 : 0,
-            this.allQuests.find((q) => q.index === i - 1),
+            this.quests[this.$route.params.id].results.find((q) => q.index === i - 1),
         );
     }
 
@@ -380,7 +355,7 @@ export default class QuestsView extends Vue {
             index,
             i,
             i >= this.allQuests.length - 1 ? this.allQuests.length - 1 : i + 1,
-            this.allQuests.find((q) => q.index === i + 1),
+            this.quests[this.$route.params.id].results.find((q) => q.index === i + 1),
         );
     }
 
@@ -416,11 +391,7 @@ export default class QuestsView extends Vue {
     }
 
     onChecked(checked: boolean) {
-        this.selectedItems = checked
-            ? (this.rewardsByPage.map((r) => {
-                  return { id: r.id, variant: r.variant };
-              }) as { variant: QuestVariant; id: string }[])
-            : [];
+        this.selectedItems = checked ? this.quests[this.$route.params.id].results : [];
     }
 
     onChangePage(page: number) {
@@ -429,30 +400,28 @@ export default class QuestsView extends Vue {
     }
 
     onClickDelete(quest: TBaseReward) {
-        if (!quest || !quest._id) return;
-        const { id } = this.$route.params;
-
         switch (quest.variant) {
             case QuestVariant.Daily:
-                return this.$store.dispatch('dailyRewards/delete', this.dailyQuests[id][quest._id]);
+                return this.$store.dispatch('dailyRewards/delete', quest);
             case QuestVariant.Invite:
-                return this.$store.dispatch('referralRewards/delete', this.inviteQuests[id][quest._id]);
+                return this.$store.dispatch('referralRewards/delete', quest);
             case QuestVariant.Discord:
             case QuestVariant.YouTube:
             case QuestVariant.Twitter:
-                return this.$store.dispatch('pointRewards/delete', this.socialQuests[id][quest._id]);
+                return this.$store.dispatch('pointRewards/delete', quest);
             case QuestVariant.Custom:
-                return this.$store.dispatch('milestoneRewards/delete', this.customQuests[id][quest._id]);
+                return this.$store.dispatch('milestoneRewards/delete', quest);
             case QuestVariant.Web3:
-                return this.$store.dispatch('web3Quests/delete', this.web3Quests[id][quest._id]);
+                return this.$store.dispatch('web3Quests/delete', quest);
         }
+        this.listQuests();
     }
 
-    onClickAction(action: { variant: number; label: string }) {
+    onClickAction(action: { variant: number }) {
         switch (action.variant) {
-            case 0:
-                for (const item of Object.values(this.selectedItems)) {
-                    this.onClickDelete(item);
+            case 0: // Delete
+                for (const quest of Object.values(this.selectedItems)) {
+                    this.onClickDelete(quest);
                 }
         }
     }

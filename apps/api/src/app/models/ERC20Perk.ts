@@ -1,9 +1,10 @@
 import mongoose from 'mongoose';
 import { TERC20Perk } from '@thxnetwork/types/';
 
-export const rewardBaseSchema = {
+export const questBaseSchema = {
     uuid: String,
     poolId: { type: String, index: 'hashed' },
+    variant: Number,
     title: String,
     description: String,
     image: String,

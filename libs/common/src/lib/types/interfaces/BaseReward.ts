@@ -6,7 +6,7 @@ export type TInfoLink = {
 };
 
 export type TBasePerk = {
-    _id?: string;
+    _id: string;
     uuid: string;
     poolId: string;
     title: string;
@@ -30,7 +30,7 @@ export type TBasePerk = {
 };
 
 export type TBaseReward = {
-    _id?: string;
+    _id: string;
     uuid: string;
     poolId: string;
     title: string;

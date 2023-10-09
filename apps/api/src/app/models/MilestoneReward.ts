@@ -1,12 +1,12 @@
 import mongoose from 'mongoose';
 import { TMilestoneReward } from '@thxnetwork/types/';
-import { rewardBaseSchema } from '@thxnetwork/api/models/ERC20Perk';
+import { questBaseSchema } from '@thxnetwork/api/models/ERC20Perk';
 
 export type MilestoneRewardDocument = mongoose.Document & TMilestoneReward;
 
 const schema = new mongoose.Schema(
     {
-        ...rewardBaseSchema,
+        ...questBaseSchema,
         amount: Number,
         limit: Number,
     },

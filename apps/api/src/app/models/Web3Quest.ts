@@ -1,12 +1,12 @@
 import mongoose from 'mongoose';
 import { TWeb3Quest } from '@thxnetwork/types/interfaces';
-import { rewardBaseSchema } from '@thxnetwork/api/models/ERC20Perk';
+import { questBaseSchema } from '@thxnetwork/api/models/ERC20Perk';
 
 export type Web3QuestDocument = mongoose.Document & TWeb3Quest;
 
 const schema = new mongoose.Schema(
     {
-        ...rewardBaseSchema,
+        ...questBaseSchema,
         amount: Number,
         chainId: Number,
         contracts: Array({

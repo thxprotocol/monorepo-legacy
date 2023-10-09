@@ -1,12 +1,12 @@
 import { TPointReward } from '@thxnetwork/types/interfaces/PointReward';
 import mongoose from 'mongoose';
-import { rewardBaseSchema } from './ERC20Perk';
+import { questBaseSchema } from './ERC20Perk';
 
 export type PointRewardDocument = mongoose.Document & TPointReward;
 
 const schema = new mongoose.Schema(
     {
-        ...rewardBaseSchema,
+        ...questBaseSchema,
         amount: Number,
         platform: Number,
         interaction: Number,

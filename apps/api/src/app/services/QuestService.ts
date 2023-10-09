@@ -95,7 +95,7 @@ async function update(variant: QuestVariant, questId: string, data: Partial<TQue
 
 async function create(variant: QuestVariant, poolId: string, data: Partial<TQuest>) {
     const model = getModel(variant);
-    const quest = await model.create({ ...data, poolId, uuid: v4() });
+    const quest = await model.create({ ...data, poolId, variant, uuid: v4() });
 
     if (data.isPublished) {
         await notify(variant, quest);

@@ -1,4 +1,11 @@
-import type { TAccount, TPool, TPoolSettings, TPoolTransferResponse } from '@thxnetwork/types/interfaces';
+import type {
+    TAccount,
+    TPool,
+    TPoolSettings,
+    TPoolTransferResponse,
+    TQuest,
+    TQuestEntry,
+} from '@thxnetwork/types/interfaces';
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
@@ -98,15 +105,41 @@ export interface IPoolAnalyticsMetrics {
     [id: string]: IPoolAnalyticMetrics;
 }
 
+export type TQuestState = {
+    [poolId: string]: {
+        total: number;
+        limit: number;
+        page: number;
+        results: TQuest[];
+    };
+};
+
+export type TQuestEntryState = {
+    [poolId: string]: {
+        [questId: string]: TQuestEntry[];
+    };
+};
+
 @Module({ namespaced: true })
 class PoolModule extends VuexModule {
     _all: IPools = {};
+    _quests: TQuestState = {};
+    _entries: TQuestEntryState = {};
+
     _analytics: IPoolAnalytics = {};
     _analyticsLeaderBoard: IPoolAnalyticsLeaderBoard = {};
     _analyticsMetrics: IPoolAnalyticsLeaderBoard = {};
 
     get all() {
         return this._all;
+    }
+
+    get quests() {
+        return this._quests;
+    }
+
+    get entries() {
+        return this._entries;
     }
 
     get analytics() {
@@ -164,6 +197,44 @@ class PoolModule extends VuexModule {
     @Mutation
     clear() {
         Vue.set(this, '_all', {});
+    }
+
+    @Mutation
+    setQuests(result: { results: TQuest[]; limit: number; page: number }) {
+        const quest = result.results[0];
+        Vue.set(this._quests, quest.poolId, result);
+    }
+
+    @Mutation
+    setQuestEntries({ entries, quest }: { entries: TQuestEntry[]; quest: TQuest }) {
+        if (!this._entries[quest.poolId]) Vue.set(this._entries, quest.poolId, {});
+        Vue.set(this._entries[quest.poolId], String(quest._id), entries);
+    }
+
+    @Action({ rawError: true })
+    async listQuests({ pool, page, limit, isPublished }) {
+        const { data } = await axios({
+            method: 'GET',
+            url: `/pools/${pool._id}/quests`,
+            headers: { 'X-PoolId': pool._id },
+            params: {
+                page: String(page),
+                limit: String(limit),
+                isPublished,
+            },
+        });
+
+        this.context.commit('setQuests', data);
+    }
+
+    @Action({ rawError: true })
+    async listEntries(quest: TQuest) {
+        const { data } = await axios({
+            method: 'GET',
+            url: `/pools/${quest.poolId}/quests/${quest._id}/entries`,
+            headers: { 'X-PoolId': quest.poolId },
+        });
+        this.context.commit('setQuestEntries', { quest, entries: data });
     }
 
     @Action({ rawError: true })
