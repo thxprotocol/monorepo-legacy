@@ -1,32 +1,11 @@
-import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
-import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import type { TPool, TBaseReward, TPointReward } from '@thxnetwork/types/interfaces';
-import { RewardConditionPlatform } from '@thxnetwork/types/enums';
-import { questInteractionVariantMap } from '@thxnetwork/types/maps';
-import {} from '@thxnetwork/types/index';
+import { Module, VuexModule, Action } from 'vuex-module-decorators';
+import type { TPointReward } from '@thxnetwork/types/interfaces';
 import { track } from '@thxnetwork/mixpanel';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 
-export type TPointRewardState = {
-    [poolId: string]: {
-        [id: string]: TPointReward;
-    };
-};
-
 @Module({ namespaced: true })
 class PointRewardModule extends VuexModule {
-    _all: TPointRewardState = {};
-    _totals: { [poolId: string]: number } = {};
-
-    get all() {
-        return this._all;
-    }
-
-    get totals() {
-        return this._totals;
-    }
-
     @Action({ rawError: true })
     async create(quest: TPointReward) {
         await axios({
@@ -42,12 +21,13 @@ class PointRewardModule extends VuexModule {
 
     @Action({ rawError: true })
     async update(quest: TPointReward) {
-        await axios({
+        const { data } = await axios({
             method: 'PATCH',
             url: `/point-rewards/${quest._id}`,
             headers: { 'X-PoolId': quest.poolId },
             data: prepareFormDataForUpload(quest),
         });
+        this.context.commit('pools/setQuest', { ...data }, { root: true });
     }
 
     @Action({ rawError: true })

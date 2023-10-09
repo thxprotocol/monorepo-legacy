@@ -12,6 +12,7 @@ import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import { track } from '@thxnetwork/mixpanel';
 import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
+import { QuestVariant } from '@thxnetwork/common/lib/types';
 
 export interface IPoolAnalytic {
     _id: string;
@@ -201,8 +202,19 @@ class PoolModule extends VuexModule {
 
     @Mutation
     setQuests(result: { results: TQuest[]; limit: number; page: number }) {
+        if (!result.results.length) return;
+
         const quest = result.results[0];
         Vue.set(this._quests, quest.poolId, result);
+    }
+
+    @Mutation
+    setQuest(quest: TQuest) {
+        if (!this._quests[quest.poolId]) return;
+
+        const quests = this._quests[quest.poolId].results;
+        const index = quests.findIndex((q) => q._id === quest._id);
+        Vue.set(this._quests[quest.poolId].results, index, quest);
     }
 
     @Mutation
@@ -230,8 +242,48 @@ class PoolModule extends VuexModule {
                 isPublished,
             },
         });
-
+        data.results = data.results.map((q) => {
+            q.delete = (payload: TQuest) => this.context.dispatch('deleteQuest', payload);
+            q.update = (payload: TQuest) => this.context.dispatch('updateQuest', payload);
+            return q;
+        });
         this.context.commit('setQuests', data);
+    }
+
+    @Action
+    async deleteQuest(quest: TQuest) {
+        switch (quest.variant) {
+            case QuestVariant.Daily:
+                return this.context.dispatch('dailyRewards/delete', quest, { root: true });
+            case QuestVariant.Invite:
+                return this.context.dispatch('referralRewards/delete', quest, { root: true });
+            case QuestVariant.Discord:
+            case QuestVariant.YouTube:
+            case QuestVariant.Twitter:
+                return this.context.dispatch('pointRewards/delete', quest, { root: true });
+            case QuestVariant.Custom:
+                return this.context.dispatch('milestoneRewards/delete', quest, { root: true });
+            case QuestVariant.Web3:
+                return this.context.dispatch('web3Quests/delete', quest, { root: true });
+        }
+    }
+
+    @Action
+    async updateQuest(quest: TQuest) {
+        switch (quest.variant) {
+            case QuestVariant.Daily:
+                return this.context.dispatch('dailyRewards/update', quest, { root: true });
+            case QuestVariant.Invite:
+                return this.context.dispatch('referralRewards/update', quest, { root: true });
+            case QuestVariant.Discord:
+            case QuestVariant.YouTube:
+            case QuestVariant.Twitter:
+                return this.context.dispatch('pointRewards/update', quest, { root: true });
+            case QuestVariant.Custom:
+                return this.context.dispatch('milestoneRewards/update', quest, { root: true });
+            case QuestVariant.Web3:
+                return this.context.dispatch('web3Quests/update', quest, { root: true });
+        }
     }
 
     @Action({ rawError: true })
