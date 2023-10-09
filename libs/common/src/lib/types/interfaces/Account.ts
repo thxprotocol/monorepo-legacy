@@ -3,6 +3,7 @@ import { AccountVariant } from '@thxnetwork/types/interfaces';
 
 export type TAccount = {
     _id: string;
+    username: string;
     sub: string;
     firstName: string;
     lastName: string;

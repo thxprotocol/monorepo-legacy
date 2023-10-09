@@ -94,7 +94,7 @@ export default class AccountProxy {
     }
 
     static async update(sub: string, updates: TAccount) {
-        const { data, status } = await authClient({
+        const { data } = await authClient({
             method: 'PATCH',
             url: `/account/${sub}`,
             data: updates,
@@ -102,10 +102,6 @@ export default class AccountProxy {
                 Authorization: await getAuthAccessToken(),
             },
         });
-
-        if (status === 422) throw new AccountApiError('A user for this e-mail already exists.');
-        if (status !== 204) throw new AccountApiError('Could not update the account');
-
         return data;
     }
 

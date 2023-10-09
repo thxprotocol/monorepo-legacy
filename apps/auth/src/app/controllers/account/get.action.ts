@@ -14,6 +14,7 @@ async function formatAccountRes(account, accessIncluded = true) {
     const twitterToken = account.getToken(AccessTokenKind.Twitter);
     const twitterUsername = twitterToken ? twitterToken.metadata?.username : 'Unknown';
     const response = {
+        username: account.username,
         sub: String(account._id),
         address: account.address,
         firstName: account.firstName,
