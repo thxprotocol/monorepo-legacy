@@ -16,11 +16,11 @@
         <b-spinner v-if="isLoading" small variant="primary" />
         <b-card class="mt-3" v-if="isValidTweetUrl && preview">
             <template #header>
-                <b-link class="text-dark" target="_blank" :href="`https://twitter.com/${preview.user.username}`">
-                    {{ preview.user.name }}
+                <b-link class="text-dark" target="_blank" :href="`https://twitter.com/${preview.username}`">
+                    {{ preview.name }}
                 </b-link>
             </template>
-            <div v-html="preview.tweet.text"></div>
+            <div v-html="preview.text"></div>
         </b-card>
         <b-alert show class="mt-3 mb-0" variant="warning" v-if="error">
             <i class="fas fa-info-circle mr-1" />
@@ -39,7 +39,7 @@ import { mapGetters } from 'vuex';
 })
 export default class BaseDropdownTwitterTweets extends Vue {
     url = '';
-    preview: { tweet: { text: string }; user: { username: string; name: string } } | null = null;
+    preview: { url: string; text: string; username: string; name: string } | null = null;
     error = '';
     isLoading = false;
 
@@ -49,7 +49,11 @@ export default class BaseDropdownTwitterTweets extends Vue {
     // https://twitter.com/twitter/status/1603121182101970945
     mounted() {
         this.url = this.content ? 'https://twitter.com/twitter/status/' + this.content : '';
-        if (this.url && this.isValidTweetUrl) this.getTweet();
+        if (this.url && this.isValidTweetUrl && !this.contentMetadata) {
+            this.getTweet();
+        } else if (this.url && this.isValidTweetUrl && this.contentMetadata) {
+            this.preview = JSON.parse(this.contentMetadata);
+        }
     }
 
     get isValidTweetUrl() {
@@ -94,14 +98,15 @@ export default class BaseDropdownTwitterTweets extends Vue {
                 this.error = data.error;
                 this.preview = null;
             } else if (data) {
-                this.preview = data;
+                this.preview = {
+                    url: this.url,
+                    username: data.user.username,
+                    name: data.user.name,
+                    text: data.tweet.text,
+                };
                 this.$emit('selected', {
                     content: tweetId,
-                    contentMetadata: {
-                        url,
-                        username: data.user.username,
-                        text: data.tweet.text,
-                    },
+                    contentMetadata: this.preview,
                 });
             }
         } catch (error) {

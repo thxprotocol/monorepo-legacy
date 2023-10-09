@@ -88,7 +88,7 @@ export default class ModalRewardPointsCreate extends Vue {
         return (
             this.rewardCondition.interaction &&
             this.rewardCondition.interaction !== RewardConditionInteraction.None &&
-            !this.rewardCondition.content
+            (!this.rewardCondition.content || !this.rewardCondition.contentMetadata)
         );
     }
 
