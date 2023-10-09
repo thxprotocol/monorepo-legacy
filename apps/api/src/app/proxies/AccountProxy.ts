@@ -94,7 +94,7 @@ export default class AccountProxy {
     }
 
     static async update(sub: string, updates: TAccount) {
-        const { data, status } = await authClient({
+        const { data } = await authClient({
             method: 'PATCH',
             url: `/account/${sub}`,
             data: updates,
@@ -102,7 +102,6 @@ export default class AccountProxy {
                 Authorization: await getAuthAccessToken(),
             },
         });
-        console.log(data, status);
         return data;
     }
 
