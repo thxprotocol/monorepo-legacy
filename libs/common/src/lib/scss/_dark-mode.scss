@@ -1,4 +1,5 @@
 
+
 .dark-mode {
     background-color: $darkest !important;
     
@@ -7,6 +8,12 @@
         color: $light !important;
     }
 
+    // Views
+    .section-home > .container-md > .row:nth-child(1) > .col-md-4:before {
+        background-color: $dark !important;
+    }
+
+    // Sidebar    
     .sidebar {
         background-color: $darker;
         

@@ -1,11 +1,8 @@
 <template>
     <b-skeleton-wrapper :loading="loading">
         <template #loading>
-            <b-card style="height: 140px" class="my-3">
+            <b-card style="height: 66px" class="mb-3">
                 <b-skeleton animation="wave" width="85%"></b-skeleton>
-                <hr />
-                <b-skeleton animation="wave" width="85%"></b-skeleton>
-                <b-skeleton animation="wave" width="55%"></b-skeleton>
             </b-card>
         </template>
         <b-card
@@ -13,8 +10,8 @@
             @mouseover="hover = true"
             @mouseleave="hover = false"
             body-class="p-2"
-            class="mb-3 cursor-pointer bg-light"
-            :class="{ 'shadow-sm': hover, 'bg-white': hover }"
+            class="mb-3 cursor-pointer bg-white"
+            :class="{ 'shadow-sm': hover }"
         >
             <slot></slot>
         </b-card>
