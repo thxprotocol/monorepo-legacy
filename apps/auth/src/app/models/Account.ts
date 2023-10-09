@@ -6,6 +6,7 @@ export type AccountDocument = mongoose.Document & TAccount;
 
 const accountSchema = new mongoose.Schema(
     {
+        username: String,
         active: Boolean,
         isEmailVerified: Boolean,
         firstName: String,

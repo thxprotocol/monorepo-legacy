@@ -33,7 +33,12 @@ export class AccountService {
         return Account.findOne({ address });
     }
 
-    static async update(account: AccountDocument, updates: TAccount) {
+    static async validateUsername(username: string) {
+        return await Account.exists({ username });
+    }
+
+    static async update(account: AccountDocument, updates: Partial<TAccount>) {
+        account.username = updates.username || account.username;
         account.email = updates.email || account.email;
         account.profileImg = updates.profileImg || account.profileImg;
         account.firstName = updates.firstName || account.firstName;

@@ -26752,6 +26752,11 @@ unique-slug@^2.0.0:
   dependencies:
     imurmurhash "^0.1.4"
 
+unique-username-generator@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/unique-username-generator/-/unique-username-generator-1.2.0.tgz#fc080da4863dcbec7bdf9f09ce3ed62605892487"
+  integrity sha512-aQB5mNOZGeZqQWku15xZeTaD0spV48GmlSmNrabYrx/5DcNDNYgSiwY2cQ0TglkO7Raz+VCUTCERe+CRZf7OLg==
+
 universalify@^0.1.0:
   version "0.1.2"
   resolved "https://registry.npmjs.org/universalify/-/universalify-0.1.2.tgz"

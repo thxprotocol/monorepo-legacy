@@ -102,10 +102,7 @@ export default class AccountProxy {
                 Authorization: await getAuthAccessToken(),
             },
         });
-
-        if (status === 422) throw new AccountApiError('A user for this e-mail already exists.');
-        if (status !== 204) throw new AccountApiError('Could not update the account');
-
+        console.log(data, status);
         return data;
     }
 
