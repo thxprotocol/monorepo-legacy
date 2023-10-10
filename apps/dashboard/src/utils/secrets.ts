@@ -1,3 +1,4 @@
+export const DOCS_URL = 'https://docs.thx.network';
 export const BASE_URL = process.env.VUE_APP_DASHBOARD_URL || '';
 export const AUTH_URL = process.env.VUE_APP_AUTH_URL || '';
 export const API_URL = process.env.VUE_APP_API_ROOT || '';

@@ -10,31 +10,7 @@
         :visible="true"
     >
         <b-navbar toggleable="lg" class="sidebar">
-            <div class="flex-grow-1 w-100 h-25 overflow-auto">
-                <div class="d-flex px-3 justify-content-between pt-4 pb-4 text-center">
-                    <router-link to="/" custom v-slot="{ navigate }" class="cursor-pointer">
-                        <img
-                            :src="require('../../public/assets/logo.png')"
-                            width="40"
-                            height="40"
-                            alt="THX logo"
-                            @click="navigate"
-                            @keypress.enter="navigate"
-                            role="link"
-                        />
-                    </router-link>
-                    <b-dropdown variant="link" size="sm" no-caret right toggle-class="pr-0">
-                        <template #button-content>
-                            <b-avatar size="sm" variant="light" :src="account.profileImg"></b-avatar>
-                        </template>
-                        <b-dropdown-item @click="onClickDarkModeToggle">
-                            {{ isDarkModeEnabled ? 'Light' : 'Dark' }} mode
-                        </b-dropdown-item>
-                        <b-dropdown-item to="/account">Account</b-dropdown-item>
-                        <b-dropdown-item to="/signout">Sign out</b-dropdown-item>
-                    </b-dropdown>
-                </div>
-                <hr class="m-0 mb-2" />
+            <div class="flex-grow-1 w-100 h-25 overflow-auto d-flex justify-content-end flex-column">
                 <b-dropdown
                     split
                     @click="onClickPreview"
@@ -68,16 +44,23 @@
                             <b-spinner v-else variant="primary" small />
                         </div>
                     </template>
-                    <b-dropdown-item-btn class="small" :key="key" v-for="(p, key) of pools" @click="onPoolSelect(p)">
-                        <div class="text-left d-flex align-items-center justify-content-between">
-                            <div class="align-items-center d-flex">
-                                <span class="truncate-pool-title">
-                                    {{ p.settings.title }}
-                                </span>
-                                <i class="fas fa-caret-right text-muted ml-2"></i>
+                    <div style="max-height: 300px; overflow: auto">
+                        <b-dropdown-item-btn
+                            class="small"
+                            :key="key"
+                            v-for="(p, key) of pools"
+                            @click="onPoolSelect(p)"
+                        >
+                            <div class="text-left d-flex align-items-center justify-content-between">
+                                <div class="align-items-center d-flex">
+                                    <span class="truncate-pool-title">
+                                        {{ p.settings.title }}
+                                    </span>
+                                    <i class="fas fa-caret-right text-muted ml-2"></i>
+                                </div>
                             </div>
-                        </div>
-                    </b-dropdown-item-btn>
+                        </b-dropdown-item-btn>
+                    </div>
                 </b-dropdown>
                 <hr class="mt-2" />
                 <template v-if="selectedPool">
@@ -125,6 +108,20 @@
                             </div>
                         </b-nav-item>
                         <b-nav-item
+                            :to="`/pool/${selectedPool._id}/participants`"
+                            link-classes="nav-link-wrapper"
+                            class="nav-link-plain"
+                        >
+                            <div class="d-flex">
+                                <div class="nav-link-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="flex-grow-1 justify-content-between d-flex align-items-center">
+                                    <span>Participants</span>
+                                </div>
+                            </div>
+                        </b-nav-item>
+                        <b-nav-item
                             :to="`/pool/${selectedPool._id}/developer`"
                             link-classes="nav-link-wrapper"
                             class="nav-link-plain"
@@ -162,8 +159,20 @@
                     </b-navbar-nav>
                     <hr />
                 </template>
-                <label class="px-3 text-muted">Smart Contracts</label>
-                <base-navbar-nav :routes="tokenRoutes" />
+                <hr class="m-0 mb-2 mt-auto" />
+                <div class="d-flex py-4 px-3 justify-content-center d-flex">
+                    <router-link to="/" custom v-slot="{ navigate }" class="cursor-pointer">
+                        <img
+                            :src="require('../../public/assets/logo.png')"
+                            width="40"
+                            height="40"
+                            alt="THX logo"
+                            @click="navigate"
+                            @keypress.enter="navigate"
+                            role="link"
+                        />
+                    </router-link>
+                </div>
             </div>
         </b-navbar>
     </b-sidebar>
@@ -199,7 +208,6 @@ export default class BaseNavbar extends Vue {
     pools!: IPools;
     account!: TAccount;
     isVisible = true;
-    isDarkModeEnabled = false;
 
     get tokenRoutes() {
         return [
@@ -248,23 +256,6 @@ export default class BaseNavbar extends Vue {
                 await this.$store.dispatch('pools/read', this.firstPool._id);
             }
         });
-
-        this.isDarkModeEnabled = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        this.setDarkMode(this.isDarkModeEnabled);
-
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ({ matches }) => {
-            this.isDarkModeEnabled = matches;
-            this.setDarkMode(this.isDarkModeEnabled);
-        });
-    }
-
-    setDarkMode(state: boolean) {
-        document.documentElement.classList[state ? 'add' : 'remove']('dark-mode');
-    }
-
-    onClickDarkModeToggle() {
-        this.isDarkModeEnabled = !this.isDarkModeEnabled;
-        this.setDarkMode(this.isDarkModeEnabled);
     }
 
     onClickPreview() {

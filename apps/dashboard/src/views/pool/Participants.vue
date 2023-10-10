@@ -1,61 +1,74 @@
 <template>
-    <BCard class="mt-3">
-        <BaseCardTableHeader
-            :pool="pool"
-            :page="page"
-            :limit="limit"
-            :total-rows="result.total"
-            :selectedItems="[]"
-            :actions="[]"
-            @change-page="onChangePage"
-            @change-limit="onChangeLimit"
-        />
-        <BTable id="table-participants" hover :busy="isLoading" :items="participantsByPage" responsive="lg" show-empty>
-            <!-- Head formatting -->
-            <template #head(account)>
-                <BaseBtnSort @click="onClickSort('email', $event)">Account</BaseBtnSort>
-            </template>
-            <template #head(connectedAccounts)> Connected </template>
-            <template #head(wallet)>
-                <BaseBtnSort @click="onClickSort('wallet', $event)">Wallet</BaseBtnSort>
-            </template>
-            <template #head(pointBalance)>
-                <BaseBtnSort @click="onClickSort('pointBalance', $event)">Point Balance</BaseBtnSort>
-            </template>
-            <template #head(subscription)>
-                <BaseBtnSort @click="onClickSort('subscription', $event)">Subscribed</BaseBtnSort>
-            </template>
-            <template #head(createdAt)>
-                <BaseBtnSort @click="onClickSort('createdAt', $event)">Created</BaseBtnSort>
-            </template>
+    <div>
+        <h2 class="mb-3">Participants</h2>
+        <BCard class="shadow-sm mb-5" no-body v-if="pool">
+            <BaseCardTableHeader
+                :pool="pool"
+                :page="page"
+                :limit="limit"
+                :total-rows="result.total"
+                :selectedItems="[]"
+                :actions="[]"
+                @change-page="onChangePage"
+                @change-limit="onChangeLimit"
+            />
+            <BTable
+                id="table-participants"
+                hover
+                :busy="isLoading"
+                :items="participantsByPage"
+                responsive="lg"
+                show-empty
+            >
+                <!-- Head formatting -->
+                <template #head(account)>
+                    <BaseBtnSort @click="onClickSort('email', $event)">Account</BaseBtnSort>
+                </template>
+                <template #head(connectedAccounts)> Connected </template>
+                <template #head(wallet)>
+                    <BaseBtnSort @click="onClickSort('wallet', $event)">Wallet</BaseBtnSort>
+                </template>
+                <template #head(pointBalance)>
+                    <BaseBtnSort @click="onClickSort('pointBalance', $event)">Point Balance</BaseBtnSort>
+                </template>
+                <template #head(subscription)>
+                    <BaseBtnSort @click="onClickSort('subscription', $event)">Subscribed</BaseBtnSort>
+                </template>
+                <template #head(createdAt)>
+                    <BaseBtnSort @click="onClickSort('createdAt', $event)">Created</BaseBtnSort>
+                </template>
 
-            <!-- Cell formatting -->
-            <template #cell(account)="{ item }"> <BaseParticipantAccount :account="item.account" /> </template>
-            <template #cell(connectedAccounts)="{ item }">
-                <BaseParticipantConnectedAccount :account="a" :key="key" v-for="(a, key) in item.connectedAccounts" />
-            </template>
-            <template #cell(wallet)="{ item }">
-                <BaseParticipantWallet :wallet="item.wallet" />
-            </template>
-            <template #cell(pointBalance)="{ item }">
-                <strong class="text-primary">{{ item.pointBalance }}</strong>
-            </template>
-            <template #cell(subscription)="{ item }">
-                <small class="text-muted">
-                    {{ item.subscription ? format(new Date(item.subscription.createdAt), 'dd-MM-yyyy HH:mm') : '' }}
-                </small>
-            </template>
-            <template #cell(createdAt)="{ item }">
-                <small class="text-muted">{{ format(new Date(item.createdAt), 'dd-MM-yyyy HH:mm') }}</small>
-            </template>
-        </BTable>
-    </BCard>
+                <!-- Cell formatting -->
+                <template #cell(account)="{ item }"> <BaseParticipantAccount :account="item.account" /> </template>
+                <template #cell(connectedAccounts)="{ item }">
+                    <BaseParticipantConnectedAccount
+                        :account="a"
+                        :key="key"
+                        v-for="(a, key) in item.connectedAccounts"
+                    />
+                </template>
+                <template #cell(wallet)="{ item }">
+                    <BaseParticipantWallet :wallet="item.wallet" />
+                </template>
+                <template #cell(pointBalance)="{ item }">
+                    <strong class="text-primary">{{ item.pointBalance }}</strong>
+                </template>
+                <template #cell(subscription)="{ item }">
+                    <small class="text-muted">
+                        {{ item.subscription ? format(new Date(item.subscription.createdAt), 'dd-MM-yyyy HH:mm') : '' }}
+                    </small>
+                </template>
+                <template #cell(createdAt)="{ item }">
+                    <small class="text-muted">{{ format(new Date(item.createdAt), 'dd-MM-yyyy HH:mm') }}</small>
+                </template>
+            </BTable>
+        </BCard>
+    </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import type { TPool } from '@thxnetwork/types/interfaces';
 import BaseBtnSort from '@thxnetwork/dashboard/components/buttons/BaseBtnSort.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseParticipantAccount, { parseAccount } from '@thxnetwork/dashboard/components/BaseParticipantAccount.vue';
@@ -64,6 +77,7 @@ import BaseParticipantConnectedAccount, {
     parseConnectedAccounts,
 } from '@thxnetwork/dashboard/components/BaseParticipantConnectedAccount.vue';
 import { format } from 'date-fns';
+import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 
 @Component({
     components: {
@@ -73,13 +87,13 @@ import { format } from 'date-fns';
         BaseParticipantWallet,
         BaseParticipantConnectedAccount,
     },
-    computed: {
-        ...mapGetters({
-            pools: 'pools/all',
-        }),
-    },
+    computed: mapGetters({
+        pools: 'pools/all',
+        profile: 'account/profile',
+    }),
 })
-export default class ViewAnalyticsParticipants extends Vue {
+export default class ViewParticipants extends Vue {
+    pools!: IPools;
     isLoading = false;
     format = format;
     page = 1;
@@ -116,7 +130,9 @@ export default class ViewAnalyticsParticipants extends Vue {
         total: 1,
     };
 
-    @Prop() pool!: TPool;
+    get pool() {
+        return this.pools[this.$route.params.id];
+    }
 
     get participantsByPage() {
         return Object.values(this.result.results).map((p: any) => ({
