@@ -10,6 +10,7 @@ import { YouTubeService } from './YouTubeService';
 import { TInteraction, TAccount, AccountVariant } from '@thxnetwork/types/interfaces';
 import { AccessTokenKind, AccountPlanType } from '@thxnetwork/types/enums';
 import bcrypt from 'bcrypt';
+import { generateUsername } from 'unique-username-generator';
 
 export class AccountService {
     static async get(sub: string) {
@@ -117,6 +118,7 @@ export class AccountService {
         if (account) return account;
 
         return await Account.create({
+            username: generateUsername(''),
             variant: AccountVariant.Metamask,
             plan: AccountPlanType.Free,
             active: true,
@@ -149,7 +151,13 @@ export class AccountService {
         // When no account is matched, create the account.
         if (!account) {
             const isEmailVerified = this.getIsEmailVerified(variant, email);
-            const data = { variant, plan: params.signup_plan || AccountPlanType.Free, active: true, isEmailVerified };
+            const data = {
+                username: generateUsername(''),
+                variant,
+                plan: params.signup_plan || AccountPlanType.Free,
+                active: true,
+                isEmailVerified,
+            };
             if (email) {
                 data['email'] = email;
             }
@@ -187,6 +195,7 @@ export class AccountService {
 
         if (!account) {
             account = new Account({
+                username: generateUsername(''),
                 email: data.email,
                 active: data.active,
                 variant: data.variant,

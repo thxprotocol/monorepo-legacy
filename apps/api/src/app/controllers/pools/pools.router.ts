@@ -113,6 +113,7 @@ router.get(
     corsHandler,
     guard.check(['pools:read']),
     assertPoolAccess,
+    assertRequestInput(ListPoolQuests.validation),
     ListPoolQuests.controller,
 );
 

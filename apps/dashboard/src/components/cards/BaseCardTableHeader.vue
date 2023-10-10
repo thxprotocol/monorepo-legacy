@@ -5,7 +5,7 @@
                 Selected <strong>{{ selectedItems.length }}</strong> item{{ selectedItems.length === 1 ? '' : 's' }}
             </span>
             <b-dropdown
-                v-if="actions.length"
+                v-if="actions.length && selectedItems.length"
                 variant="dark"
                 size="sm"
                 split
@@ -14,7 +14,13 @@
                 :disabled="!selectedItems.length"
                 @click="selectedBulkAction ? onClickAction(selectedBulkAction) : null"
             >
-                <b-dropdown-item class="small" @click="onClickAction(item)" :key="key" v-for="(item, key) of actions">
+                <b-dropdown-item
+                    :disabled="!selectedItems.length"
+                    class="small"
+                    @click="onClickAction(item)"
+                    :key="key"
+                    v-for="(item, key) of actions"
+                >
                     {{ item.label }}
                 </b-dropdown-item>
             </b-dropdown>

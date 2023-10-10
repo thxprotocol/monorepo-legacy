@@ -231,16 +231,12 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async listQuests({ pool, page, limit, isPublished }) {
+    async listQuests({ pool, page, limit, isPublishedOnly }) {
         const { data } = await axios({
             method: 'GET',
             url: `/pools/${pool._id}/quests`,
             headers: { 'X-PoolId': pool._id },
-            params: {
-                page: String(page),
-                limit: String(limit),
-                isPublished,
-            },
+            params: { page, limit, isPublishedOnly },
         });
         data.results = data.results.map((q) => {
             q.delete = (payload: TQuest) => this.context.dispatch('deleteQuest', payload);

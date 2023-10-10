@@ -6,7 +6,16 @@ import { PointReward } from '@thxnetwork/api/models/PointReward';
 import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
 import { Web3Quest } from '@thxnetwork/api/models/Web3Quest';
 
-const validation = [query('page').isInt(), query('limit').isInt(), query('isPublished').optional().isBoolean()];
+const validation = [
+    query('page').isInt(),
+    query('limit').isInt(),
+    query('isPublishedOnly')
+        .optional()
+        .isBoolean()
+        .customSanitizer((value) => {
+            return value && JSON.parse(value);
+        }),
+];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
@@ -14,9 +23,11 @@ const controller = async (req: Request, res: Response) => {
     const page = Number(req.query.page);
     const limit = Number(req.query.limit);
     const $match = { poolId };
-    if (req.query.isPublished) {
-        $match['isPublished'] = JSON.parse(req.query.isPublished as string);
+
+    if (req.query.isPublishedOnly) {
+        $match['isPublished'] = true;
     }
+
     const pipeline = [
         { $unionWith: { coll: ReferralReward.collection.name } },
         { $unionWith: { coll: PointReward.collection.name } },
