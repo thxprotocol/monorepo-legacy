@@ -29,6 +29,15 @@ body {
     }
     @media (min-width: map-get($grid-breakpoints, 'xl')) {
         max-height: 850px;
+ 
+    }
+}
+
+.table-hover tbody tr {
+    transition: .2s ease background-color;
+    
+    &:hover {
+        background-color: $light;
     }
 }
 

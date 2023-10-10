@@ -115,12 +115,25 @@
 
     .table th, .table td {
         border-color: $dark !important;
+    }
+    .table-hover thead tr {
+        background-color: $dark !important;
+
+        .custom-control-label {
+            background-color: $dark !important;
+        }
+    }
+    .table-hover tbody tr {
         background-color: $darker !important;
     }
-    
+
     .table-hover tbody tr:hover {
-        background-color: $darker !important;
+        background-color: $dark !important;
         color: $gray-400;
+        
+        .custom-control-label {
+            background-color: $dark !important;
+        }
     }
 
     tr.bg-light.text-gray {

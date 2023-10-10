@@ -36,17 +36,14 @@
                 </b-dropdown>
             </b-col>
         </b-row>
-        <BCard variant="white" fields="'index', 'checkbox'" body-class="p-0 shadow-sm">
+        <BCard variant="white" body-class="p-0 shadow-sm">
             <BaseCardTableHeader
                 :page="page"
                 :limit="limit"
                 :pool="pool"
                 :total-rows="totals[pool._id]"
-                :selectedItems="selectedItems"
-                :actions="[
-                    { variant: 0, label: `Delete rewards` },
-                    { variant: 1, label: 'Export Claim URL\'s' },
-                ]"
+                :selectedItems="[]"
+                :actions="[]"
                 @click-action="onClickAction"
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
@@ -59,10 +56,6 @@
             />
             <BTable id="table-rewards" hover :busy="isLoading" :items="rewardsByPage" responsive="lg" show-empty>
                 <!-- Head formatting -->
-                <template #head(index)> &nbsp; </template>
-                <template #head(checkbox)>
-                    <b-form-checkbox @change="onChecked" />
-                </template>
                 <template #head(variant)> Variant </template>
                 <template #head(pointPrice)> Price </template>
                 <template #head(title)> Title </template>
@@ -71,19 +64,6 @@
                 <template #head(id)> &nbsp; </template>
 
                 <!-- Cell formatting -->
-                <template #cell(index)="{ item, index }">
-                    <div class="btn btn-sort p-0">
-                        <b-link block @click="onClickUp(item, index)">
-                            <i class="fas fa-caret-up ml-0"></i>
-                        </b-link>
-                        <b-link block @click="onClickDown(item, index)">
-                            <i class="fas fa-caret-down ml-0"></i>
-                        </b-link>
-                    </div>
-                </template>
-                <template #cell(checkbox)="{ item }">
-                    <b-form-checkbox :value="{ id: item.id, variant: item.variant }" v-model="selectedItems" />
-                </template>
                 <template #cell(pointPrice)="{ item }">
                     <strong class="text-primary">{{ item.pointPrice }} </strong>
                 </template>
@@ -158,7 +138,6 @@ import {
     TERC20Perk,
     RewardVariant,
     TERC721Perk,
-    TBasePerk,
     TCustomReward,
 } from '@thxnetwork/types/index';
 import type { IERC721s } from '@thxnetwork/dashboard/types/erc721';
@@ -289,8 +268,6 @@ export default class RewardsView extends Vue {
             .filter((reward: TERC20Perk | TERC721Perk | TCustomReward | any) => reward.page === this.page)
             .sort((a: any, b: any) => (a.createdAt && b.createdAt && a.createdAt < b.createdAt ? 1 : -1))
             .map((r: any) => ({
-                index: 0,
-                checkbox: r._id,
                 variant: r.variant,
                 pointPrice: r.pointPrice,
                 title: r.title,
@@ -303,14 +280,6 @@ export default class RewardsView extends Vue {
 
     mounted() {
         this.listRewards();
-    }
-
-    onClickUp({ index }: { index: TBasePerk }, i: number) {
-        //
-    }
-
-    onClickDown({ index }: { index: TBasePerk }, i: number) {
-        //
     }
 
     async listRewards() {
@@ -364,17 +333,11 @@ export default class RewardsView extends Vue {
 }
 </script>
 <style lang="scss">
-#table-rewards tr:first-child .btn-sort a:first-child,
-#table-rewards tr:last-child .btn-sort a:last-child {
-    opacity: 0.5;
-    cursor: not-allowed;
-    color: var(--gray) !important;
-}
 #table-rewards th:nth-child(1) {
-    width: 20px;
+    width: 100px;
 }
 #table-rewards th:nth-child(2) {
-    width: 40px;
+    width: 100px;
 }
 #table-rewards th:nth-child(3) {
     width: 100px;
