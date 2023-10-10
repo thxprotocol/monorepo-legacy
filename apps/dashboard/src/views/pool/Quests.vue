@@ -291,7 +291,7 @@ export default class QuestsView extends Vue {
         [QuestVariant.Custom]: 'fas fa-flag',
         [QuestVariant.Web3]: 'fab fa-ethereum',
     };
-    isUnpublishedShown = true;
+    isPublishedOnly = false;
 
     pools!: IPools;
     quests!: TQuestState;
@@ -338,10 +338,8 @@ export default class QuestsView extends Vue {
             page: this.page,
             pool: this.pool,
             limit: this.limit,
+            isPublishedOnly: this.isPublishedOnly,
         };
-        if (!this.isUnpublishedShown) {
-            query['isPublished'] = true;
-        }
         this.$store.dispatch('pools/listQuests', query);
         this.isLoading = false;
     }
@@ -371,8 +369,8 @@ export default class QuestsView extends Vue {
         this.listQuests();
     }
 
-    onClickToggle(toggle: boolean) {
-        this.isUnpublishedShown = toggle;
+    onClickToggle(value: boolean) {
+        this.isPublishedOnly = !value;
         this.listQuests();
     }
 
