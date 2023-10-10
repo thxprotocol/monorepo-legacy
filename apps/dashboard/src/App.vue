@@ -2,7 +2,12 @@
     <div id="app" :class="{ 'is-authenticated': profile }">
         <base-navbar v-if="profile" />
         <div class="sidebar-sibling">
-            <b-navbar toggleable="md" :type="isDarkModeEnabled ? 'dark' : 'light'" class="px-4 shadow-lg">
+            <b-navbar
+                toggleable="md"
+                :type="isDarkModeEnabled ? 'dark' : 'light'"
+                class="px-4 shadow-lg"
+                v-if="$route.name !== 'preview'"
+            >
                 <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
                 <b-collapse id="nav-collapse" is-nav>
                     <b-navbar-nav>

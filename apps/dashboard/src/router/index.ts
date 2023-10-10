@@ -109,6 +109,7 @@ const routes: Array<RouteConfig> = [
         ],
     },
     {
+        name: 'preview',
         path: '/preview/:poolId',
         component: () => import('../views/Preview.vue'),
     },
