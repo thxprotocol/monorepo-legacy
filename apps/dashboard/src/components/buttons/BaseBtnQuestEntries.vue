@@ -41,7 +41,7 @@ export default class BaseBtnQuestEntries extends Vue {
     }
 
     get questEntries() {
-        if (!this.entries || !this.entries[this.pool._id]) return [];
+        if (!this.entries || !this.entries[this.pool._id] || !this.entries[this.pool._id][this.quest._id]) return [];
         return this.entries[this.pool._id][this.quest._id];
     }
 }

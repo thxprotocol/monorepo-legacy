@@ -340,7 +340,7 @@ export default class RewardsView extends Vue {
     width: 100px;
 }
 #table-rewards th:nth-child(3) {
-    width: 100px;
+    width: auto;
 }
 #table-rewards th:nth-child(4) {
     width: 100px;
@@ -349,9 +349,6 @@ export default class RewardsView extends Vue {
     width: auto;
 }
 #table-rewards th:nth-child(6) {
-    width: 100px;
-}
-#table-rewards th:nth-child(8) {
     width: 100px;
 }
 </style>

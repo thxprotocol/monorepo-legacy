@@ -340,7 +340,7 @@ export default class QuestsView extends Vue {
             limit: this.limit,
             isPublishedOnly: this.isPublishedOnly,
         };
-        this.$store.dispatch('pools/listQuests', query);
+        await this.$store.dispatch('pools/listQuests', query);
         this.isLoading = false;
     }
 
