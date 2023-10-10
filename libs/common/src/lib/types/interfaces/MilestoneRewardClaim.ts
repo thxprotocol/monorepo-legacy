@@ -6,4 +6,5 @@ export type TMilestoneRewardClaim = {
     amount: number;
     isClaimed: boolean;
     poolId: string;
+    createdAt: Date;
 };

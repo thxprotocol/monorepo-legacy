@@ -6,6 +6,6 @@ export type TDailyRewardClaim = {
     uuid: string;
     amount: string;
     poolId: string;
-    createdAt?: Date;
+    createdAt: Date;
     state: DailyRewardClaimState;
 };

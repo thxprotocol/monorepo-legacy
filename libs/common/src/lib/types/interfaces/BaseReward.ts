@@ -38,8 +38,8 @@ export type TBaseReward = {
     description: string;
     image: string;
     infoLinks: TInfoLink[];
-    createdAt?: string;
-    updatedAt?: string;
+    createdAt: string;
+    updatedAt: string;
     page?: number;
     variant?: QuestVariant;
     index: number;

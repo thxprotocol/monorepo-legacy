@@ -76,6 +76,9 @@ export class TwitterService {
             return res.data;
         } catch (res) {
             // Indicates rate limit has been hit
+            if (res.status === 401) {
+                await this.isAuthorized(account);
+            }
             if (res.status === 429) {
                 const limit = res.headers['x-rate-limit-limit'];
                 const resetTime = Number(res.headers['x-rate-limit-reset']);

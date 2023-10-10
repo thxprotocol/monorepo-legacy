@@ -9,7 +9,7 @@ export type TPointRewardClaim = {
     amount: string;
     poolId: string;
     platformUserId: string;
-    createdAt: string;
+    createdAt: Date;
     account?: TAccount;
     wallet?: TWallet;
 };

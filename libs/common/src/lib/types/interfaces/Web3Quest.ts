@@ -16,4 +16,5 @@ export type TWeb3QuestClaim = {
     poolId: string;
     chainId: ChainId;
     address: string;
+    createdAt: Date;
 };

@@ -122,7 +122,7 @@ async function complete(
         pool.settings.discordWebhookUrl,
         `${celebratoryWords[index]}✨ ${
             discord ? `<@${discord.userId}>` : `**${account.username}**`
-        } completed the [**${quest.title}**](${widget.domain}) quest and earned **${amount} pts**.`,
+        } completed the [**${quest.title}**](<${widget.domain}>) quest and earned **${amount} pts**.`,
     );
 
     let entry: TQuestEntry;

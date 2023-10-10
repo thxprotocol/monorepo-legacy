@@ -64,9 +64,13 @@ const controller = async (req: Request, res: Response) => {
                     : null;
                 const now = Date.now();
                 const defaults = getDefaults(r);
+                const amountIndex =
+                    validClaims.length >= r.amounts.length ? validClaims.length % r.amounts.length : validClaims.length;
+                const amount = r.amounts[amountIndex];
+
                 return {
                     ...defaults,
-                    amount: r.amounts[validClaims.length],
+                    amount,
                     amounts: r.amounts,
                     isDisabled,
                     claims: validClaims,
