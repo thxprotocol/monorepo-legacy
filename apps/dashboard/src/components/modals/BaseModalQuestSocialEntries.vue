@@ -11,7 +11,7 @@
             <BCard variant="white" body-class="p-0 shadow-sm" class="mb-3">
                 <BTable hover :items="entriesByPage" responsive="lg" show-empty sort-by="isApproved" :sort-desc="false">
                     <!-- Head formatting -->
-                    <template #head(account)> &nbsp;</template>
+                    <template #head(account)> Username </template>
                     <template #head(email)> E-mail</template>
                     <template #head(connectedAccounts)> Connected </template>
                     <template #head(walletAddress)> Wallet </template>
