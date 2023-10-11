@@ -122,6 +122,21 @@
                             </div>
                         </b-nav-item>
                         <b-nav-item
+                            :to="`/pool/${selectedPool._id}/integrations`"
+                            link-classes="nav-link-wrapper"
+                            class="nav-link-plain"
+                            :disabled="!hasBasicAccess(selectedPool.owner)"
+                        >
+                            <div class="d-flex">
+                                <div class="nav-link-icon">
+                                    <i class="fas fa-exchange-alt"></i>
+                                </div>
+                                <div class="flex-grow-1 justify-content-between d-flex align-items-center">
+                                    <span>Integrations</span>
+                                </div>
+                            </div>
+                        </b-nav-item>
+                        <b-nav-item
                             :to="`/pool/${selectedPool._id}/developer`"
                             link-classes="nav-link-wrapper"
                             class="nav-link-plain"
@@ -189,6 +204,7 @@ import BaseNavbarNav from './BaseNavbarNav.vue';
 import { TAccount, TPool } from '@thxnetwork/types/interfaces';
 import { AccountPlanType } from '@thxnetwork/types/enums';
 import { BASE_URL } from '../utils/secrets';
+import { hasBasicAccess } from '@thxnetwork/common';
 
 @Component({
     components: {
@@ -209,6 +225,7 @@ export default class BaseNavbar extends Vue {
     pools!: IPools;
     account!: TAccount;
     isVisible = true;
+    hasBasicAccess = hasBasicAccess;
 
     get tokenRoutes() {
         return [

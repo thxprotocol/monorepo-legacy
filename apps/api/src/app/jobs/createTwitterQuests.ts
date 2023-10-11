@@ -43,7 +43,6 @@ export async function createTwitterQuests() {
         const quests = await Promise.all(
             filteredTweets.map(async (tweet) => {
                 try {
-                    // TODO Could also create Like quest and flatten the array
                     const contentMetadata = JSON.stringify({
                         url: `https://twitter.com/${account.twitterUsername}/status/${tweet.id}`,
                         username: account.twitterUsername,
@@ -55,7 +54,7 @@ export async function createTwitterQuests() {
                         description,
                         amount,
                         platform: RewardConditionPlatform.Twitter,
-                        interaction: RewardConditionInteraction.TwitterRetweet,
+                        interaction: RewardConditionInteraction.TwitterLikeRetweet,
                         content: tweet.id,
                         contentMetadata,
                         isPublished,

@@ -86,7 +86,7 @@ async function deploy(
             isWeeklyDigestEnabled: true,
             isTwitterSyncEnabled: false,
             defaults: {
-                conditionalRewards: { title: 'Retweet this tweet', description: '', amount: 50 },
+                conditionalRewards: { title: '', description: '', amount: 50 },
             },
             authenticationMethods: [
                 AccountVariant.EmailPassword,

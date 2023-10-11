@@ -6,28 +6,23 @@ export type AccountDocument = mongoose.Document & TAccount;
 
 const accountSchema = new mongoose.Schema(
     {
-        username: String,
+        username: { type: String, maxLength: 255 },
         active: Boolean,
         isEmailVerified: Boolean,
-        firstName: String,
-        lastName: String,
+        firstName: { type: String, maxLength: 255 },
+        lastName: { type: String, maxLength: 255 },
         profileImg: String,
-        website: String,
-        organisation: String,
+        website: { type: String, maxLength: 255 },
+        organisation: { type: String, maxLength: 255 },
         plan: Number,
         // email.sparse allows the value to be null and unique if defined
-        email: { type: String, unique: true, sparse: true },
-        password: String,
+        email: { type: String, unique: true, sparse: true, maxLength: 255 },
         // address.sparse allows the value to be null and unique if defined
         address: { type: String, unique: true, sparse: true },
         variant: Number,
-        privateKey: String,
         otpSecret: String,
-        twitterId: String,
         acceptTermsPrivacy: Boolean,
         acceptUpdates: Boolean,
-        lastLoginAt: Date,
-        discordId: String,
         role: String,
         goal: [String],
         tokens: [
@@ -40,7 +35,6 @@ const accountSchema = new mongoose.Schema(
                 metadata: Object,
             },
         ],
-        shopifyStoreUrl: String,
         referralCode: String,
     },
     { timestamps: true },

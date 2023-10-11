@@ -63,6 +63,11 @@ const routes: Array<RouteConfig> = [
                 component: () => import('../views/pool/Rewards.vue'),
             },
             {
+                name: 'integrations',
+                path: 'integrations',
+                component: () => import('../views/pool/Integrations.vue'),
+            },
+            {
                 name: 'Settings',
                 path: 'settings',
                 component: () => import('../views/pool/Settings.vue'),
@@ -71,11 +76,6 @@ const routes: Array<RouteConfig> = [
                         name: 'General',
                         path: 'general',
                         component: () => import('../views/pool/settings/General.vue'),
-                    },
-                    {
-                        name: 'Discord',
-                        path: 'discord',
-                        component: () => import('../views/pool/settings/Discord.vue'),
                     },
                     {
                         name: 'Commerce',

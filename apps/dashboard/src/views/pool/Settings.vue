@@ -19,13 +19,6 @@
                     </template>
                     <BaseTabSettingsWidget />
                 </b-tab>
-                <b-tab :disabled="!hasBasicAccess(pool.owner)">
-                    <template #title>
-                        <i class="fas fa-exchange-alt mr-1"></i>
-                        Integrations
-                    </template>
-                    <BaseTabSettingsIntegrations />
-                </b-tab>
                 <b-tab disabled>
                     <template #title>
                         <i class="fas fa-tags mr-1"></i>
@@ -45,7 +38,6 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseTabSettingsGeneral from '@thxnetwork/dashboard/views/pool/settings/General.vue';
 import BaseTabSettingsCommerce from '@thxnetwork/dashboard/views/pool/settings/Commerce.vue';
-import BaseTabSettingsIntegrations from '@thxnetwork/dashboard/views/pool/settings/Integrations.vue';
 import BaseTabSettingsWidget from '@thxnetwork/dashboard/views/pool/settings/Widget.vue';
 import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
@@ -55,9 +47,8 @@ import { hasBasicAccess } from '@thxnetwork/common';
 @Component({
     components: {
         BaseTabSettingsGeneral,
-        BaseTabSettingsIntegrations,
-        BaseTabSettingsCommerce,
         BaseTabSettingsWidget,
+        BaseTabSettingsCommerce,
     },
     computed: {
         ...mapGetters({
