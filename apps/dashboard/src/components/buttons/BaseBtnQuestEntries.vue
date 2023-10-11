@@ -30,7 +30,7 @@ import BaseModalQuestSocialEntries from '@thxnetwork/dashboard/components/modals
     }),
 })
 export default class BaseBtnQuestEntries extends Vue {
-    isLoading = true;
+    isLoading = false;
     entries!: TQuestEntryState;
 
     @Prop() pool!: TPool;
@@ -46,6 +46,7 @@ export default class BaseBtnQuestEntries extends Vue {
     }
 
     getEntries(quest: TPointReward) {
+        this.isLoading = true;
         this.$store.dispatch('pools/listEntries', quest).then(() => (this.isLoading = false));
     }
 
