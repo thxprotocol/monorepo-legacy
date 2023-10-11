@@ -44,7 +44,6 @@
                 :total-rows="totals[pool._id]"
                 :selectedItems="[]"
                 :actions="[]"
-                :published="true"
                 @click-action="onClickAction"
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"

@@ -104,15 +104,15 @@ export default class ViewParticipants extends Vue {
     limit = 10;
     sorts = {
         username: (a, b) => {
-            const usernameA = a.account.username ? a.account.username.toLowerCase() : '';
-            const usernameB = b.account.username ? b.account.username.toLowerCase() : '';
+            const usernameA = a.account && a.account.username ? a.account.username.toLowerCase() : '';
+            const usernameB = b.account && b.account.username ? b.account.username.toLowerCase() : '';
             if (usernameA < usernameB) return -1;
             if (usernameA > usernameB) return 1;
             return 0;
         },
         email: (a, b) => {
-            const emailA = a.account.email ? a.account.email.toLowerCase() : '';
-            const emailB = b.account.email ? b.account.email.toLowerCase() : '';
+            const emailA = a.account && a.account.email ? a.account.email.toLowerCase() : '';
+            const emailB = b.account && b.account.email ? b.account.email.toLowerCase() : '';
             if (emailA < emailB) return -1;
             if (emailA > emailB) return 1;
             return 0;

@@ -1,6 +1,6 @@
 <template>
     <div class="table-header p-3 d-flex align-items-center justify-content-between">
-        <div class="d-flex align-items-center">
+        <div class="d-flex align-items-center" v-if="isPublishFilterShown">
             <b-button
                 :variant="published ? 'primary' : 'link'"
                 @click="$emit('click-published', true)"
@@ -100,6 +100,10 @@ export default class BaseCardTableHeader extends Vue {
     @Prop() published!: boolean;
 
     selectedBulkAction: TTableBulkAction | null = null;
+
+    get isPublishFilterShown() {
+        return typeof this.published !== 'undefined';
+    }
 
     mounted() {
         this.selectedBulkAction = this.actions[0];
