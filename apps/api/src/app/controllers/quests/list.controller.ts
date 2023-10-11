@@ -18,22 +18,28 @@ import WalletService from '@thxnetwork/api/services/WalletService';
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
     const pool = await PoolService.getById(req.header('X-PoolId'));
-    const referralRewards = await ReferralReward.find({ poolId: pool._id, isPublished: true });
-    const pointRewards = await PointReward.find({ poolId: pool._id, isPublished: true });
-    const milestoneRewards = await MilestoneReward.find({ poolId: pool._id, isPublished: true });
-    const dailyRewards = await DailyReward.find({ poolId: pool._id, isPublished: true });
-    const web3Quests = await Web3Quest.find({ poolId: pool._id, isPublished: true });
     const authHeader = req.header('authorization');
 
-    let wallet: WalletDocument, sub: string;
+    let wallet: WalletDocument,
+        sub: string,
+        isOwner = false;
     // This endpoint is public so we do not get req.auth populated and decode the token ourselves
     // when the request is made with an authorization header to obtain the sub.
     if (authHeader && authHeader.startsWith('Bearer ')) {
         const token: { sub: string } = jwt_decode(authHeader.split(' ')[1]);
         sub = token.sub;
         wallet = await WalletService.findPrimary(sub, pool.chainId);
+        isOwner = token.sub === pool.sub;
     }
 
+    const query = { poolId: pool._id };
+    if (!isOwner) query['isPublished'] = true;
+
+    const referralRewards = await ReferralReward.find(query);
+    const pointRewards = await PointReward.find(query);
+    const milestoneRewards = await MilestoneReward.find(query);
+    const dailyRewards = await DailyReward.find(query);
+    const web3Quests = await Web3Quest.find(query);
     const leaderboard = await AnalyticsService.getLeaderboard(pool, {
         startDate: new Date(pool.createdAt),
         endDate: new Date(),
