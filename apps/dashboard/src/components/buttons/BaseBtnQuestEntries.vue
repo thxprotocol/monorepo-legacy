@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator';
+import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
 import { TPointReward, TPool } from '@thxnetwork/common/lib/types';
 import { mapGetters } from 'vuex';
 import { TQuestEntryState } from '../../store/modules/pools';
@@ -30,14 +30,24 @@ import BaseModalQuestSocialEntries from '@thxnetwork/dashboard/components/modals
     }),
 })
 export default class BaseBtnQuestEntries extends Vue {
-    isLoading = true;
+    isLoading = false;
     entries!: TQuestEntryState;
 
     @Prop() pool!: TPool;
     @Prop() quest!: TPointReward;
 
+    @Watch('quest')
+    onQuestChange(newQuest: TPointReward) {
+        this.getEntries(newQuest);
+    }
+
     mounted() {
-        this.$store.dispatch('pools/listEntries', this.quest).then(() => (this.isLoading = false));
+        this.getEntries(this.quest);
+    }
+
+    getEntries(quest: TPointReward) {
+        this.isLoading = true;
+        this.$store.dispatch('pools/listEntries', quest).then(() => (this.isLoading = false));
     }
 
     get questEntries() {
