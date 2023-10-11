@@ -9,7 +9,7 @@
                 variant="light"
             />
         </template>
-        {{ account.email }}
+        {{ account.username }}
     </b-media>
 </template>
 
@@ -23,6 +23,7 @@ export function parseAccount({ id, account }) {
     return {
         id,
         email: account && account.email,
+        username: account && account.username,
         profileImg: account && account.profileImg,
         twitterUsername: account && account.twitterUsername,
         variant: account && AccountVariant[account.variant],
@@ -31,6 +32,6 @@ export function parseAccount({ id, account }) {
 
 @Component({})
 export default class BaseParticipantAccount extends Vue {
-    @Prop() account!: { id: string; variant: AccessTokenKind; profileImg: string; email: string };
+    @Prop() account!: { id: string; variant: AccessTokenKind; username: string; profileImg: string; email: string };
 }
 </script>

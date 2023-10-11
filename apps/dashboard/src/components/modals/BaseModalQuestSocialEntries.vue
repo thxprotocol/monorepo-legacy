@@ -12,6 +12,7 @@
                 <BTable hover :items="entriesByPage" responsive="lg" show-empty sort-by="isApproved" :sort-desc="false">
                     <!-- Head formatting -->
                     <template #head(account)> &nbsp;</template>
+                    <template #head(email)> E-mail</template>
                     <template #head(connectedAccounts)> Connected </template>
                     <template #head(walletAddress)> Wallet </template>
                     <template #head(pointBalance)> Point Balance </template>
@@ -21,6 +22,9 @@
                     <!-- Cell formatting -->
                     <template #cell(account)="{ item }">
                         <BaseParticipantAccount :account="item.account" />
+                    </template>
+                    <template #cell(email)="{ item }">
+                        {{ item.email }}
                     </template>
                     <template #cell(connectedAccounts)="{ item }">
                         <BaseParticipantConnectedAccount
@@ -125,6 +129,7 @@ export default class BaseModalQuestSocialEntries extends Vue {
             .sort((a: TQuestEntry, b: TQuestEntry) => (a.createdAt < b.createdAt ? 1 : -1))
             .map((entry: any) => ({
                 account: parseAccount({ id: entry._id, account: entry.account }),
+                email: entry.account && entry.account.email,
                 connectedAccounts: entry.account && parseConnectedAccounts(entry.account.connectedAccounts),
                 wallet: parseWallet(entry.wallet),
                 pointBalance: entry.pointBalance,

@@ -22,7 +22,10 @@
             >
                 <!-- Head formatting -->
                 <template #head(account)>
-                    <BaseBtnSort @click="onClickSort('email', $event)">Account</BaseBtnSort>
+                    <BaseBtnSort @click="onClickSort('username', $event)">Username</BaseBtnSort>
+                </template>
+                <template #head(email)>
+                    <BaseBtnSort @click="onClickSort('email', $event)">E-mail</BaseBtnSort>
                 </template>
                 <template #head(connectedAccounts)> Connected </template>
                 <template #head(wallet)>
@@ -40,6 +43,7 @@
 
                 <!-- Cell formatting -->
                 <template #cell(account)="{ item }"> <BaseParticipantAccount :account="item.account" /> </template>
+                <template #cell(email)="{ item }"> {{ item.email }} </template>
                 <template #cell(connectedAccounts)="{ item }">
                     <BaseParticipantConnectedAccount
                         :account="a"
@@ -99,6 +103,13 @@ export default class ViewParticipants extends Vue {
     page = 1;
     limit = 10;
     sorts = {
+        username: (a, b) => {
+            const usernameA = a.account.username ? a.account.username.toLowerCase() : '';
+            const usernameB = b.account.username ? b.account.username.toLowerCase() : '';
+            if (usernameA < usernameB) return -1;
+            if (usernameA > usernameB) return 1;
+            return 0;
+        },
         email: (a, b) => {
             const emailA = a.account.email ? a.account.email.toLowerCase() : '';
             const emailB = b.account.email ? b.account.email.toLowerCase() : '';
@@ -137,6 +148,7 @@ export default class ViewParticipants extends Vue {
     get participantsByPage() {
         return Object.values(this.result.results).map((p: any) => ({
             account: parseAccount({ id: p._id, account: p.account }),
+            email: p.account && p.account.email,
             connectedAccounts: p.account && parseConnectedAccounts(p.account.connectedAccounts),
             wallet: parseWallet(p.wallet),
             pointBalance: p.pointBalance,
