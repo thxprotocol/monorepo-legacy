@@ -120,9 +120,9 @@ async function complete(
 
     await DiscordDataProxy.sendChannelMessage(
         pool.settings.discordWebhookUrl,
-        `${celebratoryWords[index]}✨ ${
-            discord ? `<@${discord.userId}>` : `**${account.username}**`
-        } completed the [**${quest.title}**](<${widget.domain}>) quest and earned **${amount} pts**.`,
+        `${celebratoryWords[index]} ${discord ? `<@${discord.userId}>` : `**${account.username}**`} completed the **${
+            quest.title
+        }** quest and earned **${amount} pts**\n[Complete ${QuestVariant[variant]} Quest ▸](<${widget.domain}>)`,
     );
 
     let entry: TQuestEntry;

@@ -159,8 +159,8 @@
                     </b-navbar-nav>
                     <hr />
                 </template>
-                <hr class="m-0 mb-2 mt-auto" />
-                <div class="d-flex py-4 px-3 justify-content-center d-flex">
+                <hr class="m-0 mt-auto" />
+                <div class="d-flex py-4 px-3 align-items-center justify-content-between">
                     <router-link to="/" custom v-slot="{ navigate }" class="cursor-pointer">
                         <img
                             :src="require('../../public/assets/logo.png')"
@@ -172,6 +172,11 @@
                             role="link"
                         />
                     </router-link>
+                    <div class="text-right">
+                        <b-badge variant="primary" class="p-2">Plan: {{ AccountPlanType[account.plan] }}</b-badge>
+                        <br />
+                        <b-link class="small">Upgrade</b-link>
+                    </div>
                 </div>
             </div>
         </b-navbar>

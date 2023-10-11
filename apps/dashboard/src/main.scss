@@ -100,16 +100,6 @@ h2 {
     }
 }
 
-widgetbot {
-    width: 100% !important;
-    max-width: 380px !important;
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
-    left: auto;
-    top: auto;
-}
-
 .dropdown-menu {
     background-color: #f8f9fa;
 }
@@ -175,4 +165,17 @@ tbody {
 
 .text-opaque {
     opacity: .6;
+}
+
+.navbar-top .nav-link {
+    border-top: 3px solid transparent;
+    padding-top: 1.25rem;
+    padding-bottom: calc(1.25rem + 3px);
+    transition: border-color .2s ease, color .2s ease;
+
+    &:hover,
+    &.router-link-active {
+        border-color: $primary;
+        color: $primary !important;
+    }
 }

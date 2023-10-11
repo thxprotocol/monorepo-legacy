@@ -3,9 +3,10 @@
         <base-navbar v-if="profile" />
         <div class="sidebar-sibling">
             <b-navbar
+                class="px-4 py-0 navbar-top"
                 toggleable="md"
                 :type="isDarkModeEnabled ? 'dark' : 'light'"
-                class="px-4 shadow-lg"
+                :variant="isDarkModeEnabled ? 'darker' : 'white'"
                 v-if="$route.name !== 'preview'"
             >
                 <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>

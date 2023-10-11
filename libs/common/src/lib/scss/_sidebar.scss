@@ -6,6 +6,7 @@ body {
 @media (min-width: map-get($grid-breakpoints, 'md')) {
     .sidebar-sibling {
         margin-left: 260px;
+        border-left: 1px solid $gray-200;
     }
 }
 
@@ -41,6 +42,7 @@ body {
      .navbar-nav .nav-link {
         padding: 0.75rem 1rem 0.75rem 1rem;
         font-weight: 500;
+        color: $dark;
     } 
 
     .navbar-nav .nav-link i {
