@@ -21,12 +21,19 @@ export const validateCondition = async (account: TAccount, reward: TPointReward)
             }
             case RewardConditionInteraction.TwitterLike: {
                 const result = await TwitterDataProxy.validateLike(account, reward.content);
-                if (!result) return 'Twitter: Tweet has not been liked.';
+                if (!result) return 'X: Post has not been liked.';
                 break;
             }
             case RewardConditionInteraction.TwitterRetweet: {
                 const result = await TwitterDataProxy.validateRetweet(account, reward.content);
                 if (!result) return 'X: Post is not reposted.';
+                break;
+            }
+            case RewardConditionInteraction.TwitterLikeRetweet: {
+                const resultLike = await TwitterDataProxy.validateLike(account, reward.content);
+                const resultRetweet = await TwitterDataProxy.validateRetweet(account, reward.content);
+                if (!resultLike) return 'X: Post has not been liked.';
+                if (!resultRetweet) return 'X: Post is not reposted.';
                 break;
             }
             case RewardConditionInteraction.TwitterFollow: {

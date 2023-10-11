@@ -9,6 +9,7 @@ export function getInteractionComponent(interactionType: RewardConditionInteract
             return 'BaseDropdownYoutubeVideo';
         case RewardConditionInteraction.TwitterLike:
         case RewardConditionInteraction.TwitterRetweet:
+        case RewardConditionInteraction.TwitterLikeRetweet:
             return 'BaseDropdownTwitterTweets';
         case RewardConditionInteraction.TwitterFollow:
             return 'BaseDropdownTwitterUsers';
@@ -52,9 +53,10 @@ export const platformList: IChannel[] = [
         name: 'Twitter',
         logoURI: require('@thxnetwork/dashboard/../public/assets/logo-twitter.png'),
         actions: [
+            RewardConditionInteraction.TwitterFollow,
+            RewardConditionInteraction.TwitterLikeRetweet,
             RewardConditionInteraction.TwitterLike,
             RewardConditionInteraction.TwitterRetweet,
-            RewardConditionInteraction.TwitterFollow,
             RewardConditionInteraction.TwitterMessage,
         ],
     },
@@ -82,13 +84,18 @@ export const platformInteractionList = [
         items: [],
     },
     {
+        type: RewardConditionInteraction.TwitterLikeRetweet,
+        name: 'Like & Repost',
+        items: [],
+    },
+    {
         type: RewardConditionInteraction.TwitterLike,
         name: 'Like',
         items: [],
     },
     {
         type: RewardConditionInteraction.TwitterRetweet,
-        name: 'Retweet',
+        name: 'Repost',
         items: [],
     },
     {

@@ -164,19 +164,15 @@
                     <router-link to="/" custom v-slot="{ navigate }" class="cursor-pointer">
                         <img
                             :src="require('../../public/assets/logo.png')"
-                            width="40"
-                            height="40"
+                            width="30"
+                            height="30"
                             alt="THX logo"
                             @click="navigate"
                             @keypress.enter="navigate"
                             role="link"
                         />
                     </router-link>
-                    <div class="text-right">
-                        <b-badge variant="primary" class="p-2">Plan: {{ AccountPlanType[account.plan] }}</b-badge>
-                        <br />
-                        <b-link class="small">Upgrade</b-link>
-                    </div>
+                    <b-badge variant="primary" class="p-2">Plan: {{ AccountPlanType[account.plan] }}</b-badge>
                 </div>
             </div>
         </b-navbar>
