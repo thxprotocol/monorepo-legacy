@@ -118,8 +118,8 @@ export default class ViewParticipants extends Vue {
             return 0;
         },
         wallet: (a, b) => {
-            const addressA = a.wallet.address.toLowerCase();
-            const addressB = b.wallet.address.toLowerCase();
+            const addressA = a.wallet && a.wallet.address.toLowerCase();
+            const addressB = b.wallet && b.wallet.address.toLowerCase();
             if (addressA < addressB) return -1;
             if (addressA > addressB) return 1;
             return 0;
