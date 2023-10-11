@@ -59,13 +59,12 @@
                 :total-rows="total"
                 :selectedItems="selectedItems"
                 :actions="actions"
-                toggle-label="Show all"
-                @toggle="onClickToggle"
+                :published="isPublished"
+                @click-published="onClickFilterPublished"
                 @click-action="onClickAction"
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
             />
-
             <BTable
                 id="table-quests"
                 hover
@@ -80,7 +79,6 @@
                 <template #head(checkbox)>
                     <b-form-checkbox :checked="isCheckedAll" @change="onChecked" />
                 </template>
-                <template #head(variant)> Variant </template>
                 <template #head(title)> Title </template>
                 <template #head(points)> Points </template>
                 <template #head(entries)> Entries </template>
@@ -100,15 +98,17 @@
                 <template #cell(checkbox)="{ item }">
                     <b-form-checkbox :value="item.quest" v-model="selectedItems" />
                 </template>
-                <template #cell(variant)="{ item }">
-                    <b-badge variant="light" class="p-2">{{ QuestVariant[item.variant] }} </b-badge>
-                </template>
                 <template #cell(points)="{ item }">
                     <strong class="text-primary">{{ item.points }} </strong>
                 </template>
-                <template #cell(title)="{ item }"> {{ item.title }} </template>
+                <template #cell(title)="{ item }">
+                    <b-badge variant="light" class="p-2 mr-2">
+                        <i :class="questIconClassMap[item.quest.variant]" class="text-muted" />
+                    </b-badge>
+                    {{ item.title }}
+                </template>
                 <template #cell(entries)="{ item }">
-                    <template v-if="item.variant === QuestVariant.Invite">
+                    <template v-if="item.quest.variant === QuestVariant.Invite">
                         <b-link v-b-modal="`modalReferralQuestClaims${item.quest._id}`" v-if="item.entries">
                             <small><i class="fas text-muted fa-users mr-1" /></small>
                             {{ item.entries.length }}
@@ -120,7 +120,11 @@
                         />
                     </template>
                     <BaseBtnQuestEntries
-                        v-if="[QuestVariant.Twitter, QuestVariant.YouTube, QuestVariant.Discord].includes(item.variant)"
+                        v-if="
+                            [QuestVariant.Twitter, QuestVariant.YouTube, QuestVariant.Discord].includes(
+                                item.quest.variant,
+                            )
+                        "
                         :pool="pool"
                         :quest="item.quest"
                     />
@@ -130,15 +134,15 @@
                         <template #button-content>
                             <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
                         </template>
-                        <b-dropdown-item v-b-modal="questModalComponentMap[item.variant] + item.quest._id">
+                        <b-dropdown-item v-b-modal="questModalComponentMap[item.quest.variant] + item.quest._id">
                             Edit
                         </b-dropdown-item>
                         <b-dropdown-item @click="onClickDelete(item.quest)"> Delete </b-dropdown-item>
                     </b-dropdown>
                     <component
                         @submit="listQuests"
-                        :is="questModalComponentMap[item.variant]"
-                        :id="questModalComponentMap[item.variant] + item.quest._id"
+                        :is="questModalComponentMap[item.quest.variant]"
+                        :id="questModalComponentMap[item.quest.variant] + item.quest._id"
                         :pool="pool"
                         :total="allQuests.length"
                         :reward="quests[$route.params.id].results.find((q) => q._id === item.quest._id)"
@@ -291,7 +295,7 @@ export default class QuestsView extends Vue {
         [QuestVariant.Custom]: 'fas fa-flag',
         [QuestVariant.Web3]: 'fab fa-ethereum',
     };
-    isPublishedOnly = false;
+    isPublished = true;
 
     pools!: IPools;
     quests!: TQuestState;
@@ -315,7 +319,6 @@ export default class QuestsView extends Vue {
         return this.quests[this.$route.params.id].results.map((quest: any) => ({
             index: quest,
             checkbox: quest._id,
-            variant: quest.variant,
             points: quest.amount || `${quest.amounts.length} days`,
             title: quest.title,
             entries: quest.entryCount,
@@ -338,7 +341,7 @@ export default class QuestsView extends Vue {
             page: this.page,
             pool: this.pool,
             limit: this.limit,
-            isPublishedOnly: this.isPublishedOnly,
+            isPublished: this.isPublished,
         };
         await this.$store.dispatch('pools/listQuests', query);
         this.isLoading = false;
@@ -369,8 +372,8 @@ export default class QuestsView extends Vue {
         this.listQuests();
     }
 
-    onClickToggle(value: boolean) {
-        this.isPublishedOnly = !value;
+    onClickFilterPublished(value: boolean) {
+        this.isPublished = value;
         this.listQuests();
     }
 
@@ -402,6 +405,7 @@ export default class QuestsView extends Vue {
         };
         await Promise.all(this.selectedItems.map(mappers[action.variant]));
         this.isCheckedAll = false;
+        this.selectedItems = [];
         this.listQuests();
     }
 }
@@ -451,15 +455,12 @@ export default class QuestsView extends Vue {
     width: 100px;
 }
 #table-quests th:nth-child(4) {
-    width: 100px;
-}
-#table-quests th:nth-child(5) {
     width: auto;
 }
-#table-quests th:nth-child(6) {
-    width: 120px;
+#table-quests th:nth-child(5) {
+    width: 120;
 }
-#table-quests th:nth-child(7) {
+#table-quests th:nth-child(6) {
     width: 40px;
 }
 </style>

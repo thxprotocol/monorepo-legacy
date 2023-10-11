@@ -201,11 +201,8 @@ class PoolModule extends VuexModule {
     }
 
     @Mutation
-    setQuests(result: { results: TQuest[]; limit: number; page: number }) {
-        if (!result.results.length) return;
-
-        const quest = result.results[0];
-        Vue.set(this._quests, quest.poolId, result);
+    setQuests({ poolId, result }: { poolId: string; result: { results: TQuest[]; limit: number; page: number } }) {
+        Vue.set(this._quests, poolId, result);
     }
 
     @Mutation
@@ -231,19 +228,19 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async listQuests({ pool, page, limit, isPublishedOnly }) {
+    async listQuests({ pool, page, limit, isPublished }) {
         const { data } = await axios({
             method: 'GET',
             url: `/pools/${pool._id}/quests`,
             headers: { 'X-PoolId': pool._id },
-            params: { page, limit, isPublishedOnly },
+            params: { page, limit, isPublished },
         });
         data.results = data.results.map((q) => {
             q.delete = (payload: TQuest) => this.context.dispatch('deleteQuest', payload);
             q.update = (payload: TQuest) => this.context.dispatch('updateQuest', payload);
             return q;
         });
-        this.context.commit('setQuests', data);
+        this.context.commit('setQuests', { poolId: pool._id, result: data });
     }
 
     @Action

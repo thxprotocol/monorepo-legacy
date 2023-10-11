@@ -9,7 +9,7 @@ import { Web3Quest } from '@thxnetwork/api/models/Web3Quest';
 const validation = [
     query('page').isInt(),
     query('limit').isInt(),
-    query('isPublishedOnly')
+    query('isPublished')
         .optional()
         .isBoolean()
         .customSanitizer((value) => {
@@ -22,12 +22,7 @@ const controller = async (req: Request, res: Response) => {
     const poolId = req.header('X-PoolId');
     const page = Number(req.query.page);
     const limit = Number(req.query.limit);
-    const $match = { poolId };
-
-    if (req.query.isPublishedOnly) {
-        $match['isPublished'] = true;
-    }
-
+    const $match = { poolId, isPublished: req.query.isPublished };
     const pipeline = [
         { $unionWith: { coll: ReferralReward.collection.name } },
         { $unionWith: { coll: PointReward.collection.name } },

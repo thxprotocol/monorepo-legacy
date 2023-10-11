@@ -1,6 +1,22 @@
 <template>
     <div class="table-header p-3 d-flex align-items-center justify-content-between">
         <div class="d-flex align-items-center">
+            <b-button
+                :variant="published ? 'primary' : 'link'"
+                @click="$emit('click-published', true)"
+                class="rounded-pill py-2"
+            >
+                Published
+            </b-button>
+            <b-button
+                :variant="!published ? 'primary' : 'link'"
+                @click="$emit('click-published', false)"
+                class="rounded-pill py-2"
+            >
+                Unpublished
+            </b-button>
+        </div>
+        <div class="d-flex align-items-center">
             <span class="text-muted mr-2" v-if="selectedItems.length">
                 Selected <strong>{{ selectedItems.length }}</strong> item{{ selectedItems.length === 1 ? '' : 's' }}
             </span>
@@ -81,6 +97,7 @@ export default class BaseCardTableHeader extends Vue {
     @Prop() totalRows!: number;
     @Prop() search!: boolean;
     @Prop() toggleLabel!: string;
+    @Prop() published!: boolean;
 
     selectedBulkAction: TTableBulkAction | null = null;
 

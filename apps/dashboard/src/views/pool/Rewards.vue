@@ -44,6 +44,7 @@
                 :total-rows="totals[pool._id]"
                 :selectedItems="[]"
                 :actions="[]"
+                :published="true"
                 @click-action="onClickAction"
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
@@ -56,19 +57,15 @@
             />
             <BTable id="table-rewards" hover :busy="isLoading" :items="rewardsByPage" responsive="lg" show-empty>
                 <!-- Head formatting -->
-                <template #head(variant)> Variant </template>
                 <template #head(pointPrice)> Price </template>
                 <template #head(title)> Title </template>
                 <template #head(supply)> Supply </template>
                 <template #head(expiry)> Expiry </template>
-                <template #head(id)> &nbsp; </template>
+                <template #head(reward)> &nbsp; </template>
 
                 <!-- Cell formatting -->
                 <template #cell(pointPrice)="{ item }">
                     <strong class="text-primary">{{ item.pointPrice }} </strong>
-                </template>
-                <template #cell(variant)="{ item }">
-                    <b-badge variant="light" class="p-2">{{ RewardVariant[item.variant] }} </b-badge>
                 </template>
                 <template #cell(amount)="{ item }">
                     <strong class="text-primary">{{ item.amount.amount }} {{ item.amount.symbol }}</strong>
@@ -88,35 +85,38 @@
                     </b-progress>
                 </template>
                 <template #cell(title)="{ item }">
+                    <b-badge variant="light" class="p-2 mr-2">
+                        <i :class="rewardIconClassMap[item.reward.variant]" class="text-muted" />
+                    </b-badge>
                     {{ item.title }}
                 </template>
-                <template #cell(id)="{ item }">
+                <template #cell(reward)="{ item }">
                     <b-dropdown variant="link" size="sm" no-caret right>
                         <template #button-content>
                             <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
                         </template>
                         <b-dropdown-item
-                            :disabled="item.variant !== RewardVariant.NFT"
-                            v-b-modal="`modalRewardClaimsDownload${item.id}`"
+                            :disabled="item.reward.variant !== RewardVariant.NFT"
+                            v-b-modal="`modalRewardClaimsDownload${item.reward._id}`"
                         >
                             QR Codes
                         </b-dropdown-item>
-                        <b-dropdown-item v-b-modal="rewardModalComponentMap[item.variant] + item.id">
+                        <b-dropdown-item v-b-modal="rewardModalComponentMap[item.reward.variant] + item.reward._id">
                             Edit
                         </b-dropdown-item>
                         <b-dropdown-item @click="onClickDelete(item)"> Delete </b-dropdown-item>
                     </b-dropdown>
                     <BaseModalRewardClaimsDownload
-                        :id="`modalRewardClaimsDownload${item.id}`"
+                        :id="`modalRewardClaimsDownload${item.reward._id}`"
                         :pool="pool"
-                        :selectedItems="[item.id]"
+                        :selectedItems="[item.reward._id]"
                         :rewards="allRewards.filter((r) => r.variant == RewardVariant.NFT)"
                     />
                     <component
                         @submit="listRewards"
-                        :is="rewardModalComponentMap[item.variant]"
-                        :id="rewardModalComponentMap[item.variant] + item.id"
-                        :reward="allRewards.find((q) => q._id === item.id)"
+                        :is="rewardModalComponentMap[item.reward.variant]"
+                        :id="rewardModalComponentMap[item.reward.variant] + item.reward._id"
+                        :reward="allRewards.find((q) => q._id === item.reward._id)"
                         :pool="pool"
                         :total="allRewards.length"
                     />
@@ -268,12 +268,11 @@ export default class RewardsView extends Vue {
             .filter((reward: TERC20Perk | TERC721Perk | TCustomReward | any) => reward.page === this.page)
             .sort((a: any, b: any) => (a.createdAt && b.createdAt && a.createdAt < b.createdAt ? 1 : -1))
             .map((r: any) => ({
-                variant: r.variant,
                 pointPrice: r.pointPrice,
                 title: r.title,
                 expiry: r.expiry,
                 supply: { progress: r.payments ? r.payments.length : 0, limit: r.limit },
-                id: r._id,
+                reward: r,
             }))
             .slice(0, this.limit);
     }
@@ -337,18 +336,15 @@ export default class RewardsView extends Vue {
     width: 100px;
 }
 #table-rewards th:nth-child(2) {
-    width: 100px;
+    width: auto;
 }
 #table-rewards th:nth-child(3) {
-    width: auto;
-}
-#table-rewards th:nth-child(4) {
     width: 100px;
 }
-#table-rewards th:nth-child(5) {
+#table-rewards th:nth-child(4) {
     width: auto;
 }
-#table-rewards th:nth-child(6) {
+#table-rewards th:nth-child(5) {
     width: 100px;
 }
 </style>
