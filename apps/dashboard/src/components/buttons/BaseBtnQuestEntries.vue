@@ -1,16 +1,18 @@
 <template>
     <b-link v-b-modal="`modalQuestSocialEntries${quest._id}`">
-        <b-spinner v-if="isLoading" small variant="primary" />
-        <template v-else>
-            <small><i class="fas text-muted fa-users mr-1" /></small>
-            {{ questEntries.length }}
-        </template>
-        <BaseModalQuestSocialEntries
-            :id="`modalQuestSocialEntries${quest._id}`"
-            :entries="questEntries"
-            :pool="pool"
-            :quest="quest"
-        />
+        <b-badge variant="light" class="p-2 mr-2 d-inline font-weight-normal">
+            <b-spinner v-if="isLoading" small variant="primary" />
+            <template v-else>
+                <i class="fas text-muted fa-users mr-2" />
+                <span class="font-weight-bold"> {{ questEntries.length }}</span>
+                <BaseModalQuestSocialEntries
+                    :id="`modalQuestSocialEntries${quest._id}`"
+                    :entries="questEntries"
+                    :pool="pool"
+                    :quest="quest"
+                />
+            </template>
+        </b-badge>
     </b-link>
 </template>
 
@@ -36,15 +38,11 @@ export default class BaseBtnQuestEntries extends Vue {
     @Prop() pool!: TPool;
     @Prop() quest!: TPointReward;
 
-    @Watch('quest')
-    onQuestChange(newQuest: TPointReward) {
-        this.getEntries(newQuest);
-    }
-
     mounted() {
         this.getEntries(this.quest);
     }
 
+    @Watch('quest')
     getEntries(quest: TPointReward) {
         this.isLoading = true;
         this.$store.dispatch('pools/listEntries', quest).then(() => (this.isLoading = false));

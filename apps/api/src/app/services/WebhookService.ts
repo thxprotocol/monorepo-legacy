@@ -17,7 +17,7 @@ async function create(webhook: WebhookDocument, sub: string, payload: { type: Ev
         state: WebhookRequestState.Pending,
     });
 
-    await agenda.now(JobType.RequestAttemp, { webhookRequestId: webhookRequest._id, poolId: webhook.poolId });
+    await agenda.now(JobType.RequestAttempt, { webhookRequestId: webhookRequest._id, poolId: webhook.poolId });
 }
 
 async function requestAttemptJob(job: Job) {

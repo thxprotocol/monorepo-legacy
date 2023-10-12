@@ -18,6 +18,22 @@ export default class TwitterDataProxy {
         return data.userId;
     }
 
+    static async getTweetMetrics(sub: string, tweetIds: string) {
+        try {
+            const { data } = await authClient({
+                method: 'POST',
+                url: `/account/${sub}/twitter/tweet/metrics`,
+                headers: {
+                    Authorization: await getAuthAccessToken(),
+                },
+                data: { tweetIds: JSON.stringify(tweetIds) },
+            });
+            return data;
+        } catch (res) {
+            console.log(res.data);
+        }
+    }
+
     static async getTwitter(sub: string) {
         const r = await authClient({
             method: 'GET',

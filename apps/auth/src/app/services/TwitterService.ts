@@ -4,7 +4,7 @@ import { twitterClient } from '../util/axios';
 import { AUTH_URL, TWITTER_CLIENT_ID, TWITTER_CLIENT_SECRET } from '../config/secrets';
 import { AccountDocument } from '../models/Account';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
-import { IAccessToken } from '@thxnetwork/types/interfaces';
+import { IAccessToken, TAccount } from '@thxnetwork/types/interfaces';
 import { formatDistance } from 'date-fns';
 
 const ERROR_NO_DATA = 'Could not find an youtube data for this accesstoken';
@@ -60,7 +60,24 @@ export class TwitterService {
         return data;
     }
 
-    // @dev Added rate limit logic here as the tweet endpoint rate limit is rather low
+    static async getTweetMetrics(account: TAccount, tweetIds: string[]) {
+        const { accessToken } = account.getToken(AccessTokenKind.Twitter);
+        try {
+            const res = await twitterClient({
+                method: 'GET',
+                url: `/tweets`,
+                headers: { Authorization: `Bearer ${accessToken}` },
+                params: {
+                    'ids': tweetIds.join(','),
+                    'tweet.fields': 'public_metrics,non_public_metrics,organic_metrics,promoted_metrics',
+                },
+            });
+            return res.data.data;
+        } catch (res) {
+            return this.handleError(account, res);
+        }
+    }
+
     static async getTweet(account: AccountDocument, tweetId: string) {
         const { accessToken } = account.getToken(AccessTokenKind.Twitter);
         try {
@@ -75,23 +92,28 @@ export class TwitterService {
             });
             return res.data;
         } catch (res) {
-            // Indicates rate limit has been hit
-            if (res.status === 401) {
-                await this.isAuthorized(account);
-            }
-            if (res.status === 429) {
-                const limit = res.headers['x-rate-limit-limit'];
-                const resetTime = Number(res.headers['x-rate-limit-reset']);
-                const seconds = resetTime - Math.ceil(Date.now() / 1000);
+            return this.handleError(account, res);
+        }
+    }
 
-                return {
-                    error: `X API allows for a max of ${limit} requests within a 15 minute window. Try again in ${formatDistance(
-                        0,
-                        seconds * 1000,
-                        { includeSeconds: true },
-                    )}.`,
-                };
-            }
+    // @dev Added rate limit logic here as the tweet endpoint rate limit is rather low
+    static async handleError(account, res) {
+        // Indicates rate limit has been hit
+        if (res.status === 401) {
+            await this.isAuthorized(account);
+        }
+        if (res.status === 429) {
+            const limit = res.headers['x-rate-limit-limit'];
+            const resetTime = Number(res.headers['x-rate-limit-reset']);
+            const seconds = resetTime - Math.ceil(Date.now() / 1000);
+
+            return {
+                error: `X API allows for a max of ${limit} requests within a 15 minute window. Try again in ${formatDistance(
+                    0,
+                    seconds * 1000,
+                    { includeSeconds: true },
+                )}.`,
+            };
         }
     }
 

@@ -22,6 +22,7 @@ import GetTwitterMe from './twitter/user/get.controller';
 import FetchTwitterUser from './twitter/user/post.controller';
 import FetchTwitterUserByUsername from './twitter/user/by/username/post.controller';
 import FetchTwitterTweet from './twitter/tweet/post.controller';
+import FetchTwitterTweetMetrics from './twitter/tweet/metrics/post.controller';
 
 import GetGoogleUser from './google/user/get.controller';
 import GetDiscordUser from './discord/user/get.controller';
@@ -56,6 +57,12 @@ router.post(
     guard.check(['accounts:read']),
     validate(FetchTwitterTweet.validation),
     FetchTwitterTweet.controller,
+);
+router.post(
+    '/:sub/twitter/tweet/metrics',
+    guard.check(['accounts:read']),
+    validate(FetchTwitterTweetMetrics.validation),
+    FetchTwitterTweetMetrics.controller,
 );
 
 router.get('/:sub/google/youtube', guard.check(['accounts:read']), getYoutube);

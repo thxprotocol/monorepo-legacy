@@ -23,13 +23,6 @@ const controller = async (req: Request, res: Response) => {
     const page = Number(req.query.page);
     const limit = Number(req.query.limit);
     const $match = { poolId, isPublished: req.query.isPublished };
-    const pipeline = [
-        { $unionWith: { coll: ReferralReward.collection.name } },
-        { $unionWith: { coll: PointReward.collection.name } },
-        { $unionWith: { coll: MilestoneReward.collection.name } },
-        { $unionWith: { coll: Web3Quest.collection.name } },
-        { $match },
-    ];
     const arr = await Promise.all(
         [DailyReward, ReferralReward, PointReward, MilestoneReward, Web3Quest].map(
             async (model) => await model.countDocuments($match),
@@ -37,7 +30,11 @@ const controller = async (req: Request, res: Response) => {
     );
     const total = arr.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
     const results = await DailyReward.aggregate([
-        ...pipeline,
+        { $unionWith: { coll: ReferralReward.collection.name } },
+        { $unionWith: { coll: PointReward.collection.name } },
+        { $unionWith: { coll: MilestoneReward.collection.name } },
+        { $unionWith: { coll: Web3Quest.collection.name } },
+        { $match },
         { $sort: { index: 1 } },
         { $skip: (page - 1) * limit },
         { $limit: limit },

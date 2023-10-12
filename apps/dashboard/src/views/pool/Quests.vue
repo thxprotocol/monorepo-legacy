@@ -82,6 +82,7 @@
                 <template #head(title)> Title </template>
                 <template #head(points)> Points </template>
                 <template #head(entries)> Entries </template>
+                <template #head(metrics)> Metrics </template>
                 <template #head(quest)> &nbsp; </template>
 
                 <!-- Cell formatting -->
@@ -129,6 +130,28 @@
                         :quest="item.quest"
                     />
                 </template>
+                <template #cell(metrics)="{ item }">
+                    <template v-if="item.quest.variant === QuestVariant.Twitter">
+                        <b-badge variant="light" class="p-2 mr-2 d-inline font-weight-normal">
+                            <i class="fas fa-retweet mr-2"></i>
+                            <b-progress
+                                class="d-inline-flex"
+                                :value="item.metrics.reposts.impact"
+                                :max="item.metrics.reposts.count"
+                                style="height: 8px; width: 40px"
+                            ></b-progress>
+                        </b-badge>
+                        <b-badge variant="light" class="p-2 mr-2 d-inline font-weight-normal">
+                            <i class="fas fa-heart mr-2"></i>
+                            <b-progress
+                                class="d-inline-flex"
+                                :value="item.metrics.likes.impact"
+                                :max="item.metrics.likes.count"
+                                style="height: 8px; width: 40px"
+                            ></b-progress>
+                        </b-badge>
+                    </template>
+                </template>
                 <template #cell(quest)="{ item }">
                     <b-dropdown variant="link" size="sm" right no-caret>
                         <template #button-content>
@@ -154,7 +177,7 @@
 </template>
 
 <script lang="ts">
-import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
+import { IPools, TQuestEntryState } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { TQuest } from '@thxnetwork/types/interfaces';
@@ -260,6 +283,7 @@ export const contentQuests = {
     computed: mapGetters({
         pools: 'pools/all',
         quests: 'pools/quests',
+        entries: 'pools/entries',
         totals: 'dailyRewards/totals',
     }),
 })
@@ -299,6 +323,7 @@ export default class QuestsView extends Vue {
 
     pools!: IPools;
     quests!: TQuestState;
+    entries!: TQuestEntryState;
 
     get pool() {
         return this.pools[this.$route.params.id];
@@ -316,14 +341,23 @@ export default class QuestsView extends Vue {
 
     get allQuests() {
         if (!this.quests[this.$route.params.id]) return [];
-        return this.quests[this.$route.params.id].results.map((quest: any) => ({
-            index: quest,
-            checkbox: quest._id,
-            points: quest.amount || `${quest.amounts.length} days`,
-            title: quest.title,
-            entries: quest.entryCount,
-            quest: quest,
-        }));
+        return this.quests[this.$route.params.id].results.map((quest: any) => {
+            const entries = this.entries[this.$route.params.id]
+                ? this.entries[this.$route.params.id][quest._id] || []
+                : [];
+            return {
+                index: quest,
+                checkbox: quest._id,
+                points: quest.amount || `${quest.amounts.length} days`,
+                title: quest.title,
+                entries,
+                metrics: {
+                    reposts: { count: quest.repostCount, impact: entries.length },
+                    likes: { count: quest.likeCount, impact: entries.length },
+                },
+                quest: quest,
+            };
+        });
     }
 
     mounted() {
@@ -458,9 +492,12 @@ export default class QuestsView extends Vue {
     width: auto;
 }
 #table-quests th:nth-child(5) {
-    width: 120;
+    width: 100px;
 }
 #table-quests th:nth-child(6) {
+    width: 200px;
+}
+#table-quests th:nth-child(7) {
     width: 40px;
 }
 </style>
