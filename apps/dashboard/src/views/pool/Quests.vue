@@ -133,6 +133,12 @@
                 <template #cell(metrics)="{ item }">
                     <template v-if="item.metrics && item.quest.variant === QuestVariant.Twitter">
                         <BaseBadgePopover
+                            v-if="
+                                [
+                                    RewardConditionInteraction.TwitterLike,
+                                    RewardConditionInteraction.TwitterLikeRetweet,
+                                ].includes(item.quest.interaction)
+                            "
                             icon-class="fas fa-retweet"
                             :label="`Repost impact: ${Math.ceil(
                                 (item.metrics.reposts.impact / item.metrics.reposts.count) * 100,
@@ -147,6 +153,12 @@
                             </p>
                         </BaseBadgePopover>
                         <BaseBadgePopover
+                            v-if="
+                                [
+                                    RewardConditionInteraction.TwitterRetweet,
+                                    RewardConditionInteraction.TwitterLikeRetweet,
+                                ].includes(item.quest.interaction)
+                            "
                             icon-class="fas fa-heart"
                             :label="`Like impact: ${Math.ceil(
                                 (item.metrics.likes.impact / item.metrics.likes.count) * 100,
@@ -191,7 +203,7 @@ import { IPools, TQuestEntryState } from '@thxnetwork/dashboard/store/modules/po
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { TQuest } from '@thxnetwork/types/interfaces';
-import { QuestVariant } from '@thxnetwork/types/enums';
+import { QuestVariant, RewardConditionInteraction } from '@thxnetwork/types/enums';
 import BaseModalQuestDailyCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestDailyCreate.vue';
 import BaseModalQuestSocialCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestSocialCreate.vue';
 import BaseModalQuestInviteCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestInviteCreate.vue';
@@ -300,6 +312,7 @@ export const contentQuests = {
     }),
 })
 export default class QuestsView extends Vue {
+    RewardConditionInteraction = RewardConditionInteraction;
     hasPremiumAccess = hasPremiumAccess;
     contentQuests = contentQuests;
     actions = [
