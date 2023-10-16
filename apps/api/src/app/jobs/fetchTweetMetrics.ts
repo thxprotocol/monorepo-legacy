@@ -1,51 +1,43 @@
-import { PointReward } from '../models/PointReward';
-import { AssetPool } from '../models/AssetPool';
 import { logger } from '../util/logger';
-import { RewardConditionInteraction } from '@thxnetwork/common/lib/types';
+import { PointReward } from '../models/PointReward';
 import TwitterDataProxy from '../proxies/TwitterDataProxy';
+import PointRewardService from '../services/PointRewardService';
 
 export async function fetchTweetMetrics() {
-    // Now, create the aggregation query
     try {
-        const result = await PointReward.aggregate([
-            {
-                $lookup: {
-                    from: AssetPool.collection.name,
-                    let: { poolId: { $toObjectId: '$poolId' } },
-                    pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$poolId'] } } }],
-                    as: 'pool',
-                },
-            },
-            {
-                $unwind: '$pool',
-            },
-            {
-                $match: {
-                    interaction: {
-                        $in: [
-                            RewardConditionInteraction.TwitterLike,
-                            RewardConditionInteraction.TwitterRetweet,
-                            RewardConditionInteraction.TwitterLikeRetweet,
-                        ],
-                    },
-                },
-            },
-            {
-                $group: { _id: '$pool.sub', quests: { $push: '$$ROOT' } },
-            },
-        ]);
+        const result = await PointRewardService.aggregateTwitterQuestsBySub();
 
+        // _id is the sub here
         for (const { _id, quests } of result) {
-            const tweetIds = quests.map((q) => q.content);
-            const metrics = await TwitterDataProxy.getTweetMetrics(_id, tweetIds);
-            console.log(metrics);
-            for (const quest of quests) {
-                console.log(_id, quests.length);
+            try {
+                const tweetIds = quests.map((q) => q.content);
+                const metrics: { id: string; public_metrics: any }[] = await TwitterDataProxy.getTweetMetrics(
+                    _id,
+                    tweetIds,
+                );
+
+                // Pick metrics from the fetched data
+                for (const quest of quests) {
+                    try {
+                        const metric = metrics.find(({ id }) => quest.content === id);
+                        if (!metric) continue;
+
+                        // Enriched existing contentMetadata with tweet metrics
+                        const contentMetadata = quest.contentMetadata ? JSON.parse(quest.contentMetadata) : {};
+                        await PointReward.findByIdAndUpdate(quest._id, {
+                            contentMetadata: JSON.stringify({ ...contentMetadata, metrics: metric.public_metrics }),
+                        });
+                    } catch (error) {
+                        logger.error(error);
+                    }
+                }
+
+                logger.info(`[${_id}] Updated ${quests.length} quests with Twitter Tweet Metrics`);
+            } catch (error) {
+                logger.error(error);
             }
         }
     } catch (error) {
-        console.log(error);
+        logger.error(error);
     }
-
-    logger.info(`[${0}] Fetched ${0} Twitter Tweet Metrics`);
 }

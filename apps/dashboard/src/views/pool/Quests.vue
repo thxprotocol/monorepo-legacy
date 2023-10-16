@@ -131,25 +131,35 @@
                     />
                 </template>
                 <template #cell(metrics)="{ item }">
-                    <template v-if="item.quest.variant === QuestVariant.Twitter">
-                        <b-badge variant="light" class="p-2 mr-2 d-inline font-weight-normal">
-                            <i class="fas fa-retweet mr-2"></i>
-                            <b-progress
-                                class="d-inline-flex"
-                                :value="item.metrics.reposts.impact"
-                                :max="item.metrics.reposts.count"
-                                style="height: 8px; width: 40px"
-                            ></b-progress>
-                        </b-badge>
-                        <b-badge variant="light" class="p-2 mr-2 d-inline font-weight-normal">
-                            <i class="fas fa-heart mr-2"></i>
-                            <b-progress
-                                class="d-inline-flex"
-                                :value="item.metrics.likes.impact"
-                                :max="item.metrics.likes.count"
-                                style="height: 8px; width: 40px"
-                            ></b-progress>
-                        </b-badge>
+                    <template v-if="item.metrics && item.quest.variant === QuestVariant.Twitter">
+                        <BaseBadgePopover
+                            icon-class="fas fa-retweet"
+                            :label="`Repost impact: ${Math.ceil(
+                                (item.metrics.reposts.impact / item.metrics.reposts.count) * 100,
+                            )}%`"
+                            :id="`popover-reposts-${item.quest._id}`"
+                            :value="item.metrics.reposts.impact"
+                            :max="item.metrics.reposts.count"
+                        >
+                            <p class="m-0">
+                                Out of your <strong>{{ item.metrics.reposts.count }}</strong> reposting users,
+                                <strong>{{ item.metrics.reposts.impact }}</strong> have completed the quest.
+                            </p>
+                        </BaseBadgePopover>
+                        <BaseBadgePopover
+                            icon-class="fas fa-heart"
+                            :label="`Like impact: ${Math.ceil(
+                                (item.metrics.likes.impact / item.metrics.likes.count) * 100,
+                            )}%`"
+                            :id="`popover-likes-${item.quest._id}`"
+                            :value="item.metrics.likes.impact"
+                            :max="item.metrics.likes.count"
+                        >
+                            <p class="m-0">
+                                Out of your <strong>{{ item.metrics.likes.count }}</strong> liking users,
+                                <strong>{{ item.metrics.likes.impact }}</strong> have completed the quest.
+                            </p>
+                        </BaseBadgePopover>
                     </template>
                 </template>
                 <template #cell(quest)="{ item }">
@@ -190,6 +200,7 @@ import BaseModalQuestWeb3Create from '@thxnetwork/dashboard/components/modals/Ba
 import BaseModalQuestInviteClaims from '@thxnetwork/dashboard/components/modals/BaseModalQuestInviteClaims.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseBtnQuestEntries from '@thxnetwork/dashboard/components/buttons/BaseBtnQuestEntries.vue';
+import BaseBadgePopover from '@thxnetwork/dashboard/components/badges/BaseBadgePopover.vue';
 import { hasPremiumAccess } from '@thxnetwork/common';
 import { TQuestState } from '@thxnetwork/dashboard/store/modules/pools';
 
@@ -279,6 +290,7 @@ export const contentQuests = {
         BaseModalQuestWeb3Create,
         BaseModalQuestInviteCreate,
         BaseModalQuestInviteClaims,
+        BaseBadgePopover,
     },
     computed: mapGetters({
         pools: 'pools/all',
@@ -345,16 +357,18 @@ export default class QuestsView extends Vue {
             const entries = this.entries[this.$route.params.id]
                 ? this.entries[this.$route.params.id][quest._id] || []
                 : [];
+            const metadata = quest.contentMetadata ? JSON.parse(quest.contentMetadata) : null;
             return {
                 index: quest,
                 checkbox: quest._id,
                 points: quest.amount || `${quest.amounts.length} days`,
                 title: quest.title,
                 entries,
-                metrics: {
-                    reposts: { count: quest.repostCount, impact: entries.length },
-                    likes: { count: quest.likeCount, impact: entries.length },
-                },
+                metrics: metadata &&
+                    metadata.metrics && {
+                        reposts: { count: metadata.metrics.retweet_count, impact: entries.length },
+                        likes: { count: metadata.metrics.like_count, impact: entries.length },
+                    },
                 quest: quest,
             };
         });

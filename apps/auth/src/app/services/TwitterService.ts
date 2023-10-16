@@ -7,10 +7,6 @@ import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IAccessToken, TAccount } from '@thxnetwork/types/interfaces';
 import { formatDistance } from 'date-fns';
 
-const ERROR_NO_DATA = 'Could not find an youtube data for this accesstoken';
-const ERROR_NOT_AUTHORIZED = 'Not authorized for Twitter API';
-const ERROR_TOKEN_REQUEST_FAILED = 'Failed to request access token';
-
 export class TwitterService {
     static async isAuthorized(account: AccountDocument) {
         const token = account.getToken(AccessTokenKind.Twitter);
@@ -69,7 +65,9 @@ export class TwitterService {
                 headers: { Authorization: `Bearer ${accessToken}` },
                 params: {
                     'ids': tweetIds.join(','),
-                    'tweet.fields': 'public_metrics,non_public_metrics,organic_metrics,promoted_metrics',
+                    'tweet.fields': 'public_metrics',
+                    // Can access more insights if tweet is owned by used
+                    // 'tweet.fields': 'public_metrics,non_public_metrics,organic_metrics,promoted_metrics',
                 },
             });
             return res.data.data;
@@ -149,20 +147,31 @@ export class TwitterService {
         const user = await this.getMe(accessToken);
         if (!user) throw new Error('Could not find Twitter user.');
 
-        const r = await twitterClient({
-            url: `/tweets/${channelItem}/retweeted_by`,
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        });
+        const maxResults = 100;
+        let result = false,
+            resultCount = maxResults,
+            params = { max_results: maxResults };
 
-        if (r.status !== 200) throw new Error(ERROR_NOT_AUTHORIZED);
-        if (!r.data) throw new Error(ERROR_NO_DATA);
+        while (resultCount >= maxResults) {
+            const { data } = await twitterClient({
+                url: `/tweets/${channelItem}/retweeted_by`,
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
 
-        return r.data.data ? !!r.data.data.filter((u: { id: number }) => u.id === user.id).length : false;
+            resultCount = data.meta.result_count;
+            params = Object.assign(params, { pagination_token: data.meta.next_token });
+            result = data.data ? !!data.data.filter((u: { id: number }) => u.id === user.id).length : false;
+            if (result) break;
+            if (!data.meta.next_token) break;
+        }
+
+        return result;
     }
 
+    // This makes the user follow the account in case thats not already the case
     static async validateFollow(accessToken: string, channelItem: string) {
         const user = await this.getMe(accessToken);
         if (!user) throw new Error('Could not find Twitter user.');
@@ -226,8 +235,6 @@ export class TwitterService {
             },
             data,
         });
-
-        if (r.status !== 200) throw new Error(ERROR_TOKEN_REQUEST_FAILED);
 
         return r.data;
     }
