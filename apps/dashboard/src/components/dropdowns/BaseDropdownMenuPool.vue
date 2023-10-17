@@ -3,17 +3,17 @@
         <template #button-content>
             <i class="fas fa-ellipsis-v m-0 p-1 px-2 text-muted" aria-hidden="true" style="font-size: 1rem"></i>
         </template>
-        <b-dropdown-item @click.stop="$copyText(pool._id)" link-class="text-muted small">
+        <b-dropdown-item @click.stop="$copyText(pool._id)" link-class="text-muted">
             <span class="d-inline-block" style="width: 30px"><i class="fas fa-clipboard mr-3"></i></span>
             <span>Copy ID</span>
         </b-dropdown-item>
-        <b-dropdown-item @click.stop="onClickTransferPool" link-class="text-muted small">
+        <b-dropdown-item @click.stop="onClickTransferPool" link-class="text-muted">
             <span class="d-inline-block" style="width: 30px"><i class="fas fa-exchange-alt mr-3"></i></span>
             <span>Transfer</span>
             <BaseModalPoolTransfer :pool="pool" title="Transfer pool ownership" />
         </b-dropdown-item>
         <b-dropdown-divider />
-        <b-dropdown-item @click.stop="$emit('remove')" link-class="text-muted small">
+        <b-dropdown-item @click.stop="$emit('remove')" link-class="text-muted">
             <span class="d-inline-block" style="width: 30px"><i class="fas fa-trash-alt mr-3"></i></span>
             <span>Remove</span>
         </b-dropdown-item>

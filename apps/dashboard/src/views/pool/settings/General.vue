@@ -140,7 +140,7 @@
                     <b-list-group-item class="d-flex justify-content-between align-items-center bg-light">
                         {{ pool.owner.email }} (Owner)
                         <b-button
-                            disabled
+                            :disabled="pool.owner.sub !== profile.sub"
                             v-b-modal="`modalPoolTransfer${pool._id}`"
                             variant="link"
                             size="sm"
@@ -148,7 +148,7 @@
                         >
                             Transfer Ownership
                         </b-button>
-                        <BaseModalPoolTransfer :pool="pool" />
+                        <BaseModalPoolTransfer :pool="pool" title="Campaign ownership transfer" />
                     </b-list-group-item>
                     <BaseListItemCollaborator
                         @error="errorCollaborator = $event"
