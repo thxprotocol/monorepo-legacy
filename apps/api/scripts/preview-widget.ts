@@ -155,15 +155,15 @@ async function main() {
     const start = Date.now();
 
     console.log('Start', new Date());
-
-    const brands = await Brand.find({});
+    const poolIds = [];
+    const brands = await Brand.find({ poolId: { $in: poolIds } });
     for (const index in brands) {
         try {
             const brand = brands[index];
             const previewFile = await createCampaignWidgetPreviewImage(brand);
             if (!previewFile) continue;
             // Write the image buffer data to the file
-            const output = path.join('/Users/peterpolman/Desktop/previews/final', `${brand.poolId}.png`);
+            const output = path.join('/Users/peterpolman/Desktop/previews', `${brand.poolId}.png`);
             fs.writeFileSync(output, previewFile);
 
             console.log(`${Number(index) + 1}/${brands.length} ${brand.poolId}`);
