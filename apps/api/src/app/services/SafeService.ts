@@ -25,6 +25,10 @@ function getSafeSDK(chainId: ChainId) {
     return new SafeApiKit({ txServiceUrl, ethAdapter });
 }
 
+function reset(wallet: WalletDocument, userWalletAddress: string) {
+    return deploy(wallet, userWalletAddress);
+}
+
 async function create(
     data: { chainId: ChainId; sub: string; safeVersion?: SafeVersion; address?: string },
     userWalletAddress?: string,
@@ -34,9 +38,13 @@ async function create(
     // Concerns a Metamask account so we do not deploy and return early
     if (!safeVersion && address) return wallet;
 
+    return deploy(wallet, userWalletAddress);
+}
+
+async function deploy(wallet: WalletDocument, userWalletAddress: string) {
     const { defaultAccount, ethAdapter } = getProvider(wallet.chainId);
     const safeFactory = await SafeFactory.create({
-        safeVersion,
+        safeVersion: wallet.safeVersion as SafeVersion,
         ethAdapter,
         contractNetworks,
     });
@@ -55,7 +63,7 @@ async function create(
     } catch (error) {
         await agenda.now(JobType.DeploySafe, {
             safeAccountConfig,
-            safeVersion,
+            safeVersion: wallet.safeVersion,
             safeAddress,
             safeWalletId: String(wallet._id),
         });
@@ -264,6 +272,7 @@ async function getTransaction(wallet: WalletDocument, safeTxHash: string): Promi
 
 export default {
     getWalletMigration,
+    reset,
     migrate,
     migrateJob,
     createSwapOwnerTransaction,
