@@ -15,6 +15,20 @@
                 <b-form-group label="Platform">
                     <BaseDropdownChannelTypes @selected="onSelectPlatform" :platform="platform" />
                 </b-form-group>
+                <b-alert
+                    show
+                    variant="warning"
+                    class="d-flex align-items-center justify-content-between"
+                    v-if="platform.type === RewardConditionPlatform.Twitter && !profile.twitterAccess"
+                >
+                    <div>
+                        <i class="fas fa-exclamation-circle mr-1" />
+                        Please connect your Twitter account!
+                    </div>
+                    <b-button @click="onClickConnect(AccessTokenKind.Twitter)" variant="primary" size="sm">
+                        Connect
+                    </b-button>
+                </b-alert>
                 <template v-if="platform && platform.type !== RewardConditionPlatform.None">
                     <b-form-group label="Interaction">
                         <BaseDropdownChannelActions
@@ -48,7 +62,7 @@ import {
     getInteraction,
     getInteractionComponent,
 } from '@thxnetwork/dashboard/types/rewards';
-import { RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/enums';
+import { AccessTokenKind, RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/enums';
 import { TAccount } from '@thxnetwork/types/interfaces';
 import BaseDropdownChannelTypes from '../dropdowns/BaseDropdownChannelTypes.vue';
 import BaseDropdownChannelActions from '../dropdowns/BaseDropdownChannelActions.vue';
@@ -72,12 +86,10 @@ import BaseDropdownTwitterMessage from '../dropdowns/BaseDropdownTwitterMessage.
     },
     computed: mapGetters({
         profile: 'account/profile',
-        youtube: 'account/youtube',
-        twitter: 'account/twitter',
-        discord: 'account/discord',
     }),
 })
 export default class BaseCardRewardCondition extends Vue {
+    AccessTokenKind = AccessTokenKind;
     RewardConditionInteraction = RewardConditionInteraction;
     RewardConditionPlatform = RewardConditionPlatform;
     isLoadingPlatform = false;
@@ -109,6 +121,10 @@ export default class BaseCardRewardCondition extends Vue {
         this.content = this.rewardCondition ? this.rewardCondition.content : '';
         this.contentMetadata = this.rewardCondition ? this.rewardCondition.contentMetadata : {};
         this.isVisible = !!this.platform.type;
+    }
+
+    async onClickConnect(kind: AccessTokenKind) {
+        await this.$store.dispatch('account/connect', kind);
     }
 
     onSelectPlatform(platform: IChannel) {
