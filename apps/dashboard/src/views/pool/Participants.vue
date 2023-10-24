@@ -66,19 +66,29 @@
                 <template #cell(createdAt)="{ item }">
                     <small class="text-muted">{{ format(new Date(item.createdAt), 'dd-MM-yyyy HH:mm') }}</small>
                 </template>
-                <!-- <template #cell(participant)="{ item }">
+                <template #cell(participant)="{ item }">
                     <b-dropdown variant="link" size="sm" right no-caret>
                         <template #button-content>
                             <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
                         </template>
-                        <b-dropdown-item v-b-modal="'modalSendPoints' + item.participant._id">
-                            Send Points
+                        <b-dropdown-item
+                            disabled
+                            v-b-modal="'modalSendPoints' + item.participant._id"
+                            link-class="d-flex align-items-center justify-content-between"
+                        >
+                            Point Balance
+                            <i class="fas fa-caret-right ml-3" />
                         </b-dropdown-item>
-                        <b-dropdown-item v-b-modal="'modalSendMessage' + item.participant._id">
-                            Send Message
+                        <b-dropdown-item
+                            disabled
+                            v-b-modal="'modalSendMessage' + item.participant._id"
+                            link-class="d-flex align-items-center justify-content-between"
+                        >
+                            Notification
+                            <i class="fas fa-caret-right ml-3" />
                         </b-dropdown-item>
                     </b-dropdown>
-                </template> -->
+                </template>
             </BTable>
         </BCard>
     </div>
