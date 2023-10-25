@@ -179,20 +179,16 @@ const controller = async (req: Request, res: Response) => {
                     try {
                         const poolId = String(pool._id);
                         const widget = await Widget.findOne({ poolId });
-                        if (!widget) return;
-
                         const brand = await BrandService.get(poolId);
 
-                        const progress = (() => {
-                            const data = {
-                                start: new Date(pool.createdAt).getTime(),
-                                now: Date.now(),
-                                end: new Date(pool.settings.endDate).getTime(),
-                            };
-                            const period = data.end - data.start;
-                            const progress = data.now - data.start;
-                            return (progress / period) * 100;
-                        })();
+                        let progress = 0;
+                        if (pool.settings.endDate) {
+                            const start = new Date(pool.createdAt).getTime();
+                            const now = Date.now();
+                            const end = new Date(pool.settings.endDate).getTime();
+                            const period = end - start;
+                            progress = ((now - start) / period) * 100;
+                        }
 
                         return {
                             _id: pool._id,
@@ -200,14 +196,14 @@ const controller = async (req: Request, res: Response) => {
                             expiryDate: pool.settings.endDate,
                             address: pool.address,
                             chainId: pool.chainId,
-                            domain: widget.domain,
+                            domain: widget && widget.domain,
                             logoImgUrl: brand && brand.logoImgUrl,
                             backgroundImgUrl: brand && brand.backgroundImgUrl,
                             // tags: ['Gaming', 'Web3'],
                             participants: pool.participantCount,
                             rewards: pool.totalRewardsCount,
                             quests: pool.totalQuestCount,
-                            active: widget.active,
+                            active: widget && widget.active,
                             progress,
                         };
                     } catch (error) {
