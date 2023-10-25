@@ -166,9 +166,9 @@ const controller = async (req: Request, res: Response) => {
     const { page, limit, search } = req.query;
     const result = await paginatedResults(AssetPool, Number(page), Number(limit), search ? String(search) : '');
 
-    result.results = await Promise.all(
-        result.results
-            .map(
+    result.results = (
+        await Promise.all(
+            result.results.map(
                 async (
                     pool: AssetPoolDocument & {
                         participantCount: number;
@@ -214,9 +214,9 @@ const controller = async (req: Request, res: Response) => {
                         logger.error(error);
                     }
                 },
-            )
-            .filter((pool) => !!pool),
-    );
+            ),
+        )
+    ).filter((pool) => !!pool);
 
     res.json(result);
 };
