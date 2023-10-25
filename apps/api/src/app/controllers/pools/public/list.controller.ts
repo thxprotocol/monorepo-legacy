@@ -167,53 +167,55 @@ const controller = async (req: Request, res: Response) => {
     const result = await paginatedResults(AssetPool, Number(page), Number(limit), search ? String(search) : '');
 
     result.results = await Promise.all(
-        result.results.map(
-            async (
-                pool: AssetPoolDocument & {
-                    participantCount: number;
-                    totalQuestCount: number;
-                    totalRewardsCount: number;
-                },
-            ) => {
-                try {
-                    const poolId = String(pool._id);
-                    const widget = await Widget.findOne({ poolId });
-                    if (!widget) return;
+        result.results
+            .map(
+                async (
+                    pool: AssetPoolDocument & {
+                        participantCount: number;
+                        totalQuestCount: number;
+                        totalRewardsCount: number;
+                    },
+                ) => {
+                    try {
+                        const poolId = String(pool._id);
+                        const widget = await Widget.findOne({ poolId });
+                        if (!widget) return;
 
-                    const brand = await BrandService.get(poolId);
+                        const brand = await BrandService.get(poolId);
 
-                    const progress = (() => {
-                        const data = {
-                            start: new Date(pool.createdAt).getTime(),
-                            now: Date.now(),
-                            end: new Date(pool.settings.endDate).getTime(),
+                        const progress = (() => {
+                            const data = {
+                                start: new Date(pool.createdAt).getTime(),
+                                now: Date.now(),
+                                end: new Date(pool.settings.endDate).getTime(),
+                            };
+                            const period = data.end - data.start;
+                            const progress = data.now - data.start;
+                            return (progress / period) * 100;
+                        })();
+
+                        return {
+                            _id: pool._id,
+                            title: pool.settings.title,
+                            expiryDate: pool.settings.endDate,
+                            address: pool.address,
+                            chainId: pool.chainId,
+                            domain: widget.domain,
+                            logoImgUrl: brand && brand.logoImgUrl,
+                            backgroundImgUrl: brand && brand.backgroundImgUrl,
+                            // tags: ['Gaming', 'Web3'],
+                            participants: pool.participantCount,
+                            rewards: pool.totalRewardsCount,
+                            quests: pool.totalQuestCount,
+                            active: widget.active,
+                            progress,
                         };
-                        const period = data.end - data.start;
-                        const progress = data.now - data.start;
-                        return (progress / period) * 100;
-                    })();
-
-                    return {
-                        _id: pool._id,
-                        title: pool.settings.title,
-                        expiryDate: pool.settings.endDate,
-                        address: pool.address,
-                        chainId: pool.chainId,
-                        domain: widget.domain,
-                        logoImgUrl: brand && brand.logoImgUrl,
-                        backgroundImgUrl: brand && brand.backgroundImgUrl,
-                        // tags: ['Gaming', 'Web3'],
-                        participants: pool.participantCount,
-                        rewards: pool.totalRewardsCount,
-                        quests: pool.totalQuestCount,
-                        active: widget.active,
-                        progress,
-                    };
-                } catch (error) {
-                    logger.error(error);
-                }
-            },
-        ),
+                    } catch (error) {
+                        logger.error(error);
+                    }
+                },
+            )
+            .filter((pool) => !!pool),
     );
 
     res.json(result);
