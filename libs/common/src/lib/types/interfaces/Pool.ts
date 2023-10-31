@@ -57,6 +57,7 @@ export type TPoolSettings = {
     startDate: Date;
     endDate?: Date;
     isArchived: boolean;
+    isPublished: boolean;
     isWeeklyDigestEnabled: boolean;
     isTwitterSyncEnabled: boolean;
     discordWebhookUrl: string;

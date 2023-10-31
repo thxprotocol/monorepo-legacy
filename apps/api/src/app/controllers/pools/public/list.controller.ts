@@ -10,8 +10,10 @@ import { query } from 'express-validator';
 export const paginatedResults = async (model: any, page: number, limit: number, search: string) => {
     const startIndex = (page - 1) * limit;
     const $match = {
-        chainId: NODE_ENV === 'production' ? ChainId.Polygon : ChainId.Hardhat,
-        totalRewardsCount: { $gt: 0 },
+        'settings.isPublished': true,
+        'chainId': NODE_ENV === 'production' ? ChainId.Polygon : ChainId.Hardhat,
+        'totalQuestCount': { $gt: 0 },
+        'totalRewardsCount': { $gt: 0 },
     };
 
     if (search) {
@@ -61,6 +63,14 @@ export const paginatedResults = async (model: any, page: number, limit: number, 
                     localField: 'id',
                     foreignField: 'poolId',
                     as: 'customRewards',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'couponrewards',
+                    localField: 'id',
+                    foreignField: 'poolId',
+                    as: 'couponRewards',
                 },
             },
             {
@@ -118,7 +128,7 @@ export const paginatedResults = async (model: any, page: number, limit: number, 
                     },
                     totalRewardsCount: {
                         $size: {
-                            $concatArrays: ['$erc20Perks', '$erc721Perks', '$customRewards'],
+                            $concatArrays: ['$erc20Perks', '$erc721Perks', '$customRewards', '$couponRewards'],
                         },
                     },
                     participantCount: { $size: '$participants' },

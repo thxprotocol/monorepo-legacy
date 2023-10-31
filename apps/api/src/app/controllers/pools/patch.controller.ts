@@ -12,6 +12,7 @@ export const validation = [
     body('settings.endDate').optional({ nullable: true }).isString(),
     body('settings.discordWebhookUrl').optional({ checkFalsy: true }).isURL(),
     body('settings.isArchived').optional().isBoolean(),
+    body('settings.isPublished').optional().isBoolean(),
     body('settings.isWeeklyDigestEnabled').optional().isBoolean(),
     body('settings.isTwitterSyncEnabled').optional().isBoolean(),
     body('settings.defaults.conditionalRewards.title').optional().isString(),

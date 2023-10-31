@@ -20,6 +20,7 @@ const assetPoolSchema = new mongoose.Schema(
             startDate: Date,
             endDate: Date,
             isArchived: Boolean,
+            isPublished: { type: Boolean, default: false },
             isWeeklyDigestEnabled: { type: Boolean, default: true },
             isTwitterSyncEnabled: { type: Boolean, default: false },
             discordWebhookUrl: String,

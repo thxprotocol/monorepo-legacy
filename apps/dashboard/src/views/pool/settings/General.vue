@@ -166,10 +166,28 @@
             <b-col md="8">
                 <b-form-group>
                     <b-form-group>
+                        <b-form-checkbox @change="onChangeSettings" v-model="isPublished" class="mr-3">
+                            <strong>Public Campaign</strong><br />
+                            <span class="text-muted">
+                                List your campaign on
+                                <b-link href="https://campaign.thx.network" target="_blank">
+                                    campaign.thx.network
+                                </b-link>
+                                <i
+                                    v-b-tooltip
+                                    title="Campaigns must contain at least 1 quest and 1 reward."
+                                    class="fas fa-question-circle text-gray"
+                                />
+                            </span>
+                        </b-form-checkbox>
+                    </b-form-group>
+                    <b-form-group>
                         <b-form-checkbox @change="onChangeSettings" v-model="isWeeklyDigestEnabled" class="mr-3">
                             <strong>Weekly Digest</strong><br />
                             <span class="text-muted">
-                                Every week on monday we will send you the latest activity metrics for this loyalty pool.
+                                On Monday we will share campaign performance metrics with
+                                <strong>{{ pool.owner.email }}</strong
+                                >.
                             </span>
                         </b-form-checkbox>
                     </b-form-group>
@@ -198,6 +216,7 @@ import type { TAccount, TPoolSettings } from '@thxnetwork/types/interfaces';
 import BaseListItemCollaborator from '@thxnetwork/dashboard/components/list-items/BaseListItemCollaborator.vue';
 import BaseModalPoolTransfer from '@thxnetwork/dashboard/components/modals/BaseModalPoolTransfer.vue';
 import BaseCampaignDuration, { parseDateTime } from '@thxnetwork/dashboard/components/cards/BaseCampaignDuration.vue';
+import slugify from '@thxnetwork/dashboard/utils/slugify';
 
 @Component({
     components: {
@@ -227,11 +246,17 @@ export default class SettingsView extends Vue {
     backgroundImgUrl = '';
     isWeeklyDigestEnabled = false;
     isArchived = false;
+    isPublished = false;
     startDate: Date | null = null;
     endDate: Date | null = null;
     emailCollaborator = '';
     isSubmittingCollaborator = false;
     hasBasicAccess = hasBasicAccess;
+
+    get slug() {
+        if (!this.title) return '';
+        return slugify(this.title);
+    }
 
     get pool() {
         return this.pools[this.$route.params.id];
@@ -264,6 +289,7 @@ export default class SettingsView extends Vue {
         this.title = this.pool.settings.title;
         this.description = this.pool.settings.description;
         this.isArchived = this.pool.settings.isArchived;
+        this.isPublished = this.pool.settings.isPublished;
         this.isWeeklyDigestEnabled = this.pool.settings.isWeeklyDigestEnabled;
 
         this.loading = false;
@@ -303,6 +329,7 @@ export default class SettingsView extends Vue {
                 description: this.description,
                 startDate: this.startDate,
                 endDate: this.endDate,
+                isPublished: this.isPublished,
                 isArchived: this.isArchived,
                 isWeeklyDigestEnabled: this.isWeeklyDigestEnabled,
             },
