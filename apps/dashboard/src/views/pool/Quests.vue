@@ -319,8 +319,8 @@ export default class QuestsView extends Vue {
         return this.quests[this.$route.params.id].results.map((quest: any) => ({
             index: quest,
             checkbox: quest._id,
-            points: quest.amount || `${quest.amounts.length} days`,
             title: quest.title,
+            points: quest.amount || `${quest.amounts.length} days`,
             entries: quest.entryCount,
             quest: quest,
         }));
@@ -452,13 +452,13 @@ export default class QuestsView extends Vue {
     width: 40px;
 }
 #table-quests th:nth-child(3) {
-    width: 100px;
-}
-#table-quests th:nth-child(4) {
     width: auto;
 }
+#table-quests th:nth-child(4) {
+    width: 130px;
+}
 #table-quests th:nth-child(5) {
-    width: 120;
+    width: 130px;
 }
 #table-quests th:nth-child(6) {
     width: 40px;

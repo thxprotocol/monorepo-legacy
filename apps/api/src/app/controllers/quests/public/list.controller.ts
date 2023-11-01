@@ -1,14 +1,36 @@
 import { Request, Response } from 'express';
 import { query } from 'express-validator';
-import { DailyReward } from '@thxnetwork/api/models/DailyReward';
-import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
-import { PointReward } from '@thxnetwork/api/models/PointReward';
-import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
-import { Web3Quest } from '@thxnetwork/api/models/Web3Quest';
+import { AssetPool } from '@thxnetwork/api/models/AssetPool';
 
 export const paginatedResults = async (model: any, limit: number) => {
+    const pipelines = [
+        { collectionName: 'dailyrewards', target: 'dailyquests' },
+        { collectionName: 'referralrewards', target: 'invitequests' },
+        { collectionName: 'pointrewards', target: 'socialquests' },
+        { collectionName: 'milestonerewards', target: 'customquests' },
+        { collectionName: 'web3quests', target: 'web3quests' },
+    ].map(({ collectionName, target }) => ({
+        $lookup: {
+            from: collectionName,
+            localField: 'poolId',
+            foreignField: 'poolId',
+            as: target,
+        },
+    }));
+
     return await model
         .aggregate([
+            {
+                $addFields: {
+                    poolId: {
+                        $convert: {
+                            input: '$_id',
+                            to: 'string',
+                        },
+                    },
+                },
+            },
+            ...pipelines,
             {
                 $lookup: {
                     from: 'widgets',
@@ -26,49 +48,9 @@ export const paginatedResults = async (model: any, limit: number) => {
                 },
             },
             {
-                $lookup: {
-                    from: 'erc20perks',
-                    localField: 'poolId',
-                    foreignField: 'poolId',
-                    as: 'erc20Perks',
-                },
-            },
-            {
-                $lookup: {
-                    from: 'erc721perks',
-                    localField: 'poolId',
-                    foreignField: 'poolId',
-                    as: 'erc721Perks',
-                },
-            },
-            {
-                $lookup: {
-                    from: 'customrewards',
-                    localField: 'poolId',
-                    foreignField: 'poolId',
-                    as: 'customRewards',
-                },
-            },
-            {
-                $addFields: {
-                    totalRewardsCount: {
-                        $size: {
-                            $concatArrays: ['$erc20Perks', '$erc721Perks', '$customRewards'],
-                        },
-                    },
-                },
-            },
-            {
                 $match: {
-                    'totalRewardsCount': { $gt: 0 },
-                    'widgets.0.active': true,
+                    'settings.isPublished': true,
                 },
-            },
-            {
-                $sort: { createdAt: -1 },
-            },
-            {
-                $limit: limit,
             },
         ])
         .exec();
@@ -78,22 +60,31 @@ const validation = [query('page').isInt(), query('limit').isInt(), query('search
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
-    const results = [];
-    for (const model of [DailyReward, ReferralReward, PointReward, MilestoneReward, Web3Quest]) {
-        const result = await paginatedResults(model, 4);
-        const quests = result.map((q) => ({
-            title: q.title,
-            description: q.description,
-            widget: q.widget,
-            amount: q.amounts ? q.amounts[q.amounts.length - 1] : q.amount,
-            domain: q.widgets[0].domain,
-            brand: q.brands[0],
-        }));
-        results.push(quests);
-    }
-    const [daily, invite, social, custom, web3] = results;
-    const response = { daily, invite, social, custom, web3 };
-    res.json(response);
+    const decoratedPools = await paginatedResults(AssetPool, 4);
+    const quests = decoratedPools
+        .map((result) => {
+            const mapper = (q) => ({
+                ...q,
+                amount: q.amounts ? q.amounts[q.amounts.length - 1] : q.amount,
+                widget: result.widget,
+                domain: result.widgets[0].domain,
+                brand: result.brands[0],
+            });
+            return {
+                quests: [
+                    ...result.dailyquests.map(mapper),
+                    ...result.invitequests.map(mapper),
+                    ...result.socialquests.map(mapper),
+                    ...result.customquests.map(mapper),
+                    ...result.web3quests.map(mapper),
+                ],
+            };
+        })
+        .flatMap((r) => r.quests)
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .slice(0, 4);
+
+    res.json(quests);
 };
 
 export default { controller, validation };

@@ -7,7 +7,7 @@ import { AssetPool } from '@thxnetwork/api/models/AssetPool';
 export const validation = [
     param('id').exists(),
     body('settings.title').optional().isString().trim().escape().isLength({ max: 50 }),
-    body('settings.slug').optional().isString().trim().escape().isLength({ max: 25 }),
+    body('settings.slug').optional().isString().trim().escape().isLength({ min: 3, max: 25 }),
     body('settings.description').optional().isString().trim().escape().isLength({ max: 255 }),
     body('settings.startDate').optional({ nullable: true }).isString(),
     body('settings.endDate').optional({ nullable: true }).isString(),

@@ -5,162 +5,89 @@
         </p>
 
         <b-card style="max-width: 620px" class="bg-dark text-white shadow-lg mb-10 mb-md-0">
-            <iframe
-                width="100%"
-                height="315"
-                src="https://www.youtube-nocookie.com/embed/6XvN2SfswvI?controls=0"
-                title="YouTube video player"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowfullscreen
-            ></iframe>
-            <template #footer>
-                <b-alert show variant="info" class="mb-4">
-                    <i class="fas fa-exclamation-circle mr-2"> </i>
-                    <strong>This page is used only for demo purposes.</strong>
-                    <p class="m-0">Watch the video to see how the campaign widget runs in your website.</p>
-                </b-alert>
-                <b-card-title>Hi👋</b-card-title>
-                <p class="font-weight-bold">We have prepared a Quest &amp; Reward campaign for {{ title }}!❤️</p>
-                <p>
-                    Read more about its features below, play with the suggested Quests &amp; Rewards, and please reach
-                    out if you have any questions!
-                </p>
-                <b-row>
-                    <b-button variant="link" block v-b-toggle.collapse1 class="py-3 d-block text-gray text-left">
-                        Learn about <strong>infrastructure</strong>
-                        <i class="fas fa-question-circle ml-2"></i>
-                    </b-button>
-                    <b-collapse id="collapse1" class="w-100">
-                        <b-list-group class="mb-3">
-                            <b-list-group-item
-                                :key="key"
-                                v-for="(item, key) of [
-                                    {
-                                        icon: 'fas fa-wallet',
-                                        color: '#666',
-                                        label: 'Smart Wallets',
-                                        description: 'Polygon smart contract wallets ideal for non-crypto natives.',
-                                    },
-                                    {
-                                        icon: 'fas fa-save',
-                                        color: '#666',
-                                        label: 'Virtual Wallets',
-                                        description: 'Qualify users for custom quests even before account sign up.',
-                                    },
-                                    {
-                                        icon: 'fas fa-tags',
-                                        color: '#666',
-                                        label: 'Free Transactions',
-                                        description: 'Let us worry about transactions costs and delivery.',
-                                    },
-                                    {
-                                        icon: 'fas fa-chart-line',
-                                        color: '#666',
-                                        label: 'Analytics &amp; Monitoring',
-                                        description: 'Keep an eye on the performance of your quests.',
-                                    },
-                                ]"
-                                class="bg-darker"
-                            >
-                                <div class="d-flex justify-content-start align-items-center">
-                                    <div style="width: 30px">
-                                        <i :class="item.icon" :style="{ color: item.color }" class="mr-1"></i>
-                                    </div>
-                                    {{ item.label }}
-                                </div>
-                                <p class="text-muted">
-                                    {{ item.description }}
-                                </p>
-                                <!-- <b-link v-b-tooltip :title="item.description" class="ml-auto">
-                                    <i class="fas fa-question-circle text-dark mr-1"></i>
-                                </b-link> -->
-                            </b-list-group-item>
-                        </b-list-group>
-                    </b-collapse>
-                    <b-button variant="link" block v-b-toggle.collapse2 class="py-3 d-block text-gray text-left">
-                        Learn about <strong>quests</strong> <i class="fas fa-question-circle ml-2"></i>
-                    </b-button>
-                    <b-collapse id="collapse2" class="w-100">
-                        <b-list-group-item
-                            :key="key"
-                            v-for="(item, key) of [
-                                {
-                                    icon: 'fas fa-calendar',
-                                    color: '#666',
-                                    label: 'Daily Quests',
-                                    description: 'Provide daily incentives for player behavior',
-                                },
-                                {
-                                    icon: 'fas fa-comments',
-                                    color: '#666',
-                                    label: 'Referral Quests',
-                                    description: 'Empower your players to invite their friends and earn points',
-                                },
-                                {
-                                    icon: 'fas fa-trophy',
-                                    color: '#666',
-                                    label: 'Social Quests',
-                                    description:
-                                        'Stimulate social enagement with Twitter, Discord, YouTube, Github and Twitch validations',
-                                },
-                                {
-                                    icon: 'fas fa-flag',
-                                    color: '#666',
-                                    label: 'Custom Quests',
-                                    description:
-                                        'Use outbound webhooks to reward important achievements in your application',
-                                },
-                            ]"
-                            class="bg-darker text-white"
-                        >
-                            <div class="d-flex justify-content-start align-items-center">
-                                <div style="width: 30px">
-                                    <i :class="item.icon" :style="{ color: item.color }" class="mr-1"></i>
-                                </div>
-                                {{ item.label }}
+            <b-alert show variant="info" class="mb-4">
+                <i class="fas fa-exclamation-circle mr-2"> </i>
+                <strong>This page is used only for demo purposes.</strong>
+                <p class="m-0">Click the launcher below to view your personalised campaign widget.</p>
+            </b-alert>
+            <b-card-title>Hi👋</b-card-title>
+            <p class="font-weight-bold">We have prepared a Quest &amp; Reward campaign for {{ title }}!❤️</p>
+            <p>
+                Read more about its features below, play with the suggested Quests &amp; Rewards, and please reach out
+                if you have any questions!
+            </p>
+            <b-row>
+                <b-button variant="link" block v-b-toggle.collapse2 class="py-3 d-block text-gray text-left">
+                    Learn about <strong>Quests</strong> <i class="fas fa-question-circle ml-2"></i>
+                </b-button>
+                <b-collapse id="collapse2" class="w-100">
+                    <b-list-group-item :key="key" v-for="(item, key) of contentQuests" class="bg-darker text-white">
+                        <div class="d-flex justify-content-start align-items-center">
+                            <div style="width: 30px">
+                                <i :class="item.icon" :style="{ color: item.color }" class="mr-1"></i>
                             </div>
-                            <p class="text-muted">
-                                {{ item.description }}
-                            </p>
-                            <!-- <b-link v-b-tooltip :title="item.description" class="ml-auto">
+                            {{ item.title }}
+                        </div>
+                        <p class="text-muted">
+                            {{ item.description }}
+                        </p>
+                        <!-- <b-link v-b-tooltip :title="item.description" class="ml-auto">
                                     <i class="fas fa-question-circle text-dark mr-1"></i>
                                 </b-link> -->
-                        </b-list-group-item>
-                    </b-collapse>
-                    <b-button variant="link" block v-b-toggle.collapse3 class="py-3 d-block text-gray text-left">
-                        Learn about <strong>rewards</strong> <i class="fas fa-question-circle ml-2"></i>
-                    </b-button>
-                    <b-collapse id="collapse3" class="w-100">
+                    </b-list-group-item>
+                </b-collapse>
+                <b-button variant="link" block v-b-toggle.collapse3 class="py-3 d-block text-gray text-left">
+                    Learn about <strong>Rewards</strong> <i class="fas fa-question-circle ml-2"></i>
+                </b-button>
+                <b-collapse id="collapse3" class="w-100">
+                    <b-list-group-item :key="key" v-for="(item, key) of contentRewards" class="bg-darker">
+                        <div class="d-flex justify-content-start align-items-center">
+                            <div style="width: 30px">
+                                <i :class="item.icon" :style="{ color: item.color }" class="mr-1"></i>
+                            </div>
+                            {{ item.tag }}
+                        </div>
+                        <p class="text-muted">
+                            {{ item.description }}
+                        </p>
+                        <!-- <b-link v-b-tooltip :title="item.description" class="ml-auto">
+                                    <i class="fas fa-question-circle text-dark mr-1"></i>
+                                </b-link> -->
+                    </b-list-group-item>
+                </b-collapse>
+                <b-button variant="link" block v-b-toggle.collapse1 class="py-3 d-block text-gray text-left">
+                    Learn about <strong>Wallets</strong>
+                    <i class="fas fa-question-circle ml-2"></i>
+                </b-button>
+                <b-collapse id="collapse1" class="w-100">
+                    <b-list-group class="mb-3">
                         <b-list-group-item
                             :key="key"
                             v-for="(item, key) of [
                                 {
-                                    icon: 'fas fa-coins',
+                                    icon: 'fas fa-chart-line',
                                     color: '#666',
-                                    label: 'Coin Rewards',
-                                    description: 'Create rewards for ERC20 contracts',
+                                    label: 'Analytics &amp; Monitoring',
+                                    description:
+                                        'Keep an eye on campaign participants and the performance of your quests.',
                                 },
-
                                 {
-                                    icon: 'fas fa-palette',
+                                    icon: 'fas fa-save',
                                     color: '#666',
-                                    label: 'NFT Rewards',
-                                    description: 'Create rewards for ERC721 or ERC1155 contracts',
+                                    label: 'Virtual Wallets',
+                                    description: 'Onboard players in your campaign and qualify them for quests.',
                                 },
-
                                 {
-                                    icon: 'fas fa-gift',
+                                    icon: 'fas fa-tags',
                                     color: '#666',
-                                    label: 'Custom Rewards',
-                                    description: 'Use inbound webhooks to reward with custom code running in your game',
+                                    label: 'Free Transactions',
+                                    description: 'Let us worry about transactions costs and delivery.',
                                 },
-
                                 {
-                                    icon: 'fas fa-qrcode',
+                                    icon: 'fas fa-wallet',
                                     color: '#666',
-                                    label: 'QR Codes',
-                                    description: 'Use QR codes to give rewards in an offline environment',
+                                    label: 'Smart Wallets',
+                                    description: 'Self-custodial Safe multisig wallets ideal for non-crypto natives.',
                                 },
                             ]"
                             class="bg-darker"
@@ -178,57 +105,51 @@
                                     <i class="fas fa-question-circle text-dark mr-1"></i>
                                 </b-link> -->
                         </b-list-group-item>
-                    </b-collapse>
-                    <b-button variant="link" block v-b-toggle.collapse4 class="py-3 d-block text-gray text-left">
-                        Learn about <strong>integrations</strong> <i class="fas fa-question-circle ml-2"></i>
-                    </b-button>
-                    <b-collapse id="collapse4" class="w-100">
-                        <b-list-group-item
-                            :key="key"
-                            v-for="(item, key) of [
-                                {
-                                    icon: 'fab fa-discord',
-                                    color: '#7289da',
-                                    label: 'Discord',
-                                    description: 'Create quests for Discord server activity	',
-                                },
-                                {
-                                    icon: 'fab fa-twitter',
-                                    color: '#1DA1F2',
-                                    label: 'Twitter',
-                                    description: 'Automate social quest creation with hashtag filters',
-                                },
-                                {
-                                    icon: 'fab fa-youtube',
-                                    color: '#FF0000',
-                                    label: 'Youtube',
-                                    description: 'Create quests for Youtube channel activity',
-                                },
-                                {
-                                    icon: 'fas fa-shopping-cart',
-                                    color: '#F2F2F2 !important',
-                                    label: 'Payment Methods',
-                                    description: 'Sell rewards with crypto, credit Card & local payment providers	',
-                                },
-                            ]"
-                            class="bg-darker"
-                        >
-                            <div class="d-flex justify-content-start align-items-center">
-                                <div style="width: 30px">
-                                    <i :class="item.icon" :style="{ color: item.color }" class="mr-1"></i>
-                                </div>
-                                {{ item.label }}
+                    </b-list-group>
+                </b-collapse>
+                <b-button variant="link" block v-b-toggle.collapse4 class="py-3 d-block text-gray text-left">
+                    Learn about <strong>Integrations</strong> <i class="fas fa-question-circle ml-2"></i>
+                </b-button>
+                <b-collapse id="collapse4" class="w-100">
+                    <b-list-group-item
+                        :key="key"
+                        v-for="(item, key) of [
+                            {
+                                icon: 'fab fa-discord',
+                                color: '#7289da',
+                                label: 'Discord',
+                                description: 'Create quests for Discord server activity	',
+                            },
+                            {
+                                icon: 'fab fa-twitter',
+                                color: '#1DA1F2',
+                                label: 'Twitter',
+                                description: 'Automate social quest creation with hashtag filters',
+                            },
+                            {
+                                icon: 'fas fa-shopping-cart',
+                                color: '#F2F2F2 !important',
+                                label: 'Payment Methods',
+                                description: 'Sell rewards with crypto, credit Card & local payment providers	',
+                            },
+                        ]"
+                        class="bg-darker"
+                    >
+                        <div class="d-flex justify-content-start align-items-center">
+                            <div style="width: 30px">
+                                <i :class="item.icon" :style="{ color: item.color }" class="mr-1"></i>
                             </div>
-                            <p class="text-muted">
-                                {{ item.description }}
-                            </p>
-                            <!-- <b-link v-b-tooltip :title="item.description" class="ml-auto">
+                            {{ item.label }}
+                        </div>
+                        <p class="text-muted">
+                            {{ item.description }}
+                        </p>
+                        <!-- <b-link v-b-tooltip :title="item.description" class="ml-auto">
                                     <i class="fas fa-question-circle text-dark mr-1"></i>
                                 </b-link> -->
-                        </b-list-group-item>
-                    </b-collapse>
-                </b-row>
-            </template>
+                    </b-list-group-item>
+                </b-collapse>
+            </b-row>
         </b-card>
     </div>
 </template>
@@ -247,6 +168,8 @@ import { config } from '../utils/oidc';
 import { BASE_URL } from '../utils/secrets';
 import { track } from '@thxnetwork/mixpanel';
 import BaseCodeExample from '../components/BaseCodeExample.vue';
+import { contentQuests } from './pool/Quests.vue';
+import { contentRewards } from './pool/Rewards.vue';
 
 @Component({
     metaInfo() {
@@ -297,6 +220,8 @@ export default class WidgetPreviewView extends Vue {
     defaultBackgroundImgUrl = require('../../public/assets/thx_jumbotron.webp');
     error = '';
     userManager = new UserManager(config);
+    contentQuests = contentQuests;
+    contentRewards = contentRewards;
 
     get isExpired() {
         if (!this.poolTransfer) return;

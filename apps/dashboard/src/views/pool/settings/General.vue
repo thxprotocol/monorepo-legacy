@@ -14,26 +14,30 @@
                 <div class="text-muted">Your campaign title will be used to generate your landing page.</div>
             </b-col>
             <b-col md="8">
-                <b-form-group description="Max 50 characters.">
+                <b-form-group description="Minimum of 3 and maximum of 50 characters.">
                     <b-form-input
                         @change="onChangeSettings"
                         v-model="title"
                         placeholder="Short campaign title..."
+                        min="3"
+                        max="50"
                         :state="title ? (title.length < 50 ? null : false) : null"
                     />
                 </b-form-group>
                 <b-form-group
-                    description="Max 25 characters."
+                    description="Minimum of 3 and maximum of 25 characters."
                     class="mb-0"
                     :state="isValidSlug"
-                    invalid-feedback="This slug is already in use."
+                    invalid-feedback="This slug is invalid."
                 >
-                    <b-input-group size="sm" prepend="https://campaign.thx.network/c/">
+                    <b-input-group size="sm" :prepend="`${widgetUrl}/c/`">
                         <b-form-input
                             size="sm"
                             :value="slug"
                             :placeholder="slugify(title)"
                             :state="isValidSlug"
+                            min="3"
+                            max="25"
                             @input="slug = slugify($event)"
                             @change="onChangeSlug"
                         />
@@ -41,7 +45,7 @@
                             <b-button
                                 :disabled="!slug.length"
                                 variant="dark"
-                                v-clipboard:copy="`https://campaign.thx.network/c/${slug}`"
+                                v-clipboard:copy="`${widgetUrl}/c/${slug}`"
                                 v-clipboard:success="() => (isCopied = true)"
                                 size="sm"
                                 class="ml-0"
@@ -60,7 +64,7 @@
                 <div class="text-muted">This summary is used to explain your campaign to users.</div>
             </b-col>
             <b-col md="8">
-                <b-form-group description="Max 255 characters." class="mb-0">
+                <b-form-group description="Maximum of 255 characters." class="mb-0">
                     <b-textarea
                         v-model="description"
                         @change="onChangeSettings"
@@ -255,6 +259,7 @@ import BaseListItemCollaborator from '@thxnetwork/dashboard/components/list-item
 import BaseModalPoolTransfer from '@thxnetwork/dashboard/components/modals/BaseModalPoolTransfer.vue';
 import BaseCampaignDuration, { parseDateTime } from '@thxnetwork/dashboard/components/cards/BaseCampaignDuration.vue';
 import slugify from '@thxnetwork/dashboard/utils/slugify';
+import { WIDGET_URL } from '@thxnetwork/dashboard/utils/secrets';
 
 @Component({
     components: {
@@ -294,6 +299,7 @@ export default class SettingsView extends Vue {
     slugify = slugify;
     slug = '';
     isValidSlug: boolean | null = null;
+    widgetUrl = WIDGET_URL;
 
     get pool() {
         return this.pools[this.$route.params.id];
@@ -362,6 +368,11 @@ export default class SettingsView extends Vue {
 
     async onChangeSlug(slug: string) {
         try {
+            if (!slug.length) {
+                this.slug = slug = this.pool._id;
+            }
+            if (slug.length < 3) throw new Error('Slug too short');
+
             await this.$store.dispatch('pools/update', {
                 pool: this.pool,
                 data: { settings: { slug: slugify(slug) } },
