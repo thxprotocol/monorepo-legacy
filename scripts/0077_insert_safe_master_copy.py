@@ -31,7 +31,7 @@ def insert_initial_values(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("history", "0074_internaltx_history_internal_transfer_idx"),
+        ("history", "0076_alter_safemastercopy_deployer"),
     ]
 
     operations = [
