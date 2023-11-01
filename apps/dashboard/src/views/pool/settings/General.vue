@@ -10,8 +10,8 @@
         </b-form-row>
         <b-form-row>
             <b-col md="4">
-                <strong>Information</strong>
-                <div class="text-muted">Used to explain your campaign to users.</div>
+                <strong>Title</strong>
+                <div class="text-muted">Your campaign title will be used to generate your landing page.</div>
             </b-col>
             <b-col md="8">
                 <b-form-group description="Max 50 characters.">
@@ -19,9 +19,47 @@
                         @change="onChangeSettings"
                         v-model="title"
                         placeholder="Short campaign title..."
-                        :state="title ? title.length < 50 : null"
+                        :state="title ? (title.length < 50 ? null : false) : null"
                     />
                 </b-form-group>
+                <b-form-group
+                    description="Max 25 characters."
+                    class="mb-0"
+                    :state="isValidSlug"
+                    invalid-feedback="This slug is already in use."
+                >
+                    <b-input-group size="sm" prepend="https://campaign.thx.network/c/">
+                        <b-form-input
+                            size="sm"
+                            :value="slug"
+                            :placeholder="slugify(title)"
+                            :state="isValidSlug"
+                            @input="slug = slugify($event)"
+                            @change="onChangeSlug"
+                        />
+                        <template #append>
+                            <b-button
+                                :disabled="!slug.length"
+                                variant="dark"
+                                v-clipboard:copy="`https://campaign.thx.network/c/${slug}`"
+                                v-clipboard:success="() => (isCopied = true)"
+                                size="sm"
+                                class="ml-0"
+                            >
+                                <i class="fas ml-0" :class="isCopied ? 'fa-clipboard-check' : 'fa-clipboard'"></i>
+                            </b-button>
+                        </template>
+                    </b-input-group>
+                </b-form-group>
+            </b-col>
+        </b-form-row>
+        <hr />
+        <b-form-row>
+            <b-col md="4">
+                <strong>About</strong>
+                <div class="text-muted">This summary is used to explain your campaign to users.</div>
+            </b-col>
+            <b-col md="8">
                 <b-form-group description="Max 255 characters." class="mb-0">
                     <b-textarea
                         v-model="description"
@@ -233,6 +271,7 @@ import slugify from '@thxnetwork/dashboard/utils/slugify';
     },
 })
 export default class SettingsView extends Vue {
+    isCopied = false;
     loading = true;
     error = '';
     chainInfo = chainInfo;
@@ -252,11 +291,9 @@ export default class SettingsView extends Vue {
     emailCollaborator = '';
     isSubmittingCollaborator = false;
     hasBasicAccess = hasBasicAccess;
-
-    get slug() {
-        if (!this.title) return '';
-        return slugify(this.title);
-    }
+    slugify = slugify;
+    slug = '';
+    isValidSlug: boolean | null = null;
 
     get pool() {
         return this.pools[this.$route.params.id];
@@ -286,7 +323,8 @@ export default class SettingsView extends Vue {
             this.logoImgUrl = this.brand.logoImgUrl;
         });
 
-        this.title = this.pool.settings.title;
+        this.title = this.pool.settings.title || this.title;
+        this.slug = this.pool.settings.slug || this.slug;
         this.description = this.pool.settings.description;
         this.isArchived = this.pool.settings.isArchived;
         this.isPublished = this.pool.settings.isPublished;
@@ -322,10 +360,23 @@ export default class SettingsView extends Vue {
         } as any);
     }
 
-    async onChangeSettings(setting?: TPoolSettings) {
+    async onChangeSlug(slug: string) {
+        try {
+            await this.$store.dispatch('pools/update', {
+                pool: this.pool,
+                data: { settings: { slug: slugify(slug) } },
+            });
+            this.isValidSlug = null;
+        } catch (error) {
+            this.isValidSlug = false;
+        }
+    }
+
+    async onChangeSettings(setting?: Partial<TPoolSettings>) {
         const settings = Object.assign(
             {
                 title: this.title,
+                slug: this.slug,
                 description: this.description,
                 startDate: this.startDate,
                 endDate: this.endDate,

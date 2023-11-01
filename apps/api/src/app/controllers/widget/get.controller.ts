@@ -21,6 +21,8 @@ const controller = async (req: Request, res: Response) => {
         expired,
         theme: widget.theme,
         chainId: pool.chainId,
+        poolId: pool._id,
+        slug: pool.settings.slug || pool._id,
     });
 };
 

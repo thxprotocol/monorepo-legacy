@@ -53,6 +53,7 @@ export type TPool = {
 
 export type TPoolSettings = {
     title: string;
+    slug: string;
     description: string;
     startDate: Date;
     endDate?: Date;

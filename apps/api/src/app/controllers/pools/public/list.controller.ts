@@ -202,6 +202,7 @@ const controller = async (req: Request, res: Response) => {
 
                         return {
                             _id: pool._id,
+                            slug: pool.settings.slug || pool._id,
                             title: pool.settings.title,
                             expiryDate: pool.settings.endDate,
                             address: pool.address,

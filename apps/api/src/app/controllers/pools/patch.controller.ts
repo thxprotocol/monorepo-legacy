@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
-import { NotFoundError } from '@thxnetwork/api/util/errors';
+import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { AssetPool } from '@thxnetwork/api/models/AssetPool';
 
 export const validation = [
     param('id').exists(),
     body('settings.title').optional().isString().trim().escape().isLength({ max: 50 }),
+    body('settings.slug').optional().isString().trim().escape().isLength({ max: 25 }),
     body('settings.description').optional().isString().trim().escape().isLength({ max: 255 }),
     body('settings.startDate').optional({ nullable: true }).isString(),
     body('settings.endDate').optional({ nullable: true }).isString(),
@@ -27,6 +28,11 @@ export const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
     const pool = await PoolService.getById(req.params.id);
     if (!pool) throw new NotFoundError('Could not find the Asset Pool for this id');
+
+    console.log(req.body.settings.slug);
+    if (await AssetPool.exists({ '_id': { $ne: pool._id }, 'settings.slug': req.body.settings.slug })) {
+        throw new BadRequestError('This slug is in use already.');
+    }
 
     const result = await AssetPool.findByIdAndUpdate(
         pool._id,

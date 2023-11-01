@@ -16,6 +16,7 @@ const assetPoolSchema = new mongoose.Schema(
         signingSecret: String,
         settings: {
             title: String,
+            slug: String,
             description: String,
             startDate: Date,
             endDate: Date,
