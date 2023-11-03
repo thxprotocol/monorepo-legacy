@@ -374,8 +374,8 @@ export default class QuestsView extends Vue {
             return {
                 index: quest,
                 checkbox: quest._id,
-                points: quest.amount || `${quest.amounts.length} days`,
                 title: quest.title,
+                points: quest.amount || `${quest.amounts.length} days`,
                 entries,
                 metrics: metadata &&
                     metadata.metrics && {
