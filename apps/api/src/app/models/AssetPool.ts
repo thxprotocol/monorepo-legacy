@@ -14,6 +14,7 @@ const assetPoolSchema = new mongoose.Schema(
         version: String,
         token: String,
         signingSecret: String,
+        rank: Number,
         settings: {
             title: String,
             slug: String,

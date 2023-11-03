@@ -7,7 +7,7 @@ import { ChainId } from '@thxnetwork/types/enums';
 import BrandService from '@thxnetwork/api/services/BrandService';
 import { query } from 'express-validator';
 
-export const paginatedResults = async (model: any, page: number, limit: number, search: string) => {
+export const paginatedResults = async (page: number, limit: number, search: string) => {
     const startIndex = (page - 1) * limit;
     const $match = {
         'settings.isPublished': true,
@@ -26,147 +26,144 @@ export const paginatedResults = async (model: any, page: number, limit: number, 
         );
         $match['settings.title'] = { $regex };
     }
-    const [result] = await model
-        .aggregate([
-            {
-                $addFields: {
-                    id: { $toString: '$_id' },
-                },
+    const results = await AssetPool.aggregate([
+        {
+            $addFields: {
+                id: { $toString: '$_id' },
             },
-            {
-                $lookup: {
-                    from: 'participants',
-                    localField: 'id',
-                    foreignField: 'poolId',
-                    as: 'participants',
-                },
+        },
+        {
+            $lookup: {
+                from: 'participants',
+                localField: 'id',
+                foreignField: 'poolId',
+                as: 'participants',
             },
-            {
-                $lookup: {
-                    from: 'erc20perks',
-                    localField: 'id',
-                    foreignField: 'poolId',
-                    as: 'erc20Perks',
-                },
+        },
+        {
+            $lookup: {
+                from: 'erc20perks',
+                localField: 'id',
+                foreignField: 'poolId',
+                as: 'erc20Perks',
             },
-            {
-                $lookup: {
-                    from: 'erc721perks',
-                    localField: 'id',
-                    foreignField: 'poolId',
-                    as: 'erc721Perks',
-                },
+        },
+        {
+            $lookup: {
+                from: 'erc721perks',
+                localField: 'id',
+                foreignField: 'poolId',
+                as: 'erc721Perks',
             },
-            {
-                $lookup: {
-                    from: 'customrewards',
-                    localField: 'id',
-                    foreignField: 'poolId',
-                    as: 'customRewards',
-                },
+        },
+        {
+            $lookup: {
+                from: 'customrewards',
+                localField: 'id',
+                foreignField: 'poolId',
+                as: 'customRewards',
             },
-            {
-                $lookup: {
-                    from: 'couponrewards',
-                    localField: 'id',
-                    foreignField: 'poolId',
-                    as: 'couponRewards',
-                },
+        },
+        {
+            $lookup: {
+                from: 'couponrewards',
+                localField: 'id',
+                foreignField: 'poolId',
+                as: 'couponRewards',
             },
-            {
-                $lookup: {
-                    from: 'dailyrewards',
-                    localField: 'id',
-                    foreignField: 'poolId',
-                    as: 'dailyquests',
-                },
+        },
+        {
+            $lookup: {
+                from: 'dailyrewards',
+                localField: 'id',
+                foreignField: 'poolId',
+                as: 'dailyquests',
             },
-            {
-                $lookup: {
-                    from: 'referralrewards',
-                    localField: 'id',
-                    foreignField: 'poolId',
-                    as: 'invitequests',
-                },
+        },
+        {
+            $lookup: {
+                from: 'referralrewards',
+                localField: 'id',
+                foreignField: 'poolId',
+                as: 'invitequests',
             },
-            {
-                $lookup: {
-                    from: 'pointrewards',
-                    localField: 'id',
-                    foreignField: 'poolId',
-                    as: 'socialquests',
-                },
+        },
+        {
+            $lookup: {
+                from: 'pointrewards',
+                localField: 'id',
+                foreignField: 'poolId',
+                as: 'socialquests',
             },
-            {
-                $lookup: {
-                    from: 'milestonerewards',
-                    localField: 'id',
-                    foreignField: 'poolId',
-                    as: 'customquests',
-                },
+        },
+        {
+            $lookup: {
+                from: 'milestonerewards',
+                localField: 'id',
+                foreignField: 'poolId',
+                as: 'customquests',
             },
-            {
-                $lookup: {
-                    from: 'web3quests',
-                    localField: 'id',
-                    foreignField: 'poolId',
-                    as: 'web3quests',
-                },
+        },
+        {
+            $lookup: {
+                from: 'web3quests',
+                localField: 'id',
+                foreignField: 'poolId',
+                as: 'web3quests',
             },
-            {
-                $addFields: {
-                    totalQuestCount: {
-                        $size: {
-                            $concatArrays: [
-                                '$dailyquests',
-                                '$invitequests',
-                                '$socialquests',
-                                '$customquests',
-                                '$web3quests',
-                            ],
-                        },
+        },
+        {
+            $addFields: {
+                totalQuestCount: {
+                    $size: {
+                        $concatArrays: [
+                            '$dailyquests',
+                            '$invitequests',
+                            '$socialquests',
+                            '$customquests',
+                            '$web3quests',
+                        ],
                     },
-                    totalRewardsCount: {
-                        $size: {
-                            $concatArrays: ['$erc20Perks', '$erc721Perks', '$customRewards', '$couponRewards'],
-                        },
+                },
+                totalRewardsCount: {
+                    $size: {
+                        $concatArrays: ['$erc20Perks', '$erc721Perks', '$customRewards', '$couponRewards'],
                     },
-                    participantCount: { $size: '$participants' },
                 },
+                participantCount: { $size: '$participants' },
             },
-            {
-                $facet: {
-                    total: [{ $match }, { $count: 'count' }],
-                    results: [
-                        { $match },
-                        {
-                            $sort: { participantCount: -1 },
-                        },
-                        {
-                            $skip: startIndex,
-                        },
-                        {
-                            $limit: limit,
-                        },
-                    ],
-                },
+        },
+        {
+            $facet: {
+                total: [{ $match }, { $count: 'count' }],
+                results: [
+                    { $match },
+                    {
+                        $sort: { rank: -1 },
+                    },
+                    {
+                        $skip: startIndex,
+                    },
+                    {
+                        $limit: limit,
+                    },
+                ],
             },
-            {
-                $unwind: '$total',
+        },
+        {
+            $unwind: '$total',
+        },
+        {
+            $project: {
+                total: '$total.count',
+                results: 1,
+                participantCount: 1,
             },
-            {
-                $project: {
-                    total: '$total.count',
-                    results: 1,
-                    participantCount: 1,
-                },
-            },
-        ])
-        .exec();
-    return {
-        limit,
-        ...result,
-    };
+        },
+    ]).exec();
+
+    if (!results[0]) return { limit, results: [] };
+    return { limit, ...results[0] };
 };
 
 const validation = [query('page').isInt(), query('limit').isInt(), query('search').optional().isString()];
@@ -174,7 +171,9 @@ const validation = [query('page').isInt(), query('limit').isInt(), query('search
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
     const { page, limit, search } = req.query;
-    const result = await paginatedResults(AssetPool, Number(page), Number(limit), search ? String(search) : '');
+    const result = await paginatedResults(Number(page), Number(limit), search ? String(search) : '');
+
+    console.log(result);
 
     result.results = (
         await Promise.all(
@@ -202,6 +201,7 @@ const controller = async (req: Request, res: Response) => {
 
                         return {
                             _id: pool._id,
+                            rank: pool.rank,
                             slug: pool.settings.slug || pool._id,
                             title: pool.settings.title,
                             expiryDate: pool.settings.endDate,

@@ -33,6 +33,7 @@ export type TCampaign = {
 
 export type TPool = {
     _id: string;
+    rank: number;
     token: string;
     signingSecret: string;
     address: string;
