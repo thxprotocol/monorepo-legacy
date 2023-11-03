@@ -22,10 +22,10 @@ export default {
             // Recover address for not metamask user
             address = recoverSigner(authRequestMessage, authRequestSignature);
 
-            // TODO Change ownership instead of create new Safe
+            // Consider access to oauthshare lost and deploy new wallet as we
+            // can no longer sign in order to migrate
             if (safeWallet && address !== account.address) {
-                // safeWallet = await SafeService.changeOwner(safeWallet, oldOwner, newOwner);
-                // Might need confirm (will happen on frontend app load)
+                safeWallet = await SafeService.reset(safeWallet, address);
             }
 
             // Deploy Safe if none exists

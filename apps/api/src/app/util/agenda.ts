@@ -4,6 +4,7 @@ import { updatePendingTransactions } from '@thxnetwork/api/jobs/updatePendingTra
 import { createTwitterQuests } from '@thxnetwork/api/jobs/createTwitterQuests';
 import { sendPoolAnalyticsReport } from '@thxnetwork/api/jobs/sendPoolAnalyticsReport';
 import { fetchTweetMetrics } from '@thxnetwork/api/jobs/fetchTweetMetrics';
+import { updateCampaignRanks } from '@thxnetwork/api/jobs/updateCampaignRanks';
 import { JobType } from '@thxnetwork/types/enums';
 import { logger } from './logger';
 import { MONGODB_URI } from '../config/secrets';
@@ -20,6 +21,7 @@ const agenda = new Agenda({
     processEvery: '1 second',
 });
 
+agenda.define(JobType.UpdateCampaignRanks, updateCampaignRanks);
 agenda.define(JobType.UpdatePendingTransactions, updatePendingTransactions);
 agenda.define(JobType.CreateTwitterQuests, createTwitterQuests);
 agenda.define(JobType.SendCampaignReport, sendPoolAnalyticsReport);
@@ -34,6 +36,7 @@ db.connection.once('open', async () => {
     await agenda.every('10 seconds', JobType.UpdatePendingTransactions);
     await agenda.every('15 minutes', JobType.CreateTwitterQuests);
     await agenda.every('15 minutes', JobType.FetchTweetMetrics);
+    await agenda.every('1 hour', JobType.UpdateCampaignRanks);
     await agenda.every('0 9 * * MON', JobType.SendCampaignReport);
 
     logger.info('AgendaJS started job processor');

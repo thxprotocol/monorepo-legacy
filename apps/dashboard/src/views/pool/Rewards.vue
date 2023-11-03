@@ -56,7 +56,7 @@
             />
             <BTable id="table-rewards" hover :busy="isLoading" :items="rewardsByPage" responsive="lg" show-empty>
                 <!-- Head formatting -->
-                <template #head(pointPrice)> Price </template>
+                <template #head(pointPrice)> Point Price </template>
                 <template #head(title)> Title </template>
                 <template #head(supply)> Supply </template>
                 <template #head(expiry)> Expiry </template>
@@ -88,6 +88,9 @@
                         <i :class="rewardIconClassMap[item.reward.variant]" class="text-muted" />
                     </b-badge>
                     {{ item.title }}
+                </template>
+                <template #cell(expiry)="{ item }">
+                    <span class="text-gray">{{ item.expiry }}</span>
                 </template>
                 <template #cell(reward)="{ item }">
                     <b-dropdown variant="link" size="sm" no-caret right>
@@ -138,6 +141,7 @@ import {
     RewardVariant,
     TERC721Perk,
     TCustomReward,
+    TBasePerk,
 } from '@thxnetwork/types/index';
 import type { IERC721s } from '@thxnetwork/dashboard/types/erc721';
 import BaseModalRewardERC20Create from '@thxnetwork/dashboard/components/modals/BaseModalRewardERC20Create.vue';
@@ -150,6 +154,7 @@ import BaseModalRewardClaimsDownload from '@thxnetwork/dashboard/components/moda
 import { hasPremiumAccess } from '@thxnetwork/common';
 import { type TCouponRewardState } from '@thxnetwork/dashboard/store/modules/couponRewards';
 import { type TCustomRewardState } from '@thxnetwork/dashboard/store/modules/rewards';
+import { format } from 'date-fns';
 
 export const contentRewards = {
     'coin-reward': {
@@ -267,9 +272,9 @@ export default class RewardsView extends Vue {
             .filter((reward: TERC20Perk | TERC721Perk | TCustomReward | any) => reward.page === this.page)
             .sort((a: any, b: any) => (a.createdAt && b.createdAt && a.createdAt < b.createdAt ? 1 : -1))
             .map((r: any) => ({
-                pointPrice: r.pointPrice,
                 title: r.title,
-                expiry: r.expiry,
+                pointPrice: r.pointPrice,
+                expiry: r.expiryDate && format(new Date(r.expiryDate), 'dd-MM-yyyy HH:mm'),
                 supply: { progress: r.payments ? r.payments.length : 0, limit: r.limit },
                 reward: r,
             }))
@@ -306,16 +311,16 @@ export default class RewardsView extends Vue {
         this.listRewards();
     }
 
-    onClickDelete(item: { variant: RewardVariant; id: string }) {
-        switch (item.variant) {
+    onClickDelete(reward: TBasePerk) {
+        switch (reward.variant) {
             case RewardVariant.Coin:
-                return this.$store.dispatch('erc20Perks/delete', this.coinRewards[this.pool._id][item.id]);
+                return this.$store.dispatch('erc20Perks/delete', this.coinRewards[this.pool._id][reward._id]);
             case RewardVariant.NFT:
-                return this.$store.dispatch('erc721Perks/delete', this.nftRewards[this.pool._id][item.id]);
+                return this.$store.dispatch('erc721Perks/delete', this.nftRewards[this.pool._id][reward._id]);
             case RewardVariant.Custom:
-                return this.$store.dispatch('rewards/delete', this.customRewards[this.pool._id][item.id]);
+                return this.$store.dispatch('rewards/delete', this.customRewards[this.pool._id][reward._id]);
             case RewardVariant.Coupon:
-                return this.$store.dispatch('couponRewards/delete', this.couponRewards[this.pool._id][item.id]);
+                return this.$store.dispatch('couponRewards/delete', this.couponRewards[this.pool._id][reward._id]);
         }
     }
 
@@ -332,13 +337,13 @@ export default class RewardsView extends Vue {
 </script>
 <style lang="scss">
 #table-rewards th:nth-child(1) {
-    width: 100px;
-}
-#table-rewards th:nth-child(2) {
     width: auto;
 }
+#table-rewards th:nth-child(2) {
+    width: 130px;
+}
 #table-rewards th:nth-child(3) {
-    width: 100px;
+    width: 150px;
 }
 #table-rewards th:nth-child(4) {
     width: auto;

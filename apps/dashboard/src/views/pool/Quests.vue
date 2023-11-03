@@ -513,10 +513,10 @@ export default class QuestsView extends Vue {
     width: 40px;
 }
 #table-quests th:nth-child(3) {
-    width: 100px;
+    width: auto;
 }
 #table-quests th:nth-child(4) {
-    width: auto;
+    width: 130px;
 }
 #table-quests th:nth-child(5) {
     width: 100px;

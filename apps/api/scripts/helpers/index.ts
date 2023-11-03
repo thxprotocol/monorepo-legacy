@@ -38,7 +38,7 @@ function getYoutubeID(url) {
 }
 
 function getTwitterUsername(url: string) {
-    return url.match(/twitter\.com\/([^?]+)/i)[1];
+    return url.split('/')[3];
 }
 
 async function createPool(sub: string, chainId: ChainId, title: string, gameUrl: string) {

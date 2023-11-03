@@ -33,6 +33,7 @@ export type TCampaign = {
 
 export type TPool = {
     _id: string;
+    rank: number;
     token: string;
     signingSecret: string;
     address: string;
@@ -53,10 +54,12 @@ export type TPool = {
 
 export type TPoolSettings = {
     title: string;
+    slug: string;
     description: string;
     startDate: Date;
     endDate?: Date;
     isArchived: boolean;
+    isPublished: boolean;
     isWeeklyDigestEnabled: boolean;
     isTwitterSyncEnabled: boolean;
     discordWebhookUrl: string;

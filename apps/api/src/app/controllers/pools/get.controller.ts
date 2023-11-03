@@ -19,7 +19,7 @@ export const controller = async (req: Request, res: Response) => {
     const widget = await Widget.findOne({ poolId: req.params.id });
     const brand = await BrandService.get(req.params.id);
     const subscriberCount = await PoolSubscription.countDocuments({ poolId: req.params.id });
-    const wallets = await Wallet.find({ poolId: req.params.id, sub: { $exists: false } });
+    const wallets = await Wallet.find({ poolId: req.params.id });
     const collabs = await Collaborator.find({ poolId: req.params.id });
     const collaborators = await Promise.all(
         collabs.map(async (collaborator: CollaboratorDocument) => {

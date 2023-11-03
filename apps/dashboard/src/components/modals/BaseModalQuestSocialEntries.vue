@@ -9,7 +9,7 @@
     >
         <template #modal-body>
             <BCard variant="white" body-class="p-0 shadow-sm" class="mb-3">
-                <BTable hover :items="entriesByPage" responsive="lg" show-empty sort-by="isApproved" :sort-desc="false">
+                <BTable hover :items="entriesByPage" responsive="xl" show-empty sort-by="isApproved" :sort-desc="false">
                     <!-- Head formatting -->
                     <template #head(account)> Username </template>
                     <template #head(email)> E-mail</template>

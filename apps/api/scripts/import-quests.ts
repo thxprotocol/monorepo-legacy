@@ -1,7 +1,7 @@
 import path from 'path';
 import db from '@thxnetwork/api/util/database';
 import { AssetPool } from '@thxnetwork/api/models/AssetPool';
-import { ChainId, RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/enums';
+import { ChainId, QuestVariant, RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/enums';
 import { Widget } from '@thxnetwork/api/models/Widget';
 import { DailyReward } from '@thxnetwork/api/models/DailyReward';
 import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
@@ -43,13 +43,11 @@ async function main() {
             const videoUrl = sql['Youtube Video URL'];
             const tweetUrl = sql['Twitter Tweet URL'];
             const serverId = sql['Discord Server ID'];
-            const isReachout = sql['Contacted'] === 'Reach out';
-            const isContacted = sql['Contacted'] === 'Contacted';
-            const hasPreview = sql['Campaign Preview'];
+            const missingMaterials = sql['Sales Material'] === 'Missing';
             const gameName = sql['Game'];
             const gameDomain = sql['Game Domain'];
 
-            if ((!isReachout && !isContacted) || hasPreview || !gameName || !gameDomain) continue;
+            if (!missingMaterials || !gameName || !gameDomain) continue;
 
             let pool = await AssetPool.findOne({ 'settings.title': gameName });
             console.log('===============');
@@ -60,7 +58,7 @@ async function main() {
                 pool = await createPool(sub, chainId, gameName, gameDomain);
             }
 
-            const poolId = pool ? pool._id : 'testtest';
+            const poolId = pool._id;
 
             // Remove all existing quests
             await Promise.all([
@@ -76,6 +74,7 @@ async function main() {
                 const videoId = getYoutubeID(videoUrl);
                 const socialQuestYoutubeLike = {
                     poolId,
+                    index: 0,
                     uuid: db.createUUID(),
                     title: `Watch & Like`,
                     description: '',
@@ -84,6 +83,8 @@ async function main() {
                     interaction: RewardConditionInteraction.YouTubeLike,
                     content: videoId,
                     contentMetadata: JSON.stringify({ videoId }),
+                    isPublished: true,
+                    variant: QuestVariant.YouTube,
                 };
                 await PointReward.create(socialQuestYoutubeLike);
             }
@@ -94,6 +95,7 @@ async function main() {
                 const twitterUser = await getTwitterUser(username);
                 const socialQuestFollow = {
                     poolId,
+                    index: 1,
                     uuid: db.createUUID(),
                     title: `Follow ${sql['Game']}`,
                     description: '',
@@ -101,12 +103,14 @@ async function main() {
                     platform: RewardConditionPlatform.Twitter,
                     interaction: RewardConditionInteraction.TwitterFollow,
                     content: twitterUser.id,
+                    variant: QuestVariant.Twitter,
                     contentMetadata: JSON.stringify({
                         id: twitterUser.id,
                         name: twitterUser.name,
                         username: twitterUser.username,
                         profileImgUrl: twitterUser.profile_image_url,
                     }),
+                    isPublished: true,
                 };
                 await PointReward.create(socialQuestFollow);
 
@@ -115,17 +119,19 @@ async function main() {
                 const socialQuestRetweet = {
                     poolId,
                     uuid: db.createUUID(),
+                    variant: QuestVariant.Twitter,
                     title: `Boost Tweet!`,
                     description: '',
                     amount: 50,
                     platform: RewardConditionPlatform.Twitter,
-                    interaction: RewardConditionInteraction.TwitterRetweet,
+                    interaction: RewardConditionInteraction.TwitterLikeRetweet,
                     content: tweetId,
                     contentMetadata: JSON.stringify({
                         url: tweetUrl,
                         username: twitterUser.username,
                         text: tweet.text,
                     }),
+                    isPublished: true,
                 };
                 await PointReward.create(socialQuestRetweet);
             }
@@ -135,6 +141,7 @@ async function main() {
                 const inviteURL = sql['Discord Invite URL'];
                 const socialQuestJoin = {
                     poolId,
+                    variant: QuestVariant.Discord,
                     uuid: db.createUUID(),
                     title: `Join ${gameName} Discord`,
                     description: 'Become a part of our fam!',
@@ -143,37 +150,37 @@ async function main() {
                     interaction: RewardConditionInteraction.DiscordGuildJoined,
                     content: serverId,
                     contentMetadata: JSON.stringify({ serverId, inviteURL: inviteURL || undefined }),
+                    isPublished: true,
                 };
                 await PointReward.create(socialQuestJoin);
             }
 
             // Create default erc20 rewards
-            if (serverId && serverId !== 'N/A') {
-                await ERC20Perk.create({
-                    poolId,
-                    uuid: db.createUUID(),
-                    title: `Small bag of $THX`,
-                    description: 'A token of appreciation offered to you by THX Network.',
-                    image: 'https://thx-storage-bucket.s3.eu-west-3.amazonaws.com/widget-referral-xmzfznsqschvqxzvgn47qo-xtencq4fmgjg7qgwewmybj-(1)-8EHr7ckbrEZLqUyxqJK1LG.png',
-                    pointPrice: 1000,
-                    limit: 1000,
-                    amount: 10,
-                    erc20Id,
-                });
+            await ERC20Perk.create({
+                poolId,
+                uuid: db.createUUID(),
+                title: `Small bag of $THX`,
+                description: 'A token of appreciation offered to you by THX Network.',
+                image: 'https://thx-storage-bucket.s3.eu-west-3.amazonaws.com/widget-referral-xmzfznsqschvqxzvgn47qo-xtencq4fmgjg7qgwewmybj-(1)-8EHr7ckbrEZLqUyxqJK1LG.png',
+                pointPrice: 1000,
+                limit: 1000,
+                amount: 10,
+                erc20Id,
+                isPublished: true,
+            });
 
-                await ERC20Perk.create({
-                    poolId,
-                    uuid: db.createUUID(),
-                    title: `Large bag of $THX`,
-                    description: 'A token of appreciation offered to you by THX Network.',
-                    image: 'https://thx-storage-bucket.s3.eu-west-3.amazonaws.com/widget-referral-xmzfznsqschvqxzvgn47qo-xtencq4fmgjg7qgwewmybj-(1)-8EHr7ckbrEZLqUyxqJK1LG.png',
-                    pointPrice: 5000,
-                    limit: 100,
-                    amount: 100,
-                    erc20Id,
-                });
-            }
-
+            await ERC20Perk.create({
+                poolId,
+                uuid: db.createUUID(),
+                title: `Large bag of $THX`,
+                description: 'A token of appreciation offered to you by THX Network.',
+                image: 'https://thx-storage-bucket.s3.eu-west-3.amazonaws.com/widget-referral-xmzfznsqschvqxzvgn47qo-xtencq4fmgjg7qgwewmybj-(1)-8EHr7ckbrEZLqUyxqJK1LG.png',
+                pointPrice: 5000,
+                limit: 100,
+                amount: 100,
+                erc20Id,
+                isPublished: true,
+            });
             // Iterate over available quests and create
             for (let i = 1; i < 4; i++) {
                 const questType = sql[`Q${i} - Type`];
@@ -196,9 +203,11 @@ async function main() {
                     case 'Daily': {
                         const dailyQuest = {
                             poolId,
+                            variant: QuestVariant.Daily,
                             title: titleSuggestion.content,
                             description: descriptionSuggestion.content,
                             amounts: [5, 10, 20, 40, 80, 160, 360],
+                            isPublished: true,
                         };
                         await DailyReward.create(dailyQuest);
                         console.log(sql[`Q${i} - Type`], titleSuggestion.content, 'quest created!');
@@ -207,10 +216,12 @@ async function main() {
                     case 'Custom': {
                         const customQuest = {
                             poolId,
+                            variant: QuestVariant.Custom,
                             title: titleSuggestion.content,
                             description: descriptionSuggestion.content,
                             amount: Number(sql[`Q${i} - Points`]),
                             limit: 0,
+                            isPublished: true,
                         };
                         await MilestoneReward.create(customQuest);
                         console.log(sql[`Q${i} - Type`], titleSuggestion.content, 'quest created!');

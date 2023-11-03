@@ -10,4 +10,5 @@ export type TWidget = {
     cssSelector: string;
     theme: string;
     active: boolean;
+    isPublished: boolean;
 };
