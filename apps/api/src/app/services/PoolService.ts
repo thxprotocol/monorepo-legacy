@@ -121,7 +121,11 @@ async function deploy(
         },
     );
 
-    return AssetPool.findByIdAndUpdate(pool._id, { transactions: [txId] }, { new: true });
+    return AssetPool.findByIdAndUpdate(
+        pool._id,
+        { 'transactions': [txId], 'settings.slug': String(pool._id) },
+        { new: true },
+    );
 }
 
 async function deployCallback(args: TAssetPoolDeployCallbackArgs, receipt: TransactionReceipt) {
