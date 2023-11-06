@@ -50,10 +50,13 @@ const controller = async (req: Request, res: Response) => {
     });
 
     res.json({
-        leaderboard: leaderboard.map(({ score, wallet, questsCompleted }) => ({
+        leaderboard: leaderboard.map(({ score, questsCompleted, account }) => ({
             questsCompleted,
             score,
-            address: wallet.address,
+            account: {
+                username: account.username,
+                profileImg: account.profileImg,
+            },
         })),
         daily: await Promise.all(
             dailyRewards.map(async (r) => {

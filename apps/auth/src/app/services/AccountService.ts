@@ -37,7 +37,6 @@ export class AccountService {
     static async update(account: AccountDocument, updates: Partial<TAccount>) {
         account.username = updates.username || account.username;
         account.email = updates.email || account.email;
-        account.profileImg = updates.profileImg || account.profileImg;
         account.firstName = updates.firstName || account.firstName;
         account.lastName = updates.lastName || account.lastName;
         account.plan = updates.plan || account.plan;
@@ -48,12 +47,8 @@ export class AccountService {
         account.role = updates.role || account.role;
         account.goal = updates.goal || account.goal;
 
-        if (updates.profileImg) {
+        if (typeof updates.profileImg !== 'undefined') {
             account.profileImg = updates.profileImg;
-        }
-
-        if (updates.plan) {
-            account.plan = updates.plan;
         }
 
         if (updates.website) {

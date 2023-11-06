@@ -20,6 +20,7 @@ const controller = async (req: Request, res: Response) => {
         backgroundUrl: brand ? brand.backgroundImgUrl : '',
         expired,
         theme: widget.theme,
+        domain: widget.domain,
         chainId: pool.chainId,
         poolId: pool._id,
         slug: pool.settings.slug || pool._id,

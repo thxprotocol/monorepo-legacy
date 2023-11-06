@@ -68,6 +68,7 @@
                                 class="d-flex justify-content-between align-items-center"
                             >
                                 <div class="d-flex center-center">
+                                    <b-badge variant="light" class="mr-3 p-2">#{{ key + 1 }}</b-badge>
                                     <b-avatar
                                         :height="30"
                                         :width="30"
@@ -75,15 +76,9 @@
                                         :src="result.account.profileImg"
                                         class="mr-2"
                                     />
-                                    <div style="line-height: 1.2">
-                                        <strong> {{ result.account.firstName }} {{ result.account.lastName }} </strong>
-                                        <span>{{ result.account.email }}</span>
-                                        <br />
-                                        <small class="text-muted">{{ result.account.address }}</small>
-                                    </div>
+                                    <div style="line-height: 1.2">{{ result.account.username }}</div>
                                 </div>
                                 <div>
-                                    <i class="fas fa-trophy m-1" style="font-size: 1.1rem; color: silver"></i>
                                     <strong class="text-primary"> {{ result.score }} </strong>
                                 </div>
                             </b-list-group-item>
@@ -91,62 +86,6 @@
                     </b-skeleton-wrapper>
                 </b-col>
             </b-row>
-            <b-row class="mt-3" v-if="!erc20s">
-                <b-col>
-                    <div class="py-5 w-100 center-center">
-                        <b-spinner variant="primary" />
-                    </div>
-                </b-col>
-            </b-row>
-            <b-row class="mt-3" v-else>
-                <b-col>
-                    <b-list-group>
-                        <b-list-group-item
-                            :key="erc20._id"
-                            v-for="erc20 of Object.values(erc20s).filter((e) => e.chainId === pool.chainId)"
-                            class="d-flex justify-content-between align-items-center"
-                        >
-                            <div class="d-flex center-center">
-                                <base-identicon
-                                    class="mr-2"
-                                    size="40"
-                                    :rounded="true"
-                                    variant="darker"
-                                    :uri="erc20.logoImgUrl"
-                                />
-                                <div style="line-height: 1.2">
-                                    <strong>{{ erc20.name }}</strong>
-                                    <div class="text-muted" v-if="erc20.poolBalance">
-                                        {{ fromWei(String(erc20.poolBalance), 'ether') }} {{ erc20.symbol }}
-                                    </div>
-                                </div>
-                            </div>
-                            <b-button v-b-modal="`modalDepositCreate-${erc20._id}`" variant="light">
-                                <i class="fas fa-download m-0" style="font-size: 1.1rem"></i>
-                            </b-button>
-                            <BaseModalDepositCreate @submit="onTopup(erc20)" :erc20="erc20" :pool="pool" />
-                        </b-list-group-item>
-                        <b-list-group-item
-                            v-if="!Object.values(erc20s).filter((e) => e.chainId === pool.chainId).length"
-                        >
-                            <span class="text-muted">No coins found for your account.</span>
-                        </b-list-group-item>
-                        <b-list-group-item>
-                            <b-button v-b-modal="'modalERC20Import'" block variant="primary" class="rounded-pill">
-                                Import coin
-                                <i class="fas fa-chevron-right"></i>
-                            </b-button>
-                            <b-button v-b-modal="'modalERC20Create'" block variant="link" class="rounded-pill">
-                                Create coin
-                                <i class="fas fa-chevron-right"></i>
-                            </b-button>
-                        </b-list-group-item>
-                    </b-list-group>
-                </b-col>
-            </b-row>
-
-            <BaseModalErc20Create :chainId="pool.chainId" />
-            <BaseModalErc20Import :chainId="pool.chainId" />
         </b-col>
     </b-row>
 </template>
@@ -155,21 +94,15 @@
 import { mapGetters } from 'vuex';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { IERC20s, TERC20 } from '@thxnetwork/dashboard/types/erc20';
-import BaseIdenticon from '@thxnetwork/dashboard/components/BaseIdenticon.vue';
-import BaseModalErc20Import from '@thxnetwork/dashboard/components/modals/BaseModalERC20Import.vue';
-import BaseModalErc20Create from '@thxnetwork/dashboard/components/modals/BaseModalERC20Create.vue';
-import BaseModalDepositCreate from '@thxnetwork/dashboard/components/modals/BaseModalDepositCreate.vue';
 import { fromWei } from 'web3-utils';
 import { format } from 'date-fns';
 import { IPoolAnalyticsLeaderBoard, IPoolAnalyticsMetrics, IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import type { TPool } from '@thxnetwork/types/interfaces';
+import BaseIdenticon from '@thxnetwork/dashboard/components/BaseIdenticon.vue';
 
 @Component({
     components: {
         BaseIdenticon,
-        BaseModalDepositCreate,
-        BaseModalErc20Create,
-        BaseModalErc20Import,
     },
     computed: mapGetters({
         pools: 'pools/all',
