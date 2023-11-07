@@ -8,6 +8,7 @@
         @change-description="description = $event"
         @change-file="file = $event"
         @change-published="isPublished = $event"
+        @change-date="expiryDate = $event"
         :published="isPublished"
         :id="id"
         :error="error"
@@ -104,6 +105,7 @@ export default class ModalQuestWeb3Create extends Vue {
     threshold = 0;
     infoLinks: TInfoLink[] = [{ label: '', url: '' }];
     contracts: { chainId: ChainId; address: string }[] = [{ chainId: ChainId.Polygon, address: '' }];
+    expiryDate: Date | number | null = null;
 
     @Prop() id!: string;
     @Prop() total!: number;
@@ -119,6 +121,7 @@ export default class ModalQuestWeb3Create extends Vue {
         this.methodName = this.reward ? this.reward.methodName : this.methodName;
         this.threshold = this.reward ? this.reward.threshold : this.threshold;
         this.infoLinks = this.reward ? this.reward.infoLinks : this.infoLinks;
+        this.expiryDate = this.reward && this.reward.expiryDate ? this.reward.expiryDate : this.expiryDate;
     }
 
     onSubmit() {
@@ -136,6 +139,7 @@ export default class ModalQuestWeb3Create extends Vue {
                 amount: this.amount,
                 methodName: this.methodName,
                 threshold: this.threshold,
+                expiryDate: this.expiryDate ? new Date(this.expiryDate).toISOString() : undefined,
                 contracts: JSON.stringify(this.contracts),
                 infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
             })

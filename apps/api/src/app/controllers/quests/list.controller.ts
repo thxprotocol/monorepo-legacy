@@ -18,11 +18,18 @@ import WalletService from '@thxnetwork/api/services/WalletService';
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
     const pool = await PoolService.getById(req.header('X-PoolId'));
-    const referralRewards = await ReferralReward.find({ poolId: pool._id, isPublished: true });
-    const pointRewards = await PointReward.find({ poolId: pool._id, isPublished: true });
-    const milestoneRewards = await MilestoneReward.find({ poolId: pool._id, isPublished: true });
-    const dailyRewards = await DailyReward.find({ poolId: pool._id, isPublished: true });
-    const web3Quests = await Web3Quest.find({ poolId: pool._id, isPublished: true });
+    const query = {
+        poolId: pool._id,
+        isPublished: true,
+        $or: [
+            { expiryDate: { $exists: true, $gte: new Date() } }, // Include rewards with expiryDate less than or equal to now
+            { expiryDate: { $exists: false } }, // Include quests with no expiryDate
+        ],
+    };
+    const models = [ReferralReward, PointReward, MilestoneReward, DailyReward, Web3Quest];
+    const [inviteQuests, socialQuests, customQuests, dailyQuests, web3Quests] = await Promise.all(
+        models.map(async (model: any) => await model.find(query)),
+    );
     const authHeader = req.header('authorization');
 
     let wallet: WalletDocument, sub: string;
@@ -39,7 +46,7 @@ const controller = async (req: Request, res: Response) => {
         endDate: new Date(),
     });
 
-    const getDefaults = ({ _id, index, title, description, infoLinks, uuid, image }: TBaseReward) => ({
+    const getDefaults = ({ _id, index, title, description, infoLinks, uuid, image, expiryDate }: TBaseReward) => ({
         _id,
         index,
         title,
@@ -47,6 +54,7 @@ const controller = async (req: Request, res: Response) => {
         infoLinks,
         image,
         uuid,
+        expiryDate,
     });
 
     res.json({
@@ -59,7 +67,7 @@ const controller = async (req: Request, res: Response) => {
             },
         })),
         daily: await Promise.all(
-            dailyRewards.map(async (r) => {
+            dailyQuests.map(async (r) => {
                 const isDisabled = wallet ? !(await DailyRewardClaimService.isClaimable(r, wallet)) : true;
                 const validClaims = wallet ? await DailyRewardClaimService.findByWallet(r, wallet) : [];
                 const claimAgainTime = validClaims.length
@@ -83,7 +91,7 @@ const controller = async (req: Request, res: Response) => {
             }),
         ),
         custom: await Promise.all(
-            milestoneRewards.map(async (r) => {
+            customQuests.map(async (r) => {
                 const claims = wallet
                     ? await MilestoneRewardClaim.find({
                           walletId: String(wallet._id),
@@ -98,7 +106,7 @@ const controller = async (req: Request, res: Response) => {
                 };
             }),
         ),
-        invite: referralRewards.map((r) => {
+        invite: inviteQuests.map((r) => {
             const defaults = getDefaults(r);
             return {
                 ...defaults,
@@ -108,7 +116,7 @@ const controller = async (req: Request, res: Response) => {
             };
         }),
         social: await Promise.all(
-            pointRewards.map(async (r) => {
+            socialQuests.map(async (r) => {
                 const isClaimed = wallet
                     ? await PointRewardClaim.exists({
                           $or: [{ walletId: wallet._id }, { sub }],

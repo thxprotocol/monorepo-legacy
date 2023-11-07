@@ -29,6 +29,7 @@ const validation = [
             return true;
         })
         .customSanitizer((amounts) => JSON.parse(amounts)),
+    body('expiryDate').optional().isISO8601(),
     body('infoLinks')
         .optional()
         .customSanitizer((infoLinks) => {
@@ -39,7 +40,7 @@ const validation = [
 
 const controller = async (req: Request, res: Response) => {
     const poolId = req.header('X-PoolId');
-    const { title, description, amounts, infoLinks, isEnabledWebhookQualification, isPublished } = req.body;
+    const { title, description, amounts, infoLinks, isEnabledWebhookQualification, isPublished, expiryDate } = req.body;
     const image = req.file && (await ImageService.upload(req.file));
     const quest = await QuestService.create(QuestVariant.Daily, poolId, {
         title,
@@ -49,6 +50,7 @@ const controller = async (req: Request, res: Response) => {
         infoLinks,
         isEnabledWebhookQualification,
         isPublished,
+        expiryDate,
     });
 
     res.status(201).json(quest);

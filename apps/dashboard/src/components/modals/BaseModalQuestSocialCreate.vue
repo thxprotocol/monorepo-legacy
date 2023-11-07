@@ -8,6 +8,7 @@
         @change-file="file = $event"
         @change-info-links="infoLinks = Object.values($event)"
         @change-published="isPublished = $event"
+        @change-date="expiryDate = $event"
         :published="isPublished"
         :info-links="infoLinks"
         :id="id"
@@ -77,6 +78,7 @@ export default class ModalRewardPointsCreate extends Vue {
     profile!: TAccount;
     infoLinks: TInfoLink[] = [{ label: '', url: '' }];
     file: File | null = null;
+    expiryDate: Date | number | null = null;
 
     @Prop() id!: string;
     @Prop() variant!: string;
@@ -110,6 +112,7 @@ export default class ModalRewardPointsCreate extends Vue {
                   content: '',
                   contentMetadata: {},
               };
+        this.expiryDate = this.reward && this.reward.expiryDate ? this.reward.expiryDate : this.expiryDate;
     }
 
     getConditionDefaults(questVariant: string) {
@@ -163,6 +166,7 @@ export default class ModalRewardPointsCreate extends Vue {
                     this.rewardCondition.platform !== RewardConditionPlatform.None
                         ? this.rewardCondition.contentMetadata
                         : '',
+                expiryDate: this.expiryDate ? new Date(this.expiryDate).toISOString() : undefined,
                 page: this.reward ? this.reward.page : 1,
                 index: !this.reward ? this.total : this.reward.index,
             })

@@ -27,6 +27,7 @@ const validation = [
         );
     }),
     body('methodName').isString(),
+    body('expiryDate').optional().isISO8601(),
     body('threshold').isInt(),
     body('infoLinks').customSanitizer((infoLinks) => {
         return JSON.parse(infoLinks).filter((link: TInfoLink) => link.label.length && isValidUrl(link.url));

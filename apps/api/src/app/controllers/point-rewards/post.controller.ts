@@ -24,6 +24,7 @@ const validation = [
     body('interaction').optional().isNumeric(),
     body('content').optional().isString(),
     body('contentMetadata').optional().isString(),
+    body('expiryDate').optional().isISO8601(),
     body('infoLinks')
         .optional()
         .customSanitizer((infoLinks) => {
@@ -34,8 +35,18 @@ const validation = [
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Quest Social']
     const poolId = req.header('X-PoolId');
-    const { title, description, amount, infoLinks, platform, interaction, content, contentMetadata, isPublished } =
-        req.body;
+    const {
+        title,
+        description,
+        amount,
+        infoLinks,
+        platform,
+        interaction,
+        content,
+        contentMetadata,
+        isPublished,
+        expiryDate,
+    } = req.body;
     const image = req.file && (await ImageService.upload(req.file));
 
     const variant = questInteractionVariantMap[interaction];
@@ -50,6 +61,7 @@ const controller = async (req: Request, res: Response) => {
         contentMetadata,
         infoLinks,
         isPublished,
+        expiryDate,
     });
 
     res.status(201).json(quest);

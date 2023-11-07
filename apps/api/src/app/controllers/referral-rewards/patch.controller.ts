@@ -26,6 +26,7 @@ const validation = [
             return false;
         }),
     body('index').optional().isInt(),
+    body('expiryDate').optional().isISO8601(),
     body('infoLinks')
         .optional()
         .customSanitizer((infoLinks) => {
@@ -35,8 +36,18 @@ const validation = [
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards Referral']
-    const { title, description, pathname, amount, successUrl, infoLinks, isMandatoryReview, index, isPublished } =
-        req.body;
+    const {
+        title,
+        description,
+        pathname,
+        amount,
+        successUrl,
+        infoLinks,
+        isMandatoryReview,
+        index,
+        isPublished,
+        expiryDate,
+    } = req.body;
     const image = req.file && (await ImageService.upload(req.file));
     const quest = await QuestService.update(QuestVariant.Invite, req.params.id, {
         title,
@@ -49,6 +60,7 @@ const controller = async (req: Request, res: Response) => {
         infoLinks,
         index,
         isPublished,
+        expiryDate,
     });
     const claims = await ReferralRewardClaimService.findByReferralReward(quest);
 

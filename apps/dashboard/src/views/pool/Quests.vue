@@ -129,6 +129,10 @@
                         :quest="item.quest"
                     />
                 </template>
+                <template #cell(expiry)="{ item }">
+                    <small class="text-muted">{{ item.expiry }}</small>
+                </template>
+
                 <template #cell(quest)="{ item }">
                     <b-dropdown variant="link" size="sm" right no-caret>
                         <template #button-content>
@@ -169,6 +173,7 @@ import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCard
 import BaseBtnQuestEntries from '@thxnetwork/dashboard/components/buttons/BaseBtnQuestEntries.vue';
 import { hasPremiumAccess } from '@thxnetwork/common';
 import { TQuestState } from '@thxnetwork/dashboard/store/modules/pools';
+import { format } from 'date-fns';
 
 export const contentQuests = {
     'steam-quest': {
@@ -322,6 +327,7 @@ export default class QuestsView extends Vue {
             title: quest.title,
             points: quest.amount || `${quest.amounts.length} days`,
             entries: quest.entryCount,
+            expiry: quest.expiryDate ? format(new Date(quest.expiryDate), 'dd-MM-yyyy HH:mm') : 'Never',
             quest: quest,
         }));
     }
@@ -461,6 +467,9 @@ export default class QuestsView extends Vue {
     width: 130px;
 }
 #table-quests th:nth-child(6) {
+    width: 130px;
+}
+#table-quests th:nth-child(7) {
     width: 40px;
 }
 </style>

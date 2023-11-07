@@ -30,6 +30,31 @@
                                 <b-form-file v-model="imageFile" accept="image/*" @input="onInputFile" />
                             </b-input-group>
                         </b-form-group>
+                        <b-form-group label="End Date">
+                            <b-row>
+                                <b-col md="6">
+                                    <b-datepicker
+                                        value-as-date
+                                        :date-format-options="{
+                                            year: 'numeric',
+                                            month: 'short',
+                                            day: '2-digit',
+                                            weekday: 'short',
+                                        }"
+                                        :min="minDate"
+                                        :value="expirationDate"
+                                        @input="onChangeDate"
+                                    />
+                                </b-col>
+                                <b-col md="6">
+                                    <b-timepicker
+                                        :disabled="!expirationDate"
+                                        :value="expirationTime"
+                                        @input="onChangeTime"
+                                    />
+                                </b-col>
+                            </b-row>
+                        </b-form-group>
                         <slot name="col-left" />
                     </b-col>
                     <b-col md="6">
@@ -88,6 +113,8 @@ export default class ModalQuestCreate extends Vue {
     imageFile: File | null = null;
     error = '';
     image = '';
+    expirationDate: Date | null = null;
+    expirationTime = '00:00:00';
 
     @Prop() id!: string;
     @Prop() variant!: string;
@@ -97,9 +124,44 @@ export default class ModalQuestCreate extends Vue {
     @Prop({ required: false }) quest!: TBaseReward;
     @Prop() infoLinks!: TInfoLink[];
 
+    mounted() {
+        if (this.quest && this.quest.expiryDate) {
+            const date = new Date(this.quest.expiryDate);
+            this.expirationDate = date;
+            this.expirationTime = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+        }
+    }
+
+    get minDate() {
+        const date = new Date();
+        date.setDate(date.getDate() + 1);
+        return date;
+    }
+
     onInputFile(file: File) {
         this.image = '';
         this.$emit('change-file', file);
+    }
+
+    onChangeDate(date: Date) {
+        this.expirationDate = date;
+        this.change();
+    }
+
+    onChangeTime(time: string) {
+        if (!this.expirationDate) return;
+        this.expirationTime = time;
+        this.change();
+    }
+
+    change() {
+        if (!this.expirationDate) return;
+        const expiryDate = new Date(this.expirationDate);
+        const parts = this.expirationTime.split(':');
+        expiryDate.setHours(Number(parts[0]));
+        expiryDate.setMinutes(Number(parts[1]));
+        expiryDate.setSeconds(Number(parts[2]));
+        this.$emit('change-date', expiryDate);
     }
 }
 </script>

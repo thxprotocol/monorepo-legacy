@@ -22,6 +22,7 @@ const validation = [
         }),
     body('amount').optional().isInt({ gt: 0 }),
     body('limit').optional().isInt(),
+    body('expiryDate').optional().isISO8601(),
     body('infoLinks')
         .optional()
         .customSanitizer((infoLinks) => {
@@ -31,7 +32,7 @@ const validation = [
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Milestone Rewards']
-    const { title, description, amount, infoLinks, limit, index, isPublished } = req.body;
+    const { title, description, amount, infoLinks, limit, index, isPublished, expiryDate } = req.body;
     const image = req.file && (await ImageService.upload(req.file));
     const quest = await QuestService.update(QuestVariant.Custom, req.params.id, {
         title,
@@ -42,6 +43,7 @@ const controller = async (req: Request, res: Response) => {
         index,
         limit,
         isPublished,
+        expiryDate,
     });
 
     res.status(201).json(quest);

@@ -44,6 +44,7 @@ export type TBaseReward = {
     variant?: QuestVariant;
     index: number;
     isPublished: boolean;
+    expiryDate: Date;
     update: (payload: Partial<TQuest>) => Promise<void>;
     delete: (payload: Partial<TQuest>) => Promise<void>;
 };

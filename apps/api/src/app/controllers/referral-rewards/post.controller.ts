@@ -28,6 +28,7 @@ const validation = [
         }),
     body('isMandatoryReview').optional().isBoolean(),
     body('amount').exists().isInt({ gt: 0 }),
+    body('expiryDate').optional().isISO8601(),
     body('infoLinks')
         .optional()
         .customSanitizer((infoLinks) => {
@@ -39,8 +40,18 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards Referral']
     const poolId = req.header('X-PoolId');
     const image = req.file && (await ImageService.upload(req.file));
-    const { title, description, pathname, amount, successUrl, infoLinks, isMandatoryReview, index, isPublished } =
-        req.body;
+    const {
+        title,
+        description,
+        pathname,
+        amount,
+        successUrl,
+        infoLinks,
+        isMandatoryReview,
+        index,
+        isPublished,
+        expiryDate,
+    } = req.body;
     const quest = await QuestService.create(QuestVariant.Invite, poolId, {
         index,
         title,
@@ -53,6 +64,7 @@ const controller = async (req: Request, res: Response) => {
         amount,
         infoLinks,
         image,
+        expiryDate,
     });
 
     res.status(201).json(quest);

@@ -182,7 +182,7 @@ async function main() {
                 isPublished: true,
             });
             // Iterate over available quests and create
-            for (let i = 1; i < 4; i++) {
+            for (let i = 1; i < 3; i++) {
                 const questType = sql[`Q${i} - Type`];
                 const points = sql[`Q${i} - Points`];
                 const title = sql[`Q${i} - Title`];

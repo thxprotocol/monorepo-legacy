@@ -5,6 +5,7 @@
         @submit="onSubmit"
         @change-info-links="infoLinks = Object.values($event)"
         @change-title="title = $event"
+        @change-date="expiryDate = $event"
         @change-description="description = $event"
         @change-file="file = $event"
         @change-published="isPublished = $event"
@@ -72,6 +73,7 @@ export default class ModalQuestCustomCreate extends Vue {
     error = '';
     title = '';
     description = '';
+    expiryDate: Date | number | null = null;
     isPublished = false;
     amount = 0;
     limit = 0;
@@ -97,6 +99,7 @@ export default class ModalQuestCustomCreate extends Vue {
         this.amount = this.reward ? this.reward.amount : this.amount;
         this.infoLinks = this.reward ? this.reward.infoLinks : this.infoLinks;
         this.limit = this.reward && this.reward.limit ? this.reward.limit : this.limit;
+        this.expiryDate = this.reward && this.reward.expiryDate ? this.reward.expiryDate : this.expiryDate;
     }
 
     onSubmit() {
@@ -112,6 +115,7 @@ export default class ModalQuestCustomCreate extends Vue {
                 file: this.file,
                 amount: this.amount,
                 limit: this.limit,
+                expiryDate: this.expiryDate ? new Date(this.expiryDate).toISOString() : undefined,
                 infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
                 index: !this.reward ? this.total : this.reward.index,
             })

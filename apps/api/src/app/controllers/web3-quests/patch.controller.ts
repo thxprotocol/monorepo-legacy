@@ -28,6 +28,7 @@ const validation = [
         );
     }),
     body('methodName').optional().isString(),
+    body('expiryDate').optional().isISO8601(),
     body('threshold').optional().isInt(),
     body('infoLinks')
         .optional()

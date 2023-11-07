@@ -15,7 +15,18 @@
                 <b-form-group>
                     <b-row>
                         <b-col md="6">
-                            <b-datepicker value-as-date :min="minDate" :value="expirationDate" @input="onChangeDate" />
+                            <b-datepicker
+                                :date-format-options="{
+                                    year: 'numeric',
+                                    month: 'short',
+                                    day: '2-digit',
+                                    weekday: 'short',
+                                }"
+                                value-as-date
+                                :min="minDate"
+                                :value="expirationDate"
+                                @input="onChangeDate"
+                            />
                         </b-col>
                         <b-col md="6">
                             <b-timepicker :disabled="!expirationDate" :value="expirationTime" @input="onChangeTime" />

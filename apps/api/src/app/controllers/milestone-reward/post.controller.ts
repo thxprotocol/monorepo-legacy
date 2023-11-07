@@ -20,6 +20,7 @@ const validation = [
             return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
         }),
     body('amount').isInt({ gt: 0 }),
+    body('expiryDate').optional().isISO8601(),
     body('infoLinks')
         .optional()
         .customSanitizer((infoLinks) => {
@@ -31,7 +32,7 @@ const validation = [
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['RewardsToken']
     const poolId = req.header('X-PoolId');
-    const { title, description, amount, limit, infoLinks, isPublished } = req.body;
+    const { title, description, amount, limit, infoLinks, isPublished, expiryDate } = req.body;
     const image = req.file && (await ImageService.upload(req.file));
     const quest = await QuestService.create(QuestVariant.Custom, poolId, {
         title,
@@ -41,6 +42,7 @@ const controller = async (req: Request, res: Response) => {
         infoLinks,
         limit,
         isPublished,
+        expiryDate,
     });
 
     res.status(201).json(quest);

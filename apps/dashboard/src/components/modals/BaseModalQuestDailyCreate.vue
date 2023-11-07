@@ -8,6 +8,7 @@
         @change-description="description = $event"
         @change-file="file = $event"
         @change-published="isPublished = $event"
+        @change-date="expiryDate = $event"
         :info-links="infoLinks"
         :id="id"
         :error="error"
@@ -95,6 +96,7 @@ export default class ModalRewardDailyCreate extends Vue {
     infoLinks: TInfoLink[] = [{ label: '', url: '' }];
     isEnabledWebhookQualification = false;
     file: File | null = null;
+    expiryDate: Date | number | null = null;
 
     @Prop() id!: string;
     @Prop() total!: number;
@@ -116,6 +118,7 @@ export default class ModalRewardDailyCreate extends Vue {
         this.isEnabledWebhookQualification = this.reward
             ? this.reward.isEnabledWebhookQualification
             : this.isEnabledWebhookQualification;
+        this.expiryDate = this.reward && this.reward.expiryDate ? this.reward.expiryDate : this.expiryDate;
     }
 
     onSubmit() {
@@ -131,6 +134,7 @@ export default class ModalRewardDailyCreate extends Vue {
                 limit: this.limit,
                 file: this.file,
                 isPublished: this.isPublished,
+                expiryDate: this.expiryDate ? new Date(this.expiryDate).toISOString() : undefined,
                 page: this.reward ? this.reward.page : 1,
                 infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
                 isEnabledWebhookQualification: this.isEnabledWebhookQualification,

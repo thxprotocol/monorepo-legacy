@@ -8,6 +8,7 @@
         @change-file="file = $event"
         @change-info-links="infoLinks = Object.values($event)"
         @change-published="isPublished = $event"
+        @change-date="expiryDate = $event"
         :info-links="infoLinks"
         :id="id"
         :error="error"
@@ -111,6 +112,7 @@ export default class ModalReferralRewardCreate extends Vue {
     profile!: UserProfile;
     infoLinks: TInfoLink[] = [{ label: '', url: '' }];
     file: File | null = null;
+    expiryDate: Date | number | null = null;
 
     @Prop() id!: string;
     @Prop() total!: number;
@@ -138,6 +140,7 @@ export default class ModalReferralRewardCreate extends Vue {
         this.isVisibleCardURLQualify = this.reward ? !!this.reward.successUrl : true;
         this.isVisibleCardWebhookQualify = this.reward ? !this.reward.successUrl : false;
         this.isMandatoryReview = this.reward ? this.reward.isMandatoryReview : this.isMandatoryReview;
+        this.expiryDate = this.reward && this.reward.expiryDate ? this.reward.expiryDate : this.expiryDate;
     }
 
     onChangeLink({ key, label, url }: TInfoLink & { key: number }) {
@@ -164,6 +167,7 @@ export default class ModalReferralRewardCreate extends Vue {
                 pathname: this.pathname,
                 amount: this.amount,
                 isPublished: this.isPublished,
+                expiryDate: this.expiryDate ? new Date(this.expiryDate).toISOString() : undefined,
                 claimAmount: this.claimAmount,
                 successUrl: this.successUrl,
                 isMandatoryReview: this.isMandatoryReview,

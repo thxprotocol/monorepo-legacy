@@ -26,6 +26,7 @@ const validation = [
     body('content').optional().isString(),
     body('content').optional().isString(),
     body('contentMetadata').optional().isString(),
+    body('expiryDate').optional().isISO8601(),
     body('infoLinks')
         .optional()
         .customSanitizer((infoLinks) => {
@@ -47,6 +48,7 @@ const controller = async (req: Request, res: Response) => {
         interaction,
         content,
         contentMetadata,
+        expiryDate,
     } = req.body;
     const image = req.file && (await ImageService.upload(req.file));
     const variant = questInteractionVariantMap[interaction];
@@ -63,6 +65,7 @@ const controller = async (req: Request, res: Response) => {
         content,
         contentMetadata,
         image,
+        expiryDate,
     });
 
     res.json(quest);
