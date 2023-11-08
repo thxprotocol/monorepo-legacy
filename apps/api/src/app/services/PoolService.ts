@@ -244,7 +244,14 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
             }
             return {
                 ...participant.toJSON(),
-                account,
+                account: account && {
+                    email: account.email,
+                    username: account.username,
+                    profileImg: account.profileImg,
+                    twitterUsername: account.twitterUsername,
+                    variant: account.variant,
+                    connectedAccounts: account.connectedAccounts,
+                },
                 wallet,
                 subscription,
                 pointBalance: pointBalance ? pointBalance.balance : 0,
