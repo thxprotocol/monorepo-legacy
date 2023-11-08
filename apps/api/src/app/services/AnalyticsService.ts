@@ -279,8 +279,7 @@ async function getLeaderboard(pool: AssetPoolDocument, dateRange?: { startDate: 
                 account: { ...account, address: wallet.address },
             };
         })
-        .sort((a: any, b: any) => b.score - a.score)
-        .slice(0, 10);
+        .sort((a: any, b: any) => b.score - a.score);
 }
 
 async function queryQuestEntries<T>(args: {

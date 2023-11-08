@@ -14,6 +14,7 @@ export const controller = async (req: Request, res: Response) => {
     const leaderBoard = await AnalyticsService.getLeaderboard(pool);
     if (req.query.platform === 'discord') {
         const promises = leaderBoard
+            .slice(0, 10)
             .filter((x) => (x.account as TAccount).discordAccess === true)
             .map(async (y) => {
                 const discordId = await DiscordDataProxy.getUserId(y.account);

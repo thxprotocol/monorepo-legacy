@@ -21,6 +21,9 @@
                 show-empty
             >
                 <!-- Head formatting -->
+                <template #head(rank)>
+                    <BaseBtnSort @click="onClickSort('rank', $event)">Rank</BaseBtnSort>
+                </template>
                 <template #head(account)>
                     <BaseBtnSort @click="onClickSort('username', $event)">Username</BaseBtnSort>
                 </template>
@@ -43,6 +46,9 @@
                 <template #head(participant)> &nbsp;</template>
 
                 <!-- Cell formatting -->
+                <template #cell(rank)="{ item }">
+                    <span>{{ item.rank }}</span>
+                </template>
                 <template #cell(account)="{ item }"> <BaseParticipantAccount :account="item.account" /> </template>
                 <template #cell(email)="{ item }"> {{ item.email }} </template>
                 <template #cell(connectedAccounts)="{ item }">
@@ -127,6 +133,9 @@ export default class ViewParticipants extends Vue {
     page = 1;
     limit = 10;
     sorts = {
+        rank: (a, b) => {
+            return a.rank - b.rank;
+        },
         username: (a, b) => {
             const usernameA = a.account && a.account.username ? a.account.username.toLowerCase() : '';
             const usernameB = b.account && b.account.username ? b.account.username.toLowerCase() : '';
@@ -171,6 +180,7 @@ export default class ViewParticipants extends Vue {
 
     get participantsByPage() {
         return Object.values(this.result.results).map((p: any) => ({
+            rank: p.rank,
             account: parseAccount({ id: p._id, account: p.account }),
             email: p.account && p.account.email,
             connectedAccounts: p.account && parseConnectedAccounts(p.account.connectedAccounts),

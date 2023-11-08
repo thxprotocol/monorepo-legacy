@@ -58,7 +58,7 @@ const controller = async (req: Request, res: Response) => {
     });
 
     res.json({
-        leaderboard: leaderboard.map(({ score, questsCompleted, account }) => ({
+        leaderboard: leaderboard.slice(0, 10).map(({ score, questsCompleted, account }) => ({
             questsCompleted,
             score,
             account: {

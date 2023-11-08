@@ -5,12 +5,21 @@ import { ChainId } from '@thxnetwork/types/enums';
 import { logger } from '@thxnetwork/api/util/logger';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import SafeService from '@thxnetwork/api/services/SafeService';
+import { Participant } from '@thxnetwork/api/models/Participant';
 
 const validation = [];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Account']
     const account = await AccountProxy.getById(req.auth.sub);
+
+    // Set participant rank if poolId is set
+    const poolId = req.header('X-PoolId');
+    if (poolId) {
+        const participant = await Participant.findOne({ poolId, sub: req.auth.sub });
+        account['rank'] = participant.rank;
+    }
+
     const isMetamask = account.variant === AccountVariant.Metamask;
     if (!isMetamask) return res.json(account);
 

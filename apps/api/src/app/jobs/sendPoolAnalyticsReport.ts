@@ -25,7 +25,7 @@ export async function sendPoolAnalyticsReport() {
 
             const { dailyQuest, inviteQuest, socialQuest, customQuest, coinReward, nftReward } =
                 await AnalyticsService.getPoolMetrics(pool, dateRange);
-            const leaderBoard = await AnalyticsService.getLeaderboard(pool);
+            const leaderBoard = (await AnalyticsService.getLeaderboard(pool)).slice(0, 10);
             const totalPointsClaimed =
                 dailyQuest.totalAmount + inviteQuest.totalAmount + socialQuest.totalAmount + customQuest.totalAmount;
             const totalPointsSpent = coinReward.totalAmount + nftReward.totalAmount;

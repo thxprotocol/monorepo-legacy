@@ -11,7 +11,7 @@ export const controller = async (req: Request, res: Response) => {
     if (!pool.address) return res.json(pool.toJSON());
 
     const leaderBoard = await AnalyticsService.getLeaderboard(pool);
-    res.json(leaderBoard);
+    res.json(leaderBoard.slice(0, 10));
 };
 
 export default { controller, validation };

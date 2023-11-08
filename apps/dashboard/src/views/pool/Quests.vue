@@ -130,7 +130,7 @@
                     />
                 </template>
                 <template #cell(expiry)="{ item }">
-                    <small class="text-muted">{{ item.expiry }}</small>
+                    <span class="text-muted">{{ item.expiry }}</span>
                 </template>
 
                 <template #cell(quest)="{ item }">
@@ -467,7 +467,7 @@ export default class QuestsView extends Vue {
     width: 130px;
 }
 #table-quests th:nth-child(6) {
-    width: 130px;
+    width: 160px;
 }
 #table-quests th:nth-child(7) {
     width: 40px;

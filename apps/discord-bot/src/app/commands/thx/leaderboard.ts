@@ -14,7 +14,7 @@ export const onSubcommandLeaderboard = async (interaction: CommandInteraction) =
     const { widget, brand } = pool;
     if (!widget) return interaction.reply({ content: 'Widget could not be found.', ephemeral: true });
 
-    const leaderboard = await thx.pools.getLeaderboard(pool._id);
+    const leaderboard = (await thx.pools.getLeaderboard(pool._id)).slice(0, 10);
     const theme = JSON.parse(widget.theme);
 
     embed.setColor(theme.colors.accent.color).setTitle(pool.settings.title);

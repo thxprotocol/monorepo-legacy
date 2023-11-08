@@ -1,4 +1,5 @@
 export enum JobType {
+    UpdateParticipantRanks = 'updateParticipantRanks',
     UpdateCampaignRanks = 'updateCampaignRanks',
     UpdatePendingTransactions = 'updatePendingTransactions',
     CreateTwitterQuests = 'createTwitterQuests',
