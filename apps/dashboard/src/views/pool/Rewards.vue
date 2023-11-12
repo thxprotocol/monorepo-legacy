@@ -106,7 +106,7 @@
                         <b-dropdown-item v-b-modal="rewardModalComponentMap[item.reward.variant] + item.reward._id">
                             Edit
                         </b-dropdown-item>
-                        <b-dropdown-item @click="onClickDelete(item)"> Delete </b-dropdown-item>
+                        <b-dropdown-item @click="onClickDelete(item.reward)"> Delete </b-dropdown-item>
                     </b-dropdown>
                     <BaseModalRewardClaimsDownload
                         :id="`modalRewardClaimsDownload${item.reward._id}`"
