@@ -59,7 +59,7 @@
         "csv-writer": "^1.6.0",
         "date-fns": "^2.28.0",
         "defender-relay-client": "^1.26.1",
-        "discord.js": "^14.7.1",
+        "discord.js": "14.11.0",
         "ejs": "^3.1.7",
         "ethers": "^5.0.26",
         "express": "^4.17.1",
