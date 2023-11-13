@@ -5,9 +5,8 @@ export type DiscordMessageDocument = mongoose.Document & TDiscordMessage;
 
 const discordMessageSchema = new mongoose.Schema(
     {
-        sub: String,
-        poolId: String,
         guildId: String,
+        memberId: String,
     },
     {
         timestamps: true,

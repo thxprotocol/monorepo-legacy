@@ -5,9 +5,8 @@ export type DiscordReactionDocument = mongoose.Document & TDiscordReaction;
 
 const discordReactionSchema = new mongoose.Schema(
     {
-        sub: String,
-        poolId: String,
         guildId: String,
+        memberId: String,
     },
     {
         timestamps: true,
