@@ -17,7 +17,7 @@ const controller = async (req: Request, res: Response) => {
     const poolId = req.header('X-PoolId');
     if (poolId) {
         const participant = await Participant.findOne({ poolId, sub: req.auth.sub });
-        account['rank'] = participant.rank;
+        account['rank'] = participant && participant.rank;
     }
 
     const isMetamask = account.variant === AccountVariant.Metamask;
