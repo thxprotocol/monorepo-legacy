@@ -1,4 +1,4 @@
-export type TGuild = {
+export type TDiscordMessage = {
     sub: string;
     poolId: string;
     guildId: string;
