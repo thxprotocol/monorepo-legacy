@@ -31,7 +31,7 @@ def insert_initial_values(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("history", "0076_alter_safemastercopy_deployer"),
+        ("history", "0077_alter_safecontractdelegate_delegate_and_more"),
     ]
 
     operations = [
