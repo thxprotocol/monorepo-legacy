@@ -9,7 +9,7 @@ import {
     StringSelectMenuOptionBuilder,
 } from 'discord.js';
 
-export const onSubcommandMe = async (interaction: CommandInteraction) => {
+export const onSubcommandConnect = async (interaction: CommandInteraction) => {
     const isAdmin = (interaction.member.permissions as any).has(PermissionFlagsBits.Administrator);
     if (!isAdmin)
         return interaction.reply({
@@ -48,4 +48,4 @@ export const onSubcommandMe = async (interaction: CommandInteraction) => {
     const row = new ActionRowBuilder().addComponents(select);
     interaction.reply({ components: [row as any], ephemeral: true });
 };
-export default { onSubcommandMe };
+export default { onSubcommandConnect };

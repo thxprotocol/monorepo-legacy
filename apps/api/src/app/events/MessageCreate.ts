@@ -6,9 +6,9 @@ const onMessageCreate = async (message: Message) => {
     try {
         logger.info(`#${message.author.id} created message ${message.id} in guild ${message.guild.id}`);
         await DiscordMessage.create({
-            sub: String,
-            guildId: String,
-            messageId: String,
+            guildId: message.guild.id,
+            messageId: message.id,
+            memberId: message.author.id,
         });
     } catch (error) {
         logger.error(error);

@@ -7,23 +7,55 @@
                     <div class="">
                         <i class="fab fa-discord mr-2" />
                         <strong>Discord</strong>
+                        <p class="text-muted">
+                            Add more Discord Quests and let your members know about campaign events
+                        </p>
                     </div>
-                    <p class="text-muted">
-                        Sends a Didscord message for campaign events through a
-                        <b-link
-                            href="https://discordjs.guide/popular-topics/webhooks.html#creating-webhooks"
-                            target="_blank"
-                            >Discord webhook</b-link
-                        >.
-                    </p>
+                    <p class="text-muted">.</p>
                 </b-col>
                 <b-col md="8">
-                    <b-form-group label="Webhook URL" description="">
+                    <b-form-group label="Discord Server" description="Use THX Bot for Discord Quests and Role Rewards.">
+                        <template v-if="pool.guilds && pool.guilds.length">
+                            <b-badge
+                                variant="dark"
+                                :key="key"
+                                v-for="(guild, key) of pool.guilds"
+                                class="p-2 font-weight-normal center-center d-inline-flex"
+                            >
+                                <b-img
+                                    :src="require('../../../public/assets/logo-discord.png')"
+                                    width="20"
+                                    class="mr-2"
+                                />
+                                {{ guild.name }}
+                            </b-badge>
+                        </template>
+                        <template v-else>
+                            <b-button variant="light" target="_blank" :href="discordBotInviteUrl">
+                                <b-img
+                                    :src="require('../../../public/assets/logo-discord.png')"
+                                    width="25"
+                                    class="mr-2"
+                                />
+                                Invite THX Bot
+                            </b-button>
+                        </template>
+                    </b-form-group>
+                    <b-form-group label="Discord Webhook URL">
                         <b-form-input
                             :state="isValidDiscordWebhookUrl"
                             :value="discordWebhookUrl"
                             @change="onChangeDiscordWebhookUrl"
                         ></b-form-input>
+                        <small class="text-muted">
+                            Show campaign activity in one of your Discord channels using a
+                            <b-link
+                                href="https://discordjs.guide/popular-topics/webhooks.html#creating-webhooks"
+                                target="_blank"
+                            >
+                                Discord webhook
+                            </b-link>
+                        </small>
                     </b-form-group>
                     <b-form-group label="Campaign Events" description="" class="mb-0">
                         <div class="d-flex">
@@ -44,10 +76,7 @@
                         <i class="fab fa-twitter mr-2" />
                         <strong>Twitter</strong>
                     </div>
-                    <p class="text-muted">
-                        Detects new posts every 15min and automatically creates a Like &amp; Repost Quest for posts
-                        containing the given hashtag.
-                    </p>
+                    <p class="text-muted">Reduce campaign management with automated Twitter Quests</p>
                 </b-col>
                 <b-col md="8">
                     <b-alert show variant="warning" v-if="!pool.owner.twitterAccess && pool.owner.sub === profile.sub">
@@ -57,7 +86,7 @@
                         </b-link>
                         to enable Twitter quest automation.
                     </b-alert>
-                    <b-form-group>
+                    <b-form-group description="Searches for new posts in your connected account every 15 minutes">
                         <b-form-checkbox
                             v-model="isTwitterSyncEnabled"
                             :disabled="!isTwitterSyncEnabled && profile && !profile.twitterAccess"
@@ -73,7 +102,7 @@
                     <b-card body-class="bg-light">
                         <b-form-group
                             label="Hashtag filter"
-                            description="Will only create quests for posts containing the provided hashtag. Leave empty to create quests for all posts created by the account!"
+                            description="Leave empty to create quests for all posts created by the account"
                         >
                             <b-input-group prepend="#">
                                 <b-form-input
@@ -138,7 +167,8 @@ import { mapGetters } from 'vuex';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import type { TAccount } from '@thxnetwork/types/interfaces';
 import { AccessTokenKind, RewardConditionInteraction, TPoolSettings } from '@thxnetwork/types/index';
-import { BASE_URL, DISCORD_CLIENT_ID } from '@thxnetwork/dashboard/utils/secrets';
+import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
+import { DISCORD_BOT_INVITE_URL } from '@thxnetwork/dashboard/config/constants';
 import BaseCardURLWebhook from '@thxnetwork/dashboard/components/cards/BaseCardURLWebhook.vue';
 
 @Component({
@@ -157,9 +187,7 @@ export default class SettingsTwitterView extends Vue {
     isCopied = false;
     AccessTokenKind = AccessTokenKind;
     RewardConditionInteraction = RewardConditionInteraction;
-    urlDiscordBotInstall =
-        DISCORD_CLIENT_ID &&
-        `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&permissions=133120&scope=bot`;
+    discordBotInviteUrl = DISCORD_BOT_INVITE_URL;
     chainInfo = chainInfo;
     profile!: TAccount;
     pools!: IPools;

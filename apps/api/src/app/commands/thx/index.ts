@@ -1,1 +1,1 @@
-export * from './me';
+export * from './connect';

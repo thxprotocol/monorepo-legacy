@@ -9,11 +9,14 @@ import { DailyReward } from '@thxnetwork/api/models/DailyReward';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { Web3Quest } from '@thxnetwork/api/models/Web3Quest';
 import { Web3QuestClaim } from '@thxnetwork/api/models/Web3QuestClaim';
-import { TBaseReward } from '@thxnetwork/types/interfaces';
+import { TAccount, TBaseReward } from '@thxnetwork/types/interfaces';
 import AnalyticsService from '@thxnetwork/api/services/AnalyticsService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import DailyRewardClaimService, { ONE_DAY_MS } from '@thxnetwork/api/services/DailyRewardClaimService';
 import WalletService from '@thxnetwork/api/services/WalletService';
+import DiscordMessage from '@thxnetwork/api/models/DiscordMessage';
+import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
+import { AccessTokenKind, RewardConditionInteraction } from '@thxnetwork/common/lib/types';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
@@ -32,12 +35,13 @@ const controller = async (req: Request, res: Response) => {
     );
     const authHeader = req.header('authorization');
 
-    let wallet: WalletDocument, sub: string;
+    let wallet: WalletDocument, sub: string, account: TAccount;
     // This endpoint is public so we do not get req.auth populated and decode the token ourselves
     // when the request is made with an authorization header to obtain the sub.
     if (authHeader && authHeader.startsWith('Bearer ')) {
         const token: { sub: string } = jwt_decode(authHeader.split(' ')[1]);
         sub = token.sub;
+        account = await AccountProxy.getById(sub);
         wallet = await WalletService.findPrimary(sub, pool.chainId);
     }
 
@@ -117,13 +121,44 @@ const controller = async (req: Request, res: Response) => {
         }),
         social: await Promise.all(
             socialQuests.map(async (r) => {
-                const isClaimed = wallet
+                const defaults = getDefaults(r);
+                let isClaimed = wallet
                     ? await PointRewardClaim.exists({
                           $or: [{ walletId: wallet._id }, { sub }],
                           pointRewardId: String(r._id),
                       }) // TODO SHould move to service since its also used in the claim controller
                     : false;
-                const defaults = getDefaults(r);
+
+                // Discord Quest Details
+                let messages = [];
+                let amountAvailable = r.amount;
+
+                const startOfWeek = new Date();
+                startOfWeek.setUTCHours(0, 0, 0, 0);
+                startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+
+                const endOfWeek = new Date(startOfWeek);
+                endOfWeek.setDate(endOfWeek.getDate() + 7);
+
+                if (account && r.interaction === RewardConditionInteraction.DiscordMessage) {
+                    const contentMetadata = JSON.parse(r.contentMetadata);
+                    const connectedAccount = account.connectedAccounts.find(
+                        ({ kind }) => kind === AccessTokenKind.Discord,
+                    );
+
+                    if (connectedAccount) {
+                        messages = await DiscordMessage.find({
+                            guildId: r.content,
+                            memberId: connectedAccount.userId,
+                            createdAt: { $gt: startOfWeek, $lt: endOfWeek },
+                        });
+                    }
+                    isClaimed = false;
+                    amountAvailable = Math.ceil(
+                        messages.length * (r.amount / (contentMetadata.limit * contentMetadata.days)),
+                    );
+                }
+
                 return {
                     ...defaults,
                     amount: r.amount,
@@ -132,6 +167,10 @@ const controller = async (req: Request, res: Response) => {
                     interaction: r.interaction,
                     content: r.content,
                     contentMetadata: r.contentMetadata,
+                    amountAvailable,
+                    messages,
+                    startOfWeek,
+                    endOfWeek,
                 };
             }),
         ),

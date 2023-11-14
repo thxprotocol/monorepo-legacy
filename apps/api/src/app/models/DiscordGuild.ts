@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { TDiscordGuild } from '../types/TDiscordGuild';
+import { TDiscordGuild } from '@thxnetwork/types/interfaces';
 
 export type DiscordGuildDocument = mongoose.Document & TDiscordGuild;
 
@@ -8,6 +8,7 @@ const discordGuildSchema = new mongoose.Schema(
         sub: String,
         poolId: String,
         guildId: String,
+        name: String,
     },
     {
         timestamps: true,

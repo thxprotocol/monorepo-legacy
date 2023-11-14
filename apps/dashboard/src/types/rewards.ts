@@ -17,6 +17,10 @@ export function getInteractionComponent(interactionType: RewardConditionInteract
             return 'BaseDropdownTwitterMessage';
         case RewardConditionInteraction.DiscordGuildJoined:
             return 'BaseDropdownDiscordGuilds';
+        case RewardConditionInteraction.DiscordMessage:
+            return 'BaseDropdownDiscordMessage';
+        case RewardConditionInteraction.DiscordMessageReaction:
+            return 'BaseDropdownDiscordMessageReaction';
         default:
             return '';
     }
@@ -64,7 +68,11 @@ export const platformList: IChannel[] = [
         type: RewardConditionPlatform.Discord,
         name: 'Discord',
         logoURI: require('@thxnetwork/dashboard/../public/assets/logo-discord.png'),
-        actions: [RewardConditionInteraction.DiscordGuildJoined],
+        actions: [
+            RewardConditionInteraction.DiscordGuildJoined,
+            RewardConditionInteraction.DiscordMessage,
+            RewardConditionInteraction.DiscordMessageReaction,
+        ],
     },
 ];
 export const platformInteractionList = [
@@ -111,6 +119,16 @@ export const platformInteractionList = [
     {
         type: RewardConditionInteraction.DiscordGuildJoined,
         name: 'Server Joined',
+        items: [],
+    },
+    {
+        type: RewardConditionInteraction.DiscordMessage,
+        name: 'Message',
+        items: [],
+    },
+    {
+        type: RewardConditionInteraction.DiscordMessageReaction,
+        name: 'Message Reaction',
         items: [],
     },
 ];
