@@ -16,6 +16,9 @@ import WalletService from '@thxnetwork/api/services/WalletService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import PointRewardService from '@thxnetwork/api/services/PointRewardService';
 import DailyRewardService from '@thxnetwork/api/services/DailyRewardService';
+import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
+import { AccessTokenKind, RewardConditionInteraction } from '@thxnetwork/common/lib/types';
+import DiscordMessage from '@thxnetwork/api/models/DiscordMessage';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
@@ -28,13 +31,14 @@ const controller = async (req: Request, res: Response) => {
             { expiryDate: { $exists: false } }, // Include quests with no expiryDate
         ],
     };
+    const authHeader = req.header('authorization');
     const models = [ReferralReward, PointReward, MilestoneReward, DailyReward, Web3Quest];
     const [inviteQuests, socialQuests, customQuests, dailyQuests, web3Quests] = await Promise.all(
         models.map(async (model: any) => await model.find(query)),
     );
-    const authHeader = req.header('authorization');
 
     let wallet: WalletDocument, sub: string, account: TAccount;
+
     // This endpoint is public so we do not get req.auth populated and decode the token ourselves
     // when the request is made with an authorization header to obtain the sub.
     if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -104,8 +108,8 @@ const controller = async (req: Request, res: Response) => {
     const socialQuestPromises = socialQuests.map(async (r) => {
         const defaults = getDefaults(r);
         const isClaimed = wallet ? await PointRewardService.isCompleted(r, account, wallet) : false;
-        const pointsAvailable = await PointRewardService.getPointsAvailable(r, account);
         const restartDates = PointRewardService.getRestartDates(r);
+        const { messages, pointsAvailable } = await PointRewardService.getPointsAvailable(r, account);
 
         return {
             ...defaults,
@@ -117,6 +121,7 @@ const controller = async (req: Request, res: Response) => {
             pointsAvailable,
             isClaimed,
             restartDates,
+            messages,
         };
     });
     const web3QuestPromises = web3Quests.map(async (r) => {

@@ -24,8 +24,8 @@ const controller = async (req: Request, res: Response) => {
     if (failReason) return res.json({ error: failReason });
 
     const variant = questInteractionVariantMap[quest.interaction];
-    const pointsAvailable = await PointRewardService.getPointsAvailable(quest, account);
     const platformUserId = await PointRewardService.getPlatformUserId(quest, account);
+    const { pointsAvailable } = await PointRewardService.getPointsAvailable(quest, account);
     const entry = await QuestService.complete(variant, pointsAvailable, pool, quest, account, wallet, {
         pointRewardId: quest._id,
         platformUserId,

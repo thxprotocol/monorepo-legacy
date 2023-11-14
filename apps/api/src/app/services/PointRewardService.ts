@@ -127,20 +127,42 @@ export async function isValid(reward: TPointReward, account: TAccount): Promise<
 }
 
 async function getPointsAvailable(quest: TPointReward, account: TAccount) {
-    if (!account || quest.interaction !== RewardConditionInteraction.DiscordMessage) return quest.amount;
+    if (!account || quest.interaction !== RewardConditionInteraction.DiscordMessage)
+        return { pointsAvailable: quest.amount };
 
     const contentMetadata = JSON.parse(quest.contentMetadata);
     const connectedAccount = account.connectedAccounts.find(({ kind }) => kind === AccessTokenKind.Discord);
-    if (!connectedAccount) return 0;
+    if (!connectedAccount) return { pointsAvailable: 0 };
 
     const { start, end } = getRestartDates(quest);
+    const claim = await PointRewardClaim.findOne({
+        pointRewardId: String(quest._id),
+        platformUserId: connectedAccount.userId,
+        createdAt: {
+            $gte: start,
+            $lt: end,
+        },
+    }).sort({ createdAt: -1 });
+
+    // Only find messages created after the last claim if one exists
     const messages = await DiscordMessage.find({
         guildId: quest.content,
         memberId: connectedAccount.userId,
-        createdAt: { $gte: start, $lt: end },
+        createdAt: { $gte: claim ? claim.createdAt : start, $lt: end },
     });
 
-    return Math.ceil(messages.length * (quest.amount / (contentMetadata.limit * contentMetadata.days)));
+    const pointsAvailable = Math.ceil(
+        messages.length * (quest.amount / (contentMetadata.limit * contentMetadata.days)),
+    );
+    console.log(start, end);
+    return {
+        messages: await DiscordMessage.find({
+            guildId: quest.content,
+            memberId: connectedAccount.userId,
+            createdAt: { $gte: new Date(start).toISOString() },
+        }),
+        pointsAvailable,
+    };
 }
 
 function getRestartDates(quest: TPointReward) {
@@ -157,8 +179,10 @@ function getRestartDates(quest: TPointReward) {
     start.setUTCHours(0, 0, 0, 0);
 
     const end = new Date(start.getTime() + days * 24 * 60 * 60 * 1000);
+    const endDay = new Date(now);
+    endDay.setUTCHours(23, 59, 59, 999);
 
-    return { now, start, end };
+    return { now, start, endDay, end };
 }
 
 export const PointReward = PointRewardSchema;
