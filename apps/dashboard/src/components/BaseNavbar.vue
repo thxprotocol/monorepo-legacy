@@ -11,16 +11,16 @@
     >
         <b-navbar toggleable="lg" class="sidebar">
             <div class="flex-grow-1 w-100 h-25 overflow-auto d-flex justify-content-end flex-column">
-                <img
-                    v-if="selectedPool"
-                    class="mx-auto mt-3"
-                    style="max-height: 50px; max-width: 120px"
-                    :src="
-                        selectedPool.brand && selectedPool.brand.logoImgUrl
-                            ? selectedPool.brand.logoImgUrl
-                            : `https://api.dicebear.com/7.x/identicon/svg?seed=${selectedPool._id}`
-                    "
-                />
+                <b-link v-if="selectedPool" :to="`/pool/${selectedPool._id}/settings`" class="mx-auto mt-3">
+                    <img
+                        style="max-height: 50px; max-width: 120px"
+                        :src="
+                            selectedPool.brand && selectedPool.brand.logoImgUrl
+                                ? selectedPool.brand.logoImgUrl
+                                : `https://api.dicebear.com/7.x/identicon/svg?seed=${selectedPool._id}`
+                        "
+                    />
+                </b-link>
                 <b-dropdown
                     split
                     split-class="pr-2"
