@@ -9,6 +9,7 @@ import { CouponRewardDocument } from '@thxnetwork/api/models/CouponReward';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
 import ERC721PerkService from '@thxnetwork/api/services/ERC721PerkService';
 import QuestService from '@thxnetwork/api/services/QuestService';
+import { DiscordRoleRewardDocument } from '../models/DiscordRoleReward';
 
 export async function findRewardByUuid(uuid: string) {
     const erc20Perk = await ERC20Perk.findOne({ uuid });
@@ -30,6 +31,10 @@ export function isCustomReward(reward: PerkDocument): reward is CustomRewardDocu
 
 export function isCouponReward(reward: PerkDocument): reward is CouponRewardDocument {
     return (reward as CouponRewardDocument).webshopURL !== undefined;
+}
+
+export function isDiscordRoleReward(reward: PerkDocument): reward is DiscordRoleRewardDocument {
+    return (reward as DiscordRoleRewardDocument).discordRoleId !== undefined;
 }
 
 export function addMinutes(date: Date, minutes: number) {

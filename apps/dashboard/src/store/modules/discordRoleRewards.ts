@@ -42,7 +42,7 @@ class DiscordRoleRewardModule extends VuexModule {
     async list({ pool, page, limit }) {
         const { data } = await axios({
             method: 'GET',
-            url: '/coupon-rewards',
+            url: '/discord-role-rewards',
             headers: { 'X-PoolId': pool._id },
             params: {
                 page: String(page),

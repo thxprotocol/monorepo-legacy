@@ -9,17 +9,22 @@ import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import WalletService from '@thxnetwork/api/services/WalletService';
 import PerkService from '@thxnetwork/api/services/PerkService';
+import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { CustomReward } from '@thxnetwork/api/models/CustomReward';
 import { Wallet } from '@thxnetwork/api/models/Wallet';
 import { CustomRewardPayment } from '@thxnetwork/api/models/CustomRewardPayment';
 import { CouponReward } from '@thxnetwork/api/models/CouponReward';
 import { CouponRewardPayment } from '@thxnetwork/api/models/CouponRewardPayment';
 import { CouponCode } from '@thxnetwork/api/models/CouponCode';
+import { DiscordRoleReward } from '@thxnetwork/api/models/DiscordRoleReward';
+import { DiscordRoleRewardPayment } from '@thxnetwork/api/models/DiscordRoleRewardPayment';
+import { AccessTokenKind } from '@thxnetwork/types/enums';
+import { TAccount } from '@thxnetwork/types/interfaces';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Perks']
     const pool = await PoolService.getById(req.header('X-PoolId'));
-    const [erc20Perks, erc721Perks, customRewards, couponRewards] = await Promise.all([
+    const [erc20Perks, erc721Perks, customRewards, couponRewards, discordRoleRewards] = await Promise.all([
         ERC20Perk.find({
             poolId: String(pool._id),
             pointPrice: { $exists: true, $gt: 0 },
@@ -36,9 +41,13 @@ const controller = async (req: Request, res: Response) => {
             poolId: String(pool._id),
             $or: [{ pointPrice: { $exists: true, $gt: 0 } }, { price: { $exists: true, $gt: 0 } }],
         }),
+        DiscordRoleReward.find({
+            poolId: String(pool._id),
+            $or: [{ pointPrice: { $exists: true, $gt: 0 } }, { price: { $exists: true, $gt: 0 } }],
+        }),
     ]);
 
-    let wallet: WalletDocument, sub: string;
+    let wallet: WalletDocument, account: TAccount, sub: string;
 
     // This endpoint is public so we do not get req.auth populated and decode the token ourselves
     // when the request is made with an authorization header to obtain the sub.
@@ -46,7 +55,7 @@ const controller = async (req: Request, res: Response) => {
     if (authHeader && authHeader.startsWith('Bearer ')) {
         const token: { sub: string } = jwt_decode(authHeader.split(' ')[1]);
         sub = token.sub;
-
+        account = await AccountProxy.getById(sub);
         wallet = await WalletService.findPrimary(sub, pool.chainId);
     }
 
@@ -124,6 +133,19 @@ const controller = async (req: Request, res: Response) => {
                 const defaults = await getRewardDefaults(r, CouponRewardPayment);
 
                 return { ...defaults, isDisabled: isError, errorMessage, isOwned: false };
+            }),
+        ),
+        discordRole: await Promise.all(
+            discordRoleRewards.map(async (r) => {
+                const { isError, errorMessage } = await PerkService.validate({ perk: r, sub, pool });
+                console.log(isError, errorMessage);
+                const defaults = await getRewardDefaults(r, DiscordRoleRewardPayment);
+                console.log(defaults);
+                const connectedAccount =
+                    account && account.connectedAccounts.find(({ kind }) => kind === AccessTokenKind.Discord);
+                console.log(connectedAccount);
+
+                return { ...defaults, isDisabled: isError || !connectedAccount, errorMessage, isOwned: false };
             }),
         ),
     });

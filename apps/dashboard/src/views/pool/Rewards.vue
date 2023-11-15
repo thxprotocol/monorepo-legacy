@@ -44,7 +44,6 @@
                 :total-rows="totals[pool._id]"
                 :selectedItems="[]"
                 :actions="[]"
-                @click-action="onClickAction"
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
             />
@@ -156,6 +155,7 @@ import { hasPremiumAccess } from '@thxnetwork/common';
 import { type TCouponRewardState } from '@thxnetwork/dashboard/store/modules/couponRewards';
 import { type TCustomRewardState } from '@thxnetwork/dashboard/store/modules/rewards';
 import { format } from 'date-fns';
+import { TDiscordRoleRewardState } from '@thxnetwork/dashboard/store/modules/discordRoleRewards';
 
 export const contentRewards = {
     'coin-reward': {
@@ -258,6 +258,7 @@ export default class RewardsView extends Vue {
     nftRewards!: TERC721RewardState;
     customRewards!: TCustomRewardState;
     couponRewards!: TCouponRewardState;
+    discordRoleRewards!: TDiscordRoleRewardState;
 
     erc721s!: IERC721s;
 
@@ -278,6 +279,9 @@ export default class RewardsView extends Vue {
                 : []),
             ...(this.customRewards[this.$route.params.id]
                 ? Object.values(this.customRewards[this.$route.params.id])
+                : []),
+            ...(this.discordRoleRewards[this.$route.params.id]
+                ? Object.values(this.discordRoleRewards[this.$route.params.id])
                 : []),
         ];
     }
@@ -308,6 +312,7 @@ export default class RewardsView extends Vue {
             this.$store.dispatch('erc721Perks/list', { page: this.page, pool: this.pool, limit: this.limit }),
             this.$store.dispatch('rewards/list', { page: this.page, pool: this.pool, limit: this.limit }),
             this.$store.dispatch('couponRewards/list', { page: this.page, pool: this.pool, limit: this.limit }),
+            this.$store.dispatch('discordRoleRewards/list', { page: this.page, pool: this.pool, limit: this.limit }),
         ]);
         this.isLoading = false;
     }
@@ -336,16 +341,11 @@ export default class RewardsView extends Vue {
                 return this.$store.dispatch('rewards/delete', this.customRewards[this.pool._id][reward._id]);
             case RewardVariant.Coupon:
                 return this.$store.dispatch('couponRewards/delete', this.couponRewards[this.pool._id][reward._id]);
-        }
-    }
-
-    onClickAction(action: { variant: number; label: string }) {
-        switch (action.variant) {
-            case 0:
-                for (const id of Object.values(this.selectedItems)) {
-                    this.$store.dispatch('coinRewards/delete', this.coinRewards[this.pool._id][id]);
-                }
-                break;
+            case RewardVariant.DiscordRole:
+                return this.$store.dispatch(
+                    'discordRoleRewards/delete',
+                    this.discordRoleRewards[this.pool._id][reward._id],
+                );
         }
     }
 }

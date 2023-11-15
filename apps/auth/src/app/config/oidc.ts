@@ -128,6 +128,8 @@ const config: Configuration = {
         'custom_rewards:write',
         'coupon_rewards:read',
         'coupon_rewards:write',
+        'discord_role_rewards:read',
+        'discord_role_rewards:write',
         'erc20_rewards:read',
         'erc20_rewards:write',
         'erc721_rewards:read',

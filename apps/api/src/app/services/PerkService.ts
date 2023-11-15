@@ -13,14 +13,21 @@ import ERC721Service from './ERC721Service';
 import { ClaimDocument } from '../models/Claim';
 import { ERC20PerkPayment } from '../models/ERC20PerkPayment';
 import { ERC721PerkPayment } from '../models/ERC721PerkPayment';
-import { isCouponReward, isCustomReward, isTERC20Perk, isTERC721Perk } from '../util/rewards';
+import { isCouponReward, isCustomReward, isDiscordRoleReward, isTERC20Perk, isTERC721Perk } from '../util/rewards';
 import mongoose from 'mongoose';
 import { CustomRewardDocument } from '@thxnetwork/api/models/CustomReward';
 import { CustomRewardPayment } from '@thxnetwork/api/models/CustomRewardPayment';
 import { CouponRewardDocument } from '../models/CouponReward';
 import { CouponRewardPayment } from '../models/CouponRewardPayment';
+import { DiscordRoleRewardDocument } from '../models/DiscordRoleReward';
+import { DiscordRoleRewardPayment } from '../models/DiscordRoleRewardPayment';
 
-export type PerkDocument = ERC20PerkDocument | ERC721PerkDocument | CustomRewardDocument | CouponRewardDocument;
+export type PerkDocument =
+    | ERC20PerkDocument
+    | ERC721PerkDocument
+    | CustomRewardDocument
+    | CouponRewardDocument
+    | DiscordRoleRewardDocument;
 
 export async function verifyOwnership(
     { tokenGatingVariant, tokenGatingContractAddress, tokenGatingAmount }: PerkDocument,
@@ -116,6 +123,9 @@ export function getPaymentModel(perk: PerkDocument): mongoose.Model<any> {
     }
     if (isCouponReward(perk)) {
         return CouponRewardPayment;
+    }
+    if (isDiscordRoleReward(perk)) {
+        return DiscordRoleRewardPayment;
     }
 }
 
