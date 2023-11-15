@@ -3,6 +3,7 @@ export type TDiscordGuild = {
     poolId: string;
     guildId: string;
     name: string;
+    roles: TDiscordRole[];
 };
 
 export type TDiscordReaction = {
@@ -16,4 +17,11 @@ export type TDiscordMessage = {
     guildId: string;
     messageId: string;
     memberId: string;
+};
+
+export type TDiscordRole = {
+    id: string;
+    name: string;
+    color: string;
+    host: boolean;
 };

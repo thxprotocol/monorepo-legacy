@@ -15,6 +15,7 @@
                         <b-nav-item class="mx-3" to="/pools">Campaigns</b-nav-item>
                         <b-nav-item class="mx-3" to="/coins">Coins</b-nav-item>
                         <b-nav-item class="mx-3" to="/nft">NFT</b-nav-item>
+                        <b-nav-item class="mx-3" to="/qrcodes">QR Codes</b-nav-item>
                     </b-navbar-nav>
                     <b-navbar-nav class="ml-auto">
                         <b-nav-item class="mx-3" :href="docsUrl" target="_blank">

@@ -13,10 +13,12 @@
             <div class="px-3">
                 <b-form-group label="Variant">
                     <b-dropdown
-                        variant="white"
                         :text="tokenGatingVariantMap[variant]"
-                        class="bg-white dropdown-select"
                         v-model="variant"
+                        variant="light"
+                        toggle-class="form-control d-flex align-items-center justify-content-between"
+                        menu-class="w-100"
+                        class="w-100"
                     >
                         <b-dropdown-item-button v-for="(v, key) of options" :key="key" @click="onClickVariant(v)">
                             {{ tokenGatingVariantMap[v] }}

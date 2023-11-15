@@ -148,6 +148,7 @@ import BaseModalRewardERC20Create from '@thxnetwork/dashboard/components/modals/
 import BaseModalRewardERC721Create from '@thxnetwork/dashboard/components/modals/BaseModalRewardERC721Create.vue';
 import BaseModalRewardCustomCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardCustomCreate.vue';
 import BaseModalRewardCouponCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardCouponCreate.vue';
+import BaseModalRewardDiscordRoleCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardDiscordRoleCreate.vue';
 import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/badges/BaseBadgeRewardConditionPreview.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseModalRewardClaimsDownload from '@thxnetwork/dashboard/components/modals/BaseModalRewardClaimsDownload.vue';
@@ -184,6 +185,16 @@ export const contentRewards = {
         icon: 'fas fa-cogs', // Suggested icon for customization or settings
         color: '#808080', // Suggested color for customization (Gray)
     },
+    'discord-role-reward': {
+        tag: 'Discord Role Reward',
+        title: 'Exclusive Discord Roles',
+        description:
+            'Grant users the ability to redeem points for exclusive Discord roles within your community server.',
+        list: ['Promote community status', 'Encourage active participation', 'Facilitate social interaction'],
+        docsUrl: 'https://docs.thx.network/rewards/discord-role',
+        icon: 'fab fa-discord', // Suggested icon for shield or protection
+        color: '#7289DA', // Suggested color for Discord roles (Discord Blue)
+    },
     'qr-codes': {
         tag: 'QR Codes',
         title: 'Offline Reward Distribution',
@@ -201,6 +212,7 @@ export const contentRewards = {
         BaseModalRewardERC721Create,
         BaseModalRewardCustomCreate,
         BaseModalRewardCouponCreate,
+        BaseModalRewardDiscordRoleCreate,
         BaseBadgeRewardConditionPreview,
         BaseCardTableHeader,
         BaseModalRewardClaimsDownload,
@@ -212,6 +224,7 @@ export const contentRewards = {
         nftRewards: 'erc721Perks/all',
         customRewards: 'rewards/all',
         couponRewards: 'couponRewards/all',
+        discordRoleRewards: 'discordRoleRewards/all',
     }),
 })
 export default class RewardsView extends Vue {
@@ -228,12 +241,14 @@ export default class RewardsView extends Vue {
         [RewardVariant.NFT]: 'BaseModalRewardERC721Create',
         [RewardVariant.Custom]: 'BaseModalRewardCustomCreate',
         [RewardVariant.Coupon]: 'BaseModalRewardCouponCreate',
+        [RewardVariant.DiscordRole]: 'BaseModalRewardDiscordRoleCreate',
     };
     rewardIconClassMap = {
         [RewardVariant.Coin]: 'fas fa-coins',
         [RewardVariant.NFT]: 'fas fa-palette',
         [RewardVariant.Custom]: 'fas fa-gift',
         [RewardVariant.Coupon]: 'fas fa-tags',
+        [RewardVariant.DiscordRole]: 'fab fa-discord',
     };
 
     pools!: IPools;

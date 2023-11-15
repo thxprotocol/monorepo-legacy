@@ -22,6 +22,7 @@ import DailyRewardStore from './modules/dailyRewards';
 import MerchantStore from './modules/merchants';
 import RewardsStore from './modules/rewards';
 import CouponRewardsStore from './modules/couponRewards';
+import DiscordRoleRewardsStore from './modules/discordRoleRewards';
 
 Vue.use(Vuex);
 
@@ -37,6 +38,7 @@ const modules = {
     erc20Perks: ERC20PerksStore,
     rewards: RewardsStore,
     couponRewards: CouponRewardsStore,
+    discordRoleRewards: DiscordRoleRewardsStore,
     erc721: ERC721Store,
     erc1155: ERC1155Store,
     erc721Perks: ERC721PerksStore,

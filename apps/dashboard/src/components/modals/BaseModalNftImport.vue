@@ -2,7 +2,7 @@
     <base-modal :loading="loading" title="Import NFT Collection" id="modalNftImport">
         <template #modal-body v-if="!loading" title="Campaign">
             <b-card bg-variant="light" class="mb-3">
-                <p class="text-muted">Select your loyalty campaign contract.</p>
+                <p class="text-muted">Select a campaign that should distribute your NFT rewards.</p>
                 <BaseFormSelectNetwork @selected="onChangeNetwork" />
                 <base-dropdown-select-pool class="ml-auto" :chainId="chainId" @selected="onChangePool" />
             </b-card>
@@ -18,7 +18,12 @@
             <b-card bg-variant="light">
                 <p class="text-muted">Provide details about your NFT collection.</p>
                 <b-form-group label="NFT Standard">
-                    <b-dropdown variant="link" class="dropdown-select bg-white">
+                    <b-dropdown
+                        variant="light"
+                        toggle-class="form-control d-flex align-items-center justify-content-between"
+                        menu-class="w-100"
+                        class="w-100"
+                    >
                         <template #button-content>
                             <strong>{{ variant.toUpperCase() }}</strong>
                         </template>

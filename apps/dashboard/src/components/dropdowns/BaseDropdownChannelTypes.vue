@@ -1,5 +1,10 @@
 <template>
-    <b-dropdown variant="link" class="dropdown-select bg-white">
+    <b-dropdown
+        variant="light"
+        toggle-class="form-control d-flex align-items-center justify-content-between"
+        menu-class="w-100"
+        class="w-100"
+    >
         <template #button-content>
             <template v-if="platform">
                 <div class="d-flex align-items-center justify-content-start">

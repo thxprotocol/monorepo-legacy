@@ -35,3 +35,4 @@ export * from './CouponReward';
 export * from './Notification';
 export * from './Quest';
 export * from './DiscordBot';
+export * from './DiscordRoleReward';

@@ -1,10 +1,5 @@
 <template>
-    <b-form-select
-        :value="action"
-        class="dropdown-select bg-white"
-        @change="$emit('selected', $event)"
-        :disabled="disabled"
-    >
+    <b-form-select :value="action" @change="$emit('selected', $event)" :disabled="disabled">
         <b-form-select-option :value="a" :key="key" v-for="(a, key) of actions">{{ a.name }}</b-form-select-option>
     </b-form-select>
 </template>

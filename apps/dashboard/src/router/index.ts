@@ -126,6 +126,12 @@ const routes: Array<RouteConfig> = [
         beforeEnter: assertAuthorization,
     },
     {
+        name: 'qrcodes',
+        path: '/qrcodes',
+        component: () => import('../views/QRCodes.vue'),
+        beforeEnter: assertAuthorization,
+    },
+    {
         name: 'metadata',
         path: '/nft/:variant/:nftId',
         redirect: '/nft/:variant/:nftId/metadata',
