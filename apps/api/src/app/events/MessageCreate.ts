@@ -44,11 +44,12 @@ const onMessageCreate = async (message: Message) => {
 
         // Only track messages if daily limit has not been surpassed
         if (dailyMessageCount > dailyMessageLimit) return;
-        await DiscordMessage.create({
+        const payload = {
             messageId: message.id,
             guildId: message.guild.id,
             memberId: message.author.id,
-        });
+        };
+        await DiscordMessage.findOneAndUpdate(payload, payload, { upsert: true });
     } catch (error) {
         logger.error(error);
     }

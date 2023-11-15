@@ -130,12 +130,12 @@ async function getPointsAvailable(quest: TPointReward, account: TAccount) {
     if (!account || quest.interaction !== RewardConditionInteraction.DiscordMessage)
         return { pointsAvailable: quest.amount };
 
-    const contentMetadata = JSON.parse(quest.contentMetadata);
     const connectedAccount = account.connectedAccounts.find(({ kind }) => kind === AccessTokenKind.Discord);
-    if (!connectedAccount) return { pointsAvailable: 0 };
+    if (!connectedAccount) return { pointsAvailable: 0, pointsClaimed: 0 };
 
+    const { days, limit } = JSON.parse(quest.contentMetadata);
     const { start, end } = getRestartDates(quest);
-    const claim = await PointRewardClaim.findOne({
+    const claims = await PointRewardClaim.find({
         pointRewardId: String(quest._id),
         platformUserId: connectedAccount.userId,
         createdAt: {
@@ -143,6 +143,8 @@ async function getPointsAvailable(quest: TPointReward, account: TAccount) {
             $lt: end,
         },
     }).sort({ createdAt: -1 });
+    const [claim] = claims;
+    const pointsClaimed = claims.reduce((total, claim) => total + Number(claim.amount), 0);
 
     // Only find messages created after the last claim if one exists
     const messages = await DiscordMessage.find({
@@ -151,16 +153,16 @@ async function getPointsAvailable(quest: TPointReward, account: TAccount) {
         createdAt: { $gte: claim ? claim.createdAt : start, $lt: end },
     });
 
-    const pointsAvailable = Math.ceil(
-        messages.length * (quest.amount / (contentMetadata.limit * contentMetadata.days)),
-    );
-    console.log(start, end);
+    const pointsAvailable = messages.length * quest.amount;
+
     return {
         messages: await DiscordMessage.find({
             guildId: quest.content,
             memberId: connectedAccount.userId,
             createdAt: { $gte: new Date(start).toISOString() },
         }),
+        amount: days * limit * quest.amount,
+        pointsClaimed,
         pointsAvailable,
     };
 }

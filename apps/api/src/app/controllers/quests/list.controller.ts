@@ -16,9 +16,6 @@ import WalletService from '@thxnetwork/api/services/WalletService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import PointRewardService from '@thxnetwork/api/services/PointRewardService';
 import DailyRewardService from '@thxnetwork/api/services/DailyRewardService';
-import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
-import { AccessTokenKind, RewardConditionInteraction } from '@thxnetwork/common/lib/types';
-import DiscordMessage from '@thxnetwork/api/models/DiscordMessage';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
@@ -109,16 +106,20 @@ const controller = async (req: Request, res: Response) => {
         const defaults = getDefaults(r);
         const isClaimed = wallet ? await PointRewardService.isCompleted(r, account, wallet) : false;
         const restartDates = PointRewardService.getRestartDates(r);
-        const { messages, pointsAvailable } = await PointRewardService.getPointsAvailable(r, account);
+        const { messages, pointsAvailable, pointsClaimed, amount } = await PointRewardService.getPointsAvailable(
+            r,
+            account,
+        );
 
         return {
             ...defaults,
-            amount: r.amount,
+            amount: amount || r.amount,
             platform: r.platform,
             interaction: r.interaction,
             content: r.content,
             contentMetadata: r.contentMetadata,
             pointsAvailable,
+            pointsClaimed,
             isClaimed,
             restartDates,
             messages,
