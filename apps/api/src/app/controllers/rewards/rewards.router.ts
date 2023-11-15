@@ -6,6 +6,7 @@ import CreateNFTRewardPayment from './nft/payment/post.controller';
 import CreateNFTRewardRedemption from './nft/redemption/post.controller';
 import CreateRewardCustomRedemption from './custom/redemption/post.controller';
 import CreateRewardCouponRedemption from './coupon/redemption/post.controller';
+import CreateRewardDiscordRoleRedemption from './discord-role/redemption/post.controller';
 
 const router = express.Router();
 
@@ -50,6 +51,14 @@ router
         '/coupon/:uuid/redemption',
         assertRequestInput(CreateRewardCouponRedemption.validation),
         CreateRewardCouponRedemption.controller,
+    );
+router
+    .use(checkJwt)
+    .use(corsHandler)
+    .post(
+        '/discord-role/:uuid/redemption',
+        assertRequestInput(CreateRewardDiscordRoleRedemption.validation),
+        CreateRewardDiscordRoleRedemption.controller,
     );
 
 export default router;

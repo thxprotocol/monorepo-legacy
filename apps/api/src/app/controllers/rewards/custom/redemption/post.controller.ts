@@ -17,7 +17,7 @@ import { CustomRewardPayment } from '@thxnetwork/api/models/CustomRewardPayment'
 const validation = [param('uuid').exists()];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Perks Payment']
+    // #swagger.tags = ['Reward Payment']
 
     const pool = await PoolService.getById(req.header('X-PoolId'));
     const widget = await Widget.findOne({ poolId: pool._id });

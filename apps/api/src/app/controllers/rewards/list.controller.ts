@@ -138,14 +138,11 @@ const controller = async (req: Request, res: Response) => {
         discordRole: await Promise.all(
             discordRoleRewards.map(async (r) => {
                 const { isError, errorMessage } = await PerkService.validate({ perk: r, sub, pool });
-                console.log(isError, errorMessage);
                 const defaults = await getRewardDefaults(r, DiscordRoleRewardPayment);
-                console.log(defaults);
                 const connectedAccount =
                     account && account.connectedAccounts.find(({ kind }) => kind === AccessTokenKind.Discord);
-                console.log(connectedAccount);
 
-                return { ...defaults, isDisabled: isError || !connectedAccount, errorMessage, isOwned: false };
+                return { ...defaults, isDisabled: !connectedAccount || isError, errorMessage, isOwned: false };
             }),
         ),
     });
