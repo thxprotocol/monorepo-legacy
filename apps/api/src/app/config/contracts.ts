@@ -15,7 +15,7 @@ import {
     TNetworkName,
     TokenContractName,
 } from '@thxnetwork/contracts/exports';
-import { HARDHAT_NAME, POLYGON_NAME } from '@thxnetwork/dashboard/config/secrets';
+import { HARDHAT_NAME, POLYGON_NAME } from '@thxnetwork/api/config/secrets';
 import { ContractNetworksConfig } from '@safe-global/protocol-kit';
 import { SafeVersion } from '@safe-global/safe-core-sdk-types';
 

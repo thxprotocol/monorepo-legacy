@@ -1,7 +1,7 @@
 import swaggerAutogen from 'swagger-autogen';
 import m2s from 'mongoose-to-swagger';
 import { version } from '../../../../../package.json';
-import { NODE_ENV } from '@thxnetwork/dashboard/config/secrets';
+import { NODE_ENV } from '@thxnetwork/api/config/secrets';
 import ERC20 from '@thxnetwork/api/models/ERC20';
 import Brand from '@thxnetwork/api/models/Brand';
 import { ERC721 } from '@thxnetwork/api/models/ERC721';
@@ -11,7 +11,7 @@ import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
 import { Withdrawal } from '@thxnetwork/api/models/Withdrawal';
 import { AssetPool } from '@thxnetwork/api/models/AssetPool';
-import { Wallet } from '@thxnetwork/api//models/Wallet';
+import { Wallet } from '@thxnetwork/api/models/Wallet';
 import { Claim } from '@thxnetwork/api/models/Claim';
 import { Client } from '@thxnetwork/api/models/Client';
 
