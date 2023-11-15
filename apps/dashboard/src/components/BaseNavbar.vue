@@ -201,7 +201,7 @@ import { mapGetters } from 'vuex';
 import BaseNavbarNav from './BaseNavbarNav.vue';
 import { TAccount, TPool } from '@thxnetwork/types/interfaces';
 import { AccountPlanType } from '@thxnetwork/types/enums';
-import { BASE_URL } from '../utils/secrets';
+import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
 import { hasBasicAccess } from '@thxnetwork/common';
 
 @Component({

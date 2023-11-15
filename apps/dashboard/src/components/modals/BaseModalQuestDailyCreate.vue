@@ -68,7 +68,7 @@
 import type { TDailyReward, TInfoLink, TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { API_URL } from '@thxnetwork/dashboard/utils/secrets';
+import { API_URL } from '@thxnetwork/dashboard/config/secrets';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
 import BaseCardURLWebhook from '@thxnetwork/dashboard/components/cards/BaseCardURLWebhook.vue';

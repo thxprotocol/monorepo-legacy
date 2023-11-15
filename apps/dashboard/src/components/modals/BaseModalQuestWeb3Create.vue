@@ -75,7 +75,7 @@ import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import { isAddress } from 'web3-utils';
 import { ChainId } from '@thxnetwork/types/enums';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
-import { NODE_ENV } from '@thxnetwork/dashboard/utils/secrets';
+import { NODE_ENV } from '@thxnetwork/dashboard/config/secrets';
 import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
 import BaseModalQuestCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestCreate.vue';
 

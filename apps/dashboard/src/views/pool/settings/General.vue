@@ -259,7 +259,7 @@ import BaseListItemCollaborator from '@thxnetwork/dashboard/components/list-item
 import BaseModalPoolTransfer from '@thxnetwork/dashboard/components/modals/BaseModalPoolTransfer.vue';
 import BaseCampaignDuration, { parseDateTime } from '@thxnetwork/dashboard/components/cards/BaseCampaignDuration.vue';
 import slugify from '@thxnetwork/dashboard/utils/slugify';
-import { WIDGET_URL } from '@thxnetwork/dashboard/utils/secrets';
+import { WIDGET_URL } from '@thxnetwork/dashboard/config/secrets';
 
 @Component({
     components: {

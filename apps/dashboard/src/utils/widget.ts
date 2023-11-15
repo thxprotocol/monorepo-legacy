@@ -1,4 +1,4 @@
-import { PKG_ENV } from './secrets';
+import { PKG_ENV } from '@thxnetwork/dashboard/config/secrets';
 import { THXWidget } from '@thxnetwork/sdk/client/index';
 
 export function initWidget(poolId: string) {

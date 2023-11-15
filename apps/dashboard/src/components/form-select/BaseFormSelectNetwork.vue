@@ -27,7 +27,7 @@
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import type { TAccount } from '@thxnetwork/types/interfaces';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
-import { PUBLIC_URL } from '@thxnetwork/dashboard/utils/secrets';
+import { PUBLIC_URL } from '@thxnetwork/dashboard/config/secrets';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 

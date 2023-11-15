@@ -141,7 +141,7 @@ import type { Reward } from '@thxnetwork/dashboard/types/rewards';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import BaseCard from '../cards/BaseCard.vue';
 import VueQr from 'vue-qr';
-import { BASE_URL, WALLET_URL } from '@thxnetwork/dashboard/utils/secrets';
+import { BASE_URL, WALLET_URL } from '@thxnetwork/dashboard/config/secrets';
 import { mapGetters } from 'vuex';
 import type { TBrandState } from '@thxnetwork/dashboard/store/modules/brands';
 import type { TERC721, TERC721Metadata } from '@thxnetwork/dashboard/types/erc721';

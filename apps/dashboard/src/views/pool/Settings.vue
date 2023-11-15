@@ -39,7 +39,7 @@ import { mapGetters } from 'vuex';
 import BaseTabSettingsGeneral from '@thxnetwork/dashboard/views/pool/settings/General.vue';
 import BaseTabSettingsCommerce from '@thxnetwork/dashboard/views/pool/settings/Commerce.vue';
 import BaseTabSettingsWidget from '@thxnetwork/dashboard/views/pool/settings/Widget.vue';
-import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
+import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { TAccount } from '@thxnetwork/types/interfaces';
 import { hasBasicAccess } from '@thxnetwork/common';

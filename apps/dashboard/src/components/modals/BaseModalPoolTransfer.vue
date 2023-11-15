@@ -66,7 +66,7 @@
 
 <script lang="ts">
 import { TPool, TPoolTransferResponse } from '@thxnetwork/types/index';
-import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
+import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { format } from 'date-fns';
 import { mapGetters } from 'vuex';

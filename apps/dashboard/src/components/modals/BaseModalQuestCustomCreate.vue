@@ -54,7 +54,7 @@ import { TInfoLink, type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { type TMilestoneReward } from '@thxnetwork/types/index';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
-import { API_URL } from '@thxnetwork/dashboard/utils/secrets';
+import { API_URL } from '@thxnetwork/dashboard/config/secrets';
 import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
 import BaseModalQuestCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestCreate.vue';
 import BaseCardURLWebhook from '@thxnetwork/dashboard/components/cards/BaseCardURLWebhook.vue';

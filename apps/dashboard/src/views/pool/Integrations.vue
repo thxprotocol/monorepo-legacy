@@ -167,7 +167,7 @@ import { mapGetters } from 'vuex';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import type { TAccount } from '@thxnetwork/types/interfaces';
 import { AccessTokenKind, RewardConditionInteraction, TPoolSettings } from '@thxnetwork/types/index';
-import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
+import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
 import { DISCORD_BOT_INVITE_URL } from '@thxnetwork/dashboard/config/constants';
 import BaseCardURLWebhook from '@thxnetwork/dashboard/components/cards/BaseCardURLWebhook.vue';
 

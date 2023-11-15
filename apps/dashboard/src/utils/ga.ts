@@ -1,4 +1,4 @@
-import { GTM } from './secrets';
+import { GTM } from '@thxnetwork/dashboard/config/secrets';
 
 export const initGTM = () =>
     (function (w: any, d, s, l: any, i) {

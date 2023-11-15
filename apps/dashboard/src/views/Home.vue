@@ -180,7 +180,7 @@ import BaseModalRequestAccountEmailUpdate from '@thxnetwork/dashboard/components
 import BaseCardHome from '@thxnetwork/dashboard/components/cards/BaseCardHome.vue';
 import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
 import { IPools } from '../store/modules/pools';
-import { NODE_ENV } from '../utils/secrets';
+import { NODE_ENV } from '@thxnetwork/dashboard/config/secrets';
 import { ChainId, QuestVariant } from '@thxnetwork/types/enums';
 import { contentQuests } from './pool/Quests.vue';
 import { contentRewards } from './pool/Rewards.vue';

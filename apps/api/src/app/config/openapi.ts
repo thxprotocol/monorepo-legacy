@@ -1,7 +1,7 @@
 import swaggerAutogen from 'swagger-autogen';
 import m2s from 'mongoose-to-swagger';
 import { version } from '../../../../../package.json';
-import { NODE_ENV } from './secrets';
+import { NODE_ENV } from '@thxnetwork/dashboard/config/secrets';
 import ERC20 from '@thxnetwork/api/models/ERC20';
 import Brand from '@thxnetwork/api/models/Brand';
 import { ERC721 } from '@thxnetwork/api/models/ERC721';

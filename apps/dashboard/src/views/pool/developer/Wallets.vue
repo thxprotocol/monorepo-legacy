@@ -70,7 +70,7 @@
 import { mapGetters } from 'vuex';
 import { Component, Vue } from 'vue-property-decorator';
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
-import { API_URL } from '@thxnetwork/dashboard/utils/secrets';
+import { API_URL } from '@thxnetwork/dashboard/config/secrets';
 import { format } from 'date-fns';
 import BaseCardURLWebhook from '@thxnetwork/dashboard/components/cards/BaseCardURLWebhook.vue';
 import hljs from 'highlight.js/lib/core';

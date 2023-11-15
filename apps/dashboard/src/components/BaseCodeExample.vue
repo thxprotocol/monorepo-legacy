@@ -11,7 +11,7 @@
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { API_URL } from '@thxnetwork/dashboard/utils/secrets';
+import { API_URL } from '@thxnetwork/dashboard/config/secrets';
 import { mapGetters } from 'vuex';
 import type { TPool } from '@thxnetwork/types/interfaces';
 import hljs from 'highlight.js/lib/core';

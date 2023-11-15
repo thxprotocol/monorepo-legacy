@@ -334,7 +334,7 @@ import { IWidgets } from '@thxnetwork/dashboard/store/modules/widgets';
 import BaseWidgetAlertPreview from '@thxnetwork/dashboard/components/widget/BaseWidgetAlertPreview.vue';
 import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
 import Color from 'color';
-import { AUTH_URL, BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
+import { AUTH_URL, BASE_URL } from '@thxnetwork/dashboard/config/secrets';
 import { DEFAULT_ELEMENTS, DEFAULT_COLORS } from '@thxnetwork/types/contants';
 
 @Component({

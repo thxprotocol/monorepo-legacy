@@ -50,7 +50,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { initGTM } from '@thxnetwork/dashboard/utils/ga';
-import { GTM, DOCS_URL } from '@thxnetwork/dashboard/utils/secrets';
+import { GTM, DOCS_URL } from '@thxnetwork/dashboard/config/secrets';
 import type { TAccount } from '@thxnetwork/types/interfaces';
 import BaseDropdownAccount from './components/dropdowns/BaseDropdownAccount.vue';
 import BaseNavbar from './components/BaseNavbar.vue';

@@ -4,7 +4,7 @@ import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { SigninRedirectArgs, User, UserManager } from 'oidc-client-ts';
 import { config } from '@thxnetwork/dashboard/utils/oidc';
-import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
+import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
 import Mixpanel, { track } from '@thxnetwork/mixpanel';
 
 @Module({ namespaced: true })

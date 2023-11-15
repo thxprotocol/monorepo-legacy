@@ -110,7 +110,7 @@ import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCard
 import BaseModalRewardERC721Create from '@thxnetwork/dashboard/components/modals/BaseModalRewardERC721Create.vue';
 import { IERC1155Metadatas, IERC1155s } from '@thxnetwork/dashboard/types/erc1155';
 import { NFTVariant } from '@thxnetwork/types/enums';
-import { API_URL } from '@thxnetwork/dashboard/utils/secrets';
+import { API_URL } from '@thxnetwork/dashboard/config/secrets';
 
 @Component({
     components: {

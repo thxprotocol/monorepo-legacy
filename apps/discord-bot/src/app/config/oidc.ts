@@ -1,4 +1,4 @@
-import { API_URL, AUTH_URL, OIDC_CLIENT_ID, OIDC_CLIENT_SECRET } from './secrets';
+import { API_URL, AUTH_URL, OIDC_CLIENT_ID, OIDC_CLIENT_SECRET } from '@thxnetwork/dashboard/config/secrets';
 import { THXClient, THXOIDCClient } from '@thxnetwork/sdk/client';
 
 const thxOIDCClient = new THXOIDCClient({

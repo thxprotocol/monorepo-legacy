@@ -11,7 +11,7 @@ import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import { track } from '@thxnetwork/mixpanel';
-import { BASE_URL } from '@thxnetwork/dashboard/utils/secrets';
+import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
 import { QuestVariant } from '@thxnetwork/common/lib/types';
 
 export interface IPoolAnalytic {

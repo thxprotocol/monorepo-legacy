@@ -72,7 +72,7 @@ import { mapGetters } from 'vuex';
 import { UserProfile } from 'oidc-client-ts';
 import { TInfoLink, type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { API_URL } from '../../../../dashboard/src/utils/secrets';
+import { API_URL } from '@thxnetwork/dashboard/config/secrets';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
