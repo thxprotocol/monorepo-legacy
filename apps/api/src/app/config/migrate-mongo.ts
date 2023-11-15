@@ -1,5 +1,5 @@
 import path from 'path';
-import { MONGODB_URI } from '@thxnetwork/dashboard/config/secrets';
+import { MONGODB_URI } from '@thxnetwork/api/config/secrets';
 
 export default {
     migrationFileExtension: '.js',

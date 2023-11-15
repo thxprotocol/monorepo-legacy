@@ -23,7 +23,6 @@
             "@thxnetwork/common*": ["libs/common/src*"],
             "@thxnetwork/contracts*": ["libs/contracts*"],
             "@thxnetwork/dashboard*": ["apps/dashboard/src*"],
-            "@thxnetwork/discord*": ["apps/discord-bot/src/app*"],
             "@thxnetwork/mixpanel": ["libs/common/src/lib/mixpanel.ts"],
             "@thxnetwork/public*": ["apps/public/src*"],
             "@thxnetwork/scss*": ["libs/common/src/lib/scss*"],

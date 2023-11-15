@@ -18,7 +18,7 @@
             "inputs": ["production", "^production"]
         }
     },
-    "defaultProject": "discord-bot",
+    "defaultProject": "api",
     "namedInputs": {
         "default": ["{projectRoot}/**/*", "sharedGlobals"],
         "sharedGlobals": [],
