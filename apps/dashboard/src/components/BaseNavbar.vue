@@ -11,34 +11,33 @@
     >
         <b-navbar toggleable="lg" class="sidebar">
             <div class="flex-grow-1 w-100 h-25 overflow-auto d-flex justify-content-end flex-column">
+                <b-link v-if="selectedPool" :to="`/pool/${selectedPool._id}/settings`" class="mx-auto mt-3">
+                    <img
+                        style="max-height: 50px; max-width: 120px"
+                        :src="
+                            selectedPool.brand && selectedPool.brand.logoImgUrl
+                                ? selectedPool.brand.logoImgUrl
+                                : `https://api.dicebear.com/7.x/identicon/svg?seed=${selectedPool._id}`
+                        "
+                    />
+                </b-link>
                 <b-dropdown
                     split
-                    @click="onClickPreview"
                     split-class="pr-2"
                     size="sm"
                     variant="light"
                     right
                     class="my-3 d-flex btn-toggle-campaign"
+                    @click="onClickPreview"
                 >
                     <template #button-content>
-                        <div class="d-flex">
+                        <div class="d-flex" v-b-tooltip.top.hover title="Preview campaign">
                             <template v-if="selectedPool">
-                                <div class="split-button-icon">
-                                    <img
-                                        width="18"
-                                        class="bg-white"
-                                        :src="
-                                            selectedPool.brand && selectedPool.brand.logoImgUrl
-                                                ? selectedPool.brand.logoImgUrl
-                                                : `https://api.dicebear.com/7.x/identicon/svg?seed=${selectedPool._id}`
-                                        "
-                                    />
-                                </div>
-                                <div class="truncate-pool-title text-muted flex-shrink-1">
+                                <div class="truncate-pool-title text-muted flex-grow-1 pl-2">
                                     {{ selectedPool.settings.title }}
                                 </div>
-                                <div class="flex-grow-1" v-b-tooltip.top.hover title="Preview campaign">
-                                    <i class="fas fa-search text-muted" />
+                                <div class="flex-grow-0">
+                                    <i class="fas fa-external-link-alt text-muted" />
                                 </div>
                             </template>
                             <b-spinner v-else variant="primary" small />
@@ -62,7 +61,6 @@
                         </b-dropdown-item-btn>
                     </div>
                 </b-dropdown>
-                <hr class="mt-2" />
                 <template v-if="selectedPool">
                     <b-navbar-nav class="py-0">
                         <b-nav-item

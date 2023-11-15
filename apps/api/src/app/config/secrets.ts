@@ -107,3 +107,5 @@ export const IPFS_BASE_URL = 'https://ipfs.io/ipfs/';
 export const WEBHOOK_REFERRAL = process.env.WEBHOOK_REFERRAL;
 export const WEBHOOK_MILESTONE = process.env.WEBHOOK_MILESTONE;
 export const SAFE_TXS_SERVICE = process.env.SAFE_TXS_SERVICE || 'https://safe-transaction-polygon.safe.global';
+export const BOT_TOKEN = process.env.BOT_TOKEN;
+export const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;

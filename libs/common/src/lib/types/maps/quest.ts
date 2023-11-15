@@ -9,4 +9,6 @@ export const questInteractionVariantMap = {
     [RewardConditionInteraction.YouTubeLike]: QuestVariant.YouTube,
     [RewardConditionInteraction.YouTubeSubscribe]: QuestVariant.YouTube,
     [RewardConditionInteraction.DiscordGuildJoined]: QuestVariant.Discord,
+    [RewardConditionInteraction.DiscordMessage]: QuestVariant.Discord,
+    [RewardConditionInteraction.DiscordMessageReaction]: QuestVariant.Discord,
 };

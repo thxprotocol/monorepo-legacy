@@ -1,7 +1,7 @@
 import { TPointReward } from './PointReward';
 import { Contract } from 'web3-eth-contract';
 import { ChainId } from '../enums';
-import { TCollaborator, TAccount, TBrand, TWallet } from '@thxnetwork/types/interfaces';
+import { TDiscordGuild, TCollaborator, TAccount, TBrand, TWallet } from '@thxnetwork/types/interfaces';
 
 export enum AccountVariant {
     EmailPassword = 0,
@@ -33,6 +33,7 @@ export type TCampaign = {
 
 export type TPool = {
     _id: string;
+    guilds: TDiscordGuild[];
     rank: number;
     token: string;
     signingSecret: string;

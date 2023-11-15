@@ -3,6 +3,7 @@ import http from 'http';
 import https from 'https';
 import httpProxy from 'http-proxy';
 import app from './app';
+import discordBot from './discord';
 import db from './app/util/database';
 import { createTerminus } from '@godaddy/terminus';
 import { healthCheck } from './app/util/healthcheck';
@@ -66,3 +67,5 @@ logger.info({
 });
 
 server.listen(app.get('port'));
+
+discordBot();

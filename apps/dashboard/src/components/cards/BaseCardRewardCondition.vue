@@ -71,11 +71,15 @@ import BaseDropdownYoutubeVideo from '../dropdowns/BaseDropdownYoutubeVideo.vue'
 import BaseDropdownTwitterTweets from '../dropdowns/BaseDropdownTwitterTweets.vue';
 import BaseDropdownTwitterUsers from '../dropdowns/BaseDropdownTwitterUsers.vue';
 import BaseDropdownDiscordGuilds from '../dropdowns/BaseDropdownDiscordGuilds.vue';
+import BaseDropdownDiscordMessage from '../dropdowns/BaseDropdownDiscordMessage.vue';
+import BaseDropdownDiscordMessageReaction from '../dropdowns/BaseDropdownDiscordMessageReaction.vue';
 import BaseDropdownTwitterMessage from '../dropdowns/BaseDropdownTwitterMessage.vue';
 
 @Component({
     components: {
         BaseDropdownDiscordGuilds,
+        BaseDropdownDiscordMessage,
+        BaseDropdownDiscordMessageReaction,
         BaseDropdownChannelTypes,
         BaseDropdownChannelActions,
         BaseDropdownYoutubeChannels,

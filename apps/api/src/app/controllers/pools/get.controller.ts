@@ -8,6 +8,7 @@ import { PoolSubscription } from '@thxnetwork/api/models/PoolSubscription';
 import { Wallet } from '@thxnetwork/api/models/Wallet';
 import { Collaborator, CollaboratorDocument } from '@thxnetwork/api/models/Collaborator';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
+import DiscordGuild from '@thxnetwork/api/models/DiscordGuild';
 
 export const validation = [param('id').isMongoId()];
 
@@ -31,12 +32,14 @@ export const controller = async (req: Request, res: Response) => {
         }),
     );
     const owner = await AccountProxy.getById(pool.sub);
+    const guilds = await DiscordGuild.find({ poolId: pool._id });
 
     res.json({
         ...pool.toJSON(),
         wallets,
         widget,
         brand,
+        guilds,
         latestVersion: currentVersion,
         subscriberCount,
         owner,

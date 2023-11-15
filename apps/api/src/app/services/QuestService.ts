@@ -145,7 +145,10 @@ async function complete(
     else if (variant === QuestVariant.Custom) {
         const { uuid } = data as TMilestoneRewardClaim;
         entry = await model.findOneAndUpdate({ uuid }, { isClaimed: true }, { new: true });
-    } else {
+    }
+
+    // Handle all other variants
+    else {
         entry = await model.create({
             sub: account.sub,
             walletId: wallet._id,
