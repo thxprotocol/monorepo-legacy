@@ -87,9 +87,14 @@ const controller = async (req: Request, res: Response) => {
               })
             : [];
         const defaults = getDefaults(r);
+        const pointsAvailable = claims.reduce((total, claim) => {
+            return claim.isClaimed ? total : total + Number(claim.amount);
+        }, 0);
+
         return {
             ...defaults,
             amount: r.amount,
+            pointsAvailable,
             claims,
         };
     });
@@ -98,6 +103,7 @@ const controller = async (req: Request, res: Response) => {
         return {
             ...defaults,
             amount: r.amount,
+            pointsAvailable: r.amount,
             pathname: r.pathname,
             successUrl: r.successUrl,
         };
@@ -136,6 +142,7 @@ const controller = async (req: Request, res: Response) => {
         return {
             ...defaults,
             amount: r.amount,
+            pointsAvailable: r.amount,
             contracts: r.contracts,
             methodName: r.methodName,
             threshold: r.threshold,

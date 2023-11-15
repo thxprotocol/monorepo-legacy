@@ -168,6 +168,7 @@ async function getPointsAvailable(quest: TPointReward, account: TAccount) {
 }
 
 function getRestartDates(quest: TPointReward) {
+    if (!quest.contentMetadata) return;
     const { days } = JSON.parse(quest.contentMetadata);
     const now = new Date();
     const questCreatedAt = new Date(quest.createdAt);
