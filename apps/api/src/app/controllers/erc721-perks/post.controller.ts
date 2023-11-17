@@ -29,8 +29,6 @@ const validation = [
     body('pointPrice').optional().isNumeric(),
     body('expiryDate').optional().isISO8601(),
     body('limit').optional().isInt(),
-    body('price').isInt(),
-    body('priceCurrency').isString(),
     body('isPromoted').optional().isBoolean(),
     body('claimLimit').optional().isInt(),
     body('claimAmount').optional().isInt({ lt: 5001 }),

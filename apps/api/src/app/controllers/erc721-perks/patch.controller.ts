@@ -22,8 +22,6 @@ const validation = [
     body('claimLimit').exists().isInt(),
     body('expiryDate').optional().isISO8601(),
     body('limit').optional().isInt(),
-    body('price').isInt(),
-    body('priceCurrency').isString(),
     body('isPromoted').optional().isBoolean(),
     body('tokenGatingContractAddress').optional().isString(),
     body('tokenGatingVariant').optional().isString(),

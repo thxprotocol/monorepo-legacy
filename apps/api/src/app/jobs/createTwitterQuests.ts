@@ -22,6 +22,7 @@ export async function createTwitterQuests() {
         if (!isAuthorized) continue;
 
         const latestTweetsForPoolOwner = await TwitterDataProxy.getLatestTweets(pool.sub, startDate, endDate);
+        console.log({ startDate, endDate, latestTweetsForPoolOwner });
         if (!latestTweetsForPoolOwner.length) continue;
 
         const { hashtag, title, description, amount, isPublished } = pool.settings.defaults.conditionalRewards;
@@ -34,9 +35,11 @@ export async function createTwitterQuests() {
                 return { ...tweet, isExistingQuest };
             }),
         );
+        console.log({ latestTweets });
         const filteredTweets = latestTweets.filter((tweet) => {
             return !tweet.isExistingQuest && hashtag && containsValue(tweet.text, hashtag);
         });
+        console.log({ filteredTweets });
         if (!filteredTweets.length) continue;
 
         const account: TAccount = await AccountProxy.getById(pool.sub);
@@ -64,6 +67,7 @@ export async function createTwitterQuests() {
                 }
             }),
         );
+        console.log({ quests });
         const subject = `Published ${quests.length} quest${quests.length && 's'}!`;
         const message = `We have detected ${quests.length} new tweet${quests.length && 's'}. A Twitter Quest ${
             quests.length && 'for each'
