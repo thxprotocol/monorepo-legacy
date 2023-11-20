@@ -1,5 +1,12 @@
 <template>
     <div :class="toggle ? 'fixed-top bg-white shadow' : 'fixed-top'">
+        <b-alert show variant="primary" class="text-center p-2">
+            <b-link href="https://docs.thx.network/rewards/qr-codes" target="_blank">
+                <strong>Unlock Rewards with QR Codes 🚀</strong> A Featured Campaign by the Royal Dutch Mint
+                <i class="fas fa-chevron-right ml-2" />
+            </b-link>
+        </b-alert>
+
         <b-navbar
             toggleable="lg"
             class="container"
