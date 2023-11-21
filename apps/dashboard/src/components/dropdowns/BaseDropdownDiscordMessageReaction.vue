@@ -26,7 +26,9 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 
 @Component({
-    computed: mapGetters({}),
+    computed: mapGetters({
+        pools: 'pools/all',
+    }),
 })
 export default class BaseDropdownDiscordGuilds extends Vue {
     serverId = '';

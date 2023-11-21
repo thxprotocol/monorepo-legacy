@@ -126,11 +126,11 @@ export const platformInteractionList = [
         name: 'Message',
         items: [],
     },
-    {
-        type: RewardConditionInteraction.DiscordMessageReaction,
-        name: 'Message Reaction',
-        items: [],
-    },
+    // {
+    //     type: RewardConditionInteraction.DiscordMessageReaction,
+    //     name: 'Message Reaction',
+    //     items: [],
+    // },
 ];
 
 export const platformIconMap: any = {
