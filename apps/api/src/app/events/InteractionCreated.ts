@@ -1,8 +1,8 @@
-import router from '../commands';
 import { ChatInputCommandInteraction, StringSelectMenuInteraction } from 'discord.js';
-import { handleError } from '../commands/error';
+import { handleError } from './commands/error';
 import { handleCampaignConnect } from './handlers/index';
 import { logger } from '../util/logger';
+import router from './commands';
 
 const onInteractionCreated = async (interaction: ChatInputCommandInteraction | StringSelectMenuInteraction) => {
     try {

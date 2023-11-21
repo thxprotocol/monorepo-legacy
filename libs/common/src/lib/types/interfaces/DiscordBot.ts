@@ -4,6 +4,12 @@ export type TDiscordGuild = {
     guildId: string;
     name: string;
     roles: TDiscordRole[];
+    channels: TDiscordChannel[];
+};
+
+export type TDiscordChannel = {
+    channelId: string;
+    name: string;
 };
 
 export type TDiscordReaction = {

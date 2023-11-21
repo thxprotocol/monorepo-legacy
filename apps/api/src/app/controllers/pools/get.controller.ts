@@ -48,7 +48,8 @@ export const controller = async (req: Request, res: Response) => {
                 color: discordColorToHex(role.color),
             }))
             .filter((role) => role.hoist);
-        return { ...guild.toJSON(), roles };
+        const channels = (await g.channels.fetch()).map((c) => ({ name: c.name, channelId: c.id }));
+        return { ...guild.toJSON(), channels, roles };
     });
     const guilds = await Promise.all(promises);
 

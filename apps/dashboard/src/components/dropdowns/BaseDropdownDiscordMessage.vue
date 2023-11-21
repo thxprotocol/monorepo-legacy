@@ -23,6 +23,12 @@
                     </b-form-select-option>
                 </b-form-select>
             </b-form-group>
+            <b-form-group
+                label="Channels"
+                description="Use cmd+click or ctrl+click to select more than one channel to track."
+            >
+                <b-form-select @change="onChangeChannels" :value="channels" :options="channelOptions" multiple />
+            </b-form-group>
             <b-form-group label="Daily Limit" description="Maximum amount of eligible messages per day.">
                 <b-form-input @change="onChangeLimit" :value="limit" />
             </b-form-group>
@@ -51,12 +57,19 @@ export default class BaseDropdownDiscordMessage extends Vue {
     days = 7;
     guild = null;
     discordBotInviteUrl = DISCORD_BOT_INVITE_URL;
+    channels: string[] = [];
 
     @Prop({ required: false }) content!: string;
     @Prop({ required: false }) contentMetadata!: any;
     @Prop({ required: false }) amount!: number;
 
     pools!: IPools;
+
+    get channelOptions() {
+        const guild = this.pool.guilds.find((g) => g.guildId === this.serverId);
+        if (!guild) return [];
+        return guild.channels.map((c) => ({ value: c.channelId, text: c.name }));
+    }
 
     get pool() {
         return this.pools[this.$route.params.id];
@@ -73,8 +86,15 @@ export default class BaseDropdownDiscordMessage extends Vue {
             : this.pool.guilds.length
             ? this.pool.guilds[0].guildId
             : this.serverId;
+
         this.limit = this.contentMetadata.length ? JSON.parse(this.contentMetadata).limit : this.limit;
         this.days = this.contentMetadata.length ? JSON.parse(this.contentMetadata).days : this.days;
+        this.channels = this.contentMetadata.length ? JSON.parse(this.contentMetadata).channels : this.channels;
+    }
+
+    onChangeChannels(channels: string[]) {
+        this.channels = channels;
+        this.update();
     }
 
     onChangeLimit(limit: number) {
@@ -94,6 +114,7 @@ export default class BaseDropdownDiscordMessage extends Vue {
                 serverId: this.serverId,
                 limit: this.limit,
                 days: this.days,
+                channels: this.channels,
             },
         });
     }
@@ -105,3 +126,15 @@ export default class BaseDropdownDiscordMessage extends Vue {
     }
 }
 </script>
+<style style="scss">
+select[multiple='multiple'] {
+    padding: 0 !important;
+}
+select option {
+    padding: 0.5rem;
+}
+select option:checked {
+    background-color: var(--primary);
+    color: white;
+}
+</style>
