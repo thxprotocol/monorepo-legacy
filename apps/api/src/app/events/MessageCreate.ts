@@ -40,8 +40,6 @@ const onMessageCreate = async (message: Message) => {
             return limit > highestLimit ? limit : highestLimit;
         }, 0);
 
-        console.log(dailyMessageCount, dailyMessageLimit);
-
         // Only track messages if daily limit has not been surpassed
         if (dailyMessageCount > dailyMessageLimit) return;
         const payload = {

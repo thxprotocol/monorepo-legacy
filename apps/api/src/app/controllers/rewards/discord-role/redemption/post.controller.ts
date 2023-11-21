@@ -54,7 +54,10 @@ const controller = async (req: Request, res: Response) => {
         throw new ForbiddenError(`You are not a member of the ${discordGuild.name} Discord server`);
     }
 
-    await member.roles.add(discordRoleReward.discordRoleId);
+    const role = guild.roles.cache.find((r) => r.id === discordRoleReward.discordRoleId);
+    if (!role) throw new ForbiddenError('Could not find role in server');
+
+    await member.roles.add(role);
 
     const discordRoleRewardPayment = await DiscordRoleRewardPayment.create({
         perkId: discordRoleReward._id,
