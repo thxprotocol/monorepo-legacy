@@ -6,6 +6,7 @@ import { logger } from '@thxnetwork/api/util/logger';
 import { ChainId } from '@thxnetwork/types/enums';
 import BrandService from '@thxnetwork/api/services/BrandService';
 import { query } from 'express-validator';
+import Brand from '@thxnetwork/api/models/Brand';
 
 export const paginatedResults = async (page: number, limit: number, search: string) => {
     const startIndex = (page - 1) * limit;
@@ -172,8 +173,8 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
     const { page, limit, search } = req.query;
     const result = await paginatedResults(Number(page), Number(limit), search ? String(search) : '');
-
-    console.log(result);
+    const widgets = await Widget.find({ poolId: result.results.map((p: AssetPoolDocument) => p._id) });
+    const brands = await Brand.find({ poolId: result.results.map((p: AssetPoolDocument) => p._id) });
 
     result.results = (
         await Promise.all(
@@ -187,8 +188,8 @@ const controller = async (req: Request, res: Response) => {
                 ) => {
                     try {
                         const poolId = String(pool._id);
-                        const widget = await Widget.findOne({ poolId });
-                        const brand = await BrandService.get(poolId);
+                        const widget = widgets.find((w) => w.poolId === poolId);
+                        const brand = brands.find((b) => b.poolId === poolId);
 
                         let progress = 0;
                         if (pool.settings.endDate) {
@@ -200,9 +201,9 @@ const controller = async (req: Request, res: Response) => {
                         }
 
                         return {
-                            _id: pool._id,
+                            _id: poolId,
                             rank: pool.rank,
-                            slug: pool.settings.slug || pool._id,
+                            slug: pool.settings.slug || poolId,
                             title: pool.settings.title,
                             expiryDate: pool.settings.endDate,
                             address: pool.address,
