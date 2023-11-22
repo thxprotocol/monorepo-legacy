@@ -1,9 +1,9 @@
 import { Message } from 'discord.js';
 import { logger } from '../util/logger';
-import DiscordMessage from '../models/DiscordMessage';
-import DiscordGuild from '../models/DiscordGuild';
 import { PointReward, PointRewardDocument } from '../models/PointReward';
 import { RewardConditionInteraction } from '@thxnetwork/common/lib/types';
+import DiscordMessage from '../models/DiscordMessage';
+import DiscordGuild from '../models/DiscordGuild';
 import AccountProxy from '../proxies/AccountProxy';
 
 const onMessageCreate = async (message: Message) => {
@@ -27,6 +27,13 @@ const onMessageCreate = async (message: Message) => {
         });
         if (!quests.length) return;
 
+        // Return early if channel is not eligble for message tracking
+        const allowedChannels = quests.reduce((list: string[], q: PointRewardDocument) => {
+            const { channels } = JSON.parse(q.contentMetadata);
+            return [...list, ...channels];
+        }, []);
+        if (!allowedChannels.includes(message.channelId)) return;
+
         // Count the total amount of messages for today
         const dailyMessageCount = await DiscordMessage.countDocuments({
             guildId: message.guild.id,
@@ -42,11 +49,9 @@ const onMessageCreate = async (message: Message) => {
 
         // Only track messages if daily limit has not been surpassed
         if (dailyMessageCount > dailyMessageLimit) return;
-        const payload = {
-            messageId: message.id,
-            guildId: message.guild.id,
-            memberId: message.author.id,
-        };
+
+        // Store the message
+        const payload = { messageId: message.id, guildId: message.guild.id, memberId: message.author.id };
         await DiscordMessage.findOneAndUpdate(payload, payload, { upsert: true });
     } catch (error) {
         logger.error(error);
