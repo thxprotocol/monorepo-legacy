@@ -52,7 +52,7 @@
         <b-col md="4">
             <b-row>
                 <b-col>
-                    <div class="card-header block">Leaderboard</div>
+                    <strong class="text-muted">Leaderboard</strong>
                     <b-skeleton-wrapper :loading="!leaderBoard">
                         <template #loading>
                             <b-skeleton-table
@@ -61,7 +61,7 @@
                                 :table-props="{ bordered: false, striped: false }"
                             ></b-skeleton-table>
                         </template>
-                        <b-list-group v-if="leaderBoard">
+                        <b-list-group class="mt-3" v-if="leaderBoard">
                             <b-list-group-item
                                 v-for="(result, key) of leaderBoard"
                                 :key="key"
