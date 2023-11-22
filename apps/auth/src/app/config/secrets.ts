@@ -14,7 +14,7 @@ const required = [
 // For production (docker containers) we should require JWKS_JSON to be set since otherwise each container
 // would generate their own jwks.json.
 if (process.env.NODE_ENV === 'production') {
-    required.push('SENDGRID_API_KEY', 'JWKS_JSON');
+    required.push('JWKS_JSON');
 }
 
 required.forEach((value: string) => {
@@ -55,7 +55,6 @@ export const MONGODB_URI = String(process.env.MONGODB_URI);
 export const PORT = process.env.PORT;
 export const SECURE_KEY = process.env.SECURE_KEY;
 export const GTM = process.env.GTM;
-export const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
 export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 export const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 export const INITIAL_ACCESS_TOKEN = process.env.INITIAL_ACCESS_TOKEN;
@@ -78,3 +77,5 @@ export const MIXPANEL_TOKEN = process.env.MIXPANEL_TOKEN;
 export const CYPRESS_EMAIL = process.env.CYPRESS_EMAIL || 'cypress@thx.network';
 export const HUBSPOT_ACCESS_TOKEN = process.env.HUBSPOT_ACCESS_TOKEN;
 export const BOT_TOKEN = process.env.BOT_TOKEN;
+export const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
+export const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;

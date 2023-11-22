@@ -1,13 +1,14 @@
-import sgMail from '@sendgrid/mail';
-import { AUTH_URL, NODE_ENV, SENDGRID_API_KEY, CYPRESS_EMAIL } from '@thxnetwork/api/config/secrets';
-import { logger } from '../util/logger';
+import {
+    AUTH_URL,
+    NODE_ENV,
+    CYPRESS_EMAIL,
+    AWS_ACCESS_KEY_ID,
+    AWS_SECRET_ACCESS_KEY,
+} from '@thxnetwork/api/config/secrets';
 import path from 'path';
 import { assetsPath } from '../util/path';
 import ejs from 'ejs';
-
-if (SENDGRID_API_KEY) {
-    sgMail.setApiKey(SENDGRID_API_KEY);
-}
+import { sendMail } from '@thxnetwork/common';
 
 const mailTemplatePath = path.join(assetsPath, 'views', 'email');
 
@@ -20,21 +21,12 @@ const send = async (to: string, subject: string, htmlContent: string, link = { s
         { async: true },
     );
 
-    if (!SENDGRID_API_KEY || NODE_ENV === 'test' || CYPRESS_EMAIL === to) {
-        logger.info({ message: 'not sending email', link });
+    if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY || NODE_ENV === 'test' || CYPRESS_EMAIL === to) {
+        console.error({ message: 'Not sending e-mail', link });
         return;
     }
 
-    try {
-        return sgMail.send({
-            to,
-            from: { email: 'noreply@thx.network', name: 'THX Network' },
-            subject,
-            html,
-        });
-    } catch (error) {
-        console.error(error);
-    }
+    return sendMail(to, subject, html);
 };
 
 export default { send };

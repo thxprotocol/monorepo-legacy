@@ -7,7 +7,7 @@ import { Notification } from '@thxnetwork/api/models/Notification';
 import AccountProxy from '../proxies/AccountProxy';
 import MailService from './MailService';
 
-const SENDGRID_CHUNK_SIZE = 600;
+const MAIL_CHUNK_SIZE = 600;
 
 async function send(
     pool: AssetPoolDocument,
@@ -17,9 +17,9 @@ async function send(
     const subs = poolSubs.map((x) => x.sub);
     const accounts = (await AccountProxy.getMany(subs)).filter((a) => a.email);
 
-    // Create chunks for bulk email sending to avoid hitting Sendgrid rate limits
-    for (let i = 0; i < subs.length; i += SENDGRID_CHUNK_SIZE) {
-        const chunk = subs.slice(i, i + SENDGRID_CHUNK_SIZE);
+    // Create chunks for bulk email sending to avoid hitting rate limits
+    for (let i = 0; i < subs.length; i += MAIL_CHUNK_SIZE) {
+        const chunk = subs.slice(i, i + MAIL_CHUNK_SIZE);
         await Promise.all(
             chunk.map(async (sub) => {
                 try {

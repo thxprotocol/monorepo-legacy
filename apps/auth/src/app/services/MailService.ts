@@ -1,22 +1,24 @@
 import ejs from 'ejs';
 import path from 'path';
-import sgMail from '@sendgrid/mail';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import { AccountDocument } from '../models/Account';
 import { createRandomToken } from '../util/tokens';
-import { AUTH_URL, WALLET_URL, SENDGRID_API_KEY, NODE_ENV, CYPRESS_EMAIL } from '../config/secrets';
 import { assetsPath } from '../util/path';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IAccessToken } from '@thxnetwork/types/interfaces';
 import { get24HoursExpiryTimestamp } from '../util/time';
-import { logger } from '../util/logger';
+import {
+    AWS_ACCESS_KEY_ID,
+    AWS_SECRET_ACCESS_KEY,
+    AUTH_URL,
+    WALLET_URL,
+    NODE_ENV,
+    CYPRESS_EMAIL,
+} from '../config/secrets';
+import { sendMail } from '@thxnetwork/common';
 
 const mailTemplatePath = path.join(assetsPath, 'views', 'mail');
-
-if (SENDGRID_API_KEY) {
-    sgMail.setApiKey(SENDGRID_API_KEY);
-}
 
 function createOTP(account: AccountDocument) {
     return account.email === CYPRESS_EMAIL
@@ -27,18 +29,13 @@ function createOTP(account: AccountDocument) {
 }
 
 export class MailService {
-    static sendMail = (to: string, subject: string, html: string, link = '') => {
-        if (SENDGRID_API_KEY && NODE_ENV !== 'test' && CYPRESS_EMAIL !== to) {
-            return sgMail.send({
-                to,
-                from: { email: 'noreply@thx.network', name: 'THX Network' },
-                subject,
-                html,
-            });
-        } else {
-            logger.info({ message: 'not sending email', html, link });
+    static sendMail(to: string, subject: string, html: string, link = '') {
+        if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY || NODE_ENV === 'test' || CYPRESS_EMAIL === to) {
+            console.error({ message: 'Not sending e-mail', link });
+            return;
         }
-    };
+        sendMail(to, subject, html);
+    }
 
     static async sendVerificationEmail(account: AccountDocument, returnUrl: string) {
         if (!account.email) {
@@ -62,12 +59,7 @@ export class MailService {
             { async: true },
         );
 
-        await this.sendMail(
-            account.email,
-            'Please complete the e-mail verification for your THX Account',
-            html,
-            verifyUrl,
-        );
+        this.sendMail(account.email, 'Please complete the e-mail verification for your THX Account', html, verifyUrl);
 
         await account.save();
     }
@@ -81,7 +73,7 @@ export class MailService {
             { async: true },
         );
 
-        await this.sendMail(account.email, 'Request: Sign in', html);
+        this.sendMail(account.email, 'Request: Sign in', html);
 
         account.setToken({
             kind: AccessTokenKind.Auth,

@@ -23,7 +23,6 @@ const required = [
 if (process.env.NODE_ENV === 'production') {
     required.push(
         ...[
-            'SENDGRID_API_KEY',
             'POLYGON_RPC',
             'POLYGON_NAME',
             'POLYGON_RELAYER',
@@ -82,7 +81,6 @@ export const INFURA_PROJECT_ID = process.env.INFURA_PROJECT_ID;
 export const INFURA_IPFS_PROJECT_ID = process.env.INFURA_IPFS_PROJECT_ID;
 export const INFURA_IPFS_PROJECT_SECRET = process.env.INFURA_IPFS_PROJECT_SECRET;
 export const MINIMUM_GAS_LIMIT = 54680;
-export const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
 export const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
 export const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
 export const AWS_S3_PUBLIC_BUCKET_NAME = process.env.AWS_S3_PUBLIC_BUCKET_NAME;
