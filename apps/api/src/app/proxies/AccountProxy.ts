@@ -1,4 +1,4 @@
-import type { TAccount } from '@thxnetwork/types/interfaces';
+import { TAccount } from '@thxnetwork/types/interfaces';
 import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
 import { THXError } from '@thxnetwork/api/util/errors';
 

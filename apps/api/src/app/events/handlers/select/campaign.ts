@@ -4,20 +4,17 @@ import PoolService from '@thxnetwork/api/services/PoolService';
 import DiscordGuild from '@thxnetwork/api/models/DiscordGuild';
 
 export async function handleCampaignConnect(interaction: StringSelectMenuInteraction) {
-    const { guild, user, values } = interaction;
+    const { user, values } = interaction;
     const account = await AccountProxy.getByDiscordId(user.id);
-    const pool = await PoolService.getById(values[0]);
-    const filter = {
-        poolId: String(pool._id),
-        guildId: guild.id,
-    };
+    const { guildId, guildName, poolId } = JSON.parse(values[0]);
+    const pool = await PoolService.getById(poolId);
+    const filter = { poolId, guildId };
     const payload = {
         ...filter,
         sub: String(account._id),
-        name: guild.name,
+        name: guildName,
     };
 
     await DiscordGuild.findOneAndUpdate(filter, payload, { upsert: true });
-
-    interaction.reply({ content: `Connected **${pool.settings.title}**` });
+    interaction.reply({ content: `Yay!🥳 Connected **${pool.settings.title}** to the server.`, ephemeral: true });
 }
