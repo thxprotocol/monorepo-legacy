@@ -26,7 +26,7 @@
             <p class="text-muted">
                 {{ pool.settings.title }}
             </p>
-            <b-input-group size="sm">
+            <b-input-group size="sm" v-if="pool.address">
                 <b-input-group-prepend class="px-2">
                     <img width="20" :src="`https://api.dicebear.com/7.x/identicon/svg?seed=${pool._id}`" />
                 </b-input-group-prepend>
@@ -55,7 +55,6 @@ import { mapGetters, mapState } from 'vuex';
 import BaseModalDelete from '@thxnetwork/dashboard/components/modals/BaseModalDelete.vue';
 import BaseBadgeNetwork from '@thxnetwork/dashboard/components/badges/BaseBadgeNetwork.vue';
 import BaseCard from '@thxnetwork/dashboard/components/cards/BaseCard.vue';
-import promisePoller from 'promise-poller';
 import BaseDropdownMenuPool from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownMenuPool.vue';
 import BaseModalPoolCreate from '@thxnetwork/dashboard/components/modals/BaseModalPoolCreate.vue';
 import { fromWei } from 'web3-utils';
@@ -73,7 +72,6 @@ import { IPoolAnalyticsMetrics } from '../../store/modules/pools';
         ...mapState('account', ['version', 'artifacts']),
         ...mapGetters({
             profile: 'account/profile',
-            analyticsMetrics: 'pools/analyticsMetrics',
         }),
     },
 })
@@ -98,40 +96,12 @@ export default class BaseCardPool extends Vue {
 
     async mounted() {
         await this.$store.dispatch('pools/read', this.pool._id);
-        await this.$store.dispatch('pools/readAnalyticsMetrics', { poolId: this.pool._id });
-
-        if (!this.pool.address) {
-            this.isDeploying = true;
-            this.waitForAddress();
-        } else {
-            this.isDeploying = false;
-            this.isLoading = false;
-        }
+        this.isLoading = false;
     }
 
     onClickCopy() {
         this.$copyText(this.pool.address);
         this.isCopied = true;
-    }
-
-    waitForAddress() {
-        const taskFn = async () => {
-            const pool = await this.$store.dispatch('pools/read', this.pool._id);
-            if (pool.address.length) {
-                this.isDeploying = false;
-                this.isLoading = false;
-                return Promise.resolve(pool);
-            } else {
-                this.isLoading = false;
-                return Promise.reject(pool);
-            }
-        };
-
-        promisePoller({
-            taskFn,
-            interval: 3000,
-            retries: 10,
-        });
     }
 
     openPoolUrl() {
@@ -155,7 +125,7 @@ export default class BaseCardPool extends Vue {
         this.isLoading = true;
         await this.$store.dispatch('pools/update', {
             pool: this.pool,
-            data: { archived: !this.pool.settings.isArchived },
+            data: { settings: { isArchived: !this.pool.settings.isArchived } },
         });
         this.isLoading = false;
     }

@@ -138,8 +138,8 @@ async function deployCallback(args: TAssetPoolDeployCallbackArgs, receipt: Trans
     await pool.save();
 }
 
-async function getAllBySub(sub: string, archived = false) {
-    const pools = await AssetPool.find({ sub, 'settings.isArchived': archived });
+async function getAllBySub(sub: string, includeIsArchived?: boolean) {
+    const pools = await AssetPool.find({ sub, ...(includeIsArchived ? {} : { 'settings.isArchived': false }) });
     const collaborations = await Collaborator.find({ sub });
     const poolIds = collaborations.map((c) => c.poolId);
     const collaborationPools = await AssetPool.find({ _id: poolIds });

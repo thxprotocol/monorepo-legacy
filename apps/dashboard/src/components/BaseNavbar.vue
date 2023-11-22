@@ -10,38 +10,14 @@
         :visible="true"
     >
         <b-navbar toggleable="lg" class="sidebar">
-            <div class="flex-grow-1 w-100 h-25 overflow-auto d-flex justify-content-end flex-column">
-                <b-link v-if="selectedPool" :to="`/pool/${selectedPool._id}/settings`" class="mx-auto mt-3">
-                    <img
-                        style="max-height: 50px; max-width: 120px"
-                        :src="
-                            selectedPool.brand && selectedPool.brand.logoImgUrl
-                                ? selectedPool.brand.logoImgUrl
-                                : `https://api.dicebear.com/7.x/identicon/svg?seed=${selectedPool._id}`
-                        "
-                    />
+            <div class="d-flex align-items-center justify-content-between w-100 pt-3 px-3">
+                <b-link v-if="selectedPool" :to="`/pool/${selectedPool._id}/settings`">
+                    <b-img-lazy style="max-height: 40px; max-width: 120px" :src="selectedPoolLogoImg" />
                 </b-link>
-                <b-dropdown
-                    split
-                    split-class="pr-2"
-                    size="sm"
-                    variant="light"
-                    right
-                    class="my-3 d-flex btn-toggle-campaign"
-                    @click="onClickPreview"
-                >
+                <b-dropdown size="sm" variant="link" right no-caret toggle-class="py-3">
                     <template #button-content>
-                        <div class="d-flex" v-b-tooltip.top.hover title="Preview campaign">
-                            <template v-if="selectedPool">
-                                <div class="truncate-pool-title text-muted flex-grow-1 pl-2">
-                                    {{ selectedPool.settings.title }}
-                                </div>
-                                <div class="flex-grow-0">
-                                    <i class="fas fa-external-link-alt text-muted" />
-                                </div>
-                            </template>
-                            <b-spinner v-else variant="primary" small />
-                        </div>
+                        <i v-if="selectedPool" class="fas fa-ellipsis-v text-muted m-0" style="font-size: 1.1rem" />
+                        <b-spinner v-else variant="primary" small />
                     </template>
                     <div style="max-height: 300px; overflow: auto">
                         <b-dropdown-item-btn
@@ -61,6 +37,16 @@
                         </b-dropdown-item-btn>
                     </div>
                 </b-dropdown>
+            </div>
+            <div class="flex-grow-1 w-100 h-25 overflow-auto d-flex justify-content-end flex-column">
+                <b-button class="d-flex p-2 m-3 text-muted" variant="light" v-if="selectedPool" @click="onClickPreview">
+                    <div class="truncate-pool-title flex-grow-1 pl-2">
+                        {{ selectedPool.settings.title }}
+                    </div>
+                    <div class="flex-grow-0" v-b-tooltip.top.hover title="Preview campaign">
+                        <i class="fas fa-external-link-alt" />
+                    </div>
+                </b-button>
                 <template v-if="selectedPool">
                     <b-navbar-nav class="py-0">
                         <b-nav-item
@@ -248,6 +234,14 @@ export default class BaseNavbar extends Vue {
         ];
     }
 
+    get selectedPoolLogoImg() {
+        if (!this.selectedPool) return;
+
+        return this.selectedPool.brand && this.selectedPool.brand.logoImgUrl
+            ? this.selectedPool.brand.logoImgUrl
+            : `https://api.dicebear.com/7.x/identicon/png?seed=${this.selectedPool._id}`;
+    }
+
     get firstPool() {
         const pools = Object.values(this.pools);
         if (!pools.length) return;
@@ -328,16 +322,6 @@ export default class BaseNavbar extends Vue {
         &:focus {
             color: var(--gray) !important;
         }
-    }
-
-    .dropdown-toggle::after {
-        content: '\f142';
-        margin: 0 !important;
-        border: 0;
-        height: auto;
-        width: auto;
-        font-weight: 900;
-        font-family: 'Font Awesome 5 Free';
     }
 }
 </style>

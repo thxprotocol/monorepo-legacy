@@ -7,8 +7,8 @@ export const validation = [query('archived').optional().isBoolean(), query('chai
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
-    const archived = req.query.archived ? JSON.parse(String(req.query.archived)) : false;
-    const allPools = await PoolService.getAllBySub(req.auth.sub, archived);
+    const isArchived = req.query.archived ? JSON.parse(String(req.query.archived)) : false;
+    const allPools = await PoolService.getAllBySub(req.auth.sub, isArchived);
     const pools = await Promise.all(
         allPools.map(async (p) => ({ ...p.toJSON(), owner: await AccountProxy.getById(p.sub) })),
     );

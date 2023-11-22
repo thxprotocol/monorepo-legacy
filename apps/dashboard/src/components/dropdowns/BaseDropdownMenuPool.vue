@@ -7,9 +7,19 @@
             <span class="d-inline-block" style="width: 30px"><i class="fas fa-clipboard mr-3"></i></span>
             <span>Copy ID</span>
         </b-dropdown-item>
-        <b-dropdown-item @click.stop="onClickTransferPool" link-class="text-muted small">
+        <!-- <b-dropdown-item @click.stop="onClickTransferPool" link-class="text-muted small">
             <span class="d-inline-block" style="width: 30px"><i class="fas fa-exchange-alt mr-3"></i></span>
             <span>Transfer</span>
+            <BaseModalPoolTransfer :pool="pool" title="Transfer pool ownership" />
+        </b-dropdown-item> -->
+        <b-dropdown-item @click.stop="$emit('archive')" link-class="text-muted small">
+            <span class="d-inline-block" style="width: 30px">
+                <i
+                    class="fas mr-3"
+                    :class="{ 'fa-toggle-on': pool.settings.isArchived, 'fa-toggle-off': !pool.settings.isArchived }"
+                />
+            </span>
+            <span>Archive</span>
             <BaseModalPoolTransfer :pool="pool" title="Transfer pool ownership" />
         </b-dropdown-item>
         <b-dropdown-divider />
