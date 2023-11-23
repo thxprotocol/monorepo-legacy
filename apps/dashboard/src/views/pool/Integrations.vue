@@ -31,7 +31,7 @@
                                     Invite THX Bot
                                 </b-button>
                             </b-form-group>
-                            <b-form-group label="Installed in">
+                            <b-form-group label="Installed in" v-if="pool.guilds.length">
                                 <b-badge
                                     v-for="(guild, key) of pool.guilds"
                                     variant="primary"
@@ -43,6 +43,7 @@
                             </b-form-group>
                         </b-col>
                     </b-form-row>
+                    <hr />
                     <b-form-row>
                         <b-col md="4">
                             <div class="">
@@ -90,9 +91,11 @@
                     <b-form-row>
                         <b-col md="4">
                             <div>
-                                <strong>Twitter</strong>
+                                <strong>Automated Quests</strong>
                             </div>
-                            <p class="text-muted">Reduce campaign management with automated Twitter Quests</p>
+                            <p class="text-muted">
+                                Reduce campaign management with automated Repost & Like Quests for your tweets.
+                            </p>
                         </b-col>
                         <b-col md="8">
                             <b-alert
