@@ -1,34 +1,25 @@
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { TAccount } from '@thxnetwork/types/interfaces';
-import {
-    EmbedBuilder,
-    ActionRowBuilder,
-    StringSelectMenuBuilder,
-    StringSelectMenuOptionBuilder,
-    Guild,
-} from 'discord.js';
+import { ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, Guild } from 'discord.js';
+import { StringSelectMenuVariant } from '../InteractionCreated';
+
+const guildMap: { [poolId: string]: Guild } = {};
 
 async function createSelectMenuConnectCampaign(account: TAccount, guild: Guild) {
     const pools = await PoolService.getAllBySub(account._id);
     const select = new StringSelectMenuBuilder();
-    select.setCustomId('thx.campaign.connect').setPlaceholder('Connect a campaign');
+    select.setCustomId(StringSelectMenuVariant.CampaignConnect).setPlaceholder('Connect a campaign');
 
     for (const index in pools) {
         const pool = pools[index];
-        const embed = new EmbedBuilder();
         const { title, description } = pool.settings;
+        const poolId = String(pool._id);
 
-        const value = JSON.stringify({
-            guildId: guild.id,
-            guildName: guild.name,
-            poolId: String(pool._id),
-        });
-        const options = new StringSelectMenuOptionBuilder().setLabel(String(title)).setValue(value);
+        guildMap[poolId] = guild;
 
-        embed.setTitle(title);
+        const options = new StringSelectMenuOptionBuilder().setLabel(String(title)).setValue(poolId);
 
         if (description) {
-            embed.setDescription(description);
             options.setDescription(description);
         }
 
@@ -38,4 +29,4 @@ async function createSelectMenuConnectCampaign(account: TAccount, guild: Guild) 
     return new ActionRowBuilder().addComponents(select);
 }
 
-export { createSelectMenuConnectCampaign };
+export { createSelectMenuConnectCampaign, guildMap };

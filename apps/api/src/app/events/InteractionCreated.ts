@@ -4,12 +4,16 @@ import { handleCampaignConnect } from './handlers/index';
 import { logger } from '../util/logger';
 import router from './commands';
 
+export enum StringSelectMenuVariant {
+    CampaignConnect = 'thx.campaign.connect',
+}
+
 const onInteractionCreated = async (interaction: ChatInputCommandInteraction | StringSelectMenuInteraction) => {
     try {
         if (interaction.isStringSelectMenu()) {
             logger.info(`#${interaction.user.id} picked ${interaction.values[0]} for ${interaction.customId}`);
             switch (interaction.customId) {
-                case 'thx.campaign.connect': {
+                case StringSelectMenuVariant.CampaignConnect: {
                     handleCampaignConnect(interaction);
                 }
             }

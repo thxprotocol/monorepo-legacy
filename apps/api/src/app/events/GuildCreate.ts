@@ -1,4 +1,4 @@
-import { Guild, MessagePayload } from 'discord.js';
+import { Guild } from 'discord.js';
 import { logger } from '@thxnetwork/api/util/logger';
 import { handleError } from './commands/error';
 import { createSelectMenuConnectCampaign } from './components';

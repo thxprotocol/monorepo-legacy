@@ -109,7 +109,6 @@
                             :to="`/pool/${selectedPool._id}/integrations`"
                             link-classes="nav-link-wrapper"
                             class="nav-link-plain"
-                            :disabled="!hasBasicAccess(selectedPool.owner)"
                         >
                             <div class="d-flex">
                                 <div class="nav-link-icon">

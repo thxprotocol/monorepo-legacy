@@ -5,8 +5,8 @@ import DiscordGuild from '../models/DiscordGuild';
 
 const onGuildDelete = async (guild: Guild) => {
     try {
-        logger.info(`Removed from guild: ${guild.name}`);
-        await DiscordGuild.findOneAndRemove({ guildId: guild.id });
+        logger.info(`Removed campaign references for guild: ${guild.name}`);
+        await DiscordGuild.deleteMany({ guildId: guild.id });
     } catch (error) {
         handleError(error);
     }
