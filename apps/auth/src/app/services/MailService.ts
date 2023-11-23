@@ -16,7 +16,8 @@ import {
     NODE_ENV,
     CYPRESS_EMAIL,
 } from '../config/secrets';
-import { sendMail } from '@thxnetwork/common';
+import { sendMail } from '@thxnetwork/common/lib/mail';
+import { logger } from '../util/logger';
 
 const mailTemplatePath = path.join(assetsPath, 'views', 'mail');
 
@@ -31,7 +32,7 @@ function createOTP(account: AccountDocument) {
 export class MailService {
     static sendMail(to: string, subject: string, html: string, link = '') {
         if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY || NODE_ENV === 'test' || CYPRESS_EMAIL === to) {
-            console.error({ message: 'Not sending e-mail', link });
+            logger.error({ message: 'Not sending e-mail', link });
             return;
         }
         sendMail(to, subject, html);

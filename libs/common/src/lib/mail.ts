@@ -1,8 +1,8 @@
-import AWS from 'aws-sdk';
+import { SES } from '@aws-sdk/client-ses';
 
-AWS.config.update({ region: 'eu-west-3' });
-
-const ses = new AWS.SES();
+const ses = new SES({
+    region: 'eu-west-3',
+});
 
 function sendMail(to: string, subject: string, html: string) {
     ses.sendEmail(

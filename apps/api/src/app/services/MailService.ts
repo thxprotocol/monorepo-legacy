@@ -8,7 +8,7 @@ import {
 import path from 'path';
 import { assetsPath } from '../util/path';
 import ejs from 'ejs';
-import { sendMail } from '@thxnetwork/common';
+import { sendMail } from '@thxnetwork/common/lib/mail';
 
 const mailTemplatePath = path.join(assetsPath, 'views', 'email');
 
