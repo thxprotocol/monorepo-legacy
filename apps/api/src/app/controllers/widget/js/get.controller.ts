@@ -124,12 +124,16 @@ const controller = async (req: Request, res: Response) => {
         }
 
         onLoad() {
-            this.iframe = this.createIframe();
-            this.notifications = this.createNotifications(0);
-            this.message = this.createMessage();
-            this.launcher = this.settings.cssSelector ? this.selectLauncher() : this.createLauncher();
             this.referrals = JSON.parse(this.settings.refs).filter((r) => r.successUrl);
-            this.container = this.createContainer(this.iframe, this.launcher, this.message);
+            this.iframe = this.createIframe();
+
+            if (this.settings.isPublished) {
+                this.notifications = this.createNotifications(0);
+                this.message = this.createMessage();
+                this.launcher = this.settings.cssSelector ? this.selectLauncher() : this.createLauncher();
+                this.container = this.createContainer(this.iframe, this.launcher, this.message);
+            }
+
             this.parseURL();
             
             window.matchMedia('(max-width: 990px)').addListener(this.onMatchMedia.bind(this));
@@ -490,6 +494,7 @@ const controller = async (req: Request, res: Response) => {
     
     window.THXWidget = new THXWidget({
         apiUrl: '${API_URL}',
+        isPublished: ${widget.isPublished},
         widgetUrl: '${WIDGET_URL}',
         poolId: '${req.params.id}',
         chainId: '${pool.chainId}',

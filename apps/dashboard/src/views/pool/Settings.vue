@@ -12,9 +12,25 @@
                 </b-tab>
                 <b-tab>
                     <template #title>
+                        <i class="fas fa-users mr-1"></i>
+                        Team
+                    </template>
+                    <BaseTabSettingsTeam />
+                </b-tab>
+                <b-tab>
+                    <template #title>
                         <div class="d-flex align-items-center">
                             <i class="fas fa-sliders-h mr-1"></i>
-                            Personalize
+                            Appearance
+                        </div>
+                    </template>
+                    <BaseTabSettingsTheme />
+                </b-tab>
+                <b-tab>
+                    <template #title>
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-share-alt mr-1"></i>
+                            Widget
                         </div>
                     </template>
                     <BaseTabSettingsWidget />
@@ -39,6 +55,8 @@ import { mapGetters } from 'vuex';
 import BaseTabSettingsGeneral from '@thxnetwork/dashboard/views/pool/settings/General.vue';
 import BaseTabSettingsCommerce from '@thxnetwork/dashboard/views/pool/settings/Commerce.vue';
 import BaseTabSettingsWidget from '@thxnetwork/dashboard/views/pool/settings/Widget.vue';
+import BaseTabSettingsTheme from '@thxnetwork/dashboard/views/pool/settings/Theme.vue';
+import BaseTabSettingsTeam from '@thxnetwork/dashboard/views/pool/settings/Team.vue';
 import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { TAccount } from '@thxnetwork/types/interfaces';
@@ -49,6 +67,8 @@ import { hasBasicAccess } from '@thxnetwork/common';
         BaseTabSettingsGeneral,
         BaseTabSettingsWidget,
         BaseTabSettingsCommerce,
+        BaseTabSettingsTheme,
+        BaseTabSettingsTeam,
     },
     computed: {
         ...mapGetters({
