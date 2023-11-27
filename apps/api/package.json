@@ -10,7 +10,7 @@
         "jochemvn <jochemvn@gmail.com>"
     ],
     "license": "AGPL-3.0",
-    "version": "1.51.73",
+    "version": "1.51.74",
     "scripts": {
         "migrate": "yarn run migrate:db && yarn run migrate:contracts",
         "migrate:contracts": "node upgradeContractsToLatest.js",
