@@ -4,7 +4,7 @@ import { ICreateERC20Params } from '@thxnetwork/api/types/interfaces';
 import TransactionService from './TransactionService';
 import { assertEvent, ExpectedEventNotFound, findEvent, parseLogs } from '@thxnetwork/api/util/events';
 import { ChainId, ERC20Type, TransactionState } from '@thxnetwork/types/enums';
-import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
+import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { getByteCodeForContractName, getContractFromName } from '@thxnetwork/api/config/contracts';
 import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
 import { ERC20Token } from '@thxnetwork/api/models/ERC20Token';
@@ -17,6 +17,9 @@ import { WalletDocument } from '../models/Wallet';
 import WalletService, { Wallet } from './WalletService';
 import { ContractName } from '@thxnetwork/contracts/exports';
 import BN from 'bn.js';
+import { ERC20Perk } from '../models/ERC20Perk';
+import { Collaborator } from '../models/Collaborator';
+import PoolService from './PoolService';
 
 function getDeployArgs(erc20: ERC20Document, totalSupply?: string) {
     const { defaultAccount } = getProvider(erc20.chainId);
@@ -29,6 +32,15 @@ function getDeployArgs(erc20: ERC20Document, totalSupply?: string) {
             return [erc20.name, erc20.symbol, defaultAccount];
         }
     }
+}
+
+export async function findBySub(sub: string, includeIsArchived: boolean) {
+    const pools = await PoolService.getAllBySub(sub, includeIsArchived);
+    const coinRewards = await ERC20Perk.find({ poolId: pools.map((p) => String(p._id)) });
+    const erc20Ids = coinRewards.map((c) => c.erc20Id);
+    const erc20s = await ERC20.find({ sub, archived: includeIsArchived });
+
+    return erc20s.concat(await ERC20.find({ _id: erc20Ids }));
 }
 
 export const deploy = async (params: ICreateERC20Params, forceSync = true) => {
@@ -283,6 +295,7 @@ async function createERC20Token(erc20: ERC20Document, sub: string) {
 }
 
 export default {
+    findBySub,
     migrate,
     createERC20Token,
     deploy,

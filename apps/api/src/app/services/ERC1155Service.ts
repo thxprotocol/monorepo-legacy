@@ -24,6 +24,7 @@ import { WalletDocument } from '../models/Wallet';
 import IPFSService from './IPFSService';
 import WalletService from './WalletService';
 import { API_URL, VERSION } from '../config/secrets';
+import { ERC721Perk } from '../models/ERC721Perk';
 
 const contractName = 'THX_ERC1155';
 
@@ -86,8 +87,13 @@ export async function findById(id: string): Promise<ERC1155Document> {
     return erc1155;
 }
 
-export async function findBySub(sub: string): Promise<ERC1155Document[]> {
-    return ERC1155.find({ sub });
+export async function findBySub(sub: string, includeIsArchived: boolean): Promise<ERC1155Document[]> {
+    const pools = await PoolService.getAllBySub(sub, includeIsArchived);
+    const nftRewards = await ERC721Perk.find({ poolId: pools.map((p) => String(p._id)) });
+    const erc1155Ids = nftRewards.map((c) => c.erc1155Id);
+    const erc1155s = await ERC1155.find({ sub, archived: includeIsArchived });
+
+    return erc1155s.concat(await ERC1155.find({ _id: erc1155Ids }));
 }
 
 export async function createMetadata(erc1155: ERC1155Document, attributes: any): Promise<ERC1155MetadataDocument> {

@@ -60,7 +60,7 @@
                         </b-form-group>
                     </b-col>
                     <b-col md="6">
-                        <BaseCardCommerce
+                        <!-- <BaseCardCommerce
                             v-if="profile && profile.plan === 1"
                             class="mb-3"
                             :pool="pool"
@@ -68,7 +68,7 @@
                             :price-currency="priceCurrency"
                             @change-price="price = $event"
                             @change-price-currency="priceCurrency = $event"
-                        />
+                        /> -->
                         <BaseCardRewardExpiry
                             class="mb-3"
                             :expiryDate="expiryDate"
@@ -213,7 +213,7 @@ export default class ModalRewardERC721Create extends Vue {
         return this.redirectUrl && isValidUrl(this.redirectUrl);
     }
 
-    onShow() {
+    async onShow() {
         this.title = this.reward ? this.reward.title : '';
         this.description = this.reward ? this.reward.description : '';
         this.pointPrice = this.reward ? this.reward.pointPrice : 0;
@@ -226,10 +226,12 @@ export default class ModalRewardERC721Create extends Vue {
         this.image = this.reward ? this.reward.image : '';
         this.isPromoted = this.reward ? this.reward.isPromoted : false;
         if (this.reward && this.reward.erc721Id) {
-            this.nft = this.reward ? this.erc721s[this.reward.erc721Id] : this.nft;
+            await this.$store.dispatch('erc721/read', this.reward.erc721Id);
+            this.nft = this.erc721s[this.reward.erc721Id];
         }
         if (this.reward && this.reward.erc1155Id) {
-            this.nft = this.reward ? this.erc1155s[this.reward.erc1155Id] : this.nft;
+            await this.$store.dispatch('erc1155/read', this.reward.erc1155Id);
+            this.nft = this.erc1155s[this.reward.erc1155Id];
         }
         this.metadataId = this.reward && this.reward.metadataId ? this.reward.metadataId : this.metadataId;
         this.tokenId = this.reward && this.reward.tokenId ? this.reward.tokenId : this.tokenId;

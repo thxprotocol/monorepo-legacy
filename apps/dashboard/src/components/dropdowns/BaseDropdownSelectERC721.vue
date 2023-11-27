@@ -50,6 +50,7 @@ import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import BaseIdenticon from '../BaseIdenticon.vue';
 import type { IERC721s, TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import type { IERC1155s, TERC1155 } from '@thxnetwork/dashboard/types/erc1155';
+import { NFTVariant } from '@thxnetwork/common/lib/types';
 
 @Component({
     components: {
@@ -62,51 +63,45 @@ import type { IERC1155s, TERC1155 } from '@thxnetwork/dashboard/types/erc1155';
 })
 export default class BaseDropdownSelectERC721 extends Vue {
     ChainId = ChainId;
-    token: TERC721 | TERC1155 | null = null;
     tokenList: TERC721[] = [];
 
     erc721s!: IERC721s;
     erc1155s!: IERC1155s;
 
-    @Prop({ required: false }) erc721!: TERC721;
-    @Prop({ required: false }) erc1155!: TERC1155;
+    @Prop({ required: false }) nft!: TERC1155 | TERC721;
     @Prop() chainId!: ChainId;
 
     get hasNFTs() {
         return !!Object.values(this.erc721s).length || !!Object.values(this.erc1155s).length;
     }
 
-    async mounted() {
-        if (this.erc721) this.token = this.erc721;
-        if (this.erc1155) this.token = this.erc1155;
+    get token() {
+        if (!this.nft) return;
+        switch (this.nft.variant) {
+            case NFTVariant.ERC721: {
+                return this.erc721s[this.nft._id];
+            }
+            case NFTVariant.ERC1155: {
+                return this.erc1155s[this.nft._id];
+            }
+        }
+    }
 
+    async mounted() {
         this.$store.dispatch('erc721/list').then(() => {
             for (const id in this.erc721s) {
-                this.$store.dispatch('erc721/read', id).then(() => {
-                    const erc721 = this.erc721s[id] as unknown as TERC721;
-                    if (!this.token && erc721.chainId === this.chainId) {
-                        this.token = erc721;
-                        this.$emit('selected', this.token);
-                    }
-                });
+                this.$store.dispatch('erc721/read', id);
             }
         });
         this.$store.dispatch('erc1155/list').then(() => {
             for (const id in this.erc1155s) {
-                this.$store.dispatch('erc1155/read', id).then(() => {
-                    const erc1155 = this.erc1155s[id] as unknown as TERC1155;
-                    if (!this.token && erc1155.chainId === this.chainId) {
-                        this.token = erc1155;
-                        this.$emit('selected', this.token);
-                    }
-                });
+                this.$store.dispatch('erc1155/read', id);
             }
         });
     }
 
     onTokenListItemClick(token: TERC721 | TERC1155 | null) {
-        this.token = token;
-        this.$emit('selected', this.token);
+        this.$emit('selected', token);
     }
 }
 </script>

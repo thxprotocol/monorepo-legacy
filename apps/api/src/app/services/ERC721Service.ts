@@ -1,7 +1,7 @@
 import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
 import { TransactionReceipt } from 'web3-eth-accounts/node_modules/web3-core';
 import { getByteCodeForContractName, getContractFromName } from '@thxnetwork/api/config/contracts';
-import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
+import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { ERC721, ERC721Document, IERC721Updates } from '@thxnetwork/api/models/ERC721';
 import { ERC721Metadata, ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
 import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
@@ -24,6 +24,7 @@ import TransactionService from './TransactionService';
 import IPFSService from './IPFSService';
 import WalletService from './WalletService';
 import { toChecksumAddress } from 'web3-utils';
+import { ERC721Perk } from '../models/ERC721Perk';
 
 const contractName = 'NonFungibleToken';
 
@@ -80,8 +81,13 @@ export async function findById(id: string): Promise<ERC721Document> {
     return erc721;
 }
 
-export async function findBySub(sub: string): Promise<ERC721Document[]> {
-    return ERC721.find({ sub });
+export async function findBySub(sub: string, includeIsArchived: boolean): Promise<ERC721Document[]> {
+    const pools = await PoolService.getAllBySub(sub, includeIsArchived);
+    const nftRewards = await ERC721Perk.find({ poolId: pools.map((p) => String(p._id)) });
+    const erc721Ids = nftRewards.map((c) => c.erc721Id);
+    const erc721s = await ERC721.find({ sub, archived: includeIsArchived });
+
+    return erc721s.concat(await ERC721.find({ _id: erc721Ids }));
 }
 
 export async function deleteMetadata(id: string) {

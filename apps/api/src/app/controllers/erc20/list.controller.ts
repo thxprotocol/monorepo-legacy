@@ -1,4 +1,4 @@
-import ERC20 from '@thxnetwork/api/models/ERC20';
+import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import { Request, Response } from 'express';
 import { query } from 'express-validator';
 
@@ -18,7 +18,7 @@ export const controller = async (req: Request, res: Response) => {
     }
     */
     const archived = req.query.archived ? JSON.parse(String(req.query.archived)) : false;
-    const erc20s = await ERC20.find({ sub: req.auth.sub, archived });
+    const erc20s = await ERC20Service.findBySub(req.auth.sub, archived);
 
     return res.send(erc20s.map(({ _id }) => _id));
 };
