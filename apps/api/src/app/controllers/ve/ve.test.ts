@@ -132,30 +132,30 @@ describe('VESytem', () => {
             );
         });
 
-        // it('Deposit', async () => {
-        //     const endTimestamp = Math.ceil(Date.now() / 1000) + 60 * 60 * 24 * 12; // 12 weeks from now
-        //     const { status, body } = await user
-        //         .post('/v1/ve/deposit')
-        //         .set({ Authorization: widgetAccessToken })
-        //         .send({ amountInWei, veAddress: vethx.address, bptAddress: testBPT.address, endTimestamp });
-        //     expect(body.safeTxHash).toBeDefined();
-        //     expect(status).toBe(201);
+        it('Deposit', async () => {
+            const endTimestamp = Math.ceil(Date.now() / 1000) + 60 * 60 * 24 * 12; // 12 weeks from now
+            const { status, body } = await user
+                .post('/v1/ve/deposit')
+                .set({ Authorization: widgetAccessToken })
+                .send({ amountInWei, veAddress: vethx.address, bptAddress: testBPT.address, endTimestamp });
+            expect(body.safeTxHash).toBeDefined();
+            expect(status).toBe(201);
 
-        //     const { signature } = await signTxHash(safeWallet.address, body.safeTxHash, userWalletPrivateKey);
-        //     await user
-        //         .post('/v1/account/wallet/confirm')
-        //         .set({ Authorization: widgetAccessToken })
-        //         .send({ chainId: ChainId.Hardhat, safeTxHash: body.safeTxHash, signature })
-        //         .expect(200);
-        // });
+            const { signature } = await signTxHash(safeWallet.address, body.safeTxHash, userWalletPrivateKey);
+            await user
+                .post('/v1/account/wallet/confirm')
+                .set({ Authorization: widgetAccessToken })
+                .send({ chainId: ChainId.Hardhat, safeTxHash: body.safeTxHash, signature })
+                .expect(200);
+        });
 
-        // it('Wait for locked amount', async () => {
-        //     await poll(
-        //         () => vethx.locked(safeWallet.address),
-        //         (result: { amount: BigNumber }) => BigNumber.from(result.amount).eq(0),
-        //         1000,
-        //     );
-        // });
+        it('Wait for locked amount', async () => {
+            await poll(
+                () => vethx.locked(safeWallet.address),
+                (result: { amount: BigNumber }) => BigNumber.from(result.amount).eq(0),
+                1000,
+            );
+        });
 
         // it('Confirm Deposit ', async () => {
         //     const { signature } = await signTxHash(safeWallet.address, safeTxHash, userWalletPrivateKey);

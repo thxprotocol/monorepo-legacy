@@ -24,7 +24,7 @@ export const controller = async (req: Request, res: Response) => {
     // Check sufficient BPT approval
     const bpt = new web3.eth.Contract(contractArtifacts['BPTToken'].abi, req.body.bptAddress);
     const amount = await bpt.methods.allowance(wallet.address, req.body.veAddress).call();
-    if (BigNumber.from(amount).gte(req.body.amountInWei)) throw new ForbiddenError('Insufficient allowance');
+    if (BigNumber.from(amount).lt(req.body.amountInWei)) throw new ForbiddenError('Insufficient allowance');
 
     const ve = new web3.eth.Contract(contractArtifacts['VotingEscrow'].abi, req.body.veAddress);
 

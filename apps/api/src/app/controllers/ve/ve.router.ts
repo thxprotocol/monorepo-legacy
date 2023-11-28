@@ -1,7 +1,7 @@
 import express from 'express';
 import { assertRequestInput } from '@thxnetwork/api/middlewares';
-import CreateVEDeposit from './deposit/post.controller';
 import CreateVEApprove from './approve/post.controller';
+import CreateVEDeposit from './deposit/post.controller';
 
 const router = express.Router();
 
