@@ -32,6 +32,7 @@ import webhooksRouter from './webhooks/webhooks.router';
 import widgetsRouter from './widgets/widgets.router';
 import web3QuestsRouter from './web3-quests/web3-quests.router';
 import dataRouter from './data/data.router';
+import veRouter from './ve/ve.router';
 import { checkJwt, corsHandler } from '@thxnetwork/api/middlewares';
 
 const router = express.Router();
@@ -73,5 +74,6 @@ router.use('/upload', uploadRouter);
 router.use('/clients', clientRouter);
 router.use('/wallets', walletsRouter);
 router.use('/webhooks', webhooksRouter);
+router.use('/ve', veRouter);
 
 export default router;

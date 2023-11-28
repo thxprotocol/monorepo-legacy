@@ -19,6 +19,14 @@ import { HARDHAT_NAME, POLYGON_NAME } from '@thxnetwork/api/config/secrets';
 import { ContractNetworksConfig } from '@safe-global/protocol-kit';
 import { SafeVersion } from '@safe-global/safe-core-sdk-types';
 
+import BPTToken from './contracts/BPTToken.json';
+import RewardDistributor from './contracts/RewardDistributor.json';
+import SmartWalletWhitelist from './contracts/SmartWalletWhitelist.json';
+import VotingEscrow from './contracts/VotingEscrow.json';
+import Launchpad from './contracts/Launchpad.json';
+import TestToken from './contracts/TestToken.json';
+import RewardFaucet from './contracts/RewardFaucet.json';
+
 export const safeVersion: SafeVersion = '1.3.0';
 
 export const contractNetworks = {
@@ -33,6 +41,16 @@ export const contractNetworks = {
         simulateTxAccessorAddress: '0x',
     },
 } as ContractNetworksConfig;
+
+export const contractArtifacts: { [contractName: string]: { abi: any; bytecode: string } } = {
+    BPTToken,
+    TestToken,
+    RewardFaucet,
+    RewardDistributor,
+    SmartWalletWhitelist,
+    VotingEscrow,
+    Launchpad,
+};
 
 export const getContractConfig = (
     chainId: ChainId,
