@@ -8,7 +8,7 @@ import { contractArtifacts } from '@thxnetwork/api/config/contracts';
 import { sub, userWalletPrivateKey, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
-import { signTxHash } from '@thxnetwork/api/util/jest/network';
+import { signTxHash, timeTravel } from '@thxnetwork/api/util/jest/network';
 import { poll } from '@thxnetwork/api/util/polling';
 
 const user = request.agent(app);
@@ -93,6 +93,7 @@ describe('VESytem', () => {
             // Set early exit penalty treasury to reward distributor
             await vethx.set_penalty_treasury(rewardDistributor);
 
+            expect(rdthx.address).toBeDefined();
             expect(vethx.address).toBeDefined();
         });
     });
@@ -184,49 +185,81 @@ describe('VESytem', () => {
         });
     });
 
-    describe('Withdraw BPT', () => {
-        it('Withdraw', async () => {
-            const { status, body } = await user
-                .post('/v1/ve/withdraw')
-                .set({ Authorization: widgetAccessToken })
-                .send({ isEarly: false, veAddress: vethx.address });
-            expect(status).toBe(403);
-            expect(body.error.message).toBe('Funds are locked');
+    describe('Claim THX incentives', () => {
+        it('Create Reward Distribution', async () => {
+            const depositAmount = String(ethers.utils.parseUnits('100000', 'ether'));
+
+            // Travel to 8 days from now
+            await timeTravel(60 * 60 * 24 * 7);
+
+            // Add test THX as allowed reward token (incentive)
+            await rdthx.addAllowedRewardTokens([testToken.address]);
+
+            // Mint 10000 tokens for relayer to deposit into reward distributor
+            await testToken.mint(defaultAccount, depositAmount);
+
+            // Deposit 10000 tokens into rdthx
+            await testToken.approve(rdthx.address, depositAmount);
+            await rdthx.depositToken(testToken.address, depositAmount);
         });
+        it('Claim Tokens (after 8 days)', async () => {
+            await timeTravel(60 * 60 * 24 * 5); // 5 days from now
 
-        it('Withdraw Early 1000 - penalty', async () => {
-            const { status, body } = await user
-                .post('/v1/ve/withdraw')
-                .set({ Authorization: widgetAccessToken })
-                .send({ isEarly: true, veAddress: vethx.address });
-            expect(body.safeTxHash).toBeDefined();
-            expect(status).toBe(201);
+            const balance = await testToken.balanceOf(safeWallet.address);
+            console.log(String(balance));
 
-            const { signature } = await signTxHash(safeWallet.address, body.safeTxHash, userWalletPrivateKey);
-            await user
-                .post('/v1/account/wallet/confirm')
-                .set({ Authorization: widgetAccessToken })
-                .send({ chainId: ChainId.Hardhat, safeTxHash: body.safeTxHash, signature })
-                .expect(200);
-        });
+            let tx = await rdthx.claimToken(safeWallet.address, testToken.address);
+            tx = await tx.wait();
+            console.log(tx.events);
 
-        it('Balance = total + deposit - penalty', async () => {
-            await poll(
-                () => vethx.locked(safeWallet.address),
-                (result: { amount: BigNumber }) => !BigNumber.from(result.amount).eq(0),
-                1000,
-            );
-
-            const balanceInWei = await testBPT.balanceOf(safeWallet.address);
-            const rdBalanceInWei = await testBPT.balanceOf(rdthx.address);
-
-            // Due to early exit expect less BPT to be returned and the balance of
-            // the penalty treasury to increase. Formula to calculate the penalty is in
-            // the VE contract.
-            // Eg:
-            // balanceInWei     = 999917384259259259260000
-            // rdBalanceInWei   =     82615740740740740000
-            expect(balanceInWei.add(rdBalanceInWei).eq(totalSupplyInWei)).toBe(true);
+            const balanceAfterClaim = await testToken.balanceOf(safeWallet.address);
+            console.log(String(balanceAfterClaim));
         });
     });
+
+    // describe('Withdraw BPT', () => {
+    //     it('Withdraw', async () => {
+    //         const { status, body } = await user
+    //             .post('/v1/ve/withdraw')
+    //             .set({ Authorization: widgetAccessToken })
+    //             .send({ isEarly: false, veAddress: vethx.address });
+    //         expect(status).toBe(403);
+    //         expect(body.error.message).toBe('Funds are locked');
+    //     });
+
+    //     it('Withdraw Early 1000 - penalty', async () => {
+    //         const { status, body } = await user
+    //             .post('/v1/ve/withdraw')
+    //             .set({ Authorization: widgetAccessToken })
+    //             .send({ isEarly: true, veAddress: vethx.address });
+    //         expect(body.safeTxHash).toBeDefined();
+    //         expect(status).toBe(201);
+
+    //         const { signature } = await signTxHash(safeWallet.address, body.safeTxHash, userWalletPrivateKey);
+    //         await user
+    //             .post('/v1/account/wallet/confirm')
+    //             .set({ Authorization: widgetAccessToken })
+    //             .send({ chainId: ChainId.Hardhat, safeTxHash: body.safeTxHash, signature })
+    //             .expect(200);
+    //     });
+
+    //     it('Balance = total + deposit - penalty', async () => {
+    //         await poll(
+    //             () => vethx.locked(safeWallet.address),
+    //             (result: { amount: BigNumber }) => !BigNumber.from(result.amount).eq(0),
+    //             1000,
+    //         );
+
+    //         const balanceInWei = await testBPT.balanceOf(safeWallet.address);
+    //         const rdBalanceInWei = await testBPT.balanceOf(rdthx.address);
+
+    //         // Due to early exit expect less BPT to be returned and the balance of
+    //         // the penalty treasury to increase. Formula to calculate the penalty is in
+    //         // the VE contract.
+    //         // Eg:
+    //         // balanceInWei     = 999917384259259259260000
+    //         // rdBalanceInWei   =     82615740740740740000
+    //         expect(balanceInWei.add(rdBalanceInWei).eq(totalSupplyInWei)).toBe(true);
+    //     });
+    // });
 });

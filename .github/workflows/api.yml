@@ -54,7 +54,7 @@ jobs:
             - name: Start Safe Transaction Service
               run: |
                   docker compose --env-file=.env.example -f docker-compose.safe.yml up -d --remove-orphans
-                  docker compose exec txs-web python manage.py migrate
+                  docker compose exec txs-web python manage.py insert_safe_master_copy --address "0xC44951780f195Ed71145e3d0d2F25726A097C348"
                   sudo chmod -R a+rwx ./docker/data
 
             - name: Run Tests

@@ -54,7 +54,7 @@ services:
         working_dir: /app
         volumes:
             - nginx-shared-txs:/nginx
-            - ./scripts/0078_insert_safe_master_copy.py:/app/safe_transaction_service/history/migrations/0078_insert_safe_master_copy.py
+            - ./scripts/insert_safe_master_copy.py:/app/safe_transaction_service/history/management/commands/insert_safe_master_copy.py
         command: docker/web/run_web.sh
 
     txs-worker-indexer: &txs-worker
