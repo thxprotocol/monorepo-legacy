@@ -17,7 +17,6 @@ export async function updatePendingTransactions() {
             // Transactions is proposed and confirmed by the relayer, awaiting user wallet confirmation
             case TransactionState.Confirmed: {
                 if (!tx.walletId) continue;
-                console.log(tx);
 
                 const wallet = await Wallet.findById(tx.walletId);
 
