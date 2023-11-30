@@ -36,7 +36,8 @@ describe('VESytem', () => {
         testToken!: Contract,
         smartCheckerList!: Contract,
         vethx!: Contract,
-        rdthx!: Contract;
+        rdthx!: Contract,
+        rfthx!: Contract;
 
     describe('Init system', () => {
         it('Deploy Tokens', async () => {
@@ -75,11 +76,12 @@ describe('VESytem', () => {
             tx = await tx.wait();
 
             const event = tx.events.find((event: any) => event.event == 'VESystemCreated');
-            const { votingEscrow, rewardDistributor, admin } = event.args;
+            const { votingEscrow, rewardDistributor, rewardFaucet, admin } = event.args;
             expect(admin).toBe(defaultAccount);
 
             vethx = new ethers.Contract(votingEscrow, contractArtifacts['VotingEscrow'].abi, signer);
             rdthx = new ethers.Contract(rewardDistributor, contractArtifacts['RewardDistributor'].abi, signer);
+            rfthx = new ethers.Contract(rewardFaucet, contractArtifacts['RewardFaucet'].abi, signer);
             smartCheckerList = await deploy('SmartWalletWhitelist', [defaultAccount]);
             expect(smartCheckerList.address).toBeDefined();
 
@@ -186,10 +188,10 @@ describe('VESytem', () => {
     });
 
     describe('Claim THX incentives', () => {
-        it('Create Reward Distribution', async () => {
+        it('Create Reward Distribution after first week', async () => {
             const depositAmount = String(ethers.utils.parseUnits('100000', 'ether'));
 
-            // Travel to 8 days from now
+            // Travel past first week else this throws "Reward distribution has not started yet"
             await timeTravel(60 * 60 * 24 * 7);
 
             // Add test THX as allowed reward token (incentive)
@@ -199,11 +201,17 @@ describe('VESytem', () => {
             await testToken.mint(defaultAccount, depositAmount);
 
             // Deposit 10000 tokens into rdthx
-            await testToken.approve(rdthx.address, depositAmount);
-            await rdthx.depositToken(testToken.address, depositAmount);
+            await testToken.approve(rfthx.address, depositAmount);
+            await rfthx.depositEqualWeeksPeriod(testToken.address, depositAmount, '4');
+
+            console.log(await rfthx.getUpcomingRewardsForNWeeks(testToken.address, 0));
+            console.log(await rfthx.getUpcomingRewardsForNWeeks(testToken.address, 1));
+            console.log(await rfthx.getUpcomingRewardsForNWeeks(testToken.address, 2));
+            console.log(await rfthx.getUpcomingRewardsForNWeeks(testToken.address, 4));
         });
         it('Claim Tokens (after 8 days)', async () => {
-            await timeTravel(60 * 60 * 24 * 5); // 5 days from now
+            // Travel pas end date of the first reward eligible week
+            await timeTravel(60 * 60 * 24 * 8);
 
             const balance = await testToken.balanceOf(safeWallet.address);
             console.log(String(balance));
@@ -211,6 +219,9 @@ describe('VESytem', () => {
             let tx = await rdthx.claimToken(safeWallet.address, testToken.address);
             tx = await tx.wait();
             console.log(tx.events);
+
+            const event = tx.events.find((ev) => e.event === 'TokenCheckpointed');
+            expect(event).toBeDefined();
 
             const balanceAfterClaim = await testToken.balanceOf(safeWallet.address);
             console.log(String(balanceAfterClaim));
