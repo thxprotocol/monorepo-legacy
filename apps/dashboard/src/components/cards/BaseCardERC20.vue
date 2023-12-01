@@ -19,12 +19,12 @@
                     {{ erc20.totalSupply }}
                 </strong>
             </p>
-            <p class="m-0">
+            <!-- <p class="m-0">
                 <span class="text-muted">Treasury</span><br />
                 <strong class="font-weight-bold h3 text-primary">
                     {{ erc20.adminBalance }}
                 </strong>
-            </p>
+            </p> -->
         </template>
     </base-card>
 </template>
