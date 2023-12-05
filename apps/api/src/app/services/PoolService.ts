@@ -8,7 +8,6 @@ import { diamondSelectors, getDiamondCutForContractFacets, updateDiamondContract
 import { currentVersion } from '@thxnetwork/contracts/exports';
 import { TransactionReceipt } from 'web3-eth-accounts/node_modules/web3-core';
 import { TAssetPoolDeployCallbackArgs } from '@thxnetwork/api/types/TTransaction';
-import { createDummyContents } from '../util/rewards';
 import { PoolSubscription, PoolSubscriptionDocument } from '../models/PoolSubscription';
 import { logger } from '../util/logger';
 import { TAccount } from '@thxnetwork/types/interfaces';
@@ -63,14 +62,9 @@ async function deploy(
     sub: string,
     chainId: ChainId,
     title: string,
-    forceSync = true,
-    dummyContent = true,
     startDate: Date,
     endDate?: Date,
 ): Promise<AssetPoolDocument> {
-    const factory = getContract(chainId, 'Factory', currentVersion);
-    const variant = 'defaultDiamond';
-    const poolFacetContracts = diamondContracts(chainId, variant);
     const pool = await AssetPool.create({
         sub,
         chainId,
@@ -106,36 +100,7 @@ async function deploy(
         theme: JSON.stringify({ elements: DEFAULT_ELEMENTS, colors: DEFAULT_COLORS }),
     });
 
-    if (dummyContent) {
-        await createDummyContents(pool);
-    }
-
-    const txId = await TransactionService.sendAsync(
-        factory.options.address,
-        factory.methods.deploy(getDiamondCutForContractFacets(poolFacetContracts, [])),
-        pool.chainId,
-        forceSync,
-        {
-            type: 'assetPoolDeployCallback',
-            args: { chainId, assetPoolId: String(pool._id) },
-        },
-    );
-
-    return AssetPool.findByIdAndUpdate(
-        pool._id,
-        { 'transactions': [txId], 'settings.slug': String(pool._id) },
-        { new: true },
-    );
-}
-
-async function deployCallback(args: TAssetPoolDeployCallbackArgs, receipt: TransactionReceipt) {
-    const { assetPoolId, chainId } = args;
-    const contract = getContract(chainId, 'Factory');
-    const pool = await getById(assetPoolId);
-    const events = parseLogs(contract.options.jsonInterface, receipt.logs);
-    const event = assertEvent('DiamondDeployed', events);
-    pool.address = event.args.diamond;
-    await pool.save();
+    return AssetPool.findByIdAndUpdate(pool._id, { 'settings.slug': String(pool._id) }, { new: true });
 }
 
 async function getAllBySub(sub: string, includeIsArchived?: boolean) {
@@ -154,38 +119,8 @@ function getAll() {
     return AssetPool.find({});
 }
 
-function findByAddress(address: string) {
-    return AssetPool.findOne({
-        address: address,
-    });
-}
-
 async function countByNetwork(chainId: ChainId) {
     return AssetPool.countDocuments({ chainId });
-}
-
-async function contractVersionVariant(assetPool: AssetPoolDocument) {
-    const permutations = Object.values(poolFacetAdressesPermutations(assetPool.chainId));
-    const facets = await assetPool.contract.methods.facets().call();
-
-    const facetAddresses = facets
-        .filter((facet: any) => !facet.functionSelectors.every((sel: string) => diamondSelectors.includes(sel)))
-        .map((facet: any) => facet.facetAddress);
-
-    const match = permutations.find(
-        (permutation) => permutation.facetAddresses.sort().join('') === facetAddresses.sort().join(''),
-    );
-    return match ? pick(match, ['version', 'variant']) : { version: 'unknown', variant: 'unknown' };
-}
-
-async function updateAssetPool(pool: AssetPoolDocument, version?: string) {
-    const tx = await updateDiamondContract(pool.chainId, pool.contract, 'defaultDiamond', version);
-
-    pool.version = version;
-
-    await pool.save();
-
-    return tx;
 }
 
 async function find(model: any, pool: AssetPoolDocument) {
@@ -305,13 +240,9 @@ export default {
     getById,
     getByAddress,
     deploy,
-    deployCallback,
     getAllBySub,
     getAll,
-    findByAddress,
     countByNetwork,
-    contractVersionVariant,
-    updateAssetPool,
     getParticipantCount,
     getQuestCount,
     getRewardCount,

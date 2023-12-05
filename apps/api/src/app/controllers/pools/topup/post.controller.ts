@@ -10,6 +10,14 @@ import PoolService from '@thxnetwork/api/services/PoolService';
 
 export const validation = [param('id').isMongoId(), body('erc20Id').exists().isMongoId(), body('amount').exists()];
 
+// TODO
+// 1. Create Split
+// 2. TransferFrom USDC to Splitter
+// 3. Receivers [campaignSafe, companySafe], [70, 30]
+// 4. Campaign Safe Deposit 100% in LP
+// 5. Transfer 75% to RewardDistributor
+// 6. Hold 25% for Quest Incentive Distribution (weekly recurring job with multisend)
+
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
     const pool = await PoolService.getById(req.header('X-PoolId'));

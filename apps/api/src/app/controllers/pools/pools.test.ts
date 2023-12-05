@@ -30,27 +30,6 @@ describe('Default Pool', () => {
 
     afterAll(afterAllCallback);
 
-    describe('Existing ERC20 contract', () => {
-        it('TokenDeployed event', async () => {
-            const { options } = getContract(ChainId.Hardhat, 'LimitedSupplyToken', currentVersion);
-            tokenContract = await TransactionService.deploy(
-                options.jsonInterface,
-                getByteCodeForContractName('LimitedSupplyToken'),
-                [tokenName, tokenSymbol, userWallet.address, tokenTotalSupply],
-                ChainId.Hardhat,
-            );
-        });
-        it('import token', (done) => {
-            user.post('/v1/erc20/token')
-                .set('Authorization', dashboardAccessToken)
-                .send({
-                    address: tokenContract.options.address,
-                    chainId: ChainId.Hardhat,
-                })
-                .expect(201, done);
-        });
-    });
-
     describe('POST /pools', () => {
         it('HTTP 201 (success)', (done) => {
             user.post('/v1/pools')

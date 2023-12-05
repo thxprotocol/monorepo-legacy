@@ -1,10 +1,10 @@
-import { body, check } from 'express-validator';
 import { Request, Response } from 'express';
+import { body, check } from 'express-validator';
+import { ERC20Type } from '@thxnetwork/types/enums';
+import ERC20PerkService from '@thxnetwork/api/services/ERC20PerkService';
 import ImageService from '@thxnetwork/api/services/ImageService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
-import { ERC20Type } from '@thxnetwork/types/enums';
-import ERC20PerkService from '@thxnetwork/api/services/ERC20PerkService';
 
 const validation = [
     body('title').exists().isString(),

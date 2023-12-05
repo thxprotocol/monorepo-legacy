@@ -42,7 +42,7 @@ function getTwitterUsername(url: string) {
 }
 
 async function createPool(sub: string, chainId: ChainId, title: string, gameUrl: string) {
-    const pool = await PoolService.deploy(sub, chainId, title, false, false, new Date());
+    const pool = await PoolService.deploy(sub, chainId, title, new Date());
 
     await Widget.create({
         uuid: v4(),

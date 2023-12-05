@@ -1,7 +1,7 @@
 import { Wallet as WalletModel, WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { ChainId } from '@thxnetwork/types/enums';
 import { getProvider } from '@thxnetwork/api/util/network';
-import { contractNetworks } from '@thxnetwork/api/config/contracts';
+import { contractNetworks, safeVersion } from '@thxnetwork/api/config/contracts';
 import { toChecksumAddress } from 'web3-utils';
 import { MONGODB_URI } from '@thxnetwork/api/config/secrets';
 import Safe, { SafeAccountConfig, SafeFactory } from '@safe-global/protocol-kit';
@@ -17,6 +17,7 @@ import AccountProxy from '../proxies/AccountProxy';
 import { agenda, JobType } from '@thxnetwork/api/util/agenda';
 import { MongoClient } from 'mongodb';
 import { Job } from '@hokify/agenda';
+import { AssetPoolDocument } from '../models/AssetPool';
 
 export const Wallet = WalletModel;
 
@@ -26,31 +27,39 @@ function getSafeSDK(chainId: ChainId) {
 }
 
 function reset(wallet: WalletDocument, userWalletAddress: string) {
-    return deploy(wallet, userWalletAddress);
+    const { defaultAccount } = getProvider(wallet.chainId);
+    return deploy(wallet, [toChecksumAddress(defaultAccount), toChecksumAddress(userWalletAddress)]);
 }
 
 async function create(
-    data: { chainId: ChainId; sub: string; safeVersion?: SafeVersion; address?: string },
+    data: { chainId: ChainId; sub: string; safeVersion?: SafeVersion; address?: string; poolId?: string },
     userWalletAddress?: string,
 ) {
-    const { safeVersion, chainId, sub, address } = data;
-    const wallet = await Wallet.create({ sub, chainId, address, safeVersion });
+    const { safeVersion, chainId, sub, address, poolId } = data;
+    const { defaultAccount } = getProvider(chainId);
+    const wallet = await Wallet.create({ sub, chainId, address, safeVersion, poolId });
+
     // Concerns a Metamask account so we do not deploy and return early
     if (!safeVersion && address) return wallet;
 
-    return deploy(wallet, userWalletAddress);
+    // Add relayer address and consider this a campaign safe
+    const signers = [toChecksumAddress(defaultAccount)];
+    // Add user address as a signer and consider this a participant safe
+    if (!poolId) signers.push(toChecksumAddress(userWalletAddress));
+
+    return deploy(wallet, signers);
 }
 
-async function deploy(wallet: WalletDocument, userWalletAddress: string) {
-    const { defaultAccount, ethAdapter } = getProvider(wallet.chainId);
+async function deploy(wallet: WalletDocument, owners: string[]) {
+    const { ethAdapter } = getProvider(wallet.chainId);
     const safeFactory = await SafeFactory.create({
         safeVersion: wallet.safeVersion as SafeVersion,
         ethAdapter,
         contractNetworks,
     });
     const safeAccountConfig: SafeAccountConfig = {
-        owners: [toChecksumAddress(defaultAccount), toChecksumAddress(userWalletAddress)],
-        threshold: 2,
+        owners,
+        threshold: owners.length,
     };
     const safeAddress = toChecksumAddress(await safeFactory.predictSafeAddress(safeAccountConfig));
 
@@ -167,6 +176,15 @@ async function findPrimary(sub: string, chainId: ChainId) {
         ...(isMetamask
             ? { version: { $exists: false }, safeVersion: { $exists: false } }
             : { address: { $exists: true, $ne: '' }, safeVersion: '1.3.0' }),
+    });
+}
+
+async function findOneByPool(pool: AssetPoolDocument, chainId: ChainId) {
+    return await Wallet.findOne({
+        chainId,
+        sub: pool.sub,
+        poolId: String(pool._id),
+        safeVersion,
     });
 }
 
@@ -289,4 +307,5 @@ export default {
     findOneByQuery,
     getTransaction,
     executeTransaction,
+    findOneByPool,
 };

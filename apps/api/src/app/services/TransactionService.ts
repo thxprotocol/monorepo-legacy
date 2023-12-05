@@ -279,9 +279,6 @@ async function executeCallback(tx: TransactionDocument, receipt: TransactionRece
         case 'ERC1155DeployCallback':
             await ERC1155Service.deployCallback(tx.callback.args, receipt);
             break;
-        case 'assetPoolDeployCallback':
-            await PoolService.deployCallback(tx.callback.args, receipt);
-            break;
         case 'erc721TokenMintCallback':
             await ERC721Service.mintCallback(tx.callback.args, receipt);
             break;
