@@ -9,6 +9,7 @@ import path from 'path';
 import { assetsPath } from '../util/path';
 import ejs from 'ejs';
 import { sendMail } from '@thxnetwork/common/lib/mail';
+import { logger } from '../util/logger';
 
 const mailTemplatePath = path.join(assetsPath, 'views', 'email');
 
@@ -22,7 +23,7 @@ const send = async (to: string, subject: string, htmlContent: string, link = { s
     );
 
     if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY || NODE_ENV === 'test' || CYPRESS_EMAIL === to) {
-        console.error({ message: 'Not sending e-mail', link });
+        logger.error({ message: 'Not sending e-mail', link });
         return;
     }
 

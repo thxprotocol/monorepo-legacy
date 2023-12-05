@@ -5,6 +5,7 @@ import ERC20PerkService from '@thxnetwork/api/services/ERC20PerkService';
 import ImageService from '@thxnetwork/api/services/ImageService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
+import SafeService from '@thxnetwork/api/services/SafeService';
 
 const validation = [
     body('title').exists().isString(),
@@ -33,10 +34,9 @@ const controller = async (req: Request, res: Response) => {
 
     // Check if erc20 already is mintable by pool
     if (erc20.type === ERC20Type.Unlimited) {
-        const isMinter = await ERC20Service.isMinter(erc20, pool.address);
-        if (!isMinter) {
-            await ERC20Service.addMinter(erc20, pool.address);
-        }
+        const safe = await SafeService.findOneByPool(pool, pool.chainId);
+        const isMinter = await ERC20Service.isMinter(erc20, safe.address);
+        if (!isMinter) await ERC20Service.addMinter(erc20, safe.address);
     }
 
     const perk = await ERC20PerkService.create(pool, { ...req.body, image });

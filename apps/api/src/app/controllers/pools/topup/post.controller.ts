@@ -7,6 +7,7 @@ import { body, param } from 'express-validator';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
 import PoolService from '@thxnetwork/api/services/PoolService';
+import SafeService from '@thxnetwork/api/services/SafeService';
 
 export const validation = [param('id').isMongoId(), body('erc20Id').exists().isMongoId(), body('amount').exists()];
 
@@ -31,7 +32,8 @@ const controller = async (req: Request, res: Response) => {
     if (Number(balance) < Number(amount)) throw new InsufficientBalanceError();
 
     // Check allowance for admin to ensure throughput
-    const allowance = await erc20.contract.methods.allowance(defaultAccount, pool.address).call();
+    const safe = await SafeService.findOneByPool(pool, pool.chainId);
+    const allowance = await erc20.contract.methods.allowance(defaultAccount, safe.address).call();
     if (Number(allowance) < Number(amount)) {
         await TransactionService.send(
             erc20.contract.options.address,
@@ -42,7 +44,7 @@ const controller = async (req: Request, res: Response) => {
 
     await TransactionService.send(
         erc20.contract.options.address,
-        erc20.contract.methods.transfer(pool.address, amount),
+        erc20.contract.methods.transfer(safe.address, amount),
         erc20.chainId,
     );
 
