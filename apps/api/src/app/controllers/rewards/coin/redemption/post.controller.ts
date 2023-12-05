@@ -6,7 +6,7 @@ import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/
 import { getContractFromName } from '@thxnetwork/api/config/contracts';
 import { BigNumber } from 'ethers';
 import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
-import { ERC20Type } from '@thxnetwork/types/enums';
+import { ChainId, ERC20Type } from '@thxnetwork/types/enums';
 import PointBalanceService, { PointBalance } from '@thxnetwork/api/services/PointBalanceService';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
@@ -52,6 +52,14 @@ const controller = async (req: Request, res: Response) => {
         [ERC20Type.Unknown, ERC20Type.Limited].includes(erc20.type) &&
         BigNumber.from(balanceOfPool).lt(BigNumber.from(amount))
     ) {
+        const owner = await AccountProxy.getById(pool.sub);
+        await MailService.send(
+            owner.email,
+            `⚠️ Out of ${erc20.symbol}!"`,
+            `Not enough ${erc20.symbol} available in campaign contract ${pool.address}. Please top up on ${
+                ChainId[pool.chainId]
+            }`,
+        );
         throw new BadRequestError('Not enough coins available in the pool for this transfer');
     }
 
