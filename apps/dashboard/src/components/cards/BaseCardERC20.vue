@@ -13,12 +13,12 @@
                     {{ erc20.name }}
                 </div>
             </div>
-            <p>
+            <!-- <p>
                 <span class="text-muted">Total supply</span><br />
                 <strong class="font-weight-bold h3 text-primary">
                     {{ erc20.totalSupply }}
                 </strong>
-            </p>
+            </p> -->
             <!-- <p class="m-0">
                 <span class="text-muted">Treasury</span><br />
                 <strong class="font-weight-bold h3 text-primary">
