@@ -23,7 +23,7 @@ export async function updatePendingTransactions() {
                 let pendingTx;
                 try {
                     pendingTx = await SafeService.getTransaction(wallet, tx.safeTxHash);
-                    console.log(`Safe TX Found: ${tx.safeTxHash}`);
+                    logger.debug(`Safe TX Found: ${tx.safeTxHash}`);
                 } catch (error) {
                     logger.error(error);
                 }
@@ -31,7 +31,6 @@ export async function updatePendingTransactions() {
                 // Safes for pools have a single signer (relayer) while safes for end users
                 // have 2 (relayer + web3auth mpc key)
                 const threshold = wallet.poolId ? 1 : 2;
-                console.log(pendingTx, threshold);
                 if (pendingTx && pendingTx.confirmations.length >= threshold) {
                     logger.debug(`Safe TX Confirmed: ${tx.safeTxHash}`);
 
