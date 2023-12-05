@@ -18,7 +18,6 @@ import WalletService, { Wallet } from './WalletService';
 import { ContractName } from '@thxnetwork/contracts/exports';
 import BN from 'bn.js';
 import { ERC20Perk } from '../models/ERC20Perk';
-import { Collaborator } from '../models/Collaborator';
 import PoolService from './PoolService';
 
 function getDeployArgs(erc20: ERC20Document, totalSupply?: string) {

@@ -24,9 +24,8 @@ const controller = async (req: Request, res: Response) => {
         { chainId: req.body.chainId, sub: req.auth.sub, safeVersion, poolId },
         account.address,
     );
-    console.log(safe);
 
-    res.status(201).json(pool);
+    res.status(201).json({ ...pool.toJSON(), address: safe.address, safe });
 };
 
 export default { controller, validation };

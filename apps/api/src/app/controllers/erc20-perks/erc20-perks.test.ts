@@ -14,10 +14,7 @@ const user = request.agent(app);
 describe('ERC20 Perks', () => {
     let poolId: string, erc20: ERC20Document, perk: ERC20PerkDocument;
 
-    beforeAll(async () => {
-        await beforeAllCallback();
-    });
-
+    beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
 
     it('POST /erc20', (done) => {

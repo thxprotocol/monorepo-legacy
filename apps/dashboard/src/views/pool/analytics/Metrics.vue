@@ -139,6 +139,7 @@ export default class ViewAnalyticsMetrics extends Vue {
 
     get metrics() {
         if (!this.analyticsMetrics[this.$route.params.id]) return null;
+        debugger;
         return this.analyticsMetrics[this.$route.params.id];
     }
 
