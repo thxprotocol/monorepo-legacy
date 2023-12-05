@@ -18,14 +18,17 @@ import { ERC1155Document } from '@thxnetwork/api/models/ERC1155';
 import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
 import PerkService from '@thxnetwork/api/services/PerkService';
 import WalletService from '@thxnetwork/api/services/WalletService';
+import SafeService from '@thxnetwork/api/services/SafeService';
 
 const validation = [param('uuid').exists()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Perks Payment']
     const pool = await PoolService.getById(req.header('X-PoolId'));
-    const widget = await Widget.findOne({ poolId: pool._id });
+    const safe = await SafeService.findOneByPool(pool, pool.chainId);
+    if (!safe) throw new NotFoundError('Could not find campaign wallet');
 
+    const widget = await Widget.findOne({ poolId: pool._id });
     const perk = await ERC721Perk.findOne({ uuid: req.params.uuid });
     if (!perk) throw new NotFoundError('Could not find this perk');
     if (!perk.pointPrice) throw new NotFoundError('No point price for this perk has been set.');
@@ -73,7 +76,12 @@ const controller = async (req: Request, res: Response) => {
         // Handle erc721 transfer
         if (perk.erc721Id) {
             token = await ERC721Token.findById(perk.tokenId);
-            token = await ERC721Service.transferFrom(pool, token as ERC721TokenDocument, nft as ERC721Document, wallet);
+            token = await ERC721Service.transferFrom(
+                nft as ERC721Document,
+                safe,
+                wallet.address,
+                token as ERC721TokenDocument,
+            );
         }
 
         // Handle erc1155 transfer

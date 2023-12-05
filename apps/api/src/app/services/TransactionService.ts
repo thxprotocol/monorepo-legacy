@@ -382,4 +382,5 @@ export default {
     execSafeAsync,
     queryTransactionStatusDefender,
     queryTransactionStatusReceipt,
+    executeCallback,
 };

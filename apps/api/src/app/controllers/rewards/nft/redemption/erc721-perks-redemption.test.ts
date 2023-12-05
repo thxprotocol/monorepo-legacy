@@ -19,6 +19,7 @@ import WalletService from '@thxnetwork/api/services/WalletService';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { poll } from '@thxnetwork/api/util/polling';
 import SafeService from '@thxnetwork/api/services/SafeService';
+import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
 
 const user = request.agent(app);
 
@@ -155,6 +156,7 @@ describe('ERC721 Perks Redemtpion', () => {
 
     describe('POST /rewards/nft/:uuid/redemption', () => {
         const balance = 500;
+        let erc721TokenId;
 
         beforeAll(async () => {
             wallet = await WalletService.findPrimary(sub, ChainId.Hardhat);
@@ -170,13 +172,24 @@ describe('ERC721 Perks Redemtpion', () => {
                     expect(body.erc721PerkPayment.perkId).toBe(perk._id);
                     expect(body.erc721PerkPayment.poolId).toBe(pool._id);
                     expect(body.erc721Token).toBeDefined();
-                    expect(body.erc721Token.sub).toBe(sub);
+                    expect(body.erc721Token.state).toBe(ERC721TokenState.Transferring);
                     expect(body.erc721Token.erc721Id).toBe(erc721._id);
-                    expect(body.erc721Token.state).toBe(ERC721TokenState.Transferred);
-                    expect(body.erc721Token.recipient).toBe(wallet.address);
                     expect(body.erc721Token.tokenId).toBeDefined();
+                    erc721TokenId = body.erc721Token._id;
                 })
                 .expect(201, done);
+        });
+
+        it('Wait for sub to change', async () => {
+            await poll(
+                () => ERC721Token.findById(erc721TokenId),
+                (token: ERC721TokenDocument) => token.sub !== sub,
+                1000,
+            );
+            const token = await ERC721Token.findById(erc721TokenId);
+            expect(token.sub).toBe(sub);
+            expect(token.recipient).toBe(wallet.address);
+            expect(token.sub).toBe(sub);
         });
 
         it('GET /point-balances', (done) => {

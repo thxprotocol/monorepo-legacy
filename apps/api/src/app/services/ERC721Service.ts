@@ -1,7 +1,7 @@
 import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
 import { TransactionReceipt } from 'web3-eth-accounts/node_modules/web3-core';
 import { getByteCodeForContractName, getContractFromName } from '@thxnetwork/api/config/contracts';
-import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
+import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { ERC721, ERC721Document, IERC721Updates } from '@thxnetwork/api/models/ERC721';
 import { ERC721Metadata, ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
 import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
@@ -25,6 +25,7 @@ import IPFSService from './IPFSService';
 import WalletService from './WalletService';
 import { toChecksumAddress } from 'web3-utils';
 import { ERC721Perk } from '../models/ERC721Perk';
+import SafeService from './SafeService';
 
 const contractName = 'NonFungibleToken';
 
@@ -298,39 +299,45 @@ export async function transferFromWalletCallback(
 }
 
 export async function transferFrom(
-    pool: AssetPoolDocument,
-    erc721Token: ERC721TokenDocument,
     erc721: ERC721Document,
     wallet: WalletDocument,
-    forceSync = true,
+    to: string,
+    erc721Token: ERC721TokenDocument,
 ): Promise<ERC721TokenDocument> {
-    const txId = await TransactionService.sendAsync(
-        pool.contract.options.address,
-        pool.contract.methods.transferFromERC721(wallet.address, erc721Token.tokenId, erc721.address),
-        pool.chainId,
-        forceSync,
+    const toWallet = await SafeService.findOneByAddress(to);
+    const tx = await TransactionService.sendSafeAsync(
+        wallet,
+        erc721.address,
+        erc721.contract.methods.transferFrom(wallet.address, to, erc721Token.tokenId),
         {
             type: 'erc721nTransferFromCallback',
             args: {
                 erc721Id: String(erc721._id),
                 erc721TokenId: String(erc721Token._id),
-                sub: wallet.sub,
-                assetPoolId: String(pool._id),
+                sub: toWallet && toWallet.sub,
+                assetPoolId: String(wallet.poolId),
             },
         },
     );
-
-    return ERC721Token.findByIdAndUpdate(erc721Token._id, { transactions: [txId] });
+    return await ERC721Token.findByIdAndUpdate(
+        erc721Token._id,
+        {
+            transactions: [String(tx._id)],
+            state: ERC721TokenState.Transferring,
+        },
+        { new: true },
+    );
 }
 
 export async function transferFromCallback(args: TERC721TransferFromCallBackArgs, receipt: TransactionReceipt) {
-    const { assetPoolId, erc721TokenId, sub } = args;
-    const { contract, chainId } = await PoolService.getById(assetPoolId);
-    const events = parseLogs(contract.options.jsonInterface, receipt.logs);
-    const event = assertEvent('ERC721Transferred', events);
-    const wallet = await WalletService.findPrimary(sub, chainId);
+    const { erc721TokenId, sub } = args;
+    const erc721Token = await ERC721Token.findById(erc721TokenId);
+    const erc721 = await ERC721.findById(erc721Token.erc721Id);
+    const events = parseLogs(erc721.contract.options.jsonInterface, receipt.logs);
+    const event = assertEvent('Transfer', events);
+    const wallet = await WalletService.findPrimary(sub, erc721.chainId);
 
-    await ERC721Token.findByIdAndUpdate(erc721TokenId, {
+    await erc721Token.updateOne({
         sub,
         state: ERC721TokenState.Transferred,
         tokenId: Number(event.args.tokenId),

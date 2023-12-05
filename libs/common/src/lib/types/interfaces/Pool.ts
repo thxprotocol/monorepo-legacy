@@ -50,6 +50,7 @@ export type TPool = {
     widget: { domain: string; active: boolean };
     collaborators: TCollaborator[];
     owner: TAccount;
+    safe: TWallet;
     createdAt?: Date;
 };
 
