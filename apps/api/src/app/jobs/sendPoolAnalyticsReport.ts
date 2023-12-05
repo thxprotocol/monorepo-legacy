@@ -42,25 +42,25 @@ export async function sendPoolAnalyticsReport() {
             if (dailyQuest.totalCreated) {
                 html += `<tr>
                 <td><strong>${dailyQuest.totalCreated}x</strong> Daily - ${dailyQuest.totalAmount} pts</td>
-                <td align="right"><a href="${DASHBOARD_URL}/pool/${pool._id}/daily">Manage</a></td>
+                <td align="right"><a href="${DASHBOARD_URL}/pool/${pool._id}/quests">Manage</a></td>
                 `;
             }
             if (inviteQuest.totalCreated) {
                 html += `<tr>
                 <td><strong>${inviteQuest.totalCreated}x</strong> Invite - ${inviteQuest.totalAmount} pts)</td>
-                <td align="right"><a href="${DASHBOARD_URL}/pool/${pool._id}/referrals">Manage</a></td>
+                <td align="right"><a href="${DASHBOARD_URL}/pool/${pool._id}/quests">Manage</a></td>
                 </tr>`;
             }
             if (socialQuest.totalCreated) {
                 html += `<tr>
                 <td><strong>${socialQuest.totalCreated}x</strong> Social - ${socialQuest.totalAmount} pts</td>
-                <td align="right"><a href="${DASHBOARD_URL}/pool/${pool._id}/conditionals">Manage</a></td>
+                <td align="right"><a href="${DASHBOARD_URL}/pool/${pool._id}/quests">Manage</a></td>
                 </tr>`;
             }
             if (customQuest.totalCreated) {
                 html += `<tr>
                 <td><strong>${customQuest.totalCreated}x</strong> Custom - ${customQuest.totalAmount} pts</td>
-                <td align="right"><a href="${DASHBOARD_URL}/pool/${pool._id}/milestone-rewards">Manage</a></td>
+                <td align="right"><a href="${DASHBOARD_URL}/pool/${pool._id}/quests">Manage</a></td>
                 </tr>`;
             }
             html += `</table>`;
@@ -71,13 +71,13 @@ export async function sendPoolAnalyticsReport() {
             if (coinReward.totalCreated) {
                 html += `<tr>
                 <td><strong>${coinReward.totalCreated}x</strong> Coin Rewards (${coinReward.totalAmount} points)</td>
-                <td align="right" ><a href="${DASHBOARD_URL}/pool/${pool._id}/erc20-perks">Manage</a></td>
+                <td align="right" ><a href="${DASHBOARD_URL}/pool/${pool._id}/rewards">Manage</a></td>
                 </tr>`;
             }
             if (nftReward.totalCreated) {
                 html += `<tr>
                 <td><strong>${nftReward.totalCreated}x</strong> NFT Rewards (${nftReward.totalAmount} points)</td>
-                <td align="right"><a href="${DASHBOARD_URL}/pool/${pool._id}/erc721-perks">Manage</a></td>
+                <td align="right"><a href="${DASHBOARD_URL}/pool/${pool._id}/rewards">Manage</a></td>
                 </tr>`;
             }
             html += `</table>`;
@@ -95,7 +95,7 @@ export async function sendPoolAnalyticsReport() {
                 </tr>`;
             }
             html += '</table>';
-            html += `<a href="${DASHBOARD_URL}/pool/${pool._id}/dashboard">Full leaderboard</a>`;
+            html += `<a href="${DASHBOARD_URL}/pool/${pool._id}/participants">All participants</a>`;
 
             await MailService.send(account.email, `🎁 Weekly Digest: "${pool.settings.title}"`, html);
         } catch (error) {

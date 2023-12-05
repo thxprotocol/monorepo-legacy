@@ -33,7 +33,7 @@ describe('Claims', () => {
     beforeAll(async () => {
         await beforeAllCallback();
         const chainId = ChainId.Hardhat;
-        pool = await PoolService.deploy(sub, chainId, 'My Reward Campaign', true, true, new Date());
+        pool = await PoolService.deploy(sub, chainId, 'My Reward Campaign', new Date());
         poolId = String(pool._id);
         erc721 = await ERC721Service.deploy({
             variant: NFTVariant.ERC721,

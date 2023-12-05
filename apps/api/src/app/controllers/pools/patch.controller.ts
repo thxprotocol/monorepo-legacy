@@ -29,7 +29,6 @@ export const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(req.params.id);
     if (!pool) throw new NotFoundError('Could not find the Asset Pool for this id');
 
-    console.log(req.body.settings.slug);
     if (await AssetPool.exists({ '_id': { $ne: pool._id }, 'settings.slug': req.body.settings.slug })) {
         throw new BadRequestError('This slug is in use already.');
     }
