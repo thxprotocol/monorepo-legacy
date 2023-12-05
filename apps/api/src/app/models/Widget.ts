@@ -14,7 +14,7 @@ const widgetSchema = new mongoose.Schema(
         theme: String,
         cssSelector: String,
         active: { default: false, type: Boolean },
-        isPublished: { type: Boolean, default: false },
+        isPublished: { type: Boolean, default: true },
     },
     { timestamps: true },
 );

@@ -110,7 +110,7 @@
                             <strong>Weekly Digest</strong><br />
                             <span class="text-muted">
                                 On Monday we will share campaign performance metrics with
-                                <strong>{{ pool.owner.email }}</strong
+                                <strong v-if="pool.owner">{{ pool.owner.email }}</strong
                                 >.
                             </span>
                         </b-form-checkbox>
