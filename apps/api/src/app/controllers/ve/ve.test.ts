@@ -220,7 +220,7 @@ describe('VESytem', () => {
             tx = await tx.wait();
             console.log(tx.events);
 
-            const event = tx.events.find((ev) => e.event === 'TokenCheckpointed');
+            const event = tx.events.find((ev) => ev.event === 'TokenCheckpointed');
             expect(event).toBeDefined();
 
             const balanceAfterClaim = await testToken.balanceOf(safeWallet.address);
