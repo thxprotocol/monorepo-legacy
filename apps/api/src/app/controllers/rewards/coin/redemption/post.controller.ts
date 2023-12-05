@@ -60,7 +60,9 @@ const controller = async (req: Request, res: Response) => {
                 ChainId[pool.chainId]
             }`,
         );
-        throw new BadRequestError('Not enough coins available in the pool for this transfer');
+        throw new BadRequestError(
+            `We have notified the campaign owner that there is insufficient ${erc20.symbol} in the campaign wallet. Please try again later!`,
+        );
     }
 
     const withdrawal = await WithdrawalService.withdrawFor(pool, erc20, wallet, erc20Perk.amount, false);
