@@ -11,11 +11,11 @@ import {
 import { fromWei, isAddress, toWei } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { addMinutes, subMinutes } from '@thxnetwork/api/util/rewards';
+import { poll } from '@thxnetwork/api/util/polling';
+import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import ERC20, { ERC20Document } from '@thxnetwork/api/models/ERC20';
 import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 import SafeService from '@thxnetwork/api/services/SafeService';
-import { poll } from '@thxnetwork/api/util/polling';
-import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 
 const user = request.agent(app);
 
@@ -132,13 +132,10 @@ describe('ERC20 Perk Payment', () => {
             })
             .expect(200, done);
     });
-
     it('POST /rewards/coin/:uuid/redemption', (done) => {
         user.post(`/v1/rewards/coin/${perkUuid}/redemption`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
             .expect((res: request.Response) => {
-                console.log(res.body);
-                // expect(res.body.tx).toBeDefined();
                 expect(res.body.erc20PerkPayment).toBeDefined();
                 expect(res.body.erc20PerkPayment.poolId).toBe(poolId);
             })

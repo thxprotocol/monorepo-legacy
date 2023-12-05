@@ -43,11 +43,11 @@ async function create(
     if (!safeVersion && address) return wallet;
 
     // Add relayer address and consider this a campaign safe
-    const signers = [toChecksumAddress(defaultAccount)];
+    const owners = [toChecksumAddress(defaultAccount)];
     // Add user address as a signer and consider this a participant safe
-    if (!poolId) signers.push(toChecksumAddress(userWalletAddress));
+    if (userWalletAddress) owners.push(toChecksumAddress(userWalletAddress));
 
-    return deploy(wallet, signers);
+    return await deploy(wallet, owners);
 }
 
 async function deploy(wallet: WalletDocument, owners: string[]) {
