@@ -221,29 +221,27 @@ export async function transferFromCallback(args: TERC1155TransferFromCallbackArg
 }
 
 export async function transferFromWallet(
+    safe: WalletDocument,
     erc1155: ERC1155Document,
     erc1155Token: ERC1155TokenDocument,
     wallet: WalletDocument,
-    to: string,
-    forceSync = true,
 ): Promise<any> {
-    const txId = await TransactionService.sendAsync(
-        wallet.contract.options.address,
-        wallet.contract.methods.transferERC721(erc1155.address, to, erc1155Token.tokenId),
-        wallet.chainId,
-        forceSync,
+    const tx = await TransactionService.sendSafeAsync(
+        safe,
+        erc1155.address,
+        erc1155.contract.methods.transferFrom(safe.address, wallet.address, erc1155Token.tokenId),
         {
             type: 'erc721TransferFromWalletCallback',
             args: {
+                walletId: String(safe._id),
                 erc721Id: String(erc1155._id),
                 erc721TokenId: String(erc1155Token._id),
-                walletId: String(wallet._id),
-                to,
+                to: wallet.address,
             },
         },
     );
 
-    return ERC1155Token.findByIdAndUpdate(erc1155Token._id, { transactions: [txId] }, { new: true });
+    return await ERC1155Token.findByIdAndUpdate(erc1155Token._id, { transactions: [String(tx._id)] }, { new: true });
 }
 
 export async function transferFromWalletCallback(

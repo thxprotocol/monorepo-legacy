@@ -21,6 +21,8 @@ import { CouponRewardDocument } from '../models/CouponReward';
 import { CouponRewardPayment } from '../models/CouponRewardPayment';
 import { DiscordRoleRewardDocument } from '../models/DiscordRoleReward';
 import { DiscordRoleRewardPayment } from '../models/DiscordRoleRewardPayment';
+import { ERC721Metadata } from '../models/ERC721Metadata';
+import { ERC1155Metadata } from '../models/ERC1155Metadata';
 
 export type PerkDocument =
     | ERC20PerkDocument
@@ -57,10 +59,10 @@ export async function verifyOwnership(
 export async function getMetadata(perk: ERC721PerkDocument, token?: ERC721TokenDocument | ERC1155TokenDocument) {
     const metadataId = perk.metadataId || (token && token.metadataId);
     if (perk.erc721Id) {
-        return await ERC721Service.findMetadataById(metadataId);
+        return await ERC721Metadata.findById(metadataId);
     }
     if (perk.erc1155Id) {
-        return await ERC1155Service.findMetadataById(metadataId);
+        return await ERC1155Metadata.findById(metadataId);
     }
 }
 

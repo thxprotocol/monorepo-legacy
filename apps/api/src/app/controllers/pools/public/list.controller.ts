@@ -4,7 +4,6 @@ import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { Widget } from '@thxnetwork/api/models/Widget';
 import { logger } from '@thxnetwork/api/util/logger';
 import { ChainId } from '@thxnetwork/types/enums';
-import BrandService from '@thxnetwork/api/services/BrandService';
 import { query } from 'express-validator';
 import Brand from '@thxnetwork/api/models/Brand';
 

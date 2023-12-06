@@ -7,9 +7,11 @@ export const validation = [param('id').exists(), body('archived').exists().isBoo
 
 export const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721']
-    const erc721 = await ERC721Service.findById(req.params.id);
+    let erc721 = await ERC721Service.findById(req.params.id);
     if (!erc721) throw new NotFoundError('Could not find the token for this id');
-    const result = await ERC721Service.update(erc721, req.body);
-    return res.json(result);
+
+    erc721 = await erc721.updateOne(req.body, { new: true });
+
+    return res.json(erc721);
 };
 export default { controller, validation };

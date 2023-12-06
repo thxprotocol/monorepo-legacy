@@ -3,18 +3,20 @@ import { param } from 'express-validator';
 import { fromWei } from 'web3-utils';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
+import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
+import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
 
 const validation = [param('id').exists().isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721 Token']
-    const token = await ERC721Service.queryMintTransaction(await ERC721Service.findTokenById(req.params.id));
+    const token = await ERC721Service.queryMintTransaction(await ERC721Token.findById(req.params.id));
     if (!token) throw new NotFoundError('ERC721Token not found');
 
     const erc721 = await ERC721Service.findById(token.erc721Id);
     if (!erc721) throw new NotFoundError('ERC721 not found');
 
-    const metadata = await ERC721Service.findMetadataById(token.metadataId);
+    const metadata = await ERC721Metadata.findById(token.metadataId);
     if (!metadata) throw new NotFoundError('ERC721Metadata not found');
 
     const balanceInWei = await erc721.contract.methods.balanceOf(token.recipient).call();

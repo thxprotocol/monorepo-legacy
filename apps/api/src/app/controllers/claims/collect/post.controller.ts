@@ -9,6 +9,7 @@ import ClaimService from '@thxnetwork/api/services/ClaimService';
 import { Claim } from '@thxnetwork/api/models/Claim';
 import WalletService from '@thxnetwork/api/services/WalletService';
 import SafeService from '@thxnetwork/api/services/SafeService';
+import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
 
 const validation = [param('uuid').exists().isString(), query('forceSync').optional().isBoolean()];
 
@@ -35,7 +36,7 @@ const controller = async (req: Request, res: Response) => {
     if (!wallet) throw new NotFoundError('No wallet found for this user');
 
     // Mint an NFT token if the erc721 and metadata for the claim exists.
-    const metadata = await ERC721Service.findMetadataById(perk.metadataId);
+    const metadata = await ERC721Metadata.findById(perk.metadataId);
     if (!metadata) throw new NotFoundError('No metadata found for this claim URL');
 
     const erc721 = await ERC721Service.findById(metadata.erc721Id);

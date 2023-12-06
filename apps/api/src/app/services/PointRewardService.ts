@@ -4,7 +4,7 @@ import { paginatedResults } from '../util/pagination';
 import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
 import { Wallet, WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { PointBalance } from './PointBalanceService';
-import { TPointReward, TAccount, TDiscordMessage } from '@thxnetwork/types/interfaces';
+import { TPointReward, TAccount } from '@thxnetwork/types/interfaces';
 import { RewardConditionPlatform, RewardConditionInteraction, AccessTokenKind } from '@thxnetwork/types/enums';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import TwitterDataProxy from '@thxnetwork/api/proxies/TwitterDataProxy';

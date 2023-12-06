@@ -1,10 +1,6 @@
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
-import { CouponCode, CouponCodeDocument } from '@thxnetwork/api/models/CouponCode';
-import { CouponRewardPayment } from '@thxnetwork/api/models/CouponRewardPayment';
-import { CouponReward } from '@thxnetwork/api/models/CouponReward';
-import { DiscordRoleReward, DiscordRoleRewardDocument } from '@thxnetwork/api/models/DiscordRoleReward';
-import { DiscordRoleRewardPaymentDocument } from '@thxnetwork/api/models/DiscordRoleRewardPayment';
+import { DiscordRoleReward } from '@thxnetwork/api/models/DiscordRoleReward';
 
 const validation = [param('id').isMongoId()];
 
