@@ -55,7 +55,9 @@ export default class TwitterDataProxy {
         const end = new Date(now);
         const [latestTweet] = await this.getLatestTweets(account.sub, start, end);
         if (!latestTweet) return false;
-        if (latestTweet.text.includes(message)) return true;
+        const textA = String(latestTweet.text).toLowerCase().trim();
+        const textB = message.toLowerCase().trim();
+        if (textA.includes(textB)) return true;
 
         return false;
     }
