@@ -1,6 +1,7 @@
 import type { TAccount } from '@thxnetwork/types/interfaces';
 import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
 import { THXError } from '@thxnetwork/api/util/errors';
+import { encode } from 'html-entities';
 
 class NoTwitterDataError extends THXError {
     message = 'Could not find twitter data for this account';
@@ -55,7 +56,9 @@ export default class TwitterDataProxy {
         const end = new Date(now);
         const [latestTweet] = await this.getLatestTweets(account.sub, start, end);
         if (!latestTweet) return false;
-        if (latestTweet.text.includes(message)) return true;
+        const textA = String(latestTweet.text).toLowerCase().trim();
+        const textB = encode(message).toLowerCase().trim();
+        if (textA.includes(textB)) return true;
 
         return false;
     }

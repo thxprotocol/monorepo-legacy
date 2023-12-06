@@ -7,7 +7,6 @@ export type CustomRewardDocument = mongoose.Document & TCustomReward;
 const schema = new mongoose.Schema(
     {
         ...perkBaseSchema,
-        limit: Number,
         metadata: String,
         webhookId: String,
     },

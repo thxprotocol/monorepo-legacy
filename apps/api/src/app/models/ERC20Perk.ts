@@ -22,13 +22,16 @@ export const perkBaseSchema = {
     image: String,
     pointPrice: Number,
     expiryDate: Date,
-    claimAmount: Number,
-    claimLimit: Number,
+    limit: Number,
     isPromoted: { type: Boolean, default: false },
+    isPublished: { type: Boolean, default: false },
+    // Token Gating
     tokenGatingVariant: Number,
     tokenGatingContractAddress: String,
     tokenGatingAmount: Number,
-    isPublished: { type: Boolean, default: false },
+    // QR Codes
+    claimAmount: Number,
+    claimLimit: Number,
 };
 
 export type ERC20PerkDocument = mongoose.Document & TERC20Perk;

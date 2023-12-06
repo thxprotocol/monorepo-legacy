@@ -78,6 +78,7 @@
                             :expiryDate="expiryDate"
                             @change-date="expiryDate = $event"
                         />
+                        <BaseCardRewardLimits class="mb-3" :limit="limit" @change-reward-limit="limit = $event" />
                         <BaseCardTokenGating
                             class="mb-3"
                             :pool="pool"
@@ -176,6 +177,7 @@ export default class ModalRewardCustomCreate extends Vue {
         this.description = this.reward ? this.reward.description : this.description;
         this.pointPrice = this.reward ? this.reward.pointPrice : this.pointPrice;
         this.expiryDate = this.reward ? this.reward.expiryDate : this.expiryDate;
+        this.limit = this.reward ? this.reward.limit : this.limit;
         this.image = this.reward ? this.reward.image : this.image;
         this.isPromoted = this.reward ? this.reward.isPromoted : this.isPromoted;
         this.tokenGatingContractAddress = this.reward
@@ -201,6 +203,7 @@ export default class ModalRewardCustomCreate extends Vue {
             description: this.description,
             file: this.imageFile,
             expiryDate: this.expiryDate ? new Date(this.expiryDate).toISOString() : undefined,
+            limit: this.limit,
             pointPrice: this.pointPrice,
             isPromoted: this.isPromoted,
             tokenGatingContractAddress: this.tokenGatingContractAddress,

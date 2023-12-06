@@ -28,6 +28,10 @@ import { AssetPoolDocument } from '../models/AssetPool';
 import { celebratoryWords } from '../util/dictionaries';
 import { ONE_DAY_MS } from './DailyRewardClaimService';
 
+function formatAddress(address: string) {
+    return `${address.slice(0, 5)}...${address.slice(-3)}`;
+}
+
 const getEntryModel = (variant: QuestVariant) => {
     const map = {
         [QuestVariant.Daily]: DailyRewardClaim,
@@ -120,9 +124,13 @@ async function complete(
 
     await DiscordDataProxy.sendChannelMessage(
         pool.settings.discordWebhookUrl,
-        `${celebratoryWords[index]} ${discord ? `<@${discord.userId}>` : `**${account.username}**`} completed the **${
-            quest.title
-        }** quest and earned **${amount} pts**\n[Complete ${QuestVariant[variant]} Quest ▸](<${widget.domain}>)`,
+        `${celebratoryWords[index]} ${
+            discord
+                ? `<@${discord.userId}>`
+                : `**${account.username ? account.username : formatAddress(wallet.address)}**`
+        } completed the **${quest.title}** quest and earned **${amount} pts**\n[Complete ${
+            QuestVariant[variant]
+        } Quest ▸](<${widget.domain}>)`,
     );
 
     let entry: TQuestEntry;
