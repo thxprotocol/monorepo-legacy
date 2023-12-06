@@ -1,4 +1,4 @@
-import { assertRequestInput, assertPoolAccess, guard, assertQuestAccess } from '@thxnetwork/api/middlewares';
+import { assertRequestInput, assertPoolAccess, assertQuestAccess } from '@thxnetwork/api/middlewares';
 import express from 'express';
 import ListMilestoneRewards from './list.controller';
 import ReadMilestoneRewards from './get.controller';

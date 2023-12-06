@@ -6,7 +6,7 @@ import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
 import { ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
-import { ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
+import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
 import { ERC721Document } from '@thxnetwork/api/models/ERC721';
 import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
 import { ERC1155Document } from '@thxnetwork/api/models/ERC1155';
@@ -30,7 +30,7 @@ const controller = async (req: Request, res: Response) => {
                 nft = await ERC721Service.findById(perk.erc721Id);
 
                 if (perk.tokenId) {
-                    token = await ERC721Service.findTokenById(perk.tokenId);
+                    token = await ERC721Token.findById(perk.tokenId);
                 }
             }
 

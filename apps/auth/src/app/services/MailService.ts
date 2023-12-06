@@ -32,7 +32,7 @@ function createOTP(account: AccountDocument) {
 export class MailService {
     static sendMail(to: string, subject: string, html: string, link = '') {
         if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY || NODE_ENV === 'test' || CYPRESS_EMAIL === to) {
-            logger.error({ message: 'Not sending e-mail', link });
+            logger.debug({ message: 'Not sending e-mail', link });
             return;
         }
         sendMail(to, subject, html);

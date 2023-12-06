@@ -7,28 +7,21 @@ import {
     sub2,
     tokenName,
     tokenSymbol,
-    userWalletAddress,
-    userWalletAddress2,
 } from '@thxnetwork/api/util/jest/constants';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { PoolTransfer, PoolTransferDocument } from '@thxnetwork/api/models/PoolTransfer';
 import { ERC20Document } from '@thxnetwork/api/models/ERC20';
 import { createImage } from '@thxnetwork/api/util/jest/images';
-import { addMinutes, sub } from 'date-fns';
+import { addMinutes } from 'date-fns';
 import { isAddress } from 'web3-utils';
-import { Wallet } from '@thxnetwork/api/models/Wallet';
 
 const user = request.agent(app);
 
-describe('Pool Transfer', () => {
+describe('Campaign Transfer', () => {
     let pool: AssetPoolDocument, poolTransfer: PoolTransferDocument, erc20: ERC20Document;
 
-    beforeAll(async () => {
-        await beforeAllCallback();
-        await Wallet.create({ address: userWalletAddress, sub, chainId: ChainId.Hardhat });
-        await Wallet.create({ address: userWalletAddress2, sub: sub2, chainId: ChainId.Hardhat });
-    });
+    beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
 
     it('POST /erc20', (done) => {
@@ -59,6 +52,7 @@ describe('Pool Transfer', () => {
                 })
                 .expect((res: request.Response) => {
                     pool = res.body;
+                    expect(res.body.address).toBeDefined();
                     expect(res.body.settings.title).toBe(title);
                     expect(res.body.settings.isArchived).toBe(false);
                 })
@@ -66,7 +60,7 @@ describe('Pool Transfer', () => {
         });
     });
 
-    describe('ERC20 PERKS', () => {
+    describe('Coin Reward', () => {
         it('POST /erc20-perks', (done) => {
             const title = 'Lorem',
                 description = 'Ipsum',

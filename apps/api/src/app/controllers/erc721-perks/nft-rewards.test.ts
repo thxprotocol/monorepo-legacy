@@ -12,7 +12,7 @@ import { ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
 
 const user = request.agent(app);
 
-describe('ERC721 Perks', () => {
+describe('NFT Rewards', () => {
     let poolId: string, erc721metadata: ERC721MetadataDocument, erc721: ERC721Document, perk: ERC721PerkDocument;
     const name = 'Planets of the Galaxy',
         symbol = 'GLXY',

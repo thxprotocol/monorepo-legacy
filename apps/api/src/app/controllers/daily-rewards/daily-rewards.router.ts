@@ -1,4 +1,4 @@
-import { assertPoolAccess, assertQuestAccess, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
+import { assertPoolAccess, assertQuestAccess, assertRequestInput } from '@thxnetwork/api/middlewares';
 import express from 'express';
 import ListDailyRewards from './list.controller';
 import ReadDailyRewards from './get.controller';

@@ -18,6 +18,8 @@ import { agenda, JobType } from '@thxnetwork/api/util/agenda';
 import { MongoClient } from 'mongodb';
 import { Job } from '@hokify/agenda';
 import { AssetPoolDocument } from '../models/AssetPool';
+import { Transaction } from '../models/Transaction';
+import TransactionService from './TransactionService';
 
 export const Wallet = WalletModel;
 
@@ -272,8 +274,12 @@ async function executeTransaction(wallet: WalletDocument, safeTxHash: string) {
     });
     const safeTransaction = await safeService.getTransaction(safeTxHash);
     const executeTxResponse = await safeSdk.executeTransaction(safeTransaction as any);
+    const receipt = await executeTxResponse.transactionResponse?.wait();
+    const tx = await Transaction.findOne({ safeTxHash });
 
-    return await executeTxResponse.transactionResponse?.wait();
+    await TransactionService.executeCallback(tx, receipt as any);
+
+    return receipt;
 }
 
 async function getLastPendingTransactions(wallet: WalletDocument) {

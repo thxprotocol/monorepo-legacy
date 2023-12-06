@@ -3,7 +3,6 @@ export * from './AccountPlanType';
 export * from './ChainId';
 export * from './ERC20Type';
 export * from './ERC721Variant';
-export * from './MerchantFeeVariant';
 export * from './PlatformVariant';
 export * from './RewardConditionPlatform';
 export * from './RewardConditionInteraction';

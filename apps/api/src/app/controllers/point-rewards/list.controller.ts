@@ -13,7 +13,7 @@ const controller = async (req: Request, res: Response) => {
     );
 
     quests.results = await Promise.all(
-        quests.results.map(async (quest, i) => {
+        quests.results.map(async (quest) => {
             const entries = await PointRewardService.findEntries(quest);
             return { ...quest.toJSON(), entries };
         }),

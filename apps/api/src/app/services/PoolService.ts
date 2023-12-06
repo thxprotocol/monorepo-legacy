@@ -1,13 +1,6 @@
-import { assertEvent, parseLogs } from '@thxnetwork/api/util/events';
 import { ChainId, CollaboratorInviteState } from '@thxnetwork/types/enums';
 import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import TransactionService from './TransactionService';
-import { diamondContracts, getContract, poolFacetAdressesPermutations } from '@thxnetwork/api/config/contracts';
-import { pick } from '@thxnetwork/api/util';
-import { diamondSelectors, getDiamondCutForContractFacets, updateDiamondContract } from '@thxnetwork/api/util/upgrades';
 import { currentVersion } from '@thxnetwork/contracts/exports';
-import { TransactionReceipt } from 'web3-eth-accounts/node_modules/web3-core';
-import { TAssetPoolDeployCallbackArgs } from '@thxnetwork/api/types/TTransaction';
 import { PoolSubscription, PoolSubscriptionDocument } from '../models/PoolSubscription';
 import { logger } from '../util/logger';
 import { TAccount } from '@thxnetwork/types/interfaces';
@@ -50,8 +43,12 @@ async function hasAccess(sub: string, poolId: string) {
     return isOwner || isCollaborator;
 }
 
-function getById(id: string) {
-    return AssetPool.findById(id);
+async function getById(id: string) {
+    const pool = await AssetPool.findById(id);
+    const safe = await SafeService.findOneByPool(pool, pool.chainId);
+    pool.safe = safe;
+    pool.address = safe.address;
+    return pool;
 }
 
 function getByAddress(address: string) {

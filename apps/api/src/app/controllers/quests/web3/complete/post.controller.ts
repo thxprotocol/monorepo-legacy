@@ -10,7 +10,6 @@ import { AssetPool } from '@thxnetwork/api/models/AssetPool';
 import { chainList } from '@thxnetwork/common';
 import { logger } from '@thxnetwork/api/util/logger';
 import SafeService from '@thxnetwork/api/services/SafeService';
-import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 import QuestService from '@thxnetwork/api/services/QuestService';
 import { QuestVariant } from '@thxnetwork/common/lib/types';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';

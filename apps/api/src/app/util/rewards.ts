@@ -1,5 +1,4 @@
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { QuestVariant, RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/enums';
 import { TERC721Perk } from '@thxnetwork/types/interfaces';
 import { ERC20Perk, ERC20PerkDocument } from '@thxnetwork/api/models/ERC20Perk';
 import { ERC721Perk, ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
@@ -8,7 +7,6 @@ import { CustomRewardDocument } from '@thxnetwork/api/models/CustomReward';
 import { CouponRewardDocument } from '@thxnetwork/api/models/CouponReward';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
 import ERC721PerkService from '@thxnetwork/api/services/ERC721PerkService';
-import QuestService from '@thxnetwork/api/services/QuestService';
 import { DiscordRoleRewardDocument } from '../models/DiscordRoleReward';
 
 export async function findRewardByUuid(uuid: string) {

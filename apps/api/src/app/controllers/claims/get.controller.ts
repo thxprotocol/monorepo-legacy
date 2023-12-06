@@ -5,7 +5,7 @@ import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { Claim, ClaimDocument } from '@thxnetwork/api/models/Claim';
 import { ERC721Perk, ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
-import { ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
+import { ERC721Metadata, ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
 import { ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 
@@ -47,7 +47,7 @@ const controller = async (req: Request, res: Response) => {
         erc721 = await ERC721Service.findById(claim.erc721Id);
         if (!erc721) throw new NotFoundError('Could not find NFT for this claim URL');
 
-        metadata = await ERC721Service.findMetadataById(perk.metadataId);
+        metadata = await ERC721Metadata.findById(perk.metadataId);
         if (!metadata) throw new NotFoundError('Could not find metadata for this claim URL');
 
         // Can not be claimed when sub is set for this claim URL
