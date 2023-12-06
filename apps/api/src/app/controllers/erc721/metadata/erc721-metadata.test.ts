@@ -8,7 +8,7 @@ import { createImage } from '@thxnetwork/api/util/jest/images';
 
 const user = request.agent(app);
 
-describe('NFT Pool', () => {
+describe('ERC721 Metadata', () => {
     let erc721ID: string, metadataId: string;
     const chainId = ChainId.Hardhat,
         name = 'Planets of the Galaxy',

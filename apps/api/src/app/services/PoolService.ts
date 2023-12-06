@@ -45,9 +45,7 @@ async function hasAccess(sub: string, poolId: string) {
 
 async function getById(id: string) {
     const pool = await AssetPool.findById(id);
-    console.log(pool);
     const safe = await SafeService.findOneByPool(pool, pool.chainId);
-    console.log(safe);
     pool.safe = safe;
     pool.address = safe.address;
     return pool;

@@ -187,10 +187,9 @@ async function findMetadataByNFT(erc721Id: string, page = 1, limit = 10, q?: str
     }
 
     const paginatedResult = await paginatedResults(ERC721Metadata, page, limit, query);
-
     const results: TERC721Metadata[] = [];
     for (const metadata of paginatedResult.results) {
-        const tokens = (await this.findTokensByMetadata(metadata)).map((m: ERC721MetadataDocument) => m.toJSON());
+        const tokens = await ERC721Token.find({ erc721Id, metadataId: metadata._id });
         results.push({ ...metadata.toJSON(), tokens });
     }
     paginatedResult.results = results;
