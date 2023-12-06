@@ -11,7 +11,7 @@ import { ERC20PerkDocument } from '@thxnetwork/api/models/ERC20Perk';
 
 const user = request.agent(app);
 
-describe('ERC20 Perks', () => {
+describe('Coin Rewards', () => {
     let poolId: string, erc20: ERC20Document, perk: ERC20PerkDocument;
 
     beforeAll(beforeAllCallback);
