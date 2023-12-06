@@ -41,7 +41,7 @@
                         Commerce
                         <b-badge variant="dark" class="ml-2 text-white"> New </b-badge>
                     </template>
-                    <BaseTabSettingsCommerce />
+                    ...
                 </b-tab>
             </b-tabs>
             <router-view :key="$route.fullPath" />
@@ -53,7 +53,6 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseTabSettingsGeneral from '@thxnetwork/dashboard/views/pool/settings/General.vue';
-import BaseTabSettingsCommerce from '@thxnetwork/dashboard/views/pool/settings/Commerce.vue';
 import BaseTabSettingsWidget from '@thxnetwork/dashboard/views/pool/settings/Widget.vue';
 import BaseTabSettingsTheme from '@thxnetwork/dashboard/views/pool/settings/Theme.vue';
 import BaseTabSettingsTeam from '@thxnetwork/dashboard/views/pool/settings/Team.vue';
@@ -66,7 +65,6 @@ import { hasBasicAccess } from '@thxnetwork/common';
     components: {
         BaseTabSettingsGeneral,
         BaseTabSettingsWidget,
-        BaseTabSettingsCommerce,
         BaseTabSettingsTheme,
         BaseTabSettingsTeam,
     },

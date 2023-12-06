@@ -174,32 +174,24 @@ async function execSafeAsync(wallet: WalletDocument, tx: TransactionDocument) {
 async function sendSafeAsync(wallet: WalletDocument, to: string | null, fn: any, callback?: TTransactionCallback) {
     const { relayer, defaultAccount } = getProvider(wallet.chainId);
     const data = fn.encodeABI();
-    // const estimate = await fn.estimateGas({ from: defaultAccount });
-    // const gas = estimate < MINIMUM_GAS_LIMIT ? MINIMUM_GAS_LIMIT : estimate;
-    const tx = await Transaction.create({
+    const safeTxHash = await SafeService.proposeTransaction(wallet, {
+        to,
+        data,
+        value: '0',
+    });
+
+    await SafeService.confirmTransaction(wallet, safeTxHash);
+
+    return await Transaction.create({
         type: relayer ? TransactionType.Relayed : TransactionType.Default,
-        state: TransactionState.Queued,
+        state: TransactionState.Confirmed,
+        safeTxHash,
         chainId: wallet.chainId,
         walletId: String(wallet._id),
         from: defaultAccount,
         to,
         callback,
     });
-
-    const safeTxHash = await SafeService.proposeTransaction(wallet, {
-        to,
-        data,
-        value: '0',
-        // safeTxGas: gas,
-    });
-
-    await SafeService.confirmTransaction(wallet, safeTxHash);
-
-    return await Transaction.findByIdAndUpdate(
-        tx._id,
-        { state: TransactionState.Confirmed, safeTxHash },
-        { new: true },
-    );
 }
 
 async function deploy(abi: any, bytecode: any, arg: any[], chainId: ChainId) {

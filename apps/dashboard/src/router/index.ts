@@ -78,11 +78,6 @@ const routes: Array<RouteConfig> = [
                         component: () => import('../views/pool/settings/General.vue'),
                     },
                     {
-                        name: 'Commerce',
-                        path: 'commerce',
-                        component: () => import('../views/pool/settings/Commerce.vue'),
-                    },
-                    {
                         name: 'Widget',
                         path: 'widget',
                         component: () => import('../views/pool/settings/Widget.vue'),
