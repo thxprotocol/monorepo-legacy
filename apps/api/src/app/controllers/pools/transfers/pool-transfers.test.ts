@@ -164,7 +164,6 @@ describe('Campaign Transfer', () => {
             user.get(`/v1/pools/${pool._id}/transfers`)
                 .set({ 'Authorization': dashboardAccessToken2, 'X-PoolId': pool._id })
                 .expect(({ body }: Response) => {
-                    console.log(body);
                     expect(body.length).toBe(1);
                     expect(body[0].token !== poolTransfer.token).toBeTruthy();
                     expect(body[0].sub).toBe(sub2);
