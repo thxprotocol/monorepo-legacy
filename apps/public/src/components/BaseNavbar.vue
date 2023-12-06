@@ -34,7 +34,7 @@
                             More
                             <i class="fas fa-caret-down" />
                         </template>
-                        <b-dropdown-item :title="TITLES.TOKEN" to="/token">Token</b-dropdown-item>
+                        <b-dropdown-item :title="TITLES.TOKEN" to="/token">$THX Token</b-dropdown-item>
                         <b-dropdown-item target="_blank" href="https://offsetra.com/profile/THX_Network">
                             Carbon Offset
                         </b-dropdown-item>
