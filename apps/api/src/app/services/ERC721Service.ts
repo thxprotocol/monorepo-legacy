@@ -96,11 +96,10 @@ export async function deleteMetadata(id: string) {
 }
 
 export async function mint(
-    pool: AssetPoolDocument,
+    safe: WalletDocument,
     erc721: ERC721Document,
-    metadata: ERC721MetadataDocument,
     wallet: WalletDocument,
-    forceSync = true,
+    metadata: ERC721MetadataDocument,
 ): Promise<ERC721TokenDocument> {
     const tokenUri = await IPFSService.getTokenURI(erc721, String(metadata._id));
     const erc721token = await ERC721Token.create({
@@ -112,31 +111,30 @@ export async function mint(
         metadataId: String(metadata._id),
         walletId: wallet._id,
     });
-    const txId = await TransactionService.sendAsync(
-        pool.contract.options.address,
-        pool.contract.methods.mintFor(wallet.address, tokenUri, erc721.address),
-        pool.chainId,
-        forceSync,
+    const tx = await TransactionService.sendSafeAsync(
+        safe,
+        erc721.address,
+        erc721.contract.methods.mint(wallet.address, tokenUri),
         {
             type: 'erc721TokenMintCallback',
-            args: { erc721tokenId: String(erc721token._id), assetPoolId: String(pool._id) },
+            args: { erc721tokenId: String(erc721token._id), assetPoolId: safe.poolId },
         },
     );
 
     return ERC721Token.findByIdAndUpdate(
         erc721token._id,
-        { transactions: [txId], state: ERC721TokenState.Transferring },
+        { transactions: [String(tx._id)], state: ERC721TokenState.Transferring },
         { new: true },
     );
 }
 
 export async function mintCallback(args: TERC721TokenMintCallbackArgs, receipt: TransactionReceipt) {
-    const { assetPoolId, erc721tokenId } = args;
-    const { contract } = await PoolService.getById(assetPoolId);
+    const token = await ERC721Token.findById(args.erc721tokenId);
+    const { contract } = await ERC721.findById(token.erc721Id);
     const events = parseLogs(contract.options.jsonInterface, receipt.logs);
-    const event = assertEvent('ERC721Minted', events);
+    const event = assertEvent('Transfer', events);
 
-    await ERC721Token.findByIdAndUpdate(erc721tokenId, {
+    await token.updateOne({
         state: ERC721TokenState.Minted,
         tokenId: Number(event.args.tokenId),
         recipient: event.args.recipient,
@@ -271,7 +269,7 @@ export async function transferFromWallet(
         },
     );
 
-    await erc721Token.updateOne({ transactions: [tx._id] });
+    await erc721Token.updateOne({ state: ERC721TokenState.Transferring, transactions: [tx._id] });
 
     return tx;
 }
@@ -281,20 +279,18 @@ export async function transferFromWalletCallback(
     receipt: TransactionReceipt,
 ) {
     const { erc721Id, erc721TokenId, to } = args;
-    const { contract } = await ERC721.findById(erc721Id);
-    const { tokenId } = await ERC721Token.findById(erc721TokenId);
-    const ownerOfToken = await contract.methods.ownerOf(tokenId).call();
+    const erc721 = await ERC721.findById(erc721Id);
+    const erc721Token = await ERC721Token.findById(erc721TokenId);
+    const events = parseLogs(erc721.contract.options.jsonInterface, receipt.logs);
+    assertEvent('Transfer', events);
 
-    if (receipt) {
-        // TODO Parse events and assert instead of manual assertion
-    }
+    const wallet = await WalletService.findOneByAddress(to);
 
-    const toWallet = await WalletService.findOneByAddress(to);
-    await ERC721Token.findByIdAndUpdate(erc721TokenId, {
+    await erc721Token.updateOne({
         state: ERC721TokenState.Transferred,
-        recipient: toChecksumAddress(ownerOfToken),
-        sub: toWallet ? toWallet.sub : '',
-        walletId: toWallet ? String(toWallet._id) : '',
+        recipient: toChecksumAddress(to),
+        sub: wallet && wallet.sub,
+        walletId: wallet && String(wallet._id),
     });
 }
 

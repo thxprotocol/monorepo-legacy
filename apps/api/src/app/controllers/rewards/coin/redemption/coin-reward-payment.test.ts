@@ -19,7 +19,7 @@ import SafeService from '@thxnetwork/api/services/SafeService';
 
 const user = request.agent(app);
 
-describe('ERC20 Perk Payment', () => {
+describe('Coin Reward Payment', () => {
     let erc20: ERC20Document,
         poolId: string,
         perkUuid: string,

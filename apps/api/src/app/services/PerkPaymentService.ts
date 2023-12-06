@@ -31,7 +31,7 @@ async function onPaymentIntentSucceeded(event) {
     const widget = await Widget.findOne({ poolId: pool._id });
     const wallet = await Wallet.findOne({ sub: account.sub, chainId: pool.chainId });
 
-    await ERC721Service.mint(pool, erc721, metadata, wallet);
+    await ERC721Service.mint(pool, erc721, wallet, metadata);
 
     await ERC721PerkPayment.create({
         sub,

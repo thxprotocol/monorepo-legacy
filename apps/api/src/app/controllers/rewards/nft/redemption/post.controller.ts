@@ -55,7 +55,7 @@ const controller = async (req: Request, res: Response) => {
         // Handle erc721 mints
         if (perk.erc721Id) {
             metadata = await PerkService.getMetadata(perk);
-            token = await ERC721Service.mint(pool, nft as ERC721Document, metadata as ERC721MetadataDocument, wallet);
+            token = await ERC721Service.mint(safe, nft as ERC721Document, wallet, metadata as ERC721MetadataDocument);
         }
 
         // Handle erc1155 mints

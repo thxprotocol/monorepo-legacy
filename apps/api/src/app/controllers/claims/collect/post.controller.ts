@@ -8,6 +8,7 @@ import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
 import { Claim } from '@thxnetwork/api/models/Claim';
 import WalletService from '@thxnetwork/api/services/WalletService';
+import SafeService from '@thxnetwork/api/services/SafeService';
 
 const validation = [param('uuid').exists().isString(), query('forceSync').optional().isBoolean()];
 
@@ -20,6 +21,9 @@ const controller = async (req: Request, res: Response) => {
 
     const pool = await PoolService.getById(claim.poolId);
     if (!pool) throw new BadRequestError('The pool for this claim URL has been removed.');
+
+    const safe = await SafeService.findOneByPool(pool, pool.chainId);
+    if (!safe) throw new BadRequestError('Could not find campaign Safe.');
 
     const perk = await ERC721Perk.findOne({ uuid: claim.rewardUuid });
     if (!perk) throw new BadRequestError('The perk for this ID does not exist.');
@@ -38,7 +42,7 @@ const controller = async (req: Request, res: Response) => {
     if (!erc721) throw new NotFoundError('No erc721 found for this claim URL');
 
     // Mint the NFT
-    const token = await ERC721Service.mint(pool, erc721, metadata, wallet, false);
+    const token = await ERC721Service.mint(safe, erc721, wallet, metadata);
 
     // Create a payment to register a completed claim.
     const payment = await ERC721PerkPayment.create({

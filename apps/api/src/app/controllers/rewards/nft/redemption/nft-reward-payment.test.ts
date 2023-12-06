@@ -23,7 +23,7 @@ import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721T
 
 const user = request.agent(app);
 
-describe('ERC721 Perks Redemtpion', () => {
+describe('NFT Reward Payment', () => {
     let erc721: ERC721Document,
         pool: AssetPoolDocument,
         nftContract: Contract,
