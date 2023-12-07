@@ -22,7 +22,7 @@ const agenda = new Agenda({
 });
 
 agenda.define(JobType.UpdateCampaignRanks, updateCampaignRanks);
-agenda.define(JobType.UpdateParticipantRanks, updateParticipantRanks);
+agenda.define(JobType.UpdateParticipantRanks, (job: Job) => updateParticipantRanks(job));
 agenda.define(JobType.UpdatePendingTransactions, updatePendingTransactions);
 agenda.define(JobType.CreateTwitterQuests, createTwitterQuests);
 agenda.define(JobType.SendCampaignReport, sendPoolAnalyticsReport);
@@ -34,7 +34,7 @@ db.connection.once('open', async () => {
     await agenda.start();
 
     await agenda.every('5 minutes', JobType.UpdateCampaignRanks);
-    await agenda.every('5 minutes', JobType.UpdateParticipantRanks);
+    // await agenda.every('5 minutes', JobType.UpdateParticipantRanks);
     await agenda.every('10 seconds', JobType.UpdatePendingTransactions);
     await agenda.every('15 minutes', JobType.CreateTwitterQuests);
     await agenda.every('0 9 * * MON', JobType.SendCampaignReport);

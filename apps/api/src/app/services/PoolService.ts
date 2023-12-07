@@ -23,7 +23,7 @@ import { ERC721Perk } from '../models/ERC721Perk';
 import { getsigningSecret } from '../util/signingsecret';
 import { Web3Quest } from '../models/Web3Quest';
 import { CustomReward } from '../models/CustomReward';
-import { Participant } from '../models/Participant';
+import { Participant, TParticipant } from '../models/Participant';
 import { paginatedResults } from '../util/pagination';
 import { PointBalance } from './PointBalanceService';
 import { Collaborator } from '../models/Collaborator';
@@ -209,9 +209,15 @@ async function getRewardCount(pool: AssetPoolDocument) {
 }
 
 async function findParticipants(pool: AssetPoolDocument, page: number, limit: number) {
-    const participants = await paginatedResults(Participant, page, limit, {
-        poolId: pool._id,
-    });
+    const participants = await paginatedResults(
+        Participant,
+        page,
+        limit,
+        {
+            poolId: pool._id,
+        },
+        ['rank', 1],
+    );
     const subs = participants.results.map((p) => p.sub);
     const accounts = await AccountProxy.getMany(subs);
 
