@@ -47,6 +47,8 @@ export function mockStart() {
         request_uris: requestUris,
     });
 
+    mockAuthPath('get', `https://local.auth.thx.network/account?subs=${sub}`, 200, account);
+
     // Account 1 (Dashboard)
     mockAuthPath('get', `/account/${sub}`, 200, account);
     mockAuthPath('patch', `/account/${sub}`, 204, {});

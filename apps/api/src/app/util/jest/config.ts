@@ -66,5 +66,5 @@ export async function beforeAllCallback(options = { skipWalletCreation: false })
 }
 
 export async function afterAllCallback() {
-    await db.connection.collection('jobs').deleteMany({});
+    // await db.connection.collection('jobs').deleteMany({});
 }
