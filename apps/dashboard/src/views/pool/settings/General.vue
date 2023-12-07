@@ -86,6 +86,39 @@
         </b-form-row>
         <hr />
         <b-form-row>
+            <b-col md="4">
+                <strong>Wallet</strong>
+                <div class="text-muted">Your campaign wallet is used for fee payments and reward distribution.</div>
+            </b-col>
+            <b-col md="8">
+                <b-form-group
+                    label="Safe Multisig Address"
+                    description="Your assets are stored in Safe's battle-tested multisigs."
+                >
+                    <b-input-group>
+                        <b-form-input disabled :value="pool.address" />
+                        <template #append>
+                            <b-button
+                                :disabled="!slug.length"
+                                variant="dark"
+                                v-clipboard:copy="pool.address"
+                                v-clipboard:success="() => (isCopied = true)"
+                                size="sm"
+                                class="ml-0 px-4"
+                            >
+                                <i class="fas ml-0" :class="isCopied ? 'fa-clipboard-check' : 'fa-clipboard'"></i>
+                            </b-button>
+                        </template>
+                    </b-input-group>
+                    <template #description>
+                        Your assets are stored in
+                        <b-link href="https://safe.global/" target="_blank"> Safe's battle-tested multisigs </b-link>
+                    </template>
+                </b-form-group>
+            </b-col>
+        </b-form-row>
+        <hr />
+        <b-form-row>
             <b-col md="4"> </b-col>
             <b-col md="8">
                 <b-form-group>
