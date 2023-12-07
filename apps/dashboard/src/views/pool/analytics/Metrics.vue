@@ -93,7 +93,6 @@
 <script lang="ts">
 import { mapGetters } from 'vuex';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { IERC20s, TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import { fromWei } from 'web3-utils';
 import { format } from 'date-fns';
 import { IPoolAnalyticsLeaderBoard, IPoolAnalyticsMetrics, IPools } from '@thxnetwork/dashboard/store/modules/pools';
@@ -108,7 +107,6 @@ import BaseIdenticon from '@thxnetwork/dashboard/components/BaseIdenticon.vue';
         pools: 'pools/all',
         analyticsMetrics: 'pools/analyticsMetrics',
         analyticsLeaderboard: 'pools/analyticsLeaderBoard',
-        erc20s: 'erc20/all',
     }),
 })
 export default class ViewAnalyticsMetrics extends Vue {
@@ -123,7 +121,6 @@ export default class ViewAnalyticsMetrics extends Vue {
     metricRewardLabelMap = ['Coin', 'NFT', 'Custom'];
     fromWei = fromWei;
     pools!: IPools;
-    erc20s!: IERC20s;
     loading = false;
     format = format;
     analyticsLeaderboard!: IPoolAnalyticsLeaderBoard;
@@ -148,23 +145,10 @@ export default class ViewAnalyticsMetrics extends Vue {
         return `${month}/${day}`;
     }
 
-    async onTopup(erc20: TERC20) {
-        await this.$store.dispatch('erc20/read', erc20._id);
-        this.$store.dispatch('erc20/getBalance', { id: erc20._id, address: this.pool.address });
-    }
-
     async mounted() {
         this.loading = true;
         this.$store.dispatch('pools/readAnalyticsMetrics', { poolId: this.pool._id });
         this.$store.dispatch('pools/readAnalyticsLeaderBoard', { poolId: this.pool._id });
-        this.$store.dispatch('erc20/list').then(() =>
-            Promise.all(
-                Object.values(this.erc20s).map(async (erc20) => {
-                    await this.$store.dispatch('erc20/read', erc20._id);
-                    await this.$store.dispatch('erc20/getBalance', { id: erc20._id, address: this.pool.address });
-                }),
-            ),
-        );
         this.loading = false;
     }
 }
