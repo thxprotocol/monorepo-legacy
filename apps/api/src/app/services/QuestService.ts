@@ -122,16 +122,14 @@ async function complete(
     const widget = await Widget.findOne({ poolId: pool._id });
     const index = Math.floor(Math.random() * celebratoryWords.length);
     const discord = account.connectedAccounts && account.connectedAccounts.find((a) => a.kind === 'discord');
+    const user =
+        discord && discord.userId
+            ? `<@${discord.userId}>`
+            : `**${account.username ? account.username : formatAddress(wallet.address)}**`;
 
     await DiscordDataProxy.sendChannelMessage(
         pool.settings.discordWebhookUrl,
-        `${celebratoryWords[index]} ${
-            discord
-                ? `<@${discord.userId}>`
-                : `**${account.username ? account.username : formatAddress(wallet.address)}**`
-        } completed the **${quest.title}** quest and earned **${amount} pts**\n[Complete ${
-            QuestVariant[variant]
-        } Quest ▸](<${widget.domain}>)`,
+        `${celebratoryWords[index]} ${user} completed the **${quest.title}** quest and earned **${amount} pts**\n[Complete ${QuestVariant[variant]} Quest ▸](<${widget.domain}>)`,
     );
 
     let entry: TQuestEntry;
