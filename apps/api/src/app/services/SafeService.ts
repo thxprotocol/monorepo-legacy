@@ -174,6 +174,7 @@ async function findPrimary(sub: string, chainId: ChainId) {
     return await Wallet.findOne({
         sub,
         chainId,
+        poolId: { $exists: false },
         address: { $exists: true, $ne: '' },
         ...(isMetamask
             ? { version: { $exists: false }, safeVersion: { $exists: false } }
