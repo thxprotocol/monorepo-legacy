@@ -29,48 +29,40 @@ class ClientModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async list({ page = 1, limit, pool }: { limit: number; page: number; pool: TPool }) {
-        const params = new URLSearchParams();
-        params.set('page', String(page));
-        params.set('limit', String(limit));
-
+    async list(pool: TPool) {
         const { data } = await axios({
             method: 'GET',
             url: '/clients',
             headers: { 'X-PoolId': pool._id },
-            params,
         });
 
-        this.context.commit('setTotal', { pool, total: data.total });
-        data.results.forEach((client: TClient) => {
-            client.page = page;
+        data.forEach((client: TClient) => {
             this.context.commit('set', { pool, client });
-            this.context.dispatch('get', { pool, client });
         });
     }
 
     @Action({ rawError: true })
-    async create(payload: TClient) {
+    async create({ pool, payload }: { pool: TPool; payload: TClient }) {
         const { data } = await axios({
             method: 'POST',
             url: '/clients',
-            headers: { 'X-PoolId': payload.poolId },
+            headers: { 'X-PoolId': pool._id },
             data: payload,
         });
 
         const profile = this.context.rootGetters['account/profile'];
         track('UserCreates', [profile.sub, 'client']);
 
-        this.context.commit('set', { ...payload, ...data });
+        this.context.commit('set', { pool, client: data });
     }
 
     @Action({ rawError: true })
-    async update({ _id, name, pool }: TClient & { pool: TPool }) {
+    async update({ pool, payload }: { pool: TPool; payload: TClient }) {
         const { data } = await axios({
             method: 'PATCH',
-            url: '/clients/' + _id,
+            url: '/clients/' + payload._id,
             headers: { 'X-PoolId': pool._id },
-            data: { name },
+            data: { name: payload.name },
         });
 
         this.context.commit('set', { pool, client: data });
