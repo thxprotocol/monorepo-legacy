@@ -1,4 +1,4 @@
-import { DailyRewardClaimState, QuestVariant } from '@thxnetwork/types/enums';
+import { DailyRewardClaimState, JobType, QuestVariant } from '@thxnetwork/types/enums';
 import {
     TAccount,
     TDailyReward,
@@ -27,6 +27,7 @@ import PointBalanceService from './PointBalanceService';
 import { AssetPoolDocument } from '../models/AssetPool';
 import { celebratoryWords } from '../util/dictionaries';
 import { ONE_DAY_MS } from './DailyRewardClaimService';
+import { agenda } from '../util/agenda';
 
 function formatAddress(address: string) {
     return `${address.slice(0, 5)}...${address.slice(-3)}`;
@@ -168,6 +169,8 @@ async function complete(
     }
 
     await PointBalanceService.add(pool, wallet._id, amount);
+
+    await agenda.now(JobType.UpdateParticipantRanks, { poolId: pool._id });
 
     return entry;
 }
