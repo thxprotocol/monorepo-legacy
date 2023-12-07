@@ -1,4 +1,4 @@
-import { DailyRewardClaimState, QuestVariant } from '@thxnetwork/types/enums';
+import { DailyRewardClaimState, JobType, QuestVariant } from '@thxnetwork/types/enums';
 import {
     TAccount,
     TDailyReward,
@@ -27,6 +27,7 @@ import PointBalanceService from './PointBalanceService';
 import { AssetPoolDocument } from '../models/AssetPool';
 import { celebratoryWords } from '../util/dictionaries';
 import { ONE_DAY_MS } from './DailyRewardClaimService';
+import { agenda } from '../util/agenda';
 
 function formatAddress(address: string) {
     return `${address.slice(0, 5)}...${address.slice(-3)}`;
@@ -121,16 +122,14 @@ async function complete(
     const widget = await Widget.findOne({ poolId: pool._id });
     const index = Math.floor(Math.random() * celebratoryWords.length);
     const discord = account.connectedAccounts && account.connectedAccounts.find((a) => a.kind === 'discord');
+    const user =
+        discord && discord.userId
+            ? `<@${discord.userId}>`
+            : `**${account.username ? account.username : formatAddress(wallet.address)}**`;
 
     await DiscordDataProxy.sendChannelMessage(
         pool.settings.discordWebhookUrl,
-        `${celebratoryWords[index]} ${
-            discord
-                ? `<@${discord.userId}>`
-                : `**${account.username ? account.username : formatAddress(wallet.address)}**`
-        } completed the **${quest.title}** quest and earned **${amount} pts**\n[Complete ${
-            QuestVariant[variant]
-        } Quest ▸](<${widget.domain}>)`,
+        `${celebratoryWords[index]} ${user} completed the **${quest.title}** quest and earned **${amount} pts**\n[Complete ${QuestVariant[variant]} Quest ▸](<${widget.domain}>)`,
     );
 
     let entry: TQuestEntry;
@@ -168,6 +167,8 @@ async function complete(
     }
 
     await PointBalanceService.add(pool, wallet._id, amount);
+
+    await agenda.now(JobType.UpdateParticipantRanks, { poolId: pool._id });
 
     return entry;
 }
