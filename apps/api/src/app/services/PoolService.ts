@@ -209,15 +209,36 @@ async function getRewardCount(pool: AssetPoolDocument) {
 }
 
 async function findParticipants(pool: AssetPoolDocument, page: number, limit: number) {
-    const participants = await paginatedResults(
-        Participant,
-        page,
-        limit,
-        {
-            poolId: pool._id,
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const total = await Participant.find({ poolId: pool._id }).countDocuments().exec();
+    const participants = {
+        previous: startIndex > 0 && {
+            page: page - 1,
         },
-        [['rank', 1]],
-    );
+        next: endIndex < total && {
+            page: page + 1,
+        },
+        total,
+        results: await Participant.aggregate([
+            { $match: { poolId: String(pool._id) } },
+            {
+                $addFields: {
+                    rankSort: {
+                        $cond: {
+                            if: { $gt: ['$rank', 0] },
+                            then: '$rank',
+                            else: Number.MAX_SAFE_INTEGER,
+                        },
+                    },
+                },
+            },
+            { $sort: { rankSort: 1 } },
+            { $skip: startIndex },
+            { $limit: limit },
+        ]).exec(),
+    };
+
     const subs = participants.results.map((p) => p.sub);
     const accounts = await AccountProxy.getMany(subs);
 
@@ -252,7 +273,7 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
                 logger.error(error);
             }
             return {
-                ...participant.toJSON(),
+                ...participant,
                 account: account && {
                     email: account.email,
                     username: account.username,
