@@ -3,7 +3,13 @@
         <b-link v-if="account.url" :href="account.url" target="_blank">
             <i :class="account.platform.icon" class="text-gray" v-b-tooltip :title="account.userName" />
         </b-link>
-        <i v-else :class="account.platform.icon" class="text-gray" v-b-tooltip :title="account.userId" />
+        <i
+            v-else
+            :class="account.platform.icon"
+            class="text-gray"
+            v-b-tooltip
+            :title="account.userName || account.userId"
+        />
     </span>
 </template>
 
