@@ -213,7 +213,7 @@ async function getPoolMetrics(pool: AssetPoolDocument, dateRange?: { startDate: 
     return { dailyQuest, socialQuest, inviteQuest, customQuest, web3Quest, coinReward, nftReward, customReward };
 }
 
-async function getLeaderboard(pool: AssetPoolDocument, dateRange?: { startDate: Date; endDate: Date }) {
+async function createLeaderboard(pool: AssetPoolDocument, dateRange?: { startDate: Date; endDate: Date }) {
     const collections = [DailyRewardClaim, PointRewardClaim, ReferralRewardClaim, MilestoneRewardClaim, Web3QuestClaim];
     const result = await Promise.all(
         collections.map(async (Model) => {
@@ -261,24 +261,15 @@ async function getLeaderboard(pool: AssetPoolDocument, dateRange?: { startDate: 
         }
     }
 
-    const walletIds = Object.keys(walletTotals);
-    const wallets = await Wallet.find({ _id: walletIds });
-    const subs = wallets.map((w: WalletDocument) => w.sub);
-    const accounts = await AccountProxy.getMany(subs);
-
-    return accounts
-        .map((account: TAccount) => {
-            const wallet = wallets.find((w) => w.sub === account.sub);
-            const walletId = String(wallet._id);
-            return {
-                questsCompleted: walletTotals[walletId].totalCompleted,
-                sub: wallet.sub,
-                walletId,
-                score: walletTotals[walletId].totalAmount || 0,
-                wallet,
-                account: { ...account, address: wallet.address },
-            };
-        })
+    const wallets = await Wallet.find({ _id: Object.keys(walletTotals) });
+    return wallets
+        .map((wallet: WalletDocument) => ({
+            walletId: String(wallet._id),
+            wallet,
+            score: walletTotals[wallet._id].totalAmount || 0,
+            questEntryCount: walletTotals[wallet._id].totalCompleted || 0,
+            sub: wallet.sub,
+        }))
         .sort((a: any, b: any) => b.score - a.score);
 }
 
@@ -439,4 +430,4 @@ async function queryRewardRedemptions<T>(args: {
 
     return queryResult;
 }
-export default { getPoolMetrics, getLeaderboard, getPoolAnalyticsForChart };
+export default { getPoolMetrics, createLeaderboard, getPoolAnalyticsForChart };

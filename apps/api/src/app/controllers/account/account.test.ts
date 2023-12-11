@@ -132,6 +132,7 @@ describe('Account Wallet', () => {
         user.get(`/v1/erc20/token?chainId=${ChainId.Hardhat}`)
             .set({ Authorization: widgetAccessToken })
             .expect((res: request.Response) => {
+                console.log(res.body);
                 expect(res.body.length).toBe(1);
                 expect(res.body[0].migrationBalance).toBe(toWei('10'));
             })
