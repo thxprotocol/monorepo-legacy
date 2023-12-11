@@ -216,10 +216,7 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
         {
             poolId: pool._id,
         },
-        [
-            ['rank', { $exists: true, $ne: 0 }],
-            ['rank', 1],
-        ],
+        [['rank', 1]],
     );
     const subs = participants.results.map((p) => p.sub);
     const accounts = await AccountProxy.getMany(subs);
