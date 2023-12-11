@@ -5,7 +5,6 @@ import ReadPool from './get.controller';
 import ReadPoolPreview from './preview/get.controller';
 import ReadPoolPreviewImage from './preview/default/get.controller';
 import PoolsAnalytics from './analytics/get.controller';
-import PoolsAnalyticsLeaderBoard from './analytics/leaderboard/get.controller';
 import PoolsAnalyticsMetrics from './analytics/metrics/get.controller';
 import DeletePool from './delete.controller';
 import ListPools from './list.controller';
@@ -132,15 +131,6 @@ router.get(
     assertPoolAccess,
     assertRequestInput(PoolsAnalytics.validation),
     PoolsAnalytics.controller,
-);
-router.get(
-    '/:id/analytics/leaderboard',
-    checkJwt,
-    corsHandler,
-    guard.check(['pools:read']),
-    assertPoolAccess,
-    assertRequestInput(PoolsAnalyticsLeaderBoard.validation),
-    PoolsAnalyticsLeaderBoard.controller,
 );
 router.get(
     '/:id/analytics/metrics',

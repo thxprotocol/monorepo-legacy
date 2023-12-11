@@ -21,6 +21,8 @@ import { CustomReward, CustomRewardDocument } from '../models/CustomReward';
 import { Web3Quest, Web3QuestDocument } from '../models/Web3Quest';
 import { Web3QuestClaim } from '../models/Web3QuestClaim';
 import { CustomRewardPayment } from '../models/CustomRewardPayment';
+import { DiscordRoleRewardPayment } from '../models/DiscordRoleRewardPayment';
+import { CouponRewardPayment } from '../models/CouponRewardPayment';
 
 async function getPoolAnalyticsForChart(pool: AssetPoolDocument, startDate: Date, endDate: Date) {
     // Rewards
@@ -167,50 +169,73 @@ async function getPoolMetrics(pool: AssetPoolDocument, dateRange?: { startDate: 
         ERC20PerkPayment,
         ERC721PerkPayment,
         CustomRewardPayment,
+        CouponRewardPayment,
+        DiscordRoleRewardPayment,
     ];
-    const [dailyQuest, socialQuest, inviteQuest, customQuest, web3Quest, coinReward, nftReward, customReward] =
-        await Promise.all(
-            collections.map(async (Model) => {
-                const $match = { poolId: String(pool._id) };
-                if (dateRange) {
-                    $match['createdAt'] = { $gte: dateRange.startDate, $lte: dateRange.endDate };
-                }
+    const [
+        dailyQuest,
+        socialQuest,
+        inviteQuest,
+        customQuest,
+        web3Quest,
+        coinReward,
+        nftReward,
+        customReward,
+        couponReward,
+        discordRoleReward,
+    ] = await Promise.all(
+        collections.map(async (Model) => {
+            const $match = { poolId: String(pool._id) };
+            if (dateRange) {
+                $match['createdAt'] = { $gte: dateRange.startDate, $lte: dateRange.endDate };
+            }
 
-                // Extend the $match filter with model specific properties
-                switch (Model) {
-                    case DailyRewardClaim:
-                        $match['state'] = 1;
-                        break;
-                    case MilestoneRewardClaim:
-                        $match['isClaimed'] = true;
-                        break;
-                }
+            // Extend the $match filter with model specific properties
+            switch (Model) {
+                case DailyRewardClaim:
+                    $match['state'] = 1;
+                    break;
+                case MilestoneRewardClaim:
+                    $match['isClaimed'] = true;
+                    break;
+            }
 
-                const [result] = await Model.aggregate([
-                    { $match },
-                    {
-                        $group: {
-                            _id: '$poolId',
-                            totalCompleted: { $sum: 1 },
-                            totalAmount: { $sum: { $convert: { input: '$amount', to: 'int' } } },
-                        },
+            const [result] = await Model.aggregate([
+                { $match },
+                {
+                    $group: {
+                        _id: '$poolId',
+                        totalCompleted: { $sum: 1 },
+                        totalAmount: { $sum: { $convert: { input: '$amount', to: 'int' } } },
                     },
-                ]);
+                },
+            ]);
 
-                const query = { poolId: String(pool._id) };
-                if (dateRange) {
-                    query['createdAt'] = { $gte: dateRange.startDate, $lte: dateRange.endDate };
-                }
-                const totalCreated = await Model.countDocuments(query as any);
+            const query = { poolId: String(pool._id) };
+            if (dateRange) {
+                query['createdAt'] = { $gte: dateRange.startDate, $lte: dateRange.endDate };
+            }
+            const totalCreated = await Model.countDocuments(query as any);
 
-                return {
-                    totalCompleted: result && result.totalCompleted ? result.totalCompleted : 0,
-                    totalAmount: result && result.totalAmount ? result.totalAmount : 0,
-                    totalCreated,
-                };
-            }),
-        );
-    return { dailyQuest, socialQuest, inviteQuest, customQuest, web3Quest, coinReward, nftReward, customReward };
+            return {
+                totalCompleted: result && result.totalCompleted ? result.totalCompleted : 0,
+                totalAmount: result && result.totalAmount ? result.totalAmount : 0,
+                totalCreated,
+            };
+        }),
+    );
+    return {
+        dailyQuest,
+        socialQuest,
+        inviteQuest,
+        customQuest,
+        web3Quest,
+        coinReward,
+        nftReward,
+        customReward,
+        couponReward,
+        discordRoleReward,
+    };
 }
 
 async function createLeaderboard(pool: AssetPoolDocument, dateRange?: { startDate: Date; endDate: Date }) {

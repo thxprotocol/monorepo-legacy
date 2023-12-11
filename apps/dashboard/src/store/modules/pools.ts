@@ -81,6 +81,9 @@ export type PoolMetric = {
 
 export interface IPoolAnalyticMetrics {
     _id: string;
+    participantActiveCount: number;
+    participantCount: number;
+    subscriptionCount: number;
     dailyQuest: PoolMetric;
     socialQuest: PoolMetric;
     inviteQuest: PoolMetric;
@@ -89,6 +92,8 @@ export interface IPoolAnalyticMetrics {
     coinReward: PoolMetric;
     nftReward: PoolMetric;
     customReward: PoolMetric;
+    couponReward: PoolMetric;
+    discordRoleReward: PoolMetric;
 }
 export interface IPools {
     [id: string]: TPool;
