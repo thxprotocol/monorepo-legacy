@@ -133,8 +133,9 @@ const controller = async (req: Request, res: Response) => {
         invite,
         social: socialQuests.map((q: PointRewardDocument) => ({
             ...getDefaults(q),
-            restartDates: PointRewardService.getRestartDates(q),
+            amount: q.amount,
             pointsAvailable: q.amount,
+            restartDates: PointRewardService.getRestartDates(q),
         })),
         web3,
     });
