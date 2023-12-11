@@ -5,7 +5,6 @@ import { paginatedResults } from '@thxnetwork/api/util/pagination';
 
 export default class ClientProxy {
     static async getCredentials(client: ClientDocument) {
-        if (!client) return;
         const { data } = await authClient({
             method: 'GET',
             url: `/reg/${client.clientId}?access_token=${client.registrationAccessToken}`,

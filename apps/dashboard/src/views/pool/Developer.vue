@@ -24,7 +24,7 @@
                     </template>
                     <BaseTabSettingsWebhooks />
                 </b-tab>
-                <b-tab disabled>
+                <b-tab :disabled="!hasPremiumAccess(pool.owner)">
                     <template #title>
                         <div class="d-flex align-items-center">
                             <i class="fas fa-key mr-2"></i>

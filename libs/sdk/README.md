@@ -4,75 +4,133 @@ This SDK contains a client class that simplifies interactions with THX Network A
 
 ## Prerequisites
 
-1. [Sign up for an account](https://dashboard.thx.network/signup)
-2. Create a digital asset
-3. Deploy a pool
-4. Create API credentials
+1. [Sign up](https://dashboard.thx.network)
+2. Create a campaign
+3. Register API keys
 
-## Grant Types
+## Usage
 
-The OAuth2 server exposes two authorization variants:
+Meant for user authentication in web applications. The [OAuth2 authorization_code](https://datatracker.ietf.org/doc/html/rfc6749#section-1.3.1) grant will be used for this.
 
-### Grant: Authorization Code
+```javascript
+const authorizationEndpoint = 'http://auth.thx.network/authorize';
+const clientId = 'your-client-id'; // Create one at Campaign -> Developer -> API Keys
+const redirectUri = 'your-redirect-uri'; // Eg. https://localhost:8080/callback
+const scope =
+    'openid offline_access account:read account:write erc20:read erc721:read erc1155:read point_balances:read referral_rewards:read point_rewards:read wallets:read wallets:write pool_subscription:read pool_subscription:write claims:read';
 
-Meant for user authentication in a browser application. Upon signin a popup will be shown where the user will be able to authenticate before being redirected to your application and obtain a valid session.
+// Redirect user to authorization endpoint
+const authUrl = new URL(authorizationEndpoint);
+authUrl.searchParams.append('client_id', clientId);
+authUrl.searchParams.append('redirect_uri', redirectUri);
+authUrl.searchParams.append('scope', scope);
+authUrl.searchParams.append('response_type', 'code');
+window.location.href = authUrl;
 
-### Grant: Client Credentials
+// Once user is redirected back to your application with the authorization code
+const authorizationCode = 'code-received-from-redirect';
+const tokenRequestData = {
+    grant_type: 'authorization_code',
+    code: authorizationCode,
+    client_id: clientId,
+    redirect_uri: redirectUri,
+};
 
-Meant for machine to machine authentication in a server-side application.
-
-## Usage Widget (browser)
-
-You can inject the loyalty widget with a script tag where `639b277c3659345dda9facca` is the ID of your loyalty pool.
-
-```html
-<script src="https://api.thx.network/v1/widget/POOL_ID.js"></script>
+// Exchange authorization code for access token
+fetch('http://auth.thx.network/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(tokenRequestData),
+})
+    .then((response) => response.json())
+    .then((tokenResponse) => {
+        console.log('Access Token:', tokenResponse.access_token);
+    })
+    .catch((error) => {
+        console.error('Token exchange error:', error);
+    });
 ```
 
-You can also use the THXWidget class from the SDK to load the widget on your page.
+## Usage
 
-```typescript
-import { THXWidget } from '@thxnetwork/sdk';
+```javascript
+import { THXClient, THXClientOptions } from '@thxprotocol/sdk';
 
-const thxWidget = new THXWidget({
-    poolId: 'POOL_ID',
+const poolId = '6571c9c6b7d775decb45a8f0';
+const accessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // Obtain from auth.thx.network
+const client = new THXClient({
+    url: 'http://api.thx.network', // Required
+    poolId, // Optional
+    accessToken, // Optional
 });
+
+// Optional usage if not set through constructor
+client.setPoolId(poolId);
+client.setAccessToken(accessToken);
 ```
 
-## Usage SDK (browser)
+## Resources
 
-Sign in and list the tokens owned by this account.
+### Account
 
-```typescript
-import { THXWidget } from '@thxnetwork/sdk';
+```javascript
+// Get Account
+await client.account.get();
 
-const thx = new THXClient({
-    clientId: 'CLIENT_ID',
-    clientSecret: 'CLIENT_SECRET',
-    redirectUrl: 'https://localhost:8080',
-    scopes: 'openid account:read erc20:read erc721:read',
+// Update Account
+await client.account.patch({
+    username: '';
+    firstName: '';
+    lastName: '';
+    profileImg: ''; // Absolute URL
+    email: '';
 });
 
-await thx.userManager.cached.signinPopup();
-
-const tokens = await client.erc20.list();
+// Get Point Balance
+await client.pointBalance.list();
 ```
 
-## Usage SDK (server)
+### Quests
 
-Transfer tokens from your pool to another account.
+```javascript
+// List Quests
+await client.quests.list();
 
-```typescript
-import { THXWidget } from '@thxnetwork/sdk';
-
-const thx = new THXClient({
-    clientId: 'CLIENT_ID',
-    clientSecret: 'CLIENT_SECRET',
-    scopes: 'openid withdrawals:read withdrawals:write',
+// Complete Quests
+await client.quests.daily.complete(uuid, {
+    sub: '',
 });
-
-const withdrawal = await client.withdrawals.post({
-    amount: '100000000',
-    account: '0xf4b70b3931166B422bBC772a2EafcE8BD5A017F9',
+await client.quests.invite.complete(uuid, {
+    sub: '',
 });
+await client.quests.social.complete(id);
+await client.quests.custom.complete(id);
+await client.quests.web3.complete(id);
+```
+
+### Rewards
+
+```javascript
+// List Rewards
+await client.rewards.list();
+
+// Get Rewards
+await client.rewards.coin.get(uuid);
+await client.rewards.nft.get(uuid);
+await client.rewards.custom.get(uuid);
+await client.rewards.coupon.get(uuid);
+
+// Redeem Rewards
+await client.rewards.coin.redemption.post(uuid);
+await client.rewards.nft.redemption.post(uuid);
+await client.rewards.custom.redemption.post(uuid);
+await client.rewards.coupon.redemption.post(uuid);
+```
+
+### Wallet
+
+```javascript
+await client.erc20.list({ chainId: 137 });
+await client.erc721.list({ chainId: 137 });
+await client.erc1155.list({ chainId: 137 });
 ```

@@ -70,13 +70,15 @@ export default class BaseModalClientCreate extends Vue {
     }
 
     async submit() {
-        console.log(this.client);
-        await this.$store.dispatch('clients/' + this.client ? 'update' : 'create', {
-            poolId: this.pool._id,
-            name: this.name,
-            grantType: this.grantType,
-            redirectUri: this.redirectUri,
-            requestUri: this.requestUri,
+        const action = this.client ? 'update' : 'create';
+        await this.$store.dispatch('clients/' + action, {
+            pool: this.pool,
+            payload: {
+                name: this.name,
+                grantType: this.grantType,
+                redirectUri: this.redirectUri,
+                requestUri: this.requestUri,
+            },
         });
         this.$emit('submit');
         this.$bvModal.hide(`modalClientCreate`);

@@ -5,6 +5,8 @@ import AnalyticsService from '../services/AnalyticsService';
 import { Job } from '@hokify/agenda';
 
 export async function updateParticipantRanks(job: Job) {
+    if (!job.attrs.data) return;
+
     try {
         const { poolId } = job.attrs.data as { poolId: string };
         const campaign = await AssetPool.findById(poolId);

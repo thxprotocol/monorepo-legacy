@@ -23,6 +23,7 @@ import brandsRouter from './brands/brands.router';
 import walletsRouter from './wallets/wallets.router';
 import widgetRouter from './widget/widget.router';
 import questsRouter from './quests/quests.router';
+import leaderboardsRouter from './leaderboards/leaderboard.router';
 import rewardsRouter from './rewards/rewards.router';
 import dailyRewardsRouter from './daily-rewards/daily-rewards.router';
 import milestonesRewardRouter from './milestone-reward/milestone-rewards.router';
@@ -50,6 +51,7 @@ router.use('/merchants', merchantsRouter);
 router.use('/brands', brandsRouter);
 router.use('/pools', poolsRouter);
 router.use('/claims', claimsRouter);
+router.use('/leaderboards', leaderboardsRouter);
 
 router.use(checkJwt);
 router.use(corsHandler);

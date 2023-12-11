@@ -22,7 +22,7 @@
                 <BTable hover :busy="isLoading" :items="clientsByPage" responsive="lg" show-empty>
                     <!-- Head formatting -->
                     <template #head(name)> Client Name </template>
-                    <template #head(type)> Grant Type </template>
+                    <template #head(grantType)> Grant Type </template>
                     <template #head(info)> &nbsp; </template>
                     <template #head(id)> &nbsp; </template>
 
@@ -40,9 +40,9 @@
                             </b-col>
                             <b-col>
                                 <b-input-group size="sm" class="mb-2">
-                                    <b-form-input readonly size="sm" :value="item.clientId" />
+                                    <b-form-input readonly size="sm" :value="item.info.clientId" />
                                     <template #append>
-                                        <b-button size="sm" variant="dark" v-clipboard:copy="item.clientId">
+                                        <b-button size="sm" variant="dark" v-clipboard:copy="item.info.clientId">
                                             <i class="fas fa-clipboard m-0"></i>
                                         </b-button>
                                     </template>
@@ -55,10 +55,10 @@
                             </b-col>
                             <b-col>
                                 <b-input-group size="sm">
-                                    <b-form-input readonly size="sm" :value="item.clientSecret" />
+                                    <b-form-input readonly size="sm" :value="item.info.clientSecret" />
 
                                     <template #append>
-                                        <b-button size="sm" variant="dark" v-clipboard:copy="item.clientSecret">
+                                        <b-button size="sm" variant="dark" v-clipboard:copy="item.info.clientSecret">
                                             <i class="fas fa-clipboard m-0"></i>
                                         </b-button>
                                     </template>
@@ -127,14 +127,15 @@ export default class Clients extends Vue {
 
     get clientsByPage() {
         if (!this.clients[this.$route.params.id]) return [];
-        return Object.values(this.clients[this.$route.params.id])
-            .filter((client: TClient) => client.page === this.page)
-            .sort((a: any, b: any) => (a.createdAt < b.createdAt ? 1 : -1))
-            .map((r: TClient) => ({
-                id: r._id,
-                ...r,
-            }))
-            .slice(0, this.limit);
+        return Object.values(this.clients[this.$route.params.id]).map((r: TClient) => ({
+            name: r.name,
+            grantType: r.grantType,
+            info: {
+                clientId: r.clientId,
+                clientSecret: r.clientSecret,
+            },
+            id: r._id,
+        }));
     }
 
     mounted() {
@@ -153,11 +154,7 @@ export default class Clients extends Vue {
     async listClients() {
         if (!this.account || this.account.plan !== AccountPlanType.Premium) return;
         this.isLoading = true;
-        await this.$store.dispatch('clients/list', {
-            page: this.page,
-            limit: this.limit,
-            pool: this.pool,
-        });
+        await this.$store.dispatch('clients/list', this.pool);
         this.isLoading = false;
     }
 }
