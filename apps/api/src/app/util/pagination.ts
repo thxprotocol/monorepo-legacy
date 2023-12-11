@@ -11,7 +11,7 @@ export const paginatedResults = async (
     page: number,
     limit: number,
     query: any,
-    sorts: any = [{ createdAt: -1 }],
+    sorts: any = [['createdAt', -1]],
 ): Promise<PaginationResult> => {
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
