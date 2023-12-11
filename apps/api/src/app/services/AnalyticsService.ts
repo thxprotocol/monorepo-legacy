@@ -287,13 +287,14 @@ async function createLeaderboard(pool: AssetPoolDocument, dateRange?: { startDat
         }
     }
 
-    const wallets = await Wallet.find({ _id: Object.keys(walletTotals) });
+    const wallets = await Wallet.find({ _id: Object.keys(walletTotals), sub: { $exists: true } });
     const leaderboard = wallets
         .map((wallet: WalletDocument) => ({
             score: walletTotals[wallet._id].totalAmount || 0,
             questEntryCount: walletTotals[wallet._id].totalCompleted || 0,
             sub: wallet.sub,
         }))
+        .filter((entry) => entry.score > 0)
         .sort((a: any, b: any) => b.score - a.score);
 
     const updates = leaderboard.map(
