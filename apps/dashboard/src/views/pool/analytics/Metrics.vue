@@ -3,7 +3,7 @@
         <b-col md="8">
             <strong class="text-muted">Campaign</strong>
             <b-row class="mt-3" v-if="metrics">
-                <b-col md="4">
+                <b-col md="6">
                     <b-card bg-variant="white" class="text-dark mb-2" body-class="py-2 px-3">
                         <div class="text-gray d-flex align-content-between">
                             Participants
@@ -15,10 +15,10 @@
                         <small>{{ metrics.participantActiveCount }} completed quests</small>
                     </b-card>
                 </b-col>
-                <b-col md="4">
+                <b-col md="6">
                     <b-card bg-variant="white" class="text-dark mb-2" body-class="py-2 px-3">
                         <div class="text-gray d-flex align-content-between">
-                            Subscriptions
+                            Subscribers
                             <b-link v-b-tooltip title="Participants that subscribed for new quests." class="ml-auto">
                                 <i class="fas fa-question-circle"></i>
                             </b-link>
@@ -44,7 +44,7 @@
                         metrics.web3Quest,
                     ]"
                 >
-                    <b-card v-if="metrics" bg-variant="white" class="text-dark mb-2" body-class="py-2 px-3">
+                    <b-card v-if="metrics" bg-variant="white" class="text-dark mb-3" body-class="py-2 px-3">
                         <div class="text-gray d-flex align-content-between">
                             {{ metricQuestsLabelMap[key] }}
                             <b-link v-b-tooltip :title="metricQuestsInfoMap[key]" class="ml-auto">
@@ -73,7 +73,7 @@
                         metrics.discordRoleReward,
                     ]"
                 >
-                    <b-card v-if="metrics" bg-variant="white" class="text-dark mb-2" body-class="py-2 px-3">
+                    <b-card v-if="metrics" bg-variant="white" class="text-dark mb-3" body-class="py-2 px-3">
                         <span class="text-gray">{{ metricRewardLabelMap[key] }}</span>
                         <br />
                         <div class="h2 mb-0">
@@ -104,11 +104,20 @@
                                 class="d-flex justify-content-between align-items-center"
                             >
                                 <div class="d-flex center-center">
-                                    <b-badge variant="light" class="mr-3 p-2">#{{ key + 1 }}</b-badge>
-                                    <b-avatar size="25" variant="light" :src="result.account.profileImg" class="mr-2" />
-                                    <div style="line-height: 1.2">{{ result.account.username }}</div>
+                                    <b-badge variant="light" class="mr-3 p-2">#{{ result.rank }}</b-badge>
+                                    <b-avatar size="25" variant="light" :src="result.account.profileImg" class="mr-3" />
+                                    <div>
+                                        {{ result.account.username }}
+                                        <sup v-if="result.subscription">
+                                            <i class="fa fa-star text-primary" style="font-size: 0.8rem" />
+                                        </sup>
+                                    </div>
                                 </div>
-                                <div>
+                                <div class="ml-auto text-right">
+                                    <strong class="text-primary"> {{ result.questEntryCount }} </strong>
+                                    <i class="fa fa-tasks text-primary" style="font-size: 0.8rem" />
+                                </div>
+                                <div style="min-width: 75px" class="text-right">
                                     <strong class="text-primary"> {{ result.score }} </strong>
                                 </div>
                             </b-list-group-item>
