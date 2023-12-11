@@ -134,6 +134,10 @@ const controller = async (req: Request, res: Response) => {
         social: socialQuests.map((q: PointRewardDocument) => ({
             ...getDefaults(q),
             amount: q.amount,
+            platform: q.platform,
+            interaction: q.interaction,
+            content: q.content,
+            contentMetadata: q.contentMetadata,
             pointsAvailable: q.amount,
             restartDates: PointRewardService.getRestartDates(q),
         })),

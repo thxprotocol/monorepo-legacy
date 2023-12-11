@@ -6,11 +6,17 @@ import { AssetPool, AssetPoolDocument } from '../src/app/models/AssetPool';
 import { ChainId } from '@thxnetwork/types/enums';
 import { updateDiamondContract } from '../src/app/util/upgrades';
 import PoolService from '../src/app/services/PoolService';
+import AnalyticsService from '@thxnetwork/api/services/AnalyticsService';
 
 db.connect(MONGODB_URI);
 
 async function main() {
     let counter = 0;
+
+    for (const pool of await AssetPool.find({ 'settings.isPublished': true })) {
+        await AnalyticsService.createLeaderboard(pool);
+    }
+
     const pools: AssetPoolDocument[] = await AssetPool.find({
         version: { $ne: currentVersion },
         chainId: ChainId.Polygon,

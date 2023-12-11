@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
-import AnalyticsService from '@thxnetwork/api/services/AnalyticsService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 
 const validation = [param('id').isMongoId()];
@@ -8,20 +7,20 @@ const validation = [param('id').isMongoId()];
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Leaderboard']
     const pool = await PoolService.getById(req.params.id);
-    const leaderboardEntries = await AnalyticsService.getLeaderboard(pool, {
-        startDate: new Date(pool.createdAt),
-        endDate: new Date(),
-    });
-    const leaderboard = leaderboardEntries.slice(0, 10).map(({ score, questsCompleted, account }) => ({
-        questsCompleted,
-        score,
-        account: {
-            username: account.username,
-            profileImg: account.profileImg,
-        },
-    }));
+    const leaderboard = await PoolService.findParticipants(pool, 1, 10);
 
-    res.json(leaderboard);
+    res.json(
+        leaderboard.results.map((p) => {
+            return {
+                questsCompleted: p.questEntryCount,
+                score: p.score,
+                account: {
+                    username: p.account.username,
+                    profileImg: p.account.profileImg,
+                },
+            };
+        }),
+    );
 };
 
 export default { controller, validation };

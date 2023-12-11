@@ -101,7 +101,6 @@ describe('Referral Rewards', () => {
                 successUrl,
             })
             .expect((res: request.Response) => {
-                console.log(res.body);
                 expect(res.body.title).toEqual(title);
                 expect(res.body.description).toEqual(description);
                 expect(res.body.successUrl).toEqual(successUrl);
