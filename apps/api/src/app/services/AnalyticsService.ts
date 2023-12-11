@@ -23,6 +23,7 @@ import { Web3QuestClaim } from '../models/Web3QuestClaim';
 import { CustomRewardPayment } from '../models/CustomRewardPayment';
 import { DiscordRoleRewardPayment } from '../models/DiscordRoleRewardPayment';
 import { CouponRewardPayment } from '../models/CouponRewardPayment';
+import { Participant } from '../models/Participant';
 
 async function getPoolAnalyticsForChart(pool: AssetPoolDocument, startDate: Date, endDate: Date) {
     // Rewards
@@ -287,15 +288,30 @@ async function createLeaderboard(pool: AssetPoolDocument, dateRange?: { startDat
     }
 
     const wallets = await Wallet.find({ _id: Object.keys(walletTotals) });
-    return wallets
+    const leaderboard = wallets
         .map((wallet: WalletDocument) => ({
-            walletId: String(wallet._id),
-            wallet,
             score: walletTotals[wallet._id].totalAmount || 0,
             questEntryCount: walletTotals[wallet._id].totalCompleted || 0,
             sub: wallet.sub,
         }))
         .sort((a: any, b: any) => b.score - a.score);
+
+    const updates = leaderboard.map(
+        (entry: { sub: string; score: number; questEntryCount: number }, index: number) => ({
+            updateOne: {
+                filter: { poolId: String(pool._id), sub: entry.sub },
+                update: {
+                    $set: {
+                        rank: Number(index) + 1,
+                        score: entry.score,
+                        questEntryCount: entry.questEntryCount,
+                    },
+                },
+            },
+        }),
+    );
+
+    await Participant.bulkWrite(updates);
 }
 
 async function queryQuestEntries<T>(args: {

@@ -1,8 +1,7 @@
 import { AssetPool } from '../models/AssetPool';
-import { Participant } from '../models/Participant';
 import { logger } from '../util/logger';
-import AnalyticsService from '../services/AnalyticsService';
 import { Job } from '@hokify/agenda';
+import AnalyticsService from '../services/AnalyticsService';
 
 export async function updateParticipantRanks(job: Job) {
     if (!job.attrs.data) return;
@@ -10,23 +9,11 @@ export async function updateParticipantRanks(job: Job) {
     try {
         const { poolId } = job.attrs.data as { poolId: string };
         const campaign = await AssetPool.findById(poolId);
-        const leaderboard = await AnalyticsService.createLeaderboard(campaign);
-        const updates = leaderboard.map(
-            (entry: { sub: string; score: number; questEntryCount: number }, index: number) => ({
-                updateOne: {
-                    filter: { poolId: String(campaign._id), sub: entry.sub },
-                    update: {
-                        $set: {
-                            rank: Number(index) + 1,
-                            score: entry.score,
-                            questEntryCount: entry.questEntryCount,
-                        },
-                    },
-                },
-            }),
-        );
+        if (!campaign) throw new Error('Could not find campaign');
 
-        await Participant.bulkWrite(updates);
+        await AnalyticsService.createLeaderboard(campaign);
+
+        logger.info('Updated participant ranks.');
     } catch (error) {
         logger.error(error);
     }
