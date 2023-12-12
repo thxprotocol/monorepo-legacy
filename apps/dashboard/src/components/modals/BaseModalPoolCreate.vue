@@ -22,16 +22,16 @@ import { mapGetters } from 'vuex';
 import BaseFormSelectNetwork from '@thxnetwork/dashboard/components/form-select/BaseFormSelectNetwork.vue';
 import BaseModal from './BaseModal.vue';
 import BaseIdenticon from '../BaseIdenticon.vue';
-import BaseCampaignDuration, { parseDateTime } from '@thxnetwork/dashboard/components/cards/BaseCampaignDuration.vue';
+import BaseCampaignDuration, { parseDateTime } from '@thxnetwork/dashboard/components/form-group/BaseDateDuration.vue';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import type { TAccount } from '@thxnetwork/common/lib/types';
 
 @Component({
     components: {
+        chainInfo,
         BaseModal,
         BaseFormSelectNetwork,
         BaseIdenticon,
-        chainInfo,
         BaseCampaignDuration,
     },
     computed: mapGetters({

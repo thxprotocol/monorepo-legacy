@@ -60,7 +60,6 @@
 </template>
 
 <script lang="ts">
-import type { TPoolSettings } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 export function parseDateTime(dateString: Date | null, timeString: string) {
@@ -74,14 +73,14 @@ export function parseDateTime(dateString: Date | null, timeString: string) {
 }
 
 @Component({})
-export default class BaseCampaignDuration extends Vue {
+export default class BaseDateDuration extends Vue {
     isVisible = false;
     startDate: Date | null = null;
     startTime = '00:00:00';
     endDate: Date | null = null;
     endTime = '00:00:00';
 
-    @Prop() settings!: TPoolSettings;
+    @Prop() settings!: { startDate: Date; endDate: Date };
 
     mounted() {
         if (this.settings.startDate) {

@@ -24,10 +24,18 @@ import { CustomRewardPayment } from '../models/CustomRewardPayment';
 import { DiscordRoleRewardPayment } from '../models/DiscordRoleRewardPayment';
 import { CouponRewardPayment } from '../models/CouponRewardPayment';
 import { Participant } from '../models/Participant';
+import { DiscordRoleReward, DiscordRoleRewardDocument } from '../models/DiscordRoleReward';
+import { CouponReward, CouponRewardDocument } from '../models/CouponReward';
 
 async function getPoolAnalyticsForChart(pool: AssetPoolDocument, startDate: Date, endDate: Date) {
     // Rewards
-    const [erc20PerksQueryResult, erc721PerksQueryResult, customRewardsQueryResult] = await Promise.all([
+    const [
+        erc20PerksQueryResult,
+        erc721PerksQueryResult,
+        customRewardsQueryResult,
+        couponRewardsQueryResult,
+        discordRoleRewardsQueryResult,
+    ] = await Promise.all([
         queryRewardRedemptions<ERC20PerkDocument>({
             collectionName: 'erc20perkpayments',
             key: 'perkId',
@@ -48,6 +56,22 @@ async function getPoolAnalyticsForChart(pool: AssetPoolDocument, startDate: Date
             collectionName: 'customrewardpayments',
             key: 'perkId',
             model: CustomReward,
+            poolId: String(pool._id),
+            startDate,
+            endDate,
+        }),
+        queryRewardRedemptions<CouponRewardDocument>({
+            collectionName: 'couponrewardpayments',
+            key: 'perkId',
+            model: CouponReward,
+            poolId: String(pool._id),
+            startDate,
+            endDate,
+        }),
+        queryRewardRedemptions<DiscordRoleRewardDocument>({
+            collectionName: 'discordrolerewardpayments',
+            key: 'perkId',
+            model: DiscordRoleReward,
             poolId: String(pool._id),
             startDate,
             endDate,
@@ -126,6 +150,19 @@ async function getPoolAnalyticsForChart(pool: AssetPoolDocument, startDate: Date
                 totalAmount: x.total_amount,
             };
         }),
+        couponRewards: couponRewardsQueryResult.map((x) => {
+            return {
+                day: x._id,
+                totalAmount: x.total_amount,
+            };
+        }),
+        discordRoleRewards: discordRoleRewardsQueryResult.map((x) => {
+            return {
+                day: x._id,
+                totalAmount: x.total_amount,
+            };
+        }),
+        //
         dailyRewards: dailyRewardsQueryResult.map((x) => {
             return {
                 day: x._id,

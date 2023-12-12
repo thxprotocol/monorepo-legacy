@@ -36,6 +36,7 @@
             </b-row>
             <hr />
             <strong class="text-muted">Quests</strong>
+            <BaseChartQuests />
             <b-row class="mt-3" v-if="metrics">
                 <b-col
                     md="4"
@@ -65,6 +66,7 @@
             </b-row>
             <hr />
             <strong class="text-muted">Rewards</strong>
+            <BaseChartRewards />
             <b-row class="mt-3" v-if="metrics">
                 <b-col
                     md="4"
@@ -92,6 +94,30 @@
         <b-col md="4">
             <b-row>
                 <b-col>
+                    <strong class="text-muted">Date range</strong>
+                    <b-card class="mt-3">
+                        <b-form-group label="Last">
+                            <b-input-group append="days">
+                                <b-form-input
+                                    min="1"
+                                    max="1000"
+                                    :value="daysRange"
+                                    @change="onChangeDaysRange"
+                                    type="number"
+                                />
+                            </b-input-group>
+                        </b-form-group>
+                        <b-button
+                            block
+                            :disabled="isLoading"
+                            variant="primary"
+                            class="rounded-pill"
+                            @click="onClickUpdate"
+                        >
+                            <b-spinner v-if="isLoading" small />
+                            <template v-else>Update</template>
+                        </b-button>
+                    </b-card>
                     <p><strong class="text-muted">Leaderboard</strong></p>
                     <b-list-group v-if="leaderboard.results.length">
                         <b-list-group-item
@@ -141,10 +167,16 @@ import { format } from 'date-fns';
 import { IPoolAnalyticsMetrics, IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import type { TPool } from '@thxnetwork/types/interfaces';
 import BaseIdenticon from '@thxnetwork/dashboard/components/BaseIdenticon.vue';
+import BaseChartQuests from '@thxnetwork/dashboard/components/charts/BaseChartQuests.vue';
+import BaseChartRewards from '@thxnetwork/dashboard/components/charts/BaseChartRewards.vue';
+
+const ONE_DAY = 86400000; // one day in milliseconds
 
 @Component({
     components: {
         BaseIdenticon,
+        BaseChartQuests,
+        BaseChartRewards,
     },
     computed: mapGetters({
         pools: 'pools/all',
@@ -165,7 +197,7 @@ export default class ViewAnalyticsMetrics extends Vue {
     ];
     metricRewardLabelMap = ['Coin', 'NFT', 'Custom', 'Coupon', 'Discord Role'];
     pools!: IPools;
-    loading = false;
+    isLoading = false;
     leaderboard: { total: number; results: any[] } = {
         total: 0,
         results: [],
@@ -187,14 +219,37 @@ export default class ViewAnalyticsMetrics extends Vue {
     }
 
     async mounted() {
-        this.loading = true;
-        this.$store.dispatch('pools/readAnalyticsMetrics', { poolId: this.pool._id });
+        this.isLoading = true;
+        await this.getAnalytics();
+        await this.getLeaderboard();
+        this.isLoading = false;
+    }
+
+    async getLeaderboard() {
         this.leaderboard = await this.$store.dispatch('pools/participants', {
             pool: this.pool,
             page: 1,
             limit: 10,
         });
-        this.loading = false;
+    }
+
+    async getAnalytics() {
+        const endDate = new Date();
+
+        endDate.setHours(0, 0, 0, 0);
+        const startDate = new Date(new Date(endDate).getTime() - ONE_DAY * this.daysRange);
+        endDate.setHours(23, 59, 59, 0);
+
+        await this.$store.dispatch('pools/readAnalyticsMetrics', { poolId: this.pool._id, startDate, endDate });
+        debugger;
+    }
+
+    onChangeDaysRange(daysRange: number) {
+        this.daysRange = daysRange;
+    }
+
+    onClickUpdate() {
+        this.getAnalytics();
     }
 }
 </script>
