@@ -112,7 +112,9 @@
                     </b-input-group>
                     <template #description>
                         Your assets are stored in
-                        <b-link href="https://safe.global/" target="_blank"> Safe's battle-tested multisigs </b-link>
+                        <b-link :href="`https://app.safe.global/apps/open?safe=matic:${pool.address}`" target="_blank">
+                            Safe's battle-tested multisigs
+                        </b-link>
                     </template>
                 </b-form-group>
             </b-col>
