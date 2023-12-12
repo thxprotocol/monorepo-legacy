@@ -5,7 +5,7 @@
                 <h2 class="mb-3">Analytics</h2>
             </b-col>
             <b-col md="6" class="d-flex">
-                <b-card class="ml-auto mb-3">
+                <b-card body-class="p-2" class="ml-auto mb-3">
                     <b-row>
                         <b-col class="d-flex align-items-center justify-content-end">
                             <span class="mr-2">Start</span>
