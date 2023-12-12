@@ -24,7 +24,11 @@
                             </b-link>
                         </div>
                         <div class="h2 mb-0">
-                            {{ ((metrics.subscriptionCount / metrics.participantCount) * 100).toFixed(2) }}%
+                            {{
+                                metrics.subscriptionCount > 0
+                                    ? ((metrics.subscriptionCount / metrics.participantCount) * 100).toFixed(2)
+                                    : 0
+                            }}%
                         </div>
                         <small>{{ metrics.subscriptionCount }} participants subscribed</small>
                     </b-card>
@@ -88,41 +92,41 @@
         <b-col md="4">
             <b-row>
                 <b-col>
-                    <strong class="text-muted">Leaderboard</strong>
-                    <b-skeleton-wrapper :loading="!leaderboard.results.length">
-                        <template #loading>
-                            <b-skeleton-table
-                                :rows="2"
-                                :columns="1"
-                                :table-props="{ bordered: false, striped: false }"
-                            ></b-skeleton-table>
-                        </template>
-                        <b-list-group class="mt-3" v-if="leaderboard.results.length">
-                            <b-list-group-item
-                                v-for="(result, key) of leaderboard.results"
-                                :key="key"
-                                class="d-flex justify-content-between align-items-center"
-                            >
-                                <div class="d-flex center-center">
-                                    <b-badge variant="light" class="mr-3 p-2">#{{ result.rank }}</b-badge>
-                                    <b-avatar size="25" variant="light" :src="result.account.profileImg" class="mr-3" />
-                                    <div>
-                                        {{ result.account.username }}
-                                        <sup v-if="result.subscription">
-                                            <i class="fa fa-star text-primary" style="font-size: 0.8rem" />
-                                        </sup>
-                                    </div>
+                    <p><strong class="text-muted">Leaderboard</strong></p>
+                    <b-list-group v-if="leaderboard.results.length">
+                        <b-list-group-item
+                            v-for="(result, key) of leaderboard.results"
+                            :key="key"
+                            class="d-flex justify-content-between align-items-center pl-3"
+                        >
+                            <div class="d-flex center-center">
+                                <div class="mr-3 text-gray">#{{ result.rank }}</div>
+                                <!-- <b-badge variant="light" class="mr-3 p-2">#{{ result.rank }}</b-badge> -->
+                                <b-avatar size="25" variant="light" :src="result.account.profileImg" class="mr-3" />
+                                <div>
+                                    {{ result.account.username }}
+                                    <sup
+                                        v-if="result.subscription"
+                                        v-b-tooltip
+                                        :title="`Subscribed since ${format(
+                                            new Date(result.subscription.createdAt),
+                                            'dd-MM-yyyy HH:mm',
+                                        )}`"
+                                    >
+                                        <i class="fa fa-star text-primary" style="font-size: 0.8rem" />
+                                    </sup>
                                 </div>
-                                <div class="ml-auto text-right">
-                                    <strong class="text-primary"> {{ result.questEntryCount }} </strong>
-                                    <i class="fa fa-tasks text-primary" style="font-size: 0.8rem" />
-                                </div>
-                                <div style="min-width: 75px" class="text-right">
-                                    <strong class="text-primary"> {{ result.score }} </strong>
-                                </div>
-                            </b-list-group-item>
-                        </b-list-group>
-                    </b-skeleton-wrapper>
+                            </div>
+                            <div class="ml-auto text-right">
+                                <strong class="text-primary"> {{ result.questEntryCount }} </strong>
+                                <i class="fa fa-tasks text-primary" style="font-size: 0.8rem" />
+                            </div>
+                            <div style="min-width: 75px" class="text-right">
+                                <strong class="text-primary"> {{ result.score }} </strong>
+                            </div>
+                        </b-list-group-item>
+                    </b-list-group>
+                    <p v-else class="text-gray">Could not find any campaign participants yet!</p>
                 </b-col>
             </b-row>
         </b-col>
