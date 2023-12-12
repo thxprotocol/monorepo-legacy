@@ -138,7 +138,7 @@
                         </b-list-group>
                     </b-col>
                     <b-col md="8">
-                        <BaseChartQuests :start-date="startDate" :end-date="endDate" />
+                        <BaseChartQuests :chart-dates="chartDates" />
                     </b-col>
                 </b-row>
                 <p><strong class="text-muted">Rewards</strong></p>
@@ -176,7 +176,7 @@
                         </b-list-group>
                     </b-col>
                     <b-col md="8">
-                        <BaseChartRewards :start-date="startDate" :end-date="endDate" />
+                        <BaseChartRewards :chart-dates="chartDates" />
                     </b-col>
                 </b-row>
             </b-col>
@@ -292,6 +292,18 @@ export default class ViewAnalyticsMetrics extends Vue {
 
     get isLoading() {
         return this.isLoadingMetrics || this.isLoadingCharts;
+    }
+
+    get chartDates() {
+        const oneDay = 86400000; // one day in milliseconds
+        const dates: string[] = [];
+
+        for (let i = 0; i <= this.endDate.getTime() - this.startDate.getTime(); ) {
+            dates.push(format(new Date(this.startDate.getTime() + i), 'yyyy-MM-dd'));
+            i += oneDay;
+        }
+
+        return dates;
     }
 
     async mounted() {

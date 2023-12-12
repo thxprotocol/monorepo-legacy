@@ -39,24 +39,10 @@ export default class BaseChardQuests extends Vue {
     daysRange = 14;
 
     @Prop() pool!: TPool;
-    @Prop() startDate!: Date;
-    @Prop() endDate!: Date;
+    @Prop() chartDates!: string[];
 
     get poolAnalytics() {
         return this.analytics[this.$route.params.id];
-    }
-
-    get chartDates() {
-        // creates a list of dates for the charts
-        const oneDay = 86400000; // one day in milliseconds
-
-        const dates: string[] = [];
-        for (let i = 0; i <= this.endDate.getTime() - this.startDate.getTime(); ) {
-            const currentDate = new Date(this.startDate.getTime() + i);
-            dates.push(format(currentDate, 'yyyy-MM-dd')); // format the date as the same format as the analytics data
-            i += oneDay;
-        }
-        return dates;
     }
 
     get lineChartData() {
