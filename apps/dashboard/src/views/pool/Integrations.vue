@@ -18,10 +18,7 @@
                             </div>
                         </b-col>
                         <b-col md="8">
-                            <b-form-group
-                                label="Discord Server"
-                                description="Use THX Bot for Discord Quests and Role Rewards."
-                            >
+                            <b-form-group label="Discord Server">
                                 <b-button variant="light" target="_blank" :href="discordBotInviteUrl">
                                     <b-img
                                         :src="require('../../../public/assets/logo-discord.png')"
@@ -30,8 +27,12 @@
                                     />
                                     Invite THX Bot
                                 </b-button>
+                                <template #description>
+                                    Run the command <code>/thx connect</code> after the invite from an admin role to
+                                    connect the bot to a campaign you own or collaborate with.
+                                </template>
                             </b-form-group>
-                            <b-form-group label="Installed in" v-if="pool.guilds.length">
+                            <b-form-group label="Installed in" v-if="pool.guilds && pool.guilds.length">
                                 <b-badge
                                     v-for="(guild, key) of pool.guilds"
                                     variant="primary"

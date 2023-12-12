@@ -34,6 +34,19 @@ export interface IPoolAnalytic {
             totalAmount: number;
         },
     ];
+    couponRewards: [
+        {
+            day: string;
+            totalAmount: number;
+        },
+    ];
+    discordRoleRewards: [
+        {
+            day: string;
+            totalAmount: number;
+        },
+    ];
+
     //
     dailyRewards: [
         {
@@ -81,6 +94,9 @@ export type PoolMetric = {
 
 export interface IPoolAnalyticMetrics {
     _id: string;
+    participantActiveCount: number;
+    participantCount: number;
+    subscriptionCount: number;
     dailyQuest: PoolMetric;
     socialQuest: PoolMetric;
     inviteQuest: PoolMetric;
@@ -89,6 +105,8 @@ export interface IPoolAnalyticMetrics {
     coinReward: PoolMetric;
     nftReward: PoolMetric;
     customReward: PoolMetric;
+    couponReward: PoolMetric;
+    discordRoleReward: PoolMetric;
 }
 export interface IPools {
     [id: string]: TPool;
@@ -363,17 +381,6 @@ class PoolModule extends VuexModule {
             headers: { 'X-PoolId': payload.poolId },
         });
         this.context.commit('setAnalytics', r.data);
-        return r.data;
-    }
-
-    @Action({ rawError: true })
-    async readAnalyticsLeaderBoard(payload: { poolId: string }) {
-        const r = await axios({
-            method: 'get',
-            url: `/pools/${payload.poolId}/analytics/leaderboard`,
-            headers: { 'X-PoolId': payload.poolId },
-        });
-        this.context.commit('setAnalyticsLeaderBoard', { poolId: payload.poolId, data: r.data });
         return r.data;
     }
 

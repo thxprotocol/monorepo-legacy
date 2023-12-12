@@ -135,7 +135,7 @@
                                     </div>
                                     <div
                                         class="card"
-                                        :style="`background-color: ${elements.cardBg.color}; color: ${elements.cardText.color};`"
+                                        :style="`background-color: ${elements.cardBg.color} !important; color: ${elements.cardText.color} !important;`"
                                     >
                                         <div class="card-header">
                                             <div class="card-title mb-0 d-flex justify-content-between">

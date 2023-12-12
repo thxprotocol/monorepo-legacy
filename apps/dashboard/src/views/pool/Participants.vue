@@ -175,7 +175,7 @@ export default class ViewParticipants extends Vue {
     };
     result = {
         results: [],
-        total: 1,
+        total: 0,
     };
 
     get pool() {

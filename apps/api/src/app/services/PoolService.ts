@@ -15,8 +15,7 @@ import { ERC721Perk } from '../models/ERC721Perk';
 import { getsigningSecret } from '../util/signingsecret';
 import { Web3Quest } from '../models/Web3Quest';
 import { CustomReward } from '../models/CustomReward';
-import { Participant, TParticipant } from '../models/Participant';
-import { paginatedResults } from '../util/pagination';
+import { Participant } from '../models/Participant';
 import { PointBalance } from './PointBalanceService';
 import { Collaborator } from '../models/Collaborator';
 import { DASHBOARD_URL } from '../config/secrets';
@@ -141,15 +140,36 @@ async function getRewardCount(pool: AssetPoolDocument) {
 }
 
 async function findParticipants(pool: AssetPoolDocument, page: number, limit: number) {
-    const participants = await paginatedResults(
-        Participant,
-        page,
-        limit,
-        {
-            poolId: pool._id,
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const total = await Participant.find({ poolId: pool._id }).countDocuments().exec();
+    const participants = {
+        previous: startIndex > 0 && {
+            page: page - 1,
         },
-        ['rank', 1],
-    );
+        next: endIndex < total && {
+            page: page + 1,
+        },
+        total,
+        results: await Participant.aggregate([
+            { $match: { poolId: String(pool._id) } },
+            {
+                $addFields: {
+                    rankSort: {
+                        $cond: {
+                            if: { $gt: ['$rank', 0] },
+                            then: '$rank',
+                            else: Number.MAX_SAFE_INTEGER,
+                        },
+                    },
+                },
+            },
+            { $sort: { rankSort: 1 } },
+            { $skip: startIndex },
+            { $limit: limit },
+        ]).exec(),
+    };
+
     const subs = participants.results.map((p) => p.sub);
     const accounts = await AccountProxy.getMany(subs);
 
@@ -184,7 +204,7 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
                 logger.error(error);
             }
             return {
-                ...participant.toJSON(),
+                ...participant,
                 account: account && {
                     email: account.email,
                     username: account.username,

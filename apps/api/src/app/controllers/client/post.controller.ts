@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { GrantVariant } from '@thxnetwork/types/enums';
 import ClientProxy from '@thxnetwork/api/proxies/ClientProxy';
+import { widgetScopes } from '@thxnetwork/api/util/jest/constants';
 
 export default {
     controller: async (req: Request, res: Response) => {
@@ -23,7 +24,7 @@ export default {
                     redirect_uris: [redirectUri],
                     post_logout_redirect_uris: [requestUri],
                     response_types: ['code'],
-                    scope: 'openid offline_access',
+                    scope: widgetScopes,
                 };
                 break;
             case GrantVariant.ClientCredentials:
@@ -37,8 +38,8 @@ export default {
                 };
                 break;
         }
-
-        const client = await ClientProxy.create(req.auth.sub, req.headers['X-PoolId'] as string, payload, name);
+        const poolId = req.header('X-PoolId');
+        const client = await ClientProxy.create(req.auth.sub, poolId, payload, name);
 
         res.json(client);
     },
