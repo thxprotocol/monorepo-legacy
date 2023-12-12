@@ -27,9 +27,10 @@ const controller = async (req: Request, res: Response) => {
     const claims = await DailyRewardClaimService.findByWallet(quest, wallet);
     const amountIndex = claims.length >= quest.amounts.length ? claims.length % quest.amounts.length : claims.length;
     const amount = quest.amounts[amountIndex];
-
     if (!amount) throw new ForbiddenError('Could not figure out how much points you should get.');
+
     const account = await AccountProxy.getById(req.auth.sub);
+
     const entry = await QuestService.complete(QuestVariant.Daily, amount, pool, quest, account, wallet, {
         dailyRewardId: quest._id,
         state: DailyRewardClaimState.Claimed,

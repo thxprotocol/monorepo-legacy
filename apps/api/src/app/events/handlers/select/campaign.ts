@@ -18,5 +18,5 @@ export async function handleCampaignConnect(interaction: StringSelectMenuInterac
     };
 
     await DiscordGuild.findOneAndUpdate(filter, payload, { upsert: true });
-    interaction.reply({ content: `Yay!🥳 Connected **${pool.settings.title}** to the server.` });
+    interaction.reply({ content: `Yay!🥳 Connected **${pool.settings.title}** to the server.`, ephemeral: true });
 }

@@ -1,22 +1,24 @@
 import { ChatInputCommandInteraction, StringSelectMenuInteraction } from 'discord.js';
 import { handleError } from './commands/error';
-import { handleCampaignConnect } from './handlers/index';
+import { handleCampaignConnect, handleQuestComplete } from './handlers/index';
 import { logger } from '../util/logger';
 import router from './commands';
 
 export enum StringSelectMenuVariant {
     CampaignConnect = 'thx.campaign.connect',
+    QuestComplete = 'thx.campaign.quest.complete',
 }
+
+const stringSelectMenuMap = {
+    [StringSelectMenuVariant.CampaignConnect]: handleCampaignConnect,
+    [StringSelectMenuVariant.QuestComplete]: handleQuestComplete,
+};
 
 const onInteractionCreated = async (interaction: ChatInputCommandInteraction | StringSelectMenuInteraction) => {
     try {
         if (interaction.isStringSelectMenu()) {
             logger.info(`#${interaction.user.id} picked ${interaction.values[0]} for ${interaction.customId}`);
-            switch (interaction.customId) {
-                case StringSelectMenuVariant.CampaignConnect: {
-                    handleCampaignConnect(interaction);
-                }
-            }
+            await stringSelectMenuMap[interaction.customId](interaction);
         }
 
         if (interaction.isCommand()) {

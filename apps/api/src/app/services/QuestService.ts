@@ -173,4 +173,9 @@ async function complete(
     return entry;
 }
 
-export default { getModel, create, update, complete };
+function findById(variant: QuestVariant, questId) {
+    const model = getModel(variant);
+    return model.findById(questId);
+}
+
+export default { getModel, create, update, complete, findById };
