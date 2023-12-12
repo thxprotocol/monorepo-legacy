@@ -19,7 +19,7 @@ async function createSelectMenuQuests(account: TAccount, guild: Guild) {
     ]);
     const quests = results.flat();
     const select = new StringSelectMenuBuilder();
-    select.setCustomId(StringSelectMenuVariant.QuestComplete).setPlaceholder('Connect a campaign');
+    select.setCustomId(StringSelectMenuVariant.QuestComplete).setPlaceholder('Complete a quest');
 
     for (const index in quests) {
         const quest = quests[index];
