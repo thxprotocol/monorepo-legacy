@@ -25,12 +25,6 @@ const routes: Array<RouteConfig> = [
         beforeEnter: assertAuthorization,
     },
     {
-        name: 'pools',
-        path: '/pools',
-        component: () => import('../views/Pools.vue'),
-        beforeEnter: assertAuthorization,
-    },
-    {
         name: 'pool',
         path: '/pool/:id',
         redirect: '/pool/:id/dashboard',
@@ -38,19 +32,9 @@ const routes: Array<RouteConfig> = [
         beforeEnter: assertAuthorization,
         children: [
             {
-                name: 'download',
-                path: 'download',
-                beforeEnter: downloadScreenshot,
-            },
-            {
                 name: 'dashboard',
                 path: 'dashboard',
                 component: () => import('../views/pool/Analytics.vue'),
-            },
-            {
-                name: 'participants',
-                path: 'participants',
-                component: () => import('../views/pool/Participants.vue'),
             },
             {
                 name: 'quests',
@@ -63,9 +47,31 @@ const routes: Array<RouteConfig> = [
                 component: () => import('../views/pool/Rewards.vue'),
             },
             {
+                name: 'participants',
+                path: 'participants',
+                component: () => import('../views/pool/Participants.vue'),
+            },
+            {
                 name: 'integrations',
                 path: 'integrations',
                 component: () => import('../views/pool/Integrations.vue'),
+            },
+            {
+                name: 'Developer',
+                path: 'developer',
+                component: () => import('../views/pool/Developer.vue'),
+                children: [
+                    {
+                        name: 'Webhooks',
+                        path: 'webhooks',
+                        component: () => import('../views/pool/developer/Webhooks.vue'),
+                    },
+                    {
+                        name: 'API',
+                        path: 'api',
+                        component: () => import('../views/pool/developer/API.vue'),
+                    },
+                ],
             },
             {
                 name: 'Settings',
@@ -86,23 +92,6 @@ const routes: Array<RouteConfig> = [
                         name: 'Widget',
                         path: 'widget',
                         component: () => import('../views/pool/settings/Widget.vue'),
-                    },
-                ],
-            },
-            {
-                name: 'Developer',
-                path: 'developer',
-                component: () => import('../views/pool/Developer.vue'),
-                children: [
-                    {
-                        name: 'Webhooks',
-                        path: 'webhooks',
-                        component: () => import('../views/pool/developer/Webhooks.vue'),
-                    },
-                    {
-                        name: 'API',
-                        path: 'api',
-                        component: () => import('../views/pool/developer/API.vue'),
                     },
                 ],
             },
