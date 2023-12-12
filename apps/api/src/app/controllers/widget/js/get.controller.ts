@@ -1,4 +1,4 @@
-import { API_URL, AUTH_URL, NODE_ENV, WIDGET_URL } from '@thxnetwork/api/config/secrets';
+import { API_URL, AUTH_URL, DASHBOARD_URL, NODE_ENV, WIDGET_URL } from '@thxnetwork/api/config/secrets';
 import BrandService from '@thxnetwork/api/services/BrandService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
@@ -494,7 +494,7 @@ const controller = async (req: Request, res: Response) => {
     
     window.THXWidget = new THXWidget({
         apiUrl: '${API_URL}',
-        isPublished: ${widget.isPublished},
+        isPublished: window.location.origin.includes("${DASHBOARD_URL}") || ${widget.isPublished},
         widgetUrl: '${WIDGET_URL}',
         poolId: '${req.params.id}',
         chainId: '${pool.chainId}',
