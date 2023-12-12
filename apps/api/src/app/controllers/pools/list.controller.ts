@@ -8,7 +8,6 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
     const isArchived = req.query.archived ? JSON.parse(String(req.query.archived)) : false;
     const pools = await PoolService.getAllBySub(req.auth.sub, isArchived);
-
     res.json(pools);
 };
 

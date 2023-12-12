@@ -12,7 +12,6 @@
                 <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
                 <b-collapse id="nav-collapse" is-nav>
                     <b-navbar-nav>
-                        <b-nav-item class="mx-3" to="/pools">Campaigns</b-nav-item>
                         <b-nav-item class="mx-3" to="/coins">Coins</b-nav-item>
                         <b-nav-item class="mx-3" to="/nft">NFT</b-nav-item>
                         <b-nav-item class="mx-3" to="/qrcodes">QR Codes</b-nav-item>
