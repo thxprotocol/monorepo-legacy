@@ -1,6 +1,12 @@
 import { ChatInputCommandInteraction, StringSelectMenuInteraction, ButtonInteraction } from 'discord.js';
 import { handleError } from './commands/error';
-import { onSelectCampaignConnect, onSelectQuestComplete, onClickQuestComplete } from './handlers/index';
+import {
+    onSelectCampaignConnect,
+    onSelectQuestComplete,
+    onClickQuestComplete,
+    onClickRewardList,
+    onClickQuestList,
+} from './handlers/index';
 import { logger } from '../util/logger';
 import router from './commands';
 
@@ -28,6 +34,12 @@ const onInteractionCreated = async (
             logger.info(`#${interaction.user.id} clicked button #${interaction.customId}`);
             if (interaction.customId.startsWith(DiscordButtonVariant.QuestComplete)) {
                 await onClickQuestComplete(interaction);
+            }
+            if (interaction.customId.startsWith(DiscordButtonVariant.QuestList)) {
+                await onClickQuestList(interaction);
+            }
+            if (interaction.customId.startsWith(DiscordButtonVariant.RewardList)) {
+                await onClickRewardList(interaction);
             }
         }
 

@@ -11,11 +11,11 @@ import { Web3Quest } from '@thxnetwork/api/models/Web3Quest';
 async function createSelectMenuQuests(account: TAccount, guild: Guild) {
     const { poolId } = await DiscordGuild.findOne({ guildId: guild.id });
     const results = await Promise.all([
-        DailyReward.find({ poolId }),
-        ReferralReward.find({ poolId }),
-        PointReward.find({ poolId }),
-        MilestoneReward.find({ poolId }),
-        Web3Quest.find({ poolId }),
+        DailyReward.find({ poolId, isPublished: true }),
+        ReferralReward.find({ poolId, isPublished: true }),
+        PointReward.find({ poolId, isPublished: true }),
+        MilestoneReward.find({ poolId, isPublished: true }),
+        Web3Quest.find({ poolId, isPublished: true }),
     ]);
     const quests = results.flat();
     const select = new StringSelectMenuBuilder();

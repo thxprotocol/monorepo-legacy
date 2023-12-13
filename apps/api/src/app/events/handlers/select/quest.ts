@@ -14,7 +14,7 @@ const questEntryDataMap = {
     }),
 };
 
-async function completeQuest(
+export async function completeQuest(
     interaction: ButtonInteraction | StringSelectMenuInteraction,
     variant: QuestVariant,
     questId: string,
@@ -57,19 +57,6 @@ async function completeQuest(
         content: `Completed **${quest.title}** and earned **${amount} points**.`,
         ephemeral: true,
     });
-}
-
-export async function onClickQuestComplete(interaction: ButtonInteraction) {
-    try {
-        // Custom Id Syntax: DiscordButtonVariant.QuestComplete + ':' + questVariant ':' + questId
-        const data = interaction.customId.split(':');
-        const variant = data[1] as unknown as QuestVariant;
-        const questId = data[2];
-
-        await completeQuest(interaction, variant, questId);
-    } catch (error) {
-        interaction.reply({ content: error.message, ephemeral: true });
-    }
 }
 
 export async function onSelectQuestComplete(interaction: StringSelectMenuInteraction) {
