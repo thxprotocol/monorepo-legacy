@@ -50,7 +50,7 @@ export default class DiscordDataProxy {
                 channel.send({ content, embeds, components });
             } else if (pool.settings.discordWebhookUrl) {
                 // Extending the content with a link as we're not allowed to send button components over webhooks
-                content += `[Complete Quest ▸](<${url}>)`;
+                content += ` [Complete Quest ▸](<${url}>)`;
                 axios.post(pool.settings.discordWebhookUrl, { content, embeds });
             }
         } catch (error) {

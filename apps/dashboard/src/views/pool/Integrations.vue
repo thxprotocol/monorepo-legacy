@@ -48,6 +48,29 @@
                     <b-form-row>
                         <b-col md="4">
                             <div class="">
+                                <strong>Management</strong>
+                                <p class="text-muted">
+                                    Determine the roles that should be able to access administrative features.
+                                </p>
+                            </div>
+                        </b-col>
+                        <b-col md="8">
+                            <b-form-group :label="guild.name" :key="key" v-for="(guild, key) of pool.guilds">
+                                <BaseDropdownDiscordRole
+                                    :role-id="guild.adminRoleId"
+                                    :guilds="pool.guilds"
+                                    @click="updateDiscordAdminRole(guild, $event)"
+                                />
+                            </b-form-group>
+                            <small>
+                                Gives access to: <code>/thx give-points</code>, <code>/thx remove-points</code>
+                            </small>
+                        </b-col>
+                    </b-form-row>
+                    <hr />
+                    <b-form-row>
+                        <b-col md="4">
+                            <div class="">
                                 <strong>Notifications</strong>
                                 <p class="text-muted">
                                     Let your Discord members know about campaign events and gain more participants.
@@ -210,14 +233,16 @@ import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { AccessTokenKind, RewardConditionInteraction, TPoolSettings } from '@thxnetwork/types/index';
 import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
 import { DISCORD_BOT_INVITE_URL } from '@thxnetwork/dashboard/config/constants';
-import type { TAccount, TDiscordGuild } from '@thxnetwork/types/interfaces';
+import type { TAccount, TDiscordGuild, TDiscordRole } from '@thxnetwork/types/interfaces';
 import BaseCardURLWebhook from '@thxnetwork/dashboard/components/cards/BaseCardURLWebhook.vue';
 import BaseDropdownDiscordChannel from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownDiscordChannel.vue';
+import BaseDropdownDiscordRole from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownDiscordRole.vue';
 
 @Component({
     components: {
         BaseCardURLWebhook,
         BaseDropdownDiscordChannel,
+        BaseDropdownDiscordRole,
     },
     computed: {
         ...mapGetters({
@@ -294,11 +319,15 @@ export default class SettingsTwitterView extends Vue {
         });
     }
 
-    async updateDiscordGuild(guild: TDiscordGuild) {
-        await this.$store.dispatch('pools/update', {
+    updateDiscordGuild(guild: TDiscordGuild) {
+        this.$store.dispatch('pools/update', {
             pool: this.pool,
             data: { guild },
         });
+    }
+
+    updateDiscordAdminRole(guild: TDiscordGuild, role: TDiscordRole) {
+        this.updateDiscordGuild(Object.assign(guild, { adminRoleId: role.id }));
     }
 }
 </script>

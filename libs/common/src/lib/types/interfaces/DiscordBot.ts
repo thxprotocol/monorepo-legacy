@@ -5,6 +5,7 @@ export type TDiscordGuild = {
     poolId: string;
     guildId: string;
     channelId: string;
+    adminRoleId: string;
     name: string;
     roles: TDiscordRole[];
     channels: TDiscordChannel[];
