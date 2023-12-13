@@ -83,7 +83,7 @@ export const onSubcommandPoints = async (interaction: CommandInteraction, varian
         const pool = await AssetPool.findById(discordGuild.poolId);
         if (!pool) throw new Error('Could not find connected campaign.');
 
-        const wallet = await SafeService.findPrimary(account.sub, pool.chainId);
+        const wallet = await SafeService.findPrimary(receiver.sub, pool.chainId);
         if (!wallet) throw new Error('Could not find your wallet.');
 
         // Determine if we should add or remove using pointsFunctionMap
