@@ -16,6 +16,7 @@ import { AssetPoolDocument } from '../models/AssetPool';
 import { ActionRowBuilder, ButtonBuilder } from 'discord.js';
 import { WIDGET_URL } from '../config/secrets';
 import DiscordGuild from '../models/DiscordGuild';
+import { logger } from '../util/logger';
 
 class NoDataError extends THXError {
     message = 'Could not find discord data for this account';
@@ -38,19 +39,22 @@ export default class DiscordDataProxy {
         embeds: TDiscordEmbed[] = [],
         buttons?: TDiscordButton[],
     ) {
-        const discordGuild = await DiscordGuild.findOne({ poolId: String(pool._id) });
-        const url = WIDGET_URL + `/c/${pool.settings.slug}/quests`;
+        try {
+            const discordGuild = await DiscordGuild.findOne({ poolId: String(pool._id) });
+            const url = WIDGET_URL + `/c/${pool.settings.slug}/quests`;
 
-        if (discordGuild) {
-            const channel: any = await client.channels.fetch(discordGuild.channelId);
-            const components = [];
-            if (buttons) components.push(this.createButtonActionRow(buttons));
-
-            channel.send({ content, embeds, components });
-        } else if (pool.settings.discordWebhookUrl) {
-            // Extending the content with a link as we're not allowed to send button components over webhooks
-            content += `[Complete Quest ▸](<${url}>)`;
-            axios.post(pool.settings.discordWebhookUrl, { content, embeds });
+            if (discordGuild && discordGuild.channelId) {
+                const channel: any = await client.channels.fetch(discordGuild.channelId);
+                const components = [];
+                if (buttons) components.push(this.createButtonActionRow(buttons));
+                channel.send({ content, embeds, components });
+            } else if (pool.settings.discordWebhookUrl) {
+                // Extending the content with a link as we're not allowed to send button components over webhooks
+                content += `[Complete Quest ▸](<${url}>)`;
+                axios.post(pool.settings.discordWebhookUrl, { content, embeds });
+            }
+        } catch (error) {
+            logger.error(error);
         }
     }
 
