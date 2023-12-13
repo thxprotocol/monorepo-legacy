@@ -2,7 +2,7 @@
     <b-dropdown
         variant="light"
         class="w-100"
-        menu-class="w-100"
+        menu-class="w-100 dropdown-menu-scroll"
         toggle-class="justify-content-between align-items-center d-flex form-control"
     >
         <template #button-content>
@@ -44,9 +44,7 @@ export default class ModalRewardCustomCreate extends Vue {
 .dark-mode .fa-hashtag {
     color: white !important;
 }
-</style>
-<style>
-.dropdown-menu {
+.dropdown-menu-scroll {
     max-height: 300px;
     overflow: scroll;
 }
