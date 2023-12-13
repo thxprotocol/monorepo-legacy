@@ -8,6 +8,7 @@ const discordGuildSchema = new mongoose.Schema(
         sub: String,
         poolId: String,
         guildId: String,
+        channelId: String,
         name: String,
     },
     {

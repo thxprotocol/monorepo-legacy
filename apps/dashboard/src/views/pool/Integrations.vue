@@ -98,7 +98,7 @@
                                 Reduce campaign management with automated Repost & Like Quests for your tweets.
                             </p>
                         </b-col>
-                        <b-col md="8">
+                        <b-col md="8" v-if="pool.owner">
                             <b-alert
                                 show
                                 variant="warning"

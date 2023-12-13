@@ -22,8 +22,11 @@ export class AccountService {
         return await Account.find({ _id: { $in: subs } });
     }
 
-    static getByDiscordId(discordId: string) {
-        return Account.findOne({ 'tokens.userId': discordId });
+    static async getByDiscordId(discordId: string) {
+        console.log(discordId);
+        const account = await Account.findOne({ 'tokens.userId': discordId });
+        console.log(account);
+        return account;
     }
 
     static getByEmail(email: string) {

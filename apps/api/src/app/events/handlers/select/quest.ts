@@ -1,4 +1,4 @@
-import { StringSelectMenuInteraction } from 'discord.js';
+import { ButtonInteraction, StringSelectMenuInteraction } from 'discord.js';
 import { DailyRewardClaimState, QuestVariant } from '@thxnetwork/common/lib/types/enums';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import PoolService from '@thxnetwork/api/services/PoolService';
@@ -9,51 +9,74 @@ import DailyRewardClaimService from '@thxnetwork/api/services/DailyRewardClaimSe
 
 const questEntryDataMap = {
     [QuestVariant.Daily]: (quest) => ({
-        dailyRewardId: quest._id,
+        dailyRewardId: String(quest._id),
         state: DailyRewardClaimState.Claimed,
     }),
 };
 
-export async function handleQuestComplete(interaction: StringSelectMenuInteraction) {
-    const { guild, user, values } = interaction;
+async function completeQuest(
+    interaction: ButtonInteraction | StringSelectMenuInteraction,
+    variant: QuestVariant,
+    questId: string,
+) {
+    const account = await AccountProxy.getByDiscordId(interaction.user.id);
+    if (!account) throw new Error('Could not find your THX account.');
+
+    const discordGuild = await DiscordGuild.findOne({ guildId: interaction.guild.id });
+    if (!discordGuild) throw new Error('Could not find this Discord server.');
+
+    const pool = await PoolService.getById(discordGuild.poolId);
+    if (!pool) throw new Error('Could not find this campaign.');
+
+    const wallet = await SafeService.findPrimary(account.sub, pool.chainId);
+    if (!wallet) throw new Error('Could not find your wallet.');
+
+    const quest = await QuestService.findById(variant, questId);
+    if (!quest) throw new Error('Could not find this quest.');
+
+    // Specific to Daily
+    const isClaimable = await DailyRewardClaimService.isClaimable(quest, wallet);
+    if (!isClaimable) throw new Error('Not allowed to complete this quest yet.');
+
+    let amount = quest.amount;
+    if (quest.variant == QuestVariant.Daily) {
+        const claims = await DailyRewardClaimService.findByWallet(quest, wallet);
+        const amountIndex =
+            claims.length >= quest.amounts.length ? claims.length % quest.amounts.length : claims.length;
+        amount = quest.amounts[amountIndex];
+    }
+    if (!amount) throw new Error('Could not figure out how much points you should get.');
+    // End
+
+    const data = questEntryDataMap[variant](quest);
+    if (!data) throw new Error(`Sorry, no support for completing this ${QuestVariant[variant]} Quest yet.`);
+
+    await QuestService.complete(variant, amount, pool, quest, account, wallet, data);
+
+    interaction.reply({
+        content: `Completed **${quest.title}** and earned **${amount} points**.`,
+        ephemeral: true,
+    });
+}
+
+export async function onClickQuestComplete(interaction: ButtonInteraction) {
     try {
-        const account = await AccountProxy.getByDiscordId(user.id);
-        if (!account) throw new Error('Could not find your THX account.');
+        // Custom Id Syntax: DiscordButtonVariant.QuestComplete + ':' + questVariant ':' + questId
+        const data = interaction.customId.split(':');
+        const variant = data[1] as unknown as QuestVariant;
+        const questId = data[2];
 
-        const discordGuild = await DiscordGuild.findOne({ guildId: guild.id });
-        if (!discordGuild) throw new Error('Could not find this Discord server.');
+        await completeQuest(interaction, variant, questId);
+    } catch (error) {
+        interaction.reply({ content: error.message, ephemeral: true });
+    }
+}
 
-        const pool = await PoolService.getById(discordGuild.poolId);
-        if (!pool) throw new Error('Could not find this campaign.');
+export async function onSelectQuestComplete(interaction: StringSelectMenuInteraction) {
+    try {
+        const { questId, variant } = JSON.parse(interaction.values[0]);
 
-        const { questId, variant } = JSON.parse(values[0]);
-        const quest = await QuestService.findById(variant, questId);
-        if (!quest) throw new Error('Could not find this quest.');
-
-        const wallet = await SafeService.findPrimary(account.sub, pool.chainId);
-        if (!wallet) throw new Error('Could not find your wallet.');
-
-        const isClaimable = await DailyRewardClaimService.isClaimable(quest, wallet);
-        if (!isClaimable) throw new Error('This reward is not claimable yet.');
-
-        let amount = quest.amount;
-        if (!amount) {
-            const claims = await DailyRewardClaimService.findByWallet(quest, wallet);
-            const amountIndex =
-                claims.length >= quest.amounts.length ? claims.length % quest.amounts.length : claims.length;
-            amount = quest.amounts[amountIndex];
-        }
-        if (!amount) throw new Error('Could not figure out how much points you should get.');
-
-        const data = questEntryDataMap[variant];
-        if (!data) throw new Error(`Sorry, no support for completing this ${QuestVariant[variant]} Quest yet.`);
-
-        await QuestService.complete(variant, amount, pool, quest, account, wallet, data);
-
-        interaction.reply({
-            content: `Completed **${quest.title}** and earned **${amount} points**.`,
-            ephemeral: true,
-        });
+        await completeQuest(interaction, variant, questId);
     } catch (error) {
         interaction.reply({ content: error.message, ephemeral: true });
     }

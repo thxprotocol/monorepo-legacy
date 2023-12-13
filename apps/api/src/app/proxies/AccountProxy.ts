@@ -60,8 +60,8 @@ export default class AccountProxy {
                     Authorization: await getAuthAccessToken(),
                 },
             });
-            data.sub = String(data._id);
-            return data;
+            if (!data) return;
+            return { ...data, sub: String(data._id) };
         } catch (error) {
             logger.error(error);
         }

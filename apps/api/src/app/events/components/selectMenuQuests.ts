@@ -1,7 +1,7 @@
 import DiscordGuild from '@thxnetwork/api/models/DiscordGuild';
 import { TAccount } from '@thxnetwork/types/interfaces';
 import { ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, Guild } from 'discord.js';
-import { StringSelectMenuVariant } from '../InteractionCreated';
+import { DiscordStringSelectMenuVariant } from '../InteractionCreated';
 import { DailyReward } from '@thxnetwork/api/models/DailyReward';
 import { PointReward } from '@thxnetwork/api/models/PointReward';
 import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
@@ -19,7 +19,7 @@ async function createSelectMenuQuests(account: TAccount, guild: Guild) {
     ]);
     const quests = results.flat();
     const select = new StringSelectMenuBuilder();
-    select.setCustomId(StringSelectMenuVariant.QuestComplete).setPlaceholder('Complete a quest');
+    select.setCustomId(DiscordStringSelectMenuVariant.QuestComplete).setPlaceholder('Complete a quest');
 
     for (const index in quests) {
         const quest = quests[index];

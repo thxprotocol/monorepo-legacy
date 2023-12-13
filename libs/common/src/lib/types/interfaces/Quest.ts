@@ -17,26 +17,3 @@ export type TQuestEntry =
     | TPointRewardClaim
     | TMilestoneRewardClaim
     | TWeb3QuestClaim;
-
-export type TQuestEmbed = {
-    title: string;
-    description: string;
-    author: {
-        name: string;
-        icon_url: string;
-        url: string;
-    };
-    thumbnail: {
-        url: string;
-    };
-    footer: {
-        text: string;
-        icon_url: string;
-    };
-    color: number;
-    fields: {
-        name: string;
-        value: string;
-        inline?: boolean;
-    }[];
-};

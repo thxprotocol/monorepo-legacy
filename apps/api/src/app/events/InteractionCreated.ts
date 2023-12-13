@@ -1,21 +1,34 @@
-import { ChatInputCommandInteraction, StringSelectMenuInteraction } from 'discord.js';
+import { ChatInputCommandInteraction, StringSelectMenuInteraction, ButtonInteraction } from 'discord.js';
 import { handleError } from './commands/error';
-import { handleCampaignConnect, handleQuestComplete } from './handlers/index';
+import { onSelectCampaignConnect, onSelectQuestComplete, onClickQuestComplete } from './handlers/index';
 import { logger } from '../util/logger';
 import router from './commands';
 
-export enum StringSelectMenuVariant {
+export enum DiscordStringSelectMenuVariant {
     CampaignConnect = 'thx.campaign.connect',
     QuestComplete = 'thx.campaign.quest.complete',
 }
 
+export enum DiscordButtonVariant {
+    QuestComplete = 'thx.campaign.quest.entry.complete',
+}
+
 const stringSelectMenuMap = {
-    [StringSelectMenuVariant.CampaignConnect]: handleCampaignConnect,
-    [StringSelectMenuVariant.QuestComplete]: handleQuestComplete,
+    [DiscordStringSelectMenuVariant.CampaignConnect]: onSelectCampaignConnect,
+    [DiscordStringSelectMenuVariant.QuestComplete]: onSelectQuestComplete,
 };
 
-const onInteractionCreated = async (interaction: ChatInputCommandInteraction | StringSelectMenuInteraction) => {
+const onInteractionCreated = async (
+    interaction: ButtonInteraction | ChatInputCommandInteraction | StringSelectMenuInteraction,
+) => {
     try {
+        if (interaction.isButton()) {
+            logger.info(`#${interaction.user.id} clicked button #${interaction.customId}`);
+            if (interaction.customId.startsWith(DiscordButtonVariant.QuestComplete)) {
+                await onClickQuestComplete(interaction);
+            }
+        }
+
         if (interaction.isStringSelectMenu()) {
             logger.info(`#${interaction.user.id} picked ${interaction.values[0]} for ${interaction.customId}`);
             await stringSelectMenuMap[interaction.customId](interaction);
