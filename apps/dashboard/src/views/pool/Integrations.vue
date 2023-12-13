@@ -80,10 +80,10 @@
                         <b-col md="8">
                             <b-form-group label="Events" description="">
                                 <div class="d-flex">
-                                    <b-form-checkbox class="mr-2 mb-2" :checked="isValidDiscordWebhookUrl" disabled>
+                                    <b-form-checkbox class="mr-2 mb-2" :checked="isChecked" disabled>
                                         Quest Publish
                                     </b-form-checkbox>
-                                    <b-form-checkbox class="mr-2 mb-2" :checked="isValidDiscordWebhookUrl" disabled>
+                                    <b-form-checkbox class="mr-2 mb-2" :checked="isChecked" disabled>
                                         Quest Complete
                                     </b-form-checkbox>
                                     <b-form-checkbox class="mr-2 mb-2" :checked="false" disabled>
@@ -277,6 +277,10 @@ export default class SettingsTwitterView extends Vue {
 
     get pool() {
         return this.pools[this.$route.params.id];
+    }
+
+    get isChecked() {
+        return this.isValidDiscordWebhookUrl ? true : this.pool.guilds && this.pool.guilds.length ? true : false;
     }
 
     mounted() {
