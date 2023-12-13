@@ -11,6 +11,8 @@ export enum DiscordStringSelectMenuVariant {
 
 export enum DiscordButtonVariant {
     QuestComplete = 'thx.campaign.quest.entry.complete',
+    QuestList = 'thx.campaign.quest.list',
+    RewardList = 'thx.campaign.reward.list',
 }
 
 const stringSelectMenuMap = {

@@ -4,7 +4,13 @@ import {
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
 } from 'discord.js';
-import { DiscordCommandVariant, onSubcommandComplete, onSubcommandConnect, onSubcommandPoints } from './thx/index';
+import {
+    DiscordCommandVariant,
+    onSubcommandComplete,
+    onSubcommandInfo,
+    onSubcommandConnect,
+    onSubcommandPoints,
+} from './thx/index';
 
 export default {
     data: new SlashCommandBuilder()
@@ -43,6 +49,7 @@ export default {
         const commandMap = {
             'connect': () => onSubcommandConnect(interaction),
             'complete': () => onSubcommandComplete(interaction),
+            'info': () => onSubcommandInfo(interaction),
             'give-points': () => onSubcommandPoints(interaction, DiscordCommandVariant.GivePoints),
             'remove-points': () => onSubcommandPoints(interaction, DiscordCommandVariant.RemovePoints),
         };

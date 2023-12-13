@@ -39,6 +39,7 @@ export type TDiscordRole = {
 export type TDiscordButton = {
     label: string;
     style: ButtonStyle;
+    emoji?: string;
     customId?: string;
     url?: string;
 };

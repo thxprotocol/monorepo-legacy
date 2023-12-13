@@ -6,6 +6,7 @@ import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { PointBalance } from '@thxnetwork/api/models/PointBalance';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
+import { WIDGET_URL } from '@thxnetwork/api/config/secrets';
 
 export enum DiscordCommandVariant {
     GivePoints = 0,
@@ -77,14 +78,19 @@ export const onSubcommandPoints = async (interaction: CommandInteraction, varian
         const amount = interaction.options.get('amount');
         if (!amount.value || Number(amount.value) < 1) throw new Error('Please, provide a valid amount.');
 
-        const receiver = await AccountProxy.getByDiscordId(user.id);
-        if (!receiver) throw new Error('Please, ask receiver to connect his Discord account.');
-
         const pool = await AssetPool.findById(discordGuild.poolId);
         if (!pool) throw new Error('Could not find connected campaign.');
 
+        const receiver = await AccountProxy.getByDiscordId(user.id);
+        if (!receiver) {
+            user.send({
+                content: `<@${interaction.user.id}> failed to send you ${amount.value} points. Please [sign in](${WIDGET_URL}/c/${pool._id}) and connect Discord!`,
+            });
+            throw new Error('Please, ask receiver to connect his Discord account.');
+        }
+
         const wallet = await SafeService.findPrimary(receiver.sub, pool.chainId);
-        if (!wallet) throw new Error('Could not find your wallet.');
+        if (!wallet) throw new Error('Could not find the receivers wallet.');
 
         // Determine if we should add or remove using pointsFunctionMap
         const { senderMessage, receiverMessage } = await pointsFunctionMap[variant](

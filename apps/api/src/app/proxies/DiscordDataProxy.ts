@@ -92,6 +92,7 @@ export default class DiscordDataProxy {
             const button = new ButtonBuilder().setLabel(btn.label).setStyle(btn.style);
             if (btn.customId) button.setCustomId(btn.customId);
             if (btn.url) button.setURL(btn.url);
+            if (btn.emoji) button.setEmoji(btn.emoji);
             return button;
         });
         return new ActionRowBuilder().addComponents(components);
