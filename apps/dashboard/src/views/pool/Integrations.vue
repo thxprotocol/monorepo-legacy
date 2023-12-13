@@ -48,14 +48,38 @@
                     <b-form-row>
                         <b-col md="4">
                             <div class="">
-                                <strong>Channel Webhook</strong>
+                                <strong>Notifications</strong>
                                 <p class="text-muted">
                                     Let your Discord members know about campaign events and gain more participants.
                                 </p>
                             </div>
                         </b-col>
                         <b-col md="8">
-                            <b-form-group label="Discord Webhook URL">
+                            <b-form-group label="Events" description="">
+                                <div class="d-flex">
+                                    <b-form-checkbox class="mr-2 mb-2" :checked="isValidDiscordWebhookUrl" disabled>
+                                        Quest Publish
+                                    </b-form-checkbox>
+                                    <b-form-checkbox class="mr-2 mb-2" :checked="isValidDiscordWebhookUrl" disabled>
+                                        Quest Complete
+                                    </b-form-checkbox>
+                                    <b-form-checkbox class="mr-2 mb-2" :checked="false" disabled>
+                                        Reward Publish
+                                    </b-form-checkbox>
+                                    <b-form-checkbox class="mr-2 mb-2" :checked="false" disabled>
+                                        Reward Payment
+                                    </b-form-checkbox>
+                                </div>
+                            </b-form-group>
+                            <b-form-group :label="guild.name" :key="key" v-for="(guild, key) of pool.guilds">
+                                <BaseDropdownDiscordChannel
+                                    @click="updateDiscordGuild"
+                                    :channel-id="guild.channelId"
+                                    :guild="guild"
+                                />
+                            </b-form-group>
+                            <hr />
+                            <b-form-group label="Discord Webhook URL" class="mb-0">
                                 <b-form-input
                                     :state="isValidDiscordWebhookUrl"
                                     :value="discordWebhookUrl"
@@ -70,16 +94,6 @@
                                         Discord webhook
                                     </b-link>
                                 </small>
-                            </b-form-group>
-                            <b-form-group label="Campaign Events" description="" class="mb-0">
-                                <div class="d-flex">
-                                    <b-form-checkbox class="mr-2 mb-2" :checked="isValidDiscordWebhookUrl" disabled>
-                                        Quest Publish
-                                    </b-form-checkbox>
-                                    <b-form-checkbox class="mr-2 mb-2" :checked="isValidDiscordWebhookUrl" disabled>
-                                        Quest Complete
-                                    </b-form-checkbox>
-                                </div>
                             </b-form-group>
                         </b-col>
                     </b-form-row>
@@ -193,15 +207,17 @@ import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
-import type { TAccount } from '@thxnetwork/types/interfaces';
 import { AccessTokenKind, RewardConditionInteraction, TPoolSettings } from '@thxnetwork/types/index';
 import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
 import { DISCORD_BOT_INVITE_URL } from '@thxnetwork/dashboard/config/constants';
+import type { TAccount, TDiscordGuild } from '@thxnetwork/types/interfaces';
 import BaseCardURLWebhook from '@thxnetwork/dashboard/components/cards/BaseCardURLWebhook.vue';
+import BaseDropdownDiscordChannel from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownDiscordChannel.vue';
 
 @Component({
     components: {
         BaseCardURLWebhook,
+        BaseDropdownDiscordChannel,
     },
     computed: {
         ...mapGetters({
@@ -275,6 +291,13 @@ export default class SettingsTwitterView extends Vue {
                     },
                 },
             },
+        });
+    }
+
+    async updateDiscordGuild(guild: TDiscordGuild) {
+        await this.$store.dispatch('pools/update', {
+            pool: this.pool,
+            data: { guild },
         });
     }
 }

@@ -3,6 +3,7 @@ import { body, param } from 'express-validator';
 import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { AssetPool } from '@thxnetwork/api/models/AssetPool';
+import DiscordGuild from '@thxnetwork/api/models/DiscordGuild';
 
 export const validation = [
     param('id').exists(),
@@ -29,7 +30,16 @@ export const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(req.params.id);
     if (!pool) throw new NotFoundError('Could not find the Asset Pool for this id');
 
-    if (await AssetPool.exists({ '_id': { $ne: pool._id }, 'settings.slug': req.body.settings.slug })) {
+    if (req.body.guild) {
+        const { _id, channelId } = req.body.guild;
+        await DiscordGuild.findByIdAndUpdate(_id, { channelId });
+    }
+
+    if (
+        req.body.settings &&
+        req.body.settings.slug &&
+        (await AssetPool.exists({ '_id': { $ne: pool._id }, 'settings.slug': req.body.settings.slug }))
+    ) {
         throw new BadRequestError('This slug is in use already.');
     }
 
