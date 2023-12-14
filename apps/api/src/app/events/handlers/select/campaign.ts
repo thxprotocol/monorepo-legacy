@@ -3,6 +3,7 @@ import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import DiscordGuild from '@thxnetwork/api/models/DiscordGuild';
 import { guildMap } from '@thxnetwork/api/events/components';
+import { handleError } from '../../commands/error';
 
 export async function onSelectCampaignConnect(interaction: StringSelectMenuInteraction) {
     try {
@@ -29,6 +30,6 @@ export async function onSelectCampaignConnect(interaction: StringSelectMenuInter
 
         interaction.reply({ content: `Yay!🥳 Connected **${pool.settings.title}** to the server.`, ephemeral: true });
     } catch (error) {
-        interaction.reply({ content: error.message, ephemeral: true });
+        handleError(error, interaction);
     }
 }

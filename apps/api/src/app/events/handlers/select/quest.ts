@@ -6,6 +6,7 @@ import DiscordGuild from '@thxnetwork/api/models/DiscordGuild';
 import QuestService from '@thxnetwork/api/services/QuestService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import DailyRewardClaimService from '@thxnetwork/api/services/DailyRewardClaimService';
+import { handleError } from '../../commands/error';
 
 const questEntryDataMap = {
     [QuestVariant.Daily]: (quest) => ({
@@ -65,6 +66,6 @@ export async function onSelectQuestComplete(interaction: StringSelectMenuInterac
 
         await completeQuest(interaction, variant, questId);
     } catch (error) {
-        interaction.reply({ content: error.message, ephemeral: true });
+        handleError(error, interaction);
     }
 }

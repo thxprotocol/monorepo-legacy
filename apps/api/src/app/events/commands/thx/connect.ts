@@ -1,7 +1,7 @@
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { createSelectMenuConnectCampaign } from '@thxnetwork/api/events/components';
 import { CommandInteraction, PermissionFlagsBits } from 'discord.js';
-import { logger } from '@thxnetwork/api/util/logger';
+import { handleError } from '../error';
 
 export const onSubcommandConnect = async (interaction: CommandInteraction) => {
     try {
@@ -14,11 +14,7 @@ export const onSubcommandConnect = async (interaction: CommandInteraction) => {
 
         interaction.reply({ components: [row as any], ephemeral: true });
     } catch (error) {
-        logger.error(error);
-        interaction.reply({
-            content: error.message,
-            ephemeral: true,
-        });
+        handleError(error, interaction);
     }
 };
 export default { onSubcommandConnect };

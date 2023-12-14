@@ -7,6 +7,7 @@ import { PointReward } from '@thxnetwork/api/models/PointReward';
 import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
 import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
 import { Web3Quest } from '@thxnetwork/api/models/Web3Quest';
+import { handleError } from '../../commands/error';
 
 export async function onClickQuestComplete(interaction: ButtonInteraction) {
     try {
@@ -17,7 +18,7 @@ export async function onClickQuestComplete(interaction: ButtonInteraction) {
 
         await completeQuest(interaction, variant, questId);
     } catch (error) {
-        interaction.reply({ content: error.message, ephemeral: true });
+        handleError(error, interaction);
     }
 }
 
@@ -35,16 +36,21 @@ export async function onClickQuestList(interaction: ButtonInteraction) {
             Web3Quest.find({ poolId, isPublished: true }),
         ]);
         const quests = results.flat();
-        const list = quests.map((quest) => quest.title);
+        const list = quests.map(
+            (quest: any) =>
+                `${String(quest.amount ? quest.amount : quest.amounts[0]).padStart(4)} pts. | ${quest.title}`,
+        );
+        const code = list.join('\n');
         const embeds = [
             {
-                title: `Quests`,
-                description: '```' + list.join('\n') + `\n` + '```',
+                title: `✅ Quests`,
+                description: 'Use `/thx complete` to earn points and buy rewards!🎁 \n ```' + code + `\n` + '```',
             },
         ];
+        throw new Error('Foobar');
 
         interaction.reply({ embeds, ephemeral: true });
     } catch (error) {
-        interaction.reply({ content: error.message, ephemeral: true });
+        handleError(error, interaction);
     }
 }

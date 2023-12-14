@@ -5,7 +5,7 @@ import { Participant } from '@thxnetwork/api/models/Participant';
 import { DiscordButtonVariant } from '../../InteractionCreated';
 import { WIDGET_URL } from '@thxnetwork/api/config/secrets';
 import { Widget } from '@thxnetwork/api/models/Widget';
-import { logger } from '@thxnetwork/api/util/logger';
+import { handleError } from '../error';
 import Brand from '@thxnetwork/api/models/Brand';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import SafeService from '@thxnetwork/api/services/SafeService';
@@ -89,11 +89,7 @@ export const onSubcommandInfo = async (interaction: CommandInteraction) => {
 
         interaction.reply({ embeds: [embed], components: [row as any], ephemeral: true });
     } catch (error) {
-        logger.error(error);
-        interaction.reply({
-            content: error.message,
-            ephemeral: true,
-        });
+        handleError(error, interaction);
     }
 };
 export default { onSubcommandInfo };
