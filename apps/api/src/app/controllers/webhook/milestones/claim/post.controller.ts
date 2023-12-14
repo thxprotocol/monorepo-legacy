@@ -32,10 +32,10 @@ const controller = async (req: Request, res: Response) => {
     if (!req.body.code && !req.body.address) {
         throw new BadRequestError('This request requires either a wallet code or address');
     }
-
     const wallet: WalletDocument = req.body.code
         ? await getWalletForCode(pool, req.body.code)
         : await getWalletForAddress(pool, req.body.address);
+    if (!wallet) throw new NotFoundError('Could not find wallet for this code or address.');
 
     if (reward.limit) {
         const claimsForAccount = await MilestoneRewardClaim.count({

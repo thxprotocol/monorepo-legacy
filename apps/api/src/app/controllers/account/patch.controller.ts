@@ -31,7 +31,6 @@ export default {
             // Deploy Safe if none exists
             if (!safeWallet) {
                 safeWallet = await SafeService.create({ sub: account.sub, chainId, safeVersion }, address);
-                await SafeService.migrate(safeWallet);
             }
         }
 

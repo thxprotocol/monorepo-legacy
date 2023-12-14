@@ -120,12 +120,13 @@ describe('Webhook: Virtual Wallets', () => {
                 .expect(200, done);
         });
 
-        it('GET /wallets', (done) => {
+        it('GET /account/wallet?chainId=31337', (done) => {
             user.get(`/v1/account/wallet`)
+                .query({ chainId: ChainId.Hardhat })
                 .set({ Authorization: widgetAccessToken3 })
                 .expect(({ body }: request.Response) => {
-                    expect(body.length).toBe(2);
-                    const safe = body.find((wallet) => wallet.safeVersion);
+                    expect(body.length).toBe(1);
+                    const safe = body[0];
                     expect(safe.sub).toBe(sub3);
                     expect(isAddress(safe.address)).toBeTruthy;
                     safeAddress = safe.address;
