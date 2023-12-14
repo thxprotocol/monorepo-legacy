@@ -6,6 +6,7 @@ import {
 } from 'discord.js';
 import {
     DiscordCommandVariant,
+    onSubcommandBuy,
     onSubcommandComplete,
     onSubcommandInfo,
     onSubcommandConnect,
@@ -15,12 +16,12 @@ import {
 export default {
     data: new SlashCommandBuilder()
         .setName('thx')
-        .setDescription('Quest engine for gaming communities.')
+        .setDescription('The reward engine for gaming communities.')
         .addSubcommand(
             new SlashCommandSubcommandBuilder().setName('connect').setDescription('Connect your server to a campaign.'),
         )
         .addSubcommand(new SlashCommandSubcommandBuilder().setName('complete').setDescription('Complete a quest.'))
-        .addSubcommand(new SlashCommandSubcommandBuilder().setName('redeem').setDescription('Redeem a reward.'))
+        .addSubcommand(new SlashCommandSubcommandBuilder().setName('buy').setDescription('Buy a reward from the shop.'))
         .addSubcommand(new SlashCommandSubcommandBuilder().setName('info').setDescription('Campaign info.'))
         .addSubcommand(
             new SlashCommandSubcommandBuilder()
@@ -49,6 +50,7 @@ export default {
         const commandMap = {
             'connect': () => onSubcommandConnect(interaction),
             'complete': () => onSubcommandComplete(interaction),
+            'buy': () => onSubcommandBuy(interaction),
             'info': () => onSubcommandInfo(interaction),
             'give-points': () => onSubcommandPoints(interaction, DiscordCommandVariant.GivePoints),
             'remove-points': () => onSubcommandPoints(interaction, DiscordCommandVariant.RemovePoints),

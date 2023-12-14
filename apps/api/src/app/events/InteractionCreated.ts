@@ -12,11 +12,13 @@ import router from './commands';
 
 export enum DiscordStringSelectMenuVariant {
     CampaignConnect = 'thx.campaign.connect',
-    QuestComplete = 'thx.campaign.quest.complete',
+    QuestComplete = 'thx.campaign.quest.entry.create',
+    RewardBuy = 'thx.campaign.reward.payment.create',
 }
 
 export enum DiscordButtonVariant {
-    QuestComplete = 'thx.campaign.quest.entry.complete',
+    RewardBuy = 'thx.campaign.reward.payment.create',
+    QuestComplete = 'thx.campaign.quest.entry.create',
     QuestList = 'thx.campaign.quest.list',
     RewardList = 'thx.campaign.reward.list',
 }
@@ -45,6 +47,8 @@ const onInteractionCreated = async (
 
         if (interaction.isStringSelectMenu()) {
             logger.info(`#${interaction.user.id} picked ${interaction.values[0]} for ${interaction.customId}`);
+            if (!stringSelectMenuMap[interaction.customId])
+                throw new Error('Support for this action is not yet implemented!');
             await stringSelectMenuMap[interaction.customId](interaction);
         }
 

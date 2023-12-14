@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
-import { RewardVariant, TERC20Perk } from '@thxnetwork/types/';
+import { RewardVariant } from '@thxnetwork/types/enums';
+import { TERC20Perk } from '@thxnetwork/types/interfaces';
 
 export const questBaseSchema = {
     uuid: String,

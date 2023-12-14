@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { perkBaseSchema } from './ERC20Perk';
-import { RewardVariant, TCouponReward } from '@thxnetwork/types/';
+import { RewardVariant } from '@thxnetwork/types/enums';
+import { TCouponReward } from '@thxnetwork/types/interfaces';
 
 export type CouponRewardDocument = mongoose.Document & TCouponReward;
 

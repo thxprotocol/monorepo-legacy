@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
-import { RewardVariant, TERC721Perk } from '@thxnetwork/types/';
+import { RewardVariant } from '@thxnetwork/types/enums';
+import { TERC721Perk } from '@thxnetwork/types/interfaces';
 import { perkBaseSchema } from '@thxnetwork/api/models/ERC20Perk';
 
 export type ERC721PerkDocument = mongoose.Document & TERC721Perk;
