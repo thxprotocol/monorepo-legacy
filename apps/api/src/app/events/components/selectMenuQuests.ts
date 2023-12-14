@@ -1,5 +1,4 @@
 import DiscordGuild from '@thxnetwork/api/models/DiscordGuild';
-import { TAccount } from '@thxnetwork/types/interfaces';
 import { ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, Guild } from 'discord.js';
 import { DiscordStringSelectMenuVariant } from '../InteractionCreated';
 import { DailyReward } from '@thxnetwork/api/models/DailyReward';
@@ -8,7 +7,7 @@ import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
 import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
 import { Web3Quest } from '@thxnetwork/api/models/Web3Quest';
 
-async function createSelectMenuQuests(account: TAccount, guild: Guild) {
+async function createSelectMenuQuests(guild: Guild) {
     const { poolId } = await DiscordGuild.findOne({ guildId: guild.id });
     const results = await Promise.all([
         DailyReward.find({ poolId, isPublished: true }),
