@@ -14,7 +14,7 @@
                 <b-link v-if="selectedPool" :to="`/pool/${selectedPool._id}/settings`">
                     <b-img-lazy style="max-height: 40px; max-width: 120px" :src="selectedPoolLogoImg" />
                 </b-link>
-                <b-dropdown size="sm" variant="link" right no-caret toggle-class="py-3">
+                <b-dropdown size="sm" variant="link" right no-caret toggle-class="py-3" menu-class="pb-0">
                     <template #button-content>
                         <i v-if="selectedPool" class="fas fa-ellipsis-v text-muted m-0" style="font-size: 1.1rem" />
                         <b-spinner v-else variant="primary" small />
@@ -35,6 +35,19 @@
                                 </div>
                             </div>
                         </b-dropdown-item-btn>
+                        <b-dropdown-text>
+                            <b-button
+                                v-b-modal="'modalCreateCampaign'"
+                                variant="primary"
+                                size="sm"
+                                block
+                                class="rounded-pill"
+                            >
+                                <i class="fas fa-plus mr-1 ml-0" />
+                                Campaign
+                            </b-button>
+                            <BaseModalPoolCreate id="modalCreateCampaign" />
+                        </b-dropdown-text>
                     </div>
                 </b-dropdown>
             </div>
@@ -184,6 +197,7 @@ import { plans } from '@thxnetwork/dashboard/utils/plans';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseNavbarNav from './BaseNavbarNav.vue';
+import BaseModalPoolCreate from '@thxnetwork/dashboard/components/modals/BaseModalPoolCreate.vue';
 import { TAccount, TPool } from '@thxnetwork/types/interfaces';
 import { AccountPlanType } from '@thxnetwork/types/enums';
 import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
@@ -192,6 +206,7 @@ import { hasBasicAccess } from '@thxnetwork/common';
 @Component({
     components: {
         BaseNavbarNav,
+        BaseModalPoolCreate,
     },
     computed: mapGetters({
         pools: 'pools/all',

@@ -159,6 +159,24 @@
                 </b-form-group>
             </b-col>
         </b-form-row>
+
+        <b-form-row>
+            <b-col offset-xl="4">
+                <b-card class="border-danger" body-class="d-flex justify-content-between">
+                    <div>
+                        <i class="fas fa-exclamation-triangle mr-3" />
+                        <strong>Danger Zone!</strong>
+                    </div>
+                    <b-link class="text-danger" v-b-modal="`modalDelete-${pool._id}`">Remove this campaign</b-link>
+                </b-card>
+            </b-col>
+        </b-form-row>
+        <BaseModalDelete
+            @submit="remove(pool._id)"
+            :id="`modalDelete-${pool._id}`"
+            :error="error"
+            :subject="pool._id"
+        />
     </div>
 </template>
 
@@ -172,6 +190,7 @@ import type { TAccount, TPoolSettings } from '@thxnetwork/types/interfaces';
 import BaseListItemCollaborator from '@thxnetwork/dashboard/components/list-items/BaseListItemCollaborator.vue';
 import BaseModalPoolTransfer from '@thxnetwork/dashboard/components/modals/BaseModalPoolTransfer.vue';
 import BaseDateDuration, { parseDateTime } from '@thxnetwork/dashboard/components/form-group/BaseDateDuration.vue';
+import BaseModalDelete from '@thxnetwork/dashboard/components/modals/BaseModalDelete.vue';
 import slugify from '@thxnetwork/dashboard/utils/slugify';
 import { WIDGET_URL } from '@thxnetwork/dashboard/config/secrets';
 
@@ -180,6 +199,7 @@ import { WIDGET_URL } from '@thxnetwork/dashboard/config/secrets';
         BaseListItemCollaborator,
         BaseModalPoolTransfer,
         BaseDateDuration,
+        BaseModalDelete,
     },
     computed: {
         ...mapGetters({
@@ -265,6 +285,11 @@ export default class SettingsView extends Vue {
         });
 
         this.error = '';
+    }
+
+    async remove(_id: string) {
+        this.$store.dispatch('pools/remove', { _id });
+        this.$router.push({ name: 'home' });
     }
 }
 </script>

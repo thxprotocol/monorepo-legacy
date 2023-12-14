@@ -105,7 +105,7 @@
                 <p><strong class="text-muted">Quests</strong></p>
                 <b-row class="mb-3" v-if="metrics">
                     <b-col md="4">
-                        <b-list-group class="mb-3" v-if="leaderboard.results.length">
+                        <b-list-group class="mb-3">
                             <b-list-group-item
                                 v-for="(metric, key) of [
                                     metrics.dailyQuest,
@@ -144,7 +144,7 @@
                 <p><strong class="text-muted">Rewards</strong></p>
                 <b-row class="mb-3" v-if="metrics">
                     <b-col md="4">
-                        <b-list-group class="mb-3" v-if="leaderboard.results.length">
+                        <b-list-group class="mb-3">
                             <b-list-group-item
                                 v-for="(metric, key) of [
                                     metrics.coinReward,
@@ -184,7 +184,7 @@
                 <b-row>
                     <b-col>
                         <p><strong class="text-muted">Leaderboard</strong></p>
-                        <b-list-group class="mb-3" v-if="leaderboard.results.length">
+                        <b-list-group class="mb-3">
                             <b-list-group-item
                                 v-for="(result, key) of leaderboard.results"
                                 :key="key"
@@ -215,11 +215,13 @@
                                     <strong class="text-primary"> {{ result.score }} </strong>
                                 </div>
                             </b-list-group-item>
+                            <b-list-group-item v-if="!leaderboard.results.length">
+                                <p class="mb-0 text-gray">Could not find any campaign participants yet!</p>
+                            </b-list-group-item>
                             <b-list-group-item>
                                 <b-link :to="`/pool/${pool._id}/participants`">All Participants</b-link>
                             </b-list-group-item>
                         </b-list-group>
-                        <p v-else class="text-gray">Could not find any campaign participants yet!</p>
                     </b-col>
                 </b-row>
             </b-col>

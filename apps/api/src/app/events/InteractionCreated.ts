@@ -1,22 +1,51 @@
-import { ChatInputCommandInteraction, StringSelectMenuInteraction } from 'discord.js';
+import { ChatInputCommandInteraction, StringSelectMenuInteraction, ButtonInteraction } from 'discord.js';
 import { handleError } from './commands/error';
-import { handleCampaignConnect } from './handlers/index';
+import {
+    onSelectCampaignConnect,
+    onSelectQuestComplete,
+    onClickQuestComplete,
+    onClickRewardList,
+    onClickQuestList,
+} from './handlers/index';
 import { logger } from '../util/logger';
 import router from './commands';
 
-export enum StringSelectMenuVariant {
+export enum DiscordStringSelectMenuVariant {
     CampaignConnect = 'thx.campaign.connect',
+    QuestComplete = 'thx.campaign.quest.complete',
 }
 
-const onInteractionCreated = async (interaction: ChatInputCommandInteraction | StringSelectMenuInteraction) => {
+export enum DiscordButtonVariant {
+    QuestComplete = 'thx.campaign.quest.entry.complete',
+    QuestList = 'thx.campaign.quest.list',
+    RewardList = 'thx.campaign.reward.list',
+}
+
+const stringSelectMenuMap = {
+    [DiscordStringSelectMenuVariant.CampaignConnect]: onSelectCampaignConnect,
+    [DiscordStringSelectMenuVariant.QuestComplete]: onSelectQuestComplete,
+};
+
+const onInteractionCreated = async (
+    interaction: ButtonInteraction | ChatInputCommandInteraction | StringSelectMenuInteraction,
+) => {
     try {
+        if (interaction.isButton()) {
+            logger.info(`#${interaction.user.id} clicked button #${interaction.customId}`);
+            if (interaction.customId.startsWith(DiscordButtonVariant.QuestComplete)) {
+                await onClickQuestComplete(interaction);
+            }
+            if (interaction.customId.startsWith(DiscordButtonVariant.QuestList)) {
+                await onClickQuestList(interaction);
+            }
+            if (interaction.customId.startsWith(DiscordButtonVariant.RewardList)) {
+                await onClickRewardList(interaction);
+            }
+        }
+
         if (interaction.isStringSelectMenu()) {
             logger.info(`#${interaction.user.id} picked ${interaction.values[0]} for ${interaction.customId}`);
-            switch (interaction.customId) {
-                case StringSelectMenuVariant.CampaignConnect: {
-                    handleCampaignConnect(interaction);
-                }
-            }
+            await stringSelectMenuMap[interaction.customId](interaction);
         }
 
         if (interaction.isCommand()) {

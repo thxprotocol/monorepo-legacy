@@ -1,12 +1,13 @@
 import mongoose from 'mongoose';
 import { perkBaseSchema } from './ERC20Perk';
-import { TCouponReward } from '@thxnetwork/types/interfaces';
+import { RewardVariant, TCouponReward } from '@thxnetwork/types/';
 
 export type CouponRewardDocument = mongoose.Document & TCouponReward;
 
 const schema = new mongoose.Schema(
     {
         ...perkBaseSchema,
+        variant: { type: Number, default: RewardVariant.Coupon },
         webshopURL: String,
     },
     { timestamps: true },

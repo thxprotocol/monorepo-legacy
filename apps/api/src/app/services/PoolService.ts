@@ -101,12 +101,15 @@ async function deploy(
 
 async function getAllBySub(sub: string, includeIsArchived?: boolean) {
     const pools = await AssetPool.find({ sub, ...(includeIsArchived ? {} : { 'settings.isArchived': false }) });
-    const ownedPoolIds = pools.map(({ _id }) => String(_id));
-
     // Only query for collabs of not already owned pools
-    const collaborations = await Collaborator.find({ sub, poolId: { $nin: ownedPoolIds } });
+    const collaborations = await Collaborator.find({ sub, poolId: { $nin: pools.map(({ _id }) => String(_id)) } });
     const poolIds = collaborations.map((c) => c.poolId);
-    const collaborationPools = await AssetPool.find({ _id: poolIds });
+    if (!poolIds.length) return pools;
+
+    const collaborationPools = await AssetPool.find({
+        _id: poolIds,
+        ...(includeIsArchived ? {} : { 'settings.isArchived': false }),
+    });
 
     return pools.concat(collaborationPools);
 }

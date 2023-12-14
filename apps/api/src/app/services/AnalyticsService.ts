@@ -262,6 +262,7 @@ async function getPoolMetrics(pool: AssetPoolDocument, dateRange?: { startDate: 
             };
         }),
     );
+
     return {
         dailyQuest,
         socialQuest,

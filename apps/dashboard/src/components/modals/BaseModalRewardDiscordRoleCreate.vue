@@ -18,45 +18,11 @@
                             <b-textarea v-model="description" />
                         </b-form-group>
                         <b-form-group label="Discord Roles">
-                            <b-dropdown
-                                variant="light"
-                                class="w-100"
-                                menu-class="w-100"
-                                toggle-class="justify-content-between align-items-center d-flex form-control"
-                            >
-                                <template #button-content>
-                                    <span
-                                        :style="{
-                                            color: selectedDiscordRole && String(selectedDiscordRole.color),
-                                        }"
-                                    >
-                                        {{ selectedDiscordRole ? selectedDiscordRole.name : 'Choose a server role...' }}
-                                    </span>
-                                </template>
-                                <b-dropdown-group
-                                    v-for="(guild, k) of pool.guilds"
-                                    :header="guild.name"
-                                    :key="k"
-                                    class="p-0"
-                                >
-                                    <b-dropdown-item
-                                        v-for="(role, key) of guild.roles"
-                                        @click="onClickDiscordRole(role)"
-                                        :key="key"
-                                        :style="{ color: role.color }"
-                                    >
-                                        <b-badge
-                                            class="p-2"
-                                            :style="{
-                                                backgroundColor: String(role.color),
-                                                color: 'white',
-                                            }"
-                                        >
-                                            {{ role.name }}
-                                        </b-badge>
-                                    </b-dropdown-item>
-                                </b-dropdown-group>
-                            </b-dropdown>
+                            <BaseDropdownDiscordRole
+                                @click="discordRoleId = $event.id"
+                                :role-id="discordRoleId"
+                                :guilds="pool.guilds"
+                            />
                         </b-form-group>
                         <b-form-group label="Point Price">
                             <b-form-input type="number" :value="pointPrice" @input="onChangePointPrice" />
@@ -117,12 +83,9 @@ import BaseModal from './BaseModal.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
 import BaseCardTokenGating from '../cards/BaseCardTokenGating.vue';
+import BaseDropdownDiscordRole from '../dropdowns/BaseDropdownDiscordRole.vue';
 import { TokenGatingVariant, RewardVariant } from '@thxnetwork/types/enums';
 import type { TAccount, TPool, TDiscordRoleReward } from '@thxnetwork/types/interfaces';
-
-function getRoleById(guilds, roleId) {
-    return guilds.flatMap((guild) => guild.roles).find((role) => role.id === roleId);
-}
 
 @Component({
     components: {
@@ -130,6 +93,7 @@ function getRoleById(guilds, roleId) {
         BaseCardRewardExpiry,
         BaseCardRewardLimits,
         BaseCardTokenGating,
+        BaseDropdownDiscordRole,
     },
     computed: mapGetters({
         pools: 'pools/all',
@@ -165,11 +129,6 @@ export default class ModalRewardCustomCreate extends Vue {
 
     get isSubmitDisabled() {
         return this.isLoading;
-    }
-
-    get selectedDiscordRole() {
-        if (!this.pool.guilds || !this.pool.guilds.length) return;
-        return getRoleById(this.pool.guilds, this.discordRoleId);
     }
 
     onShow() {
@@ -217,10 +176,6 @@ export default class ModalRewardCustomCreate extends Vue {
             this.$bvModal.hide(this.id);
             this.$emit('submit');
         });
-    }
-
-    onClickDiscordRole(role: { id: string; name: string }) {
-        this.discordRoleId = role.id;
     }
 
     onImgChange() {

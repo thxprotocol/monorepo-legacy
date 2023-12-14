@@ -1,9 +1,13 @@
 import axios from 'axios';
-import type { TAccount, TBrand, TPool, TQuest, TQuestEmbed, TWidget } from '@thxnetwork/types/interfaces';
+import type { TAccount, TDiscordButton, TDiscordEmbed } from '@thxnetwork/types/interfaces';
 import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
 import { THXError } from '@thxnetwork/api/util/errors';
-import { format } from 'date-fns';
-import { QuestVariant } from '@thxnetwork/common/lib/types';
+import { client, PermissionFlagsBits } from '../../discord';
+import { AssetPoolDocument } from '../models/AssetPool';
+import { ActionRowBuilder, ButtonBuilder } from 'discord.js';
+import { WIDGET_URL } from '../config/secrets';
+import { logger } from '../util/logger';
+import DiscordGuild from '../models/DiscordGuild';
 
 class NoDataError extends THXError {
     message = 'Could not find discord data for this account';
@@ -20,42 +24,46 @@ export enum NotificationVariant {
 }
 
 export default class DiscordDataProxy {
-    static async sendChannelMessage(webhookUrl: string, content: string, embeds: TQuestEmbed[] = []) {
-        if (!webhookUrl) return;
-        await axios.post(webhookUrl, { content, embeds });
+    static async sendChannelMessage(
+        pool: AssetPoolDocument,
+        content: string,
+        embeds: TDiscordEmbed[] = [],
+        buttons?: TDiscordButton[],
+    ) {
+        try {
+            const discordGuild = await DiscordGuild.findOne({ poolId: String(pool._id) });
+            const url = WIDGET_URL + `/c/${pool.settings.slug}/quests`;
+
+            if (discordGuild && discordGuild.channelId) {
+                const channel: any = await client.channels.fetch(discordGuild.channelId);
+                const components = [];
+                if (buttons) components.push(this.createButtonActionRow(buttons));
+
+                const botMember = channel.guild.members.cache.get(client.user.id);
+                if (!botMember.permissionsIn(channel).has(PermissionFlagsBits.SendMessages)) {
+                    throw new Error('Insufficient channel permissions for bot to send messages.');
+                }
+
+                channel.send({ content, embeds, components });
+            } else if (pool.settings.discordWebhookUrl) {
+                // Extending the content with a link as we're not allowed to send button components over webhooks
+                content += ` [Complete Quest ▸](<${url}>)`;
+                axios.post(pool.settings.discordWebhookUrl, { content, embeds });
+            }
+        } catch (error) {
+            logger.error(error);
+        }
     }
 
-    static createEmbedQuest(variant: QuestVariant, quest: TQuest, pool: TPool, widget: TWidget, brand?: TBrand) {
-        const theme = JSON.parse(widget.theme);
-        const { amount, amounts } = quest as any;
-
-        return {
-            title: quest.title,
-            description: quest.description,
-            author: {
-                name: pool.settings.title,
-                icon_url: brand && brand.logoImgUrl,
-                url: widget.domain,
-            },
-            thumbnail: { url: quest.image },
-            footer: {
-                text: `THX Network • ${format(new Date(), 'cccc MMM d - HH:mm')}`,
-                icon_url: 'https://auth.thx.network/img/logo.png',
-            },
-            color: parseInt(theme.elements.btnBg.color.replace(/^#/, ''), 16),
-            fields: [
-                {
-                    name: ' ',
-                    value: `Points: **${amount || amounts[0]}** ✨`,
-                    inline: true,
-                },
-                {
-                    name: ' ',
-                    value: `[Complete ${QuestVariant[variant]} Quest ▸](${widget.domain})`,
-                    inline: true,
-                },
-            ],
-        };
+    static createButtonActionRow(buttons: TDiscordButton[]) {
+        const components = buttons.map((btn: TDiscordButton) => {
+            const button = new ButtonBuilder().setLabel(btn.label).setStyle(btn.style);
+            if (btn.customId) button.setCustomId(btn.customId);
+            if (btn.url) button.setURL(btn.url);
+            if (btn.emoji) button.setEmoji(btn.emoji);
+            return button;
+        });
+        return new ActionRowBuilder().addComponents(components);
     }
 
     static async getUserId(account: TAccount) {

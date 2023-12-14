@@ -25,12 +25,6 @@ const routes: Array<RouteConfig> = [
         beforeEnter: assertAuthorization,
     },
     {
-        name: 'pools',
-        path: '/pools',
-        component: () => import('../views/Pools.vue'),
-        beforeEnter: assertAuthorization,
-    },
-    {
         name: 'pool',
         path: '/pool/:id',
         redirect: '/pool/:id/dashboard',
@@ -38,19 +32,9 @@ const routes: Array<RouteConfig> = [
         beforeEnter: assertAuthorization,
         children: [
             {
-                name: 'download',
-                path: 'download',
-                beforeEnter: downloadScreenshot,
-            },
-            {
                 name: 'dashboard',
                 path: 'dashboard',
                 component: () => import('../views/pool/Analytics.vue'),
-            },
-            {
-                name: 'participants',
-                path: 'participants',
-                component: () => import('../views/pool/Participants.vue'),
             },
             {
                 name: 'quests',
@@ -63,26 +47,14 @@ const routes: Array<RouteConfig> = [
                 component: () => import('../views/pool/Rewards.vue'),
             },
             {
+                name: 'participants',
+                path: 'participants',
+                component: () => import('../views/pool/Participants.vue'),
+            },
+            {
                 name: 'integrations',
                 path: 'integrations',
                 component: () => import('../views/pool/Integrations.vue'),
-            },
-            {
-                name: 'Settings',
-                path: 'settings',
-                component: () => import('../views/pool/Settings.vue'),
-                children: [
-                    {
-                        name: 'General',
-                        path: 'general',
-                        component: () => import('../views/pool/settings/General.vue'),
-                    },
-                    {
-                        name: 'Widget',
-                        path: 'widget',
-                        component: () => import('../views/pool/settings/Widget.vue'),
-                    },
-                ],
             },
             {
                 name: 'Developer',
@@ -98,6 +70,23 @@ const routes: Array<RouteConfig> = [
                         name: 'API',
                         path: 'api',
                         component: () => import('../views/pool/developer/API.vue'),
+                    },
+                ],
+            },
+            {
+                name: 'Settings',
+                path: 'settings',
+                component: () => import('../views/pool/Settings.vue'),
+                children: [
+                    {
+                        name: 'General',
+                        path: 'general',
+                        component: () => import('../views/pool/settings/General.vue'),
+                    },
+                    {
+                        name: 'Widget',
+                        path: 'widget',
+                        component: () => import('../views/pool/settings/Widget.vue'),
                     },
                 ],
             },
