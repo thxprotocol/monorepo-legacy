@@ -1,22 +1,13 @@
 import axios from 'axios';
-import type {
-    TAccount,
-    TBrand,
-    TDiscordButton,
-    TDiscordEmbed,
-    TPool,
-    TQuest,
-    TWidget,
-} from '@thxnetwork/types/interfaces';
+import type { TAccount, TDiscordButton, TDiscordEmbed } from '@thxnetwork/types/interfaces';
 import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
 import { THXError } from '@thxnetwork/api/util/errors';
-import { QuestVariant } from '@thxnetwork/common/lib/types';
-import { client } from '../../discord';
+import { client, PermissionFlagsBits } from '../../discord';
 import { AssetPoolDocument } from '../models/AssetPool';
 import { ActionRowBuilder, ButtonBuilder } from 'discord.js';
 import { WIDGET_URL } from '../config/secrets';
-import DiscordGuild from '../models/DiscordGuild';
 import { logger } from '../util/logger';
+import DiscordGuild from '../models/DiscordGuild';
 
 class NoDataError extends THXError {
     message = 'Could not find discord data for this account';
@@ -47,6 +38,12 @@ export default class DiscordDataProxy {
                 const channel: any = await client.channels.fetch(discordGuild.channelId);
                 const components = [];
                 if (buttons) components.push(this.createButtonActionRow(buttons));
+
+                const botMember = channel.guild.members.cache.get(client.user.id);
+                if (!botMember.permissionsIn(channel).has(PermissionFlagsBits.SendMessages)) {
+                    throw new Error('Insufficient channel permissions for bot to send messages.');
+                }
+
                 channel.send({ content, embeds, components });
             } else if (pool.settings.discordWebhookUrl) {
                 // Extending the content with a link as we're not allowed to send button components over webhooks
@@ -56,35 +53,6 @@ export default class DiscordDataProxy {
         } catch (error) {
             logger.error(error);
         }
-    }
-
-    static createEmbed(variant: QuestVariant, quest: TQuest, pool: TPool, widget: TWidget, brand?: TBrand) {
-        const theme = JSON.parse(widget.theme);
-        const { amount, amounts } = quest as any;
-        const color = parseInt(theme.elements.btnBg.color.replace(/^#/, ''), 16);
-        return {
-            title: quest.title,
-            description: quest.description,
-            author: {
-                name: pool.settings.title,
-                icon_url: brand && brand.logoImgUrl,
-                url: widget.domain,
-            },
-            thumbnail: { url: quest.image },
-            color,
-            fields: [
-                {
-                    name: 'Points',
-                    value: amount || amounts[0],
-                    inline: true,
-                },
-                {
-                    name: 'Type',
-                    value: QuestVariant[variant],
-                    inline: true,
-                },
-            ],
-        };
     }
 
     static createButtonActionRow(buttons: TDiscordButton[]) {

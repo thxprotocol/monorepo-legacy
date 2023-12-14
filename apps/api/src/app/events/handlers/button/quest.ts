@@ -35,8 +35,6 @@ export async function onClickQuestList(interaction: ButtonInteraction) {
             Web3Quest.find({ poolId, isPublished: true }),
         ]);
         const quests = results.flat();
-        console.log({ quests });
-
         const list = quests.map((quest) => quest.title);
         const embeds = [
             {

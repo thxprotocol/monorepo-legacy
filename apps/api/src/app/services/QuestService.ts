@@ -101,19 +101,20 @@ async function notifyDiscord(
 ) {
     const theme = JSON.parse(widget.theme);
     const { amount, amounts } = quest as any;
+
     const embed = {
         title: quest.title,
         description: quest.description,
         author: {
             name: pool.settings.title,
-            icon_url: brand && brand.logoImgUrl,
+            icon_url: brand ? brand.logoImgUrl : '',
             url: widget.domain,
         },
         thumbnail: { url: quest.image },
         color: parseInt(theme.elements.btnBg.color.replace(/^#/, ''), 16),
         fields: [
             {
-                name: 'Type',
+                name: 'Points',
                 value: `${amount || amounts[0]}`,
                 inline: true,
             },

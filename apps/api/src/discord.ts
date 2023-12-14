@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, Partials } from 'discord.js';
+import { Client, GatewayIntentBits, Partials, PermissionFlagsBits } from 'discord.js';
 import { BOT_TOKEN } from '@thxnetwork/api/config/secrets';
 import { eventRegister } from '@thxnetwork/api/util/discord';
 import eventRouter from '@thxnetwork/api/events';
@@ -12,3 +12,5 @@ export default async () => {
     eventRegister(client, eventRouter);
     client.login(BOT_TOKEN);
 };
+
+export { PermissionFlagsBits };
