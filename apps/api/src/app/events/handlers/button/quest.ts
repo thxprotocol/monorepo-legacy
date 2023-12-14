@@ -38,13 +38,17 @@ export async function onClickQuestList(interaction: ButtonInteraction) {
         const quests = results.flat();
         const list = quests.map(
             (quest: any) =>
-                `${String(quest.amount ? quest.amount : quest.amounts[0]).padStart(4)} pts. | ${quest.title}`,
+                `${String(quest.amount ? quest.amount : quest.amounts[0]).padStart(4)} pts. ${quest.title} (${
+                    QuestVariant[quest.variant]
+                })`,
         );
         const code = list.join('\n');
         const embeds = [
             {
                 title: `✅ Quests`,
-                description: 'Use `/thx complete` to earn points and buy rewards!🎁 \n ```' + code + `\n` + '```',
+                description: quests.length
+                    ? 'Use `/thx complete` to earn points and buy rewards. \n ```' + code + `\n` + '```'
+                    : 'No quests available!',
             },
         ];
 
