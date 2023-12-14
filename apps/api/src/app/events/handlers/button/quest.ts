@@ -47,7 +47,6 @@ export async function onClickQuestList(interaction: ButtonInteraction) {
                 description: 'Use `/thx complete` to earn points and buy rewards!🎁 \n ```' + code + `\n` + '```',
             },
         ];
-        throw new Error('Foobar');
 
         interaction.reply({ embeds, ephemeral: true });
     } catch (error) {
