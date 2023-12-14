@@ -1,12 +1,13 @@
-import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { CommandInteraction, User } from 'discord.js';
-import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
-import DiscordGuild from '@thxnetwork/api/models/DiscordGuild';
 import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { PointBalance } from '@thxnetwork/api/models/PointBalance';
-import SafeService from '@thxnetwork/api/services/SafeService';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { WIDGET_URL } from '@thxnetwork/api/config/secrets';
+import { logger } from '@thxnetwork/api/util/logger';
+import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
+import DiscordGuild from '@thxnetwork/api/models/DiscordGuild';
+import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
+import SafeService from '@thxnetwork/api/services/SafeService';
 
 export enum DiscordCommandVariant {
     GivePoints = 0,
@@ -110,6 +111,7 @@ export const onSubcommandPoints = async (interaction: CommandInteraction, varian
         // Send DM to user
         user.send({ content: receiverMessage });
     } catch (error) {
+        logger.error(error);
         interaction.reply({
             content: error.message,
             ephemeral: true,

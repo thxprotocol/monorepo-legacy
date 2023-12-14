@@ -1,6 +1,7 @@
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { createSelectMenuQuests } from '@thxnetwork/api/events/components';
 import { CommandInteraction } from 'discord.js';
+import { logger } from '@thxnetwork/api/util/logger';
 
 export const onSubcommandComplete = async (interaction: CommandInteraction) => {
     try {
@@ -11,6 +12,7 @@ export const onSubcommandComplete = async (interaction: CommandInteraction) => {
 
         interaction.reply({ components: [row as any], ephemeral: true });
     } catch (error) {
+        logger.error(error);
         interaction.reply({
             content: error.message,
             ephemeral: true,
