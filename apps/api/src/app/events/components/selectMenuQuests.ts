@@ -6,6 +6,7 @@ import { PointReward } from '@thxnetwork/api/models/PointReward';
 import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
 import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
 import { Web3Quest } from '@thxnetwork/api/models/Web3Quest';
+import { QuestVariant } from '@thxnetwork/common/lib/types/enums';
 
 async function createSelectMenuQuests(guild: Guild) {
     const { poolId } = await DiscordGuild.findOne({ guildId: guild.id });
@@ -21,15 +22,16 @@ async function createSelectMenuQuests(guild: Guild) {
     select.setCustomId(DiscordStringSelectMenuVariant.QuestComplete).setPlaceholder('Complete a quest');
 
     for (const index in quests) {
-        const quest = quests[index];
-        const { title, description } = quest;
+        const quest: any = quests[index];
         const questId = String(quest._id);
         const value = JSON.stringify({ questId, variant: quest.variant });
-        const options = new StringSelectMenuOptionBuilder().setLabel(String(title)).setValue(value);
-
-        if (description) {
-            options.setDescription(description);
-        }
+        const options = new StringSelectMenuOptionBuilder()
+            .setLabel(quest.title)
+            .setDescription(
+                `${quest.amount ? quest.amount : quest.amounts[0]} points 
+                (${QuestVariant[quest.variant]} Quest)`,
+            )
+            .setValue(value);
 
         select.addOptions(options);
     }
