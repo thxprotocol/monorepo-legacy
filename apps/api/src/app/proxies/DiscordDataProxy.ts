@@ -4,7 +4,7 @@ import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
 import { THXError } from '@thxnetwork/api/util/errors';
 import { client, PermissionFlagsBits } from '../../discord';
 import { AssetPoolDocument } from '../models/AssetPool';
-import { ActionRowBuilder, ButtonBuilder } from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { WIDGET_URL } from '../config/secrets';
 import { logger } from '../util/logger';
 import DiscordGuild from '../models/DiscordGuild';
