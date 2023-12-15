@@ -4,7 +4,6 @@ import {
     TBrand,
     TDailyReward,
     TMilestoneRewardClaim,
-    TPool,
     TQuest,
     TQuestEntry,
     TWallet,
@@ -33,7 +32,6 @@ import { ONE_DAY_MS } from './DailyRewardClaimService';
 import { agenda } from '../util/agenda';
 import { ButtonStyle } from 'discord.js';
 import { WIDGET_URL } from '../config/secrets';
-import { format } from 'date-fns';
 import { DiscordButtonVariant } from '../events/InteractionCreated';
 
 function formatAddress(address: string) {
@@ -175,7 +173,7 @@ async function complete(
 ) {
     const model = getEntryModel(variant);
     const index = Math.floor(Math.random() * celebratoryWords.length);
-    const discord = account.tokens && account.tokens.find((a) => a.kind === 'discord');
+    const discord = account.connectedAccounts && account.connectedAccounts.find((a) => a.kind === 'discord');
     const user =
         discord && discord.userId
             ? `<@${discord.userId}>`
@@ -189,7 +187,7 @@ async function complete(
             {
                 customId: `${DiscordButtonVariant.QuestComplete}:${quest.variant}:${quest._id}`,
                 label: 'Complete Quest',
-                style: ButtonStyle.Secondary,
+                style: ButtonStyle.Primary,
             },
         ],
     );

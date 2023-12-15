@@ -95,6 +95,13 @@ export const getAccountByEmail = async (req: Request, res: Response) => {
     res.send(await formatAccountRes(account));
 };
 
+export const getAccountByDiscord = async (req: Request, res: Response) => {
+    const account = await AccountService.getByDiscordId(req.params.discordId);
+    if (!account) throw new NotFoundError('Could not find this account for this discord');
+
+    res.send(await formatAccountRes(account));
+};
+
 export const getMultipleAccounts = async (req: Request, res: Response) => {
     const subs = String(req.query.subs)
         .split(',')
