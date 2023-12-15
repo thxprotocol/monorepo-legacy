@@ -1,4 +1,4 @@
-import { THXClient } from '../../index';
+import { THXClient } from '../clients';
 import BaseManager from './BaseManager';
 
 class QuestManager extends BaseManager {

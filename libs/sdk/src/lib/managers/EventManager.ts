@@ -1,4 +1,4 @@
-import { THXClient } from '../../index';
+import { THXClient } from '../clients';
 import BaseManager from './BaseManager';
 
 class EventManager extends BaseManager {
@@ -18,14 +18,9 @@ class EventManager extends BaseManager {
         if (!identity) {
             throw new Error("Please provide an 'identity' parameter. Create it with 'client.identity.create()'.");
         }
-        if (!this.client.options.apiKey) {
-            throw new Error(
-                "Please provide an 'apiKey' when constructing the client or set it with 'client.setApiKey('...')'.",
-            );
-        }
 
         await this.client.request.post('/v1/events', {
-            body: JSON.stringify({ event, identityUuid: identity, token: this.client.options.apiKey }),
+            body: JSON.stringify({ event, identityUuid: identity }),
         });
     }
 }

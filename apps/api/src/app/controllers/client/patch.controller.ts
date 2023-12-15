@@ -6,13 +6,6 @@ import { body, param } from 'express-validator';
 export default {
     validation: [param('id').exists(), body('name').exists()],
     controller: async (req: Request, res: Response) => {
-        /*
-        #swagger.tags = ['Client']
-        #swagger.responses[200] = { 
-            description: 'Edit paramed client credentials',
-            schema: { $ref: '#/definitions/Client' } 
-        }
-        */
         let client = await ClientProxy.get(req.params.id);
         if (!client) throw new NotFoundError('Cannot found Client ID in this request');
 

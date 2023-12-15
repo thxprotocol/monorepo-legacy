@@ -1,15 +1,9 @@
-import THXClient from '../client/Client';
+import { THXClient } from '../clients';
 
 export default class BaseManager {
-  client: THXClient = null!;
+    client!: THXClient;
 
-  constructor(client: THXClient) {
-    /**
-     * The client that instantiated this Manager
-     * @name BaseManager#client
-     * @type {Client}
-     * @readonly
-     */
-    Object.defineProperty(this, 'client', { value: client });
-  }
+    constructor(client: THXClient) {
+        Object.defineProperty(this, 'client', { value: client });
+    }
 }

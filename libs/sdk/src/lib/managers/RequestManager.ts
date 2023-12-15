@@ -1,6 +1,8 @@
-import { THXClient } from '../../index';
+import { THXClient } from '../clients';
 import BaseManager from './BaseManager';
+import fetch, { Headers, HeadersInit, RequestInit, Response } from 'node-fetch';
 import * as jose from 'jose';
+import { THXOIDCUser } from '../types';
 
 interface RequestConfig extends RequestInit {
     poolId?: string;
@@ -11,32 +13,40 @@ class RequestManager extends BaseManager {
         super(client);
     }
 
-    async get(path: string, config?: RequestConfig) {
-        return await this.request(path, { ...config, method: 'GET' });
+    get(path: string, config?: RequestConfig) {
+        return this.request(path, { ...config, method: 'GET' });
     }
 
-    async post(path: string, config?: RequestConfig) {
-        return await this.request(path, { ...config, method: 'POST' });
+    post(path: string, config?: RequestConfig) {
+        return this.request(path, { ...config, method: 'POST' });
     }
 
-    async patch(path: string, config?: RequestConfig) {
-        return await this.request(path, { ...config, method: 'PATCH' });
+    patch(path: string, config?: RequestConfig) {
+        return this.request(path, { ...config, method: 'PATCH' });
     }
 
-    async put(path: string, config?: RequestConfig) {
-        return await this.request(path, { ...config, method: 'PUT' });
+    put(path: string, config?: RequestConfig) {
+        return this.request(path, { ...config, method: 'PUT' });
     }
 
-    async delete(path: string, config?: RequestConfig) {
-        return await this.request(path, { ...config, method: 'DELETE' });
+    delete(path: string, config?: RequestConfig) {
+        return this.request(path, { ...config, method: 'DELETE' });
     }
 
-    private async request(path: string, config: RequestConfig) {
+    private async request(path: string, config: RequestInit) {
+        // Check for user to exist and token not to be expired
+        if (!this.client.oidc.isAuthenticated) {
+            await this.client.oidc.init();
+        }
+        // Another check to make sure init was successfull
+        if (!this.client.oidc.user) {
+            throw new Error('Not authenticated');
+        }
+
+        const headers = this.getHeaders(config);
         const r = await fetch(this.getUrl(path), {
             ...config,
-            mode: 'cors',
-            credentials: 'omit',
-            headers: this.getHeaders(config),
+            headers,
         });
 
         return await this.handleResponse(r);
@@ -64,18 +74,20 @@ class RequestManager extends BaseManager {
         return this.client.options.url + path;
     }
 
-    private getHeaders(config?: RequestConfig) {
+    private getHeaders(config?: RequestConfig): HeadersInit {
+        const { access_token } = this.client.oidc.user as THXOIDCUser;
         const headers = new Headers({
             'Accept': 'application/json',
             'Content-Type': 'application/json',
             ...config?.headers,
         });
-        const { accessToken } = this.client.options;
 
-        if (accessToken) {
-            headers.append('Authorization', `Bearer ${this.validateToken(accessToken)}`);
+        if (access_token) {
+            const token = this.validateToken(access_token);
+            headers.append('Authorization', `Bearer ${token}`);
         }
 
+        // Needs refactor
         if ((config && config.poolId) || this.client.options.poolId) {
             headers.append('X-PoolId', (config && config.poolId) || this.client.options.poolId);
         }
@@ -83,11 +95,11 @@ class RequestManager extends BaseManager {
         return headers;
     }
 
-    private async handleResponse(r: Response) {
+    private handleResponse(r: Response) {
         if (r.status >= 400 && r.status < 600) {
-            throw await r.json();
+            throw r.json();
         } else {
-            return await r.json();
+            return r.json();
         }
     }
 }

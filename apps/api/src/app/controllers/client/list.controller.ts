@@ -4,9 +4,6 @@ import ClientProxy from '@thxnetwork/api/proxies/ClientProxy';
 
 export default {
     controller: async (req: Request, res: Response) => {
-        /*
-        #swagger.tags = ['Client']
-        */
         const poolId = req.header('X-PoolId');
         const clients = await Client.find({ poolId });
         const promises = clients.map(async (client) => {

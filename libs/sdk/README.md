@@ -58,11 +58,13 @@ import { THXClient, THXClientOptions } from '@thxprotocol/sdk';
 
 const poolId = '6571c9c6b7d775decb45a8f0';
 const accessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // Obtain from auth.thx.network
-const client = new THXClient({
+const options: THXClientOptions = {
     url: 'http://api.thx.network', // Required
     poolId, // Optional
+    apiKey, // Optional
     accessToken, // Optional
-});
+};
+const client = new THXClient(options);
 
 // Optional usage if not set through constructor
 client.setPoolId(poolId);
