@@ -31,6 +31,8 @@ import merchantsRouter from './merchants/merchants.router';
 import webhookRouter from './webhook/webhook.router';
 import webhooksRouter from './webhooks/webhooks.router';
 import widgetsRouter from './widgets/widgets.router';
+import identityRouter from './identity/identity.router';
+import eventsRouter from './events/events.router';
 import web3QuestsRouter from './web3-quests/web3-quests.router';
 import dataRouter from './data/data.router';
 import { checkJwt, corsHandler } from '@thxnetwork/api/middlewares';
@@ -52,6 +54,8 @@ router.use('/brands', brandsRouter);
 router.use('/pools', poolsRouter);
 router.use('/claims', claimsRouter);
 router.use('/leaderboards', leaderboardsRouter);
+router.use('/id', identityRouter);
+router.use('/events', eventsRouter);
 
 router.use(checkJwt);
 router.use(corsHandler);
