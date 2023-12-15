@@ -70,7 +70,7 @@ export const onSubcommandPoints = async (interaction: CommandInteraction, varian
         if (!discordGuild) throw new Error('Could not find server in database.');
 
         // Check role
-        const member = await interaction.guild.members.fetch(user.id);
+        const member = await interaction.guild.members.fetch(interaction.user.id);
         if (!member.roles.cache.has(discordGuild.adminRoleId)) {
             const role = await interaction.guild.roles.fetch(discordGuild.adminRoleId);
             throw new Error(`Only **${role.name}** roles have access to this command!`);
