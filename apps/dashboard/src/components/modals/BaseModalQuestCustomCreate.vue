@@ -26,6 +26,35 @@
             </b-form-group>
         </template>
         <template #col-right>
+            <!-- <b-card class="mb-3" body-class="bg-light p-0">
+                <b-button
+                    class="d-flex align-items-center justify-content-between w-100"
+                    variant="light"
+                    v-b-toggle.collapse-card-events
+                >
+                    <strong>Events</strong>
+                    <i :class="`fa-chevron-${isVisible ? 'up' : 'down'}`" class="fas m-0"></i>
+                </b-button>
+                <b-collapse id="collapse-card-events" v-model="isVisible">
+                    <hr class="mt-0" />
+                    <div class="px-3">
+                        <b-form-group label="Event Type">
+                            <b-dropdown
+                                variant="light"
+                                class="w-100"
+                                menu-class="w-100"
+                                toggle-class="justify-content-between align-items-center d-flex form-control"
+                            >
+                                <template #button-content> awgw </template>
+                                <b-dropdown-item> level_up </b-dropdown-item>
+                            </b-dropdown>
+                        </b-form-group>
+                        <b-form-group label="Threshold" description="How many times this event should have occured.">
+                            <b-form-input type="number" v-model="limit" min="0" />
+                        </b-form-group>
+                    </div>
+                </b-collapse>
+            </b-card> -->
             <BaseCardURLWebhook
                 class="mb-3"
                 :code="code"
@@ -100,6 +129,12 @@ export default class ModalQuestCustomCreate extends Vue {
         this.infoLinks = this.reward ? this.reward.infoLinks : this.infoLinks;
         this.limit = this.reward && this.reward.limit ? this.reward.limit : this.limit;
         this.expiryDate = this.reward && this.reward.expiryDate ? this.reward.expiryDate : this.expiryDate;
+
+        // this.getEvents();
+    }
+
+    getEvents() {
+        this.$store.dispatch('pools/getEvents');
     }
 
     onSubmit() {
