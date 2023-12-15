@@ -9,6 +9,9 @@ import { assetsPath } from '@thxnetwork/api/util/path';
 import path from 'path';
 import CanvasService from '@thxnetwork/api/services/CanvasService';
 
+// Provide before running
+const poolIds = [];
+
 // Load on boot as registration on runtime results in font not being loaded in time
 const fontPath = path.resolve(assetsPath, 'fa-solid-900.ttf');
 const family = 'Font Awesome 5 Pro Solid';
@@ -155,7 +158,6 @@ async function main() {
     const start = Date.now();
 
     console.log('Start', new Date());
-    const poolIds = [];
     const brands = await Brand.find({ poolId: { $in: poolIds } });
     for (const index in brands) {
         try {
