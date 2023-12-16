@@ -44,6 +44,7 @@ export type TPool = {
     transactions: string[];
     version?: string;
     variant?: 'defaultDiamond' | 'registry' | 'factory' | 'sharedWallet';
+    events: string[];
     brand: TBrand;
     wallets: TWallet[];
     settings: TPoolSettings;

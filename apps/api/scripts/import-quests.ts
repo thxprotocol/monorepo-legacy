@@ -10,13 +10,14 @@ async function main() {
         clientSecret: 'q4ilZuGA4VPtrGhXug3i5taXrvDtidrzyv-gJN3yVo8T2stL6RwYQjqRoK-iUiAGGvhbG_F3TEFFuD_56Q065Q',
     });
 
-    const id = await thx.identity.create();
-    console.log(id);
+    const identity = await thx.identity.create();
+    const event = await thx.events.create({ event: 'winner', identity });
+    console.log(event);
 }
 
 main()
     .then(() => process.exit(0))
     .catch((error) => {
-        console.error(error);
+        console.error(error.response.data);
         process.exit(1);
     });

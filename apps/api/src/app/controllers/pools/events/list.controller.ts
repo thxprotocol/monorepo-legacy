@@ -10,7 +10,6 @@ const controller = async (req: Request, res: Response) => {
     const pool = await AssetPool.findById(req.header('X-PoolId'));
     if (!pool) throw new NotFoundError('Could not find pool for token');
 
-    // Implement pagination for this
     const eventNames = await Event.find({ poolId: pool._id }).distinct('name');
 
     res.json(eventNames);

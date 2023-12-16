@@ -16,7 +16,7 @@ const controller = async (req: Request, res: Response) => {
 
     const id = await Identity.create({ poolId: pool._id, uuid: v4() });
 
-    res.json({ uuid: id.uuid });
+    res.json(id.uuid);
 };
 
 export default { validation, controller };

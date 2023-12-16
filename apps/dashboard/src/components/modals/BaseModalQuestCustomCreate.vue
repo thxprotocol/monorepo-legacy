@@ -26,7 +26,7 @@
             </b-form-group>
         </template>
         <template #col-right>
-            <!-- <b-card class="mb-3" body-class="bg-light p-0">
+            <b-card class="mb-3" body-class="bg-light p-0">
                 <b-button
                     class="d-flex align-items-center justify-content-between w-100"
                     variant="light"
@@ -45,8 +45,10 @@
                                 menu-class="w-100"
                                 toggle-class="justify-content-between align-items-center d-flex form-control"
                             >
-                                <template #button-content> awgw </template>
-                                <b-dropdown-item> level_up </b-dropdown-item>
+                                <template #button-content> Choose an event </template>
+                                <b-dropdown-item :key="key" v-for="(event, key) of pool.events">
+                                    {{ event }}
+                                </b-dropdown-item>
                             </b-dropdown>
                         </b-form-group>
                         <b-form-group label="Threshold" description="How many times this event should have occured.">
@@ -54,26 +56,7 @@
                         </b-form-group>
                     </div>
                 </b-collapse>
-            </b-card> -->
-            <BaseCardURLWebhook
-                class="mb-3"
-                :code="code"
-                title="Webhook Qualification"
-                description="Run this webhook to qualify an account wallet address for the claim of this reward."
-            >
-                <template #alerts>
-                    <b-alert show variant="info">
-                        <i class="fas fa-question-circle mr-2"></i> Take note of these development guidelines:
-                        <ul class="px-3 mb-0 mt-1 small">
-                            <li v-if="!reward"><strong>TOKEN</strong> will be populated after creating this reward.</li>
-                            <li>
-                                <strong>CODE</strong> should be the virtual wallet code obtained for the user after
-                                running the virtual wallet webhook
-                            </li>
-                        </ul>
-                    </b-alert>
-                </template>
-            </BaseCardURLWebhook>
+            </b-card>
         </template>
     </BaseModalQuestCreate>
 </template>
