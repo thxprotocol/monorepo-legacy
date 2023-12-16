@@ -54,7 +54,7 @@ router.use('/brands', brandsRouter);
 router.use('/pools', poolsRouter);
 router.use('/claims', claimsRouter);
 router.use('/leaderboards', leaderboardsRouter);
-router.use('/id', identityRouter);
+router.use('/identity', identityRouter);
 router.use('/events', eventsRouter);
 
 router.use(checkJwt);

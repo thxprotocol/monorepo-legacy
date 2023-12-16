@@ -20,7 +20,7 @@ class EventManager extends BaseManager {
         }
 
         await this.client.request.post('/v1/events', {
-            body: JSON.stringify({ event, identityUuid: identity }),
+            data: JSON.stringify({ event, identityUuid: identity }),
         });
     }
 }

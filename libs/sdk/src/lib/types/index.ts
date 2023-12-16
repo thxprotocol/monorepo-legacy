@@ -1,9 +1,7 @@
-import { THXOIDCGrant } from './enums/Grant';
+import { AxiosRequestConfig } from 'axios';
 
 type THXAPIClientOptions = {
     url: string;
-    poolId: string;
-    accessToken?: string; // Deprecates soon in favor of THX OIDCConfig
 } & THXOIDCConfig;
 
 type THXBrowserClientOptions = {
@@ -12,11 +10,14 @@ type THXBrowserClientOptions = {
     accessToken?: string; // Deprecates soon in favor of THX OIDCConfig
 } & THXOIDCConfig;
 
+type THXRequestConfig = {
+    poolId?: string;
+} & AxiosRequestConfig;
+
 type THXOIDCConfig = {
     clientId: string;
     clientSecret: string;
-    grantType: THXOIDCGrant;
-    scope: string;
+    returnUrl?: string;
     issuer?: string;
 };
 
@@ -29,4 +30,4 @@ type THXOIDCUser = {
 
 type THXWidgetOptions = { url?: string; poolId: string };
 
-export { THXWidgetOptions, THXAPIClientOptions, THXBrowserClientOptions, THXOIDCConfig, THXOIDCUser };
+export { THXWidgetOptions, THXAPIClientOptions, THXBrowserClientOptions, THXOIDCConfig, THXOIDCUser, THXRequestConfig };

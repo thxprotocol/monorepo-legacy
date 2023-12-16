@@ -12,7 +12,7 @@ export default class AccountManager extends BaseManager {
     }
 
     async patch(body: any) {
-        return await this.client.request.patch('/v1/account', { body: JSON.stringify(body) });
+        return await this.client.request.patch('/v1/account', { data: JSON.stringify(body) });
     }
 
     wallet = {
@@ -20,10 +20,10 @@ export default class AccountManager extends BaseManager {
             return await this.client.request.post(`/v1/account/wallet?chainId=${chainId}`);
         },
         connect: async (body: { chainId: number }) => {
-            return await this.client.request.post(`/v1/account/wallet/connect`, { body: JSON.stringify(body) });
+            return await this.client.request.post(`/v1/account/wallet/connect`, { data: JSON.stringify(body) });
         },
         confirm: async (body: { chainId: number }) => {
-            return await this.client.request.post(`/v1/account/wallet/confirm`, { body: JSON.stringify(body) });
+            return await this.client.request.post(`/v1/account/wallet/confirm`, { data: JSON.stringify(body) });
         },
     };
 }

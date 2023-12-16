@@ -11,7 +11,7 @@ class IdentityManager extends BaseManager {
     }
 
     async get() {
-        return await this.client.request.post('/v1/identity');
+        return await this.client.request.get('/v1/identity');
     }
 }
 

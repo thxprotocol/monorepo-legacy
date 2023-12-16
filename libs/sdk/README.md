@@ -40,7 +40,7 @@ const tokenRequestData = {
 fetch('http://auth.thx.network/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(tokenRequestData),
+    data: JSON.stringify(tokenRequestData),
 })
     .then((response) => response.json())
     .then((tokenResponse) => {

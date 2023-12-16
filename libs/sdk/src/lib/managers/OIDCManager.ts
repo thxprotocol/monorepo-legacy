@@ -1,17 +1,20 @@
-import fetch, { Headers } from 'node-fetch';
+import axios from 'axios';
 import { THXClient } from '../clients';
 import { THXOIDCConfig, THXOIDCUser } from '../types';
-import { THXOIDCGrant } from '../types/enums/Grant';
+import BaseManager from './BaseManager';
 
-export default class OIDCManager {
-    client: THXClient;
+export enum THXOIDCGrant {
+    AuthorizationCode = 'authorization_code',
+    ClientCredentials = 'client_credentials',
+}
+
+class OIDCManager extends BaseManager {
     user: THXOIDCUser | null;
-    issuer: string;
     expiresAt: number;
 
     constructor(client: THXClient) {
-        this.client = client;
-        this.issuer = client.options.issuer || 'https://auth.thx.network';
+        super(client);
+
         this.expiresAt = Date.now();
         this.user = null;
     }
@@ -24,34 +27,35 @@ export default class OIDCManager {
         return this.user && !this.isExpired;
     }
 
-    async init() {
+    async authenticate() {
         const initMap = {
-            [THXOIDCGrant.ClientCredentials]: this.getClientCredentialsGrant,
-            [THXOIDCGrant.AuthorizationCode]: this.getAuthorizationCodeGrant,
+            [String(THXOIDCGrant.ClientCredentials)]: this.getClientCredentialsGrant.bind(this),
+            [String(THXOIDCGrant.AuthorizationCode)]: this.getAuthorizationCodeGrant.bind(this),
         };
 
-        if (!this.client.options.grantType) {
-            throw new Error("Please, set 'options.grantType' to client_credentials or authorization_code.");
-        }
+        const grantType = this.client.options.returnUrl
+            ? THXOIDCGrant.AuthorizationCode
+            : THXOIDCGrant.ClientCredentials;
 
-        await initMap[this.client.options.grantType](this.client.options);
+        await initMap[grantType](this.client.options);
     }
 
-    async getClientCredentialsGrant({ scope, clientId, clientSecret }: THXOIDCConfig) {
+    async getClientCredentialsGrant({ clientId, clientSecret, issuer }: THXOIDCConfig) {
         const authHeader = 'Basic ' + Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
-        const headers = new Headers({
+        const headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Authorization': authHeader,
-        });
-        const body = new URLSearchParams({ grant_type: 'client_credentials', scope });
-        const response = await fetch(`${this.issuer}/token`, {
+        };
+        const url = `${issuer || 'https://auth.thx.network'}/token`;
+        const params = new URLSearchParams({ grant_type: THXOIDCGrant.ClientCredentials, scope: 'openid' });
+        const response = await axios({
             method: 'POST',
+            url,
             headers,
-            body,
+            data: params,
         });
-        const user = await response.json();
 
-        this.user = user as THXOIDCUser;
+        this.user = response.data as THXOIDCUser;
         this.expiresAt = Date.now() + this.user.expires_in * 1000;
     }
 
@@ -59,8 +63,14 @@ export default class OIDCManager {
         console.debug('Sorry! Not implemented yet...', options);
     }
 
+    getUser() {
+        return this.user;
+    }
+
     // Deprecated
     setAccessToken(accessToken: string) {
         this.user = { access_token: accessToken } as THXOIDCUser;
     }
 }
+
+export default OIDCManager;

@@ -1,55 +1,45 @@
 import { THXClient } from '../clients';
-import BaseManager from './BaseManager';
-import fetch, { Headers, HeadersInit, RequestInit, Response } from 'node-fetch';
+import { THXBrowserClientOptions, THXRequestConfig } from '../types';
 import * as jose from 'jose';
-import { THXOIDCUser } from '../types';
+import axios, { AxiosResponse } from 'axios';
+import OIDCManager from './OIDCManager';
 
-interface RequestConfig extends RequestInit {
-    poolId?: string;
-}
-
-class RequestManager extends BaseManager {
+class RequestManager extends OIDCManager {
     constructor(client: THXClient) {
         super(client);
     }
 
-    get(path: string, config?: RequestConfig) {
+    get(path: string, config?: THXRequestConfig) {
         return this.request(path, { ...config, method: 'GET' });
     }
 
-    post(path: string, config?: RequestConfig) {
+    post(path: string, config?: THXRequestConfig) {
         return this.request(path, { ...config, method: 'POST' });
     }
 
-    patch(path: string, config?: RequestConfig) {
+    patch(path: string, config?: THXRequestConfig) {
         return this.request(path, { ...config, method: 'PATCH' });
     }
 
-    put(path: string, config?: RequestConfig) {
+    put(path: string, config?: THXRequestConfig) {
         return this.request(path, { ...config, method: 'PUT' });
     }
 
-    delete(path: string, config?: RequestConfig) {
+    delete(path: string, config?: THXRequestConfig) {
         return this.request(path, { ...config, method: 'DELETE' });
     }
 
-    private async request(path: string, config: RequestInit) {
+    private async request(path: string, config: THXRequestConfig) {
         // Check for user to exist and token not to be expired
-        if (!this.client.oidc.isAuthenticated) {
-            await this.client.oidc.init();
-        }
-        // Another check to make sure init was successfull
-        if (!this.client.oidc.user) {
-            throw new Error('Not authenticated');
+        if (!this.isAuthenticated) {
+            await this.authenticate();
         }
 
         const headers = this.getHeaders(config);
-        const r = await fetch(this.getUrl(path), {
-            ...config,
-            headers,
-        });
+        const url = this.getUrl(path);
+        const response = await axios({ ...config, url, headers });
 
-        return await this.handleResponse(r);
+        return await this.handleResponse(response);
     }
 
     private validateToken(accessToken: string) {
@@ -74,32 +64,33 @@ class RequestManager extends BaseManager {
         return this.client.options.url + path;
     }
 
-    private getHeaders(config?: RequestConfig): HeadersInit {
-        const { access_token } = this.client.oidc.user as THXOIDCUser;
-        const headers = new Headers({
+    private getHeaders(config?: THXRequestConfig) {
+        if (!this.user) throw new Error('Could not find user.');
+
+        const headers: Record<string, string> = {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            ...config?.headers,
-        });
+        };
 
-        if (access_token) {
-            const token = this.validateToken(access_token);
-            headers.append('Authorization', `Bearer ${token}`);
+        if (this.user.access_token) {
+            const token = this.validateToken(this.user.access_token);
+            headers['Authorization'] = `Bearer ${token}`;
         }
 
         // Needs refactor
-        if ((config && config.poolId) || this.client.options.poolId) {
-            headers.append('X-PoolId', (config && config.poolId) || this.client.options.poolId);
+        const options = this.client.options as THXBrowserClientOptions;
+        if ((config && config.poolId) || (options && options.poolId)) {
+            headers['X-PoolId'] = (config && config.poolId) || (options && options.poolId);
         }
 
         return headers;
     }
 
-    private handleResponse(r: Response) {
+    private async handleResponse(r: AxiosResponse) {
         if (r.status >= 400 && r.status < 600) {
-            throw r.json();
+            throw r.data;
         } else {
-            return r.json();
+            return r.data;
         }
     }
 }

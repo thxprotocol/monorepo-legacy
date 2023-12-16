@@ -24,7 +24,7 @@ import BaseJumbotron from '@thxnetwork/public/components/BaseJumbotron.vue';
 import BaseNavbar from '@thxnetwork/public/components/BaseNavbar.vue';
 import CookieLaw from 'vue-cookie-law';
 import { TITLES } from './utils/constants';
-import { THXWidget } from '@thxnetwork/sdk/client';
+import { THXWidget } from '@thxnetwork/sdk/clients';
 import { PKG_ENV, WIDGET_ID, GTM } from './config/secrets';
 
 @Component({

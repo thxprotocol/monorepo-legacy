@@ -21,7 +21,7 @@ class ERC20Manager extends BaseManager {
     }
 
     async transfer(config: { erc20Id: string; to: string; amount: string; chainId: ChainId }) {
-        return await this.client.request.post(`/v1/erc20/transfer`, { body: JSON.stringify(config) });
+        return await this.client.request.post(`/v1/erc20/transfer`, { data: JSON.stringify(config) });
     }
 }
 

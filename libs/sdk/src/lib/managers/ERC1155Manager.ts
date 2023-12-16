@@ -24,7 +24,7 @@ class ERC1155Manager extends BaseManager {
     }
 
     async transfer(config: { erc1155Id: string; erc1155TokenId: string; to: string }) {
-        return await this.client.request.post(`/v1/erc1155/transfer`, { body: JSON.stringify(config) });
+        return await this.client.request.post(`/v1/erc1155/transfer`, { data: JSON.stringify(config) });
     }
 }
 
