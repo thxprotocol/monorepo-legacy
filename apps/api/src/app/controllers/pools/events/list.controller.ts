@@ -1,18 +1,21 @@
 import { Request, Response } from 'express';
 import { AssetPool } from '@thxnetwork/api/models/AssetPool';
-import { body } from 'express-validator';
+import { query } from 'express-validator';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { Event } from '@thxnetwork/api/models/Event';
+import { paginatedResults } from '@thxnetwork/api/util/pagination';
 
-const validation = [body('uuid').isUUID(), body('event').isString().isLength({ min: 0, max: 10 })];
+const validation = [query('page').isInt(), query('limit').isInt()];
 
 const controller = async (req: Request, res: Response) => {
     const pool = await AssetPool.findById(req.header('X-PoolId'));
     if (!pool) throw new NotFoundError('Could not find pool for token');
 
-    const eventNames = await Event.find({ poolId: pool._id }).distinct('name');
+    const result = await paginatedResults(Event, Number(req.query.page), Number(req.query.limit), {
+        poolId: pool._id,
+    });
 
-    res.json(eventNames);
+    res.json(result);
 };
 
 export default { validation, controller };
