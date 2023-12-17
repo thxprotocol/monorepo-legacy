@@ -41,14 +41,14 @@ export default class AssetPoolView extends Vue {
             route: 'general',
         },
         {
-            name: 'Wallets',
-            class: 'fas fa-wallet',
-            route: 'wallets',
+            name: 'API',
+            class: 'fas fa-key',
+            route: 'api',
         },
         {
-            name: 'Webhooks',
-            class: 'fas fa-globe',
-            route: 'webhooks',
+            name: 'Identity',
+            class: 'fas fa-id-badge',
+            route: 'wallets',
         },
         {
             name: 'Events',
@@ -56,9 +56,9 @@ export default class AssetPoolView extends Vue {
             route: 'events',
         },
         {
-            name: 'API',
-            class: 'fas fa-key',
-            route: 'api',
+            name: 'Webhooks',
+            class: 'fas fa-globe',
+            route: 'webhooks',
         },
     ];
 

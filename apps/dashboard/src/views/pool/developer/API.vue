@@ -3,6 +3,7 @@
         <b-col md="4">
             <strong>API Keys</strong>
             <p class="text-muted">Register OAuth2 clients and build your own frontend against THX API's.</p>
+            <BaseCode :code="code" language="js" />
         </b-col>
         <b-col md="8">
             <b-form-group>
@@ -86,14 +87,24 @@ import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import BaseListItemClient from '@thxnetwork/dashboard/components/list-items/BaseListItemClient.vue';
 import BaseModalClientCreate from '@thxnetwork/dashboard/components/modals/BaseModalClientCreate.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
+import BaseCode from '@thxnetwork/dashboard/components/BaseCode.vue';
 import { AccountPlanType } from '@thxnetwork/types/enums';
 import { TClient, TAccount } from '@thxnetwork/types/interfaces';
+
+const exampleCode = `import { THXAPIClient } from '@thxnetwork/sdk';
+
+const thx = new THXAPIClient({
+    clientId: 'chyBeltL7rmOeTwVu-YiM',
+    clientSecret: 'q4ilZuGA4VPtrGhXug3i5taXrvDtidrzyv-gJN3yVo8T2stL6RwYQjqRoK-iUiAGGvhbG_F3TEFFuD_56Q065Q'
+});
+`;
 
 @Component({
     components: {
         BaseListItemClient,
         BaseModalClientCreate,
         BaseCardTableHeader,
+        BaseCode,
     },
     computed: mapGetters({
         totals: 'clients/totals',
@@ -106,7 +117,7 @@ export default class Clients extends Vue {
     page = 1;
     limit = 5;
     isLoading = true;
-
+    code = exampleCode;
     actions = [];
 
     totals!: { [poolId: string]: number };

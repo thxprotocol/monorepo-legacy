@@ -1,9 +1,5 @@
 import mongoose from 'mongoose';
-
-export type TIdentity = {
-    poolId: string;
-    uuid: string;
-};
+import { TIdentity } from '@thxnetwork/common/lib/types/interfaces/Identity';
 
 export type IdentityDocument = mongoose.Document & TIdentity;
 

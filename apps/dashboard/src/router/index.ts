@@ -67,9 +67,9 @@ const routes: Array<RouteConfig> = [
                         component: () => import('../views/pool/developer/General.vue'),
                     },
                     {
-                        name: 'DeveloperWallets',
+                        name: 'DeveloperIdentities',
                         path: 'wallets',
-                        component: () => import('../views/pool/developer/Wallets.vue'),
+                        component: () => import('../views/pool/developer/Identities.vue'),
                     },
                     {
                         name: 'DeveloperWebhooks',

@@ -2,7 +2,7 @@
     <div>
         <b-form-row>
             <b-col md="4">
-                <strong>Outbound Webhooks</strong>
+                <strong>Webhooks</strong>
                 <p class="text-muted">Listen to live THX events and forward them to your server.</p>
             </b-col>
             <b-col md="8">
