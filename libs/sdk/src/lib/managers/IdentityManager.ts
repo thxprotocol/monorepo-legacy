@@ -6,12 +6,12 @@ class IdentityManager extends BaseManager {
         super(client);
     }
 
-    async create() {
-        return await this.client.request.post('/v1/identity');
+    create() {
+        return this.client.request.post('/v1/identity');
     }
 
-    async get() {
-        return await this.client.request.get('/v1/identity');
+    get(uuid: string) {
+        return this.client.request.get(`/v1/identity/${uuid}`);
     }
 }
 

@@ -195,15 +195,15 @@ export const contentRewards = {
         icon: 'fab fa-discord', // Suggested icon for shield or protection
         color: '#7289DA', // Suggested color for Discord roles (Discord Blue)
     },
-    'qr-codes': {
-        tag: 'QR Codes',
-        title: 'Offline Reward Distribution',
-        description: 'Use QR codes to distribute rewards in offline environments.',
-        list: ['Expand reach to offline users', 'Facilitate in-person engagement', 'Enhance brand recognition'],
-        docsUrl: 'https://docs.thx.network',
-        icon: 'fas fa-qrcode', // Suggested icon for QR codes
-        color: '#000000', // Suggested color for QR codes (Black)
-    },
+    // 'qr-codes': {
+    //     tag: 'QR Codes',
+    //     title: 'Offline Reward Distribution',
+    //     description: 'Use QR codes to distribute rewards in offline environments.',
+    //     list: ['Expand reach to offline users', 'Facilitate in-person engagement', 'Enhance brand recognition'],
+    //     docsUrl: 'https://docs.thx.network',
+    //     icon: 'fas fa-qrcode', // Suggested icon for QR codes
+    //     color: '#000000', // Suggested color for QR codes (Black)
+    // },
 };
 
 @Component({

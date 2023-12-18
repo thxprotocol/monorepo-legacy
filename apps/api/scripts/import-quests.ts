@@ -4,15 +4,18 @@ process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
 
 async function main() {
     const thx = new THXAPIClient({
-        url: 'https://localhost:3000', // Optional
-        issuer: 'https://localhost:3030', // Optional
+        apiUrl: 'https://localhost:3000', // Optional
+        authUrl: 'https://localhost:3030', // Optional
         clientId: 'chyBeltL7rmOeTwVu-YiM',
         clientSecret: 'q4ilZuGA4VPtrGhXug3i5taXrvDtidrzyv-gJN3yVo8T2stL6RwYQjqRoK-iUiAGGvhbG_F3TEFFuD_56Q065Q',
     });
 
     const identity = await thx.identity.create();
-    const event = await thx.events.create({ event: 'winner', identity });
-    console.log(event);
+    console.log('ID', identity);
+
+    const event = 'winner';
+    await thx.events.create({ event, identity });
+    console.log('Event created: ', `"${event}"`);
 }
 
 main()

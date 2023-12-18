@@ -9,13 +9,12 @@ import RewardManager from '../managers/RewardManager';
 import ClaimsManager from '../managers/ClaimsManager';
 import PoolManager from '../managers/PoolManager';
 import PointBalanceManager from '../managers/PointBalanceManager';
-import OIDCManager from '../managers/OIDCManager';
+import { THXOIDCGrant } from '../managers/OIDCManager';
 import { THXBrowserClientOptions } from '../types';
 
 export default class THXBrowserClient {
     options: THXBrowserClientOptions;
     request: RequestManager;
-    oidc: OIDCManager;
     account: AccountManager;
     erc20: ERC20Manager;
     erc721: ERC721Manager;
@@ -29,8 +28,7 @@ export default class THXBrowserClient {
 
     constructor(options: THXBrowserClientOptions) {
         this.options = options;
-        this.request = new RequestManager(this);
-        this.oidc = new OIDCManager(this);
+        this.request = new RequestManager(this, THXOIDCGrant.AuthorizationCode);
         this.account = new AccountManager(this);
         this.erc20 = new ERC20Manager(this);
         this.erc721 = new ERC721Manager(this);
@@ -43,11 +41,7 @@ export default class THXBrowserClient {
         this.pointBalance = new PointBalanceManager(this);
     }
 
-    setAccessToken(accessToken: string) {
-        this.oidc.setAccessToken(accessToken);
-    }
-
-    setPoolId(poolId: string) {
-        this.options.poolId = poolId;
+    setCampaignId(campaignId: string) {
+        this.options.poolId = campaignId;
     }
 }

@@ -1,13 +1,12 @@
 import { AxiosRequestConfig } from 'axios';
 
 type THXAPIClientOptions = {
-    url: string;
+    apiUrl: string;
 } & THXOIDCConfig;
 
 type THXBrowserClientOptions = {
-    url: string;
+    apiUrl: string;
     poolId: string;
-    accessToken?: string; // Deprecates soon in favor of THX OIDCConfig
 } & THXOIDCConfig;
 
 type THXRequestConfig = {
@@ -15,10 +14,10 @@ type THXRequestConfig = {
 } & AxiosRequestConfig;
 
 type THXOIDCConfig = {
+    authUrl: string;
     clientId: string;
     clientSecret: string;
-    returnUrl?: string;
-    issuer?: string;
+    redirectUri?: string;
 };
 
 type THXOIDCUser = {
