@@ -3,7 +3,7 @@
         "_id": { "$oid": "60a38b36bf804b033c5e3faa" },
         "active": true,
         "email": "peter@thx.network",
-        "plan": 1,
+        "plan": 2,
         "createdAt": { "$date": "2021-05-18T09:39:03.446Z" },
         "updatedAt": { "$date": "2021-05-18T09:39:23.128Z" },
         "__v": 0
