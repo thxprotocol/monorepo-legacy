@@ -4,7 +4,7 @@ import { logger } from './logger';
 
 export class ExpectedEventNotFound extends THXError {
     constructor(event: string) {
-        super(`Event ${event} expected in eventlog but not found. Check API health status at /v1/health.`);
+        super(`Event ${event} expected in eventlog but not found.`);
     }
 }
 

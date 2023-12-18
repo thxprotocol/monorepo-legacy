@@ -20,11 +20,13 @@ const controller = async (req: Request, res: Response) => {
     const balanceInWei = await erc721.contract.methods.balanceOf(token.recipient).call();
     const balance = Number(fromWei(balanceInWei, 'ether'));
 
+    const owner = await erc721.contract.methods.ownerOf(token.tokenId).call();
     const tokenUri = token.tokenId ? await erc721.contract.methods.tokenURI(token.tokenId).call() : '';
     erc721.logoImgUrl = erc721.logoImgUrl || `https://api.dicebear.com/7.x/identicon/svg?seed=${erc721.address}`;
 
     res.status(200).json({
         ...token.toJSON(),
+        owner,
         tokenUri,
         balance,
         nft: erc721.toJSON(),
