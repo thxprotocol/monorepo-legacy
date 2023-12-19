@@ -14,6 +14,10 @@
                 "assets": ["apps/api/src/assets", "apps/api/src/app/migrations"],
                 "additionalEntryPoints": [
                     {
+                        "entryPath": "apps/api/scripts/ipfs.ts",
+                        "entryName": "ipfs"
+                    },
+                    {
                         "entryPath": "apps/api/scripts/upgradeContractsToLatest.ts",
                         "entryName": "upgradeContractsToLatest"
                     },
@@ -88,6 +92,14 @@
             "executor": "nx:run-commands",
             "options": {
                 "command": "node import-quests.js",
+                "cwd": "dist/apps/api"
+            }
+        },
+        "ipfs": {
+            "dependsOn": ["^build"],
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "node ipfs.js",
                 "cwd": "dist/apps/api"
             }
         },
