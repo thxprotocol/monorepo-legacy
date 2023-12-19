@@ -21,9 +21,6 @@
             <b-form-group label="Amount">
                 <b-form-input type="number" v-model="amount" />
             </b-form-group>
-            <b-form-group label="Limit" description="Maximum amount of claims per acount.">
-                <b-form-input type="number" v-model="limit" min="0" />
-            </b-form-group>
         </template>
         <template #col-right>
             <b-card class="mb-3" body-class="bg-light p-0">
@@ -45,13 +42,19 @@
                                 menu-class="w-100"
                                 toggle-class="justify-content-between align-items-center d-flex form-control"
                             >
-                                <template #button-content> Choose an event </template>
-                                <b-dropdown-item :key="key" v-for="(event, key) of pool.events">
+                                <template #button-content>
+                                    {{ eventName ? eventName : 'Choose an event...' }}
+                                </template>
+                                <b-dropdown-item
+                                    @click="eventName = event"
+                                    :key="key"
+                                    v-for="(event, key) of pool.events"
+                                >
                                     {{ event }}
                                 </b-dropdown-item>
                             </b-dropdown>
                         </b-form-group>
-                        <b-form-group label="Threshold" description="How many times this event should have occured.">
+                        <b-form-group label="Limit" description="Maximum amount of claims for this event per account.">
                             <b-form-input type="number" v-model="limit" min="0" />
                         </b-form-group>
                     </div>
@@ -66,16 +69,13 @@ import { TInfoLink, type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { type TMilestoneReward } from '@thxnetwork/types/index';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
-import { API_URL } from '@thxnetwork/dashboard/config/secrets';
 import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
 import BaseModalQuestCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestCreate.vue';
-import BaseCardURLWebhook from '@thxnetwork/dashboard/components/cards/BaseCardURLWebhook.vue';
 
 @Component({
     components: {
         BaseModal,
         BaseModalQuestCreate,
-        BaseCardURLWebhook,
     },
 })
 export default class ModalQuestCustomCreate extends Vue {
@@ -91,18 +91,13 @@ export default class ModalQuestCustomCreate extends Vue {
     limit = 0;
     isCopied = false;
     infoLinks: TInfoLink[] = [{ label: '', url: '' }];
+    eventName = '';
     file: File | null = null;
 
     @Prop() id!: string;
     @Prop() total!: number;
     @Prop() pool!: TPool;
     @Prop({ required: false }) reward!: TMilestoneReward;
-
-    get code() {
-        return `curl "${API_URL}/v1/webhook/milestone/${this.reward ? this.reward.uuid : '<TOKEN>'}/claim" \\
--X POST \\
--d "code=<CODE>"`;
-    }
 
     onShow() {
         this.isPublished = this.reward ? this.reward.isPublished : this.isPublished;
@@ -112,12 +107,7 @@ export default class ModalQuestCustomCreate extends Vue {
         this.infoLinks = this.reward ? this.reward.infoLinks : this.infoLinks;
         this.limit = this.reward && this.reward.limit ? this.reward.limit : this.limit;
         this.expiryDate = this.reward && this.reward.expiryDate ? this.reward.expiryDate : this.expiryDate;
-
-        // this.getEvents();
-    }
-
-    getEvents() {
-        this.$store.dispatch('pools/getEvents');
+        this.eventName = this.reward ? this.reward.eventName : this.eventName;
     }
 
     onSubmit() {
@@ -136,6 +126,7 @@ export default class ModalQuestCustomCreate extends Vue {
                 expiryDate: this.expiryDate ? new Date(this.expiryDate).toISOString() : undefined,
                 infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
                 index: !this.reward ? this.total : this.reward.index,
+                eventName: this.eventName,
             })
             .then(() => {
                 this.$bvModal.hide(this.id);

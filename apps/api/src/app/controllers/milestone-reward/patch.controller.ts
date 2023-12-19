@@ -32,7 +32,7 @@ const validation = [
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Milestone Rewards']
-    const { title, description, amount, infoLinks, limit, index, isPublished, expiryDate } = req.body;
+    const { title, description, amount, infoLinks, limit, index, isPublished, expiryDate, eventName } = req.body;
     const image = req.file && (await ImageService.upload(req.file));
     const quest = await QuestService.update(QuestVariant.Custom, req.params.id, {
         title,
@@ -42,6 +42,7 @@ const controller = async (req: Request, res: Response) => {
         infoLinks,
         index,
         limit,
+        eventName,
         isPublished,
         expiryDate,
     });

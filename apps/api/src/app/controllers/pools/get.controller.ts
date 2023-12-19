@@ -54,7 +54,7 @@ export const controller = async (req: Request, res: Response) => {
     });
     const guilds = await Promise.all(promises);
     const events = await Event.find({ poolId: pool._id }).distinct('name');
-    console.log({ events });
+
     res.json({
         ...pool.toJSON(),
         events,

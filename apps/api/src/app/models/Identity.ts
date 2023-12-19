@@ -7,6 +7,7 @@ const identitySchema = new mongoose.Schema(
     {
         poolId: String,
         uuid: String,
+        sub: String,
     },
     { timestamps: true },
 );
