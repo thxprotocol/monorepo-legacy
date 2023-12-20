@@ -178,62 +178,29 @@ async function complete(
         discord && discord.userId
             ? `<@${discord.userId}>`
             : `**${account.username ? account.username : formatAddress(wallet.address)}**`;
-
-    await DiscordDataProxy.sendChannelMessage(
-        pool,
-        `${celebratoryWords[index]} ${user} completed the **${quest.title}** quest and earned **${amount} points.**`,
-        [],
-        [
-            {
-                customId: `${DiscordButtonVariant.QuestComplete}:${quest.variant}:${quest._id}`,
-                label: 'Complete Quest',
-                style: ButtonStyle.Primary,
-            },
-        ],
-    );
-
-    let entry: TQuestEntry;
-    const { isEnabledWebhookQualification } = quest as TDailyReward;
-    // Handle Daily Quest entry update after webhook is invoked (if webhook qualification is enabled)
-    if (variant === QuestVariant.Daily && isEnabledWebhookQualification) {
-        entry = await model.findOneAndUpdate(
-            {
-                dailyRewardId: String(quest._id),
-                sub: account.sub,
-                walletId: wallet._id,
-                state: DailyRewardClaimState.Pending,
-                createdAt: { $gt: new Date(Date.now() - ONE_DAY_MS) }, // Greater than now - 24h
-            },
-            { state: DailyRewardClaimState.Claimed },
-            { new: true },
-        );
-    }
-    // Handle Custom Quest entry update after webhook is invoked
-    else if (variant === QuestVariant.Custom) {
-        const { uuid } = data as TMilestoneRewardClaim;
-        entry = await model.findOneAndUpdate({ uuid }, { isClaimed: true }, { new: true });
-    }
-
-    // Handle all other variants
-    else {
-        entry = await model.create({
-            sub: account.sub,
-            walletId: wallet._id,
-            amount,
-            ...data,
-            poolId: pool._id,
-            uuid: v4(),
-        });
-    }
+    const button = {
+        customId: `${DiscordButtonVariant.QuestComplete}:${quest.variant}:${quest._id}`,
+        label: 'Complete Quest',
+        style: ButtonStyle.Primary,
+    };
+    const content = `${celebratoryWords[index]} ${user} completed the **${quest.title}** quest and earned **${amount} points.**`;
+    const entry = await model.create({
+        sub: account.sub,
+        walletId: wallet._id,
+        amount,
+        ...data,
+        poolId: pool._id,
+        uuid: v4(),
+    });
 
     await PointBalanceService.add(pool, wallet._id, amount);
-
+    await DiscordDataProxy.sendChannelMessage(pool, content, [], [button]);
     await agenda.now(JobType.UpdateParticipantRanks, { poolId: pool._id });
 
     return entry;
 }
 
-function findById(variant: QuestVariant, questId) {
+function findById(variant: QuestVariant, questId: string) {
     const model = getModel(variant);
     return model.findById(questId);
 }

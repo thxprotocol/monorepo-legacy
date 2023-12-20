@@ -1,10 +1,5 @@
 import mongoose from 'mongoose';
-
-export type TEvent = {
-    identityId: string;
-    poolId: string;
-    name: string;
-};
+import { TEvent } from '@thxnetwork/types/interfaces';
 
 export type EventDocument = mongoose.Document & TEvent;
 

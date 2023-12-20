@@ -8,20 +8,12 @@ import QuestManager from '../managers/QuestManager';
 import RewardManager from '../managers/RewardManager';
 import ClaimsManager from '../managers/ClaimsManager';
 import PoolManager from '../managers/PoolManager';
-import EventManager from '../managers/EventManager';
 import PointBalanceManager from '../managers/PointBalanceManager';
-import IdentityManager from '../managers/IdentityManager';
+import { THXOIDCGrant } from '../managers/OIDCManager';
+import { THXBrowserClientOptions } from '../types';
 
-type THXClientOptions = {
-    url: string;
-    poolId: string;
-    apiKey: string;
-    accessToken: string;
-};
-
-export default class THXClient {
-    options: THXClientOptions;
-
+export default class THXBrowserClient {
+    options: THXBrowserClientOptions;
     request: RequestManager;
     account: AccountManager;
     erc20: ERC20Manager;
@@ -33,15 +25,10 @@ export default class THXClient {
     claims: ClaimsManager;
     pools: PoolManager;
     pointBalance: PointBalanceManager;
-    events: EventManager;
-    identity: IdentityManager;
 
-    constructor(options: THXClientOptions) {
+    constructor(options: THXBrowserClientOptions) {
         this.options = options;
-
-        this.request = new RequestManager(this);
-
-        // Authorization Code Grant
+        this.request = new RequestManager(this, THXOIDCGrant.AuthorizationCode);
         this.account = new AccountManager(this);
         this.erc20 = new ERC20Manager(this);
         this.erc721 = new ERC721Manager(this);
@@ -52,21 +39,9 @@ export default class THXClient {
         this.claims = new ClaimsManager(this);
         this.pools = new PoolManager(this);
         this.pointBalance = new PointBalanceManager(this);
-
-        // API Key
-        this.identity = new IdentityManager(this);
-        this.events = new EventManager(this);
     }
 
-    setApiKey(key: string) {
-        this.options.apiKey = key;
-    }
-
-    setAccessToken(accessToken: string) {
-        this.options.accessToken = accessToken;
-    }
-
-    setPoolId(poolId: string) {
-        this.options.poolId = poolId;
+    setCampaignId(campaignId: string) {
+        this.options.poolId = campaignId;
     }
 }

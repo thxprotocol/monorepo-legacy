@@ -25,5 +25,6 @@ module.exports = (config) => {
     config.resolve.alias = {
         ...config.resolve.alias,
         '@thxnetwork/dashboard': 'src',
+        'node-fetch': "require('node-fetch')",
     };
 };

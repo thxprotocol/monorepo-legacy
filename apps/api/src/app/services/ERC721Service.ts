@@ -25,6 +25,7 @@ import IPFSService from './IPFSService';
 import WalletService from './WalletService';
 import { toChecksumAddress } from 'web3-utils';
 import { ERC721Perk } from '../models/ERC721Perk';
+import { logger } from 'ethers';
 
 const contractName = 'NonFungibleToken';
 

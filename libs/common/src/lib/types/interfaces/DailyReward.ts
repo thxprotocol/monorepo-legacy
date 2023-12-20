@@ -4,5 +4,6 @@ export type TDailyReward = TBaseReward & {
     amounts: number[];
     progress?: number;
     claims?: any[];
-    isEnabledWebhookQualification: boolean;
+    events?: any[];
+    eventName?: string;
 };

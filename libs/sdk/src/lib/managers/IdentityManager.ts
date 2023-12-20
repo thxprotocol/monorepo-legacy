@@ -1,4 +1,4 @@
-import { THXClient } from '../../index';
+import { THXClient } from '../clients';
 import BaseManager from './BaseManager';
 
 class IdentityManager extends BaseManager {
@@ -6,16 +6,12 @@ class IdentityManager extends BaseManager {
         super(client);
     }
 
-    async create() {
-        if (!this.client.options.apiKey) {
-            throw new Error(
-                "Please provide an 'apiKey' when constructing the client or set it with 'client.setApiKey('...')'.",
-            );
-        }
+    create() {
+        return this.client.request.post('/v1/identity');
+    }
 
-        return await this.client.request.post('/v1/identity', {
-            body: JSON.stringify({ apiKey: this.client.options.apiKey }),
-        });
+    get(uuid: string) {
+        return this.client.request.get(`/v1/identity/${uuid}`);
     }
 }
 

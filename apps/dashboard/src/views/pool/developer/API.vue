@@ -3,6 +3,7 @@
         <b-col md="4">
             <strong>API Keys</strong>
             <p class="text-muted">Register OAuth2 clients and build your own frontend against THX API's.</p>
+            <BaseCode :codes="[code]" :languages="['JavaScript']" />
         </b-col>
         <b-col md="8">
             <b-form-group>
@@ -17,9 +18,9 @@
                         <i class="fas fa-plus mr-2"></i>
                         API Key
                     </b-button>
-                    <BaseModalClientCreate :pool="pool" @submit="onSubmit" />
+                    <BaseModalClientCreate id="modalClientCreate" :pool="pool" @submit="onSubmit" />
                 </template>
-                <BTable hover :busy="isLoading" :items="clientsByPage" responsive="lg" show-empty>
+                <BTable hover :busy="isLoading" :items="clients" responsive="lg" show-empty>
                     <!-- Head formatting -->
                     <template #head(name)> Client Name </template>
                     <template #head(grantType)> Grant Type </template>
@@ -56,7 +57,6 @@
                             <b-col>
                                 <b-input-group size="sm">
                                     <b-form-input readonly size="sm" :value="item.info.clientSecret" />
-
                                     <template #append>
                                         <b-button size="sm" variant="dark" v-clipboard:copy="item.info.clientSecret">
                                             <i class="fas fa-clipboard m-0"></i>
@@ -71,8 +71,14 @@
                             <template #button-content>
                                 <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
                             </template>
-                            <b-dropdown-item v-b-modal="`modalClientCreate${item.id}`">Edit</b-dropdown-item>
+                            <b-dropdown-item v-b-modal="`modalClientCreate${item.id}`"> Edit </b-dropdown-item>
                         </b-dropdown>
+                        <BaseModalClientCreate
+                            :id="`modalClientCreate${item.id}`"
+                            :pool="pool"
+                            :client="clientList[pool._id][item.id]"
+                            @submit="onSubmit"
+                        />
                     </template>
                 </BTable>
             </b-form-group>
@@ -82,59 +88,51 @@
 <script lang="ts">
 import { mapGetters } from 'vuex';
 import { Component, Vue } from 'vue-property-decorator';
-import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
-import BaseListItemClient from '@thxnetwork/dashboard/components/list-items/BaseListItemClient.vue';
+import type { IPools } from '@thxnetwork/dashboard/store/modules/pools';
+import type { TClient, TClientState } from '@thxnetwork/types/interfaces';
 import BaseModalClientCreate from '@thxnetwork/dashboard/components/modals/BaseModalClientCreate.vue';
-import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
-import { AccountPlanType } from '@thxnetwork/types/enums';
-import { TClient, TAccount } from '@thxnetwork/types/interfaces';
+import BaseCode from '@thxnetwork/dashboard/components/BaseCode.vue';
+
+const exampleCode = `import { THXAPIClient } from '@thxnetwork/sdk';
+
+const thx = new THXAPIClient({
+    clientId: 'chyBeltL7rmOeTwVu-YiM',
+    clientSecret: 'q4ilZuGA4VPtrGhXug3i5taXrvDtidrzyv-gJN3yVo8T2stL6RwYQjqRoK-iUiAGGvhbG_F3TEFFuD_56Q065Q'
+});
+`;
 
 @Component({
     components: {
-        BaseListItemClient,
         BaseModalClientCreate,
-        BaseCardTableHeader,
+        BaseCode,
     },
     computed: mapGetters({
-        totals: 'clients/totals',
-        clients: 'clients/all',
         pools: 'pools/all',
-        account: 'account/profile',
+        clientList: 'clients/all',
     }),
 })
 export default class Clients extends Vue {
     page = 1;
     limit = 5;
     isLoading = true;
-
-    actions = [];
-
-    totals!: { [poolId: string]: number };
-    clients!: { [poolId: string]: { [id: string]: TClient } };
-    editingClient: TClient | null = null;
+    code = exampleCode;
     pools!: IPools;
-    account!: TAccount;
-
-    selectedItems: string[] = [];
-
-    get total() {
-        return this.totals[this.$route.params.id];
-    }
+    clientList!: TClientState;
 
     get pool() {
         return this.pools[this.$route.params.id];
     }
 
-    get clientsByPage() {
-        if (!this.clients[this.$route.params.id]) return [];
-        return Object.values(this.clients[this.$route.params.id]).map((r: TClient) => ({
-            name: r.name,
-            grantType: r.grantType,
+    get clients() {
+        if (!this.clientList[this.$route.params.id]) return [];
+        return Object.values(this.clientList[this.$route.params.id]).map((client: TClient) => ({
+            name: client.name,
+            grantType: client.grantType,
             info: {
-                clientId: r.clientId,
-                clientSecret: r.clientSecret,
+                clientId: client.clientId,
+                clientSecret: client.clientSecret,
             },
-            id: r._id,
+            id: client._id,
         }));
     }
 
@@ -152,7 +150,6 @@ export default class Clients extends Vue {
     }
 
     async listClients() {
-        if (!this.account || this.account.plan !== AccountPlanType.Premium) return;
         this.isLoading = true;
         await this.$store.dispatch('clients/list', this.pool);
         this.isLoading = false;

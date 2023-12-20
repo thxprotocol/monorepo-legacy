@@ -1,7 +1,6 @@
 import store from '@thxnetwork/dashboard/store';
 import {
     assertAuthorization,
-    downloadScreenshot,
     redirectAccount,
     redirectCollaborationRequest,
     redirectPoolTransfer,
@@ -59,39 +58,66 @@ const routes: Array<RouteConfig> = [
             {
                 name: 'Developer',
                 path: 'developer',
+                redirect: 'developer/general',
                 component: () => import('../views/pool/Developer.vue'),
                 children: [
                     {
-                        name: 'Webhooks',
+                        name: 'DeveloperGeneral',
+                        path: 'general',
+                        component: () => import('../views/pool/developer/General.vue'),
+                    },
+                    {
+                        name: 'DeveloperIdentities',
+                        path: 'wallets',
+                        component: () => import('../views/pool/developer/Identities.vue'),
+                    },
+                    {
+                        name: 'DeveloperWebhooks',
                         path: 'webhooks',
                         component: () => import('../views/pool/developer/Webhooks.vue'),
                     },
                     {
-                        name: 'API',
+                        name: 'DeveloperAPI',
                         path: 'api',
                         component: () => import('../views/pool/developer/API.vue'),
+                    },
+                    {
+                        name: 'DeveloperEvents',
+                        path: 'events',
+                        component: () => import('../views/pool/developer/Events.vue'),
                     },
                 ],
             },
             {
                 name: 'Settings',
                 path: 'settings',
+                redirect: 'settings/general',
                 component: () => import('../views/pool/Settings.vue'),
                 children: [
                     {
-                        name: 'General',
+                        name: 'SettingsGeneral',
                         path: 'general',
                         component: () => import('../views/pool/settings/General.vue'),
+                    },
+                    {
+                        name: 'SettingsTeam',
+                        path: 'team',
+                        component: () => import('../views/pool/settings/Team.vue'),
+                    },
+                    {
+                        name: 'SettingsAppearance',
+                        path: 'appearance',
+                        component: () => import('../views/pool/settings/Appearance.vue'),
+                    },
+                    {
+                        name: 'SettingsWidget',
+                        path: 'widget',
+                        component: () => import('../views/pool/settings/Widget.vue'),
                     },
                     {
                         name: 'Commerce',
                         path: 'commerce',
                         component: () => import('../views/pool/settings/Commerce.vue'),
-                    },
-                    {
-                        name: 'Widget',
-                        path: 'widget',
-                        component: () => import('../views/pool/settings/Widget.vue'),
                     },
                 ],
             },

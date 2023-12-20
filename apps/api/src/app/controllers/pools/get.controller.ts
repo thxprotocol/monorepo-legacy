@@ -1,15 +1,17 @@
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
-import PoolService from '@thxnetwork/api/services/PoolService';
 import { currentVersion } from '@thxnetwork/contracts/exports';
 import { Widget } from '@thxnetwork/api/services/WidgetService';
-import BrandService from '@thxnetwork/api/services/BrandService';
 import { PoolSubscription } from '@thxnetwork/api/models/PoolSubscription';
 import { Wallet } from '@thxnetwork/api/models/Wallet';
+import { Event } from '@thxnetwork/api/models/Event';
 import { Collaborator, CollaboratorDocument } from '@thxnetwork/api/models/Collaborator';
+import { client } from '@thxnetwork/api/../discord';
+import PoolService from '@thxnetwork/api/services/PoolService';
+import BrandService from '@thxnetwork/api/services/BrandService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import DiscordGuild, { DiscordGuildDocument } from '@thxnetwork/api/models/DiscordGuild';
-import { client } from '@thxnetwork/api/../discord';
+import { Identity } from '@thxnetwork/api/models/Identity';
 
 function discordColorToHex(discordColorCode) {
     return `#${discordColorCode.toString(16).padStart(6, '0')}`;
@@ -52,9 +54,13 @@ export const controller = async (req: Request, res: Response) => {
         return { ...guild.toJSON(), channels, roles };
     });
     const guilds = await Promise.all(promises);
+    const events = await Event.find({ poolId: pool._id }).distinct('name');
+    const identities = await Identity.find({ poolId: pool._id });
 
     res.json({
         ...pool.toJSON(),
+        identities,
+        events,
         wallets,
         widget,
         brand,

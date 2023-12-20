@@ -1,15 +1,23 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId } from '@thxnetwork/types/enums';
-import { dashboardAccessToken, userWalletAddress2, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
+import {
+    dashboardAccessToken,
+    userWalletAddress2,
+    widgetAccessToken,
+    widgetAccessToken2,
+} from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
+import { v4 } from 'uuid';
+import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
 
 const user = request.agent(app);
 
 describe('Milestone Rewards', () => {
     let pool: AssetPoolDocument, milestoneReward: any, claim: any;
+    const eventName = v4();
 
     beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
@@ -36,11 +44,13 @@ describe('Milestone Rewards', () => {
                 amount: 100,
                 limit: 1,
                 index: 0,
+                eventName,
             })
-            .expect((res: request.Response) => {
+            .expect(async (res: request.Response) => {
                 expect(res.body.uuid).toBeDefined();
                 expect(res.body.amount).toBe(100);
                 milestoneReward = res.body;
+                await MilestoneReward.findByIdAndUpdate(milestoneReward._id, { eventName: milestoneReward.uuid });
             })
             .expect(201, done);
     });
@@ -51,35 +61,27 @@ describe('Milestone Rewards', () => {
                 .send({
                     address: userWalletAddress2,
                 })
-                .expect((res: request.Response) => {
-                    expect(res.body.milestoneRewardId).toBe(milestoneReward._id);
-                    expect(res.body.uuid).toBeDefined();
-                    expect(res.body.wallet.address).toBe(userWalletAddress2);
-                    claim = res.body;
-                })
                 .expect(201, done);
         });
 
-        it('POST /webhook/milestone/:token/claim second time should fail', (done) => {
+        it('POST /webhook/milestone/:token/claim second time should also succeed', (done) => {
             user.post(`/v1/webhook/milestone/${milestoneReward.uuid}/claim`)
                 .send({
                     address: userWalletAddress2,
                 })
-                .expect((res: request.Response) => {
-                    expect(res.body.error.message).toBe('This reward has reached its limit for this account.');
-                })
-                .expect(403, done);
+                .expect(201, done);
+        });
+
+        it('GET /account to update identity', (done) => {
+            user.get(`/v1/account`)
+                .set({ 'X-PoolId': pool._id, 'Authorization': widgetAccessToken2 })
+                .expect(200, done);
         });
 
         it('POST /quests/custom/claims/:uuid/collect', (done) => {
-            user.post(`/v1/quests/custom/claims/${claim.uuid}/collect`)
-                .set({ 'X-PoolId': pool._id, 'Authorization': widgetAccessToken })
-                .send({
-                    address: userWalletAddress2,
-                })
-                .expect((res: request.Response) => {
-                    expect(res.body.isClaimed).toBe(true);
-                })
+            user.post(`/v1/quests/custom/claims/${milestoneReward.uuid}/collect`)
+                .set({ 'X-PoolId': pool._id, 'Authorization': widgetAccessToken2 })
+                .send()
                 .expect(201, done);
         });
     });

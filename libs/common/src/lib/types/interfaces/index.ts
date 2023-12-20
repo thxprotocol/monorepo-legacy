@@ -19,6 +19,7 @@ export * from './PointRewardClaim';
 export * from './MilestoneRewardClaim';
 export * from './DailyRewardClaim';
 export * from './Pool';
+export * from './Event';
 export * from './Pagination';
 export * from './Brand';
 export * from './Widget';

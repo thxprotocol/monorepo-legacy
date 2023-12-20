@@ -5,11 +5,11 @@ import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
 import { Widget } from '@thxnetwork/api/models/Widget';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { Request, Response } from 'express';
-import { param } from 'express-validator';
+import { query, param } from 'express-validator';
 import { minify } from 'terser';
 import { runMilestoneRewardWebhook, runReferralRewardWebhook } from '@thxnetwork/api/services/THXService';
 
-const validation = [param('id').isMongoId()];
+const validation = [param('id').isMongoId(), query('identity').optional().isUUID(4)];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Widget']
@@ -87,6 +87,10 @@ const controller = async (req: Request, res: Response) => {
                 const timer = setInterval(tick, 1000);
             });
             waitForBody().then(this.onLoad.bind(this));
+        }
+
+        public setIdentity(identity) {
+            this.iframe.contentWindow.postMessage({ message: 'thx.auth.identity', identity }, this.settings.widgetUrl);
         }
 
         public signin() {
@@ -458,6 +462,10 @@ const controller = async (req: Request, res: Response) => {
 
             this.open(widgetPath);
             this.storeRef(this.ref);
+ 
+            if (this.settings.identity) {
+                this.setIdentity(this.settings.identity)
+            }
         }
 
         show(isShown) {
@@ -507,7 +515,8 @@ const controller = async (req: Request, res: Response) => {
         align: '${widget.align || 'right'}',
         theme: '${widget.theme}',
         refs: ${JSON.stringify(refs)},
-        expired: '${expired}'
+        expired: '${expired}',
+        identity: '${req.query.identity || ''}'
     });
 `;
     const result = await minify(data, {

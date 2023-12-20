@@ -83,21 +83,21 @@ export const getAccount = async (req: Request, res: Response) => {
 
 export const getAccountByAddress = async (req: Request, res: Response) => {
     const account = await AccountService.getByAddress(req.params.address);
-    if (!account) throw new NotFoundError('Could not find the account for this address');
+    if (!account) return res.end();
 
     res.send(await formatAccountRes(account));
 };
 
 export const getAccountByEmail = async (req: Request, res: Response) => {
     const account = await AccountService.getByEmail(req.params.email);
-    if (!account) throw new NotFoundError('Could not find this account for this email');
+    if (!account) return res.end();
 
     res.send(await formatAccountRes(account));
 };
 
 export const getAccountByDiscord = async (req: Request, res: Response) => {
     const account = await AccountService.getByDiscordId(req.params.discordId);
-    if (!account) throw new NotFoundError('Could not find this account for this discord');
+    if (!account) return res.end();
 
     res.send(await formatAccountRes(account));
 };
