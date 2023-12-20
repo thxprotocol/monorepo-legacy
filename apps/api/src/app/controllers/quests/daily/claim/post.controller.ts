@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import { DailyReward } from '@thxnetwork/api/services/DailyRewardService';
-import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
+import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { QuestVariant } from '@thxnetwork/common/lib/types';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import SafeService from '@thxnetwork/api/services/SafeService';
@@ -20,6 +20,8 @@ const controller = async (req: Request, res: Response) => {
     if (!pool) throw new NotFoundError('Could not find the campaign for this reward');
 
     const wallet = await SafeService.findPrimary(req.auth.sub, pool.chainId);
+    if (!wallet) throw new NotFoundError('Could not find wallet');
+
     const isClaimable = await DailyRewardClaimService.isClaimable(quest, wallet);
     if (!isClaimable) {
         return res.json({ error: 'You can not complete this quest yet.' });
@@ -28,7 +30,9 @@ const controller = async (req: Request, res: Response) => {
     const claims = await DailyRewardClaimService.findByWallet(quest, wallet);
     const amountIndex = claims.length >= quest.amounts.length ? claims.length % quest.amounts.length : claims.length;
     const amount = quest.amounts[amountIndex];
-    if (!amount) throw new ForbiddenError('Could not figure out how much points you should get.');
+    if (!amount) {
+        return res.json({ error: 'Could not figure out how much points you should get.' });
+    }
 
     const account = await AccountProxy.getById(req.auth.sub);
     const entry = await QuestService.complete(QuestVariant.Daily, amount, pool, quest, account, wallet, {

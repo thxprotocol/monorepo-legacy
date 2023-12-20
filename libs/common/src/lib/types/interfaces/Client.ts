@@ -15,7 +15,5 @@ export type TClient = {
 };
 
 export type TClientState = {
-    [poolId: string]: {
-        [page: number]: TClient[];
-    };
+    [poolId: string]: { [clientId: string]: TClient };
 };

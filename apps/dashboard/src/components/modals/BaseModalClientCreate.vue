@@ -1,9 +1,10 @@
 <template>
     <base-modal
+        @show="onShow"
         @hidden="$emit('hidden')"
         :error="error"
         :title="`${client ? 'Update' : 'Create'} API Key`"
-        id="modalClientCreate"
+        :id="id"
     >
         <template #modal-body>
             <form v-on:submit.prevent="submit" id="formClientCreate">
@@ -11,19 +12,15 @@
                     <b-form-input v-model="name" />
                 </b-form-group>
                 <b-form-group label="Grant Type">
-                    <b-select v-model="grantType">
-                        <b-select-option value="authorization_code">Authorization Code</b-select-option>
+                    <b-select v-model="grantType" :disabled="!!client">
                         <b-select-option value="client_credentials">Client Credentials</b-select-option>
+                        <b-select-option value="authorization_code">Authorization Code</b-select-option>
                     </b-select>
                 </b-form-group>
                 <template v-if="grantType === 'authorization_code'">
                     <b-form-group>
                         <label>Redirect URI</label>
                         <b-form-input v-model="redirectUri" placeholder="https://example.com/redirect-callback" />
-                    </b-form-group>
-                    <b-form-group>
-                        <label>Request URI</label>
-                        <b-form-input v-model="requestUri" placeholder="https://example.com" />
                     </b-form-group>
                 </template>
             </form>
@@ -54,6 +51,7 @@ export default class BaseModalClientCreate extends Vue {
     redirectUri = '';
     requestUri = '';
 
+    @Prop() id!: string;
     @Prop() pool!: TPool;
     @Prop() client!: TClient;
 
@@ -74,6 +72,7 @@ export default class BaseModalClientCreate extends Vue {
         await this.$store.dispatch('clients/' + action, {
             pool: this.pool,
             payload: {
+                ...this.client,
                 name: this.name,
                 grantType: this.grantType,
                 redirectUri: this.redirectUri,
@@ -81,7 +80,7 @@ export default class BaseModalClientCreate extends Vue {
             },
         });
         this.$emit('submit');
-        this.$bvModal.hide(`modalClientCreate`);
+        this.$bvModal.hide(this.id);
     }
 }
 </script>

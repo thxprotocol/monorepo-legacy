@@ -55,6 +55,10 @@
                             </div>
                         </b-col>
                         <b-col md="8">
+                            <b-alert show variant="info" v-if="pool.guilds && !pool.guilds.length">
+                                <i class="fab fa-discord mr-2" />
+                                Please invite THX Bot and connect your Discord server.
+                            </b-alert>
                             <b-form-group :label="guild.name" :key="key" v-for="(guild, key) of pool.guilds">
                                 <BaseDropdownDiscordRole
                                     :role-id="guild.adminRoleId"
@@ -78,6 +82,10 @@
                             </div>
                         </b-col>
                         <b-col md="8">
+                            <b-alert show variant="info" v-if="pool.guilds && !pool.guilds.length">
+                                <i class="fab fa-discord mr-2" />
+                                Please invite THX Bot and connect your Discord server.
+                            </b-alert>
                             <b-form-group label="Events" description="">
                                 <div class="d-flex">
                                     <b-form-checkbox class="mr-2 mb-2" :checked="isChecked" disabled>
@@ -100,23 +108,6 @@
                                     :channel-id="guild.channelId"
                                     :guild="guild"
                                 />
-                            </b-form-group>
-                            <hr />
-                            <b-form-group label="Discord Webhook URL" class="mb-0">
-                                <b-form-input
-                                    :state="isValidDiscordWebhookUrl"
-                                    :value="discordWebhookUrl"
-                                    @change="onChangeDiscordWebhookUrl"
-                                ></b-form-input>
-                                <small class="text-muted">
-                                    Show campaign activity in one of your Discord channels using a
-                                    <b-link
-                                        href="https://discordjs.guide/popular-topics/webhooks.html#creating-webhooks"
-                                        target="_blank"
-                                    >
-                                        Discord webhook
-                                    </b-link>
-                                </small>
                             </b-form-group>
                         </b-col>
                     </b-form-row>

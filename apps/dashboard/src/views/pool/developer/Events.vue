@@ -36,7 +36,7 @@
                             <span>{{ item.name }}</span>
                         </template>
                         <template #cell(identity)="{ item }">
-                            <code>{{ item.identity.uuid }}</code>
+                            <code>{{ item.identity ? item.identity.uuid : '' }}</code>
                         </template>
                         <template #cell(createdAt)="{ item }">
                             <small class="text-muted">

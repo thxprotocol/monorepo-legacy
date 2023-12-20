@@ -22,6 +22,13 @@ const controller = async (req: Request, res: Response) => {
         account['rank'] = participant && participant.rank;
     }
 
+    // @peterpolman This is FK specific and should deprecate asap
+    // We search for a created virtual wallet and update the identity with the sub
+    // This should fix quest entry calculations
+    const virtualWallet = await Wallet.findOne({ poolId, address: account.address });
+    if (virtualWallet) await Identity.findOneAndUpdate({ uuid: virtualWallet.uuid }, { sub: account.sub });
+    // @peterpolman .
+
     const isMetamask = account.variant === AccountVariant.Metamask;
     if (!isMetamask) return res.json(account);
 
@@ -30,13 +37,6 @@ const controller = async (req: Request, res: Response) => {
     // If metamask search for the primary wallet of this account
     let wallet = await SafeService.findPrimary(account.sub, chainId);
     if (wallet) return res.json(account);
-
-    // @peterpolman This is FK specific and should deprecate asap
-    // We search for a created virtual wallet and update the identity with the sub
-    // This should fix quest entry calculations
-    const virtualWallet = await Wallet.findOne({ poolId, address: account.address });
-    if (virtualWallet) await Identity.findOneAndUpdate({ uuid: virtualWallet.uuid }, { sub: account.sub });
-    // @peterpolman .
 
     // No wallet was found, create metamask wallet
     wallet = await SafeService.create({

@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { body, param } from 'express-validator';
-import { v4, validate } from 'uuid';
-import { isAddress, toChecksumAddress } from 'web3-utils';
+import { v4 } from 'uuid';
+import { toChecksumAddress } from 'web3-utils';
 import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
 import { Wallet } from '@thxnetwork/api/services/WalletService';
@@ -10,19 +10,17 @@ import { Identity } from '@thxnetwork/api/models/Identity';
 import { Event } from '@thxnetwork/api/models/Event';
 
 const validation = [
-    param('eventName').isUUID('4'),
-    body('code')
-        .optional()
-        .custom((code) => validate(code)),
+    param('uuid').isUUID('4'),
+    body('code').optional().isUUID(4),
     body('address')
         .optional()
-        .custom((address) => isAddress(address))
+        .isEthereumAddress()
         .customSanitizer((address) => toChecksumAddress(address)),
 ];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
-    const customQuest = await MilestoneReward.findOne({ eventName: req.params.eventName });
+    const customQuest = await MilestoneReward.findOne({ uuid: req.params.uuid });
     if (!customQuest) throw new NotFoundError('Could not find a milestone reward for this token');
 
     const pool = await AssetPool.findById(customQuest.poolId);
@@ -36,7 +34,7 @@ const controller = async (req: Request, res: Response) => {
         ? await getIdentityForCode(pool, req.body.code)
         : await getIdentityForAddress(pool, req.body.address);
 
-    await Event.create({ name: req.params.eventName, identityId: identity._id, poolId: pool._id });
+    await Event.create({ name: customQuest.eventName, identityId: identity._id, poolId: pool._id });
 
     res.status(201).end();
 };
