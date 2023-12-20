@@ -11,6 +11,7 @@ import PoolService from '@thxnetwork/api/services/PoolService';
 import BrandService from '@thxnetwork/api/services/BrandService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import DiscordGuild, { DiscordGuildDocument } from '@thxnetwork/api/models/DiscordGuild';
+import { Identity } from '@thxnetwork/api/models/Identity';
 
 function discordColorToHex(discordColorCode) {
     return `#${discordColorCode.toString(16).padStart(6, '0')}`;
@@ -54,9 +55,11 @@ export const controller = async (req: Request, res: Response) => {
     });
     const guilds = await Promise.all(promises);
     const events = await Event.find({ poolId: pool._id }).distinct('name');
+    const identities = await Identity.find({ poolId: pool._id });
 
     res.json({
         ...pool.toJSON(),
+        identities,
         events,
         wallets,
         widget,

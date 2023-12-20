@@ -6,14 +6,16 @@ async function main() {
     const thx = new THXAPIClient({
         apiUrl: 'https://localhost:3000', // Optional
         authUrl: 'https://localhost:3030', // Optional
-        clientId: 'chyBeltL7rmOeTwVu-YiM',
-        clientSecret: 'q4ilZuGA4VPtrGhXug3i5taXrvDtidrzyv-gJN3yVo8T2stL6RwYQjqRoK-iUiAGGvhbG_F3TEFFuD_56Q065Q',
+        clientId: 'msuq4Znuv3q8hLf7ATnlP',
+        clientSecret: 'YP_k8_LnPG58LHqzWGxg3EMBBGVwwJUmqsuQZdoMtEAD-85hJwRt2vxfev23T92h727bDwCqh3cIkx6meT0xxg',
     });
 
-    const identity = await thx.identity.create();
-    console.log('ID', identity);
+    // const identity = await thx.identity.create();
+    // console.log('ID', identity);
 
-    const event = 'winner';
+    const event = '86920c71-8f23-4db1-ba88-4fbcb6376e99';
+    const identity = '9c5352b4-f474-4430-8867-9ab769b3c21d';
+
     await thx.events.create({ event, identity });
     console.log('Event created: ', `"${event}"`);
 }

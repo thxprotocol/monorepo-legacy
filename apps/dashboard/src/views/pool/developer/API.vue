@@ -3,7 +3,7 @@
         <b-col md="4">
             <strong>API Keys</strong>
             <p class="text-muted">Register OAuth2 clients and build your own frontend against THX API's.</p>
-            <BaseCode :code="code" language="js" />
+            <BaseCode :codes="[code]" :languages="['JavaScript']" />
         </b-col>
         <b-col md="8">
             <b-form-group>

@@ -17,12 +17,19 @@ const validation = [param('uuid').custom((uuid) => validate(uuid))];
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
     const quest = await MilestoneReward.findOne({ uuid: req.params.uuid });
-    if (!quest) throw new NotFoundError('No custom quest for the given uuid could be found.');
+    if (!quest) return res.json({ error: 'This quest is no longer available.' });
 
     const pool = await PoolService.getById(quest.poolId);
     const account = await AccountProxy.getById(req.auth.sub);
     const wallet = await SafeService.findPrimary(req.auth.sub, pool.chainId);
+    if (!wallet) {
+        return res.json({ error: 'No wallet found for this account' });
+    }
+
     const identity = await Identity.findOne({ poolId: pool._id, sub: account.sub });
+    if (!identity) {
+        return res.json({ error: 'No identity connected to this account' });
+    }
 
     const entries = await MilestoneRewardClaim.find({
         milestoneRewardId: quest._id,
@@ -30,12 +37,12 @@ const controller = async (req: Request, res: Response) => {
         isClaimed: true,
     });
     if (entries.length >= quest.limit) {
-        return res.json({ error: 'Quest entry limit has been reached.' });
+        return res.json({ error: 'Quest entry limit has been reached' });
     }
 
     const events = await Event.find({ identityId: identity._id, poolId: pool._id });
     if (entries.length >= events.length) {
-        return res.json({ error: 'Insufficient custom events are found for this quest.' });
+        return res.json({ error: 'Insufficient custom events found for this quest' });
     }
 
     const entry = await QuestService.complete(QuestVariant.Custom, quest.amount, pool, quest, account, wallet, {

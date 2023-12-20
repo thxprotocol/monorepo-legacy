@@ -35,24 +35,15 @@
                 <b-collapse id="collapse-card-events" v-model="isVisible">
                     <hr class="mt-0" />
                     <div class="px-3">
-                        <b-form-group label="Event Type">
-                            <b-dropdown
-                                variant="light"
-                                class="w-100"
-                                menu-class="w-100"
-                                toggle-class="justify-content-between align-items-center d-flex form-control"
-                            >
-                                <template #button-content>
-                                    {{ eventName ? eventName : 'Choose an event...' }}
-                                </template>
-                                <b-dropdown-item
-                                    @click="eventName = event"
-                                    :key="key"
-                                    v-for="(event, key) of pool.events"
-                                >
-                                    {{ event }}
-                                </b-dropdown-item>
-                            </b-dropdown>
+                        <b-form-group
+                            label="Event Type"
+                            description="Requires this event for a participant to complete the quest."
+                        >
+                            <BaseDropdownEventType
+                                @click="eventName = $event"
+                                :events="pool.events"
+                                :event-name="eventName"
+                            />
                         </b-form-group>
                         <b-form-group label="Limit" description="Maximum amount of claims for this event per account.">
                             <b-form-input type="number" v-model="limit" min="0" />
@@ -71,11 +62,13 @@ import { type TMilestoneReward } from '@thxnetwork/types/index';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
 import BaseModalQuestCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestCreate.vue';
+import BaseDropdownEventType from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownEventType.vue';
 
 @Component({
     components: {
         BaseModal,
         BaseModalQuestCreate,
+        BaseDropdownEventType,
     },
 })
 export default class ModalQuestCustomCreate extends Vue {

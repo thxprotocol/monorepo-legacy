@@ -6,7 +6,7 @@
                 <p class="text-muted">
                     Search events linked to identities that are created through an external system.
                 </p>
-                <BaseCode :code="code" language="js" />
+                <BaseCode :codes="[code]" :languages="['JavaScript']" />
             </b-col>
             <b-col md="8">
                 <b-form-group>

@@ -3,11 +3,11 @@
         <b-col md="4">
             <strong>THX ID</strong>
             <p class="text-muted">Use THX ID to connect your users to accounts.</p>
-            <BaseCode :code="code" language="js" />
+            <BaseCode :codes="[code]" :languages="['JavaScript']" />
         </b-col>
         <b-col md="8">
             <b-form-group label="Identities">
-                <BTable :items="wallets" hover show-empty responsive="lg">
+                <BTable :items="identities" hover show-empty responsive="lg">
                     <!-- Head formatting -->
                     <template #head(url)>Connect URL</template>
                     <template #head(uuid)>Code</template>
@@ -24,7 +24,7 @@
                         <code>{{ item.uuid }}</code>
                     </template>
                     <template #cell(sub)="{ item }">
-                        <span>{{ item.sub }}</span>
+                        <span>{{ item.account ? item.account.username : item.sub }}</span>
                     </template>
                     <template #cell(createdAt)="{ item }">
                         <small class="text-muted">
@@ -64,13 +64,13 @@ export default class IdentitiesView extends Vue {
         return this.pools[this.$route.params.id];
     }
 
-    get wallets() {
-        if (!this.pool || !this.pool.wallets) return [];
-        return this.pool.wallets.map((wallet) => ({
-            url: this.pool.widget.domain + '?thx_widget_path=/w/' + wallet.uuid,
-            uuid: wallet.uuid,
-            sub: wallet.sub,
-            createdAt: wallet.createdAt,
+    get identities() {
+        if (!this.pool || !this.pool.identities) return [];
+        return this.pool.identities.map((identity) => ({
+            url: this.pool.widget.domain + '?thx_widget_path=/w/' + identity.uuid,
+            uuid: identity.uuid,
+            sub: identity.sub,
+            createdAt: identity.createdAt,
         }));
     }
 }

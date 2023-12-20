@@ -3,4 +3,5 @@ export type TIdentity = {
     poolId: string;
     uuid: string;
     sub: string;
+    createdAt: Date;
 };

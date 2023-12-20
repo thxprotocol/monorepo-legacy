@@ -184,38 +184,23 @@ async function complete(
         style: ButtonStyle.Primary,
     };
     const content = `${celebratoryWords[index]} ${user} completed the **${quest.title}** quest and earned **${amount} points.**`;
-
-    await DiscordDataProxy.sendChannelMessage(pool, content, [], [button]);
-
-    const { isEnabledWebhookQualification } = quest as TDailyReward;
-    const entry =
-        variant === QuestVariant.Daily && isEnabledWebhookQualification
-            ? // Handle Daily Quest entry update after webhook is invoked (if webhook qualification is enabled)
-              await model.create({
-                  dailyRewardId: String(quest._id),
-                  sub: account.sub,
-                  walletId: wallet._id,
-                  createdAt: { $gt: new Date(Date.now() - ONE_DAY_MS) }, // Greater than now - 24h
-                  state: DailyRewardClaimState.Claimed,
-              })
-            : // Handle all other quest variants
-              await model.create({
-                  sub: account.sub,
-                  walletId: wallet._id,
-                  amount,
-                  ...data,
-                  poolId: pool._id,
-                  uuid: v4(),
-              });
+    const entry = await model.create({
+        sub: account.sub,
+        walletId: wallet._id,
+        amount,
+        ...data,
+        poolId: pool._id,
+        uuid: v4(),
+    });
 
     await PointBalanceService.add(pool, wallet._id, amount);
-
+    await DiscordDataProxy.sendChannelMessage(pool, content, [], [button]);
     await agenda.now(JobType.UpdateParticipantRanks, { poolId: pool._id });
 
     return entry;
 }
 
-function findById(variant: QuestVariant, questId) {
+function findById(variant: QuestVariant, questId: string) {
     const model = getModel(variant);
     return model.findById(questId);
 }

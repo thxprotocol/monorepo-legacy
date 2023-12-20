@@ -8,6 +8,7 @@ const schema = new mongoose.Schema(
     {
         ...questBaseSchema,
         amounts: [Number],
+        eventName: String,
         isEnabledWebhookQualification: Boolean,
     },
     { timestamps: true },

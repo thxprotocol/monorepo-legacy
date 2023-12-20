@@ -46,7 +46,7 @@
                         <BaseModalWebhookCreate id="modalWebhookCreate" :pool="pool" />
                     </template>
 
-                    <BTable :items="webhooksList" id="table-webhooks" responsive="lg" show-empty>
+                    <BTable hover :items="webhooksList" id="table-webhooks" responsive="lg" show-empty>
                         <!-- Head formatting -->
                         <template #head(url)>URL</template>
                         <template #head(webhookRequests)> Requests </template>
@@ -155,8 +155,8 @@ export default class CampaignConfigWebhooks extends Vue {
         //
     }
 
-    async onClickDelete(item: { _id: string }) {
-        const webhook = Object.values(this.webhooks[this.pool._id]).find((webhook) => webhook._id === item._id);
+    async onClickDelete(item: { id: string }) {
+        const webhook = Object.values(this.webhooks[this.pool._id]).find((webhook) => webhook._id === item.id);
         await this.$store.dispatch('webhooks/delete', webhook);
     }
 }
