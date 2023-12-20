@@ -15,7 +15,6 @@
                         :key="key"
                         v-b-modal="rewardModalComponentMap[RewardVariant[variant]]"
                         button-class="d-flex"
-                        :disabled="RewardVariant[variant] == RewardVariant.Custom && !hasPremiumAccess(pool.owner)"
                     >
                         <div style="width: 30px">
                             <i
