@@ -50,6 +50,7 @@ const config: Configuration = {
         authorization: '/authorize',
     },
     extraParams: [
+        'identity',
         'claim_id',
         'reward_hash',
         'signup_email',
