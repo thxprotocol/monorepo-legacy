@@ -10,20 +10,26 @@ module.exports = {
         const wallets = await (await walletsColl.find({ poolId: { $exists: true } })).toArray();
 
         for (const virtualWallet of wallets) {
-            const { _id, poolId, uuid, sub, createdAt, updatedAt } = virtualWallet;
-            const walletId = String(_id);
+            const { _id, poolId, uuid, address, createdAt, updatedAt } = virtualWallet;
+            let virtualWalletId = String(_id);
+            const primaryWallet = await walletsColl.findOne({
+                address,
+                $or: [{ poolId: { $exists: false } }, { poolId: { $ne: '' } }],
+            });
 
             try {
                 // Create the Identity
                 const identity = await identitiesColl.findOneAndUpdate(
                     { uuid },
-                    { $set: { poolId, uuid, sub, createdAt, updatedAt } },
+                    { $set: { poolId, uuid, sub: primaryWallet && primaryWallet.sub, createdAt, updatedAt } },
                     { upsert: true, returnDocument: 'after' },
                 );
                 const identityId = String(identity.value._id);
 
                 // Create the Event for this Identity
-                for (const entry of await (await customQuestEntriesColl.find({ walletId })).toArray()) {
+                for (const entry of await (
+                    await customQuestEntriesColl.find({ walletId: virtualWalletId })
+                ).toArray()) {
                     try {
                         const { milestoneRewardId, createdAt, updatedAt } = entry;
                         const { uuid } = await customQuestColl.findOne({ _id: new ObjectId(milestoneRewardId) });
@@ -38,11 +44,11 @@ module.exports = {
                         // Update Custom Quest with eventName
                         await customQuestColl.findOneAndUpdate({ uuid }, { $set: { eventName } });
                     } catch (error) {
-                        console.log(walletId, entry._id, error);
+                        console.log(virtualWalletId, primaryWallet && primaryWallet.sub, entry._id, error);
                     }
                 }
             } catch (error) {
-                console.log(walletId, error);
+                console.log(virtualWalletId, error);
             }
         }
     },

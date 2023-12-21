@@ -8,6 +8,7 @@ import SafeService from '@thxnetwork/api/services/SafeService';
 import DailyRewardClaimService from '@thxnetwork/api/services/DailyRewardClaimService';
 import QuestService from '@thxnetwork/api/services/QuestService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
+import { Identity } from '@thxnetwork/api/models/Identity';
 
 const validation = [param('id').isMongoId()];
 
@@ -22,7 +23,10 @@ const controller = async (req: Request, res: Response) => {
     const wallet = await SafeService.findPrimary(req.auth.sub, pool.chainId);
     if (!wallet) throw new NotFoundError('Could not find wallet');
 
-    const isClaimable = await DailyRewardClaimService.isClaimable(quest, wallet);
+    const identities = await Identity.find({ sub: req.auth.sub, poolId: pool._id });
+    if (!identities.length) throw new NotFoundError('Could not find identities');
+
+    const isClaimable = await DailyRewardClaimService.isClaimable(quest, wallet, identities);
     if (!isClaimable) {
         return res.json({ error: 'You can not complete this quest yet.' });
     }

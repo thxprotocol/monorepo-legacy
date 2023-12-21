@@ -8,6 +8,7 @@ import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
 import { Wallet } from '@thxnetwork/api/services/WalletService';
 import { Identity } from '@thxnetwork/api/models/Identity';
 import { Event } from '@thxnetwork/api/models/Event';
+import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 
 const validation = [
     param('uuid').isUUID('4'),
@@ -43,26 +44,33 @@ export function getIdentityForCode(pool: AssetPoolDocument, code: string) {
     return Identity.findOne({ poolId: pool._id, uuid: code });
 }
 
-// @peterpolman
+// @peterpolman (FK still depends on this)
 // This function should deprecate as soon as clients implement the wallet onboarding webhook
-// Forest knight still depends on this
 export async function getIdentityForAddress(pool: AssetPoolDocument, address: string) {
-    let wallet = await Wallet.findOne({ chainId: pool.chainId, address });
+    // Find the virtual wallet for this address
+    let virtualWallet = await Wallet.findOne({ poolId: pool._id, chainId: pool.chainId, address });
 
-    // If a wallet is not found for this address then create one
-    // Also create an identity to support the future integration
-    if (!wallet) {
+    // If no wallet is found for this address then create a virtual wallet
+    if (!virtualWallet) {
         const uuid = v4();
-        wallet = await Wallet.create({
+        virtualWallet = await Wallet.create({
             uuid,
             poolId: pool._id,
             chainId: pool.chainId,
             address,
         });
-        await Identity.create({ poolId: pool._id, uuid });
     }
 
-    return await Identity.findOne({ uuid: wallet.uuid });
+    // If an account is found for this address, we can instantly connect the Identity
+    const account = await AccountProxy.getByAddress(address);
+
+    // Always upsert and Identity to support the modern SDK implementation
+    return await Identity.findOneAndUpdate(
+        { poolId: pool._id, uuid: virtualWallet.uuid },
+        // If an account is found for this address, connect the Identity
+        { poolId: pool._id, uuid: virtualWallet.uuid, sub: account && account.sub },
+        { upsert: true, new: true },
+    );
 }
 
 export default { validation, controller };

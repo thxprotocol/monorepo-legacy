@@ -4,7 +4,7 @@ import { DailyRewardDocument } from '../models/DailyReward';
 import { DailyRewardClaimState } from '@thxnetwork/types/enums/DailyRewardClaimState';
 import { WalletDocument } from '../models/Wallet';
 import { Event } from '../models/Event';
-import { Identity } from '../models/Identity';
+import { Identity, IdentityDocument } from '../models/Identity';
 export const DailyRewardClaimDocument = DailyRewardClaim;
 
 export const ONE_DAY_MS = 86400 * 1000; // 24 hours in milliseconds
@@ -69,7 +69,7 @@ export default {
 
         return claims;
     },
-    isClaimable: async (quest: DailyRewardDocument, wallet: WalletDocument) => {
+    isClaimable: async (quest: DailyRewardDocument, wallet: WalletDocument, identities: IdentityDocument[] = []) => {
         const now = Date.now(),
             start = now - ONE_DAY_MS,
             end = now;
@@ -82,12 +82,14 @@ export default {
         //If no event is required and no entry is found the entry is allowed to be created
         if (!quest.eventName) return !entry;
 
+        // List Identity IDs if any to query for events connected to this account
+        const identityIds = identities.map(({ _id }) => String(_id));
+
         // If an event is required we check if there is an event found within the time window
-        const identity = await Identity.findOne({ sub: wallet.sub, poolId: quest.poolId });
         const events = await Event.find({
             name: quest.eventName,
             poolId: quest.poolId,
-            identityId: identity._id,
+            identityId: identityIds,
             createdAt: { $gt: new Date(start), $lt: new Date(end) },
         });
 
