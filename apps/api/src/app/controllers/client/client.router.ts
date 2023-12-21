@@ -19,15 +19,8 @@ router.patch(
     guard.check(['clients:read', 'clients:write']),
     assertRequestInput(PatchController.validation),
     assertPoolAccess,
-    assertPlan([AccountPlanType.Premium]),
     PatchController.controller,
 );
-router.post(
-    '/',
-    guard.check(['clients:read', 'clients:write']),
-    assertPoolAccess,
-    assertPlan([AccountPlanType.Premium]),
-    PostController.controller,
-);
+router.post('/', guard.check(['clients:read', 'clients:write']), assertPoolAccess, PostController.controller);
 
 export default router;
