@@ -24,8 +24,6 @@ const controller = async (req: Request, res: Response) => {
     if (!wallet) throw new NotFoundError('Could not find wallet');
 
     const identities = await Identity.find({ sub: req.auth.sub, poolId: pool._id });
-    if (!identities.length) throw new NotFoundError('Could not find identities');
-
     const isClaimable = await DailyRewardClaimService.isClaimable(quest, wallet, identities);
     if (!isClaimable) {
         return res.json({ error: 'You can not complete this quest yet.' });
