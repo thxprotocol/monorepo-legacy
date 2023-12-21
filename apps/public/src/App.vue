@@ -66,7 +66,7 @@ export default class App extends Vue {
         if (WIDGET_ID && API_URL) {
             THXWidget.create({
                 apiUrl: API_URL,
-                campaignId: '6582f1954a369a38ee7ea41b' || WIDGET_ID,
+                campaignId: WIDGET_ID,
             });
         }
     }
