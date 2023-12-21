@@ -14,7 +14,7 @@ module.exports = {
             let virtualWalletId = String(_id);
             const primaryWallet = await walletsColl.findOne({
                 address,
-                $or: [{ poolId: { $exists: false } }, { poolId: { $ne: '' } }],
+                $or: [{ poolId: { $exists: false } }, { poolId: { $eq: '' } }],
             });
 
             try {

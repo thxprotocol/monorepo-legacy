@@ -9,6 +9,7 @@ import { Wallet } from '@thxnetwork/api/services/WalletService';
 import { Identity } from '@thxnetwork/api/models/Identity';
 import { Event } from '@thxnetwork/api/models/Event';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
+import SafeService from '@thxnetwork/api/services/SafeService';
 
 const validation = [
     param('uuid').isUUID('4'),
@@ -61,14 +62,14 @@ export async function getIdentityForAddress(pool: AssetPoolDocument, address: st
         });
     }
 
-    // If an account is found for this address, we can instantly connect the Identity
-    const account = await AccountProxy.getByAddress(address);
+    // If a primary wallet is found for this address, we can instantly connect the Identity to the sub
+    const primaryWallet = await Wallet.findOne({ address, $or: [{ poolId: { $exists: false } }, { poolId: '' }] });
 
     // Always upsert and Identity to support the modern SDK implementation
     return await Identity.findOneAndUpdate(
         { poolId: pool._id, uuid: virtualWallet.uuid },
         // If an account is found for this address, connect the Identity
-        { poolId: pool._id, uuid: virtualWallet.uuid, sub: account && account.sub },
+        { poolId: pool._id, uuid: virtualWallet.uuid, sub: primaryWallet && primaryWallet.sub },
         { upsert: true, new: true },
     );
 }
