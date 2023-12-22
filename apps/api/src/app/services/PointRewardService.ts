@@ -4,13 +4,14 @@ import { paginatedResults } from '../util/pagination';
 import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
 import { Wallet, WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { PointBalance } from './PointBalanceService';
-import { TPointReward, TAccount, TDiscordMessage } from '@thxnetwork/types/interfaces';
+import { TPointReward, TAccount } from '@thxnetwork/types/interfaces';
 import { RewardConditionPlatform, RewardConditionInteraction, AccessTokenKind } from '@thxnetwork/types/enums';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import TwitterDataProxy from '@thxnetwork/api/proxies/TwitterDataProxy';
 import YouTubeDataProxy from '@thxnetwork/api/proxies/YoutubeDataProxy';
 import DiscordDataProxy from '@thxnetwork/api/proxies/DiscordDataProxy';
 import DiscordMessage from '../models/DiscordMessage';
+import { logger } from '../util/logger';
 
 const getPlatformUserId = async (reward: TPointReward, account: TAccount) => {
     try {
@@ -24,7 +25,7 @@ const getPlatformUserId = async (reward: TPointReward, account: TAccount) => {
             }
         }
     } catch (error) {
-        return 'Could not get the platform user ID for this claim.';
+        logger.error('Could not get the platform user ID for this claim.');
     }
 };
 
@@ -54,9 +55,9 @@ async function isCompleted(quest: PointRewardDocument, account: TAccount, wallet
     if (!account || !wallet) return false;
 
     // We validate for both here since there are claims that only contain a sub and should not be claimed again
-    const ids = [{ sub: account.sub }, { walletId: wallet._id }];
+    const ids: any[] = [{ sub: account.sub }, { walletId: wallet._id }];
     const platformUserId = await getPlatformUserId(quest, account);
-    if (platformUserId) ids['platformUserId'] = platformUserId;
+    if (platformUserId) ids.push({ platformUserId });
 
     const isCompletedAlready = await PointRewardClaim.exists({
         pointRewardId: quest._id,

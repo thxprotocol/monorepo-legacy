@@ -1,14 +1,5 @@
-import { DailyRewardClaimState, JobType, QuestVariant } from '@thxnetwork/types/enums';
-import {
-    TAccount,
-    TBrand,
-    TDailyReward,
-    TMilestoneRewardClaim,
-    TQuest,
-    TQuestEntry,
-    TWallet,
-    TWidget,
-} from '@thxnetwork/types/interfaces';
+import { JobType, QuestVariant } from '@thxnetwork/types/enums';
+import { TAccount, TBrand, TQuest, TQuestEntry, TWallet, TWidget } from '@thxnetwork/types/interfaces';
 import { DailyReward } from './DailyRewardService';
 import { ReferralReward } from '../models/ReferralReward';
 import { PointReward } from './PointRewardService';
@@ -28,7 +19,6 @@ import { Web3QuestClaim } from '../models/Web3QuestClaim';
 import PointBalanceService from './PointBalanceService';
 import { AssetPoolDocument } from '../models/AssetPool';
 import { celebratoryWords } from '../util/dictionaries';
-import { ONE_DAY_MS } from './DailyRewardClaimService';
 import { agenda } from '../util/agenda';
 import { ButtonStyle } from 'discord.js';
 import { WIDGET_URL } from '../config/secrets';
