@@ -23,37 +23,53 @@ import { agenda } from '../util/agenda';
 import { ButtonStyle } from 'discord.js';
 import { WIDGET_URL } from '../config/secrets';
 import { DiscordButtonVariant } from '../events/InteractionCreated';
+import DailyRewardClaimService from './DailyRewardClaimService';
+import { WalletDocument } from '../models/Wallet';
+import { PointRewardDocument } from '../models/PointReward';
 
 function formatAddress(address: string) {
     return `${address.slice(0, 5)}...${address.slice(-3)}`;
 }
 
-const getEntryModel = (variant: QuestVariant) => {
-    const map = {
-        [QuestVariant.Daily]: DailyRewardClaim,
-        [QuestVariant.Invite]: ReferralRewardClaim,
-        [QuestVariant.Twitter]: PointRewardClaim,
-        [QuestVariant.Discord]: PointRewardClaim,
-        [QuestVariant.YouTube]: PointRewardClaim,
-        [QuestVariant.Custom]: MilestoneRewardClaim,
-        [QuestVariant.Web3]: Web3QuestClaim,
-    };
-
-    return map[variant] as any;
+const entryModelMap: any = {
+    [QuestVariant.Daily]: DailyRewardClaim,
+    [QuestVariant.Invite]: ReferralRewardClaim,
+    [QuestVariant.Twitter]: PointRewardClaim,
+    [QuestVariant.Discord]: PointRewardClaim,
+    [QuestVariant.YouTube]: PointRewardClaim,
+    [QuestVariant.Custom]: MilestoneRewardClaim,
+    [QuestVariant.Web3]: Web3QuestClaim,
 };
 
-const getModel = (variant: QuestVariant) => {
-    const map = {
-        [QuestVariant.Daily]: DailyReward,
-        [QuestVariant.Invite]: ReferralReward,
-        [QuestVariant.Twitter]: PointReward,
-        [QuestVariant.Discord]: PointReward,
-        [QuestVariant.YouTube]: PointReward,
-        [QuestVariant.Custom]: MilestoneReward,
-        [QuestVariant.Web3]: Web3Quest,
-    };
+const modelMap: any = {
+    [QuestVariant.Daily]: DailyReward,
+    [QuestVariant.Invite]: ReferralReward,
+    [QuestVariant.Twitter]: PointReward,
+    [QuestVariant.Discord]: PointReward,
+    [QuestVariant.YouTube]: PointReward,
+    [QuestVariant.Custom]: MilestoneReward,
+    [QuestVariant.Web3]: Web3Quest,
+};
 
-    return map[variant] as any;
+const callbackQuestDaily = (quest) => ({
+    dailyRewardId: String(quest._id),
+});
+const callbackQuestSocial = (quest: PointRewardDocument, platformUserId: string) => ({
+    pointRewardId: String(quest._id),
+    platformUserId,
+});
+const callbackQuestCustom = (quest: PointRewardDocument) => ({
+    milestoneRewardId: String(quest._id),
+});
+
+const questEntryDataMap = {
+    [QuestVariant.Daily]: callbackQuestDaily,
+    // [QuestVariant.Invite]: ..,
+    [QuestVariant.Discord]: callbackQuestSocial,
+    [QuestVariant.Twitter]: callbackQuestSocial,
+    [QuestVariant.YouTube]: callbackQuestSocial,
+    [QuestVariant.Custom]: callbackQuestCustom,
+    // [QuestVariant.Web3]: ..,
 };
 
 async function notify(variant: QuestVariant, quest: TQuest) {
@@ -130,7 +146,7 @@ async function notifyDiscord(
 }
 
 async function update(variant: QuestVariant, questId: string, data: Partial<TQuest>) {
-    const model = getModel(variant);
+    const model = modelMap[variant];
     const quest = await model.findById(questId);
 
     // We only want to notify when the quest is set to published (and not updated while published already)
@@ -142,7 +158,7 @@ async function update(variant: QuestVariant, questId: string, data: Partial<TQue
 }
 
 async function create(variant: QuestVariant, poolId: string, data: Partial<TQuest>) {
-    const model = getModel(variant);
+    const model = modelMap[variant];
     const quest = await model.create({ ...data, poolId, variant, uuid: v4() });
 
     if (data.isPublished) {
@@ -150,6 +166,30 @@ async function create(variant: QuestVariant, poolId: string, data: Partial<TQues
     }
 
     return quest;
+}
+
+async function getAmount(variant: QuestVariant, quest: TQuest, wallet: WalletDocument) {
+    const getAmountMap = {
+        [QuestVariant.Daily]: async (quest, wallet) => {
+            const claims = await DailyRewardClaimService.findByWallet(quest, wallet);
+            const amountIndex =
+                claims.length >= quest.amounts.length ? claims.length % quest.amounts.length : claims.length;
+            return quest.amounts[amountIndex];
+        },
+        // [QuestVariant.Invite]: ..,
+        // TODO
+    };
+    return await getAmountMap[variant](quest, wallet);
+}
+
+async function validate(variant: QuestVariant, quest: TQuest, wallet: WalletDocument) {
+    const validateQuestMap = {
+        [QuestVariant.Daily]: (quest, wallet) => DailyRewardClaimService.isClaimable(quest, wallet),
+        // [QuestVariant.Invite]: ..,
+        // TODO
+    };
+
+    return await validateQuestMap[variant](quest, wallet);
 }
 
 async function complete(
@@ -161,7 +201,7 @@ async function complete(
     wallet: TWallet,
     data: Partial<TQuestEntry>,
 ) {
-    const model = getEntryModel(variant);
+    const model = entryModelMap[variant];
     const index = Math.floor(Math.random() * celebratoryWords.length);
     const discord = account.connectedAccounts && account.connectedAccounts.find((a) => a.kind === 'discord');
     const user =
@@ -191,8 +231,9 @@ async function complete(
 }
 
 function findById(variant: QuestVariant, questId: string) {
-    const model = getModel(variant);
+    const model = modelMap[variant];
     return model.findById(questId);
 }
 
-export default { getModel, create, update, complete, findById };
+export { questEntryDataMap, modelMap };
+export default { getAmount, create, update, complete, validate, findById };
