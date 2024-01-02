@@ -1,4 +1,4 @@
-import type { TAccount } from '@thxnetwork/types/interfaces';
+import type { TAccount, TPointReward } from '@thxnetwork/types/interfaces';
 import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
 import { THXError } from '@thxnetwork/api/util/errors';
 import { encode } from 'html-entities';
@@ -8,6 +8,17 @@ class NoTwitterDataError extends THXError {
 }
 
 export default class TwitterDataProxy {
+    static async getUser(account: TAccount) {
+        const { data } = await authClient({
+            method: 'GET',
+            url: `/account/${account.sub}/twitter/user`,
+            headers: {
+                Authorization: await getAuthAccessToken(),
+            },
+        });
+        return data.user.data;
+    }
+
     static async getUserId(account: TAccount) {
         const { data } = await authClient({
             method: 'GET',
@@ -48,6 +59,15 @@ export default class TwitterDataProxy {
             params,
         });
         return data;
+    }
+
+    static async validateUser(account: TAccount, reward: TPointReward) {
+        const metadata = JSON.parse(reward.contentMetadata);
+        const minFollowersCount = metadata.minFollowersCount ? Number(metadata.minFollowersCount) : 0;
+        const user = await this.getUser(account);
+        const followersCount = user.public_metrics.followers_count;
+        if (followersCount >= minFollowersCount) return true;
+        return false;
     }
 
     static async validateMessage(account: TAccount, message: string) {

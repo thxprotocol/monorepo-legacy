@@ -139,7 +139,6 @@ if (typeof window.THXWidget !== 'undefined') {
         }
 
         onLoad() {
-            console.log({onLoad: true})
             this.referrals = JSON.parse(this.settings.refs).filter((r) => r.successUrl);
             this.iframe = this.createIframe();
 

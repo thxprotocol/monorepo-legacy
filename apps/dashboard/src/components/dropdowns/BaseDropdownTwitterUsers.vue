@@ -1,46 +1,53 @@
 <template>
-    <b-form-group label="Username">
-        <b-input-group prepend="@">
-            <b-form-input :debounce="1000" @change="onInput" :state="state" v-model="username" />
-        </b-input-group>
-        <b-card v-if="preview" body-class="d-flex align-items-center" class="mt-3">
-            <b-avatar :src="preview.profile_image_url" class="mr-2" />
-            <div>
+    <div>
+        <BaseFormGroupTwitterFollowersMin :amount="minFollowersCount" @input="onInputFollowersMin" />
+        <b-form-group label="Username">
+            <b-input-group prepend="@">
+                <b-form-input :debounce="1000" @change="onInput" :state="state" v-model="username" />
+            </b-input-group>
+            <b-card v-if="preview" body-class="d-flex align-items-center" class="mt-3">
+                <b-avatar :src="preview.profile_image_url" class="mr-2" />
                 <div>
-                    <strong>{{ preview.name }}</strong>
-                    <small> #{{ preview.id }}</small>
+                    <div>
+                        <strong>{{ preview.name }}</strong>
+                        <small> #{{ preview.id }}</small>
+                    </div>
+                    <b-link target="_blank">@{{ preview.username }}</b-link>
                 </div>
-                <b-link target="_blank">@{{ preview.username }}</b-link>
-            </div>
-        </b-card>
-    </b-form-group>
+            </b-card>
+        </b-form-group>
+    </div>
 </template>
 
 <script lang="ts">
 import axios from 'axios';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { mapGetters } from 'vuex';
+import BaseFormGroupTwitterFollowersMin from '@thxnetwork/dashboard/components/form-group/BaseFormGroupTwitterFollowersMin.vue';
 
 @Component({
-    computed: mapGetters({}),
+    components: {
+        BaseFormGroupTwitterFollowersMin,
+    },
 })
 export default class BaseDropdownTwitterUsers extends Vue {
     username = '';
     state: boolean | null = null;
     preview: { profile_image_url: string; name: string; id: string; username: string } | null = null;
+    minFollowersCount = 0;
 
     @Prop({ required: false }) content!: number;
     @Prop({ required: false }) contentMetadata!: any;
 
     async mounted() {
         if (this.content && this.contentMetadata) {
-            const { profileImgUrl, name, id, username } = JSON.parse(this.contentMetadata);
+            const { profileImgUrl, name, id, username, minFollowersCount } = JSON.parse(this.contentMetadata);
             this.preview = {
                 profile_image_url: profileImgUrl,
                 name,
                 id,
                 username,
             };
+            this.minFollowersCount = minFollowersCount || null;
             this.username = username;
         } else if (this.content && !this.contentMetadata) {
             const { data } = await axios({
@@ -51,6 +58,11 @@ export default class BaseDropdownTwitterUsers extends Vue {
             this.preview = data;
             this.username = data.username;
         }
+    }
+
+    onInputFollowersMin(amount: number) {
+        this.minFollowersCount = amount;
+        this.onInput(this.username);
     }
 
     async onInput(username: string) {
@@ -79,6 +91,7 @@ export default class BaseDropdownTwitterUsers extends Vue {
                     name: data.name,
                     profileImgUrl: data.profile_image_url,
                     username,
+                    minFollowersCount: this.minFollowersCount,
                 },
             });
         }
