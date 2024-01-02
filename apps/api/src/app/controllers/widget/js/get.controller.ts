@@ -9,7 +9,11 @@ import { query, param } from 'express-validator';
 import { minify } from 'terser';
 import { runMilestoneRewardWebhook, runReferralRewardWebhook } from '@thxnetwork/api/services/THXService';
 
-const validation = [param('id').isMongoId(), query('identity').optional().isUUID(4)];
+const validation = [
+    param('id').isMongoId(),
+    query('identity').optional().isUUID(4),
+    query('containerSelector').optional().isString(),
+];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Widget']
@@ -48,32 +52,36 @@ const controller = async (req: Request, res: Response) => {
     const data = `
     class THXWidget {
         MD_BREAKPOINT = 990;
-        defaultStyles = {
-            sm: {
-                width: '100%',
-                height: '100%',
-                maxHeight: 'none',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                borderRadius: 0,
-            },
-            md: {
-                top: 'auto',
-                bottom: '100px',
-                maxHeight: '703px',
-                width: '400px',
-                borderRadius: '10px',
-                height: 'calc(100% - 115px)',
-            },
-        };
         public isAuthenticated = false;
     
         constructor(settings) {
             this.settings = settings;
             this.theme = JSON.parse(settings.theme);
             this.init();
+        }
+
+        get defaultStyles() {
+            const isCustomContainer = !!this.settings.containerSelector;
+            return {
+                sm: {
+                    width: '100%',
+                    height: '100%',
+                    maxHeight: 'none',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    borderRadius: 0,
+                },
+                md: {
+                    top: 'auto',
+                    bottom: isCustomContainer ? 'auto' : '100px',
+                    maxHeight: isCustomContainer ? 'none' : '703px',
+                    width: isCustomContainer ? '100%' : '400px',
+                    borderRadius: isCustomContainer ? '0px' : '10px',
+                    height: isCustomContainer ? '100%' : 'calc(100% - 115px)',
+                },
+            }
         }
 
         init() {
@@ -171,7 +179,7 @@ const controller = async (req: Request, res: Response) => {
         }
 
         createIframe() {
-            const { widgetUrl, poolId, chainId, theme, align, expired } = this.settings;
+            const { widgetUrl, poolId, chainId, theme, align, expired, containerSelector } = this.settings;
             const iframe = document.createElement('iframe');
             const styles = this.isSmallMedia ? this.defaultStyles['sm'] : this.defaultStyles['md'];
             const url = this.createURL();
@@ -179,6 +187,11 @@ const controller = async (req: Request, res: Response) => {
             iframe.id = 'thx-iframe';
             iframe.src = url;
             iframe.setAttribute('data-hj-allow-iframe', true);
+
+            if (containerSelector) {
+                Object.assign(iframe.style, this.defaultStyles[this.isSmallMedia ? 'sm' : 'md']);
+                return iframe;
+            }
 
             let top, bottom, left, right, marginLeft, marginTop, transformOrigin;
           
@@ -214,7 +227,6 @@ const controller = async (req: Request, res: Response) => {
                 left = '0';
                 right = '0';
             }
-          
 
             Object.assign(iframe.style, {
                 ...styles,
@@ -394,17 +406,23 @@ const controller = async (req: Request, res: Response) => {
         }
     
         createContainer(iframe, launcher, message) {
-            const container = document.createElement('div');
-            container.id = 'thx-container';
-            container.appendChild(iframe);
-            
-            if (!this.settings.cssSelector) {
-                container.appendChild(launcher);
-                container.appendChild(message);
+            const { containerSelector, cssSelector } = this.settings;
+            let container;
+            if (containerSelector) {
+                container = document.getElementById(containerSelector)
+                container.appendChild(iframe);   
+            } else {
+                container = document.createElement('div');
+                container.id = 'thx-container';
+                container.appendChild(iframe);   
+                
+                if (!cssSelector) {
+                    container.appendChild(launcher);
+                    container.appendChild(message);
+                }  
+                
+                document.body.appendChild(container);
             }
-    
-            document.body.appendChild(container);
-    
             return container;
         }
 
@@ -469,10 +487,14 @@ const controller = async (req: Request, res: Response) => {
         }
 
         show(isShown) {
-            this.iframe.style.opacity = isShown ? '1' : '0';
-            this.iframe.style.transform = isShown ? 'scale(1)' : 'scale(0)';
-            this.iframe.contentWindow.postMessage({ message: 'thx.iframe.show', isShown }, this.settings.widgetUrl);
-            if (isShown) this.message.remove();
+            const { containerSelector } = this.settings;
+            const shouldShow = isShown || !!containerSelector;
+
+            this.iframe.style.opacity = shouldShow ? '1' : '0';
+            this.iframe.style.transform = shouldShow ? 'scale(1)' : 'scale(0)';
+            this.iframe.contentWindow.postMessage({ message: 'thx.iframe.show', shouldShow }, this.settings.widgetUrl);
+            
+            if (shouldShow) this.message.remove();
         }
 
         onURLDetectionCallback() {
@@ -516,7 +538,8 @@ const controller = async (req: Request, res: Response) => {
         theme: '${widget.theme}',
         refs: ${JSON.stringify(refs)},
         expired: '${expired}',
-        identity: '${req.query.identity || ''}'
+        identity: '${req.query.identity || ''}',
+        containerSelector: '${req.query.containerSelector || ''}'
     });
 `;
     const result = await minify(data, {
