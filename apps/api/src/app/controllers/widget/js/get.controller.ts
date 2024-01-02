@@ -50,6 +50,9 @@ const controller = async (req: Request, res: Response) => {
     }
 
     const data = `
+if (typeof window.THXWidget !== 'undefined') {
+    window.THXWidget.onLoad();
+} else {
     class THXWidget {
         MD_BREAKPOINT = 990;
         public isAuthenticated = false;
@@ -136,6 +139,7 @@ const controller = async (req: Request, res: Response) => {
         }
 
         onLoad() {
+            console.log({onLoad: true})
             this.referrals = JSON.parse(this.settings.refs).filter((r) => r.successUrl);
             this.iframe = this.createIframe();
 
@@ -194,7 +198,7 @@ const controller = async (req: Request, res: Response) => {
             }
 
             let top, bottom, left, right, marginLeft, marginTop, transformOrigin;
-          
+        
             if (!this.isSmallMedia) {
                 switch(align) {
                     case 'left' :
@@ -409,7 +413,8 @@ const controller = async (req: Request, res: Response) => {
             const { containerSelector, cssSelector } = this.settings;
             let container;
             if (containerSelector) {
-                container = document.getElementById(containerSelector)
+                container = document.querySelector(containerSelector)
+                if (!container) throw new Error("Could not find an HTML element for selector: '" + containerSelector + "'.")
                 container.appendChild(iframe);   
             } else {
                 container = document.createElement('div');
@@ -480,7 +485,7 @@ const controller = async (req: Request, res: Response) => {
 
             this.open(widgetPath);
             this.storeRef(this.ref);
- 
+
             if (this.settings.identity) {
                 this.setIdentity(this.settings.identity)
             }
@@ -492,8 +497,11 @@ const controller = async (req: Request, res: Response) => {
 
             this.iframe.style.opacity = shouldShow ? '1' : '0';
             this.iframe.style.transform = shouldShow ? 'scale(1)' : 'scale(0)';
-            this.iframe.contentWindow.postMessage({ message: 'thx.iframe.show', shouldShow }, this.settings.widgetUrl);
             
+            if (this.iframe.contentWindow) {
+                this.iframe.contentWindow.postMessage({ message: 'thx.iframe.show', shouldShow }, this.settings.widgetUrl);
+            }
+        
             if (shouldShow) this.message.remove();
         }
 
@@ -521,7 +529,6 @@ const controller = async (req: Request, res: Response) => {
             }
         }
     }
-    
     window.THXWidget = new THXWidget({
         apiUrl: '${API_URL}',
         isPublished: window.location.origin.includes("${DASHBOARD_URL}") || ${widget.isPublished},
@@ -541,6 +548,7 @@ const controller = async (req: Request, res: Response) => {
         identity: '${req.query.identity || ''}',
         containerSelector: '${req.query.containerSelector || ''}'
     });
+}
 `;
     const result = await minify(data, {
         mangle: { toplevel: false },

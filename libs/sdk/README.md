@@ -10,15 +10,22 @@ This SDK contains API wrappers and an OIDC OAuth manager to simplify access to T
 
 ## SDK Contents
 
-1.  [THXWidget](#1-thxwidget)
-2.  [THXAPIClient](#2-thxapiclient)
-    2.1 [Identities](#21-identities)
-    2.2 [Events](#22-events)
-3.  [THXBrowserClient](#3-thxbrowserclient)
-    3.1 [Account](#31-account)
-    3.2 [Quests](#32-quests)
-    3.3 [Rewards](#33-rewards)
-    3.4 [Wallet](#34-wallet)
+-   [1. THXWidget](#1-thxwidget)
+
+    -   [1.1 ContainerSelector](#11-containerselector)
+    -   [1.2 Identity](#12-identity)
+
+-   [2. THXAPIClient](#2-thxapiclient)
+
+    -   [2.1 Identities](#21-identities)
+    -   [2.2 Events](#22-events)
+
+-   [3. THXBrowserClient](#3-thxbrowserclient)
+
+    -   [3.1 Account](#31-account)
+    -   [3.2 Quests](#32-quests)
+    -   [3.3 Rewards](#33-rewards)
+    -   [3.4 Wallet](#34-wallet)
 
 ## 1. THXWidget
 
@@ -29,12 +36,25 @@ import { THXWidget, THXWidgetOptions } from '@thxnetwork/sdk';
 
 const options: THXWidgetOptions = {
     campaignId: '6571c9c6b7d775decb45a8f0',
+    containerSelector: '#your-html-container', // Optional
     identity: '36d33a59-5398-463a-ac98-0f7d9b201648', // Optional
 };
 THXWidget.create(options);
 ```
 
-Alternatively you can set the identity at a later moment, for example after successful authentication with your app.
+### 1.1 ContainerSelector
+
+Providing a `containerSelector` is optional and will inject the application in a given HTML element. Make sure to provide CSS styles for proper dimensions within your page.
+
+```html
+<div id="your-html-container" style="height: 750px;"></div>
+```
+
+No messagbox, launcher and notification elements will be injected if a container selector is specified!
+
+### 1.2 Identity
+
+Providing an identity is optional and alternatively you can set an identity at a later moment, for example after successful authentication with your app.
 
 ```javascript
 window.THXWidget.setIdentity('36d33a59-5398-463a-ac98-0f7d9b201648');
