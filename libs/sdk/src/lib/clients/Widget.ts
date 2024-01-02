@@ -5,7 +5,7 @@ export default class THXWidget {
         if (document.getElementById('thx-container')) return;
         if (!options) throw new Error("Please provide 'options'.");
 
-        const { campaignId, apiUrl, identity } = options;
+        const { campaignId, apiUrl, identity, containerSelector } = options;
         if (!campaignId) throw new Error("Please provide 'options.campaignId'.");
 
         const url = new URL(apiUrl || 'https://api.thx.network');
@@ -13,6 +13,10 @@ export default class THXWidget {
 
         if (identity) {
             url.searchParams.append('identity', identity);
+        }
+
+        if (containerSelector) {
+            url.searchParams.append('containerSelector', containerSelector);
         }
 
         const script = document.createElement('script');

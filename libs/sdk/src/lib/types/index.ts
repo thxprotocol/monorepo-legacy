@@ -27,6 +27,12 @@ type THXOIDCUser = {
     scope: string;
 };
 
-type THXWidgetOptions = { campaignId?: string; poolId?: string; identity?: string; apiUrl?: string };
+type THXWidgetOptions = {
+    campaignId?: string;
+    poolId?: string;
+    apiUrl?: string;
+    identity?: string;
+    containerSelector?: string;
+};
 
 export { THXWidgetOptions, THXAPIClientOptions, THXBrowserClientOptions, THXOIDCConfig, THXOIDCUser, THXRequestConfig };

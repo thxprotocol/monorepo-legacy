@@ -41,7 +41,7 @@ export class TwitterService {
             url: `/users/by/username/${username}`,
             headers: { Authorization: `Bearer ${accessToken}` },
             params: {
-                'user.fields': 'profile_image_url',
+                'user.fields': 'profile_image_url,public_metrics',
             },
         });
         return data;
@@ -54,7 +54,7 @@ export class TwitterService {
             url: `/users/${userId}`,
             headers: { Authorization: `Bearer ${accessToken}` },
             params: {
-                'user.fields': 'profile_image_url',
+                'user.fields': 'profile_image_url,public_metrics',
             },
         });
         return data;

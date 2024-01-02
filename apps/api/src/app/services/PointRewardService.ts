@@ -87,23 +87,31 @@ export async function isValid(reward: TPointReward, account: TAccount): Promise<
                 break;
             }
             case RewardConditionInteraction.TwitterLike: {
+                const resultUser = await TwitterDataProxy.validateUser(account, reward);
+                if (!resultUser) return 'X: Your account has insufficient followers.';
                 const result = await TwitterDataProxy.validateLike(account, reward.content);
                 if (!result) return 'X: Post has not been liked.';
                 break;
             }
             case RewardConditionInteraction.TwitterRetweet: {
+                const resultUser = await TwitterDataProxy.validateUser(account, reward);
+                if (!resultUser) return 'X: Your account has insufficient followers.';
                 const result = await TwitterDataProxy.validateRetweet(account, reward.content);
                 if (!result) return 'X: Post is not reposted.';
                 break;
             }
             case RewardConditionInteraction.TwitterLikeRetweet: {
+                const resultUser = await TwitterDataProxy.validateUser(account, reward);
+                if (!resultUser) return 'X: Your account has insufficient followers.';
                 const resultLike = await TwitterDataProxy.validateLike(account, reward.content);
-                const resultRetweet = await TwitterDataProxy.validateRetweet(account, reward.content);
                 if (!resultLike) return 'X: Post has not been liked.';
+                const resultRetweet = await TwitterDataProxy.validateRetweet(account, reward.content);
                 if (!resultRetweet) return 'X: Post is not reposted.';
                 break;
             }
             case RewardConditionInteraction.TwitterFollow: {
+                const resultUser = await TwitterDataProxy.validateUser(account, reward);
+                if (!resultUser) return 'X: Account has insufficient followers.';
                 const result = await TwitterDataProxy.validateFollow(account, reward.content);
                 if (!result) return 'X: Account is not followed.';
                 break;
