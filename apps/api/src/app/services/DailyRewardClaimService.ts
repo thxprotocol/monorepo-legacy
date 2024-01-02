@@ -69,7 +69,8 @@ export default {
 
         return claims;
     },
-    isClaimable: async (quest: DailyRewardDocument, wallet: WalletDocument, identities: IdentityDocument[] = []) => {
+    validate: async (quest: DailyRewardDocument, wallet: WalletDocument) => {
+        const identities = await Identity.find({ sub: wallet.sub, poolId: quest.poolId });
         const now = Date.now(),
             start = now - ONE_DAY_MS,
             end = now;
@@ -79,13 +80,19 @@ export default {
             walletId: wallet._id,
             createdAt: { $gt: new Date(start), $lt: new Date(end) },
         });
-        //If no event is required and no entry is found the entry is allowed to be created
-        if (!quest.eventName) return !entry;
 
-        // List Identity IDs if any to query for events connected to this account
-        const identityIds = identities.map(({ _id }) => String(_id));
+        // If an entry has been found the user needs to wait
+        if (entry) {
+            return { result: false, reason: `Already completed within the last 24 hours.` };
+        }
+
+        // If no entry has been found and no event is required the entry is allowed to be created
+        if (!quest.eventName) {
+            return { result: true, reason: '' };
+        }
 
         // If an event is required we check if there is an event found within the time window
+        const identityIds = identities.map(({ _id }) => String(_id));
         const events = await Event.find({
             name: quest.eventName,
             poolId: quest.poolId,
@@ -93,6 +100,14 @@ export default {
             createdAt: { $gt: new Date(start), $lt: new Date(end) },
         });
 
-        return !entry && events.length ? true : false;
+        // If no events are found we invalidate
+        if (!events.length) {
+            return { result: false, reason: 'No events found for this account' };
+        }
+
+        // If events are found we validate true
+        else {
+            return { result: true, reason: '' };
+        }
     },
 };

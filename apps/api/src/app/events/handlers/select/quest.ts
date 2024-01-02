@@ -27,18 +27,13 @@ export async function completeQuest(
     const quest = await QuestService.findById(variant, questId);
     if (!quest) throw new Error('Could not find this quest.');
 
-    // BEGIN TODO Also move this implementation into the HTTP endpoints
-    const amount = await QuestService.getAmount(variant, quest, wallet);
+    const validationResult = await QuestService.validate(variant, quest, account, wallet);
+    if (!validationResult.result) throw new Error(validationResult.reason);
+
+    const amount = await QuestService.getAmount(variant, quest, account, wallet);
     if (!amount) throw new Error('Could not figure out how much points you should get.');
 
-    const isValid = await QuestService.validate(variant, quest, wallet);
-    if (!isValid) throw new Error('Not allowed to complete this quest yet.');
-    // END
-
-    const data = questEntryDataMap[variant](quest);
-    if (!data) throw new Error(`Sorry, no support for completing this ${QuestVariant[variant]} Quest yet.`);
-
-    await QuestService.complete(variant, amount, pool, quest, account, wallet, data);
+    await QuestService.complete(variant, amount, pool, quest, account, wallet, questEntryDataMap[variant](quest));
 
     interaction.reply({
         content: `Completed **${quest.title}** and earned **${amount} points**.`,

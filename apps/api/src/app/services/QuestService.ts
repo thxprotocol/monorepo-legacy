@@ -1,10 +1,10 @@
 import { JobType, QuestVariant } from '@thxnetwork/types/enums';
 import { TAccount, TBrand, TQuest, TQuestEntry, TWallet, TWidget } from '@thxnetwork/types/interfaces';
 import { DailyReward } from './DailyRewardService';
-import { ReferralReward } from '../models/ReferralReward';
-import { PointReward } from './PointRewardService';
-import { Web3Quest } from '../models/Web3Quest';
-import { MilestoneReward } from '../models/MilestoneReward';
+import { ReferralReward, ReferralRewardDocument } from '../models/ReferralReward';
+import QuestSocialService, { PointReward } from './PointRewardService';
+import { Web3Quest, Web3QuestDocument } from '../models/Web3Quest';
+import { MilestoneReward, MilestoneRewardDocument } from '../models/MilestoneReward';
 import { v4 } from 'uuid';
 import { Widget } from '../models/Widget';
 import DiscordDataProxy from '../proxies/DiscordDataProxy';
@@ -26,6 +26,7 @@ import { DiscordButtonVariant } from '../events/InteractionCreated';
 import DailyRewardClaimService from './DailyRewardClaimService';
 import { WalletDocument } from '../models/Wallet';
 import { PointRewardDocument } from '../models/PointReward';
+import MilestoneRewardService from './MilestoneRewardService';
 
 function formatAddress(address: string) {
     return `${address.slice(0, 5)}...${address.slice(-3)}`;
@@ -60,6 +61,7 @@ const callbackQuestSocial = (quest: PointRewardDocument, platformUserId: string)
 });
 const callbackQuestCustom = (quest: PointRewardDocument) => ({
     milestoneRewardId: String(quest._id),
+    isClaimed: true,
 });
 
 const questEntryDataMap = {
@@ -168,25 +170,43 @@ async function create(variant: QuestVariant, poolId: string, data: Partial<TQues
     return quest;
 }
 
-async function getAmount(variant: QuestVariant, quest: TQuest, wallet: WalletDocument) {
-    const getAmountMap = {
-        [QuestVariant.Daily]: async (quest, wallet) => {
+async function getAmount(variant: QuestVariant, quest: TQuest, account: TAccount, wallet: WalletDocument) {
+    const getPointsSocialQuest = async (quest, account, wallet) => {
+        const { pointsAvailable } = await QuestSocialService.getPointsAvailable(quest, account);
+        return pointsAvailable;
+    };
+    const questAmountMap = {
+        [QuestVariant.Daily]: async (quest, account, wallet) => {
             const claims = await DailyRewardClaimService.findByWallet(quest, wallet);
             const amountIndex =
                 claims.length >= quest.amounts.length ? claims.length % quest.amounts.length : claims.length;
             return quest.amounts[amountIndex];
         },
-        // [QuestVariant.Invite]: ..,
-        // TODO
+        [QuestVariant.Invite]: (quest: ReferralRewardDocument) => quest.amount,
+        [QuestVariant.Discord]: getPointsSocialQuest,
+        [QuestVariant.YouTube]: getPointsSocialQuest,
+        [QuestVariant.Twitter]: getPointsSocialQuest,
+        [QuestVariant.Custom]: (quest: MilestoneRewardDocument) => quest.amount,
+        [QuestVariant.Web3]: (quest: Web3QuestDocument) => quest.amount,
     };
-    return await getAmountMap[variant](quest, wallet);
+
+    return await questAmountMap[variant](quest, account, wallet);
 }
 
-async function validate(variant: QuestVariant, quest: TQuest, wallet: WalletDocument) {
+async function validate(variant: QuestVariant, quest: TQuest, account: TAccount, wallet: WalletDocument) {
+    const isValidSocialQuest = async (quest, wallet) => await QuestSocialService.validate(quest, account, wallet);
+    const isValidCustomQuest = async (quest, wallet) => await MilestoneRewardService.validate(quest, wallet);
+    const isValidDailyQuest = async (quest, wallet) => await DailyRewardClaimService.validate(quest, wallet);
+    const isNotImplemented = (quest, wallet) => ({ result: false, reason: 'Sorry, support not yet implemented...' });
+
     const validateQuestMap = {
-        [QuestVariant.Daily]: (quest, wallet) => DailyRewardClaimService.isClaimable(quest, wallet),
-        // [QuestVariant.Invite]: ..,
-        // TODO
+        [QuestVariant.Daily]: isValidDailyQuest,
+        [QuestVariant.Invite]: isNotImplemented,
+        [QuestVariant.Twitter]: isValidSocialQuest,
+        [QuestVariant.Discord]: isValidSocialQuest,
+        [QuestVariant.YouTube]: isValidSocialQuest,
+        [QuestVariant.Custom]: isValidCustomQuest,
+        [QuestVariant.Web3]: isNotImplemented,
     };
 
     return await validateQuestMap[variant](quest, wallet);
