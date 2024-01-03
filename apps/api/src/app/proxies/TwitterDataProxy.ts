@@ -2,6 +2,7 @@ import type { TAccount, TPointReward } from '@thxnetwork/types/interfaces';
 import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
 import { THXError } from '@thxnetwork/api/util/errors';
 import { encode } from 'html-entities';
+import { AccessTokenKind } from '@thxnetwork/common/lib/types/enums';
 
 class NoTwitterDataError extends THXError {
     message = 'Could not find twitter data for this account';
@@ -22,12 +23,15 @@ export default class TwitterDataProxy {
     static async getUserId(account: TAccount) {
         const { data } = await authClient({
             method: 'GET',
-            url: `/account/${account.sub}/twitter/user`,
+            url: `/account/${account.sub}`,
             headers: {
                 Authorization: await getAuthAccessToken(),
             },
         });
-        return data.userId;
+
+        const token = data.connectedAccounts.find((token) => token.kind === AccessTokenKind.Twitter);
+        if (!token) return;
+        return token.userId;
     }
 
     static async getTwitter(sub: string) {

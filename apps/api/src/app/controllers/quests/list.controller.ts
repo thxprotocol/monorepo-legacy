@@ -61,7 +61,7 @@ const controller = async (req: Request, res: Response) => {
     }
 
     const dailyQuestPromises = dailyQuests.map(async (r) => {
-        const isDisabled = wallet ? !(await DailyRewardClaimService.isClaimable(r, wallet, identities)) : true;
+        const validationResult = wallet ? await DailyRewardClaimService.validate(r, wallet) : { result: true };
         const validClaims = wallet ? await DailyRewardClaimService.findByWallet(r, wallet) : [];
         const claimAgainTime = validClaims.length ? new Date(validClaims[0].createdAt).getTime() + ONE_DAY_MS : null;
         const now = Date.now();
@@ -72,7 +72,7 @@ const controller = async (req: Request, res: Response) => {
             ...defaults,
             amounts: r.amounts,
             pointsAvailable,
-            isDisabled,
+            isDisabled: !validationResult.result,
             claims: validClaims,
             claimAgainDuration:
                 claimAgainTime && claimAgainTime - now > 0 ? Math.floor((claimAgainTime - now) / 1000) : null, // Convert and floor to S,
@@ -88,7 +88,6 @@ const controller = async (req: Request, res: Response) => {
                   isClaimed: true,
               })
             : [];
-
         const identityIds = identities.map(({ _id }) => String(_id));
         const events = identityIds.length ? await Event.find({ name: r.eventName, identityId: identityIds }) : [];
         const pointsAvailable = (r.limit - claims.length) * r.amount;

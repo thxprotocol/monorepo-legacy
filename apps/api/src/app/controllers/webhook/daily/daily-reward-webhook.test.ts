@@ -1,16 +1,10 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId } from '@thxnetwork/types/enums';
-import {
-    dashboardAccessToken,
-    sub2,
-    userWalletAddress2,
-    widgetAccessToken2,
-} from '@thxnetwork/api/util/jest/constants';
+import { dashboardAccessToken, userWalletAddress2, widgetAccessToken2 } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { DailyReward, DailyRewardDocument } from '@thxnetwork/api/models/DailyReward';
-import WalletService from '@thxnetwork/api/services/WalletService';
 
 const user = request.agent(app);
 
@@ -79,7 +73,7 @@ describe('Daily Rewards WebHooks', () => {
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken2 })
             .send()
             .expect(({ body }: request.Response) => {
-                expect(body.error).toBe('You can not complete this quest yet.');
+                expect(body.error).toBe('Already completed within the last 24 hours.');
             })
             .expect(200, done);
     });

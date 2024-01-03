@@ -42,6 +42,7 @@ export type TDiscordButton = {
     emoji?: string;
     customId?: string;
     url?: string;
+    disabled?: boolean;
 };
 
 export type TDiscordEmbed = {
@@ -52,9 +53,7 @@ export type TDiscordEmbed = {
         icon_url: string;
         url: string;
     };
-    thumbnail: {
-        url: string;
-    };
+    image: { url: string };
     color: number;
     fields: {
         name: string;

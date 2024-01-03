@@ -1,2 +1,13 @@
-import thx from './thx';
-export default { thx };
+import connect from './thx/connect';
+import quest from './thx/quest';
+import buy from './thx/buy';
+import points from './thx/points';
+import info from './thx/info';
+
+export default {
+    connect,
+    quest,
+    buy,
+    points,
+    info,
+};

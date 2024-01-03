@@ -1,5 +1,5 @@
 export * from './connect';
-export * from './complete';
+export * from './quest';
 export * from './buy';
 export * from './points';
 export * from './info';

@@ -8,7 +8,7 @@ import {
     onClickQuestList,
 } from './handlers/index';
 import { logger } from '../util/logger';
-import router from './commands';
+import router from './commands/thx';
 
 export enum DiscordStringSelectMenuVariant {
     CampaignConnect = 'thx.campaign.connect',
@@ -53,10 +53,8 @@ const onInteractionCreated = async (
         }
 
         if (interaction.isCommand()) {
-            logger.info(
-                `#${interaction.user.id} ran /${interaction.commandName} ${interaction.options.getSubcommand()}`,
-            );
-            await router[interaction.commandName].executor(interaction);
+            logger.info(`#${interaction.user.id} ran /${interaction.commandName}`);
+            router.executor(interaction);
         }
     } catch (error) {
         handleError(error, interaction);

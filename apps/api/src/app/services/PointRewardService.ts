@@ -12,6 +12,60 @@ import YouTubeDataProxy from '@thxnetwork/api/proxies/YoutubeDataProxy';
 import DiscordDataProxy from '@thxnetwork/api/proxies/DiscordDataProxy';
 import DiscordMessage from '../models/DiscordMessage';
 import { logger } from '../util/logger';
+import { questInteractionVariantMap } from '@thxnetwork/common/lib/types/maps';
+
+const questConditionMap: {
+    [interaction: number]: (account: TAccount, quest) => Promise<void | { result: boolean; reason: string }>;
+} = {
+    [RewardConditionInteraction.YouTubeLike]: async (account, quest) => {
+        const result = await YouTubeDataProxy.validateLike(account, quest.content);
+        if (!result) return { result: false, reason: 'Youtube: Video has not been liked.' };
+    },
+    [RewardConditionInteraction.YouTubeSubscribe]: async (account, quest) => {
+        const result = await YouTubeDataProxy.validateSubscribe(account, quest.content);
+        if (!result) return { result: false, reason: 'Youtube: Not subscribed to channel.' };
+    },
+    [RewardConditionInteraction.TwitterLike]: async (account, quest) => {
+        const resultUser = await TwitterDataProxy.validateUser(account, quest);
+        if (!resultUser) return { result: false, reason: 'X: Your account has insufficient followers.' };
+        const result = await TwitterDataProxy.validateLike(account, quest.content);
+        if (!result) return { result: false, reason: 'X: Post has not been liked.' };
+    },
+    [RewardConditionInteraction.TwitterRetweet]: async (account, quest) => {
+        const resultUser = await TwitterDataProxy.validateUser(account, quest);
+        if (!resultUser) return { result: false, reason: 'X: Your account has insufficient followers.' };
+        const result = await TwitterDataProxy.validateRetweet(account, quest.content);
+        if (!result) return { result: false, reason: 'X: Post is not reposted.' };
+    },
+    [RewardConditionInteraction.TwitterLikeRetweet]: async (account, quest) => {
+        const resultUser = await TwitterDataProxy.validateUser(account, quest);
+        if (!resultUser) return { result: false, reason: 'X: Your account has insufficient followers.' };
+        const resultLike = await TwitterDataProxy.validateLike(account, quest.content);
+        if (!resultLike) return { result: false, reason: 'X: Post has not been liked.' };
+        const resultRetweet = await TwitterDataProxy.validateRetweet(account, quest.content);
+        if (!resultRetweet) return { result: false, reason: 'X: Post is not reposted.' };
+    },
+    [RewardConditionInteraction.TwitterFollow]: async (account, quest) => {
+        const resultUser = await TwitterDataProxy.validateUser(account, quest);
+        if (!resultUser) return { result: false, reason: 'X: Account has insufficient followers.' };
+        const result = await TwitterDataProxy.validateFollow(account, quest.content);
+        if (!result) return { result: false, reason: 'X: Account is not followed.' };
+    },
+    [RewardConditionInteraction.TwitterMessage]: async (account, quest) => {
+        const result = await TwitterDataProxy.validateMessage(account, quest.content);
+        if (!result) return { result: false, reason: `X: Your last post does not contain exactly "${quest.content}".` };
+    },
+    [RewardConditionInteraction.DiscordGuildJoined]: async (account, quest) => {
+        const result = await DiscordDataProxy.validateGuildJoined(account, quest.content);
+        if (!result) {
+            const userId = await getPlatformUserId(quest, account);
+            return {
+                result: false,
+                reason: `Discord: User #${userId} has not joined Discord server #${quest.content}.`,
+            };
+        }
+    },
+};
 
 const getPlatformUserId = async (reward: TPointReward, account: TAccount) => {
     try {
@@ -51,87 +105,41 @@ async function findEntries(quest: PointRewardDocument) {
     );
 }
 
-async function isCompleted(quest: PointRewardDocument, account: TAccount, wallet?: WalletDocument) {
-    if (!account || !wallet) return false;
+async function isAvailable(quest: PointRewardDocument, account: TAccount, wallet?: WalletDocument) {
+    if (!account || !wallet) return true;
 
-    // We validate for both here since there are claims that only contain a sub and should not be claimed again
+    // We validate for both here since there are claims that only contain a sub
+    // and should not be claimed again.
     const ids: any[] = [{ sub: account.sub }, { walletId: wallet._id }];
     const platformUserId = await getPlatformUserId(quest, account);
     if (platformUserId) ids.push({ platformUserId });
 
-    const isCompletedAlready = await PointRewardClaim.exists({
-        pointRewardId: quest._id,
-        $or: ids,
-    });
-
     if (quest.interaction === RewardConditionInteraction.DiscordMessage) {
-        return false;
+        return true;
     }
 
-    return isCompletedAlready;
+    // If none exsist the quest is available
+    return !(await PointRewardClaim.exists({
+        pointRewardId: quest._id,
+        $or: ids,
+    }));
 }
 
-export async function isValid(reward: TPointReward, account: TAccount): Promise<string> {
-    if (reward.platform === RewardConditionPlatform.None) return;
+export async function validate(
+    quest: PointRewardDocument,
+    account: TAccount,
+    wallet: WalletDocument,
+): Promise<{ result: boolean; reason: string }> {
+    // Check if completed already
+    const available = await isAvailable(quest, account, wallet);
+    if (!available) return { result: false, reason: 'You have completed this quest already.' };
 
+    // Check quest requirements
     try {
-        switch (reward.interaction) {
-            case RewardConditionInteraction.YouTubeLike: {
-                const result = await YouTubeDataProxy.validateLike(account, reward.content);
-                if (!result) return 'Youtube: Video has not been liked.';
-                break;
-            }
-            case RewardConditionInteraction.YouTubeSubscribe: {
-                const result = await YouTubeDataProxy.validateSubscribe(account, reward.content);
-                if (!result) return 'Youtube: Not subscribed to channel.';
-                break;
-            }
-            case RewardConditionInteraction.TwitterLike: {
-                const resultUser = await TwitterDataProxy.validateUser(account, reward);
-                if (!resultUser) return 'X: Your account has insufficient followers.';
-                const result = await TwitterDataProxy.validateLike(account, reward.content);
-                if (!result) return 'X: Post has not been liked.';
-                break;
-            }
-            case RewardConditionInteraction.TwitterRetweet: {
-                const resultUser = await TwitterDataProxy.validateUser(account, reward);
-                if (!resultUser) return 'X: Your account has insufficient followers.';
-                const result = await TwitterDataProxy.validateRetweet(account, reward.content);
-                if (!result) return 'X: Post is not reposted.';
-                break;
-            }
-            case RewardConditionInteraction.TwitterLikeRetweet: {
-                const resultUser = await TwitterDataProxy.validateUser(account, reward);
-                if (!resultUser) return 'X: Your account has insufficient followers.';
-                const resultLike = await TwitterDataProxy.validateLike(account, reward.content);
-                if (!resultLike) return 'X: Post has not been liked.';
-                const resultRetweet = await TwitterDataProxy.validateRetweet(account, reward.content);
-                if (!resultRetweet) return 'X: Post is not reposted.';
-                break;
-            }
-            case RewardConditionInteraction.TwitterFollow: {
-                const resultUser = await TwitterDataProxy.validateUser(account, reward);
-                if (!resultUser) return 'X: Account has insufficient followers.';
-                const result = await TwitterDataProxy.validateFollow(account, reward.content);
-                if (!result) return 'X: Account is not followed.';
-                break;
-            }
-            case RewardConditionInteraction.TwitterMessage: {
-                const result = await TwitterDataProxy.validateMessage(account, reward.content);
-                if (!result) return `X: Your last post does not contain exactly "${reward.content}".`;
-                break;
-            }
-            case RewardConditionInteraction.DiscordGuildJoined: {
-                const result = await DiscordDataProxy.validateGuildJoined(account, reward.content);
-                if (!result) {
-                    const userId = await getPlatformUserId(reward, account);
-                    return `Discord: User #${userId} has not joined Discord server #${reward.content}.`;
-                }
-                break;
-            }
-        }
+        const validationResult = await questConditionMap[quest.interaction](account, quest);
+        return validationResult || { result: true, reason: '' };
     } catch (error) {
-        return 'We were unable to confirm the requirements for this quest.';
+        return { result: false, reason: 'We were unable to confirm the requirements for this quest.' };
     }
 }
 
@@ -200,11 +208,11 @@ function getRestartDates(quest: TPointReward) {
 export const PointReward = PointRewardSchema;
 
 export default {
+    validate,
     getPointsAvailable,
     findByPool,
     findEntries,
-    isCompleted,
-    isValid,
+    isAvailable,
     getPlatformUserId,
     getRestartDates,
 };

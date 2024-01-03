@@ -8,7 +8,7 @@ export const handleError = async (
     logger.error(error);
     if (interaction) {
         interaction.reply({
-            content: `Oops🙈 Something went wrong... \`\`\`Details: ${error.message}\`\`\``,
+            content: `\`\`\`${error.message}\`\`\``,
             ephemeral: true,
         });
     }

@@ -9,10 +9,9 @@ import { Web3QuestClaim } from '@thxnetwork/api/models/Web3QuestClaim';
 import { AssetPool } from '@thxnetwork/api/models/AssetPool';
 import { chainList } from '@thxnetwork/common';
 import { logger } from '@thxnetwork/api/util/logger';
-import SafeService from '@thxnetwork/api/services/SafeService';
-import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
-import QuestService from '@thxnetwork/api/services/QuestService';
 import { QuestVariant } from '@thxnetwork/common/lib/types';
+import SafeService from '@thxnetwork/api/services/SafeService';
+import QuestService from '@thxnetwork/api/services/QuestService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 
 const validation = [
@@ -32,6 +31,7 @@ const controller = async (req: Request, res: Response) => {
     const wallet = await SafeService.findPrimary(req.auth.sub, pool.chainId);
     if (!wallet) throw new NotFoundError('Could not find primary wallet');
 
+    // START Validation
     const { rpc, name } = chainList[req.body.chainId];
     if (!rpc) throw new NotFoundError(`Could not find RPC for ${name}`);
 
@@ -65,6 +65,7 @@ const controller = async (req: Request, res: Response) => {
     if (result.lt(threshold)) {
         return res.json({ error: 'Result does not meet the threshold' });
     }
+    // END
 
     const account = await AccountProxy.getById(req.auth.sub);
     const entry = await QuestService.complete(QuestVariant.Web3, quest.amount, pool, quest, account, wallet, {

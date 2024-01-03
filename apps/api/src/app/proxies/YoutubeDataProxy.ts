@@ -1,6 +1,7 @@
 import type { TAccount } from '@thxnetwork/types/interfaces';
 import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
 import { THXError } from '@thxnetwork/api/util/errors';
+import { AccessTokenKind } from '@thxnetwork/common/lib/types';
 
 class NoYoutubeDataError extends THXError {
     message = 'Could not find youtube data for this account';
@@ -10,12 +11,15 @@ export default class YoutubeDataProxy {
     static async getUserId(account: TAccount) {
         const { data } = await authClient({
             method: 'GET',
-            url: `/account/${account.sub}/google/user`,
+            url: `/account/${account.sub}`,
             headers: {
                 Authorization: await getAuthAccessToken(),
             },
         });
-        return data.userId;
+
+        const token = data.connectedAccounts.find((token) => token.kind === AccessTokenKind.Google);
+        if (!token) return;
+        return token.userId;
     }
 
     static async getYoutube(sub: string) {

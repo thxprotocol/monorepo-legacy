@@ -42,14 +42,11 @@ export const controller = async (req: Request, res: Response) => {
     const discordGuilds = await DiscordGuild.find({ poolId: pool._id });
     const promises = discordGuilds.map(async (guild: DiscordGuildDocument) => {
         const g = await client.guilds.fetch(guild.guildId);
-        const roles = g.roles.cache
-            .map((role) => ({
-                id: role.id,
-                name: role.name,
-                hoist: role.hoist,
-                color: discordColorToHex(role.color),
-            }))
-            .filter((role) => role.hoist);
+        const roles = g.roles.cache.map((role) => ({
+            id: role.id,
+            name: role.name,
+            color: discordColorToHex(role.color),
+        }));
         const channels = (await g.channels.fetch()).map((c) => ({ name: c.name, channelId: c.id }));
         return { ...guild.toJSON(), channels, roles };
     });

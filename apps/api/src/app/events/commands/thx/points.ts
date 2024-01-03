@@ -28,7 +28,7 @@ async function removePoints(
         walletId: wallet._id,
     });
 
-    const senderMessage = `The balance of <@${receiver.id}> has been decreased with **${amount} points** and is now **${balance.balance}** !`;
+    const senderMessage = `The balance of <@${receiver.id}> has been decreased with **${amount} points** and is now **${balance.balance}**.`;
     const receiverMessage = `<@${sender.id}> decreased your balance with **${amount}** resulting in a total of **${balance.balance} points**.`;
 
     return { senderMessage, receiverMessage };
@@ -47,7 +47,7 @@ async function addPoints(
         poolId: pool._id,
         walletId: wallet._id,
     });
-    const senderMessage = `The balance of <@${receiver.id}> has been increased with **${amount} points** and is now **${balance.balance}** !`;
+    const senderMessage = `The balance of <@${receiver.id}> has been increased with **${amount} points** and is now **${balance.balance}**!`;
     const receiverMessage = `<@${sender.id}> increased your balance with **${amount}** resulting in a total of **${balance.balance} points**.`;
 
     return { senderMessage, receiverMessage };
