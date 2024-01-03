@@ -1,5 +1,6 @@
 import {
     ActionRowBuilder,
+    ButtonInteraction,
     CommandInteraction,
     StringSelectMenuBuilder,
     StringSelectMenuOptionBuilder,
@@ -18,7 +19,7 @@ import QuestService from '@thxnetwork/api/services/QuestService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import WalletService from '@thxnetwork/api/services/WalletService';
 
-async function createSelectMenuQuests(interaction: CommandInteraction) {
+async function createSelectMenuQuests(interaction: CommandInteraction | ButtonInteraction) {
     const { guild, user } = interaction;
     const { poolId } = await DiscordGuild.findOne({ guildId: guild.id });
     const results = await Promise.all([

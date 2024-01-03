@@ -69,6 +69,19 @@ export default {
 
         return claims;
     },
+    isAvailable: async (quest, account, wallet) => {
+        const now = Date.now(),
+            start = now - ONE_DAY_MS,
+            end = now;
+
+        const entry = await DailyRewardClaim.findOne({
+            dailyRewardId: quest._id,
+            walletId: wallet._id,
+            createdAt: { $gt: new Date(start), $lt: new Date(end) },
+        });
+
+        return !entry;
+    },
     validate: async (quest: DailyRewardDocument, wallet: WalletDocument) => {
         const identities = await Identity.find({ sub: wallet.sub, poolId: quest.poolId });
         const now = Date.now(),

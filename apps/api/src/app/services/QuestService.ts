@@ -3,8 +3,8 @@ import { TAccount, TBrand, TQuest, TQuestEntry, TWallet, TWidget } from '@thxnet
 import { DailyReward } from './DailyRewardService';
 import { ReferralReward, ReferralRewardDocument } from '../models/ReferralReward';
 import QuestSocialService, { PointReward } from './PointRewardService';
-import { Web3Quest, Web3QuestDocument } from '../models/Web3Quest';
-import { MilestoneReward, MilestoneRewardDocument } from '../models/MilestoneReward';
+import { Web3Quest } from '../models/Web3Quest';
+import { MilestoneReward } from '../models/MilestoneReward';
 import { v4 } from 'uuid';
 import { Widget } from '../models/Widget';
 import DiscordDataProxy from '../proxies/DiscordDataProxy';
@@ -27,51 +27,132 @@ import DailyRewardClaimService from './DailyRewardClaimService';
 import { WalletDocument } from '../models/Wallet';
 import { PointRewardDocument } from '../models/PointReward';
 import MilestoneRewardService from './MilestoneRewardService';
+import PointRewardService from './PointRewardService';
+
+type TValidationResult = {
+    result: boolean;
+    reason: string;
+};
 
 function formatAddress(address: string) {
     return `${address.slice(0, 5)}...${address.slice(-3)}`;
 }
 
-const entryModelMap: any = {
-    [QuestVariant.Daily]: DailyRewardClaim,
-    [QuestVariant.Invite]: ReferralRewardClaim,
-    [QuestVariant.Twitter]: PointRewardClaim,
-    [QuestVariant.Discord]: PointRewardClaim,
-    [QuestVariant.YouTube]: PointRewardClaim,
-    [QuestVariant.Custom]: MilestoneRewardClaim,
-    [QuestVariant.Web3]: Web3QuestClaim,
+const getPointsQuest = async (quest: ReferralRewardDocument) => quest.amount;
+const getPointsSocialQuest = async (quest, account, wallet) => {
+    const { pointsAvailable } = await QuestSocialService.getPointsAvailable(quest, account);
+    return pointsAvailable;
 };
-
-const modelMap: any = {
-    [QuestVariant.Daily]: DailyReward,
-    [QuestVariant.Invite]: ReferralReward,
-    [QuestVariant.Twitter]: PointReward,
-    [QuestVariant.Discord]: PointReward,
-    [QuestVariant.YouTube]: PointReward,
-    [QuestVariant.Custom]: MilestoneReward,
-    [QuestVariant.Web3]: Web3Quest,
+const getPointsDailyQuest = async (quest, account, wallet) => {
+    const claims = await DailyRewardClaimService.findByWallet(quest, wallet);
+    const amountIndex = claims.length >= quest.amounts.length ? claims.length % quest.amounts.length : claims.length;
+    return quest.amounts[amountIndex];
 };
+const isValidSocialQuest = async (quest, account, wallet) => await QuestSocialService.validate(quest, account, wallet);
+const isValidCustomQuest = async (quest, account, wallet) => await MilestoneRewardService.validate(quest, wallet);
+const isValidDailyQuest = async (quest, account, wallet) => await DailyRewardClaimService.validate(quest, wallet);
+const isNotImplemented = async (quest, account, wallet) => ({
+    result: false,
+    reason: 'Sorry, support not yet implemented...',
+});
 
-const callbackQuestDaily = (quest) => ({
+const getDataQuestDaily = (quest) => ({
     dailyRewardId: String(quest._id),
 });
-const callbackQuestSocial = (quest: PointRewardDocument, platformUserId: string) => ({
+const getDataQuestSocial = (quest: PointRewardDocument, platformUserId: string) => ({
     pointRewardId: String(quest._id),
     platformUserId,
 });
-const callbackQuestCustom = (quest: PointRewardDocument) => ({
+const getDataQuestCustom = (quest: PointRewardDocument) => ({
     milestoneRewardId: String(quest._id),
     isClaimed: true,
 });
 
-const questEntryDataMap = {
-    [QuestVariant.Daily]: callbackQuestDaily,
-    // [QuestVariant.Invite]: ..,
-    [QuestVariant.Discord]: callbackQuestSocial,
-    [QuestVariant.Twitter]: callbackQuestSocial,
-    [QuestVariant.YouTube]: callbackQuestSocial,
-    [QuestVariant.Custom]: callbackQuestCustom,
-    // [QuestVariant.Web3]: ..,
+const getDataQuestWeb3 = (quest, chainId, address) => ({
+    web3QuestId: quest._id,
+    chainId,
+    address,
+});
+
+const getAvailability = async (quest, account, wallet) => true;
+const getAvailabilityQuestSocial = (quest, account, wallet) => PointRewardService.isAvailable(quest, account, wallet);
+const getAvailabilityQuestDaily = (quest, account, wallet) =>
+    DailyRewardClaimService.isAvailable(quest, account, wallet);
+
+const questMap: {
+    [variant: number]: {
+        models: { quest: any; entry: any };
+        methods: {
+            getData: (quest: TQuest, ...any) => Partial<TQuestEntry>;
+            getAmount: (quest, account, wallet) => Promise<number>;
+            getValidationResult: (quest, account, wallet) => Promise<TValidationResult>;
+            isAvailable: (quest, account, wallet) => Promise<boolean>;
+        };
+    };
+} = {
+    [QuestVariant.Daily]: {
+        models: { quest: DailyReward, entry: DailyRewardClaim },
+        methods: {
+            getData: getDataQuestDaily,
+            getAmount: getPointsDailyQuest,
+            getValidationResult: isValidDailyQuest,
+            isAvailable: getAvailabilityQuestDaily,
+        },
+    },
+    [QuestVariant.Invite]: {
+        models: { quest: ReferralReward, entry: ReferralRewardClaim },
+        methods: {
+            getAmount: getPointsQuest,
+            getValidationResult: isNotImplemented,
+            getData: getDataQuestSocial,
+            isAvailable: getAvailability,
+        },
+    },
+    [QuestVariant.Twitter]: {
+        models: { quest: PointReward, entry: PointRewardClaim },
+        methods: {
+            getAmount: getPointsSocialQuest,
+            getValidationResult: isValidSocialQuest,
+            getData: getDataQuestSocial,
+            isAvailable: getAvailabilityQuestSocial,
+        },
+    },
+    [QuestVariant.Discord]: {
+        models: { quest: PointReward, entry: PointRewardClaim },
+        methods: {
+            getAmount: getPointsSocialQuest,
+            getValidationResult: isValidSocialQuest,
+            getData: getDataQuestSocial,
+            isAvailable: getAvailabilityQuestSocial,
+        },
+    },
+    [QuestVariant.YouTube]: {
+        models: { quest: PointReward, entry: PointRewardClaim },
+        methods: {
+            getAmount: getPointsSocialQuest,
+            getValidationResult: isValidSocialQuest,
+            getData: getDataQuestSocial,
+            isAvailable: getAvailabilityQuestSocial,
+        },
+    },
+    [QuestVariant.Custom]: {
+        models: { quest: MilestoneReward, entry: MilestoneRewardClaim },
+        methods: {
+            getAmount: getPointsQuest,
+            getValidationResult: isValidCustomQuest,
+            getData: getDataQuestCustom,
+            isAvailable: getAvailability,
+        },
+    },
+    [QuestVariant.Web3]: {
+        models: { quest: Web3Quest, entry: Web3QuestClaim },
+        methods: {
+            getAmount: getPointsQuest,
+            getValidationResult: isValidCustomQuest,
+            getData: getDataQuestWeb3,
+            isAvailable: getAvailability,
+        },
+    },
 };
 
 async function notify(variant: QuestVariant, quest: TQuest) {
@@ -116,7 +197,7 @@ async function notifyDiscord(
             icon_url: brand ? brand.logoImgUrl : '',
             url: widget.domain,
         },
-        thumbnail: { url: quest.image },
+        image: { url: quest.image },
         color: parseInt(theme.elements.btnBg.color.replace(/^#/, ''), 16),
         fields: [
             {
@@ -134,7 +215,7 @@ async function notifyDiscord(
 
     await DiscordDataProxy.sendChannelMessage(
         pool,
-        `Hi @everyone! **${pool.settings.title}** just published a **${QuestVariant[variant]} Quest**.`,
+        `Hi @everyone! We published a **${QuestVariant[variant]} Quest**.`,
         [embed],
         [
             {
@@ -148,7 +229,7 @@ async function notifyDiscord(
 }
 
 async function update(variant: QuestVariant, questId: string, data: Partial<TQuest>) {
-    const model = modelMap[variant];
+    const model = questMap[variant].models.quest;
     const quest = await model.findById(questId);
 
     // We only want to notify when the quest is set to published (and not updated while published already)
@@ -160,7 +241,7 @@ async function update(variant: QuestVariant, questId: string, data: Partial<TQue
 }
 
 async function create(variant: QuestVariant, poolId: string, data: Partial<TQuest>) {
-    const model = modelMap[variant];
+    const model = questMap[variant].models.quest;
     const quest = await model.create({ ...data, poolId, variant, uuid: v4() });
 
     if (data.isPublished) {
@@ -170,46 +251,16 @@ async function create(variant: QuestVariant, poolId: string, data: Partial<TQues
     return quest;
 }
 
-async function getAmount(variant: QuestVariant, quest: TQuest, account: TAccount, wallet: WalletDocument) {
-    const getPointsSocialQuest = async (quest, account, wallet) => {
-        const { pointsAvailable } = await QuestSocialService.getPointsAvailable(quest, account);
-        return pointsAvailable;
-    };
-    const questAmountMap = {
-        [QuestVariant.Daily]: async (quest, account, wallet) => {
-            const claims = await DailyRewardClaimService.findByWallet(quest, wallet);
-            const amountIndex =
-                claims.length >= quest.amounts.length ? claims.length % quest.amounts.length : claims.length;
-            return quest.amounts[amountIndex];
-        },
-        [QuestVariant.Invite]: (quest: ReferralRewardDocument) => quest.amount,
-        [QuestVariant.Discord]: getPointsSocialQuest,
-        [QuestVariant.YouTube]: getPointsSocialQuest,
-        [QuestVariant.Twitter]: getPointsSocialQuest,
-        [QuestVariant.Custom]: (quest: MilestoneRewardDocument) => quest.amount,
-        [QuestVariant.Web3]: (quest: Web3QuestDocument) => quest.amount,
-    };
-
-    return await questAmountMap[variant](quest, account, wallet);
+function getAmount(variant: QuestVariant, quest: TQuest, account: TAccount, wallet: WalletDocument) {
+    return questMap[variant].methods.getAmount(quest, account, wallet);
 }
 
-async function validate(variant: QuestVariant, quest: TQuest, account: TAccount, wallet: WalletDocument) {
-    const isValidSocialQuest = async (quest, wallet) => await QuestSocialService.validate(quest, account, wallet);
-    const isValidCustomQuest = async (quest, wallet) => await MilestoneRewardService.validate(quest, wallet);
-    const isValidDailyQuest = async (quest, wallet) => await DailyRewardClaimService.validate(quest, wallet);
-    const isNotImplemented = (quest, wallet) => ({ result: false, reason: 'Sorry, support not yet implemented...' });
+function isAvailable(variant: QuestVariant, quest: TQuest, account: TAccount, wallet: WalletDocument) {
+    return questMap[variant].methods.isAvailable(quest, account, wallet);
+}
 
-    const validateQuestMap = {
-        [QuestVariant.Daily]: isValidDailyQuest,
-        [QuestVariant.Invite]: isNotImplemented,
-        [QuestVariant.Twitter]: isValidSocialQuest,
-        [QuestVariant.Discord]: isValidSocialQuest,
-        [QuestVariant.YouTube]: isValidSocialQuest,
-        [QuestVariant.Custom]: isValidCustomQuest,
-        [QuestVariant.Web3]: isNotImplemented,
-    };
-
-    return await validateQuestMap[variant](quest, wallet);
+function validate(variant: QuestVariant, quest: TQuest, account: TAccount, wallet: WalletDocument) {
+    return questMap[variant].methods.getValidationResult(quest, account, wallet);
 }
 
 async function complete(
@@ -221,7 +272,7 @@ async function complete(
     wallet: TWallet,
     data: Partial<TQuestEntry>,
 ) {
-    const model = entryModelMap[variant];
+    const model = questMap[variant].models.entry;
     const index = Math.floor(Math.random() * celebratoryWords.length);
     const discord = account.connectedAccounts && account.connectedAccounts.find((a) => a.kind === 'discord');
     const user =
@@ -251,9 +302,9 @@ async function complete(
 }
 
 function findById(variant: QuestVariant, questId: string) {
-    const model = modelMap[variant];
+    const model = questMap[variant].models.quest;
     return model.findById(questId);
 }
 
-export { questEntryDataMap, modelMap };
-export default { getAmount, create, update, complete, validate, findById };
+export { questMap };
+export default { getAmount, isAvailable, create, update, complete, validate, findById };

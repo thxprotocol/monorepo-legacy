@@ -12,6 +12,7 @@ import YouTubeDataProxy from '@thxnetwork/api/proxies/YoutubeDataProxy';
 import DiscordDataProxy from '@thxnetwork/api/proxies/DiscordDataProxy';
 import DiscordMessage from '../models/DiscordMessage';
 import { logger } from '../util/logger';
+import { questInteractionVariantMap } from '@thxnetwork/common/lib/types/maps';
 
 const questConditionMap: {
     [interaction: number]: (account: TAccount, quest) => Promise<void | { result: boolean; reason: string }>;
@@ -104,24 +105,24 @@ async function findEntries(quest: PointRewardDocument) {
     );
 }
 
-async function isCompleted(quest: PointRewardDocument, account: TAccount, wallet?: WalletDocument) {
-    if (!account || !wallet) return false;
+async function isAvailable(quest: PointRewardDocument, account: TAccount, wallet?: WalletDocument) {
+    if (!account || !wallet) return true;
 
-    // We validate for both here since there are claims that only contain a sub and should not be claimed again
+    // We validate for both here since there are claims that only contain a sub
+    // and should not be claimed again.
     const ids: any[] = [{ sub: account.sub }, { walletId: wallet._id }];
     const platformUserId = await getPlatformUserId(quest, account);
     if (platformUserId) ids.push({ platformUserId });
 
-    const isCompletedAlready = await PointRewardClaim.exists({
-        pointRewardId: quest._id,
-        $or: ids,
-    });
-
     if (quest.interaction === RewardConditionInteraction.DiscordMessage) {
-        return false;
+        return true;
     }
 
-    return isCompletedAlready;
+    // If none exsist the quest is available
+    return !(await PointRewardClaim.exists({
+        pointRewardId: quest._id,
+        $or: ids,
+    }));
 }
 
 export async function validate(
@@ -130,12 +131,12 @@ export async function validate(
     wallet: WalletDocument,
 ): Promise<{ result: boolean; reason: string }> {
     // Check if completed already
-    const isCompletedAlready = await isCompleted(quest, account, wallet);
-    if (isCompletedAlready) return { result: false, reason: 'You have completed this quest already.' };
+    const available = await isAvailable(quest, account, wallet);
+    if (!available) return { result: false, reason: 'You have completed this quest already.' };
 
     // Check quest requirements
     try {
-        const validationResult = await questConditionMap[quest.variant](account, quest);
+        const validationResult = await questConditionMap[quest.interaction](account, quest);
         return validationResult || { result: true, reason: '' };
     } catch (error) {
         return { result: false, reason: 'We were unable to confirm the requirements for this quest.' };
@@ -211,7 +212,7 @@ export default {
     getPointsAvailable,
     findByPool,
     findEntries,
-    isCompleted,
+    isAvailable,
     getPlatformUserId,
     getRestartDates,
 };

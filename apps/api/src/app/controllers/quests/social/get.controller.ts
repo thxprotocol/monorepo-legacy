@@ -19,7 +19,7 @@ const controller = async (req: Request, res: Response) => {
     const account = await AccountProxy.getById(req.auth.sub);
     const wallet = await SafeService.findPrimary(req.auth.sub, pool.chainId);
 
-    const isClaimed = wallet ? await PointRewardService.isCompleted(quest, account, wallet) : false;
+    const isAvailable = wallet ? await PointRewardService.isAvailable(quest, account, wallet) : false;
     const restartDates = PointRewardService.getRestartDates(quest);
     const { messages, pointsAvailable, pointsClaimed, amount } = await PointRewardService.getPointsAvailable(
         quest,
@@ -42,7 +42,8 @@ const controller = async (req: Request, res: Response) => {
         contentMetadata: quest.contentMetadata,
         pointsAvailable,
         pointsClaimed,
-        isClaimed,
+        isClaimed: !isAvailable, // Should deprecate
+        isAvailable,
         restartDates,
         messages,
     });
