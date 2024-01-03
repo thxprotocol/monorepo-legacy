@@ -126,7 +126,7 @@ describe('Daily Rewards', () => {
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
             .send()
             .expect(({ body }: request.Response) => {
-                expect(body.error).toBe('You can not complete this quest yet.');
+                expect(body.error).toBe('Already completed within the last 24 hours.');
             })
             .expect(200, done);
     });
