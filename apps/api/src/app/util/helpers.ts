@@ -16,3 +16,8 @@ export const uniq = <T>(array: T[]): T[] => {
 export const sleep = async (seconds: number) => {
     await new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 };
+
+export const convertObjectIdToNumber = (objectId: string) => {
+    // Extract the timestamp part of the ObjectId (first 4 bytes)
+    return parseInt(objectId.toString().substring(0, 8), 16);
+};

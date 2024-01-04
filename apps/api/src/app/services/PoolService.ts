@@ -46,7 +46,7 @@ async function getById(id: string) {
     const pool = await AssetPool.findById(id);
     const safe = await SafeService.findOneByPool(pool, pool.chainId);
     pool.safe = safe;
-    pool.address = safe.address;
+    pool.address = safe && safe.address;
     return pool;
 }
 

@@ -20,6 +20,7 @@ import { Job } from '@hokify/agenda';
 import { AssetPoolDocument } from '../models/AssetPool';
 import { Transaction } from '../models/Transaction';
 import TransactionService from './TransactionService';
+import { convertObjectIdToNumber } from '../util';
 
 export const Wallet = WalletModel;
 
@@ -49,10 +50,13 @@ async function create(
     // Add user address as a signer and consider this a participant safe
     if (userWalletAddress) owners.push(toChecksumAddress(userWalletAddress));
 
-    return await deploy(wallet, owners);
+    // If campaign safe we provide a nonce based on the timestamp in the MongoID the pool (poolId value)
+    const nonce = owners.length === 1 && wallet.poolId && String(convertObjectIdToNumber(wallet.poolId));
+
+    return await deploy(wallet, owners, nonce);
 }
 
-async function deploy(wallet: WalletDocument, owners: string[]) {
+async function deploy(wallet: WalletDocument, owners: string[], nonce?: string) {
     const { ethAdapter } = getProvider(wallet.chainId);
     const safeFactory = await SafeFactory.create({
         safeVersion: wallet.safeVersion as SafeVersion,
@@ -63,7 +67,7 @@ async function deploy(wallet: WalletDocument, owners: string[]) {
         owners,
         threshold: owners.length,
     };
-    const safeAddress = toChecksumAddress(await safeFactory.predictSafeAddress(safeAccountConfig));
+    const safeAddress = toChecksumAddress(await safeFactory.predictSafeAddress(safeAccountConfig, nonce));
 
     try {
         await Safe.create({
@@ -95,7 +99,10 @@ async function createJob(job: Job) {
         contractNetworks,
     });
 
-    await safeFactory.deploySafe({ safeAccountConfig, options: { gasLimit: '3000000' } });
+    // If campaign safe we provide a nonce based on the timestamp in the MongoID the pool (poolId value)
+    const nonce = wallet.poolId && String(convertObjectIdToNumber(wallet.poolId));
+
+    await safeFactory.deploySafe({ safeAccountConfig, saltNonce: nonce, options: { gasLimit: '3000000' } });
     logger.debug(`[${wallet.sub}] Deployed Safe: ${safeAddress}`);
 }
 

@@ -14,12 +14,12 @@ import Web3 from 'web3';
 import { Contract } from 'web3-eth-contract';
 import { arrayify, computeAddress, hashMessage, recoverPublicKey } from 'ethers/lib/utils';
 import { ChainId } from '@thxnetwork/types/enums';
-import { DefenderRelayProvider } from 'defender-relay-client/lib/web3';
-import { Relayer } from 'defender-relay-client';
 import { TNetworkName } from '@thxnetwork/contracts/exports';
 import { Signer, Wallet, ethers } from 'ethers';
-import { DefenderRelaySigner } from 'defender-relay-client/lib/ethers';
 import { EthersAdapter } from '@safe-global/protocol-kit';
+import { DefenderRelaySigner } from '@openzeppelin/defender-relay-client/lib/ethers';
+import { Relayer } from '@openzeppelin/defender-relay-client';
+import { DefenderRelayProvider } from '@openzeppelin/defender-relay-client/lib/web3';
 
 export const MaxUint256 = '115792089237316195423570985008687907853269984665640564039457584007913129639935';
 

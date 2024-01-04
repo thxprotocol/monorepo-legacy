@@ -1,4 +1,4 @@
-import { Speed } from 'defender-relay-client';
+import { Speed } from '@openzeppelin/defender-relay-client';
 import path from 'path';
 
 const required = [
