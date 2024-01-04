@@ -51,7 +51,7 @@ async function create(
     if (userWalletAddress) owners.push(toChecksumAddress(userWalletAddress));
 
     // If campaign safe we provide a nonce based on the timestamp in the MongoID the pool (poolId value)
-    const nonce = owners.length === 1 && wallet.poolId && String(convertObjectIdToNumber(wallet.poolId));
+    const nonce = wallet.poolId && String(convertObjectIdToNumber(wallet.poolId));
 
     return await deploy(wallet, owners, nonce);
 }
@@ -101,8 +101,10 @@ async function createJob(job: Job) {
 
     // If campaign safe we provide a nonce based on the timestamp in the MongoID the pool (poolId value)
     const nonce = wallet.poolId && String(convertObjectIdToNumber(wallet.poolId));
+    const config = { safeAccountConfig, options: { gasLimit: '3000000' } };
+    if (nonce) config['saltNonce'] = nonce;
 
-    await safeFactory.deploySafe({ safeAccountConfig, saltNonce: nonce, options: { gasLimit: '3000000' } });
+    await safeFactory.deploySafe(config);
     logger.debug(`[${wallet.sub}] Deployed Safe: ${safeAddress}`);
 }
 
