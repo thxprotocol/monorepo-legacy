@@ -196,7 +196,7 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            Virtual Wallets<br />
+                                            Identity & Event API<br />
                                             <span class="text-gray small">
                                                 Qualify users for custom quests even before account sign up
                                             </span>
