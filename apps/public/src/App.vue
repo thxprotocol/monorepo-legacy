@@ -24,8 +24,8 @@ import BaseJumbotron from '@thxnetwork/public/components/BaseJumbotron.vue';
 import BaseNavbar from '@thxnetwork/public/components/BaseNavbar.vue';
 import CookieLaw from 'vue-cookie-law';
 import { TITLES } from './utils/constants';
-import { THXWidget } from '@thxnetwork/sdk/client';
-import { PKG_ENV, WIDGET_ID, GTM } from './config/secrets';
+import { THXWidget } from '@thxnetwork/sdk/clients';
+import { WIDGET_ID, GTM, API_URL } from './config/secrets';
 
 @Component({
     metaInfo: {
@@ -63,7 +63,12 @@ export default class App extends Vue {
     }
 
     mounted() {
-        if (WIDGET_ID && PKG_ENV) new THXWidget({ env: PKG_ENV, poolId: WIDGET_ID });
+        if (WIDGET_ID && API_URL) {
+            THXWidget.create({
+                apiUrl: API_URL,
+                campaignId: WIDGET_ID,
+            });
+        }
     }
 }
 </script>

@@ -7,25 +7,15 @@ import { track } from '@thxnetwork/mixpanel';
 @Module({ namespaced: true })
 class ClientModule extends VuexModule {
     _all: TClientState = {};
-    _totals: { [poolId: string]: number } = {};
 
     get all() {
         return this._all;
-    }
-
-    get totals() {
-        return this._totals;
     }
 
     @Mutation
     set({ pool, client }: { pool: TPool; client: TClient }) {
         if (!this._all[pool._id]) Vue.set(this._all, pool._id, {});
         Vue.set(this._all[pool._id], client._id, client);
-    }
-
-    @Mutation
-    setTotal({ pool, total }: { pool: TPool; total: number }) {
-        Vue.set(this._totals, pool._id, total);
     }
 
     @Action({ rawError: true })

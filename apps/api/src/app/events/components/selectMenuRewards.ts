@@ -6,6 +6,7 @@ import { ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
 import { CustomReward } from '@thxnetwork/api/models/CustomReward';
 import { CouponReward } from '@thxnetwork/api/models/CouponReward';
 import { DiscordRoleReward } from '@thxnetwork/api/models/DiscordRoleReward';
+import { RewardVariant } from '@thxnetwork/common/lib/types/enums';
 
 async function createSelectMenuRewards(guild: Guild) {
     const { poolId } = await DiscordGuild.findOne({ guildId: guild.id });
@@ -22,14 +23,12 @@ async function createSelectMenuRewards(guild: Guild) {
 
     for (const index in rewards) {
         const reward = rewards[index];
-        const { title, description } = reward;
         const questId = String(reward._id);
         const value = JSON.stringify({ questId, variant: reward.variant });
-        const options = new StringSelectMenuOptionBuilder().setLabel(String(title)).setValue(value);
-
-        if (description) {
-            options.setDescription(description);
-        }
+        const options = new StringSelectMenuOptionBuilder()
+            .setLabel(reward.title)
+            .setDescription(`${reward.pointPrice} points (${RewardVariant[reward.variant]} Quest)`)
+            .setValue(value);
 
         select.addOptions(options);
     }

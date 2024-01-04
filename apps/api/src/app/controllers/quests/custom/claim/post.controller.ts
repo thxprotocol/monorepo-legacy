@@ -1,6 +1,4 @@
 import { Request, Response } from 'express';
-import { MilestoneRewardClaim } from '@thxnetwork/api/models/MilestoneRewardClaims';
-import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
 import { param } from 'express-validator';
 import { validate } from '@thxnetwork/api/services/PerkService';
@@ -14,18 +12,21 @@ const validation = [param('uuid').custom((uuid) => validate(uuid))];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Rewards']
-    const claim = await MilestoneRewardClaim.findOne({ uuid: req.params.uuid });
-    if (!claim) throw new NotFoundError('No custom quest entry for that uuid could be found.');
-    if (claim.isClaimed) throw new ForbiddenError('This custom quest entry has already been claimed');
-
-    const quest = await MilestoneReward.findById(claim.milestoneRewardId);
-    if (!quest) throw new NotFoundError('No custom quest for the given uuid could be found.');
+    const quest = await MilestoneReward.findOne({ uuid: req.params.uuid });
+    if (!quest) return res.json({ error: 'This quest is no longer available.' });
 
     const pool = await PoolService.getById(quest.poolId);
     const account = await AccountProxy.getById(req.auth.sub);
     const wallet = await SafeService.findPrimary(req.auth.sub, pool.chainId);
-    const entry = await QuestService.complete(QuestVariant.Custom, claim.amount, pool, quest, account, wallet, {
-        uuid: req.params.uuid,
+    if (!wallet) {
+        return res.json({ error: 'No wallet found for this account' });
+    }
+
+    const validationResult = await QuestService.validate(QuestVariant.Custom, quest, account, wallet);
+    if (!validationResult.result) return res.json({ error: validationResult.reason });
+
+    const entry = await QuestService.complete(QuestVariant.Custom, quest.amount, pool, quest, account, wallet, {
+        milestoneRewardId: quest._id,
         isClaimed: true,
     });
 

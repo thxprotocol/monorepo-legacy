@@ -1,6 +1,5 @@
 import express from 'express';
 import ListController from './list.controller';
-import GetController from './get.controller';
 import PostController from './post.controller';
 import PatchController from './patch.controller';
 import { assertPoolAccess, assertPlan, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
@@ -15,27 +14,13 @@ router.get(
     assertPlan([AccountPlanType.Premium]),
     ListController.controller,
 );
-router.get(
-    '/:id',
-    guard.check(['clients:read']),
-    assertPoolAccess,
-    assertPlan([AccountPlanType.Premium]),
-    GetController.controller,
-);
 router.patch(
     '/:id',
     guard.check(['clients:read', 'clients:write']),
     assertRequestInput(PatchController.validation),
     assertPoolAccess,
-    assertPlan([AccountPlanType.Premium]),
     PatchController.controller,
 );
-router.post(
-    '/',
-    guard.check(['clients:read', 'clients:write']),
-    assertPoolAccess,
-    assertPlan([AccountPlanType.Premium]),
-    PostController.controller,
-);
+router.post('/', guard.check(['clients:read', 'clients:write']), assertPoolAccess, PostController.controller);
 
 export default router;

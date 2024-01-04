@@ -14,6 +14,10 @@
                 "assets": ["apps/api/src/assets", "apps/api/src/app/migrations"],
                 "additionalEntryPoints": [
                     {
+                        "entryPath": "apps/api/scripts/ipfs.ts",
+                        "entryName": "ipfs"
+                    },
+                    {
                         "entryPath": "apps/api/scripts/upgradeContractsToLatest.ts",
                         "entryName": "upgradeContractsToLatest"
                     },
@@ -28,6 +32,10 @@
                     {
                         "entryPath": "apps/api/scripts/preview-widget.ts",
                         "entryName": "preview-widget"
+                    },
+                    {
+                        "entryPath": "apps/api/scripts/script.ts",
+                        "entryName": "script"
                     }
                 ],
                 "generatePackageJson": true
@@ -88,6 +96,22 @@
             "executor": "nx:run-commands",
             "options": {
                 "command": "node import-quests.js",
+                "cwd": "dist/apps/api"
+            }
+        },
+        "ipfs": {
+            "dependsOn": ["^build"],
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "node ipfs.js",
+                "cwd": "dist/apps/api"
+            }
+        },
+        "script": {
+            "dependsOn": ["^build"],
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "node script.js",
                 "cwd": "dist/apps/api"
             }
         },

@@ -1,4 +1,4 @@
-import { THXClient } from '../../index';
+import { THXClient } from '../clients';
 import BaseManager from './BaseManager';
 
 class QuestManager extends BaseManager {
@@ -19,7 +19,7 @@ class QuestManager extends BaseManager {
     invite = {
         complete: async (uuid: string, payload: { sub: string }) => {
             return await this.client.request.post(`/v1/quests/invite/${uuid}/claim`, {
-                body: JSON.stringify(payload),
+                data: JSON.stringify(payload),
             });
         },
     };
@@ -39,7 +39,7 @@ class QuestManager extends BaseManager {
     web3 = {
         complete: async (uuid: string, payload: { signature: string; message: string }) => {
             return await this.client.request.post(`/v1/quests/web3/${uuid}/claim`, {
-                body: JSON.stringify(payload),
+                data: JSON.stringify(payload),
             });
         },
     };

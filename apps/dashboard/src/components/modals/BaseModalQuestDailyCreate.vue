@@ -31,35 +31,33 @@
                 </b-form-group>
                 <b-link @click="$set(amounts, amounts.length, 0)">Add amount</b-link>
             </b-form-group>
-            <b-form-group label="Qualification">
-                <b-form-checkbox v-model="isEnabledWebhookQualification">
-                    Enable mandatory webhook qualification
-                </b-form-checkbox>
-            </b-form-group>
         </template>
         <template #col-right>
-            <BaseCardURLWebhook
-                :visible="isEnabledWebhookQualification"
-                :code="code"
-                class="mb-3"
-                title="Webhook Qualification"
-                description="You can also choose to run this webhook to qualify the daily reward and trigger a point transfer."
-            >
-                <template #alerts>
-                    <b-alert show variant="info">
-                        <i class="fas fa-question-circle mr-2"></i> Take note of these development guidelines:
-                        <ul class="px-3 mb-0 mt-1 small">
-                            <li v-if="!reward">
-                                <strong>TOKEN</strong> will be populated after creating this daily reward.
-                            </li>
-                            <li>
-                                <strong>CODE</strong> should be the virtual wallet code obtained for the user after
-                                running the virtual wallet webhook
-                            </li>
-                        </ul>
-                    </b-alert>
-                </template>
-            </BaseCardURLWebhook>
+            <b-card class="mb-3" body-class="bg-light p-0">
+                <b-button
+                    class="d-flex align-items-center justify-content-between w-100"
+                    variant="light"
+                    v-b-toggle.collapse-card-events
+                >
+                    <strong>Events</strong>
+                    <i :class="`fa-chevron-${isVisible ? 'up' : 'down'}`" class="fas m-0"></i>
+                </b-button>
+                <b-collapse id="collapse-card-events" v-model="isVisible">
+                    <hr class="mt-0" />
+                    <div class="px-3">
+                        <b-form-group
+                            label="Event Type"
+                            description="Requires this event for a participant to complete the quest."
+                        >
+                            <BaseDropdownEventType
+                                @click="eventName = $event"
+                                :events="pool.events"
+                                :event-name="eventName"
+                            />
+                        </b-form-group>
+                    </div>
+                </b-collapse>
+            </b-card>
         </template>
     </BaseModalQuestCreate>
 </template>
@@ -71,14 +69,14 @@ import { mapGetters } from 'vuex';
 import { API_URL } from '@thxnetwork/dashboard/config/secrets';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
-import BaseCardURLWebhook from '@thxnetwork/dashboard/components/cards/BaseCardURLWebhook.vue';
+import BaseDropdownEventType from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownEventType.vue';
 import BaseModalQuestCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestCreate.vue';
 
 @Component({
     components: {
         BaseModal,
         BaseModalQuestCreate,
-        BaseCardURLWebhook,
+        BaseDropdownEventType,
     },
     computed: mapGetters({
         totals: 'dailyRewards/totals',
@@ -97,6 +95,8 @@ export default class ModalRewardDailyCreate extends Vue {
     isEnabledWebhookQualification = false;
     file: File | null = null;
     expiryDate: Date | number | null = null;
+    eventName = '';
+    isVisible = true;
 
     @Prop() id!: string;
     @Prop() total!: number;
@@ -115,10 +115,8 @@ export default class ModalRewardDailyCreate extends Vue {
         this.description = this.reward ? this.reward.description : this.description;
         this.amounts = this.reward ? this.reward.amounts : this.amounts;
         this.infoLinks = this.reward ? this.reward.infoLinks : this.infoLinks;
-        this.isEnabledWebhookQualification = this.reward
-            ? this.reward.isEnabledWebhookQualification
-            : this.isEnabledWebhookQualification;
         this.expiryDate = this.reward && this.reward.expiryDate ? this.reward.expiryDate : this.expiryDate;
+        this.eventName = this.reward ? this.reward.eventName : this.eventName;
     }
 
     onSubmit() {
@@ -134,10 +132,10 @@ export default class ModalRewardDailyCreate extends Vue {
                 limit: this.limit,
                 file: this.file,
                 isPublished: this.isPublished,
+                eventName: this.eventName,
                 expiryDate: this.expiryDate ? new Date(this.expiryDate).toISOString() : undefined,
                 page: this.reward ? this.reward.page : 1,
                 infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
-                isEnabledWebhookQualification: this.isEnabledWebhookQualification,
                 index: !this.reward ? this.total : this.reward.index,
             })
             .then(() => {

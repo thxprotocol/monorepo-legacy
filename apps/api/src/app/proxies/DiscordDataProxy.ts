@@ -8,6 +8,7 @@ import { ActionRowBuilder, ButtonBuilder } from 'discord.js';
 import { WIDGET_URL } from '../config/secrets';
 import { logger } from '../util/logger';
 import DiscordGuild from '../models/DiscordGuild';
+import { AccessTokenKind } from '@thxnetwork/common/lib/types/enums';
 
 class NoDataError extends THXError {
     message = 'Could not find discord data for this account';
@@ -61,6 +62,7 @@ export default class DiscordDataProxy {
             if (btn.customId) button.setCustomId(btn.customId);
             if (btn.url) button.setURL(btn.url);
             if (btn.emoji) button.setEmoji(btn.emoji);
+            if (btn.disabled) button.setDisabled(true);
             return button;
         });
         return new ActionRowBuilder().addComponents(components);
@@ -69,12 +71,14 @@ export default class DiscordDataProxy {
     static async getUserId(account: TAccount) {
         const { data } = await authClient({
             method: 'GET',
-            url: `/account/${account.sub}/discord/user`,
+            url: `/account/${account.sub}`,
             headers: {
                 Authorization: await getAuthAccessToken(),
             },
         });
-        return data.userId;
+        const token = data.connectedAccounts.find((token) => token.kind === AccessTokenKind.Discord);
+        if (!token) return;
+        return token.userId;
     }
 
     static async get(sub: string) {

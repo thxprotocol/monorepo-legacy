@@ -8,7 +8,7 @@ export const onSubcommandComplete = async (interaction: CommandInteraction) => {
         const account = await AccountProxy.getByDiscordId(interaction.user.id);
         if (!account) throw new Error('Please, connect your THX Account with Discord first.');
 
-        const row = await createSelectMenuQuests(interaction.guild);
+        const row = await createSelectMenuQuests(interaction);
 
         interaction.reply({ components: [row as any], ephemeral: true });
     } catch (error) {

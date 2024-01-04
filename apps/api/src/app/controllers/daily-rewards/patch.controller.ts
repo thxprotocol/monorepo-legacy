@@ -33,13 +33,13 @@ const validation = [
             return true;
         })
         .customSanitizer((amounts) => JSON.parse(amounts)),
+    body('eventName').optional().isString(),
     body('expiryDate').optional().isISO8601(),
     body('infoLinks')
         .optional()
         .customSanitizer((infoLinks) => {
             return JSON.parse(infoLinks).filter((link: TInfoLink) => link.label.length && isValidUrl(link.url));
         }),
-    body('isEnabledWebhookQualification').optional().isBoolean(),
 ];
 
 const controller = async (req: Request, res: Response) => {
@@ -49,8 +49,7 @@ const controller = async (req: Request, res: Response) => {
     if (!quest) throw new NotFoundError('Could not find the dailyReward');
 
     const image = req.file && (await ImageService.upload(req.file));
-    const { title, description, amounts, infoLinks, isEnabledWebhookQualification, index, isPublished, expiryDate } =
-        req.body;
+    const { title, description, amounts, infoLinks, eventName, index, isPublished, expiryDate } = req.body;
 
     quest = await QuestService.update(QuestVariant.Daily, req.params.id, {
         title,
@@ -58,7 +57,7 @@ const controller = async (req: Request, res: Response) => {
         amounts,
         image,
         infoLinks,
-        isEnabledWebhookQualification,
+        eventName,
         index,
         isPublished,
         expiryDate,

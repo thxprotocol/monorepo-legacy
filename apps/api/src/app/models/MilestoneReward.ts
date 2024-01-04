@@ -9,6 +9,7 @@ const schema = new mongoose.Schema(
         ...questBaseSchema,
         amount: Number,
         limit: Number,
+        eventName: String,
     },
     { timestamps: true },
 );

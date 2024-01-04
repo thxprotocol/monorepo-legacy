@@ -14,7 +14,6 @@
                         v-for="(variant, key) of Object.keys(QuestVariant).filter((v) => isNaN(Number(v)))"
                         :key="key"
                         v-b-modal="`${questModalComponentMap[QuestVariant[variant]]}-${variant}`"
-                        :disabled="QuestVariant[variant] === QuestVariant.Custom && !hasPremiumAccess(pool.owner)"
                         button-class="d-flex px-2"
                     >
                         <b-media>

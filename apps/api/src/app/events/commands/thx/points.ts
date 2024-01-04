@@ -28,7 +28,7 @@ async function removePoints(
         walletId: wallet._id,
     });
 
-    const senderMessage = `The balance of <@${receiver.id}> has been decreased with **${amount} points** and is now **${balance.balance}** !`;
+    const senderMessage = `The balance of <@${receiver.id}> has been decreased with **${amount} points** and is now **${balance.balance}**.`;
     const receiverMessage = `<@${sender.id}> decreased your balance with **${amount}** resulting in a total of **${balance.balance} points**.`;
 
     return { senderMessage, receiverMessage };
@@ -47,7 +47,7 @@ async function addPoints(
         poolId: pool._id,
         walletId: wallet._id,
     });
-    const senderMessage = `The balance of <@${receiver.id}> has been increased with **${amount} points** and is now **${balance.balance}** !`;
+    const senderMessage = `The balance of <@${receiver.id}> has been increased with **${amount} points** and is now **${balance.balance}**!`;
     const receiverMessage = `<@${sender.id}> increased your balance with **${amount}** resulting in a total of **${balance.balance} points**.`;
 
     return { senderMessage, receiverMessage };
@@ -70,7 +70,7 @@ export const onSubcommandPoints = async (interaction: CommandInteraction, varian
         if (!discordGuild) throw new Error('Could not find server in database.');
 
         // Check role
-        const member = await interaction.guild.members.fetch(user.id);
+        const member = await interaction.guild.members.fetch(interaction.user.id);
         if (!member.roles.cache.has(discordGuild.adminRoleId)) {
             const role = await interaction.guild.roles.fetch(discordGuild.adminRoleId);
             throw new Error(`Only **${role.name}** roles have access to this command!`);

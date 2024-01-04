@@ -9,6 +9,8 @@ import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { Web3Quest } from '@thxnetwork/api/models/Web3Quest';
 import { Web3QuestClaim } from '@thxnetwork/api/models/Web3QuestClaim';
 import { TBaseReward } from '@thxnetwork/types/interfaces';
+import { Event } from '@thxnetwork/api/models/Event';
+import { Identity, IdentityDocument } from '@thxnetwork/api/models/Identity';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import DailyRewardClaimService, { ONE_DAY_MS } from '@thxnetwork/api/services/DailyRewardClaimService';
 import WalletService from '@thxnetwork/api/services/WalletService';
@@ -27,34 +29,39 @@ const getDefaults = ({ _id, index, title, description, infoLinks, uuid, image, e
 });
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Rewards']
+    // #swagger.tags = ['Quests']
     const pool = await PoolService.getById(req.header('X-PoolId'));
     const query = {
         poolId: pool._id,
         isPublished: true,
         $or: [
-            { expiryDate: { $exists: true, $gte: new Date() } }, // Include rewards with expiryDate less than or equal to now
-            { expiryDate: { $exists: false } }, // Include quests with no expiryDate
+            // Include quests with expiryDate less than or equal to now
+            { expiryDate: { $exists: true, $gte: new Date() } },
+            // Include quests with no expiryDate
+            { expiryDate: { $exists: false } },
         ],
     };
-    const authHeader = req.header('authorization');
     const models = [ReferralReward, PointReward, MilestoneReward, DailyReward, Web3Quest];
     const [inviteQuests, socialQuests, customQuests, dailyQuests, web3Quests] = await Promise.all(
         models.map(async (model: any) => await model.find(query)),
     );
 
-    let wallet: WalletDocument, sub: string;
+    let wallet: WalletDocument,
+        sub: string,
+        identities: IdentityDocument[] = [];
 
     // This endpoint is public so we do not get req.auth populated and decode the token ourselves
     // when the request is made with an authorization header to obtain the sub.
+    const authHeader = req.header('authorization');
     if (authHeader && authHeader.startsWith('Bearer ')) {
         const token: { sub: string } = jwt_decode(authHeader.split(' ')[1]);
         sub = token.sub;
         wallet = await WalletService.findPrimary(sub, pool.chainId);
+        identities = await Identity.find({ poolId: pool._id, sub });
     }
 
     const dailyQuestPromises = dailyQuests.map(async (r) => {
-        const isDisabled = wallet ? !(await DailyRewardClaimService.isClaimable(r, wallet)) : true;
+        const validationResult = wallet ? await DailyRewardClaimService.validate(r, wallet) : { result: true };
         const validClaims = wallet ? await DailyRewardClaimService.findByWallet(r, wallet) : [];
         const claimAgainTime = validClaims.length ? new Date(validClaims[0].createdAt).getTime() + ONE_DAY_MS : null;
         const now = Date.now();
@@ -65,31 +72,36 @@ const controller = async (req: Request, res: Response) => {
             ...defaults,
             amounts: r.amounts,
             pointsAvailable,
-            isDisabled,
+            isDisabled: !validationResult.result,
             claims: validClaims,
             claimAgainDuration:
                 claimAgainTime && claimAgainTime - now > 0 ? Math.floor((claimAgainTime - now) / 1000) : null, // Convert and floor to S,
         };
     });
+
     const customQuestPromises = customQuests.map(async (r) => {
+        const defaults = getDefaults(r);
         const claims = wallet
             ? await MilestoneRewardClaim.find({
                   walletId: String(wallet._id),
                   milestoneRewardId: String(r._id),
+                  isClaimed: true,
               })
             : [];
-        const defaults = getDefaults(r);
-        const pointsAvailable = claims.reduce((total, claim) => {
-            return claim.isClaimed ? total : total + Number(claim.amount);
-        }, 0);
+        const identityIds = identities.map(({ _id }) => String(_id));
+        const events = identityIds.length ? await Event.find({ name: r.eventName, identityId: identityIds }) : [];
+        const pointsAvailable = (r.limit - claims.length) * r.amount;
 
         return {
             ...defaults,
+            limit: r.limit,
             amount: r.amount,
             pointsAvailable,
             claims,
+            events,
         };
     });
+
     const inviteQuestPromises = inviteQuests.map((r) => {
         const defaults = getDefaults(r);
         return {

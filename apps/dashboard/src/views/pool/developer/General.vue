@@ -10,11 +10,16 @@
         </b-form-row>
         <b-form-row>
             <b-col md="4">
-                <strong>Embed code</strong>
+                <strong>Campaign Widget</strong>
                 <p class="text-muted">
-                    Place this code before the closing body tag of your HTML page. The launcher will show for your web
-                    page visitors.<br />
-                    <b-link target="_blank" href="https://www.npmjs.com/package/@thxnetwork/sdk"> Download SDK </b-link>
+                    Place this script in HTML page and your campaign widget will show for your web page visitors.
+                </p>
+                <p class="text-muted">
+                    Alternatively you can use the
+                    <b-link target="_blank" href="https://www.npmjs.com/package/@thxnetwork/sdk">
+                        @thxnetwork/sdk
+                    </b-link>
+                    for this.
                 </p>
             </b-col>
             <b-col md="8">
