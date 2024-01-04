@@ -12,7 +12,6 @@ import YouTubeDataProxy from '@thxnetwork/api/proxies/YoutubeDataProxy';
 import DiscordDataProxy from '@thxnetwork/api/proxies/DiscordDataProxy';
 import DiscordMessage from '../models/DiscordMessage';
 import { logger } from '../util/logger';
-import { questInteractionVariantMap } from '@thxnetwork/common/lib/types/maps';
 
 const questConditionMap: {
     [interaction: number]: (account: TAccount, quest) => Promise<void | { result: boolean; reason: string }>;
@@ -64,6 +63,12 @@ const questConditionMap: {
                 reason: `Discord: User #${userId} has not joined Discord server #${quest.content}.`,
             };
         }
+    },
+    [RewardConditionInteraction.DiscordMessage]: async (account, quest) => {
+        return;
+    },
+    [RewardConditionInteraction.DiscordMessageReaction]: async (account, quest) => {
+        return;
     },
 };
 
