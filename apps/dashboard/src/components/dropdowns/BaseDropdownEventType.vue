@@ -8,6 +8,7 @@
         <template #button-content>
             {{ eventName ? eventName : 'Choose an event...' }}
         </template>
+        <b-dropdown-item @click="$emit('click', '')"> None </b-dropdown-item>
         <b-dropdown-item @click="$emit('click', event)" :key="key" v-for="(event, key) of events">
             {{ event }}
         </b-dropdown-item>
