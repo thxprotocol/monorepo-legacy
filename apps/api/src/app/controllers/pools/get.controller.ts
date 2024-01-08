@@ -13,6 +13,8 @@ import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import DiscordGuild, { DiscordGuildDocument } from '@thxnetwork/api/models/DiscordGuild';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import { Identity } from '@thxnetwork/api/models/Identity';
+import { safeVersion } from '@thxnetwork/api/config/contracts';
+import { logger } from '@thxnetwork/api/util/logger';
 
 function discordColorToHex(discordColorCode) {
     return `#${discordColorCode.toString(16).padStart(6, '0')}`;
@@ -24,7 +26,16 @@ export const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
     const pool = await PoolService.getById(req.params.id);
     const safe = await SafeService.findOneByPool(pool, pool.chainId);
-    if (!safe) return res.json(pool.toJSON());
+    if (!safe) {
+        // Deploy a Safe
+        const safe = await SafeService.create({
+            chainId: pool.chainId,
+            sub: pool.sub,
+            safeVersion,
+            poolId: req.params.id,
+        });
+        logger.info(`[${req.params.id}] Deployed Campaign Safe ${safe.address}`);
+    }
 
     const widget = await Widget.findOne({ poolId: req.params.id });
     const brand = await BrandService.get(req.params.id);
