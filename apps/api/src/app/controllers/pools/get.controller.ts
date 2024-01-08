@@ -25,10 +25,11 @@ export const validation = [param('id').isMongoId()];
 export const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
     const pool = await PoolService.getById(req.params.id);
-    const safe = await SafeService.findOneByPool(pool, pool.chainId);
+    let safe = await SafeService.findOneByPool(pool, pool.chainId);
+
+    // Deploy a Safe if none is found
     if (!safe) {
-        // Deploy a Safe
-        const safe = await SafeService.create({
+        safe = await SafeService.create({
             chainId: pool.chainId,
             sub: pool.sub,
             safeVersion,
@@ -69,7 +70,7 @@ export const controller = async (req: Request, res: Response) => {
 
     res.json({
         ...pool.toJSON(),
-        address: safe.address,
+        address: pool.safeAddress,
         safe,
         identities,
         events,

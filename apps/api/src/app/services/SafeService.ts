@@ -17,7 +17,7 @@ import AccountProxy from '../proxies/AccountProxy';
 import { agenda, JobType } from '@thxnetwork/api/util/agenda';
 import { MongoClient } from 'mongodb';
 import { Job } from '@hokify/agenda';
-import { AssetPoolDocument } from '../models/AssetPool';
+import { AssetPool, AssetPoolDocument } from '../models/AssetPool';
 import { Transaction } from '../models/Transaction';
 import TransactionService from './TransactionService';
 import { convertObjectIdToNumber } from '../util';
@@ -106,6 +106,11 @@ async function createJob(job: Job) {
 
     await safeFactory.deploySafe(config);
     logger.debug(`[${wallet.sub}] Deployed Safe: ${safeAddress}`);
+
+    // Set safeAddress for campaign to keep address available for potential regression
+    if (wallet.poolId) {
+        await AssetPool.findByIdAndUpdate(wallet.poolId, { safeAddress: toChecksumAddress(safeAddress) });
+    }
 }
 
 async function getWalletMigration(sub: string, chainId: ChainId) {
