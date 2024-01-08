@@ -11,30 +11,34 @@ import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import { IPFS_BASE_URL } from '@thxnetwork/api/config/secrets';
 import { TERC721Perk } from '@thxnetwork/types/interfaces';
+import { safeVersion } from '@thxnetwork/api/config/contracts';
+import SafeService from '@thxnetwork/api/services/SafeService';
 
 const user = request.agent(app);
 
-describe('Claims', () => {
+describe('QR Codes', () => {
     let poolId: string,
         pool: AssetPoolDocument,
         erc721: ERC721Document,
         metadata: ERC721MetadataDocument,
         claims: ClaimDocument[];
-    const claimAmount = 10;
-    const config = {
-        title: '',
-        description: '',
-        price: 0,
-        priceCurrency: 'USD',
-        pointPrice: 0,
-        limit: 0,
-    } as TERC721Perk;
+    const claimAmount = 10,
+        config = {
+            title: '',
+            description: '',
+            pointPrice: 0,
+            limit: 0,
+        } as TERC721Perk,
+        chainId = ChainId.Hardhat;
 
     beforeAll(async () => {
         await beforeAllCallback();
-        const chainId = ChainId.Hardhat;
-        pool = await PoolService.deploy(sub, chainId, 'My Reward Campaign', true, true, new Date());
+
+        pool = await PoolService.deploy(sub, chainId, 'My Reward Campaign', new Date());
         poolId = String(pool._id);
+
+        await SafeService.create({ sub, chainId, safeVersion, poolId });
+
         erc721 = await ERC721Service.deploy({
             variant: NFTVariant.ERC721,
             sub,

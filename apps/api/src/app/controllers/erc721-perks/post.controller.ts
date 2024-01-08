@@ -13,6 +13,8 @@ import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
 import ERC721PerkService from '@thxnetwork/api/services/ERC721PerkService';
+import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
+import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
 
 const validation = [
     check('file')
@@ -128,7 +130,7 @@ async function createPerkForTokenId(
 async function getMetadataForNFTVariant(variant: NFTVariant, metadataId: string) {
     switch (variant) {
         case NFTVariant.ERC721:
-            return await ERC721Service.findMetadataById(metadataId);
+            return await ERC721Metadata.findById(metadataId);
         case NFTVariant.ERC1155:
             return await ERC1155Service.findMetadataById(metadataId);
     }
@@ -137,7 +139,7 @@ async function getMetadataForNFTVariant(variant: NFTVariant, metadataId: string)
 async function getTokenForNFTVariant(variant: NFTVariant, tokenId: string) {
     switch (variant) {
         case NFTVariant.ERC721:
-            return await ERC721Service.findTokenById(tokenId);
+            return await ERC721Token.findById(tokenId);
         case NFTVariant.ERC1155:
             return await ERC1155Service.findTokenById(tokenId);
     }

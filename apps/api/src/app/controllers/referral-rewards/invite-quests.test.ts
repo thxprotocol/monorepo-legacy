@@ -82,9 +82,9 @@ describe('Referral Rewards', () => {
         user.get(`/v1/referral-rewards`)
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .expect((res: request.Response) => {
-                expect(res.body.results.length).toBe(2);
+                expect(res.body.results.length).toBe(1);
                 expect(res.body.limit).toBe(10);
-                expect(res.body.total).toBe(2);
+                expect(res.body.total).toBe(1);
             })
             .expect(200, done);
     });

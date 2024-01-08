@@ -11,6 +11,7 @@ import PoolService from '@thxnetwork/api/services/PoolService';
 import BrandService from '@thxnetwork/api/services/BrandService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import DiscordGuild, { DiscordGuildDocument } from '@thxnetwork/api/models/DiscordGuild';
+import SafeService from '@thxnetwork/api/services/SafeService';
 import { Identity } from '@thxnetwork/api/models/Identity';
 
 function discordColorToHex(discordColorCode) {
@@ -22,7 +23,8 @@ export const validation = [param('id').isMongoId()];
 export const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
     const pool = await PoolService.getById(req.params.id);
-    if (!pool.address) return res.json(pool.toJSON());
+    const safe = await SafeService.findOneByPool(pool, pool.chainId);
+    if (!safe) return res.json(pool.toJSON());
 
     const widget = await Widget.findOne({ poolId: req.params.id });
     const brand = await BrandService.get(req.params.id);
@@ -56,6 +58,8 @@ export const controller = async (req: Request, res: Response) => {
 
     res.json({
         ...pool.toJSON(),
+        address: safe.address,
+        safe,
         identities,
         events,
         wallets,

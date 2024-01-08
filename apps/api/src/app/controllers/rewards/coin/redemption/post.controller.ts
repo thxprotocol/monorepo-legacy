@@ -7,12 +7,11 @@ import { getContractFromName } from '@thxnetwork/api/config/contracts';
 import { BigNumber } from 'ethers';
 import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
 import { ChainId, ERC20Type } from '@thxnetwork/types/enums';
+import { Widget } from '@thxnetwork/api/models/Widget';
 import PointBalanceService, { PointBalance } from '@thxnetwork/api/services/PointBalanceService';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
-import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import { Widget } from '@thxnetwork/api/models/Widget';
 import MailService from '@thxnetwork/api/services/MailService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import PerkService from '@thxnetwork/api/services/PerkService';
@@ -23,8 +22,10 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Reward Payment']
 
     const pool = await PoolService.getById(req.header('X-PoolId'));
-    const widget = await Widget.findOne({ poolId: pool._id });
+    const safe = await SafeService.findOneByPool(pool, pool.chainId);
+    if (!safe) throw new NotFoundError('Could not find campaign wallet');
 
+    const widget = await Widget.findOne({ poolId: pool._id });
     const erc20Perk = await ERC20Perk.findOne({ uuid: req.params.uuid });
     if (!erc20Perk) throw new NotFoundError('Could not find this perk');
     if (!erc20Perk.pointPrice) throw new NotFoundError('No point price for this perk has been set.');
@@ -47,7 +48,7 @@ const controller = async (req: Request, res: Response) => {
 
     const contract = getContractFromName(pool.chainId, 'LimitedSupplyToken', erc20.address);
     const amount = toWei(erc20Perk.amount).toString();
-    const balanceOfPool = await contract.methods.balanceOf(pool.address).call();
+    const balanceOfPool = await contract.methods.balanceOf(safe.address).call();
     if (
         [ERC20Type.Unknown, ERC20Type.Limited].includes(erc20.type) &&
         BigNumber.from(balanceOfPool).lt(BigNumber.from(amount))
@@ -56,7 +57,7 @@ const controller = async (req: Request, res: Response) => {
         await MailService.send(
             owner.email,
             `⚠️ Out of ${erc20.symbol}!"`,
-            `Not enough ${erc20.symbol} available in campaign contract ${pool.address}. Please top up on ${
+            `Not enough ${erc20.symbol} available in campaign contract ${safe.address}. Please top up on ${
                 ChainId[pool.chainId]
             }`,
         );
@@ -64,8 +65,7 @@ const controller = async (req: Request, res: Response) => {
             `We have notified the campaign owner that there is insufficient ${erc20.symbol} in the campaign wallet. Please try again later!`,
         );
     }
-
-    const withdrawal = await WithdrawalService.withdrawFor(pool, erc20, wallet, erc20Perk.amount, false);
+    const tx = await ERC20Service.transferFrom(erc20, safe, wallet.address, amount);
     const erc20PerkPayment = await ERC20PerkPayment.create({
         perkId: erc20Perk.id,
         sub: req.auth.sub,
@@ -82,7 +82,7 @@ const controller = async (req: Request, res: Response) => {
 
     await MailService.send(account.email, `🎁 Coin Drop! ${erc20Perk.amount} ${erc20.symbol}"`, html);
 
-    res.status(201).json({ withdrawal, erc20PerkPayment });
+    res.status(201).json({ tx, erc20PerkPayment });
 };
 
 export default { controller, validation };

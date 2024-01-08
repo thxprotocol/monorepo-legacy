@@ -8,8 +8,6 @@ import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
 import { Wallet } from '@thxnetwork/api/services/WalletService';
 import { Identity } from '@thxnetwork/api/models/Identity';
 import { Event } from '@thxnetwork/api/models/Event';
-import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import SafeService from '@thxnetwork/api/services/SafeService';
 
 const validation = [
     param('uuid').isUUID('4'),

@@ -29,12 +29,6 @@
                     {{ erc721.totalSupply }}
                 </strong>
             </p>
-            <p>
-                <span class="text-muted">Base URL</span><br />
-                <b-badge variant="primary" class="mr-1 mb-1">
-                    {{ erc721.baseURL }}
-                </b-badge>
-            </p>
             <b-button block variant="light" class="rounded-pill">Manage Metadata</b-button>
         </template>
     </base-card>

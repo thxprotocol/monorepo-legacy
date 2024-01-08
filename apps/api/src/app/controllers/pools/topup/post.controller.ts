@@ -7,8 +7,17 @@ import { body, param } from 'express-validator';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
 import PoolService from '@thxnetwork/api/services/PoolService';
+import SafeService from '@thxnetwork/api/services/SafeService';
 
 export const validation = [param('id').isMongoId(), body('erc20Id').exists().isMongoId(), body('amount').exists()];
+
+// TODO
+// 1. Create Split
+// 2. TransferFrom USDC to Splitter
+// 3. Receivers [campaignSafe, companySafe], [70, 30]
+// 4. Campaign Safe Deposit 100% in LP
+// 5. Transfer 75% to RewardDistributor
+// 6. Hold 25% for Quest Incentive Distribution (weekly recurring job with multisend)
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
@@ -23,7 +32,8 @@ const controller = async (req: Request, res: Response) => {
     if (Number(balance) < Number(amount)) throw new InsufficientBalanceError();
 
     // Check allowance for admin to ensure throughput
-    const allowance = await erc20.contract.methods.allowance(defaultAccount, pool.address).call();
+    const safe = await SafeService.findOneByPool(pool, pool.chainId);
+    const allowance = await erc20.contract.methods.allowance(defaultAccount, safe.address).call();
     if (Number(allowance) < Number(amount)) {
         await TransactionService.send(
             erc20.contract.options.address,
@@ -34,7 +44,7 @@ const controller = async (req: Request, res: Response) => {
 
     await TransactionService.send(
         erc20.contract.options.address,
-        erc20.contract.methods.transfer(pool.address, amount),
+        erc20.contract.methods.transfer(safe.address, amount),
         erc20.chainId,
     );
 

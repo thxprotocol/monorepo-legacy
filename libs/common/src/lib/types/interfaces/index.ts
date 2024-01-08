@@ -25,7 +25,6 @@ export * from './Brand';
 export * from './Widget';
 export * from './Claim';
 export * from './Wallet';
-export * from './Merchant';
 export * from './Client';
 export * from './Interaction';
 export * from './Webhook';

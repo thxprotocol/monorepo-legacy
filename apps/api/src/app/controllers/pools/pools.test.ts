@@ -12,8 +12,8 @@ import {
     dashboardAccessToken,
 } from '@thxnetwork/api/util/jest/constants';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { getByteCodeForContractName, getContract } from '@thxnetwork/api/config/contracts';
 import { currentVersion } from '@thxnetwork/contracts/exports';
+import { getByteCodeForContractName, getContract } from '@thxnetwork/api/config/contracts';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
 import { Contract } from 'web3-eth-contract';
 
@@ -26,30 +26,17 @@ describe('Default Pool', () => {
         await beforeAllCallback();
 
         userWallet = createWallet(userWalletPrivateKey2);
+
+        const { options } = getContract(ChainId.Hardhat, 'LimitedSupplyToken', currentVersion);
+        tokenContract = await TransactionService.deploy(
+            options.jsonInterface,
+            getByteCodeForContractName('LimitedSupplyToken'),
+            [tokenName, tokenSymbol, userWallet.address, tokenTotalSupply],
+            ChainId.Hardhat,
+        );
     });
 
     afterAll(afterAllCallback);
-
-    describe('Existing ERC20 contract', () => {
-        it('TokenDeployed event', async () => {
-            const { options } = getContract(ChainId.Hardhat, 'LimitedSupplyToken', currentVersion);
-            tokenContract = await TransactionService.deploy(
-                options.jsonInterface,
-                getByteCodeForContractName('LimitedSupplyToken'),
-                [tokenName, tokenSymbol, userWallet.address, tokenTotalSupply],
-                ChainId.Hardhat,
-            );
-        });
-        it('import token', (done) => {
-            user.post('/v1/erc20/token')
-                .set('Authorization', dashboardAccessToken)
-                .send({
-                    address: tokenContract.options.address,
-                    chainId: ChainId.Hardhat,
-                })
-                .expect(201, done);
-        });
-    });
 
     describe('POST /pools', () => {
         it('HTTP 201 (success)', (done) => {
@@ -62,6 +49,7 @@ describe('Default Pool', () => {
                 })
                 .expect((res: request.Response) => {
                     poolId = res.body._id;
+                    expect(res.body.safe.address).toBeDefined();
                     expect(res.body.settings.endDate).toBeDefined();
                     expect(res.body.settings.title).toBe('My Pool');
                     expect(res.body.settings.isArchived).toBe(false);

@@ -88,10 +88,7 @@ describe('ERC20Transfer', () => {
 
             expect(res2.status).toBe(200);
         });
-    });
-
-    describe('Wait for balance', () => {
-        it('Poll', async () => {
+        it('Wait for balance', async () => {
             const { contract } = await ERC20.findById(erc20._id);
             await poll(
                 contract.methods.balanceOf(userWalletAddress2).call,

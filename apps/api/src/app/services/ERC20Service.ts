@@ -4,7 +4,7 @@ import { ICreateERC20Params } from '@thxnetwork/api/types/interfaces';
 import TransactionService from './TransactionService';
 import { assertEvent, ExpectedEventNotFound, findEvent, parseLogs } from '@thxnetwork/api/util/events';
 import { ChainId, ERC20Type, TransactionState } from '@thxnetwork/types/enums';
-import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
+import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { getByteCodeForContractName, getContractFromName } from '@thxnetwork/api/config/contracts';
 import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
 import { ERC20Token } from '@thxnetwork/api/models/ERC20Token';
@@ -18,7 +18,6 @@ import WalletService, { Wallet } from './WalletService';
 import { ContractName } from '@thxnetwork/contracts/exports';
 import BN from 'bn.js';
 import { ERC20Perk } from '../models/ERC20Perk';
-import { Collaborator } from '../models/Collaborator';
 import PoolService from './PoolService';
 
 function getDeployArgs(erc20: ERC20Document, totalSupply?: string) {

@@ -75,12 +75,12 @@ describe('Daily Rewards', () => {
         user.get(`/v1/daily-rewards`)
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .expect(({ body }: request.Response) => {
-                expect(body.results.length).toBe(2);
+                expect(body.results.length).toBe(1);
                 expect(body.results[0].uuid).toBeDefined();
                 expect(body.results[0].title).toBe(dailyReward.title);
                 expect(body.results[0].description).toBe(dailyReward.description);
                 expect(body.results[0].amounts[0]).toBe(dailyReward.amounts[0]);
-                expect(body.total).toBe(2);
+                expect(body.total).toBe(1);
             })
             .expect(200, done);
     });

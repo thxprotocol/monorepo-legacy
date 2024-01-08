@@ -30,6 +30,7 @@ export const controller = async (req: Request, res: Response) => {
     if (owner !== wallet.address) throw new ForbiddenError('Account is not owner of given tokenId');
 
     const tx = await ERC721Service.transferFromWallet(erc721, erc721Token, wallet, req.body.to);
+
     res.status(201).json(tx);
 };
 export default { controller, validation };

@@ -23,7 +23,7 @@ const send = async (to: string, subject: string, htmlContent: string, link = { s
     );
 
     if (!AWS_ACCESS_KEY_ID || !AWS_SECRET_ACCESS_KEY || NODE_ENV === 'test' || CYPRESS_EMAIL === to) {
-        logger.error({ message: 'Not sending e-mail', link });
+        logger.debug({ message: 'Not sending e-mail', link });
         return;
     }
 

@@ -8,6 +8,7 @@ import { ERC20Perk } from '@thxnetwork/api/models/ERC20Perk';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import MailService from '@thxnetwork/api/services/MailService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
+import SafeService from '@thxnetwork/api/services/SafeService';
 
 const validation = [param('id').isMongoId(), body('sub').isMongoId(), body('token').isString()];
 
@@ -15,6 +16,9 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
     const pool = await PoolService.getById(req.params.id);
     if (!pool) throw new NotFoundError('Could not find the pool for this token.');
+
+    const safe = await SafeService.findOneByPool(pool, pool.chainId);
+    if (!safe) throw new NotFoundError('Could not find the Safe for this pool.');
 
     const poolTransfer = await PoolTransfer.findOne({ sub: pool.sub, token: req.body.token });
     if (!poolTransfer) throw new NotFoundError('Could not find this pool transfer token.');
@@ -42,6 +46,8 @@ const controller = async (req: Request, res: Response) => {
     }
 
     pool.sub = req.body.sub;
+
+    await safe.updateOne({ sub: req.body.sub });
     await pool.save();
 
     const erc20Ids = await ERC20Perk.find({ poolId: pool._id }).distinct('erc20Id');

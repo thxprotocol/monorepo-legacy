@@ -6,6 +6,7 @@ import IPFSService from '@thxnetwork/api/services/IPFSService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { AccountPlanType } from '@thxnetwork/types/enums';
 import { IPFS_BASE_URL } from '@thxnetwork/api/config/secrets';
+import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
 
 const validation = [
     param('id').isMongoId(),
@@ -20,7 +21,7 @@ const controller = async (req: Request, res: Response) => {
     const erc721 = await ERC721Service.findById(req.params.id);
     if (!erc721) throw new NotFoundError('Could not find this NFT in the database');
 
-    const metadata = await ERC721Service.findMetadataById(req.params.metadataId);
+    const metadata = await ERC721Metadata.findById(req.params.metadataId);
     if (!metadata) throw new NotFoundError('Could not find this NFT Metadata in the database');
 
     const tokens = metadata.tokens || [];

@@ -8,13 +8,12 @@ import { TransactionReceipt } from 'web3-eth-accounts/node_modules/web3-core';
 import { toChecksumAddress } from 'web3-utils';
 import { poll } from '@thxnetwork/api/util/polling';
 import { deployCallback as erc20DeployCallback } from './ERC20Service';
-import PoolService from './PoolService';
-import ERC721Service from './ERC721Service';
-import WithdrawalService from './WithdrawalService';
-import { RelayerTransactionPayload } from 'defender-relay-client';
+import { RelayerTransactionPayload } from '@openzeppelin/defender-relay-client';
 import { Contract } from 'web3-eth-contract';
 import { WalletDocument } from '../models/Wallet';
 import WalletManagerService from './WalletManagerService';
+import ERC721Service from './ERC721Service';
+import WithdrawalService from './WithdrawalService';
 import ERC1155Service from './ERC1155Service';
 import SafeService from './SafeService';
 import WalletService from './WalletService';
@@ -175,32 +174,24 @@ async function execSafeAsync(wallet: WalletDocument, tx: TransactionDocument) {
 async function sendSafeAsync(wallet: WalletDocument, to: string | null, fn: any, callback?: TTransactionCallback) {
     const { relayer, defaultAccount } = getProvider(wallet.chainId);
     const data = fn.encodeABI();
-    // const estimate = await fn.estimateGas({ from: defaultAccount });
-    // const gas = estimate < MINIMUM_GAS_LIMIT ? MINIMUM_GAS_LIMIT : estimate;
-    const tx = await Transaction.create({
+    const safeTxHash = await SafeService.proposeTransaction(wallet, {
+        to,
+        data,
+        value: '0',
+    });
+
+    await SafeService.confirmTransaction(wallet, safeTxHash);
+
+    return await Transaction.create({
         type: relayer ? TransactionType.Relayed : TransactionType.Default,
-        state: TransactionState.Queued,
+        state: TransactionState.Confirmed,
+        safeTxHash,
         chainId: wallet.chainId,
         walletId: String(wallet._id),
         from: defaultAccount,
         to,
         callback,
     });
-
-    const safeTxHash = await SafeService.proposeTransaction(wallet, {
-        to,
-        data,
-        value: '0',
-        // safeTxGas: gas,
-    });
-
-    await SafeService.confirmTransaction(wallet, safeTxHash);
-
-    return await Transaction.findByIdAndUpdate(
-        tx._id,
-        { state: TransactionState.Confirmed, safeTxHash },
-        { new: true },
-    );
 }
 
 async function deploy(abi: any, bytecode: any, arg: any[], chainId: ChainId) {
@@ -278,9 +269,6 @@ async function executeCallback(tx: TransactionDocument, receipt: TransactionRece
             break;
         case 'ERC1155DeployCallback':
             await ERC1155Service.deployCallback(tx.callback.args, receipt);
-            break;
-        case 'assetPoolDeployCallback':
-            await PoolService.deployCallback(tx.callback.args, receipt);
             break;
         case 'erc721TokenMintCallback':
             await ERC721Service.mintCallback(tx.callback.args, receipt);
@@ -386,4 +374,5 @@ export default {
     execSafeAsync,
     queryTransactionStatusDefender,
     queryTransactionStatusReceipt,
+    executeCallback,
 };
