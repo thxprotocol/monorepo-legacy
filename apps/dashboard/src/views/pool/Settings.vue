@@ -1,50 +1,22 @@
 <template>
     <div>
         <h2 class="mb-3">Settings</h2>
-        <b-card class="shadow-sm mb-5" no-body v-if="pool">
-            <b-tabs card pills active-nav-item-class="rounded-pill">
-                <b-tab active>
-                    <template #title>
-                        <i class="fas fa-cog mr-1"></i>
-                        General
-                    </template>
-                    <BaseTabSettingsGeneral />
-                </b-tab>
-                <b-tab>
-                    <template #title>
-                        <i class="fas fa-users mr-1"></i>
-                        Team
-                    </template>
-                    <BaseTabSettingsTeam />
-                </b-tab>
-                <b-tab>
-                    <template #title>
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-sliders-h mr-1"></i>
-                            Appearance
-                        </div>
-                    </template>
-                    <BaseTabSettingsTheme />
-                </b-tab>
-                <b-tab>
-                    <template #title>
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-share-alt mr-1"></i>
-                            Widget
-                        </div>
-                    </template>
-                    <BaseTabSettingsWidget />
-                </b-tab>
-                <b-tab disabled>
-                    <template #title>
-                        <i class="fas fa-tags mr-1"></i>
-                        Commerce
-                        <b-badge variant="dark" class="ml-2 text-white"> New </b-badge>
-                    </template>
-                    ...
-                </b-tab>
-            </b-tabs>
-            <router-view :key="$route.fullPath" />
+        <b-card class="shadow-sm mb-5" v-if="pool" header-class="p-0">
+            <template #header>
+                <b-nav card-header tabs pills class="px-3 border-0">
+                    <b-nav-text active v-for="(item, key) in childRoutes" :key="key">
+                        <b-button
+                            :variant="$route.path.endsWith(item.route) ? 'primary' : 'link'"
+                            class="rounded-pill"
+                            :to="`/pool/${pool._id}/settings/${item.route}`"
+                        >
+                            <i class="ml-0 mr-2" :class="item.class"></i>
+                            {{ item.name }}
+                        </b-button>
+                    </b-nav-text>
+                </b-nav>
+            </template>
+            <router-view />
         </b-card>
     </div>
 </template>
@@ -52,34 +24,38 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import BaseTabSettingsGeneral from '@thxnetwork/dashboard/views/pool/settings/General.vue';
-import BaseTabSettingsWidget from '@thxnetwork/dashboard/views/pool/settings/Widget.vue';
-import BaseTabSettingsTheme from '@thxnetwork/dashboard/views/pool/settings/Theme.vue';
-import BaseTabSettingsTeam from '@thxnetwork/dashboard/views/pool/settings/Team.vue';
-import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
-import { TAccount } from '@thxnetwork/types/interfaces';
-import { hasBasicAccess } from '@thxnetwork/common';
 
 @Component({
-    components: {
-        BaseTabSettingsGeneral,
-        BaseTabSettingsWidget,
-        BaseTabSettingsTheme,
-        BaseTabSettingsTeam,
-    },
-    computed: {
-        ...mapGetters({
-            profile: 'account/profile',
-            pools: 'pools/all',
-        }),
-    },
+    computed: mapGetters({
+        profile: 'account/profile',
+        pools: 'pools/all',
+    }),
 })
 export default class SettingsView extends Vue {
-    profile!: TAccount;
-    dashboardUrl = BASE_URL;
     pools!: IPools;
-    hasBasicAccess = hasBasicAccess;
+    childRoutes = [
+        {
+            name: 'General',
+            class: 'fas fa-cog',
+            route: 'general',
+        },
+        {
+            name: 'Team',
+            class: 'fas fa-users',
+            route: 'team',
+        },
+        {
+            name: 'Appearance',
+            class: 'fas fa-sliders-h',
+            route: 'appearance',
+        },
+        {
+            name: 'Widget',
+            class: 'fas fa-share-alt',
+            route: 'widget',
+        },
+    ];
 
     get pool() {
         return this.pools[this.$route.params.id];

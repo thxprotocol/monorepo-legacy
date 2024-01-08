@@ -11,6 +11,7 @@ export const paginatedResults = async (
     page: number,
     limit: number,
     query: any,
+    sorts: any = [['createdAt', -1]],
 ): Promise<PaginationResult> => {
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
@@ -32,12 +33,7 @@ export const paginatedResults = async (
         };
     }
 
-    const results = await model
-        .find(query)
-        .sort([['createdAt', -1]])
-        .limit(limit)
-        .skip(startIndex)
-        .exec();
+    const results = await model.find(query).sort(sorts).limit(limit).skip(startIndex).exec();
 
     return {
         results,

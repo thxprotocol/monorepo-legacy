@@ -1,1 +1,2 @@
-export { THXClient, THXWidget } from './lib/client';
+export * from './lib/clients';
+export * from './lib/types';

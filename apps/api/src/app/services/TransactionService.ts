@@ -8,7 +8,7 @@ import { TransactionReceipt } from 'web3-eth-accounts/node_modules/web3-core';
 import { toChecksumAddress } from 'web3-utils';
 import { poll } from '@thxnetwork/api/util/polling';
 import { deployCallback as erc20DeployCallback } from './ERC20Service';
-import { RelayerTransactionPayload } from 'defender-relay-client';
+import { RelayerTransactionPayload } from '@openzeppelin/defender-relay-client';
 import { Contract } from 'web3-eth-contract';
 import { WalletDocument } from '../models/Wallet';
 import WalletManagerService from './WalletManagerService';

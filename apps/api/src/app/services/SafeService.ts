@@ -17,9 +17,10 @@ import AccountProxy from '../proxies/AccountProxy';
 import { agenda, JobType } from '@thxnetwork/api/util/agenda';
 import { MongoClient } from 'mongodb';
 import { Job } from '@hokify/agenda';
-import { AssetPoolDocument } from '../models/AssetPool';
+import { AssetPool, AssetPoolDocument } from '../models/AssetPool';
 import { Transaction } from '../models/Transaction';
 import TransactionService from './TransactionService';
+import { convertObjectIdToNumber } from '../util';
 
 export const Wallet = WalletModel;
 
@@ -49,10 +50,13 @@ async function create(
     // Add user address as a signer and consider this a participant safe
     if (userWalletAddress) owners.push(toChecksumAddress(userWalletAddress));
 
-    return await deploy(wallet, owners);
+    // If campaign safe we provide a nonce based on the timestamp in the MongoID the pool (poolId value)
+    const nonce = wallet.poolId && String(convertObjectIdToNumber(wallet.poolId));
+
+    return await deploy(wallet, owners, nonce);
 }
 
-async function deploy(wallet: WalletDocument, owners: string[]) {
+async function deploy(wallet: WalletDocument, owners: string[], nonce?: string) {
     const { ethAdapter } = getProvider(wallet.chainId);
     const safeFactory = await SafeFactory.create({
         safeVersion: wallet.safeVersion as SafeVersion,
@@ -63,7 +67,7 @@ async function deploy(wallet: WalletDocument, owners: string[]) {
         owners,
         threshold: owners.length,
     };
-    const safeAddress = toChecksumAddress(await safeFactory.predictSafeAddress(safeAccountConfig));
+    const safeAddress = toChecksumAddress(await safeFactory.predictSafeAddress(safeAccountConfig, nonce));
 
     try {
         await Safe.create({
@@ -95,8 +99,18 @@ async function createJob(job: Job) {
         contractNetworks,
     });
 
-    await safeFactory.deploySafe({ safeAccountConfig, options: { gasLimit: '3000000' } });
+    // If campaign safe we provide a nonce based on the timestamp in the MongoID the pool (poolId value)
+    const nonce = wallet.poolId && String(convertObjectIdToNumber(wallet.poolId));
+    const config = { safeAccountConfig, options: { gasLimit: '3000000' } };
+    if (nonce) config['saltNonce'] = nonce;
+
+    await safeFactory.deploySafe(config);
     logger.debug(`[${wallet.sub}] Deployed Safe: ${safeAddress}`);
+
+    // Set safeAddress for campaign to keep address available for potential regression
+    if (wallet.poolId) {
+        await AssetPool.findByIdAndUpdate(wallet.poolId, { safeAddress: toChecksumAddress(safeAddress) });
+    }
 }
 
 async function getWalletMigration(sub: string, chainId: ChainId) {
@@ -174,6 +188,7 @@ async function findPrimary(sub: string, chainId: ChainId) {
     return await Wallet.findOne({
         sub,
         chainId,
+        poolId: { $exists: false },
         address: { $exists: true, $ne: '' },
         ...(isMetamask
             ? { version: { $exists: false }, safeVersion: { $exists: false } }

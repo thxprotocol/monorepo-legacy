@@ -1,4 +1,4 @@
-import { THXClient } from '../../index';
+import { THXClient } from '../clients';
 import BaseManager from './BaseManager';
 
 class PoolManager extends BaseManager {
@@ -21,7 +21,7 @@ class PoolManager extends BaseManager {
 
         post: async (payload: { poolId: string; email: string }) => {
             return await this.client.request.post(`/v1/pools/${payload.poolId}/subscription`, {
-                body: JSON.stringify({ email: payload.email }),
+                data: JSON.stringify({ email: payload.email }),
             });
         },
 

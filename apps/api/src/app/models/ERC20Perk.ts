@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
-import { TERC20Perk } from '@thxnetwork/types/';
+import { RewardVariant } from '@thxnetwork/types/enums';
+import { TERC20Perk } from '@thxnetwork/types/interfaces';
 
 export const questBaseSchema = {
     uuid: String,
@@ -39,6 +40,7 @@ export type ERC20PerkDocument = mongoose.Document & TERC20Perk;
 const schema = new mongoose.Schema(
     {
         ...perkBaseSchema,
+        variant: { type: Number, default: RewardVariant.Coin },
         limit: Number,
         erc20Id: String,
         amount: String,

@@ -14,6 +14,7 @@ import { signTxHash } from '@thxnetwork/api/util/jest/network';
 import WalletService, { Wallet } from '@thxnetwork/api/services/WalletService';
 import { safeVersion } from '@thxnetwork/api/config/contracts';
 import SafeService from '@thxnetwork/api/services/SafeService';
+import { getProvider } from '@thxnetwork/api/util/network';
 
 const user = request.agent(app);
 
@@ -38,6 +39,7 @@ describe('ERC721 Transfer', () => {
     afterAll(afterAllCallback);
 
     it('Deploy ERC721', async () => {
+        const { web3 } = getProvider(ChainId.Hardhat);
         const pool = await PoolService.deploy(sub, chainId, 'My Reward Campaign', new Date());
         const poolId = String(pool._id);
         const safe = await SafeService.create({ chainId, sub, safeVersion, poolId });
@@ -70,6 +72,13 @@ describe('ERC721 Transfer', () => {
             description: metadataDescription,
             externalUrl: metadataExternalUrl,
         });
+
+        // Wait for safe address to return code
+        await poll(
+            () => web3.eth.getCode(safe.address),
+            (data: string) => data === '0x',
+            1000,
+        );
 
         // Mint a token for metadata
         erc721Token = await ERC721Service.mint(safe, erc721, wallet, metadata);

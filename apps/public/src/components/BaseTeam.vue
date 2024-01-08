@@ -22,7 +22,7 @@
                                 </div>
                                 <div class="d-flex flex-column justify-content-center flex-grow-1">
                                     <h3 class="text-darker m-0">Peter Polman</h3>
-                                    <small>CTO &amp; Cofounder</small>
+                                    <small>CTO &amp; Co-founder</small>
                                 </div>
                                 <div>
                                     <a
@@ -46,43 +46,13 @@
                                     <img
                                         class="rounded"
                                         height="65"
-                                        v-lazy="require('../../public/assets/img/steffen.jpg')"
-                                        :alt="ALT_TEXT.HOME_BASE_TEAM_STEFFEN"
-                                    />
-                                </div>
-                                <div class="d-flex flex-column justify-content-center flex-grow-1">
-                                    <h3 class="text-darker m-0">Steffen Boode</h3>
-                                    <small>CCO &amp; Cofounder</small>
-                                </div>
-                                <div>
-                                    <a
-                                        class="p-1 small bg-dark text-white"
-                                        href="https://www.linkedin.com/in/steffen-boode-27601915/"
-                                    >
-                                        <i class="fab fa-linkedin-in"></i>
-                                    </a>
-                                </div>
-                            </div>
-                            <hr />
-                            <p class="font-italic font-weight-light">
-                                Business developer. Background in VC/M&A. Digital asset enthousiast.
-                            </p>
-                        </b-card>
-                    </b-col>
-                    <b-col md="3" class="p-2">
-                        <b-card class="h-100">
-                            <div class="d-flex">
-                                <div class="pr-4">
-                                    <img
-                                        class="rounded"
-                                        height="65"
                                         v-lazy="require('../../public/assets/img/thx_team_mieszko.jpg')"
                                         :alt="ALT_TEXT.HOME_BASE_TEAM_MIESZKO"
                                     />
                                 </div>
                                 <div class="d-flex flex-column justify-content-center flex-grow-1">
                                     <h3 class="text-darker m-0">Mieszko Czyzyk</h3>
-                                    <small>CEO &amp; Cofounder</small>
+                                    <small>CEO &amp; Co-founder</small>
                                 </div>
                                 <div>
                                     <a
@@ -96,6 +66,36 @@
                             <hr />
                             <p class="font-italic font-weight-light">
                                 Serial SaaS founder. Loves data-driven marketing. Into blockchain since 2013.
+                            </p>
+                        </b-card>
+                    </b-col>
+                    <b-col md="3" class="p-2">
+                        <b-card class="h-100">
+                            <div class="d-flex">
+                                <div class="pr-4">
+                                    <img
+                                        class="rounded"
+                                        height="65"
+                                        v-lazy="require('../../public/assets/img/steffen.jpg')"
+                                        :alt="ALT_TEXT.HOME_BASE_TEAM_STEFFEN"
+                                    />
+                                </div>
+                                <div class="d-flex flex-column justify-content-center flex-grow-1">
+                                    <h3 class="text-darker m-0">Steffen Boode</h3>
+                                    <small>Co-founder</small>
+                                </div>
+                                <div>
+                                    <a
+                                        class="p-1 small bg-dark text-white"
+                                        href="https://www.linkedin.com/in/steffen-boode-27601915/"
+                                    >
+                                        <i class="fab fa-linkedin-in"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <hr />
+                            <p class="font-italic font-weight-light">
+                                Business developer. Background in VC/M&A. Digital asset enthousiast.
                             </p>
                         </b-card>
                     </b-col>

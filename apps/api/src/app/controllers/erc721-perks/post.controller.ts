@@ -15,6 +15,7 @@ import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
 import ERC721PerkService from '@thxnetwork/api/services/ERC721PerkService';
 import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
 import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
+import SafeService from '@thxnetwork/api/services/SafeService';
 
 const validation = [
     check('file')
@@ -50,6 +51,9 @@ const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(req.header('X-PoolId'));
     if (!pool) throw new NotFoundError('Could not find pool');
 
+    const safe = await SafeService.findOneByPool(pool, pool.chainId);
+    if (!safe) throw new NotFoundError('Could not find campaign Safe');
+
     const metadataIdList = metadataIds ? JSON.parse(metadataIds) : [];
 
     // Handle erc721 variant
@@ -57,11 +61,11 @@ const controller = async (req: Request, res: Response) => {
         nft = await ERC721Service.findById(erc721Id);
         if (!nft) throw new NotFoundError('Could not find erc721');
 
-        // Check if relayer can mint
+        // Check if Safe can mint
         if (metadataIdList.length) {
-            const isMinter = await ERC721Service.isMinter(nft, pool.address);
+            const isMinter = await ERC721Service.isMinter(nft, safe.address);
             // TODO this might fail if the contract is external
-            if (!isMinter) await ERC721Service.addMinter(nft, pool.address);
+            if (!isMinter) await ERC721Service.addMinter(nft, safe.address);
         }
     }
 
@@ -70,11 +74,11 @@ const controller = async (req: Request, res: Response) => {
         nft = await ERC1155Service.findById(erc1155Id);
         if (!nft) throw new NotFoundError('Could not find erc1155');
 
-        // Check if relayer can mint
+        // Check if Safe can mint
         if (metadataIdList.length) {
-            const isMinter = await ERC721Service.isMinter(nft, pool.address);
+            const isMinter = await ERC721Service.isMinter(nft, safe.address);
             // TODO this might fail if the contract is external
-            if (!isMinter) await ERC721Service.addMinter(nft, pool.address);
+            if (!isMinter) await ERC721Service.addMinter(nft, safe.address);
         }
     }
 

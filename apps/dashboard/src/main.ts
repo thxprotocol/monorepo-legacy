@@ -2,7 +2,7 @@ import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
 import store from './store';
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 import { BootstrapVue, TooltipPlugin, ModalPlugin, ToastPlugin, VBTogglePlugin } from 'bootstrap-vue';
 import './main.scss';
 import VueClipboard from 'vue-clipboard2';
@@ -37,7 +37,7 @@ axios.defaults.baseURL = `${process.env.VUE_APP_API_ROOT}/v1`;
 axios.defaults.maxRedirects = 0;
 
 // Add a request interceptor
-axios.interceptors.request.use((config: AxiosRequestConfig) => {
+axios.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     const user = store.getters['account/user'];
     if (user && !user.expired) {
         config.headers = config.headers || {};

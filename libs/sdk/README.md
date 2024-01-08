@@ -1,78 +1,186 @@
-# THX Network JavaScript SDK
+# THX Network JS SDK
 
-This SDK contains a client class that simplifies interactions with THX Network API's. Configure your digital assets in your dashboard and use the SDK to integrate distribution of those assets into your application.
+This SDK contains API wrappers and an OIDC OAuth manager to simplify access to THX API resources.
 
 ## Prerequisites
 
-1. [Sign up for an account](https://dashboard.thx.network/signup)
-2. Create a digital asset
-3. Deploy a pool
-4. Create API credentials
+1. [Sign up for an account](https://dashboard.thx.network/)
+2. Create API keys (Developer -> API)
+3. Save your `clientId` and `clientSecret`
 
-## Grant Types
+## SDK Contents
 
-The OAuth2 server exposes two authorization variants:
+-   [1. THXWidget](#1-thxwidget)
 
-### Grant: Authorization Code
+    -   [1.1 ContainerSelector](#11-containerselector)
+    -   [1.2 Identity](#12-identity)
 
-Meant for user authentication in a browser application. Upon signin a popup will be shown where the user will be able to authenticate before being redirected to your application and obtain a valid session.
+-   [2. THXAPIClient](#2-thxapiclient)
 
-### Grant: Client Credentials
+    -   [2.1 Identities](#21-identities)
+    -   [2.2 Events](#22-events)
 
-Meant for machine to machine authentication in a server-side application.
+-   [3. THXBrowserClient](#3-thxbrowserclient)
 
-## Usage Widget (browser)
+    -   [3.1 Account](#31-account)
+    -   [3.2 Quests](#32-quests)
+    -   [3.3 Rewards](#33-rewards)
+    -   [3.4 Wallet](#34-wallet)
 
-You can inject the loyalty widget with a script tag where `639b277c3659345dda9facca` is the ID of your loyalty pool.
+## 1. THXWidget
+
+Meant for loading the HTML widget in a website using JavaScript.
+
+```javascript
+import { THXWidget, THXWidgetOptions } from '@thxnetwork/sdk';
+
+const options: THXWidgetOptions = {
+    campaignId: '6571c9c6b7d775decb45a8f0',
+    containerSelector: '#your-html-container', // Optional
+    identity: '36d33a59-5398-463a-ac98-0f7d9b201648', // Optional
+};
+THXWidget.create(options);
+```
+
+### 1.1 ContainerSelector
+
+Providing a `containerSelector` is optional and will inject the application in a given HTML element. Make sure to provide CSS styles for proper dimensions within your page.
 
 ```html
-<script src="https://api.thx.network/v1/widget/POOL_ID.js"></script>
+<div id="your-html-container" style="height: 750px;"></div>
 ```
 
-You can also use the THXWidget class from the SDK to load the widget on your page.
+No messagbox, launcher and notification elements will be injected if a container selector is specified!
 
-```typescript
-import { THXWidget } from '@thxnetwork/sdk';
+### 1.2 Identity
 
-const thxWidget = new THXWidget({
-    poolId: 'POOL_ID',
-});
+Providing an identity is optional and alternatively you can set an identity at a later moment, for example after successful authentication with your app.
+
+```javascript
+window.THXWidget.setIdentity('36d33a59-5398-463a-ac98-0f7d9b201648');
 ```
 
-## Usage SDK (browser)
+## 2. THXAPIClient
 
-Sign in and list the tokens owned by this account.
+Meant for JavaScript backend applications.
 
-```typescript
-import { THXWidget } from '@thxnetwork/sdk';
+```javascript
+import { THXAPIClient, THXAPIClientOptions } from '@thxnetwork/sdk';
 
-const thx = new THXClient({
-    clientId: 'CLIENT_ID',
-    clientSecret: 'CLIENT_SECRET',
-    redirectUrl: 'https://localhost:8080',
-    scopes: 'openid account:read erc20:read erc721:read',
-});
-
-await thx.userManager.cached.signinPopup();
-
-const tokens = await client.erc20.list();
+const options: THXAPIClientOptions = {
+    clientId: 'msuq4Znuv3q8hLf7ATnlP',
+    clientSecret: 'YP_k8_LnPG58LHqzWGxg3EMBBGVwwJUmqsuQZdoMtEAD-85hJwRt2vxfev23T92h727bDwCqh3cIkx6meT0xxg',
+};
+const thx = new THXAPIClient(options);
 ```
 
-## Usage SDK (server)
+### 2.1 Identities
 
-Transfer tokens from your pool to another account.
+Identities are used to connect THX accounts to users in your database.
 
-```typescript
-import { THXWidget } from '@thxnetwork/sdk';
+```javascript
+const identity = await thx.identity.create();
+// 36d33a59-5398-463a-ac98-0f7d9b201648
+```
 
-const thx = new THXClient({
-    clientId: 'CLIENT_ID',
-    clientSecret: 'CLIENT_SECRET',
-    scopes: 'openid withdrawals:read withdrawals:write',
+### 2.2 Events
+
+Events can be used to add requirements for Daily, Invite and Custom Quests.
+
+```javascript
+thx.events.create({ name: 'level_up', identity: '36d33a59-5398-463a-ac98-0f7d9b201648' });
+```
+
+## 3. THXBrowserClient
+
+Meant for JavaScript browser applications.
+
+```javascript
+import { THXBrowserClient, THXBrowserClientOptions } from '@thxnetwork/sdk';
+
+const options: THXBrowserClientOptions = {
+    clientId: 'chyBeltL7rmOeTwVu',
+    clientSecret: 'q4ilZuGA4VPtrGhXug3i5taXrvDtidrzyv-gJN3yVo8T2stL6RwYQjqRoK-iUiAGGvhbG_F3TEFFuD_56Q065Q'
+    redirectUri: 'https://www.yourdomain.com/auth-callback'
+    campaignId: '6571c9c6b7d775decb45a8f0', // Optional
+};
+const thx = new THXBrowserClient(options);
+```
+
+Alternatively you can set the `campaignId` at a later moment, for example after obtaining it from a url or database. The campaign is used to scope API requests to a campaign that you own.
+
+```javascript
+thx.setCampaignId('6571c9c6b7d775decb45a8f0');
+```
+
+### 3.1 Account
+
+Get account info for the authenticated user and obtain it's current point balance in your campaign.
+
+```javascript
+// Get Account
+await client.account.get();
+
+// Update Account
+await client.account.patch({
+    username: '';
+    firstName: '';
+    lastName: '';
+    email: '';
+    profileImg: ''; // Absolute URL
 });
 
-const withdrawal = await client.withdrawals.post({
-    amount: '100000000',
-    account: '0xf4b70b3931166B422bBC772a2EafcE8BD5A017F9',
+// Get Point Balance
+await client.pointBalance.list();
+```
+
+### 3.2 Quests
+
+List and complete quests in your campaign.
+
+```javascript
+// List Quests
+await client.quests.list();
+
+// Complete Quests
+await client.quests.daily.complete(uuid, {
+    sub: '',
 });
+await client.quests.invite.complete(uuid, {
+    sub: '',
+});
+await client.quests.social.complete(id);
+await client.quests.custom.complete(id);
+await client.quests.web3.complete(id);
+```
+
+### 3.3 Rewards
+
+List and redeem rewards in your campaign.
+
+```javascript
+// List Rewards
+await thx.rewards.list();
+
+// Get Rewards
+await thx.rewards.coin.get(uuid);
+await thx.rewards.nft.get(uuid);
+await thx.rewards.custom.get(uuid);
+await thx.rewards.coupon.get(uuid);
+
+// Redeem Rewards
+await thx.rewards.coin.redemption.post(uuid);
+await thx.rewards.nft.redemption.post(uuid);
+await thx.rewards.custom.redemption.post(uuid);
+await thx.rewards.coupon.redemption.post(uuid);
+```
+
+### 3.4 Wallet
+
+List tokens held in your accounts wallet.
+
+```javascript
+await thx.erc20.list({ chainId: 137 });
+await thx.erc721.list({ chainId: 137 });
+await thx.erc1155.list({ chainId: 137 });
 ```

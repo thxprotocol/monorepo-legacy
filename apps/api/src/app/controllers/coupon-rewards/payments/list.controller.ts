@@ -18,6 +18,8 @@ const controller = async (req: Request, res: Response) => {
     const couponCodes = await Promise.all(
         couponRewardPayments.map(async (p) => {
             const couponCode = await CouponCode.findById(p.couponCodeId);
+            if (!couponCode) return;
+
             const reward = await CouponReward.findById(couponCode.couponRewardId);
             return { ...p.toJSON(), code: couponCode.code, webshopURL: reward.webshopURL };
         }),

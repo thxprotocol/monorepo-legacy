@@ -21,10 +21,21 @@ import { CustomReward, CustomRewardDocument } from '../models/CustomReward';
 import { Web3Quest, Web3QuestDocument } from '../models/Web3Quest';
 import { Web3QuestClaim } from '../models/Web3QuestClaim';
 import { CustomRewardPayment } from '../models/CustomRewardPayment';
+import { DiscordRoleRewardPayment } from '../models/DiscordRoleRewardPayment';
+import { CouponRewardPayment } from '../models/CouponRewardPayment';
+import { Participant } from '../models/Participant';
+import { DiscordRoleReward, DiscordRoleRewardDocument } from '../models/DiscordRoleReward';
+import { CouponReward, CouponRewardDocument } from '../models/CouponReward';
 
 async function getPoolAnalyticsForChart(pool: AssetPoolDocument, startDate: Date, endDate: Date) {
     // Rewards
-    const [erc20PerksQueryResult, erc721PerksQueryResult, customRewardsQueryResult] = await Promise.all([
+    const [
+        erc20PerksQueryResult,
+        erc721PerksQueryResult,
+        customRewardsQueryResult,
+        couponRewardsQueryResult,
+        discordRoleRewardsQueryResult,
+    ] = await Promise.all([
         queryRewardRedemptions<ERC20PerkDocument>({
             collectionName: 'erc20perkpayments',
             key: 'perkId',
@@ -45,6 +56,22 @@ async function getPoolAnalyticsForChart(pool: AssetPoolDocument, startDate: Date
             collectionName: 'customrewardpayments',
             key: 'perkId',
             model: CustomReward,
+            poolId: String(pool._id),
+            startDate,
+            endDate,
+        }),
+        queryRewardRedemptions<CouponRewardDocument>({
+            collectionName: 'couponrewardpayments',
+            key: 'perkId',
+            model: CouponReward,
+            poolId: String(pool._id),
+            startDate,
+            endDate,
+        }),
+        queryRewardRedemptions<DiscordRoleRewardDocument>({
+            collectionName: 'discordrolerewardpayments',
+            key: 'perkId',
+            model: DiscordRoleReward,
             poolId: String(pool._id),
             startDate,
             endDate,
@@ -123,6 +150,19 @@ async function getPoolAnalyticsForChart(pool: AssetPoolDocument, startDate: Date
                 totalAmount: x.total_amount,
             };
         }),
+        couponRewards: couponRewardsQueryResult.map((x) => {
+            return {
+                day: x._id,
+                totalAmount: x.total_amount,
+            };
+        }),
+        discordRoleRewards: discordRoleRewardsQueryResult.map((x) => {
+            return {
+                day: x._id,
+                totalAmount: x.total_amount,
+            };
+        }),
+        //
         dailyRewards: dailyRewardsQueryResult.map((x) => {
             return {
                 day: x._id,
@@ -167,53 +207,77 @@ async function getPoolMetrics(pool: AssetPoolDocument, dateRange?: { startDate: 
         ERC20PerkPayment,
         ERC721PerkPayment,
         CustomRewardPayment,
+        CouponRewardPayment,
+        DiscordRoleRewardPayment,
     ];
-    const [dailyQuest, socialQuest, inviteQuest, customQuest, web3Quest, coinReward, nftReward, customReward] =
-        await Promise.all(
-            collections.map(async (Model) => {
-                const $match = { poolId: String(pool._id) };
-                if (dateRange) {
-                    $match['createdAt'] = { $gte: dateRange.startDate, $lte: dateRange.endDate };
-                }
+    const [
+        dailyQuest,
+        socialQuest,
+        inviteQuest,
+        customQuest,
+        web3Quest,
+        coinReward,
+        nftReward,
+        customReward,
+        couponReward,
+        discordRoleReward,
+    ] = await Promise.all(
+        collections.map(async (Model) => {
+            const $match = { poolId: String(pool._id) };
+            if (dateRange) {
+                $match['createdAt'] = { $gte: dateRange.startDate, $lte: dateRange.endDate };
+            }
 
-                // Extend the $match filter with model specific properties
-                switch (Model) {
-                    case DailyRewardClaim:
-                        $match['state'] = 1;
-                        break;
-                    case MilestoneRewardClaim:
-                        $match['isClaimed'] = true;
-                        break;
-                }
+            // Extend the $match filter with model specific properties
+            switch (Model) {
+                case DailyRewardClaim:
+                    $match['state'] = 1;
+                    break;
+                case MilestoneRewardClaim:
+                    $match['isClaimed'] = true;
+                    break;
+            }
 
-                const [result] = await Model.aggregate([
-                    { $match },
-                    {
-                        $group: {
-                            _id: '$poolId',
-                            totalCompleted: { $sum: 1 },
-                            totalAmount: { $sum: { $convert: { input: '$amount', to: 'int' } } },
-                        },
+            const [result] = await Model.aggregate([
+                { $match },
+                {
+                    $group: {
+                        _id: '$poolId',
+                        totalCompleted: { $sum: 1 },
+                        totalAmount: { $sum: { $convert: { input: '$amount', to: 'int' } } },
                     },
-                ]);
+                },
+            ]);
 
-                const query = { poolId: String(pool._id) };
-                if (dateRange) {
-                    query['createdAt'] = { $gte: dateRange.startDate, $lte: dateRange.endDate };
-                }
-                const totalCreated = await Model.countDocuments(query as any);
+            const query = { poolId: String(pool._id) };
+            if (dateRange) {
+                query['createdAt'] = { $gte: dateRange.startDate, $lte: dateRange.endDate };
+            }
+            const totalCreated = await Model.countDocuments(query as any);
 
-                return {
-                    totalCompleted: result && result.totalCompleted ? result.totalCompleted : 0,
-                    totalAmount: result && result.totalAmount ? result.totalAmount : 0,
-                    totalCreated,
-                };
-            }),
-        );
-    return { dailyQuest, socialQuest, inviteQuest, customQuest, web3Quest, coinReward, nftReward, customReward };
+            return {
+                totalCompleted: result && result.totalCompleted ? result.totalCompleted : 0,
+                totalAmount: result && result.totalAmount ? result.totalAmount : 0,
+                totalCreated,
+            };
+        }),
+    );
+
+    return {
+        dailyQuest,
+        socialQuest,
+        inviteQuest,
+        customQuest,
+        web3Quest,
+        coinReward,
+        nftReward,
+        customReward,
+        couponReward,
+        discordRoleReward,
+    };
 }
 
-async function getLeaderboard(pool: AssetPoolDocument, dateRange?: { startDate: Date; endDate: Date }) {
+async function createLeaderboard(pool: AssetPoolDocument, dateRange?: { startDate: Date; endDate: Date }) {
     const collections = [DailyRewardClaim, PointRewardClaim, ReferralRewardClaim, MilestoneRewardClaim, Web3QuestClaim];
     const result = await Promise.all(
         collections.map(async (Model) => {
@@ -261,25 +325,32 @@ async function getLeaderboard(pool: AssetPoolDocument, dateRange?: { startDate: 
         }
     }
 
-    const walletIds = Object.keys(walletTotals);
-    const wallets = await Wallet.find({ _id: walletIds });
-    const subs = wallets.map((w: WalletDocument) => w.sub);
-    const accounts = await AccountProxy.getMany(subs);
-
-    return accounts
-        .map((account: TAccount) => {
-            const wallet = wallets.find((w) => w.sub === account.sub);
-            const walletId = String(wallet._id);
-            return {
-                questsCompleted: walletTotals[walletId].totalCompleted,
-                sub: wallet.sub,
-                walletId,
-                score: walletTotals[walletId].totalAmount || 0,
-                wallet,
-                account: { ...account, address: wallet.address },
-            };
-        })
+    const wallets = await Wallet.find({ _id: Object.keys(walletTotals), sub: { $exists: true } });
+    const leaderboard = wallets
+        .map((wallet: WalletDocument) => ({
+            score: walletTotals[wallet._id].totalAmount || 0,
+            questEntryCount: walletTotals[wallet._id].totalCompleted || 0,
+            sub: wallet.sub,
+        }))
+        .filter((entry) => entry.score > 0)
         .sort((a: any, b: any) => b.score - a.score);
+
+    const updates = leaderboard.map(
+        (entry: { sub: string; score: number; questEntryCount: number }, index: number) => ({
+            updateOne: {
+                filter: { poolId: String(pool._id), sub: entry.sub },
+                update: {
+                    $set: {
+                        rank: Number(index) + 1,
+                        score: entry.score,
+                        questEntryCount: entry.questEntryCount,
+                    },
+                },
+            },
+        }),
+    );
+
+    await Participant.bulkWrite(updates);
 }
 
 async function queryQuestEntries<T>(args: {
@@ -439,4 +510,4 @@ async function queryRewardRedemptions<T>(args: {
 
     return queryResult;
 }
-export default { getPoolMetrics, getLeaderboard, getPoolAnalyticsForChart };
+export default { getPoolMetrics, createLeaderboard, getPoolAnalyticsForChart };

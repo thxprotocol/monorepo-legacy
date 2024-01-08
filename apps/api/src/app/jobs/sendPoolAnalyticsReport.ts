@@ -5,6 +5,7 @@ import MailService from '../services/MailService';
 import AnalyticsService from '../services/AnalyticsService';
 import { DASHBOARD_URL } from '../config/secrets';
 import { logger } from '../util/logger';
+import PoolService from '../services/PoolService';
 
 const emojiMap = ['🥇', '🥈', '🥉'];
 const oneDay = 86400000; // one day in milliseconds
@@ -25,7 +26,10 @@ export async function sendPoolAnalyticsReport() {
 
             const { dailyQuest, inviteQuest, socialQuest, customQuest, coinReward, nftReward } =
                 await AnalyticsService.getPoolMetrics(pool, dateRange);
-            const leaderBoard = (await AnalyticsService.getLeaderboard(pool)).slice(0, 10);
+            const leaderboard = await PoolService.findParticipants(pool, 1, 10);
+            const subs = leaderboard.results.map((entry) => entry.sub);
+            const accounts = await AccountProxy.getMany(subs);
+
             const totalPointsClaimed =
                 dailyQuest.totalAmount + inviteQuest.totalAmount + socialQuest.totalAmount + customQuest.totalAmount;
             const totalPointsSpent = coinReward.totalAmount + nftReward.totalAmount;
@@ -86,11 +90,13 @@ export async function sendPoolAnalyticsReport() {
             html += `<p style="font-size:16px"><strong>Top 3</strong></p>`;
             html += `<table role="presentation" border="0" cellpadding="0" cellspacing="0">`;
 
-            for (const index in leaderBoard) {
-                const entry = leaderBoard[index];
+            for (const index in leaderboard.results) {
+                const entry = leaderboard[index];
+                const account = accounts.find((a) => a.sub === entry.sub);
+
                 html += `<tr>
                 <td width="5%">${emojiMap[index]}</td>
-                <td><strong>${entry.account.firstName || '...'}</strong> ${entry.wallet.address.substring(0, 8)}...</td>
+                <td><strong>${account.firstName || '...'}</strong> ${entry.wallet.address.substring(0, 8)}...</td>
                 <td align="right" width="25%"><strong>${entry.score} Points</strong></td>
                 </tr>`;
             }

@@ -1,5 +1,6 @@
 import type {
     TAccount,
+    TEvent,
     TPool,
     TPoolSettings,
     TPoolTransferResponse,
@@ -34,6 +35,19 @@ export interface IPoolAnalytic {
             totalAmount: number;
         },
     ];
+    couponRewards: [
+        {
+            day: string;
+            totalAmount: number;
+        },
+    ];
+    discordRoleRewards: [
+        {
+            day: string;
+            totalAmount: number;
+        },
+    ];
+
     //
     dailyRewards: [
         {
@@ -81,6 +95,9 @@ export type PoolMetric = {
 
 export interface IPoolAnalyticMetrics {
     _id: string;
+    participantActiveCount: number;
+    participantCount: number;
+    subscriptionCount: number;
     dailyQuest: PoolMetric;
     socialQuest: PoolMetric;
     inviteQuest: PoolMetric;
@@ -89,6 +106,8 @@ export interface IPoolAnalyticMetrics {
     coinReward: PoolMetric;
     nftReward: PoolMetric;
     customReward: PoolMetric;
+    couponReward: PoolMetric;
+    discordRoleReward: PoolMetric;
 }
 export interface IPools {
     [id: string]: TPool;
@@ -121,12 +140,18 @@ export type TQuestEntryState = {
     };
 };
 
+export type TEventState = {
+    [poolId: string]: {
+        [eventId: string]: TEvent[];
+    };
+};
+
 @Module({ namespaced: true })
 class PoolModule extends VuexModule {
     _all: IPools = {};
     _quests: TQuestState = {};
     _entries: TQuestEntryState = {};
-
+    _events: TEventState = {};
     _analytics: IPoolAnalytics = {};
     _analyticsLeaderBoard: IPoolAnalyticsLeaderBoard = {};
     _analyticsMetrics: IPoolAnalyticsLeaderBoard = {};
@@ -137,6 +162,10 @@ class PoolModule extends VuexModule {
 
     get quests() {
         return this._quests;
+    }
+
+    get events() {
+        return this._events;
     }
 
     get entries() {
@@ -206,6 +235,11 @@ class PoolModule extends VuexModule {
     }
 
     @Mutation
+    setEvents({ poolId, result }: { poolId: string; result: { results: TEvent[]; limit: number; page: number } }) {
+        Vue.set(this._events, poolId, result);
+    }
+
+    @Mutation
     setQuest(quest: TQuest) {
         if (!this._quests[quest.poolId]) return;
 
@@ -225,6 +259,17 @@ class PoolModule extends VuexModule {
     setQuestEntries({ entries, quest }: { entries: TQuestEntry[]; quest: TQuest }) {
         if (!this._entries[quest.poolId]) Vue.set(this._entries, quest.poolId, {});
         Vue.set(this._entries[quest.poolId], String(quest._id), entries);
+    }
+
+    @Action({ rawError: true })
+    async listEvents({ pool, page, limit }) {
+        const { data } = await axios({
+            method: 'GET',
+            url: `/pools/${pool._id}/events`,
+            headers: { 'X-PoolId': pool._id },
+            params: { page, limit },
+        });
+        this.context.commit('setEvents', { poolId: pool._id, result: data });
     }
 
     @Action({ rawError: true })
@@ -363,17 +408,6 @@ class PoolModule extends VuexModule {
             headers: { 'X-PoolId': payload.poolId },
         });
         this.context.commit('setAnalytics', r.data);
-        return r.data;
-    }
-
-    @Action({ rawError: true })
-    async readAnalyticsLeaderBoard(payload: { poolId: string }) {
-        const r = await axios({
-            method: 'get',
-            url: `/pools/${payload.poolId}/analytics/leaderboard`,
-            headers: { 'X-PoolId': payload.poolId },
-        });
-        this.context.commit('setAnalyticsLeaderBoard', { poolId: payload.poolId, data: r.data });
         return r.data;
     }
 

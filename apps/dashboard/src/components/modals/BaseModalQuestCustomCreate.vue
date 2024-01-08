@@ -21,30 +21,36 @@
             <b-form-group label="Amount">
                 <b-form-input type="number" v-model="amount" />
             </b-form-group>
-            <b-form-group label="Limit" description="Maximum amount of claims per acount.">
-                <b-form-input type="number" v-model="limit" min="0" />
-            </b-form-group>
         </template>
         <template #col-right>
-            <BaseCardURLWebhook
-                class="mb-3"
-                :code="code"
-                title="Webhook Qualification"
-                description="Run this webhook to qualify an account wallet address for the claim of this reward."
-            >
-                <template #alerts>
-                    <b-alert show variant="info">
-                        <i class="fas fa-question-circle mr-2"></i> Take note of these development guidelines:
-                        <ul class="px-3 mb-0 mt-1 small">
-                            <li v-if="!reward"><strong>TOKEN</strong> will be populated after creating this reward.</li>
-                            <li>
-                                <strong>CODE</strong> should be the virtual wallet code obtained for the user after
-                                running the virtual wallet webhook
-                            </li>
-                        </ul>
-                    </b-alert>
-                </template>
-            </BaseCardURLWebhook>
+            <b-card class="mb-3" body-class="bg-light p-0">
+                <b-button
+                    class="d-flex align-items-center justify-content-between w-100"
+                    variant="light"
+                    v-b-toggle.collapse-card-events
+                >
+                    <strong>Events</strong>
+                    <i :class="`fa-chevron-${isVisible ? 'up' : 'down'}`" class="fas m-0"></i>
+                </b-button>
+                <b-collapse id="collapse-card-events" v-model="isVisible">
+                    <hr class="mt-0" />
+                    <div class="px-3">
+                        <b-form-group
+                            label="Event Type"
+                            description="Requires this event for a participant to complete the quest."
+                        >
+                            <BaseDropdownEventType
+                                @click="eventName = $event"
+                                :events="pool.events"
+                                :event-name="eventName"
+                            />
+                        </b-form-group>
+                        <b-form-group label="Limit" description="Maximum amount of claims for this event per account.">
+                            <b-form-input type="number" v-model="limit" min="0" />
+                        </b-form-group>
+                    </div>
+                </b-collapse>
+            </b-card>
         </template>
     </BaseModalQuestCreate>
 </template>
@@ -54,16 +60,15 @@ import { TInfoLink, type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { type TMilestoneReward } from '@thxnetwork/types/index';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
-import { API_URL } from '@thxnetwork/dashboard/config/secrets';
 import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
 import BaseModalQuestCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestCreate.vue';
-import BaseCardURLWebhook from '@thxnetwork/dashboard/components/cards/BaseCardURLWebhook.vue';
+import BaseDropdownEventType from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownEventType.vue';
 
 @Component({
     components: {
         BaseModal,
         BaseModalQuestCreate,
-        BaseCardURLWebhook,
+        BaseDropdownEventType,
     },
 })
 export default class ModalQuestCustomCreate extends Vue {
@@ -79,18 +84,13 @@ export default class ModalQuestCustomCreate extends Vue {
     limit = 0;
     isCopied = false;
     infoLinks: TInfoLink[] = [{ label: '', url: '' }];
+    eventName = '';
     file: File | null = null;
 
     @Prop() id!: string;
     @Prop() total!: number;
     @Prop() pool!: TPool;
     @Prop({ required: false }) reward!: TMilestoneReward;
-
-    get code() {
-        return `curl "${API_URL}/v1/webhook/milestone/${this.reward ? this.reward.uuid : '<TOKEN>'}/claim" \\
--X POST \\
--d "code=<CODE>"`;
-    }
 
     onShow() {
         this.isPublished = this.reward ? this.reward.isPublished : this.isPublished;
@@ -100,6 +100,7 @@ export default class ModalQuestCustomCreate extends Vue {
         this.infoLinks = this.reward ? this.reward.infoLinks : this.infoLinks;
         this.limit = this.reward && this.reward.limit ? this.reward.limit : this.limit;
         this.expiryDate = this.reward && this.reward.expiryDate ? this.reward.expiryDate : this.expiryDate;
+        this.eventName = this.reward ? this.reward.eventName : this.eventName;
     }
 
     onSubmit() {
@@ -118,6 +119,7 @@ export default class ModalQuestCustomCreate extends Vue {
                 expiryDate: this.expiryDate ? new Date(this.expiryDate).toISOString() : undefined,
                 infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
                 index: !this.reward ? this.total : this.reward.index,
+                eventName: this.eventName,
             })
             .then(() => {
                 this.$bvModal.hide(this.id);

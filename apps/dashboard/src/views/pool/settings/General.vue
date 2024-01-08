@@ -81,7 +81,42 @@
                 <div class="text-muted">Configure start and end dates for this campaign.</div>
             </b-col>
             <b-col md="8">
-                <BaseCampaignDuration class="mb-0" :settings="pool.settings" @update="onUpdateDuration" />
+                <BaseDateDuration class="mb-0" :settings="pool.settings" @update="onUpdateDuration" />
+            </b-col>
+        </b-form-row>
+        <hr />
+        <b-form-row>
+            <b-col md="4">
+                <strong>Wallet</strong>
+                <div class="text-muted">Your campaign wallet is used for fee payments and reward distribution.</div>
+            </b-col>
+            <b-col md="8">
+                <b-form-group
+                    label="Safe Multisig Address"
+                    description="Your assets are stored in Safe's battle-tested multisigs."
+                >
+                    <b-input-group>
+                        <b-form-input disabled :value="pool.address" />
+                        <template #append>
+                            <b-button
+                                :disabled="!slug.length"
+                                variant="dark"
+                                v-clipboard:copy="pool.address"
+                                v-clipboard:success="() => (isCopied = true)"
+                                size="sm"
+                                class="ml-0 px-4"
+                            >
+                                <i class="fas ml-0" :class="isCopied ? 'fa-clipboard-check' : 'fa-clipboard'"></i>
+                            </b-button>
+                        </template>
+                    </b-input-group>
+                    <template #description>
+                        Your assets are stored in
+                        <b-link :href="`https://app.safe.global/apps/open?safe=matic:${pool.address}`" target="_blank">
+                            Safe's battle-tested multisigs
+                        </b-link>
+                    </template>
+                </b-form-group>
             </b-col>
         </b-form-row>
         <hr />
@@ -124,6 +159,24 @@
                 </b-form-group>
             </b-col>
         </b-form-row>
+
+        <b-form-row>
+            <b-col offset-xl="4">
+                <b-card class="border-danger" body-class="d-flex justify-content-between">
+                    <div>
+                        <i class="fas fa-exclamation-triangle mr-3" />
+                        <strong>Danger Zone!</strong>
+                    </div>
+                    <b-link class="text-danger" v-b-modal="`modalDelete-${pool._id}`">Remove this campaign</b-link>
+                </b-card>
+            </b-col>
+        </b-form-row>
+        <BaseModalDelete
+            @submit="remove(pool._id)"
+            :id="`modalDelete-${pool._id}`"
+            :error="error"
+            :subject="pool._id"
+        />
     </div>
 </template>
 
@@ -136,7 +189,8 @@ import { hasBasicAccess } from '@thxnetwork/common';
 import type { TAccount, TPoolSettings } from '@thxnetwork/types/interfaces';
 import BaseListItemCollaborator from '@thxnetwork/dashboard/components/list-items/BaseListItemCollaborator.vue';
 import BaseModalPoolTransfer from '@thxnetwork/dashboard/components/modals/BaseModalPoolTransfer.vue';
-import BaseCampaignDuration, { parseDateTime } from '@thxnetwork/dashboard/components/cards/BaseCampaignDuration.vue';
+import BaseDateDuration, { parseDateTime } from '@thxnetwork/dashboard/components/form-group/BaseDateDuration.vue';
+import BaseModalDelete from '@thxnetwork/dashboard/components/modals/BaseModalDelete.vue';
 import slugify from '@thxnetwork/dashboard/utils/slugify';
 import { WIDGET_URL } from '@thxnetwork/dashboard/config/secrets';
 
@@ -144,7 +198,8 @@ import { WIDGET_URL } from '@thxnetwork/dashboard/config/secrets';
     components: {
         BaseListItemCollaborator,
         BaseModalPoolTransfer,
-        BaseCampaignDuration,
+        BaseDateDuration,
+        BaseModalDelete,
     },
     computed: {
         ...mapGetters({
@@ -230,6 +285,11 @@ export default class SettingsView extends Vue {
         });
 
         this.error = '';
+    }
+
+    async remove(_id: string) {
+        this.$store.dispatch('pools/remove', { _id });
+        this.$router.push({ name: 'home' });
     }
 }
 </script>

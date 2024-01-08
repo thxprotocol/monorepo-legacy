@@ -17,16 +17,17 @@ const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(req.header('X-PoolId'));
     const wallet = await WalletService.findPrimary(req.auth.sub, pool.chainId);
 
-    const isCompletedAlready = await PointRewardService.isCompleted(quest, account, wallet);
-    if (isCompletedAlready) return res.json({ error: 'You have completed this quest already.' });
-
-    const failReason = await PointRewardService.isValid(quest, account);
-    if (failReason) return res.json({ error: failReason });
-
+    // Get quest variant for quest interaction variant
     const variant = questInteractionVariantMap[quest.interaction];
+
+    const validationResult = await QuestService.validate(quest.variant, quest, account, wallet);
+    if (!validationResult.result) return res.json({ error: validationResult.reason });
+
     const platformUserId = await PointRewardService.getPlatformUserId(quest, account);
-    const { pointsAvailable } = await PointRewardService.getPointsAvailable(quest, account);
-    const entry = await QuestService.complete(variant, pointsAvailable, pool, quest, account, wallet, {
+    if (!platformUserId) return res.json({ error: 'Could not find platform user id.' });
+
+    const amount = await QuestService.getAmount(variant, quest, account, wallet);
+    const entry = await QuestService.complete(variant, amount, pool, quest, account, wallet, {
         pointRewardId: quest._id,
         platformUserId,
     });

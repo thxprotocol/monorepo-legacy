@@ -12,10 +12,18 @@
                 <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
                 <b-collapse id="nav-collapse" is-nav>
                     <b-navbar-nav>
-                        <b-nav-item class="mx-3" to="/pools">Campaigns</b-nav-item>
-                        <b-nav-item class="mx-3" to="/coins">Coins</b-nav-item>
-                        <b-nav-item class="mx-3" to="/nft">NFT</b-nav-item>
-                        <b-nav-item class="mx-3" to="/qrcodes">QR Codes</b-nav-item>
+                        <b-nav-item class="mx-3" to="/coins">
+                            <i class="fas fa-coins mr-2" />
+                            Coins
+                        </b-nav-item>
+                        <b-nav-item class="mx-3" to="/nft">
+                            <i class="fas fa-palette mr-2" />
+                            NFT
+                        </b-nav-item>
+                        <b-nav-item class="mx-3" to="/qrcodes">
+                            <i class="fas fa-qrcode mr-2" />
+                            QR Codes
+                        </b-nav-item>
                     </b-navbar-nav>
                     <b-navbar-nav class="ml-auto">
                         <b-nav-item class="mx-3" :href="docsUrl" target="_blank">

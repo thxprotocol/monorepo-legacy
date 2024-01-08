@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h2 class="mb-3">Participants</h2>
+        <h2 class="mb-3">Participants: {{ result.total }}</h2>
         <BCard class="shadow-sm mb-5" no-body v-if="pool">
             <BaseCardTableHeader
                 :pool="pool"
@@ -134,8 +134,10 @@ export default class ViewParticipants extends Vue {
     limit = 10;
     sorts = {
         rank: (a, b) => {
-            if (a.rank < b.rank) return -1;
-            if (a.rank > b.rank) return 1;
+            const rankA = a.rank ? a.rank : 0;
+            const rankB = b.rank ? b.rank : 0;
+            if (rankA < rankB) return 1;
+            if (rankA > rankB) return -1;
             return 0;
         },
         username: (a, b) => {
@@ -173,7 +175,7 @@ export default class ViewParticipants extends Vue {
     };
     result = {
         results: [],
-        total: 1,
+        total: 0,
     };
 
     get pool() {

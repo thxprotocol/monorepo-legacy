@@ -1,26 +1,16 @@
 import { Request, Response } from 'express';
+import { Client } from '@thxnetwork/api/models/Client';
 import ClientProxy from '@thxnetwork/api/proxies/ClientProxy';
 
 export default {
     controller: async (req: Request, res: Response) => {
-        /*
-        #swagger.tags = ['Client']
-        #swagger.responses[200] = { 
-            description: 'Get a list of client credentials for this user',
-            schema: { 
-                type: 'array',
-                items: {
-                    $ref: '#/definitions/Client' } 
-                }
-            }
-        }
-        */
+        const poolId = req.header('X-PoolId');
+        const clients = await Client.find({ poolId });
+        const promises = clients.map(async (client) => {
+            return await ClientProxy.getCredentials(client.toJSON());
+        });
+        const result = await Promise.all(promises);
 
-        const clients = await ClientProxy.findByQuery(
-            { poolId: req.header('X-PoolId') },
-            Number(req.query.page),
-            Number(req.query.limit),
-        );
-        res.status(200).json(clients);
+        res.status(200).json(result);
     },
 };

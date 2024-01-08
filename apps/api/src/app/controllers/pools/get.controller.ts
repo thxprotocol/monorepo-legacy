@@ -1,16 +1,20 @@
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
-import PoolService from '@thxnetwork/api/services/PoolService';
 import { currentVersion } from '@thxnetwork/contracts/exports';
 import { Widget } from '@thxnetwork/api/services/WidgetService';
-import BrandService from '@thxnetwork/api/services/BrandService';
 import { PoolSubscription } from '@thxnetwork/api/models/PoolSubscription';
 import { Wallet } from '@thxnetwork/api/models/Wallet';
+import { Event } from '@thxnetwork/api/models/Event';
 import { Collaborator, CollaboratorDocument } from '@thxnetwork/api/models/Collaborator';
+import { client } from '@thxnetwork/api/../discord';
+import PoolService from '@thxnetwork/api/services/PoolService';
+import BrandService from '@thxnetwork/api/services/BrandService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import DiscordGuild, { DiscordGuildDocument } from '@thxnetwork/api/models/DiscordGuild';
-import { client } from '@thxnetwork/api/../discord';
 import SafeService from '@thxnetwork/api/services/SafeService';
+import { Identity } from '@thxnetwork/api/models/Identity';
+import { safeVersion } from '@thxnetwork/api/config/contracts';
+import { logger } from '@thxnetwork/api/util/logger';
 
 function discordColorToHex(discordColorCode) {
     return `#${discordColorCode.toString(16).padStart(6, '0')}`;
@@ -21,8 +25,18 @@ export const validation = [param('id').isMongoId()];
 export const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
     const pool = await PoolService.getById(req.params.id);
-    const safe = await SafeService.findOneByPool(pool, pool.chainId);
-    if (!safe) return res.json(pool.toJSON());
+    let safe = await SafeService.findOneByPool(pool, pool.chainId);
+
+    // Deploy a Safe if none is found
+    if (!safe) {
+        safe = await SafeService.create({
+            chainId: pool.chainId,
+            sub: pool.sub,
+            safeVersion,
+            poolId: req.params.id,
+        });
+        logger.info(`[${req.params.id}] Deployed Campaign Safe ${safe.address}`);
+    }
 
     const widget = await Widget.findOne({ poolId: req.params.id });
     const brand = await BrandService.get(req.params.id);
@@ -42,23 +56,24 @@ export const controller = async (req: Request, res: Response) => {
     const discordGuilds = await DiscordGuild.find({ poolId: pool._id });
     const promises = discordGuilds.map(async (guild: DiscordGuildDocument) => {
         const g = await client.guilds.fetch(guild.guildId);
-        const roles = g.roles.cache
-            .map((role) => ({
-                id: role.id,
-                name: role.name,
-                hoist: role.hoist,
-                color: discordColorToHex(role.color),
-            }))
-            .filter((role) => role.hoist);
+        const roles = g.roles.cache.map((role) => ({
+            id: role.id,
+            name: role.name,
+            color: discordColorToHex(role.color),
+        }));
         const channels = (await g.channels.fetch()).map((c) => ({ name: c.name, channelId: c.id }));
         return { ...guild.toJSON(), channels, roles };
     });
     const guilds = await Promise.all(promises);
+    const events = await Event.find({ poolId: pool._id }).distinct('name');
+    const identities = await Identity.find({ poolId: pool._id });
 
     res.json({
         ...pool.toJSON(),
-        address: safe.address,
+        address: pool.safeAddress,
         safe,
+        identities,
+        events,
         wallets,
         widget,
         brand,

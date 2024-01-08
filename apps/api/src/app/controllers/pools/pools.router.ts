@@ -2,11 +2,7 @@ import express from 'express';
 import { assertRequestInput, assertPoolAccess, guard, checkJwt, corsHandler } from '@thxnetwork/api/middlewares';
 import CreatePool from './post.controller';
 import ReadPool from './get.controller';
-import ReadPoolPreview from './preview/get.controller';
-import ReadPoolPreviewImage from './preview/default/get.controller';
 import PoolsAnalytics from './analytics/get.controller';
-import PoolsAnalyticsLeaderBoard from './analytics/leaderboard/get.controller';
-import PoolsAnalyticsLeaderBoardClient from './analytics/leaderboard/client/get.controller';
 import PoolsAnalyticsMetrics from './analytics/metrics/get.controller';
 import DeletePool from './delete.controller';
 import ListPools from './list.controller';
@@ -26,6 +22,7 @@ import UpdatePoolCollaborator from './collaborators/patch.controller';
 import DeletePoolSubscription from './subscriptions/delete.controller';
 import CreatePoolTransferRefresh from './transfers/refresh/post.controller';
 import ListPoolTransfer from './transfers/list.controller';
+import ListPoolEvents from './events/list.controller';
 import UpdatePool from './patch.controller';
 import ListPoolWallets from './wallets/list.controller';
 
@@ -54,6 +51,15 @@ router.post(
     guard.check(['pool_subscription:write']),
     assertRequestInput(CreatePoolSubscription.validation),
     CreatePoolSubscription.controller,
+);
+router.get(
+    '/:id/events',
+    checkJwt,
+    corsHandler,
+    guard.check(['pools:read']),
+    assertPoolAccess,
+    assertRequestInput(ListPoolEvents.validation),
+    ListPoolEvents.controller,
 );
 router.get(
     '/:id/wallets',
@@ -93,10 +99,14 @@ router.post(
     CreatePoolTransferRefresh.controller,
 );
 
-router.get('/preview/default/:id.png', ReadPoolPreviewImage.controller);
-router.get('/:id/preview', ReadPoolPreview.controller);
-
-router.get('/', checkJwt, guard.check(['pools:read']), assertRequestInput(ListPools.validation), ListPools.controller);
+router.get(
+    '/',
+    checkJwt,
+    corsHandler,
+    guard.check(['pools:read']),
+    assertRequestInput(ListPools.validation),
+    ListPools.controller,
+);
 router.get('/public', assertRequestInput(ListPoolsPublic.validation), ListPoolsPublic.controller);
 router.get(
     '/:id',
@@ -133,24 +143,6 @@ router.get(
     assertPoolAccess,
     assertRequestInput(PoolsAnalytics.validation),
     PoolsAnalytics.controller,
-);
-router.get(
-    '/:id/analytics/leaderboard/client',
-    checkJwt,
-    corsHandler,
-    guard.check(['pool_analytics:read']),
-    //assertPoolAccess,
-    assertRequestInput(PoolsAnalyticsLeaderBoardClient.validation),
-    PoolsAnalyticsLeaderBoardClient.controller,
-);
-router.get(
-    '/:id/analytics/leaderboard',
-    checkJwt,
-    corsHandler,
-    guard.check(['pools:read']),
-    assertPoolAccess,
-    assertRequestInput(PoolsAnalyticsLeaderBoard.validation),
-    PoolsAnalyticsLeaderBoard.controller,
 );
 router.get(
     '/:id/analytics/metrics',

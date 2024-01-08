@@ -1,29 +1,60 @@
-import { ChatInputCommandInteraction, StringSelectMenuInteraction } from 'discord.js';
+import { ChatInputCommandInteraction, StringSelectMenuInteraction, ButtonInteraction } from 'discord.js';
 import { handleError } from './commands/error';
-import { handleCampaignConnect } from './handlers/index';
+import {
+    onSelectCampaignConnect,
+    onSelectQuestComplete,
+    onClickQuestComplete,
+    onClickRewardList,
+    onClickQuestList,
+} from './handlers/index';
 import { logger } from '../util/logger';
-import router from './commands';
+import router from './commands/thx';
 
-export enum StringSelectMenuVariant {
+export enum DiscordStringSelectMenuVariant {
     CampaignConnect = 'thx.campaign.connect',
+    QuestComplete = 'thx.campaign.quest.entry.create',
+    RewardBuy = 'thx.campaign.reward.payment.create',
 }
 
-const onInteractionCreated = async (interaction: ChatInputCommandInteraction | StringSelectMenuInteraction) => {
+export enum DiscordButtonVariant {
+    RewardBuy = 'thx.campaign.reward.payment.create',
+    QuestComplete = 'thx.campaign.quest.entry.create',
+    QuestList = 'thx.campaign.quest.list',
+    RewardList = 'thx.campaign.reward.list',
+}
+
+const stringSelectMenuMap = {
+    [DiscordStringSelectMenuVariant.CampaignConnect]: onSelectCampaignConnect,
+    [DiscordStringSelectMenuVariant.QuestComplete]: onSelectQuestComplete,
+};
+
+const onInteractionCreated = async (
+    interaction: ButtonInteraction | ChatInputCommandInteraction | StringSelectMenuInteraction,
+) => {
     try {
-        if (interaction.isStringSelectMenu()) {
-            logger.info(`#${interaction.user.id} picked ${interaction.values[0]} for ${interaction.customId}`);
-            switch (interaction.customId) {
-                case StringSelectMenuVariant.CampaignConnect: {
-                    handleCampaignConnect(interaction);
-                }
+        if (interaction.isButton()) {
+            logger.info(`#${interaction.user.id} clicked button #${interaction.customId}`);
+            if (interaction.customId.startsWith(DiscordButtonVariant.QuestComplete)) {
+                await onClickQuestComplete(interaction);
+            }
+            if (interaction.customId.startsWith(DiscordButtonVariant.QuestList)) {
+                await onClickQuestList(interaction);
+            }
+            if (interaction.customId.startsWith(DiscordButtonVariant.RewardList)) {
+                await onClickRewardList(interaction);
             }
         }
 
+        if (interaction.isStringSelectMenu()) {
+            logger.info(`#${interaction.user.id} picked ${interaction.values[0]} for ${interaction.customId}`);
+            if (!stringSelectMenuMap[interaction.customId])
+                throw new Error('Support for this action is not yet implemented!');
+            await stringSelectMenuMap[interaction.customId](interaction);
+        }
+
         if (interaction.isCommand()) {
-            logger.info(
-                `#${interaction.user.id} ran /${interaction.commandName} ${interaction.options.getSubcommand()}`,
-            );
-            await router[interaction.commandName].executor(interaction);
+            logger.info(`#${interaction.user.id} ran /${interaction.commandName}`);
+            router.executor(interaction);
         }
     } catch (error) {
         handleError(error, interaction);

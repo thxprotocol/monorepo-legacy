@@ -1,7 +1,6 @@
 import store from '@thxnetwork/dashboard/store';
 import {
     assertAuthorization,
-    downloadScreenshot,
     redirectAccount,
     redirectCollaborationRequest,
     redirectPoolTransfer,
@@ -25,12 +24,6 @@ const routes: Array<RouteConfig> = [
         beforeEnter: assertAuthorization,
     },
     {
-        name: 'pools',
-        path: '/pools',
-        component: () => import('../views/Pools.vue'),
-        beforeEnter: assertAuthorization,
-    },
-    {
         name: 'pool',
         path: '/pool/:id',
         redirect: '/pool/:id/dashboard',
@@ -38,19 +31,9 @@ const routes: Array<RouteConfig> = [
         beforeEnter: assertAuthorization,
         children: [
             {
-                name: 'download',
-                path: 'download',
-                beforeEnter: downloadScreenshot,
-            },
-            {
                 name: 'dashboard',
                 path: 'dashboard',
                 component: () => import('../views/pool/Analytics.vue'),
-            },
-            {
-                name: 'participants',
-                path: 'participants',
-                component: () => import('../views/pool/Participants.vue'),
             },
             {
                 name: 'quests',
@@ -63,41 +46,73 @@ const routes: Array<RouteConfig> = [
                 component: () => import('../views/pool/Rewards.vue'),
             },
             {
+                name: 'participants',
+                path: 'participants',
+                component: () => import('../views/pool/Participants.vue'),
+            },
+            {
                 name: 'integrations',
                 path: 'integrations',
                 component: () => import('../views/pool/Integrations.vue'),
             },
             {
-                name: 'Settings',
-                path: 'settings',
-                component: () => import('../views/pool/Settings.vue'),
-                children: [
-                    {
-                        name: 'General',
-                        path: 'general',
-                        component: () => import('../views/pool/settings/General.vue'),
-                    },
-                    {
-                        name: 'Widget',
-                        path: 'widget',
-                        component: () => import('../views/pool/settings/Widget.vue'),
-                    },
-                ],
-            },
-            {
                 name: 'Developer',
                 path: 'developer',
+                redirect: 'developer/general',
                 component: () => import('../views/pool/Developer.vue'),
                 children: [
                     {
-                        name: 'Webhooks',
+                        name: 'DeveloperGeneral',
+                        path: 'general',
+                        component: () => import('../views/pool/developer/General.vue'),
+                    },
+                    {
+                        name: 'DeveloperIdentities',
+                        path: 'wallets',
+                        component: () => import('../views/pool/developer/Identities.vue'),
+                    },
+                    {
+                        name: 'DeveloperWebhooks',
                         path: 'webhooks',
                         component: () => import('../views/pool/developer/Webhooks.vue'),
                     },
                     {
-                        name: 'API',
+                        name: 'DeveloperAPI',
                         path: 'api',
                         component: () => import('../views/pool/developer/API.vue'),
+                    },
+                    {
+                        name: 'DeveloperEvents',
+                        path: 'events',
+                        component: () => import('../views/pool/developer/Events.vue'),
+                    },
+                ],
+            },
+            {
+                name: 'Settings',
+                path: 'settings',
+                redirect: 'settings/general',
+                component: () => import('../views/pool/Settings.vue'),
+                children: [
+                    {
+                        name: 'SettingsGeneral',
+                        path: 'general',
+                        component: () => import('../views/pool/settings/General.vue'),
+                    },
+                    {
+                        name: 'SettingsTeam',
+                        path: 'team',
+                        component: () => import('../views/pool/settings/Team.vue'),
+                    },
+                    {
+                        name: 'SettingsAppearance',
+                        path: 'appearance',
+                        component: () => import('../views/pool/settings/Appearance.vue'),
+                    },
+                    {
+                        name: 'SettingsWidget',
+                        path: 'widget',
+                        component: () => import('../views/pool/settings/Widget.vue'),
                     },
                 ],
             },

@@ -2,6 +2,7 @@ import { TPointReward } from './PointReward';
 import { Contract } from 'web3-eth-contract';
 import { ChainId } from '../enums';
 import { TDiscordGuild, TCollaborator, TAccount, TBrand, TWallet } from '@thxnetwork/types/interfaces';
+import { TIdentity } from './Identity';
 
 export enum AccountVariant {
     EmailPassword = 0,
@@ -38,17 +39,20 @@ export type TPool = {
     token: string;
     signingSecret: string;
     address: string;
+    safeAddress: string;
     contract: Contract;
     chainId: ChainId;
     sub: string;
     transactions: string[];
     version?: string;
     variant?: 'defaultDiamond' | 'registry' | 'factory' | 'sharedWallet';
+    events: string[];
     brand: TBrand;
-    wallets: TWallet[];
+    // wallets: TWallet[];
     settings: TPoolSettings;
     widget: { domain: string; active: boolean };
     collaborators: TCollaborator[];
+    identities: TIdentity[];
     owner: TAccount;
     safe: TWallet;
     createdAt?: Date;

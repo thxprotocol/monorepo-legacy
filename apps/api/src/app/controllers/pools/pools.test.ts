@@ -16,11 +16,15 @@ import { currentVersion } from '@thxnetwork/contracts/exports';
 import { getByteCodeForContractName, getContract } from '@thxnetwork/api/config/contracts';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
 import { Contract } from 'web3-eth-contract';
+import { getProvider } from '@thxnetwork/api/util/network';
+import { poll } from '@thxnetwork/api/util/polling';
+import SafeService from '@thxnetwork/api/services/SafeService';
+import { TWallet } from '@thxnetwork/common/lib/types/interfaces';
 
 const user = request.agent(app);
 
 describe('Default Pool', () => {
-    let poolAddress: string, userWallet: Account, poolId: string, tokenContract: Contract;
+    let poolAddress: string, userWallet: Account, poolId: string, tokenContract: Contract, safe: TWallet;
 
     beforeAll(async () => {
         await beforeAllCallback();
@@ -50,6 +54,7 @@ describe('Default Pool', () => {
                 .expect((res: request.Response) => {
                     poolId = res.body._id;
                     expect(res.body.safe.address).toBeDefined();
+                    safe = res.body.safe;
                     expect(res.body.settings.endDate).toBeDefined();
                     expect(res.body.settings.title).toBe('My Pool');
                     expect(res.body.settings.isArchived).toBe(false);
@@ -59,14 +64,23 @@ describe('Default Pool', () => {
                 .expect(201, done);
         });
 
-        it('HTTP 200 (success)', (done) => {
-            user.get(`/v1/pools/${poolId}`)
+        it('HTTP 200 (success)', async () => {
+            // Wait for campaign safe to be deployed
+            const { web3 } = getProvider(ChainId.Hardhat);
+            await poll(
+                () => web3.eth.getCode(safe.address),
+                (data: string) => data === '0x',
+                1000,
+            );
+
+            await user
+                .get(`/v1/pools/${poolId}`)
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect((res: request.Response) => {
                     expect(isAddress(res.body.address)).toBe(true);
                     poolAddress = res.body.address;
                 })
-                .expect(200, done);
+                .expect(200);
         });
     });
 

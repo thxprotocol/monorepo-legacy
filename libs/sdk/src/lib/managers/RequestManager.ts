@@ -1,93 +1,102 @@
-import { THXClient } from '../../index';
-import BaseManager from './BaseManager';
+import { THXClient } from '../clients';
+import { THXBrowserClientOptions, THXRequestConfig } from '../types';
 import * as jose from 'jose';
+import axios, { AxiosError, AxiosResponse } from 'axios';
+import OIDCManager, { THXOIDCGrant } from './OIDCManager';
 
-interface RequestConfig extends RequestInit {
-    poolId?: string;
-}
-
-class RequestManager extends BaseManager {
-    constructor(client: THXClient) {
-        super(client);
+class RequestManager extends OIDCManager {
+    constructor(client: THXClient, grantType: THXOIDCGrant) {
+        super(client, grantType);
     }
 
-    async get(path: string, config?: RequestConfig) {
-        return await this.request(path, { ...config, method: 'GET' });
+    get(path: string, config?: THXRequestConfig) {
+        return this.request(path, { ...config, method: 'GET' });
     }
 
-    async post(path: string, config?: RequestConfig) {
-        return await this.request(path, { ...config, method: 'POST' });
+    post(path: string, config?: THXRequestConfig) {
+        return this.request(path, { ...config, method: 'POST' });
     }
 
-    async patch(path: string, config?: RequestConfig) {
-        return await this.request(path, { ...config, method: 'PATCH' });
+    patch(path: string, config?: THXRequestConfig) {
+        return this.request(path, { ...config, method: 'PATCH' });
     }
 
-    async put(path: string, config?: RequestConfig) {
-        return await this.request(path, { ...config, method: 'PUT' });
+    put(path: string, config?: THXRequestConfig) {
+        return this.request(path, { ...config, method: 'PUT' });
     }
 
-    async delete(path: string, config?: RequestConfig) {
-        return await this.request(path, { ...config, method: 'DELETE' });
+    delete(path: string, config?: THXRequestConfig) {
+        return this.request(path, { ...config, method: 'DELETE' });
     }
 
-    private async request(path: string, config: RequestConfig) {
-        const r = await fetch(this.getUrl(path), {
-            ...config,
-            mode: 'cors',
-            credentials: 'omit',
-            headers: this.getHeaders(config),
-        });
-
-        return await this.handleResponse(r);
+    get apiUrl() {
+        return this.client.options.apiUrl || 'https://api.thx.network';
     }
 
-    private validateToken(accessToken: string) {
+    private async request(path: string, config: THXRequestConfig) {
+        // Check for user to exist and token not to be expired if auth is intended
+        const { clientId, clientSecret } = this.client.options;
+        if (!this.isAuthenticated && clientId && clientSecret) {
+            await this.authenticate();
+        }
+
+        const headers = this.getHeaders(config);
+        const url = `${this.apiUrl}${path}`;
         try {
-            if (!accessToken) {
-                throw new Error('no access token');
-            }
+            const response = await axios({ ...config, url, headers });
 
-            const { exp } = jose.decodeJwt(accessToken);
-            if (!exp || Date.now() > Number(exp) * 1000) {
-                throw new Error('token expired');
-            }
-
-            return accessToken;
+            return await this.handleResponse(response);
         } catch (error) {
-            console.error(error);
-            return '';
+            return await this.handleError(error as AxiosError);
         }
     }
 
-    private getUrl(path: string) {
-        return this.client.options.url + path;
-    }
-
-    private getHeaders(config?: RequestConfig) {
-        const headers = new Headers({
+    private getHeaders(config?: THXRequestConfig) {
+        const headers: Record<string, string> = {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            ...config?.headers,
-        });
-        const { accessToken } = this.client.options;
+        };
 
-        if (accessToken) {
-            headers.append('Authorization', `Bearer ${this.validateToken(accessToken)}`);
+        if (this.user && this.user.access_token) {
+            const token = this.validateToken(this.user.access_token);
+            headers['Authorization'] = `Bearer ${token}`;
         }
 
-        if ((config && config.poolId) || this.client.options.poolId) {
-            headers.append('X-PoolId', (config && config.poolId) || this.client.options.poolId);
+        // Needs refactor in places where X-PoolId is as config.poolId or config header
+        const options = this.client.options as THXBrowserClientOptions;
+        if ((config && config.poolId) || (options && options.poolId)) {
+            headers['X-PoolId'] = (config && config.poolId) || (options && options.poolId);
         }
 
         return headers;
     }
 
-    private async handleResponse(r: Response) {
+    private async handleResponse(r: AxiosResponse) {
+        // Return response data, but throw if HTTP status with the range of 400 - 600
         if (r.status >= 400 && r.status < 600) {
-            throw await r.json();
+            throw r.data;
         } else {
-            return await r.json();
+            return r.data;
+        }
+    }
+
+    private async handleError(error: AxiosError) {
+        if (!error || !error.response) throw new Error('Could not parse failed response.');
+        throw error.response.data;
+    }
+
+    private validateToken(accessToken: string) {
+        if (!accessToken) throw new Error("Please, provide an 'accessToken'.");
+
+        try {
+            const { exp } = jose.decodeJwt(accessToken);
+            if (!exp || Date.now() > Number(exp) * 1000) {
+                throw new Error('The token has expired.');
+            }
+
+            return accessToken;
+        } catch (error) {
+            throw new Error("Failed to validate this 'accessToken'.");
         }
     }
 }

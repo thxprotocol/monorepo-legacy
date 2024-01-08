@@ -45,9 +45,9 @@
             </b-row>
             <base-nothing-here
                 v-if="!Object.values(erc20s).length"
-                text-submit="Create a Token"
-                title="You have not created a Token yet"
-                description="Tokens could be used for making payments, exchanging value, point systems
+                text-submit="Create a Coin"
+                title="You have not created a Coin yet"
+                description="Coins could be used for making payments, exchanging value, point systems
                 and reputation metrics."
                 @clicked="$bvModal.show('modalERC20Create')"
             />

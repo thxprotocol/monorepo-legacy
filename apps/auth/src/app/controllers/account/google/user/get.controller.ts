@@ -6,7 +6,7 @@ export const controller = async (req: Request, res: Response) => {
     const account = await AccountService.get(req.params.sub);
     const token = account.getToken(AccessTokenKind.Google);
 
-    res.json({ userId: token.userId });
+    res.json({ userId: token && token.userId });
 };
 
 export default { controller };

@@ -16,7 +16,6 @@ import { getsigningSecret } from '../util/signingsecret';
 import { Web3Quest } from '../models/Web3Quest';
 import { CustomReward } from '../models/CustomReward';
 import { Participant } from '../models/Participant';
-import { paginatedResults } from '../util/pagination';
 import { PointBalance } from './PointBalanceService';
 import { Collaborator } from '../models/Collaborator';
 import { DASHBOARD_URL } from '../config/secrets';
@@ -47,7 +46,7 @@ async function getById(id: string) {
     const pool = await AssetPool.findById(id);
     const safe = await SafeService.findOneByPool(pool, pool.chainId);
     pool.safe = safe;
-    pool.address = safe.address;
+    pool.address = safe && safe.address;
     return pool;
 }
 
@@ -102,12 +101,15 @@ async function deploy(
 
 async function getAllBySub(sub: string, includeIsArchived?: boolean) {
     const pools = await AssetPool.find({ sub, ...(includeIsArchived ? {} : { 'settings.isArchived': false }) });
-    const ownedPoolIds = pools.map(({ _id }) => String(_id));
-
     // Only query for collabs of not already owned pools
-    const collaborations = await Collaborator.find({ sub, poolId: { $nin: ownedPoolIds } });
+    const collaborations = await Collaborator.find({ sub, poolId: { $nin: pools.map(({ _id }) => String(_id)) } });
     const poolIds = collaborations.map((c) => c.poolId);
-    const collaborationPools = await AssetPool.find({ _id: poolIds });
+    if (!poolIds.length) return pools;
+
+    const collaborationPools = await AssetPool.find({
+        _id: poolIds,
+        ...(includeIsArchived ? {} : { 'settings.isArchived': false }),
+    });
 
     return pools.concat(collaborationPools);
 }
@@ -141,9 +143,36 @@ async function getRewardCount(pool: AssetPoolDocument) {
 }
 
 async function findParticipants(pool: AssetPoolDocument, page: number, limit: number) {
-    const participants = await paginatedResults(Participant, page, limit, {
-        poolId: pool._id,
-    });
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const total = await Participant.find({ poolId: pool._id }).countDocuments().exec();
+    const participants = {
+        previous: startIndex > 0 && {
+            page: page - 1,
+        },
+        next: endIndex < total && {
+            page: page + 1,
+        },
+        total,
+        results: await Participant.aggregate([
+            { $match: { poolId: String(pool._id) } },
+            {
+                $addFields: {
+                    rankSort: {
+                        $cond: {
+                            if: { $gt: ['$rank', 0] },
+                            then: '$rank',
+                            else: Number.MAX_SAFE_INTEGER,
+                        },
+                    },
+                },
+            },
+            { $sort: { rankSort: 1 } },
+            { $skip: startIndex },
+            { $limit: limit },
+        ]).exec(),
+    };
+
     const subs = participants.results.map((p) => p.sub);
     const accounts = await AccountProxy.getMany(subs);
 
@@ -178,7 +207,7 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
                 logger.error(error);
             }
             return {
-                ...participant.toJSON(),
+                ...participant,
                 account: account && {
                     email: account.email,
                     username: account.username,

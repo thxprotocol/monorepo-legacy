@@ -18,10 +18,7 @@
                             </div>
                         </b-col>
                         <b-col md="8">
-                            <b-form-group
-                                label="Discord Server"
-                                description="Use THX Bot for Discord Quests and Role Rewards."
-                            >
+                            <b-form-group label="Discord Server">
                                 <b-button variant="light" target="_blank" :href="discordBotInviteUrl">
                                     <b-img
                                         :src="require('../../../public/assets/logo-discord.png')"
@@ -30,8 +27,12 @@
                                     />
                                     Invite THX Bot
                                 </b-button>
+                                <template #description>
+                                    Run the command <code>/thx connect</code> after the invite from an admin role to
+                                    connect the bot to a campaign you own or collaborate with.
+                                </template>
                             </b-form-group>
-                            <b-form-group label="Installed in" v-if="pool.guilds.length">
+                            <b-form-group label="Installed in" v-if="pool.guilds && pool.guilds.length">
                                 <b-badge
                                     v-for="(guild, key) of pool.guilds"
                                     variant="primary"
@@ -47,38 +48,66 @@
                     <b-form-row>
                         <b-col md="4">
                             <div class="">
-                                <strong>Channel Webhook</strong>
+                                <strong>Management</strong>
+                                <p class="text-muted">
+                                    Determine the roles that should be able to access administrative features.
+                                </p>
+                            </div>
+                        </b-col>
+                        <b-col md="8">
+                            <b-alert show variant="info" v-if="pool.guilds && !pool.guilds.length">
+                                <i class="fab fa-discord mr-2" />
+                                Please invite THX Bot and connect your Discord server.
+                            </b-alert>
+                            <b-form-group :label="guild.name" :key="key" v-for="(guild, key) of pool.guilds">
+                                <BaseDropdownDiscordRole
+                                    :role-id="guild.adminRoleId"
+                                    :guilds="pool.guilds"
+                                    @click="updateDiscordAdminRole(guild, $event)"
+                                />
+                            </b-form-group>
+                            <small>
+                                Gives access to: <code>/thx give-points</code>, <code>/thx remove-points</code>
+                            </small>
+                        </b-col>
+                    </b-form-row>
+                    <hr />
+                    <b-form-row>
+                        <b-col md="4">
+                            <div class="">
+                                <strong>Notifications</strong>
                                 <p class="text-muted">
                                     Let your Discord members know about campaign events and gain more participants.
                                 </p>
                             </div>
                         </b-col>
                         <b-col md="8">
-                            <b-form-group label="Discord Webhook URL">
-                                <b-form-input
-                                    :state="isValidDiscordWebhookUrl"
-                                    :value="discordWebhookUrl"
-                                    @change="onChangeDiscordWebhookUrl"
-                                ></b-form-input>
-                                <small class="text-muted">
-                                    Show campaign activity in one of your Discord channels using a
-                                    <b-link
-                                        href="https://discordjs.guide/popular-topics/webhooks.html#creating-webhooks"
-                                        target="_blank"
-                                    >
-                                        Discord webhook
-                                    </b-link>
-                                </small>
-                            </b-form-group>
-                            <b-form-group label="Campaign Events" description="" class="mb-0">
+                            <b-alert show variant="info" v-if="pool.guilds && !pool.guilds.length">
+                                <i class="fab fa-discord mr-2" />
+                                Please invite THX Bot and connect your Discord server.
+                            </b-alert>
+                            <b-form-group label="Events" description="">
                                 <div class="d-flex">
-                                    <b-form-checkbox class="mr-2 mb-2" :checked="isValidDiscordWebhookUrl" disabled>
+                                    <b-form-checkbox class="mr-2 mb-2" :checked="isChecked" disabled>
                                         Quest Publish
                                     </b-form-checkbox>
-                                    <b-form-checkbox class="mr-2 mb-2" :checked="isValidDiscordWebhookUrl" disabled>
+                                    <b-form-checkbox class="mr-2 mb-2" :checked="isChecked" disabled>
                                         Quest Complete
                                     </b-form-checkbox>
+                                    <b-form-checkbox class="mr-2 mb-2" :checked="false" disabled>
+                                        Reward Publish
+                                    </b-form-checkbox>
+                                    <b-form-checkbox class="mr-2 mb-2" :checked="false" disabled>
+                                        Reward Payment
+                                    </b-form-checkbox>
                                 </div>
+                            </b-form-group>
+                            <b-form-group :label="guild.name" :key="key" v-for="(guild, key) of pool.guilds">
+                                <BaseDropdownDiscordChannel
+                                    @click="updateDiscordGuild"
+                                    :channel-id="guild.channelId"
+                                    :guild="guild"
+                                />
                             </b-form-group>
                         </b-col>
                     </b-form-row>
@@ -97,7 +126,7 @@
                                 Reduce campaign management with automated Repost & Like Quests for your tweets.
                             </p>
                         </b-col>
-                        <b-col md="8">
+                        <b-col md="8" v-if="pool.owner">
                             <b-alert
                                 show
                                 variant="warning"
@@ -192,15 +221,19 @@ import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
-import type { TAccount } from '@thxnetwork/types/interfaces';
 import { AccessTokenKind, RewardConditionInteraction, TPoolSettings } from '@thxnetwork/types/index';
 import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
 import { DISCORD_BOT_INVITE_URL } from '@thxnetwork/dashboard/config/constants';
+import type { TAccount, TDiscordGuild, TDiscordRole } from '@thxnetwork/types/interfaces';
 import BaseCardURLWebhook from '@thxnetwork/dashboard/components/cards/BaseCardURLWebhook.vue';
+import BaseDropdownDiscordChannel from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownDiscordChannel.vue';
+import BaseDropdownDiscordRole from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownDiscordRole.vue';
 
 @Component({
     components: {
         BaseCardURLWebhook,
+        BaseDropdownDiscordChannel,
+        BaseDropdownDiscordRole,
     },
     computed: {
         ...mapGetters({
@@ -235,6 +268,10 @@ export default class SettingsTwitterView extends Vue {
 
     get pool() {
         return this.pools[this.$route.params.id];
+    }
+
+    get isChecked() {
+        return this.isValidDiscordWebhookUrl ? true : this.pool.guilds && this.pool.guilds.length ? true : false;
     }
 
     mounted() {
@@ -275,6 +312,17 @@ export default class SettingsTwitterView extends Vue {
                 },
             },
         });
+    }
+
+    updateDiscordGuild(guild: TDiscordGuild) {
+        this.$store.dispatch('pools/update', {
+            pool: this.pool,
+            data: { guild },
+        });
+    }
+
+    updateDiscordAdminRole(guild: TDiscordGuild, role: TDiscordRole) {
+        this.updateDiscordGuild(Object.assign(guild, { adminRoleId: role.id }));
     }
 }
 </script>

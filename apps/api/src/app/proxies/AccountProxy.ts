@@ -1,6 +1,7 @@
 import { TAccount } from '@thxnetwork/types/interfaces';
 import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
 import { THXError } from '@thxnetwork/api/util/errors';
+import { logger } from '../util/logger';
 
 class NoAccountError extends THXError {
     message = 'Could not find an account for this address';
@@ -51,19 +52,18 @@ export default class AccountProxy {
     }
 
     static async getByDiscordId(discordId: string): Promise<TAccount> {
-        const r = await authClient({
-            method: 'GET',
-            url: `/account/discord/${discordId}`,
-            headers: {
-                Authorization: await getAuthAccessToken(),
-            },
-        });
-
-        if (!r.data) {
-            throw new NoAccountError();
+        try {
+            const { data } = await authClient({
+                method: 'GET',
+                url: `/account/discord/${discordId}`,
+                headers: {
+                    Authorization: await getAuthAccessToken(),
+                },
+            });
+            return data;
+        } catch (error) {
+            logger.error(error);
         }
-
-        return r.data;
     }
 
     static async getByEmail(email: string) {
