@@ -7,6 +7,9 @@ export const networkNames = ['matic', 'maticdev', 'hardhat'] as const;
 export type TNetworkName = typeof networkNames[number];
 
 export const contractNames = [
+    // Core
+    'BalancerVault',
+
     // Default
     'Diamond',
     'DiamondCutFacet',
@@ -17,7 +20,7 @@ export const contractNames = [
     'Factory',
     'Registry',
 
-    // Facets
+    // Deprecated facets
     'FactoryFacet',
     'RegistryFacet',
     'RegistryProxyFacet',
@@ -29,8 +32,6 @@ export const contractNames = [
     'ERC1155ProxyFacet',
     'ERC1155HolderProxyFacet',
     'SharedWalletFacet',
-
-    // Deprecated facets
     'ERC20ProxyFacet',
     'TokenFactory',
     'PoolRegistry',

@@ -7,20 +7,14 @@ import SafeService from '@thxnetwork/api/services/SafeService';
 import { MetaTransactionData } from '@safe-global/safe-core-sdk-types';
 import { ethers } from 'hardhat';
 import { BigNumber, ContractInterface } from 'ethers';
+import {
+    USDC_ADDRESS,
+    COMPANY_SAFE_ADDRESS,
+    BALANCER_VAULT_ADDRESS,
+    BALANCER_POOL_ID,
+} from '@thxnetwork/api/services/LiquidityService';
 
 export const validation = [param('id').isMongoId(), body('erc20Id').exists().isMongoId(), body('amount').exists()];
-
-const USDC_ADDRESS = '';
-const COMPANY_SAFE_ADDRESS = '';
-const BALANCER_VAULT_ADDRESS = '';
-const BALANCER_POOL_ID = '';
-
-enum JoinKind {
-    INIT,
-    EXACT_TOKENS_IN_FOR_BPT_OUT,
-    TOKEN_IN_FOR_EXACT_BPT_OUT,
-    ALL_TOKENS_IN_FOR_EXACT_BPT_OUT,
-}
 
 // TODO
 // 1. Customer transers 100% USDC to Campaign Safe
@@ -39,21 +33,21 @@ const controller = async (req: Request, res: Response) => {
     const safe = await SafeService.findOneByPool(pool, pool.chainId);
 
     // Check balance to ensure throughput
-    const usdc = new ethers.Contract(
-        USDC_ADDRESS,
-        getAbiForContractName('LimitedSupplyToken') as unknown as ContractInterface,
-    );
-    const amount = BigNumber.from(req.body.amount);
-    const balance = await usdc.balanceOf(safe.address);
-    if (balance.lt(amount)) throw new InsufficientBalanceError('Insufficient USDC in campaign Safe for this topup');
+    // const usdc = new ethers.Contract(
+    //     USDC_ADDRESS,
+    //     getAbiForContractName('LimitedSupplyToken') as unknown as ContractInterface,
+    // );
+    // const amount = BigNumber.from(req.body.amount);
+    // const balance = await usdc.balanceOf(safe.address);
+    // if (balance.lt(amount)) throw new InsufficientBalanceError('Insufficient USDC in campaign Safe for this topup');
 
-    const vault = new ethers.Contract(
-        BALANCER_VAULT_ADDRESS,
-        getAbiForContractName('BalancerVault') as unknown as ContractInterface,
-    );
+    // const vault = new ethers.Contract(
+    //     BALANCER_VAULT_ADDRESS,
+    //     getAbiForContractName('BalancerVault') as unknown as ContractInterface,
+    // );
 
     // Prepare company safe USDC transfer
-    const tx1 = await usdc.populateTransaction.transfer(COMPANY_SAFE_ADDRESS, amount);
+    // const tx1 = await usdc.populateTransaction.transfer(COMPANY_SAFE_ADDRESS, amount);
 
     // joinPool(
     //     bytes32 poolId,
@@ -69,38 +63,38 @@ const controller = async (req: Request, res: Response) => {
     //     bool fromInternalBalance
     // }
 
-    const tx2 = await vault.populateTransaction.joinPool(BALANCER_POOL_ID, safe.address, safe.address, {
-        assets: [USDC_ADDRESS],
-        maxAmountsIn: [amount.mul(0.75)],
-        userData: JoinKind.EXACT_TOKENS_IN_FOR_BPT_OUT,
-        fromInternalBalance: false,
-    });
+    // const tx2 = await vault.populateTransaction.joinPool(BALANCER_POOL_ID, safe.address, safe.address, {
+    //     assets: [USDC_ADDRESS],
+    //     maxAmountsIn: [amount.mul(0.75)],
+    //     userData: JoinKind.EXACT_TOKENS_IN_FOR_BPT_OUT,
+    //     fromInternalBalance: false,
+    // });
 
-    const tx3 = await vault.populateTransaction.joinPool(BALANCER_POOL_ID, safe.address, safe.address, {
-        assets: [USDC_ADDRESS],
-        maxAmountsIn: [amount.mul(0.25)],
-        userData: JoinKind.EXACT_TOKENS_IN_FOR_BPT_OUT,
-        fromInternalBalance: false,
-    });
+    // const tx3 = await vault.populateTransaction.joinPool(BALANCER_POOL_ID, safe.address, safe.address, {
+    //     assets: [USDC_ADDRESS],
+    //     maxAmountsIn: [amount.mul(0.25)],
+    //     userData: JoinKind.EXACT_TOKENS_IN_FOR_BPT_OUT,
+    //     fromInternalBalance: false,
+    // });
 
     // The batch to be sent. Order is important!
-    const payload: MetaTransactionData[] = [
-        {
-            to: USDC_ADDRESS,
-            value: '0',
-            data: tx1.data,
-        },
-        {
-            to: BALANCER_VAULT_ADDRESS,
-            value: '0',
-            data: tx2.data,
-        },
-        {
-            to: BALANCER_VAULT_ADDRESS,
-            value: '0',
-            data: tx3.data,
-        },
-    ];
+    // const payload: MetaTransactionData[] = [
+    //     {
+    //         to: USDC_ADDRESS,
+    //         value: '0',
+    //         data: tx1.data,
+    //     },
+    //     {
+    //         to: BALANCER_VAULT_ADDRESS,
+    //         value: '0',
+    //         data: tx2.data,
+    //     },
+    //     {
+    //         to: BALANCER_VAULT_ADDRESS,
+    //         value: '0',
+    //         data: tx3.data,
+    //     },
+    // ];
 
     // Execute the multisend
 
