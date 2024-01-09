@@ -7,7 +7,7 @@ import QuestService from '@thxnetwork/api/services/QuestService';
 import { QuestVariant } from '@thxnetwork/common/lib/types';
 
 const validation = [
-    body('index').isInt(),
+    body('index').optional().isInt(),
     body('title').isString(),
     body('description').isString(),
     body('isPublished')
@@ -36,11 +36,17 @@ const validation = [
         .customSanitizer((infoLinks) => {
             return JSON.parse(infoLinks).filter((link: TInfoLink) => link.label.length && isValidUrl(link.url));
         }),
+    body('gateIds')
+        .custom((value) => {
+            const gateIds = JSON.parse(value);
+            return Array.isArray(gateIds) && gateIds.every((item) => typeof item === 'string');
+        })
+        .customSanitizer((gateIds) => JSON.parse(gateIds)),
 ];
 
 const controller = async (req: Request, res: Response) => {
     const poolId = req.header('X-PoolId');
-    const { title, description, amounts, infoLinks, eventName, isPublished, expiryDate } = req.body;
+    const { title, description, amounts, infoLinks, eventName, isPublished, gateIds, expiryDate } = req.body;
     const image = req.file && (await ImageService.upload(req.file));
     const quest = await QuestService.create(QuestVariant.Daily, poolId, {
         title,
@@ -51,6 +57,7 @@ const controller = async (req: Request, res: Response) => {
         eventName,
         isPublished,
         expiryDate,
+        gateIds,
     });
 
     res.status(201).json(quest);

@@ -105,6 +105,20 @@
                             </div>
                         </b-nav-item>
                         <b-nav-item
+                            :to="`/pool/${selectedPool._id}/gates`"
+                            link-classes="nav-link-wrapper"
+                            class="nav-link-plain"
+                        >
+                            <div class="d-flex">
+                                <div class="nav-link-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <div class="flex-grow-1 justify-content-between d-flex align-items-center">
+                                    <span>Gates</span>
+                                </div>
+                            </div>
+                        </b-nav-item>
+                        <b-nav-item
                             :to="`/pool/${selectedPool._id}/participants`"
                             link-classes="nav-link-wrapper"
                             class="nav-link-plain"

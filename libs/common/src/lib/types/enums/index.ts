@@ -15,7 +15,7 @@ export * from './WithdrawalState';
 export * from './DailyRewardClaimState';
 export * from './NFTVariant';
 export * from './Signup';
-export * from './TokenGatingVariant';
+export * from './GateVariant';
 export * from './Webhook';
 export * from './Event';
 export * from './Job';

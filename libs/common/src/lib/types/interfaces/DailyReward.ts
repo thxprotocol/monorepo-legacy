@@ -5,5 +5,5 @@ export type TDailyReward = TBaseReward & {
     progress?: number;
     claims?: any[];
     events?: any[];
-    eventName?: string;
+    eventName: string;
 };

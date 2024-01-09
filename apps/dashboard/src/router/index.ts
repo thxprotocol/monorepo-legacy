@@ -46,6 +46,11 @@ const routes: Array<RouteConfig> = [
                 component: () => import('../views/pool/Rewards.vue'),
             },
             {
+                name: 'gates',
+                path: 'gates',
+                component: () => import('../views/pool/Gates.vue'),
+            },
+            {
                 name: 'participants',
                 path: 'participants',
                 component: () => import('../views/pool/Participants.vue'),

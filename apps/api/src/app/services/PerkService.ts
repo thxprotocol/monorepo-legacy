@@ -1,6 +1,3 @@
-import { TokenGatingVariant } from '@thxnetwork/types/enums/TokenGatingVariant';
-import { getContractFromName } from '../config/contracts';
-import { fromWei } from 'web3-utils';
 import { WalletDocument } from '../models/Wallet';
 import { ERC20PerkDocument } from '../models/ERC20Perk';
 import { ERC721PerkDocument } from '../models/ERC721Perk';
@@ -23,6 +20,7 @@ import { DiscordRoleRewardDocument } from '../models/DiscordRoleReward';
 import { DiscordRoleRewardPayment } from '../models/DiscordRoleRewardPayment';
 import { ERC721Metadata } from '../models/ERC721Metadata';
 import { ERC1155Metadata } from '../models/ERC1155Metadata';
+import GateService from './GateService';
 
 export type PerkDocument =
     | ERC20PerkDocument
@@ -30,31 +28,6 @@ export type PerkDocument =
     | CustomRewardDocument
     | CouponRewardDocument
     | DiscordRoleRewardDocument;
-
-export async function verifyOwnership(
-    { tokenGatingVariant, tokenGatingContractAddress, tokenGatingAmount }: PerkDocument,
-    wallet: WalletDocument,
-): Promise<boolean> {
-    switch (tokenGatingVariant) {
-        case TokenGatingVariant.ERC20: {
-            const contract = getContractFromName(wallet.chainId, 'LimitedSupplyToken', tokenGatingContractAddress);
-            const balance = Number(fromWei(await contract.methods.balanceOf(wallet.address).call(), 'ether'));
-
-            return balance >= tokenGatingAmount;
-        }
-        case TokenGatingVariant.ERC721: {
-            const contract = getContractFromName(wallet.chainId, 'NonFungibleToken', tokenGatingContractAddress);
-            const balance = Number(await contract.methods.balanceOf(wallet.address).call());
-
-            return !!balance;
-        }
-        case TokenGatingVariant.ERC1155: {
-            const contract = getContractFromName(wallet.chainId, 'THX_ERC1155', tokenGatingContractAddress);
-            const balance = Number(await contract.methods.balanceOf(wallet.address).call());
-            return !!balance;
-        }
-    }
-}
 
 export async function getMetadata(perk: ERC721PerkDocument, token?: ERC721TokenDocument | ERC1155TokenDocument) {
     const metadataId = perk.metadataId || (token && token.metadataId);
@@ -85,18 +58,15 @@ export async function getNFT(perk: ERC721PerkDocument) {
 }
 
 export async function getIsLockedForWallet(perk: PerkDocument, wallet: WalletDocument) {
-    if (!perk.tokenGatingContractAddress || !wallet) return;
-    const isOwned = await verifyOwnership(perk, wallet);
-    return !isOwned;
+    if (!perk.gateIds.length || !wallet) return;
+    return await GateService.getIsLocked(perk.gateIds, wallet);
 }
 
 export async function getIsLockedForSub(perk: PerkDocument, sub: string, pool: AssetPoolDocument) {
-    if (!perk.tokenGatingContractAddress) return;
+    if (!perk.gateIds.length) return;
     const wallet = await WalletService.findPrimary(sub, pool.chainId);
     if (!wallet) return true;
-
-    const isOwned = await verifyOwnership(perk, wallet);
-    return !isOwned;
+    return await GateService.getIsLocked(perk.gateIds, wallet);
 }
 
 async function getProgress(r: PerkDocument, model: any) {
@@ -145,7 +115,7 @@ export async function validate({
     if (!model) return { isError: true, errorMessage: 'Could not determine payment model.' };
 
     // Is gated and reqeust is made authenticated
-    if (sub && pool && perk.tokenGatingContractAddress) {
+    if (sub && pool && perk.gateIds.length) {
         const isPerkLocked = await getIsLockedForSub(perk, sub, pool);
         if (isPerkLocked) {
             return { isError: true, errorMessage: 'This perk has been gated with a token.' };
@@ -169,7 +139,6 @@ export async function validate({
 }
 
 export default {
-    verifyOwnership,
     getIsLockedForWallet,
     getExpiry,
     getProgress,

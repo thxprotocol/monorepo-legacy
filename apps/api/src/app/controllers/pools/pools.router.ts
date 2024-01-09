@@ -16,6 +16,8 @@ import ReadPoolSubscription from './subscriptions/get.controller';
 import ListPoolQuests from './quests/list.controller';
 import ListPoolQuestEntries from './quests/entries/list.controller';
 import ListPoolParticipants from './participants/list.controller';
+import ListPoolGates from './gates/list.controller';
+import CreatePoolGate from './gates/post.controller';
 import CreatePoolCollaborator from './collaborators/post.controller';
 import DeletePoolCollaborator from './collaborators/delete.controller';
 import UpdatePoolCollaborator from './collaborators/patch.controller';
@@ -169,6 +171,24 @@ router.get(
     assertPoolAccess,
     assertRequestInput(ListPoolParticipants.validation),
     ListPoolParticipants.controller,
+);
+router.get(
+    '/:id/gates',
+    checkJwt,
+    corsHandler,
+    guard.check(['pools:read']), // TODO Should become pool_participants:read
+    assertPoolAccess,
+    assertRequestInput(ListPoolGates.validation),
+    ListPoolGates.controller,
+);
+router.post(
+    '/:id/gates',
+    checkJwt,
+    corsHandler,
+    guard.check(['pools:read', 'pools:write']),
+    assertPoolAccess,
+    assertRequestInput(CreatePoolGate.validation),
+    CreatePoolGate.controller,
 );
 router.patch(
     '/:id/collaborators/:uuid',

@@ -9,6 +9,8 @@
         @change-description="description = $event"
         @change-file="file = $event"
         @change-published="isPublished = $event"
+        @change-gates="gateIds = $event"
+        :pool="pool"
         :published="isPublished"
         :id="id"
         :error="error"

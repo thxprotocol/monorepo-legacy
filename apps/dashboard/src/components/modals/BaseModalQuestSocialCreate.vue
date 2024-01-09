@@ -9,6 +9,7 @@
         @change-info-links="infoLinks = Object.values($event)"
         @change-published="isPublished = $event"
         @change-date="expiryDate = $event"
+        @change-gates="gateIds = $event"
         :published="isPublished"
         :info-links="infoLinks"
         :id="id"
@@ -16,6 +17,7 @@
         :loading="isLoading"
         :disabled="isSubmitDisabled || !amount || !title"
         :quest="reward"
+        :pool="pool"
     >
         <template #col-left>
             <b-form-group label="Amount">

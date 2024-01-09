@@ -9,6 +9,7 @@
         @change-file="file = $event"
         @change-published="isPublished = $event"
         @change-date="expiryDate = $event"
+        @change-gates="gateIds = $event"
         :published="isPublished"
         :id="id"
         :error="error"
@@ -16,6 +17,7 @@
         :loading="isLoading"
         :disabled="isSubmitDisabled"
         :quest="reward"
+        :pool="pool"
     >
         <template #col-left>
             <b-form-group label="Amount">
