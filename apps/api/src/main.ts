@@ -4,6 +4,7 @@ import https from 'https';
 import httpProxy from 'http-proxy';
 import app from './app';
 import discordBot from './discord';
+import telegramBot from './telegram';
 import db from './app/util/database';
 import { createTerminus } from '@godaddy/terminus';
 import { healthCheck } from './app/util/healthcheck';
@@ -48,6 +49,7 @@ const options = {
 
 createTerminus(server, options);
 
+// Enable graceful stop
 process.on('uncaughtException', function (err: Error) {
     if (err) {
         logger.error({
@@ -69,3 +71,4 @@ logger.info({
 server.listen(app.get('port'));
 
 discordBot();
+telegramBot();

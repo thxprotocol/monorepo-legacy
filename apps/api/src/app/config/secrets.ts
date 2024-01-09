@@ -107,3 +107,7 @@ export const WEBHOOK_MILESTONE = process.env.WEBHOOK_MILESTONE;
 export const SAFE_TXS_SERVICE = process.env.SAFE_TXS_SERVICE || 'https://safe-transaction-polygon.safe.global';
 export const BOT_TOKEN = process.env.BOT_TOKEN;
 export const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
+export const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+export const TELEGRAM_API_ID = Number(process.env.TELEGRAM_API_ID);
+export const TELEGRAM_API_HASH = process.env.TELEGRAM_API_HASH;
+export const TELEGRAM_SESSION_STRING = process.env.TELEGRAM_SESSION_STRING;

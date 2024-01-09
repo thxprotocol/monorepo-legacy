@@ -11,4 +11,5 @@ export enum AccessTokenKind {
     YoutubeView = 'youtube-view',
     YoutubeManage = 'youtube-manage',
     Shopify = 'shopify',
+    Telegram = 'telegram',
 }

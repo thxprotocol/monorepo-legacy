@@ -11,6 +11,7 @@ import BrandProxy from '@thxnetwork/auth/proxies/BrandProxy';
 import PoolProxy from '@thxnetwork/auth/proxies/PoolProxy';
 import WalletProxy from '@thxnetwork/auth/proxies/WalletProxy';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
+import TelegramService from '@thxnetwork/auth/services/TelegramService';
 
 async function controller(req: Request, res: Response) {
     const { uid, params } = req.interaction;
@@ -41,6 +42,7 @@ async function controller(req: Request, res: Response) {
             AccountVariant.SSODiscord,
             AccountVariant.SSOTwitch,
             AccountVariant.SSOGithub,
+            AccountVariant.SSOTelegram,
         ];
     }
 
@@ -91,6 +93,9 @@ async function controller(req: Request, res: Response) {
             AccountVariant.SSODiscord,
         ].includes(method),
     );
+    params.telegramLoginUrl = authenticationMethods.includes(AccountVariant.SSOTelegram)
+        ? TelegramService.getLoginURL(req.params.uid)
+        : null;
     params.googleLoginUrl = authenticationMethods.includes(AccountVariant.SSOGoogle)
         ? YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getBasicScopes())
         : null;
