@@ -366,6 +366,11 @@
             </a>
             <% } %>
 
+            <a style="width: 40px; height: 40px;" class="mr-2 mb-2 d-block p-1 btn btn-light"
+               href="<%= params.telegramLoginUrl %>" data-toggle="tooltip" title="Sign in with Telegram">
+              <img width="20" src="/img/telegram-logo.png" alt="twitch logo" />
+            </a>
+
             <% if (params.twitchLoginUrl) { %>
             <a style="width: 40px; height: 40px;" class="mr-2 mb-2 d-block p-1 btn btn-light"
                href="<%= params.twitchLoginUrl %>" data-toggle="tooltip" title="Sign in with Twitch">

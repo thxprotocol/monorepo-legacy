@@ -77,3 +77,7 @@ export const HUBSPOT_ACCESS_TOKEN = process.env.HUBSPOT_ACCESS_TOKEN;
 export const BOT_TOKEN = process.env.BOT_TOKEN;
 export const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
 export const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
+export const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+export const TELEGRAM_API_ID = Number(process.env.TELEGRAM_API_ID);
+export const TELEGRAM_API_HASH = process.env.TELEGRAM_API_HASH;
+export const TELEGRAM_SESSION_STRING = process.env.TELEGRAM_SESSION_STRING;
