@@ -18,16 +18,16 @@
                     <h5 class="mb-4">The numbers</h5>
                     <div>
                         <div class="card-logo mb-3 mr-md-3 w-100">
-                            <span>Users</span>
-                            <strong>13858</strong>
+                            <span>Campaign Participants</span>
+                            <strong>18896</strong>
                         </div>
                         <div class="card-logo mb-3 mr-md-3 w-100">
-                            <span>Quests Completed</span>
-                            <strong>11013</strong>
+                            <span>Quests Entries</span>
+                            <strong>19680</strong>
                         </div>
                         <div class="card-logo mb-3 mr-md-3 w-100">
-                            <span>Rewards Earned</span>
-                            <strong>875</strong>
+                            <span>Reward Purchases</span>
+                            <strong>1868</strong>
                         </div>
                     </div>
                 </div>

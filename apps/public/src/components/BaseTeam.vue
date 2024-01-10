@@ -3,12 +3,40 @@
         <div class="container pt-5 pb-5">
             <div class="row pt-5 pb-5">
                 <div class="col-md-12 text-center">
-                    <h2 class="h5">Our team members</h2>
+                    <h2 class="h5">Core Team</h2>
                     <p class="lead h1">Nice to meet you!</p>
                 </div>
-            </div>
-            <div class="pb-5">
                 <b-row>
+                    <b-col md="3" class="p-2">
+                        <b-card class="h-100">
+                            <div class="d-flex">
+                                <div class="pr-4">
+                                    <img
+                                        class="rounded"
+                                        height="65"
+                                        v-lazy="require('../../public/assets/img/thx_team_mieszko.jpg')"
+                                        :alt="ALT_TEXT.HOME_BASE_TEAM_MIESZKO"
+                                    />
+                                </div>
+                                <div class="d-flex flex-column justify-content-center flex-grow-1">
+                                    <h3 class="text-darker m-0">Mieszko Czyzyk</h3>
+                                    <small>CEO &amp; Co-founder</small>
+                                </div>
+                                <div>
+                                    <a
+                                        class="p-1 small bg-dark text-white"
+                                        href="https://www.linkedin.com/in/mieszkoczyzyk/"
+                                    >
+                                        <i class="fab fa-linkedin-in"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <hr />
+                            <p class="font-italic font-weight-light">
+                                Serial SaaS founder. Loves data-driven marketing. Into blockchain since 2013.
+                            </p>
+                        </b-card>
+                    </b-col>
                     <b-col md="3" class="p-2">
                         <b-card class="h-100">
                             <div class="d-flex">
@@ -46,29 +74,64 @@
                                     <img
                                         class="rounded"
                                         height="65"
-                                        v-lazy="require('../../public/assets/img/thx_team_mieszko.jpg')"
-                                        :alt="ALT_TEXT.HOME_BASE_TEAM_MIESZKO"
+                                        v-lazy="require('../../public/assets/img/phillip.png')"
+                                        :alt="ALT_TEXT.HOME_BASE_TEAM_PHILLIP"
                                     />
                                 </div>
                                 <div class="d-flex flex-column justify-content-center flex-grow-1">
-                                    <h3 class="text-darker m-0">Mieszko Czyzyk</h3>
-                                    <small>CEO &amp; Co-founder</small>
+                                    <h3 class="text-darker m-0">Phillip Reidy</h3>
+                                    <small>Community Manager</small>
                                 </div>
                                 <div>
                                     <a
                                         class="p-1 small bg-dark text-white"
-                                        href="https://www.linkedin.com/in/mieszkoczyzyk/"
+                                        href="https://www.linkedin.com/in/phillip-r-7a6991155/"
                                     >
                                         <i class="fab fa-linkedin-in"></i>
                                     </a>
                                 </div>
                             </div>
                             <hr />
-                            <p class="font-italic font-weight-light">
-                                Serial SaaS founder. Loves data-driven marketing. Into blockchain since 2013.
-                            </p>
+                            <p class="font-italic font-weight-light">Community Lead and Blockchain Investor</p>
                         </b-card>
                     </b-col>
+                    <b-col md="3" class="p-2">
+                        <b-card class="h-100">
+                            <div class="d-flex">
+                                <div class="pr-4">
+                                    <img
+                                        class="rounded-circle"
+                                        height="65"
+                                        v-lazy="require('../../public/assets/img/thx_team_prasanth.jpeg')"
+                                        :alt="ALT_TEXT.HOME_BASE_TEAM_VALERIA"
+                                    />
+                                </div>
+                                <div class="d-flex flex-column justify-content-center flex-grow-1">
+                                    <h3 class="text-darker m-0">Prasanth Viswam</h3>
+                                    <small>Sales Engineer</small>
+                                </div>
+                                <div>
+                                    <a
+                                        class="p-1 small bg-dark text-white"
+                                        href="https://www.linkedin.com/in/prasanth-xipher"
+                                    >
+                                        <i class="fab fa-linkedin-in"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <hr />
+                            <p class="font-italic font-weight-light">Background in software engineering.</p>
+                        </b-card>
+                    </b-col>
+                </b-row>
+            </div>
+            <div class="row pt-5 pb-5">
+                <div class="col-md-12 text-center">
+                    <h2 class="h5">Our Contributors</h2>
+                </div>
+            </div>
+            <div class="pb-5">
+                <b-row>
                     <b-col md="3" class="p-2">
                         <b-card class="h-100">
                             <div class="d-flex">
@@ -194,34 +257,6 @@
                                     <img
                                         class="rounded"
                                         height="65"
-                                        v-lazy="require('../../public/assets/img/phillip.png')"
-                                        :alt="ALT_TEXT.HOME_BASE_TEAM_PHILLIP"
-                                    />
-                                </div>
-                                <div class="d-flex flex-column justify-content-center flex-grow-1">
-                                    <h3 class="text-darker m-0">Phillip Reidy</h3>
-                                    <small>Community Manager</small>
-                                </div>
-                                <div>
-                                    <a
-                                        class="p-1 small bg-dark text-white"
-                                        href="https://www.linkedin.com/in/phillip-r-7a6991155/"
-                                    >
-                                        <i class="fab fa-linkedin-in"></i>
-                                    </a>
-                                </div>
-                            </div>
-                            <hr />
-                            <p class="font-italic font-weight-light">Community Lead and Blockchain Investor</p>
-                        </b-card>
-                    </b-col>
-                    <b-col md="3" class="p-2">
-                        <b-card class="h-100">
-                            <div class="d-flex">
-                                <div class="pr-4">
-                                    <img
-                                        class="rounded"
-                                        height="65"
                                         v-lazy="require('../../public/assets/img/bram.png')"
                                         :alt="ALT_TEXT.HOME_BASE_TEAM_BRAM"
                                     />
@@ -279,7 +314,7 @@
                             <div class="d-flex">
                                 <div class="pr-4">
                                     <img
-                                        class="rounded"
+                                        class="rounded-circle"
                                         height="65"
                                         v-lazy="require('../../public/assets/img/thx_team_evert.jpg')"
                                         :alt="ALT_TEXT.HOME_BASE_TEAM_EVERT"

@@ -14,13 +14,15 @@
         <b-container class="pb-5">
             <b-row>
                 <b-col lg="5" offset-lg="1">
+                    <BaseCardUseCase :content="content['titanborn']" />
                     <BaseCardUseCase :content="content['carbify']" />
-                    <BaseCardUseCase :content="content['apeswap']" />
                     <BaseCardUseCase :content="content['tryhards']" />
+                    <BaseCardUseCase :content="content['blind-boxes']" />
                 </b-col>
                 <b-col lg="5" class="pt-lg-5 mt-lg-5">
                     <BaseCardUseCase :content="content['forest-knight']" />
-                    <BaseCardUseCase :content="content['blind-boxes']" />
+                    <BaseCardUseCase :content="content['apeswap']" />
+                    <BaseCardUseCase :content="content['royal-dutch-mint']" />
                     <BaseCardUseCase :content="content['2tokens']" />
                 </b-col>
             </b-row>
